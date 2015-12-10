@@ -3,40 +3,47 @@ entry:
   %f = alloca [6 x i16], align 2
   %g = alloca [6 x i16], align 2
   %l = alloca i64, align 8
-  %0 = bitcast [6 x i16]* %f to i8*
-  %1 = bitcast %struct.realvaluetype* %x to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
-  %arraydecay = getelementptr inbounds [6 x i16]* %f, i64 0, i64 0
-  %arrayidx.i = getelementptr inbounds [6 x i16]* %f, i64 0, i64 5
-  %2 = load i16* %arrayidx.i, align 2, !tbaa !0
-  %and.i = and i16 %2, 32767
-  %cmp.i = icmp eq i16 %and.i, 32767
-  br i1 %cmp.i, label %for.body.i, label %if.end
+  call void @llvm.dbg.declare(metadata !{%struct.realvaluetype* %x}, metadata !326), !dbg !2054
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %f}, metadata !327), !dbg !2055
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %g}, metadata !328), !dbg !2055
+  call void @llvm.dbg.declare(metadata !{i64* %l}, metadata !329), !dbg !2056
+  %0 = bitcast [6 x i16]* %f to i8*, !dbg !2057
+  %1 = bitcast %struct.realvaluetype* %x to i8*, !dbg !2057
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false), !dbg !2057
+  %arraydecay = getelementptr inbounds [6 x i16]* %f, i64 0, i64 0, !dbg !2058
+  tail call void @llvm.dbg.value(metadata !{i16* %arraydecay}, i64 0, metadata !2059), !dbg !2060
+  %arrayidx.i = getelementptr inbounds [6 x i16]* %f, i64 0, i64 5, !dbg !2061
+  %2 = load i16* %arrayidx.i, align 2, !dbg !2061, !tbaa !1057
+  %and.i = and i16 %2, 32767, !dbg !2061
+  %cmp.i = icmp eq i16 %and.i, 32767, !dbg !2061
+  br i1 %cmp.i, label %for.body.i, label %if.end, !dbg !2061
 
 for.body.i:                                       ; preds = %entry, %for.inc.i
   %i.012.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %entry ]
   %x.addr.011.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %arraydecay, %entry ]
-  %3 = load i16* %x.addr.011.i, align 2, !tbaa !0
-  %cmp5.i = icmp eq i16 %3, 0
-  br i1 %cmp5.i, label %for.inc.i, label %if.then
+  %3 = load i16* %x.addr.011.i, align 2, !dbg !2062, !tbaa !1057
+  %cmp5.i = icmp eq i16 %3, 0, !dbg !2062
+  br i1 %cmp5.i, label %for.inc.i, label %if.then, !dbg !2062
 
 for.inc.i:                                        ; preds = %for.body.i
-  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1
-  %inc.i = add nsw i32 %i.012.i, 1
-  %cmp2.i = icmp slt i32 %inc.i, 5
-  br i1 %cmp2.i, label %for.body.i, label %if.end
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1, !dbg !2062
+  %inc.i = add nsw i32 %i.012.i, 1, !dbg !2063
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !2064), !dbg !2063
+  %cmp2.i = icmp slt i32 %inc.i, 5, !dbg !2063
+  br i1 %cmp2.i, label %for.body.i, label %if.end, !dbg !2063
 
 if.then:                                          ; preds = %for.body.i
-  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([36 x i8]* @.str1, i64 0, i64 0)) #7
-  br label %return
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([36 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !2065
+  br label %return, !dbg !2067
 
 if.end:                                           ; preds = %for.inc.i, %entry
-  %arraydecay2 = getelementptr inbounds [6 x i16]* %g, i64 0, i64 0
-  call fastcc void @euifrac(i16* %arraydecay, i64* %l, i16* %arraydecay2) #6
-  %4 = load i64* %l, align 8, !tbaa !4
-  br label %return
+  %arraydecay2 = getelementptr inbounds [6 x i16]* %g, i64 0, i64 0, !dbg !2068
+  call fastcc void @euifrac(i16* %arraydecay, i64* %l, i16* %arraydecay2) #7, !dbg !2068
+  call void @llvm.dbg.value(metadata !{i64* %l}, i64 0, metadata !329), !dbg !2069
+  %4 = load i64* %l, align 8, !dbg !2069, !tbaa !1581
+  br label %return, !dbg !2069
 
 return:                                           ; preds = %if.end, %if.then
   %retval.0 = phi i64 [ -1, %if.then ], [ %4, %if.end ]
-  ret i64 %retval.0
+  ret i64 %retval.0, !dbg !2070
 }

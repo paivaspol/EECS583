@@ -1,33 +1,35 @@
 define internal void @mark_const_hash_entry(i8* nocapture %ptr) #0 {
 entry:
-  %0 = bitcast i8* %ptr to %struct.constant_descriptor**
-  %desc.06 = load %struct.constant_descriptor** %0, align 8
-  %tobool7 = icmp eq %struct.constant_descriptor* %desc.06, null
-  br i1 %tobool7, label %while.end, label %do.body
+  tail call void @llvm.dbg.value(metadata !{i8* %ptr}, i64 0, metadata !1854), !dbg !4015
+  %0 = bitcast i8* %ptr to %struct.constant_descriptor**, !dbg !4016
+  %desc.06 = load %struct.constant_descriptor** %0, align 8, !dbg !4016
+  %tobool7 = icmp eq %struct.constant_descriptor* %desc.06, null, !dbg !4017
+  br i1 %tobool7, label %while.end, label %do.body, !dbg !4017
 
 do.body:                                          ; preds = %entry, %do.end
   %desc.08 = phi %struct.constant_descriptor* [ %desc.0, %do.end ], [ %desc.06, %entry ]
-  %rtl = getelementptr inbounds %struct.constant_descriptor* %desc.08, i64 0, i32 2
-  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
-  %cmp = icmp eq %struct.rtx_def* %1, null
-  br i1 %cmp, label %do.end, label %land.lhs.true
+  %rtl = getelementptr inbounds %struct.constant_descriptor* %desc.08, i64 0, i32 2, !dbg !4018
+  %1 = load %struct.rtx_def** %rtl, align 8, !dbg !4018, !tbaa !2357
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !1856), !dbg !4018
+  %cmp = icmp eq %struct.rtx_def* %1, null, !dbg !4018
+  br i1 %cmp, label %do.end, label %land.lhs.true, !dbg !4018
 
 land.lhs.true:                                    ; preds = %do.body
-  %2 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 0, i64 0
-  %call = tail call i32 @ggc_set_mark(i8* %2) #9
-  %tobool1 = icmp eq i32 %call, 0
-  br i1 %tobool1, label %if.then, label %do.end
+  %2 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 0, i64 0, !dbg !4018
+  %call = tail call i32 @ggc_set_mark(i8* %2) #10, !dbg !4018
+  %tobool1 = icmp eq i32 %call, 0, !dbg !4018
+  br i1 %tobool1, label %if.then, label %do.end, !dbg !4018
 
 if.then:                                          ; preds = %land.lhs.true
-  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %1) #9
-  br label %do.end
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %1) #10, !dbg !4018
+  br label %do.end, !dbg !4018
 
 do.end:                                           ; preds = %land.lhs.true, %do.body, %if.then
-  %next = getelementptr inbounds %struct.constant_descriptor* %desc.08, i64 0, i32 0
-  %desc.0 = load %struct.constant_descriptor** %next, align 8
-  %tobool = icmp eq %struct.constant_descriptor* %desc.0, null
-  br i1 %tobool, label %while.end, label %do.body
+  %next = getelementptr inbounds %struct.constant_descriptor* %desc.08, i64 0, i32 0, !dbg !4019
+  %desc.0 = load %struct.constant_descriptor** %next, align 8, !dbg !4016
+  %tobool = icmp eq %struct.constant_descriptor* %desc.0, null, !dbg !4017
+  br i1 %tobool, label %while.end, label %do.body, !dbg !4017
 
 while.end:                                        ; preds = %do.end, %entry
-  ret void
+  ret void, !dbg !4020
 }

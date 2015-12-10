@@ -1,19 +1,20 @@
 define void @_ZN13POVMS_Message21SetDestinationAddressEPv(%class.POVMS_Message* %this, i8* %addr) #5 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.POVMS_Message* %this, i64 0, metadata !1007, metadata !1380), !dbg !2885
-  tail call void @llvm.dbg.value(metadata i8* %addr, i64 0, metadata !1008, metadata !1380), !dbg !2886
-  %1 = getelementptr inbounds %class.POVMS_Message* %this, i64 0, i32 0, i32 0, i32 1, !dbg !2887
-  %2 = tail call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %1, i8* %addr) #13, !dbg !2888
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !1009, metadata !1380), !dbg !2889
-  %3 = icmp eq i32 %2, 0, !dbg !2890
-  br i1 %3, label %7, label %4, !dbg !2892
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %this}, i64 0, metadata !1017), !dbg !1746
+  tail call void @llvm.dbg.value(metadata !{i8* %addr}, i64 0, metadata !1018), !dbg !1746
+  %data = getelementptr inbounds %class.POVMS_Message* %this, i64 0, i32 0, i32 0, i32 1, !dbg !1747
+  %call = tail call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %data, i8* %addr) #12, !dbg !1747
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1019), !dbg !1747
+  %cmp = icmp eq i32 %call, 0, !dbg !1748
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1748
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !2893
-  %6 = bitcast i8* %5 to i32*, !dbg !2893
-  store i32 %2, i32* %6, align 4, !dbg !2893, !tbaa !1456
-  tail call void @__cxa_throw(i8* %5, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #14, !dbg !2893
-  unreachable, !dbg !2893
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !1749
+  %0 = bitcast i8* %exception to i32*, !dbg !1749
+  store i32 %call, i32* %0, align 4, !dbg !1749, !tbaa !1112
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #13, !dbg !1749
+  unreachable, !dbg !1749
 
-; <label>:7                                       ; preds = %0
-  ret void, !dbg !2894
+if.end:                                           ; preds = %entry
+  ret void, !dbg !1750
 }

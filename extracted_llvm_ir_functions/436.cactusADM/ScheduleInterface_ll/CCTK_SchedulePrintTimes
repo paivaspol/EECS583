@@ -1,115 +1,88 @@
 define i32 @CCTK_SchedulePrintTimes(i8* %where) #1 {
+entry:
   %data = alloca %struct.t_sched_data, align 8
-  tail call void @llvm.dbg.value(metadata i8* %where, i64 0, metadata !249, metadata !498), !dbg !1365
-  %1 = bitcast %struct.t_sched_data* %data to i8*, !dbg !1366
-  call void @llvm.lifetime.start(i64 48, i8* %1) #4, !dbg !1366
-  %2 = load %struct.cTimerData** @timerinfo, align 8, !dbg !1367, !tbaa !593
-  %3 = icmp eq %struct.cTimerData* %2, null, !dbg !1367
-  br i1 %3, label %4, label %6, !dbg !1369
+  call void @llvm.dbg.value(metadata !{i8* %where}, i64 0, metadata !239), !dbg !1037
+  %0 = bitcast %struct.t_sched_data* %data to i8*, !dbg !1038
+  call void @llvm.lifetime.start(i64 48, i8* %0) #4, !dbg !1038
+  call void @llvm.dbg.declare(metadata !{%struct.t_sched_data* %data}, metadata !240), !dbg !1038
+  %1 = load %struct.cTimerData** @timerinfo, align 8, !dbg !1039, !tbaa !504
+  %tobool = icmp eq %struct.cTimerData* %1, null, !dbg !1039
+  br i1 %tobool, label %if.then, label %if.end, !dbg !1039
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call %struct.cTimerData* @CCTK_TimerCreateData() #8, !dbg !1370
-  store %struct.cTimerData* %5, %struct.cTimerData** @timerinfo, align 8, !dbg !1372, !tbaa !593
-  br label %6, !dbg !1373
+if.then:                                          ; preds = %entry
+  %call = call %struct.cTimerData* @CCTK_TimerCreateData() #8, !dbg !1040
+  store %struct.cTimerData* %call, %struct.cTimerData** @timerinfo, align 8, !dbg !1040, !tbaa !504
+  br label %if.end, !dbg !1042
 
-; <label>:6                                       ; preds = %0, %4
-  %.in = phi %struct.cTimerData* [ %2, %0 ], [ %5, %4 ]
-  %7 = ptrtoint %struct.cTimerData* %.in to i64
-  %8 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 0, !dbg !1374
-  store %struct.cGH* null, %struct.cGH** %8, align 8, !dbg !1375, !tbaa !961
-  %9 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 1, !dbg !1376
-  store i32 0, i32* %9, align 8, !dbg !1377, !tbaa !970
-  %10 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 4, !dbg !1378
-  store i32 1, i32* %10, align 8, !dbg !1379, !tbaa !1380
-  %11 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 2, !dbg !1381
-  %12 = bitcast %struct.cTimerData** %11 to i64*, !dbg !1382
-  store i64 %7, i64* %12, align 8, !dbg !1382, !tbaa !1383
-  %13 = tail call %struct.cTimerData* @CCTK_TimerCreateData() #8, !dbg !1384
-  %14 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 3, !dbg !1385
-  store %struct.cTimerData* %13, %struct.cTimerData** %14, align 8, !dbg !1386, !tbaa !1387
-  %15 = icmp eq i8* %where, null, !dbg !1388
-  tail call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  br i1 %15, label %16, label %17, !dbg !1391
+if.end:                                           ; preds = %entry, %if.then
+  %2 = phi %struct.cTimerData* [ %1, %entry ], [ %call, %if.then ]
+  %GH = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 0, !dbg !1043
+  store %struct.cGH* null, %struct.cGH** %GH, align 8, !dbg !1043, !tbaa !504
+  %schedpoint = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 1, !dbg !1044
+  store i32 0, i32* %schedpoint, align 8, !dbg !1044, !tbaa !489
+  %print_headers = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 4, !dbg !1045
+  store i32 1, i32* %print_headers, align 8, !dbg !1045, !tbaa !592
+  %info = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 2, !dbg !1046
+  store %struct.cTimerData* %2, %struct.cTimerData** %info, align 8, !dbg !1046, !tbaa !504
+  %call1 = call %struct.cTimerData* @CCTK_TimerCreateData() #8, !dbg !1047
+  %total_time = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 3, !dbg !1047
+  store %struct.cTimerData* %call1, %struct.cTimerData** %total_time, align 8, !dbg !1047, !tbaa !504
+  %tobool2 = icmp eq i8* %where, null, !dbg !1048
+  br i1 %tobool2, label %if.then3, label %if.else, !dbg !1048
 
-; <label>:16                                      ; preds = %6
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([23 x i8]* @.str32, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1392
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([16 x i8]* @.str51, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1394
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([13 x i8]* @.str14, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1395
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([16 x i8]* @.str17, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1396
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([20 x i8]* @.str19, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1397
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([14 x i8]* @.str20, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1398
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([19 x i8]* @.str21, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1399
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([19 x i8]* @.str22, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1400
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([13 x i8]* @.str23, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1401
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([18 x i8]* @.str24, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1402
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([23 x i8]* @.str25, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1403
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([17 x i8]* @.str26, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1404
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([22 x i8]* @.str27, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1405
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([19 x i8]* @.str44, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1406
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([13 x i8]* @.str45, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1407
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([18 x i8]* @.str46, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1408
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([16 x i8]* @.str47, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1409
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([10 x i8]* @.str48, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1410
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([15 x i8]* @.str49, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1411
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([20 x i8]* @.str28, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1412
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([14 x i8]* @.str29, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1413
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([19 x i8]* @.str30, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1414
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([20 x i8]* @.str37, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1415
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([14 x i8]* @.str38, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1416
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([19 x i8]* @.str39, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1417
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1418
-  call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !250, metadata !498), !dbg !1390
-  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([14 x i8]* @.str56, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1419
-  br label %18, !dbg !1420
+if.then3:                                         ; preds = %if.end
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([23 x i8]* @.str32, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1049
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([16 x i8]* @.str51, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1051
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([13 x i8]* @.str14, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1052
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([16 x i8]* @.str17, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1053
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([20 x i8]* @.str19, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1054
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([14 x i8]* @.str20, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1055
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([19 x i8]* @.str21, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1056
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([19 x i8]* @.str22, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1057
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([13 x i8]* @.str23, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1058
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([18 x i8]* @.str24, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1059
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([23 x i8]* @.str25, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1060
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([17 x i8]* @.str26, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1061
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([22 x i8]* @.str27, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1062
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([19 x i8]* @.str44, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1063
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([13 x i8]* @.str45, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1064
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([18 x i8]* @.str46, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1065
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([16 x i8]* @.str47, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1066
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([10 x i8]* @.str48, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1067
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([15 x i8]* @.str49, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1068
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([20 x i8]* @.str28, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1069
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([14 x i8]* @.str29, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1070
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([19 x i8]* @.str30, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1071
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([20 x i8]* @.str37, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1072
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([14 x i8]* @.str38, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1073
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([19 x i8]* @.str39, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1074
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1075
+  call fastcc void @SchedulePrintTimes(i8* getelementptr inbounds ([14 x i8]* @.str56, i64 0, i64 0), %struct.t_sched_data* %data) #9, !dbg !1076
+  br label %if.end32, !dbg !1077
 
-; <label>:17                                      ; preds = %6
-  call fastcc void @SchedulePrintTimes(i8* %where, %struct.t_sched_data* %data) #9, !dbg !1421
-  br label %18
+if.else:                                          ; preds = %if.end
+  call fastcc void @SchedulePrintTimes(i8* %where, %struct.t_sched_data* %data) #9, !dbg !1078
+  br label %if.end32
 
-; <label>:18                                      ; preds = %17, %16
-  %19 = load %struct.cTimerData** %14, align 8, !dbg !1423, !tbaa !1387
-  %20 = call i32 @CCTK_TimerDestroyData(%struct.cTimerData* %19) #8, !dbg !1424
-  %21 = load i32* @total_timer, align 4, !dbg !1425, !tbaa !873
-  %22 = icmp sgt i32 %21, -1, !dbg !1427
-  br i1 %22, label %23, label %31, !dbg !1428
+if.end32:                                         ; preds = %if.else, %if.then3
+  %3 = load %struct.cTimerData** %total_time, align 8, !dbg !1080, !tbaa !504
+  %call34 = call i32 @CCTK_TimerDestroyData(%struct.cTimerData* %3) #8, !dbg !1080
+  %4 = load i32* @total_timer, align 4, !dbg !1081, !tbaa !592
+  %cmp = icmp sgt i32 %4, -1, !dbg !1081
+  br i1 %cmp, label %if.then35, label %if.end39, !dbg !1081
 
-; <label>:23                                      ; preds = %18
-  %24 = call i32 @CCTK_TimerStopI(i32 %21) #8, !dbg !1429
-  %25 = load i32* @total_timer, align 4, !dbg !1431, !tbaa !873
-  %26 = load %struct.cTimerData** @timerinfo, align 8, !dbg !1432, !tbaa !593
-  %27 = call i32 @CCTK_TimerI(i32 %25, %struct.cTimerData* %26) #8, !dbg !1433
-  %28 = load %struct.cTimerData** @timerinfo, align 8, !dbg !1434, !tbaa !593
-  call fastcc void @CCTKi_SchedulePrintTimerInfo(%struct.cTimerData* %28, %struct.cTimerData* null, i8* getelementptr inbounds ([1 x i8]* @.str57, i64 0, i64 0), i8* getelementptr inbounds ([26 x i8]* @.str58, i64 0, i64 0)) #9, !dbg !1435
-  %29 = load i32* @total_timer, align 4, !dbg !1436, !tbaa !873
-  %30 = call i32 @CCTK_TimerStartI(i32 %29) #8, !dbg !1437
-  br label %31, !dbg !1438
+if.then35:                                        ; preds = %if.end32
+  %call36 = call i32 @CCTK_TimerStopI(i32 %4) #8, !dbg !1082
+  %5 = load i32* @total_timer, align 4, !dbg !1084, !tbaa !592
+  %6 = load %struct.cTimerData** @timerinfo, align 8, !dbg !1084, !tbaa !504
+  %call37 = call i32 @CCTK_TimerI(i32 %5, %struct.cTimerData* %6) #8, !dbg !1084
+  %7 = load %struct.cTimerData** @timerinfo, align 8, !dbg !1085, !tbaa !504
+  call fastcc void @CCTKi_SchedulePrintTimerInfo(%struct.cTimerData* %7, %struct.cTimerData* null, i8* getelementptr inbounds ([1 x i8]* @.str57, i64 0, i64 0), i8* getelementptr inbounds ([26 x i8]* @.str58, i64 0, i64 0)) #9, !dbg !1085
+  %8 = load i32* @total_timer, align 4, !dbg !1086, !tbaa !592
+  %call38 = call i32 @CCTK_TimerStartI(i32 %8) #8, !dbg !1086
+  br label %if.end39, !dbg !1087
 
-; <label>:31                                      ; preds = %23, %18
-  call void @llvm.lifetime.end(i64 48, i8* %1) #4, !dbg !1439
-  ret i32 0, !dbg !1439
+if.end39:                                         ; preds = %if.then35, %if.end32
+  call void @llvm.lifetime.end(i64 48, i8* %0) #4, !dbg !1088
+  ret i32 0, !dbg !1089
 }

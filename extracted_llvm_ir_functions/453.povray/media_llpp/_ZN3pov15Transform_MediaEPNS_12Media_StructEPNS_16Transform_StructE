@@ -1,38 +1,39 @@
-define void @_ZN3pov15Transform_MediaEPNS_12Media_StructEPNS_16Transform_StructE(%"struct.pov::Media_Struct"* readonly %IMedia, %"struct.pov::Transform_Struct"* %Trans) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Media_Struct"* %IMedia, i64 0, metadata !1117, metadata !1851), !dbg !4040
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1118, metadata !1851), !dbg !4041
-  %1 = icmp eq %"struct.pov::Media_Struct"* %IMedia, null, !dbg !4042
-  br i1 %1, label %.loopexit, label %.lr.ph, !dbg !4044
+define void @_ZN3pov15Transform_MediaEPNS_12Media_StructEPNS_16Transform_StructE(%"struct.pov::Media_Struct"* %IMedia, %"struct.pov::Transform_Struct"* %Trans) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Media_Struct"* %IMedia}, i64 0, metadata !1110), !dbg !2584
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1111), !dbg !2584
+  %cmp = icmp eq %"struct.pov::Media_Struct"* %IMedia, null, !dbg !2585
+  br i1 %cmp, label %if.end, label %for.body, !dbg !2585
 
-.lr.ph:                                           ; preds = %0, %_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit
-  %Temp.01 = phi %"struct.pov::Media_Struct"* [ %11, %_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit ], [ %IMedia, %0 ]
-  %2 = getelementptr inbounds %"struct.pov::Media_Struct"* %Temp.01, i64 0, i32 24, !dbg !4045
-  %3 = load %"struct.pov::Pigment_Struct"** %2, align 8, !dbg !4045, !tbaa !2496
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Pigment_Struct"* %3, i64 0, metadata !1124, metadata !1851), !dbg !4050
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1125, metadata !1851), !dbg !4052
-  %4 = icmp eq %"struct.pov::Pigment_Struct"* %3, null, !dbg !4053
-  br i1 %4, label %_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit, label %.lr.ph.i, !dbg !4054
+for.body:                                         ; preds = %entry, %_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit
+  %Temp.06 = phi %"struct.pov::Media_Struct"* [ %3, %_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit ], [ %IMedia, %entry ]
+  %Density = getelementptr inbounds %"struct.pov::Media_Struct"* %Temp.06, i64 0, i32 24, !dbg !2586
+  %0 = load %"struct.pov::Pigment_Struct"** %Density, align 8, !dbg !2586, !tbaa !1570
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Pigment_Struct"* %0}, i64 0, metadata !2590), !dbg !2591
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !2592), !dbg !2591
+  %cmp3.i = icmp eq %"struct.pov::Pigment_Struct"* %0, null, !dbg !2593
+  br i1 %cmp3.i, label %_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit, label %while.body.lr.ph.i, !dbg !2593
 
-.lr.ph.i:                                         ; preds = %.lr.ph
-  %5 = bitcast %"struct.pov::Pigment_Struct"* %3 to %"struct.pov::Pattern_Struct"*, !dbg !4055
-  br label %6, !dbg !4054
+while.body.lr.ph.i:                               ; preds = %for.body
+  %1 = bitcast %"struct.pov::Pigment_Struct"* %0 to %"struct.pov::Pattern_Struct"*, !dbg !2594
+  br label %while.body.i, !dbg !2593
 
-; <label>:6                                       ; preds = %6, %.lr.ph.i
-  %Temp.01.i = phi %"struct.pov::Pattern_Struct"* [ %5, %.lr.ph.i ], [ %8, %6 ], !dbg !4056
-  tail call void @_ZN3pov18Transform_TpatternEPNS_14Pattern_StructEPNS_16Transform_StructE(%"struct.pov::Pattern_Struct"* %Temp.01.i, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !4057
-  %7 = getelementptr inbounds %"struct.pov::Pattern_Struct"* %Temp.01.i, i64 0, i32 8, !dbg !4059
-  %8 = load %"struct.pov::Pattern_Struct"** %7, align 8, !dbg !4059, !tbaa !4060
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Pattern_Struct"* %8, i64 0, metadata !1126, metadata !1851), !dbg !4062
-  %9 = icmp eq %"struct.pov::Pattern_Struct"* %8, null, !dbg !4053
-  br i1 %9, label %_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit, label %6, !dbg !4054
+while.body.i:                                     ; preds = %while.body.i, %while.body.lr.ph.i
+  %Temp.04.i = phi %"struct.pov::Pattern_Struct"* [ %1, %while.body.lr.ph.i ], [ %2, %while.body.i ]
+  tail call void @_ZN3pov18Transform_TpatternEPNS_14Pattern_StructEPNS_16Transform_StructE(%"struct.pov::Pattern_Struct"* %Temp.04.i, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !2595
+  %Next.i = getelementptr inbounds %"struct.pov::Pattern_Struct"* %Temp.04.i, i64 0, i32 8, !dbg !2597
+  %2 = load %"struct.pov::Pattern_Struct"** %Next.i, align 8, !dbg !2597, !tbaa !1570
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Pattern_Struct"* %2}, i64 0, metadata !2598), !dbg !2597
+  %cmp.i = icmp eq %"struct.pov::Pattern_Struct"* %2, null, !dbg !2593
+  br i1 %cmp.i, label %_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit, label %while.body.i, !dbg !2593
 
-_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit: ; preds = %6, %.lr.ph
-  %10 = getelementptr inbounds %"struct.pov::Media_Struct"* %Temp.01, i64 0, i32 25, !dbg !4063
-  %11 = load %"struct.pov::Media_Struct"** %10, align 8, !dbg !4063, !tbaa !1908
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Media_Struct"* %11, i64 0, metadata !1119, metadata !1851), !dbg !4064
-  %12 = icmp eq %"struct.pov::Media_Struct"* %11, null, !dbg !4065
-  br i1 %12, label %.loopexit, label %.lr.ph, !dbg !4066
+_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit: ; preds = %while.body.i, %for.body
+  %Next_Media = getelementptr inbounds %"struct.pov::Media_Struct"* %Temp.06, i64 0, i32 25, !dbg !2599
+  %3 = load %"struct.pov::Media_Struct"** %Next_Media, align 8, !dbg !2599, !tbaa !1570
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Media_Struct"* %3}, i64 0, metadata !1112), !dbg !2599
+  %cmp1 = icmp eq %"struct.pov::Media_Struct"* %3, null, !dbg !2599
+  br i1 %cmp1, label %if.end, label %for.body, !dbg !2599
 
-.loopexit:                                        ; preds = %_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit, %0
-  ret void, !dbg !4067
+if.end:                                           ; preds = %_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE.exit, %entry
+  ret void, !dbg !2600
 }

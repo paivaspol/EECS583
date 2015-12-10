@@ -1,60 +1,61 @@
 define i32 @IVL_sizeOf(%struct._IVL* %ivl) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._IVL* %ivl, i64 0, metadata !34, metadata !199), !dbg !200
-  %1 = icmp eq %struct._IVL* %ivl, null, !dbg !201
-  br i1 %1, label %2, label %5, !dbg !203
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IVL* %ivl}, i64 0, metadata !33), !dbg !192
+  %cmp = icmp eq %struct._IVL* %ivl, null, !dbg !193
+  br i1 %cmp, label %if.then, label %if.end, !dbg !193
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !204, !tbaa !206
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), %struct._IVL* null) #5, !dbg !210
-  tail call void @exit(i32 -1) #6, !dbg !211
-  unreachable, !dbg !211
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !194, !tbaa !196
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), %struct._IVL* null) #5, !dbg !194
+  tail call void @exit(i32 -1) #6, !dbg !199
+  unreachable, !dbg !199
 
-; <label>:5                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 48, i64 0, metadata !35, metadata !199), !dbg !212
-  %6 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !213
-  %7 = load i32* %6, align 4, !dbg !213, !tbaa !214
-  %8 = icmp sgt i32 %7, 0, !dbg !217
-  br i1 %8, label %9, label %.loopexit, !dbg !218
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !200, i64 0, metadata !34), !dbg !201
+  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !202
+  %1 = load i32* %nlist, align 4, !dbg !202, !tbaa !203
+  %cmp1 = icmp sgt i32 %1, 0, !dbg !202
+  br i1 %cmp1, label %if.then2, label %if.end26, !dbg !202
 
-; <label>:9                                       ; preds = %5
-  %10 = mul i32 %7, 12, !dbg !219
-  %11 = add i32 %10, 48, !dbg !220
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !35, metadata !199), !dbg !212
-  %12 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 0, !dbg !221
-  %13 = load i32* %12, align 4, !dbg !221, !tbaa !222
-  %14 = icmp eq i32 %13, 2, !dbg !223
-  br i1 %14, label %15, label %21, !dbg !224
+if.then2:                                         ; preds = %if.end
+  %mul = mul i32 %1, 12, !dbg !204
+  %add = add i32 %mul, 48, !dbg !204
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !34), !dbg !204
+  %type = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 0, !dbg !205
+  %2 = load i32* %type, align 4, !dbg !205, !tbaa !203
+  %cmp6 = icmp eq i32 %2, 2, !dbg !205
+  br i1 %cmp6, label %if.then8, label %if.else, !dbg !205
 
-; <label>:15                                      ; preds = %9
-  %16 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4, !dbg !225
-  %17 = load i32** %16, align 8, !dbg !225, !tbaa !227
-  %18 = tail call i32 @IVsum(i32 %7, i32* %17) #5, !dbg !228
-  %19 = shl i32 %18, 2, !dbg !229
-  %20 = add i32 %19, %11, !dbg !230
-  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !35, metadata !199), !dbg !212
-  br label %.loopexit, !dbg !231
+if.then8:                                         ; preds = %if.then2
+  %sizes = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4, !dbg !206
+  %3 = load i32** %sizes, align 8, !dbg !206, !tbaa !196
+  %call10 = tail call i32 @IVsum(i32 %1, i32* %3) #5, !dbg !206
+  %mul12 = shl i32 %call10, 2, !dbg !206
+  %add14 = add i32 %mul12, %add, !dbg !206
+  tail call void @llvm.dbg.value(metadata !{i32 %add14}, i64 0, metadata !34), !dbg !206
+  br label %if.end26, !dbg !208
 
-; <label>:21                                      ; preds = %9
-  %22 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 7, !dbg !232
-  %chunk.01 = load %struct._Ichunk** %22, align 8, !dbg !232
-  %23 = icmp eq %struct._Ichunk* %chunk.01, null, !dbg !234
-  br i1 %23, label %.loopexit, label %.lr.ph, !dbg !236
+if.else:                                          ; preds = %if.then2
+  %chunk16 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 7, !dbg !209
+  %chunk.040 = load %struct._Ichunk** %chunk16, align 8, !dbg !209
+  %cmp1741 = icmp eq %struct._Ichunk* %chunk.040, null, !dbg !209
+  br i1 %cmp1741, label %if.end26, label %for.body, !dbg !209
 
-.lr.ph:                                           ; preds = %21, %.lr.ph
-  %chunk.03 = phi %struct._Ichunk* [ %chunk.0, %.lr.ph ], [ %chunk.01, %21 ]
-  %nbytes.02 = phi i32 [ %28, %.lr.ph ], [ %11, %21 ]
-  %24 = getelementptr inbounds %struct._Ichunk* %chunk.03, i64 0, i32 0, !dbg !237
-  %25 = load i32* %24, align 4, !dbg !237, !tbaa !239
-  %26 = shl i32 %25, 2, !dbg !241
-  %27 = add i32 %nbytes.02, 24, !dbg !242
-  %28 = add i32 %27, %26, !dbg !243
-  tail call void @llvm.dbg.value(metadata i32 %28, i64 0, metadata !35, metadata !199), !dbg !212
-  %29 = getelementptr inbounds %struct._Ichunk* %chunk.03, i64 0, i32 3, !dbg !244
-  %chunk.0 = load %struct._Ichunk** %29, align 8, !dbg !232
-  %30 = icmp eq %struct._Ichunk* %chunk.0, null, !dbg !234
-  br i1 %30, label %.loopexit, label %.lr.ph, !dbg !236
+for.body:                                         ; preds = %if.else, %for.body
+  %chunk.043 = phi %struct._Ichunk* [ %chunk.0, %for.body ], [ %chunk.040, %if.else ]
+  %nbytes.042 = phi i32 [ %add23, %for.body ], [ %add, %if.else ]
+  %size = getelementptr inbounds %struct._Ichunk* %chunk.043, i64 0, i32 0, !dbg !211
+  %4 = load i32* %size, align 4, !dbg !211, !tbaa !203
+  %mul20 = shl i32 %4, 2, !dbg !211
+  %add21 = add i32 %nbytes.042, 24, !dbg !211
+  %add23 = add i32 %add21, %mul20, !dbg !211
+  tail call void @llvm.dbg.value(metadata !{i32 %add23}, i64 0, metadata !34), !dbg !211
+  %next = getelementptr inbounds %struct._Ichunk* %chunk.043, i64 0, i32 3, !dbg !213
+  %chunk.0 = load %struct._Ichunk** %next, align 8, !dbg !209
+  %cmp17 = icmp eq %struct._Ichunk* %chunk.0, null, !dbg !209
+  br i1 %cmp17, label %if.end26, label %for.body, !dbg !209
 
-.loopexit:                                        ; preds = %.lr.ph, %21, %15, %5
-  %nbytes.1 = phi i32 [ %20, %15 ], [ 48, %5 ], [ %11, %21 ], [ %28, %.lr.ph ]
-  ret i32 %nbytes.1, !dbg !245
+if.end26:                                         ; preds = %if.else, %for.body, %if.then8, %if.end
+  %nbytes.1 = phi i32 [ %add14, %if.then8 ], [ 48, %if.end ], [ %add, %if.else ], [ %add23, %for.body ]
+  ret i32 %nbytes.1, !dbg !214
 }

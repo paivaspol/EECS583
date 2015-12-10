@@ -1,22 +1,24 @@
 define i32 @FmoStartPicture() #0 {
-  %1 = load i8** @MBAmap, align 8, !dbg !1380, !tbaa !984
-  %2 = icmp eq i8* %1, null, !dbg !1380
-  br i1 %2, label %3, label %.preheader, !dbg !1380, !prof !1381
+entry:
+  %0 = load i8** @MBAmap, align 8, !dbg !1155, !tbaa !948
+  %cmp = icmp eq i8* %0, null, !dbg !1155
+  br i1 %cmp, label %cond.false, label %for.body, !dbg !1155
 
-; <label>:3                                       ; preds = %0
-  tail call void @__assert_rtn(i8* getelementptr inbounds ([16 x i8]* @__func__.FmoStartPicture, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i32 561, i8* getelementptr inbounds ([15 x i8]* @.str1, i64 0, i64 0)) #9, !dbg !1380
-  unreachable, !dbg !1380
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 561, i8* getelementptr inbounds ([22 x i8]* @__PRETTY_FUNCTION__.FmoStartPicture, i64 0, i64 0)) #9, !dbg !1155
+  unreachable, !dbg !1155
 
-.preheader:                                       ; preds = %0, %.preheader
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.preheader ], [ 0, %0 ]
-  %4 = trunc i64 %indvars.iv to i32, !dbg !1382
-  %5 = tail call i32 @FmoGetFirstMBOfSliceGroup(i32 %4) #10, !dbg !1382
-  %6 = getelementptr inbounds [8 x i32]* @FirstMBInSlice, i64 0, i64 %indvars.iv, !dbg !1385
-  store i32 %5, i32* %6, align 4, !dbg !1386, !tbaa !965
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1387
-  %exitcond = icmp eq i64 %indvars.iv.next, 8, !dbg !1387
-  br i1 %exitcond, label %7, label %.preheader, !dbg !1387
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %1 = trunc i64 %indvars.iv to i32, !dbg !1156
+  %call = tail call i32 @FmoGetFirstMBOfSliceGroup(i32 %1) #10, !dbg !1156
+  %arrayidx = getelementptr inbounds [8 x i32]* @FirstMBInSlice, i64 0, i64 %indvars.iv, !dbg !1156
+  store i32 %call, i32* %arrayidx, align 4, !dbg !1156, !tbaa !938
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1158
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1158
+  %exitcond = icmp eq i32 %lftr.wideiv, 8, !dbg !1158
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1158
 
-; <label>:7                                       ; preds = %.preheader
-  ret i32 0, !dbg !1388
+for.end:                                          ; preds = %for.body
+  ret i32 0, !dbg !1159
 }

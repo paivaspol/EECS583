@@ -1,28 +1,29 @@
 define i32 @SymbolIndex(i8 signext %sym) #0 {
-  tail call void @llvm.dbg.value(metadata i8 %sym, i64 0, metadata !32, metadata !167), !dbg !317
-  %1 = sext i8 %sym to i32, !dbg !318
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !156, metadata !167) #5, !dbg !319
-  %2 = tail call i32 @__toupper(i32 %1) #6, !dbg !321
-  %sext = shl i32 %2, 24, !dbg !322
-  %3 = ashr exact i32 %sext, 24, !dbg !322
-  %4 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %3) #6, !dbg !323
-  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !33, metadata !167), !dbg !324
-  %5 = icmp eq i8* %4, null, !dbg !325
-  br i1 %5, label %6, label %10, !dbg !326
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8 %sym}, i64 0, metadata !30), !dbg !256
+  %conv = sext i8 %sym to i32, !dbg !257
+  %call = tail call i32 @toupper(i32 %conv) #6, !dbg !257
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !32), !dbg !257
+  %sext = shl i32 %call, 24, !dbg !259
+  %conv2 = ashr exact i32 %sext, 24, !dbg !259
+  %call3 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %conv2) #8, !dbg !259
+  tail call void @llvm.dbg.value(metadata !{i8* %call3}, i64 0, metadata !31), !dbg !259
+  %cmp = icmp eq i8* %call3, null, !dbg !259
+  br i1 %cmp, label %cond.true, label %cond.false, !dbg !259
 
-; <label>:6                                       ; preds = %0
-  %7 = load i32* @Alphabet_iupac, align 4, !dbg !327, !tbaa !224
-  %8 = add nsw i32 %7, -1, !dbg !328
-  %9 = sext i32 %8 to i64, !dbg !327
-  br label %13, !dbg !326
+cond.true:                                        ; preds = %entry
+  %0 = load i32* @Alphabet_iupac, align 4, !dbg !259, !tbaa !194
+  %sub = add nsw i32 %0, -1, !dbg !259
+  %conv5 = sext i32 %sub to i64, !dbg !259
+  br label %cond.end, !dbg !259
 
-; <label>:10                                      ; preds = %0
-  %11 = ptrtoint i8* %4 to i64, !dbg !329
-  %12 = sub i64 %11, ptrtoint ([25 x i8]* @Alphabet to i64), !dbg !329
-  br label %13, !dbg !326
+cond.false:                                       ; preds = %entry
+  %sub.ptr.lhs.cast = ptrtoint i8* %call3 to i64, !dbg !259
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, ptrtoint ([25 x i8]* @Alphabet to i64), !dbg !259
+  br label %cond.end, !dbg !259
 
-; <label>:13                                      ; preds = %10, %6
-  %14 = phi i64 [ %9, %6 ], [ %12, %10 ], !dbg !326
-  %15 = trunc i64 %14 to i32, !dbg !326
-  ret i32 %15, !dbg !330
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %conv5, %cond.true ], [ %sub.ptr.sub, %cond.false ], !dbg !259
+  %conv6 = trunc i64 %cond to i32, !dbg !259
+  ret i32 %conv6, !dbg !259
 }

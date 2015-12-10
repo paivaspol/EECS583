@@ -1,25 +1,28 @@
 define internal void @destroy_node(i64 %v) #0 {
 entry:
-  %tobool = icmp eq i64 %v, 0
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i64 %v}, i64 0, metadata !877), !dbg !885
+  tail call void @llvm.dbg.value(metadata !{%struct.include_file* %0}, i64 0, metadata !878), !dbg !886
+  %tobool = icmp eq i64 %v, 0, !dbg !887
+  br i1 %tobool, label %if.end, label %if.then, !dbg !887
 
 if.then:                                          ; preds = %entry
-  %0 = inttoptr i64 %v to %struct.include_file*
-  %buffer.i = getelementptr inbounds %struct.include_file* %0, i64 0, i32 3
-  %1 = load i8** %buffer.i, align 8, !tbaa !0
-  %tobool.i = icmp eq i8* %1, null
-  br i1 %tobool.i, label %purge_cache.exit, label %if.then.i
+  %0 = inttoptr i64 %v to %struct.include_file*, !dbg !886
+  tail call void @llvm.dbg.value(metadata !{%struct.include_file* %0}, i64 0, metadata !888) #5, !dbg !891
+  %buffer.i = getelementptr inbounds %struct.include_file* %0, i64 0, i32 3, !dbg !892
+  %1 = load i8** %buffer.i, align 8, !dbg !892, !tbaa !881
+  %tobool.i = icmp eq i8* %1, null, !dbg !892
+  br i1 %tobool.i, label %purge_cache.exit, label %if.then.i, !dbg !892
 
 if.then.i:                                        ; preds = %if.then
-  tail call void @free(i8* %1) #6
-  store i8* null, i8** %buffer.i, align 8, !tbaa !0
-  br label %purge_cache.exit
+  tail call void @free(i8* %1) #7, !dbg !893
+  store i8* null, i8** %buffer.i, align 8, !dbg !895, !tbaa !881
+  br label %purge_cache.exit, !dbg !896
 
 purge_cache.exit:                                 ; preds = %if.then, %if.then.i
-  %2 = inttoptr i64 %v to i8*
-  tail call void @free(i8* %2) #6
-  br label %if.end
+  %2 = inttoptr i64 %v to i8*, !dbg !897
+  tail call void @free(i8* %2) #7, !dbg !897
+  br label %if.end, !dbg !898
 
 if.end:                                           ; preds = %entry, %purge_cache.exit
-  ret void
+  ret void, !dbg !899
 }

@@ -1,12 +1,13 @@
 define double @sre_random_positive() #0 {
-  br label %1, !dbg !196
+entry:
+  br label %do.body, !dbg !147
 
-; <label>:1                                       ; preds = %1, %0
-  %2 = tail call double @sre_random() #3, !dbg !197
-  tail call void @llvm.dbg.value(metadata double %2, i64 0, metadata !30, metadata !93), !dbg !199
-  %3 = fcmp oeq double %2, 0.000000e+00, !dbg !200
-  br i1 %3, label %1, label %4, !dbg !201
+do.body:                                          ; preds = %do.body, %entry
+  %call = tail call double @sre_random() #3, !dbg !148
+  tail call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !30), !dbg !148
+  %cmp = fcmp oeq double %call, 0.000000e+00, !dbg !148
+  br i1 %cmp, label %do.body, label %do.end, !dbg !148
 
-; <label>:4                                       ; preds = %1
-  ret double %2, !dbg !202
+do.end:                                           ; preds = %do.body
+  ret double %call, !dbg !150
 }

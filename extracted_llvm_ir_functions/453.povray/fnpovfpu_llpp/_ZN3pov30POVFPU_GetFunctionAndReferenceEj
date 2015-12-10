@@ -1,20 +1,21 @@
-define %"struct.pov::FunctionCode"* @_ZN3pov30POVFPU_GetFunctionAndReferenceEj(i32 %k) #2 {
-  tail call void @llvm.dbg.value(metadata i32 %k, i64 0, metadata !530, metadata !1171), !dbg !1427
-  %1 = load i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !1428, !tbaa !1189
-  %2 = icmp ugt i32 %1, %k, !dbg !1430
-  br i1 %2, label %5, label %3, !dbg !1431
+define %"struct.pov::FunctionCode"* @_ZN3pov30POVFPU_GetFunctionAndReferenceEj(i32 %k) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !261), !dbg !625
+  %0 = load i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !626, !tbaa !498
+  %cmp = icmp ugt i32 %0, %k, !dbg !626
+  br i1 %cmp, label %if.end, label %if.then, !dbg !626
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([31 x i8]* @.str54, i64 0, i64 0)) #8, !dbg !1432
-  br label %5, !dbg !1432
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([31 x i8]* @.str54, i64 0, i64 0)) #9, !dbg !627
+  br label %if.end, !dbg !627
 
-; <label>:5                                       ; preds = %0, %3
-  %6 = zext i32 %k to i64, !dbg !1433
-  %7 = load %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !1433, !tbaa !1183
-  %8 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %7, i64 %6, i32 1, !dbg !1434
-  %9 = load i32* %8, align 4, !dbg !1435, !tbaa !1309
-  %10 = add i32 %9, 1, !dbg !1435
-  store i32 %10, i32* %8, align 4, !dbg !1435, !tbaa !1309
-  %11 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %7, i64 %6, i32 0, !dbg !1436
-  ret %"struct.pov::FunctionCode"* %11, !dbg !1437
+if.end:                                           ; preds = %entry, %if.then
+  %idxprom = zext i32 %k to i64, !dbg !628
+  %1 = load %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !628, !tbaa !493
+  %reference_count = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %1, i64 %idxprom, i32 1, !dbg !628
+  %2 = load i32* %reference_count, align 4, !dbg !628, !tbaa !498
+  %inc = add i32 %2, 1, !dbg !628
+  store i32 %inc, i32* %reference_count, align 4, !dbg !628, !tbaa !498
+  %fn = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %1, i64 %idxprom, i32 0, !dbg !629
+  ret %"struct.pov::FunctionCode"* %fn, !dbg !629
 }

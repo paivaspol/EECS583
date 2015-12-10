@@ -1,0 +1,19 @@
+define internal fastcc void @_ZN3povL11Echo_ungetcEi(i32 %c) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %c}, i64 0, metadata !1332), !dbg !1674
+  %0 = load i32* @_ZN3pov9Echo_IndxE, align 4, !dbg !1675, !tbaa !1569
+  %cmp = icmp sgt i32 %0, 0, !dbg !1675
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1675
+
+if.then:                                          ; preds = %entry
+  %dec = add nsw i32 %0, -1, !dbg !1677
+  store i32 %dec, i32* @_ZN3pov9Echo_IndxE, align 4, !dbg !1677, !tbaa !1569
+  br label %if.end, !dbg !1677
+
+if.end:                                           ; preds = %if.then, %entry
+  %1 = load %"struct.pov::InputFileData"** @_ZN3pov10Input_FileE, align 8, !dbg !1678, !tbaa !1578
+  %In_File = getelementptr inbounds %"struct.pov::InputFileData"* %1, i64 0, i32 0, !dbg !1678
+  %2 = load %"class.pov_base::ITextStream"** %In_File, align 8, !dbg !1678, !tbaa !1578
+  tail call void @_ZN8pov_base11ITextStream9ungetcharEi(%"class.pov_base::ITextStream"* %2, i32 %c) #9, !dbg !1678
+  ret void, !dbg !1679
+}

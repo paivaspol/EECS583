@@ -1,33 +1,34 @@
-define void @_ZN14MACRelayUnitPP13handleMessageEP8cMessage(%class.MACRelayUnitPP* %this, %class.cMessage* %msg) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.MACRelayUnitPP* %this, i64 0, metadata !4757, metadata !6395), !dbg !6691
-  tail call void @llvm.dbg.value(metadata %class.cMessage* %msg, i64 0, metadata !4758, metadata !6395), !dbg !6692
-  tail call void @llvm.dbg.value(metadata %class.cMessage* %msg, i64 0, metadata !5104, metadata !6395), !dbg !6693
-  %1 = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 12, !dbg !6696
-  %2 = load i32* %1, align 4, !dbg !6696, !tbaa !6697
-  %3 = icmp eq i32 %2, -1, !dbg !6699
-  br i1 %3, label %12, label %4, !dbg !6700
+define void @_ZN14MACRelayUnitPP13handleMessageEP8cMessage(%class.MACRelayUnitPP* %this, %class.cMessage* %msg) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MACRelayUnitPP* %this}, i64 0, metadata !5478), !dbg !6185
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !5479), !dbg !6185
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !6186), !dbg !6188
+  %togate.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 12, !dbg !6188
+  %0 = load i32* %togate.i, align 4, !dbg !6188, !tbaa !6041
+  %cmp.i = icmp eq i32 %0, -1, !dbg !6188
+  br i1 %cmp.i, label %if.else, label %if.then, !dbg !6187
 
-; <label>:4                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata %class.cMessage* %msg, i64 0, metadata !5108, metadata !6395), !dbg !6701
-  %5 = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 1, !dbg !6705
-  %6 = load i32* %5, align 4, !dbg !6705, !tbaa !6706
-  %7 = icmp eq i32 %6, 2001, !dbg !6707
-  br i1 %7, label %10, label %8, !dbg !6708
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !6189), !dbg !6192
+  %msgkind.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 1, !dbg !6192
+  %1 = load i32* %msgkind.i, align 4, !dbg !6192, !tbaa !6041
+  %cmp = icmp eq i32 %1, 2001, !dbg !6190
+  br i1 %cmp, label %if.end, label %if.then3, !dbg !6190
 
-; <label>:8                                       ; preds = %4
-  %9 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 0, i32 0, !dbg !6709
-  tail call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %9, i8* getelementptr inbounds ([23 x i8]* @.str20, i64 0, i64 0)) #11, !dbg !6709
-  br label %10, !dbg !6709
+if.then3:                                         ; preds = %if.then
+  %2 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 0, i32 0, !dbg !6193
+  tail call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %2, i8* getelementptr inbounds ([23 x i8]* @.str21, i64 0, i64 0)) #9, !dbg !6193
+  br label %if.end, !dbg !6193
 
-; <label>:10                                      ; preds = %4, %8
-  %11 = bitcast %class.cMessage* %msg to %class.EtherFrame*, !dbg !6710
-  tail call void @_ZN14MACRelayUnitPP19handleIncomingFrameEP10EtherFrame(%class.MACRelayUnitPP* %this, %class.EtherFrame* %11) #11, !dbg !6711
-  br label %13, !dbg !6712
+if.end:                                           ; preds = %if.then, %if.then3
+  %3 = bitcast %class.cMessage* %msg to %class.EtherFrame*, !dbg !6194
+  tail call void @_ZN14MACRelayUnitPP19handleIncomingFrameEP10EtherFrame(%class.MACRelayUnitPP* %this, %class.EtherFrame* %3) #9, !dbg !6194
+  br label %if.end4, !dbg !6195
 
-; <label>:12                                      ; preds = %0
-  tail call void @_ZN14MACRelayUnitPP12processFrameEP8cMessage(%class.MACRelayUnitPP* %this, %class.cMessage* %msg) #11, !dbg !6713
-  br label %13
+if.else:                                          ; preds = %entry
+  tail call void @_ZN14MACRelayUnitPP12processFrameEP8cMessage(%class.MACRelayUnitPP* %this, %class.cMessage* %msg) #9, !dbg !6196
+  br label %if.end4
 
-; <label>:13                                      ; preds = %12, %10
-  ret void, !dbg !6715
+if.end4:                                          ; preds = %if.else, %if.end
+  ret void, !dbg !6198
 }

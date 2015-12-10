@@ -1,32 +1,36 @@
-define internal fastcc i32 @count_cond(%union.tree_node* nocapture %expr, i32 %lim) #4 {
+define internal fastcc i32 @count_cond(%union.tree_node* nocapture %expr, i32 %lim) #5 {
 entry:
-  %code = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp ne i32 %bf.clear, 51
-  %cmp1 = icmp slt i32 %lim, 1
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %return, label %if.end3
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %expr}, i64 0, metadata !1608), !dbg !3977
+  tail call void @llvm.dbg.value(metadata !{i32 %lim}, i64 0, metadata !1609), !dbg !3978
+  %code = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 0, i32 2, !dbg !3979
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !3979
+  %bf.load = load i32* %0, align 8, !dbg !3979
+  %bf.clear = and i32 %bf.load, 255, !dbg !3979
+  %cmp = icmp ne i32 %bf.clear, 51, !dbg !3979
+  %cmp1 = icmp slt i32 %lim, 1, !dbg !3980
+  %or.cond = or i1 %cmp, %cmp1, !dbg !3979
+  br i1 %or.cond, label %return, label %if.end3, !dbg !3979
 
 if.end3:                                          ; preds = %entry
-  %operands = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 2
-  %arrayidx = getelementptr inbounds i32* %operands, i64 2
-  %1 = bitcast i32* %arrayidx to %union.tree_node**
-  %2 = load %union.tree_node** %1, align 8, !tbaa !3
-  %sub = add nsw i32 %lim, -1
-  %call = tail call fastcc i32 @count_cond(%union.tree_node* %2, i32 %sub) #7
-  %arrayidx6 = getelementptr inbounds i32* %operands, i64 4
-  %3 = bitcast i32* %arrayidx6 to %union.tree_node**
-  %4 = load %union.tree_node** %3, align 8, !tbaa !3
-  %sub8 = sub nsw i32 %sub, %call
-  %call9 = tail call fastcc i32 @count_cond(%union.tree_node* %4, i32 %sub8) #7
-  %add = add nsw i32 %call, 1
-  %add10 = add nsw i32 %add, %call9
-  %cmp11 = icmp sgt i32 %add10, %lim
-  %lim.add10 = select i1 %cmp11, i32 %lim, i32 %add10
-  ret i32 %lim.add10
+  %operands = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 2, !dbg !3981
+  %arrayidx = getelementptr inbounds i32* %operands, i64 2, !dbg !3981
+  %1 = bitcast i32* %arrayidx to %union.tree_node**, !dbg !3981
+  %2 = load %union.tree_node** %1, align 8, !dbg !3981, !tbaa !1705
+  %sub = add nsw i32 %lim, -1, !dbg !3981
+  %call = tail call fastcc i32 @count_cond(%union.tree_node* %2, i32 %sub) #7, !dbg !3981
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1610), !dbg !3981
+  %arrayidx6 = getelementptr inbounds i32* %operands, i64 4, !dbg !3982
+  %3 = bitcast i32* %arrayidx6 to %union.tree_node**, !dbg !3982
+  %4 = load %union.tree_node** %3, align 8, !dbg !3982, !tbaa !1705
+  %sub8 = sub nsw i32 %sub, %call, !dbg !3982
+  %call9 = tail call fastcc i32 @count_cond(%union.tree_node* %4, i32 %sub8) #7, !dbg !3982
+  tail call void @llvm.dbg.value(metadata !{i32 %call9}, i64 0, metadata !1611), !dbg !3982
+  %add = add nsw i32 %call, 1, !dbg !3983
+  %add10 = add nsw i32 %add, %call9, !dbg !3983
+  %cmp11 = icmp sgt i32 %add10, %lim, !dbg !3983
+  %lim.add10 = select i1 %cmp11, i32 %lim, i32 %add10, !dbg !3983
+  ret i32 %lim.add10, !dbg !3984
 
 return:                                           ; preds = %entry
-  ret i32 0
+  ret i32 0, !dbg !3984
 }

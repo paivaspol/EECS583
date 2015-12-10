@@ -1,81 +1,84 @@
 define i32 @Graph_externalDegree(%struct._Graph* %g, i32 %v) #0 {
+entry:
   %vsize = alloca i32, align 4
   %vadj = alloca i32*, align 8
-  tail call void @llvm.dbg.value(metadata %struct._Graph* %g, i64 0, metadata !48, metadata !165), !dbg !166
-  tail call void @llvm.dbg.value(metadata i32 %v, i64 0, metadata !49, metadata !165), !dbg !167
-  %1 = icmp eq %struct._Graph* %g, null, !dbg !168
-  %2 = icmp slt i32 %v, 0, !dbg !170
-  %or.cond = or i1 %1, %2, !dbg !171
-  br i1 %or.cond, label %10, label %3, !dbg !171
+  call void @llvm.dbg.value(metadata !{%struct._Graph* %g}, i64 0, metadata !47), !dbg !159
+  call void @llvm.dbg.value(metadata !{i32 %v}, i64 0, metadata !48), !dbg !160
+  call void @llvm.dbg.declare(metadata !{i32* %vsize}, metadata !50), !dbg !161
+  call void @llvm.dbg.declare(metadata !{i32** %vadj}, metadata !53), !dbg !162
+  %cmp = icmp eq %struct._Graph* %g, null, !dbg !163
+  %cmp1 = icmp slt i32 %v, 0, !dbg !163
+  %or.cond = or i1 %cmp, %cmp1, !dbg !163
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !163
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1, !dbg !172
-  %5 = load i32* %4, align 4, !dbg !172, !tbaa !173
-  %6 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 2, !dbg !179
-  %7 = load i32* %6, align 4, !dbg !179, !tbaa !180
-  %8 = add nsw i32 %7, %5, !dbg !181
-  %9 = icmp sgt i32 %8, %v, !dbg !182
-  br i1 %9, label %13, label %10, !dbg !183
+lor.lhs.false2:                                   ; preds = %entry
+  %nvtx = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1, !dbg !163
+  %0 = load i32* %nvtx, align 4, !dbg !163, !tbaa !164
+  %nvbnd = getelementptr inbounds %struct._Graph* %g, i64 0, i32 2, !dbg !163
+  %1 = load i32* %nvbnd, align 4, !dbg !163, !tbaa !164
+  %add = add nsw i32 %1, %0, !dbg !163
+  %cmp3 = icmp sgt i32 %add, %v, !dbg !163
+  br i1 %cmp3, label %if.end, label %if.then, !dbg !163
 
-; <label>:10                                      ; preds = %3, %0
-  %11 = load %struct.__sFILE** @__stderrp, align 8, !dbg !184, !tbaa !186
-  %12 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %11, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), %struct._Graph* %g, i32 %v) #5, !dbg !187
-  tail call void @exit(i32 -1) #6, !dbg !188
-  unreachable, !dbg !188
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !167, !tbaa !169
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), %struct._Graph* %g, i32 %v) #5, !dbg !167
+  call void @exit(i32 -1) #6, !dbg !170
+  unreachable, !dbg !170
 
-; <label>:13                                      ; preds = %3
-  %14 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 7, !dbg !189
-  %15 = load i32** %14, align 8, !dbg !189, !tbaa !190
-  tail call void @llvm.dbg.value(metadata i32* %15, i64 0, metadata !55, metadata !165), !dbg !191
-  tail call void @llvm.dbg.value(metadata i32* %vsize, i64 0, metadata !51, metadata !165), !dbg !192
-  tail call void @llvm.dbg.value(metadata i32** %vadj, i64 0, metadata !54, metadata !165), !dbg !193
-  call void @Graph_adjAndSize(%struct._Graph* %g, i32 %v, i32* %vsize, i32** %vadj) #7, !dbg !194
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !50, metadata !165), !dbg !195
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !53, metadata !165), !dbg !196
-  call void @llvm.dbg.value(metadata i32* %vsize, i64 0, metadata !51, metadata !165), !dbg !192
-  %16 = load i32* %vsize, align 4, !dbg !197, !tbaa !200
-  %17 = icmp sgt i32 %16, 0, !dbg !201
-  br i1 %17, label %.lr.ph, label %._crit_edge, !dbg !202
+if.end:                                           ; preds = %lor.lhs.false2
+  %vwghts4 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 7, !dbg !171
+  %3 = load i32** %vwghts4, align 8, !dbg !171, !tbaa !169
+  call void @llvm.dbg.value(metadata !{i32* %3}, i64 0, metadata !54), !dbg !171
+  call void @Graph_adjAndSize(%struct._Graph* %g, i32 %v, i32* %vsize, i32** %vadj) #7, !dbg !172
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !49), !dbg !173
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !52), !dbg !173
+  call void @llvm.dbg.value(metadata !{i32* %vsize}, i64 0, metadata !50), !dbg !173
+  %4 = load i32* %vsize, align 4, !dbg !173, !tbaa !164
+  %cmp526 = icmp sgt i32 %4, 0, !dbg !173
+  br i1 %cmp526, label %for.body.lr.ph, label %for.end, !dbg !173
 
-.lr.ph:                                           ; preds = %13
-  %18 = load i32** %vadj, align 8, !dbg !203, !tbaa !186
-  %19 = icmp eq i32* %15, null, !dbg !206
-  %20 = sext i32 %16 to i64, !dbg !202
-  br label %21, !dbg !202
+for.body.lr.ph:                                   ; preds = %if.end
+  call void @llvm.dbg.value(metadata !{i32** %vadj}, i64 0, metadata !53), !dbg !175
+  %5 = load i32** %vadj, align 8, !dbg !175, !tbaa !169
+  call void @llvm.dbg.value(metadata !{i32* %vsize}, i64 0, metadata !50), !dbg !173
+  %cmp8 = icmp eq i32* %3, null, !dbg !177
+  br label %for.body, !dbg !173
 
-; <label>:21                                      ; preds = %.lr.ph, %33
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %33 ]
-  %weight.02 = phi i32 [ 0, %.lr.ph ], [ %weight.1, %33 ]
-  call void @llvm.dbg.value(metadata i32** %vadj, i64 0, metadata !54, metadata !165), !dbg !193
-  %22 = getelementptr inbounds i32* %18, i64 %indvars.iv, !dbg !203
-  %23 = load i32* %22, align 4, !dbg !203, !tbaa !200
-  call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !52, metadata !165), !dbg !208
-  %24 = icmp eq i32 %23, %v, !dbg !209
-  br i1 %24, label %33, label %25, !dbg !210
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %weight.027 = phi i32 [ 0, %for.body.lr.ph ], [ %weight.1, %for.inc ]
+  call void @llvm.dbg.value(metadata !{i32** %vadj}, i64 0, metadata !53), !dbg !175
+  %arrayidx = getelementptr inbounds i32* %5, i64 %indvars.iv, !dbg !175
+  %6 = load i32* %arrayidx, align 4, !dbg !175, !tbaa !164
+  call void @llvm.dbg.value(metadata !{i32 %6}, i64 0, metadata !51), !dbg !175
+  %cmp6 = icmp eq i32 %6, %v, !dbg !175
+  br i1 %cmp6, label %for.inc, label %if.then7, !dbg !175
 
-; <label>:25                                      ; preds = %21
-  br i1 %19, label %30, label %26, !dbg !211
+if.then7:                                         ; preds = %for.body
+  br i1 %cmp8, label %cond.end, label %cond.true, !dbg !177
 
-; <label>:26                                      ; preds = %25
-  %27 = sext i32 %23 to i64, !dbg !212
-  %28 = getelementptr inbounds i32* %15, i64 %27, !dbg !212
-  %29 = load i32* %28, align 4, !dbg !212, !tbaa !200
-  br label %30, !dbg !211
+cond.true:                                        ; preds = %if.then7
+  %idxprom9 = sext i32 %6 to i64, !dbg !177
+  %arrayidx10 = getelementptr inbounds i32* %3, i64 %idxprom9, !dbg !177
+  %7 = load i32* %arrayidx10, align 4, !dbg !177, !tbaa !164
+  br label %cond.end, !dbg !177
 
-; <label>:30                                      ; preds = %25, %26
-  %31 = phi i32 [ %29, %26 ], [ 1, %25 ], !dbg !211
-  %32 = add nsw i32 %31, %weight.02, !dbg !213
-  call void @llvm.dbg.value(metadata i32 %32, i64 0, metadata !53, metadata !165), !dbg !196
-  br label %33, !dbg !214
+cond.end:                                         ; preds = %if.then7, %cond.true
+  %cond = phi i32 [ %7, %cond.true ], [ 1, %if.then7 ], !dbg !177
+  %add11 = add nsw i32 %cond, %weight.027, !dbg !177
+  call void @llvm.dbg.value(metadata !{i32 %add11}, i64 0, metadata !52), !dbg !177
+  br label %for.inc, !dbg !179
 
-; <label>:33                                      ; preds = %21, %30
-  %weight.1 = phi i32 [ %32, %30 ], [ %weight.02, %21 ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !202
-  call void @llvm.dbg.value(metadata i32* %vsize, i64 0, metadata !51, metadata !165), !dbg !192
-  %34 = icmp slt i64 %indvars.iv.next, %20, !dbg !201
-  br i1 %34, label %21, label %._crit_edge, !dbg !202
+for.inc:                                          ; preds = %for.body, %cond.end
+  %weight.1 = phi i32 [ %add11, %cond.end ], [ %weight.027, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !173
+  call void @llvm.dbg.value(metadata !{i32* %vsize}, i64 0, metadata !50), !dbg !173
+  %8 = trunc i64 %indvars.iv.next to i32, !dbg !173
+  %cmp5 = icmp slt i32 %8, %4, !dbg !173
+  br i1 %cmp5, label %for.body, label %for.end, !dbg !173
 
-._crit_edge:                                      ; preds = %33, %13
-  %weight.0.lcssa = phi i32 [ 0, %13 ], [ %weight.1, %33 ]
-  ret i32 %weight.0.lcssa, !dbg !215
+for.end:                                          ; preds = %for.inc, %if.end
+  %weight.0.lcssa = phi i32 [ 0, %if.end ], [ %weight.1, %for.inc ]
+  ret i32 %weight.0.lcssa, !dbg !180
 }

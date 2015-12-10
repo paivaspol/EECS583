@@ -1,179 +1,186 @@
 define void @combine_temp_slots() #0 {
 entry:
-  %0 = load i32* @flag_strict_aliasing, align 4, !tbaa !4
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.end, label %for.end79
+  %0 = load i32* @flag_strict_aliasing, align 4, !dbg !3020, !tbaa !2768
+  %tobool = icmp eq i32 %0, 0, !dbg !3020
+  br i1 %tobool, label %if.end, label %for.end79, !dbg !3020
 
 if.end:                                           ; preds = %entry
-  %1 = load i32* @flag_expensive_optimizations, align 4, !tbaa !4
-  %tobool1 = icmp eq i32 %1, 0
-  %2 = load %struct.function** @cfun, align 8, !tbaa !0
-  %x_temp_slots = getelementptr inbounds %struct.function* %2, i64 0, i32 39
-  %p.0131 = load %struct.temp_slot** %x_temp_slots, align 8
-  br i1 %tobool1, label %if.then2, label %if.end8
+  %1 = load i32* @flag_expensive_optimizations, align 4, !dbg !3021, !tbaa !2768
+  %tobool1 = icmp eq i32 %1, 0, !dbg !3021
+  %2 = load %struct.function** @cfun, align 8, !dbg !3022, !tbaa !2729
+  %x_temp_slots = getelementptr inbounds %struct.function* %2, i64 0, i32 39, !dbg !3022
+  %p.0131 = load %struct.temp_slot** %x_temp_slots, align 8, !dbg !3022
+  br i1 %tobool1, label %if.then2, label %if.end8, !dbg !3021
 
 if.then2:                                         ; preds = %if.end
-  %tobool3132 = icmp eq %struct.temp_slot* %p.0131, null
-  br i1 %tobool3132, label %for.end79, label %for.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !748, i64 0, metadata !1388), !dbg !3022
+  %tobool3132 = icmp eq %struct.temp_slot* %p.0131, null, !dbg !3022
+  br i1 %tobool3132, label %for.end79, label %for.body.lr.ph, !dbg !3022
 
 for.body.lr.ph:                                   ; preds = %if.then2
-  %3 = load i32* @optimize, align 4, !tbaa !4
-  %cmp5 = icmp eq i32 %3, 0
-  br label %for.body
+  %3 = load i32* @optimize, align 4, !dbg !3024, !tbaa !2768
+  %cmp5 = icmp eq i32 %3, 0, !dbg !3024
+  br label %for.body, !dbg !3022
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc
   %p.0134 = phi %struct.temp_slot* [ %p.0131, %for.body.lr.ph ], [ %p.0, %for.inc ]
   %num_slots.0133 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
-  %cmp = icmp sgt i32 %num_slots.0133, 100
-  %cmp4 = icmp sgt i32 %num_slots.0133, 10
-  %or.cond = and i1 %cmp4, %cmp5
-  %or.cond144 = or i1 %cmp, %or.cond
-  br i1 %or.cond144, label %for.end79, label %for.inc
+  %cmp = icmp sgt i32 %num_slots.0133, 100, !dbg !3024
+  %cmp4 = icmp sgt i32 %num_slots.0133, 10, !dbg !3024
+  %or.cond = and i1 %cmp4, %cmp5, !dbg !3024
+  %or.cond144 = or i1 %cmp, %or.cond, !dbg !3024
+  br i1 %or.cond144, label %for.end79, label %for.inc, !dbg !3024
 
 for.inc:                                          ; preds = %for.body
-  %next = getelementptr inbounds %struct.temp_slot* %p.0134, i64 0, i32 0
-  %inc = add nsw i32 %num_slots.0133, 1
-  %p.0 = load %struct.temp_slot** %next, align 8
-  %tobool3 = icmp eq %struct.temp_slot* %p.0, null
-  br i1 %tobool3, label %if.end8, label %for.body
+  %next = getelementptr inbounds %struct.temp_slot* %p.0134, i64 0, i32 0, !dbg !3022
+  %inc = add nsw i32 %num_slots.0133, 1, !dbg !3022
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1388), !dbg !3022
+  %p.0 = load %struct.temp_slot** %next, align 8, !dbg !3022
+  %tobool3 = icmp eq %struct.temp_slot* %p.0, null, !dbg !3022
+  br i1 %tobool3, label %if.end8, label %for.body, !dbg !3022
 
 if.end8:                                          ; preds = %if.end, %for.inc
-  %tobool11127 = icmp eq %struct.temp_slot* %p.0131, null
-  br i1 %tobool11127, label %for.end79, label %for.body12
+  tail call void @llvm.dbg.value(metadata !2898, i64 0, metadata !1386), !dbg !3025
+  %tobool11127 = icmp eq %struct.temp_slot* %p.0131, null, !dbg !3025
+  br i1 %tobool11127, label %for.end79, label %for.body12, !dbg !3025
 
 for.body12:                                       ; preds = %if.end8, %for.cond10.backedge
   %p.1129 = phi %struct.temp_slot* [ %p.1, %for.cond10.backedge ], [ %p.0131, %if.end8 ]
   %prev_p.0128 = phi %struct.temp_slot* [ %prev_p.0.be, %for.cond10.backedge ], [ null, %if.end8 ]
-  %in_use = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 7
-  %4 = load i8* %in_use, align 1, !tbaa !1
-  %tobool13 = icmp eq i8 %4, 0
-  br i1 %tobool13, label %land.lhs.true14, label %cond.true
+  tail call void @llvm.dbg.value(metadata !748, i64 0, metadata !1389), !dbg !3026
+  %in_use = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 7, !dbg !3027
+  %4 = load i8* %in_use, align 1, !dbg !3027, !tbaa !2730
+  %tobool13 = icmp eq i8 %4, 0, !dbg !3027
+  br i1 %tobool13, label %land.lhs.true14, label %cond.true, !dbg !3027
 
 land.lhs.true14:                                  ; preds = %for.body12
-  %slot = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 1
-  %5 = load %struct.rtx_def** %slot, align 8, !tbaa !0
-  %6 = bitcast %struct.rtx_def* %5 to i32*
-  %bf.load = load i32* %6, align 8
-  %bf.clear = and i32 %bf.load, 16711680
-  %cmp15 = icmp eq i32 %bf.clear, 3342336
-  br i1 %cmp15, label %for.cond18.preheader, label %cond.true
+  %slot = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 1, !dbg !3027
+  %5 = load %struct.rtx_def** %slot, align 8, !dbg !3027, !tbaa !2729
+  %6 = bitcast %struct.rtx_def* %5 to i32*, !dbg !3027
+  %bf.load = load i32* %6, align 8, !dbg !3027
+  %bf.clear = and i32 %bf.load, 16711680, !dbg !3027
+  %cmp15 = icmp eq i32 %bf.clear, 3342336, !dbg !3027
+  br i1 %cmp15, label %for.cond18.preheader, label %cond.true, !dbg !3027
 
 for.cond18.preheader:                             ; preds = %land.lhs.true14
-  %q.0.in121 = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 0
-  %q.0118122 = load %struct.temp_slot** %q.0.in121, align 8
-  %tobool19119123 = icmp eq %struct.temp_slot* %q.0118122, null
-  br i1 %tobool19119123, label %cond.true, label %for.body20.lr.ph.lr.ph
+  %q.0.in121 = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 0, !dbg !3028
+  %q.0118122 = load %struct.temp_slot** %q.0.in121, align 8, !dbg !3028
+  %tobool19119123 = icmp eq %struct.temp_slot* %q.0118122, null, !dbg !3028
+  br i1 %tobool19119123, label %cond.true, label %for.body20.lr.ph.lr.ph, !dbg !3028
 
 for.body20.lr.ph.lr.ph:                           ; preds = %for.cond18.preheader
-  %base_offset = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 11
-  %full_size = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 12
-  %size33 = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 4
-  br label %for.body20.lr.ph
+  %base_offset = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 11, !dbg !3029
+  %full_size = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 12, !dbg !3029
+  %size33 = getelementptr inbounds %struct.temp_slot* %p.1129, i64 0, i32 4, !dbg !3031
+  br label %for.body20.lr.ph, !dbg !3028
 
 for.body20.lr.ph:                                 ; preds = %for.body20.lr.ph.lr.ph, %for.cond18.outer.backedge
   %q.0118125 = phi %struct.temp_slot* [ %q.0118122, %for.body20.lr.ph.lr.ph ], [ %q.0118, %for.cond18.outer.backedge ]
   %q.0.in124 = phi %struct.temp_slot** [ %q.0.in121, %for.body20.lr.ph.lr.ph ], [ %q.0.in, %for.cond18.outer.backedge ]
-  br label %for.body20
+  br label %for.body20, !dbg !3028
 
 for.body20:                                       ; preds = %for.body20.lr.ph, %if.then32
   %q.0120 = phi %struct.temp_slot* [ %q.0118125, %for.body20.lr.ph ], [ %16, %if.then32 ]
-  %in_use21 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 7
-  %7 = load i8* %in_use21, align 1, !tbaa !1
-  %tobool22 = icmp eq i8 %7, 0
-  br i1 %tobool22, label %land.lhs.true23, label %for.cond18.outer.backedge
+  tail call void @llvm.dbg.value(metadata !748, i64 0, metadata !1392), !dbg !3033
+  %in_use21 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 7, !dbg !3034
+  %7 = load i8* %in_use21, align 1, !dbg !3034, !tbaa !2730
+  %tobool22 = icmp eq i8 %7, 0, !dbg !3034
+  br i1 %tobool22, label %land.lhs.true23, label %for.cond18.outer.backedge, !dbg !3034
 
 land.lhs.true23:                                  ; preds = %for.body20
-  %slot24 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 1
-  %8 = load %struct.rtx_def** %slot24, align 8, !tbaa !0
-  %9 = bitcast %struct.rtx_def* %8 to i32*
-  %bf.load25 = load i32* %9, align 8
-  %bf.clear27 = and i32 %bf.load25, 16711680
-  %cmp28 = icmp eq i32 %bf.clear27, 3342336
-  br i1 %cmp28, label %if.then29, label %for.cond18.outer.backedge
+  %slot24 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 1, !dbg !3034
+  %8 = load %struct.rtx_def** %slot24, align 8, !dbg !3034, !tbaa !2729
+  %9 = bitcast %struct.rtx_def* %8 to i32*, !dbg !3034
+  %bf.load25 = load i32* %9, align 8, !dbg !3034
+  %bf.clear27 = and i32 %bf.load25, 16711680, !dbg !3034
+  %cmp28 = icmp eq i32 %bf.clear27, 3342336, !dbg !3034
+  br i1 %cmp28, label %if.then29, label %for.cond18.outer.backedge, !dbg !3034
 
 if.then29:                                        ; preds = %land.lhs.true23
-  %10 = load i64* %base_offset, align 8, !tbaa !5
-  %11 = load i64* %full_size, align 8, !tbaa !5
-  %add = add nsw i64 %11, %10
-  %base_offset30 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 11
-  %12 = load i64* %base_offset30, align 8, !tbaa !5
-  %cmp31 = icmp eq i64 %add, %12
-  br i1 %cmp31, label %if.then32, label %if.else
+  %10 = load i64* %base_offset, align 8, !dbg !3029, !tbaa !2852
+  %11 = load i64* %full_size, align 8, !dbg !3029, !tbaa !2852
+  %add = add nsw i64 %11, %10, !dbg !3029
+  %base_offset30 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 11, !dbg !3029
+  %12 = load i64* %base_offset30, align 8, !dbg !3029, !tbaa !2852
+  %cmp31 = icmp eq i64 %add, %12, !dbg !3029
+  br i1 %cmp31, label %if.then32, label %if.else, !dbg !3029
 
 if.then32:                                        ; preds = %if.then29
-  %size = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 4
-  %13 = load i64* %size, align 8, !tbaa !5
-  %14 = load i64* %size33, align 8, !tbaa !5
-  %add34 = add nsw i64 %14, %13
-  store i64 %add34, i64* %size33, align 8, !tbaa !5
-  %full_size35 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 12
-  %15 = load i64* %full_size35, align 8, !tbaa !5
-  %add37 = add nsw i64 %11, %15
-  store i64 %add37, i64* %full_size, align 8, !tbaa !5
-  %next55 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 0
-  %16 = load %struct.temp_slot** %next55, align 8, !tbaa !0
-  store %struct.temp_slot* %16, %struct.temp_slot** %q.0.in124, align 8, !tbaa !0
-  %tobool19 = icmp eq %struct.temp_slot* %16, null
-  br i1 %tobool19, label %cond.true, label %for.body20
+  %size = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 4, !dbg !3031
+  %13 = load i64* %size, align 8, !dbg !3031, !tbaa !2852
+  %14 = load i64* %size33, align 8, !dbg !3031, !tbaa !2852
+  %add34 = add nsw i64 %14, %13, !dbg !3031
+  store i64 %add34, i64* %size33, align 8, !dbg !3031, !tbaa !2852
+  %full_size35 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 12, !dbg !3035
+  %15 = load i64* %full_size35, align 8, !dbg !3035, !tbaa !2852
+  %add37 = add nsw i64 %11, %15, !dbg !3035
+  store i64 %add37, i64* %full_size, align 8, !dbg !3035, !tbaa !2852
+  tail call void @llvm.dbg.value(metadata !3036, i64 0, metadata !1392), !dbg !3037
+  %next55 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 0, !dbg !3038
+  %16 = load %struct.temp_slot** %next55, align 8, !dbg !3038, !tbaa !2729
+  store %struct.temp_slot* %16, %struct.temp_slot** %q.0.in124, align 8, !dbg !3038, !tbaa !2729
+  %tobool19 = icmp eq %struct.temp_slot* %16, null, !dbg !3028
+  br i1 %tobool19, label %cond.true, label %for.body20, !dbg !3028
 
 if.else:                                          ; preds = %if.then29
-  %full_size39 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 12
-  %17 = load i64* %full_size39, align 8, !tbaa !5
-  %add40 = add nsw i64 %17, %12
-  %cmp42 = icmp eq i64 %add40, %10
-  br i1 %cmp42, label %if.then43, label %for.cond18.outer.backedge
+  %full_size39 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 12, !dbg !3039
+  %17 = load i64* %full_size39, align 8, !dbg !3039, !tbaa !2852
+  %add40 = add nsw i64 %17, %12, !dbg !3039
+  %cmp42 = icmp eq i64 %add40, %10, !dbg !3039
+  br i1 %cmp42, label %if.then43, label %for.cond18.outer.backedge, !dbg !3039
 
 for.cond18.outer.backedge:                        ; preds = %land.lhs.true23, %for.body20, %if.else
-  %q.0.in = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 0
-  %q.0118 = load %struct.temp_slot** %q.0.in, align 8
-  %tobool19119 = icmp eq %struct.temp_slot* %q.0118, null
-  br i1 %tobool19119, label %for.inc75, label %for.body20.lr.ph
+  %q.0.in = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 0, !dbg !3028
+  %q.0118 = load %struct.temp_slot** %q.0.in, align 8, !dbg !3028
+  %tobool19119 = icmp eq %struct.temp_slot* %q.0118, null, !dbg !3028
+  br i1 %tobool19119, label %for.inc75, label %for.body20.lr.ph, !dbg !3028
 
 if.then43:                                        ; preds = %if.else
-  %18 = load i64* %size33, align 8, !tbaa !5
-  %size45 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 4
-  %19 = load i64* %size45, align 8, !tbaa !5
-  %add46 = add nsw i64 %19, %18
-  store i64 %add46, i64* %size45, align 8, !tbaa !5
-  %20 = load i64* %full_size, align 8, !tbaa !5
-  %add49 = add nsw i64 %17, %20
-  store i64 %add49, i64* %full_size39, align 8, !tbaa !5
-  %tobool65 = icmp eq %struct.temp_slot* %prev_p.0128, null
-  %21 = load %struct.temp_slot** %q.0.in121, align 8, !tbaa !0
-  br i1 %tobool65, label %for.inc75.thread112, label %if.then66
+  %18 = load i64* %size33, align 8, !dbg !3040, !tbaa !2852
+  %size45 = getelementptr inbounds %struct.temp_slot* %q.0120, i64 0, i32 4, !dbg !3040
+  %19 = load i64* %size45, align 8, !dbg !3040, !tbaa !2852
+  %add46 = add nsw i64 %19, %18, !dbg !3040
+  store i64 %add46, i64* %size45, align 8, !dbg !3040, !tbaa !2852
+  %20 = load i64* %full_size, align 8, !dbg !3042, !tbaa !2852
+  %add49 = add nsw i64 %17, %20, !dbg !3042
+  store i64 %add49, i64* %full_size39, align 8, !dbg !3042, !tbaa !2852
+  tail call void @llvm.dbg.value(metadata !3036, i64 0, metadata !1389), !dbg !3043
+  %tobool65 = icmp eq %struct.temp_slot* %prev_p.0128, null, !dbg !3044
+  %21 = load %struct.temp_slot** %q.0.in121, align 8, !dbg !3046, !tbaa !2729
+  br i1 %tobool65, label %for.inc75.thread112, label %if.then66, !dbg !3044
 
 if.then66:                                        ; preds = %if.then43
-  %next68 = getelementptr inbounds %struct.temp_slot* %prev_p.0128, i64 0, i32 0
-  store %struct.temp_slot* %21, %struct.temp_slot** %next68, align 8, !tbaa !0
-  br label %cond.true
+  %next68 = getelementptr inbounds %struct.temp_slot* %prev_p.0128, i64 0, i32 0, !dbg !3046
+  store %struct.temp_slot* %21, %struct.temp_slot** %next68, align 8, !dbg !3046, !tbaa !2729
+  br label %cond.true, !dbg !3046
 
 for.inc75.thread112:                              ; preds = %if.then43
-  %22 = load %struct.function** @cfun, align 8, !tbaa !0
-  %x_temp_slots71 = getelementptr inbounds %struct.function* %22, i64 0, i32 39
-  store %struct.temp_slot* %21, %struct.temp_slot** %x_temp_slots71, align 8, !tbaa !0
-  br label %cond.false
+  %22 = load %struct.function** @cfun, align 8, !dbg !3047, !tbaa !2729
+  %x_temp_slots71 = getelementptr inbounds %struct.function* %22, i64 0, i32 39, !dbg !3047
+  store %struct.temp_slot* %21, %struct.temp_slot** %x_temp_slots71, align 8, !dbg !3047, !tbaa !2729
+  br label %cond.false, !dbg !3025
 
 for.inc75:                                        ; preds = %for.cond18.outer.backedge
-  %tobool76 = icmp eq %struct.temp_slot* %p.1129, null
-  br i1 %tobool76, label %cond.false, label %cond.true
+  %tobool76 = icmp eq %struct.temp_slot* %p.1129, null, !dbg !3025
+  br i1 %tobool76, label %cond.false, label %cond.true, !dbg !3025
 
 cond.true:                                        ; preds = %if.then32, %for.cond18.preheader, %land.lhs.true14, %for.body12, %if.then66, %for.inc75
   %prev_p.1111 = phi %struct.temp_slot* [ %p.1129, %for.inc75 ], [ %prev_p.0128, %if.then66 ], [ %p.1129, %for.body12 ], [ %p.1129, %land.lhs.true14 ], [ %p.1129, %for.cond18.preheader ], [ %p.1129, %if.then32 ]
-  %next77 = getelementptr inbounds %struct.temp_slot* %prev_p.1111, i64 0, i32 0
-  br label %for.cond10.backedge
+  %next77 = getelementptr inbounds %struct.temp_slot* %prev_p.1111, i64 0, i32 0, !dbg !3025
+  br label %for.cond10.backedge, !dbg !3025
 
 cond.false:                                       ; preds = %for.inc75, %for.inc75.thread112
-  %23 = load %struct.function** @cfun, align 8, !tbaa !0
-  %x_temp_slots78 = getelementptr inbounds %struct.function* %23, i64 0, i32 39
-  br label %for.cond10.backedge
+  %23 = load %struct.function** @cfun, align 8, !dbg !3025, !tbaa !2729
+  %x_temp_slots78 = getelementptr inbounds %struct.function* %23, i64 0, i32 39, !dbg !3025
+  br label %for.cond10.backedge, !dbg !3025
 
 for.cond10.backedge:                              ; preds = %cond.false, %cond.true
   %p.1.in.be = phi %struct.temp_slot** [ %next77, %cond.true ], [ %x_temp_slots78, %cond.false ]
   %prev_p.0.be = phi %struct.temp_slot* [ %prev_p.1111, %cond.true ], [ null, %cond.false ]
-  %p.1 = load %struct.temp_slot** %p.1.in.be, align 8
-  %tobool11 = icmp eq %struct.temp_slot* %p.1, null
-  br i1 %tobool11, label %for.end79, label %for.body12
+  %p.1 = load %struct.temp_slot** %p.1.in.be, align 8, !dbg !3025
+  %tobool11 = icmp eq %struct.temp_slot* %p.1, null, !dbg !3025
+  br i1 %tobool11, label %for.end79, label %for.body12, !dbg !3025
 
 for.end79:                                        ; preds = %if.then2, %for.body, %if.end8, %for.cond10.backedge, %entry
-  ret void
+  ret void, !dbg !3048
 }

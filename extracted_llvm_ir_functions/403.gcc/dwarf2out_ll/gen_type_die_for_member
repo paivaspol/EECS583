@@ -1,84 +1,91 @@
 define internal fastcc void @gen_type_die_for_member(%union.tree_node* %type, %union.tree_node* %member, %struct.die_struct* %context_die) #1 {
 entry:
-  tail call fastcc void @gen_type_die(%union.tree_node* %type, %struct.die_struct* %context_die) #10
-  %chain = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 0
-  %0 = load %union.tree_node** %chain, align 8, !tbaa !4
-  %external_flag = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 5
-  %1 = bitcast [8 x i8]* %external_flag to i64*
-  %bf.load = load i64* %1, align 8
-  %bf.cast = and i64 %bf.load, 256
-  %tobool = icmp eq i64 %bf.cast, 0
-  br i1 %tobool, label %if.end12, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !3235), !dbg !11064
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %member}, i64 0, metadata !3236), !dbg !11064
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %context_die}, i64 0, metadata !3237), !dbg !11065
+  tail call fastcc void @gen_type_die(%union.tree_node* %type, %struct.die_struct* %context_die) #11, !dbg !11066
+  %chain = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 0, !dbg !11067
+  %0 = load %union.tree_node** %chain, align 8, !dbg !11067, !tbaa !3768
+  %external_flag = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 5, !dbg !11067
+  %1 = bitcast [8 x i8]* %external_flag to i64*, !dbg !11067
+  %bf.load = load i64* %1, align 8, !dbg !11067
+  %bf.cast = and i64 %bf.load, 256, !dbg !11067
+  %tobool = icmp eq i64 %bf.cast, 0, !dbg !11067
+  br i1 %tobool, label %if.end12, label %land.lhs.true, !dbg !11067
 
 land.lhs.true:                                    ; preds = %entry
-  %uid.i = getelementptr inbounds %union.tree_node* %member, i64 0, i32 0, i32 3
-  %2 = load i32* %uid.i, align 4, !tbaa !0
-  %3 = load i32* @decl_die_table_in_use, align 4, !tbaa !0
-  %cmp.i20 = icmp ult i32 %2, %3
-  br i1 %cmp.i20, label %lookup_decl_die.exit, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %member}, i64 0, metadata !11068), !dbg !11070
+  %uid.i = getelementptr inbounds %union.tree_node* %member, i64 0, i32 0, i32 3, !dbg !11071
+  %2 = load i32* %uid.i, align 4, !dbg !11071, !tbaa !3758
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !11072), !dbg !11071
+  %3 = load i32* @decl_die_table_in_use, align 4, !dbg !11073, !tbaa !3758
+  %cmp.i20 = icmp ult i32 %2, %3, !dbg !11073
+  br i1 %cmp.i20, label %lookup_decl_die.exit, label %if.then, !dbg !11073
 
 lookup_decl_die.exit:                             ; preds = %land.lhs.true
-  %idxprom.i = zext i32 %2 to i64
-  %4 = load %struct.die_struct*** @decl_die_table, align 8, !tbaa !4
-  %arrayidx.i = getelementptr inbounds %struct.die_struct** %4, i64 %idxprom.i
-  %5 = load %struct.die_struct** %arrayidx.i, align 8, !tbaa !4
-  %tobool1 = icmp eq %struct.die_struct* %5, null
-  br i1 %tobool1, label %if.then, label %if.end12
+  %idxprom.i = zext i32 %2 to i64, !dbg !11073
+  %4 = load %struct.die_struct*** @decl_die_table, align 8, !dbg !11073, !tbaa !3768
+  %arrayidx.i = getelementptr inbounds %struct.die_struct** %4, i64 %idxprom.i, !dbg !11073
+  %5 = load %struct.die_struct** %arrayidx.i, align 8, !dbg !11073, !tbaa !3768
+  %tobool1 = icmp eq %struct.die_struct* %5, null, !dbg !11069
+  br i1 %tobool1, label %if.then, label %if.end12, !dbg !11069
 
 if.then:                                          ; preds = %land.lhs.true, %lookup_decl_die.exit
-  %abstract_flag.i = getelementptr inbounds %union.tree_node* %member, i64 0, i32 0, i32 5
-  %6 = bitcast [8 x i8]* %abstract_flag.i to i64*
-  %bf.load.i = load i64* %6, align 8
-  %bf.cast.i = and i64 %bf.load.i, 32768
-  %tobool.i = icmp ne i64 %bf.cast.i, 0
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %member}, i64 0, metadata !11074), !dbg !11077
+  %abstract_flag.i = getelementptr inbounds %union.tree_node* %member, i64 0, i32 0, i32 5, !dbg !11078
+  %6 = bitcast [8 x i8]* %abstract_flag.i to i64*, !dbg !11078
+  %bf.load.i = load i64* %6, align 8, !dbg !11078
+  %bf.cast.i = and i64 %bf.load.i, 32768, !dbg !11078
+  %tobool.i = icmp ne i64 %bf.cast.i, 0, !dbg !11078
   %abstract_origin4.phi.trans.insert.i = getelementptr inbounds %union.tree_node* %member, i64 0, i32 0, i32 13
-  %.pre.i = load %union.tree_node** %abstract_origin4.phi.trans.insert.i, align 8, !tbaa !4
-  %cmp.i19 = icmp eq %union.tree_node* %.pre.i, %member
-  %or.cond.i = and i1 %tobool.i, %cmp.i19
-  %tobool322 = icmp eq %union.tree_node* %.pre.i, null
-  %tobool3 = or i1 %or.cond.i, %tobool322
-  br i1 %tobool3, label %if.end, label %if.then4
+  %.pre.i = load %union.tree_node** %abstract_origin4.phi.trans.insert.i, align 8, !dbg !11079, !tbaa !3768
+  %cmp.i19 = icmp eq %union.tree_node* %.pre.i, %member, !dbg !11078
+  %or.cond.i = and i1 %tobool.i, %cmp.i19, !dbg !11078
+  %tobool322 = icmp eq %union.tree_node* %.pre.i, null, !dbg !11075
+  %tobool3 = or i1 %or.cond.i, %tobool322, !dbg !11075
+  br i1 %tobool3, label %if.end, label %if.then4, !dbg !11075
 
 if.then4:                                         ; preds = %if.then
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 10121, i8* getelementptr inbounds ([24 x i8]* @__FUNCTION__.gen_type_die_for_member, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 10121, i8* getelementptr inbounds ([24 x i8]* @__FUNCTION__.gen_type_die_for_member, i64 0, i64 0)) #13, !dbg !11080
+  unreachable, !dbg !11080
 
 if.end:                                           ; preds = %if.then
-  tail call fastcc void @push_decl_scope(%union.tree_node* %type) #10
-  %code = getelementptr inbounds %union.tree_node* %member, i64 0, i32 0, i32 0, i32 2
-  %7 = bitcast [4 x i8]* %code to i32*
-  %bf.load6 = load i32* %7, align 8
-  %bf.clear7 = and i32 %bf.load6, 255
-  %cmp = icmp eq i32 %bf.clear7, 30
-  %symtab.i = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 10
-  %pointer2.i = load %union.tree_node** %symtab.i, align 8
-  %8 = bitcast %union.tree_node* %pointer2.i to %struct.die_struct*
-  br i1 %cmp, label %if.then8, label %if.else
+  tail call fastcc void @push_decl_scope(%union.tree_node* %type) #11, !dbg !11081
+  %code = getelementptr inbounds %union.tree_node* %member, i64 0, i32 0, i32 0, i32 2, !dbg !11082
+  %7 = bitcast [4 x i8]* %code to i32*, !dbg !11082
+  %bf.load6 = load i32* %7, align 8, !dbg !11082
+  %bf.clear7 = and i32 %bf.load6, 255, !dbg !11082
+  %cmp = icmp eq i32 %bf.clear7, 30, !dbg !11082
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !11083), !dbg !11085
+  %symtab.i = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 10, !dbg !11086
+  %pointer2.i = load %union.tree_node** %symtab.i, align 8, !dbg !11086
+  %8 = bitcast %union.tree_node* %pointer2.i to %struct.die_struct*, !dbg !11086
+  br i1 %cmp, label %if.then8, label %if.else, !dbg !11082
 
 if.then8:                                         ; preds = %if.end
-  tail call fastcc void @gen_subprogram_die(%union.tree_node* %member, %struct.die_struct* %8) #10
-  br label %if.end11
+  tail call fastcc void @gen_subprogram_die(%union.tree_node* %member, %struct.die_struct* %8) #11, !dbg !11084
+  br label %if.end11, !dbg !11084
 
 if.else:                                          ; preds = %if.end
-  tail call fastcc void @gen_variable_die(%union.tree_node* %member, %struct.die_struct* %8) #10
+  tail call fastcc void @gen_variable_die(%union.tree_node* %member, %struct.die_struct* %8) #11, !dbg !11087
   br label %if.end11
 
 if.end11:                                         ; preds = %if.else, %if.then8
-  %9 = load %struct.varray_head_tag** @decl_scope_table, align 8, !tbaa !4
-  %elements_used.i = getelementptr inbounds %struct.varray_head_tag* %9, i64 0, i32 1
-  %10 = load i64* %elements_used.i, align 8, !tbaa !6
-  %cmp.i = icmp eq i64 %10, 0
-  br i1 %cmp.i, label %if.then.i, label %pop_decl_scope.exit
+  %9 = load %struct.varray_head_tag** @decl_scope_table, align 8, !dbg !11088, !tbaa !3768
+  %elements_used.i = getelementptr inbounds %struct.varray_head_tag* %9, i64 0, i32 1, !dbg !11088
+  %10 = load i64* %elements_used.i, align 8, !dbg !11088, !tbaa !3782
+  %cmp.i = icmp eq i64 %10, 0, !dbg !11088
+  br i1 %cmp.i, label %if.then.i, label %pop_decl_scope.exit, !dbg !11088
 
 if.then.i:                                        ; preds = %if.end11
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 9553, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.pop_decl_scope, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 9553, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.pop_decl_scope, i64 0, i64 0)) #13, !dbg !11090
+  unreachable, !dbg !11090
 
 pop_decl_scope.exit:                              ; preds = %if.end11
-  %dec.i = add i64 %10, -1
-  store i64 %dec.i, i64* %elements_used.i, align 8, !tbaa !6
-  br label %if.end12
+  %dec.i = add i64 %10, -1, !dbg !11091
+  store i64 %dec.i, i64* %elements_used.i, align 8, !dbg !11091, !tbaa !3782
+  br label %if.end12, !dbg !11092
 
 if.end12:                                         ; preds = %lookup_decl_die.exit, %entry, %pop_decl_scope.exit
-  ret void
+  ret void, !dbg !11093
 }

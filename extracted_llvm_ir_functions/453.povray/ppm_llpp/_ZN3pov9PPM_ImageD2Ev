@@ -1,44 +1,45 @@
 define void @_ZN3pov9PPM_ImageD2Ev(%"class.pov::PPM_Image"* nocapture %this) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.pov::PPM_Image"* %this, i64 0, metadata !472, metadata !861), !dbg !1046
-  %1 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 0, i32 0, !dbg !1047
-  store i32 (...)** bitcast (i8** getelementptr inbounds ([9 x i8*]* @_ZTVN3pov9PPM_ImageE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %1, align 8, !dbg !1047, !tbaa !879
-  %2 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 6, !dbg !1048
-  %3 = load %"class.pov_base::IStream"** %2, align 8, !dbg !1048, !tbaa !923
-  %4 = icmp eq %"class.pov_base::IStream"* %3, null, !dbg !1051
-  br i1 %4, label %10, label %5, !dbg !1052
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov::PPM_Image"* %this}, i64 0, metadata !468), !dbg !756
+  %0 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 0, i32 0, !dbg !757
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([9 x i8*]* @_ZTVN3pov9PPM_ImageE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !757, !tbaa !689
+  %in_file = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 6, !dbg !758
+  %1 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !758, !tbaa !696
+  %cmp = icmp eq %"class.pov_base::IStream"* %1, null, !dbg !758
+  br i1 %cmp, label %if.end, label %delete.notnull, !dbg !758
 
-; <label>:5                                       ; preds = %0
-  %6 = bitcast %"class.pov_base::IStream"* %3 to void (%"class.pov_base::IStream"*)***, !dbg !1053
-  %7 = load void (%"class.pov_base::IStream"*)*** %6, align 8, !dbg !1053, !tbaa !879
-  %8 = getelementptr inbounds void (%"class.pov_base::IStream"*)** %7, i64 1, !dbg !1053
-  %9 = load void (%"class.pov_base::IStream"*)** %8, align 8, !dbg !1053
-  tail call void %9(%"class.pov_base::IStream"* %3) #9, !dbg !1053
-  br label %10
+delete.notnull:                                   ; preds = %entry
+  %2 = bitcast %"class.pov_base::IStream"* %1 to void (%"class.pov_base::IStream"*)***, !dbg !760
+  %vtable = load void (%"class.pov_base::IStream"*)*** %2, align 8, !dbg !760, !tbaa !689
+  %vfn = getelementptr inbounds void (%"class.pov_base::IStream"*)** %vtable, i64 1, !dbg !760
+  %3 = load void (%"class.pov_base::IStream"*)** %vfn, align 8, !dbg !760
+  tail call void %3(%"class.pov_base::IStream"* %1) #8, !dbg !760
+  br label %if.end
 
-; <label>:10                                      ; preds = %5, %0
-  %11 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 7, !dbg !1054
-  %12 = load %"class.pov_base::OStream"** %11, align 8, !dbg !1054, !tbaa !1002
-  %13 = icmp eq %"class.pov_base::OStream"* %12, null, !dbg !1056
-  br i1 %13, label %23, label %_ZN8pov_base7OStream5flushEv.exit, !dbg !1057
+if.end:                                           ; preds = %delete.notnull, %entry
+  %out_file = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 7, !dbg !761
+  %4 = load %"class.pov_base::OStream"** %out_file, align 8, !dbg !761, !tbaa !696
+  %cmp3 = icmp eq %"class.pov_base::OStream"* %4, null, !dbg !761
+  br i1 %cmp3, label %if.end14, label %if.then4, !dbg !761
 
-_ZN8pov_base7OStream5flushEv.exit:                ; preds = %10
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %12, i64 0, metadata !554, metadata !861), !dbg !1058
-  %14 = getelementptr inbounds %"class.pov_base::OStream"* %12, i64 0, i32 0, !dbg !1061
-  %15 = tail call dereferenceable(40) %"class.pov_base::IOBase"* @_ZN8pov_base6IOBase5flushEv(%"class.pov_base::IOBase"* %14) #9, !dbg !1062
-  %16 = load %"class.pov_base::OStream"** %11, align 8, !dbg !1063, !tbaa !1002
-  %17 = icmp eq %"class.pov_base::OStream"* %16, null, !dbg !1064
-  br i1 %17, label %23, label %18, !dbg !1064
+if.then4:                                         ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %4}, i64 0, metadata !762), !dbg !765
+  %5 = getelementptr inbounds %"class.pov_base::OStream"* %4, i64 0, i32 0, !dbg !765
+  %call.i19 = tail call %"class.pov_base::IOBase"* @_ZN8pov_base6IOBase5flushEv(%"class.pov_base::IOBase"* %5) #8
+  %6 = load %"class.pov_base::OStream"** %out_file, align 8, !dbg !766, !tbaa !696
+  %isnull8 = icmp eq %"class.pov_base::OStream"* %6, null, !dbg !766
+  br i1 %isnull8, label %if.end14, label %delete.notnull9, !dbg !766
 
-; <label>:18                                      ; preds = %_ZN8pov_base7OStream5flushEv.exit
-  %19 = bitcast %"class.pov_base::OStream"* %16 to void (%"class.pov_base::OStream"*)***, !dbg !1064
-  %20 = load void (%"class.pov_base::OStream"*)*** %19, align 8, !dbg !1064, !tbaa !879
-  %21 = getelementptr inbounds void (%"class.pov_base::OStream"*)** %20, i64 1, !dbg !1064
-  %22 = load void (%"class.pov_base::OStream"*)** %21, align 8, !dbg !1064
-  tail call void %22(%"class.pov_base::OStream"* %16) #9, !dbg !1064
-  br label %23
+delete.notnull9:                                  ; preds = %if.then4
+  %7 = bitcast %"class.pov_base::OStream"* %6 to void (%"class.pov_base::OStream"*)***, !dbg !766
+  %vtable10 = load void (%"class.pov_base::OStream"*)*** %7, align 8, !dbg !766, !tbaa !689
+  %vfn11 = getelementptr inbounds void (%"class.pov_base::OStream"*)** %vtable10, i64 1, !dbg !766
+  %8 = load void (%"class.pov_base::OStream"*)** %vfn11, align 8, !dbg !766
+  tail call void %8(%"class.pov_base::OStream"* %6) #8, !dbg !766
+  br label %if.end14
 
-; <label>:23                                      ; preds = %18, %10, %_ZN8pov_base7OStream5flushEv.exit
-  %24 = bitcast %"class.pov_base::IStream"** %2 to i8*, !dbg !1065
-  call void @llvm.memset.p0i8.i64(i8* %24, i8 0, i64 16, i32 8, i1 false), !dbg !1066
-  ret void, !dbg !1065
+if.end14:                                         ; preds = %delete.notnull9, %if.end, %if.then4
+  %9 = bitcast %"class.pov_base::IStream"** %in_file to i8*, !dbg !767
+  call void @llvm.memset.p0i8.i64(i8* %9, i8 0, i64 16, i32 8, i1 false), !dbg !768
+  ret void, !dbg !767
 }

@@ -1,28 +1,30 @@
-define i32 @_Z23POVMS_GetContextAddressPvPS_(i8* readonly %contextref, i8** %addrptr) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %contextref, i64 0, metadata !188, metadata !1201), !dbg !1361
-  tail call void @llvm.dbg.value(metadata i8** %addrptr, i64 0, metadata !189, metadata !1201), !dbg !1362
-  %1 = icmp eq i8* %contextref, null, !dbg !1363
-  br i1 %1, label %13, label %2, !dbg !1365
+define i32 @_Z23POVMS_GetContextAddressPvPS_(i8* %contextref, i8** %addrptr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %contextref}, i64 0, metadata !149), !dbg !1003
+  tail call void @llvm.dbg.value(metadata !{i8** %addrptr}, i64 0, metadata !150), !dbg !1003
+  %cmp = icmp eq i8* %contextref, null, !dbg !1004
+  br i1 %cmp, label %return, label %if.end, !dbg !1004
 
-; <label>:2                                       ; preds = %0
-  %3 = bitcast i8* %contextref to i32*, !dbg !1366
-  %4 = load i32* %3, align 4, !dbg !1366, !tbaa !1255
-  %5 = icmp eq i32 %4, 0, !dbg !1368
-  br i1 %5, label %13, label %6, !dbg !1369
+if.end:                                           ; preds = %entry
+  %valid = bitcast i8* %contextref to i32*, !dbg !1005
+  %0 = load i32* %valid, align 4, !dbg !1005, !tbaa !937
+  %cmp1 = icmp eq i32 %0, 0, !dbg !1005
+  br i1 %cmp1, label %return, label %if.end3, !dbg !1005
 
-; <label>:6                                       ; preds = %2
-  %7 = icmp eq i8** %addrptr, null, !dbg !1370
-  br i1 %7, label %13, label %8, !dbg !1372
+if.end3:                                          ; preds = %if.end
+  %cmp4 = icmp eq i8** %addrptr, null, !dbg !1006
+  br i1 %cmp4, label %return, label %if.end6, !dbg !1006
 
-; <label>:8                                       ; preds = %6
-  %9 = getelementptr inbounds i8* %contextref, i64 16, !dbg !1373
-  %10 = bitcast i8* %9 to i64*, !dbg !1373
-  %11 = load i64* %10, align 8, !dbg !1373, !tbaa !1248
-  %12 = bitcast i8** %addrptr to i64*, !dbg !1374
-  store i64 %11, i64* %12, align 8, !dbg !1374, !tbaa !1210
-  br label %13, !dbg !1375
+if.end6:                                          ; preds = %if.end3
+  %queue = getelementptr inbounds i8* %contextref, i64 16, !dbg !1007
+  %1 = bitcast i8* %queue to %struct.POVMS_Sys_QueueNode_Default**, !dbg !1007
+  %2 = load %struct.POVMS_Sys_QueueNode_Default** %1, align 8, !dbg !1007, !tbaa !917
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMS_Sys_QueueNode_Default* %2}, i64 0, metadata !1008), !dbg !1009
+  %3 = bitcast %struct.POVMS_Sys_QueueNode_Default* %2 to i8*, !dbg !1010
+  store i8* %3, i8** %addrptr, align 8, !dbg !1007, !tbaa !917
+  br label %return, !dbg !1011
 
-; <label>:13                                      ; preds = %6, %2, %0, %8
-  %.0 = phi i32 [ 0, %8 ], [ -1, %0 ], [ -21, %2 ], [ -1, %6 ]
-  ret i32 %.0, !dbg !1376
+return:                                           ; preds = %if.end3, %if.end, %entry, %if.end6
+  %retval.0 = phi i32 [ 0, %if.end6 ], [ -1, %entry ], [ -21, %if.end ], [ -1, %if.end3 ]
+  ret i32 %retval.0, !dbg !1011
 }

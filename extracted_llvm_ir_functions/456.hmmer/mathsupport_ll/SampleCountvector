@@ -1,30 +1,27 @@
-define void @SampleCountvector(float* %p, i32 %n, i32 %c, float* %cvec) #2 {
-  tail call void @llvm.dbg.value(metadata float* %p, i64 0, metadata !156, metadata !184), !dbg !494
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !157, metadata !184), !dbg !495
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !158, metadata !184), !dbg !496
-  tail call void @llvm.dbg.value(metadata float* %cvec, i64 0, metadata !159, metadata !184), !dbg !497
-  tail call void @FSet(float* %cvec, i32 %n, float 0.000000e+00) #6, !dbg !498
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !160, metadata !184), !dbg !499
-  %1 = icmp sgt i32 %c, 0, !dbg !500
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !503
+define void @SampleCountvector(float* %p, i32 %n, i32 %c, float* %cvec) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %p}, i64 0, metadata !155), !dbg !283
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !156), !dbg !283
+  tail call void @llvm.dbg.value(metadata !{i32 %c}, i64 0, metadata !157), !dbg !283
+  tail call void @llvm.dbg.value(metadata !{float* %cvec}, i64 0, metadata !158), !dbg !283
+  tail call void @FSet(float* %cvec, i32 %n, float 0.000000e+00) #6, !dbg !284
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !159), !dbg !285
+  %cmp5 = icmp sgt i32 %c, 0, !dbg !285
+  br i1 %cmp5, label %for.body, label %for.end, !dbg !285
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %c, -1, !dbg !503
-  br label %3, !dbg !503
+for.body:                                         ; preds = %entry, %for.body
+  %i.06 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %call = tail call i32 @FChoose(float* %p, i32 %n) #6, !dbg !287
+  %idxprom = sext i32 %call to i64, !dbg !287
+  %arrayidx = getelementptr inbounds float* %cvec, i64 %idxprom, !dbg !287
+  %0 = load float* %arrayidx, align 4, !dbg !287, !tbaa !199
+  %conv1 = fadd float %0, 1.000000e+00, !dbg !287
+  store float %conv1, float* %arrayidx, align 4, !dbg !287, !tbaa !199
+  %inc = add nsw i32 %i.06, 1, !dbg !285
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !159), !dbg !285
+  %exitcond = icmp eq i32 %inc, %c, !dbg !285
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !285
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %i.01 = phi i32 [ 0, %.lr.ph ], [ %9, %3 ]
-  %4 = tail call i32 @FChoose(float* %p, i32 %n) #6, !dbg !504
-  %5 = sext i32 %4 to i64, !dbg !505
-  %6 = getelementptr inbounds float* %cvec, i64 %5, !dbg !505
-  %7 = load float* %6, align 4, !dbg !506, !tbaa !333
-  %8 = fadd float %7, 1.000000e+00, !dbg !506
-  store float %8, float* %6, align 4, !dbg !506, !tbaa !333
-  %9 = add nuw nsw i32 %i.01, 1, !dbg !507
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !160, metadata !184), !dbg !499
-  %exitcond = icmp eq i32 %i.01, %2, !dbg !503
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !503
-
-._crit_edge:                                      ; preds = %3, %0
-  ret void, !dbg !508
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !288
 }

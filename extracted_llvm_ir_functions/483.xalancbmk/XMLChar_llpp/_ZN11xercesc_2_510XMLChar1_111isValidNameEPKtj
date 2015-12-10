@@ -1,0 +1,85 @@
+define zeroext i1 @_ZN11xercesc_2_510XMLChar1_111isValidNameEPKtj(i16* %toCheck, i32 %count) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !213), !dbg !361
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !214), !dbg !362
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !215), !dbg !363
+  %idx.ext = zext i32 %count to i64, !dbg !364
+  %add.ptr = getelementptr inbounds i16* %toCheck, i64 %idx.ext, !dbg !364
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr}, i64 0, metadata !216), !dbg !364
+  %incdec.ptr = getelementptr inbounds i16* %toCheck, i64 1, !dbg !365
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !215), !dbg !365
+  %0 = load i16* %toCheck, align 2, !dbg !365, !tbaa !260
+  tail call void @llvm.dbg.value(metadata !{i16 %0}, i64 0, metadata !217), !dbg !365
+  %.off = add i16 %0, 10240, !dbg !366
+  %1 = icmp ult i16 %.off, 896, !dbg !366
+  br i1 %1, label %if.then, label %if.else, !dbg !366
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr3}, i64 0, metadata !215), !dbg !367
+  %2 = load i16* %incdec.ptr, align 2, !dbg !367, !tbaa !260
+  tail call void @llvm.dbg.value(metadata !{i16 %2}, i64 0, metadata !217), !dbg !367
+  %cmp5 = icmp ult i16 %2, -9216, !dbg !369
+  br i1 %cmp5, label %return, label %lor.lhs.false, !dbg !369
+
+lor.lhs.false:                                    ; preds = %if.then
+  %incdec.ptr3 = getelementptr inbounds i16* %toCheck, i64 2, !dbg !367
+  %cmp7 = icmp ugt i16 %2, -8193, !dbg !369
+  br i1 %cmp7, label %return, label %while.cond.preheader, !dbg !369
+
+if.else:                                          ; preds = %entry
+  %idxprom = zext i16 %0 to i64, !dbg !370
+  %arrayidx = getelementptr inbounds [65536 x i8]* @_ZN11xercesc_2_510XMLChar1_119fgCharCharsTable1_1E, i64 0, i64 %idxprom, !dbg !370
+  %3 = load i8* %arrayidx, align 1, !dbg !370, !tbaa !261
+  %and = and i8 %3, 2, !dbg !370
+  %tobool = icmp eq i8 %and, 0, !dbg !370
+  br i1 %tobool, label %return, label %while.cond.preheader, !dbg !370
+
+while.cond.preheader:                             ; preds = %if.else, %lor.lhs.false
+  %curCh.1.ph = phi i16* [ %incdec.ptr3, %lor.lhs.false ], [ %incdec.ptr, %if.else ]
+  %cmp1372 = icmp ult i16* %curCh.1.ph, %add.ptr, !dbg !371
+  br i1 %cmp1372, label %while.body, label %return, !dbg !371
+
+while.body:                                       ; preds = %while.cond.preheader, %while.cond.backedge
+  %gotLeadingSurrogate.074 = phi i1 [ %gotLeadingSurrogate.0.be, %while.cond.backedge ], [ false, %while.cond.preheader ]
+  %curCh.173 = phi i16* [ %incdec.ptr14, %while.cond.backedge ], [ %curCh.1.ph, %while.cond.preheader ]
+  %incdec.ptr14 = getelementptr inbounds i16* %curCh.173, i64 1, !dbg !372
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr14}, i64 0, metadata !215), !dbg !372
+  %4 = load i16* %curCh.173, align 2, !dbg !372, !tbaa !260
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !217), !dbg !372
+  %.off70 = add i16 %4, 10240, !dbg !374
+  %5 = icmp ult i16 %.off70, 1024, !dbg !374
+  br i1 %5, label %if.then20, label %if.else28, !dbg !374
+
+if.then20:                                        ; preds = %while.body
+  %cmp22 = icmp ugt i16 %4, -9345, !dbg !375
+  %brmerge = or i1 %cmp22, %gotLeadingSurrogate.074, !dbg !375
+  br i1 %brmerge, label %return, label %while.cond.backedge, !dbg !375
+
+while.cond.backedge:                              ; preds = %if.then20, %if.else41, %if.then34
+  %gotLeadingSurrogate.0.be = phi i1 [ true, %if.then20 ], [ false, %if.else41 ], [ false, %if.then34 ]
+  %cmp13 = icmp ult i16* %incdec.ptr14, %add.ptr, !dbg !371
+  br i1 %cmp13, label %while.body, label %return, !dbg !371
+
+if.else28:                                        ; preds = %while.body
+  %.off71 = add i16 %4, 9216, !dbg !377
+  %6 = icmp ult i16 %.off71, 1024, !dbg !377
+  br i1 %6, label %if.then34, label %if.else38, !dbg !377
+
+if.then34:                                        ; preds = %if.else28
+  br i1 %gotLeadingSurrogate.074, label %while.cond.backedge, label %return, !dbg !379
+
+if.else38:                                        ; preds = %if.else28
+  br i1 %gotLeadingSurrogate.074, label %return, label %if.else41, !dbg !381
+
+if.else41:                                        ; preds = %if.else38
+  %idxprom42 = zext i16 %4 to i64, !dbg !383
+  %arrayidx43 = getelementptr inbounds [65536 x i8]* @_ZN11xercesc_2_510XMLChar1_119fgCharCharsTable1_1E, i64 0, i64 %idxprom42, !dbg !383
+  %7 = load i8* %arrayidx43, align 1, !dbg !383, !tbaa !261
+  %and45 = and i8 %7, 4, !dbg !383
+  %tobool46 = icmp eq i8 %and45, 0, !dbg !383
+  br i1 %tobool46, label %return, label %while.cond.backedge, !dbg !383
+
+return:                                           ; preds = %while.cond.preheader, %if.else41, %if.else38, %if.then34, %if.then20, %while.cond.backedge, %if.else, %if.then, %lor.lhs.false
+  %retval.0 = phi i1 [ false, %lor.lhs.false ], [ false, %if.then ], [ false, %if.else ], [ true, %while.cond.preheader ], [ false, %if.else41 ], [ false, %if.else38 ], [ false, %if.then34 ], [ false, %if.then20 ], [ true, %while.cond.backedge ]
+  ret i1 %retval.0, !dbg !384
+}

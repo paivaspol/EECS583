@@ -1,4 +1,5 @@
-define i32 @main(i32 %argc, i8** nocapture readonly %argv) #0 {
+define i32 @main(i32 %argc, i8** nocapture %argv) #0 {
+entry:
   %platformbase = alloca %"class.pov_base::DefaultPlatformBase", align 8
   %addr = alloca i8*, align 8
   %frontend = alloca %"class.pov_frontend::DefaultRenderFrontend", align 8
@@ -6,517 +7,522 @@ define i32 @main(i32 %argc, i8** nocapture readonly %argv) #0 {
   %obj = alloca %struct.POVMSData, align 8
   %l = alloca i32, align 4
   %optionsobj = alloca %class.POVMS_Object, align 8
-  tail call void @llvm.dbg.value(metadata i32 %argc, i64 0, metadata !1358, metadata !1951), !dbg !1952
-  tail call void @llvm.dbg.value(metadata i8** %argv, i64 0, metadata !1359, metadata !1951), !dbg !1953
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::DefaultPlatformBase"* %platformbase, i64 0, metadata !1360, metadata !1951), !dbg !1954
-  call void @_ZN8pov_base19DefaultPlatformBaseC1Ev(%"class.pov_base::DefaultPlatformBase"* %platformbase) #10, !dbg !1954
-  call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !1361, metadata !1951), !dbg !1955
-  store i8* null, i8** %addr, align 8, !dbg !1955, !tbaa !1956
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1362, metadata !1951), !dbg !1960
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1363, metadata !1951), !dbg !1961
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1364, metadata !1951), !dbg !1962
-  invoke void @_ZN3pov10spec_srandEi(i32 1010) #10
-          to label %1 unwind label %5, !dbg !1963
+  call void @llvm.dbg.value(metadata !{i32 %argc}, i64 0, metadata !876), !dbg !1452
+  call void @llvm.dbg.value(metadata !{i8** %argv}, i64 0, metadata !877), !dbg !1452
+  call void @llvm.dbg.declare(metadata !{%"class.pov_base::DefaultPlatformBase"* %platformbase}, metadata !878), !dbg !1453
+  call void @_ZN8pov_base19DefaultPlatformBaseC1Ev(%"class.pov_base::DefaultPlatformBase"* %platformbase) #9, !dbg !1453
+  call void @llvm.dbg.declare(metadata !{i8** %addr}, metadata !933), !dbg !1454
+  call void @llvm.dbg.value(metadata !1455, i64 0, metadata !933), !dbg !1454
+  store i8* null, i8** %addr, align 8, !dbg !1454, !tbaa !1456
+  call void @llvm.dbg.value(metadata !868, i64 0, metadata !934), !dbg !1459
+  call void @llvm.dbg.value(metadata !868, i64 0, metadata !935), !dbg !1460
+  call void @llvm.dbg.value(metadata !868, i64 0, metadata !936), !dbg !1461
+  invoke void @_ZN3pov10spec_srandEi(i32 1010) #9
+          to label %invoke.cont unwind label %lpad, !dbg !1462
 
-; <label>:1                                       ; preds = %0
-  invoke void @_Z11povray_initv() #10
-          to label %2 unwind label %5, !dbg !1964
+invoke.cont:                                      ; preds = %entry
+  invoke void @_Z11povray_initv() #9
+          to label %if.then unwind label %lpad, !dbg !1463
 
-; <label>:2                                       ; preds = %1
-  %3 = load i8** @POVMS_Render_Context, align 8, !dbg !1965, !tbaa !1956
-  %4 = invoke i32 @_Z23POVMS_GetContextAddressPvPS_(i8* %3, i8** %addr) #10
-          to label %9 unwind label %5, !dbg !1967
+if.then:                                          ; preds = %invoke.cont
+  %0 = load i8** @POVMS_Render_Context, align 8, !dbg !1464, !tbaa !1456
+  %call = invoke i32 @_Z23POVMS_GetContextAddressPvPS_(i8* %0, i8** %addr) #9
+          to label %if.end unwind label %lpad, !dbg !1464
 
-; <label>:5                                       ; preds = %.noexc10, %.noexc, %184, %187, %.loopexit, %19, %12, %2, %1, %0
-  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !1968
-  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !1968
-  %8 = extractvalue { i8*, i32 } %6, 1, !dbg !1968
-  br label %191, !dbg !1968
+lpad:                                             ; preds = %.noexc260, %.noexc, %if.end211, %invoke.cont212, %cleanup, %if.else, %if.then9, %if.then, %invoke.cont, %entry
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1462
+  %2 = extractvalue { i8*, i32 } %1, 0, !dbg !1462
+  %3 = extractvalue { i8*, i32 } %1, 1, !dbg !1462
+  br label %ehcleanup216, !dbg !1462
 
-; <label>:9                                       ; preds = %2
-  call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !1362, metadata !1951), !dbg !1960
-  %cond9 = icmp eq i32 %4, 0, !dbg !1969
-  br i1 %cond9, label %12, label %.thread, !dbg !1969
+if.end:                                           ; preds = %if.then
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !934), !dbg !1464
+  %cond259 = icmp eq i32 %call, 0, !dbg !1465
+  br i1 %cond259, label %if.then9, label %if.end12.thread, !dbg !1465
 
-.thread:                                          ; preds = %9
-  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1970, !tbaa !1956
-  %11 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([39 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str1, i64 0, i64 0), i32 0, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0)) #10, !dbg !1970
-  br label %16, !dbg !1972
+if.end12.thread:                                  ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !1466, !tbaa !1456
+  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([39 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str1, i64 0, i64 0), i32 0, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0)) #9, !dbg !1466
+  br label %if.then14, !dbg !1467
 
-; <label>:12                                      ; preds = %9
-  %13 = invoke i32 @_Z17POVMS_OpenContextPPv(i8** @POVMS_Output_Context) #10
-          to label %14 unwind label %5, !dbg !1973
+if.then9:                                         ; preds = %if.end
+  %call11 = invoke i32 @_Z17POVMS_OpenContextPPv(i8** @POVMS_Output_Context) #9
+          to label %if.end12 unwind label %lpad, !dbg !1468
 
-; <label>:14                                      ; preds = %12
-  %15 = icmp eq i32 %13, 0, !dbg !1975
-  br i1 %15, label %19, label %16, !dbg !1972
+if.end12:                                         ; preds = %if.then9
+  %cmp13 = icmp eq i32 %call11, 0, !dbg !1467
+  br i1 %cmp13, label %if.else, label %if.then14, !dbg !1467
 
-; <label>:16                                      ; preds = %.thread, %14
-  %17 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1976, !tbaa !1956
-  %18 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %17, i8* getelementptr inbounds ([39 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str1, i64 0, i64 0), i32 0, i8* getelementptr inbounds ([38 x i8]* @.str3, i64 0, i64 0)) #10, !dbg !1976
-  br label %184
+if.then14:                                        ; preds = %if.end12.thread, %if.end12
+  %5 = load %struct._IO_FILE** @stderr, align 8, !dbg !1469, !tbaa !1456
+  %call16 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([39 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str1, i64 0, i64 0), i32 0, i8* getelementptr inbounds ([38 x i8]* @.str3, i64 0, i64 0)) #9, !dbg !1469
+  br label %if.end211
 
-; <label>:19                                      ; preds = %14
-  %20 = bitcast %"class.pov_frontend::DefaultRenderFrontend"* %frontend to i8*, !dbg !1977
-  call void @llvm.lifetime.start(i64 280, i8* %20) #3, !dbg !1977
-  %21 = load i8** @POVMS_Output_Context, align 8, !dbg !1978, !tbaa !1956
-  call void @llvm.dbg.value(metadata i8** %addr, i64 0, metadata !1361, metadata !1951), !dbg !1955
-  %22 = load i8** %addr, align 8, !dbg !1979, !tbaa !1956
-  invoke void @_ZN12pov_frontend21DefaultRenderFrontendC1EPvS1_(%"class.pov_frontend::DefaultRenderFrontend"* %frontend, i8* %21, i8* %22) #10
-          to label %23 unwind label %5, !dbg !1980
+if.else:                                          ; preds = %if.end12
+  %6 = bitcast %"class.pov_frontend::DefaultRenderFrontend"* %frontend to i8*, !dbg !1470
+  call void @llvm.lifetime.start(i64 280, i8* %6) #4, !dbg !1470
+  call void @llvm.dbg.declare(metadata !{%"class.pov_frontend::DefaultRenderFrontend"* %frontend}, metadata !937), !dbg !1470
+  %7 = load i8** @POVMS_Output_Context, align 8, !dbg !1470, !tbaa !1456
+  call void @llvm.dbg.value(metadata !{i8** %addr}, i64 0, metadata !933), !dbg !1470
+  %8 = load i8** %addr, align 8, !dbg !1470, !tbaa !1456
+  invoke void @_ZN12pov_frontend21DefaultRenderFrontendC1EPvS1_(%"class.pov_frontend::DefaultRenderFrontend"* %frontend, i8* %7, i8* %8) #9
+          to label %invoke.cont17 unwind label %lpad, !dbg !1470
 
-; <label>:23                                      ; preds = %19
-  call void @llvm.dbg.value(metadata i32 %argc, i64 0, metadata !1358, metadata !1951), !dbg !1952
-  %24 = icmp sgt i32 %argc, 1, !dbg !1981
-  br i1 %24, label %25, label %32, !dbg !1983
+invoke.cont17:                                    ; preds = %if.else
+  call void @llvm.dbg.value(metadata !{i32 %argc}, i64 0, metadata !876), !dbg !1471
+  %cmp18 = icmp sgt i32 %argc, 1, !dbg !1472
+  br i1 %cmp18, label %land.lhs.true, label %if.end24, !dbg !1472
 
-; <label>:25                                      ; preds = %23
-  %26 = getelementptr inbounds i8** %argv, i64 1, !dbg !1984
-  %27 = load i8** %26, align 8, !dbg !1984, !tbaa !1956
-  %28 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %27, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0)) #10
-          to label %29 unwind label %.loopexit.split-lp, !dbg !1985
+land.lhs.true:                                    ; preds = %invoke.cont17
+  %arrayidx = getelementptr inbounds i8** %argv, i64 1, !dbg !1472
+  %9 = load i8** %arrayidx, align 8, !dbg !1472, !tbaa !1456
+  %call21 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %9, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0)) #9
+          to label %invoke.cont20 unwind label %ehcleanup208.nonloopexit, !dbg !1472
 
-; <label>:29                                      ; preds = %25
-  %30 = icmp eq i32 %28, 0, !dbg !1986
-  br i1 %30, label %31, label %32, !dbg !1987
+invoke.cont20:                                    ; preds = %land.lhs.true
+  %cmp22 = icmp eq i32 %call21, 0, !dbg !1472
+  br i1 %cmp22, label %if.then23, label %if.end24, !dbg !1472
 
-; <label>:31                                      ; preds = %29
-  store i8 1, i8* @Binary_POVMS_Stream_Mode, align 1, !dbg !1988, !tbaa !1989
-  br label %32, !dbg !1991
+if.then23:                                        ; preds = %invoke.cont20
+  store i8 1, i8* @Binary_POVMS_Stream_Mode, align 1, !dbg !1473, !tbaa !1474
+  br label %if.end24, !dbg !1473
 
-; <label>:32                                      ; preds = %31, %29, %23
-  switch i32 %argc, label %87 [
-    i32 1, label %33
-    i32 2, label %34
-  ], !dbg !1992
+if.end24:                                         ; preds = %if.then23, %invoke.cont20, %invoke.cont17
+  switch i32 %argc, label %if.end121 [
+    i32 1, label %if.then26
+    i32 2, label %if.then30
+  ], !dbg !1475
 
-; <label>:33                                      ; preds = %32
-  invoke void @_ZN12pov_frontend21DefaultRenderFrontend16PrintHelpScreensEv(%"class.pov_frontend::DefaultRenderFrontend"* %frontend) #10
-          to label %.loopexit unwind label %.loopexit.split-lp, !dbg !1993
+if.then26:                                        ; preds = %if.end24
+  invoke void @_ZN12pov_frontend21DefaultRenderFrontend16PrintHelpScreensEv(%"class.pov_frontend::DefaultRenderFrontend"* %frontend) #9
+          to label %cleanup unwind label %ehcleanup208.nonloopexit, !dbg !1476
 
-; <label>:34                                      ; preds = %32
-  %35 = getelementptr inbounds i8** %argv, i64 1, !dbg !1996
-  %36 = load i8** %35, align 8, !dbg !1996, !tbaa !1956
-  %37 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %36, i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0)) #10
-          to label %38 unwind label %.loopexit.split-lp, !dbg !2000
+if.then30:                                        ; preds = %if.end24
+  %arrayidx31 = getelementptr inbounds i8** %argv, i64 1, !dbg !1478
+  %10 = load i8** %arrayidx31, align 8, !dbg !1478, !tbaa !1456
+  %call33 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %10, i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0)) #9
+          to label %invoke.cont32 unwind label %ehcleanup208.nonloopexit, !dbg !1478
 
-; <label>:38                                      ; preds = %34
-  %39 = icmp eq i32 %37, 0, !dbg !2001
-  br i1 %39, label %55, label %40, !dbg !2002
+invoke.cont32:                                    ; preds = %if.then30
+  %cmp34 = icmp eq i32 %call33, 0, !dbg !1478
+  br i1 %cmp34, label %if.then49, label %lor.lhs.false, !dbg !1478
 
-; <label>:40                                      ; preds = %38
-  %41 = load i8** %35, align 8, !dbg !2003, !tbaa !1956
-  %42 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %41, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #10
-          to label %43 unwind label %.loopexit.split-lp, !dbg !2004
+lor.lhs.false:                                    ; preds = %invoke.cont32
+  %11 = load i8** %arrayidx31, align 8, !dbg !1480, !tbaa !1456
+  %call37 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %11, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #9
+          to label %invoke.cont36 unwind label %ehcleanup208.nonloopexit, !dbg !1480
 
-; <label>:43                                      ; preds = %40
-  %44 = icmp eq i32 %42, 0, !dbg !2005
-  br i1 %44, label %55, label %45, !dbg !2006
+invoke.cont36:                                    ; preds = %lor.lhs.false
+  %cmp38 = icmp eq i32 %call37, 0, !dbg !1480
+  br i1 %cmp38, label %if.then49, label %lor.lhs.false39, !dbg !1480
 
-; <label>:45                                      ; preds = %43
-  %46 = load i8** %35, align 8, !dbg !2007, !tbaa !1956
-  %47 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %46, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0)) #10
-          to label %48 unwind label %.loopexit.split-lp, !dbg !2008
+lor.lhs.false39:                                  ; preds = %invoke.cont36
+  %12 = load i8** %arrayidx31, align 8, !dbg !1481, !tbaa !1456
+  %call42 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %12, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0)) #9
+          to label %invoke.cont41 unwind label %ehcleanup208.nonloopexit, !dbg !1481
 
-; <label>:48                                      ; preds = %45
-  %49 = icmp eq i32 %47, 0, !dbg !2009
-  br i1 %49, label %55, label %50, !dbg !2010
+invoke.cont41:                                    ; preds = %lor.lhs.false39
+  %cmp43 = icmp eq i32 %call42, 0, !dbg !1481
+  br i1 %cmp43, label %if.then49, label %lor.lhs.false44, !dbg !1481
 
-; <label>:50                                      ; preds = %48
-  %51 = load i8** %35, align 8, !dbg !2011, !tbaa !1956
-  %52 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %51, i8* getelementptr inbounds ([6 x i8]* @.str8, i64 0, i64 0)) #10
-          to label %53 unwind label %.loopexit.split-lp, !dbg !2012
+lor.lhs.false44:                                  ; preds = %invoke.cont41
+  %13 = load i8** %arrayidx31, align 8, !dbg !1482, !tbaa !1456
+  %call47 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %13, i8* getelementptr inbounds ([6 x i8]* @.str8, i64 0, i64 0)) #9
+          to label %invoke.cont46 unwind label %ehcleanup208.nonloopexit, !dbg !1482
 
-; <label>:53                                      ; preds = %50
-  %54 = icmp eq i32 %52, 0, !dbg !2013
-  br i1 %54, label %55, label %56, !dbg !2014
+invoke.cont46:                                    ; preds = %lor.lhs.false44
+  %cmp48 = icmp eq i32 %call47, 0, !dbg !1482
+  br i1 %cmp48, label %if.then49, label %if.else51, !dbg !1482
 
-; <label>:55                                      ; preds = %53, %48, %43, %38
-  invoke void @_ZN12pov_frontend21DefaultRenderFrontend16PrintHelpScreensEv(%"class.pov_frontend::DefaultRenderFrontend"* %frontend) #10
-          to label %.loopexit unwind label %.loopexit.split-lp, !dbg !2015
+if.then49:                                        ; preds = %invoke.cont46, %invoke.cont41, %invoke.cont36, %invoke.cont32
+  invoke void @_ZN12pov_frontend21DefaultRenderFrontend16PrintHelpScreensEv(%"class.pov_frontend::DefaultRenderFrontend"* %frontend) #9
+          to label %cleanup unwind label %ehcleanup208.nonloopexit, !dbg !1483
 
-; <label>:56                                      ; preds = %53
-  %57 = load i8** %35, align 8, !dbg !2017, !tbaa !1956
-  %58 = load i8* %57, align 1, !dbg !2017, !tbaa !2019
-  %59 = icmp eq i8 %58, 45, !dbg !2020
-  br i1 %59, label %60, label %87, !dbg !2021
+if.else51:                                        ; preds = %invoke.cont46
+  %14 = load i8** %arrayidx31, align 8, !dbg !1485, !tbaa !1456
+  %15 = load i8* %14, align 1, !dbg !1485, !tbaa !1457
+  %cmp54 = icmp eq i8 %15, 45, !dbg !1485
+  br i1 %cmp54, label %if.then55, label %if.end121, !dbg !1485
 
-; <label>:60                                      ; preds = %56
-  %61 = getelementptr inbounds i8* %57, i64 1, !dbg !2022
-  %62 = load i8* %61, align 1, !dbg !2022, !tbaa !2019
-  %63 = icmp eq i8 %62, 63, !dbg !2025
-  br i1 %63, label %64, label %69, !dbg !2026
+if.then55:                                        ; preds = %if.else51
+  %arrayidx57 = getelementptr inbounds i8* %14, i64 1, !dbg !1486
+  %16 = load i8* %arrayidx57, align 1, !dbg !1486, !tbaa !1457
+  %cmp59 = icmp eq i8 %16, 63, !dbg !1486
+  br i1 %cmp59, label %if.then60, label %if.else65, !dbg !1486
 
-; <label>:64                                      ; preds = %60
-  %65 = getelementptr inbounds i8* %57, i64 2, !dbg !2027
-  %66 = load i8* %65, align 1, !dbg !2027, !tbaa !2019
-  %67 = sext i8 %66 to i32, !dbg !2027
-  %68 = add nsw i32 %67, -48, !dbg !2029
-  invoke void @_ZN12pov_frontend21DefaultRenderFrontend10PrintUsageEi(%"class.pov_frontend::DefaultRenderFrontend"* %frontend, i32 %68) #10
-          to label %.loopexit unwind label %.loopexit.split-lp, !dbg !2030
+if.then60:                                        ; preds = %if.then55
+  %arrayidx62 = getelementptr inbounds i8* %14, i64 2, !dbg !1488
+  %17 = load i8* %arrayidx62, align 1, !dbg !1488, !tbaa !1457
+  %conv63 = sext i8 %17 to i32, !dbg !1488
+  %sub = add nsw i32 %conv63, -48, !dbg !1488
+  invoke void @_ZN12pov_frontend21DefaultRenderFrontend10PrintUsageEi(%"class.pov_frontend::DefaultRenderFrontend"* %frontend, i32 %sub) #9
+          to label %cleanup unwind label %ehcleanup208.nonloopexit, !dbg !1488
 
-; <label>:69                                      ; preds = %60
-  %70 = call i64 @strlen(i8* %57) #10, !dbg !2031
-  %71 = icmp eq i64 %70, 6, !dbg !2033
-  br i1 %71, label %72, label %87, !dbg !2034
+if.else65:                                        ; preds = %if.then55
+  %call67 = call i64 @strlen(i8* %14) #10, !dbg !1490
+  %cmp68 = icmp eq i64 %call67, 6, !dbg !1490
+  br i1 %cmp68, label %if.then69, label %if.end121, !dbg !1490
 
-; <label>:72                                      ; preds = %69
-  switch i8 %62, label %87 [
-    i8 104, label %73
-    i8 72, label %73
-  ], !dbg !2035
+if.then69:                                        ; preds = %if.else65
+  switch i8 %16, label %if.end121 [
+    i8 104, label %land.lhs.true79
+    i8 72, label %land.lhs.true79
+  ], !dbg !1491
 
-; <label>:73                                      ; preds = %72, %72
-  %74 = getelementptr inbounds i8* %57, i64 2, !dbg !2038
-  %75 = load i8* %74, align 1, !dbg !2038, !tbaa !2019
-  switch i8 %75, label %87 [
-    i8 101, label %76
-    i8 69, label %76
-  ], !dbg !2039
+land.lhs.true79:                                  ; preds = %if.then69, %if.then69
+  %arrayidx81 = getelementptr inbounds i8* %14, i64 2, !dbg !1491
+  %18 = load i8* %arrayidx81, align 1, !dbg !1491, !tbaa !1457
+  switch i8 %18, label %if.end121 [
+    i8 101, label %land.lhs.true89
+    i8 69, label %land.lhs.true89
+  ], !dbg !1491
 
-; <label>:76                                      ; preds = %73, %73
-  %77 = getelementptr inbounds i8* %57, i64 3, !dbg !2040
-  %78 = load i8* %77, align 1, !dbg !2040, !tbaa !2019
-  switch i8 %78, label %87 [
-    i8 108, label %79
-    i8 76, label %79
-  ], !dbg !2041
+land.lhs.true89:                                  ; preds = %land.lhs.true79, %land.lhs.true79
+  %arrayidx91 = getelementptr inbounds i8* %14, i64 3, !dbg !1491
+  %19 = load i8* %arrayidx91, align 1, !dbg !1491, !tbaa !1457
+  switch i8 %19, label %if.end121 [
+    i8 108, label %land.lhs.true99
+    i8 76, label %land.lhs.true99
+  ], !dbg !1491
 
-; <label>:79                                      ; preds = %76, %76
-  %80 = getelementptr inbounds i8* %57, i64 4, !dbg !2042
-  %81 = load i8* %80, align 1, !dbg !2042, !tbaa !2019
-  switch i8 %81, label %87 [
-    i8 112, label %82
-    i8 80, label %82
-  ], !dbg !2043
+land.lhs.true99:                                  ; preds = %land.lhs.true89, %land.lhs.true89
+  %arrayidx101 = getelementptr inbounds i8* %14, i64 4, !dbg !1491
+  %20 = load i8* %arrayidx101, align 1, !dbg !1491, !tbaa !1457
+  switch i8 %20, label %if.end121 [
+    i8 112, label %if.then109
+    i8 80, label %if.then109
+  ], !dbg !1491
 
-; <label>:82                                      ; preds = %79, %79
-  %83 = getelementptr inbounds i8* %57, i64 5, !dbg !2044
-  %84 = load i8* %83, align 1, !dbg !2044, !tbaa !2019
-  %85 = sext i8 %84 to i32, !dbg !2044
-  %86 = add nsw i32 %85, -48, !dbg !2046
-  invoke void @_ZN12pov_frontend21DefaultRenderFrontend10PrintUsageEi(%"class.pov_frontend::DefaultRenderFrontend"* %frontend, i32 %86) #10
-          to label %.loopexit unwind label %.loopexit.split-lp, !dbg !2047
+if.then109:                                       ; preds = %land.lhs.true99, %land.lhs.true99
+  %arrayidx111 = getelementptr inbounds i8* %14, i64 5, !dbg !1493
+  %21 = load i8* %arrayidx111, align 1, !dbg !1493, !tbaa !1457
+  %conv112 = sext i8 %21 to i32, !dbg !1493
+  %sub113 = add nsw i32 %conv112, -48, !dbg !1493
+  invoke void @_ZN12pov_frontend21DefaultRenderFrontend10PrintUsageEi(%"class.pov_frontend::DefaultRenderFrontend"* %frontend, i32 %sub113) #9
+          to label %cleanup unwind label %ehcleanup208.nonloopexit, !dbg !1493
 
-; <label>:87                                      ; preds = %79, %76, %73, %72, %32, %56, %69
-  br i1 %24, label %88, label %94, !dbg !2048
+if.end121:                                        ; preds = %land.lhs.true99, %land.lhs.true89, %land.lhs.true79, %if.then69, %if.end24, %if.else51, %if.else65
+  br i1 %cmp18, label %land.lhs.true123, label %if.end129, !dbg !1495
 
-; <label>:88                                      ; preds = %87
-  %89 = getelementptr inbounds i8** %argv, i64 1, !dbg !2050
-  %90 = load i8** %89, align 8, !dbg !2050, !tbaa !1956
-  %91 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %90, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0)) #10
-          to label %92 unwind label %.loopexit.split-lp, !dbg !2051
+land.lhs.true123:                                 ; preds = %if.end121
+  %arrayidx124 = getelementptr inbounds i8** %argv, i64 1, !dbg !1495
+  %22 = load i8** %arrayidx124, align 8, !dbg !1495, !tbaa !1456
+  %call126 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %22, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0)) #9
+          to label %invoke.cont125 unwind label %ehcleanup208.nonloopexit, !dbg !1495
 
-; <label>:92                                      ; preds = %88
-  %93 = icmp eq i32 %91, 0, !dbg !2052
-  br i1 %93, label %.thread12, label %94, !dbg !2053
+invoke.cont125:                                   ; preds = %land.lhs.true123
+  %cmp127 = icmp eq i32 %call126, 0, !dbg !1495
+  br i1 %cmp127, label %if.end129.thread, label %if.end129, !dbg !1495
 
-.thread12:                                        ; preds = %92
-  store i8 1, i8* @Binary_POVMS_Stream_Mode, align 1, !dbg !2054, !tbaa !1989
-  br label %.preheader, !dbg !2055
+if.end129.thread:                                 ; preds = %invoke.cont125
+  store i8 1, i8* @Binary_POVMS_Stream_Mode, align 1, !dbg !1496, !tbaa !1474
+  br label %while.cond, !dbg !1497
 
-; <label>:94                                      ; preds = %92, %87
-  %.pr = load i8* @Binary_POVMS_Stream_Mode, align 1, !dbg !2056, !tbaa !1989
-  %95 = icmp eq i8 %.pr, 0, !dbg !2056
-  br i1 %95, label %99, label %.preheader, !dbg !2055
+if.end129:                                        ; preds = %invoke.cont125, %if.end121
+  %.pr = load i8* @Binary_POVMS_Stream_Mode, align 1, !dbg !1497, !tbaa !1474
+  %tobool = icmp eq i8 %.pr, 0, !dbg !1497
+  br i1 %tobool, label %if.end135, label %while.cond, !dbg !1497
 
-.preheader:                                       ; preds = %.thread12, %94, %98
-  %96 = load i32* @_ZN3pov21Cooperate_Render_FlagE, align 4, !dbg !2058, !tbaa !2060
-  %97 = icmp sgt i32 %96, -1, !dbg !2062
-  br i1 %97, label %98, label %.loopexit, !dbg !2063
+while.cond:                                       ; preds = %if.end129.thread, %if.end129, %while.body
+  %23 = load i32* @_ZN3pov21Cooperate_Render_FlagE, align 4, !dbg !1498, !tbaa !1500
+  %cmp133 = icmp sgt i32 %23, -1, !dbg !1498
+  br i1 %cmp133, label %while.body, label %cleanup, !dbg !1498
 
-; <label>:98                                      ; preds = %.preheader
-  invoke void @_Z16povray_cooperatev() #10
-          to label %.preheader unwind label %.loopexit13, !dbg !2064
+while.body:                                       ; preds = %while.cond
+  invoke void @_Z16povray_cooperatev() #9
+          to label %while.cond unwind label %ehcleanup208.loopexit, !dbg !1501
 
-; <label>:99                                      ; preds = %94
-  invoke void @_ZN12pov_frontend20ProcessRenderOptionsC1Ev(%"class.pov_frontend::ProcessRenderOptions"* %renderoptions) #10
-          to label %100 unwind label %109, !dbg !2065
+if.end135:                                        ; preds = %if.end129
+  call void @llvm.dbg.declare(metadata !{%"class.pov_frontend::ProcessRenderOptions"* %renderoptions}, metadata !971), !dbg !1502
+  invoke void @_ZN12pov_frontend20ProcessRenderOptionsC1Ev(%"class.pov_frontend::ProcessRenderOptions"* %renderoptions) #9
+          to label %invoke.cont137 unwind label %lpad136, !dbg !1502
 
-; <label>:100                                     ; preds = %99
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1371, metadata !1951), !dbg !2066
-  store i32 0, i32* %l, align 4, !dbg !2066, !tbaa !2060
-  %101 = invoke i32 @_Z15POVMSObject_NewP9POVMSDataj(%struct.POVMSData* %obj, i32 1380937844) #10
-          to label %102 unwind label %.loopexit.split-lp22, !dbg !2067
+invoke.cont137:                                   ; preds = %if.end135
+  call void @llvm.dbg.declare(metadata !{%struct.POVMSData* %obj}, metadata !1166), !dbg !1503
+  call void @llvm.dbg.declare(metadata !{i32* %l}, metadata !1167), !dbg !1504
+  call void @llvm.dbg.value(metadata !868, i64 0, metadata !1167), !dbg !1504
+  store i32 0, i32* %l, align 4, !dbg !1504, !tbaa !1500
+  %call140 = invoke i32 @_Z15POVMSObject_NewP9POVMSDataj(%struct.POVMSData* %obj, i32 1380937844) #9
+          to label %invoke.cont139 unwind label %lpad138.nonloopexit, !dbg !1505
 
-; <label>:102                                     ; preds = %100
-  call void @llvm.dbg.value(metadata i32 %101, i64 0, metadata !1362, metadata !1951), !dbg !1960
-  %103 = icmp eq i32 %101, 0, !dbg !2068
-  br i1 %103, label %.preheader20, label %106, !dbg !2070
+invoke.cont139:                                   ; preds = %invoke.cont137
+  call void @llvm.dbg.value(metadata !{i32 %call140}, i64 0, metadata !934), !dbg !1505
+  %cmp141 = icmp eq i32 %call140, 0, !dbg !1506
+  br i1 %cmp141, label %for.cond.preheader, label %if.then142, !dbg !1506
 
-.preheader20:                                     ; preds = %102
-  br i1 %24, label %.lr.ph, label %._crit_edge, !dbg !2071
+for.cond.preheader:                               ; preds = %invoke.cont139
+  br i1 %cmp18, label %for.body.lr.ph, label %for.end, !dbg !1507
 
-.lr.ph:                                           ; preds = %.preheader20
-  %104 = getelementptr inbounds %"class.pov_frontend::ProcessRenderOptions"* %renderoptions, i64 0, i32 0, !dbg !2073
-  %105 = sext i32 %argc to i64, !dbg !2071
-  br label %116, !dbg !2071
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %24 = getelementptr inbounds %"class.pov_frontend::ProcessRenderOptions"* %renderoptions, i64 0, i32 0, !dbg !1509
+  br label %for.body, !dbg !1507
 
-; <label>:106                                     ; preds = %102
-  %107 = call i8* @__cxa_allocate_exception(i64 4) #3, !dbg !2078
-  %108 = bitcast i8* %107 to i32*, !dbg !2078
-  store i32 %101, i32* %108, align 4, !dbg !2078, !tbaa !2060
-  invoke void @__cxa_throw(i8* %107, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #11
-          to label %198 unwind label %.loopexit.split-lp22, !dbg !2078
+if.then142:                                       ; preds = %invoke.cont139
+  %exception = call i8* @__cxa_allocate_exception(i64 4) #4, !dbg !1512
+  %25 = bitcast i8* %exception to i32*, !dbg !1512
+  store i32 %call140, i32* %25, align 4, !dbg !1512, !tbaa !1500
+  invoke void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #11
+          to label %unreachable unwind label %lpad138.nonloopexit, !dbg !1512
 
-; <label>:109                                     ; preds = %160, %99
-  %110 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+lpad136:                                          ; preds = %invoke.cont183, %if.end135
+  %26 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
           catch i8* bitcast (i8** @_ZTIi to i8*)
           catch i8* bitcast (i8** @_ZTIPKc to i8*)
-          catch i8* null, !dbg !2079
-  %111 = extractvalue { i8*, i32 } %110, 0, !dbg !2079
-  %112 = extractvalue { i8*, i32 } %110, 1, !dbg !2079
-  br label %162, !dbg !2079
+          catch i8* null, !dbg !1502
+  %27 = extractvalue { i8*, i32 } %26, 0, !dbg !1502
+  %28 = extractvalue { i8*, i32 } %26, 1, !dbg !1502
+  br label %catch.dispatch, !dbg !1502
 
-.loopexit21:                                      ; preds = %116, %122
-  %lpad.loopexit23 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+lpad138.loopexit:                                 ; preds = %for.body, %if.then149
+  %lpad.loopexit267 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
           catch i8* bitcast (i8** @_ZTIi to i8*)
           catch i8* bitcast (i8** @_ZTIPKc to i8*)
-          catch i8* null, !dbg !2079
-  br label %113
+          catch i8* null, !dbg !1505
+  br label %lpad138
 
-.loopexit.split-lp22:                             ; preds = %100, %106, %127, %._crit_edge, %135, %141, %145, %148, %159
-  %lpad.loopexit.split-lp24 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+lpad138.nonloopexit:                              ; preds = %invoke.cont137, %if.then142, %if.then155, %for.end, %if.then162, %invoke.cont163, %if.then168, %if.end172, %while.end182
+  %lpad.nonloopexit268 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
           catch i8* bitcast (i8** @_ZTIi to i8*)
           catch i8* bitcast (i8** @_ZTIPKc to i8*)
-          catch i8* null, !dbg !2079
-  br label %113
+          catch i8* null, !dbg !1505
+  br label %lpad138
 
-; <label>:113                                     ; preds = %.loopexit.split-lp22, %.loopexit21
-  %lpad.phi25 = phi { i8*, i32 } [ %lpad.loopexit23, %.loopexit21 ], [ %lpad.loopexit.split-lp24, %.loopexit.split-lp22 ]
-  %114 = extractvalue { i8*, i32 } %lpad.phi25, 0, !dbg !2079
-  %115 = extractvalue { i8*, i32 } %lpad.phi25, 1, !dbg !2079
-  br label %161, !dbg !2079
+lpad138:                                          ; preds = %lpad138.nonloopexit, %lpad138.loopexit
+  %lpad.phi269 = phi { i8*, i32 } [ %lpad.loopexit267, %lpad138.loopexit ], [ %lpad.nonloopexit268, %lpad138.nonloopexit ]
+  %29 = extractvalue { i8*, i32 } %lpad.phi269, 0, !dbg !1505
+  %30 = extractvalue { i8*, i32 } %lpad.phi269, 1, !dbg !1505
+  br label %ehcleanup, !dbg !1505
 
-; <label>:116                                     ; preds = %.lr.ph, %130
-  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %130 ]
-  %117 = getelementptr inbounds i8** %argv, i64 %indvars.iv, !dbg !2080
-  %118 = load i8** %117, align 8, !dbg !2080, !tbaa !1956
-  %119 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %118, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0)) #10
-          to label %120 unwind label %.loopexit21, !dbg !2081
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx145 = getelementptr inbounds i8** %argv, i64 %indvars.iv, !dbg !1513
+  %31 = load i8** %arrayidx145, align 8, !dbg !1513, !tbaa !1456
+  %call147 = invoke i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* %31, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0)) #9
+          to label %invoke.cont146 unwind label %lpad138.loopexit, !dbg !1513
 
-; <label>:120                                     ; preds = %116
-  %121 = icmp eq i32 %119, 0, !dbg !2082
-  br i1 %121, label %130, label %122, !dbg !2083
+invoke.cont146:                                   ; preds = %for.body
+  %cmp148 = icmp eq i32 %call147, 0, !dbg !1513
+  br i1 %cmp148, label %for.inc, label %if.then149, !dbg !1513
 
-; <label>:122                                     ; preds = %120
-  %123 = load i8** %117, align 8, !dbg !2084, !tbaa !1956
-  %124 = invoke i32 @_ZN8pov_base14ProcessOptions11ParseStringEPKcP9POVMSDatab(%"class.pov_base::ProcessOptions"* %104, i8* %123, %struct.POVMSData* %obj, i1 zeroext true) #10
-          to label %125 unwind label %.loopexit21, !dbg !2073
+if.then149:                                       ; preds = %invoke.cont146
+  %32 = load i8** %arrayidx145, align 8, !dbg !1509, !tbaa !1456
+  %call153 = invoke i32 @_ZN8pov_base14ProcessOptions11ParseStringEPKcP9POVMSDatab(%"class.pov_base::ProcessOptions"* %24, i8* %32, %struct.POVMSData* %obj, i1 zeroext true) #9
+          to label %invoke.cont152 unwind label %lpad138.loopexit, !dbg !1509
 
-; <label>:125                                     ; preds = %122
-  call void @llvm.dbg.value(metadata i32 %124, i64 0, metadata !1362, metadata !1951), !dbg !1960
-  %126 = icmp eq i32 %124, 0, !dbg !2085
-  br i1 %126, label %130, label %127, !dbg !2087
+invoke.cont152:                                   ; preds = %if.then149
+  call void @llvm.dbg.value(metadata !{i32 %call153}, i64 0, metadata !934), !dbg !1509
+  %cmp154 = icmp eq i32 %call153, 0, !dbg !1514
+  br i1 %cmp154, label %for.inc, label %if.then155, !dbg !1514
 
-; <label>:127                                     ; preds = %125
-  %128 = call i8* @__cxa_allocate_exception(i64 4) #3, !dbg !2088
-  %129 = bitcast i8* %128 to i32*, !dbg !2088
-  store i32 %124, i32* %129, align 4, !dbg !2088, !tbaa !2060
-  invoke void @__cxa_throw(i8* %128, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #11
-          to label %198 unwind label %.loopexit.split-lp22, !dbg !2088
+if.then155:                                       ; preds = %invoke.cont152
+  %exception156 = call i8* @__cxa_allocate_exception(i64 4) #4, !dbg !1515
+  %33 = bitcast i8* %exception156 to i32*, !dbg !1515
+  store i32 %call153, i32* %33, align 4, !dbg !1515, !tbaa !1500
+  invoke void @__cxa_throw(i8* %exception156, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #11
+          to label %unreachable unwind label %lpad138.nonloopexit, !dbg !1515
 
-; <label>:130                                     ; preds = %125, %120
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2071
-  %131 = icmp slt i64 %indvars.iv.next, %105, !dbg !2089
-  br i1 %131, label %116, label %._crit_edge, !dbg !2071
+for.inc:                                          ; preds = %invoke.cont152, %invoke.cont146
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1507
+  %34 = trunc i64 %indvars.iv.next to i32, !dbg !1507
+  %cmp144 = icmp slt i32 %34, %argc, !dbg !1507
+  br i1 %cmp144, label %for.body, label %for.end, !dbg !1507
 
-._crit_edge:                                      ; preds = %130, %.preheader20
-  %132 = invoke i32 @_Z25POVMSUtil_GetStringLengthP9POVMSDatajPi(%struct.POVMSData* %obj, i32 1128885865, i32* %l) #10
-          to label %133 unwind label %.loopexit.split-lp22, !dbg !2090
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %call160 = invoke i32 @_Z25POVMSUtil_GetStringLengthP9POVMSDatajPi(%struct.POVMSData* %obj, i32 1128885865, i32* %l) #9
+          to label %invoke.cont159 unwind label %lpad138.nonloopexit, !dbg !1516
 
-; <label>:133                                     ; preds = %._crit_edge
-  %134 = icmp eq i32 %132, 0, !dbg !2091
-  br i1 %134, label %135, label %148, !dbg !2092
+invoke.cont159:                                   ; preds = %for.end
+  %cmp161 = icmp eq i32 %call160, 0, !dbg !1516
+  br i1 %cmp161, label %if.then162, label %if.end172, !dbg !1516
 
-; <label>:135                                     ; preds = %133
-  call void @llvm.dbg.value(metadata i32* %l, i64 0, metadata !1371, metadata !1951), !dbg !2066
-  %136 = load i32* %l, align 4, !dbg !2093, !tbaa !2060
-  %137 = sext i32 %136 to i64, !dbg !2094
-  %138 = icmp sgt i64 %137, -1, !dbg !2094
-  %139 = select i1 %138, i64 %137, i64 -1, !dbg !2094
-  %140 = invoke noalias i8* @_Znam(i64 %139) #12
-          to label %141 unwind label %.loopexit.split-lp22, !dbg !2094
+if.then162:                                       ; preds = %invoke.cont159
+  call void @llvm.dbg.value(metadata !{i32* %l}, i64 0, metadata !1167), !dbg !1517
+  %35 = load i32* %l, align 4, !dbg !1517, !tbaa !1500
+  %36 = sext i32 %35 to i64, !dbg !1517
+  %37 = icmp sgt i64 %36, -1, !dbg !1517
+  %38 = select i1 %37, i64 %36, i64 -1, !dbg !1517
+  %call164 = invoke noalias i8* @_Znam(i64 %38) #9
+          to label %invoke.cont163 unwind label %lpad138.nonloopexit, !dbg !1517
 
-; <label>:141                                     ; preds = %135
-  call void @llvm.dbg.value(metadata i8* %140, i64 0, metadata !1372, metadata !1951), !dbg !2095
-  %142 = invoke i32 @_Z19POVMSUtil_GetStringP9POVMSDatajPcPi(%struct.POVMSData* %obj, i32 1128885865, i8* %140, i32* %l) #10
-          to label %143 unwind label %.loopexit.split-lp22, !dbg !2096
+invoke.cont163:                                   ; preds = %if.then162
+  call void @llvm.dbg.value(metadata !{i8* %call164}, i64 0, metadata !1168), !dbg !1517
+  %call166 = invoke i32 @_Z19POVMSUtil_GetStringP9POVMSDatajPcPi(%struct.POVMSData* %obj, i32 1128885865, i8* %call164, i32* %l) #9
+          to label %invoke.cont165 unwind label %lpad138.nonloopexit, !dbg !1518
 
-; <label>:143                                     ; preds = %141
-  %144 = icmp eq i32 %142, 0, !dbg !2098
-  br i1 %144, label %145, label %148, !dbg !2099
+invoke.cont165:                                   ; preds = %invoke.cont163
+  %cmp167 = icmp eq i32 %call166, 0, !dbg !1518
+  br i1 %cmp167, label %if.then168, label %if.end172, !dbg !1518
 
-; <label>:145                                     ; preds = %143
-  %146 = getelementptr inbounds %"class.pov_frontend::ProcessRenderOptions"* %renderoptions, i64 0, i32 0, !dbg !2100
-  %147 = invoke i32 @_ZN8pov_base14ProcessOptions9WriteFileEPKcP9POVMSData(%"class.pov_base::ProcessOptions"* %146, i8* %140, %struct.POVMSData* %obj) #10
-          to label %148 unwind label %.loopexit.split-lp22, !dbg !2100
+if.then168:                                       ; preds = %invoke.cont165
+  %39 = getelementptr inbounds %"class.pov_frontend::ProcessRenderOptions"* %renderoptions, i64 0, i32 0, !dbg !1519
+  %call170 = invoke i32 @_ZN8pov_base14ProcessOptions9WriteFileEPKcP9POVMSData(%"class.pov_base::ProcessOptions"* %39, i8* %call164, %struct.POVMSData* %obj) #9
+          to label %if.end172 unwind label %lpad138.nonloopexit, !dbg !1519
 
-; <label>:148                                     ; preds = %143, %145, %133
-  invoke void @_ZN12POVMS_ObjectC1ER9POVMSData(%class.POVMS_Object* %optionsobj, %struct.POVMSData* dereferenceable(16) %obj) #10
-          to label %149 unwind label %.loopexit.split-lp22, !dbg !2101
+if.end172:                                        ; preds = %invoke.cont165, %if.then168, %invoke.cont159
+  call void @llvm.dbg.declare(metadata !{%class.POVMS_Object* %optionsobj}, metadata !1170), !dbg !1520
+  invoke void @_ZN12POVMS_ObjectC1ER9POVMSData(%class.POVMS_Object* %optionsobj, %struct.POVMSData* %obj) #9
+          to label %invoke.cont173 unwind label %lpad138.nonloopexit, !dbg !1520
 
-; <label>:149                                     ; preds = %148
-  %150 = bitcast %"class.pov_frontend::DefaultRenderFrontend"* %frontend to %"class.pov_frontend::RenderFrontend"*, !dbg !2102
-  invoke void @_ZN12pov_frontend14RenderFrontend11StartRenderER12POVMS_Object(%"class.pov_frontend::RenderFrontend"* %150, %class.POVMS_Object* dereferenceable(24) %optionsobj) #10
-          to label %.preheader14 unwind label %.loopexit.split-lp16, !dbg !2102
+invoke.cont173:                                   ; preds = %if.end172
+  %40 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %frontend, i64 0, i32 0, !dbg !1521
+  invoke void @_ZN12pov_frontend14RenderFrontend11StartRenderER12POVMS_Object(%"class.pov_frontend::RenderFrontend"* %40, %class.POVMS_Object* %optionsobj) #9
+          to label %while.cond176.preheader unwind label %lpad174.nonloopexit, !dbg !1521
 
-.preheader14:                                     ; preds = %149
-  %151 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %frontend, i64 0, i32 0, i32 3, !dbg !2103
-  br label %152, !dbg !2105
+while.cond176.preheader:                          ; preds = %invoke.cont173
+  %state.i = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %frontend, i64 0, i32 0, i32 3, !dbg !1522
+  br label %while.cond176, !dbg !1525
 
-; <label>:152                                     ; preds = %.preheader14, %155
-  tail call void @llvm.dbg.value(metadata %"class.pov_frontend::RenderFrontend"* %150, i64 0, metadata !1405, metadata !1951), !dbg !2105
-  %153 = load i32* %151, align 8, !dbg !2103, !tbaa !2106
-  %154 = icmp eq i32 %153, 1, !dbg !2109
-  br i1 %154, label %159, label %155, !dbg !2110
+while.cond176:                                    ; preds = %while.cond176.preheader, %while.body180
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %40}, i64 0, metadata !1526), !dbg !1525
+  %41 = load i32* %state.i, align 8, !dbg !1522, !tbaa !1527
+  %cmp179 = icmp eq i32 %41, 1, !dbg !1524
+  br i1 %cmp179, label %while.end182, label %while.body180, !dbg !1524
 
-; <label>:155                                     ; preds = %152
-  invoke void @_Z16povray_cooperatev() #10
-          to label %152 unwind label %.loopexit15, !dbg !2111
+while.body180:                                    ; preds = %while.cond176
+  invoke void @_Z16povray_cooperatev() #9
+          to label %while.cond176 unwind label %lpad174.loopexit, !dbg !1528
 
-.loopexit15:                                      ; preds = %155
-  %lpad.loopexit17 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+lpad174.loopexit:                                 ; preds = %while.body180
+  %lpad.loopexit264 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
           catch i8* bitcast (i8** @_ZTIi to i8*)
           catch i8* bitcast (i8** @_ZTIPKc to i8*)
-          catch i8* null, !dbg !2079
-  br label %156
+          catch i8* null, !dbg !1521
+  br label %lpad174
 
-.loopexit.split-lp16:                             ; preds = %149
-  %lpad.loopexit.split-lp18 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+lpad174.nonloopexit:                              ; preds = %invoke.cont173
+  %lpad.nonloopexit265 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
           catch i8* bitcast (i8** @_ZTIi to i8*)
           catch i8* bitcast (i8** @_ZTIPKc to i8*)
-          catch i8* null, !dbg !2079
-  br label %156
+          catch i8* null, !dbg !1521
+  br label %lpad174
 
-; <label>:156                                     ; preds = %.loopexit.split-lp16, %.loopexit15
-  %lpad.phi19 = phi { i8*, i32 } [ %lpad.loopexit17, %.loopexit15 ], [ %lpad.loopexit.split-lp18, %.loopexit.split-lp16 ]
-  %157 = extractvalue { i8*, i32 } %lpad.phi19, 0, !dbg !2079
-  %158 = extractvalue { i8*, i32 } %lpad.phi19, 1, !dbg !2079
-  invoke void @_ZN12POVMS_ObjectD1Ev(%class.POVMS_Object* %optionsobj) #10
-          to label %161 unwind label %195, !dbg !2112
+lpad174:                                          ; preds = %lpad174.nonloopexit, %lpad174.loopexit
+  %lpad.phi266 = phi { i8*, i32 } [ %lpad.loopexit264, %lpad174.loopexit ], [ %lpad.nonloopexit265, %lpad174.nonloopexit ]
+  %42 = extractvalue { i8*, i32 } %lpad.phi266, 0, !dbg !1521
+  %43 = extractvalue { i8*, i32 } %lpad.phi266, 1, !dbg !1521
+  invoke void @_ZN12POVMS_ObjectD1Ev(%class.POVMS_Object* %optionsobj) #9
+          to label %ehcleanup unwind label %terminate.lpad, !dbg !1529
 
-; <label>:159                                     ; preds = %152
-  invoke void @_ZN12POVMS_ObjectD1Ev(%class.POVMS_Object* %optionsobj) #10
-          to label %160 unwind label %.loopexit.split-lp22, !dbg !2112
+while.end182:                                     ; preds = %while.cond176
+  invoke void @_ZN12POVMS_ObjectD1Ev(%class.POVMS_Object* %optionsobj) #9
+          to label %invoke.cont183 unwind label %lpad138.nonloopexit, !dbg !1530
 
-; <label>:160                                     ; preds = %159
-  invoke void @_ZN12pov_frontend20ProcessRenderOptionsD1Ev(%"class.pov_frontend::ProcessRenderOptions"* %renderoptions) #10
-          to label %.loopexit unwind label %109, !dbg !2112
+invoke.cont183:                                   ; preds = %while.end182
+  invoke void @_ZN12pov_frontend20ProcessRenderOptionsD1Ev(%"class.pov_frontend::ProcessRenderOptions"* %renderoptions) #9
+          to label %cleanup unwind label %lpad136, !dbg !1529
 
-; <label>:161                                     ; preds = %156, %113
-  %.05 = phi i8* [ %114, %113 ], [ %157, %156 ]
-  %.03 = phi i32 [ %115, %113 ], [ %158, %156 ]
-  invoke void @_ZN12pov_frontend20ProcessRenderOptionsD1Ev(%"class.pov_frontend::ProcessRenderOptions"* %renderoptions) #10
-          to label %162 unwind label %195, !dbg !2112
+ehcleanup:                                        ; preds = %lpad174, %lpad138
+  %exn.slot.0 = phi i8* [ %29, %lpad138 ], [ %42, %lpad174 ]
+  %ehselector.slot.0 = phi i32 [ %30, %lpad138 ], [ %43, %lpad174 ]
+  invoke void @_ZN12pov_frontend20ProcessRenderOptionsD1Ev(%"class.pov_frontend::ProcessRenderOptions"* %renderoptions) #9
+          to label %catch.dispatch unwind label %terminate.lpad, !dbg !1529
 
-; <label>:162                                     ; preds = %161, %109
-  %.16 = phi i8* [ %.05, %161 ], [ %111, %109 ]
-  %.14 = phi i32 [ %.03, %161 ], [ %112, %109 ]
-  %163 = call i32 @llvm.eh.typeid.for(i8* bitcast (i8** @_ZTIi to i8*)) #3, !dbg !2113
-  %164 = icmp eq i32 %.14, %163, !dbg !2113
-  br i1 %164, label %165, label %171, !dbg !2113
+catch.dispatch:                                   ; preds = %ehcleanup, %lpad136
+  %exn.slot.1 = phi i8* [ %exn.slot.0, %ehcleanup ], [ %27, %lpad136 ]
+  %ehselector.slot.1 = phi i32 [ %ehselector.slot.0, %ehcleanup ], [ %28, %lpad136 ]
+  %44 = call i32 @llvm.eh.typeid.for(i8* bitcast (i8** @_ZTIi to i8*)) #4, !dbg !1529
+  %matches = icmp eq i32 %ehselector.slot.1, %44, !dbg !1529
+  br i1 %matches, label %invoke.cont204, label %catch.fallthrough, !dbg !1529
 
-; <label>:165                                     ; preds = %162
-  %166 = call i8* @__cxa_begin_catch(i8* %.16) #3, !dbg !2114
-  %167 = bitcast i8* %166 to i32*, !dbg !2114
-  %168 = load i32* %167, align 4, !dbg !2114, !tbaa !2060
-  call void @llvm.dbg.value(metadata i32 %168, i64 0, metadata !1377, metadata !1951), !dbg !2116
-  %169 = load %struct.__sFILE** @__stderrp, align 8, !dbg !2117, !tbaa !1956
-  %170 = call i64 @fwrite(i8* getelementptr inbounds ([40 x i8]* @.str9, i64 0, i64 0), i64 39, i64 1, %struct.__sFILE* %169), !dbg !2119
-  call void @__cxa_end_catch() #3, !dbg !2120
-  br label %.loopexit
+invoke.cont204:                                   ; preds = %catch.dispatch
+  %45 = call i8* @__cxa_begin_catch(i8* %exn.slot.1) #4, !dbg !1531
+  %46 = bitcast i8* %45 to i32*, !dbg !1531
+  %47 = load i32* %46, align 4, !dbg !1531, !tbaa !1500
+  call void @llvm.dbg.value(metadata !{i32 %47}, i64 0, metadata !1172), !dbg !1531
+  %48 = load %struct._IO_FILE** @stderr, align 8, !dbg !1532, !tbaa !1456
+  %49 = call i64 @fwrite(i8* getelementptr inbounds ([40 x i8]* @.str9, i64 0, i64 0), i64 39, i64 1, %struct._IO_FILE* %48), !dbg !1532
+  call void @__cxa_end_catch() #4, !dbg !1534
+  br label %cleanup
 
-; <label>:171                                     ; preds = %162
-  %172 = call i32 @llvm.eh.typeid.for(i8* bitcast (i8** @_ZTIPKc to i8*)) #3, !dbg !2113
-  %173 = icmp eq i32 %.14, %172, !dbg !2113
-  %174 = call i8* @__cxa_begin_catch(i8* %.16) #3, !dbg !2121
-  %175 = load %struct.__sFILE** @__stderrp, align 8, !dbg !2123, !tbaa !1956
-  br i1 %173, label %176, label %178, !dbg !2113
+catch.fallthrough:                                ; preds = %catch.dispatch
+  %50 = call i32 @llvm.eh.typeid.for(i8* bitcast (i8** @_ZTIPKc to i8*)) #4, !dbg !1529
+  %matches187 = icmp eq i32 %ehselector.slot.1, %50, !dbg !1529
+  %51 = call i8* @__cxa_begin_catch(i8* %exn.slot.1) #4, !dbg !1535
+  %52 = load %struct._IO_FILE** @stderr, align 8, !dbg !1536, !tbaa !1456
+  br i1 %matches187, label %invoke.cont197, label %invoke.cont189, !dbg !1529
 
-; <label>:176                                     ; preds = %171
-  call void @llvm.dbg.value(metadata i8* %174, i64 0, metadata !1376, metadata !1951), !dbg !2124
-  %177 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %175, i8* getelementptr inbounds ([28 x i8]* @.str10, i64 0, i64 0), i8* %174) #10, !dbg !2125
-  call void @__cxa_end_catch() #3, !dbg !2114
-  br label %.loopexit
+invoke.cont197:                                   ; preds = %catch.fallthrough
+  call void @llvm.dbg.value(metadata !{i8* %51}, i64 0, metadata !1171), !dbg !1535
+  %call198 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %52, i8* getelementptr inbounds ([28 x i8]* @.str10, i64 0, i64 0), i8* %51) #9, !dbg !1536
+  call void @__cxa_end_catch() #4, !dbg !1538
+  br label %cleanup
 
-; <label>:178                                     ; preds = %171
-  %179 = call i64 @fwrite(i8* getelementptr inbounds ([40 x i8]* @.str9, i64 0, i64 0), i64 39, i64 1, %struct.__sFILE* %175), !dbg !2126
+invoke.cont189:                                   ; preds = %catch.fallthrough
+  %53 = call i64 @fwrite(i8* getelementptr inbounds ([40 x i8]* @.str9, i64 0, i64 0), i64 39, i64 1, %struct._IO_FILE* %52), !dbg !1539
   invoke void @__cxa_end_catch()
-          to label %.loopexit unwind label %.loopexit.split-lp, !dbg !2121
+          to label %cleanup unwind label %ehcleanup208.nonloopexit, !dbg !1541
 
-.loopexit:                                        ; preds = %.preheader, %160, %82, %64, %55, %33, %178, %165, %176
-  %.02 = phi i32 [ 1, %165 ], [ 1, %176 ], [ 1, %178 ], [ 1, %33 ], [ 1, %55 ], [ 1, %64 ], [ 1, %82 ], [ 0, %160 ], [ 1, %.preheader ]
-  %.0 = phi i32 [ %168, %165 ], [ -1, %176 ], [ -1, %178 ], [ 0, %33 ], [ 0, %55 ], [ 0, %64 ], [ 0, %82 ], [ 0, %160 ], [ 0, %.preheader ]
-  invoke void @_ZN12pov_frontend21DefaultRenderFrontendD1Ev(%"class.pov_frontend::DefaultRenderFrontend"* %frontend) #10
-          to label %180 unwind label %5, !dbg !2127
+cleanup:                                          ; preds = %while.cond, %invoke.cont183, %if.then109, %if.then60, %if.then49, %if.then26, %invoke.cont189, %invoke.cont204, %invoke.cont197
+  %cleanup.dest.slot.0 = phi i32 [ 1, %invoke.cont204 ], [ 1, %invoke.cont197 ], [ 1, %invoke.cont189 ], [ 1, %if.then26 ], [ 1, %if.then49 ], [ 1, %if.then60 ], [ 1, %if.then109 ], [ 0, %invoke.cont183 ], [ 1, %while.cond ]
+  %retval.0 = phi i32 [ %47, %invoke.cont204 ], [ -1, %invoke.cont197 ], [ -1, %invoke.cont189 ], [ 0, %if.then26 ], [ 0, %if.then49 ], [ 0, %if.then60 ], [ 0, %if.then109 ], [ 0, %invoke.cont183 ], [ 0, %while.cond ]
+  invoke void @_ZN12pov_frontend21DefaultRenderFrontendD1Ev(%"class.pov_frontend::DefaultRenderFrontend"* %frontend) #9
+          to label %invoke.cont207 unwind label %lpad, !dbg !1542
 
-; <label>:180                                     ; preds = %.loopexit
-  call void @llvm.lifetime.end(i64 280, i8* %20) #3, !dbg !2127
-  %cond = icmp eq i32 %.02, 0
-  br i1 %cond, label %184, label %190
+invoke.cont207:                                   ; preds = %cleanup
+  call void @llvm.lifetime.end(i64 280, i8* %6) #4, !dbg !1543
+  %cond = icmp eq i32 %cleanup.dest.slot.0, 0
+  br i1 %cond, label %if.end211, label %cleanup215
 
-.loopexit13:                                      ; preds = %98
+ehcleanup208.loopexit:                            ; preds = %while.body
   %lpad.loopexit = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !2128
-  br label %181
+          cleanup, !dbg !1472
+  br label %ehcleanup208
 
-.loopexit.split-lp:                               ; preds = %178, %88, %82, %64, %55, %50, %45, %40, %34, %33, %25
-  %lpad.loopexit.split-lp = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !2128
-  br label %181
+ehcleanup208.nonloopexit:                         ; preds = %invoke.cont189, %land.lhs.true123, %if.then109, %if.then60, %if.then49, %lor.lhs.false44, %lor.lhs.false39, %lor.lhs.false, %if.then30, %if.then26, %land.lhs.true
+  %lpad.nonloopexit = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1472
+  br label %ehcleanup208
 
-; <label>:181                                     ; preds = %.loopexit.split-lp, %.loopexit13
-  %lpad.phi = phi { i8*, i32 } [ %lpad.loopexit, %.loopexit13 ], [ %lpad.loopexit.split-lp, %.loopexit.split-lp ]
-  %182 = extractvalue { i8*, i32 } %lpad.phi, 0, !dbg !2128
-  %183 = extractvalue { i8*, i32 } %lpad.phi, 1, !dbg !2128
-  invoke void @_ZN12pov_frontend21DefaultRenderFrontendD1Ev(%"class.pov_frontend::DefaultRenderFrontend"* %frontend) #10
-          to label %191 unwind label %195, !dbg !2127
+ehcleanup208:                                     ; preds = %ehcleanup208.nonloopexit, %ehcleanup208.loopexit
+  %lpad.phi = phi { i8*, i32 } [ %lpad.loopexit, %ehcleanup208.loopexit ], [ %lpad.nonloopexit, %ehcleanup208.nonloopexit ]
+  %54 = extractvalue { i8*, i32 } %lpad.phi, 0, !dbg !1472
+  %55 = extractvalue { i8*, i32 } %lpad.phi, 1, !dbg !1472
+  invoke void @_ZN12pov_frontend21DefaultRenderFrontendD1Ev(%"class.pov_frontend::DefaultRenderFrontend"* %frontend) #9
+          to label %ehcleanup216 unwind label %terminate.lpad, !dbg !1543
 
-; <label>:184                                     ; preds = %16, %180
-  invoke void @_ZN3pov9close_allEv() #10
-          to label %.noexc unwind label %5, !dbg !2129
+if.end211:                                        ; preds = %if.then14, %invoke.cont207
+  invoke void @_ZN3pov9close_allEv() #9
+          to label %.noexc unwind label %lpad
 
-.noexc:                                           ; preds = %184
-  invoke void @_ZN3pov15mem_release_allEv() #10
-          to label %.noexc10 unwind label %5, !dbg !2131
+.noexc:                                           ; preds = %if.end211
+  invoke void @_ZN3pov15mem_release_allEv() #9
+          to label %.noexc260 unwind label %lpad
 
-.noexc10:                                         ; preds = %.noexc
-  %185 = load i8** @POVMS_Render_Context, align 8, !dbg !2132, !tbaa !1956
-  %186 = invoke i32 @_Z18POVMS_CloseContextPv(i8* %185) #10
-          to label %187 unwind label %5, !dbg !2133
+.noexc260:                                        ; preds = %.noexc
+  %56 = load i8** @POVMS_Render_Context, align 8, !dbg !1544, !tbaa !1456
+  %call.i261 = invoke i32 @_Z18POVMS_CloseContextPv(i8* %56) #9
+          to label %invoke.cont212 unwind label %lpad
 
-; <label>:187                                     ; preds = %.noexc10
-  store i32 0, i32* @_ZN3pov13pre_init_flagE, align 4, !dbg !2134, !tbaa !2060
-  %188 = load i8** @POVMS_Output_Context, align 8, !dbg !2135, !tbaa !1956
-  %189 = invoke i32 @_Z18POVMS_CloseContextPv(i8* %188) #10
-          to label %190 unwind label %5, !dbg !2136
+invoke.cont212:                                   ; preds = %.noexc260
+  store i32 0, i32* @_ZN3pov13pre_init_flagE, align 4, !dbg !1546, !tbaa !1500
+  %57 = load i8** @POVMS_Output_Context, align 8, !dbg !1547, !tbaa !1456
+  %call214 = invoke i32 @_Z18POVMS_CloseContextPv(i8* %57) #9
+          to label %cleanup215 unwind label %lpad, !dbg !1547
 
-; <label>:190                                     ; preds = %187, %180
-  %.1 = phi i32 [ %.0, %180 ], [ 0, %187 ]
-  call void @llvm.dbg.value(metadata %"class.pov_base::DefaultPlatformBase"* %platformbase, i64 0, metadata !1360, metadata !1951), !dbg !1954
-  call void @_ZN8pov_base19DefaultPlatformBaseD1Ev(%"class.pov_base::DefaultPlatformBase"* %platformbase) #10, !dbg !1968
-  ret i32 %.1, !dbg !1968
+cleanup215:                                       ; preds = %invoke.cont212, %invoke.cont207
+  %retval.1 = phi i32 [ %retval.0, %invoke.cont207 ], [ 0, %invoke.cont212 ]
+  call void @_ZN8pov_base19DefaultPlatformBaseD1Ev(%"class.pov_base::DefaultPlatformBase"* %platformbase) #9, !dbg !1548
+  ret i32 %retval.1, !dbg !1548
 
-; <label>:191                                     ; preds = %181, %5
-  %.38 = phi i8* [ %7, %5 ], [ %182, %181 ]
-  %.3 = phi i32 [ %8, %5 ], [ %183, %181 ]
-  invoke void @_ZN8pov_base19DefaultPlatformBaseD1Ev(%"class.pov_base::DefaultPlatformBase"* %platformbase) #10
-          to label %192 unwind label %195, !dbg !1968
+ehcleanup216:                                     ; preds = %ehcleanup208, %lpad
+  %exn.slot.3 = phi i8* [ %2, %lpad ], [ %54, %ehcleanup208 ]
+  %ehselector.slot.3 = phi i32 [ %3, %lpad ], [ %55, %ehcleanup208 ]
+  invoke void @_ZN8pov_base19DefaultPlatformBaseD1Ev(%"class.pov_base::DefaultPlatformBase"* %platformbase) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !1548
 
-; <label>:192                                     ; preds = %191
-  %193 = insertvalue { i8*, i32 } undef, i8* %.38, 0, !dbg !1968
-  %194 = insertvalue { i8*, i32 } %193, i32 %.3, 1, !dbg !1968
-  resume { i8*, i32 } %194, !dbg !1968
+eh.resume:                                        ; preds = %ehcleanup216
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.3, 0, !dbg !1548
+  %lpad.val220 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.3, 1, !dbg !1548
+  resume { i8*, i32 } %lpad.val220, !dbg !1548
 
-; <label>:195                                     ; preds = %191, %181, %161, %156
-  %196 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          catch i8* null, !dbg !2112
-  %197 = extractvalue { i8*, i32 } %196, 0, !dbg !2112
-  call void @__clang_call_terminate(i8* %197) #13, !dbg !2112
-  unreachable, !dbg !2112
+terminate.lpad:                                   ; preds = %ehcleanup216, %ehcleanup208, %ehcleanup, %lpad174
+  %58 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !1529
+  %59 = extractvalue { i8*, i32 } %58, 0, !dbg !1529
+  call void @__clang_call_terminate(i8* %59) #12, !dbg !1529
+  unreachable, !dbg !1529
 
-; <label>:198                                     ; preds = %127, %106
+unreachable:                                      ; preds = %if.then155, %if.then142
   unreachable
 }

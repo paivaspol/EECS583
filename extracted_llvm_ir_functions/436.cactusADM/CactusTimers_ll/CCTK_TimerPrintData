@@ -1,50 +1,51 @@
 define i32 @CCTK_TimerPrintData(i8* %timername, i8* %clockname) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %timername, i64 0, metadata !267, metadata !354), !dbg !1016
-  tail call void @llvm.dbg.value(metadata i8* %clockname, i64 0, metadata !268, metadata !354), !dbg !1017
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !271, metadata !354), !dbg !1018
-  %1 = icmp eq i8* %clockname, null, !dbg !1019
-  br i1 %1, label %7, label %2, !dbg !1021
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !267), !dbg !703
+  tail call void @llvm.dbg.value(metadata !{i8* %clockname}, i64 0, metadata !268), !dbg !703
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !271), !dbg !704
+  %tobool = icmp eq i8* %clockname, null, !dbg !705
+  br i1 %tobool, label %if.end4, label %if.else, !dbg !705
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i32 @CCTK_ClockHandle(i8* %clockname) #9, !dbg !1022
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !270, metadata !354), !dbg !1024
-  %4 = icmp eq i32 %3, -1, !dbg !1025
-  br i1 %4, label %5, label %7, !dbg !1027
+if.else:                                          ; preds = %entry
+  %call = tail call i32 @CCTK_ClockHandle(i8* %clockname) #10, !dbg !706
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !270), !dbg !706
+  %cmp = icmp eq i32 %call, -1, !dbg !708
+  br i1 %cmp, label %if.then2, label %if.end4, !dbg !708
 
-; <label>:5                                       ; preds = %2
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1339, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str16, i64 0, i64 0), i8* %clockname) #8, !dbg !1028
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !271, metadata !354), !dbg !1018
-  br label %7, !dbg !1030
+if.then2:                                         ; preds = %if.else
+  %call3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1339, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str16, i64 0, i64 0), i8* %clockname) #8, !dbg !709
+  tail call void @llvm.dbg.value(metadata !660, i64 0, metadata !271), !dbg !711
+  br label %if.end4, !dbg !712
 
-; <label>:7                                       ; preds = %0, %2, %5
-  %this_clock.0 = phi i32 [ -1, %5 ], [ %3, %2 ], [ -1, %0 ]
-  %retval.0 = phi i32 [ -1, %5 ], [ 0, %2 ], [ 0, %0 ]
-  %8 = icmp eq i8* %timername, null, !dbg !1031
-  br i1 %8, label %14, label %9, !dbg !1033
+if.end4:                                          ; preds = %entry, %if.else, %if.then2
+  %this_clock.0 = phi i32 [ -1, %if.then2 ], [ %call, %if.else ], [ -1, %entry ]
+  %retval1.0 = phi i32 [ -1, %if.then2 ], [ 0, %if.else ], [ 0, %entry ]
+  %tobool5 = icmp eq i8* %timername, null, !dbg !713
+  br i1 %tobool5, label %if.end13, label %if.else7, !dbg !713
 
-; <label>:9                                       ; preds = %7
-  %10 = load %struct.cHandledData** @timers, align 8, !dbg !1034, !tbaa !376
-  %11 = tail call i32 @Util_GetHandle(%struct.cHandledData* %10, i8* %timername, i8** null) #8, !dbg !1036
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !269, metadata !354), !dbg !1037
-  %12 = icmp eq i32 %11, -1, !dbg !1038
-  br i1 %12, label %.thread, label %14, !dbg !1040
+if.else7:                                         ; preds = %if.end4
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !714, !tbaa !355
+  %call8 = tail call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %timername, i8** null) #8, !dbg !714
+  tail call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !269), !dbg !714
+  %cmp9 = icmp eq i32 %call8, -1, !dbg !716
+  br i1 %cmp9, label %if.end13.thread, label %if.end13, !dbg !716
 
-.thread:                                          ; preds = %9
-  %13 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1354, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str17, i64 0, i64 0), i8* %timername) #8, !dbg !1041
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !271, metadata !354), !dbg !1018
-  br label %18, !dbg !1043
+if.end13.thread:                                  ; preds = %if.else7
+  %call11 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1354, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str17, i64 0, i64 0), i8* %timername) #8, !dbg !717
+  tail call void @llvm.dbg.value(metadata !660, i64 0, metadata !271), !dbg !719
+  br label %if.end17, !dbg !720
 
-; <label>:14                                      ; preds = %7, %9
-  %this_timer.0 = phi i32 [ %11, %9 ], [ -1, %7 ]
-  %15 = icmp eq i32 %retval.0, 0, !dbg !1044
-  br i1 %15, label %16, label %18, !dbg !1043
+if.end13:                                         ; preds = %if.end4, %if.else7
+  %this_timer.0 = phi i32 [ %call8, %if.else7 ], [ -1, %if.end4 ]
+  %cmp14 = icmp eq i32 %retval1.0, 0, !dbg !720
+  br i1 %cmp14, label %if.then15, label %if.end17, !dbg !720
 
-; <label>:16                                      ; preds = %14
-  %17 = tail call i32 @CCTK_TimerPrintDataI(i32 %this_timer.0, i32 %this_clock.0) #9, !dbg !1046
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !271, metadata !354), !dbg !1018
-  br label %18, !dbg !1048
+if.then15:                                        ; preds = %if.end13
+  %call16 = tail call i32 @CCTK_TimerPrintDataI(i32 %this_timer.0, i32 %this_clock.0) #10, !dbg !721
+  tail call void @llvm.dbg.value(metadata !{i32 %call16}, i64 0, metadata !271), !dbg !721
+  br label %if.end17, !dbg !723
 
-; <label>:18                                      ; preds = %.thread, %16, %14
-  %retval.2 = phi i32 [ %17, %16 ], [ -1, %14 ], [ -1, %.thread ]
-  ret i32 %retval.2, !dbg !1049
+if.end17:                                         ; preds = %if.end13.thread, %if.then15, %if.end13
+  %retval1.2 = phi i32 [ %call16, %if.then15 ], [ -1, %if.end13 ], [ -1, %if.end13.thread ]
+  ret i32 %retval1.2, !dbg !724
 }

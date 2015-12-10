@@ -1,156 +1,143 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/400.perlbench/src/stdio.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/400.perlbench/src/stdio.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 
 @.str = private unnamed_addr constant [2 x i8] c"w\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
-define %struct.__sFILE* @xsfopen(i8* %path) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %path, i64 0, metadata !72, metadata !89), !dbg !90
-  %1 = tail call %struct.__sFILE* @"\01_fopen"(i8* %path, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0)) #4, !dbg !91
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %1, i64 0, metadata !73, metadata !89), !dbg !92
-  ret %struct.__sFILE* %1, !dbg !93
-}
-
-; Function Attrs: optsize
-declare %struct.__sFILE* @"\01_fopen"(i8*, i8*) #1
-
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @xsfclose(%struct.__sFILE* nocapture %stream) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %stream, i64 0, metadata !78, metadata !89), !dbg !94
-  %1 = tail call i32 @fclose(%struct.__sFILE* %stream) #4, !dbg !95
-  ret i32 %1, !dbg !96
+; Function Attrs: nounwind optsize uwtable
+define noalias %struct._IO_FILE* @xsfopen(i8* nocapture %path) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %path}, i64 0, metadata !69), !dbg !82
+  %call = tail call %struct._IO_FILE* @fopen(i8* %path, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0)) #3, !dbg !83
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call}, i64 0, metadata !70), !dbg !83
+  ret %struct._IO_FILE* %call, !dbg !84
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @fclose(%struct.__sFILE* nocapture) #2
+declare noalias %struct._IO_FILE* @fopen(i8* nocapture, i8* nocapture) #1
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @xsfprintf(%struct.__sFILE* nocapture %stream, i8* nocapture readonly %text) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %stream, i64 0, metadata !83, metadata !89), !dbg !97
-  tail call void @llvm.dbg.value(metadata i8* %text, i64 0, metadata !84, metadata !89), !dbg !98
-  %1 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %stream, i8* %text) #4, !dbg !99
-  ret i32 %1, !dbg !100
+; Function Attrs: nounwind optsize uwtable
+define i32 @xsfclose(%struct._IO_FILE* nocapture %stream) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %stream}, i64 0, metadata !75), !dbg !85
+  %call = tail call i32 @fclose(%struct._IO_FILE* %stream) #3, !dbg !86
+  ret i32 %call, !dbg !86
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #2
+declare i32 @fclose(%struct._IO_FILE* nocapture) #1
+
+; Function Attrs: nounwind optsize uwtable
+define i32 @xsfprintf(%struct._IO_FILE* nocapture %stream, i8* nocapture %text) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %stream}, i64 0, metadata !80), !dbg !87
+  tail call void @llvm.dbg.value(metadata !{i8* %text}, i64 0, metadata !81), !dbg !87
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* %text) #3, !dbg !88
+  ret i32 %call, !dbg !88
+}
+
+; Function Attrs: nounwind optsize
+declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #3
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind readnone }
-attributes #4 = { nounwind optsize }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind readnone }
+attributes #3 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!85, !86, !87}
-!llvm.ident = !{!88}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !2, subprograms: !3, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/400.perlbench/src/stdio.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !74, !79}
-!4 = !DISubprogram(name: "xsfopen", scope: !1, file: !1, line: 14, type: !5, isLocal: false, isDefinition: true, scopeLine: 14, flags: DIFlagPrototyped, isOptimized: true, function: %struct.__sFILE* (i8*)* @xsfopen, variables: !71)
-!5 = !DISubroutineType(types: !6)
-!6 = !{!7, !53}
-!7 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !8, size: 64, align: 64)
-!8 = !DIDerivedType(tag: DW_TAG_typedef, name: "FILE", file: !9, line: 153, baseType: !10)
-!9 = !DIFile(filename: "/usr/include/stdio.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!10 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sFILE", file: !9, line: 122, size: 1216, align: 64, elements: !11)
-!11 = !{!12, !15, !17, !18, !20, !21, !26, !27, !29, !33, !39, !49, !55, !56, !59, !60, !64, !68, !69, !70}
-!12 = !DIDerivedType(tag: DW_TAG_member, name: "_p", scope: !10, file: !9, line: 123, baseType: !13, size: 64, align: 64)
-!13 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !14, size: 64, align: 64)
-!14 = !DIBasicType(name: "unsigned char", size: 8, align: 8, encoding: DW_ATE_unsigned_char)
-!15 = !DIDerivedType(tag: DW_TAG_member, name: "_r", scope: !10, file: !9, line: 124, baseType: !16, size: 32, align: 32, offset: 64)
-!16 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!17 = !DIDerivedType(tag: DW_TAG_member, name: "_w", scope: !10, file: !9, line: 125, baseType: !16, size: 32, align: 32, offset: 96)
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "_flags", scope: !10, file: !9, line: 126, baseType: !19, size: 16, align: 16, offset: 128)
-!19 = !DIBasicType(name: "short", size: 16, align: 16, encoding: DW_ATE_signed)
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "_file", scope: !10, file: !9, line: 127, baseType: !19, size: 16, align: 16, offset: 144)
-!21 = !DIDerivedType(tag: DW_TAG_member, name: "_bf", scope: !10, file: !9, line: 128, baseType: !22, size: 128, align: 64, offset: 192)
-!22 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sbuf", file: !9, line: 88, size: 128, align: 64, elements: !23)
-!23 = !{!24, !25}
-!24 = !DIDerivedType(tag: DW_TAG_member, name: "_base", scope: !22, file: !9, line: 89, baseType: !13, size: 64, align: 64)
-!25 = !DIDerivedType(tag: DW_TAG_member, name: "_size", scope: !22, file: !9, line: 90, baseType: !16, size: 32, align: 32, offset: 64)
-!26 = !DIDerivedType(tag: DW_TAG_member, name: "_lbfsize", scope: !10, file: !9, line: 129, baseType: !16, size: 32, align: 32, offset: 320)
-!27 = !DIDerivedType(tag: DW_TAG_member, name: "_cookie", scope: !10, file: !9, line: 132, baseType: !28, size: 64, align: 64, offset: 384)
-!28 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!29 = !DIDerivedType(tag: DW_TAG_member, name: "_close", scope: !10, file: !9, line: 133, baseType: !30, size: 64, align: 64, offset: 448)
-!30 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !31, size: 64, align: 64)
-!31 = !DISubroutineType(types: !32)
-!32 = !{!16, !28}
-!33 = !DIDerivedType(tag: DW_TAG_member, name: "_read", scope: !10, file: !9, line: 134, baseType: !34, size: 64, align: 64, offset: 512)
-!34 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !35, size: 64, align: 64)
-!35 = !DISubroutineType(types: !36)
-!36 = !{!16, !28, !37, !16}
-!37 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !38, size: 64, align: 64)
-!38 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!39 = !DIDerivedType(tag: DW_TAG_member, name: "_seek", scope: !10, file: !9, line: 135, baseType: !40, size: 64, align: 64, offset: 576)
-!40 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !41, size: 64, align: 64)
-!41 = !DISubroutineType(types: !42)
-!42 = !{!43, !28, !43, !16}
-!43 = !DIDerivedType(tag: DW_TAG_typedef, name: "fpos_t", file: !9, line: 77, baseType: !44)
-!44 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_off_t", file: !45, line: 71, baseType: !46)
-!45 = !DIFile(filename: "/usr/include/sys/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!46 = !DIDerivedType(tag: DW_TAG_typedef, name: "__int64_t", file: !47, line: 46, baseType: !48)
-!47 = !DIFile(filename: "/usr/include/i386/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!48 = !DIBasicType(name: "long long int", size: 64, align: 64, encoding: DW_ATE_signed)
-!49 = !DIDerivedType(tag: DW_TAG_member, name: "_write", scope: !10, file: !9, line: 136, baseType: !50, size: 64, align: 64, offset: 640)
-!50 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !51, size: 64, align: 64)
-!51 = !DISubroutineType(types: !52)
-!52 = !{!16, !28, !53, !16}
-!53 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !54, size: 64, align: 64)
-!54 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !38)
-!55 = !DIDerivedType(tag: DW_TAG_member, name: "_ub", scope: !10, file: !9, line: 139, baseType: !22, size: 128, align: 64, offset: 704)
-!56 = !DIDerivedType(tag: DW_TAG_member, name: "_extra", scope: !10, file: !9, line: 140, baseType: !57, size: 64, align: 64, offset: 832)
-!57 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !58, size: 64, align: 64)
-!58 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sFILEX", file: !9, line: 94, flags: DIFlagFwdDecl)
-!59 = !DIDerivedType(tag: DW_TAG_member, name: "_ur", scope: !10, file: !9, line: 141, baseType: !16, size: 32, align: 32, offset: 896)
-!60 = !DIDerivedType(tag: DW_TAG_member, name: "_ubuf", scope: !10, file: !9, line: 144, baseType: !61, size: 24, align: 8, offset: 928)
-!61 = !DICompositeType(tag: DW_TAG_array_type, baseType: !14, size: 24, align: 8, elements: !62)
-!62 = !{!63}
-!63 = !DISubrange(count: 3)
-!64 = !DIDerivedType(tag: DW_TAG_member, name: "_nbuf", scope: !10, file: !9, line: 145, baseType: !65, size: 8, align: 8, offset: 952)
-!65 = !DICompositeType(tag: DW_TAG_array_type, baseType: !14, size: 8, align: 8, elements: !66)
-!66 = !{!67}
-!67 = !DISubrange(count: 1)
-!68 = !DIDerivedType(tag: DW_TAG_member, name: "_lb", scope: !10, file: !9, line: 148, baseType: !22, size: 128, align: 64, offset: 960)
-!69 = !DIDerivedType(tag: DW_TAG_member, name: "_blksize", scope: !10, file: !9, line: 151, baseType: !16, size: 32, align: 32, offset: 1088)
-!70 = !DIDerivedType(tag: DW_TAG_member, name: "_offset", scope: !10, file: !9, line: 152, baseType: !43, size: 64, align: 64, offset: 1152)
-!71 = !{!72, !73}
-!72 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "path", arg: 1, scope: !4, file: !1, line: 14, type: !53)
-!73 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "stream", scope: !4, file: !1, line: 15, type: !7)
-!74 = !DISubprogram(name: "xsfclose", scope: !1, file: !1, line: 20, type: !75, isLocal: false, isDefinition: true, scopeLine: 20, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.__sFILE*)* @xsfclose, variables: !77)
-!75 = !DISubroutineType(types: !76)
-!76 = !{!16, !7}
-!77 = !{!78}
-!78 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "stream", arg: 1, scope: !74, file: !1, line: 20, type: !7)
-!79 = !DISubprogram(name: "xsfprintf", scope: !1, file: !1, line: 25, type: !80, isLocal: false, isDefinition: true, scopeLine: 25, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.__sFILE*, i8*)* @xsfprintf, variables: !82)
-!80 = !DISubroutineType(types: !81)
-!81 = !{!16, !7, !53}
-!82 = !{!83, !84}
-!83 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "stream", arg: 1, scope: !79, file: !1, line: 25, type: !7)
-!84 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "text", arg: 2, scope: !79, file: !1, line: 25, type: !53)
-!85 = !{i32 2, !"Dwarf Version", i32 2}
-!86 = !{i32 2, !"Debug Info Version", i32 700000003}
-!87 = !{i32 1, !"PIC Level", i32 2}
-!88 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!89 = !DIExpression()
-!90 = !DILocation(line: 14, column: 31, scope: !4)
-!91 = !DILocation(line: 16, column: 12, scope: !4)
-!92 = !DILocation(line: 15, column: 10, scope: !4)
-!93 = !DILocation(line: 17, column: 3, scope: !4)
-!94 = !DILocation(line: 20, column: 23, scope: !74)
-!95 = !DILocation(line: 21, column: 10, scope: !74)
-!96 = !DILocation(line: 21, column: 3, scope: !74)
-!97 = !DILocation(line: 25, column: 24, scope: !79)
-!98 = !DILocation(line: 25, column: 45, scope: !79)
-!99 = !DILocation(line: 26, column: 10, scope: !79)
-!100 = !DILocation(line: 26, column: 3, scope: !79)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/400.perlbench/src/stdio.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/400.perlbench/src/stdio.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !71, metadata !76}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"xsfopen", metadata !"xsfopen", metadata !"", i32 14, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct._IO_FILE* (i8*)* @xsfopen, null, null, metadata !68, i32 14} ; [ DW_TAG_subprogram ] [line 14] [def] [xsfopen]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/400.perlbench/src/stdio.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8, metadata !66}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from FILE]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"FILE", i32 48, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [FILE] [line 48, size 0, align 0, offset 0] [from _IO_FILE]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"_IO_FILE", i32 245, i64 1728, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [_IO_FILE] [line 245, size 1728, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"/usr/include/libio.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13, metadata !15, metadata !18, metadata !19, metadata !20, metadata !21, metadata !22, metadata !23, metadata !24, metadata !25, metadata !26, metadata !27, metadata !28, metadata !36, metadata !37, metadata !38, metadata !39, metadata !42, metadata !44, metadata !46, metadata !50, metadata !52, metadata !54, metadata !55, metadata !56, metadata !57, metadata !58, metadata !61, metadata !62}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_flags", i32 246, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [_flags] [line 246, size 32, align 32, offset 0] [from int]
+!14 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!15 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_read_ptr", i32 251, i64 64, i64 64, i64 64, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_read_ptr] [line 251, size 64, align 64, offset 64] [from ]
+!16 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !17} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!17 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!18 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_read_end", i32 252, i64 64, i64 64, i64 128, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_read_end] [line 252, size 64, align 64, offset 128] [from ]
+!19 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_read_base", i32 253, i64 64, i64 64, i64 192, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_read_base] [line 253, size 64, align 64, offset 192] [from ]
+!20 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_write_base", i32 254, i64 64, i64 64, i64 256, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_write_base] [line 254, size 64, align 64, offset 256] [from ]
+!21 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_write_ptr", i32 255, i64 64, i64 64, i64 320, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_write_ptr] [line 255, size 64, align 64, offset 320] [from ]
+!22 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_write_end", i32 256, i64 64, i64 64, i64 384, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_write_end] [line 256, size 64, align 64, offset 384] [from ]
+!23 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_buf_base", i32 257, i64 64, i64 64, i64 448, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_buf_base] [line 257, size 64, align 64, offset 448] [from ]
+!24 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_buf_end", i32 258, i64 64, i64 64, i64 512, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_buf_end] [line 258, size 64, align 64, offset 512] [from ]
+!25 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_save_base", i32 260, i64 64, i64 64, i64 576, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_save_base] [line 260, size 64, align 64, offset 576] [from ]
+!26 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_backup_base", i32 261, i64 64, i64 64, i64 640, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_backup_base] [line 261, size 64, align 64, offset 640] [from ]
+!27 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_IO_save_end", i32 262, i64 64, i64 64, i64 704, i32 0, metadata !16} ; [ DW_TAG_member ] [_IO_save_end] [line 262, size 64, align 64, offset 704] [from ]
+!28 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_markers", i32 264, i64 64, i64 64, i64 768, i32 0, metadata !29} ; [ DW_TAG_member ] [_markers] [line 264, size 64, align 64, offset 768] [from ]
+!29 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !30} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from _IO_marker]
+!30 = metadata !{i32 786451, metadata !11, null, metadata !"_IO_marker", i32 160, i64 192, i64 64, i32 0, i32 0, null, metadata !31, i32 0, null, null} ; [ DW_TAG_structure_type ] [_IO_marker] [line 160, size 192, align 64, offset 0] [from ]
+!31 = metadata !{metadata !32, metadata !33, metadata !35}
+!32 = metadata !{i32 786445, metadata !11, metadata !30, metadata !"_next", i32 161, i64 64, i64 64, i64 0, i32 0, metadata !29} ; [ DW_TAG_member ] [_next] [line 161, size 64, align 64, offset 0] [from ]
+!33 = metadata !{i32 786445, metadata !11, metadata !30, metadata !"_sbuf", i32 162, i64 64, i64 64, i64 64, i32 0, metadata !34} ; [ DW_TAG_member ] [_sbuf] [line 162, size 64, align 64, offset 64] [from ]
+!34 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !10} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from _IO_FILE]
+!35 = metadata !{i32 786445, metadata !11, metadata !30, metadata !"_pos", i32 166, i64 32, i64 32, i64 128, i32 0, metadata !14} ; [ DW_TAG_member ] [_pos] [line 166, size 32, align 32, offset 128] [from int]
+!36 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_chain", i32 266, i64 64, i64 64, i64 832, i32 0, metadata !34} ; [ DW_TAG_member ] [_chain] [line 266, size 64, align 64, offset 832] [from ]
+!37 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_fileno", i32 268, i64 32, i64 32, i64 896, i32 0, metadata !14} ; [ DW_TAG_member ] [_fileno] [line 268, size 32, align 32, offset 896] [from int]
+!38 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_flags2", i32 272, i64 32, i64 32, i64 928, i32 0, metadata !14} ; [ DW_TAG_member ] [_flags2] [line 272, size 32, align 32, offset 928] [from int]
+!39 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_old_offset", i32 274, i64 64, i64 64, i64 960, i32 0, metadata !40} ; [ DW_TAG_member ] [_old_offset] [line 274, size 64, align 64, offset 960] [from __off_t]
+!40 = metadata !{i32 786454, metadata !11, null, metadata !"__off_t", i32 131, i64 0, i64 0, i64 0, i32 0, metadata !41} ; [ DW_TAG_typedef ] [__off_t] [line 131, size 0, align 0, offset 0] [from long int]
+!41 = metadata !{i32 786468, null, null, metadata !"long int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [long int] [line 0, size 64, align 64, offset 0, enc DW_ATE_signed]
+!42 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_cur_column", i32 278, i64 16, i64 16, i64 1024, i32 0, metadata !43} ; [ DW_TAG_member ] [_cur_column] [line 278, size 16, align 16, offset 1024] [from unsigned short]
+!43 = metadata !{i32 786468, null, null, metadata !"unsigned short", i32 0, i64 16, i64 16, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned short] [line 0, size 16, align 16, offset 0, enc DW_ATE_unsigned]
+!44 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_vtable_offset", i32 279, i64 8, i64 8, i64 1040, i32 0, metadata !45} ; [ DW_TAG_member ] [_vtable_offset] [line 279, size 8, align 8, offset 1040] [from signed char]
+!45 = metadata !{i32 786468, null, null, metadata !"signed char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [signed char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!46 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_shortbuf", i32 280, i64 8, i64 8, i64 1048, i32 0, metadata !47} ; [ DW_TAG_member ] [_shortbuf] [line 280, size 8, align 8, offset 1048] [from ]
+!47 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 8, i64 8, i32 0, i32 0, metadata !17, metadata !48, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 8, align 8, offset 0] [from char]
+!48 = metadata !{metadata !49}
+!49 = metadata !{i32 786465, i64 0, i64 1}        ; [ DW_TAG_subrange_type ] [0, 0]
+!50 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_lock", i32 284, i64 64, i64 64, i64 1088, i32 0, metadata !51} ; [ DW_TAG_member ] [_lock] [line 284, size 64, align 64, offset 1088] [from ]
+!51 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!52 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_offset", i32 293, i64 64, i64 64, i64 1152, i32 0, metadata !53} ; [ DW_TAG_member ] [_offset] [line 293, size 64, align 64, offset 1152] [from __off64_t]
+!53 = metadata !{i32 786454, metadata !11, null, metadata !"__off64_t", i32 132, i64 0, i64 0, i64 0, i32 0, metadata !41} ; [ DW_TAG_typedef ] [__off64_t] [line 132, size 0, align 0, offset 0] [from long int]
+!54 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"__pad1", i32 302, i64 64, i64 64, i64 1216, i32 0, metadata !51} ; [ DW_TAG_member ] [__pad1] [line 302, size 64, align 64, offset 1216] [from ]
+!55 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"__pad2", i32 303, i64 64, i64 64, i64 1280, i32 0, metadata !51} ; [ DW_TAG_member ] [__pad2] [line 303, size 64, align 64, offset 1280] [from ]
+!56 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"__pad3", i32 304, i64 64, i64 64, i64 1344, i32 0, metadata !51} ; [ DW_TAG_member ] [__pad3] [line 304, size 64, align 64, offset 1344] [from ]
+!57 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"__pad4", i32 305, i64 64, i64 64, i64 1408, i32 0, metadata !51} ; [ DW_TAG_member ] [__pad4] [line 305, size 64, align 64, offset 1408] [from ]
+!58 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"__pad5", i32 306, i64 64, i64 64, i64 1472, i32 0, metadata !59} ; [ DW_TAG_member ] [__pad5] [line 306, size 64, align 64, offset 1472] [from size_t]
+!59 = metadata !{i32 786454, metadata !11, null, metadata !"size_t", i32 42, i64 0, i64 0, i64 0, i32 0, metadata !60} ; [ DW_TAG_typedef ] [size_t] [line 42, size 0, align 0, offset 0] [from long unsigned int]
+!60 = metadata !{i32 786468, null, null, metadata !"long unsigned int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [long unsigned int] [line 0, size 64, align 64, offset 0, enc DW_ATE_unsigned]
+!61 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_mode", i32 308, i64 32, i64 32, i64 1536, i32 0, metadata !14} ; [ DW_TAG_member ] [_mode] [line 308, size 32, align 32, offset 1536] [from int]
+!62 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"_unused2", i32 310, i64 160, i64 8, i64 1568, i32 0, metadata !63} ; [ DW_TAG_member ] [_unused2] [line 310, size 160, align 8, offset 1568] [from ]
+!63 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 160, i64 8, i32 0, i32 0, metadata !17, metadata !64, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 160, align 8, offset 0] [from char]
+!64 = metadata !{metadata !65}
+!65 = metadata !{i32 786465, i64 0, i64 20}       ; [ DW_TAG_subrange_type ] [0, 19]
+!66 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !67} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!67 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !17} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!68 = metadata !{metadata !69, metadata !70}
+!69 = metadata !{i32 786689, metadata !4, metadata !"path", metadata !5, i32 16777230, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [path] [line 14]
+!70 = metadata !{i32 786688, metadata !4, metadata !"stream", metadata !5, i32 15, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [stream] [line 15]
+!71 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"xsfclose", metadata !"xsfclose", metadata !"", i32 20, metadata !72, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct._IO_FILE*)* @xsfclose, null, null, metadata !74, i32 20} ; [ DW_TAG_subprogram ] [line 20] [def] [xsfclose]
+!72 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !73, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!73 = metadata !{metadata !14, metadata !8}
+!74 = metadata !{metadata !75}
+!75 = metadata !{i32 786689, metadata !71, metadata !"stream", metadata !5, i32 16777236, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [stream] [line 20]
+!76 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"xsfprintf", metadata !"xsfprintf", metadata !"", i32 25, metadata !77, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct._IO_FILE*, i8*)* @xsfprintf, null, null, metadata !79, i32 25} ; [ DW_TAG_subprogram ] [line 25] [def] [xsfprintf]
+!77 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !78, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!78 = metadata !{metadata !14, metadata !8, metadata !66}
+!79 = metadata !{metadata !80, metadata !81}
+!80 = metadata !{i32 786689, metadata !76, metadata !"stream", metadata !5, i32 16777241, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [stream] [line 25]
+!81 = metadata !{i32 786689, metadata !76, metadata !"text", metadata !5, i32 33554457, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [text] [line 25]
+!82 = metadata !{i32 14, i32 0, metadata !4, null}
+!83 = metadata !{i32 16, i32 0, metadata !4, null}
+!84 = metadata !{i32 17, i32 0, metadata !4, null}
+!85 = metadata !{i32 20, i32 0, metadata !71, null}
+!86 = metadata !{i32 21, i32 0, metadata !71, null}
+!87 = metadata !{i32 25, i32 0, metadata !76, null}
+!88 = metadata !{i32 26, i32 0, metadata !76, null}

@@ -1,20 +1,21 @@
-define void @_ZN12POVMS_Object5MergeERS_(%class.POVMS_Object* %this, %class.POVMS_Object* dereferenceable(24) %source) #5 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.POVMS_Object* %this, i64 0, metadata !807, metadata !1380), !dbg !2335
-  tail call void @llvm.dbg.value(metadata %class.POVMS_Object* %source, i64 0, metadata !808, metadata !1380), !dbg !2336
-  %1 = getelementptr inbounds %class.POVMS_Object* %source, i64 0, i32 0, i32 1, !dbg !2337
-  %2 = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !2338
-  %3 = tail call i32 @_Z17POVMSObject_MergeP9POVMSDataS0_(%struct.POVMSData* %1, %struct.POVMSData* %2) #13, !dbg !2339
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !809, metadata !1380), !dbg !2340
-  %4 = icmp eq i32 %3, 0, !dbg !2341
-  br i1 %4, label %8, label %5, !dbg !2343
+define void @_ZN12POVMS_Object5MergeERS_(%class.POVMS_Object* %this, %class.POVMS_Object* %source) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Object* %this}, i64 0, metadata !839), !dbg !1529
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Object* %source}, i64 0, metadata !840), !dbg !1529
+  %data = getelementptr inbounds %class.POVMS_Object* %source, i64 0, i32 0, i32 1, !dbg !1530
+  %data2 = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !1530
+  %call = tail call i32 @_Z17POVMSObject_MergeP9POVMSDataS0_(%struct.POVMSData* %data, %struct.POVMSData* %data2) #12, !dbg !1530
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !841), !dbg !1530
+  %cmp = icmp eq i32 %call, 0, !dbg !1531
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1531
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !2344
-  %7 = bitcast i8* %6 to i32*, !dbg !2344
-  store i32 %3, i32* %7, align 4, !dbg !2344, !tbaa !1456
-  tail call void @__cxa_throw(i8* %6, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #14, !dbg !2344
-  unreachable, !dbg !2344
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !1532
+  %0 = bitcast i8* %exception to i32*, !dbg !1532
+  store i32 %call, i32* %0, align 4, !dbg !1532, !tbaa !1112
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #13, !dbg !1532
+  unreachable, !dbg !1532
 
-; <label>:8                                       ; preds = %0
-  ret void, !dbg !2345
+if.end:                                           ; preds = %entry
+  ret void, !dbg !1533
 }

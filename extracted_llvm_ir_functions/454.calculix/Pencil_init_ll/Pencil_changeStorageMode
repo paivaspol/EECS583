@@ -1,25 +1,26 @@
-define void @Pencil_changeStorageMode(%struct._Pencil* nocapture readonly %pencil, i32 %newMode) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Pencil* %pencil, i64 0, metadata !76, metadata !82), !dbg !154
-  tail call void @llvm.dbg.value(metadata i32 %newMode, i64 0, metadata !77, metadata !82), !dbg !155
-  %1 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2, !dbg !156
-  %2 = load %struct._InpMtx** %1, align 8, !dbg !156, !tbaa !124
-  %3 = icmp eq %struct._InpMtx* %2, null, !dbg !158
-  br i1 %3, label %5, label %4, !dbg !159
+define void @Pencil_changeStorageMode(%struct._Pencil* nocapture %pencil, i32 %newMode) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Pencil* %pencil}, i64 0, metadata !75), !dbg !119
+  tail call void @llvm.dbg.value(metadata !{i32 %newMode}, i64 0, metadata !76), !dbg !120
+  %inpmtxA = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2, !dbg !121
+  %0 = load %struct._InpMtx** %inpmtxA, align 8, !dbg !121, !tbaa !86
+  %cmp = icmp eq %struct._InpMtx* %0, null, !dbg !121
+  br i1 %cmp, label %if.end, label %if.then, !dbg !121
 
-; <label>:4                                       ; preds = %0
-  tail call void @InpMtx_changeStorageMode(%struct._InpMtx* %2, i32 %newMode) #5, !dbg !160
-  br label %5, !dbg !162
+if.then:                                          ; preds = %entry
+  tail call void @InpMtx_changeStorageMode(%struct._InpMtx* %0, i32 %newMode) #5, !dbg !122
+  br label %if.end, !dbg !124
 
-; <label>:5                                       ; preds = %0, %4
-  %6 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3, !dbg !163
-  %7 = load %struct._InpMtx** %6, align 8, !dbg !163, !tbaa !135
-  %8 = icmp eq %struct._InpMtx* %7, null, !dbg !165
-  br i1 %8, label %10, label %9, !dbg !166
+if.end:                                           ; preds = %entry, %if.then
+  %inpmtxB = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3, !dbg !125
+  %1 = load %struct._InpMtx** %inpmtxB, align 8, !dbg !125, !tbaa !86
+  %cmp2 = icmp eq %struct._InpMtx* %1, null, !dbg !125
+  br i1 %cmp2, label %if.end5, label %if.then3, !dbg !125
 
-; <label>:9                                       ; preds = %5
-  tail call void @InpMtx_changeStorageMode(%struct._InpMtx* %7, i32 %newMode) #5, !dbg !167
-  br label %10, !dbg !169
+if.then3:                                         ; preds = %if.end
+  tail call void @InpMtx_changeStorageMode(%struct._InpMtx* %1, i32 %newMode) #5, !dbg !126
+  br label %if.end5, !dbg !128
 
-; <label>:10                                      ; preds = %5, %9
-  ret void, !dbg !170
+if.end5:                                          ; preds = %if.end, %if.then3
+  ret void, !dbg !129
 }

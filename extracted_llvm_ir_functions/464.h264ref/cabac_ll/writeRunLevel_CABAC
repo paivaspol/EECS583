@@ -1,113 +1,114 @@
-define void @writeRunLevel_CABAC(%struct.syntaxelement* nocapture readonly %se, %struct.EncodingEnvironment* %eep_dp) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %se, i64 0, metadata !512, metadata !1011), !dbg !2662
-  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %eep_dp, i64 0, metadata !513, metadata !1011), !dbg !2663
-  %1 = load %struct.ImageParameters** @img, align 8, !dbg !2664, !tbaa !1001
-  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 3, !dbg !2665
-  %3 = load i32* %2, align 4, !dbg !2665, !tbaa !1004
-  %4 = sext i32 %3 to i64, !dbg !2666
-  %5 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 51, !dbg !2667
-  %6 = load %struct.macroblock** %5, align 8, !dbg !2667, !tbaa !1010
-  %7 = getelementptr inbounds %struct.macroblock* %6, i64 %4, !dbg !2666
-  tail call void @llvm.dbg.value(metadata %struct.macroblock* %7, i64 0, metadata !514, metadata !1011), !dbg !2668
-  %8 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1, !dbg !2669
-  %9 = load i32* %8, align 4, !dbg !2669, !tbaa !1115
-  %10 = icmp eq i32 %9, 0, !dbg !2671
-  br i1 %10, label %thread-pre-split, label %.preheader, !dbg !2672
+define void @writeRunLevel_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %se}, i64 0, metadata !509), !dbg !1720
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %eep_dp}, i64 0, metadata !510), !dbg !1720
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1721, !tbaa !989
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3, !dbg !1721
+  %1 = load i32* %current_mb_nr, align 4, !dbg !1721, !tbaa !984
+  %idxprom = sext i32 %1 to i64, !dbg !1721
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51, !dbg !1721
+  %2 = load %struct.macroblock** %mb_data, align 8, !dbg !1721, !tbaa !989
+  %arrayidx = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, !dbg !1721
+  tail call void @llvm.dbg.value(metadata !{%struct.macroblock* %arrayidx}, i64 0, metadata !511), !dbg !1721
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1, !dbg !1722
+  %3 = load i32* %value1, align 4, !dbg !1722, !tbaa !984
+  %cmp = icmp eq i32 %3, 0, !dbg !1722
+  br i1 %cmp, label %for.cond10thread-pre-split, label %for.cond.preheader, !dbg !1722
 
-.preheader:                                       ; preds = %0
-  %11 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2, !dbg !2673
-  %12 = load i32* %11, align 4, !dbg !2673, !tbaa !1194
-  %13 = icmp sgt i32 %12, 0, !dbg !2677
-  %.pre = load i32* @writeRunLevel_CABAC.pos, align 4, !dbg !2678, !tbaa !995
-  br i1 %13, label %.lr.ph3, label %.preheader._crit_edge, !dbg !2679
+for.cond.preheader:                               ; preds = %entry
+  %value2 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2, !dbg !1723
+  %4 = load i32* %value2, align 4, !dbg !1723, !tbaa !984
+  %cmp137 = icmp sgt i32 %4, 0, !dbg !1723
+  %.pre39 = load i32* @writeRunLevel_CABAC.pos, align 4, !dbg !1723, !tbaa !984
+  br i1 %cmp137, label %for.body, label %for.end, !dbg !1723
 
-.lr.ph3:                                          ; preds = %.preheader, %.lr.ph3
-  %14 = phi i32 [ %15, %.lr.ph3 ], [ %.pre, %.preheader ], !dbg !2678
-  %i.02 = phi i32 [ %18, %.lr.ph3 ], [ 0, %.preheader ]
-  %15 = add nsw i32 %14, 1, !dbg !2678
-  store i32 %15, i32* @writeRunLevel_CABAC.pos, align 4, !dbg !2678, !tbaa !995
-  %16 = sext i32 %14 to i64, !dbg !2680
-  %17 = getelementptr inbounds [64 x i32]* @writeRunLevel_CABAC.coeff, i64 0, i64 %16, !dbg !2680
-  store i32 0, i32* %17, align 4, !dbg !2681, !tbaa !995
-  %18 = add nuw nsw i32 %i.02, 1, !dbg !2682
-  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !515, metadata !1011), !dbg !2683
-  %19 = load i32* %11, align 4, !dbg !2673, !tbaa !1194
-  %20 = icmp slt i32 %18, %19, !dbg !2677
-  br i1 %20, label %.lr.ph3, label %._crit_edge4, !dbg !2679
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %5 = phi i32 [ %inc, %for.body ], [ %.pre39, %for.cond.preheader ], !dbg !1723
+  %i.038 = phi i32 [ %inc4, %for.body ], [ 0, %for.cond.preheader ]
+  %inc = add nsw i32 %5, 1, !dbg !1723
+  store i32 %inc, i32* @writeRunLevel_CABAC.pos, align 4, !dbg !1723, !tbaa !984
+  %idxprom2 = sext i32 %5 to i64, !dbg !1723
+  %arrayidx3 = getelementptr inbounds [64 x i32]* @writeRunLevel_CABAC.coeff, i64 0, i64 %idxprom2, !dbg !1723
+  store i32 0, i32* %arrayidx3, align 4, !dbg !1723, !tbaa !984
+  %inc4 = add nsw i32 %i.038, 1, !dbg !1723
+  tail call void @llvm.dbg.value(metadata !{i32 %inc4}, i64 0, metadata !512), !dbg !1723
+  %6 = load i32* %value2, align 4, !dbg !1723, !tbaa !984
+  %cmp1 = icmp slt i32 %inc4, %6, !dbg !1723
+  br i1 %cmp1, label %for.body, label %for.cond.for.end_crit_edge, !dbg !1723
 
-._crit_edge4:                                     ; preds = %.lr.ph3
-  %.pre6 = load i32* %8, align 4, !dbg !2684, !tbaa !1115
-  br label %.preheader._crit_edge, !dbg !2679
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %.pre = load i32* %value1, align 4, !dbg !1726, !tbaa !984
+  br label %for.end, !dbg !1723
 
-.preheader._crit_edge:                            ; preds = %.preheader, %._crit_edge4
-  %21 = phi i32 [ %15, %._crit_edge4 ], [ %.pre, %.preheader ]
-  %22 = phi i32 [ %.pre6, %._crit_edge4 ], [ %9, %.preheader ]
-  %23 = add nsw i32 %21, 1, !dbg !2685
-  store i32 %23, i32* @writeRunLevel_CABAC.pos, align 4, !dbg !2685, !tbaa !995
-  %24 = sext i32 %21 to i64, !dbg !2686
-  %25 = getelementptr inbounds [64 x i32]* @writeRunLevel_CABAC.coeff, i64 0, i64 %24, !dbg !2686
-  store i32 %22, i32* %25, align 4, !dbg !2687, !tbaa !995
-  %26 = load i32* @writeRunLevel_CABAC.coeff_ctr, align 4, !dbg !2688, !tbaa !995
-  %27 = add nsw i32 %26, 1, !dbg !2688
-  store i32 %27, i32* @writeRunLevel_CABAC.coeff_ctr, align 4, !dbg !2688, !tbaa !995
-  br label %52, !dbg !2689
+for.end:                                          ; preds = %for.cond.preheader, %for.cond.for.end_crit_edge
+  %7 = phi i32 [ %inc, %for.cond.for.end_crit_edge ], [ %.pre39, %for.cond.preheader ]
+  %8 = phi i32 [ %.pre, %for.cond.for.end_crit_edge ], [ %3, %for.cond.preheader ]
+  %inc6 = add nsw i32 %7, 1, !dbg !1726
+  store i32 %inc6, i32* @writeRunLevel_CABAC.pos, align 4, !dbg !1726, !tbaa !984
+  %idxprom7 = sext i32 %7 to i64, !dbg !1726
+  %arrayidx8 = getelementptr inbounds [64 x i32]* @writeRunLevel_CABAC.coeff, i64 0, i64 %idxprom7, !dbg !1726
+  store i32 %8, i32* %arrayidx8, align 4, !dbg !1726, !tbaa !984
+  %9 = load i32* @writeRunLevel_CABAC.coeff_ctr, align 4, !dbg !1726, !tbaa !984
+  %inc9 = add nsw i32 %9, 1, !dbg !1726
+  store i32 %inc9, i32* @writeRunLevel_CABAC.coeff_ctr, align 4, !dbg !1726, !tbaa !984
+  br label %return, !dbg !1727
 
-thread-pre-split:                                 ; preds = %0
-  %.pr = load i32* @writeRunLevel_CABAC.pos, align 4, !dbg !2690, !tbaa !995
-  %28 = icmp slt i32 %.pr, 64, !dbg !2694
-  br i1 %28, label %.lr.ph, label %37, !dbg !2695
+for.cond10thread-pre-split:                       ; preds = %entry
+  %.pr = load i32* @writeRunLevel_CABAC.pos, align 4, !dbg !1728, !tbaa !984
+  %cmp1135 = icmp slt i32 %.pr, 64, !dbg !1728
+  br i1 %cmp1135, label %for.body12.lr.ph, label %if.end, !dbg !1728
 
-.lr.ph:                                           ; preds = %thread-pre-split
-  %29 = add i32 %.pr, 1, !dbg !2695
-  %30 = icmp sgt i32 %29, 64
-  br label %31, !dbg !2695
+for.body12.lr.ph:                                 ; preds = %for.cond10thread-pre-split
+  %10 = add i32 %.pr, 1, !dbg !1728
+  %11 = icmp sgt i32 %10, 64
+  br label %for.body12, !dbg !1728
 
-; <label>:31                                      ; preds = %.lr.ph, %31
-  %32 = phi i32 [ %.pr, %.lr.ph ], [ %35, %31 ], !dbg !2696
-  %33 = sext i32 %32 to i64, !dbg !2696
-  %34 = getelementptr inbounds [64 x i32]* @writeRunLevel_CABAC.coeff, i64 0, i64 %33, !dbg !2696
-  store i32 0, i32* %34, align 4, !dbg !2697, !tbaa !995
-  %35 = add nsw i32 %32, 1, !dbg !2698
-  %36 = icmp slt i32 %35, 64, !dbg !2694
-  br i1 %36, label %31, label %._crit_edge, !dbg !2695
+for.body12:                                       ; preds = %for.body12.lr.ph, %for.body12
+  %inc1636 = phi i32 [ %.pr, %for.body12.lr.ph ], [ %inc16, %for.body12 ], !dbg !1728
+  %idxprom13 = sext i32 %inc1636 to i64, !dbg !1728
+  %arrayidx14 = getelementptr inbounds [64 x i32]* @writeRunLevel_CABAC.coeff, i64 0, i64 %idxprom13, !dbg !1728
+  store i32 0, i32* %arrayidx14, align 4, !dbg !1728, !tbaa !984
+  %inc16 = add nsw i32 %inc1636, 1, !dbg !1728
+  %cmp11 = icmp slt i32 %inc16, 64, !dbg !1728
+  br i1 %cmp11, label %for.body12, label %for.cond10.if.end_crit_edge, !dbg !1728
 
-._crit_edge:                                      ; preds = %31
-  %smax = select i1 %30, i32 %29, i32 64
-  store i32 %smax, i32* @writeRunLevel_CABAC.pos, align 4, !dbg !2698, !tbaa !995
-  br label %37, !dbg !2695
+for.cond10.if.end_crit_edge:                      ; preds = %for.body12
+  %smax = select i1 %11, i32 %10, i32 64
+  store i32 %smax, i32* @writeRunLevel_CABAC.pos, align 4, !dbg !1728, !tbaa !984
+  br label %if.end, !dbg !1728
 
-; <label>:37                                      ; preds = %._crit_edge, %thread-pre-split
-  %.lcssa = phi i32 [ %smax, %._crit_edge ], [ %.pr, %thread-pre-split ]
-  %38 = icmp sgt i32 %.lcssa, 64, !dbg !2699
-  br i1 %38, label %39, label %40, !dbg !2699, !prof !2700
+if.end:                                           ; preds = %for.cond10.if.end_crit_edge, %for.cond10thread-pre-split
+  %.lcssa = phi i32 [ %smax, %for.cond10.if.end_crit_edge ], [ %.pr, %for.cond10thread-pre-split ]
+  %cmp18 = icmp slt i32 %.lcssa, 65, !dbg !1731
+  br i1 %cmp18, label %cond.end, label %cond.false, !dbg !1731
 
-; <label>:39                                      ; preds = %37
-  tail call void @__assert_rtn(i8* getelementptr inbounds ([20 x i8]* @__func__.writeRunLevel_CABAC, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 1347, i8* getelementptr inbounds ([9 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !2699
-  unreachable, !dbg !2699
+cond.false:                                       ; preds = %if.end
+  tail call void @__assert_fail(i8* getelementptr inbounds ([9 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 1347, i8* getelementptr inbounds ([66 x i8]* @__PRETTY_FUNCTION__.writeRunLevel_CABAC, i64 0, i64 0)) #7, !dbg !1731
+  unreachable, !dbg !1731
 
-; <label>:40                                      ; preds = %37
-  %41 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 6, !dbg !2701
-  %42 = load i32* %41, align 4, !dbg !2701, !tbaa !1153
-  %43 = load i32* @writeRunLevel_CABAC.coeff_ctr, align 4, !dbg !2702, !tbaa !995
-  %44 = icmp sgt i32 %43, 0, !dbg !2703
-  %45 = zext i1 %44 to i32, !dbg !2702
-  tail call void @write_and_store_CBP_block_bit(%struct.macroblock* %7, %struct.EncodingEnvironment* %eep_dp, i32 %42, i32 %45) #7, !dbg !2704
-  %46 = load i32* @writeRunLevel_CABAC.coeff_ctr, align 4, !dbg !2705, !tbaa !995
-  %47 = icmp sgt i32 %46, 0, !dbg !2707
-  br i1 %47, label %48, label %51, !dbg !2708
+cond.end:                                         ; preds = %if.end
+  %context = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 6, !dbg !1732
+  %12 = load i32* %context, align 4, !dbg !1732, !tbaa !984
+  %13 = load i32* @writeRunLevel_CABAC.coeff_ctr, align 4, !dbg !1732, !tbaa !984
+  %cmp19 = icmp sgt i32 %13, 0, !dbg !1732
+  %cond = zext i1 %cmp19 to i32, !dbg !1732
+  tail call void @write_and_store_CBP_block_bit(%struct.macroblock* %arrayidx, %struct.EncodingEnvironment* %eep_dp, i32 %12, i32 %cond) #8, !dbg !1732
+  %14 = load i32* @writeRunLevel_CABAC.coeff_ctr, align 4, !dbg !1733, !tbaa !984
+  %cmp20 = icmp sgt i32 %14, 0, !dbg !1733
+  br i1 %cmp20, label %if.then21, label %if.end24, !dbg !1733
 
-; <label>:48                                      ; preds = %40
-  %49 = load i32* %41, align 4, !dbg !2709, !tbaa !1153
-  tail call void @write_significance_map(%struct.macroblock* %7, %struct.EncodingEnvironment* %eep_dp, i32 %49, i32* getelementptr inbounds ([64 x i32]* @writeRunLevel_CABAC.coeff, i64 0, i64 0), i32 %46) #7, !dbg !2711
-  %50 = load i32* %41, align 4, !dbg !2712, !tbaa !1153
-  tail call void @write_significant_coefficients(%struct.macroblock* undef, %struct.EncodingEnvironment* %eep_dp, i32 %50, i32* getelementptr inbounds ([64 x i32]* @writeRunLevel_CABAC.coeff, i64 0, i64 0)) #7, !dbg !2713
-  br label %51, !dbg !2714
+if.then21:                                        ; preds = %cond.end
+  %15 = load i32* %context, align 4, !dbg !1734, !tbaa !984
+  tail call void @write_significance_map(%struct.macroblock* %arrayidx, %struct.EncodingEnvironment* %eep_dp, i32 %15, i32* getelementptr inbounds ([64 x i32]* @writeRunLevel_CABAC.coeff, i64 0, i64 0), i32 %14) #8, !dbg !1734
+  %16 = load i32* %context, align 4, !dbg !1736, !tbaa !984
+  tail call void @write_significant_coefficients(%struct.macroblock* undef, %struct.EncodingEnvironment* %eep_dp, i32 %16, i32* getelementptr inbounds ([64 x i32]* @writeRunLevel_CABAC.coeff, i64 0, i64 0)) #8, !dbg !1736
+  br label %if.end24, !dbg !1737
 
-; <label>:51                                      ; preds = %48, %40
-  store i32 0, i32* @writeRunLevel_CABAC.coeff_ctr, align 4, !dbg !2715, !tbaa !995
-  store i32 0, i32* @writeRunLevel_CABAC.pos, align 4, !dbg !2716, !tbaa !995
-  br label %52, !dbg !2717
+if.end24:                                         ; preds = %if.then21, %cond.end
+  store i32 0, i32* @writeRunLevel_CABAC.coeff_ctr, align 4, !dbg !1738, !tbaa !984
+  store i32 0, i32* @writeRunLevel_CABAC.pos, align 4, !dbg !1738, !tbaa !984
+  br label %return, !dbg !1738
 
-; <label>:52                                      ; preds = %51, %.preheader._crit_edge
-  ret void, !dbg !2717
+return:                                           ; preds = %if.end24, %for.end
+  ret void, !dbg !1738
 }

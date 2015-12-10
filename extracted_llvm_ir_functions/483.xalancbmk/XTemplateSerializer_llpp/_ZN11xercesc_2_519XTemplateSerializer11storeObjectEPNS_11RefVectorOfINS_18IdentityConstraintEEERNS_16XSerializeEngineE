@@ -1,0 +1,32 @@
+define void @_ZN11xercesc_2_519XTemplateSerializer11storeObjectEPNS_11RefVectorOfINS_18IdentityConstraintEEERNS_16XSerializeEngineE(%"class.xercesc_2_5::RefVectorOf.8"* %objToStore, %"class.xercesc_2_5::XSerializeEngine"* %serEng) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefVectorOf.8"* %objToStore}, i64 0, metadata !10102), !dbg !15529
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializeEngine"* %serEng}, i64 0, metadata !10103), !dbg !15530
+  %0 = bitcast %"class.xercesc_2_5::RefVectorOf.8"* %objToStore to i8*, !dbg !15531
+  %call = tail call zeroext i1 @_ZN11xercesc_2_516XSerializeEngine17needToStoreObjectEPv(%"class.xercesc_2_5::XSerializeEngine"* %serEng, i8* %0) #12, !dbg !15531
+  br i1 %call, label %if.then, label %if.end, !dbg !15531
+
+if.then:                                          ; preds = %entry
+  %1 = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.8"* %objToStore, i64 0, i32 0, !dbg !15532
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.9"* %1}, i64 0, metadata !15533), !dbg !15534
+  %fCurCount.i = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.8"* %objToStore, i64 0, i32 0, i32 2, !dbg !15535
+  %2 = load i32* %fCurCount.i, align 4, !dbg !15535, !tbaa !14899
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !10104), !dbg !15532
+  %call2 = tail call %"class.xercesc_2_5::XSerializeEngine"* @_ZN11xercesc_2_516XSerializeEnginelsEi(%"class.xercesc_2_5::XSerializeEngine"* %serEng, i32 %2) #12, !dbg !15536
+  tail call void @llvm.dbg.value(metadata !1577, i64 0, metadata !10106), !dbg !15537
+  %cmp11 = icmp sgt i32 %2, 0, !dbg !15537
+  br i1 %cmp11, label %for.body, label %if.end, !dbg !15537
+
+for.body:                                         ; preds = %if.then, %for.body
+  %i.012 = phi i32 [ %inc, %for.body ], [ 0, %if.then ]
+  %call3 = tail call %"class.xercesc_2_5::IdentityConstraint"* @_ZN11xercesc_2_515BaseRefVectorOfINS_18IdentityConstraintEE9elementAtEj(%"class.xercesc_2_5::BaseRefVectorOf.9"* %1, i32 %i.012) #12, !dbg !15538
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::IdentityConstraint"* %call3}, i64 0, metadata !10108), !dbg !15538
+  tail call void @_ZN11xercesc_2_518IdentityConstraint7storeICERNS_16XSerializeEngineEPS0_(%"class.xercesc_2_5::XSerializeEngine"* %serEng, %"class.xercesc_2_5::IdentityConstraint"* %call3) #12, !dbg !15539
+  %inc = add nsw i32 %i.012, 1, !dbg !15537
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !10106), !dbg !15537
+  %exitcond = icmp eq i32 %inc, %2, !dbg !15537
+  br i1 %exitcond, label %if.end, label %for.body, !dbg !15537
+
+if.end:                                           ; preds = %if.then, %for.body, %entry
+  ret void, !dbg !15540
+}

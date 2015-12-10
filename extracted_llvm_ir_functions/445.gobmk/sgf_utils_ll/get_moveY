@@ -1,24 +1,25 @@
-define i32 @get_moveY(%struct.SGFProperty_t* nocapture readonly %property, i32 %boardsize) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %property, i64 0, metadata !27, metadata !90), !dbg !116
-  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !28, metadata !90), !dbg !117
-  %1 = getelementptr inbounds %struct.SGFProperty_t* %property, i64 0, i32 2, !dbg !118
-  %2 = load i8** %1, align 8, !dbg !118, !tbaa !95
-  %3 = tail call i64 @strlen(i8* %2) #7, !dbg !120
-  %4 = icmp ult i64 %3, 2, !dbg !121
-  br i1 %4, label %11, label %5, !dbg !122
+define i32 @get_moveY(%struct.SGFProperty_t* nocapture %property, i32 %boardsize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %property}, i64 0, metadata !29), !dbg !95
+  tail call void @llvm.dbg.value(metadata !{i32 %boardsize}, i64 0, metadata !30), !dbg !95
+  %value = getelementptr inbounds %struct.SGFProperty_t* %property, i64 0, i32 2, !dbg !96
+  %0 = load i8** %value, align 8, !dbg !96, !tbaa !86
+  %call = tail call i64 @strlen(i8* %0) #6, !dbg !96
+  %cmp = icmp ult i64 %call, 2, !dbg !96
+  br i1 %cmp, label %return, label %if.end, !dbg !96
 
-; <label>:5                                       ; preds = %0
-  %6 = load i8* %2, align 1, !dbg !123, !tbaa !105
-  %7 = sext i8 %6 to i32, !dbg !124
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !85, metadata !90) #6, !dbg !125
-  %8 = tail call i32 @__toupper(i32 %7) #7, !dbg !127
-  %9 = add nsw i32 %8, -65, !dbg !128
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !29, metadata !90), !dbg !129
-  %10 = icmp slt i32 %9, %boardsize, !dbg !130
-  %. = select i1 %10, i32 %9, i32 -1, !dbg !132
-  br label %11, !dbg !132
+if.end:                                           ; preds = %entry
+  %1 = load i8* %0, align 1, !dbg !97, !tbaa !87
+  %conv = sext i8 %1 to i32, !dbg !97
+  %call2 = tail call i32 @toupper(i32 %conv) #7, !dbg !97
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !32), !dbg !97
+  %sub = add nsw i32 %call2, -65, !dbg !99
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !31), !dbg !99
+  %cmp3 = icmp slt i32 %sub, %boardsize, !dbg !100
+  %sub. = select i1 %cmp3, i32 %sub, i32 -1, !dbg !101
+  br label %return, !dbg !101
 
-; <label>:11                                      ; preds = %5, %0
-  %.0 = phi i32 [ -1, %0 ], [ %., %5 ]
-  ret i32 %.0, !dbg !133
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %sub., %if.end ]
+  ret i32 %retval.0, !dbg !102
 }

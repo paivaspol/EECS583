@@ -1,107 +1,102 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/433.milc/src/submat.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/433.milc/src/submat.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.su3_matrix = type { [3 x [3 x %struct.complex]] }
 %struct.complex = type { double, double }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @sub_su3_matrix(%struct.su3_matrix* nocapture readonly %a, %struct.su3_matrix* nocapture readonly %b, %struct.su3_matrix* nocapture %c) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.su3_matrix* %a, i64 0, metadata !24, metadata !34), !dbg !35
-  tail call void @llvm.dbg.value(metadata %struct.su3_matrix* %b, i64 0, metadata !25, metadata !34), !dbg !36
-  tail call void @llvm.dbg.value(metadata %struct.su3_matrix* %c, i64 0, metadata !26, metadata !34), !dbg !37
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !27, metadata !34), !dbg !38
-  br label %.preheader, !dbg !39
+; Function Attrs: nounwind optsize uwtable
+define void @sub_su3_matrix(%struct.su3_matrix* nocapture %a, %struct.su3_matrix* nocapture %b, %struct.su3_matrix* nocapture %c) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.su3_matrix* %a}, i64 0, metadata !25), !dbg !31
+  tail call void @llvm.dbg.value(metadata !{%struct.su3_matrix* %b}, i64 0, metadata !26), !dbg !31
+  tail call void @llvm.dbg.value(metadata !{%struct.su3_matrix* %c}, i64 0, metadata !27), !dbg !31
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !28), !dbg !32
+  br label %for.cond1.preheader, !dbg !32
 
-.preheader:                                       ; preds = %11, %0
-  %indvars.iv3 = phi i64 [ 0, %0 ], [ %indvars.iv.next4, %11 ]
-  br label %1, !dbg !41
+for.cond1.preheader:                              ; preds = %for.inc36, %entry
+  %indvars.iv58 = phi i64 [ 0, %entry ], [ %indvars.iv.next59, %for.inc36 ]
+  br label %for.body3, !dbg !34
 
-; <label>:1                                       ; preds = %1, %.preheader
-  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 %indvars.iv3, i64 %indvars.iv, i32 0, !dbg !44
-  %3 = getelementptr inbounds %struct.su3_matrix* %b, i64 0, i32 0, i64 %indvars.iv3, i64 %indvars.iv, i32 0, !dbg !44
-  %4 = getelementptr inbounds %struct.su3_matrix* %c, i64 0, i32 0, i64 %indvars.iv3, i64 %indvars.iv, i32 0, !dbg !44
-  %5 = bitcast double* %2 to <2 x double>*, !dbg !44
-  %6 = load <2 x double>* %5, align 8, !dbg !44, !tbaa !48
-  %7 = bitcast double* %3 to <2 x double>*, !dbg !44
-  %8 = load <2 x double>* %7, align 8, !dbg !44, !tbaa !48
-  %9 = fsub <2 x double> %6, %8, !dbg !44
-  %10 = bitcast double* %4 to <2 x double>*, !dbg !44
-  store <2 x double> %9, <2 x double>* %10, align 8, !dbg !44, !tbaa !48
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !41
-  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !41
-  br i1 %exitcond, label %11, label %1, !dbg !41
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %real = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 %indvars.iv58, i64 %indvars.iv, i32 0, !dbg !36
+  %0 = load double* %real, align 8, !dbg !36, !tbaa !39
+  %real11 = getelementptr inbounds %struct.su3_matrix* %b, i64 0, i32 0, i64 %indvars.iv58, i64 %indvars.iv, i32 0, !dbg !36
+  %1 = load double* %real11, align 8, !dbg !36, !tbaa !39
+  %sub = fsub double %0, %1, !dbg !36
+  %real17 = getelementptr inbounds %struct.su3_matrix* %c, i64 0, i32 0, i64 %indvars.iv58, i64 %indvars.iv, i32 0, !dbg !36
+  store double %sub, double* %real17, align 8, !dbg !36, !tbaa !39
+  %imag = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 %indvars.iv58, i64 %indvars.iv, i32 1, !dbg !36
+  %2 = load double* %imag, align 8, !dbg !36, !tbaa !39
+  %imag28 = getelementptr inbounds %struct.su3_matrix* %b, i64 0, i32 0, i64 %indvars.iv58, i64 %indvars.iv, i32 1, !dbg !36
+  %3 = load double* %imag28, align 8, !dbg !36, !tbaa !39
+  %sub29 = fsub double %2, %3, !dbg !36
+  %imag35 = getelementptr inbounds %struct.su3_matrix* %c, i64 0, i32 0, i64 %indvars.iv58, i64 %indvars.iv, i32 1, !dbg !36
+  store double %sub29, double* %imag35, align 8, !dbg !36, !tbaa !39
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !34
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !34
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !34
+  br i1 %exitcond, label %for.inc36, label %for.body3, !dbg !34
 
-; <label>:11                                      ; preds = %1
-  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1, !dbg !39
-  %exitcond5 = icmp eq i64 %indvars.iv.next4, 3, !dbg !39
-  br i1 %exitcond5, label %12, label %.preheader, !dbg !39
+for.inc36:                                        ; preds = %for.body3
+  %indvars.iv.next59 = add i64 %indvars.iv58, 1, !dbg !32
+  %lftr.wideiv60 = trunc i64 %indvars.iv.next59 to i32, !dbg !32
+  %exitcond61 = icmp eq i32 %lftr.wideiv60, 3, !dbg !32
+  br i1 %exitcond61, label %for.end38, label %for.cond1.preheader, !dbg !32
 
-; <label>:12                                      ; preds = %11
-  ret void, !dbg !52
+for.end38:                                        ; preds = %for.inc36
+  ret void, !dbg !42
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #1
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { nounwind readnone }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!30, !31, !32}
-!llvm.ident = !{!33}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !2, subprograms: !3, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/433.milc/src/submat.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DISubprogram(name: "sub_su3_matrix", scope: !1, file: !1, line: 11, type: !5, isLocal: false, isDefinition: true, scopeLine: 11, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct.su3_matrix*, %struct.su3_matrix*, %struct.su3_matrix*)* @sub_su3_matrix, variables: !23)
-!5 = !DISubroutineType(types: !6)
-!6 = !{null, !7, !7, !7}
-!7 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !8, size: 64, align: 64)
-!8 = !DIDerivedType(tag: DW_TAG_typedef, name: "su3_matrix", file: !9, line: 14, baseType: !10)
-!9 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/433.milc/src/su3.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!10 = !DICompositeType(tag: DW_TAG_structure_type, file: !9, line: 14, size: 1152, align: 64, elements: !11)
-!11 = !{!12}
-!12 = !DIDerivedType(tag: DW_TAG_member, name: "e", scope: !10, file: !9, line: 14, baseType: !13, size: 1152, align: 64)
-!13 = !DICompositeType(tag: DW_TAG_array_type, baseType: !14, size: 1152, align: 64, elements: !21)
-!14 = !DIDerivedType(tag: DW_TAG_typedef, name: "complex", file: !15, line: 76, baseType: !16)
-!15 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/433.milc/src/complex.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!16 = !DICompositeType(tag: DW_TAG_structure_type, file: !15, line: 73, size: 128, align: 64, elements: !17)
-!17 = !{!18, !20}
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "real", scope: !16, file: !15, line: 74, baseType: !19, size: 64, align: 64)
-!19 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "imag", scope: !16, file: !15, line: 75, baseType: !19, size: 64, align: 64, offset: 64)
-!21 = !{!22, !22}
-!22 = !DISubrange(count: 3)
-!23 = !{!24, !25, !26, !27, !29}
-!24 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "a", arg: 1, scope: !4, file: !1, line: 11, type: !7)
-!25 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "b", arg: 2, scope: !4, file: !1, line: 11, type: !7)
-!26 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "c", arg: 3, scope: !4, file: !1, line: 11, type: !7)
-!27 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !4, file: !1, line: 12, type: !28)
-!28 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!29 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "j", scope: !4, file: !1, line: 12, type: !28)
-!30 = !{i32 2, !"Dwarf Version", i32 2}
-!31 = !{i32 2, !"Debug Info Version", i32 700000003}
-!32 = !{i32 1, !"PIC Level", i32 2}
-!33 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!34 = !DIExpression()
-!35 = !DILocation(line: 11, column: 34, scope: !4)
-!36 = !DILocation(line: 11, column: 49, scope: !4)
-!37 = !DILocation(line: 11, column: 64, scope: !4)
-!38 = !DILocation(line: 12, column: 14, scope: !4)
-!39 = !DILocation(line: 13, column: 5, scope: !40)
-!40 = distinct !DILexicalBlock(scope: !4, file: !1, line: 13, column: 5)
-!41 = !DILocation(line: 13, column: 21, scope: !42)
-!42 = distinct !DILexicalBlock(scope: !43, file: !1, line: 13, column: 21)
-!43 = distinct !DILexicalBlock(scope: !40, file: !1, line: 13, column: 5)
-!44 = !DILocation(line: 14, column: 2, scope: !45)
-!45 = distinct !DILexicalBlock(scope: !46, file: !1, line: 14, column: 2)
-!46 = distinct !DILexicalBlock(scope: !47, file: !1, line: 13, column: 37)
-!47 = distinct !DILexicalBlock(scope: !42, file: !1, line: 13, column: 21)
-!48 = !{!49, !49, i64 0}
-!49 = !{!"double", !50, i64 0}
-!50 = !{!"omnipotent char", !51, i64 0}
-!51 = !{!"Simple C/C++ TBAA"}
-!52 = !DILocation(line: 16, column: 1, scope: !4)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/433.milc/src/submat.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/433.milc/src/submat.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"sub_su3_matrix", metadata !"sub_su3_matrix", metadata !"", i32 11, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct.su3_matrix*, %struct.su3_matrix*, %struct.su3_matrix*)* @sub_su3_matrix, null, null, metadata !24, i32 11} ; [ DW_TAG_subprogram ] [line 11] [def] [sub_su3_matrix]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/433.milc/src/submat.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{null, metadata !8, metadata !8, metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from su3_matrix]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"su3_matrix", i32 14, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [su3_matrix] [line 14, size 0, align 0, offset 0] [from ]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"", i32 14, i64 1152, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 14, size 1152, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/433.milc/src/su3.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"e", i32 14, i64 1152, i64 64, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [e] [line 14, size 1152, align 64, offset 0] [from ]
+!14 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 1152, i64 64, i32 0, i32 0, metadata !15, metadata !22, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 1152, align 64, offset 0] [from complex]
+!15 = metadata !{i32 786454, metadata !11, null, metadata !"complex", i32 76, i64 0, i64 0, i64 0, i32 0, metadata !16} ; [ DW_TAG_typedef ] [complex] [line 76, size 0, align 0, offset 0] [from ]
+!16 = metadata !{i32 786451, metadata !17, null, metadata !"", i32 73, i64 128, i64 64, i32 0, i32 0, null, metadata !18, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 73, size 128, align 64, offset 0] [from ]
+!17 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/433.milc/src/complex.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!18 = metadata !{metadata !19, metadata !21}
+!19 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"real", i32 74, i64 64, i64 64, i64 0, i32 0, metadata !20} ; [ DW_TAG_member ] [real] [line 74, size 64, align 64, offset 0] [from double]
+!20 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!21 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"imag", i32 75, i64 64, i64 64, i64 64, i32 0, metadata !20} ; [ DW_TAG_member ] [imag] [line 75, size 64, align 64, offset 64] [from double]
+!22 = metadata !{metadata !23, metadata !23}
+!23 = metadata !{i32 786465, i64 0, i64 3}        ; [ DW_TAG_subrange_type ] [0, 2]
+!24 = metadata !{metadata !25, metadata !26, metadata !27, metadata !28, metadata !30}
+!25 = metadata !{i32 786689, metadata !4, metadata !"a", metadata !5, i32 16777227, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [a] [line 11]
+!26 = metadata !{i32 786689, metadata !4, metadata !"b", metadata !5, i32 33554443, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [b] [line 11]
+!27 = metadata !{i32 786689, metadata !4, metadata !"c", metadata !5, i32 50331659, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [c] [line 11]
+!28 = metadata !{i32 786688, metadata !4, metadata !"i", metadata !5, i32 12, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 12]
+!29 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!30 = metadata !{i32 786688, metadata !4, metadata !"j", metadata !5, i32 12, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [j] [line 12]
+!31 = metadata !{i32 11, i32 0, metadata !4, null}
+!32 = metadata !{i32 13, i32 0, metadata !33, null}
+!33 = metadata !{i32 786443, metadata !1, metadata !4, i32 13, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/433.milc/src/submat.c]
+!34 = metadata !{i32 13, i32 0, metadata !35, null}
+!35 = metadata !{i32 786443, metadata !1, metadata !33, i32 13, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/433.milc/src/submat.c]
+!36 = metadata !{i32 14, i32 0, metadata !37, null}
+!37 = metadata !{i32 786443, metadata !1, metadata !38, i32 14, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/433.milc/src/submat.c]
+!38 = metadata !{i32 786443, metadata !1, metadata !35, i32 13, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/433.milc/src/submat.c]
+!39 = metadata !{metadata !"double", metadata !40}
+!40 = metadata !{metadata !"omnipotent char", metadata !41}
+!41 = metadata !{metadata !"Simple C/C++ TBAA"}
+!42 = metadata !{i32 16, i32 0, metadata !4, null}

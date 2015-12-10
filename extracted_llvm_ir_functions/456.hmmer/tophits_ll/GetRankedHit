@@ -1,277 +1,262 @@
-define void @GetRankedHit(%struct.tophit_s* nocapture readonly %h, i32 %rank, double* %r_pvalue, float* %r_score, double* %r_motherp, float* %r_mothersc, i8** %r_name, i8** %r_acc, i8** %r_desc, i32* %r_sqfrom, i32* %r_sqto, i32* %r_sqlen, i32* %r_hmmfrom, i32* %r_hmmto, i32* %r_hmmlen, i32* %r_domidx, i32* %r_ndom, %struct.fancyali_s** %r_ali) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.tophit_s* %h, i64 0, metadata !110, metadata !165), !dbg !396
-  tail call void @llvm.dbg.value(metadata i32 %rank, i64 0, metadata !111, metadata !165), !dbg !397
-  tail call void @llvm.dbg.value(metadata double* %r_pvalue, i64 0, metadata !112, metadata !165), !dbg !398
-  tail call void @llvm.dbg.value(metadata float* %r_score, i64 0, metadata !113, metadata !165), !dbg !399
-  tail call void @llvm.dbg.value(metadata double* %r_motherp, i64 0, metadata !114, metadata !165), !dbg !400
-  tail call void @llvm.dbg.value(metadata float* %r_mothersc, i64 0, metadata !115, metadata !165), !dbg !401
-  tail call void @llvm.dbg.value(metadata i8** %r_name, i64 0, metadata !116, metadata !165), !dbg !402
-  tail call void @llvm.dbg.value(metadata i8** %r_acc, i64 0, metadata !117, metadata !165), !dbg !403
-  tail call void @llvm.dbg.value(metadata i8** %r_desc, i64 0, metadata !118, metadata !165), !dbg !404
-  tail call void @llvm.dbg.value(metadata i32* %r_sqfrom, i64 0, metadata !119, metadata !165), !dbg !405
-  tail call void @llvm.dbg.value(metadata i32* %r_sqto, i64 0, metadata !120, metadata !165), !dbg !406
-  tail call void @llvm.dbg.value(metadata i32* %r_sqlen, i64 0, metadata !121, metadata !165), !dbg !407
-  tail call void @llvm.dbg.value(metadata i32* %r_hmmfrom, i64 0, metadata !122, metadata !165), !dbg !408
-  tail call void @llvm.dbg.value(metadata i32* %r_hmmto, i64 0, metadata !123, metadata !165), !dbg !409
-  tail call void @llvm.dbg.value(metadata i32* %r_hmmlen, i64 0, metadata !124, metadata !165), !dbg !410
-  tail call void @llvm.dbg.value(metadata i32* %r_domidx, i64 0, metadata !125, metadata !165), !dbg !411
-  tail call void @llvm.dbg.value(metadata i32* %r_ndom, i64 0, metadata !126, metadata !165), !dbg !412
-  tail call void @llvm.dbg.value(metadata %struct.fancyali_s** %r_ali, i64 0, metadata !127, metadata !165), !dbg !413
-  %1 = icmp eq double* %r_pvalue, null, !dbg !414
-  br i1 %1, label %12, label %2, !dbg !416
+define void @GetRankedHit(%struct.tophit_s* nocapture %h, i32 %rank, double* %r_pvalue, float* %r_score, double* %r_motherp, float* %r_mothersc, i8** %r_name, i8** %r_acc, i8** %r_desc, i32* %r_sqfrom, i32* %r_sqto, i32* %r_sqlen, i32* %r_hmmfrom, i32* %r_hmmto, i32* %r_hmmlen, i32* %r_domidx, i32* %r_ndom, %struct.fancyali_s** %r_ali) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.tophit_s* %h}, i64 0, metadata !109), !dbg !238
+  tail call void @llvm.dbg.value(metadata !{i32 %rank}, i64 0, metadata !110), !dbg !238
+  tail call void @llvm.dbg.value(metadata !{double* %r_pvalue}, i64 0, metadata !111), !dbg !239
+  tail call void @llvm.dbg.value(metadata !{float* %r_score}, i64 0, metadata !112), !dbg !239
+  tail call void @llvm.dbg.value(metadata !{double* %r_motherp}, i64 0, metadata !113), !dbg !240
+  tail call void @llvm.dbg.value(metadata !{float* %r_mothersc}, i64 0, metadata !114), !dbg !240
+  tail call void @llvm.dbg.value(metadata !{i8** %r_name}, i64 0, metadata !115), !dbg !241
+  tail call void @llvm.dbg.value(metadata !{i8** %r_acc}, i64 0, metadata !116), !dbg !241
+  tail call void @llvm.dbg.value(metadata !{i8** %r_desc}, i64 0, metadata !117), !dbg !241
+  tail call void @llvm.dbg.value(metadata !{i32* %r_sqfrom}, i64 0, metadata !118), !dbg !242
+  tail call void @llvm.dbg.value(metadata !{i32* %r_sqto}, i64 0, metadata !119), !dbg !242
+  tail call void @llvm.dbg.value(metadata !{i32* %r_sqlen}, i64 0, metadata !120), !dbg !242
+  tail call void @llvm.dbg.value(metadata !{i32* %r_hmmfrom}, i64 0, metadata !121), !dbg !243
+  tail call void @llvm.dbg.value(metadata !{i32* %r_hmmto}, i64 0, metadata !122), !dbg !243
+  tail call void @llvm.dbg.value(metadata !{i32* %r_hmmlen}, i64 0, metadata !123), !dbg !243
+  tail call void @llvm.dbg.value(metadata !{i32* %r_domidx}, i64 0, metadata !124), !dbg !244
+  tail call void @llvm.dbg.value(metadata !{i32* %r_ndom}, i64 0, metadata !125), !dbg !244
+  tail call void @llvm.dbg.value(metadata !{%struct.fancyali_s** %r_ali}, i64 0, metadata !126), !dbg !245
+  %cmp = icmp eq double* %r_pvalue, null, !dbg !246
+  br i1 %cmp, label %if.end, label %if.then, !dbg !246
 
-; <label>:2                                       ; preds = %0
-  %3 = sext i32 %rank to i64, !dbg !417
-  %4 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !418
-  %5 = load %struct.hit_s*** %4, align 8, !dbg !418, !tbaa !171
-  %6 = getelementptr inbounds %struct.hit_s** %5, i64 %3, !dbg !417
-  %7 = load %struct.hit_s** %6, align 8, !dbg !417, !tbaa !419
-  %8 = getelementptr inbounds %struct.hit_s* %7, i64 0, i32 2, !dbg !420
-  %9 = bitcast double* %8 to i64*, !dbg !420
-  %10 = load i64* %9, align 8, !dbg !420, !tbaa !358
-  %11 = bitcast double* %r_pvalue to i64*, !dbg !421
-  store i64 %10, i64* %11, align 8, !dbg !421, !tbaa !422
-  br label %12, !dbg !423
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %rank to i64, !dbg !246
+  %hit = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !246
+  %0 = load %struct.hit_s*** %hit, align 8, !dbg !246, !tbaa !163
+  %arrayidx = getelementptr inbounds %struct.hit_s** %0, i64 %idxprom, !dbg !246
+  %1 = load %struct.hit_s** %arrayidx, align 8, !dbg !246, !tbaa !163
+  %pvalue = getelementptr inbounds %struct.hit_s* %1, i64 0, i32 2, !dbg !246
+  %2 = load double* %pvalue, align 8, !dbg !246, !tbaa !221
+  store double %2, double* %r_pvalue, align 8, !dbg !246, !tbaa !221
+  br label %if.end, !dbg !246
 
-; <label>:12                                      ; preds = %0, %2
-  %13 = icmp eq float* %r_score, null, !dbg !424
-  br i1 %13, label %24, label %14, !dbg !426
+if.end:                                           ; preds = %entry, %if.then
+  %cmp1 = icmp eq float* %r_score, null, !dbg !247
+  br i1 %cmp1, label %if.end6, label %if.then2, !dbg !247
 
-; <label>:14                                      ; preds = %12
-  %15 = sext i32 %rank to i64, !dbg !427
-  %16 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !428
-  %17 = load %struct.hit_s*** %16, align 8, !dbg !428, !tbaa !171
-  %18 = getelementptr inbounds %struct.hit_s** %17, i64 %15, !dbg !427
-  %19 = load %struct.hit_s** %18, align 8, !dbg !427, !tbaa !419
-  %20 = getelementptr inbounds %struct.hit_s* %19, i64 0, i32 1, !dbg !429
-  %21 = bitcast float* %20 to i32*, !dbg !429
-  %22 = load i32* %21, align 4, !dbg !429, !tbaa !361
-  %23 = bitcast float* %r_score to i32*, !dbg !430
-  store i32 %22, i32* %23, align 4, !dbg !430, !tbaa !431
-  br label %24, !dbg !432
+if.then2:                                         ; preds = %if.end
+  %idxprom3 = sext i32 %rank to i64, !dbg !247
+  %hit4 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !247
+  %3 = load %struct.hit_s*** %hit4, align 8, !dbg !247, !tbaa !163
+  %arrayidx5 = getelementptr inbounds %struct.hit_s** %3, i64 %idxprom3, !dbg !247
+  %4 = load %struct.hit_s** %arrayidx5, align 8, !dbg !247, !tbaa !163
+  %score = getelementptr inbounds %struct.hit_s* %4, i64 0, i32 1, !dbg !247
+  %5 = load float* %score, align 4, !dbg !247, !tbaa !224
+  store float %5, float* %r_score, align 4, !dbg !247, !tbaa !224
+  br label %if.end6, !dbg !247
 
-; <label>:24                                      ; preds = %12, %14
-  %25 = icmp eq double* %r_motherp, null, !dbg !433
-  br i1 %25, label %36, label %26, !dbg !435
+if.end6:                                          ; preds = %if.end, %if.then2
+  %cmp7 = icmp eq double* %r_motherp, null, !dbg !248
+  br i1 %cmp7, label %if.end12, label %if.then8, !dbg !248
 
-; <label>:26                                      ; preds = %24
-  %27 = sext i32 %rank to i64, !dbg !436
-  %28 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !437
-  %29 = load %struct.hit_s*** %28, align 8, !dbg !437, !tbaa !171
-  %30 = getelementptr inbounds %struct.hit_s** %29, i64 %27, !dbg !436
-  %31 = load %struct.hit_s** %30, align 8, !dbg !436, !tbaa !419
-  %32 = getelementptr inbounds %struct.hit_s* %31, i64 0, i32 4, !dbg !438
-  %33 = bitcast double* %32 to i64*, !dbg !438
-  %34 = load i64* %33, align 8, !dbg !438, !tbaa !364
-  %35 = bitcast double* %r_motherp to i64*, !dbg !439
-  store i64 %34, i64* %35, align 8, !dbg !439, !tbaa !422
-  br label %36, !dbg !440
+if.then8:                                         ; preds = %if.end6
+  %idxprom9 = sext i32 %rank to i64, !dbg !248
+  %hit10 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !248
+  %6 = load %struct.hit_s*** %hit10, align 8, !dbg !248, !tbaa !163
+  %arrayidx11 = getelementptr inbounds %struct.hit_s** %6, i64 %idxprom9, !dbg !248
+  %7 = load %struct.hit_s** %arrayidx11, align 8, !dbg !248, !tbaa !163
+  %motherp = getelementptr inbounds %struct.hit_s* %7, i64 0, i32 4, !dbg !248
+  %8 = load double* %motherp, align 8, !dbg !248, !tbaa !221
+  store double %8, double* %r_motherp, align 8, !dbg !248, !tbaa !221
+  br label %if.end12, !dbg !248
 
-; <label>:36                                      ; preds = %24, %26
-  %37 = icmp eq float* %r_mothersc, null, !dbg !441
-  br i1 %37, label %48, label %38, !dbg !443
+if.end12:                                         ; preds = %if.end6, %if.then8
+  %cmp13 = icmp eq float* %r_mothersc, null, !dbg !249
+  br i1 %cmp13, label %if.end18, label %if.then14, !dbg !249
 
-; <label>:38                                      ; preds = %36
-  %39 = sext i32 %rank to i64, !dbg !444
-  %40 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !445
-  %41 = load %struct.hit_s*** %40, align 8, !dbg !445, !tbaa !171
-  %42 = getelementptr inbounds %struct.hit_s** %41, i64 %39, !dbg !444
-  %43 = load %struct.hit_s** %42, align 8, !dbg !444, !tbaa !419
-  %44 = getelementptr inbounds %struct.hit_s* %43, i64 0, i32 3, !dbg !446
-  %45 = bitcast float* %44 to i32*, !dbg !446
-  %46 = load i32* %45, align 4, !dbg !446, !tbaa !367
-  %47 = bitcast float* %r_mothersc to i32*, !dbg !447
-  store i32 %46, i32* %47, align 4, !dbg !447, !tbaa !431
-  br label %48, !dbg !448
+if.then14:                                        ; preds = %if.end12
+  %idxprom15 = sext i32 %rank to i64, !dbg !249
+  %hit16 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !249
+  %9 = load %struct.hit_s*** %hit16, align 8, !dbg !249, !tbaa !163
+  %arrayidx17 = getelementptr inbounds %struct.hit_s** %9, i64 %idxprom15, !dbg !249
+  %10 = load %struct.hit_s** %arrayidx17, align 8, !dbg !249, !tbaa !163
+  %mothersc = getelementptr inbounds %struct.hit_s* %10, i64 0, i32 3, !dbg !249
+  %11 = load float* %mothersc, align 4, !dbg !249, !tbaa !224
+  store float %11, float* %r_mothersc, align 4, !dbg !249, !tbaa !224
+  br label %if.end18, !dbg !249
 
-; <label>:48                                      ; preds = %36, %38
-  %49 = icmp eq i8** %r_name, null, !dbg !449
-  br i1 %49, label %60, label %50, !dbg !451
+if.end18:                                         ; preds = %if.end12, %if.then14
+  %cmp19 = icmp eq i8** %r_name, null, !dbg !250
+  br i1 %cmp19, label %if.end24, label %if.then20, !dbg !250
 
-; <label>:50                                      ; preds = %48
-  %51 = sext i32 %rank to i64, !dbg !452
-  %52 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !453
-  %53 = load %struct.hit_s*** %52, align 8, !dbg !453, !tbaa !171
-  %54 = getelementptr inbounds %struct.hit_s** %53, i64 %51, !dbg !452
-  %55 = load %struct.hit_s** %54, align 8, !dbg !452, !tbaa !419
-  %56 = getelementptr inbounds %struct.hit_s* %55, i64 0, i32 5, !dbg !454
-  %57 = bitcast i8** %56 to i64*, !dbg !454
-  %58 = load i64* %57, align 8, !dbg !454, !tbaa !218
-  %59 = bitcast i8** %r_name to i64*, !dbg !455
-  store i64 %58, i64* %59, align 8, !dbg !455, !tbaa !419
-  br label %60, !dbg !456
+if.then20:                                        ; preds = %if.end18
+  %idxprom21 = sext i32 %rank to i64, !dbg !250
+  %hit22 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !250
+  %12 = load %struct.hit_s*** %hit22, align 8, !dbg !250, !tbaa !163
+  %arrayidx23 = getelementptr inbounds %struct.hit_s** %12, i64 %idxprom21, !dbg !250
+  %13 = load %struct.hit_s** %arrayidx23, align 8, !dbg !250, !tbaa !163
+  %name = getelementptr inbounds %struct.hit_s* %13, i64 0, i32 5, !dbg !250
+  %14 = load i8** %name, align 8, !dbg !250, !tbaa !163
+  store i8* %14, i8** %r_name, align 8, !dbg !250, !tbaa !163
+  br label %if.end24, !dbg !250
 
-; <label>:60                                      ; preds = %48, %50
-  %61 = icmp eq i8** %r_acc, null, !dbg !457
-  br i1 %61, label %72, label %62, !dbg !459
+if.end24:                                         ; preds = %if.end18, %if.then20
+  %cmp25 = icmp eq i8** %r_acc, null, !dbg !251
+  br i1 %cmp25, label %if.end30, label %if.then26, !dbg !251
 
-; <label>:62                                      ; preds = %60
-  %63 = sext i32 %rank to i64, !dbg !460
-  %64 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !461
-  %65 = load %struct.hit_s*** %64, align 8, !dbg !461, !tbaa !171
-  %66 = getelementptr inbounds %struct.hit_s** %65, i64 %63, !dbg !460
-  %67 = load %struct.hit_s** %66, align 8, !dbg !460, !tbaa !419
-  %68 = getelementptr inbounds %struct.hit_s* %67, i64 0, i32 6, !dbg !462
-  %69 = bitcast i8** %68 to i64*, !dbg !462
-  %70 = load i64* %69, align 8, !dbg !462, !tbaa !225
-  %71 = bitcast i8** %r_acc to i64*, !dbg !463
-  store i64 %70, i64* %71, align 8, !dbg !463, !tbaa !419
-  br label %72, !dbg !464
+if.then26:                                        ; preds = %if.end24
+  %idxprom27 = sext i32 %rank to i64, !dbg !251
+  %hit28 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !251
+  %15 = load %struct.hit_s*** %hit28, align 8, !dbg !251, !tbaa !163
+  %arrayidx29 = getelementptr inbounds %struct.hit_s** %15, i64 %idxprom27, !dbg !251
+  %16 = load %struct.hit_s** %arrayidx29, align 8, !dbg !251, !tbaa !163
+  %acc = getelementptr inbounds %struct.hit_s* %16, i64 0, i32 6, !dbg !251
+  %17 = load i8** %acc, align 8, !dbg !251, !tbaa !163
+  store i8* %17, i8** %r_acc, align 8, !dbg !251, !tbaa !163
+  br label %if.end30, !dbg !251
 
-; <label>:72                                      ; preds = %60, %62
-  %73 = icmp eq i8** %r_desc, null, !dbg !465
-  br i1 %73, label %84, label %74, !dbg !467
+if.end30:                                         ; preds = %if.end24, %if.then26
+  %cmp31 = icmp eq i8** %r_desc, null, !dbg !252
+  br i1 %cmp31, label %if.end36, label %if.then32, !dbg !252
 
-; <label>:74                                      ; preds = %72
-  %75 = sext i32 %rank to i64, !dbg !468
-  %76 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !469
-  %77 = load %struct.hit_s*** %76, align 8, !dbg !469, !tbaa !171
-  %78 = getelementptr inbounds %struct.hit_s** %77, i64 %75, !dbg !468
-  %79 = load %struct.hit_s** %78, align 8, !dbg !468, !tbaa !419
-  %80 = getelementptr inbounds %struct.hit_s* %79, i64 0, i32 7, !dbg !470
-  %81 = bitcast i8** %80 to i64*, !dbg !470
-  %82 = load i64* %81, align 8, !dbg !470, !tbaa !232
-  %83 = bitcast i8** %r_desc to i64*, !dbg !471
-  store i64 %82, i64* %83, align 8, !dbg !471, !tbaa !419
-  br label %84, !dbg !472
+if.then32:                                        ; preds = %if.end30
+  %idxprom33 = sext i32 %rank to i64, !dbg !252
+  %hit34 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !252
+  %18 = load %struct.hit_s*** %hit34, align 8, !dbg !252, !tbaa !163
+  %arrayidx35 = getelementptr inbounds %struct.hit_s** %18, i64 %idxprom33, !dbg !252
+  %19 = load %struct.hit_s** %arrayidx35, align 8, !dbg !252, !tbaa !163
+  %desc = getelementptr inbounds %struct.hit_s* %19, i64 0, i32 7, !dbg !252
+  %20 = load i8** %desc, align 8, !dbg !252, !tbaa !163
+  store i8* %20, i8** %r_desc, align 8, !dbg !252, !tbaa !163
+  br label %if.end36, !dbg !252
 
-; <label>:84                                      ; preds = %72, %74
-  %85 = icmp eq i32* %r_sqfrom, null, !dbg !473
-  br i1 %85, label %94, label %86, !dbg !475
+if.end36:                                         ; preds = %if.end30, %if.then32
+  %cmp37 = icmp eq i32* %r_sqfrom, null, !dbg !253
+  br i1 %cmp37, label %if.end42, label %if.then38, !dbg !253
 
-; <label>:86                                      ; preds = %84
-  %87 = sext i32 %rank to i64, !dbg !476
-  %88 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !477
-  %89 = load %struct.hit_s*** %88, align 8, !dbg !477, !tbaa !171
-  %90 = getelementptr inbounds %struct.hit_s** %89, i64 %87, !dbg !476
-  %91 = load %struct.hit_s** %90, align 8, !dbg !476, !tbaa !419
-  %92 = getelementptr inbounds %struct.hit_s* %91, i64 0, i32 8, !dbg !478
-  %93 = load i32* %92, align 4, !dbg !478, !tbaa !370
-  store i32 %93, i32* %r_sqfrom, align 4, !dbg !479, !tbaa !480
-  br label %94, !dbg !481
+if.then38:                                        ; preds = %if.end36
+  %idxprom39 = sext i32 %rank to i64, !dbg !253
+  %hit40 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !253
+  %21 = load %struct.hit_s*** %hit40, align 8, !dbg !253, !tbaa !163
+  %arrayidx41 = getelementptr inbounds %struct.hit_s** %21, i64 %idxprom39, !dbg !253
+  %22 = load %struct.hit_s** %arrayidx41, align 8, !dbg !253, !tbaa !163
+  %sqfrom = getelementptr inbounds %struct.hit_s* %22, i64 0, i32 8, !dbg !253
+  %23 = load i32* %sqfrom, align 4, !dbg !253, !tbaa !168
+  store i32 %23, i32* %r_sqfrom, align 4, !dbg !253, !tbaa !168
+  br label %if.end42, !dbg !253
 
-; <label>:94                                      ; preds = %84, %86
-  %95 = icmp eq i32* %r_sqto, null, !dbg !482
-  br i1 %95, label %104, label %96, !dbg !484
+if.end42:                                         ; preds = %if.end36, %if.then38
+  %cmp43 = icmp eq i32* %r_sqto, null, !dbg !254
+  br i1 %cmp43, label %if.end48, label %if.then44, !dbg !254
 
-; <label>:96                                      ; preds = %94
-  %97 = sext i32 %rank to i64, !dbg !485
-  %98 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !486
-  %99 = load %struct.hit_s*** %98, align 8, !dbg !486, !tbaa !171
-  %100 = getelementptr inbounds %struct.hit_s** %99, i64 %97, !dbg !485
-  %101 = load %struct.hit_s** %100, align 8, !dbg !485, !tbaa !419
-  %102 = getelementptr inbounds %struct.hit_s* %101, i64 0, i32 9, !dbg !487
-  %103 = load i32* %102, align 4, !dbg !487, !tbaa !373
-  store i32 %103, i32* %r_sqto, align 4, !dbg !488, !tbaa !480
-  br label %104, !dbg !489
+if.then44:                                        ; preds = %if.end42
+  %idxprom45 = sext i32 %rank to i64, !dbg !254
+  %hit46 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !254
+  %24 = load %struct.hit_s*** %hit46, align 8, !dbg !254, !tbaa !163
+  %arrayidx47 = getelementptr inbounds %struct.hit_s** %24, i64 %idxprom45, !dbg !254
+  %25 = load %struct.hit_s** %arrayidx47, align 8, !dbg !254, !tbaa !163
+  %sqto = getelementptr inbounds %struct.hit_s* %25, i64 0, i32 9, !dbg !254
+  %26 = load i32* %sqto, align 4, !dbg !254, !tbaa !168
+  store i32 %26, i32* %r_sqto, align 4, !dbg !254, !tbaa !168
+  br label %if.end48, !dbg !254
 
-; <label>:104                                     ; preds = %94, %96
-  %105 = icmp eq i32* %r_sqlen, null, !dbg !490
-  br i1 %105, label %114, label %106, !dbg !492
+if.end48:                                         ; preds = %if.end42, %if.then44
+  %cmp49 = icmp eq i32* %r_sqlen, null, !dbg !255
+  br i1 %cmp49, label %if.end54, label %if.then50, !dbg !255
 
-; <label>:106                                     ; preds = %104
-  %107 = sext i32 %rank to i64, !dbg !493
-  %108 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !494
-  %109 = load %struct.hit_s*** %108, align 8, !dbg !494, !tbaa !171
-  %110 = getelementptr inbounds %struct.hit_s** %109, i64 %107, !dbg !493
-  %111 = load %struct.hit_s** %110, align 8, !dbg !493, !tbaa !419
-  %112 = getelementptr inbounds %struct.hit_s* %111, i64 0, i32 10, !dbg !495
-  %113 = load i32* %112, align 4, !dbg !495, !tbaa !376
-  store i32 %113, i32* %r_sqlen, align 4, !dbg !496, !tbaa !480
-  br label %114, !dbg !497
+if.then50:                                        ; preds = %if.end48
+  %idxprom51 = sext i32 %rank to i64, !dbg !255
+  %hit52 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !255
+  %27 = load %struct.hit_s*** %hit52, align 8, !dbg !255, !tbaa !163
+  %arrayidx53 = getelementptr inbounds %struct.hit_s** %27, i64 %idxprom51, !dbg !255
+  %28 = load %struct.hit_s** %arrayidx53, align 8, !dbg !255, !tbaa !163
+  %sqlen = getelementptr inbounds %struct.hit_s* %28, i64 0, i32 10, !dbg !255
+  %29 = load i32* %sqlen, align 4, !dbg !255, !tbaa !168
+  store i32 %29, i32* %r_sqlen, align 4, !dbg !255, !tbaa !168
+  br label %if.end54, !dbg !255
 
-; <label>:114                                     ; preds = %104, %106
-  %115 = icmp eq i32* %r_hmmfrom, null, !dbg !498
-  br i1 %115, label %124, label %116, !dbg !500
+if.end54:                                         ; preds = %if.end48, %if.then50
+  %cmp55 = icmp eq i32* %r_hmmfrom, null, !dbg !256
+  br i1 %cmp55, label %if.end60, label %if.then56, !dbg !256
 
-; <label>:116                                     ; preds = %114
-  %117 = sext i32 %rank to i64, !dbg !501
-  %118 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !502
-  %119 = load %struct.hit_s*** %118, align 8, !dbg !502, !tbaa !171
-  %120 = getelementptr inbounds %struct.hit_s** %119, i64 %117, !dbg !501
-  %121 = load %struct.hit_s** %120, align 8, !dbg !501, !tbaa !419
-  %122 = getelementptr inbounds %struct.hit_s* %121, i64 0, i32 11, !dbg !503
-  %123 = load i32* %122, align 4, !dbg !503, !tbaa !379
-  store i32 %123, i32* %r_hmmfrom, align 4, !dbg !504, !tbaa !480
-  br label %124, !dbg !505
+if.then56:                                        ; preds = %if.end54
+  %idxprom57 = sext i32 %rank to i64, !dbg !256
+  %hit58 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !256
+  %30 = load %struct.hit_s*** %hit58, align 8, !dbg !256, !tbaa !163
+  %arrayidx59 = getelementptr inbounds %struct.hit_s** %30, i64 %idxprom57, !dbg !256
+  %31 = load %struct.hit_s** %arrayidx59, align 8, !dbg !256, !tbaa !163
+  %hmmfrom = getelementptr inbounds %struct.hit_s* %31, i64 0, i32 11, !dbg !256
+  %32 = load i32* %hmmfrom, align 4, !dbg !256, !tbaa !168
+  store i32 %32, i32* %r_hmmfrom, align 4, !dbg !256, !tbaa !168
+  br label %if.end60, !dbg !256
 
-; <label>:124                                     ; preds = %114, %116
-  %125 = icmp eq i32* %r_hmmto, null, !dbg !506
-  br i1 %125, label %134, label %126, !dbg !508
+if.end60:                                         ; preds = %if.end54, %if.then56
+  %cmp61 = icmp eq i32* %r_hmmto, null, !dbg !257
+  br i1 %cmp61, label %if.end66, label %if.then62, !dbg !257
 
-; <label>:126                                     ; preds = %124
-  %127 = sext i32 %rank to i64, !dbg !509
-  %128 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !510
-  %129 = load %struct.hit_s*** %128, align 8, !dbg !510, !tbaa !171
-  %130 = getelementptr inbounds %struct.hit_s** %129, i64 %127, !dbg !509
-  %131 = load %struct.hit_s** %130, align 8, !dbg !509, !tbaa !419
-  %132 = getelementptr inbounds %struct.hit_s* %131, i64 0, i32 12, !dbg !511
-  %133 = load i32* %132, align 4, !dbg !511, !tbaa !382
-  store i32 %133, i32* %r_hmmto, align 4, !dbg !512, !tbaa !480
-  br label %134, !dbg !513
+if.then62:                                        ; preds = %if.end60
+  %idxprom63 = sext i32 %rank to i64, !dbg !257
+  %hit64 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !257
+  %33 = load %struct.hit_s*** %hit64, align 8, !dbg !257, !tbaa !163
+  %arrayidx65 = getelementptr inbounds %struct.hit_s** %33, i64 %idxprom63, !dbg !257
+  %34 = load %struct.hit_s** %arrayidx65, align 8, !dbg !257, !tbaa !163
+  %hmmto = getelementptr inbounds %struct.hit_s* %34, i64 0, i32 12, !dbg !257
+  %35 = load i32* %hmmto, align 4, !dbg !257, !tbaa !168
+  store i32 %35, i32* %r_hmmto, align 4, !dbg !257, !tbaa !168
+  br label %if.end66, !dbg !257
 
-; <label>:134                                     ; preds = %124, %126
-  %135 = icmp eq i32* %r_hmmlen, null, !dbg !514
-  br i1 %135, label %144, label %136, !dbg !516
+if.end66:                                         ; preds = %if.end60, %if.then62
+  %cmp67 = icmp eq i32* %r_hmmlen, null, !dbg !258
+  br i1 %cmp67, label %if.end72, label %if.then68, !dbg !258
 
-; <label>:136                                     ; preds = %134
-  %137 = sext i32 %rank to i64, !dbg !517
-  %138 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !518
-  %139 = load %struct.hit_s*** %138, align 8, !dbg !518, !tbaa !171
-  %140 = getelementptr inbounds %struct.hit_s** %139, i64 %137, !dbg !517
-  %141 = load %struct.hit_s** %140, align 8, !dbg !517, !tbaa !419
-  %142 = getelementptr inbounds %struct.hit_s* %141, i64 0, i32 13, !dbg !519
-  %143 = load i32* %142, align 4, !dbg !519, !tbaa !385
-  store i32 %143, i32* %r_hmmlen, align 4, !dbg !520, !tbaa !480
-  br label %144, !dbg !521
+if.then68:                                        ; preds = %if.end66
+  %idxprom69 = sext i32 %rank to i64, !dbg !258
+  %hit70 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !258
+  %36 = load %struct.hit_s*** %hit70, align 8, !dbg !258, !tbaa !163
+  %arrayidx71 = getelementptr inbounds %struct.hit_s** %36, i64 %idxprom69, !dbg !258
+  %37 = load %struct.hit_s** %arrayidx71, align 8, !dbg !258, !tbaa !163
+  %hmmlen = getelementptr inbounds %struct.hit_s* %37, i64 0, i32 13, !dbg !258
+  %38 = load i32* %hmmlen, align 4, !dbg !258, !tbaa !168
+  store i32 %38, i32* %r_hmmlen, align 4, !dbg !258, !tbaa !168
+  br label %if.end72, !dbg !258
 
-; <label>:144                                     ; preds = %134, %136
-  %145 = icmp eq i32* %r_domidx, null, !dbg !522
-  br i1 %145, label %154, label %146, !dbg !524
+if.end72:                                         ; preds = %if.end66, %if.then68
+  %cmp73 = icmp eq i32* %r_domidx, null, !dbg !259
+  br i1 %cmp73, label %if.end78, label %if.then74, !dbg !259
 
-; <label>:146                                     ; preds = %144
-  %147 = sext i32 %rank to i64, !dbg !525
-  %148 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !526
-  %149 = load %struct.hit_s*** %148, align 8, !dbg !526, !tbaa !171
-  %150 = getelementptr inbounds %struct.hit_s** %149, i64 %147, !dbg !525
-  %151 = load %struct.hit_s** %150, align 8, !dbg !525, !tbaa !419
-  %152 = getelementptr inbounds %struct.hit_s* %151, i64 0, i32 14, !dbg !527
-  %153 = load i32* %152, align 4, !dbg !527, !tbaa !388
-  store i32 %153, i32* %r_domidx, align 4, !dbg !528, !tbaa !480
-  br label %154, !dbg !529
+if.then74:                                        ; preds = %if.end72
+  %idxprom75 = sext i32 %rank to i64, !dbg !259
+  %hit76 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !259
+  %39 = load %struct.hit_s*** %hit76, align 8, !dbg !259, !tbaa !163
+  %arrayidx77 = getelementptr inbounds %struct.hit_s** %39, i64 %idxprom75, !dbg !259
+  %40 = load %struct.hit_s** %arrayidx77, align 8, !dbg !259, !tbaa !163
+  %domidx = getelementptr inbounds %struct.hit_s* %40, i64 0, i32 14, !dbg !259
+  %41 = load i32* %domidx, align 4, !dbg !259, !tbaa !168
+  store i32 %41, i32* %r_domidx, align 4, !dbg !259, !tbaa !168
+  br label %if.end78, !dbg !259
 
-; <label>:154                                     ; preds = %144, %146
-  %155 = icmp eq i32* %r_ndom, null, !dbg !530
-  br i1 %155, label %164, label %156, !dbg !532
+if.end78:                                         ; preds = %if.end72, %if.then74
+  %cmp79 = icmp eq i32* %r_ndom, null, !dbg !260
+  br i1 %cmp79, label %if.end84, label %if.then80, !dbg !260
 
-; <label>:156                                     ; preds = %154
-  %157 = sext i32 %rank to i64, !dbg !533
-  %158 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !534
-  %159 = load %struct.hit_s*** %158, align 8, !dbg !534, !tbaa !171
-  %160 = getelementptr inbounds %struct.hit_s** %159, i64 %157, !dbg !533
-  %161 = load %struct.hit_s** %160, align 8, !dbg !533, !tbaa !419
-  %162 = getelementptr inbounds %struct.hit_s* %161, i64 0, i32 15, !dbg !535
-  %163 = load i32* %162, align 4, !dbg !535, !tbaa !391
-  store i32 %163, i32* %r_ndom, align 4, !dbg !536, !tbaa !480
-  br label %164, !dbg !537
+if.then80:                                        ; preds = %if.end78
+  %idxprom81 = sext i32 %rank to i64, !dbg !260
+  %hit82 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !260
+  %42 = load %struct.hit_s*** %hit82, align 8, !dbg !260, !tbaa !163
+  %arrayidx83 = getelementptr inbounds %struct.hit_s** %42, i64 %idxprom81, !dbg !260
+  %43 = load %struct.hit_s** %arrayidx83, align 8, !dbg !260, !tbaa !163
+  %ndom = getelementptr inbounds %struct.hit_s* %43, i64 0, i32 15, !dbg !260
+  %44 = load i32* %ndom, align 4, !dbg !260, !tbaa !168
+  store i32 %44, i32* %r_ndom, align 4, !dbg !260, !tbaa !168
+  br label %if.end84, !dbg !260
 
-; <label>:164                                     ; preds = %154, %156
-  %165 = icmp eq %struct.fancyali_s** %r_ali, null, !dbg !538
-  br i1 %165, label %176, label %166, !dbg !540
+if.end84:                                         ; preds = %if.end78, %if.then80
+  %cmp85 = icmp eq %struct.fancyali_s** %r_ali, null, !dbg !261
+  br i1 %cmp85, label %if.end90, label %if.then86, !dbg !261
 
-; <label>:166                                     ; preds = %164
-  %167 = sext i32 %rank to i64, !dbg !541
-  %168 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !542
-  %169 = load %struct.hit_s*** %168, align 8, !dbg !542, !tbaa !171
-  %170 = getelementptr inbounds %struct.hit_s** %169, i64 %167, !dbg !541
-  %171 = load %struct.hit_s** %170, align 8, !dbg !541, !tbaa !419
-  %172 = getelementptr inbounds %struct.hit_s* %171, i64 0, i32 16, !dbg !543
-  %173 = bitcast %struct.fancyali_s** %172 to i64*, !dbg !543
-  %174 = load i64* %173, align 8, !dbg !543, !tbaa !208
-  %175 = bitcast %struct.fancyali_s** %r_ali to i64*, !dbg !544
-  store i64 %174, i64* %175, align 8, !dbg !544, !tbaa !419
-  br label %176, !dbg !545
+if.then86:                                        ; preds = %if.end84
+  %idxprom87 = sext i32 %rank to i64, !dbg !261
+  %hit88 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !261
+  %45 = load %struct.hit_s*** %hit88, align 8, !dbg !261, !tbaa !163
+  %arrayidx89 = getelementptr inbounds %struct.hit_s** %45, i64 %idxprom87, !dbg !261
+  %46 = load %struct.hit_s** %arrayidx89, align 8, !dbg !261, !tbaa !163
+  %ali = getelementptr inbounds %struct.hit_s* %46, i64 0, i32 16, !dbg !261
+  %47 = load %struct.fancyali_s** %ali, align 8, !dbg !261, !tbaa !163
+  store %struct.fancyali_s* %47, %struct.fancyali_s** %r_ali, align 8, !dbg !261, !tbaa !163
+  br label %if.end90, !dbg !261
 
-; <label>:176                                     ; preds = %164, %166
-  ret void, !dbg !546
+if.end90:                                         ; preds = %if.end84, %if.then86
+  ret void, !dbg !262
 }

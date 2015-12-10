@@ -1,74 +1,75 @@
 define void @_ZN3pov17Test_Blob_OpacityEPNS_11Blob_StructE(%"struct.pov::Blob_Struct"* nocapture %Blob) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_Struct"* %Blob, i64 0, metadata !1018, metadata !1893), !dbg !3533
-  %1 = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 3, !dbg !3534
-  %2 = load %"struct.pov::Texture_Struct"** %1, align 8, !dbg !3534, !tbaa !3536
-  %3 = icmp eq %"struct.pov::Texture_Struct"* %2, null, !dbg !3537
-  br i1 %3, label %7, label %4, !dbg !3538
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_Struct"* %Blob}, i64 0, metadata !1035), !dbg !2498
+  %Texture = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 3, !dbg !2499
+  %0 = load %"struct.pov::Texture_Struct"** %Texture, align 8, !dbg !2499, !tbaa !1639
+  %cmp = icmp eq %"struct.pov::Texture_Struct"* %0, null, !dbg !2499
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !2499
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @_ZN3pov12Test_OpacityEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %2) #6, !dbg !3539
-  %6 = icmp eq i32 %5, 0, !dbg !3540
-  br i1 %6, label %._crit_edge, label %7, !dbg !3541
+lor.lhs.false:                                    ; preds = %entry
+  %call = tail call i32 @_ZN3pov12Test_OpacityEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %0) #7, !dbg !2499
+  %tobool = icmp eq i32 %call, 0, !dbg !2499
+  br i1 %tobool, label %lor.lhs.false.if.end_crit_edge, label %if.then, !dbg !2499
 
-._crit_edge:                                      ; preds = %4
-  %.phi.trans.insert = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 13
-  %.pre = load i32* %.phi.trans.insert, align 4, !dbg !3542, !tbaa !2610
-  br label %11, !dbg !3541
+lor.lhs.false.if.end_crit_edge:                   ; preds = %lor.lhs.false
+  %Flags3.phi.trans.insert = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 13
+  %.pre = load i32* %Flags3.phi.trans.insert, align 4, !dbg !2500, !tbaa !1693
+  br label %if.end, !dbg !2499
 
-; <label>:7                                       ; preds = %4, %0
-  %8 = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 13, !dbg !3544
-  %9 = load i32* %8, align 4, !dbg !3544, !tbaa !2610
-  %10 = or i32 %9, 128, !dbg !3544
-  store i32 %10, i32* %8, align 4, !dbg !3544, !tbaa !2610
-  br label %11, !dbg !3547
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %Flags = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 13, !dbg !2501
+  %1 = load i32* %Flags, align 4, !dbg !2501, !tbaa !1693
+  %or = or i32 %1, 128, !dbg !2501
+  store i32 %or, i32* %Flags, align 4, !dbg !2501, !tbaa !1693
+  br label %if.end, !dbg !2504
 
-; <label>:11                                      ; preds = %._crit_edge, %7
-  %.pre-phi = phi i32* [ %.phi.trans.insert, %._crit_edge ], [ %8, %7 ], !dbg !3542
-  %12 = phi i32 [ %.pre, %._crit_edge ], [ %10, %7 ]
-  %13 = and i32 %12, 256, !dbg !3542
-  %14 = icmp eq i32 %13, 0, !dbg !3542
-  br i1 %14, label %.loopexit, label %.preheader, !dbg !3548
+if.end:                                           ; preds = %lor.lhs.false.if.end_crit_edge, %if.then
+  %2 = phi i32 [ %.pre, %lor.lhs.false.if.end_crit_edge ], [ %or, %if.then ]
+  %Flags3 = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 13, !dbg !2500
+  %and = and i32 %2, 256, !dbg !2500
+  %tobool5 = icmp eq i32 %and, 0, !dbg !2500
+  br i1 %tobool5, label %if.end22, label %for.cond.preheader, !dbg !2500
 
-.preheader:                                       ; preds = %11
-  %15 = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 14, !dbg !3549
-  %16 = load %"struct.pov::Blob_Data_Struct"** %15, align 8, !dbg !3549, !tbaa !1978
-  %17 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %16, i64 0, i32 1, !dbg !3553
-  %18 = load i32* %17, align 4, !dbg !3553, !tbaa !1998
-  %19 = icmp sgt i32 %18, 0, !dbg !3554
-  br i1 %19, label %.lr.ph, label %.loopexit, !dbg !3555
+for.cond.preheader:                               ; preds = %if.end
+  %Data = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 14, !dbg !2505
+  %3 = load %"struct.pov::Blob_Data_Struct"** %Data, align 8, !dbg !2505, !tbaa !1639
+  %Number_Of_Components33 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %3, i64 0, i32 1, !dbg !2505
+  %4 = load i32* %Number_Of_Components33, align 4, !dbg !2505, !tbaa !1693
+  %cmp734 = icmp sgt i32 %4, 0, !dbg !2505
+  br i1 %cmp734, label %for.body.lr.ph, label %if.end22, !dbg !2505
 
-.lr.ph:                                           ; preds = %.preheader
-  %20 = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 15, !dbg !3556
-  br label %21, !dbg !3555
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %Element_Texture = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 15, !dbg !2508
+  br label %for.body, !dbg !2505
 
-; <label>:21                                      ; preds = %.lr.ph, %32
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %32 ]
-  %22 = load %"struct.pov::Texture_Struct"*** %20, align 8, !dbg !3556, !tbaa !3013
-  %23 = getelementptr inbounds %"struct.pov::Texture_Struct"** %22, i64 %indvars.iv, !dbg !3559
-  %24 = load %"struct.pov::Texture_Struct"** %23, align 8, !dbg !3559, !tbaa !2026
-  %25 = icmp eq %"struct.pov::Texture_Struct"* %24, null, !dbg !3560
-  br i1 %25, label %32, label %26, !dbg !3561
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %5 = load %"struct.pov::Texture_Struct"*** %Element_Texture, align 8, !dbg !2508, !tbaa !1639
+  %arrayidx = getelementptr inbounds %"struct.pov::Texture_Struct"** %5, i64 %indvars.iv, !dbg !2508
+  %6 = load %"struct.pov::Texture_Struct"** %arrayidx, align 8, !dbg !2508, !tbaa !1639
+  %cmp8 = icmp eq %"struct.pov::Texture_Struct"* %6, null, !dbg !2508
+  br i1 %cmp8, label %for.inc, label %if.then9, !dbg !2508
 
-; <label>:26                                      ; preds = %21
-  %27 = tail call i32 @_ZN3pov12Test_OpacityEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %24) #6, !dbg !3562
-  %28 = icmp eq i32 %27, 0, !dbg !3562
-  br i1 %28, label %29, label %32, !dbg !3565
+if.then9:                                         ; preds = %for.body
+  %call13 = tail call i32 @_ZN3pov12Test_OpacityEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %6) #7, !dbg !2510
+  %tobool14 = icmp eq i32 %call13, 0, !dbg !2510
+  br i1 %tobool14, label %if.then15, label %for.inc, !dbg !2510
 
-; <label>:29                                      ; preds = %26
-  %30 = load i32* %.pre-phi, align 4, !dbg !3566, !tbaa !2610
-  %31 = and i32 %30, -129, !dbg !3566
-  store i32 %31, i32* %.pre-phi, align 4, !dbg !3566, !tbaa !2610
-  br label %32, !dbg !3569
+if.then15:                                        ; preds = %if.then9
+  %7 = load i32* %Flags3, align 4, !dbg !2512, !tbaa !1693
+  %and18 = and i32 %7, -129, !dbg !2512
+  store i32 %and18, i32* %Flags3, align 4, !dbg !2512, !tbaa !1693
+  br label %for.inc, !dbg !2515
 
-; <label>:32                                      ; preds = %26, %21, %29
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !3555
-  %33 = load %"struct.pov::Blob_Data_Struct"** %15, align 8, !dbg !3549, !tbaa !1978
-  %34 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %33, i64 0, i32 1, !dbg !3553
-  %35 = load i32* %34, align 4, !dbg !3553, !tbaa !1998
-  %36 = sext i32 %35 to i64, !dbg !3554
-  %37 = icmp slt i64 %indvars.iv.next, %36, !dbg !3554
-  br i1 %37, label %21, label %.loopexit, !dbg !3555
+for.inc:                                          ; preds = %if.then9, %for.body, %if.then15
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2505
+  %8 = load %"struct.pov::Blob_Data_Struct"** %Data, align 8, !dbg !2505, !tbaa !1639
+  %Number_Of_Components = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %8, i64 0, i32 1, !dbg !2505
+  %9 = load i32* %Number_Of_Components, align 4, !dbg !2505, !tbaa !1693
+  %10 = trunc i64 %indvars.iv.next to i32, !dbg !2505
+  %cmp7 = icmp slt i32 %10, %9, !dbg !2505
+  br i1 %cmp7, label %for.body, label %if.end22, !dbg !2505
 
-.loopexit:                                        ; preds = %32, %.preheader, %11
-  ret void, !dbg !3570
+if.end22:                                         ; preds = %for.cond.preheader, %for.inc, %if.end
+  ret void, !dbg !2516
 }

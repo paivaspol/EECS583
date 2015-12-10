@@ -1,29 +1,30 @@
 define void @ToDNA(i8* nocapture %seq) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %seq, i64 0, metadata !318, metadata !624), !dbg !1198
-  br label %1, !dbg !1199
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %seq}, i64 0, metadata !323), !dbg !790
+  br label %for.cond, !dbg !791
 
-; <label>:1                                       ; preds = %5, %0
-  %.0 = phi i8* [ %seq, %0 ], [ %6, %5 ]
-  %2 = load i8* %.0, align 1, !dbg !1200, !tbaa !861
-  switch i8 %2, label %5 [
-    i8 0, label %7
-    i8 85, label %3
-    i8 117, label %4
-  ], !dbg !1203
+for.cond:                                         ; preds = %for.inc, %entry
+  %seq.addr.0 = phi i8* [ %seq, %entry ], [ %incdec.ptr, %for.inc ]
+  %0 = load i8* %seq.addr.0, align 1, !dbg !791, !tbaa !601
+  switch i8 %0, label %for.inc [
+    i8 0, label %for.end
+    i8 85, label %if.then
+    i8 117, label %if.then8
+  ], !dbg !791
 
-; <label>:3                                       ; preds = %1
-  store i8 84, i8* %.0, align 1, !dbg !1204, !tbaa !861
-  br label %5, !dbg !1207
+if.then:                                          ; preds = %for.cond
+  store i8 84, i8* %seq.addr.0, align 1, !dbg !793, !tbaa !601
+  br label %for.inc, !dbg !793
 
-; <label>:4                                       ; preds = %1
-  store i8 116, i8* %.0, align 1, !dbg !1208, !tbaa !861
-  br label %5, !dbg !1210
+if.then8:                                         ; preds = %for.cond
+  store i8 116, i8* %seq.addr.0, align 1, !dbg !795, !tbaa !601
+  br label %for.inc, !dbg !795
 
-; <label>:5                                       ; preds = %1, %3, %4
-  %6 = getelementptr inbounds i8* %.0, i64 1, !dbg !1211
-  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !318, metadata !624), !dbg !1198
-  br label %1, !dbg !1212
+for.inc:                                          ; preds = %for.cond, %if.then, %if.then8
+  %incdec.ptr = getelementptr inbounds i8* %seq.addr.0, i64 1, !dbg !791
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !323), !dbg !791
+  br label %for.cond, !dbg !791
 
-; <label>:7                                       ; preds = %1
-  ret void, !dbg !1213
+for.end:                                          ; preds = %for.cond
+  ret void, !dbg !796
 }

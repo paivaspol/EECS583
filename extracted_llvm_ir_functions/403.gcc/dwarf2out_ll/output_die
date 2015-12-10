@@ -1,57 +1,62 @@
 define internal fastcc void @output_die(%struct.die_struct* nocapture %die) #1 {
 entry:
   %l1 = alloca [20 x i8], align 16
-  %die_symbol = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 1
-  %0 = load i8** %die_symbol, align 8, !tbaa !4
-  %tobool = icmp eq i8* %0, null
-  br i1 %tobool, label %if.end, label %if.end.i
+  call void @llvm.dbg.value(metadata !{%struct.die_struct* %die}, i64 0, metadata !2106), !dbg !7320
+  %die_symbol = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 1, !dbg !7321
+  %0 = load i8** %die_symbol, align 8, !dbg !7321, !tbaa !3768
+  %tobool = icmp eq i8* %0, null, !dbg !7321
+  br i1 %tobool, label %if.end, label %if.end.i, !dbg !7321
 
 if.end.i:                                         ; preds = %entry
-  %call.i = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([3 x i8]* @.str366, i64 0, i64 0), i64 2) #11
-  %cmp1.i = icmp eq i32 %call.i, 0
-  br i1 %cmp1.i, label %if.then2.i, label %output_die_symbol.exit
+  call void @llvm.dbg.value(metadata !{%struct.die_struct* %die}, i64 0, metadata !7322) #6, !dbg !7324
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !7325) #6, !dbg !7326
+  %call.i = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([3 x i8]* @.str366, i64 0, i64 0), i64 2) #12, !dbg !7327
+  %cmp1.i = icmp eq i32 %call.i, 0, !dbg !7327
+  br i1 %cmp1.i, label %if.then2.i, label %output_die_symbol.exit, !dbg !7327
 
 if.then2.i:                                       ; preds = %if.end.i
-  %1 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
-  %2 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str367, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %1) #5
-  %3 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
-  call void @assemble_name(%struct._IO_FILE* %3, i8* %0) #9
-  %4 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
-  %fputc.i = call i32 @fputc(i32 10, %struct._IO_FILE* %4) #5
-  br label %output_die_symbol.exit
+  %1 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !7328, !tbaa !3768
+  %2 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str367, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %1) #6, !dbg !7328
+  %3 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !7328, !tbaa !3768
+  call void @assemble_name(%struct._IO_FILE* %3, i8* %0) #10, !dbg !7328
+  %4 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !7328, !tbaa !3768
+  %fputc.i = call i32 @fputc(i32 10, %struct._IO_FILE* %4) #6, !dbg !7328
+  br label %output_die_symbol.exit, !dbg !7328
 
 output_die_symbol.exit:                           ; preds = %if.end.i, %if.then2.i
-  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
-  call void @assemble_name(%struct._IO_FILE* %5, i8* %0) #9
-  %6 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
-  %7 = call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %6) #5
-  br label %if.end
+  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !7329, !tbaa !3768
+  call void @assemble_name(%struct._IO_FILE* %5, i8* %0) #10, !dbg !7329
+  %6 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !7329, !tbaa !3768
+  %7 = call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %6) #6, !dbg !7329
+  br label %if.end, !dbg !7323
 
 if.end:                                           ; preds = %entry, %output_die_symbol.exit
-  %die_abbrev = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 7
-  %8 = load i64* %die_abbrev, align 8, !tbaa !6
-  %die_offset = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 6
-  %9 = load i64* %die_offset, align 8, !tbaa !6
-  %die_tag = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 0
-  %10 = load i32* %die_tag, align 4, !tbaa !12
-  %call = call fastcc i8* @dwarf_tag_name(i32 %10) #10
-  call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %8, i8* getelementptr inbounds ([17 x i8]* @.str212, i64 0, i64 0), i64 %9, i8* %call) #9
-  %die_attr = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2
-  %a.0281 = load %struct.dw_attr_struct** %die_attr, align 8
-  %cmp282 = icmp eq %struct.dw_attr_struct* %a.0281, null
-  br i1 %cmp282, label %for.end103, label %for.body.lr.ph
+  %die_abbrev = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 7, !dbg !7330
+  %8 = load i64* %die_abbrev, align 8, !dbg !7330, !tbaa !3782
+  %die_offset = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 6, !dbg !7330
+  %9 = load i64* %die_offset, align 8, !dbg !7330, !tbaa !3782
+  %die_tag = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 0, !dbg !7331
+  %10 = load i32* %die_tag, align 4, !dbg !7331, !tbaa !4815
+  %call = call fastcc i8* @dwarf_tag_name(i32 %10) #11, !dbg !7331
+  call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %8, i8* getelementptr inbounds ([17 x i8]* @.str212, i64 0, i64 0), i64 %9, i8* %call) #10, !dbg !7331
+  %die_attr = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2, !dbg !7332
+  %a.0281 = load %struct.dw_attr_struct** %die_attr, align 8, !dbg !7332
+  %cmp282 = icmp eq %struct.dw_attr_struct* %a.0281, null, !dbg !7332
+  br i1 %cmp282, label %for.end103, label %for.body.lr.ph, !dbg !7332
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %arraydecay = getelementptr inbounds [20 x i8]* %l1, i64 0, i64 0
-  br label %for.body
+  %arraydecay = getelementptr inbounds [20 x i8]* %l1, i64 0, i64 0, !dbg !7333
+  br label %for.body, !dbg !7332
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc102
   %a.0283 = phi %struct.dw_attr_struct* [ %a.0281, %for.body.lr.ph ], [ %a.0, %for.inc102 ]
-  %dw_attr = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 0
-  %11 = load i32* %dw_attr, align 4, !tbaa !11
-  %call1 = call fastcc i8* @dwarf_attr_name(i32 %11) #10
-  %val_class.i = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 0
-  %12 = load i32* %val_class.i, align 4, !tbaa !1
+  %dw_attr = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 0, !dbg !7335
+  %11 = load i32* %dw_attr, align 4, !dbg !7335, !tbaa !4703
+  %call1 = call fastcc i8* @dwarf_attr_name(i32 %11) #11, !dbg !7335
+  call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !2110), !dbg !7335
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7336), !dbg !7338
+  %val_class.i = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 0, !dbg !7339
+  %12 = load i32* %val_class.i, align 4, !dbg !7339, !tbaa !3759
   switch i32 %12, label %sw.default [
     i32 0, label %AT_addr.exit
     i32 1, label %sw.bb5
@@ -68,289 +73,327 @@ for.body:                                         ; preds = %for.body.lr.ph, %fo
     i32 12, label %AT_lbl.exit
     i32 13, label %AT_lbl.exit256
     i32 14, label %sw.bb91
-  ]
+  ], !dbg !7337
 
 AT_addr.exit:                                     ; preds = %for.body
-  %13 = load i32* @target_flags, align 4, !tbaa !0
-  %and = lshr i32 %13, 20
-  %14 = and i32 %and, 32
-  %15 = add i32 %14, 32
-  %div = sdiv i32 %15, 8
-  %v.i = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %val_addr.i = bitcast %union.anon.3* %v.i to %struct.rtx_def**
-  %16 = load %struct.rtx_def** %val_addr.i, align 8, !tbaa !4
-  call void (i32, %struct.rtx_def*, i8*, ...)* @dw2_asm_output_addr_rtx(i32 %div, %struct.rtx_def* %16, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  br label %for.inc102
+  %13 = load i32* @target_flags, align 4, !dbg !7340, !tbaa !3758
+  %and = lshr i32 %13, 20, !dbg !7340
+  %14 = and i32 %and, 32, !dbg !7340
+  %15 = add i32 %14, 32, !dbg !7340
+  %div = sdiv i32 %15, 8, !dbg !7340
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7341) #6, !dbg !7343
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7344) #6, !dbg !7346
+  %v.i = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7347
+  %val_addr.i = bitcast %union.anon.3* %v.i to %struct.rtx_def**, !dbg !7347
+  %16 = load %struct.rtx_def** %val_addr.i, align 8, !dbg !7347, !tbaa !3768
+  call void (i32, %struct.rtx_def*, i8*, ...)* @dw2_asm_output_addr_rtx(i32 %div, %struct.rtx_def* %16, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7342
+  br label %for.inc102, !dbg !7348
 
 sw.bb5:                                           ; preds = %for.body
-  %val_offset = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 0
-  %17 = load i64* %val_offset, align 8, !tbaa !6
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 4, i64 %17, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  br label %for.inc102
+  %val_offset = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7349
+  %17 = load i64* %val_offset, align 8, !dbg !7349, !tbaa !3782
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 4, i64 %17, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7349
+  br label %for.inc102, !dbg !7350
 
 sw.bb6:                                           ; preds = %for.body
-  %call7 = call i8* @strchr(i8* getelementptr inbounds ([60 x i8]* @ranges_section_label, i64 0, i64 0), i32 0) #11
-  %val_offset10 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 0
-  %18 = load i64* %val_offset10, align 8, !tbaa !6
-  %call11 = call i32 (i8*, i8*, ...)* @sprintf(i8* %call7, i8* getelementptr inbounds ([7 x i8]* @.str214, i64 0, i64 0), i64 %18) #9
-  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 4, i8* getelementptr inbounds ([60 x i8]* @ranges_section_label, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  store i8 0, i8* %call7, align 1, !tbaa !1
-  br label %for.inc102
+  %call7 = call i8* @strchr(i8* getelementptr inbounds ([60 x i8]* @ranges_section_label, i64 0, i64 0), i32 0) #12, !dbg !7351
+  call void @llvm.dbg.value(metadata !{i8* %call7}, i64 0, metadata !2113), !dbg !7351
+  %val_offset10 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7352
+  %18 = load i64* %val_offset10, align 8, !dbg !7352, !tbaa !3782
+  %call11 = call i32 (i8*, i8*, ...)* @sprintf(i8* %call7, i8* getelementptr inbounds ([7 x i8]* @.str214, i64 0, i64 0), i64 %18) #10, !dbg !7352
+  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 4, i8* getelementptr inbounds ([60 x i8]* @ranges_section_label, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7353
+  store i8 0, i8* %call7, align 1, !dbg !7354, !tbaa !3759
+  br label %for.inc102, !dbg !7355
 
 land.lhs.true.i187:                               ; preds = %for.body
-  %v.i182 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %val_loc.i = bitcast %union.anon.3* %v.i182 to %struct.dw_loc_descr_struct**
-  %19 = load %struct.dw_loc_descr_struct** %val_loc.i, align 8, !tbaa !4
-  %call14 = call fastcc i64 @size_of_locs(%struct.dw_loc_descr_struct* %19) #10
-  %call15 = call fastcc i32 @constant_size(i64 %call14) #10
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 %call15, i64 %call14, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  %20 = load i32* %val_class.i, align 4, !tbaa !1
-  %cmp.i186 = icmp eq i32 %20, 2
-  br i1 %cmp.i186, label %AT_loc.exit191, label %if.end.i190
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7356) #6, !dbg !7358
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7359) #6, !dbg !7361
+  %v.i182 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7362
+  %val_loc.i = bitcast %union.anon.3* %v.i182 to %struct.dw_loc_descr_struct**, !dbg !7362
+  %19 = load %struct.dw_loc_descr_struct** %val_loc.i, align 8, !dbg !7362, !tbaa !3768
+  %call14 = call fastcc i64 @size_of_locs(%struct.dw_loc_descr_struct* %19) #11, !dbg !7357
+  call void @llvm.dbg.value(metadata !{i64 %call14}, i64 0, metadata !2109), !dbg !7357
+  %call15 = call fastcc i32 @constant_size(i64 %call14) #11, !dbg !7363
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 %call15, i64 %call14, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7363
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7364) #6, !dbg !7366
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7367) #6, !dbg !7369
+  %20 = load i32* %val_class.i, align 4, !dbg !7370, !tbaa !3759
+  %cmp.i186 = icmp eq i32 %20, 2, !dbg !7368
+  br i1 %cmp.i186, label %AT_loc.exit191, label %if.end.i190, !dbg !7368
 
 if.end.i190:                                      ; preds = %land.lhs.true.i187
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4653, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_loc, i64 0, i64 0)) #12
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4653, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_loc, i64 0, i64 0)) #13, !dbg !7371
+  unreachable, !dbg !7371
 
 AT_loc.exit191:                                   ; preds = %land.lhs.true.i187
-  %21 = load %struct.dw_loc_descr_struct** %val_loc.i, align 8, !tbaa !4
-  call fastcc void @output_loc_sequence(%struct.dw_loc_descr_struct* %21) #10
-  br label %for.inc102
+  %21 = load %struct.dw_loc_descr_struct** %val_loc.i, align 8, !dbg !7372, !tbaa !3768
+  call fastcc void @output_loc_sequence(%struct.dw_loc_descr_struct* %21) #11, !dbg !7365
+  br label %for.inc102, !dbg !7373
 
 AT_int.exit:                                      ; preds = %for.body
-  %val_int.i = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 0
-  %22 = load i64* %val_int.i, align 8, !tbaa !6
-  call void (i64, i8*, ...)* @dw2_asm_output_data_sleb128(i64 %22, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  br label %for.inc102
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7374) #6, !dbg !7376
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7377) #6, !dbg !7379
+  %val_int.i = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7380
+  %22 = load i64* %val_int.i, align 8, !dbg !7380, !tbaa !3782
+  call void (i64, i8*, ...)* @dw2_asm_output_data_sleb128(i64 %22, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7375
+  br label %for.inc102, !dbg !7381
 
 land.lhs.true.i205:                               ; preds = %for.body
-  %val_unsigned.i = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 0
-  %23 = load i64* %val_unsigned.i, align 8, !tbaa !6
-  %call21 = call fastcc i32 @constant_size(i64 %23) #10
-  %24 = load i32* %val_class.i, align 4, !tbaa !1
-  %cmp.i204 = icmp eq i32 %24, 6
-  br i1 %cmp.i204, label %AT_unsigned.exit208, label %if.end.i207
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7382) #6, !dbg !7384
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7385) #6, !dbg !7387
+  %val_unsigned.i = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7388
+  %23 = load i64* %val_unsigned.i, align 8, !dbg !7388, !tbaa !3782
+  %call21 = call fastcc i32 @constant_size(i64 %23) #11, !dbg !7383
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7389) #6, !dbg !7391
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7392) #6, !dbg !7394
+  %24 = load i32* %val_class.i, align 4, !dbg !7395, !tbaa !3759
+  %cmp.i204 = icmp eq i32 %24, 6, !dbg !7393
+  br i1 %cmp.i204, label %AT_unsigned.exit208, label %if.end.i207, !dbg !7393
 
 if.end.i207:                                      ; preds = %land.lhs.true.i205
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4441, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.AT_unsigned, i64 0, i64 0)) #12
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4441, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.AT_unsigned, i64 0, i64 0)) #13, !dbg !7396
+  unreachable, !dbg !7396
 
 AT_unsigned.exit208:                              ; preds = %land.lhs.true.i205
-  %25 = load i64* %val_unsigned.i, align 8, !tbaa !6
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 %call21, i64 %25, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  br label %for.inc102
+  %25 = load i64* %val_unsigned.i, align 8, !dbg !7397, !tbaa !3782
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 %call21, i64 %25, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7390
+  br label %for.inc102, !dbg !7398
 
 sw.bb23:                                          ; preds = %for.body
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 16, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  %low = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 1
-  %26 = load i64* %low, align 8, !tbaa !6
-  %hi = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 0
-  %27 = load i64* %hi, align 8, !tbaa !6
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 8, i64 %26, i8* getelementptr inbounds ([19 x i8]* @.str215, i64 0, i64 0)) #9
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 8, i64 %27, i8* null) #9
-  br label %for.inc102
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 16, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7399
+  %low = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 1, !dbg !7400
+  %26 = load i64* %low, align 8, !dbg !7400, !tbaa !3782
+  call void @llvm.dbg.value(metadata !{i64 %26}, i64 0, metadata !2116), !dbg !7400
+  %hi = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7402
+  %27 = load i64* %hi, align 8, !dbg !7402, !tbaa !3782
+  call void @llvm.dbg.value(metadata !{i64 %27}, i64 0, metadata !2118), !dbg !7402
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 8, i64 %26, i8* getelementptr inbounds ([19 x i8]* @.str215, i64 0, i64 0)) #10, !dbg !7403
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 8, i64 %27, i8* null) #10, !dbg !7404
+  br label %for.inc102, !dbg !7405
 
 sw.bb29:                                          ; preds = %for.body
-  %length = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 1
-  %28 = bitcast i64* %length to i32*
-  %29 = load i32* %28, align 4, !tbaa !0
-  %mul = shl i32 %29, 2
-  %conv = zext i32 %mul to i64
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %conv, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  %30 = load i32* %28, align 4, !tbaa !0
-  %cmp37279 = icmp eq i32 %30, 0
-  br i1 %cmp37279, label %for.inc102, label %for.body39.lr.ph
+  %length = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 1, !dbg !7406
+  %28 = bitcast i64* %length to i32*, !dbg !7406
+  %29 = load i32* %28, align 4, !dbg !7406, !tbaa !3758
+  %mul = shl i32 %29, 2, !dbg !7406
+  %conv = zext i32 %mul to i64, !dbg !7406
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %conv, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7406
+  call void @llvm.dbg.value(metadata !1204, i64 0, metadata !2119), !dbg !7407
+  %30 = load i32* %28, align 4, !dbg !7407, !tbaa !3758
+  %cmp37279 = icmp eq i32 %30, 0, !dbg !7407
+  br i1 %cmp37279, label %for.inc102, label %for.body39.lr.ph, !dbg !7407
 
 for.body39.lr.ph:                                 ; preds = %sw.bb29
-  %v31 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %array = bitcast %union.anon.3* %v31 to i64**
-  br label %for.body39
+  %v31 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7406
+  %array = bitcast %union.anon.3* %v31 to i64**, !dbg !7409
+  br label %for.body39, !dbg !7407
 
 for.body39:                                       ; preds = %for.body39.lr.ph, %for.body39
   %i.0280 = phi i32 [ 0, %for.body39.lr.ph ], [ %inc, %for.body39 ]
-  %idxprom = zext i32 %i.0280 to i64
-  %31 = load i64** %array, align 8, !tbaa !4
-  %arrayidx = getelementptr inbounds i64* %31, i64 %idxprom
-  %32 = load i64* %arrayidx, align 8, !tbaa !6
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 4, i64 %32, i8* getelementptr inbounds ([20 x i8]* @.str216, i64 0, i64 0), i32 %i.0280) #9
-  %inc = add i32 %i.0280, 1
-  %33 = load i32* %28, align 4, !tbaa !0
-  %cmp37 = icmp ult i32 %inc, %33
-  br i1 %cmp37, label %for.body39, label %for.inc102
+  %idxprom = zext i32 %i.0280 to i64, !dbg !7409
+  %31 = load i64** %array, align 8, !dbg !7409, !tbaa !3768
+  %arrayidx = getelementptr inbounds i64* %31, i64 %idxprom, !dbg !7409
+  %32 = load i64* %arrayidx, align 8, !dbg !7409, !tbaa !3782
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 4, i64 %32, i8* getelementptr inbounds ([20 x i8]* @.str216, i64 0, i64 0), i32 %i.0280) #10, !dbg !7409
+  %inc = add i32 %i.0280, 1, !dbg !7407
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !2119), !dbg !7407
+  %33 = load i32* %28, align 4, !dbg !7407, !tbaa !3758
+  %cmp37 = icmp ult i32 %inc, %33, !dbg !7407
+  br i1 %cmp37, label %for.body39, label %for.inc102, !dbg !7407
 
 AT_flag.exit:                                     ; preds = %for.body
-  %v.i213 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %val_flag.i = bitcast %union.anon.3* %v.i213 to i8*
-  %34 = load i8* %val_flag.i, align 1, !tbaa !1
-  %conv45 = zext i8 %34 to i64
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %conv45, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  br label %for.inc102
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7410) #6, !dbg !7412
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7413) #6, !dbg !7415
+  %v.i213 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7416
+  %val_flag.i = bitcast %union.anon.3* %v.i213 to i8*, !dbg !7416
+  %34 = load i8* %val_flag.i, align 1, !dbg !7416, !tbaa !3759
+  %conv45 = zext i8 %34 to i64, !dbg !7411
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %conv45, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7411
+  br label %for.inc102, !dbg !7417
 
 AT_loc_list.exit:                                 ; preds = %for.body
-  %v.i219 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %val_loc_list.i = bitcast %union.anon.3* %v.i219 to %struct.dw_loc_list_struct**
-  %35 = load %struct.dw_loc_list_struct** %val_loc_list.i, align 8, !tbaa !4
-  %ll_symbol = getelementptr inbounds %struct.dw_loc_list_struct* %35, i64 0, i32 3
-  %36 = load i8** %ll_symbol, align 8, !tbaa !4
-  %cmp48 = icmp eq i8* %36, null
-  br i1 %cmp48, label %if.then50, label %if.end51
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7418) #6, !dbg !7420
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7421) #6, !dbg !7423
+  %v.i219 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7424
+  %val_loc_list.i = bitcast %union.anon.3* %v.i219 to %struct.dw_loc_list_struct**, !dbg !7424
+  %35 = load %struct.dw_loc_list_struct** %val_loc_list.i, align 8, !dbg !7424, !tbaa !3768
+  %ll_symbol = getelementptr inbounds %struct.dw_loc_list_struct* %35, i64 0, i32 3, !dbg !7419
+  %36 = load i8** %ll_symbol, align 8, !dbg !7419, !tbaa !3768
+  call void @llvm.dbg.value(metadata !{i8* %36}, i64 0, metadata !2121), !dbg !7419
+  %cmp48 = icmp eq i8* %36, null, !dbg !7425
+  br i1 %cmp48, label %if.then50, label %if.end51, !dbg !7425
 
 if.then50:                                        ; preds = %AT_loc_list.exit
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 6361, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.output_die, i64 0, i64 0)) #12
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 6361, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.output_die, i64 0, i64 0)) #13, !dbg !7426
+  unreachable, !dbg !7426
 
 if.end51:                                         ; preds = %AT_loc_list.exit
-  call void (i32, i8*, i8*, i8*, ...)* @dw2_asm_output_delta(i32 4, i8* %36, i8* getelementptr inbounds ([30 x i8]* @loc_section_label, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  br label %for.inc102
+  call void (i32, i8*, i8*, i8*, ...)* @dw2_asm_output_delta(i32 4, i8* %36, i8* getelementptr inbounds ([30 x i8]* @loc_section_label, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7427
+  br label %for.inc102, !dbg !7428
 
 AT_ref.exit:                                      ; preds = %for.body
-  %external.i = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 1
-  %37 = bitcast i64* %external.i to i32*
-  %38 = load i32* %37, align 4, !tbaa !0
-  %tobool54 = icmp eq i32 %38, 0
-  %v.i229 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %die.i = bitcast %union.anon.3* %v.i229 to %struct.die_struct**
-  %39 = load %struct.die_struct** %die.i, align 8, !tbaa !4
-  br i1 %tobool54, label %if.else, label %if.then55
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7429), !dbg !7431
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7432), !dbg !7434
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7435) #6, !dbg !7437
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7438) #6, !dbg !7440
+  %external.i = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, i32 0, i32 1, !dbg !7441
+  %37 = bitcast i64* %external.i to i32*, !dbg !7441
+  %38 = load i32* %37, align 4, !dbg !7441, !tbaa !3758
+  %tobool54 = icmp eq i32 %38, 0, !dbg !7430
+  %v.i229 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7442
+  %die.i = bitcast %union.anon.3* %v.i229 to %struct.die_struct**, !dbg !7442
+  %39 = load %struct.die_struct** %die.i, align 8, !dbg !7442, !tbaa !3768
+  br i1 %tobool54, label %if.else, label %if.then55, !dbg !7430
 
 if.then55:                                        ; preds = %AT_ref.exit
-  %die_symbol58 = getelementptr inbounds %struct.die_struct* %39, i64 0, i32 1
-  %40 = load i8** %die_symbol58, align 8, !tbaa !4
-  %cmp59 = icmp eq i8* %40, null
-  br i1 %cmp59, label %if.then61, label %if.end62
+  %die_symbol58 = getelementptr inbounds %struct.die_struct* %39, i64 0, i32 1, !dbg !7436
+  %40 = load i8** %die_symbol58, align 8, !dbg !7436, !tbaa !3768
+  call void @llvm.dbg.value(metadata !{i8* %40}, i64 0, metadata !2123), !dbg !7436
+  %cmp59 = icmp eq i8* %40, null, !dbg !7443
+  br i1 %cmp59, label %if.then61, label %if.end62, !dbg !7443
 
 if.then61:                                        ; preds = %if.then55
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 6373, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.output_die, i64 0, i64 0)) #12
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 6373, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.output_die, i64 0, i64 0)) #13, !dbg !7444
+  unreachable, !dbg !7444
 
 if.end62:                                         ; preds = %if.then55
-  %41 = load i32* @target_flags, align 4, !tbaa !0
-  %and63 = lshr i32 %41, 20
-  %42 = and i32 %and63, 32
-  %43 = add i32 %42, 32
-  %div66 = sdiv i32 %43, 8
-  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 %div66, i8* %40, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  br label %for.inc102
+  %41 = load i32* @target_flags, align 4, !dbg !7445, !tbaa !3758
+  %and63 = lshr i32 %41, 20, !dbg !7445
+  %42 = and i32 %and63, 32, !dbg !7445
+  %43 = add i32 %42, 32, !dbg !7445
+  %div66 = sdiv i32 %43, 8, !dbg !7445
+  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 %div66, i8* %40, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7445
+  br label %for.inc102, !dbg !7446
 
 if.else:                                          ; preds = %AT_ref.exit
-  %die_offset68 = getelementptr inbounds %struct.die_struct* %39, i64 0, i32 6
-  %44 = load i64* %die_offset68, align 8, !tbaa !6
-  %cmp69 = icmp eq i64 %44, 0
-  br i1 %cmp69, label %if.then71, label %AT_ref.exit240
+  %die_offset68 = getelementptr inbounds %struct.die_struct* %39, i64 0, i32 6, !dbg !7447
+  %44 = load i64* %die_offset68, align 8, !dbg !7447, !tbaa !3782
+  %cmp69 = icmp eq i64 %44, 0, !dbg !7447
+  br i1 %cmp69, label %if.then71, label %AT_ref.exit240, !dbg !7447
 
 if.then71:                                        ; preds = %if.else
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 6377, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.output_die, i64 0, i64 0)) #12
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 6377, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.output_die, i64 0, i64 0)) #13, !dbg !7448
+  unreachable, !dbg !7448
 
 AT_ref.exit240:                                   ; preds = %if.else
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 4, i64 %44, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7449) #6, !dbg !7451
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 4, i64 %44, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7450
   br label %for.inc102
 
 do.body:                                          ; preds = %for.body
-  %v79 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %val_fde_index = bitcast %union.anon.3* %v79 to i32*
-  %45 = load i32* %val_fde_index, align 4, !tbaa !0
-  %mul80 = shl i32 %45, 1
-  %call81 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str217, i64 0, i64 0), i32 %mul80) #9
-  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 4, i8* %arraydecay, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  br label %for.inc102
+  call void @llvm.dbg.declare(metadata !{[20 x i8]* %l1}, metadata !2125), !dbg !7452
+  %v79 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7333
+  %val_fde_index = bitcast %union.anon.3* %v79 to i32*, !dbg !7333
+  %45 = load i32* %val_fde_index, align 4, !dbg !7333, !tbaa !3758
+  %mul80 = shl i32 %45, 1, !dbg !7333
+  %call81 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str217, i64 0, i64 0), i32 %mul80) #10, !dbg !7333
+  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 4, i8* %arraydecay, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7453
+  br label %for.inc102, !dbg !7454
 
 AT_lbl.exit:                                      ; preds = %for.body
-  %46 = load i32* @target_flags, align 4, !tbaa !0
-  %and84 = lshr i32 %46, 20
-  %47 = and i32 %and84, 32
-  %48 = add i32 %47, 32
-  %div87 = sdiv i32 %48, 8
-  %v.i244 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %val_lbl_id.i = bitcast %union.anon.3* %v.i244 to i8**
-  %49 = load i8** %val_lbl_id.i, align 8, !tbaa !4
-  call void (i32, i8*, i8*, ...)* @dw2_asm_output_addr(i32 %div87, i8* %49, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  br label %for.inc102
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7455) #6, !dbg !7457
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7458) #6, !dbg !7460
+  %46 = load i32* @target_flags, align 4, !dbg !7461, !tbaa !3758
+  %and84 = lshr i32 %46, 20, !dbg !7461
+  %47 = and i32 %and84, 32, !dbg !7461
+  %48 = add i32 %47, 32, !dbg !7461
+  %div87 = sdiv i32 %48, 8, !dbg !7461
+  %v.i244 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7462
+  %val_lbl_id.i = bitcast %union.anon.3* %v.i244 to i8**, !dbg !7462
+  %49 = load i8** %val_lbl_id.i, align 8, !dbg !7462, !tbaa !3768
+  call void (i32, i8*, i8*, ...)* @dw2_asm_output_addr(i32 %div87, i8* %49, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7456
+  br label %for.inc102, !dbg !7463
 
 AT_lbl.exit256:                                   ; preds = %for.body
-  %v.i252 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %val_lbl_id.i253 = bitcast %union.anon.3* %v.i252 to i8**
-  %50 = load i8** %val_lbl_id.i253, align 8, !tbaa !4
-  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 4, i8* %50, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
-  br label %for.inc102
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7464) #6, !dbg !7466
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7467) #6, !dbg !7469
+  %v.i252 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7470
+  %val_lbl_id.i253 = bitcast %union.anon.3* %v.i252 to i8**, !dbg !7470
+  %50 = load i8** %val_lbl_id.i253, align 8, !dbg !7470, !tbaa !3768
+  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 4, i8* %50, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7465
+  br label %for.inc102, !dbg !7471
 
 sw.bb91:                                          ; preds = %for.body
-  %call92 = call fastcc i32 @AT_string_form(%struct.dw_attr_struct* %a.0283) #10
-  %cmp93 = icmp eq i32 %call92, 14
-  br i1 %cmp93, label %land.lhs.true.i260, label %land.lhs.true.i267
+  %call92 = call fastcc i32 @AT_string_form(%struct.dw_attr_struct* %a.0283) #11, !dbg !7472
+  %cmp93 = icmp eq i32 %call92, 14, !dbg !7472
+  br i1 %cmp93, label %land.lhs.true.i260, label %land.lhs.true.i267, !dbg !7472
 
 land.lhs.true.i260:                               ; preds = %sw.bb91
-  %v97 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %val_str = bitcast %union.anon.3* %v97 to %struct.indirect_string_node**
-  %51 = load %struct.indirect_string_node** %val_str, align 8, !tbaa !4
-  %52 = load i32* %val_class.i, align 4, !tbaa !1
-  %cmp.i259 = icmp eq i32 %52, 14
-  br i1 %cmp.i259, label %AT_string.exit, label %if.end.i263
+  %v97 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7473
+  %val_str = bitcast %union.anon.3* %v97 to %struct.indirect_string_node**, !dbg !7473
+  %51 = load %struct.indirect_string_node** %val_str, align 8, !dbg !7473, !tbaa !3768
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7474) #6, !dbg !7476
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7477) #6, !dbg !7479
+  %52 = load i32* %val_class.i, align 4, !dbg !7480, !tbaa !3759
+  %cmp.i259 = icmp eq i32 %52, 14, !dbg !7478
+  br i1 %cmp.i259, label %AT_string.exit, label %if.end.i263, !dbg !7478
 
 if.end.i263:                                      ; preds = %land.lhs.true.i260
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4518, i8* getelementptr inbounds ([10 x i8]* @__FUNCTION__.AT_string, i64 0, i64 0)) #12
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4518, i8* getelementptr inbounds ([10 x i8]* @__FUNCTION__.AT_string, i64 0, i64 0)) #13, !dbg !7481
+  unreachable, !dbg !7481
 
 AT_string.exit:                                   ; preds = %land.lhs.true.i260
-  %label = getelementptr inbounds %struct.indirect_string_node* %51, i64 0, i32 3
-  %53 = load i8** %label, align 8, !tbaa !4
-  %str.i = getelementptr inbounds %struct.indirect_string_node* %51, i64 0, i32 0, i32 1
-  %54 = load i8** %str.i, align 8, !tbaa !4
-  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 4, i8* %53, i8* getelementptr inbounds ([9 x i8]* @.str218, i64 0, i64 0), i8* %call1, i8* %54) #9
-  br label %for.inc102
+  %label = getelementptr inbounds %struct.indirect_string_node* %51, i64 0, i32 3, !dbg !7473
+  %53 = load i8** %label, align 8, !dbg !7473, !tbaa !3768
+  %str.i = getelementptr inbounds %struct.indirect_string_node* %51, i64 0, i32 0, i32 1, !dbg !7482
+  %54 = load i8** %str.i, align 8, !dbg !7482, !tbaa !3768
+  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 4, i8* %53, i8* getelementptr inbounds ([9 x i8]* @.str218, i64 0, i64 0), i8* %call1, i8* %54) #10, !dbg !7475
+  br label %for.inc102, !dbg !7475
 
 land.lhs.true.i267:                               ; preds = %sw.bb91
-  %55 = load i32* %val_class.i, align 4, !tbaa !1
-  %cmp.i266 = icmp eq i32 %55, 14
-  br i1 %cmp.i266, label %AT_string.exit273, label %if.end.i272
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7483) #6, !dbg !7485
+  call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0283}, i64 0, metadata !7486) #6, !dbg !7488
+  %55 = load i32* %val_class.i, align 4, !dbg !7489, !tbaa !3759
+  %cmp.i266 = icmp eq i32 %55, 14, !dbg !7487
+  br i1 %cmp.i266, label %AT_string.exit273, label %if.end.i272, !dbg !7487
 
 if.end.i272:                                      ; preds = %land.lhs.true.i267
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4518, i8* getelementptr inbounds ([10 x i8]* @__FUNCTION__.AT_string, i64 0, i64 0)) #12
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4518, i8* getelementptr inbounds ([10 x i8]* @__FUNCTION__.AT_string, i64 0, i64 0)) #13, !dbg !7490
+  unreachable, !dbg !7490
 
 AT_string.exit273:                                ; preds = %land.lhs.true.i267
-  %v.i268 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1
-  %val_str.i269 = bitcast %union.anon.3* %v.i268 to %struct.indirect_string_node**
-  %56 = load %struct.indirect_string_node** %val_str.i269, align 8, !tbaa !4
-  %str.i270 = getelementptr inbounds %struct.indirect_string_node* %56, i64 0, i32 0, i32 1
-  %57 = load i8** %str.i270, align 8, !tbaa !4
-  call void (i8*, i64, i8*, ...)* @dw2_asm_output_nstring(i8* %57, i64 -1, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #9
+  %v.i268 = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 2, i32 1, !dbg !7491
+  %val_str.i269 = bitcast %union.anon.3* %v.i268 to %struct.indirect_string_node**, !dbg !7491
+  %56 = load %struct.indirect_string_node** %val_str.i269, align 8, !dbg !7491, !tbaa !3768
+  %str.i270 = getelementptr inbounds %struct.indirect_string_node* %56, i64 0, i32 0, i32 1, !dbg !7491
+  %57 = load i8** %str.i270, align 8, !dbg !7491, !tbaa !3768
+  call void (i8*, i64, i8*, ...)* @dw2_asm_output_nstring(i8* %57, i64 -1, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call1) #10, !dbg !7484
   br label %for.inc102
 
 sw.default:                                       ; preds = %for.body
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 6411, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.output_die, i64 0, i64 0)) #12
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 6411, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.output_die, i64 0, i64 0)) #13, !dbg !7492
+  unreachable, !dbg !7492
 
 for.inc102:                                       ; preds = %sw.bb29, %for.body39, %AT_addr.exit, %sw.bb5, %sw.bb6, %AT_loc.exit191, %AT_int.exit, %AT_unsigned.exit208, %sw.bb23, %AT_flag.exit, %if.end51, %do.body, %AT_lbl.exit, %AT_lbl.exit256, %AT_ref.exit240, %if.end62, %AT_string.exit273, %AT_string.exit
-  %dw_attr_next = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 1
-  %a.0 = load %struct.dw_attr_struct** %dw_attr_next, align 8
-  %cmp = icmp eq %struct.dw_attr_struct* %a.0, null
-  br i1 %cmp, label %for.end103, label %for.body
+  %dw_attr_next = getelementptr inbounds %struct.dw_attr_struct* %a.0283, i64 0, i32 1, !dbg !7332
+  %a.0 = load %struct.dw_attr_struct** %dw_attr_next, align 8, !dbg !7332
+  %cmp = icmp eq %struct.dw_attr_struct* %a.0, null, !dbg !7332
+  br i1 %cmp, label %for.end103, label %for.body, !dbg !7332
 
 for.end103:                                       ; preds = %for.inc102, %if.end
-  %die_child = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 4
-  %c.0276 = load %struct.die_struct** %die_child, align 8
-  %cmp105277 = icmp eq %struct.die_struct* %c.0276, null
-  br i1 %cmp105277, label %if.end115, label %for.body107
+  %die_child = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 4, !dbg !7493
+  %c.0276 = load %struct.die_struct** %die_child, align 8, !dbg !7493
+  %cmp105277 = icmp eq %struct.die_struct* %c.0276, null, !dbg !7493
+  br i1 %cmp105277, label %if.end115, label %for.body107, !dbg !7493
 
 for.body107:                                      ; preds = %for.end103, %for.body107
   %c.0278 = phi %struct.die_struct* [ %c.0, %for.body107 ], [ %c.0276, %for.end103 ]
-  call fastcc void @output_die(%struct.die_struct* %c.0278) #10
-  %die_sib = getelementptr inbounds %struct.die_struct* %c.0278, i64 0, i32 5
-  %c.0 = load %struct.die_struct** %die_sib, align 8
-  %cmp105 = icmp eq %struct.die_struct* %c.0, null
-  br i1 %cmp105, label %for.end109, label %for.body107
+  call fastcc void @output_die(%struct.die_struct* %c.0278) #11, !dbg !7495
+  %die_sib = getelementptr inbounds %struct.die_struct* %c.0278, i64 0, i32 5, !dbg !7493
+  %c.0 = load %struct.die_struct** %die_sib, align 8, !dbg !7493
+  %cmp105 = icmp eq %struct.die_struct* %c.0, null, !dbg !7493
+  br i1 %cmp105, label %for.end109, label %for.body107, !dbg !7493
 
 for.end109:                                       ; preds = %for.body107
-  %.pre = load %struct.die_struct** %die_child, align 8, !tbaa !4
-  %phitmp = icmp eq %struct.die_struct* %.pre, null
-  br i1 %phitmp, label %if.end115, label %if.then113
+  %.pre = load %struct.die_struct** %die_child, align 8, !dbg !7496, !tbaa !3768
+  %phitmp = icmp eq %struct.die_struct* %.pre, null, !dbg !7493
+  br i1 %phitmp, label %if.end115, label %if.then113, !dbg !7496
 
 if.then113:                                       ; preds = %for.end109
-  %58 = load i64* %die_offset, align 8, !tbaa !6
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 0, i8* getelementptr inbounds ([29 x i8]* @.str219, i64 0, i64 0), i64 %58) #9
-  br label %if.end115
+  %58 = load i64* %die_offset, align 8, !dbg !7497, !tbaa !3782
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 0, i8* getelementptr inbounds ([29 x i8]* @.str219, i64 0, i64 0), i64 %58) #10, !dbg !7497
+  br label %if.end115, !dbg !7497
 
 if.end115:                                        ; preds = %for.end103, %for.end109, %if.then113
-  ret void
+  ret void, !dbg !7498
 }

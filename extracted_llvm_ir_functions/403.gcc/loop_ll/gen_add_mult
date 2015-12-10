@@ -1,20 +1,26 @@
 define internal fastcc %struct.rtx_def* @gen_add_mult(%struct.rtx_def* %b, %struct.rtx_def* %m, %struct.rtx_def* %a, %struct.rtx_def* %reg) #0 {
 entry:
-  tail call void @start_sequence() #8
-  %0 = bitcast %struct.rtx_def* %reg to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %call = tail call %struct.rtx_def* @expand_mult_add(%struct.rtx_def* %b, %struct.rtx_def* %reg, %struct.rtx_def* %m, %struct.rtx_def* %a, i32 %bf.clear, i32 1) #8
-  %cmp = icmp eq %struct.rtx_def* %call, %reg
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %b}, i64 0, metadata !1639), !dbg !4649
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %m}, i64 0, metadata !1640), !dbg !4650
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %a}, i64 0, metadata !1641), !dbg !4651
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg}, i64 0, metadata !1642), !dbg !4652
+  tail call void @start_sequence() #8, !dbg !4653
+  %0 = bitcast %struct.rtx_def* %reg to i32*, !dbg !4654
+  %bf.load = load i32* %0, align 8, !dbg !4654
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !4654
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !4654
+  %call = tail call %struct.rtx_def* @expand_mult_add(%struct.rtx_def* %b, %struct.rtx_def* %reg, %struct.rtx_def* %m, %struct.rtx_def* %a, i32 %bf.clear, i32 1) #8, !dbg !4654
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1644), !dbg !4654
+  %cmp = icmp eq %struct.rtx_def* %call, %reg, !dbg !4655
+  br i1 %cmp, label %if.end, label %if.then, !dbg !4655
 
 if.then:                                          ; preds = %entry
-  %call1 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %reg, %struct.rtx_def* %call) #8
-  br label %if.end
+  %call1 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %reg, %struct.rtx_def* %call) #8, !dbg !4656
+  br label %if.end, !dbg !4656
 
 if.end:                                           ; preds = %entry, %if.then
-  %call2 = tail call %struct.rtx_def* @gen_sequence() #8
-  tail call void @end_sequence() #8
-  ret %struct.rtx_def* %call2
+  %call2 = tail call %struct.rtx_def* @gen_sequence() #8, !dbg !4657
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call2}, i64 0, metadata !1643), !dbg !4657
+  tail call void @end_sequence() #8, !dbg !4658
+  ret %struct.rtx_def* %call2, !dbg !4659
 }

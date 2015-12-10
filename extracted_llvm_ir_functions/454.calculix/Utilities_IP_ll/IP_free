@@ -1,14 +1,15 @@
 define void @IP_free(%struct._IP* %ip) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._IP* %ip, i64 0, metadata !118, metadata !176), !dbg !300
-  %1 = icmp eq %struct._IP* %ip, null, !dbg !301
-  br i1 %1, label %4, label %2, !dbg !303
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %ip}, i64 0, metadata !108), !dbg !234
+  %cmp = icmp eq %struct._IP* %ip, null, !dbg !235
+  br i1 %cmp, label %if.end3, label %if.then2, !dbg !235
 
-; <label>:2                                       ; preds = %0
-  %3 = bitcast %struct._IP* %ip to i8*, !dbg !304
-  tail call void @free(i8* %3) #7, !dbg !304
-  tail call void @llvm.dbg.value(metadata %struct._IP* null, i64 0, metadata !118, metadata !176), !dbg !300
-  br label %4, !dbg !304
+if.then2:                                         ; preds = %entry
+  %0 = bitcast %struct._IP* %ip to i8*, !dbg !236
+  tail call void @free(i8* %0) #5, !dbg !236
+  tail call void @llvm.dbg.value(metadata !199, i64 0, metadata !108), !dbg !236
+  br label %if.end3, !dbg !236
 
-; <label>:4                                       ; preds = %0, %2
-  ret void, !dbg !308
+if.end3:                                          ; preds = %entry, %if.then2
+  ret void, !dbg !239
 }

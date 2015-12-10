@@ -1,0 +1,40 @@
+define void @_ZN11xercesc_2_521ValidationContextImpl12setIdRefListEPNS_14RefHashTableOfINS_10XMLRefInfoEEE(%"class.xercesc_2_5::ValidationContextImpl"* nocapture %this, %"class.xercesc_2_5::RefHashTableOf"* %newIdRefList) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ValidationContextImpl"* %this}, i64 0, metadata !1419), !dbg !2547
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf"* %newIdRefList}, i64 0, metadata !1420), !dbg !2547
+  %fIdRefList = getelementptr inbounds %"class.xercesc_2_5::ValidationContextImpl"* %this, i64 0, i32 1, !dbg !2548
+  %0 = load %"class.xercesc_2_5::RefHashTableOf"** %fIdRefList, align 8, !dbg !2548, !tbaa !2506
+  %tobool = icmp eq %"class.xercesc_2_5::RefHashTableOf"* %0, null, !dbg !2548
+  br i1 %tobool, label %if.end, label %delete.notnull, !dbg !2548
+
+delete.notnull:                                   ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf"* %0}, i64 0, metadata !2549), !dbg !2551
+  invoke void @_ZN11xercesc_2_514RefHashTableOfINS_10XMLRefInfoEED2Ev(%"class.xercesc_2_5::RefHashTableOf"* %0) #11
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %1 = bitcast %"class.xercesc_2_5::RefHashTableOf"* %0 to i8*, !dbg !2550
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %1) #11, !dbg !2550
+  br label %if.end, !dbg !2550
+
+lpad:                                             ; preds = %delete.notnull
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2550
+  %3 = bitcast %"class.xercesc_2_5::RefHashTableOf"* %0 to i8*, !dbg !2550
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %3) #11
+          to label %eh.resume unwind label %terminate.lpad, !dbg !2550
+
+if.end:                                           ; preds = %entry, %invoke.cont
+  store %"class.xercesc_2_5::RefHashTableOf"* %newIdRefList, %"class.xercesc_2_5::RefHashTableOf"** %fIdRefList, align 8, !dbg !2552, !tbaa !2506
+  ret void, !dbg !2553
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %2, !dbg !2550
+
+terminate.lpad:                                   ; preds = %lpad
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !2550
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !2550
+  tail call void @__clang_call_terminate(i8* %5) #12, !dbg !2550
+  unreachable, !dbg !2550
+}

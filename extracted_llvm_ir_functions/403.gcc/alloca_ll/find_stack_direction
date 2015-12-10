@@ -1,27 +1,29 @@
 define internal fastcc void @find_stack_direction() #0 {
+entry:
   %dummy = alloca i8, align 1
-  %1 = load i8** @find_stack_direction.addr, align 8, !dbg !111, !tbaa !68
-  %2 = icmp eq i8* %1, null, !dbg !113
-  br i1 %2, label %3, label %4, !dbg !114
+  call void @llvm.dbg.declare(metadata !{i8* %dummy}, metadata !42), !dbg !73
+  %0 = load i8** @find_stack_direction.addr, align 8, !dbg !74, !tbaa !57
+  %cmp = icmp eq i8* %0, null, !dbg !74
+  br i1 %cmp, label %if.then, label %if.else, !dbg !74
 
-; <label>:3                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i8* %dummy, i64 0, metadata !45, metadata !55), !dbg !115
-  store i8* %dummy, i8** @find_stack_direction.addr, align 8, !dbg !116, !tbaa !68
-  call fastcc void @find_stack_direction() #5, !dbg !118
-  br label %8, !dbg !119
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !{i8* %dummy}, i64 0, metadata !42), !dbg !75
+  store i8* %dummy, i8** @find_stack_direction.addr, align 8, !dbg !75, !tbaa !57
+  call fastcc void @find_stack_direction() #5, !dbg !77
+  br label %if.end4, !dbg !78
 
-; <label>:4                                       ; preds = %0
-  %5 = icmp ugt i8* %dummy, %1, !dbg !120
-  br i1 %5, label %6, label %7, !dbg !123
+if.else:                                          ; preds = %entry
+  %cmp1 = icmp ugt i8* %dummy, %0, !dbg !79
+  br i1 %cmp1, label %if.then2, label %if.else3, !dbg !79
 
-; <label>:6                                       ; preds = %4
-  store i32 1, i32* @stack_dir, align 4, !dbg !124, !tbaa !60
-  br label %8, !dbg !125
+if.then2:                                         ; preds = %if.else
+  store i32 1, i32* @stack_dir, align 4, !dbg !81, !tbaa !52
+  br label %if.end4, !dbg !81
 
-; <label>:7                                       ; preds = %4
-  store i32 -1, i32* @stack_dir, align 4, !dbg !126, !tbaa !60
-  br label %8
+if.else3:                                         ; preds = %if.else
+  store i32 -1, i32* @stack_dir, align 4, !dbg !82, !tbaa !52
+  br label %if.end4
 
-; <label>:8                                       ; preds = %6, %7, %3
-  ret void, !dbg !127
+if.end4:                                          ; preds = %if.then2, %if.else3, %if.then
+  ret void, !dbg !83
 }

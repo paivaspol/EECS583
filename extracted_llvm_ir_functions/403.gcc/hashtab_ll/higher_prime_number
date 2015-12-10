@@ -1,47 +1,52 @@
 define internal fastcc i64 @higher_prime_number(i64 %n) #1 {
 entry:
-  br label %while.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !{i64 %n}, i64 0, metadata !188), !dbg !232
+  tail call void @llvm.dbg.value(metadata !233, i64 0, metadata !189), !dbg !234
+  tail call void @llvm.dbg.value(metadata !235, i64 0, metadata !192), !dbg !236
+  br label %while.body.lr.ph, !dbg !237
 
 while.cond.outer.loopexit:                        ; preds = %while.body
-  %sub.ptr.div.off = add i64 %sub.ptr.div, 1
-  %0 = icmp ult i64 %sub.ptr.div.off, 3
-  br i1 %0, label %while.end, label %while.body.lr.ph
+  %sub.ptr.div.off = add i64 %sub.ptr.div, 1, !dbg !237
+  %0 = icmp ult i64 %sub.ptr.div.off, 3, !dbg !237
+  br i1 %0, label %while.end, label %while.body.lr.ph, !dbg !237
 
 while.body.lr.ph:                                 ; preds = %entry, %while.cond.outer.loopexit
   %low.0.ph19 = phi i64* [ getelementptr inbounds ([30 x i64]* @higher_prime_number.primes, i64 0, i64 0), %entry ], [ %low.016, %while.cond.outer.loopexit ]
   %high.0.ph18 = phi i64* [ getelementptr inbounds ([30 x i64]* @higher_prime_number.primes, i64 1, i64 0), %entry ], [ %add.ptr, %while.cond.outer.loopexit ]
-  %sub.ptr.lhs.cast = ptrtoint i64* %high.0.ph18 to i64
-  br label %while.body
+  %sub.ptr.lhs.cast = ptrtoint i64* %high.0.ph18 to i64, !dbg !238
+  br label %while.body, !dbg !237
 
 while.body:                                       ; preds = %while.body.lr.ph, %if.then
   %low.016 = phi i64* [ %low.0.ph19, %while.body.lr.ph ], [ %add.ptr2, %if.then ]
-  %sub.ptr.rhs.cast = ptrtoint i64* %low.016 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %sub.ptr.div = ashr exact i64 %sub.ptr.sub, 3
-  %div = sdiv i64 %sub.ptr.div, 2
-  %add.ptr = getelementptr inbounds i64* %low.016, i64 %div
-  %1 = load i64* %add.ptr, align 8, !tbaa !3
-  %cmp1 = icmp ult i64 %1, %n
-  br i1 %cmp1, label %if.then, label %while.cond.outer.loopexit
+  %sub.ptr.rhs.cast = ptrtoint i64* %low.016 to i64, !dbg !238
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !238
+  %sub.ptr.div = ashr exact i64 %sub.ptr.sub, 3, !dbg !238
+  %div = sdiv i64 %sub.ptr.div, 2, !dbg !238
+  %add.ptr = getelementptr inbounds i64* %low.016, i64 %div, !dbg !238
+  tail call void @llvm.dbg.value(metadata !{i64* %add.ptr}, i64 0, metadata !193), !dbg !238
+  %1 = load i64* %add.ptr, align 8, !dbg !239, !tbaa !225
+  %cmp1 = icmp ult i64 %1, %n, !dbg !239
+  br i1 %cmp1, label %if.then, label %while.cond.outer.loopexit, !dbg !239
 
 if.then:                                          ; preds = %while.body
-  %add.ptr.sum = add i64 %div, 1
-  %add.ptr2 = getelementptr inbounds i64* %low.016, i64 %add.ptr.sum
-  %cmp = icmp eq i64* %add.ptr2, %high.0.ph18
-  br i1 %cmp, label %while.end, label %while.body
+  %add.ptr.sum = add i64 %div, 1, !dbg !240
+  %add.ptr2 = getelementptr inbounds i64* %low.016, i64 %add.ptr.sum, !dbg !240
+  tail call void @llvm.dbg.value(metadata !{i64* %high.0.ph18}, i64 0, metadata !189), !dbg !240
+  %cmp = icmp eq i64* %add.ptr2, %high.0.ph18, !dbg !237
+  br i1 %cmp, label %while.end, label %while.body, !dbg !237
 
 while.end:                                        ; preds = %while.cond.outer.loopexit, %if.then
   %low.0.lcssa = phi i64* [ %high.0.ph18, %if.then ], [ %low.016, %while.cond.outer.loopexit ]
-  %2 = load i64* %low.0.lcssa, align 8, !tbaa !3
-  %cmp3 = icmp ult i64 %2, %n
-  br i1 %cmp3, label %if.then4, label %if.end5
+  %2 = load i64* %low.0.lcssa, align 8, !dbg !241, !tbaa !225
+  %cmp3 = icmp ult i64 %2, %n, !dbg !241
+  br i1 %cmp3, label %if.then4, label %if.end5, !dbg !241
 
 if.then4:                                         ; preds = %while.end
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([35 x i8]* @.str, i64 0, i64 0), i64 %n) #8
-  tail call void @abort() #9
-  unreachable
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !242, !tbaa !221
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([35 x i8]* @.str, i64 0, i64 0), i64 %n) #9, !dbg !242
+  tail call void @abort() #10, !dbg !244
+  unreachable, !dbg !244
 
 if.end5:                                          ; preds = %while.end
-  ret i64 %2
+  ret i64 %2, !dbg !245
 }

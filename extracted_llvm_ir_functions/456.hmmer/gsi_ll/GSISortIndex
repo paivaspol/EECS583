@@ -1,10 +1,11 @@
-define void @GSISortIndex(%struct.gsiindex_s* nocapture readonly %g) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.gsiindex_s* %g, i64 0, metadata !174, metadata !226), !dbg !533
-  %1 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 3, !dbg !534
-  %2 = bitcast %struct.gsikey_s** %1 to i8**, !dbg !534
-  %3 = load i8** %2, align 8, !dbg !534, !tbaa !432
-  %4 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 4, !dbg !535
-  %5 = load i32* %4, align 4, !dbg !535, !tbaa !438
-  %6 = tail call i32 (i8*, i32, i64, i32 (i8*, i8*)*, ...)* bitcast (i32 (...)* @specqsort to i32 (i8*, i32, i64, i32 (i8*, i8*)*, ...)*)(i8* %3, i32 %5, i64 40, i32 (i8*, i8*)* @gsi_keysorter) #7, !dbg !536
-  ret void, !dbg !537
+define void @GSISortIndex(%struct.gsiindex_s* nocapture %g) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.gsiindex_s* %g}, i64 0, metadata !165), !dbg !326
+  %elems = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 3, !dbg !327
+  %0 = load %struct.gsikey_s** %elems, align 8, !dbg !327, !tbaa !217
+  %1 = getelementptr inbounds %struct.gsikey_s* %0, i64 0, i32 0, i64 0, !dbg !327
+  %nkeys = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 4, !dbg !327
+  %2 = load i32* %nkeys, align 4, !dbg !327, !tbaa !222
+  %call = tail call i32 (i8*, i32, i64, i32 (i8*, i8*)*, ...)* bitcast (i32 (...)* @specqsort to i32 (i8*, i32, i64, i32 (i8*, i8*)*, ...)*)(i8* %1, i32 %2, i64 40, i32 (i8*, i8*)* @gsi_keysorter) #7, !dbg !327
+  ret void, !dbg !328
 }

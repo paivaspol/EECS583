@@ -1,67 +1,76 @@
 define internal fastcc %struct.tlist* @new_tlist(%struct.tlist* %next, %union.tree_node* %t, %union.tree_node* %writer) #0 {
 entry:
-  %0 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 4), align 8, !tbaa !3
-  %1 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
-  %sub.ptr.lhs.cast = ptrtoint i8* %0 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %1 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %cmp = icmp slt i64 %sub.ptr.sub, 24
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist* %next}, i64 0, metadata !2129), !dbg !4215
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %t}, i64 0, metadata !2130), !dbg !4216
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %writer}, i64 0, metadata !2131), !dbg !4217
+  tail call void @llvm.dbg.value(metadata !2604, i64 0, metadata !2133), !dbg !4218
+  tail call void @llvm.dbg.value(metadata !2604, i64 0, metadata !2135), !dbg !4219
+  tail call void @llvm.dbg.value(metadata !4220, i64 0, metadata !2137), !dbg !4219
+  %0 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 4), align 8, !dbg !4219, !tbaa !2305
+  %1 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !dbg !4219, !tbaa !2305
+  %sub.ptr.lhs.cast = ptrtoint i8* %0 to i64, !dbg !4219
+  %sub.ptr.rhs.cast = ptrtoint i8* %1 to i64, !dbg !4219
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !4219
+  %cmp = icmp slt i64 %sub.ptr.sub, 24, !dbg !4219
+  br i1 %cmp, label %if.then, label %if.end, !dbg !4219
 
 if.then:                                          ; preds = %entry
-  tail call void @_obstack_newchunk(%struct.obstack* @tlist_obstack, i32 24) #8
-  %.pre = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
-  br label %if.end
+  tail call void @_obstack_newchunk(%struct.obstack* @tlist_obstack, i32 24) #9, !dbg !4219
+  %.pre = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !dbg !4219, !tbaa !2305
+  br label %if.end, !dbg !4219
 
 if.end:                                           ; preds = %if.then, %entry
   %2 = phi i8* [ %.pre, %if.then ], [ %1, %entry ]
-  %add.ptr = getelementptr inbounds i8* %2, i64 24
-  store i8* %add.ptr, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
-  %3 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 2), align 8, !tbaa !3
-  %cmp4 = icmp eq i8* %add.ptr, %3
-  br i1 %cmp4, label %if.then6, label %if.end7
+  %add.ptr = getelementptr inbounds i8* %2, i64 24, !dbg !4219
+  store i8* %add.ptr, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !dbg !4219, !tbaa !2305
+  tail call void @llvm.dbg.value(metadata !2604, i64 0, metadata !2138), !dbg !4221
+  %3 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 2), align 8, !dbg !4221, !tbaa !2305
+  tail call void @llvm.dbg.value(metadata !{i8* %3}, i64 0, metadata !2140), !dbg !4221
+  %cmp4 = icmp eq i8* %add.ptr, %3, !dbg !4221
+  br i1 %cmp4, label %if.then6, label %if.end7, !dbg !4221
 
 if.then6:                                         ; preds = %if.end
-  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 10), align 8
-  %bf.set = or i8 %bf.load, 2
-  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 10), align 8
-  br label %if.end7
+  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 10), align 8, !dbg !4221
+  %bf.set = or i8 %bf.load, 2, !dbg !4221
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 10), align 8, !dbg !4221
+  br label %if.end7, !dbg !4221
 
 if.end7:                                          ; preds = %if.end, %if.then6
-  %sub.ptr.lhs.cast9 = ptrtoint i8* %add.ptr to i64
-  %4 = load i32* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 6), align 8, !tbaa !0
-  %conv11 = sext i32 %4 to i64
-  %add = add nsw i64 %conv11, %sub.ptr.lhs.cast9
-  %neg = xor i32 %4, -1
-  %conv13 = sext i32 %neg to i64
-  %and = and i64 %add, %conv13
-  %add.ptr14 = getelementptr inbounds i8* null, i64 %and
-  store i8* %add.ptr14, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
-  %5 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 1), align 8, !tbaa !3
-  %sub.ptr.lhs.cast17 = ptrtoint i8* %add.ptr14 to i64
-  %sub.ptr.rhs.cast18 = ptrtoint %struct._obstack_chunk* %5 to i64
-  %sub.ptr.sub19 = sub i64 %sub.ptr.lhs.cast17, %sub.ptr.rhs.cast18
-  %6 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 4), align 8, !tbaa !3
-  %sub.ptr.lhs.cast22 = ptrtoint i8* %6 to i64
-  %sub.ptr.sub24 = sub i64 %sub.ptr.lhs.cast22, %sub.ptr.rhs.cast18
-  %cmp25 = icmp sgt i64 %sub.ptr.sub19, %sub.ptr.sub24
-  br i1 %cmp25, label %if.then27, label %if.end30
+  %sub.ptr.lhs.cast9 = ptrtoint i8* %add.ptr to i64, !dbg !4221
+  %4 = load i32* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 6), align 8, !dbg !4221, !tbaa !2299
+  %conv11 = sext i32 %4 to i64, !dbg !4221
+  %add = add nsw i64 %conv11, %sub.ptr.lhs.cast9, !dbg !4221
+  %neg = xor i32 %4, -1, !dbg !4221
+  %conv13 = sext i32 %neg to i64, !dbg !4221
+  %and = and i64 %add, %conv13, !dbg !4221
+  %add.ptr14 = getelementptr inbounds i8* null, i64 %and, !dbg !4221
+  store i8* %add.ptr14, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !dbg !4221, !tbaa !2305
+  %5 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 1), align 8, !dbg !4221, !tbaa !2305
+  %sub.ptr.lhs.cast17 = ptrtoint i8* %add.ptr14 to i64, !dbg !4221
+  %sub.ptr.rhs.cast18 = ptrtoint %struct._obstack_chunk* %5 to i64, !dbg !4221
+  %sub.ptr.sub19 = sub i64 %sub.ptr.lhs.cast17, %sub.ptr.rhs.cast18, !dbg !4221
+  %6 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 4), align 8, !dbg !4221, !tbaa !2305
+  %sub.ptr.lhs.cast22 = ptrtoint i8* %6 to i64, !dbg !4221
+  %sub.ptr.sub24 = sub i64 %sub.ptr.lhs.cast22, %sub.ptr.rhs.cast18, !dbg !4221
+  %cmp25 = icmp sgt i64 %sub.ptr.sub19, %sub.ptr.sub24, !dbg !4221
+  br i1 %cmp25, label %if.then27, label %if.end30, !dbg !4221
 
 if.then27:                                        ; preds = %if.end7
-  store i8* %6, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
-  br label %if.end30
+  store i8* %6, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !dbg !4221, !tbaa !2305
+  br label %if.end30, !dbg !4221
 
 if.end30:                                         ; preds = %if.then27, %if.end7
   %7 = phi i8* [ %6, %if.then27 ], [ %add.ptr14, %if.end7 ]
-  store i8* %7, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 2), align 8, !tbaa !3
-  %8 = bitcast i8* %3 to %struct.tlist*
-  %next33 = bitcast i8* %3 to %struct.tlist**
-  store %struct.tlist* %next, %struct.tlist** %next33, align 8, !tbaa !3
-  %expr = getelementptr inbounds i8* %3, i64 8
-  %9 = bitcast i8* %expr to %union.tree_node**
-  store %union.tree_node* %t, %union.tree_node** %9, align 8, !tbaa !3
-  %writer34 = getelementptr inbounds i8* %3, i64 16
-  %10 = bitcast i8* %writer34 to %union.tree_node**
-  store %union.tree_node* %writer, %union.tree_node** %10, align 8, !tbaa !3
-  ret %struct.tlist* %8
+  store i8* %7, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 2), align 8, !dbg !4221, !tbaa !2305
+  %8 = bitcast i8* %3 to %struct.tlist*, !dbg !4218
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist* %8}, i64 0, metadata !2132), !dbg !4218
+  %next33 = bitcast i8* %3 to %struct.tlist**, !dbg !4222
+  store %struct.tlist* %next, %struct.tlist** %next33, align 8, !dbg !4222, !tbaa !2305
+  %expr = getelementptr inbounds i8* %3, i64 8, !dbg !4223
+  %9 = bitcast i8* %expr to %union.tree_node**, !dbg !4223
+  store %union.tree_node* %t, %union.tree_node** %9, align 8, !dbg !4223, !tbaa !2305
+  %writer34 = getelementptr inbounds i8* %3, i64 16, !dbg !4224
+  %10 = bitcast i8* %writer34 to %union.tree_node**, !dbg !4224
+  store %union.tree_node* %writer, %union.tree_node** %10, align 8, !dbg !4224, !tbaa !2305
+  ret %struct.tlist* %8, !dbg !4225
 }

@@ -1,17 +1,18 @@
 define i8* @SubMtx_workspace(%struct._SubMtx* %mtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %mtx, i64 0, metadata !54, metadata !102), !dbg !175
-  %1 = icmp eq %struct._SubMtx* %mtx, null, !dbg !176
-  br i1 %1, label %2, label %5, !dbg !178
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %mtx}, i64 0, metadata !55), !dbg !145
+  %cmp = icmp eq %struct._SubMtx* %mtx, null, !dbg !146
+  br i1 %cmp, label %if.then, label %if.end, !dbg !146
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !179, !tbaa !115
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), %struct._SubMtx* null) #6, !dbg !181
-  tail call void @exit(i32 -1) #7, !dbg !182
-  unreachable, !dbg !182
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !147, !tbaa !108
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), %struct._SubMtx* null) #6, !dbg !147
+  tail call void @exit(i32 -1) #7, !dbg !149
+  unreachable, !dbg !149
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8, !dbg !183
-  %7 = tail call double* @DV_entries(%struct._DV* %6) #6, !dbg !184
-  %8 = bitcast double* %7 to i8*, !dbg !185
-  ret i8* %8, !dbg !186
+if.end:                                           ; preds = %entry
+  %wrkDV = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8, !dbg !150
+  %call1 = tail call double* @DV_entries(%struct._DV* %wrkDV) #6, !dbg !150
+  %1 = bitcast double* %call1 to i8*, !dbg !150
+  ret i8* %1, !dbg !150
 }

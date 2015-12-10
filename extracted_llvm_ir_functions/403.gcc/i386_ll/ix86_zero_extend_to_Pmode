@@ -1,35 +1,37 @@
 define %struct.rtx_def* @ix86_zero_extend_to_Pmode(%struct.rtx_def* %exp) #1 {
 entry:
-  %0 = bitcast %struct.rtx_def* %exp to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %cmp = icmp eq i32 %bf.clear, 0
-  %1 = load i32* @target_flags, align 4, !tbaa !0
-  %and = lshr i32 %1, 25
-  %2 = and i32 %and, 1
-  %3 = or i32 %2, 4
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %exp}, i64 0, metadata !3087), !dbg !8782
+  %0 = bitcast %struct.rtx_def* %exp to i32*, !dbg !8783
+  %bf.load = load i32* %0, align 8, !dbg !8783
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !8783
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !8783
+  %cmp = icmp eq i32 %bf.clear, 0, !dbg !8783
+  %1 = load i32* @target_flags, align 4, !dbg !8784, !tbaa !4347
+  %and = lshr i32 %1, 25, !dbg !8784
+  %2 = and i32 %and, 1, !dbg !8784
+  %3 = or i32 %2, 4, !dbg !8784
+  br i1 %cmp, label %if.then, label %if.end, !dbg !8783
 
 if.then:                                          ; preds = %entry
-  %call = tail call %struct.rtx_def* @force_reg(i32 %3, %struct.rtx_def* %exp) #9
-  br label %return
+  %call = tail call %struct.rtx_def* @force_reg(i32 %3, %struct.rtx_def* %exp) #10, !dbg !8784
+  br label %return, !dbg !8784
 
 if.end:                                           ; preds = %entry
-  %cmp7 = icmp eq i32 %bf.clear, %3
-  br i1 %cmp7, label %if.then8, label %if.end13
+  %cmp7 = icmp eq i32 %bf.clear, %3, !dbg !8785
+  br i1 %cmp7, label %if.then8, label %if.end13, !dbg !8785
 
 if.then8:                                         ; preds = %if.end
-  %call12 = tail call %struct.rtx_def* @copy_to_mode_reg(i32 %bf.clear, %struct.rtx_def* %exp) #9
-  br label %return
+  %call12 = tail call %struct.rtx_def* @copy_to_mode_reg(i32 %bf.clear, %struct.rtx_def* %exp) #10, !dbg !8786
+  br label %return, !dbg !8786
 
 if.end13:                                         ; preds = %if.end
-  %call17 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %3) #9
-  %call18 = tail call %struct.rtx_def* @gen_zero_extendsidi2(%struct.rtx_def* %call17, %struct.rtx_def* %exp) #9
-  %call19 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call18) #9
-  br label %return
+  %call17 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %3) #10, !dbg !8787
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call17}, i64 0, metadata !3088), !dbg !8787
+  %call18 = tail call %struct.rtx_def* @gen_zero_extendsidi2(%struct.rtx_def* %call17, %struct.rtx_def* %exp) #10, !dbg !8788
+  %call19 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call18) #10, !dbg !8788
+  br label %return, !dbg !8789
 
 return:                                           ; preds = %if.end13, %if.then8, %if.then
   %retval.0 = phi %struct.rtx_def* [ %call, %if.then ], [ %call12, %if.then8 ], [ %call17, %if.end13 ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !8790
 }

@@ -1,37 +1,34 @@
 define void @DVramp(i32 %size, double* %y, double %start, double %inc) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !327, metadata !696), !dbg !1306
-  tail call void @llvm.dbg.value(metadata double* %y, i64 0, metadata !328, metadata !696), !dbg !1307
-  tail call void @llvm.dbg.value(metadata double %start, i64 0, metadata !329, metadata !696), !dbg !1308
-  tail call void @llvm.dbg.value(metadata double %inc, i64 0, metadata !330, metadata !696), !dbg !1309
-  %1 = icmp sgt i32 %size, 0, !dbg !1310
-  br i1 %1, label %2, label %.loopexit, !dbg !1311
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !288), !dbg !1012
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !289), !dbg !1013
+  tail call void @llvm.dbg.value(metadata !{double %start}, i64 0, metadata !290), !dbg !1014
+  tail call void @llvm.dbg.value(metadata !{double %inc}, i64 0, metadata !291), !dbg !1015
+  %cmp = icmp sgt i32 %size, 0, !dbg !1016
+  br i1 %cmp, label %if.then, label %if.end5, !dbg !1016
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp eq double* %y, null, !dbg !1312
-  br i1 %3, label %5, label %.lr.ph, !dbg !1313
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq double* %y, null, !dbg !1017
+  br i1 %cmp1, label %if.then2, label %for.body, !dbg !1017
 
-.lr.ph:                                           ; preds = %2
-  %4 = add i32 %size, -1, !dbg !1314
-  br label %8, !dbg !1314
+if.then2:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1018, !tbaa !629
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([81 x i8]* @.str25, i64 0, i64 0), i32 %size, double* null, double %start, double %inc) #6, !dbg !1018
+  tail call void @exit(i32 -1) #7, !dbg !1020
+  unreachable, !dbg !1020
 
-; <label>:5                                       ; preds = %2
-  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1316, !tbaa !709
-  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([81 x i8]* @.str25, i64 0, i64 0), i32 %size, double* null, double %start, double %inc) #7, !dbg !1318
-  tail call void @exit(i32 -1) #8, !dbg !1319
-  unreachable, !dbg !1319
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %val.017 = phi double [ %add, %for.body ], [ %start, %if.then ]
+  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1021
+  store double %val.017, double* %arrayidx, align 8, !dbg !1021, !tbaa !635
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1024
+  %add = fadd double %val.017, %inc, !dbg !1024
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !295), !dbg !1024
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1024
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !1024
+  br i1 %exitcond, label %if.end5, label %for.body, !dbg !1024
 
-; <label>:8                                       ; preds = %8, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %8 ]
-  %val.02 = phi double [ %start, %.lr.ph ], [ %10, %8 ]
-  %9 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1320
-  store double %val.02, double* %9, align 8, !dbg !1323, !tbaa !718
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1314
-  %10 = fadd double %val.02, %inc, !dbg !1324
-  tail call void @llvm.dbg.value(metadata double %10, i64 0, metadata !336, metadata !696), !dbg !1325
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1314
-  %exitcond = icmp eq i32 %lftr.wideiv, %4, !dbg !1314
-  br i1 %exitcond, label %.loopexit, label %8, !dbg !1314
-
-.loopexit:                                        ; preds = %8, %0
-  ret void, !dbg !1326
+if.end5:                                          ; preds = %for.body, %entry
+  ret void, !dbg !1025
 }

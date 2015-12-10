@@ -1,31 +1,33 @@
-define internal fastcc void @write_bin_string(%struct.__sFILE* %fp, i8* %s) #0 {
+define internal fastcc void @write_bin_string(%struct._IO_FILE* nocapture %fp, i8* %s) #0 {
+entry:
   %len = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !433, metadata !464), !dbg !3220
-  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !434, metadata !464), !dbg !3221
-  %1 = icmp eq i8* %s, null, !dbg !3222
-  br i1 %1, label %11, label %2, !dbg !3224
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !276), !dbg !1472
+  call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !277), !dbg !1472
+  call void @llvm.dbg.declare(metadata !{i32* %len}, metadata !278), !dbg !1473
+  %cmp = icmp eq i8* %s, null, !dbg !1474
+  br i1 %cmp, label %if.else, label %if.then, !dbg !1474
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i64 @strlen(i8* %s) #6, !dbg !3225
-  %4 = add i64 %3, 1, !dbg !3227
-  %5 = trunc i64 %4 to i32, !dbg !3225
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !435, metadata !464), !dbg !3228
-  store i32 %5, i32* %len, align 4, !dbg !3229, !tbaa !550
-  %6 = bitcast i32* %len to i8*, !dbg !3230
-  %7 = call i64 @"\01_fwrite"(i8* %6, i64 4, i64 1, %struct.__sFILE* %fp) #6, !dbg !3231
-  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !435, metadata !464), !dbg !3228
-  %8 = load i32* %len, align 4, !dbg !3232, !tbaa !550
-  %9 = sext i32 %8 to i64, !dbg !3232
-  %10 = call i64 @"\01_fwrite"(i8* %s, i64 1, i64 %9, %struct.__sFILE* %fp) #6, !dbg !3233
-  br label %14, !dbg !3234
+if.then:                                          ; preds = %entry
+  %call = call i64 @strlen(i8* %s) #8, !dbg !1475
+  %add = add i64 %call, 1, !dbg !1475
+  %conv = trunc i64 %add to i32, !dbg !1475
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !278), !dbg !1475
+  store i32 %conv, i32* %len, align 4, !dbg !1475, !tbaa !460
+  %0 = bitcast i32* %len to i8*, !dbg !1477
+  %call1 = call i64 @fwrite(i8* %0, i64 4, i64 1, %struct._IO_FILE* %fp) #7, !dbg !1477
+  call void @llvm.dbg.value(metadata !{i32* %len}, i64 0, metadata !278), !dbg !1478
+  %1 = load i32* %len, align 4, !dbg !1478, !tbaa !460
+  %conv2 = sext i32 %1 to i64, !dbg !1478
+  %call3 = call i64 @fwrite(i8* %s, i64 1, i64 %conv2, %struct._IO_FILE* %fp) #7, !dbg !1478
+  br label %if.end, !dbg !1479
 
-; <label>:11                                      ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !435, metadata !464), !dbg !3228
-  store i32 0, i32* %len, align 4, !dbg !3235, !tbaa !550
-  %12 = bitcast i32* %len to i8*, !dbg !3237
-  %13 = call i64 @"\01_fwrite"(i8* %12, i64 4, i64 1, %struct.__sFILE* %fp) #6, !dbg !3238
-  br label %14
+if.else:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !18, i64 0, metadata !278), !dbg !1480
+  store i32 0, i32* %len, align 4, !dbg !1480, !tbaa !460
+  %2 = bitcast i32* %len to i8*, !dbg !1482
+  %call4 = call i64 @fwrite(i8* %2, i64 4, i64 1, %struct._IO_FILE* %fp) #7, !dbg !1482
+  br label %if.end
 
-; <label>:14                                      ; preds = %11, %2
-  ret void, !dbg !3239
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !1483
 }

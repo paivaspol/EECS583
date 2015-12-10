@@ -1,102 +1,99 @@
 define i8* @getpwd() #0 {
+entry:
   %dotstat = alloca %struct.stat, align 8
   %pwdstat = alloca %struct.stat, align 8
-  %1 = load i8** @getpwd.pwd, align 8, !dbg !99, !tbaa !100
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !10, metadata !104), !dbg !105
-  %2 = bitcast %struct.stat* %dotstat to i8*, !dbg !106
-  call void @llvm.lifetime.start(i64 144, i8* %2) #1, !dbg !106
-  %3 = bitcast %struct.stat* %pwdstat to i8*, !dbg !106
-  call void @llvm.lifetime.start(i64 144, i8* %3) #1, !dbg !106
-  %4 = icmp eq i8* %1, null, !dbg !107
-  br i1 %4, label %5, label %47, !dbg !108
+  %0 = load i8** @getpwd.pwd, align 8, !dbg !64, !tbaa !65
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !11), !dbg !64
+  %1 = bitcast %struct.stat* %dotstat to i8*, !dbg !68
+  call void @llvm.lifetime.start(i64 144, i8* %1) #2, !dbg !68
+  call void @llvm.dbg.declare(metadata !{%struct.stat* %dotstat}, metadata !15), !dbg !68
+  %2 = bitcast %struct.stat* %pwdstat to i8*, !dbg !68
+  call void @llvm.lifetime.start(i64 144, i8* %2) #2, !dbg !68
+  call void @llvm.dbg.declare(metadata !{%struct.stat* %pwdstat}, metadata !56), !dbg !68
+  %tobool = icmp eq i8* %0, null, !dbg !69
+  br i1 %tobool, label %land.lhs.true, label %if.end32, !dbg !69
 
-; <label>:5                                       ; preds = %0
-  %6 = load i32* @getpwd.failure_errno, align 4, !dbg !109, !tbaa !110
-  %7 = tail call i32* @__error() #6, !dbg !112
-  store i32 %6, i32* %7, align 4, !dbg !113, !tbaa !110
-  %8 = icmp eq i32 %6, 0, !dbg !113
-  br i1 %8, label %9, label %47, !dbg !114
+land.lhs.true:                                    ; preds = %entry
+  %3 = load i32* @getpwd.failure_errno, align 4, !dbg !69, !tbaa !70
+  %call = call i32* @__errno_location() #7, !dbg !69
+  store i32 %3, i32* %call, align 4, !dbg !69, !tbaa !70
+  %tobool1 = icmp eq i32 %3, 0, !dbg !69
+  br i1 %tobool1, label %if.then, label %if.end32, !dbg !69
 
-; <label>:9                                       ; preds = %5
-  %10 = tail call i8* @getenv(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0)) #6, !dbg !115
-  tail call void @llvm.dbg.value(metadata i8* %10, i64 0, metadata !10, metadata !104), !dbg !105
-  %11 = icmp eq i8* %10, null, !dbg !116
-  br i1 %11, label %.preheader, label %12, !dbg !117
+if.then:                                          ; preds = %land.lhs.true
+  %call2 = call i8* @getenv(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0)) #8, !dbg !71
+  call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !11), !dbg !71
+  %cmp = icmp eq i8* %call2, null, !dbg !71
+  br i1 %cmp, label %for.cond.preheader, label %land.lhs.true3, !dbg !71
 
-; <label>:12                                      ; preds = %9
-  %13 = load i8* %10, align 1, !dbg !118, !tbaa !119
-  %14 = icmp eq i8 %13, 47, !dbg !120
-  br i1 %14, label %15, label %.preheader, !dbg !121
+land.lhs.true3:                                   ; preds = %if.then
+  %4 = load i8* %call2, align 1, !dbg !71, !tbaa !66
+  %cmp4 = icmp eq i8 %4, 47, !dbg !71
+  br i1 %cmp4, label %land.lhs.true6, label %for.cond.preheader, !dbg !71
 
-; <label>:15                                      ; preds = %12
-  tail call void @llvm.dbg.value(metadata %struct.stat* %pwdstat, i64 0, metadata !84, metadata !104), !dbg !122
-  %16 = call i32 @"\01_stat$INODE64"(i8* %10, %struct.stat* %pwdstat) #6, !dbg !123
-  %17 = icmp eq i32 %16, 0, !dbg !124
-  br i1 %17, label %18, label %.preheader, !dbg !125
+land.lhs.true6:                                   ; preds = %land.lhs.true3
+  %call7 = call i32 @stat(i8* %call2, %struct.stat* %pwdstat) #8, !dbg !72
+  %cmp8 = icmp eq i32 %call7, 0, !dbg !72
+  br i1 %cmp8, label %land.lhs.true10, label %for.cond.preheader, !dbg !72
 
-; <label>:18                                      ; preds = %15
-  call void @llvm.dbg.value(metadata %struct.stat* %dotstat, i64 0, metadata !17, metadata !104), !dbg !126
-  %19 = call i32 @"\01_stat$INODE64"(i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0), %struct.stat* %dotstat) #6, !dbg !127
-  %20 = icmp eq i32 %19, 0, !dbg !128
-  br i1 %20, label %21, label %.preheader, !dbg !129
+land.lhs.true10:                                  ; preds = %land.lhs.true6
+  %call11 = call i32 @stat(i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0), %struct.stat* %dotstat) #8, !dbg !73
+  %cmp12 = icmp eq i32 %call11, 0, !dbg !73
+  br i1 %cmp12, label %land.lhs.true14, label %for.cond.preheader, !dbg !73
 
-; <label>:21                                      ; preds = %18
-  %22 = getelementptr inbounds %struct.stat* %dotstat, i64 0, i32 3, !dbg !130
-  %23 = load i64* %22, align 8, !dbg !130, !tbaa !131
-  %24 = getelementptr inbounds %struct.stat* %pwdstat, i64 0, i32 3, !dbg !137
-  %25 = load i64* %24, align 8, !dbg !137, !tbaa !131
-  %26 = icmp eq i64 %23, %25, !dbg !138
-  br i1 %26, label %27, label %.preheader, !dbg !139
+land.lhs.true14:                                  ; preds = %land.lhs.true10
+  %st_ino = getelementptr inbounds %struct.stat* %dotstat, i64 0, i32 1, !dbg !73
+  %5 = load i64* %st_ino, align 8, !dbg !73, !tbaa !74
+  %st_ino15 = getelementptr inbounds %struct.stat* %pwdstat, i64 0, i32 1, !dbg !73
+  %6 = load i64* %st_ino15, align 8, !dbg !73, !tbaa !74
+  %cmp16 = icmp eq i64 %5, %6, !dbg !73
+  br i1 %cmp16, label %land.lhs.true18, label %for.cond.preheader, !dbg !73
 
-; <label>:27                                      ; preds = %21
-  %28 = getelementptr inbounds %struct.stat* %dotstat, i64 0, i32 0, !dbg !140
-  %29 = load i32* %28, align 8, !dbg !140, !tbaa !141
-  %30 = getelementptr inbounds %struct.stat* %pwdstat, i64 0, i32 0, !dbg !142
-  %31 = load i32* %30, align 8, !dbg !142, !tbaa !141
-  %32 = icmp eq i32 %29, %31, !dbg !143
-  br i1 %32, label %.loopexit, label %.preheader, !dbg !144
+land.lhs.true18:                                  ; preds = %land.lhs.true14
+  %st_dev = getelementptr inbounds %struct.stat* %dotstat, i64 0, i32 0, !dbg !73
+  %7 = load i64* %st_dev, align 8, !dbg !73, !tbaa !74
+  %st_dev19 = getelementptr inbounds %struct.stat* %pwdstat, i64 0, i32 0, !dbg !73
+  %8 = load i64* %st_dev19, align 8, !dbg !73, !tbaa !74
+  %cmp20 = icmp eq i64 %7, %8, !dbg !73
+  br i1 %cmp20, label %if.end31, label %for.cond.preheader, !dbg !73
 
-.preheader:                                       ; preds = %9, %27, %21, %18, %15, %12
-  %33 = call noalias i8* @xmalloc(i64 100) #6, !dbg !145
-  call void @llvm.dbg.value(metadata i8* %33, i64 0, metadata !10, metadata !104), !dbg !105
-  %34 = call i8* @getcwd(i8* %33, i64 100) #6, !dbg !146
-  %35 = icmp eq i8* %34, null, !dbg !147
-  br i1 %35, label %.lr.ph, label %.loopexit, !dbg !148
+for.cond.preheader:                               ; preds = %if.then, %land.lhs.true18, %land.lhs.true14, %land.lhs.true10, %land.lhs.true6, %land.lhs.true3
+  %call2342 = call noalias i8* @xmalloc(i64 100) #8, !dbg !75
+  %call2443 = call i8* @getcwd(i8* %call2342, i64 100) #8, !dbg !75
+  %lnot44 = icmp eq i8* %call2443, null, !dbg !75
+  br i1 %lnot44, label %for.body, label %if.end31, !dbg !75
 
-; <label>:36                                      ; preds = %.lr.ph
-  %37 = call noalias i8* @xmalloc(i64 %44) #6, !dbg !145
-  call void @llvm.dbg.value(metadata i8* %37, i64 0, metadata !10, metadata !104), !dbg !105
-  %38 = call i8* @getcwd(i8* %37, i64 %44) #6, !dbg !146
-  %39 = icmp eq i8* %38, null, !dbg !147
-  br i1 %39, label %.lr.ph, label %.loopexit, !dbg !148
+for.cond:                                         ; preds = %for.body
+  %call23 = call noalias i8* @xmalloc(i64 %mul) #8, !dbg !75
+  %call24 = call i8* @getcwd(i8* %call23, i64 %mul) #8, !dbg !75
+  %lnot = icmp eq i8* %call24, null, !dbg !75
+  br i1 %lnot, label %for.body, label %if.end31, !dbg !75
 
-.lr.ph:                                           ; preds = %.preheader, %36
-  %40 = phi i8* [ %37, %36 ], [ %33, %.preheader ]
-  %s.03 = phi i64 [ %44, %36 ], [ 100, %.preheader ]
-  %41 = call i32* @__error() #6, !dbg !149
-  %42 = load i32* %41, align 4, !dbg !149, !tbaa !110
-  call void @llvm.dbg.value(metadata i32 %42, i64 0, metadata !85, metadata !104), !dbg !150
-  call void @free(i8* %40) #7, !dbg !151
-  %43 = icmp eq i32 %42, 34, !dbg !152
-  %44 = shl i64 %s.03, 1, !dbg !154
-  call void @llvm.dbg.value(metadata i64 %44, i64 0, metadata !11, metadata !104), !dbg !155
-  br i1 %43, label %36, label %45, !dbg !156
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %call2346 = phi i8* [ %call23, %for.cond ], [ %call2342, %for.cond.preheader ]
+  %s.045 = phi i64 [ %mul, %for.cond ], [ 100, %for.cond.preheader ]
+  %9 = load i32* %call, align 4, !dbg !76, !tbaa !70
+  call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !57), !dbg !76
+  call void @free(i8* %call2346) #8, !dbg !77
+  %cmp27 = icmp eq i32 %9, 34, !dbg !78
+  %mul = shl i64 %s.045, 1, !dbg !75
+  call void @llvm.dbg.value(metadata !{i64 %mul}, i64 0, metadata !12), !dbg !75
+  br i1 %cmp27, label %for.cond, label %if.then29, !dbg !78
 
-; <label>:45                                      ; preds = %.lr.ph
-  store i32 %42, i32* @getpwd.failure_errno, align 4, !dbg !157, !tbaa !110
-  %46 = call i32* @__error() #6, !dbg !159
-  store i32 %42, i32* %46, align 4, !dbg !160, !tbaa !110
-  call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !10, metadata !104), !dbg !105
-  br label %.loopexit, !dbg !161
+if.then29:                                        ; preds = %for.body
+  store i32 %9, i32* @getpwd.failure_errno, align 4, !dbg !79, !tbaa !70
+  store i32 %9, i32* %call, align 4, !dbg !79, !tbaa !70
+  call void @llvm.dbg.value(metadata !81, i64 0, metadata !11), !dbg !82
+  br label %if.end31, !dbg !83
 
-.loopexit:                                        ; preds = %36, %.preheader, %45, %27
-  %p.0 = phi i8* [ %10, %27 ], [ null, %45 ], [ %33, %.preheader ], [ %37, %36 ]
-  store i8* %p.0, i8** @getpwd.pwd, align 8, !dbg !162, !tbaa !100
-  br label %47, !dbg !163
+if.end31:                                         ; preds = %for.cond.preheader, %for.cond, %if.then29, %land.lhs.true18
+  %p.0 = phi i8* [ %call2, %land.lhs.true18 ], [ null, %if.then29 ], [ %call2342, %for.cond.preheader ], [ %call23, %for.cond ]
+  store i8* %p.0, i8** @getpwd.pwd, align 8, !dbg !84, !tbaa !65
+  br label %if.end32, !dbg !85
 
-; <label>:47                                      ; preds = %5, %0, %.loopexit
-  %p.1 = phi i8* [ %1, %0 ], [ null, %5 ], [ %p.0, %.loopexit ]
-  call void @llvm.lifetime.end(i64 144, i8* %3) #1, !dbg !164
-  call void @llvm.lifetime.end(i64 144, i8* %2) #1, !dbg !164
-  ret i8* %p.1, !dbg !164
+if.end32:                                         ; preds = %land.lhs.true, %entry, %if.end31
+  %p.1 = phi i8* [ %0, %entry ], [ null, %land.lhs.true ], [ %p.0, %if.end31 ]
+  call void @llvm.lifetime.end(i64 144, i8* %2) #2, !dbg !86
+  call void @llvm.lifetime.end(i64 144, i8* %1) #2, !dbg !86
+  ret i8* %p.1, !dbg !86
 }

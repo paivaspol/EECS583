@@ -1,17 +1,18 @@
 define i32* @IVinit(i32 %size, i32 %ival) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !173, metadata !380), !dbg !647
-  tail call void @llvm.dbg.value(metadata i32 %ival, i64 0, metadata !174, metadata !380), !dbg !648
-  tail call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !175, metadata !380), !dbg !649
-  %1 = icmp sgt i32 %size, 0, !dbg !650
-  br i1 %1, label %2, label %4, !dbg !652
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !156), !dbg !491
+  tail call void @llvm.dbg.value(metadata !{i32 %ival}, i64 0, metadata !157), !dbg !492
+  tail call void @llvm.dbg.value(metadata !459, i64 0, metadata !158), !dbg !493
+  %cmp = icmp sgt i32 %size, 0, !dbg !494
+  br i1 %cmp, label %if.then, label %if.end, !dbg !494
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i32* @IVinit2(i32 %size) #11, !dbg !653
-  tail call void @llvm.dbg.value(metadata i32* %3, i64 0, metadata !175, metadata !380), !dbg !649
-  tail call void @IVfill(i32 %size, i32* %3, i32 %ival) #11, !dbg !655
-  br label %4, !dbg !656
+if.then:                                          ; preds = %entry
+  %call = tail call i32* @IVinit2(i32 %size) #9, !dbg !495
+  tail call void @llvm.dbg.value(metadata !{i32* %call}, i64 0, metadata !158), !dbg !495
+  tail call void @IVfill(i32 %size, i32* %call, i32 %ival) #9, !dbg !497
+  br label %if.end, !dbg !498
 
-; <label>:4                                       ; preds = %2, %0
-  %y.0 = phi i32* [ %3, %2 ], [ null, %0 ]
-  ret i32* %y.0, !dbg !657
+if.end:                                           ; preds = %if.then, %entry
+  %y.0 = phi i32* [ %call, %if.then ], [ null, %entry ]
+  ret i32* %y.0, !dbg !499
 }

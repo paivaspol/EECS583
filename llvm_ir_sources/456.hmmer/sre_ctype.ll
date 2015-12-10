@@ -1,188 +1,121 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/456.hmmer/src/sre_ctype.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_ctype.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct._RuneLocale = type { [8 x i8], [32 x i8], i32 (i8*, i64, i8**)*, i32 (i32, i8*, i64, i8**)*, i32, [256 x i32], [256 x i32], [256 x i32], %struct._RuneRange, %struct._RuneRange, %struct._RuneRange, i8*, i32, i32, %struct._RuneCharClass* }
-%struct._RuneRange = type { i32, %struct._RuneEntry* }
-%struct._RuneEntry = type { i32, i32, i32, i32* }
-%struct._RuneCharClass = type { [14 x i8], i32 }
-
-@_DefaultRuneLocale = external global %struct._RuneLocale
-
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @sre_tolower(i32 %c) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !9, metadata !42), !dbg !43
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !16, metadata !42) #3, !dbg !44
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !24, metadata !42) #3, !dbg !47
-  tail call void @llvm.dbg.value(metadata i64 32768, i64 0, metadata !25, metadata !42) #3, !dbg !49
-  %isascii.i.i = icmp ult i32 %c, 128, !dbg !50
-  br i1 %isascii.i.i, label %1, label %6, !dbg !50
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %c}, i64 0, metadata !26), !dbg !34
+  %idxprom = sext i32 %c to i64, !dbg !35
+  %call = tail call i16** @__ctype_b_loc() #4, !dbg !35
+  %0 = load i16** %call, align 8, !dbg !35, !tbaa !36
+  %arrayidx = getelementptr inbounds i16* %0, i64 %idxprom, !dbg !35
+  %1 = load i16* %arrayidx, align 2, !dbg !35, !tbaa !39
+  %and = and i16 %1, 256, !dbg !35
+  %tobool = icmp eq i16 %and, 0, !dbg !35
+  br i1 %tobool, label %return, label %if.then, !dbg !35
 
-; <label>:1                                       ; preds = %0
-  %2 = sext i32 %c to i64, !dbg !51
-  %3 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %2, !dbg !51
-  %4 = load i32* %3, align 4, !dbg !51, !tbaa !52
-  %5 = and i32 %4, 32768, !dbg !56
-  br label %isupper.exit, !dbg !50
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @tolower(i32 %c) #5, !dbg !40
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !27), !dbg !40
+  br label %return, !dbg !42
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 @__maskrune(i32 %c, i64 32768) #4, !dbg !57
-  br label %isupper.exit, !dbg !50
-
-isupper.exit:                                     ; preds = %1, %6
-  %.sink.i.in.i = phi i32 [ %5, %1 ], [ %7, %6 ], !dbg !58
-  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0, !dbg !59
-  br i1 %.sink.i.i, label %10, label %8, !dbg !60
-
-; <label>:8                                       ; preds = %isupper.exit
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !31, metadata !42) #3, !dbg !61
-  %9 = tail call i32 @__tolower(i32 %c) #4, !dbg !63
-  br label %10, !dbg !64
-
-; <label>:10                                      ; preds = %isupper.exit, %8
-  %.0 = phi i32 [ %9, %8 ], [ %c, %isupper.exit ]
-  ret i32 %.0, !dbg !65
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ %call1, %if.then ], [ %c, %entry ]
+  ret i32 %retval.0, !dbg !43
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize readnone
+declare i16** @__ctype_b_loc() #1
+
+; Function Attrs: nounwind optsize
+declare i32 @tolower(i32) #2
+
+; Function Attrs: nounwind optsize uwtable
 define i32 @sre_toupper(i32 %c) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !12, metadata !42), !dbg !66
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !34, metadata !42) #3, !dbg !67
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !24, metadata !42) #3, !dbg !70
-  tail call void @llvm.dbg.value(metadata i64 4096, i64 0, metadata !25, metadata !42) #3, !dbg !72
-  %isascii.i.i = icmp ult i32 %c, 128, !dbg !73
-  br i1 %isascii.i.i, label %1, label %6, !dbg !73
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %c}, i64 0, metadata !31), !dbg !44
+  %idxprom = sext i32 %c to i64, !dbg !45
+  %call = tail call i16** @__ctype_b_loc() #4, !dbg !45
+  %0 = load i16** %call, align 8, !dbg !45, !tbaa !36
+  %arrayidx = getelementptr inbounds i16* %0, i64 %idxprom, !dbg !45
+  %1 = load i16* %arrayidx, align 2, !dbg !45, !tbaa !39
+  %and = and i16 %1, 512, !dbg !45
+  %tobool = icmp eq i16 %and, 0, !dbg !45
+  br i1 %tobool, label %return, label %if.then, !dbg !45
 
-; <label>:1                                       ; preds = %0
-  %2 = sext i32 %c to i64, !dbg !74
-  %3 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %2, !dbg !74
-  %4 = load i32* %3, align 4, !dbg !74, !tbaa !52
-  %5 = and i32 %4, 4096, !dbg !75
-  br label %islower.exit, !dbg !73
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @toupper(i32 %c) #5, !dbg !46
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !32), !dbg !46
+  br label %return, !dbg !48
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 @__maskrune(i32 %c, i64 4096) #4, !dbg !76
-  br label %islower.exit, !dbg !73
-
-islower.exit:                                     ; preds = %1, %6
-  %.sink.i.in.i = phi i32 [ %5, %1 ], [ %7, %6 ], !dbg !77
-  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0, !dbg !78
-  br i1 %.sink.i.i, label %10, label %8, !dbg !79
-
-; <label>:8                                       ; preds = %islower.exit
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !37, metadata !42) #3, !dbg !80
-  %9 = tail call i32 @__toupper(i32 %c) #4, !dbg !82
-  br label %10, !dbg !83
-
-; <label>:10                                      ; preds = %islower.exit, %8
-  %.0 = phi i32 [ %9, %8 ], [ %c, %islower.exit ]
-  ret i32 %.0, !dbg !84
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ %call1, %if.then ], [ %c, %entry ]
+  ret i32 %retval.0, !dbg !49
 }
 
-; Function Attrs: optsize
-declare i32 @__maskrune(i32, i64) #1
-
-; Function Attrs: optsize
-declare i32 @__tolower(i32) #1
-
-; Function Attrs: optsize
-declare i32 @__toupper(i32) #1
+; Function Attrs: nounwind optsize
+declare i32 @toupper(i32) #2
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #3
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind readnone }
-attributes #3 = { nounwind }
-attributes #4 = { nounwind optsize }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind readnone }
+attributes #4 = { nounwind optsize readnone }
+attributes #5 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!38, !39, !40}
-!llvm.ident = !{!41}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !2, subprograms: !3, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/456.hmmer/src/sre_ctype.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !10, !13, !17, !26, !29, !32, !35}
-!4 = !DISubprogram(name: "sre_tolower", scope: !1, file: !1, line: 25, type: !5, isLocal: false, isDefinition: true, scopeLine: 26, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32)* @sre_tolower, variables: !8)
-!5 = !DISubroutineType(types: !6)
-!6 = !{!7, !7}
-!7 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!8 = !{!9}
-!9 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "c", arg: 1, scope: !4, file: !1, line: 25, type: !7)
-!10 = !DISubprogram(name: "sre_toupper", scope: !1, file: !1, line: 32, type: !5, isLocal: false, isDefinition: true, scopeLine: 33, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32)* @sre_toupper, variables: !11)
-!11 = !{!12}
-!12 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "c", arg: 1, scope: !10, file: !1, line: 32, type: !7)
-!13 = !DISubprogram(name: "isupper", scope: !14, file: !14, line: 273, type: !5, isLocal: false, isDefinition: true, scopeLine: 274, flags: DIFlagPrototyped, isOptimized: true, variables: !15)
-!14 = !DIFile(filename: "/usr/include/ctype.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!15 = !{!16}
-!16 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "_c", arg: 1, scope: !13, file: !14, line: 273, type: !7)
-!17 = !DISubprogram(name: "__istype", scope: !14, file: !14, line: 153, type: !18, isLocal: false, isDefinition: true, scopeLine: 154, flags: DIFlagPrototyped, isOptimized: true, variables: !23)
-!18 = !DISubroutineType(types: !19)
-!19 = !{!7, !20, !22}
-!20 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_ct_rune_t", file: !21, line: 70, baseType: !7)
-!21 = !DIFile(filename: "/usr/include/i386/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!22 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!23 = !{!24, !25}
-!24 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "_c", arg: 1, scope: !17, file: !14, line: 153, type: !20)
-!25 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "_f", arg: 2, scope: !17, file: !14, line: 153, type: !22)
-!26 = !DISubprogram(name: "isascii", scope: !14, file: !14, line: 135, type: !5, isLocal: false, isDefinition: true, scopeLine: 136, flags: DIFlagPrototyped, isOptimized: true, variables: !27)
-!27 = !{!28}
-!28 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "_c", arg: 1, scope: !26, file: !14, line: 135, type: !7)
-!29 = !DISubprogram(name: "tolower", scope: !14, file: !14, line: 292, type: !5, isLocal: false, isDefinition: true, scopeLine: 293, flags: DIFlagPrototyped, isOptimized: true, variables: !30)
-!30 = !{!31}
-!31 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "_c", arg: 1, scope: !29, file: !14, line: 292, type: !7)
-!32 = !DISubprogram(name: "islower", scope: !14, file: !14, line: 249, type: !5, isLocal: false, isDefinition: true, scopeLine: 250, flags: DIFlagPrototyped, isOptimized: true, variables: !33)
-!33 = !{!34}
-!34 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "_c", arg: 1, scope: !32, file: !14, line: 249, type: !7)
-!35 = !DISubprogram(name: "toupper", scope: !14, file: !14, line: 298, type: !5, isLocal: false, isDefinition: true, scopeLine: 299, flags: DIFlagPrototyped, isOptimized: true, variables: !36)
-!36 = !{!37}
-!37 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "_c", arg: 1, scope: !35, file: !14, line: 298, type: !7)
-!38 = !{i32 2, !"Dwarf Version", i32 2}
-!39 = !{i32 2, !"Debug Info Version", i32 700000003}
-!40 = !{i32 1, !"PIC Level", i32 2}
-!41 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!42 = !DIExpression()
-!43 = !DILocation(line: 25, column: 17, scope: !4)
-!44 = !DILocation(line: 273, column: 13, scope: !13, inlinedAt: !45)
-!45 = distinct !DILocation(line: 27, column: 7, scope: !46)
-!46 = distinct !DILexicalBlock(scope: !4, file: !1, line: 27, column: 7)
-!47 = !DILocation(line: 153, column: 29, scope: !17, inlinedAt: !48)
-!48 = distinct !DILocation(line: 275, column: 10, scope: !13, inlinedAt: !45)
-!49 = !DILocation(line: 153, column: 47, scope: !17, inlinedAt: !48)
-!50 = !DILocation(line: 158, column: 10, scope: !17, inlinedAt: !48)
-!51 = !DILocation(line: 158, column: 27, scope: !17, inlinedAt: !48)
-!52 = !{!53, !53, i64 0}
-!53 = !{!"int", !54, i64 0}
-!54 = !{!"omnipotent char", !55, i64 0}
-!55 = !{!"Simple C/C++ TBAA"}
-!56 = !DILocation(line: 158, column: 25, scope: !17, inlinedAt: !48)
-!57 = !DILocation(line: 159, column: 7, scope: !17, inlinedAt: !48)
-!58 = !DILocation(line: 27, column: 7, scope: !46)
-!59 = !DILocation(line: 275, column: 10, scope: !13, inlinedAt: !45)
-!60 = !DILocation(line: 27, column: 7, scope: !4)
-!61 = !DILocation(line: 292, column: 13, scope: !29, inlinedAt: !62)
-!62 = distinct !DILocation(line: 27, column: 26, scope: !46)
-!63 = !DILocation(line: 294, column: 17, scope: !29, inlinedAt: !62)
-!64 = !DILocation(line: 27, column: 19, scope: !46)
-!65 = !DILocation(line: 29, column: 1, scope: !4)
-!66 = !DILocation(line: 32, column: 17, scope: !10)
-!67 = !DILocation(line: 249, column: 13, scope: !32, inlinedAt: !68)
-!68 = distinct !DILocation(line: 34, column: 7, scope: !69)
-!69 = distinct !DILexicalBlock(scope: !10, file: !1, line: 34, column: 7)
-!70 = !DILocation(line: 153, column: 29, scope: !17, inlinedAt: !71)
-!71 = distinct !DILocation(line: 251, column: 10, scope: !32, inlinedAt: !68)
-!72 = !DILocation(line: 153, column: 47, scope: !17, inlinedAt: !71)
-!73 = !DILocation(line: 158, column: 10, scope: !17, inlinedAt: !71)
-!74 = !DILocation(line: 158, column: 27, scope: !17, inlinedAt: !71)
-!75 = !DILocation(line: 158, column: 25, scope: !17, inlinedAt: !71)
-!76 = !DILocation(line: 159, column: 7, scope: !17, inlinedAt: !71)
-!77 = !DILocation(line: 34, column: 7, scope: !69)
-!78 = !DILocation(line: 251, column: 10, scope: !32, inlinedAt: !68)
-!79 = !DILocation(line: 34, column: 7, scope: !10)
-!80 = !DILocation(line: 298, column: 13, scope: !35, inlinedAt: !81)
-!81 = distinct !DILocation(line: 34, column: 26, scope: !69)
-!82 = !DILocation(line: 300, column: 17, scope: !35, inlinedAt: !81)
-!83 = !DILocation(line: 34, column: 19, scope: !69)
-!84 = !DILocation(line: 36, column: 1, scope: !10)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !18, metadata !19, metadata !18, metadata !18, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_ctype.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_ctype.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{metadata !3}
+!3 = metadata !{i32 786436, metadata !4, null, metadata !"", i32 46, i64 32, i64 32, i32 0, i32 0, null, metadata !5, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 46, size 32, align 32, offset 0] [from ]
+!4 = metadata !{metadata !"/usr/include/ctype.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!5 = metadata !{metadata !6, metadata !7, metadata !8, metadata !9, metadata !10, metadata !11, metadata !12, metadata !13, metadata !14, metadata !15, metadata !16, metadata !17}
+!6 = metadata !{i32 786472, metadata !"_ISupper", i64 256} ; [ DW_TAG_enumerator ] [_ISupper :: 256]
+!7 = metadata !{i32 786472, metadata !"_ISlower", i64 512} ; [ DW_TAG_enumerator ] [_ISlower :: 512]
+!8 = metadata !{i32 786472, metadata !"_ISalpha", i64 1024} ; [ DW_TAG_enumerator ] [_ISalpha :: 1024]
+!9 = metadata !{i32 786472, metadata !"_ISdigit", i64 2048} ; [ DW_TAG_enumerator ] [_ISdigit :: 2048]
+!10 = metadata !{i32 786472, metadata !"_ISxdigit", i64 4096} ; [ DW_TAG_enumerator ] [_ISxdigit :: 4096]
+!11 = metadata !{i32 786472, metadata !"_ISspace", i64 8192} ; [ DW_TAG_enumerator ] [_ISspace :: 8192]
+!12 = metadata !{i32 786472, metadata !"_ISprint", i64 16384} ; [ DW_TAG_enumerator ] [_ISprint :: 16384]
+!13 = metadata !{i32 786472, metadata !"_ISgraph", i64 32768} ; [ DW_TAG_enumerator ] [_ISgraph :: 32768]
+!14 = metadata !{i32 786472, metadata !"_ISblank", i64 1} ; [ DW_TAG_enumerator ] [_ISblank :: 1]
+!15 = metadata !{i32 786472, metadata !"_IScntrl", i64 2} ; [ DW_TAG_enumerator ] [_IScntrl :: 2]
+!16 = metadata !{i32 786472, metadata !"_ISpunct", i64 4} ; [ DW_TAG_enumerator ] [_ISpunct :: 4]
+!17 = metadata !{i32 786472, metadata !"_ISalnum", i64 8} ; [ DW_TAG_enumerator ] [_ISalnum :: 8]
+!18 = metadata !{i32 0}
+!19 = metadata !{metadata !20, metadata !29}
+!20 = metadata !{i32 786478, metadata !1, metadata !21, metadata !"sre_tolower", metadata !"sre_tolower", metadata !"", i32 25, metadata !22, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32)* @sre_tolower, null, null, metadata !25, i32 26} ; [ DW_TAG_subprogram ] [line 25] [def] [scope 26] [sre_tolower]
+!21 = metadata !{i32 786473, metadata !1}         ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_ctype.c]
+!22 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !23, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!23 = metadata !{metadata !24, metadata !24}
+!24 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!25 = metadata !{metadata !26, metadata !27}
+!26 = metadata !{i32 786689, metadata !20, metadata !"c", metadata !21, i32 16777241, metadata !24, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [c] [line 25]
+!27 = metadata !{i32 786688, metadata !28, metadata !"__res", metadata !21, i32 27, metadata !24, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [__res] [line 27]
+!28 = metadata !{i32 786443, metadata !1, metadata !20, i32 27, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_ctype.c]
+!29 = metadata !{i32 786478, metadata !1, metadata !21, metadata !"sre_toupper", metadata !"sre_toupper", metadata !"", i32 32, metadata !22, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32)* @sre_toupper, null, null, metadata !30, i32 33} ; [ DW_TAG_subprogram ] [line 32] [def] [scope 33] [sre_toupper]
+!30 = metadata !{metadata !31, metadata !32}
+!31 = metadata !{i32 786689, metadata !29, metadata !"c", metadata !21, i32 16777248, metadata !24, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [c] [line 32]
+!32 = metadata !{i32 786688, metadata !33, metadata !"__res", metadata !21, i32 34, metadata !24, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [__res] [line 34]
+!33 = metadata !{i32 786443, metadata !1, metadata !29, i32 34, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_ctype.c]
+!34 = metadata !{i32 25, i32 0, metadata !20, null}
+!35 = metadata !{i32 27, i32 0, metadata !20, null}
+!36 = metadata !{metadata !"any pointer", metadata !37}
+!37 = metadata !{metadata !"omnipotent char", metadata !38}
+!38 = metadata !{metadata !"Simple C/C++ TBAA"}
+!39 = metadata !{metadata !"short", metadata !37}
+!40 = metadata !{i32 27, i32 0, metadata !41, null}
+!41 = metadata !{i32 786443, metadata !1, metadata !28, i32 27, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_ctype.c]
+!42 = metadata !{i32 27, i32 0, metadata !28, null}
+!43 = metadata !{i32 29, i32 0, metadata !20, null}
+!44 = metadata !{i32 32, i32 0, metadata !29, null}
+!45 = metadata !{i32 34, i32 0, metadata !29, null}
+!46 = metadata !{i32 34, i32 0, metadata !47, null}
+!47 = metadata !{i32 786443, metadata !1, metadata !33, i32 34, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_ctype.c]
+!48 = metadata !{i32 34, i32 0, metadata !33, null}
+!49 = metadata !{i32 36, i32 0, metadata !29, null}

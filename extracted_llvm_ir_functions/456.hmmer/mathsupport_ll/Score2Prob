@@ -1,21 +1,22 @@
 define float @Score2Prob(i32 %sc, float %null) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %sc, i64 0, metadata !18, metadata !184), !dbg !195
-  tail call void @llvm.dbg.value(metadata float %null, i64 0, metadata !19, metadata !184), !dbg !196
-  %1 = icmp eq i32 %sc, -987654321, !dbg !197
-  br i1 %1, label %11, label %2, !dbg !199
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %sc}, i64 0, metadata !17), !dbg !183
+  tail call void @llvm.dbg.value(metadata !{float %null}, i64 0, metadata !18), !dbg !183
+  %cmp = icmp eq i32 %sc, -987654321, !dbg !184
+  br i1 %cmp, label %return, label %if.else, !dbg !184
 
-; <label>:2                                       ; preds = %0
-  %3 = fpext float %null to double, !dbg !200
-  %4 = sitofp i32 %sc to float, !dbg !201
-  %5 = fpext float %4 to double, !dbg !201
-  %6 = fdiv double %5, 1.000000e+03, !dbg !201
-  %7 = fmul double %6, 0x3FE62E42FEAD449C, !dbg !201
-  %8 = tail call double @exp(double %7) #5, !dbg !201
-  %9 = fmul double %3, %8, !dbg !202
-  %10 = fptrunc double %9 to float, !dbg !203
-  br label %11, !dbg !204
+if.else:                                          ; preds = %entry
+  %conv = fpext float %null to double, !dbg !185
+  %conv1 = sitofp i32 %sc to float, !dbg !185
+  %conv2 = fpext float %conv1 to double, !dbg !185
+  %div = fdiv double %conv2, 1.000000e+03, !dbg !185
+  %mul = fmul double %div, 0x3FE62E42FEAD449C, !dbg !185
+  %call = tail call double @exp(double %mul) #6, !dbg !185
+  %mul3 = fmul double %conv, %call, !dbg !185
+  %conv4 = fptrunc double %mul3 to float, !dbg !185
+  br label %return, !dbg !185
 
-; <label>:11                                      ; preds = %0, %2
-  %.0 = phi float [ %10, %2 ], [ 0.000000e+00, %0 ]
-  ret float %.0, !dbg !205
+return:                                           ; preds = %entry, %if.else
+  %retval.0 = phi float [ %conv4, %if.else ], [ 0.000000e+00, %entry ]
+  ret float %retval.0, !dbg !186
 }

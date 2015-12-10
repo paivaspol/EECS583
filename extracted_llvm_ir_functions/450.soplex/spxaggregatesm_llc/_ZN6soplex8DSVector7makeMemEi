@@ -1,42 +1,45 @@
-define linkonce_odr void @_ZN6soplex8DSVector7makeMemEi(%"class.soplex::DSVector"* %this, i32 %n) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DSVector"* %this, i64 0, metadata !4298, metadata !5492), !dbg !6985
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !4299, metadata !5492), !dbg !6986
-  %1 = getelementptr inbounds %"class.soplex::DSVector"* %this, i64 0, i32 0, i32 0, !dbg !6987
-  %2 = load %"struct.soplex::SVector::Element"** %1, align 8, !dbg !6987, !tbaa !5503
-  %3 = icmp eq %"struct.soplex::SVector::Element"* %2, null, !dbg !6991
-  br i1 %3, label %_ZNK6soplex7SVector4sizeEv.exit3, label %_ZNK6soplex7SVector3maxEv.exit, !dbg !6992
+define linkonce_odr void @_ZN6soplex8DSVector7makeMemEi(%"class.soplex::DSVector"* %this, i32 %n) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DSVector"* %this}, i64 0, metadata !5644), !dbg !7067
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !5645), !dbg !7067
+  %m_elem.i = getelementptr inbounds %"class.soplex::DSVector"* %this, i64 0, i32 0, i32 0, !dbg !7068
+  %0 = load %"struct.soplex::SVector::Element"** %m_elem.i, align 8, !dbg !7068, !tbaa !5852
+  %cmp.i = icmp eq %"struct.soplex::SVector::Element"* %0, null, !dbg !7068
+  br i1 %cmp.i, label %_ZNK6soplex7SVector4sizeEv.exit14, label %if.then.i12, !dbg !7068
 
-_ZNK6soplex7SVector3maxEv.exit:                   ; preds = %0
-  %4 = getelementptr inbounds %"struct.soplex::SVector::Element"* %2, i64 -1, i32 0, !dbg !6993
-  %5 = load double* %4, align 8, !dbg !6993, !tbaa !5526
-  %6 = fptosi double %5 to i32, !dbg !6994
-  %7 = getelementptr inbounds %"struct.soplex::SVector::Element"* %2, i64 -1, i32 1, !dbg !6995
-  %8 = load i32* %7, align 4, !dbg !6995, !tbaa !5511
-  br label %_ZNK6soplex7SVector4sizeEv.exit3, !dbg !6997
+if.then.i12:                                      ; preds = %entry
+  %val.i = getelementptr inbounds %"struct.soplex::SVector::Element"* %0, i64 -1, i32 0, !dbg !7071
+  %1 = load double* %val.i, align 8, !dbg !7071, !tbaa !5868
+  %conv.i = fptosi double %1 to i32, !dbg !7071
+  %idx.i11 = getelementptr inbounds %"struct.soplex::SVector::Element"* %0, i64 -1, i32 1, !dbg !7072
+  %2 = load i32* %idx.i11, align 4, !dbg !7072, !tbaa !5856
+  br label %_ZNK6soplex7SVector4sizeEv.exit14, !dbg !7072
 
-_ZNK6soplex7SVector4sizeEv.exit3:                 ; preds = %0, %_ZNK6soplex7SVector3maxEv.exit
-  %.0.i4 = phi i32 [ %6, %_ZNK6soplex7SVector3maxEv.exit ], [ 0, %0 ]
-  %.0.i2 = phi i32 [ %8, %_ZNK6soplex7SVector3maxEv.exit ], [ 0, %0 ], !dbg !6998
-  %9 = sub nsw i32 %.0.i4, %.0.i2, !dbg !6999
-  %10 = add nsw i32 %n, 1, !dbg !7000
-  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !4299, metadata !5492), !dbg !6986
-  %11 = icmp slt i32 %9, %10, !dbg !7001
-  br i1 %11, label %12, label %17, !dbg !7002
+_ZNK6soplex7SVector4sizeEv.exit14:                ; preds = %entry, %if.then.i12
+  %3 = phi %"struct.soplex::SVector::Element"* [ %0, %if.then.i12 ], [ null, %entry ]
+  %retval.0.i16 = phi i32 [ %conv.i, %if.then.i12 ], [ 0, %entry ]
+  %retval.0.i13 = phi i32 [ %2, %if.then.i12 ], [ 0, %entry ]
+  %sub = sub nsw i32 %retval.0.i16, %retval.0.i13, !dbg !7070
+  %inc = add nsw i32 %n, 1, !dbg !7070
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !5645), !dbg !7070
+  %cmp = icmp slt i32 %sub, %inc, !dbg !7070
+  br i1 %cmp, label %if.then, label %if.end, !dbg !7070
 
-; <label>:12                                      ; preds = %_ZNK6soplex7SVector4sizeEv.exit3
-  br i1 %3, label %_ZNK6soplex7SVector4sizeEv.exit, label %13, !dbg !7003
+if.then:                                          ; preds = %_ZNK6soplex7SVector4sizeEv.exit14
+  %cmp.i6 = icmp eq %"struct.soplex::SVector::Element"* %3, null, !dbg !7073
+  br i1 %cmp.i6, label %_ZNK6soplex7SVector4sizeEv.exit, label %if.then.i7, !dbg !7073
 
-; <label>:13                                      ; preds = %12
-  %14 = getelementptr inbounds %"struct.soplex::SVector::Element"* %2, i64 -1, i32 1, !dbg !7005
-  %15 = load i32* %14, align 4, !dbg !7005, !tbaa !5511
-  br label %_ZNK6soplex7SVector4sizeEv.exit, !dbg !7006
+if.then.i7:                                       ; preds = %if.then
+  %idx.i = getelementptr inbounds %"struct.soplex::SVector::Element"* %3, i64 -1, i32 1, !dbg !7075
+  %4 = load i32* %idx.i, align 4, !dbg !7075, !tbaa !5856
+  br label %_ZNK6soplex7SVector4sizeEv.exit, !dbg !7075
 
-_ZNK6soplex7SVector4sizeEv.exit:                  ; preds = %12, %13
-  %.0.i1 = phi i32 [ %15, %13 ], [ 0, %12 ], !dbg !7007
-  %16 = add nsw i32 %.0.i1, %10, !dbg !7008
-  tail call void @_ZN6soplex8DSVector6setMaxEi(%"class.soplex::DSVector"* %this, i32 %16) #9, !dbg !7009
-  br label %17, !dbg !7009
+_ZNK6soplex7SVector4sizeEv.exit:                  ; preds = %if.then, %if.then.i7
+  %retval.0.i8 = phi i32 [ %4, %if.then.i7 ], [ 0, %if.then ]
+  %add = add nsw i32 %retval.0.i8, %inc, !dbg !7074
+  tail call void @_ZN6soplex8DSVector6setMaxEi(%"class.soplex::DSVector"* %this, i32 %add) #11, !dbg !7074
+  br label %if.end, !dbg !7074
 
-; <label>:17                                      ; preds = %_ZNK6soplex7SVector4sizeEv.exit, %_ZNK6soplex7SVector4sizeEv.exit3
-  ret void, !dbg !7010
+if.end:                                           ; preds = %_ZNK6soplex7SVector4sizeEv.exit, %_ZNK6soplex7SVector4sizeEv.exit14
+  ret void, !dbg !7076
 }

@@ -1,14 +1,16 @@
 define void @flush_diagnostic_buffer() #2 {
 entry:
-  %0 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  %call.i = tail call i8* @output_finalize_message(%struct.output_buffer* %0) #10
-  %stream.i = getelementptr inbounds %struct.output_buffer* %0, i64 0, i32 1
-  %1 = load %struct._IO_FILE** %stream.i, align 8, !tbaa !3
-  %call1.i = tail call i32 @fputs(i8* %call.i, %struct._IO_FILE* %1) #10
-  tail call void @output_clear_message_text(%struct.output_buffer* %0) #10
-  %2 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  %stream = getelementptr inbounds %struct.output_buffer* %2, i64 0, i32 1
-  %3 = load %struct._IO_FILE** %stream, align 8, !tbaa !3
-  %call = tail call i32 @fflush(%struct._IO_FILE* %3) #10
-  ret void
+  %0 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1299, !tbaa !1178
+  tail call void @llvm.dbg.value(metadata !{%struct.output_buffer* %0}, i64 0, metadata !1300) #4, !dbg !1301
+  %call.i = tail call i8* @output_finalize_message(%struct.output_buffer* %0) #11, !dbg !1302
+  tail call void @llvm.dbg.value(metadata !{i8* %call.i}, i64 0, metadata !1303) #4, !dbg !1302
+  %stream.i = getelementptr inbounds %struct.output_buffer* %0, i64 0, i32 1, !dbg !1304
+  %1 = load %struct._IO_FILE** %stream.i, align 8, !dbg !1304, !tbaa !1178
+  %call1.i = tail call i32 @fputs(i8* %call.i, %struct._IO_FILE* %1) #11, !dbg !1304
+  tail call void @output_clear_message_text(%struct.output_buffer* %0) #11, !dbg !1305
+  %2 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1306, !tbaa !1178
+  %stream = getelementptr inbounds %struct.output_buffer* %2, i64 0, i32 1, !dbg !1306
+  %3 = load %struct._IO_FILE** %stream, align 8, !dbg !1306, !tbaa !1178
+  %call = tail call i32 @fflush(%struct._IO_FILE* %3) #11, !dbg !1306
+  ret void, !dbg !1307
 }

@@ -1,0 +1,57 @@
+define internal fastcc %"class.xercesc_2_5::XMLMsgLoader"* @_ZN11xercesc_2_5L17gScannerMsgLoaderEv() #3 {
+entry:
+  %lockInit = alloca %"class.xercesc_2_5::XMLMutexLock", align 8
+  %0 = load %"class.xercesc_2_5::XMLMsgLoader"** @_ZN11xercesc_2_5L10gMsgLoaderE, align 8, !dbg !9268, !tbaa !8169
+  %tobool = icmp eq %"class.xercesc_2_5::XMLMsgLoader"* %0, null, !dbg !9268
+  br i1 %tobool, label %if.then, label %if.end10, !dbg !9268
+
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.declare(metadata !{%"class.xercesc_2_5::XMLMutexLock"* %lockInit}, metadata !7708), !dbg !9269
+  %call = call fastcc %"class.xercesc_2_5::XMLMutex"* @_ZN11xercesc_2_5L13gScannerMutexEv() #10, !dbg !9269
+  call void @_ZN11xercesc_2_512XMLMutexLockC1EPNS_8XMLMutexE(%"class.xercesc_2_5::XMLMutexLock"* %lockInit, %"class.xercesc_2_5::XMLMutex"* %call) #10, !dbg !9269
+  %1 = load %"class.xercesc_2_5::XMLMsgLoader"** @_ZN11xercesc_2_5L10gMsgLoaderE, align 8, !dbg !9270, !tbaa !8169
+  %tobool1 = icmp eq %"class.xercesc_2_5::XMLMsgLoader"* %1, null, !dbg !9270
+  br i1 %tobool1, label %if.then2, label %if.end8, !dbg !9270
+
+if.then2:                                         ; preds = %if.then
+  %call3 = invoke %"class.xercesc_2_5::XMLMsgLoader"* @_ZN11xercesc_2_516XMLPlatformUtils10loadMsgSetEPKt(i16* getelementptr inbounds ([0 x i16]* @_ZN11xercesc_2_56XMLUni14fgXMLErrDomainE, i64 0, i64 0)) #10
+          to label %invoke.cont unwind label %lpad, !dbg !9271
+
+invoke.cont:                                      ; preds = %if.then2
+  store %"class.xercesc_2_5::XMLMsgLoader"* %call3, %"class.xercesc_2_5::XMLMsgLoader"** @_ZN11xercesc_2_5L10gMsgLoaderE, align 8, !dbg !9271, !tbaa !8169
+  %tobool4 = icmp eq %"class.xercesc_2_5::XMLMsgLoader"* %call3, null, !dbg !9273
+  br i1 %tobool4, label %if.then5, label %if.end, !dbg !9273
+
+if.then5:                                         ; preds = %invoke.cont
+  invoke void @_ZN11xercesc_2_516XMLPlatformUtils5panicENS_12PanicHandler12PanicReasonsE(i32 4) #10
+          to label %if.end unwind label %lpad, !dbg !9274
+
+lpad:                                             ; preds = %if.end, %if.then5, %if.then2
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !9271
+  invoke void @_ZN11xercesc_2_512XMLMutexLockD1Ev(%"class.xercesc_2_5::XMLMutexLock"* %lockInit) #10
+          to label %eh.resume unwind label %terminate.lpad, !dbg !9275
+
+if.end:                                           ; preds = %invoke.cont, %if.then5
+  invoke void @_ZN11xercesc_2_518XMLRegisterCleanup15registerCleanupEPFvvE(%"class.xercesc_2_5::XMLRegisterCleanup"* @_ZN11xercesc_2_5L16cleanupMsgLoaderE, void ()* @_ZN11xercesc_2_510XMLScanner15reinitMsgLoaderEv) #10
+          to label %if.end8 unwind label %lpad, !dbg !9276
+
+if.end8:                                          ; preds = %if.then, %if.end
+  call void @_ZN11xercesc_2_512XMLMutexLockD1Ev(%"class.xercesc_2_5::XMLMutexLock"* %lockInit) #10, !dbg !9277
+  %.pre = load %"class.xercesc_2_5::XMLMsgLoader"** @_ZN11xercesc_2_5L10gMsgLoaderE, align 8, !dbg !9278, !tbaa !8169
+  br label %if.end10, !dbg !9275
+
+if.end10:                                         ; preds = %entry, %if.end8
+  %3 = phi %"class.xercesc_2_5::XMLMsgLoader"* [ %0, %entry ], [ %.pre, %if.end8 ]
+  ret %"class.xercesc_2_5::XMLMsgLoader"* %3, !dbg !9278
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %2, !dbg !9275
+
+terminate.lpad:                                   ; preds = %lpad
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !9275
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !9275
+  call void @__clang_call_terminate(i8* %5) #9, !dbg !9275
+  unreachable, !dbg !9275
+}

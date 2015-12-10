@@ -1,30 +1,31 @@
-define void @SKTreePrintNodes(%struct.T_SKTREE* readonly %root, i32 %depth, void (i8*, i8*, i32)* %print_node) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %root, i64 0, metadata !66, metadata !109), !dbg !287
-  tail call void @llvm.dbg.value(metadata i32 %depth, i64 0, metadata !67, metadata !109), !dbg !288
-  tail call void @llvm.dbg.value(metadata void (i8*, i8*, i32)* %print_node, i64 0, metadata !68, metadata !109), !dbg !289
-  %1 = icmp eq %struct.T_SKTREE* %root, null, !dbg !290
-  br i1 %1, label %tailrecurse._crit_edge, label %tailrecurse, !dbg !292
+define void @SKTreePrintNodes(%struct.T_SKTREE* %root, i32 %depth, void (i8*, i8*, i32)* %print_node) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %root}, i64 0, metadata !66), !dbg !181
+  tail call void @llvm.dbg.value(metadata !{i32 %depth}, i64 0, metadata !67), !dbg !181
+  tail call void @llvm.dbg.value(metadata !{void (i8*, i8*, i32)* %print_node}, i64 0, metadata !68), !dbg !181
+  %tobool10 = icmp eq %struct.T_SKTREE* %root, null, !dbg !182
+  br i1 %tobool10, label %if.end, label %if.then, !dbg !182
 
-tailrecurse:                                      ; preds = %0, %tailrecurse
-  %depth.tr2 = phi i32 [ %4, %tailrecurse ], [ %depth, %0 ]
-  %root.tr1 = phi %struct.T_SKTREE* [ %10, %tailrecurse ], [ %root, %0 ]
-  %2 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 0, !dbg !293
-  %3 = load %struct.T_SKTREE** %2, align 8, !dbg !293, !tbaa !153
-  %4 = add nsw i32 %depth.tr2, 1, !dbg !295
-  tail call void @SKTreePrintNodes(%struct.T_SKTREE* %3, i32 %4, void (i8*, i8*, i32)* %print_node) #9, !dbg !296
-  %5 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 4, !dbg !297
-  %6 = load i8** %5, align 8, !dbg !297, !tbaa !140
-  %7 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 5, !dbg !298
-  %8 = load i8** %7, align 8, !dbg !298, !tbaa !130
-  tail call void %print_node(i8* %6, i8* %8, i32 %depth.tr2) #8, !dbg !299
-  %9 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 1, !dbg !300
-  %10 = load %struct.T_SKTREE** %9, align 8, !dbg !300, !tbaa !169
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %10, i64 0, metadata !66, metadata !109), !dbg !287
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !67, metadata !109), !dbg !288
-  tail call void @llvm.dbg.value(metadata void (i8*, i8*, i32)* %print_node, i64 0, metadata !68, metadata !109), !dbg !289
-  %11 = icmp eq %struct.T_SKTREE* %10, null, !dbg !290
-  br i1 %11, label %tailrecurse._crit_edge, label %tailrecurse, !dbg !292
+if.then:                                          ; preds = %entry, %if.then
+  %depth.tr12 = phi i32 [ %add, %if.then ], [ %depth, %entry ]
+  %root.tr11 = phi %struct.T_SKTREE* [ %3, %if.then ], [ %root, %entry ]
+  %left = getelementptr inbounds %struct.T_SKTREE* %root.tr11, i64 0, i32 0, !dbg !183
+  %0 = load %struct.T_SKTREE** %left, align 8, !dbg !183, !tbaa !117
+  %add = add nsw i32 %depth.tr12, 1, !dbg !183
+  tail call void @SKTreePrintNodes(%struct.T_SKTREE* %0, i32 %add, void (i8*, i8*, i32)* %print_node) #10, !dbg !183
+  %key = getelementptr inbounds %struct.T_SKTREE* %root.tr11, i64 0, i32 4, !dbg !185
+  %1 = load i8** %key, align 8, !dbg !185, !tbaa !117
+  %data = getelementptr inbounds %struct.T_SKTREE* %root.tr11, i64 0, i32 5, !dbg !185
+  %2 = load i8** %data, align 8, !dbg !185, !tbaa !117
+  tail call void %print_node(i8* %1, i8* %2, i32 %depth.tr12) #8, !dbg !185
+  %right = getelementptr inbounds %struct.T_SKTREE* %root.tr11, i64 0, i32 1, !dbg !186
+  %3 = load %struct.T_SKTREE** %right, align 8, !dbg !186, !tbaa !117
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %root.tr11}, i64 0, metadata !66), !dbg !181
+  tail call void @llvm.dbg.value(metadata !{i32 %depth.tr12}, i64 0, metadata !67), !dbg !181
+  tail call void @llvm.dbg.value(metadata !{void (i8*, i8*, i32)* %print_node}, i64 0, metadata !68), !dbg !181
+  %tobool = icmp eq %struct.T_SKTREE* %3, null, !dbg !182
+  br i1 %tobool, label %if.end, label %if.then, !dbg !182
 
-tailrecurse._crit_edge:                           ; preds = %tailrecurse, %0
-  ret void, !dbg !301
+if.end:                                           ; preds = %if.then, %entry
+  ret void, !dbg !187
 }

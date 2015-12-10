@@ -1,12 +1,13 @@
-define x86_fp80 @CCTK_Cmplx32Abs(%struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %complex_number) #5 {
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX32* %complex_number, metadata !190, metadata !243), !dbg !342
-  %1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 0, !dbg !342
-  %2 = load x86_fp80* %1, align 16, !dbg !342, !tbaa !334
-  %3 = fptrunc x86_fp80 %2 to double, !dbg !342
-  %4 = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 1, !dbg !342
-  %5 = load x86_fp80* %4, align 16, !dbg !342, !tbaa !340
-  %6 = fptrunc x86_fp80 %5 to double, !dbg !342
-  %7 = tail call double @hypot(double %3, double %6) #6, !dbg !342
-  %8 = fpext double %7 to x86_fp80, !dbg !342
-  ret x86_fp80 %8, !dbg !342
+define x86_fp80 @CCTK_Cmplx32Abs(%struct.CCTK_COMPLEX32* byval nocapture align 16 %complex_number) #3 {
+entry:
+  tail call void @llvm.dbg.declare(metadata !{%struct.CCTK_COMPLEX32* %complex_number}, metadata !191), !dbg !312
+  %Re = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 0, !dbg !312
+  %0 = load x86_fp80* %Re, align 16, !dbg !312, !tbaa !307
+  %conv = fptrunc x86_fp80 %0 to double, !dbg !312
+  %Im = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 1, !dbg !312
+  %1 = load x86_fp80* %Im, align 16, !dbg !312, !tbaa !307
+  %conv1 = fptrunc x86_fp80 %1 to double, !dbg !312
+  %call = tail call double @hypot(double %conv, double %conv1) #7, !dbg !312
+  %conv2 = fpext double %call to x86_fp80, !dbg !312
+  ret x86_fp80 %conv2, !dbg !312
 }

@@ -1,20 +1,22 @@
 define void @GrowTophits(%struct.tophit_s* nocapture %h) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.tophit_s* %h, i64 0, metadata !64, metadata !165), !dbg !191
-  %1 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 1, !dbg !192
-  %2 = bitcast %struct.hit_s** %1 to i8**, !dbg !192
-  %3 = load i8** %2, align 8, !dbg !192, !tbaa !180
-  %4 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 2, !dbg !192
-  %5 = load i32* %4, align 4, !dbg !192, !tbaa !183
-  %6 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 4, !dbg !192
-  %7 = load i32* %6, align 4, !dbg !192, !tbaa !189
-  %8 = add nsw i32 %7, %5, !dbg !192
-  %9 = sext i32 %8 to i64, !dbg !192
-  %10 = mul nsw i64 %9, 104, !dbg !192
-  %11 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 93, i8* %3, i64 %10) #7, !dbg !192
-  store i8* %11, i8** %2, align 8, !dbg !193, !tbaa !180
-  %12 = load i32* %6, align 4, !dbg !194, !tbaa !189
-  %13 = load i32* %4, align 4, !dbg !195, !tbaa !183
-  %14 = add nsw i32 %13, %12, !dbg !195
-  store i32 %14, i32* %4, align 4, !dbg !195, !tbaa !183
-  ret void, !dbg !196
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.tophit_s* %h}, i64 0, metadata !63), !dbg !172
+  %unsrt = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 1, !dbg !173
+  %0 = load %struct.hit_s** %unsrt, align 8, !dbg !173, !tbaa !163
+  %1 = bitcast %struct.hit_s* %0 to i8*, !dbg !173
+  %alloc = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 2, !dbg !173
+  %2 = load i32* %alloc, align 4, !dbg !173, !tbaa !168
+  %lump = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 4, !dbg !173
+  %3 = load i32* %lump, align 4, !dbg !173, !tbaa !168
+  %add = add nsw i32 %3, %2, !dbg !173
+  %conv = sext i32 %add to i64, !dbg !173
+  %mul = mul i64 %conv, 104, !dbg !173
+  %call = tail call i8* @sre_realloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 93, i8* %1, i64 %mul) #7, !dbg !173
+  %4 = bitcast i8* %call to %struct.hit_s*, !dbg !173
+  store %struct.hit_s* %4, %struct.hit_s** %unsrt, align 8, !dbg !173, !tbaa !163
+  %5 = load i32* %lump, align 4, !dbg !174, !tbaa !168
+  %6 = load i32* %alloc, align 4, !dbg !174, !tbaa !168
+  %add4 = add nsw i32 %6, %5, !dbg !174
+  store i32 %add4, i32* %alloc, align 4, !dbg !174, !tbaa !168
+  ret void, !dbg !175
 }

@@ -1,33 +1,32 @@
 define i32 @BndCopyDirVI(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, i32 %vi_to, i32 %vi_from) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !62, metadata !358), !dbg !359
-  tail call void @llvm.dbg.value(metadata i32 %stencil_size, i64 0, metadata !63, metadata !358), !dbg !360
-  tail call void @llvm.dbg.value(metadata i32 %dir, i64 0, metadata !64, metadata !358), !dbg !361
-  tail call void @llvm.dbg.value(metadata i32 %vi_to, i64 0, metadata !65, metadata !358), !dbg !362
-  tail call void @llvm.dbg.value(metadata i32 %vi_from, i64 0, metadata !66, metadata !358), !dbg !363
-  %1 = tail call i32 @CCTK_NumVars() #6, !dbg !364
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !68, metadata !358), !dbg !365
-  %2 = icmp sgt i32 %vi_to, -1, !dbg !366
-  br i1 %2, label %3, label %9, !dbg !368
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !54), !dbg !326
+  tail call void @llvm.dbg.value(metadata !{i32 %stencil_size}, i64 0, metadata !55), !dbg !327
+  tail call void @llvm.dbg.value(metadata !{i32 %dir}, i64 0, metadata !56), !dbg !328
+  tail call void @llvm.dbg.value(metadata !{i32 %vi_to}, i64 0, metadata !57), !dbg !329
+  tail call void @llvm.dbg.value(metadata !{i32 %vi_from}, i64 0, metadata !58), !dbg !330
+  %call = tail call i32 @CCTK_NumVars() #6, !dbg !331
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !60), !dbg !331
+  %cmp = icmp sgt i32 %vi_to, -1, !dbg !332
+  %cmp2 = icmp sgt i32 %call, %vi_to, !dbg !332
+  %or.cond = and i1 %cmp, %cmp2, !dbg !332
+  %cmp4 = icmp sgt i32 %vi_from, -1, !dbg !332
+  %or.cond16 = and i1 %or.cond, %cmp4, !dbg !332
+  %cmp6 = icmp sgt i32 %call, %vi_from, !dbg !332
+  %or.cond17 = and i1 %or.cond16, %cmp6, !dbg !332
+  br i1 %or.cond17, label %if.then, label %if.else, !dbg !332
 
-; <label>:3                                       ; preds = %0
-  %4 = icmp sgt i32 %1, %vi_to, !dbg !369
-  %5 = icmp sgt i32 %vi_from, -1, !dbg !370
-  %or.cond = and i1 %5, %4, !dbg !371
-  %6 = icmp sgt i32 %1, %vi_from, !dbg !372
-  %or.cond2 = and i1 %6, %or.cond, !dbg !371
-  br i1 %or.cond2, label %7, label %9, !dbg !371
+if.then:                                          ; preds = %entry
+  %call7 = tail call fastcc i32 @ApplyBndCopy(%struct.cGH* %GH, i32 %stencil_size, i32* null, i32 %dir, i32 %vi_to, i32 %vi_from, i32 1) #7, !dbg !333
+  tail call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !59), !dbg !333
+  br label %if.end, !dbg !335
 
-; <label>:7                                       ; preds = %3
-  %8 = tail call fastcc i32 @ApplyBndCopy(%struct.cGH* %GH, i32 %stencil_size, i32* null, i32 %dir, i32 %vi_to, i32 %vi_from, i32 1) #7, !dbg !373
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !67, metadata !358), !dbg !375
-  br label %11, !dbg !376
+if.else:                                          ; preds = %entry
+  %call8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 157, i8* getelementptr inbounds ([71 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i32 %vi_to, i32 %vi_from) #6, !dbg !336
+  tail call void @llvm.dbg.value(metadata !338, i64 0, metadata !59), !dbg !339
+  br label %if.end
 
-; <label>:9                                       ; preds = %3, %0
-  %10 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 157, i8* getelementptr inbounds ([83 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i32 %vi_to, i32 %vi_from) #6, !dbg !377
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !67, metadata !358), !dbg !375
-  br label %11
-
-; <label>:11                                      ; preds = %9, %7
-  %retval.0 = phi i32 [ %8, %7 ], [ -1, %9 ]
-  ret i32 %retval.0, !dbg !379
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call7, %if.then ], [ -1, %if.else ]
+  ret i32 %retval1.0, !dbg !340
 }

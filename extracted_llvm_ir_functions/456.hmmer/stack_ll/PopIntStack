@@ -1,26 +1,25 @@
 define i32 @PopIntStack(%struct.intstack_s* nocapture %stack, i32* nocapture %ret_data) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %stack, i64 0, metadata !30, metadata !54), !dbg !82
-  tail call void @llvm.dbg.value(metadata i32* %ret_data, i64 0, metadata !31, metadata !54), !dbg !83
-  %1 = getelementptr inbounds %struct.intstack_s* %stack, i64 0, i32 1, !dbg !84
-  %2 = load %struct.intstack_s** %1, align 8, !dbg !84, !tbaa !61
-  %3 = icmp eq %struct.intstack_s* %2, null, !dbg !86
-  br i1 %3, label %12, label %4, !dbg !87
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %stack}, i64 0, metadata !29), !dbg !61
+  tail call void @llvm.dbg.value(metadata !{i32* %ret_data}, i64 0, metadata !30), !dbg !61
+  %nxt = getelementptr inbounds %struct.intstack_s* %stack, i64 0, i32 1, !dbg !62
+  %0 = load %struct.intstack_s** %nxt, align 8, !dbg !62, !tbaa !49
+  %cmp = icmp eq %struct.intstack_s* %0, null, !dbg !62
+  br i1 %cmp, label %return, label %if.end, !dbg !62
 
-; <label>:4                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %2, i64 0, metadata !32, metadata !54), !dbg !88
-  %5 = getelementptr inbounds %struct.intstack_s* %2, i64 0, i32 1, !dbg !89
-  %6 = bitcast %struct.intstack_s** %5 to i64*, !dbg !89
-  %7 = load i64* %6, align 8, !dbg !89, !tbaa !61
-  %8 = bitcast %struct.intstack_s** %1 to i64*, !dbg !90
-  store i64 %7, i64* %8, align 8, !dbg !90, !tbaa !61
-  %9 = getelementptr inbounds %struct.intstack_s* %2, i64 0, i32 0, !dbg !91
-  %10 = load i32* %9, align 4, !dbg !91, !tbaa !77
-  store i32 %10, i32* %ret_data, align 4, !dbg !92, !tbaa !93
-  %11 = bitcast %struct.intstack_s* %2 to i8*, !dbg !94
-  tail call void @free(i8* %11) #5, !dbg !95
-  br label %12, !dbg !96
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %0}, i64 0, metadata !31), !dbg !63
+  %nxt2 = getelementptr inbounds %struct.intstack_s* %0, i64 0, i32 1, !dbg !64
+  %1 = load %struct.intstack_s** %nxt2, align 8, !dbg !64, !tbaa !49
+  store %struct.intstack_s* %1, %struct.intstack_s** %nxt, align 8, !dbg !64, !tbaa !49
+  %data = getelementptr inbounds %struct.intstack_s* %0, i64 0, i32 0, !dbg !65
+  %2 = load i32* %data, align 4, !dbg !65, !tbaa !57
+  store i32 %2, i32* %ret_data, align 4, !dbg !65, !tbaa !57
+  %3 = bitcast %struct.intstack_s* %0 to i8*, !dbg !66
+  tail call void @free(i8* %3) #4, !dbg !66
+  br label %return, !dbg !67
 
-; <label>:12                                      ; preds = %0, %4
-  %.0 = phi i32 [ 1, %4 ], [ 0, %0 ]
-  ret i32 %.0, !dbg !97
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !67
 }

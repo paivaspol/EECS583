@@ -1,28 +1,29 @@
-define i32 @is_move_node(%struct.SGFNode_t* nocapture readonly %node) #3 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFNode_t* %node, i64 0, metadata !65, metadata !90), !dbg !219
-  %1 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !220
-  %2 = load %struct.SGFProperty_t** %1, align 8, !dbg !220, !tbaa !153
-  %3 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !222
-  br i1 %3, label %.loopexit, label %.lr.ph, !dbg !223
+define i32 @is_move_node(%struct.SGFNode_t* nocapture %node) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFNode_t* %node}, i64 0, metadata !69), !dbg !148
+  %props = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !149
+  %0 = load %struct.SGFProperty_t** %props, align 8, !dbg !149, !tbaa !86
+  %tobool = icmp eq %struct.SGFProperty_t* %0, null, !dbg !149
+  br i1 %tobool, label %return, label %while.body, !dbg !149
 
-.lr.ph:                                           ; preds = %0, %7
-  %sgf_prop.01 = phi %struct.SGFProperty_t* [ %9, %7 ], [ %2, %0 ]
-  %4 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.01, i64 0, i32 1, !dbg !224
-  %5 = load i16* %4, align 2, !dbg !224, !tbaa !163
-  %6 = sext i16 %5 to i32, !dbg !226
-  switch i32 %6, label %7 [
-    i32 8258, label %.loopexit
-    i32 8279, label %.loopexit
-  ], !dbg !227
+while.body:                                       ; preds = %entry, %sw.epilog
+  %sgf_prop.07 = phi %struct.SGFProperty_t* [ %2, %sw.epilog ], [ %0, %entry ]
+  %name = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.07, i64 0, i32 1, !dbg !150
+  %1 = load i16* %name, align 2, !dbg !150, !tbaa !119
+  %conv = sext i16 %1 to i32, !dbg !150
+  switch i32 %conv, label %sw.epilog [
+    i32 8258, label %return
+    i32 8279, label %return
+  ], !dbg !150
 
-; <label>:7                                       ; preds = %.lr.ph
-  %8 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.01, i64 0, i32 0, !dbg !228
-  %9 = load %struct.SGFProperty_t** %8, align 8, !dbg !228, !tbaa !169
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %9, i64 0, metadata !66, metadata !90), !dbg !229
-  %10 = icmp eq %struct.SGFProperty_t* %9, null, !dbg !230
-  br i1 %10, label %.loopexit, label %.lr.ph, !dbg !230
+sw.epilog:                                        ; preds = %while.body
+  %next = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.07, i64 0, i32 0, !dbg !152
+  %2 = load %struct.SGFProperty_t** %next, align 8, !dbg !152, !tbaa !86
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %2}, i64 0, metadata !70), !dbg !152
+  %tobool2 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !153
+  br i1 %tobool2, label %return, label %while.body, !dbg !153
 
-.loopexit:                                        ; preds = %.lr.ph, %.lr.ph, %7, %0
-  %.0 = phi i32 [ 0, %0 ], [ 0, %7 ], [ 1, %.lr.ph ], [ 1, %.lr.ph ]
-  ret i32 %.0, !dbg !231
+return:                                           ; preds = %while.body, %while.body, %sw.epilog, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %while.body ], [ 1, %while.body ], [ 0, %sw.epilog ]
+  ret i32 %retval.0, !dbg !154
 }

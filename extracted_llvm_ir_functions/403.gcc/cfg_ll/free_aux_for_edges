@@ -1,33 +1,35 @@
 define void @free_aux_for_edges() #0 {
 entry:
-  %0 = load i8** @first_edge_aux_obj, align 8, !tbaa !0
-  %tobool = icmp eq i8* %0, null
-  br i1 %tobool, label %if.then, label %if.end
+  %0 = load i8** @first_edge_aux_obj, align 8, !dbg !1540, !tbaa !1158
+  %tobool = icmp eq i8* %0, null, !dbg !1540
+  br i1 %tobool, label %if.then, label %if.end, !dbg !1540
 
 if.then:                                          ; preds = %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([47 x i8]* @.str, i64 0, i64 0), i32 764, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.free_aux_for_edges, i64 0, i64 0)) #6
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([47 x i8]* @.str, i64 0, i64 0), i32 764, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.free_aux_for_edges, i64 0, i64 0)) #7, !dbg !1541
+  unreachable, !dbg !1541
 
 if.end:                                           ; preds = %entry
-  %1 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @edge_aux_obstack, i64 0, i32 1), align 8, !tbaa !0
-  %2 = bitcast %struct._obstack_chunk* %1 to i8*
-  %cmp = icmp ugt i8* %0, %2
-  %3 = load i8** getelementptr inbounds (%struct.obstack* @edge_aux_obstack, i64 0, i32 4), align 8, !tbaa !0
-  %cmp1 = icmp ult i8* %0, %3
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then2, label %if.else
+  tail call void @llvm.dbg.value(metadata !1505, i64 0, metadata !1036), !dbg !1542
+  tail call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !1038), !dbg !1542
+  %1 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @edge_aux_obstack, i64 0, i32 1), align 8, !dbg !1542, !tbaa !1158
+  %2 = bitcast %struct._obstack_chunk* %1 to i8*, !dbg !1542
+  %cmp = icmp ugt i8* %0, %2, !dbg !1542
+  %3 = load i8** getelementptr inbounds (%struct.obstack* @edge_aux_obstack, i64 0, i32 4), align 8, !dbg !1542, !tbaa !1158
+  %cmp1 = icmp ult i8* %0, %3, !dbg !1542
+  %or.cond = and i1 %cmp, %cmp1, !dbg !1542
+  br i1 %or.cond, label %if.then2, label %if.else, !dbg !1542
 
 if.then2:                                         ; preds = %if.end
-  store i8* %0, i8** getelementptr inbounds (%struct.obstack* @edge_aux_obstack, i64 0, i32 2), align 8, !tbaa !0
-  store i8* %0, i8** getelementptr inbounds (%struct.obstack* @edge_aux_obstack, i64 0, i32 3), align 8, !tbaa !0
-  br label %if.end3
+  store i8* %0, i8** getelementptr inbounds (%struct.obstack* @edge_aux_obstack, i64 0, i32 2), align 8, !dbg !1542, !tbaa !1158
+  store i8* %0, i8** getelementptr inbounds (%struct.obstack* @edge_aux_obstack, i64 0, i32 3), align 8, !dbg !1542, !tbaa !1158
+  br label %if.end3, !dbg !1542
 
 if.else:                                          ; preds = %if.end
-  tail call void @obstack_free(%struct.obstack* @edge_aux_obstack, i8* %0) #5
+  tail call void @obstack_free(%struct.obstack* @edge_aux_obstack, i8* %0) #6, !dbg !1542
   br label %if.end3
 
 if.end3:                                          ; preds = %if.else, %if.then2
-  store i8* null, i8** @first_edge_aux_obj, align 8, !tbaa !0
-  tail call void @clear_aux_for_edges() #7
-  ret void
+  store i8* null, i8** @first_edge_aux_obj, align 8, !dbg !1543, !tbaa !1158
+  tail call void @clear_aux_for_edges() #8, !dbg !1544
+  ret void, !dbg !1545
 }

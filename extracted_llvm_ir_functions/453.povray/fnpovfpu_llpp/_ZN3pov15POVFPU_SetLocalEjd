@@ -1,42 +1,39 @@
-define void @_ZN3pov15POVFPU_SetLocalEjd(i32 %k, double %v) #2 {
-  tail call void @llvm.dbg.value(metadata i32 %k, i64 0, metadata !508, metadata !1171), !dbg !1345
-  tail call void @llvm.dbg.value(metadata double %v, i64 0, metadata !509, metadata !1171), !dbg !1346
-  %1 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !1347, !tbaa !1183
-  %2 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %1, i64 0, i32 3, !dbg !1349
-  %3 = load i32* %2, align 4, !dbg !1349, !tbaa !1209
-  %4 = icmp ugt i32 %3, %k, !dbg !1350
-  br i1 %4, label %18, label %5, !dbg !1351
+define void @_ZN3pov15POVFPU_SetLocalEjd(i32 %k, double %v) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !165), !dbg !585
+  tail call void @llvm.dbg.value(metadata !{double %v}, i64 0, metadata !166), !dbg !585
+  %0 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !586, !tbaa !493
+  %maxdblstacksize = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %0, i64 0, i32 3, !dbg !586
+  %1 = load i32* %maxdblstacksize, align 4, !dbg !586, !tbaa !498
+  %cmp = icmp ugt i32 %1, %k, !dbg !586
+  br i1 %cmp, label %if.end, label %if.then, !dbg !586
 
-; <label>:5                                       ; preds = %0
-  %6 = add i32 %k, 1, !dbg !1352
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !622, metadata !1171), !dbg !1354
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !615, metadata !1171), !dbg !1358
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !607, metadata !1171), !dbg !1359
-  tail call void @llvm.dbg.value(metadata i32 256, i64 0, metadata !623, metadata !1171), !dbg !1360
-  tail call void @llvm.dbg.value(metadata i32 256, i64 0, metadata !616, metadata !1171), !dbg !1361
-  tail call void @llvm.dbg.value(metadata i32 256, i64 0, metadata !608, metadata !1171), !dbg !1362
-  %7 = icmp ult i32 %6, 256, !dbg !1363
-  %8 = select i1 %7, i32 256, i32 %6, !dbg !1364
-  store i32 %8, i32* %2, align 4, !dbg !1365, !tbaa !1209
-  %9 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %1, i64 0, i32 2, !dbg !1366
-  %10 = bitcast double** %9 to i8**, !dbg !1366
-  %11 = load i8** %10, align 8, !dbg !1366, !tbaa !1213
-  %12 = zext i32 %8 to i64, !dbg !1366
-  %13 = shl nuw nsw i64 %12, 3, !dbg !1366
-  %14 = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %11, i64 %13, i8* getelementptr inbounds ([69 x i8]* @.str51, i64 0, i64 0), i32 778, i8* getelementptr inbounds ([10 x i8]* @.str52, i64 0, i64 0)) #8, !dbg !1366
-  %15 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !1367, !tbaa !1183
-  %16 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %15, i64 0, i32 2, !dbg !1368
-  %17 = bitcast double** %16 to i8**, !dbg !1369
-  store i8* %14, i8** %17, align 8, !dbg !1369, !tbaa !1213
-  %.pre = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !1370, !tbaa !1183
-  br label %18, !dbg !1371
+if.then:                                          ; preds = %entry
+  %add = add i32 %k, 1, !dbg !587
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !589), !dbg !590
+  tail call void @llvm.dbg.value(metadata !591, i64 0, metadata !592), !dbg !590
+  %cmp.i = icmp ult i32 %add, 256, !dbg !593
+  %.sroa.speculated = select i1 %cmp.i, i32 256, i32 %add, !dbg !587
+  store i32 %.sroa.speculated, i32* %maxdblstacksize, align 4, !dbg !587, !tbaa !498
+  %dblstackbase = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %0, i64 0, i32 2, !dbg !596
+  %2 = load double** %dblstackbase, align 8, !dbg !596, !tbaa !493
+  %3 = bitcast double* %2 to i8*, !dbg !596
+  %conv = zext i32 %.sroa.speculated to i64, !dbg !596
+  %mul = shl nuw nsw i64 %conv, 3, !dbg !596
+  %call4 = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %3, i64 %mul, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 778, i8* getelementptr inbounds ([10 x i8]* @.str52, i64 0, i64 0)) #9, !dbg !596
+  %4 = bitcast i8* %call4 to double*, !dbg !596
+  %5 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !596, !tbaa !493
+  %dblstackbase5 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %5, i64 0, i32 2, !dbg !596
+  store double* %4, double** %dblstackbase5, align 8, !dbg !596, !tbaa !493
+  %.pre = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !597, !tbaa !493
+  br label %if.end, !dbg !598
 
-; <label>:18                                      ; preds = %0, %5
-  %19 = phi %"struct.pov::FPUContext_Struct"* [ %1, %0 ], [ %.pre, %5 ]
-  %20 = zext i32 %k to i64, !dbg !1370
-  %21 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %19, i64 0, i32 2, !dbg !1372
-  %22 = load double** %21, align 8, !dbg !1372, !tbaa !1213
-  %23 = getelementptr inbounds double* %22, i64 %20, !dbg !1370
-  store double %v, double* %23, align 8, !dbg !1373, !tbaa !1235
-  ret void, !dbg !1374
+if.end:                                           ; preds = %entry, %if.then
+  %6 = phi %"struct.pov::FPUContext_Struct"* [ %0, %entry ], [ %.pre, %if.then ]
+  %idxprom = zext i32 %k to i64, !dbg !597
+  %dblstackbase6 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %6, i64 0, i32 2, !dbg !597
+  %7 = load double** %dblstackbase6, align 8, !dbg !597, !tbaa !493
+  %arrayidx = getelementptr inbounds double* %7, i64 %idxprom, !dbg !597
+  store double %v, double* %arrayidx, align 8, !dbg !597, !tbaa !521
+  ret void, !dbg !599
 }

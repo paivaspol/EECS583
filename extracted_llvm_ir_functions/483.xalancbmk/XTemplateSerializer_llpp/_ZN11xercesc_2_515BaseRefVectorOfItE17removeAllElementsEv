@@ -1,0 +1,49 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfItE17removeAllElementsEv(%"class.xercesc_2_5::BaseRefVectorOf.18"* nocapture %this) unnamed_addr #8 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.18"* %this}, i64 0, metadata !13977), !dbg !20937
+  tail call void @llvm.dbg.value(metadata !1577, i64 0, metadata !13978), !dbg !20938
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.18"* %this, i64 0, i32 2, !dbg !20938
+  %0 = load i32* %fCurCount, align 4, !dbg !20938, !tbaa !14899
+  %cmp9 = icmp eq i32 %0, 0, !dbg !20938
+  br i1 %cmp9, label %for.end, label %for.body.lr.ph, !dbg !20938
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.18"* %this, i64 0, i32 1, !dbg !20939
+  %fElemList3 = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.18"* %this, i64 0, i32 4, !dbg !20941
+  br label %for.body, !dbg !20938
+
+for.body:                                         ; preds = %if.end, %for.body.lr.ph
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %6, %if.end ]
+  %index.010 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %if.end ]
+  %2 = load i8* %fAdoptedElems, align 1, !dbg !20939, !tbaa !14963, !range !15984
+  %tobool = icmp eq i8 %2, 0, !dbg !20939
+  %idxprom2.pre = zext i32 %index.010 to i64, !dbg !20941
+  br i1 %tobool, label %if.end, label %if.then, !dbg !20939
+
+if.then:                                          ; preds = %for.body
+  %3 = load i16*** %fElemList3, align 8, !dbg !20942, !tbaa !14906
+  %arrayidx = getelementptr inbounds i16** %3, i64 %idxprom2.pre, !dbg !20942
+  %4 = load i16** %arrayidx, align 8, !dbg !20942, !tbaa !14906
+  %isnull = icmp eq i16* %4, null, !dbg !20942
+  br i1 %isnull, label %if.end, label %delete.notnull, !dbg !20942
+
+delete.notnull:                                   ; preds = %if.then
+  %5 = bitcast i16* %4 to i8*, !dbg !20942
+  tail call void @_ZdlPv(i8* %5) #14, !dbg !20942
+  %.pre = load i32* %fCurCount, align 4, !dbg !20938, !tbaa !14899
+  br label %if.end, !dbg !20942
+
+if.end:                                           ; preds = %for.body, %if.then, %delete.notnull
+  %6 = phi i32 [ %1, %if.then ], [ %.pre, %delete.notnull ], [ %1, %for.body ], !dbg !20941
+  %7 = load i16*** %fElemList3, align 8, !dbg !20941, !tbaa !14906
+  %arrayidx4 = getelementptr inbounds i16** %7, i64 %idxprom2.pre, !dbg !20941
+  store i16* null, i16** %arrayidx4, align 8, !dbg !20941, !tbaa !14906
+  %inc = add i32 %index.010, 1, !dbg !20938
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !13978), !dbg !20938
+  %cmp = icmp ult i32 %inc, %6, !dbg !20938
+  br i1 %cmp, label %for.body, label %for.end, !dbg !20938
+
+for.end:                                          ; preds = %if.end, %entry
+  store i32 0, i32* %fCurCount, align 4, !dbg !20943, !tbaa !14899
+  ret void, !dbg !20944
+}

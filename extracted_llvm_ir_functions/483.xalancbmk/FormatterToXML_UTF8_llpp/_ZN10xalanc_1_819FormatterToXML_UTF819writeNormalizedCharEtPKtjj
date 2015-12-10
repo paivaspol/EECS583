@@ -1,0 +1,53 @@
+define i32 @_ZN10xalanc_1_819FormatterToXML_UTF819writeNormalizedCharEtPKtjj(%"class.xalanc_1_8::FormatterToXML_UTF8"* %this, i16 zeroext %ch, i16* nocapture %chars, i32 %start, i32 %length) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::FormatterToXML_UTF8"* %this}, i64 0, metadata !3017), !dbg !4473
+  tail call void @llvm.dbg.value(metadata !{i16 %ch}, i64 0, metadata !3018), !dbg !4474
+  tail call void @llvm.dbg.value(metadata !{i16* %chars}, i64 0, metadata !3019), !dbg !4475
+  tail call void @llvm.dbg.value(metadata !{i32 %start}, i64 0, metadata !3020), !dbg !4476
+  tail call void @llvm.dbg.value(metadata !{i32 %length}, i64 0, metadata !3021), !dbg !4477
+  %cmp = icmp eq i16 %ch, 10, !dbg !4478
+  br i1 %cmp, label %if.then, label %if.else, !dbg !4478
+
+if.then:                                          ; preds = %entry
+  %0 = bitcast %"class.xalanc_1_8::FormatterToXML_UTF8"* %this to void (%"class.xalanc_1_8::FormatterToXML_UTF8"*)***, !dbg !4479
+  %vtable = load void (%"class.xalanc_1_8::FormatterToXML_UTF8"*)*** %0, align 8, !dbg !4479, !tbaa !3977
+  %vfn = getelementptr inbounds void (%"class.xalanc_1_8::FormatterToXML_UTF8"*)** %vtable, i64 27, !dbg !4479
+  %1 = load void (%"class.xalanc_1_8::FormatterToXML_UTF8"*)** %vfn, align 8, !dbg !4479
+  tail call void %1(%"class.xalanc_1_8::FormatterToXML_UTF8"* %this) #11, !dbg !4479
+  br label %if.end11, !dbg !4481
+
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i16 %ch}, i64 0, metadata !4482), !dbg !4484
+  %theChar.off.i = add i16 %ch, 10240, !dbg !4485
+  %2 = icmp ult i16 %theChar.off.i, 1024, !dbg !4485
+  br i1 %2, label %if.then4, label %if.else9, !dbg !4483
+
+if.then4:                                         ; preds = %if.else
+  %add = add i32 %start, 1, !dbg !4486
+  %cmp5 = icmp ult i32 %add, %length, !dbg !4486
+  br i1 %cmp5, label %if.else7, label %if.then6, !dbg !4486
+
+if.then6:                                         ; preds = %if.then4
+  tail call void @_ZN10xalanc_1_818FormatterToXMLBase35throwInvalidUTF16SurrogateExceptionEt(i16 zeroext %ch) #11, !dbg !4488
+  br label %if.end11, !dbg !4490
+
+if.else7:                                         ; preds = %if.then4
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !3020), !dbg !4491
+  %idxprom = zext i32 %add to i64, !dbg !4491
+  %arrayidx = getelementptr inbounds i16* %chars, i64 %idxprom, !dbg !4491
+  %3 = load i16* %arrayidx, align 2, !dbg !4491, !tbaa !4029
+  %call8 = tail call i32 @_ZN10xalanc_1_818FormatterToXMLBase24decodeUTF16SurrogatePairEtt(i16 zeroext %ch, i16 zeroext %3) #11, !dbg !4491
+  tail call void @_ZN10xalanc_1_819FormatterToXML_UTF85writeEj(%"class.xalanc_1_8::FormatterToXML_UTF8"* %this, i32 %call8) #11, !dbg !4491
+  br label %if.end11
+
+if.else9:                                         ; preds = %if.else
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::FormatterToXML_UTF8"* %this}, i64 0, metadata !4493), !dbg !4496
+  tail call void @llvm.dbg.value(metadata !{i16 %ch}, i64 0, metadata !4497), !dbg !4496
+  %conv.i = zext i16 %ch to i32, !dbg !4498
+  tail call void @_ZN10xalanc_1_819FormatterToXML_UTF85writeEj(%"class.xalanc_1_8::FormatterToXML_UTF8"* %this, i32 %conv.i) #11, !dbg !4498
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.else9, %if.else7, %if.then6, %if.then
+  %start.addr.0 = phi i32 [ %start, %if.then ], [ %start, %if.then6 ], [ %add, %if.else7 ], [ %start, %if.else9 ]
+  ret i32 %start.addr.0, !dbg !4499
+}

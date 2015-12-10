@@ -1,30 +1,31 @@
 define void @IOUtil_RecoverGH(%struct.cGH* %GH) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !164, metadata !598), !dbg !678
-  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0)) #7, !dbg !679
-  %2 = load i32* @checkpoint_file_exists, align 4, !dbg !680, !tbaa !615
-  %3 = icmp eq i32 %2, 0, !dbg !680
-  br i1 %3, label %11, label %4, !dbg !682
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !156), !dbg !602
+  %call = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0)) #9, !dbg !603
+  %0 = load i32* @checkpoint_file_exists, align 4, !dbg !604, !tbaa !562
+  %tobool = icmp eq i32 %0, 0, !dbg !604
+  br i1 %tobool, label %if.else, label %if.then, !dbg !604
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call fastcc i32 @IOUtil_RecoverFromFile(%struct.cGH* %GH, i8* null, i32 3) #8, !dbg !683
-  %6 = icmp sgt i32 %5, -1, !dbg !685
-  %.lobit = lshr i32 %5, 31, !dbg !685
-  %.lobit.not = xor i32 %.lobit, 1, !dbg !685
-  %7 = getelementptr inbounds i8* %1, i64 28, !dbg !686
-  %8 = bitcast i8* %7 to i32*, !dbg !686
-  store i32 %.lobit.not, i32* %8, align 4, !dbg !687, !tbaa !688
-  br i1 %6, label %14, label %9, !dbg !690
+if.then:                                          ; preds = %entry
+  %call1 = tail call fastcc i32 @IOUtil_RecoverFromFile(%struct.cGH* %GH, i8* null, i32 3) #10, !dbg !605
+  %cmp = icmp sgt i32 %call1, -1, !dbg !605
+  %call1.lobit = lshr i32 %call1, 31, !dbg !605
+  %call1.lobit.not = xor i32 %call1.lobit, 1, !dbg !605
+  %recovered = getelementptr inbounds i8* %call, i64 28, !dbg !605
+  %1 = bitcast i8* %recovered to i32*, !dbg !605
+  store i32 %call1.lobit.not, i32* %1, align 4, !dbg !605, !tbaa !562
+  br i1 %cmp, label %if.end7, label %if.then4, !dbg !607
 
-; <label>:9                                       ; preds = %4
-  %10 = tail call i32 @CCTK_Warn(i32 0, i32 343, i8* getelementptr inbounds ([87 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([34 x i8]* @.str10, i64 0, i64 0)) #7, !dbg !691
-  br label %14, !dbg !694
+if.then4:                                         ; preds = %if.then
+  %call5 = tail call i32 @CCTK_Warn(i32 0, i32 343, i8* getelementptr inbounds ([75 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([34 x i8]* @.str10, i64 0, i64 0)) #9, !dbg !608
+  br label %if.end7, !dbg !610
 
-; <label>:11                                      ; preds = %0
-  %12 = getelementptr inbounds i8* %1, i64 28, !dbg !695
-  %13 = bitcast i8* %12 to i32*, !dbg !695
-  store i32 0, i32* %13, align 4, !dbg !697, !tbaa !688
-  br label %14
+if.else:                                          ; preds = %entry
+  %recovered6 = getelementptr inbounds i8* %call, i64 28, !dbg !611
+  %2 = bitcast i8* %recovered6 to i32*, !dbg !611
+  store i32 0, i32* %2, align 4, !dbg !611, !tbaa !562
+  br label %if.end7
 
-; <label>:14                                      ; preds = %4, %9, %11
-  ret void, !dbg !698
+if.end7:                                          ; preds = %if.then, %if.then4, %if.else
+  ret void, !dbg !613
 }

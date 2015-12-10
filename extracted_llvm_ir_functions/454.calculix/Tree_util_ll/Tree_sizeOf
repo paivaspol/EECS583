@@ -1,19 +1,20 @@
 define i32 @Tree_sizeOf(%struct._Tree* %tree) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Tree* %tree, i64 0, metadata !92, metadata !98), !dbg !405
-  %1 = icmp eq %struct._Tree* %tree, null, !dbg !406
-  br i1 %1, label %2, label %5, !dbg !408
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Tree* %tree}, i64 0, metadata !91), !dbg !239
+  %cmp = icmp eq %struct._Tree* %tree, null, !dbg !240
+  br i1 %cmp, label %if.then, label %if.end, !dbg !240
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !409, !tbaa !114
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([45 x i8]* @.str11, i64 0, i64 0), %struct._Tree* null) #5, !dbg !411
-  tail call void @exit(i32 -1) #6, !dbg !412
-  unreachable, !dbg !412
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !241, !tbaa !100
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str11, i64 0, i64 0), %struct._Tree* null) #5, !dbg !241
+  tail call void @exit(i32 -1) #6, !dbg !243
+  unreachable, !dbg !243
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !413
-  %7 = load i32* %6, align 4, !dbg !413, !tbaa !104
-  %8 = mul i32 %7, 12, !dbg !414
-  %9 = add i32 %8, 32, !dbg !415
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !93, metadata !98), !dbg !416
-  ret i32 %9, !dbg !417
+if.end:                                           ; preds = %entry
+  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !244
+  %1 = load i32* %n, align 4, !dbg !244, !tbaa !95
+  %mul1 = mul i32 %1, 12, !dbg !244
+  %add = add i32 %mul1, 32, !dbg !244
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !92), !dbg !244
+  ret i32 %add, !dbg !245
 }

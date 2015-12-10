@@ -1,265 +1,246 @@
-define internal fastcc void @gen_pic_list_from_frame_list(i32 %currStrcture, %struct.frame_store** nocapture readonly %fs_list, i32 %list_idx, %struct.storable_picture** nocapture %list, i32* nocapture %list_size, i32 %long_term) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %currStrcture, i64 0, metadata !869, metadata !1408), !dbg !2552
-  tail call void @llvm.dbg.value(metadata %struct.frame_store** %fs_list, i64 0, metadata !870, metadata !1408), !dbg !2553
-  tail call void @llvm.dbg.value(metadata i32 %list_idx, i64 0, metadata !871, metadata !1408), !dbg !2554
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture** %list, i64 0, metadata !872, metadata !1408), !dbg !2555
-  tail call void @llvm.dbg.value(metadata i32* %list_size, i64 0, metadata !873, metadata !1408), !dbg !2556
-  tail call void @llvm.dbg.value(metadata i32 %long_term, i64 0, metadata !874, metadata !1408), !dbg !2557
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !875, metadata !1408), !dbg !2558
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !876, metadata !1408), !dbg !2559
-  %1 = icmp eq i32 %long_term, 0, !dbg !2560
-  %is_short_ref.is_long_ref = select i1 %1, i32 (%struct.storable_picture*)* @is_short_ref, i32 (%struct.storable_picture*)* @is_long_ref
-  %2 = icmp eq i32 %currStrcture, 1, !dbg !2562
-  br i1 %2, label %.preheader7, label %.loopexit8, !dbg !2564
+define internal fastcc void @gen_pic_list_from_frame_list(i32 %currStrcture, %struct.frame_store** nocapture %fs_list, i32 %list_idx, %struct.storable_picture** nocapture %list, i32* nocapture %list_size, i32 %long_term) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %currStrcture}, i64 0, metadata !1008), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{%struct.frame_store** %fs_list}, i64 0, metadata !1009), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{i32 %list_idx}, i64 0, metadata !1010), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{%struct.storable_picture** %list}, i64 0, metadata !1011), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{i32* %list_size}, i64 0, metadata !1012), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{i32 %long_term}, i64 0, metadata !1013), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !1014), !dbg !1900
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !1015), !dbg !1901
+  %tobool = icmp eq i32 %long_term, 0, !dbg !1902
+  %is_short_ref.is_long_ref = select i1 %tobool, i32 (%struct.storable_picture*)* @is_short_ref, i32 (%struct.storable_picture*)* @is_long_ref
+  %cmp = icmp eq i32 %currStrcture, 1, !dbg !1903
+  br i1 %cmp, label %while.cond.preheader, label %if.end46, !dbg !1903
 
-.preheader7:                                      ; preds = %0
-  %3 = icmp sgt i32 %list_idx, 0, !dbg !2565
-  br i1 %3, label %.critedge.preheader.lr.ph, label %.loopexit4, !dbg !2565
+while.cond.preheader:                             ; preds = %entry
+  %0 = icmp sgt i32 %list_idx, 0, !dbg !1904
+  br i1 %0, label %for.cond.preheader, label %if.end110, !dbg !1904
 
-.critedge.preheader.lr.ph:                        ; preds = %.preheader7
-  %4 = sext i32 %list_idx to i64, !dbg !2565
-  br label %.critedge.preheader, !dbg !2565
+for.cond.preheader:                               ; preds = %while.cond.preheader, %while.cond.backedge
+  %bot_idx.0194 = phi i32 [ %bot_idx.0.be, %while.cond.backedge ], [ 0, %while.cond.preheader ]
+  %top_idx.0193 = phi i32 [ %top_idx.2.ph, %while.cond.backedge ], [ 0, %while.cond.preheader ]
+  %cmp4183 = icmp slt i32 %top_idx.0193, %list_idx, !dbg !1906
+  br i1 %cmp4183, label %for.body.lr.ph, label %for.cond20.preheader, !dbg !1906
 
-..loopexit6_crit_edge:                            ; preds = %62
-  %5 = trunc i64 %indvars.iv.next55 to i32, !dbg !2567
-  br label %.backedge9, !dbg !2567
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %1 = sext i32 %top_idx.0193 to i64
+  br label %for.body, !dbg !1906
 
-.critedge.preheader:                              ; preds = %.critedge.preheader.lr.ph, %.backedge9
-  %bot_idx.032 = phi i32 [ 0, %.critedge.preheader.lr.ph ], [ %bot_idx.0.be, %.backedge9 ]
-  %top_idx.031 = phi i32 [ 0, %.critedge.preheader.lr.ph ], [ %top_idx.2.ph, %.backedge9 ]
-  %6 = icmp slt i32 %top_idx.031, %list_idx, !dbg !2570
-  br i1 %6, label %.lr.ph25, label %.preheader5, !dbg !2573
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv205 = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next206, %for.inc ]
+  %top_idx.1184 = phi i32 [ %top_idx.0193, %for.body.lr.ph ], [ %inc19, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv205, !dbg !1909
+  %2 = load %struct.frame_store** %arrayidx, align 8, !dbg !1909, !tbaa !1363
+  %is_used = getelementptr inbounds %struct.frame_store* %2, i64 0, i32 0, !dbg !1909
+  %3 = load i32* %is_used, align 4, !dbg !1909, !tbaa !1366
+  %and = and i32 %3, 1, !dbg !1909
+  %tobool5 = icmp eq i32 %and, 0, !dbg !1909
+  br i1 %tobool5, label %for.inc, label %if.then6, !dbg !1909
 
-.lr.ph25:                                         ; preds = %.critedge.preheader
-  %7 = sext i32 %top_idx.031 to i64
-  br label %11, !dbg !2573
+if.then6:                                         ; preds = %for.body
+  %top_field = getelementptr inbounds %struct.frame_store* %2, i64 0, i32 11, !dbg !1911
+  %4 = load %struct.storable_picture** %top_field, align 8, !dbg !1911, !tbaa !1363
+  %call = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %4) #8, !dbg !1911
+  %tobool9 = icmp eq i32 %call, 0, !dbg !1911
+  br i1 %tobool9, label %for.inc, label %if.then10, !dbg !1911
 
-.critedge..preheader5.loopexit_crit_edge:         ; preds = %.critedge
-  %8 = trunc i64 %indvars.iv.next53 to i32, !dbg !2573
-  br label %.preheader5, !dbg !2573
+if.then10:                                        ; preds = %if.then6
+  %5 = load %struct.frame_store** %arrayidx, align 8, !dbg !1913, !tbaa !1363
+  %top_field13 = getelementptr inbounds %struct.frame_store* %5, i64 0, i32 11, !dbg !1913
+  %6 = load %struct.storable_picture** %top_field13, align 8, !dbg !1913, !tbaa !1363
+  %7 = load i32* %list_size, align 4, !dbg !1913, !tbaa !1366
+  %idxprom14 = sext i32 %7 to i64, !dbg !1913
+  %arrayidx15 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom14, !dbg !1913
+  store %struct.storable_picture* %6, %struct.storable_picture** %arrayidx15, align 8, !dbg !1913, !tbaa !1363
+  %inc = add nsw i32 %7, 1, !dbg !1915
+  store i32 %inc, i32* %list_size, align 4, !dbg !1915, !tbaa !1366
+  %inc16 = add nsw i32 %top_idx.1184, 1, !dbg !1916
+  tail call void @llvm.dbg.value(metadata !{i32 %inc16}, i64 0, metadata !1014), !dbg !1916
+  br label %for.cond20.preheader, !dbg !1917
 
-.preheader5:                                      ; preds = %.critedge.preheader, %.critedge..preheader5.loopexit_crit_edge, %23
-  %top_idx.2.ph = phi i32 [ %34, %23 ], [ %8, %.critedge..preheader5.loopexit_crit_edge ], [ %top_idx.031, %.critedge.preheader ]
-  %9 = icmp slt i32 %bot_idx.032, %list_idx, !dbg !2574
-  br i1 %9, label %.lr.ph28, label %.backedge9, !dbg !2567
+for.inc:                                          ; preds = %if.then6, %for.body
+  %indvars.iv.next206 = add i64 %indvars.iv205, 1, !dbg !1906
+  %inc19 = add nsw i32 %top_idx.1184, 1, !dbg !1906
+  tail call void @llvm.dbg.value(metadata !{i32 %inc19}, i64 0, metadata !1014), !dbg !1906
+  %8 = trunc i64 %indvars.iv.next206 to i32, !dbg !1906
+  %cmp4 = icmp slt i32 %8, %list_idx, !dbg !1906
+  br i1 %cmp4, label %for.body, label %for.cond20.preheader, !dbg !1906
 
-.lr.ph28:                                         ; preds = %.preheader5
-  %10 = sext i32 %bot_idx.032 to i64
-  br label %36, !dbg !2567
+for.cond20.preheader:                             ; preds = %for.cond.preheader, %for.inc, %if.then10
+  %top_idx.2.ph = phi i32 [ %inc16, %if.then10 ], [ %top_idx.0193, %for.cond.preheader ], [ %inc19, %for.inc ]
+  %cmp21187 = icmp slt i32 %bot_idx.0194, %list_idx, !dbg !1918
+  br i1 %cmp21187, label %for.body22.lr.ph, label %while.cond.backedge, !dbg !1918
 
-; <label>:11                                      ; preds = %.lr.ph25, %.critedge
-  %indvars.iv52 = phi i64 [ %7, %.lr.ph25 ], [ %indvars.iv.next53, %.critedge ]
-  %12 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv52, !dbg !2576
-  %13 = load %struct.frame_store** %12, align 8, !dbg !2576, !tbaa !1389
-  %14 = getelementptr inbounds %struct.frame_store* %13, i64 0, i32 0, !dbg !2579
-  %15 = load i32* %14, align 4, !dbg !2579, !tbaa !1925
-  %16 = and i32 %15, 1, !dbg !2580
-  %17 = icmp eq i32 %16, 0, !dbg !2580
-  br i1 %17, label %.critedge, label %18, !dbg !2581
+for.body22.lr.ph:                                 ; preds = %for.cond20.preheader
+  %9 = sext i32 %bot_idx.0194 to i64
+  br label %for.body22, !dbg !1918
 
-; <label>:18                                      ; preds = %11
-  %19 = getelementptr inbounds %struct.frame_store* %13, i64 0, i32 11, !dbg !2582
-  %20 = load %struct.storable_picture** %19, align 8, !dbg !2582, !tbaa !1611
-  %21 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %20) #8, !dbg !2585
-  %22 = icmp eq i32 %21, 0, !dbg !2585
-  br i1 %22, label %.critedge, label %23, !dbg !2586
+for.body22:                                       ; preds = %for.body22.lr.ph, %for.inc43
+  %indvars.iv209 = phi i64 [ %9, %for.body22.lr.ph ], [ %indvars.iv.next210, %for.inc43 ]
+  %bot_idx.1188 = phi i32 [ %bot_idx.0194, %for.body22.lr.ph ], [ %inc44, %for.inc43 ]
+  %arrayidx24 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv209, !dbg !1920
+  %10 = load %struct.frame_store** %arrayidx24, align 8, !dbg !1920, !tbaa !1363
+  %is_used25 = getelementptr inbounds %struct.frame_store* %10, i64 0, i32 0, !dbg !1920
+  %11 = load i32* %is_used25, align 4, !dbg !1920, !tbaa !1366
+  %and26 = and i32 %11, 2, !dbg !1920
+  %tobool27 = icmp eq i32 %and26, 0, !dbg !1920
+  br i1 %tobool27, label %for.inc43, label %if.then28, !dbg !1920
 
-; <label>:23                                      ; preds = %18
-  %24 = trunc i64 %indvars.iv52 to i32, !dbg !2587
-  %25 = load %struct.frame_store** %12, align 8, !dbg !2587, !tbaa !1389
-  %26 = getelementptr inbounds %struct.frame_store* %25, i64 0, i32 11, !dbg !2589
-  %27 = bitcast %struct.storable_picture** %26 to i64*, !dbg !2589
-  %28 = load i64* %27, align 8, !dbg !2589, !tbaa !1611
-  %29 = load i32* %list_size, align 4, !dbg !2590, !tbaa !1532
-  %30 = sext i32 %29 to i64, !dbg !2591
-  %31 = getelementptr inbounds %struct.storable_picture** %list, i64 %30, !dbg !2591
-  %32 = bitcast %struct.storable_picture** %31 to i64*, !dbg !2592
-  store i64 %28, i64* %32, align 8, !dbg !2592, !tbaa !1389
-  %33 = add nsw i32 %29, 1, !dbg !2593
-  store i32 %33, i32* %list_size, align 4, !dbg !2593, !tbaa !1532
-  %34 = add nsw i32 %24, 1, !dbg !2594
-  tail call void @llvm.dbg.value(metadata i32 %34, i64 0, metadata !875, metadata !1408), !dbg !2558
-  br label %.preheader5, !dbg !2595
+if.then28:                                        ; preds = %for.body22
+  %bottom_field = getelementptr inbounds %struct.frame_store* %10, i64 0, i32 12, !dbg !1922
+  %12 = load %struct.storable_picture** %bottom_field, align 8, !dbg !1922, !tbaa !1363
+  %call31 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %12) #8, !dbg !1922
+  %tobool32 = icmp eq i32 %call31, 0, !dbg !1922
+  br i1 %tobool32, label %for.inc43, label %if.then33, !dbg !1922
 
-.critedge:                                        ; preds = %18, %11
-  %indvars.iv.next53 = add nsw i64 %indvars.iv52, 1, !dbg !2573
-  %35 = icmp slt i64 %indvars.iv.next53, %4, !dbg !2570
-  br i1 %35, label %11, label %.critedge..preheader5.loopexit_crit_edge, !dbg !2573
+if.then33:                                        ; preds = %if.then28
+  %13 = load %struct.frame_store** %arrayidx24, align 8, !dbg !1924, !tbaa !1363
+  %bottom_field36 = getelementptr inbounds %struct.frame_store* %13, i64 0, i32 12, !dbg !1924
+  %14 = load %struct.storable_picture** %bottom_field36, align 8, !dbg !1924, !tbaa !1363
+  %15 = load i32* %list_size, align 4, !dbg !1924, !tbaa !1366
+  %idxprom37 = sext i32 %15 to i64, !dbg !1924
+  %arrayidx38 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom37, !dbg !1924
+  store %struct.storable_picture* %14, %struct.storable_picture** %arrayidx38, align 8, !dbg !1924, !tbaa !1363
+  %inc39 = add nsw i32 %15, 1, !dbg !1926
+  store i32 %inc39, i32* %list_size, align 4, !dbg !1926, !tbaa !1366
+  %inc40 = add nsw i32 %bot_idx.1188, 1, !dbg !1927
+  tail call void @llvm.dbg.value(metadata !{i32 %inc40}, i64 0, metadata !1015), !dbg !1927
+  br label %while.cond.backedge, !dbg !1928
 
-; <label>:36                                      ; preds = %.lr.ph28, %62
-  %indvars.iv54 = phi i64 [ %10, %.lr.ph28 ], [ %indvars.iv.next55, %62 ]
-  %37 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv54, !dbg !2596
-  %38 = load %struct.frame_store** %37, align 8, !dbg !2596, !tbaa !1389
-  %39 = getelementptr inbounds %struct.frame_store* %38, i64 0, i32 0, !dbg !2599
-  %40 = load i32* %39, align 4, !dbg !2599, !tbaa !1925
-  %41 = and i32 %40, 2, !dbg !2600
-  %42 = icmp eq i32 %41, 0, !dbg !2600
-  br i1 %42, label %62, label %43, !dbg !2601
+while.cond.backedge:                              ; preds = %for.cond20.preheader, %for.inc43, %if.then33
+  %bot_idx.0.be = phi i32 [ %inc40, %if.then33 ], [ %bot_idx.0194, %for.cond20.preheader ], [ %inc44, %for.inc43 ]
+  %cmp2 = icmp slt i32 %top_idx.2.ph, %list_idx, !dbg !1904
+  %cmp3 = icmp slt i32 %bot_idx.0.be, %list_idx, !dbg !1904
+  %or.cond = or i1 %cmp2, %cmp3, !dbg !1904
+  br i1 %or.cond, label %for.cond.preheader, label %if.end46, !dbg !1904
 
-; <label>:43                                      ; preds = %36
-  %44 = getelementptr inbounds %struct.frame_store* %38, i64 0, i32 12, !dbg !2602
-  %45 = load %struct.storable_picture** %44, align 8, !dbg !2602, !tbaa !1620
-  %46 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %45) #8, !dbg !2605
-  %47 = icmp eq i32 %46, 0, !dbg !2605
-  br i1 %47, label %62, label %48, !dbg !2606
+for.inc43:                                        ; preds = %if.then28, %for.body22
+  %indvars.iv.next210 = add i64 %indvars.iv209, 1, !dbg !1918
+  %inc44 = add nsw i32 %bot_idx.1188, 1, !dbg !1918
+  tail call void @llvm.dbg.value(metadata !{i32 %inc44}, i64 0, metadata !1015), !dbg !1918
+  %16 = trunc i64 %indvars.iv.next210 to i32, !dbg !1918
+  %cmp21 = icmp slt i32 %16, %list_idx, !dbg !1918
+  br i1 %cmp21, label %for.body22, label %while.cond.backedge, !dbg !1918
 
-; <label>:48                                      ; preds = %43
-  %49 = trunc i64 %indvars.iv54 to i32, !dbg !2607
-  %50 = load %struct.frame_store** %37, align 8, !dbg !2607, !tbaa !1389
-  %51 = getelementptr inbounds %struct.frame_store* %50, i64 0, i32 12, !dbg !2609
-  %52 = bitcast %struct.storable_picture** %51 to i64*, !dbg !2609
-  %53 = load i64* %52, align 8, !dbg !2609, !tbaa !1620
-  %54 = load i32* %list_size, align 4, !dbg !2610, !tbaa !1532
-  %55 = sext i32 %54 to i64, !dbg !2611
-  %56 = getelementptr inbounds %struct.storable_picture** %list, i64 %55, !dbg !2611
-  %57 = bitcast %struct.storable_picture** %56 to i64*, !dbg !2612
-  store i64 %53, i64* %57, align 8, !dbg !2612, !tbaa !1389
-  %58 = add nsw i32 %54, 1, !dbg !2613
-  store i32 %58, i32* %list_size, align 4, !dbg !2613, !tbaa !1532
-  %59 = add nsw i32 %49, 1, !dbg !2614
-  tail call void @llvm.dbg.value(metadata i32 %59, i64 0, metadata !876, metadata !1408), !dbg !2559
-  br label %.backedge9, !dbg !2615
+if.end46:                                         ; preds = %while.cond.backedge, %entry
+  %top_idx.3 = phi i32 [ 0, %entry ], [ %top_idx.2.ph, %while.cond.backedge ]
+  %bot_idx.2 = phi i32 [ 0, %entry ], [ %bot_idx.0.be, %while.cond.backedge ]
+  %cmp47 = icmp eq i32 %currStrcture, 2, !dbg !1929
+  br i1 %cmp47, label %while.cond49.preheader, label %if.end110, !dbg !1929
 
-.backedge9:                                       ; preds = %.preheader5, %..loopexit6_crit_edge, %48
-  %bot_idx.0.be = phi i32 [ %59, %48 ], [ %5, %..loopexit6_crit_edge ], [ %bot_idx.032, %.preheader5 ]
-  %60 = icmp slt i32 %top_idx.2.ph, %list_idx, !dbg !2616
-  %61 = icmp slt i32 %bot_idx.0.be, %list_idx, !dbg !2617
-  %or.cond = or i1 %60, %61, !dbg !2565
-  br i1 %or.cond, label %.critedge.preheader, label %.loopexit8, !dbg !2565
+while.cond49.preheader:                           ; preds = %if.end46
+  %cmp50177 = icmp slt i32 %top_idx.3, %list_idx, !dbg !1930
+  %cmp52178 = icmp slt i32 %bot_idx.2, %list_idx, !dbg !1930
+  %or.cond169179 = or i1 %cmp50177, %cmp52178, !dbg !1930
+  br i1 %or.cond169179, label %for.cond55.preheader, label %if.end110, !dbg !1930
 
-; <label>:62                                      ; preds = %43, %36
-  %indvars.iv.next55 = add nsw i64 %indvars.iv54, 1, !dbg !2567
-  %63 = icmp slt i64 %indvars.iv.next55, %4, !dbg !2574
-  br i1 %63, label %36, label %..loopexit6_crit_edge, !dbg !2567
+for.cond55.preheader:                             ; preds = %while.cond49.preheader, %while.cond49.backedge
+  %bot_idx.3181 = phi i32 [ %bot_idx.5.ph, %while.cond49.backedge ], [ %bot_idx.2, %while.cond49.preheader ]
+  %top_idx.4180 = phi i32 [ %top_idx.4.be, %while.cond49.backedge ], [ %top_idx.3, %while.cond49.preheader ]
+  %cmp56171 = icmp slt i32 %bot_idx.3181, %list_idx, !dbg !1932
+  br i1 %cmp56171, label %for.body57.lr.ph, label %for.cond82.preheader, !dbg !1932
 
-.loopexit8:                                       ; preds = %.backedge9, %0
-  %top_idx.3 = phi i32 [ 0, %0 ], [ %top_idx.2.ph, %.backedge9 ]
-  %bot_idx.2 = phi i32 [ 0, %0 ], [ %bot_idx.0.be, %.backedge9 ]
-  %64 = icmp eq i32 %currStrcture, 2, !dbg !2618
-  br i1 %64, label %.preheader3, label %.loopexit4, !dbg !2620
+for.body57.lr.ph:                                 ; preds = %for.cond55.preheader
+  %17 = sext i32 %bot_idx.3181 to i64
+  br label %for.body57, !dbg !1932
 
-.preheader3:                                      ; preds = %.loopexit8
-  %65 = icmp slt i32 %top_idx.3, %list_idx, !dbg !2621
-  %66 = icmp slt i32 %bot_idx.2, %list_idx, !dbg !2623
-  %or.cond221 = or i1 %65, %66, !dbg !2624
-  br i1 %or.cond221, label %.critedge1.preheader.lr.ph, label %.loopexit4, !dbg !2624
+for.body57:                                       ; preds = %for.body57.lr.ph, %for.inc79
+  %indvars.iv = phi i64 [ %17, %for.body57.lr.ph ], [ %indvars.iv.next, %for.inc79 ]
+  %bot_idx.4172 = phi i32 [ %bot_idx.3181, %for.body57.lr.ph ], [ %inc80, %for.inc79 ]
+  %arrayidx59 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv, !dbg !1935
+  %18 = load %struct.frame_store** %arrayidx59, align 8, !dbg !1935, !tbaa !1363
+  %is_used60 = getelementptr inbounds %struct.frame_store* %18, i64 0, i32 0, !dbg !1935
+  %19 = load i32* %is_used60, align 4, !dbg !1935, !tbaa !1366
+  %and61 = and i32 %19, 2, !dbg !1935
+  %tobool62 = icmp eq i32 %and61, 0, !dbg !1935
+  br i1 %tobool62, label %for.inc79, label %if.then63, !dbg !1935
 
-.critedge1.preheader.lr.ph:                       ; preds = %.preheader3
-  %67 = sext i32 %list_idx to i64, !dbg !2624
-  br label %.critedge1.preheader, !dbg !2624
+if.then63:                                        ; preds = %for.body57
+  %bottom_field66 = getelementptr inbounds %struct.frame_store* %18, i64 0, i32 12, !dbg !1937
+  %20 = load %struct.storable_picture** %bottom_field66, align 8, !dbg !1937, !tbaa !1363
+  %call67 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %20) #8, !dbg !1937
+  %tobool68 = icmp eq i32 %call67, 0, !dbg !1937
+  br i1 %tobool68, label %for.inc79, label %if.then69, !dbg !1937
 
-..loopexit_crit_edge:                             ; preds = %125
-  %68 = trunc i64 %indvars.iv.next51 to i32, !dbg !2625
-  br label %.backedge, !dbg !2625
+if.then69:                                        ; preds = %if.then63
+  %21 = load %struct.frame_store** %arrayidx59, align 8, !dbg !1939, !tbaa !1363
+  %bottom_field72 = getelementptr inbounds %struct.frame_store* %21, i64 0, i32 12, !dbg !1939
+  %22 = load %struct.storable_picture** %bottom_field72, align 8, !dbg !1939, !tbaa !1363
+  %23 = load i32* %list_size, align 4, !dbg !1939, !tbaa !1366
+  %idxprom73 = sext i32 %23 to i64, !dbg !1939
+  %arrayidx74 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom73, !dbg !1939
+  store %struct.storable_picture* %22, %struct.storable_picture** %arrayidx74, align 8, !dbg !1939, !tbaa !1363
+  %inc75 = add nsw i32 %23, 1, !dbg !1941
+  store i32 %inc75, i32* %list_size, align 4, !dbg !1941, !tbaa !1366
+  %inc76 = add nsw i32 %bot_idx.4172, 1, !dbg !1942
+  tail call void @llvm.dbg.value(metadata !{i32 %inc76}, i64 0, metadata !1015), !dbg !1942
+  br label %for.cond82.preheader, !dbg !1943
 
-.critedge1.preheader:                             ; preds = %.critedge1.preheader.lr.ph, %.backedge
-  %bot_idx.323 = phi i32 [ %bot_idx.2, %.critedge1.preheader.lr.ph ], [ %bot_idx.5.ph, %.backedge ]
-  %top_idx.422 = phi i32 [ %top_idx.3, %.critedge1.preheader.lr.ph ], [ %top_idx.4.be, %.backedge ]
-  %69 = icmp slt i32 %bot_idx.323, %list_idx, !dbg !2628
-  br i1 %69, label %.lr.ph, label %.preheader, !dbg !2631
+for.inc79:                                        ; preds = %if.then63, %for.body57
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1932
+  %inc80 = add nsw i32 %bot_idx.4172, 1, !dbg !1932
+  tail call void @llvm.dbg.value(metadata !{i32 %inc80}, i64 0, metadata !1015), !dbg !1932
+  %24 = trunc i64 %indvars.iv.next to i32, !dbg !1932
+  %cmp56 = icmp slt i32 %24, %list_idx, !dbg !1932
+  br i1 %cmp56, label %for.body57, label %for.cond82.preheader, !dbg !1932
 
-.lr.ph:                                           ; preds = %.critedge1.preheader
-  %70 = sext i32 %bot_idx.323 to i64
-  br label %74, !dbg !2631
+for.cond82.preheader:                             ; preds = %for.cond55.preheader, %for.inc79, %if.then69
+  %bot_idx.5.ph = phi i32 [ %inc76, %if.then69 ], [ %bot_idx.3181, %for.cond55.preheader ], [ %inc80, %for.inc79 ]
+  %cmp83174 = icmp slt i32 %top_idx.4180, %list_idx, !dbg !1944
+  br i1 %cmp83174, label %for.body84.lr.ph, label %while.cond49.backedge, !dbg !1944
 
-.critedge1..preheader.loopexit_crit_edge:         ; preds = %.critedge1
-  %71 = trunc i64 %indvars.iv.next to i32, !dbg !2631
-  br label %.preheader, !dbg !2631
+for.body84.lr.ph:                                 ; preds = %for.cond82.preheader
+  %25 = sext i32 %top_idx.4180 to i64
+  br label %for.body84, !dbg !1944
 
-.preheader:                                       ; preds = %.critedge1.preheader, %.critedge1..preheader.loopexit_crit_edge, %86
-  %bot_idx.5.ph = phi i32 [ %97, %86 ], [ %71, %.critedge1..preheader.loopexit_crit_edge ], [ %bot_idx.323, %.critedge1.preheader ]
-  %72 = icmp slt i32 %top_idx.422, %list_idx, !dbg !2632
-  br i1 %72, label %.lr.ph19, label %.backedge, !dbg !2625
+for.body84:                                       ; preds = %for.body84.lr.ph, %for.inc106
+  %indvars.iv201 = phi i64 [ %25, %for.body84.lr.ph ], [ %indvars.iv.next202, %for.inc106 ]
+  %top_idx.5175 = phi i32 [ %top_idx.4180, %for.body84.lr.ph ], [ %inc107, %for.inc106 ]
+  %arrayidx86 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv201, !dbg !1946
+  %26 = load %struct.frame_store** %arrayidx86, align 8, !dbg !1946, !tbaa !1363
+  %is_used87 = getelementptr inbounds %struct.frame_store* %26, i64 0, i32 0, !dbg !1946
+  %27 = load i32* %is_used87, align 4, !dbg !1946, !tbaa !1366
+  %and88 = and i32 %27, 1, !dbg !1946
+  %tobool89 = icmp eq i32 %and88, 0, !dbg !1946
+  br i1 %tobool89, label %for.inc106, label %if.then90, !dbg !1946
 
-.lr.ph19:                                         ; preds = %.preheader
-  %73 = sext i32 %top_idx.422 to i64
-  br label %99, !dbg !2625
+if.then90:                                        ; preds = %for.body84
+  %top_field93 = getelementptr inbounds %struct.frame_store* %26, i64 0, i32 11, !dbg !1948
+  %28 = load %struct.storable_picture** %top_field93, align 8, !dbg !1948, !tbaa !1363
+  %call94 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %28) #8, !dbg !1948
+  %tobool95 = icmp eq i32 %call94, 0, !dbg !1948
+  br i1 %tobool95, label %for.inc106, label %if.then96, !dbg !1948
 
-; <label>:74                                      ; preds = %.lr.ph, %.critedge1
-  %indvars.iv = phi i64 [ %70, %.lr.ph ], [ %indvars.iv.next, %.critedge1 ]
-  %75 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv, !dbg !2634
-  %76 = load %struct.frame_store** %75, align 8, !dbg !2634, !tbaa !1389
-  %77 = getelementptr inbounds %struct.frame_store* %76, i64 0, i32 0, !dbg !2637
-  %78 = load i32* %77, align 4, !dbg !2637, !tbaa !1925
-  %79 = and i32 %78, 2, !dbg !2638
-  %80 = icmp eq i32 %79, 0, !dbg !2638
-  br i1 %80, label %.critedge1, label %81, !dbg !2639
+if.then96:                                        ; preds = %if.then90
+  %29 = load %struct.frame_store** %arrayidx86, align 8, !dbg !1950, !tbaa !1363
+  %top_field99 = getelementptr inbounds %struct.frame_store* %29, i64 0, i32 11, !dbg !1950
+  %30 = load %struct.storable_picture** %top_field99, align 8, !dbg !1950, !tbaa !1363
+  %31 = load i32* %list_size, align 4, !dbg !1950, !tbaa !1366
+  %idxprom100 = sext i32 %31 to i64, !dbg !1950
+  %arrayidx101 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom100, !dbg !1950
+  store %struct.storable_picture* %30, %struct.storable_picture** %arrayidx101, align 8, !dbg !1950, !tbaa !1363
+  %inc102 = add nsw i32 %31, 1, !dbg !1952
+  store i32 %inc102, i32* %list_size, align 4, !dbg !1952, !tbaa !1366
+  %inc103 = add nsw i32 %top_idx.5175, 1, !dbg !1953
+  tail call void @llvm.dbg.value(metadata !{i32 %inc103}, i64 0, metadata !1014), !dbg !1953
+  br label %while.cond49.backedge, !dbg !1954
 
-; <label>:81                                      ; preds = %74
-  %82 = getelementptr inbounds %struct.frame_store* %76, i64 0, i32 12, !dbg !2640
-  %83 = load %struct.storable_picture** %82, align 8, !dbg !2640, !tbaa !1620
-  %84 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %83) #8, !dbg !2643
-  %85 = icmp eq i32 %84, 0, !dbg !2643
-  br i1 %85, label %.critedge1, label %86, !dbg !2644
+while.cond49.backedge:                            ; preds = %for.cond82.preheader, %for.inc106, %if.then96
+  %top_idx.4.be = phi i32 [ %inc103, %if.then96 ], [ %top_idx.4180, %for.cond82.preheader ], [ %inc107, %for.inc106 ]
+  %cmp50 = icmp slt i32 %top_idx.4.be, %list_idx, !dbg !1930
+  %cmp52 = icmp slt i32 %bot_idx.5.ph, %list_idx, !dbg !1930
+  %or.cond169 = or i1 %cmp50, %cmp52, !dbg !1930
+  br i1 %or.cond169, label %for.cond55.preheader, label %if.end110, !dbg !1930
 
-; <label>:86                                      ; preds = %81
-  %87 = trunc i64 %indvars.iv to i32, !dbg !2645
-  %88 = load %struct.frame_store** %75, align 8, !dbg !2645, !tbaa !1389
-  %89 = getelementptr inbounds %struct.frame_store* %88, i64 0, i32 12, !dbg !2647
-  %90 = bitcast %struct.storable_picture** %89 to i64*, !dbg !2647
-  %91 = load i64* %90, align 8, !dbg !2647, !tbaa !1620
-  %92 = load i32* %list_size, align 4, !dbg !2648, !tbaa !1532
-  %93 = sext i32 %92 to i64, !dbg !2649
-  %94 = getelementptr inbounds %struct.storable_picture** %list, i64 %93, !dbg !2649
-  %95 = bitcast %struct.storable_picture** %94 to i64*, !dbg !2650
-  store i64 %91, i64* %95, align 8, !dbg !2650, !tbaa !1389
-  %96 = add nsw i32 %92, 1, !dbg !2651
-  store i32 %96, i32* %list_size, align 4, !dbg !2651, !tbaa !1532
-  %97 = add nsw i32 %87, 1, !dbg !2652
-  tail call void @llvm.dbg.value(metadata i32 %97, i64 0, metadata !876, metadata !1408), !dbg !2559
-  br label %.preheader, !dbg !2653
+for.inc106:                                       ; preds = %if.then90, %for.body84
+  %indvars.iv.next202 = add i64 %indvars.iv201, 1, !dbg !1944
+  %inc107 = add nsw i32 %top_idx.5175, 1, !dbg !1944
+  tail call void @llvm.dbg.value(metadata !{i32 %inc107}, i64 0, metadata !1014), !dbg !1944
+  %32 = trunc i64 %indvars.iv.next202 to i32, !dbg !1944
+  %cmp83 = icmp slt i32 %32, %list_idx, !dbg !1944
+  br i1 %cmp83, label %for.body84, label %while.cond49.backedge, !dbg !1944
 
-.critedge1:                                       ; preds = %81, %74
-  %indvars.iv.next = add nsw i64 %indvars.iv, 1, !dbg !2631
-  %98 = icmp slt i64 %indvars.iv.next, %67, !dbg !2628
-  br i1 %98, label %74, label %.critedge1..preheader.loopexit_crit_edge, !dbg !2631
-
-; <label>:99                                      ; preds = %.lr.ph19, %125
-  %indvars.iv50 = phi i64 [ %73, %.lr.ph19 ], [ %indvars.iv.next51, %125 ]
-  %100 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv50, !dbg !2654
-  %101 = load %struct.frame_store** %100, align 8, !dbg !2654, !tbaa !1389
-  %102 = getelementptr inbounds %struct.frame_store* %101, i64 0, i32 0, !dbg !2657
-  %103 = load i32* %102, align 4, !dbg !2657, !tbaa !1925
-  %104 = and i32 %103, 1, !dbg !2658
-  %105 = icmp eq i32 %104, 0, !dbg !2658
-  br i1 %105, label %125, label %106, !dbg !2659
-
-; <label>:106                                     ; preds = %99
-  %107 = getelementptr inbounds %struct.frame_store* %101, i64 0, i32 11, !dbg !2660
-  %108 = load %struct.storable_picture** %107, align 8, !dbg !2660, !tbaa !1611
-  %109 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %108) #8, !dbg !2663
-  %110 = icmp eq i32 %109, 0, !dbg !2663
-  br i1 %110, label %125, label %111, !dbg !2664
-
-; <label>:111                                     ; preds = %106
-  %112 = trunc i64 %indvars.iv50 to i32, !dbg !2665
-  %113 = load %struct.frame_store** %100, align 8, !dbg !2665, !tbaa !1389
-  %114 = getelementptr inbounds %struct.frame_store* %113, i64 0, i32 11, !dbg !2667
-  %115 = bitcast %struct.storable_picture** %114 to i64*, !dbg !2667
-  %116 = load i64* %115, align 8, !dbg !2667, !tbaa !1611
-  %117 = load i32* %list_size, align 4, !dbg !2668, !tbaa !1532
-  %118 = sext i32 %117 to i64, !dbg !2669
-  %119 = getelementptr inbounds %struct.storable_picture** %list, i64 %118, !dbg !2669
-  %120 = bitcast %struct.storable_picture** %119 to i64*, !dbg !2670
-  store i64 %116, i64* %120, align 8, !dbg !2670, !tbaa !1389
-  %121 = add nsw i32 %117, 1, !dbg !2671
-  store i32 %121, i32* %list_size, align 4, !dbg !2671, !tbaa !1532
-  %122 = add nsw i32 %112, 1, !dbg !2672
-  tail call void @llvm.dbg.value(metadata i32 %122, i64 0, metadata !875, metadata !1408), !dbg !2558
-  br label %.backedge, !dbg !2673
-
-.backedge:                                        ; preds = %.preheader, %..loopexit_crit_edge, %111
-  %top_idx.4.be = phi i32 [ %122, %111 ], [ %68, %..loopexit_crit_edge ], [ %top_idx.422, %.preheader ]
-  %123 = icmp slt i32 %top_idx.4.be, %list_idx, !dbg !2621
-  %124 = icmp slt i32 %bot_idx.5.ph, %list_idx, !dbg !2623
-  %or.cond2 = or i1 %123, %124, !dbg !2624
-  br i1 %or.cond2, label %.critedge1.preheader, label %.loopexit4, !dbg !2624
-
-; <label>:125                                     ; preds = %106, %99
-  %indvars.iv.next51 = add nsw i64 %indvars.iv50, 1, !dbg !2625
-  %126 = icmp slt i64 %indvars.iv.next51, %67, !dbg !2632
-  br i1 %126, label %99, label %..loopexit_crit_edge, !dbg !2625
-
-.loopexit4:                                       ; preds = %.backedge, %.preheader7, %.preheader3, %.loopexit8
-  ret void, !dbg !2674
+if.end110:                                        ; preds = %while.cond.preheader, %while.cond49.preheader, %while.cond49.backedge, %if.end46
+  ret void, !dbg !1955
 }

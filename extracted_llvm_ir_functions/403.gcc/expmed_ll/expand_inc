@@ -1,18 +1,21 @@
 define void @expand_inc(%struct.rtx_def* %target, %struct.rtx_def* %inc) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %target to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %1 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 0), align 8, !tbaa !3
-  %call = tail call %struct.rtx_def* @expand_binop(i32 %bf.clear, %struct.optab* %1, %struct.rtx_def* %target, %struct.rtx_def* %inc, %struct.rtx_def* %target, i32 0, i32 3) #4
-  %cmp = icmp eq %struct.rtx_def* %call, %target
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %target}, i64 0, metadata !1727), !dbg !2887
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %inc}, i64 0, metadata !1728), !dbg !2887
+  %0 = bitcast %struct.rtx_def* %target to i32*, !dbg !2888
+  %bf.load = load i32* %0, align 8, !dbg !2888
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !2888
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !2888
+  %1 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 0), align 8, !dbg !2888, !tbaa !2258
+  %call = tail call %struct.rtx_def* @expand_binop(i32 %bf.clear, %struct.optab* %1, %struct.rtx_def* %target, %struct.rtx_def* %inc, %struct.rtx_def* %target, i32 0, i32 3) #5, !dbg !2888
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1729), !dbg !2888
+  %cmp = icmp eq %struct.rtx_def* %call, %target, !dbg !2889
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2889
 
 if.then:                                          ; preds = %entry
-  %call1 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %target, %struct.rtx_def* %call) #4
-  br label %if.end
+  %call1 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %target, %struct.rtx_def* %call) #5, !dbg !2890
+  br label %if.end, !dbg !2890
 
 if.end:                                           ; preds = %entry, %if.then
-  ret void
+  ret void, !dbg !2891
 }

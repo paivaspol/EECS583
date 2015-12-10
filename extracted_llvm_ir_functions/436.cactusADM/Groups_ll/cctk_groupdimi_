@@ -1,23 +1,24 @@
-define void @cctk_groupdimi_(i32* nocapture %dim, i32* nocapture readonly %group) #2 {
-  tail call void @llvm.dbg.value(metadata i32* %dim, i64 0, metadata !303, metadata !483), !dbg !1139
-  tail call void @llvm.dbg.value(metadata i32* %group, i64 0, metadata !304, metadata !483), !dbg !1140
-  %1 = load i32* %group, align 4, !dbg !1141, !tbaa !502
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !300, metadata !483), !dbg !1142
-  %2 = icmp sgt i32 %1, -1, !dbg !1144
-  %3 = load i32* @n_groups, align 4, !dbg !1145
-  %4 = icmp sgt i32 %3, %1, !dbg !1146
-  %or.cond.i = and i1 %2, %4, !dbg !1147
-  br i1 %or.cond.i, label %5, label %CCTK_GroupDimI.exit, !dbg !1147
+define void @cctk_groupdimi_(i32* nocapture %dim, i32* nocapture %group) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %dim}, i64 0, metadata !290), !dbg !839
+  tail call void @llvm.dbg.value(metadata !{i32* %group}, i64 0, metadata !291), !dbg !840
+  %0 = load i32* %group, align 4, !dbg !841, !tbaa !488
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !842), !dbg !843
+  %cmp.i = icmp sgt i32 %0, -1, !dbg !844
+  %1 = load i32* @n_groups, align 4, !dbg !844, !tbaa !488
+  %cmp1.i = icmp sgt i32 %1, %0, !dbg !844
+  %or.cond.i = and i1 %cmp.i, %cmp1.i, !dbg !844
+  br i1 %or.cond.i, label %cond.true.i, label %CCTK_GroupDimI.exit, !dbg !844
 
-; <label>:5                                       ; preds = %0
-  %6 = sext i32 %1 to i64, !dbg !1148
-  %7 = load %struct.cGroupDefinition** @groups, align 8, !dbg !1148, !tbaa !487
-  %8 = getelementptr inbounds %struct.cGroupDefinition* %7, i64 %6, i32 9, !dbg !1149
-  %9 = load i32* %8, align 4, !dbg !1149, !tbaa !894
-  br label %CCTK_GroupDimI.exit, !dbg !1150
+cond.true.i:                                      ; preds = %entry
+  %idxprom.i = sext i32 %0 to i64, !dbg !844
+  %2 = load %struct.cGroupDefinition** @groups, align 8, !dbg !844, !tbaa !480
+  %dim.i = getelementptr inbounds %struct.cGroupDefinition* %2, i64 %idxprom.i, i32 9, !dbg !844
+  %3 = load i32* %dim.i, align 4, !dbg !844, !tbaa !488
+  br label %CCTK_GroupDimI.exit, !dbg !844
 
-CCTK_GroupDimI.exit:                              ; preds = %0, %5
-  %10 = phi i32 [ %9, %5 ], [ -1, %0 ], !dbg !1150
-  store i32 %10, i32* %dim, align 4, !dbg !1151, !tbaa !502
-  ret void, !dbg !1152
+CCTK_GroupDimI.exit:                              ; preds = %entry, %cond.true.i
+  %cond.i = phi i32 [ %3, %cond.true.i ], [ -1, %entry ], !dbg !844
+  store i32 %cond.i, i32* %dim, align 4, !dbg !841, !tbaa !488
+  ret void, !dbg !845
 }

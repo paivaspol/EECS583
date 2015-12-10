@@ -1,13 +1,14 @@
 define i32 @_Z18POVMSUtil_TempFreePv(i8* %ptr) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %ptr, i64 0, metadata !842, metadata !1201), !dbg !4353
-  %1 = icmp eq i8* %ptr, null, !dbg !4354
-  br i1 %1, label %3, label %2, !dbg !4356
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %ptr}, i64 0, metadata !809), !dbg !2568
+  %cmp = icmp eq i8* %ptr, null, !dbg !2569
+  br i1 %cmp, label %return, label %if.end, !dbg !2569
 
-; <label>:2                                       ; preds = %0
-  tail call void @free(i8* %ptr) #8, !dbg !4357
-  br label %3, !dbg !4358
+if.end:                                           ; preds = %entry
+  tail call void @free(i8* %ptr) #9, !dbg !2570
+  br label %return, !dbg !2571
 
-; <label>:3                                       ; preds = %0, %2
-  %.0 = phi i32 [ 0, %2 ], [ -1, %0 ]
-  ret i32 %.0, !dbg !4359
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ 0, %if.end ], [ -1, %entry ]
+  ret i32 %retval.0, !dbg !2571
 }

@@ -1,56 +1,57 @@
 define void @BZ2_bzclose(i8* %b) #5 {
+entry:
   %bzerr = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata i8* %b, i64 0, metadata !474, metadata !626), !dbg !2854
-  %1 = bitcast i8* %b to %struct.__sFILE**, !dbg !2855
-  %2 = load %struct.__sFILE** %1, align 8, !dbg !2855, !tbaa !2018
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %2, i64 0, metadata !476, metadata !626), !dbg !2856
-  %3 = icmp eq i8* %b, null, !dbg !2857
-  br i1 %3, label %20, label %4, !dbg !2859
+  call void @llvm.dbg.value(metadata !{i8* %b}, i64 0, metadata !483), !dbg !1676
+  call void @llvm.dbg.declare(metadata !{i32* %bzerr}, metadata !484), !dbg !1677
+  %handle = bitcast i8* %b to %struct._IO_FILE**, !dbg !1678
+  %0 = load %struct._IO_FILE** %handle, align 8, !dbg !1678, !tbaa !615
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %0}, i64 0, metadata !485), !dbg !1678
+  %cmp = icmp eq i8* %b, null, !dbg !1679
+  br i1 %cmp, label %if.end9, label %if.end, !dbg !1679
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds i8* %b, i64 5012, !dbg !2860
-  %6 = load i8* %5, align 1, !dbg !2860, !tbaa !2021
-  %7 = icmp eq i8 %6, 0, !dbg !2862
-  tail call void @llvm.dbg.value(metadata i32* %bzerr, i64 0, metadata !475, metadata !626), !dbg !2863
-  br i1 %7, label %12, label %8, !dbg !2864
+if.end:                                           ; preds = %entry
+  %1 = getelementptr inbounds i8* %b, i64 5012, !dbg !1680
+  %2 = load i8* %1, align 1, !dbg !1680, !tbaa !616
+  %tobool = icmp eq i8 %2, 0, !dbg !1680
+  br i1 %tobool, label %if.else, label %if.then1, !dbg !1680
 
-; <label>:8                                       ; preds = %4
-  tail call void @llvm.dbg.value(metadata i32* %bzerr, i64 0, metadata !350, metadata !626) #9, !dbg !2865
-  tail call void @llvm.dbg.value(metadata i8* %b, i64 0, metadata !351, metadata !626) #9, !dbg !2868
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !352, metadata !626) #9, !dbg !2869
-  tail call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !353, metadata !626) #9, !dbg !2870
-  tail call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !354, metadata !626) #9, !dbg !2871
-  call void @BZ2_bzWriteClose64(i32* %bzerr, i8* %b, i32 0, i32* null, i32* null, i32* null, i32* null) #10, !dbg !2872
-  call void @llvm.dbg.value(metadata i32* %bzerr, i64 0, metadata !475, metadata !626), !dbg !2863
-  %9 = load i32* %bzerr, align 4, !dbg !2873, !tbaa !1029
-  %10 = icmp eq i32 %9, 0, !dbg !2875
-  br i1 %10, label %13, label %11, !dbg !2876
+if.then1:                                         ; preds = %if.end
+  call void @llvm.dbg.value(metadata !{i32* %bzerr}, i64 0, metadata !1681) #9, !dbg !1684
+  call void @llvm.dbg.value(metadata !{i8* %b}, i64 0, metadata !1685) #9, !dbg !1686
+  call void @llvm.dbg.value(metadata !18, i64 0, metadata !1687) #9, !dbg !1688
+  call void @llvm.dbg.value(metadata !1689, i64 0, metadata !1690) #9, !dbg !1691
+  call void @llvm.dbg.value(metadata !1689, i64 0, metadata !1692) #9, !dbg !1693
+  call void @BZ2_bzWriteClose64(i32* %bzerr, i8* %b, i32 0, i32* null, i32* null, i32* null, i32* null) #12, !dbg !1694
+  call void @llvm.dbg.value(metadata !{i32* %bzerr}, i64 0, metadata !484), !dbg !1695
+  %3 = load i32* %bzerr, align 4, !dbg !1695, !tbaa !651
+  %cmp2 = icmp eq i32 %3, 0, !dbg !1695
+  br i1 %cmp2, label %if.end5, label %if.then3, !dbg !1695
 
-; <label>:11                                      ; preds = %8
-  call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !350, metadata !626) #9, !dbg !2877
-  call void @llvm.dbg.value(metadata i8* %b, i64 0, metadata !351, metadata !626) #9, !dbg !2880
-  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !352, metadata !626) #9, !dbg !2881
-  call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !353, metadata !626) #9, !dbg !2882
-  call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !354, metadata !626) #9, !dbg !2883
-  call void @BZ2_bzWriteClose64(i32* null, i8* %b, i32 1, i32* null, i32* null, i32* null, i32* null) #10, !dbg !2884
-  br label %13, !dbg !2885
+if.then3:                                         ; preds = %if.then1
+  call void @llvm.dbg.value(metadata !1689, i64 0, metadata !1696) #9, !dbg !1699
+  call void @llvm.dbg.value(metadata !{i8* %b}, i64 0, metadata !1700) #9, !dbg !1701
+  call void @llvm.dbg.value(metadata !1623, i64 0, metadata !1702) #9, !dbg !1703
+  call void @llvm.dbg.value(metadata !1689, i64 0, metadata !1704) #9, !dbg !1705
+  call void @llvm.dbg.value(metadata !1689, i64 0, metadata !1706) #9, !dbg !1707
+  call void @BZ2_bzWriteClose64(i32* null, i8* %b, i32 1, i32* null, i32* null, i32* null, i32* null) #12, !dbg !1708
+  br label %if.end5, !dbg !1709
 
-; <label>:12                                      ; preds = %4
-  call void @BZ2_bzReadClose(i32* %bzerr, i8* %b) #12, !dbg !2886
-  br label %13
+if.else:                                          ; preds = %if.end
+  call void @BZ2_bzReadClose(i32* %bzerr, i8* %b) #14, !dbg !1710
+  br label %if.end5
 
-; <label>:13                                      ; preds = %8, %11, %12
-  %14 = load %struct.__sFILE** @__stdinp, align 8, !dbg !2888, !tbaa !629
-  %15 = icmp eq %struct.__sFILE* %2, %14, !dbg !2890
-  %16 = load %struct.__sFILE** @__stdoutp, align 8
-  %17 = icmp eq %struct.__sFILE* %2, %16, !dbg !2891
-  %or.cond = or i1 %15, %17, !dbg !2892
-  br i1 %or.cond, label %20, label %18, !dbg !2892
+if.end5:                                          ; preds = %if.then1, %if.then3, %if.else
+  %4 = load %struct._IO_FILE** @stdin, align 8, !dbg !1712, !tbaa !615
+  %cmp6 = icmp eq %struct._IO_FILE* %0, %4, !dbg !1712
+  %5 = load %struct._IO_FILE** @stdout, align 8, !dbg !1712, !tbaa !615
+  %cmp7 = icmp eq %struct._IO_FILE* %0, %5, !dbg !1712
+  %or.cond = or i1 %cmp6, %cmp7, !dbg !1712
+  br i1 %or.cond, label %if.end9, label %if.then8, !dbg !1712
 
-; <label>:18                                      ; preds = %13
-  %19 = call i32 @fclose(%struct.__sFILE* %2) #10, !dbg !2893
-  br label %20, !dbg !2895
+if.then8:                                         ; preds = %if.end5
+  %call = call i32 @fclose(%struct._IO_FILE* %0) #12, !dbg !1713
+  br label %if.end9, !dbg !1715
 
-; <label>:20                                      ; preds = %13, %0, %18
-  ret void, !dbg !2896
+if.end9:                                          ; preds = %if.end5, %entry, %if.then8
+  ret void, !dbg !1716
 }

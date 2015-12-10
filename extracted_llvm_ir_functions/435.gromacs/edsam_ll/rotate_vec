@@ -1,57 +1,56 @@
-define void @rotate_vec(i32 %nr, [3 x float]* nocapture %x, [3 x float]* nocapture readonly %rotmat) #4 {
+define void @rotate_vec(i32 %nr, [3 x float]* nocapture %x, [3 x float]* nocapture %rotmat) #0 {
+entry:
   %xdum = alloca [3 x float], align 4
-  %xdum6 = bitcast [3 x float]* %xdum to i8*
-  tail call void @llvm.dbg.value(metadata i32 %nr, i64 0, metadata !951, metadata !1112), !dbg !2872
-  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !952, metadata !1112), !dbg !2873
-  tail call void @llvm.dbg.value(metadata [3 x float]* %rotmat, i64 0, metadata !953, metadata !1112), !dbg !2874
-  tail call void @llvm.dbg.declare(metadata [3 x float]* %xdum, metadata !957, metadata !1112), !dbg !2875
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !954, metadata !1112), !dbg !2876
-  %1 = icmp sgt i32 %nr, 0, !dbg !2877
-  br i1 %1, label %.preheader1.lr.ph, label %._crit_edge, !dbg !2880
+  %xdum58 = bitcast [3 x float]* %xdum to i8*
+  call void @llvm.dbg.value(metadata !{i32 %nr}, i64 0, metadata !827), !dbg !1732
+  call void @llvm.dbg.value(metadata !{[3 x float]* %x}, i64 0, metadata !828), !dbg !1732
+  call void @llvm.dbg.value(metadata !{[3 x float]* %rotmat}, i64 0, metadata !829), !dbg !1732
+  call void @llvm.dbg.declare(metadata !{[3 x float]* %xdum}, metadata !833), !dbg !1733
+  call void @llvm.dbg.value(metadata !53, i64 0, metadata !830), !dbg !1734
+  %cmp56 = icmp sgt i32 %nr, 0, !dbg !1734
+  br i1 %cmp56, label %for.cond1.preheader, label %for.end36, !dbg !1734
 
-.preheader1.lr.ph:                                ; preds = %0
-  %2 = add i32 %nr, -1, !dbg !2880
-  br label %.preheader1, !dbg !2880
+for.cond1.preheader:                              ; preds = %entry, %for.inc34
+  %indvars.iv66 = phi i64 [ %indvars.iv.next67, %for.inc34 ], [ 0, %entry ]
+  %scevgep = getelementptr [3 x float]* %x, i64 %indvars.iv66, i64 0
+  %scevgep59 = bitcast float* %scevgep to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %xdum58, i8* %scevgep59, i64 12, i32 4, i1 false), !dbg !1736
+  br label %for.body10, !dbg !1739
 
-.preheader1:                                      ; preds = %14, %.preheader1.lr.ph
-  %indvars.iv13 = phi i64 [ 0, %.preheader1.lr.ph ], [ %indvars.iv.next14, %14 ]
-  %scevgep = getelementptr [3 x float]* %x, i64 %indvars.iv13, i64 0
-  %scevgep7 = bitcast float* %scevgep to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %xdum6, i8* %scevgep7, i64 12, i32 4, i1 false), !dbg !2881
-  br label %3, !dbg !2885
+for.body10:                                       ; preds = %for.inc31, %for.cond1.preheader
+  %indvars.iv60 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next61, %for.inc31 ]
+  %arrayidx14 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv66, i64 %indvars.iv60, !dbg !1741
+  store float 0.000000e+00, float* %arrayidx14, align 4, !dbg !1741, !tbaa !1007
+  call void @llvm.dbg.value(metadata !53, i64 0, metadata !832), !dbg !1743
+  br label %for.body17, !dbg !1743
 
-; <label>:3                                       ; preds = %13, %.preheader1
-  %indvars.iv8 = phi i64 [ 0, %.preheader1 ], [ %indvars.iv.next9, %13 ]
-  %4 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv13, i64 %indvars.iv8, !dbg !2887
-  store float 0.000000e+00, float* %4, align 4, !dbg !2890, !tbaa !1208
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !956, metadata !1112), !dbg !2891
-  br label %5, !dbg !2892
+for.body17:                                       ; preds = %for.body17, %for.body10
+  %0 = phi float [ 0.000000e+00, %for.body10 ], [ %add, %for.body17 ], !dbg !1745
+  %indvars.iv = phi i64 [ 0, %for.body10 ], [ %indvars.iv.next, %for.body17 ]
+  %arrayidx21 = getelementptr inbounds [3 x float]* %rotmat, i64 %indvars.iv, i64 %indvars.iv60, !dbg !1745
+  %1 = load float* %arrayidx21, align 4, !dbg !1745, !tbaa !1007
+  %arrayidx23 = getelementptr inbounds [3 x float]* %xdum, i64 0, i64 %indvars.iv, !dbg !1745
+  %2 = load float* %arrayidx23, align 4, !dbg !1745, !tbaa !1007
+  %mul = fmul float %1, %2, !dbg !1745
+  %add = fadd float %0, %mul, !dbg !1745
+  store float %add, float* %arrayidx14, align 4, !dbg !1745, !tbaa !1007
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1743
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1743
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !1743
+  br i1 %exitcond, label %for.inc31, label %for.body17, !dbg !1743
 
-; <label>:5                                       ; preds = %5, %3
-  %6 = phi float [ 0.000000e+00, %3 ], [ %12, %5 ], !dbg !2894
-  %indvars.iv = phi i64 [ 0, %3 ], [ %indvars.iv.next, %5 ]
-  %7 = getelementptr inbounds [3 x float]* %rotmat, i64 %indvars.iv, i64 %indvars.iv8, !dbg !2894
-  %8 = load float* %7, align 4, !dbg !2894, !tbaa !1208
-  %9 = getelementptr inbounds [3 x float]* %xdum, i64 0, i64 %indvars.iv, !dbg !2896
-  %10 = load float* %9, align 4, !dbg !2896, !tbaa !1208
-  %11 = fmul float %8, %10, !dbg !2897
-  %12 = fadd float %6, %11, !dbg !2898
-  store float %12, float* %4, align 4, !dbg !2898, !tbaa !1208
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2892
-  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !2892
-  br i1 %exitcond, label %13, label %5, !dbg !2892
+for.inc31:                                        ; preds = %for.body17
+  %indvars.iv.next61 = add i64 %indvars.iv60, 1, !dbg !1739
+  %lftr.wideiv62 = trunc i64 %indvars.iv.next61 to i32, !dbg !1739
+  %exitcond63 = icmp eq i32 %lftr.wideiv62, 3, !dbg !1739
+  br i1 %exitcond63, label %for.inc34, label %for.body10, !dbg !1739
 
-; <label>:13                                      ; preds = %5
-  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv8, 1, !dbg !2885
-  %exitcond10 = icmp eq i64 %indvars.iv.next9, 3, !dbg !2885
-  br i1 %exitcond10, label %14, label %3, !dbg !2885
+for.inc34:                                        ; preds = %for.inc31
+  %indvars.iv.next67 = add i64 %indvars.iv66, 1, !dbg !1734
+  %lftr.wideiv68 = trunc i64 %indvars.iv.next67 to i32, !dbg !1734
+  %exitcond69 = icmp eq i32 %lftr.wideiv68, %nr, !dbg !1734
+  br i1 %exitcond69, label %for.end36, label %for.cond1.preheader, !dbg !1734
 
-; <label>:14                                      ; preds = %13
-  %indvars.iv.next14 = add nuw nsw i64 %indvars.iv13, 1, !dbg !2880
-  %lftr.wideiv = trunc i64 %indvars.iv13 to i32, !dbg !2880
-  %exitcond15 = icmp eq i32 %lftr.wideiv, %2, !dbg !2880
-  br i1 %exitcond15, label %._crit_edge, label %.preheader1, !dbg !2880
-
-._crit_edge:                                      ; preds = %14, %0
-  ret void, !dbg !2899
+for.end36:                                        ; preds = %for.inc34, %entry
+  ret void, !dbg !1746
 }

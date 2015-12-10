@@ -1,30 +1,31 @@
-define double @_ZN3pov9cycloidalEd(double %value) #5 {
-  tail call void @llvm.dbg.value(metadata double %value, i64 0, metadata !1105, metadata !1747), !dbg !2734
-  %1 = fcmp ult double %value, 0.000000e+00, !dbg !2735
-  br i1 %1, label %9, label %2, !dbg !2737
+define double @_ZN3pov9cycloidalEd(double %value) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %value}, i64 0, metadata !1093), !dbg !2047
+  %cmp = fcmp ult double %value, 0.000000e+00, !dbg !2048
+  br i1 %cmp, label %if.else, label %if.then, !dbg !2048
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call double @floor(double %value) #9, !dbg !2738
-  %4 = fsub double %value, %3, !dbg !2740
-  %5 = fmul double %4, 5.000000e+04, !dbg !2741
-  %6 = fdiv double %5, 5.000000e+04, !dbg !2742
-  %7 = fmul double %6, 0x401921FB54442D18, !dbg !2743
-  %8 = tail call double @sin(double %7) #9, !dbg !2744
-  br label %19, !dbg !2745
+if.then:                                          ; preds = %entry
+  %call = tail call double @floor(double %value) #11, !dbg !2049
+  %sub = fsub double %value, %call, !dbg !2049
+  %mul = fmul double %sub, 5.000000e+04, !dbg !2049
+  %div = fdiv double %mul, 5.000000e+04, !dbg !2049
+  %mul1 = fmul double %div, 0x401921FB54442D18, !dbg !2049
+  %call2 = tail call double @sin(double %mul1) #10, !dbg !2049
+  br label %return, !dbg !2049
 
-; <label>:9                                       ; preds = %0
-  %10 = fsub double 0.000000e+00, %value, !dbg !2746
-  %11 = tail call double @floor(double %10) #9, !dbg !2748
-  %12 = fadd double %11, %value, !dbg !2749
-  %13 = fsub double 0.000000e+00, %12, !dbg !2750
-  %14 = fmul double %13, 5.000000e+04, !dbg !2751
-  %15 = fdiv double %14, 5.000000e+04, !dbg !2752
-  %16 = fmul double %15, 0x401921FB54442D18, !dbg !2753
-  %17 = tail call double @sin(double %16) #9, !dbg !2754
-  %18 = fsub double 0.000000e+00, %17, !dbg !2755
-  br label %19, !dbg !2756
+if.else:                                          ; preds = %entry
+  %sub3 = fsub double 0.000000e+00, %value, !dbg !2051
+  %call4 = tail call double @floor(double %sub3) #11, !dbg !2051
+  %add = fadd double %call4, %value, !dbg !2051
+  %sub5 = fsub double 0.000000e+00, %add, !dbg !2051
+  %mul6 = fmul double %sub5, 5.000000e+04, !dbg !2051
+  %div7 = fdiv double %mul6, 5.000000e+04, !dbg !2051
+  %mul8 = fmul double %div7, 0x401921FB54442D18, !dbg !2051
+  %call9 = tail call double @sin(double %mul8) #10, !dbg !2051
+  %sub10 = fsub double 0.000000e+00, %call9, !dbg !2051
+  br label %return, !dbg !2051
 
-; <label>:19                                      ; preds = %9, %2
-  %.0 = phi double [ %8, %2 ], [ %18, %9 ]
-  ret double %.0, !dbg !2757
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi double [ %call2, %if.then ], [ %sub10, %if.else ]
+  ret double %retval.0, !dbg !2053
 }

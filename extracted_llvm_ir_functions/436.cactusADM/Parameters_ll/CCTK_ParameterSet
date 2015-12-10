@@ -1,66 +1,67 @@
 define i32 @CCTK_ParameterSet(i8* %name, i8* %thorn, i8* %value) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !135, metadata !369), !dbg !1006
-  tail call void @llvm.dbg.value(metadata i8* %thorn, i64 0, metadata !136, metadata !369), !dbg !1007
-  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !137, metadata !369), !dbg !1008
-  %1 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 5) #7, !dbg !1009
-  tail call void @llvm.dbg.value(metadata %struct.PARAM* %1, i64 0, metadata !139, metadata !369), !dbg !1010
-  %2 = icmp eq %struct.PARAM* %1, null, !dbg !1011
-  br i1 %2, label %31, label %3, !dbg !1013
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !107), !dbg !709
+  tail call void @llvm.dbg.value(metadata !{i8* %thorn}, i64 0, metadata !108), !dbg !709
+  tail call void @llvm.dbg.value(metadata !{i8* %value}, i64 0, metadata !109), !dbg !709
+  %call = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 5) #7, !dbg !710
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM* %call}, i64 0, metadata !111), !dbg !710
+  %tobool = icmp eq %struct.PARAM* %call, null, !dbg !711
+  br i1 %tobool, label %if.end23, label %if.then, !dbg !711
 
-; <label>:3                                       ; preds = %0
-  %4 = load i32* @cctk_parameter_set_mask, align 4, !dbg !1014, !tbaa !887
-  switch i32 %4, label %._crit_edge [
-    i32 2, label %5
-    i32 1, label %13
-  ], !dbg !1017
+if.then:                                          ; preds = %entry
+  %0 = load i32* @cctk_parameter_set_mask, align 4, !dbg !712, !tbaa !396
+  switch i32 %0, label %if.else.if.else16_crit_edge [
+    i32 2, label %land.lhs.true
+    i32 1, label %land.lhs.true6
+  ], !dbg !712
 
-; <label>:5                                       ; preds = %3
-  %6 = getelementptr inbounds %struct.PARAM* %1, i64 0, i32 0, !dbg !1018
-  %7 = load %struct.PARAM_PROPS** %6, align 8, !dbg !1018, !tbaa !406
-  %8 = getelementptr inbounds %struct.PARAM_PROPS* %7, i64 0, i32 8, !dbg !1019
-  %9 = load i32* %8, align 4, !dbg !1019, !tbaa !465
-  %10 = icmp eq i32 %9, 1, !dbg !1020
-  br i1 %10, label %._crit_edge, label %11, !dbg !1021
+land.lhs.true:                                    ; preds = %if.then
+  %props = getelementptr inbounds %struct.PARAM* %call, i64 0, i32 0, !dbg !712
+  %1 = load %struct.PARAM_PROPS** %props, align 8, !dbg !712, !tbaa !386
+  %steerable = getelementptr inbounds %struct.PARAM_PROPS* %1, i64 0, i32 8, !dbg !712
+  %2 = load i32* %steerable, align 4, !dbg !712, !tbaa !396
+  %cmp2 = icmp eq i32 %2, 1, !dbg !712
+  br i1 %cmp2, label %if.else.if.else16_crit_edge, label %if.then3, !dbg !712
 
-; <label>:11                                      ; preds = %5
-  %12 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 390, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str2, i64 0, i64 0), i8* %thorn, i8* %name) #8, !dbg !1022
-  tail call void @llvm.dbg.value(metadata i32 -3, i64 0, metadata !138, metadata !369), !dbg !1024
-  br label %31, !dbg !1025
+if.then3:                                         ; preds = %land.lhs.true
+  %call4 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 390, i8* getelementptr inbounds ([67 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str2, i64 0, i64 0), i8* %thorn, i8* %name) #8, !dbg !714
+  tail call void @llvm.dbg.value(metadata !716, i64 0, metadata !110), !dbg !717
+  br label %if.end23, !dbg !718
 
-._crit_edge:                                      ; preds = %3, %5
-  %.pre = getelementptr inbounds %struct.PARAM* %1, i64 0, i32 0, !dbg !1026
-  br label %25, !dbg !1029
+if.else.if.else16_crit_edge:                      ; preds = %if.then, %land.lhs.true
+  %props18.pre = getelementptr inbounds %struct.PARAM* %call, i64 0, i32 0, !dbg !719
+  br label %if.else16, !dbg !721
 
-; <label>:13                                      ; preds = %3
-  %14 = getelementptr inbounds %struct.PARAM* %1, i64 0, i32 0, !dbg !1030
-  %15 = load %struct.PARAM_PROPS** %14, align 8, !dbg !1030, !tbaa !406
-  %16 = getelementptr inbounds %struct.PARAM_PROPS* %15, i64 0, i32 7, !dbg !1031
-  %17 = load i32* %16, align 4, !dbg !1031, !tbaa !471
-  %18 = icmp sgt i32 %17, 0, !dbg !1032
-  br i1 %18, label %19, label %25, !dbg !1033
+land.lhs.true6:                                   ; preds = %if.then
+  %props7 = getelementptr inbounds %struct.PARAM* %call, i64 0, i32 0, !dbg !721
+  %3 = load %struct.PARAM_PROPS** %props7, align 8, !dbg !721, !tbaa !386
+  %n_set = getelementptr inbounds %struct.PARAM_PROPS* %3, i64 0, i32 7, !dbg !721
+  %4 = load i32* %n_set, align 4, !dbg !721, !tbaa !396
+  %cmp8 = icmp sgt i32 %4, 0, !dbg !721
+  br i1 %cmp8, label %if.then9, label %if.else16, !dbg !721
 
-; <label>:19                                      ; preds = %13
-  %20 = getelementptr inbounds %struct.PARAM_PROPS* %15, i64 0, i32 8, !dbg !1034
-  %21 = load i32* %20, align 4, !dbg !1034, !tbaa !465
-  %22 = icmp eq i32 %21, 0, !dbg !1037
-  br i1 %22, label %23, label %31, !dbg !1038
+if.then9:                                         ; preds = %land.lhs.true6
+  %steerable11 = getelementptr inbounds %struct.PARAM_PROPS* %3, i64 0, i32 8, !dbg !722
+  %5 = load i32* %steerable11, align 4, !dbg !722, !tbaa !396
+  %cmp12 = icmp eq i32 %5, 0, !dbg !722
+  br i1 %cmp12, label %if.then13, label %if.end23, !dbg !722
 
-; <label>:23                                      ; preds = %19
-  %24 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 402, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([126 x i8]* @.str3, i64 0, i64 0), i8* %thorn, i8* %name) #8, !dbg !1039
-  br label %31, !dbg !1041
+if.then13:                                        ; preds = %if.then9
+  %call14 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 402, i8* getelementptr inbounds ([67 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([126 x i8]* @.str3, i64 0, i64 0), i8* %thorn, i8* %name) #8, !dbg !724
+  br label %if.end23, !dbg !726
 
-; <label>:25                                      ; preds = %._crit_edge, %13
-  %.pre-phi = phi %struct.PARAM_PROPS** [ %.pre, %._crit_edge ], [ %14, %13 ], !dbg !1026
-  %26 = tail call fastcc i32 @ParameterSetSimple(%struct.PARAM* %1, i8* %value) #7, !dbg !1042
-  tail call void @llvm.dbg.value(metadata i32 %26, i64 0, metadata !138, metadata !369), !dbg !1024
-  %27 = load %struct.PARAM_PROPS** %.pre-phi, align 8, !dbg !1026, !tbaa !406
-  %28 = getelementptr inbounds %struct.PARAM_PROPS* %27, i64 0, i32 7, !dbg !1043
-  %29 = load i32* %28, align 4, !dbg !1044, !tbaa !471
-  %30 = add nsw i32 %29, 1, !dbg !1044
-  store i32 %30, i32* %28, align 4, !dbg !1044, !tbaa !471
-  br label %31
+if.else16:                                        ; preds = %if.else.if.else16_crit_edge, %land.lhs.true6
+  %props18.pre-phi = phi %struct.PARAM_PROPS** [ %props18.pre, %if.else.if.else16_crit_edge ], [ %props7, %land.lhs.true6 ], !dbg !719
+  %call17 = tail call fastcc i32 @ParameterSetSimple(%struct.PARAM* %call, i8* %value) #7, !dbg !727
+  tail call void @llvm.dbg.value(metadata !{i32 %call17}, i64 0, metadata !110), !dbg !727
+  %6 = load %struct.PARAM_PROPS** %props18.pre-phi, align 8, !dbg !719, !tbaa !386
+  %n_set19 = getelementptr inbounds %struct.PARAM_PROPS* %6, i64 0, i32 7, !dbg !719
+  %7 = load i32* %n_set19, align 4, !dbg !719, !tbaa !396
+  %inc = add nsw i32 %7, 1, !dbg !719
+  store i32 %inc, i32* %n_set19, align 4, !dbg !719, !tbaa !396
+  br label %if.end23
 
-; <label>:31                                      ; preds = %0, %23, %19, %11, %25
-  %retval.0 = phi i32 [ -3, %11 ], [ %26, %25 ], [ 0, %19 ], [ 0, %23 ], [ -2, %0 ]
-  ret i32 %retval.0, !dbg !1045
+if.end23:                                         ; preds = %entry, %if.then13, %if.then9, %if.then3, %if.else16
+  %retval1.0 = phi i32 [ -3, %if.then3 ], [ %call17, %if.else16 ], [ 0, %if.then9 ], [ 0, %if.then13 ], [ -2, %entry ]
+  ret i32 %retval1.0, !dbg !728
 }

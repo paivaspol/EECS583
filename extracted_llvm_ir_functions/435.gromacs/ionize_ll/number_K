@@ -1,23 +1,24 @@
-define i32 @number_K(%struct.t_cross_atom* nocapture readonly %ca) #8 {
-  tail call void @llvm.dbg.value(metadata %struct.t_cross_atom* %ca, i64 0, metadata !285, metadata !677), !dbg !960
-  %1 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 0, !dbg !961
-  %2 = load i32* %1, align 4, !dbg !961, !tbaa !846
-  %3 = icmp slt i32 %2, 3, !dbg !963
-  br i1 %3, label %4, label %8, !dbg !964
+define i32 @number_K(%struct.t_cross_atom* nocapture %ca) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_cross_atom* %ca}, i64 0, metadata !151), !dbg !593
+  %z = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 0, !dbg !594
+  %0 = load i32* %z, align 4, !dbg !594, !tbaa !542
+  %cmp = icmp slt i32 %0, 3, !dbg !594
+  br i1 %cmp, label %if.then, label %if.else, !dbg !594
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 1, !dbg !965
-  %6 = load i32* %5, align 4, !dbg !965, !tbaa !849
-  %7 = sub nsw i32 %2, %6, !dbg !966
-  br label %12, !dbg !967
+if.then:                                          ; preds = %entry
+  %n = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 1, !dbg !595
+  %1 = load i32* %n, align 4, !dbg !595, !tbaa !542
+  %sub = sub nsw i32 %0, %1, !dbg !595
+  br label %return, !dbg !595
 
-; <label>:8                                       ; preds = %0
-  %9 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 2, !dbg !968
-  %10 = load i32* %9, align 4, !dbg !968, !tbaa !851
-  %11 = sub nsw i32 2, %10, !dbg !969
-  br label %12, !dbg !970
+if.else:                                          ; preds = %entry
+  %k = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 2, !dbg !596
+  %2 = load i32* %k, align 4, !dbg !596, !tbaa !542
+  %sub2 = sub nsw i32 2, %2, !dbg !596
+  br label %return, !dbg !596
 
-; <label>:12                                      ; preds = %8, %4
-  %.0 = phi i32 [ %7, %4 ], [ %11, %8 ]
-  ret i32 %.0, !dbg !971
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i32 [ %sub, %if.then ], [ %sub2, %if.else ]
+  ret i32 %retval.0, !dbg !597
 }

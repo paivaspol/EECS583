@@ -1,31 +1,35 @@
 define i32 @smallest_mode_for_size(i32 %size, i32 %class) #0 {
 entry:
-  %idxprom = sext i32 %class to i64
-  %arrayidx = getelementptr inbounds [9 x i32]* @class_narrowest_mode, i64 0, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !5
-  %cmp11 = icmp eq i32 %0, 0
-  br i1 %cmp11, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !933), !dbg !1244
+  tail call void @llvm.dbg.value(metadata !{i32 %class}, i64 0, metadata !934), !dbg !1245
+  %idxprom = sext i32 %class to i64, !dbg !1246
+  %arrayidx = getelementptr inbounds [9 x i32]* @class_narrowest_mode, i64 0, i64 %idxprom, !dbg !1246
+  %0 = load i32* %arrayidx, align 4, !dbg !1246, !tbaa !1232
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !935), !dbg !1246
+  %cmp11 = icmp eq i32 %0, 0, !dbg !1246
+  br i1 %cmp11, label %for.end, label %for.body, !dbg !1246
 
 for.body:                                         ; preds = %entry, %for.inc
   %mode.012 = phi i32 [ %conv7, %for.inc ], [ %0, %entry ]
-  %idxprom1 = sext i32 %mode.012 to i64
-  %arrayidx2 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom1
-  %1 = load i16* %arrayidx2, align 2, !tbaa !4
-  %conv = zext i16 %1 to i32
-  %cmp3 = icmp ult i32 %conv, %size
-  br i1 %cmp3, label %for.inc, label %if.then
+  %idxprom1 = sext i32 %mode.012 to i64, !dbg !1248
+  %arrayidx2 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom1, !dbg !1248
+  %1 = load i16* %arrayidx2, align 2, !dbg !1248, !tbaa !1229
+  %conv = zext i16 %1 to i32, !dbg !1248
+  %cmp3 = icmp ult i32 %conv, %size, !dbg !1248
+  br i1 %cmp3, label %for.inc, label %if.then, !dbg !1248
 
 if.then:                                          ; preds = %for.body
-  ret i32 %mode.012
+  ret i32 %mode.012, !dbg !1249
 
 for.inc:                                          ; preds = %for.body
-  %arrayidx6 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom1
-  %2 = load i8* %arrayidx6, align 1, !tbaa !1
-  %conv7 = zext i8 %2 to i32
-  %cmp = icmp eq i8 %2, 0
-  br i1 %cmp, label %for.end, label %for.body
+  %arrayidx6 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom1, !dbg !1250
+  %2 = load i8* %arrayidx6, align 1, !dbg !1250, !tbaa !1184
+  %conv7 = zext i8 %2 to i32, !dbg !1250
+  tail call void @llvm.dbg.value(metadata !{i32 %conv7}, i64 0, metadata !935), !dbg !1250
+  %cmp = icmp eq i8 %2, 0, !dbg !1246
+  br i1 %cmp, label %for.end, label %for.body, !dbg !1246
 
 for.end:                                          ; preds = %for.inc, %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 259, i8* getelementptr inbounds ([23 x i8]* @__FUNCTION__.smallest_mode_for_size, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 259, i8* getelementptr inbounds ([23 x i8]* @__FUNCTION__.smallest_mode_for_size, i64 0, i64 0)) #9, !dbg !1251
+  unreachable, !dbg !1251
 }

@@ -1,33 +1,36 @@
 define i32 @extended_count(%struct.rtx_def* %x, i32 %mode, i32 %unsignedp) #0 {
 entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !493), !dbg !2415
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !494), !dbg !2416
+  tail call void @llvm.dbg.value(metadata !{i32 %unsignedp}, i64 0, metadata !495), !dbg !2417
   %.b = load i1* @nonzero_sign_valid, align 1
-  br i1 %.b, label %if.end, label %return
+  br i1 %.b, label %if.end, label %return, !dbg !2418
 
 if.end:                                           ; preds = %entry
-  %tobool = icmp eq i32 %unsignedp, 0
-  br i1 %tobool, label %cond.false9, label %cond.true
+  %tobool = icmp eq i32 %unsignedp, 0, !dbg !2419
+  br i1 %tobool, label %cond.false9, label %cond.true, !dbg !2419
 
 cond.true:                                        ; preds = %if.end
-  %idxprom = sext i32 %mode to i64
-  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
-  %0 = load i16* %arrayidx, align 2, !tbaa !5
-  %cmp1 = icmp ult i16 %0, 65
-  br i1 %cmp1, label %cond.true3, label %return
+  %idxprom = sext i32 %mode to i64, !dbg !2419
+  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom, !dbg !2419
+  %0 = load i16* %arrayidx, align 2, !dbg !2419, !tbaa !1811
+  %cmp1 = icmp ult i16 %0, 65, !dbg !2419
+  br i1 %cmp1, label %cond.true3, label %return, !dbg !2419
 
 cond.true3:                                       ; preds = %cond.true
-  %conv = zext i16 %0 to i32
-  %sub = add nsw i32 %conv, -1
-  %call = tail call fastcc i64 @nonzero_bits(%struct.rtx_def* %x, i32 %mode) #7
-  %call7 = tail call i32 @floor_log2_wide(i64 %call) #6
-  %sub8 = sub i32 %sub, %call7
-  br label %return
+  %conv = zext i16 %0 to i32, !dbg !2419
+  %sub = add nsw i32 %conv, -1, !dbg !2419
+  %call = tail call fastcc i64 @nonzero_bits(%struct.rtx_def* %x, i32 %mode) #8, !dbg !2420
+  %call7 = tail call i32 @floor_log2_wide(i64 %call) #7, !dbg !2420
+  %sub8 = sub i32 %sub, %call7, !dbg !2420
+  br label %return, !dbg !2420
 
 cond.false9:                                      ; preds = %if.end
-  %call10 = tail call fastcc i32 @num_sign_bit_copies(%struct.rtx_def* %x, i32 %mode) #7
-  %sub11 = add i32 %call10, -1
-  br label %return
+  %call10 = tail call fastcc i32 @num_sign_bit_copies(%struct.rtx_def* %x, i32 %mode) #8, !dbg !2421
+  %sub11 = add i32 %call10, -1, !dbg !2421
+  br label %return, !dbg !2421
 
 return:                                           ; preds = %cond.false9, %cond.true, %cond.true3, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ %sub11, %cond.false9 ], [ %sub8, %cond.true3 ], [ 0, %cond.true ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2422
 }

@@ -1,0 +1,40 @@
+define zeroext i1 @_ZN11xercesc_2_59XMLReader11skippedCharEt(%"class.xercesc_2_5::XMLReader"* %this, i16 zeroext %toSkip) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %this}, i64 0, metadata !1526), !dbg !3215
+  tail call void @llvm.dbg.value(metadata !{i16 %toSkip}, i64 0, metadata !1527), !dbg !3215
+  %fCharIndex = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 0, !dbg !3216
+  %0 = load i32* %fCharIndex, align 4, !dbg !3216, !tbaa !2430
+  %fCharsAvail = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 2, !dbg !3216
+  %1 = load i32* %fCharsAvail, align 4, !dbg !3216, !tbaa !2430
+  %cmp = icmp eq i32 %0, %1, !dbg !3216
+  br i1 %cmp, label %if.then, label %if.end3, !dbg !3216
+
+if.then:                                          ; preds = %entry
+  %call = tail call zeroext i1 @_ZN11xercesc_2_59XMLReader17refreshCharBufferEv(%"class.xercesc_2_5::XMLReader"* %this) #10, !dbg !3217
+  br i1 %call, label %if.then.if.end3_crit_edge, label %return, !dbg !3217
+
+if.then.if.end3_crit_edge:                        ; preds = %if.then
+  %.pre = load i32* %fCharIndex, align 4, !dbg !3219, !tbaa !2430
+  br label %if.end3, !dbg !3217
+
+if.end3:                                          ; preds = %if.then.if.end3_crit_edge, %entry
+  %2 = phi i32 [ %.pre, %if.then.if.end3_crit_edge ], [ %0, %entry ]
+  %idxprom = zext i32 %2 to i64, !dbg !3219
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 1, i64 %idxprom, !dbg !3219
+  %3 = load i16* %arrayidx, align 2, !dbg !3219, !tbaa !2400
+  %cmp6 = icmp eq i16 %3, %toSkip, !dbg !3219
+  br i1 %cmp6, label %if.then7, label %return, !dbg !3219
+
+if.then7:                                         ; preds = %if.end3
+  %inc = add i32 %2, 1, !dbg !3220
+  store i32 %inc, i32* %fCharIndex, align 4, !dbg !3220, !tbaa !2430
+  %fCurCol = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 4, !dbg !3222
+  %4 = load i64* %fCurCol, align 8, !dbg !3222, !tbaa !2431
+  %inc9 = add nsw i64 %4, 1, !dbg !3222
+  store i64 %inc9, i64* %fCurCol, align 8, !dbg !3222, !tbaa !2431
+  br label %return, !dbg !3223
+
+return:                                           ; preds = %if.end3, %if.then, %if.then7
+  %retval.0 = phi i1 [ true, %if.then7 ], [ false, %if.then ], [ false, %if.end3 ]
+  ret i1 %retval.0, !dbg !3224
+}

@@ -1,17 +1,18 @@
 define %struct._I2Ohash* @I2Ohash_new() #0 {
-  %1 = tail call i8* @malloc(i64 40) #6, !dbg !53
-  %2 = bitcast i8* %1 to %struct._I2Ohash*, !dbg !53
-  tail call void @llvm.dbg.value(metadata %struct._I2Ohash* %2, i64 0, metadata !36, metadata !57), !dbg !58
-  %3 = icmp eq i8* %1, null, !dbg !53
-  br i1 %3, label %4, label %7, !dbg !59
+entry:
+  %call = tail call noalias i8* @malloc(i64 40) #6, !dbg !47
+  %0 = bitcast i8* %call to %struct._I2Ohash*, !dbg !47
+  tail call void @llvm.dbg.value(metadata !{%struct._I2Ohash* %0}, i64 0, metadata !34), !dbg !47
+  %cmp = icmp eq i8* %call, null, !dbg !47
+  br i1 %cmp, label %if.then, label %if.end, !dbg !47
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !60, !tbaa !62
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 40, i32 21, i8* getelementptr inbounds ([95 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !60
-  tail call void @exit(i32 -1) #7, !dbg !60
-  unreachable, !dbg !60
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !49, !tbaa !51
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 40, i32 21, i8* getelementptr inbounds ([83 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !49
+  tail call void @exit(i32 -1) #7, !dbg !49
+  unreachable, !dbg !49
 
-; <label>:7                                       ; preds = %0
-  tail call void @I2Ohash_setDefaultFields(%struct._I2Ohash* %2) #8, !dbg !66
-  ret %struct._I2Ohash* %2, !dbg !67
+if.end:                                           ; preds = %entry
+  tail call void @I2Ohash_setDefaultFields(%struct._I2Ohash* %0) #8, !dbg !54
+  ret %struct._I2Ohash* %0, !dbg !55
 }

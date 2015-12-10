@@ -1,41 +1,43 @@
 define void @genrtl_if_stmt(%union.tree_node* nocapture %t) #0 {
 entry:
-  %0 = load i8** @input_filename, align 8, !tbaa !0
-  %1 = load i32* @lineno, align 4, !tbaa !4
-  %call.i = tail call %struct.rtx_def* @emit_line_note(i8* %0, i32 %1) #5
-  tail call void @clear_last_expr() #5
-  %operands = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
-  %arrayidx = bitcast i32* %operands to %union.tree_node**
-  %2 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
-  %call = tail call %union.tree_node* @expand_cond(%union.tree_node* %2) #7
-  %3 = load i8** @input_filename, align 8, !tbaa !0
-  %4 = load i32* @lineno, align 4, !tbaa !4
-  %call1 = tail call %struct.rtx_def* @emit_line_note(i8* %3, i32 %4) #5
-  tail call void @expand_start_cond(%union.tree_node* %call, i32 0) #5
-  %arrayidx4 = getelementptr inbounds i32* %operands, i64 2
-  %5 = bitcast i32* %arrayidx4 to %union.tree_node**
-  %6 = load %union.tree_node** %5, align 8, !tbaa !0
-  %tobool = icmp eq %union.tree_node* %6, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %t}, i64 0, metadata !1160), !dbg !1432
+  %0 = load i8** @input_filename, align 8, !dbg !1433, !tbaa !1245
+  %1 = load i32* @lineno, align 4, !dbg !1433, !tbaa !1276
+  %call.i = tail call %struct.rtx_def* @emit_line_note(i8* %0, i32 %1) #6, !dbg !1433
+  tail call void @clear_last_expr() #6, !dbg !1435
+  %operands = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2, !dbg !1436
+  %arrayidx = bitcast i32* %operands to %union.tree_node**, !dbg !1436
+  %2 = load %union.tree_node** %arrayidx, align 8, !dbg !1436, !tbaa !1245
+  %call = tail call %union.tree_node* @expand_cond(%union.tree_node* %2) #8, !dbg !1436
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1161), !dbg !1436
+  %3 = load i8** @input_filename, align 8, !dbg !1437, !tbaa !1245
+  %4 = load i32* @lineno, align 4, !dbg !1437, !tbaa !1276
+  %call1 = tail call %struct.rtx_def* @emit_line_note(i8* %3, i32 %4) #6, !dbg !1437
+  tail call void @expand_start_cond(%union.tree_node* %call, i32 0) #6, !dbg !1438
+  %arrayidx4 = getelementptr inbounds i32* %operands, i64 2, !dbg !1439
+  %5 = bitcast i32* %arrayidx4 to %union.tree_node**, !dbg !1439
+  %6 = load %union.tree_node** %5, align 8, !dbg !1439, !tbaa !1245
+  %tobool = icmp eq %union.tree_node* %6, null, !dbg !1439
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1439
 
 if.then:                                          ; preds = %entry
-  tail call void @expand_stmt(%union.tree_node* %6) #7
-  br label %if.end
+  tail call void @expand_stmt(%union.tree_node* %6) #8, !dbg !1440
+  br label %if.end, !dbg !1440
 
 if.end:                                           ; preds = %entry, %if.then
-  %arrayidx10 = getelementptr inbounds i32* %operands, i64 4
-  %7 = bitcast i32* %arrayidx10 to %union.tree_node**
-  %8 = load %union.tree_node** %7, align 8, !tbaa !0
-  %tobool11 = icmp eq %union.tree_node* %8, null
-  br i1 %tobool11, label %if.end16, label %if.then12
+  %arrayidx10 = getelementptr inbounds i32* %operands, i64 4, !dbg !1441
+  %7 = bitcast i32* %arrayidx10 to %union.tree_node**, !dbg !1441
+  %8 = load %union.tree_node** %7, align 8, !dbg !1441, !tbaa !1245
+  %tobool11 = icmp eq %union.tree_node* %8, null, !dbg !1441
+  br i1 %tobool11, label %if.end16, label %if.then12, !dbg !1441
 
 if.then12:                                        ; preds = %if.end
-  tail call void @expand_start_else() #5
-  %9 = load %union.tree_node** %7, align 8, !tbaa !0
-  tail call void @expand_stmt(%union.tree_node* %9) #7
-  br label %if.end16
+  tail call void @expand_start_else() #6, !dbg !1442
+  %9 = load %union.tree_node** %7, align 8, !dbg !1444, !tbaa !1245
+  tail call void @expand_stmt(%union.tree_node* %9) #8, !dbg !1444
+  br label %if.end16, !dbg !1445
 
 if.end16:                                         ; preds = %if.end, %if.then12
-  tail call void @expand_end_cond() #5
-  ret void
+  tail call void @expand_end_cond() #6, !dbg !1446
+  ret void, !dbg !1447
 }

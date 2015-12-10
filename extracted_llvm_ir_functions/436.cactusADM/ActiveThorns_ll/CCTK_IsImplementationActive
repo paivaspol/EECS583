@@ -1,24 +1,23 @@
 define i32 @CCTK_IsImplementationActive(i8* %name) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !144, metadata !358), !dbg !722
-  %1 = load %struct.T_SKTREE** @implist, align 8, !dbg !723, !tbaa !381
-  %2 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %1, i8* %name) #8, !dbg !724
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %2, i64 0, metadata !146, metadata !358), !dbg !725
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !145, metadata !358), !dbg !726
-  %3 = icmp eq %struct.T_SKTREE* %2, null, !dbg !727
-  br i1 %3, label %10, label %4, !dbg !729
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !144), !dbg !573
+  %0 = load %struct.T_SKTREE** @implist, align 8, !dbg !574, !tbaa !357
+  %call = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %0, i8* %name) #9, !dbg !574
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call}, i64 0, metadata !146), !dbg !574
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !145), !dbg !575
+  %tobool = icmp eq %struct.T_SKTREE* %call, null, !dbg !576
+  br i1 %tobool, label %if.end4, label %if.then, !dbg !576
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.T_SKTREE* %2, i64 0, i32 5, !dbg !730
-  %6 = bitcast i8** %5 to %struct.IMPLEMENTATION**, !dbg !730
-  %7 = load %struct.IMPLEMENTATION** %6, align 8, !dbg !730, !tbaa !555
-  tail call void @llvm.dbg.value(metadata %struct.IMPLEMENTATION* %7, i64 0, metadata !147, metadata !358), !dbg !732
-  %8 = getelementptr inbounds %struct.IMPLEMENTATION* %7, i64 0, i32 0, !dbg !733
-  %9 = load i32* %8, align 4, !dbg !733, !tbaa !469
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !145, metadata !358), !dbg !726
-  %not. = icmp ne i32 %9, 0, !dbg !735
-  %. = zext i1 %not. to i32, !dbg !735
-  ret i32 %., !dbg !735
+if.then:                                          ; preds = %entry
+  %data = getelementptr inbounds %struct.T_SKTREE* %call, i64 0, i32 5, !dbg !577
+  %1 = load i8** %data, align 8, !dbg !577, !tbaa !357
+  %active = bitcast i8* %1 to i32*, !dbg !579
+  %2 = load i32* %active, align 4, !dbg !579, !tbaa !387
+  tail call void @llvm.dbg.value(metadata !496, i64 0, metadata !145), !dbg !580
+  %not.tobool2 = icmp ne i32 %2, 0, !dbg !579
+  %. = zext i1 %not.tobool2 to i32, !dbg !579
+  ret i32 %., !dbg !579
 
-; <label>:10                                      ; preds = %0
-  ret i32 0, !dbg !736
+if.end4:                                          ; preds = %entry
+  ret i32 0, !dbg !582
 }

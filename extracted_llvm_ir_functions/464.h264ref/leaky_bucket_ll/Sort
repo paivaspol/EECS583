@@ -1,46 +1,47 @@
 define void @Sort(i64 %NumberLeakyBuckets, i64* nocapture %Rmin) #0 {
-  tail call void @llvm.dbg.value(metadata i64 %NumberLeakyBuckets, i64 0, metadata !107, metadata !620), !dbg !709
-  tail call void @llvm.dbg.value(metadata i64* %Rmin, i64 0, metadata !108, metadata !620), !dbg !710
-  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !109, metadata !620), !dbg !711
-  %1 = add i64 %NumberLeakyBuckets, -1, !dbg !712
-  %2 = icmp eq i64 %1, 0, !dbg !715
-  br i1 %2, label %._crit_edge, label %.lr.ph3, !dbg !716
+entry:
+  tail call void @llvm.dbg.value(metadata !{i64 %NumberLeakyBuckets}, i64 0, metadata !99), !dbg !653
+  tail call void @llvm.dbg.value(metadata !{i64* %Rmin}, i64 0, metadata !100), !dbg !653
+  tail call void @llvm.dbg.value(metadata !643, i64 0, metadata !101), !dbg !654
+  %sub = add i64 %NumberLeakyBuckets, -1, !dbg !654
+  %cmp29 = icmp eq i64 %sub, 0, !dbg !654
+  br i1 %cmp29, label %for.end12, label %for.body, !dbg !654
 
-.loopexit:                                        ; preds = %12, %.lr.ph3
-  %exitcond4 = icmp eq i64 %3, %1, !dbg !716
-  br i1 %exitcond4, label %._crit_edge, label %.lr.ph3, !dbg !716
+for.cond.loopexit:                                ; preds = %for.inc, %for.body
+  %exitcond31 = icmp eq i64 %add, %sub, !dbg !654
+  br i1 %exitcond31, label %for.end12, label %for.body, !dbg !654
 
-.lr.ph3:                                          ; preds = %0, %.loopexit
-  %i.02 = phi i64 [ %3, %.loopexit ], [ 0, %0 ]
-  %3 = add nuw i64 %i.02, 1, !dbg !717
-  tail call void @llvm.dbg.value(metadata i64 %3, i64 0, metadata !110, metadata !620), !dbg !720
-  %4 = icmp ult i64 %3, %NumberLeakyBuckets, !dbg !721
-  br i1 %4, label %.lr.ph, label %.loopexit, !dbg !723
+for.body:                                         ; preds = %entry, %for.cond.loopexit
+  %i.030 = phi i64 [ %add, %for.cond.loopexit ], [ 0, %entry ]
+  %add = add i64 %i.030, 1, !dbg !656
+  tail call void @llvm.dbg.value(metadata !{i64 %add}, i64 0, metadata !102), !dbg !656
+  %cmp227 = icmp ult i64 %add, %NumberLeakyBuckets, !dbg !656
+  br i1 %cmp227, label %for.body3.lr.ph, label %for.cond.loopexit, !dbg !656
 
-.lr.ph:                                           ; preds = %.lr.ph3
-  %5 = getelementptr inbounds i64* %Rmin, i64 %i.02, !dbg !724
-  br label %6, !dbg !723
+for.body3.lr.ph:                                  ; preds = %for.body
+  %arrayidx = getelementptr inbounds i64* %Rmin, i64 %i.030, !dbg !659
+  br label %for.body3, !dbg !656
 
-; <label>:6                                       ; preds = %12, %.lr.ph
-  %j.01 = phi i64 [ %3, %.lr.ph ], [ %13, %12 ]
-  %7 = load i64* %5, align 8, !dbg !724, !tbaa !651
-  %8 = getelementptr inbounds i64* %Rmin, i64 %j.01, !dbg !727
-  %9 = load i64* %8, align 8, !dbg !727, !tbaa !651
-  %10 = icmp ugt i64 %7, %9, !dbg !728
-  br i1 %10, label %11, label %12, !dbg !729
+for.body3:                                        ; preds = %for.inc, %for.body3.lr.ph
+  %j.028 = phi i64 [ %add, %for.body3.lr.ph ], [ %inc, %for.inc ]
+  %0 = load i64* %arrayidx, align 8, !dbg !659, !tbaa !626
+  %arrayidx4 = getelementptr inbounds i64* %Rmin, i64 %j.028, !dbg !659
+  %1 = load i64* %arrayidx4, align 8, !dbg !659, !tbaa !626
+  %cmp5 = icmp ugt i64 %0, %1, !dbg !659
+  br i1 %cmp5, label %if.then, label %for.inc, !dbg !659
 
-; <label>:11                                      ; preds = %6
-  tail call void @llvm.dbg.value(metadata i64 %7, i64 0, metadata !111, metadata !620), !dbg !730
-  store i64 %9, i64* %5, align 8, !dbg !731, !tbaa !651
-  store i64 %7, i64* %8, align 8, !dbg !733, !tbaa !651
-  br label %12, !dbg !734
+if.then:                                          ; preds = %for.body3
+  tail call void @llvm.dbg.value(metadata !{i64 %0}, i64 0, metadata !103), !dbg !661
+  store i64 %1, i64* %arrayidx, align 8, !dbg !663, !tbaa !626
+  store i64 %0, i64* %arrayidx4, align 8, !dbg !664, !tbaa !626
+  br label %for.inc, !dbg !665
 
-; <label>:12                                      ; preds = %6, %11
-  %13 = add nuw i64 %j.01, 1, !dbg !735
-  tail call void @llvm.dbg.value(metadata i64 %13, i64 0, metadata !110, metadata !620), !dbg !720
-  %exitcond = icmp eq i64 %13, %NumberLeakyBuckets, !dbg !723
-  br i1 %exitcond, label %.loopexit, label %6, !dbg !723
+for.inc:                                          ; preds = %for.body3, %if.then
+  %inc = add i64 %j.028, 1, !dbg !656
+  tail call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !102), !dbg !656
+  %exitcond = icmp eq i64 %inc, %NumberLeakyBuckets, !dbg !656
+  br i1 %exitcond, label %for.cond.loopexit, label %for.body3, !dbg !656
 
-._crit_edge:                                      ; preds = %.loopexit, %0
-  ret void, !dbg !736
+for.end12:                                        ; preds = %for.cond.loopexit, %entry
+  ret void, !dbg !666
 }

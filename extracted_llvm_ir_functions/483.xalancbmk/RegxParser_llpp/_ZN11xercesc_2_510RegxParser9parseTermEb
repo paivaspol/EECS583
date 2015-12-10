@@ -1,0 +1,77 @@
+define %"class.xercesc_2_5::Token"* @_ZN11xercesc_2_510RegxParser9parseTermEb(%"class.xercesc_2_5::RegxParser"* %this, i1 zeroext %matchingRParen) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RegxParser"* %this}, i64 0, metadata !2157), !dbg !3620
+  tail call void @llvm.dbg.value(metadata !{i1 %matchingRParen}, i64 0, metadata !2158), !dbg !3620
+  %fState = getelementptr inbounds %"class.xercesc_2_5::RegxParser"* %this, i64 0, i32 8, !dbg !3621
+  %0 = load i16* %fState, align 2, !dbg !3621, !tbaa !3280
+  tail call void @llvm.dbg.value(metadata !{i16 %0}, i64 0, metadata !2159), !dbg !3621
+  switch i16 %0, label %if.else [
+    i16 2, label %if.then
+    i16 1, label %if.then
+    i16 7, label %land.lhs.true
+  ], !dbg !3622
+
+land.lhs.true:                                    ; preds = %entry
+  br i1 %matchingRParen, label %if.then, label %if.else, !dbg !3622
+
+if.then:                                          ; preds = %entry, %entry, %land.lhs.true
+  %fTokenFactory = getelementptr inbounds %"class.xercesc_2_5::RegxParser"* %this, i64 0, i32 12, !dbg !3623
+  %1 = load %"class.xercesc_2_5::TokenFactory"** %fTokenFactory, align 8, !dbg !3623, !tbaa !3278
+  %call = tail call %"class.xercesc_2_5::Token"* @_ZN11xercesc_2_512TokenFactory11createTokenEt(%"class.xercesc_2_5::TokenFactory"* %1, i16 zeroext 7) #9, !dbg !3623
+  br label %return, !dbg !3623
+
+if.else:                                          ; preds = %entry, %land.lhs.true
+  %call7 = tail call %"class.xercesc_2_5::Token"* @_ZN11xercesc_2_510RegxParser11parseFactorEv(%"class.xercesc_2_5::RegxParser"* %this) #9, !dbg !3625
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::Token"* %call7}, i64 0, metadata !2160), !dbg !3625
+  tail call void @llvm.dbg.value(metadata !3587, i64 0, metadata !2162), !dbg !3626
+  %fTokenFactory19 = getelementptr inbounds %"class.xercesc_2_5::RegxParser"* %this, i64 0, i32 12, !dbg !3627
+  br label %while.cond, !dbg !3630
+
+while.cond:                                       ; preds = %if.end, %if.else
+  %tok.0 = phi %"class.xercesc_2_5::Token"* [ %call7, %if.else ], [ %tok.1, %if.end ]
+  %concatTok.0 = phi %"class.xercesc_2_5::Token"* [ null, %if.else ], [ %concatTok.1, %if.end ]
+  %2 = load i16* %fState, align 2, !dbg !3630, !tbaa !3280
+  tail call void @llvm.dbg.value(metadata !{i16 %2}, i64 0, metadata !2159), !dbg !3630
+  switch i16 %2, label %while.body [
+    i16 2, label %return
+    i16 1, label %return
+    i16 7, label %lor.rhs
+  ], !dbg !3630
+
+lor.rhs:                                          ; preds = %while.cond
+  br i1 %matchingRParen, label %return, label %while.body
+
+while.body:                                       ; preds = %while.cond, %lor.rhs
+  %cmp17 = icmp eq %"class.xercesc_2_5::Token"* %concatTok.0, null, !dbg !3631
+  br i1 %cmp17, label %if.then18, label %if.end, !dbg !3631
+
+if.then18:                                        ; preds = %while.body
+  %3 = load %"class.xercesc_2_5::TokenFactory"** %fTokenFactory19, align 8, !dbg !3627, !tbaa !3278
+  %call20 = tail call %"class.xercesc_2_5::UnionToken"* @_ZN11xercesc_2_512TokenFactory11createUnionEb(%"class.xercesc_2_5::TokenFactory"* %3, i1 zeroext true) #9, !dbg !3627
+  %4 = getelementptr inbounds %"class.xercesc_2_5::UnionToken"* %call20, i64 0, i32 0, !dbg !3627
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::Token"* %4}, i64 0, metadata !2162), !dbg !3627
+  %5 = bitcast %"class.xercesc_2_5::UnionToken"* %call20 to void (%"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::TokenFactory"*)***, !dbg !3632
+  %vtable = load void (%"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::TokenFactory"*)*** %5, align 8, !dbg !3632, !tbaa !3277
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::TokenFactory"*)** %vtable, i64 18, !dbg !3632
+  %6 = load void (%"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::TokenFactory"*)** %vfn, align 8, !dbg !3632
+  %7 = load %"class.xercesc_2_5::TokenFactory"** %fTokenFactory19, align 8, !dbg !3632, !tbaa !3278
+  tail call void %6(%"class.xercesc_2_5::Token"* %4, %"class.xercesc_2_5::Token"* %tok.0, %"class.xercesc_2_5::TokenFactory"* %7) #9, !dbg !3632
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::Token"* %4}, i64 0, metadata !2160), !dbg !3633
+  br label %if.end, !dbg !3634
+
+if.end:                                           ; preds = %if.then18, %while.body
+  %tok.1 = phi %"class.xercesc_2_5::Token"* [ %4, %if.then18 ], [ %tok.0, %while.body ]
+  %concatTok.1 = phi %"class.xercesc_2_5::Token"* [ %4, %if.then18 ], [ %concatTok.0, %while.body ]
+  %8 = bitcast %"class.xercesc_2_5::Token"* %concatTok.1 to void (%"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::TokenFactory"*)***, !dbg !3635
+  %vtable22 = load void (%"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::TokenFactory"*)*** %8, align 8, !dbg !3635, !tbaa !3277
+  %vfn23 = getelementptr inbounds void (%"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::TokenFactory"*)** %vtable22, i64 18, !dbg !3635
+  %9 = load void (%"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::Token"*, %"class.xercesc_2_5::TokenFactory"*)** %vfn23, align 8, !dbg !3635
+  %call24 = tail call %"class.xercesc_2_5::Token"* @_ZN11xercesc_2_510RegxParser11parseFactorEv(%"class.xercesc_2_5::RegxParser"* %this) #9, !dbg !3635
+  %10 = load %"class.xercesc_2_5::TokenFactory"** %fTokenFactory19, align 8, !dbg !3635, !tbaa !3278
+  tail call void %9(%"class.xercesc_2_5::Token"* %concatTok.1, %"class.xercesc_2_5::Token"* %call24, %"class.xercesc_2_5::TokenFactory"* %10) #9, !dbg !3635
+  br label %while.cond, !dbg !3636
+
+return:                                           ; preds = %lor.rhs, %while.cond, %while.cond, %if.then
+  %retval.0 = phi %"class.xercesc_2_5::Token"* [ %call, %if.then ], [ %tok.0, %while.cond ], [ %tok.0, %while.cond ], [ %tok.0, %lor.rhs ]
+  ret %"class.xercesc_2_5::Token"* %retval.0, !dbg !3637
+}

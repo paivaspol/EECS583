@@ -1,72 +1,75 @@
-define i32 @GSIWriteKeyRecord(%struct.__sFILE* %fp, i8* %key, i32 %fileidx, i64 %offset) #0 {
+define i32 @GSIWriteKeyRecord(%struct._IO_FILE* nocapture %fp, i8* nocapture %key, i32 %fileidx, i64 %offset) #0 {
+entry:
   %f1 = alloca i16, align 2
   %f2 = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !206, metadata !226), !dbg !656
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !207, metadata !226), !dbg !657
-  tail call void @llvm.dbg.value(metadata i32 %fileidx, i64 0, metadata !208, metadata !226), !dbg !658
-  tail call void @llvm.dbg.value(metadata i64 %offset, i64 0, metadata !209, metadata !226), !dbg !659
-  %1 = tail call i64 @strlen(i8* %key) #7, !dbg !660
-  %2 = icmp ugt i64 %1, 31, !dbg !662
-  br i1 %2, label %27, label %3, !dbg !663
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !197), !dbg !370
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !198), !dbg !370
+  call void @llvm.dbg.value(metadata !{i32 %fileidx}, i64 0, metadata !199), !dbg !370
+  call void @llvm.dbg.value(metadata !{i64 %offset}, i64 0, metadata !200), !dbg !370
+  call void @llvm.dbg.declare(metadata !{i16* %f1}, metadata !201), !dbg !371
+  call void @llvm.dbg.declare(metadata !{i32* %f2}, metadata !202), !dbg !372
+  %call = call i64 @strlen(i8* %key) #8, !dbg !373
+  %cmp = icmp ugt i64 %call, 31, !dbg !373
+  br i1 %cmp, label %return, label %if.end, !dbg !373
 
-; <label>:3                                       ; preds = %0
-  %4 = icmp sgt i32 %fileidx, 65535, !dbg !664
-  br i1 %4, label %5, label %6, !dbg !666
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp sgt i32 %fileidx, 65535, !dbg !374
+  br i1 %cmp1, label %if.then2, label %if.end3, !dbg !374
 
-; <label>:5                                       ; preds = %3
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([29 x i8]* @.str11, i64 0, i64 0)) #7, !dbg !667
-  br label %6, !dbg !667
+if.then2:                                         ; preds = %if.end
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([29 x i8]* @.str11, i64 0, i64 0)) #7, !dbg !374
+  br label %if.end3, !dbg !374
 
-; <label>:6                                       ; preds = %5, %3
-  %7 = icmp sgt i64 %offset, 4294967295, !dbg !668
-  br i1 %7, label %8, label %9, !dbg !670
+if.end3:                                          ; preds = %if.then2, %if.end
+  %cmp4 = icmp sgt i64 %offset, 4294967295, !dbg !375
+  br i1 %cmp4, label %if.then5, label %if.end6, !dbg !375
 
-; <label>:8                                       ; preds = %6
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([25 x i8]* @.str13, i64 0, i64 0)) #7, !dbg !671
-  br label %9, !dbg !671
+if.then5:                                         ; preds = %if.end3
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([25 x i8]* @.str13, i64 0, i64 0)) #7, !dbg !375
+  br label %if.end6, !dbg !375
 
-; <label>:9                                       ; preds = %8, %6
-  %10 = trunc i32 %fileidx to i16, !dbg !672
-  tail call void @llvm.dbg.value(metadata i16 %10, i64 0, metadata !210, metadata !226), !dbg !673
-  %11 = trunc i64 %offset to i32, !dbg !674
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !211, metadata !226), !dbg !675
-  tail call void @llvm.dbg.value(metadata i16* %f1, i64 0, metadata !210, metadata !226), !dbg !673
-  %12 = tail call zeroext i16 @sre_hton16(i16 zeroext %10) #7, !dbg !676
-  tail call void @llvm.dbg.value(metadata i16 %12, i64 0, metadata !210, metadata !226), !dbg !673
-  store i16 %12, i16* %f1, align 2, !dbg !677, !tbaa !338
-  tail call void @llvm.dbg.value(metadata i32* %f2, i64 0, metadata !211, metadata !226), !dbg !675
-  %13 = tail call i32 @sre_hton32(i32 %11) #7, !dbg !678
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !211, metadata !226), !dbg !675
-  store i32 %13, i32* %f2, align 4, !dbg !679, !tbaa !248
-  %14 = tail call i64 @"\01_fwrite"(i8* %key, i64 1, i64 32, %struct.__sFILE* %fp) #7, !dbg !680
-  %15 = icmp ult i64 %14, 32, !dbg !682
-  br i1 %15, label %16, label %17, !dbg !683
+if.end6:                                          ; preds = %if.then5, %if.end3
+  %conv = trunc i32 %fileidx to i16, !dbg !376
+  call void @llvm.dbg.value(metadata !{i16 %conv}, i64 0, metadata !201), !dbg !376
+  %conv7 = trunc i64 %offset to i32, !dbg !377
+  call void @llvm.dbg.value(metadata !{i32 %conv7}, i64 0, metadata !202), !dbg !377
+  call void @llvm.dbg.value(metadata !{i16* %f1}, i64 0, metadata !201), !dbg !378
+  %call8 = call zeroext i16 @sre_hton16(i16 zeroext %conv) #7, !dbg !378
+  call void @llvm.dbg.value(metadata !{i16 %call8}, i64 0, metadata !201), !dbg !378
+  store i16 %call8, i16* %f1, align 2, !dbg !378, !tbaa !236
+  call void @llvm.dbg.value(metadata !{i32* %f2}, i64 0, metadata !202), !dbg !379
+  %call9 = call i32 @sre_hton32(i32 %conv7) #7, !dbg !379
+  call void @llvm.dbg.value(metadata !{i32 %call9}, i64 0, metadata !202), !dbg !379
+  store i32 %call9, i32* %f2, align 4, !dbg !379, !tbaa !222
+  %call10 = call i64 @fwrite(i8* %key, i64 1, i64 32, %struct._IO_FILE* %fp) #7, !dbg !380
+  %cmp11 = icmp ult i64 %call10, 32, !dbg !380
+  br i1 %cmp11, label %if.then13, label %if.end14, !dbg !380
 
-; <label>:16                                      ; preds = %9
-  tail call void @Panic(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 382) #7, !dbg !684
-  br label %17, !dbg !684
+if.then13:                                        ; preds = %if.end6
+  call void @Panic(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 382) #7, !dbg !380
+  br label %if.end14, !dbg !380
 
-; <label>:17                                      ; preds = %16, %9
-  %18 = bitcast i16* %f1 to i8*, !dbg !685
-  %19 = call i64 @"\01_fwrite"(i8* %18, i64 2, i64 1, %struct.__sFILE* %fp) #7, !dbg !687
-  %20 = icmp eq i64 %19, 0, !dbg !688
-  br i1 %20, label %21, label %22, !dbg !689
+if.end14:                                         ; preds = %if.then13, %if.end6
+  %0 = bitcast i16* %f1 to i8*, !dbg !381
+  %call15 = call i64 @fwrite(i8* %0, i64 2, i64 1, %struct._IO_FILE* %fp) #7, !dbg !381
+  %cmp16 = icmp eq i64 %call15, 0, !dbg !381
+  br i1 %cmp16, label %if.then18, label %if.end19, !dbg !381
 
-; <label>:21                                      ; preds = %17
-  call void @Panic(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 383) #7, !dbg !690
-  br label %22, !dbg !690
+if.then18:                                        ; preds = %if.end14
+  call void @Panic(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 383) #7, !dbg !381
+  br label %if.end19, !dbg !381
 
-; <label>:22                                      ; preds = %21, %17
-  %23 = bitcast i32* %f2 to i8*, !dbg !691
-  %24 = call i64 @"\01_fwrite"(i8* %23, i64 4, i64 1, %struct.__sFILE* %fp) #7, !dbg !693
-  %25 = icmp eq i64 %24, 0, !dbg !694
-  br i1 %25, label %26, label %27, !dbg !695
+if.end19:                                         ; preds = %if.then18, %if.end14
+  %1 = bitcast i32* %f2 to i8*, !dbg !382
+  %call20 = call i64 @fwrite(i8* %1, i64 4, i64 1, %struct._IO_FILE* %fp) #7, !dbg !382
+  %cmp21 = icmp eq i64 %call20, 0, !dbg !382
+  br i1 %cmp21, label %if.then23, label %return, !dbg !382
 
-; <label>:26                                      ; preds = %22
-  call void @Panic(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 384) #7, !dbg !696
-  br label %27, !dbg !696
+if.then23:                                        ; preds = %if.end19
+  call void @Panic(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 384) #7, !dbg !382
+  br label %return, !dbg !382
 
-; <label>:27                                      ; preds = %22, %26, %0
-  %.0 = phi i32 [ 0, %0 ], [ 1, %26 ], [ 1, %22 ]
-  ret i32 %.0, !dbg !697
+return:                                           ; preds = %if.end19, %if.then23, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %if.then23 ], [ 1, %if.end19 ]
+  ret i32 %retval.0, !dbg !383
 }

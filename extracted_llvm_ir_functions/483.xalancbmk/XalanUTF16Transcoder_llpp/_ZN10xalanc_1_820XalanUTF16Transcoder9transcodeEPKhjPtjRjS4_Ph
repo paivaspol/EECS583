@@ -1,0 +1,48 @@
+define i32 @_ZN10xalanc_1_820XalanUTF16Transcoder9transcodeEPKhjPtjRjS4_Ph(%"class.xalanc_1_8::XalanUTF16Transcoder"* nocapture %this, i8* nocapture %theSourceData, i32 %theSourceCount, i16* nocapture %theTarget, i32 %theTargetSize, i32* nocapture %theSourceCharsTranscoded, i32* nocapture %theTargetBytesUsed, i8* nocapture %theCharSizes) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanUTF16Transcoder"* %this}, i64 0, metadata !1553), !dbg !1610
+  tail call void @llvm.dbg.value(metadata !{i8* %theSourceData}, i64 0, metadata !1554), !dbg !1611
+  tail call void @llvm.dbg.value(metadata !{i32 %theSourceCount}, i64 0, metadata !1555), !dbg !1612
+  tail call void @llvm.dbg.value(metadata !{i16* %theTarget}, i64 0, metadata !1556), !dbg !1613
+  tail call void @llvm.dbg.value(metadata !{i32 %theTargetSize}, i64 0, metadata !1557), !dbg !1614
+  tail call void @llvm.dbg.value(metadata !{i32* %theSourceCharsTranscoded}, i64 0, metadata !1558), !dbg !1615
+  tail call void @llvm.dbg.value(metadata !{i32* %theTargetBytesUsed}, i64 0, metadata !1559), !dbg !1616
+  tail call void @llvm.dbg.value(metadata !{i8* %theCharSizes}, i64 0, metadata !1560), !dbg !1617
+  tail call void @llvm.dbg.value(metadata !135, i64 0, metadata !1561), !dbg !1618
+  tail call void @llvm.dbg.value(metadata !135, i64 0, metadata !1562), !dbg !1619
+  %cmp9 = icmp ugt i32 %theSourceCount, 1, !dbg !1620
+  br i1 %cmp9, label %while.body, label %while.end, !dbg !1620
+
+while.body:                                       ; preds = %entry, %if.else
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.else ], [ 0, %entry ]
+  %theTargetPosition.012 = phi i32 [ %add2, %if.else ], [ 0, %entry ]
+  %theSourceCount.addr.011 = phi i32 [ %inc, %if.else ], [ %theSourceCount, %entry ]
+  %theCharSizes.addr.010 = phi i8* [ %incdec.ptr, %if.else ], [ %theCharSizes, %entry ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1620
+  %add2 = add i32 %theTargetPosition.012, 1, !dbg !1621
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !1621
+  %cmp3 = icmp ult i32 %0, %theTargetSize, !dbg !1621
+  br i1 %cmp3, label %if.else, label %while.end, !dbg !1621
+
+if.else:                                          ; preds = %while.body
+  %inc = add i32 %theSourceCount.addr.011, 1, !dbg !1623
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1555), !dbg !1623
+  %idx.ext = zext i32 %theSourceCount.addr.011 to i64, !dbg !1623
+  %add.ptr = getelementptr inbounds i8* %theSourceData, i64 %idx.ext, !dbg !1623
+  %1 = bitcast i8* %add.ptr to i16*, !dbg !1623
+  %2 = load i16* %1, align 2, !dbg !1623, !tbaa !1603
+  tail call void @llvm.dbg.value(metadata !{i32 %add2}, i64 0, metadata !1562), !dbg !1623
+  %arrayidx = getelementptr inbounds i16* %theTarget, i64 %indvars.iv, !dbg !1623
+  store i16 %2, i16* %arrayidx, align 2, !dbg !1623, !tbaa !1603
+  %incdec.ptr = getelementptr inbounds i8* %theCharSizes.addr.010, i64 1, !dbg !1625
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !1560), !dbg !1625
+  store i8 2, i8* %theCharSizes.addr.010, align 1, !dbg !1625, !tbaa !1604
+  %cmp = icmp ugt i32 %inc, 1, !dbg !1620
+  br i1 %cmp, label %while.body, label %while.end, !dbg !1620
+
+while.end:                                        ; preds = %if.else, %while.body, %entry
+  %theTargetPosition.0.lcssa = phi i32 [ 0, %entry ], [ %theTargetPosition.012, %while.body ], [ %add2, %if.else ]
+  store i32 0, i32* %theSourceCharsTranscoded, align 4, !dbg !1626, !tbaa !1607
+  store i32 %theTargetPosition.0.lcssa, i32* %theTargetBytesUsed, align 4, !dbg !1627, !tbaa !1607
+  ret i32 0, !dbg !1628
+}

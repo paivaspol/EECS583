@@ -1,39 +1,42 @@
 define %union.tree_node* @size_in_bytes(%union.tree_node* %type) #0 {
 entry:
-  %0 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 16, !tbaa !0
-  %cmp = icmp eq %union.tree_node* %0, %type
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1141), !dbg !2359
+  %0 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 16, !dbg !2360, !tbaa !1913
+  %cmp = icmp eq %union.tree_node* %0, %type, !dbg !2360
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2360
 
 if.then:                                          ; preds = %entry
-  %1 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 11), align 8, !tbaa !0
-  br label %return
+  %1 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 11), align 8, !dbg !2361, !tbaa !1913
+  br label %return, !dbg !2361
 
 if.end:                                           ; preds = %entry
-  %2 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 15
-  %3 = load %union.tree_node** %2, align 8, !tbaa !0
-  %4 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 4
-  %5 = load %union.tree_node** %4, align 8, !tbaa !0
-  %cmp3 = icmp eq %union.tree_node* %5, null
-  br i1 %cmp3, label %if.then4, label %if.end5
+  %2 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 15, !dbg !2362
+  %3 = load %union.tree_node** %2, align 8, !dbg !2362, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %3}, i64 0, metadata !1141), !dbg !2362
+  %4 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 4, !dbg !2363
+  %5 = load %union.tree_node** %4, align 8, !dbg !2363, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %5}, i64 0, metadata !1142), !dbg !2363
+  %cmp3 = icmp eq %union.tree_node* %5, null, !dbg !2364
+  br i1 %cmp3, label %if.then4, label %if.end5, !dbg !2364
 
 if.then4:                                         ; preds = %if.end
-  tail call void @incomplete_type_error(%union.tree_node* null, %union.tree_node* %3) #9
-  %6 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 15), align 8, !tbaa !0
-  br label %return
+  tail call void @incomplete_type_error(%union.tree_node* null, %union.tree_node* %3) #10, !dbg !2365
+  %6 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 15), align 8, !dbg !2367, !tbaa !1913
+  br label %return, !dbg !2367
 
 if.end5:                                          ; preds = %if.end
-  %code = getelementptr inbounds %union.tree_node* %5, i64 0, i32 0, i32 0, i32 2
-  %7 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %7, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp6 = icmp eq i32 %bf.clear, 25
-  br i1 %cmp6, label %if.then7, label %return
+  %code = getelementptr inbounds %union.tree_node* %5, i64 0, i32 0, i32 0, i32 2, !dbg !2368
+  %7 = bitcast [4 x i8]* %code to i32*, !dbg !2368
+  %bf.load = load i32* %7, align 8, !dbg !2368
+  %bf.clear = and i32 %bf.load, 255, !dbg !2368
+  %cmp6 = icmp eq i32 %bf.clear, 25, !dbg !2368
+  br i1 %cmp6, label %if.then7, label %return, !dbg !2368
 
 if.then7:                                         ; preds = %if.end5
-  %call = tail call i32 @force_fit_type(%union.tree_node* %5, i32 0) #9
-  br label %return
+  %call = tail call i32 @force_fit_type(%union.tree_node* %5, i32 0) #10, !dbg !2369
+  br label %return, !dbg !2369
 
 return:                                           ; preds = %if.end5, %if.then7, %if.then4, %if.then
   %retval.0 = phi %union.tree_node* [ %1, %if.then ], [ %6, %if.then4 ], [ %5, %if.then7 ], [ %5, %if.end5 ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !2370
 }

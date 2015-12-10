@@ -1,30 +1,31 @@
-define void @done_fftgrid(%struct.t_fftgrid* nocapture %grid) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.t_fftgrid* %grid, i64 0, metadata !235, metadata !432), !dbg !654
-  %1 = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 0, !dbg !655
-  %2 = load float** %1, align 8, !dbg !655, !tbaa !652
-  %3 = icmp eq float* %2, null, !dbg !657
-  br i1 %3, label %6, label %4, !dbg !658
+define void @done_fftgrid(%struct.t_fftgrid* nocapture %grid) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_fftgrid* %grid}, i64 0, metadata !100), !dbg !316
+  %ptr = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 0, !dbg !317
+  %0 = load float** %ptr, align 8, !dbg !317, !tbaa !314
+  %tobool = icmp eq float* %0, null, !dbg !317
+  br i1 %tobool, label %if.end, label %if.then, !dbg !317
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast float* %2 to i8*, !dbg !659
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 152, i8* %5) #7, !dbg !659
-  store float* null, float** %1, align 8, !dbg !661, !tbaa !652
-  br label %6, !dbg !662
+if.then:                                          ; preds = %entry
+  %1 = bitcast float* %0 to i8*, !dbg !318
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 152, i8* %1) #5, !dbg !318
+  store float* null, float** %ptr, align 8, !dbg !320, !tbaa !314
+  br label %if.end, !dbg !321
 
-; <label>:6                                       ; preds = %0, %4
-  %7 = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 1, !dbg !663
-  store float* null, float** %7, align 8, !dbg !664, !tbaa !665
-  %8 = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 2, !dbg !666
-  %9 = load float** %8, align 8, !dbg !666, !tbaa !668
-  %10 = icmp eq float* %9, null, !dbg !669
-  br i1 %10, label %13, label %11, !dbg !670
+if.end:                                           ; preds = %entry, %if.then
+  %localptr = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 1, !dbg !322
+  store float* null, float** %localptr, align 8, !dbg !322, !tbaa !314
+  %workspace = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 2, !dbg !323
+  %2 = load float** %workspace, align 8, !dbg !323, !tbaa !314
+  %tobool3 = icmp eq float* %2, null, !dbg !323
+  br i1 %tobool3, label %if.end7, label %if.then4, !dbg !323
 
-; <label>:11                                      ; preds = %6
-  %12 = bitcast float* %9 to i8*, !dbg !671
-  tail call void @save_free(i8* getelementptr inbounds ([16 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 158, i8* %12) #7, !dbg !671
-  store float* null, float** %8, align 8, !dbg !673, !tbaa !668
-  br label %13, !dbg !674
+if.then4:                                         ; preds = %if.end
+  %3 = bitcast float* %2 to i8*, !dbg !324
+  tail call void @save_free(i8* getelementptr inbounds ([16 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 158, i8* %3) #5, !dbg !324
+  store float* null, float** %workspace, align 8, !dbg !326, !tbaa !314
+  br label %if.end7, !dbg !327
 
-; <label>:13                                      ; preds = %6, %11
-  ret void, !dbg !675
+if.end7:                                          ; preds = %if.end, %if.then4
+  ret void, !dbg !328
 }

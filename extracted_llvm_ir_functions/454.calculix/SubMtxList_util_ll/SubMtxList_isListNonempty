@@ -1,29 +1,30 @@
 define i32 @SubMtxList_isListNonempty(%struct._SubMtxList* %list, i32 %ilist) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._SubMtxList* %list, i64 0, metadata !59, metadata !83), !dbg !84
-  tail call void @llvm.dbg.value(metadata i32 %ilist, i64 0, metadata !60, metadata !83), !dbg !85
-  %1 = icmp eq %struct._SubMtxList* %list, null, !dbg !86
-  %2 = icmp slt i32 %ilist, 0, !dbg !88
-  %or.cond = or i1 %1, %2, !dbg !89
-  br i1 %or.cond, label %7, label %3, !dbg !89
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtxList* %list}, i64 0, metadata !61), !dbg !81
+  tail call void @llvm.dbg.value(metadata !{i32 %ilist}, i64 0, metadata !62), !dbg !82
+  %cmp = icmp eq %struct._SubMtxList* %list, null, !dbg !83
+  %cmp1 = icmp slt i32 %ilist, 0, !dbg !83
+  %or.cond = or i1 %cmp, %cmp1, !dbg !83
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !83
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 0, !dbg !90
-  %5 = load i32* %4, align 4, !dbg !90, !tbaa !91
-  %6 = icmp sgt i32 %5, %ilist, !dbg !97
-  br i1 %6, label %10, label %7, !dbg !98
+lor.lhs.false2:                                   ; preds = %entry
+  %nlist = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 0, !dbg !83
+  %0 = load i32* %nlist, align 4, !dbg !83, !tbaa !84
+  %cmp3 = icmp sgt i32 %0, %ilist, !dbg !83
+  br i1 %cmp3, label %if.end, label %if.then, !dbg !83
 
-; <label>:7                                       ; preds = %3, %0
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !99, !tbaa !101
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), %struct._SubMtxList* %list, i32 %ilist) #5, !dbg !102
-  br label %10, !dbg !103
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !87, !tbaa !89
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), %struct._SubMtxList* %list, i32 %ilist) #5, !dbg !87
+  br label %if.end, !dbg !90
 
-; <label>:10                                      ; preds = %3, %7
-  %11 = sext i32 %ilist to i64, !dbg !104
-  %12 = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 1, !dbg !105
-  %13 = load %struct._SubMtx*** %12, align 8, !dbg !105, !tbaa !106
-  %14 = getelementptr inbounds %struct._SubMtx** %13, i64 %11, !dbg !104
-  %15 = load %struct._SubMtx** %14, align 8, !dbg !104, !tbaa !101
-  %16 = icmp ne %struct._SubMtx* %15, null, !dbg !107
-  %17 = zext i1 %16 to i32, !dbg !107
-  ret i32 %17, !dbg !108
+if.end:                                           ; preds = %lor.lhs.false2, %if.then
+  %idxprom = sext i32 %ilist to i64, !dbg !91
+  %heads = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 1, !dbg !91
+  %2 = load %struct._SubMtx*** %heads, align 8, !dbg !91, !tbaa !89
+  %arrayidx = getelementptr inbounds %struct._SubMtx** %2, i64 %idxprom, !dbg !91
+  %3 = load %struct._SubMtx** %arrayidx, align 8, !dbg !91, !tbaa !89
+  %cmp4 = icmp ne %struct._SubMtx* %3, null, !dbg !91
+  %conv = zext i1 %cmp4 to i32, !dbg !91
+  ret i32 %conv, !dbg !91
 }

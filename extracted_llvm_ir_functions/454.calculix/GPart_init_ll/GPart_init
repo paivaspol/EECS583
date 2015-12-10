@@ -1,38 +1,40 @@
 define void @GPart_init(%struct._GPart* %gpart, %struct._Graph* %g) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._GPart* %gpart, i64 0, metadata !136, metadata !149), !dbg !150
-  tail call void @llvm.dbg.value(metadata %struct._Graph* %g, i64 0, metadata !137, metadata !149), !dbg !151
-  %1 = icmp eq %struct._GPart* %gpart, null, !dbg !152
-  %2 = icmp eq %struct._Graph* %g, null, !dbg !154
-  %or.cond = or i1 %1, %2, !dbg !155
-  br i1 %or.cond, label %7, label %3, !dbg !155
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._GPart* %gpart}, i64 0, metadata !132), !dbg !141
+  tail call void @llvm.dbg.value(metadata !{%struct._Graph* %g}, i64 0, metadata !133), !dbg !142
+  %cmp = icmp eq %struct._GPart* %gpart, null, !dbg !143
+  %cmp1 = icmp eq %struct._Graph* %g, null, !dbg !143
+  %or.cond = or i1 %cmp, %cmp1, !dbg !143
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !143
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1, !dbg !156
-  %5 = load i32* %4, align 4, !dbg !156, !tbaa !157
-  %6 = icmp slt i32 %5, 1, !dbg !163
-  br i1 %6, label %7, label %10, !dbg !164
+lor.lhs.false2:                                   ; preds = %entry
+  %nvtx = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1, !dbg !143
+  %0 = load i32* %nvtx, align 4, !dbg !143, !tbaa !144
+  %cmp3 = icmp slt i32 %0, 1, !dbg !143
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !143
 
-; <label>:7                                       ; preds = %3, %0
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !165, !tbaa !167
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([47 x i8]* @.str, i64 0, i64 0), %struct._GPart* %gpart, %struct._Graph* %g) #5, !dbg !168
-  tail call void @exit(i32 -1) #6, !dbg !169
-  unreachable, !dbg !169
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !147, !tbaa !149
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([47 x i8]* @.str, i64 0, i64 0), %struct._GPart* %gpart, %struct._Graph* %g) #5, !dbg !147
+  tail call void @exit(i32 -1) #6, !dbg !150
+  unreachable, !dbg !150
 
-; <label>:10                                      ; preds = %3
-  tail call void @GPart_clearData(%struct._GPart* %gpart) #5, !dbg !170
-  %11 = load i32* %4, align 4, !dbg !171, !tbaa !157
-  %12 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 2, !dbg !172
-  store i32 %11, i32* %12, align 4, !dbg !173, !tbaa !174
-  %13 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 2, !dbg !177
-  %14 = load i32* %13, align 4, !dbg !177, !tbaa !178
-  %15 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 3, !dbg !179
-  store i32 %14, i32* %15, align 4, !dbg !180, !tbaa !181
-  %16 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 1, !dbg !182
-  store %struct._Graph* %g, %struct._Graph** %16, align 8, !dbg !183, !tbaa !184
-  %17 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 4, !dbg !185
-  store i32 1, i32* %17, align 4, !dbg !186, !tbaa !187
-  %18 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 5, !dbg !188
-  tail call void @IV_setSize(%struct._IV* %18, i32 %11) #5, !dbg !189
-  tail call void @IV_fill(%struct._IV* %18, i32 1) #5, !dbg !190
-  ret void, !dbg !191
+if.end:                                           ; preds = %lor.lhs.false2
+  tail call void @GPart_clearData(%struct._GPart* %gpart) #5, !dbg !151
+  %2 = load i32* %nvtx, align 4, !dbg !152, !tbaa !144
+  %nvtx5 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 2, !dbg !152
+  store i32 %2, i32* %nvtx5, align 4, !dbg !152, !tbaa !144
+  %nvbnd = getelementptr inbounds %struct._Graph* %g, i64 0, i32 2, !dbg !153
+  %3 = load i32* %nvbnd, align 4, !dbg !153, !tbaa !144
+  %nvbnd6 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 3, !dbg !153
+  store i32 %3, i32* %nvbnd6, align 4, !dbg !153, !tbaa !144
+  %g7 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 1, !dbg !154
+  store %struct._Graph* %g, %struct._Graph** %g7, align 8, !dbg !154, !tbaa !149
+  %ncomp = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 4, !dbg !155
+  store i32 1, i32* %ncomp, align 4, !dbg !155, !tbaa !144
+  %compidsIV = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 5, !dbg !156
+  %4 = load i32* %nvtx, align 4, !dbg !156, !tbaa !144
+  tail call void @IV_setSize(%struct._IV* %compidsIV, i32 %4) #5, !dbg !156
+  tail call void @IV_fill(%struct._IV* %compidsIV, i32 1) #5, !dbg !157
+  ret void, !dbg !158
 }

@@ -1,101 +1,109 @@
 define void @find_unreachable_blocks() #0 {
 entry:
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %conv = sext i32 %0 to i64
-  %mul = shl nsw i64 %conv, 3
-  %call = tail call noalias i8* @xmalloc(i64 %mul) #6
-  %1 = bitcast i8* %call to %struct.basic_block_def**
-  %cmp52 = icmp sgt i32 %0, 0
-  br i1 %cmp52, label %for.body.lr.ph, label %for.cond2.preheader
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !864, !tbaa !755
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !477), !dbg !864
+  %conv = sext i32 %0 to i64, !dbg !865
+  %mul = shl nsw i64 %conv, 3, !dbg !865
+  %call = tail call noalias i8* @xmalloc(i64 %mul) #7, !dbg !865
+  %1 = bitcast i8* %call to %struct.basic_block_def**, !dbg !865
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def** %1}, i64 0, metadata !479), !dbg !865
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def** %1}, i64 0, metadata !478), !dbg !865
+  tail call void @llvm.dbg.value(metadata !255, i64 0, metadata !476), !dbg !866
+  %cmp52 = icmp sgt i32 %0, 0, !dbg !866
+  br i1 %cmp52, label %for.body.lr.ph, label %for.cond2.preheader, !dbg !866
 
 for.body.lr.ph:                                   ; preds = %entry
-  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
-  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4
-  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  br label %for.body
+  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !868, !tbaa !741
+  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4, !dbg !868
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !868
+  br label %for.body, !dbg !866
 
 for.cond2.preheader:                              ; preds = %for.body, %entry
-  %e.047 = load %struct.edge_def** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0, i32 5), align 8
-  %tobool48 = icmp eq %struct.edge_def* %e.047, null
-  br i1 %tobool48, label %while.end, label %for.body3
+  %e.047 = load %struct.edge_def** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0, i32 5), align 8, !dbg !869
+  %tobool48 = icmp eq %struct.edge_def* %e.047, null, !dbg !869
+  br i1 %tobool48, label %while.end, label %for.body3, !dbg !869
 
 for.body:                                         ; preds = %for.body, %for.body.lr.ph
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv
-  %3 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
-  %flags = getelementptr inbounds %struct.basic_block_def* %3, i64 0, i32 15
-  %4 = load i32* %flags, align 4, !tbaa !3
-  %and = and i32 %4, -2
-  store i32 %and, i32* %flags, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %0
-  br i1 %exitcond, label %for.cond2.preheader, label %for.body
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv, !dbg !868
+  %3 = load %struct.basic_block_def** %arrayidx, align 8, !dbg !868, !tbaa !741
+  %flags = getelementptr inbounds %struct.basic_block_def* %3, i64 0, i32 15, !dbg !868
+  %4 = load i32* %flags, align 4, !dbg !868, !tbaa !755
+  %and = and i32 %4, -2, !dbg !868
+  store i32 %and, i32* %flags, align 4, !dbg !868, !tbaa !755
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !866
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !866
+  %exitcond = icmp eq i32 %lftr.wideiv, %0, !dbg !866
+  br i1 %exitcond, label %for.cond2.preheader, label %for.body, !dbg !866
 
 while.cond.preheader:                             ; preds = %for.body3
-  %cmp845 = icmp eq %struct.basic_block_def** %incdec.ptr, %1
-  br i1 %cmp845, label %while.end, label %while.body
+  %cmp845 = icmp eq %struct.basic_block_def** %incdec.ptr, %1, !dbg !871
+  br i1 %cmp845, label %while.end, label %while.body, !dbg !871
 
 for.body3:                                        ; preds = %for.cond2.preheader, %for.body3
   %e.050 = phi %struct.edge_def* [ %e.0, %for.body3 ], [ %e.047, %for.cond2.preheader ]
   %tos.049 = phi %struct.basic_block_def** [ %incdec.ptr, %for.body3 ], [ %1, %for.cond2.preheader ]
-  %dest = getelementptr inbounds %struct.edge_def* %e.050, i64 0, i32 3
-  %5 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
-  %incdec.ptr = getelementptr inbounds %struct.basic_block_def** %tos.049, i64 1
-  store %struct.basic_block_def* %5, %struct.basic_block_def** %tos.049, align 8, !tbaa !0
-  %6 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
-  %flags5 = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 15
-  %7 = load i32* %flags5, align 4, !tbaa !3
-  %or = or i32 %7, 1
-  store i32 %or, i32* %flags5, align 4, !tbaa !3
-  %succ_next = getelementptr inbounds %struct.edge_def* %e.050, i64 0, i32 1
-  %e.0 = load %struct.edge_def** %succ_next, align 8
-  %tobool = icmp eq %struct.edge_def* %e.0, null
-  br i1 %tobool, label %while.cond.preheader, label %for.body3
+  %dest = getelementptr inbounds %struct.edge_def* %e.050, i64 0, i32 3, !dbg !872
+  %5 = load %struct.basic_block_def** %dest, align 8, !dbg !872, !tbaa !741
+  %incdec.ptr = getelementptr inbounds %struct.basic_block_def** %tos.049, i64 1, !dbg !872
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def** %incdec.ptr}, i64 0, metadata !478), !dbg !872
+  store %struct.basic_block_def* %5, %struct.basic_block_def** %tos.049, align 8, !dbg !872, !tbaa !741
+  %6 = load %struct.basic_block_def** %dest, align 8, !dbg !874, !tbaa !741
+  %flags5 = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 15, !dbg !874
+  %7 = load i32* %flags5, align 4, !dbg !874, !tbaa !755
+  %or = or i32 %7, 1, !dbg !874
+  store i32 %or, i32* %flags5, align 4, !dbg !874, !tbaa !755
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.050, i64 0, i32 1, !dbg !869
+  %e.0 = load %struct.edge_def** %succ_next, align 8, !dbg !869
+  %tobool = icmp eq %struct.edge_def* %e.0, null, !dbg !869
+  br i1 %tobool, label %while.cond.preheader, label %for.body3, !dbg !869
 
 while.cond.loopexit:                              ; preds = %for.inc23, %while.body
   %tos.2.lcssa = phi %struct.basic_block_def** [ %incdec.ptr10, %while.body ], [ %tos.3, %for.inc23 ]
-  %cmp8 = icmp eq %struct.basic_block_def** %tos.2.lcssa, %1
-  br i1 %cmp8, label %while.end, label %while.body
+  %cmp8 = icmp eq %struct.basic_block_def** %tos.2.lcssa, %1, !dbg !871
+  br i1 %cmp8, label %while.end, label %while.body, !dbg !871
 
 while.body:                                       ; preds = %while.cond.preheader, %while.cond.loopexit
   %tos.146 = phi %struct.basic_block_def** [ %tos.2.lcssa, %while.cond.loopexit ], [ %incdec.ptr, %while.cond.preheader ]
-  %incdec.ptr10 = getelementptr inbounds %struct.basic_block_def** %tos.146, i64 -1
-  %8 = load %struct.basic_block_def** %incdec.ptr10, align 8, !tbaa !0
-  %succ = getelementptr inbounds %struct.basic_block_def* %8, i64 0, i32 5
-  %e.141 = load %struct.edge_def** %succ, align 8
-  %tobool1242 = icmp eq %struct.edge_def* %e.141, null
-  br i1 %tobool1242, label %while.cond.loopexit, label %for.body13
+  %incdec.ptr10 = getelementptr inbounds %struct.basic_block_def** %tos.146, i64 -1, !dbg !875
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def** %incdec.ptr10}, i64 0, metadata !478), !dbg !875
+  %8 = load %struct.basic_block_def** %incdec.ptr10, align 8, !dbg !875, !tbaa !741
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %8}, i64 0, metadata !480), !dbg !875
+  %succ = getelementptr inbounds %struct.basic_block_def* %8, i64 0, i32 5, !dbg !876
+  %e.141 = load %struct.edge_def** %succ, align 8, !dbg !876
+  %tobool1242 = icmp eq %struct.edge_def* %e.141, null, !dbg !876
+  br i1 %tobool1242, label %while.cond.loopexit, label %for.body13, !dbg !876
 
 for.body13:                                       ; preds = %while.body, %for.inc23
   %e.144 = phi %struct.edge_def* [ %e.1, %for.inc23 ], [ %e.141, %while.body ]
   %tos.243 = phi %struct.basic_block_def** [ %tos.3, %for.inc23 ], [ %incdec.ptr10, %while.body ]
-  %dest14 = getelementptr inbounds %struct.edge_def* %e.144, i64 0, i32 3
-  %9 = load %struct.basic_block_def** %dest14, align 8, !tbaa !0
-  %flags15 = getelementptr inbounds %struct.basic_block_def* %9, i64 0, i32 15
-  %10 = load i32* %flags15, align 4, !tbaa !3
-  %and16 = and i32 %10, 1
-  %tobool17 = icmp eq i32 %and16, 0
-  br i1 %tobool17, label %if.then, label %for.inc23
+  %dest14 = getelementptr inbounds %struct.edge_def* %e.144, i64 0, i32 3, !dbg !878
+  %9 = load %struct.basic_block_def** %dest14, align 8, !dbg !878, !tbaa !741
+  %flags15 = getelementptr inbounds %struct.basic_block_def* %9, i64 0, i32 15, !dbg !878
+  %10 = load i32* %flags15, align 4, !dbg !878, !tbaa !755
+  %and16 = and i32 %10, 1, !dbg !878
+  %tobool17 = icmp eq i32 %and16, 0, !dbg !878
+  br i1 %tobool17, label %if.then, label %for.inc23, !dbg !878
 
 if.then:                                          ; preds = %for.body13
-  %incdec.ptr19 = getelementptr inbounds %struct.basic_block_def** %tos.243, i64 1
-  store %struct.basic_block_def* %9, %struct.basic_block_def** %tos.243, align 8, !tbaa !0
-  %11 = load %struct.basic_block_def** %dest14, align 8, !tbaa !0
-  %flags21 = getelementptr inbounds %struct.basic_block_def* %11, i64 0, i32 15
-  %12 = load i32* %flags21, align 4, !tbaa !3
-  %or22 = or i32 %12, 1
-  store i32 %or22, i32* %flags21, align 4, !tbaa !3
-  br label %for.inc23
+  %incdec.ptr19 = getelementptr inbounds %struct.basic_block_def** %tos.243, i64 1, !dbg !879
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def** %incdec.ptr19}, i64 0, metadata !478), !dbg !879
+  store %struct.basic_block_def* %9, %struct.basic_block_def** %tos.243, align 8, !dbg !879, !tbaa !741
+  %11 = load %struct.basic_block_def** %dest14, align 8, !dbg !881, !tbaa !741
+  %flags21 = getelementptr inbounds %struct.basic_block_def* %11, i64 0, i32 15, !dbg !881
+  %12 = load i32* %flags21, align 4, !dbg !881, !tbaa !755
+  %or22 = or i32 %12, 1, !dbg !881
+  store i32 %or22, i32* %flags21, align 4, !dbg !881, !tbaa !755
+  br label %for.inc23, !dbg !882
 
 for.inc23:                                        ; preds = %for.body13, %if.then
   %tos.3 = phi %struct.basic_block_def** [ %tos.243, %for.body13 ], [ %incdec.ptr19, %if.then ]
-  %succ_next24 = getelementptr inbounds %struct.edge_def* %e.144, i64 0, i32 1
-  %e.1 = load %struct.edge_def** %succ_next24, align 8
-  %tobool12 = icmp eq %struct.edge_def* %e.1, null
-  br i1 %tobool12, label %while.cond.loopexit, label %for.body13
+  %succ_next24 = getelementptr inbounds %struct.edge_def* %e.144, i64 0, i32 1, !dbg !876
+  %e.1 = load %struct.edge_def** %succ_next24, align 8, !dbg !876
+  %tobool12 = icmp eq %struct.edge_def* %e.1, null, !dbg !876
+  br i1 %tobool12, label %while.cond.loopexit, label %for.body13, !dbg !876
 
 while.end:                                        ; preds = %for.cond2.preheader, %while.cond.loopexit, %while.cond.preheader
-  tail call void @free(i8* %call) #6
-  ret void
+  tail call void @free(i8* %call) #7, !dbg !883
+  ret void, !dbg !884
 }

@@ -1,133 +1,131 @@
-define i16* @UMVLineX(i32 %size, i16* readonly %Pic, i32 %y, i32 %x, i32 %height, i32 %width) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !62, metadata !635), !dbg !739
-  tail call void @llvm.dbg.value(metadata i16* %Pic, i64 0, metadata !63, metadata !635), !dbg !740
-  tail call void @llvm.dbg.value(metadata i32 %y, i64 0, metadata !64, metadata !635), !dbg !741
-  tail call void @llvm.dbg.value(metadata i32 %x, i64 0, metadata !65, metadata !635), !dbg !742
-  tail call void @llvm.dbg.value(metadata i32 %height, i64 0, metadata !66, metadata !635), !dbg !743
-  tail call void @llvm.dbg.value(metadata i32 %width, i64 0, metadata !67, metadata !635), !dbg !744
-  %1 = add nsw i32 %height, -1, !dbg !745
-  %2 = icmp sle i32 %height, %y, !dbg !745
-  %.y = select i1 %2, i32 %1, i32 %y, !dbg !745
-  %3 = icmp slt i32 %.y, 0, !dbg !745
-  %..y = select i1 %3, i32 0, i32 %.y, !dbg !745
-  %4 = mul nsw i32 %..y, %width, !dbg !746
-  %5 = sext i32 %4 to i64, !dbg !747
-  %6 = getelementptr inbounds i16* %Pic, i64 %5, !dbg !747
-  tail call void @llvm.dbg.value(metadata i16* %6, i64 0, metadata !70, metadata !635), !dbg !748
-  %7 = icmp slt i32 %x, 0, !dbg !749
-  br i1 %7, label %8, label %26, !dbg !751
+define i16* @UMVLineX(i32 %size, i16* %Pic, i32 %y, i32 %x, i32 %height, i32 %width) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !63), !dbg !661
+  tail call void @llvm.dbg.value(metadata !{i16* %Pic}, i64 0, metadata !64), !dbg !661
+  tail call void @llvm.dbg.value(metadata !{i32 %y}, i64 0, metadata !65), !dbg !661
+  tail call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !66), !dbg !661
+  tail call void @llvm.dbg.value(metadata !{i32 %height}, i64 0, metadata !67), !dbg !661
+  tail call void @llvm.dbg.value(metadata !{i32 %width}, i64 0, metadata !68), !dbg !661
+  %sub = add nsw i32 %height, -1, !dbg !662
+  %cmp = icmp sle i32 %height, %y, !dbg !662
+  %sub.y = select i1 %cmp, i32 %sub, i32 %y, !dbg !662
+  %cmp2 = icmp slt i32 %sub.y, 0, !dbg !662
+  %.sub.y = select i1 %cmp2, i32 0, i32 %sub.y, !dbg !662
+  %mul = mul nsw i32 %.sub.y, %width, !dbg !662
+  %idx.ext = sext i32 %mul to i64, !dbg !662
+  %add.ptr = getelementptr inbounds i16* %Pic, i64 %idx.ext, !dbg !662
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr}, i64 0, metadata !71), !dbg !662
+  %cmp14 = icmp slt i32 %x, 0, !dbg !663
+  br i1 %cmp14, label %if.then, label %if.else, !dbg !663
 
-; <label>:8                                       ; preds = %0
-  %9 = add i32 %x, %size, !dbg !752
-  %10 = icmp sgt i32 %9, 0, !dbg !752
-  %. = select i1 %10, i32 0, i32 %9, !dbg !752
-  tail call void @llvm.dbg.value(metadata i32 %., i64 0, metadata !69, metadata !635), !dbg !754
-  tail call void @llvm.dbg.value(metadata i32 %x, i64 0, metadata !68, metadata !635), !dbg !755
-  %11 = icmp sgt i32 %., %x, !dbg !756
-  br i1 %11, label %.lr.ph9, label %.preheader, !dbg !759
+if.then:                                          ; preds = %entry
+  %add = add i32 %x, %size, !dbg !664
+  %cmp15 = icmp sgt i32 %add, 0, !dbg !664
+  %.add = select i1 %cmp15, i32 0, i32 %add, !dbg !664
+  tail call void @llvm.dbg.value(metadata !{i32 %.add}, i64 0, metadata !70), !dbg !664
+  tail call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !69), !dbg !666
+  %cmp21126 = icmp sgt i32 %.add, %x, !dbg !666
+  br i1 %cmp21126, label %for.body.lr.ph, label %for.cond25.preheader, !dbg !666
 
-.lr.ph9:                                          ; preds = %8
-  %12 = sext i32 %x to i64
-  %13 = icmp slt i32 %9, 0
-  %.op = add i32 %9, -1, !dbg !759
-  %14 = select i1 %13, i32 %.op, i32 -1, !dbg !759
-  br label %17, !dbg !759
+for.body.lr.ph:                                   ; preds = %if.then
+  %0 = sext i32 %x to i64
+  br label %for.body, !dbg !666
 
-.preheader:                                       ; preds = %17, %8
-  br i1 %10, label %.lr.ph, label %.loopexit, !dbg !760
+for.cond25.preheader:                             ; preds = %for.body, %if.then
+  br i1 %cmp15, label %for.body27, label %return, !dbg !668
 
-.lr.ph:                                           ; preds = %.preheader
-  %15 = sext i32 %x to i64, !dbg !760
-  %16 = add i32 %9, -1, !dbg !760
-  br label %21, !dbg !760
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv133 = phi i64 [ %0, %for.body.lr.ph ], [ %indvars.iv.next134, %for.body ]
+  %1 = load i16* %add.ptr, align 2, !dbg !670, !tbaa !630
+  %2 = trunc i64 %indvars.iv133 to i32, !dbg !670
+  %sub22 = sub nsw i32 %2, %x, !dbg !670
+  %idxprom = sext i32 %sub22 to i64, !dbg !670
+  %arrayidx23 = getelementptr inbounds [16 x i16]* @line, i64 0, i64 %idxprom, !dbg !670
+  store i16 %1, i16* %arrayidx23, align 2, !dbg !670, !tbaa !630
+  %indvars.iv.next134 = add i64 %indvars.iv133, 1, !dbg !666
+  %3 = trunc i64 %indvars.iv.next134 to i32, !dbg !666
+  %cmp21 = icmp slt i32 %3, %.add, !dbg !666
+  br i1 %cmp21, label %for.body, label %for.cond25.preheader, !dbg !666
 
-; <label>:17                                      ; preds = %17, %.lr.ph9
-  %indvars.iv15 = phi i64 [ %12, %.lr.ph9 ], [ %indvars.iv.next16, %17 ]
-  %18 = load i16* %6, align 2, !dbg !762, !tbaa !648
-  %19 = sub nsw i64 %indvars.iv15, %12, !dbg !764
-  %20 = getelementptr inbounds [16 x i16]* @line, i64 0, i64 %19, !dbg !765
-  store i16 %18, i16* %20, align 2, !dbg !766, !tbaa !648
-  %indvars.iv.next16 = add nsw i64 %indvars.iv15, 1, !dbg !759
-  %lftr.wideiv17 = trunc i64 %indvars.iv15 to i32, !dbg !759
-  %exitcond18 = icmp eq i32 %lftr.wideiv17, %14, !dbg !759
-  br i1 %exitcond18, label %.preheader, label %17, !dbg !759
+for.body27:                                       ; preds = %for.cond25.preheader, %for.body27
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body27 ], [ 0, %for.cond25.preheader ]
+  %add.ptr.sum122 = add i64 %indvars.iv, %idx.ext, !dbg !672
+  %arrayidx29 = getelementptr inbounds i16* %Pic, i64 %add.ptr.sum122, !dbg !672
+  %4 = load i16* %arrayidx29, align 2, !dbg !672, !tbaa !630
+  %5 = trunc i64 %indvars.iv to i32, !dbg !672
+  %sub30 = sub nsw i32 %5, %x, !dbg !672
+  %idxprom31 = sext i32 %sub30 to i64, !dbg !672
+  %arrayidx32 = getelementptr inbounds [16 x i16]* @line, i64 0, i64 %idxprom31, !dbg !672
+  store i16 %4, i16* %arrayidx32, align 2, !dbg !672, !tbaa !630
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !668
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !668
+  %exitcond = icmp eq i32 %lftr.wideiv, %add, !dbg !668
+  br i1 %exitcond, label %return, label %for.body27, !dbg !668
 
-; <label>:21                                      ; preds = %21, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %21 ]
-  %.sum3 = add nsw i64 %indvars.iv, %5, !dbg !767
-  %22 = getelementptr inbounds i16* %Pic, i64 %.sum3, !dbg !767
-  %23 = load i16* %22, align 2, !dbg !767, !tbaa !648
-  %24 = sub nsw i64 %indvars.iv, %15, !dbg !769
-  %25 = getelementptr inbounds [16 x i16]* @line, i64 0, i64 %24, !dbg !770
-  store i16 %23, i16* %25, align 2, !dbg !771, !tbaa !648
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !760
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !760
-  %exitcond = icmp eq i32 %lftr.wideiv, %16, !dbg !760
-  br i1 %exitcond, label %.loopexit, label %21, !dbg !760
+if.else:                                          ; preds = %entry
+  %sub36 = sub nsw i32 %width, %size, !dbg !673
+  %cmp37 = icmp slt i32 %sub36, %x, !dbg !673
+  br i1 %cmp37, label %for.cond39.preheader, label %if.else68, !dbg !673
 
-; <label>:26                                      ; preds = %0
-  %27 = sub nsw i32 %width, %size, !dbg !772
-  %28 = icmp slt i32 %27, %x, !dbg !774
-  br i1 %28, label %.preheader6, label %50, !dbg !775
+for.cond39.preheader:                             ; preds = %if.else
+  %cmp40131 = icmp slt i32 %x, %width, !dbg !674
+  br i1 %cmp40131, label %for.body41.lr.ph, label %for.end49, !dbg !674
 
-.preheader6:                                      ; preds = %26
-  %29 = icmp slt i32 %x, %width, !dbg !776
-  br i1 %29, label %.lr.ph13, label %._crit_edge, !dbg !780
+for.body41.lr.ph:                                 ; preds = %for.cond39.preheader
+  %6 = sext i32 %x to i64
+  br label %for.body41, !dbg !674
 
-.lr.ph13:                                         ; preds = %.preheader6
-  %30 = sext i32 %x to i64
-  %31 = add i32 %width, -1, !dbg !780
-  br label %32, !dbg !780
+for.body41:                                       ; preds = %for.body41.lr.ph, %for.body41
+  %indvars.iv137 = phi i64 [ %6, %for.body41.lr.ph ], [ %indvars.iv.next138, %for.body41 ]
+  %add.ptr.sum121 = add i64 %indvars.iv137, %idx.ext, !dbg !677
+  %arrayidx43 = getelementptr inbounds i16* %Pic, i64 %add.ptr.sum121, !dbg !677
+  %7 = load i16* %arrayidx43, align 2, !dbg !677, !tbaa !630
+  %8 = trunc i64 %indvars.iv137 to i32, !dbg !677
+  %sub44 = sub nsw i32 %8, %x, !dbg !677
+  %idxprom45 = sext i32 %sub44 to i64, !dbg !677
+  %arrayidx46 = getelementptr inbounds [16 x i16]* @line, i64 0, i64 %idxprom45, !dbg !677
+  store i16 %7, i16* %arrayidx46, align 2, !dbg !677, !tbaa !630
+  %indvars.iv.next138 = add i64 %indvars.iv137, 1, !dbg !674
+  %9 = trunc i64 %indvars.iv.next138 to i32, !dbg !674
+  %cmp40 = icmp slt i32 %9, %width, !dbg !674
+  br i1 %cmp40, label %for.body41, label %for.end49, !dbg !674
 
-; <label>:32                                      ; preds = %32, %.lr.ph13
-  %indvars.iv24 = phi i64 [ %30, %.lr.ph13 ], [ %indvars.iv.next25, %32 ]
-  %.sum2 = add nsw i64 %indvars.iv24, %5, !dbg !781
-  %33 = getelementptr inbounds i16* %Pic, i64 %.sum2, !dbg !781
-  %34 = load i16* %33, align 2, !dbg !781, !tbaa !648
-  %35 = sub nsw i64 %indvars.iv24, %30, !dbg !783
-  %36 = getelementptr inbounds [16 x i16]* @line, i64 0, i64 %35, !dbg !784
-  store i16 %34, i16* %36, align 2, !dbg !785, !tbaa !648
-  %indvars.iv.next25 = add nsw i64 %indvars.iv24, 1, !dbg !780
-  %lftr.wideiv26 = trunc i64 %indvars.iv24 to i32, !dbg !780
-  %exitcond27 = icmp eq i32 %lftr.wideiv26, %31, !dbg !780
-  br i1 %exitcond27, label %._crit_edge, label %32, !dbg !780
+for.end49:                                        ; preds = %for.body41, %for.cond39.preheader
+  %add50 = add nsw i32 %x, %size, !dbg !679
+  tail call void @llvm.dbg.value(metadata !{i32 %add50}, i64 0, metadata !70), !dbg !679
+  %cond55 = select i1 %cmp40131, i32 %width, i32 %x, !dbg !680
+  tail call void @llvm.dbg.value(metadata !{i32 %cond55}, i64 0, metadata !69), !dbg !680
+  %cmp57129 = icmp slt i32 %cond55, %add50, !dbg !680
+  br i1 %cmp57129, label %for.body58.lr.ph, label %return, !dbg !680
 
-._crit_edge:                                      ; preds = %32, %.preheader6
-  %37 = add i32 %x, %size, !dbg !786
-  tail call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !69, metadata !635), !dbg !754
-  %38 = select i1 %29, i32 %width, i32 %x, !dbg !787
-  tail call void @llvm.dbg.value(metadata i32 %38, i64 0, metadata !68, metadata !635), !dbg !755
-  %39 = icmp slt i32 %38, %37, !dbg !789
-  br i1 %39, label %.lr.ph11, label %.loopexit, !dbg !791
+for.body58.lr.ph:                                 ; preds = %for.end49
+  %sub59 = add nsw i32 %width, -1, !dbg !682
+  %idxprom60 = sext i32 %sub59 to i64, !dbg !682
+  %add.ptr.sum120 = add i64 %idx.ext, %idxprom60, !dbg !682
+  %arrayidx61 = getelementptr inbounds i16* %Pic, i64 %add.ptr.sum120, !dbg !682
+  %10 = sext i32 %cond55 to i64
+  br label %for.body58, !dbg !680
 
-.lr.ph11:                                         ; preds = %._crit_edge
-  %40 = add nsw i32 %width, -1, !dbg !792
-  %41 = sext i32 %40 to i64, !dbg !794
-  %.sum1 = add nsw i64 %5, %41, !dbg !794
-  %42 = getelementptr inbounds i16* %Pic, i64 %.sum1, !dbg !794
-  %43 = sext i32 %38 to i64
-  %44 = sext i32 %x to i64, !dbg !791
-  %45 = add i32 %37, -1, !dbg !791
-  br label %46, !dbg !791
+for.body58:                                       ; preds = %for.body58.lr.ph, %for.body58
+  %indvars.iv135 = phi i64 [ %10, %for.body58.lr.ph ], [ %indvars.iv.next136, %for.body58 ]
+  %11 = load i16* %arrayidx61, align 2, !dbg !682, !tbaa !630
+  %12 = trunc i64 %indvars.iv135 to i32, !dbg !682
+  %sub62 = sub nsw i32 %12, %x, !dbg !682
+  %idxprom63 = sext i32 %sub62 to i64, !dbg !682
+  %arrayidx64 = getelementptr inbounds [16 x i16]* @line, i64 0, i64 %idxprom63, !dbg !682
+  store i16 %11, i16* %arrayidx64, align 2, !dbg !682, !tbaa !630
+  %indvars.iv.next136 = add i64 %indvars.iv135, 1, !dbg !680
+  %13 = trunc i64 %indvars.iv.next136 to i32, !dbg !680
+  %cmp57 = icmp slt i32 %13, %add50, !dbg !680
+  br i1 %cmp57, label %for.body58, label %return, !dbg !680
 
-; <label>:46                                      ; preds = %46, %.lr.ph11
-  %indvars.iv20 = phi i64 [ %43, %.lr.ph11 ], [ %indvars.iv.next21, %46 ]
-  %47 = load i16* %42, align 2, !dbg !794, !tbaa !648
-  %48 = sub nsw i64 %indvars.iv20, %44, !dbg !795
-  %49 = getelementptr inbounds [16 x i16]* @line, i64 0, i64 %48, !dbg !796
-  store i16 %47, i16* %49, align 2, !dbg !797, !tbaa !648
-  %indvars.iv.next21 = add nsw i64 %indvars.iv20, 1, !dbg !791
-  %lftr.wideiv22 = trunc i64 %indvars.iv20 to i32, !dbg !791
-  %exitcond23 = icmp eq i32 %lftr.wideiv22, %45, !dbg !791
-  br i1 %exitcond23, label %.loopexit, label %46, !dbg !791
+if.else68:                                        ; preds = %if.else
+  %idx.ext69 = sext i32 %x to i64, !dbg !684
+  %add.ptr.sum = add i64 %idx.ext, %idx.ext69, !dbg !684
+  %add.ptr70 = getelementptr inbounds i16* %Pic, i64 %add.ptr.sum, !dbg !684
+  br label %return, !dbg !684
 
-; <label>:50                                      ; preds = %26
-  %51 = sext i32 %x to i64, !dbg !798
-  %.sum = add nsw i64 %5, %51, !dbg !798
-  %52 = getelementptr inbounds i16* %Pic, i64 %.sum, !dbg !798
-  br label %.loopexit, !dbg !800
-
-.loopexit:                                        ; preds = %46, %21, %._crit_edge, %.preheader, %50
-  %.0 = phi i16* [ %52, %50 ], [ getelementptr inbounds ([16 x i16]* @line, i64 0, i64 0), %.preheader ], [ getelementptr inbounds ([16 x i16]* @line, i64 0, i64 0), %._crit_edge ], [ getelementptr inbounds ([16 x i16]* @line, i64 0, i64 0), %21 ], [ getelementptr inbounds ([16 x i16]* @line, i64 0, i64 0), %46 ]
-  ret i16* %.0, !dbg !801
+return:                                           ; preds = %for.end49, %for.body58, %for.cond25.preheader, %for.body27, %if.else68
+  %retval.0 = phi i16* [ %add.ptr70, %if.else68 ], [ getelementptr inbounds ([16 x i16]* @line, i64 0, i64 0), %for.body27 ], [ getelementptr inbounds ([16 x i16]* @line, i64 0, i64 0), %for.cond25.preheader ], [ getelementptr inbounds ([16 x i16]* @line, i64 0, i64 0), %for.body58 ], [ getelementptr inbounds ([16 x i16]* @line, i64 0, i64 0), %for.end49 ]
+  ret i16* %retval.0, !dbg !686
 }

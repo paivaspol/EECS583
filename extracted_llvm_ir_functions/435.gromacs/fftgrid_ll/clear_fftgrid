@@ -1,22 +1,25 @@
-define void @clear_fftgrid(%struct.t_fftgrid* nocapture readonly %grid) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.t_fftgrid* %grid, i64 0, metadata !256, metadata !432), !dbg !681
-  %1 = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 10, !dbg !682
-  %2 = load i32* %1, align 4, !dbg !682, !tbaa !650
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !258, metadata !432), !dbg !683
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !257, metadata !432), !dbg !684
-  %3 = icmp sgt i32 %2, 0, !dbg !685
-  br i1 %3, label %.lr.ph, label %10, !dbg !688
+define void @clear_fftgrid(%struct.t_fftgrid* nocapture %grid) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_fftgrid* %grid}, i64 0, metadata !121), !dbg !332
+  %nptr = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 10, !dbg !333
+  %0 = load i32* %nptr, align 4, !dbg !333, !tbaa !299
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !123), !dbg !333
+  tail call void @llvm.dbg.value(metadata !{float* %1}, i64 0, metadata !124), !dbg !334
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !122), !dbg !335
+  %cmp5 = icmp sgt i32 %0, 0, !dbg !335
+  br i1 %cmp5, label %for.body.lr.ph, label %for.end, !dbg !335
 
-.lr.ph:                                           ; preds = %0
-  %4 = bitcast %struct.t_fftgrid* %grid to i8**, !dbg !689
-  %5 = load i8** %4, align 8, !dbg !689, !tbaa !652
-  %6 = add i32 %2, -1, !dbg !688
-  %7 = zext i32 %6 to i64
-  %8 = shl nuw nsw i64 %7, 2, !dbg !688
-  %9 = add nuw nsw i64 %8, 4, !dbg !688
-  call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 %9, i32 4, i1 false), !dbg !690
-  br label %10, !dbg !688
+for.body.lr.ph:                                   ; preds = %entry
+  %ptr1 = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 0, !dbg !334
+  %1 = load float** %ptr1, align 8, !dbg !334, !tbaa !314
+  %2 = bitcast float* %1 to i8*
+  %3 = add i32 %0, -1, !dbg !335
+  %4 = zext i32 %3 to i64
+  %5 = shl nuw nsw i64 %4, 2, !dbg !335
+  %6 = add i64 %5, 4, !dbg !335
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 %6, i32 4, i1 false), !dbg !337
+  br label %for.end, !dbg !335
 
-; <label>:10                                      ; preds = %.lr.ph, %0
-  ret void, !dbg !692
+for.end:                                          ; preds = %for.body.lr.ph, %entry
+  ret void, !dbg !339
 }

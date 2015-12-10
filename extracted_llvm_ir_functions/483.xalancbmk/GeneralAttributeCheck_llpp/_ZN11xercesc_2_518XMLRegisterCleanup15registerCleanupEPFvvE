@@ -1,0 +1,37 @@
+define linkonce_odr void @_ZN11xercesc_2_518XMLRegisterCleanup15registerCleanupEPFvvE(%"class.xercesc_2_5::XMLRegisterCleanup"* %this, void ()* %cleanupFn) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLRegisterCleanup"* %this}, i64 0, metadata !8423), !dbg !8739
+  tail call void @llvm.dbg.value(metadata !{void ()* %cleanupFn}, i64 0, metadata !8425), !dbg !8739
+  %m_cleanupFn = getelementptr inbounds %"class.xercesc_2_5::XMLRegisterCleanup"* %this, i64 0, i32 0, !dbg !8740
+  store void ()* %cleanupFn, void ()** %m_cleanupFn, align 8, !dbg !8740, !tbaa !8517
+  %0 = load %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_520gXMLCleanupListMutexE, align 8, !dbg !8742, !tbaa !8517
+  tail call void @_ZN11xercesc_2_58XMLMutex4lockEv(%"class.xercesc_2_5::XMLMutex"* %0) #7, !dbg !8742
+  %m_nextCleanup = getelementptr inbounds %"class.xercesc_2_5::XMLRegisterCleanup"* %this, i64 0, i32 1, !dbg !8743
+  %1 = load %"class.xercesc_2_5::XMLRegisterCleanup"** %m_nextCleanup, align 8, !dbg !8743, !tbaa !8517
+  %tobool = icmp eq %"class.xercesc_2_5::XMLRegisterCleanup"* %1, null, !dbg !8743
+  br i1 %tobool, label %land.lhs.true, label %if.end9, !dbg !8743
+
+land.lhs.true:                                    ; preds = %entry
+  %m_prevCleanup = getelementptr inbounds %"class.xercesc_2_5::XMLRegisterCleanup"* %this, i64 0, i32 2, !dbg !8743
+  %2 = load %"class.xercesc_2_5::XMLRegisterCleanup"** %m_prevCleanup, align 8, !dbg !8743, !tbaa !8517
+  %tobool2 = icmp eq %"class.xercesc_2_5::XMLRegisterCleanup"* %2, null, !dbg !8743
+  br i1 %tobool2, label %if.then, label %if.end9, !dbg !8743
+
+if.then:                                          ; preds = %land.lhs.true
+  %3 = load %"class.xercesc_2_5::XMLRegisterCleanup"** @_ZN11xercesc_2_515gXMLCleanupListE, align 8, !dbg !8744, !tbaa !8517
+  store %"class.xercesc_2_5::XMLRegisterCleanup"* %3, %"class.xercesc_2_5::XMLRegisterCleanup"** %m_nextCleanup, align 8, !dbg !8744, !tbaa !8517
+  store %"class.xercesc_2_5::XMLRegisterCleanup"* %this, %"class.xercesc_2_5::XMLRegisterCleanup"** @_ZN11xercesc_2_515gXMLCleanupListE, align 8, !dbg !8746, !tbaa !8517
+  %4 = load %"class.xercesc_2_5::XMLRegisterCleanup"** %m_nextCleanup, align 8, !dbg !8747, !tbaa !8517
+  %tobool5 = icmp eq %"class.xercesc_2_5::XMLRegisterCleanup"* %4, null, !dbg !8747
+  br i1 %tobool5, label %if.end9, label %if.then6, !dbg !8747
+
+if.then6:                                         ; preds = %if.then
+  %m_prevCleanup8 = getelementptr inbounds %"class.xercesc_2_5::XMLRegisterCleanup"* %4, i64 0, i32 2, !dbg !8748
+  store %"class.xercesc_2_5::XMLRegisterCleanup"* %this, %"class.xercesc_2_5::XMLRegisterCleanup"** %m_prevCleanup8, align 8, !dbg !8748, !tbaa !8517
+  br label %if.end9, !dbg !8748
+
+if.end9:                                          ; preds = %if.then, %land.lhs.true, %entry, %if.then6
+  %5 = load %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_520gXMLCleanupListMutexE, align 8, !dbg !8749, !tbaa !8517
+  tail call void @_ZN11xercesc_2_58XMLMutex6unlockEv(%"class.xercesc_2_5::XMLMutex"* %5) #7, !dbg !8749
+  ret void, !dbg !8750
+}

@@ -1,17 +1,18 @@
 define noalias i8* @xmalloc(i64 %size) #0 {
-  tail call void @llvm.dbg.value(metadata i64 %size, i64 0, metadata !26, metadata !48), !dbg !63
-  %1 = icmp eq i64 %size, 0, !dbg !64
-  %.size = select i1 %1, i64 1, i64 %size, !dbg !66
-  tail call void @llvm.dbg.value(metadata i64 %.size, i64 0, metadata !26, metadata !48), !dbg !63
-  %2 = tail call i8* @malloc(i64 %.size) #5, !dbg !67
-  tail call void @llvm.dbg.value(metadata i8* %2, i64 0, metadata !27, metadata !48), !dbg !68
-  %3 = icmp eq i8* %2, null, !dbg !69
-  br i1 %3, label %4, label %5, !dbg !71
+entry:
+  tail call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !25), !dbg !52
+  %cmp = icmp eq i64 %size, 0, !dbg !53
+  %.size = select i1 %cmp, i64 1, i64 %size, !dbg !53
+  tail call void @llvm.dbg.value(metadata !{i64 %.size}, i64 0, metadata !25), !dbg !54
+  %call = tail call i8* @malloc(i64 %.size) #5, !dbg !55
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !26), !dbg !55
+  %tobool = icmp eq i8* %call, null, !dbg !56
+  br i1 %tobool, label %if.then1, label %if.end2, !dbg !56
 
-; <label>:4                                       ; preds = %0
-  tail call void @xmalloc_failed(i64 %.size) #7, !dbg !72
-  unreachable, !dbg !72
+if.then1:                                         ; preds = %entry
+  tail call void @xmalloc_failed(i64 %.size) #7, !dbg !57
+  unreachable, !dbg !57
 
-; <label>:5                                       ; preds = %0
-  ret i8* %2, !dbg !73
+if.end2:                                          ; preds = %entry
+  ret i8* %call, !dbg !58
 }

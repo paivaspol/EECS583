@@ -1,44 +1,45 @@
 define void @_ZN21POVMS_MessageReceiver6RemoveEjj(%class.POVMS_MessageReceiver* nocapture %this, i32 %hclass, i32 %hid) #5 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.POVMS_MessageReceiver* %this, i64 0, metadata !1029, metadata !1380), !dbg !2986
-  tail call void @llvm.dbg.value(metadata i32 %hclass, i64 0, metadata !1030, metadata !1380), !dbg !2987
-  tail call void @llvm.dbg.value(metadata i32 %hid, i64 0, metadata !1031, metadata !1380), !dbg !2988
-  tail call void @llvm.dbg.value(metadata %"struct.POVMS_MessageReceiver::HandlerNode"* null, i64 0, metadata !1032, metadata !1380), !dbg !2989
-  %1 = getelementptr inbounds %class.POVMS_MessageReceiver* %this, i64 0, i32 2, !dbg !2990
-  %nodeptr.02 = load %"struct.POVMS_MessageReceiver::HandlerNode"** %1, align 8, !dbg !2990
-  %2 = icmp eq %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.02, null, !dbg !2992
-  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !2994
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_MessageReceiver* %this}, i64 0, metadata !1033), !dbg !1783
+  tail call void @llvm.dbg.value(metadata !{i32 %hclass}, i64 0, metadata !1034), !dbg !1783
+  tail call void @llvm.dbg.value(metadata !{i32 %hid}, i64 0, metadata !1035), !dbg !1783
+  tail call void @llvm.dbg.value(metadata !1784, i64 0, metadata !1036), !dbg !1785
+  %receivers = getelementptr inbounds %class.POVMS_MessageReceiver* %this, i64 0, i32 2, !dbg !1786
+  %nodeptr.013 = load %"struct.POVMS_MessageReceiver::HandlerNode"** %receivers, align 8, !dbg !1786
+  %cmp14 = icmp eq %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.013, null, !dbg !1786
+  br i1 %cmp14, label %for.end, label %for.body.lr.ph, !dbg !1786
 
-.lr.ph:                                           ; preds = %0
-  %3 = icmp eq i32 %hid, 707406378, !dbg !2995
-  br label %4, !dbg !2994
+for.body.lr.ph:                                   ; preds = %entry
+  %cmp6 = icmp eq i32 %hid, 707406378, !dbg !1788
+  br label %for.body, !dbg !1786
 
-; <label>:4                                       ; preds = %.lr.ph, %14
-  %nodeptr.03 = phi %"struct.POVMS_MessageReceiver::HandlerNode"* [ %nodeptr.02, %.lr.ph ], [ %nodeptr.0, %14 ]
-  %5 = getelementptr inbounds %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.03, i64 0, i32 2, !dbg !2998
-  %6 = load i32* %5, align 4, !dbg !2998, !tbaa !2936
-  %7 = icmp eq i32 %6, %hclass, !dbg !2999
-  br i1 %7, label %8, label %14, !dbg !3000
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %nodeptr.015 = phi %"struct.POVMS_MessageReceiver::HandlerNode"* [ %nodeptr.013, %for.body.lr.ph ], [ %nodeptr.0, %for.inc ]
+  %hclass2 = getelementptr inbounds %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.015, i64 0, i32 2, !dbg !1788
+  %0 = load i32* %hclass2, align 4, !dbg !1788, !tbaa !1112
+  %cmp3 = icmp eq i32 %0, %hclass, !dbg !1788
+  br i1 %cmp3, label %land.lhs.true, label %for.inc, !dbg !1788
 
-; <label>:8                                       ; preds = %4
-  %9 = getelementptr inbounds %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.03, i64 0, i32 3, !dbg !3001
-  %10 = load i32* %9, align 4, !dbg !3001, !tbaa !2939
-  %11 = icmp eq i32 %10, %hid, !dbg !3002
-  %or.cond = or i1 %3, %11, !dbg !3003
-  br i1 %or.cond, label %12, label %14, !dbg !3003
+land.lhs.true:                                    ; preds = %for.body
+  %hid4 = getelementptr inbounds %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.015, i64 0, i32 3, !dbg !1788
+  %1 = load i32* %hid4, align 4, !dbg !1788, !tbaa !1112
+  %cmp5 = icmp eq i32 %1, %hid, !dbg !1788
+  %or.cond = or i1 %cmp5, %cmp6, !dbg !1788
+  br i1 %or.cond, label %if.then, label %for.inc, !dbg !1788
 
-; <label>:12                                      ; preds = %8
-  tail call void @_ZN21POVMS_MessageReceiver10RemoveNodeEPNS_11HandlerNodeE(%class.POVMS_MessageReceiver* %this, %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.03) #13, !dbg !3004
-  %13 = load %"struct.POVMS_MessageReceiver::HandlerNode"** %1, align 8, !dbg !3006, !tbaa !2905
-  tail call void @llvm.dbg.value(metadata %"struct.POVMS_MessageReceiver::HandlerNode"* %13, i64 0, metadata !1032, metadata !1380), !dbg !2989
-  br label %14, !dbg !3007
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @_ZN21POVMS_MessageReceiver10RemoveNodeEPNS_11HandlerNodeE(%class.POVMS_MessageReceiver* %this, %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.015) #12, !dbg !1790
+  %2 = load %"struct.POVMS_MessageReceiver::HandlerNode"** %receivers, align 8, !dbg !1792, !tbaa !1116
+  tail call void @llvm.dbg.value(metadata !{%"struct.POVMS_MessageReceiver::HandlerNode"* %2}, i64 0, metadata !1036), !dbg !1792
+  br label %for.inc, !dbg !1793
 
-; <label>:14                                      ; preds = %4, %12, %8
-  %nodeptr.1 = phi %"struct.POVMS_MessageReceiver::HandlerNode"* [ %13, %12 ], [ %nodeptr.03, %8 ], [ %nodeptr.03, %4 ]
-  %15 = getelementptr inbounds %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.1, i64 0, i32 1, !dbg !3008
-  %nodeptr.0 = load %"struct.POVMS_MessageReceiver::HandlerNode"** %15, align 8, !dbg !2990
-  %16 = icmp eq %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.0, null, !dbg !2992
-  br i1 %16, label %._crit_edge, label %4, !dbg !2994
+for.inc:                                          ; preds = %for.body, %if.then, %land.lhs.true
+  %nodeptr.1 = phi %"struct.POVMS_MessageReceiver::HandlerNode"* [ %2, %if.then ], [ %nodeptr.015, %land.lhs.true ], [ %nodeptr.015, %for.body ]
+  %next = getelementptr inbounds %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.1, i64 0, i32 1, !dbg !1786
+  %nodeptr.0 = load %"struct.POVMS_MessageReceiver::HandlerNode"** %next, align 8, !dbg !1786
+  %cmp = icmp eq %"struct.POVMS_MessageReceiver::HandlerNode"* %nodeptr.0, null, !dbg !1786
+  br i1 %cmp, label %for.end, label %for.body, !dbg !1786
 
-._crit_edge:                                      ; preds = %14, %0
-  ret void, !dbg !3009
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !1794
 }

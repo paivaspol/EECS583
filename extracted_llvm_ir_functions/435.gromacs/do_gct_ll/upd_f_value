@@ -1,22 +1,24 @@
 define internal fastcc void @upd_f_value(i32 %atnr, float %xi, float %dt, float %factor, float* nocapture %ff, i32 %ati, i32 %atj) #0 {
 entry:
-  %fabsf = tail call float @fabsf(float %xi) #7
-  %0 = fpext float %fabsf to double
-  %cmp = fcmp ogt double %0, 1.200000e-38
-  br i1 %cmp, label %if.then, label %if.end8
+  tail call void @llvm.dbg.value(metadata !1037, i64 0, metadata !791), !dbg !1578
+  %fabsf = tail call float @fabsf(float %xi) #8, !dbg !1579
+  %0 = fpext float %fabsf to double, !dbg !1579
+  %cmp = fcmp ogt double %0, 1.200000e-38, !dbg !1579
+  br i1 %cmp, label %if.then, label %if.end8, !dbg !1579
 
 if.then:                                          ; preds = %entry
-  %div = fdiv float %dt, %xi
-  %mul = fmul float %div, %factor
-  %add = fadd float %mul, 1.000000e+00
-  %cmp2 = fcmp ogt float %add, 0.000000e+00
-  br i1 %cmp2, label %if.then4, label %if.end8
+  %div = fdiv float %dt, %xi, !dbg !1580
+  %mul = fmul float %div, %factor, !dbg !1580
+  %add = fadd float %mul, 1.000000e+00, !dbg !1580
+  tail call void @llvm.dbg.value(metadata !{float %add}, i64 0, metadata !799), !dbg !1580
+  %cmp2 = fcmp ogt float %add, 0.000000e+00, !dbg !1582
+  br i1 %cmp2, label %if.then4, label %if.end8, !dbg !1582
 
 if.then4:                                         ; preds = %if.then
-  %conv7 = tail call float @sqrtf(float %add) #4
-  tail call fastcc void @set_factor_matrix(i32 %atnr, float* %ff, float %conv7, i32 %ati, i32 %atj) #8
-  br label %if.end8
+  %conv7 = tail call float @sqrtf(float %add) #5, !dbg !1583
+  tail call fastcc void @set_factor_matrix(i32 %atnr, float* %ff, float %conv7, i32 %ati, i32 %atj) #9, !dbg !1583
+  br label %if.end8, !dbg !1583
 
 if.end8:                                          ; preds = %if.then, %if.then4, %entry
-  ret void
+  ret void, !dbg !1584
 }

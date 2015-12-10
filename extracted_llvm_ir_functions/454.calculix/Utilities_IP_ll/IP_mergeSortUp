@@ -1,57 +1,58 @@
 define %struct._IP* @IP_mergeSortUp(%struct._IP* %ip0) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._IP* %ip0, i64 0, metadata !164, metadata !176), !dbg !580
-  tail call void @llvm.dbg.value(metadata %struct._IP* %ip0, i64 0, metadata !168, metadata !176), !dbg !581
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !166, metadata !176), !dbg !582
-  %1 = icmp eq %struct._IP* %ip0, null, !dbg !583
-  br i1 %1, label %._crit_edge.thread, label %.lr.ph, !dbg !586
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %ip0}, i64 0, metadata !153), !dbg !407
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %ip0}, i64 0, metadata !157), !dbg !408
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !155), !dbg !408
+  %cmp25 = icmp eq %struct._IP* %ip0, null, !dbg !408
+  br i1 %cmp25, label %return, label %for.body, !dbg !408
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %ip.03 = phi %struct._IP* [ %4, %.lr.ph ], [ %ip0, %0 ]
-  %m.02 = phi i32 [ %2, %.lr.ph ], [ 0, %0 ]
-  %2 = add nuw nsw i32 %m.02, 1, !dbg !587
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !166, metadata !176), !dbg !582
-  %3 = getelementptr inbounds %struct._IP* %ip.03, i64 0, i32 1, !dbg !589
-  %4 = load %struct._IP** %3, align 8, !dbg !589, !tbaa !196
-  tail call void @llvm.dbg.value(metadata %struct._IP* %4, i64 0, metadata !168, metadata !176), !dbg !581
-  %5 = icmp eq %struct._IP* %4, null, !dbg !583
-  br i1 %5, label %._crit_edge, label %.lr.ph, !dbg !586
+for.body:                                         ; preds = %entry, %for.body
+  %ip.027 = phi %struct._IP* [ %0, %for.body ], [ %ip0, %entry ]
+  %m.026 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %inc = add nsw i32 %m.026, 1, !dbg !410
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !155), !dbg !410
+  %next = getelementptr inbounds %struct._IP* %ip.027, i64 0, i32 1, !dbg !408
+  %0 = load %struct._IP** %next, align 8, !dbg !408, !tbaa !171
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %0}, i64 0, metadata !157), !dbg !408
+  %cmp = icmp eq %struct._IP* %0, null, !dbg !408
+  br i1 %cmp, label %for.end, label %for.body, !dbg !408
 
-._crit_edge:                                      ; preds = %.lr.ph
-  %6 = icmp slt i32 %2, 2, !dbg !590
-  br i1 %6, label %._crit_edge.thread, label %7, !dbg !592
+for.end:                                          ; preds = %for.body
+  %cmp1 = icmp slt i32 %inc, 2, !dbg !412
+  br i1 %cmp1, label %return, label %if.else, !dbg !412
 
-; <label>:7                                       ; preds = %._crit_edge
-  %8 = sdiv i32 %2, 2, !dbg !593
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !167, metadata !176), !dbg !595
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !165, metadata !176), !dbg !596
-  tail call void @llvm.dbg.value(metadata %struct._IP* %ip0, i64 0, metadata !168, metadata !176), !dbg !581
-  tail call void @llvm.dbg.value(metadata %struct._IP* null, i64 0, metadata !171, metadata !176), !dbg !597
-  br label %9, !dbg !598
+if.else:                                          ; preds = %for.end
+  %div = sdiv i32 %inc, 2, !dbg !413
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !156), !dbg !413
+  tail call void @llvm.dbg.value(metadata !415, i64 0, metadata !154), !dbg !416
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %ip0}, i64 0, metadata !157), !dbg !416
+  tail call void @llvm.dbg.value(metadata !199, i64 0, metadata !160), !dbg !416
+  br label %for.cond2, !dbg !416
 
-; <label>:9                                       ; preds = %9, %7
-  %ip.1 = phi %struct._IP* [ %ip0, %7 ], [ %12, %9 ]
-  %i.0 = phi i32 [ 1, %7 ], [ %13, %9 ]
-  %10 = icmp slt i32 %i.0, %8, !dbg !600
-  %11 = getelementptr inbounds %struct._IP* %ip.1, i64 0, i32 1, !dbg !602
-  %12 = load %struct._IP** %11, align 8, !dbg !602, !tbaa !196
-  tail call void @llvm.dbg.value(metadata %struct._IP* %ip.1, i64 0, metadata !171, metadata !176), !dbg !597
-  tail call void @llvm.dbg.value(metadata %struct._IP* %12, i64 0, metadata !168, metadata !176), !dbg !581
-  %13 = add nuw nsw i32 %i.0, 1, !dbg !604
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !165, metadata !176), !dbg !596
-  br i1 %10, label %9, label %14, !dbg !605
+for.cond2:                                        ; preds = %for.cond2, %if.else
+  %ip.1 = phi %struct._IP* [ %ip0, %if.else ], [ %1, %for.cond2 ]
+  %i.0 = phi i32 [ 1, %if.else ], [ %inc7, %for.cond2 ]
+  %cmp3 = icmp slt i32 %i.0, %div, !dbg !416
+  %next5 = getelementptr inbounds %struct._IP* %ip.1, i64 0, i32 1, !dbg !418
+  %1 = load %struct._IP** %next5, align 8, !dbg !418, !tbaa !171
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %ip.1}, i64 0, metadata !160), !dbg !420
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %1}, i64 0, metadata !157), !dbg !418
+  %inc7 = add nsw i32 %i.0, 1, !dbg !416
+  tail call void @llvm.dbg.value(metadata !{i32 %inc7}, i64 0, metadata !154), !dbg !416
+  br i1 %cmp3, label %for.cond2, label %for.end8, !dbg !416
 
-; <label>:14                                      ; preds = %9
-  tail call void @llvm.dbg.value(metadata %struct._IP* %12, i64 0, metadata !170, metadata !176), !dbg !606
-  store %struct._IP* null, %struct._IP** %11, align 8, !dbg !607, !tbaa !196
-  tail call void @llvm.dbg.value(metadata %struct._IP* %ip0, i64 0, metadata !169, metadata !176), !dbg !608
-  %15 = tail call %struct._IP* @IP_mergeSortUp(%struct._IP* %ip0) #7, !dbg !609
-  tail call void @llvm.dbg.value(metadata %struct._IP* %15, i64 0, metadata !169, metadata !176), !dbg !608
-  %16 = tail call %struct._IP* @IP_mergeSortUp(%struct._IP* %12) #7, !dbg !610
-  tail call void @llvm.dbg.value(metadata %struct._IP* %16, i64 0, metadata !170, metadata !176), !dbg !606
-  %17 = tail call %struct._IP* @IP_mergeUp(%struct._IP* %15, %struct._IP* %16) #7, !dbg !611
-  tail call void @llvm.dbg.value(metadata %struct._IP* %17, i64 0, metadata !168, metadata !176), !dbg !581
-  ret %struct._IP* %17, !dbg !612
+for.end8:                                         ; preds = %for.cond2
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %1}, i64 0, metadata !159), !dbg !421
+  store %struct._IP* null, %struct._IP** %next5, align 8, !dbg !422, !tbaa !171
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %ip0}, i64 0, metadata !158), !dbg !423
+  %call = tail call %struct._IP* @IP_mergeSortUp(%struct._IP* %ip0) #7, !dbg !424
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %call}, i64 0, metadata !158), !dbg !424
+  %call11 = tail call %struct._IP* @IP_mergeSortUp(%struct._IP* %1) #7, !dbg !425
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %call11}, i64 0, metadata !159), !dbg !425
+  %call12 = tail call %struct._IP* @IP_mergeUp(%struct._IP* %call, %struct._IP* %call11) #7, !dbg !426
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %call12}, i64 0, metadata !157), !dbg !426
+  ret %struct._IP* %call12, !dbg !427
 
-._crit_edge.thread:                               ; preds = %0, %._crit_edge
-  ret %struct._IP* %ip0, !dbg !612
+return:                                           ; preds = %entry, %for.end
+  ret %struct._IP* %ip0, !dbg !427
 }

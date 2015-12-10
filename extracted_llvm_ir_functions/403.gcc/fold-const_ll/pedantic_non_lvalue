@@ -1,14 +1,15 @@
 define %union.tree_node* @pedantic_non_lvalue(%union.tree_node* %x) #0 {
 entry:
-  %0 = load i32* @pedantic_lvalues, align 4, !tbaa !4
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %return, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %x}, i64 0, metadata !925), !dbg !3877
+  %0 = load i32* @pedantic_lvalues, align 4, !dbg !3878, !tbaa !1707
+  %tobool = icmp eq i32 %0, 0, !dbg !3878
+  br i1 %tobool, label %return, label %if.then, !dbg !3878
 
 if.then:                                          ; preds = %entry
-  %call = tail call %union.tree_node* @non_lvalue(%union.tree_node* %x) #7
-  br label %return
+  %call = tail call %union.tree_node* @non_lvalue(%union.tree_node* %x) #7, !dbg !3879
+  br label %return, !dbg !3879
 
 return:                                           ; preds = %entry, %if.then
   %retval.0 = phi %union.tree_node* [ %call, %if.then ], [ %x, %entry ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !3880
 }

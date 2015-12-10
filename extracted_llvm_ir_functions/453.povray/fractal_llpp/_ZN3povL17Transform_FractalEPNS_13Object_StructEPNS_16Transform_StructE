@@ -1,21 +1,22 @@
 define internal void @_ZN3povL17Transform_FractalEPNS_13Object_StructEPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Transform_Struct"* %Trans) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !1135, metadata !1481), !dbg !2223
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1136, metadata !1481), !dbg !2224
-  %1 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Fractal_Struct"*, !dbg !2225
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Fractal_Struct"* %1, i64 0, metadata !1137, metadata !1481), !dbg !2226
-  %2 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !2227
-  %3 = load %"struct.pov::Transform_Struct"** %2, align 8, !dbg !2227, !tbaa !1516
-  %4 = icmp eq %"struct.pov::Transform_Struct"* %3, null, !dbg !2229
-  br i1 %4, label %5, label %7, !dbg !2230
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1061), !dbg !1796
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1062), !dbg !1796
+  %0 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Fractal_Struct"*, !dbg !1797
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Fractal_Struct"* %0}, i64 0, metadata !1063), !dbg !1797
+  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !1798
+  %2 = load %"struct.pov::Transform_Struct"** %1, align 8, !dbg !1798, !tbaa !1297
+  %cmp = icmp eq %"struct.pov::Transform_Struct"* %2, null, !dbg !1798
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1798
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #6, !dbg !2231
-  store %"struct.pov::Transform_Struct"* %6, %"struct.pov::Transform_Struct"** %2, align 8, !dbg !2233, !tbaa !1516
-  br label %7, !dbg !2234
+if.then:                                          ; preds = %entry
+  %call = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #6, !dbg !1799
+  store %"struct.pov::Transform_Struct"* %call, %"struct.pov::Transform_Struct"** %1, align 8, !dbg !1799, !tbaa !1297
+  br label %if.end, !dbg !1801
 
-; <label>:7                                       ; preds = %5, %0
-  %8 = phi %"struct.pov::Transform_Struct"* [ %6, %5 ], [ %3, %0 ]
-  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %8, %"struct.pov::Transform_Struct"* %Trans) #6, !dbg !2235
-  tail call fastcc void @_ZN3povL20Compute_Fractal_BBoxEPNS_14Fractal_StructE(%"struct.pov::Fractal_Struct"* %1) #6, !dbg !2236
-  ret void, !dbg !2237
+if.end:                                           ; preds = %if.then, %entry
+  %3 = phi %"struct.pov::Transform_Struct"* [ %call, %if.then ], [ %2, %entry ]
+  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %3, %"struct.pov::Transform_Struct"* %Trans) #6, !dbg !1802
+  tail call fastcc void @_ZN3povL20Compute_Fractal_BBoxEPNS_14Fractal_StructE(%"struct.pov::Fractal_Struct"* %0) #6, !dbg !1803
+  ret void, !dbg !1804
 }

@@ -1,138 +1,141 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 %struct._DenseMtx = type { i32, i32, i32, i32, i32, i32, i32, i32*, i32*, double*, %struct._DV, %struct._DenseMtx* }
 %struct._DV = type { i32, i32, i32, double* }
 
-@__stderrp = external global %struct.__sFILE*
+@stderr = external global %struct._IO_FILE*
 @.str = private unnamed_addr constant [49 x i8] c"\0A ALLOCATE failure : bytes %zd, line %d, file %s\00", align 1
-@.str1 = private unnamed_addr constant [97 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c\00", align 1
+@.str1 = private unnamed_addr constant [85 x i8] c"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c\00", align 1
 @.str2 = private unnamed_addr constant [58 x i8] c"\0A fatal error in DenseMtx_setDefaultFields(%p)\0A bad input\00", align 1
 @.str3 = private unnamed_addr constant [52 x i8] c"\0A fatal error in DenseMtx_clearData(%p)\0A bad input\0A\00", align 1
 @.str4 = private unnamed_addr constant [47 x i8] c"\0A fatal error in DenseMtx_free(%p)\0A bad input\0A\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define %struct._DenseMtx* @DenseMtx_new() #0 {
-  %1 = tail call i8* @malloc(i64 88) #6, !dbg !59
-  %2 = bitcast i8* %1 to %struct._DenseMtx*, !dbg !59
-  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %2, i64 0, metadata !43, metadata !63), !dbg !64
-  %3 = icmp eq i8* %1, null, !dbg !59
-  br i1 %3, label %4, label %7, !dbg !65
+entry:
+  %call = tail call noalias i8* @malloc(i64 88) #6, !dbg !52
+  %0 = bitcast i8* %call to %struct._DenseMtx*, !dbg !52
+  tail call void @llvm.dbg.value(metadata !{%struct._DenseMtx* %0}, i64 0, metadata !40), !dbg !52
+  %cmp = icmp eq i8* %call, null, !dbg !52
+  br i1 %cmp, label %if.then, label %if.end, !dbg !52
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !66, !tbaa !68
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 88, i32 21, i8* getelementptr inbounds ([97 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !66
-  tail call void @exit(i32 -1) #7, !dbg !66
-  unreachable, !dbg !66
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !54, !tbaa !56
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 88, i32 21, i8* getelementptr inbounds ([85 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !54
+  tail call void @exit(i32 -1) #7, !dbg !54
+  unreachable, !dbg !54
 
-; <label>:7                                       ; preds = %0
-  tail call void @DenseMtx_setDefaultFields(%struct._DenseMtx* %2) #8, !dbg !72
-  ret %struct._DenseMtx* %2, !dbg !73
+if.end:                                           ; preds = %entry
+  tail call void @DenseMtx_setDefaultFields(%struct._DenseMtx* %0) #8, !dbg !59
+  ret %struct._DenseMtx* %0, !dbg !60
 }
 
 ; Function Attrs: nounwind optsize
 declare noalias i8* @malloc(i64) #1
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #1
+declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #1
 
-; Function Attrs: noreturn optsize
+; Function Attrs: noreturn nounwind optsize
 declare void @exit(i32) #2
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @DenseMtx_setDefaultFields(%struct._DenseMtx* %mtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !48, metadata !63), !dbg !74
-  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !75
-  br i1 %1, label %2, label %5, !dbg !77
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DenseMtx* %mtx}, i64 0, metadata !45), !dbg !61
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null, !dbg !62
+  br i1 %cmp, label %if.then, label %if.end, !dbg !62
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !78, !tbaa !68
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([58 x i8]* @.str2, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !80
-  tail call void @exit(i32 -1) #7, !dbg !81
-  unreachable, !dbg !81
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !63, !tbaa !56
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str2, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !63
+  tail call void @exit(i32 -1) #7, !dbg !65
+  unreachable, !dbg !65
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0, !dbg !82
-  store i32 1, i32* %6, align 4, !dbg !83, !tbaa !84
-  %7 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 1, !dbg !88
-  store i32 -1, i32* %7, align 4, !dbg !89, !tbaa !90
-  %8 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 2, !dbg !91
-  store i32 -1, i32* %8, align 4, !dbg !92, !tbaa !93
-  %9 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !94
-  %10 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 7, !dbg !95
-  %11 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 10, !dbg !96
-  %12 = bitcast i32* %9 to i8*, !dbg !97
-  call void @llvm.memset.p0i8.i64(i8* %12, i8 0, i64 16, i32 4, i1 false), !dbg !98
-  %13 = bitcast i32** %10 to i8*, !dbg !97
-  call void @llvm.memset.p0i8.i64(i8* %13, i8 0, i64 24, i32 8, i1 false), !dbg !99
-  tail call void @DV_setDefaultFields(%struct._DV* %11) #6, !dbg !97
-  %14 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 11, !dbg !100
-  store %struct._DenseMtx* null, %struct._DenseMtx** %14, align 8, !dbg !101, !tbaa !102
-  ret void, !dbg !103
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0, !dbg !66
+  store i32 1, i32* %type, align 4, !dbg !66, !tbaa !67
+  %rowid = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 1, !dbg !68
+  store i32 -1, i32* %rowid, align 4, !dbg !68, !tbaa !67
+  %colid = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 2, !dbg !69
+  store i32 -1, i32* %colid, align 4, !dbg !69, !tbaa !67
+  %nrow = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !70
+  %rowind = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 7, !dbg !71
+  %wrkDV = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 10, !dbg !72
+  %1 = bitcast i32* %nrow to i8*, !dbg !72
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 16, i32 4, i1 false), !dbg !73
+  %2 = bitcast i32** %rowind to i8*, !dbg !72
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 24, i32 8, i1 false), !dbg !71
+  tail call void @DV_setDefaultFields(%struct._DV* %wrkDV) #6, !dbg !72
+  %next = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 11, !dbg !74
+  store %struct._DenseMtx* null, %struct._DenseMtx** %next, align 8, !dbg !74, !tbaa !56
+  ret void, !dbg !75
 }
 
 ; Function Attrs: optsize
 declare void @DV_setDefaultFields(%struct._DV*) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @DenseMtx_clearData(%struct._DenseMtx* %mtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !51, metadata !63), !dbg !104
-  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !105
-  br i1 %1, label %2, label %5, !dbg !107
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DenseMtx* %mtx}, i64 0, metadata !48), !dbg !76
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null, !dbg !77
+  br i1 %cmp, label %if.then, label %if.end, !dbg !77
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !108, !tbaa !68
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([52 x i8]* @.str3, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !110
-  tail call void @exit(i32 -1) #7, !dbg !111
-  unreachable, !dbg !111
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !78, !tbaa !56
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str3, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !78
+  tail call void @exit(i32 -1) #7, !dbg !80
+  unreachable, !dbg !80
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 10, !dbg !112
-  tail call void @DV_clearData(%struct._DV* %6) #6, !dbg !113
-  tail call void @DenseMtx_setDefaultFields(%struct._DenseMtx* %mtx) #8, !dbg !114
-  ret void, !dbg !115
+if.end:                                           ; preds = %entry
+  %wrkDV = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 10, !dbg !81
+  tail call void @DV_clearData(%struct._DV* %wrkDV) #6, !dbg !81
+  tail call void @DenseMtx_setDefaultFields(%struct._DenseMtx* %mtx) #8, !dbg !82
+  ret void, !dbg !83
 }
 
 ; Function Attrs: optsize
 declare void @DV_clearData(%struct._DV*) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @DenseMtx_free(%struct._DenseMtx* %mtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !54, metadata !63), !dbg !116
-  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !117
-  br i1 %1, label %2, label %5, !dbg !119
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DenseMtx* %mtx}, i64 0, metadata !51), !dbg !84
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null, !dbg !85
+  br i1 %cmp, label %if.then, label %if.end, !dbg !85
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !120, !tbaa !68
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([47 x i8]* @.str4, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !122
-  tail call void @exit(i32 -1) #7, !dbg !123
-  unreachable, !dbg !123
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !86, !tbaa !56
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str4, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !86
+  tail call void @exit(i32 -1) #7, !dbg !88
+  unreachable, !dbg !88
 
-; <label>:5                                       ; preds = %0
-  tail call void @DenseMtx_clearData(%struct._DenseMtx* %mtx) #8, !dbg !124
-  %6 = bitcast %struct._DenseMtx* %mtx to i8*, !dbg !125
-  tail call void @free(i8* %6) #8, !dbg !125
-  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* null, i64 0, metadata !54, metadata !63), !dbg !116
-  ret void, !dbg !128
+if.end:                                           ; preds = %entry
+  tail call void @DenseMtx_clearData(%struct._DenseMtx* %mtx) #8, !dbg !89
+  %1 = bitcast %struct._DenseMtx* %mtx to i8*, !dbg !90
+  tail call void @free(i8* %1) #6, !dbg !90
+  tail call void @llvm.dbg.value(metadata !92, i64 0, metadata !51), !dbg !90
+  ret void, !dbg !93
 }
 
 ; Function Attrs: nounwind optsize
 declare void @free(i8* nocapture) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #4
+declare void @llvm.dbg.value(metadata, i64, metadata) #4
 
 ; Function Attrs: nounwind
 declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #5
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #4 = { nounwind readnone }
 attributes #5 = { nounwind }
 attributes #6 = { nounwind optsize }
@@ -140,135 +143,98 @@ attributes #7 = { noreturn nounwind optsize }
 attributes #8 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!55, !56, !57}
-!llvm.ident = !{!58}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !38, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !34, !35, !36}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DICompositeType(tag: DW_TAG_structure_type, name: "_DenseMtx", file: !6, line: 29, size: 704, align: 64, elements: !7)
-!6 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/../DenseMtx.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!7 = !{!8, !10, !11, !12, !13, !14, !15, !16, !18, !19, !22, !31}
-!8 = !DIDerivedType(tag: DW_TAG_member, name: "type", scope: !5, file: !6, line: 30, baseType: !9, size: 32, align: 32)
-!9 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!10 = !DIDerivedType(tag: DW_TAG_member, name: "rowid", scope: !5, file: !6, line: 31, baseType: !9, size: 32, align: 32, offset: 32)
-!11 = !DIDerivedType(tag: DW_TAG_member, name: "colid", scope: !5, file: !6, line: 32, baseType: !9, size: 32, align: 32, offset: 64)
-!12 = !DIDerivedType(tag: DW_TAG_member, name: "nrow", scope: !5, file: !6, line: 33, baseType: !9, size: 32, align: 32, offset: 96)
-!13 = !DIDerivedType(tag: DW_TAG_member, name: "ncol", scope: !5, file: !6, line: 34, baseType: !9, size: 32, align: 32, offset: 128)
-!14 = !DIDerivedType(tag: DW_TAG_member, name: "inc1", scope: !5, file: !6, line: 35, baseType: !9, size: 32, align: 32, offset: 160)
-!15 = !DIDerivedType(tag: DW_TAG_member, name: "inc2", scope: !5, file: !6, line: 36, baseType: !9, size: 32, align: 32, offset: 192)
-!16 = !DIDerivedType(tag: DW_TAG_member, name: "rowind", scope: !5, file: !6, line: 37, baseType: !17, size: 64, align: 64, offset: 256)
-!17 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !9, size: 64, align: 64)
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "colind", scope: !5, file: !6, line: 38, baseType: !17, size: 64, align: 64, offset: 320)
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "entries", scope: !5, file: !6, line: 39, baseType: !20, size: 64, align: 64, offset: 384)
-!20 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !21, size: 64, align: 64)
-!21 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!22 = !DIDerivedType(tag: DW_TAG_member, name: "wrkDV", scope: !5, file: !6, line: 40, baseType: !23, size: 192, align: 64, offset: 448)
-!23 = !DIDerivedType(tag: DW_TAG_typedef, name: "DV", file: !24, line: 20, baseType: !25)
-!24 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/../../DV/DV.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!25 = !DICompositeType(tag: DW_TAG_structure_type, name: "_DV", file: !24, line: 21, size: 192, align: 64, elements: !26)
-!26 = !{!27, !28, !29, !30}
-!27 = !DIDerivedType(tag: DW_TAG_member, name: "size", scope: !25, file: !24, line: 22, baseType: !9, size: 32, align: 32)
-!28 = !DIDerivedType(tag: DW_TAG_member, name: "maxsize", scope: !25, file: !24, line: 23, baseType: !9, size: 32, align: 32, offset: 32)
-!29 = !DIDerivedType(tag: DW_TAG_member, name: "owned", scope: !25, file: !24, line: 24, baseType: !9, size: 32, align: 32, offset: 64)
-!30 = !DIDerivedType(tag: DW_TAG_member, name: "vec", scope: !25, file: !24, line: 25, baseType: !20, size: 64, align: 64, offset: 128)
-!31 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !5, file: !6, line: 41, baseType: !32, size: 64, align: 64, offset: 640)
-!32 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !33, size: 64, align: 64)
-!33 = !DIDerivedType(tag: DW_TAG_typedef, name: "DenseMtx", file: !6, line: 28, baseType: !5)
-!34 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!35 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!36 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !37, size: 64, align: 64)
-!37 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!38 = !{!39, !44, !49, !52}
-!39 = !DISubprogram(name: "DenseMtx_new", scope: !1, file: !1, line: 16, type: !40, isLocal: false, isDefinition: true, scopeLine: 18, flags: DIFlagPrototyped, isOptimized: true, function: %struct._DenseMtx* ()* @DenseMtx_new, variables: !42)
-!40 = !DISubroutineType(types: !41)
-!41 = !{!32}
-!42 = !{!43}
-!43 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "mtx", scope: !39, file: !1, line: 19, type: !32)
-!44 = !DISubprogram(name: "DenseMtx_setDefaultFields", scope: !1, file: !1, line: 35, type: !45, isLocal: false, isDefinition: true, scopeLine: 37, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._DenseMtx*)* @DenseMtx_setDefaultFields, variables: !47)
-!45 = !DISubroutineType(types: !46)
-!46 = !{null, !32}
-!47 = !{!48}
-!48 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "mtx", arg: 1, scope: !44, file: !1, line: 36, type: !32)
-!49 = !DISubprogram(name: "DenseMtx_clearData", scope: !1, file: !1, line: 67, type: !45, isLocal: false, isDefinition: true, scopeLine: 69, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._DenseMtx*)* @DenseMtx_clearData, variables: !50)
-!50 = !{!51}
-!51 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "mtx", arg: 1, scope: !49, file: !1, line: 68, type: !32)
-!52 = !DISubprogram(name: "DenseMtx_free", scope: !1, file: !1, line: 104, type: !45, isLocal: false, isDefinition: true, scopeLine: 106, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._DenseMtx*)* @DenseMtx_free, variables: !53)
-!53 = !{!54}
-!54 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "mtx", arg: 1, scope: !52, file: !1, line: 105, type: !32)
-!55 = !{i32 2, !"Dwarf Version", i32 2}
-!56 = !{i32 2, !"Debug Info Version", i32 700000003}
-!57 = !{i32 1, !"PIC Level", i32 2}
-!58 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!59 = !DILocation(line: 21, column: 1, scope: !60)
-!60 = distinct !DILexicalBlock(scope: !61, file: !1, line: 21, column: 1)
-!61 = distinct !DILexicalBlock(scope: !62, file: !1, line: 21, column: 1)
-!62 = distinct !DILexicalBlock(scope: !39, file: !1, line: 21, column: 1)
-!63 = !DIExpression()
-!64 = !DILocation(line: 19, column: 13, scope: !39)
-!65 = !DILocation(line: 21, column: 1, scope: !61)
-!66 = !DILocation(line: 21, column: 1, scope: !67)
-!67 = distinct !DILexicalBlock(scope: !60, file: !1, line: 21, column: 1)
-!68 = !{!69, !69, i64 0}
-!69 = !{!"any pointer", !70, i64 0}
-!70 = !{!"omnipotent char", !71, i64 0}
-!71 = !{!"Simple C/C++ TBAA"}
-!72 = !DILocation(line: 22, column: 1, scope: !39)
-!73 = !DILocation(line: 24, column: 1, scope: !39)
-!74 = !DILocation(line: 36, column: 16, scope: !44)
-!75 = !DILocation(line: 38, column: 10, scope: !76)
-!76 = distinct !DILexicalBlock(scope: !44, file: !1, line: 38, column: 6)
-!77 = !DILocation(line: 38, column: 6, scope: !44)
-!78 = !DILocation(line: 39, column: 12, scope: !79)
-!79 = distinct !DILexicalBlock(scope: !76, file: !1, line: 38, column: 20)
-!80 = !DILocation(line: 39, column: 4, scope: !79)
-!81 = !DILocation(line: 41, column: 4, scope: !79)
-!82 = !DILocation(line: 43, column: 6, scope: !44)
-!83 = !DILocation(line: 43, column: 14, scope: !44)
-!84 = !{!85, !86, i64 0}
-!85 = !{!"_DenseMtx", !86, i64 0, !86, i64 4, !86, i64 8, !86, i64 12, !86, i64 16, !86, i64 20, !86, i64 24, !69, i64 32, !69, i64 40, !69, i64 48, !87, i64 56, !69, i64 80}
-!86 = !{!"int", !70, i64 0}
-!87 = !{!"_DV", !86, i64 0, !86, i64 4, !86, i64 8, !69, i64 16}
-!88 = !DILocation(line: 44, column: 6, scope: !44)
-!89 = !DILocation(line: 44, column: 14, scope: !44)
-!90 = !{!85, !86, i64 4}
-!91 = !DILocation(line: 45, column: 6, scope: !44)
-!92 = !DILocation(line: 45, column: 14, scope: !44)
-!93 = !{!85, !86, i64 8}
-!94 = !DILocation(line: 46, column: 6, scope: !44)
-!95 = !DILocation(line: 50, column: 6, scope: !44)
-!96 = !DILocation(line: 53, column: 27, scope: !44)
-!97 = !DILocation(line: 53, column: 1, scope: !44)
-!98 = !DILocation(line: 47, column: 14, scope: !44)
-!99 = !DILocation(line: 50, column: 14, scope: !44)
-!100 = !DILocation(line: 54, column: 6, scope: !44)
-!101 = !DILocation(line: 54, column: 14, scope: !44)
-!102 = !{!85, !69, i64 80}
-!103 = !DILocation(line: 56, column: 1, scope: !44)
-!104 = !DILocation(line: 68, column: 16, scope: !49)
-!105 = !DILocation(line: 75, column: 10, scope: !106)
-!106 = distinct !DILexicalBlock(scope: !49, file: !1, line: 75, column: 6)
-!107 = !DILocation(line: 75, column: 6, scope: !49)
-!108 = !DILocation(line: 76, column: 12, scope: !109)
-!109 = distinct !DILexicalBlock(scope: !106, file: !1, line: 75, column: 20)
-!110 = !DILocation(line: 76, column: 4, scope: !109)
-!111 = !DILocation(line: 78, column: 4, scope: !109)
-!112 = !DILocation(line: 85, column: 20, scope: !49)
-!113 = !DILocation(line: 85, column: 1, scope: !49)
-!114 = !DILocation(line: 91, column: 1, scope: !49)
-!115 = !DILocation(line: 93, column: 1, scope: !49)
-!116 = !DILocation(line: 105, column: 16, scope: !52)
-!117 = !DILocation(line: 107, column: 10, scope: !118)
-!118 = distinct !DILexicalBlock(scope: !52, file: !1, line: 107, column: 6)
-!119 = !DILocation(line: 107, column: 6, scope: !52)
-!120 = !DILocation(line: 108, column: 12, scope: !121)
-!121 = distinct !DILexicalBlock(scope: !118, file: !1, line: 107, column: 20)
-!122 = !DILocation(line: 108, column: 4, scope: !121)
-!123 = !DILocation(line: 110, column: 4, scope: !121)
-!124 = !DILocation(line: 112, column: 1, scope: !52)
-!125 = !DILocation(line: 113, column: 1, scope: !126)
-!126 = distinct !DILexicalBlock(scope: !127, file: !1, line: 113, column: 1)
-!127 = distinct !DILexicalBlock(scope: !52, file: !1, line: 113, column: 1)
-!128 = !DILocation(line: 115, column: 1, scope: !52)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !41, metadata !46, metadata !49}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DenseMtx_new", metadata !"DenseMtx_new", metadata !"", i32 16, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct._DenseMtx* ()* @DenseMtx_new, null, null, metadata !39, i32 18} ; [ DW_TAG_subprogram ] [line 16] [def] [scope 18] [DenseMtx_new]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from DenseMtx]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"DenseMtx", i32 28, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [DenseMtx] [line 28, size 0, align 0, offset 0] [from _DenseMtx]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"_DenseMtx", i32 29, i64 704, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [_DenseMtx] [line 29, size 704, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/../DenseMtx.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13, metadata !15, metadata !16, metadata !17, metadata !18, metadata !19, metadata !20, metadata !21, metadata !23, metadata !24, metadata !27, metadata !36}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"type", i32 30, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [type] [line 30, size 32, align 32, offset 0] [from int]
+!14 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!15 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"rowid", i32 31, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [rowid] [line 31, size 32, align 32, offset 32] [from int]
+!16 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"colid", i32 32, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [colid] [line 32, size 32, align 32, offset 64] [from int]
+!17 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"nrow", i32 33, i64 32, i64 32, i64 96, i32 0, metadata !14} ; [ DW_TAG_member ] [nrow] [line 33, size 32, align 32, offset 96] [from int]
+!18 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"ncol", i32 34, i64 32, i64 32, i64 128, i32 0, metadata !14} ; [ DW_TAG_member ] [ncol] [line 34, size 32, align 32, offset 128] [from int]
+!19 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"inc1", i32 35, i64 32, i64 32, i64 160, i32 0, metadata !14} ; [ DW_TAG_member ] [inc1] [line 35, size 32, align 32, offset 160] [from int]
+!20 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"inc2", i32 36, i64 32, i64 32, i64 192, i32 0, metadata !14} ; [ DW_TAG_member ] [inc2] [line 36, size 32, align 32, offset 192] [from int]
+!21 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"rowind", i32 37, i64 64, i64 64, i64 256, i32 0, metadata !22} ; [ DW_TAG_member ] [rowind] [line 37, size 64, align 64, offset 256] [from ]
+!22 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !14} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!23 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"colind", i32 38, i64 64, i64 64, i64 320, i32 0, metadata !22} ; [ DW_TAG_member ] [colind] [line 38, size 64, align 64, offset 320] [from ]
+!24 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"entries", i32 39, i64 64, i64 64, i64 384, i32 0, metadata !25} ; [ DW_TAG_member ] [entries] [line 39, size 64, align 64, offset 384] [from ]
+!25 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !26} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from double]
+!26 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!27 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"wrkDV", i32 40, i64 192, i64 64, i64 448, i32 0, metadata !28} ; [ DW_TAG_member ] [wrkDV] [line 40, size 192, align 64, offset 448] [from DV]
+!28 = metadata !{i32 786454, metadata !11, null, metadata !"DV", i32 20, i64 0, i64 0, i64 0, i32 0, metadata !29} ; [ DW_TAG_typedef ] [DV] [line 20, size 0, align 0, offset 0] [from _DV]
+!29 = metadata !{i32 786451, metadata !30, null, metadata !"_DV", i32 21, i64 192, i64 64, i32 0, i32 0, null, metadata !31, i32 0, null, null} ; [ DW_TAG_structure_type ] [_DV] [line 21, size 192, align 64, offset 0] [from ]
+!30 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/../../DV/DV.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!31 = metadata !{metadata !32, metadata !33, metadata !34, metadata !35}
+!32 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"size", i32 22, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [size] [line 22, size 32, align 32, offset 0] [from int]
+!33 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"maxsize", i32 23, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [maxsize] [line 23, size 32, align 32, offset 32] [from int]
+!34 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"owned", i32 24, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [owned] [line 24, size 32, align 32, offset 64] [from int]
+!35 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"vec", i32 25, i64 64, i64 64, i64 128, i32 0, metadata !25} ; [ DW_TAG_member ] [vec] [line 25, size 64, align 64, offset 128] [from ]
+!36 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"next", i32 41, i64 64, i64 64, i64 640, i32 0, metadata !37} ; [ DW_TAG_member ] [next] [line 41, size 64, align 64, offset 640] [from ]
+!37 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !38} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from DenseMtx]
+!38 = metadata !{i32 786454, metadata !11, null, metadata !"DenseMtx", i32 28, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [DenseMtx] [line 28, size 0, align 0, offset 0] [from _DenseMtx]
+!39 = metadata !{metadata !40}
+!40 = metadata !{i32 786688, metadata !4, metadata !"mtx", metadata !5, i32 19, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [mtx] [line 19]
+!41 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DenseMtx_setDefaultFields", metadata !"DenseMtx_setDefaultFields", metadata !"", i32 35, metadata !42, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._DenseMtx*)* @DenseMtx_setDefaultFields, null, null, metadata !44, i32 37} ; [ DW_TAG_subprogram ] [line 35] [def] [scope 37] [DenseMtx_setDefaultFields]
+!42 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !43, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!43 = metadata !{null, metadata !8}
+!44 = metadata !{metadata !45}
+!45 = metadata !{i32 786689, metadata !41, metadata !"mtx", metadata !5, i32 16777252, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mtx] [line 36]
+!46 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DenseMtx_clearData", metadata !"DenseMtx_clearData", metadata !"", i32 67, metadata !42, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._DenseMtx*)* @DenseMtx_clearData, null, null, metadata !47, i32 69} ; [ DW_TAG_subprogram ] [line 67] [def] [scope 69] [DenseMtx_clearData]
+!47 = metadata !{metadata !48}
+!48 = metadata !{i32 786689, metadata !46, metadata !"mtx", metadata !5, i32 16777284, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mtx] [line 68]
+!49 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DenseMtx_free", metadata !"DenseMtx_free", metadata !"", i32 104, metadata !42, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._DenseMtx*)* @DenseMtx_free, null, null, metadata !50, i32 106} ; [ DW_TAG_subprogram ] [line 104] [def] [scope 106] [DenseMtx_free]
+!50 = metadata !{metadata !51}
+!51 = metadata !{i32 786689, metadata !49, metadata !"mtx", metadata !5, i32 16777321, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mtx] [line 105]
+!52 = metadata !{i32 21, i32 0, metadata !53, null}
+!53 = metadata !{i32 786443, metadata !1, metadata !4, i32 21, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c]
+!54 = metadata !{i32 21, i32 0, metadata !55, null}
+!55 = metadata !{i32 786443, metadata !1, metadata !53, i32 21, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c]
+!56 = metadata !{metadata !"any pointer", metadata !57}
+!57 = metadata !{metadata !"omnipotent char", metadata !58}
+!58 = metadata !{metadata !"Simple C/C++ TBAA"}
+!59 = metadata !{i32 22, i32 0, metadata !4, null}
+!60 = metadata !{i32 24, i32 0, metadata !4, null}
+!61 = metadata !{i32 36, i32 0, metadata !41, null}
+!62 = metadata !{i32 38, i32 0, metadata !41, null}
+!63 = metadata !{i32 39, i32 0, metadata !64, null}
+!64 = metadata !{i32 786443, metadata !1, metadata !41, i32 38, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c]
+!65 = metadata !{i32 41, i32 0, metadata !64, null}
+!66 = metadata !{i32 43, i32 0, metadata !41, null}
+!67 = metadata !{metadata !"int", metadata !57}
+!68 = metadata !{i32 44, i32 0, metadata !41, null}
+!69 = metadata !{i32 45, i32 0, metadata !41, null}
+!70 = metadata !{i32 46, i32 0, metadata !41, null}
+!71 = metadata !{i32 50, i32 0, metadata !41, null}
+!72 = metadata !{i32 53, i32 0, metadata !41, null}
+!73 = metadata !{i32 47, i32 0, metadata !41, null}
+!74 = metadata !{i32 54, i32 0, metadata !41, null}
+!75 = metadata !{i32 56, i32 0, metadata !41, null}
+!76 = metadata !{i32 68, i32 0, metadata !46, null}
+!77 = metadata !{i32 75, i32 0, metadata !46, null}
+!78 = metadata !{i32 76, i32 0, metadata !79, null}
+!79 = metadata !{i32 786443, metadata !1, metadata !46, i32 75, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c]
+!80 = metadata !{i32 78, i32 0, metadata !79, null}
+!81 = metadata !{i32 85, i32 0, metadata !46, null}
+!82 = metadata !{i32 91, i32 0, metadata !46, null}
+!83 = metadata !{i32 93, i32 0, metadata !46, null}
+!84 = metadata !{i32 105, i32 0, metadata !49, null}
+!85 = metadata !{i32 107, i32 0, metadata !49, null}
+!86 = metadata !{i32 108, i32 0, metadata !87, null}
+!87 = metadata !{i32 786443, metadata !1, metadata !49, i32 107, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c]
+!88 = metadata !{i32 110, i32 0, metadata !87, null}
+!89 = metadata !{i32 112, i32 0, metadata !49, null}
+!90 = metadata !{i32 113, i32 0, metadata !91, null}
+!91 = metadata !{i32 786443, metadata !1, metadata !49, i32 113, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DenseMtx/src/DenseMtx_basics.c]
+!92 = metadata !{%struct._DenseMtx* null}
+!93 = metadata !{i32 115, i32 0, metadata !49, null}

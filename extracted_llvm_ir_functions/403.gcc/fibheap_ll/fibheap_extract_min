@@ -1,19 +1,23 @@
 define i8* @fibheap_extract_min(%struct.fibheap* nocapture %heap) #0 {
 entry:
-  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1
-  %0 = load %struct.fibnode** %min, align 8, !tbaa !0
-  %cmp = icmp eq %struct.fibnode* %0, null
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.fibheap* %heap}, i64 0, metadata !63), !dbg !276
+  tail call void @llvm.dbg.value(metadata !277, i64 0, metadata !65), !dbg !278
+  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1, !dbg !279
+  %0 = load %struct.fibnode** %min, align 8, !dbg !279, !tbaa !204
+  %cmp = icmp eq %struct.fibnode* %0, null, !dbg !279
+  br i1 %cmp, label %if.end, label %if.then, !dbg !279
 
 if.then:                                          ; preds = %entry
-  %call = tail call fastcc %struct.fibnode* @fibheap_extr_min_node(%struct.fibheap* %heap) #6
-  %data = getelementptr inbounds %struct.fibnode* %call, i64 0, i32 5
-  %1 = load i8** %data, align 8, !tbaa !0
-  %2 = bitcast %struct.fibnode* %call to i8*
-  tail call void @free(i8* %2) #5
-  br label %if.end
+  %call = tail call fastcc %struct.fibnode* @fibheap_extr_min_node(%struct.fibheap* %heap) #7, !dbg !280
+  tail call void @llvm.dbg.value(metadata !{%struct.fibnode* %call}, i64 0, metadata !64), !dbg !280
+  %data = getelementptr inbounds %struct.fibnode* %call, i64 0, i32 5, !dbg !282
+  %1 = load i8** %data, align 8, !dbg !282, !tbaa !204
+  tail call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !65), !dbg !282
+  %2 = bitcast %struct.fibnode* %call to i8*, !dbg !283
+  tail call void @free(i8* %2) #6, !dbg !283
+  br label %if.end, !dbg !284
 
 if.end:                                           ; preds = %entry, %if.then
   %ret.0 = phi i8* [ %1, %if.then ], [ null, %entry ]
-  ret i8* %ret.0
+  ret i8* %ret.0, !dbg !285
 }

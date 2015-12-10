@@ -1,21 +1,22 @@
 define void @extract_insn_cached(%struct.rtx_def* %insn) #0 {
 entry:
-  %0 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 10), align 8, !tbaa !3
-  %cmp = icmp eq %struct.rtx_def* %0, %insn
-  br i1 %cmp, label %land.lhs.true, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !779), !dbg !1981
+  %0 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 10), align 8, !dbg !1982, !tbaa !1177
+  %cmp = icmp eq %struct.rtx_def* %0, %insn, !dbg !1982
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !1982
 
 land.lhs.true:                                    ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
-  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %1 = load i32* %rtint, align 4, !tbaa !0
-  %cmp1 = icmp sgt i32 %1, -1
-  br i1 %cmp1, label %return, label %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4, !dbg !1982
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !1982
+  %1 = load i32* %rtint, align 4, !dbg !1982, !tbaa !1168
+  %cmp1 = icmp sgt i32 %1, -1, !dbg !1982
+  br i1 %cmp1, label %return, label %if.end, !dbg !1982
 
 if.end:                                           ; preds = %land.lhs.true, %entry
-  tail call void @extract_insn(%struct.rtx_def* %insn) #7
-  store %struct.rtx_def* %insn, %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 10), align 8, !tbaa !3
-  br label %return
+  tail call void @extract_insn(%struct.rtx_def* %insn) #8, !dbg !1983
+  store %struct.rtx_def* %insn, %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 10), align 8, !dbg !1984, !tbaa !1177
+  br label %return, !dbg !1984
 
 return:                                           ; preds = %land.lhs.true, %if.end
-  ret void
+  ret void, !dbg !1984
 }

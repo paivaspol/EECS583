@@ -1,19 +1,20 @@
 define i32 @CCTK_DisableGroupCommI(%struct.cGH* %GH, i32 %group) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !94, metadata !553), !dbg !628
-  tail call void @llvm.dbg.value(metadata i32 %group, i64 0, metadata !95, metadata !553), !dbg !629
-  %1 = tail call i8* @CCTK_GroupName(i32 %group) #6, !dbg !630
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !97, metadata !553), !dbg !631
-  %2 = icmp eq i8* %1, null, !dbg !632
-  br i1 %2, label %6, label %3, !dbg !634
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !92), !dbg !590
+  tail call void @llvm.dbg.value(metadata !{i32 %group}, i64 0, metadata !93), !dbg !590
+  %call = tail call i8* @CCTK_GroupName(i32 %group) #6, !dbg !591
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !95), !dbg !591
+  %tobool = icmp eq i8* %call, null, !dbg !592
+  br i1 %tobool, label %if.end, label %if.then, !dbg !592
 
-; <label>:3                                       ; preds = %0
-  %4 = load i32 (%struct.cGH*, i8*)** @CCTK_DisableGroupComm, align 8, !dbg !635, !tbaa !572
-  %5 = tail call i32 %4(%struct.cGH* %GH, i8* %1) #6, !dbg !635
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !96, metadata !553), !dbg !637
-  tail call void @free(i8* %1) #7, !dbg !638
-  br label %6, !dbg !639
+if.then:                                          ; preds = %entry
+  %0 = load i32 (%struct.cGH*, i8*)** @CCTK_DisableGroupComm, align 8, !dbg !593, !tbaa !554
+  %call1 = tail call i32 %0(%struct.cGH* %GH, i8* %call) #6, !dbg !593
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !94), !dbg !593
+  tail call void @free(i8* %call) #6, !dbg !595
+  br label %if.end, !dbg !596
 
-; <label>:6                                       ; preds = %0, %3
-  %retcode.0 = phi i32 [ %5, %3 ], [ 0, %0 ]
-  ret i32 %retcode.0, !dbg !640
+if.end:                                           ; preds = %entry, %if.then
+  %retcode.0 = phi i32 [ %call1, %if.then ], [ 0, %entry ]
+  ret i32 %retcode.0, !dbg !597
 }

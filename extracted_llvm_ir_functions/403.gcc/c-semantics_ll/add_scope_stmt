@@ -1,38 +1,44 @@
 define %union.tree_node* @add_scope_stmt(i32 %begin_p, i32 %partial_p) #0 {
 entry:
-  %call = tail call %union.tree_node** @current_scope_stmt_stack() #5
-  %0 = load %union.tree_node** %call, align 8, !tbaa !0
-  %call1 = tail call %union.tree_node* (i32, ...)* @build_stmt(i32 166, %union.tree_node* null) #7
-  %lang_flag_0 = getelementptr inbounds %union.tree_node* %call1, i64 0, i32 0, i32 0, i32 2
-  %1 = bitcast [4 x i8]* %lang_flag_0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.value = shl i32 %begin_p, 24
-  %bf.shl = and i32 %bf.value, 16777216
-  %bf.clear = and i32 %bf.load, -285212673
-  %bf.value4 = shl i32 %partial_p, 28
-  %bf.shl5 = and i32 %bf.value4, 268435456
-  %bf.set = or i32 %bf.shl5, %bf.shl
-  %bf.set7 = or i32 %bf.set, %bf.clear
-  store i32 %bf.set7, i32* %1, align 8
-  %tobool = icmp eq i32 %begin_p, 0
-  br i1 %tobool, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i32 %begin_p}, i64 0, metadata !1098), !dbg !1283
+  tail call void @llvm.dbg.value(metadata !{i32 %partial_p}, i64 0, metadata !1099), !dbg !1284
+  %call = tail call %union.tree_node** @current_scope_stmt_stack() #6, !dbg !1285
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node** %call}, i64 0, metadata !1100), !dbg !1285
+  %0 = load %union.tree_node** %call, align 8, !dbg !1286, !tbaa !1245
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %0}, i64 0, metadata !1102), !dbg !1286
+  %call1 = tail call %union.tree_node* (i32, ...)* @build_stmt(i32 166, %union.tree_node* null) #8, !dbg !1287
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call1}, i64 0, metadata !1101), !dbg !1287
+  %lang_flag_0 = getelementptr inbounds %union.tree_node* %call1, i64 0, i32 0, i32 0, i32 2, !dbg !1288
+  %1 = bitcast [4 x i8]* %lang_flag_0 to i32*, !dbg !1288
+  %bf.load = load i32* %1, align 8, !dbg !1288
+  %bf.value = shl i32 %begin_p, 24, !dbg !1288
+  %bf.shl = and i32 %bf.value, 16777216, !dbg !1288
+  %bf.clear = and i32 %bf.load, -285212673, !dbg !1288
+  %bf.value4 = shl i32 %partial_p, 28, !dbg !1289
+  %bf.shl5 = and i32 %bf.value4, 268435456, !dbg !1289
+  %bf.set = or i32 %bf.shl5, %bf.shl, !dbg !1288
+  %bf.set7 = or i32 %bf.set, %bf.clear, !dbg !1289
+  store i32 %bf.set7, i32* %1, align 8, !dbg !1289
+  %tobool = icmp eq i32 %begin_p, 0, !dbg !1290
+  br i1 %tobool, label %if.else, label %if.then, !dbg !1290
 
 if.then:                                          ; preds = %entry
-  %call8 = tail call %union.tree_node* @tree_cons(%union.tree_node* %call1, %union.tree_node* null, %union.tree_node* %0) #5
-  br label %if.end
+  %call8 = tail call %union.tree_node* @tree_cons(%union.tree_node* %call1, %union.tree_node* null, %union.tree_node* %0) #6, !dbg !1291
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call8}, i64 0, metadata !1102), !dbg !1291
+  br label %if.end, !dbg !1293
 
 if.else:                                          ; preds = %entry
-  %value = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 2
-  %2 = bitcast i32* %value to %union.tree_node**
-  store %union.tree_node* %call1, %union.tree_node** %2, align 8, !tbaa !0
-  %chain = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 0
-  %3 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %value = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 2, !dbg !1294
+  %2 = bitcast i32* %value to %union.tree_node**, !dbg !1294
+  store %union.tree_node* %call1, %union.tree_node** %2, align 8, !dbg !1294, !tbaa !1245
+  %chain = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 0, !dbg !1296
+  %3 = load %union.tree_node** %chain, align 8, !dbg !1296, !tbaa !1245
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
   %storemerge = phi %union.tree_node* [ %3, %if.else ], [ %call8, %if.then ]
   %top.0 = phi %union.tree_node* [ %0, %if.else ], [ %call8, %if.then ]
-  store %union.tree_node* %storemerge, %union.tree_node** %call, align 8, !tbaa !0
-  %call10 = tail call %union.tree_node* @add_stmt(%union.tree_node* %call1) #7
-  ret %union.tree_node* %top.0
+  store %union.tree_node* %storemerge, %union.tree_node** %call, align 8, !dbg !1297, !tbaa !1245
+  %call10 = tail call %union.tree_node* @add_stmt(%union.tree_node* %call1) #8, !dbg !1298
+  ret %union.tree_node* %top.0, !dbg !1299
 }

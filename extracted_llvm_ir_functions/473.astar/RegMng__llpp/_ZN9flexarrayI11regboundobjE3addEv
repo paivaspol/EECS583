@@ -1,47 +1,26 @@
 define linkonce_odr %class.regboundobj* @_ZN9flexarrayI11regboundobjE3addEv(%class.flexarray.1* nocapture %this) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.flexarray.1* %this, i64 0, metadata !654, metadata !675), !dbg !1265
-  %1 = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 1, !dbg !1266
-  %2 = load i32* %1, align 4, !dbg !1266, !tbaa !1114
-  %3 = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 2, !dbg !1268
-  %4 = load i32* %3, align 4, !dbg !1268, !tbaa !1110
-  %5 = icmp eq i32 %2, %4, !dbg !1269
-  br i1 %5, label %6, label %._crit_edge, !dbg !1270
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray.1* %this}, i64 0, metadata !646), !dbg !1084
+  %elemqu = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 1, !dbg !1085
+  %0 = load i32* %elemqu, align 4, !dbg !1085, !tbaa !781
+  %maxelemqu = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 2, !dbg !1085
+  %1 = load i32* %maxelemqu, align 4, !dbg !1085, !tbaa !781
+  %cmp = icmp eq i32 %0, %1, !dbg !1085
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1085
 
-._crit_edge:                                      ; preds = %0
-  %.phi.trans.insert = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 0
-  %.pre1 = load %class.regboundobj** %.phi.trans.insert, align 8, !dbg !1271, !tbaa !1120
-  br label %16, !dbg !1270
+if.then:                                          ; preds = %entry
+  tail call void @_ZN9flexarrayI11regboundobjE8doublingEb(%class.flexarray.1* %this, i1 zeroext true) #7, !dbg !1085
+  %.pre = load i32* %elemqu, align 4, !dbg !1086, !tbaa !781
+  br label %if.end, !dbg !1085
 
-; <label>:6                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata %class.flexarray.1* %this, i64 0, metadata !657, metadata !675) #5, !dbg !1272
-  tail call void @llvm.dbg.value(metadata i1 true, i64 0, metadata !658, metadata !675) #5, !dbg !1274
-  %7 = shl i32 %2, 1, !dbg !1275
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !660, metadata !675) #5, !dbg !1276
-  %8 = mul i32 %2, 224, !dbg !1277
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !566, metadata !675) #5, !dbg !1278
-  tail call void @llvm.dbg.value(metadata i32 16, i64 0, metadata !567, metadata !675) #5, !dbg !1280
-  %9 = sext i32 %8 to i64, !dbg !1281
-  %10 = tail call i8* @malloc(i64 %9) #10, !dbg !1282
-  %11 = bitcast %class.flexarray.1* %this to i8**, !dbg !1283
-  %12 = load i8** %11, align 8, !dbg !1283, !tbaa !1120
-  %13 = sext i32 %2 to i64, !dbg !1285
-  %14 = mul nsw i64 %13, 112, !dbg !1286
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %12, i64 %14, i32 8, i1 false) #5, !dbg !1287
-  tail call void @llvm.dbg.value(metadata i8* %12, i64 0, metadata !596, metadata !675) #5, !dbg !1288
-  tail call void @free(i8* %12) #10, !dbg !1290
-  store i8* %10, i8** %11, align 8, !dbg !1291, !tbaa !1120
-  store i32 %7, i32* %3, align 4, !dbg !1292, !tbaa !1110
-  %.pre = load i32* %1, align 4, !dbg !1293, !tbaa !1114
-  %15 = bitcast i8* %10 to %class.regboundobj*
-  br label %16, !dbg !1294
-
-; <label>:16                                      ; preds = %._crit_edge, %6
-  %17 = phi %class.regboundobj* [ %15, %6 ], [ %.pre1, %._crit_edge ]
-  %18 = phi i32 [ %.pre, %6 ], [ %2, %._crit_edge ]
-  %19 = add nsw i32 %18, 1, !dbg !1293
-  store i32 %19, i32* %1, align 4, !dbg !1293, !tbaa !1114
-  %20 = sext i32 %19 to i64, !dbg !1295
-  %.sum = add nsw i64 %20, -1, !dbg !1296
-  %21 = getelementptr inbounds %class.regboundobj* %17, i64 %.sum, !dbg !1296
-  ret %class.regboundobj* %21, !dbg !1297
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %inc = add nsw i32 %2, 1, !dbg !1086
+  store i32 %inc, i32* %elemqu, align 4, !dbg !1086, !tbaa !781
+  %ep = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 0, !dbg !1087
+  %3 = load %class.regboundobj** %ep, align 8, !dbg !1087, !tbaa !777
+  %idx.ext = sext i32 %inc to i64, !dbg !1087
+  %add.ptr.sum = add i64 %idx.ext, -1, !dbg !1087
+  %add.ptr4 = getelementptr inbounds %class.regboundobj* %3, i64 %add.ptr.sum, !dbg !1087
+  ret %class.regboundobj* %add.ptr4, !dbg !1087
 }

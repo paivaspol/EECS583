@@ -1,66 +1,75 @@
-define internal fastcc void @schedule_unit(i32 %unit, %struct.rtx_def* %insn, i32 %clock) #3 {
+define internal fastcc void @schedule_unit(i32 %unit, %struct.rtx_def* %insn, i32 %clock) #4 {
 entry:
-  %cmp = icmp sgt i32 %unit, -1
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i32 %unit}, i64 0, metadata !689), !dbg !1683
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !690), !dbg !1684
+  tail call void @llvm.dbg.value(metadata !{i32 %clock}, i64 0, metadata !691), !dbg !1683
+  %cmp = icmp sgt i32 %unit, -1, !dbg !1685
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1685
 
 if.then:                                          ; preds = %entry
-  %idxprom = sext i32 %unit to i64
-  %multiplicity = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom, i32 2
-  %0 = load i32* %multiplicity, align 4, !tbaa !0
-  %i.037 = add nsw i32 %0, -1
-  %cmp138 = icmp sgt i32 %i.037, 0
-  br i1 %cmp138, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i32 %unit}, i64 0, metadata !693), !dbg !1686
+  %idxprom = sext i32 %unit to i64, !dbg !1687
+  %multiplicity = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom, i32 2, !dbg !1687
+  %0 = load i32* %multiplicity, align 4, !dbg !1687, !tbaa !899
+  %i.037 = add nsw i32 %0, -1, !dbg !1687
+  %cmp138 = icmp sgt i32 %i.037, 0, !dbg !1687
+  br i1 %cmp138, label %for.body, label %for.end, !dbg !1687
 
 for.cond:                                         ; preds = %for.body
-  %i.0 = add nsw i32 %i.040, -1
-  %cmp1 = icmp sgt i32 %i.0, 0
-  br i1 %cmp1, label %for.body, label %for.end
+  %i.0 = add nsw i32 %i.040, -1, !dbg !1687
+  %cmp1 = icmp sgt i32 %i.0, 0, !dbg !1687
+  br i1 %cmp1, label %for.body, label %for.end, !dbg !1687
 
 for.body:                                         ; preds = %if.then, %for.cond
   %i.040 = phi i32 [ %i.0, %for.cond ], [ %i.037, %if.then ]
   %instance.039 = phi i32 [ %add, %for.cond ], [ %unit, %if.then ]
-  %call = tail call i32 @actual_hazard_this_instance(i32 %unit, i32 %instance.039, %struct.rtx_def* %insn, i32 %clock, i32 0) #11
-  %tobool = icmp eq i32 %call, 0
-  %add = add nsw i32 %instance.039, 26
-  br i1 %tobool, label %for.end, label %for.cond
+  %call = tail call i32 @actual_hazard_this_instance(i32 %unit, i32 %instance.039, %struct.rtx_def* %insn, i32 %clock, i32 0) #12, !dbg !1689
+  %tobool = icmp eq i32 %call, 0, !dbg !1689
+  %add = add nsw i32 %instance.039, 26, !dbg !1691
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !693), !dbg !1691
+  br i1 %tobool, label %for.end, label %for.cond, !dbg !1689
 
 for.end:                                          ; preds = %for.cond, %for.body, %if.then
   %instance.0.lcssa = phi i32 [ %unit, %if.then ], [ %instance.039, %for.body ], [ %add, %for.cond ]
-  %idxprom3 = sext i32 %instance.0.lcssa to i64
-  %arrayidx4 = getelementptr inbounds [78 x %struct.rtx_def*]* @unit_last_insn, i64 0, i64 %idxprom3
-  store %struct.rtx_def* %insn, %struct.rtx_def** %arrayidx4, align 8, !tbaa !3
-  %max_blockage = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom, i32 8
-  %1 = load i32* %max_blockage, align 8, !tbaa !0
-  %add7 = add nsw i32 %1, %clock
-  %arrayidx9 = getelementptr inbounds [78 x i32]* @unit_tick, i64 0, i64 %idxprom3
-  store i32 %add7, i32* %arrayidx9, align 4, !tbaa !0
-  br label %if.end18
+  %idxprom3 = sext i32 %instance.0.lcssa to i64, !dbg !1692
+  %arrayidx4 = getelementptr inbounds [78 x %struct.rtx_def*]* @unit_last_insn, i64 0, i64 %idxprom3, !dbg !1692
+  store %struct.rtx_def* %insn, %struct.rtx_def** %arrayidx4, align 8, !dbg !1692, !tbaa !906
+  %max_blockage = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom, i32 8, !dbg !1693
+  %1 = load i32* %max_blockage, align 8, !dbg !1693, !tbaa !899
+  %add7 = add nsw i32 %1, %clock, !dbg !1693
+  %arrayidx9 = getelementptr inbounds [78 x i32]* @unit_tick, i64 0, i64 %idxprom3, !dbg !1693
+  store i32 %add7, i32* %arrayidx9, align 4, !dbg !1693, !tbaa !899
+  br label %if.end18, !dbg !1694
 
 if.else:                                          ; preds = %entry
-  %tobool1141 = icmp eq i32 %unit, -1
-  br i1 %tobool1141, label %if.end18, label %for.body12.lr.ph
+  tail call void @llvm.dbg.value(metadata !291, i64 0, metadata !692), !dbg !1695
+  tail call void @llvm.dbg.value(metadata !{i32 %neg}, i64 0, metadata !689), !dbg !1695
+  %tobool1141 = icmp eq i32 %unit, -1, !dbg !1695
+  br i1 %tobool1141, label %if.end18, label %for.body12.lr.ph, !dbg !1695
 
 for.body12.lr.ph:                                 ; preds = %if.else
-  %neg = xor i32 %unit, -1
-  br label %for.body12
+  %neg = xor i32 %unit, -1, !dbg !1695
+  br label %for.body12, !dbg !1695
 
 for.body12:                                       ; preds = %for.body12.lr.ph, %for.inc16
   %i.143 = phi i32 [ 0, %for.body12.lr.ph ], [ %inc, %for.inc16 ]
   %unit.addr.042 = phi i32 [ %neg, %for.body12.lr.ph ], [ %shr, %for.inc16 ]
-  %and = and i32 %unit.addr.042, 1
-  %cmp13 = icmp eq i32 %and, 0
-  br i1 %cmp13, label %for.inc16, label %if.then14
+  %and = and i32 %unit.addr.042, 1, !dbg !1697
+  %cmp13 = icmp eq i32 %and, 0, !dbg !1697
+  br i1 %cmp13, label %for.inc16, label %if.then14, !dbg !1697
 
 if.then14:                                        ; preds = %for.body12
-  tail call fastcc void @schedule_unit(i32 %i.143, %struct.rtx_def* %insn, i32 %clock) #11
-  br label %for.inc16
+  tail call fastcc void @schedule_unit(i32 %i.143, %struct.rtx_def* %insn, i32 %clock) #12, !dbg !1698
+  br label %for.inc16, !dbg !1698
 
 for.inc16:                                        ; preds = %for.body12, %if.then14
-  %inc = add nsw i32 %i.143, 1
-  %shr = ashr i32 %unit.addr.042, 1
-  %tobool11 = icmp eq i32 %shr, 0
-  br i1 %tobool11, label %if.end18, label %for.body12
+  %inc = add nsw i32 %i.143, 1, !dbg !1695
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !692), !dbg !1695
+  %shr = ashr i32 %unit.addr.042, 1, !dbg !1695
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !689), !dbg !1695
+  %tobool11 = icmp eq i32 %shr, 0, !dbg !1695
+  br i1 %tobool11, label %if.end18, label %for.body12, !dbg !1695
 
 if.end18:                                         ; preds = %if.else, %for.inc16, %for.end
-  ret void
+  ret void, !dbg !1699
 }

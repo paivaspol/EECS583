@@ -1,51 +1,52 @@
-define zeroext i8 @_ZNK10MACAddress10getAddressEj(%class.MACAddress* nocapture readonly %this, i32 %k) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.MACAddress* %this, i64 0, metadata !1541, metadata !2864), !dbg !3005
-  tail call void @llvm.dbg.value(metadata i32 %k, i64 0, metadata !1542, metadata !2864), !dbg !3006
-  %1 = icmp ugt i32 %k, 5, !dbg !3007
-  br i1 %1, label %2, label %20, !dbg !3009
+define zeroext i8 @_ZNK10MACAddress10getAddressEj(%class.MACAddress* nocapture %this, i32 %k) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MACAddress* %this}, i64 0, metadata !1281), !dbg !1418
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !1282), !dbg !1418
+  %cmp = icmp ugt i32 %k, 5, !dbg !1419
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1419
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i8* @__cxa_allocate_exception(i64 8) #3, !dbg !3010
-  %4 = invoke noalias i8* @_Znwm(i64 32) #15
-          to label %5 unwind label %9, !dbg !3011
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 8) #1, !dbg !1419
+  %0 = bitcast i8* %exception to %class.cException**, !dbg !1419
+  %call = invoke noalias i8* @_Znwm(i64 32) #11
+          to label %invoke.cont unwind label %lpad, !dbg !1419
 
-; <label>:5                                       ; preds = %2
-  %6 = bitcast i8* %4 to %class.cException*, !dbg !3011
-  invoke void (%class.cException*, i8*, ...)* @_ZN10cExceptionC1EPKcz(%class.cException* %6, i8* getelementptr inbounds ([32 x i8]* @.str, i64 0, i64 0), i32 %k) #13
-          to label %7 unwind label %13, !dbg !3012
+invoke.cont:                                      ; preds = %if.then
+  %1 = bitcast i8* %call to %class.cException*, !dbg !1419
+  invoke void (%class.cException*, i8*, ...)* @_ZN10cExceptionC1EPKcz(%class.cException* %1, i8* getelementptr inbounds ([32 x i8]* @.str, i64 0, i64 0), i32 %k) #11
+          to label %invoke.cont3 unwind label %lpad2, !dbg !1419
 
-; <label>:7                                       ; preds = %5
-  %8 = bitcast i8* %3 to i8**, !dbg !3010
-  store i8* %4, i8** %8, align 8, !dbg !3010, !tbaa !2899
-  tail call void @__cxa_throw(i8* %3, i8* bitcast ({ i8*, i8*, i32, i8* }* @_ZTIP10cException to i8*), i8* null) #16, !dbg !3010
-  unreachable, !dbg !3010
+invoke.cont3:                                     ; preds = %invoke.cont
+  store %class.cException* %1, %class.cException** %0, align 8, !dbg !1419, !tbaa !1384
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i32, i8* }* @_ZTIP10cException to i8*), i8* null) #13, !dbg !1419
+  unreachable, !dbg !1419
 
-; <label>:9                                       ; preds = %2
-  %10 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !3013
-  %11 = extractvalue { i8*, i32 } %10, 0, !dbg !3013
-  %12 = extractvalue { i8*, i32 } %10, 1, !dbg !3013
-  br label %17, !dbg !3013
+lpad:                                             ; preds = %if.then
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1419
+  %3 = extractvalue { i8*, i32 } %2, 0, !dbg !1419
+  %4 = extractvalue { i8*, i32 } %2, 1, !dbg !1419
+  br label %ehcleanup, !dbg !1419
 
-; <label>:13                                      ; preds = %5
-  %14 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !3013
-  %15 = extractvalue { i8*, i32 } %14, 0, !dbg !3013
-  %16 = extractvalue { i8*, i32 } %14, 1, !dbg !3013
-  tail call void @_ZdlPv(i8* %4) #17, !dbg !3011
-  br label %17, !dbg !3011
+lpad2:                                            ; preds = %invoke.cont
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1419
+  %6 = extractvalue { i8*, i32 } %5, 0, !dbg !1419
+  %7 = extractvalue { i8*, i32 } %5, 1, !dbg !1419
+  tail call void @_ZdlPv(i8* %call) #14, !dbg !1419
+  br label %ehcleanup, !dbg !1419
 
-; <label>:17                                      ; preds = %13, %9
-  %.01 = phi i8* [ %15, %13 ], [ %11, %9 ]
-  %.0 = phi i32 [ %16, %13 ], [ %12, %9 ]
-  tail call void @__cxa_free_exception(i8* %3) #3, !dbg !3010
-  %18 = insertvalue { i8*, i32 } undef, i8* %.01, 0, !dbg !3010
-  %19 = insertvalue { i8*, i32 } %18, i32 %.0, 1, !dbg !3010
-  resume { i8*, i32 } %19, !dbg !3010
+ehcleanup:                                        ; preds = %lpad2, %lpad
+  %exn.slot.0 = phi i8* [ %6, %lpad2 ], [ %3, %lpad ]
+  %ehselector.slot.0 = phi i32 [ %7, %lpad2 ], [ %4, %lpad ]
+  tail call void @__cxa_free_exception(i8* %exception) #1, !dbg !1419
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !1419
+  %lpad.val4 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !1419
+  resume { i8*, i32 } %lpad.val4, !dbg !1419
 
-; <label>:20                                      ; preds = %0
-  %21 = zext i32 %k to i64, !dbg !3014
-  %22 = getelementptr inbounds %class.MACAddress* %this, i64 0, i32 1, i64 %21, !dbg !3014
-  %23 = load i8* %22, align 1, !dbg !3014, !tbaa !2909
-  ret i8 %23, !dbg !3015
+if.end:                                           ; preds = %entry
+  %idxprom = zext i32 %k to i64, !dbg !1420
+  %arrayidx = getelementptr inbounds %class.MACAddress* %this, i64 0, i32 1, i64 %idxprom, !dbg !1420
+  %8 = load i8* %arrayidx, align 1, !dbg !1420, !tbaa !1385
+  ret i8 %8, !dbg !1420
 }

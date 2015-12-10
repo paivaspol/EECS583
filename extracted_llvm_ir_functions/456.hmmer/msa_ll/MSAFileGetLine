@@ -1,23 +1,24 @@
 define i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.msafile_struct* %afp, i64 0, metadata !344, metadata !481), !dbg !1665
-  %1 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 3, !dbg !1666
-  %2 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 4, !dbg !1668
-  %3 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !1669
-  %4 = load %struct.__sFILE** %3, align 8, !dbg !1669, !tbaa !1439
-  %5 = tail call i8* @sre_fgets(i8** %1, i32* %2, %struct.__sFILE* %4) #7, !dbg !1670
-  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !345, metadata !481), !dbg !1671
-  %6 = icmp eq i8* %5, null, !dbg !1672
-  br i1 %6, label %12, label %7, !dbg !1673
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.msafile_struct* %afp}, i64 0, metadata !329), !dbg !878
+  %buf = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 3, !dbg !879
+  %buflen = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 4, !dbg !879
+  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !879
+  %0 = load %struct._IO_FILE** %f, align 8, !dbg !879, !tbaa !466
+  %call = tail call i8* @sre_fgets(i8** %buf, i32* %buflen, %struct._IO_FILE* %0) #7, !dbg !879
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !330), !dbg !879
+  %cmp = icmp eq i8* %call, null, !dbg !879
+  br i1 %cmp, label %return, label %if.end, !dbg !879
 
-; <label>:7                                       ; preds = %0
-  %8 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 2, !dbg !1674
-  %9 = load i32* %8, align 4, !dbg !1675, !tbaa !1542
-  %10 = add nsw i32 %9, 1, !dbg !1675
-  store i32 %10, i32* %8, align 4, !dbg !1675, !tbaa !1542
-  %11 = load i8** %1, align 8, !dbg !1676, !tbaa !1545
-  br label %12, !dbg !1677
+if.end:                                           ; preds = %entry
+  %linenumber = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 2, !dbg !880
+  %1 = load i32* %linenumber, align 4, !dbg !880, !tbaa !478
+  %inc = add nsw i32 %1, 1, !dbg !880
+  store i32 %inc, i32* %linenumber, align 4, !dbg !880, !tbaa !478
+  %2 = load i8** %buf, align 8, !dbg !881, !tbaa !466
+  br label %return, !dbg !881
 
-; <label>:12                                      ; preds = %0, %7
-  %.0 = phi i8* [ %11, %7 ], [ null, %0 ]
-  ret i8* %.0, !dbg !1678
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i8* [ %2, %if.end ], [ null, %entry ]
+  ret i8* %retval.0, !dbg !882
 }

@@ -1,24 +1,25 @@
-define void @rd_index_nrs(i8* %statfile, i32 %ngrps, i32* nocapture %isize, i32** nocapture %index, i8** nocapture %grpnames, i32* %grpnr) #4 {
+define void @rd_index_nrs(i8* %statfile, i32 %ngrps, i32* nocapture %isize, i32** nocapture %index, i8** nocapture %grpnames, i32* %grpnr) #0 {
+entry:
   %gnames = alloca i8**, align 8
-  tail call void @llvm.dbg.value(metadata i8* %statfile, i64 0, metadata !146, metadata !249), !dbg !551
-  tail call void @llvm.dbg.value(metadata i32 %ngrps, i64 0, metadata !147, metadata !249), !dbg !552
-  tail call void @llvm.dbg.value(metadata i32* %isize, i64 0, metadata !148, metadata !249), !dbg !553
-  tail call void @llvm.dbg.value(metadata i32** %index, i64 0, metadata !149, metadata !249), !dbg !554
-  tail call void @llvm.dbg.value(metadata i8** %grpnames, i64 0, metadata !150, metadata !249), !dbg !555
-  tail call void @llvm.dbg.value(metadata i32* %grpnr, i64 0, metadata !151, metadata !249), !dbg !556
-  %1 = icmp eq i8* %statfile, null, !dbg !557
-  br i1 %1, label %2, label %3, !dbg !559
+  call void @llvm.dbg.value(metadata !{i8* %statfile}, i64 0, metadata !127), !dbg !338
+  call void @llvm.dbg.value(metadata !{i32 %ngrps}, i64 0, metadata !128), !dbg !338
+  call void @llvm.dbg.value(metadata !{i32* %isize}, i64 0, metadata !129), !dbg !338
+  call void @llvm.dbg.value(metadata !{i32** %index}, i64 0, metadata !130), !dbg !339
+  call void @llvm.dbg.value(metadata !{i8** %grpnames}, i64 0, metadata !131), !dbg !339
+  call void @llvm.dbg.value(metadata !{i32* %grpnr}, i64 0, metadata !132), !dbg !339
+  call void @llvm.dbg.declare(metadata !{i8*** %gnames}, metadata !133), !dbg !340
+  %tobool = icmp eq i8* %statfile, null, !dbg !341
+  br i1 %tobool, label %if.then, label %if.end, !dbg !341
 
-; <label>:2                                       ; preds = %0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([24 x i8]* @.str15, i64 0, i64 0)) #8, !dbg !560
-  br label %3, !dbg !560
+if.then:                                          ; preds = %entry
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([24 x i8]* @.str15, i64 0, i64 0)) #6, !dbg !342
+  br label %if.end, !dbg !342
 
-; <label>:3                                       ; preds = %0, %2
-  tail call void @llvm.dbg.value(metadata i8*** %gnames, i64 0, metadata !152, metadata !249), !dbg !561
-  %4 = call %struct.t_block* @init_index(i8* %statfile, i8*** %gnames) #9, !dbg !562
-  tail call void @llvm.dbg.value(metadata %struct.t_block* %4, i64 0, metadata !153, metadata !249), !dbg !563
-  tail call void @llvm.dbg.value(metadata i8*** %gnames, i64 0, metadata !152, metadata !249), !dbg !561
-  %5 = load i8*** %gnames, align 8, !dbg !564, !tbaa !337
-  tail call fastcc void @rd_groups(%struct.t_block* %4, i8** %5, i8** %grpnames, i32 %ngrps, i32* %isize, i32** %index, i32* %grpnr) #9, !dbg !565
-  ret void, !dbg !566
+if.end:                                           ; preds = %entry, %if.then
+  %call = call %struct.t_block* @init_index(i8* %statfile, i8*** %gnames) #8, !dbg !343
+  call void @llvm.dbg.value(metadata !{%struct.t_block* %call}, i64 0, metadata !134), !dbg !343
+  call void @llvm.dbg.value(metadata !{i8*** %gnames}, i64 0, metadata !133), !dbg !344
+  %0 = load i8*** %gnames, align 8, !dbg !344, !tbaa !246
+  call fastcc void @rd_groups(%struct.t_block* %call, i8** %0, i8** %grpnames, i32 %ngrps, i32* %isize, i32** %index, i32* %grpnr) #8, !dbg !344
+  ret void, !dbg !345
 }

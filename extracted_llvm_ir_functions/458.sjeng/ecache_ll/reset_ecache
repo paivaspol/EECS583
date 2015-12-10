@@ -1,9 +1,10 @@
 define void @reset_ecache() #0 {
-  %1 = load i8** bitcast (%struct.ECacheType** @ECache to i8**), align 8, !dbg !90, !tbaa !53
-  %2 = load i32* @ECacheSize, align 4, !dbg !90, !tbaa !45
-  %3 = sext i32 %2 to i64, !dbg !90
-  %4 = mul nsw i64 %3, 12, !dbg !90
-  %5 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %1, i1 false), !dbg !90
-  %6 = tail call i8* @__memset_chk(i8* %1, i32 0, i64 %4, i64 %5) #5, !dbg !90
-  ret void, !dbg !91
+entry:
+  %0 = load %struct.ECacheType** @ECache, align 8, !dbg !57, !tbaa !43
+  %1 = bitcast %struct.ECacheType* %0 to i8*, !dbg !57
+  %2 = load i32* @ECacheSize, align 4, !dbg !57, !tbaa !39
+  %conv = sext i32 %2 to i64, !dbg !57
+  %mul = mul i64 %conv, 12, !dbg !57
+  tail call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 %mul, i32 4, i1 false), !dbg !57
+  ret void, !dbg !58
 }

@@ -1,25 +1,26 @@
-define i32 @hit_comparison(i8* nocapture readonly %vh1, i8* nocapture readonly %vh2) #3 {
-  tail call void @llvm.dbg.value(metadata i8* %vh1, i64 0, metadata !142, metadata !165), !dbg !564
-  tail call void @llvm.dbg.value(metadata i8* %vh2, i64 0, metadata !143, metadata !165), !dbg !565
-  %1 = bitcast i8* %vh1 to %struct.hit_s**, !dbg !566
-  %2 = load %struct.hit_s** %1, align 8, !dbg !567, !tbaa !419
-  tail call void @llvm.dbg.value(metadata %struct.hit_s* %2, i64 0, metadata !144, metadata !165), !dbg !568
-  %3 = bitcast i8* %vh2 to %struct.hit_s**, !dbg !569
-  %4 = load %struct.hit_s** %3, align 8, !dbg !570, !tbaa !419
-  tail call void @llvm.dbg.value(metadata %struct.hit_s* %4, i64 0, metadata !145, metadata !165), !dbg !571
-  %5 = getelementptr inbounds %struct.hit_s* %2, i64 0, i32 0, !dbg !572
-  %6 = load double* %5, align 8, !dbg !572, !tbaa !355
-  %7 = getelementptr inbounds %struct.hit_s* %4, i64 0, i32 0, !dbg !574
-  %8 = load double* %7, align 8, !dbg !574, !tbaa !355
-  %9 = fcmp olt double %6, %8, !dbg !575
-  br i1 %9, label %12, label %10, !dbg !576
+define i32 @hit_comparison(i8* nocapture %vh1, i8* nocapture %vh2) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %vh1}, i64 0, metadata !141), !dbg !271
+  tail call void @llvm.dbg.value(metadata !{i8* %vh2}, i64 0, metadata !142), !dbg !271
+  %0 = bitcast i8* %vh1 to %struct.hit_s**, !dbg !272
+  %1 = load %struct.hit_s** %0, align 8, !dbg !272, !tbaa !163
+  tail call void @llvm.dbg.value(metadata !{%struct.hit_s* %1}, i64 0, metadata !143), !dbg !272
+  %2 = bitcast i8* %vh2 to %struct.hit_s**, !dbg !273
+  %3 = load %struct.hit_s** %2, align 8, !dbg !273, !tbaa !163
+  tail call void @llvm.dbg.value(metadata !{%struct.hit_s* %3}, i64 0, metadata !144), !dbg !273
+  %sortkey = getelementptr inbounds %struct.hit_s* %1, i64 0, i32 0, !dbg !274
+  %4 = load double* %sortkey, align 8, !dbg !274, !tbaa !221
+  %sortkey1 = getelementptr inbounds %struct.hit_s* %3, i64 0, i32 0, !dbg !274
+  %5 = load double* %sortkey1, align 8, !dbg !274, !tbaa !221
+  %cmp = fcmp olt double %4, %5, !dbg !274
+  br i1 %cmp, label %return, label %if.else, !dbg !274
 
-; <label>:10                                      ; preds = %0
-  %11 = fcmp ogt double %6, %8, !dbg !577
-  %. = sext i1 %11 to i32, !dbg !579
-  br label %12, !dbg !579
+if.else:                                          ; preds = %entry
+  %cmp4 = fcmp ogt double %4, %5, !dbg !275
+  %. = sext i1 %cmp4 to i32, !dbg !275
+  br label %return, !dbg !275
 
-; <label>:12                                      ; preds = %10, %0
-  %.0 = phi i32 [ 1, %0 ], [ %., %10 ]
-  ret i32 %.0, !dbg !580
+return:                                           ; preds = %if.else, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ %., %if.else ]
+  ret i32 %retval.0, !dbg !276
 }

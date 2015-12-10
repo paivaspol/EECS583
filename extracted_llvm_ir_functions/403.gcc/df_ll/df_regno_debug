@@ -1,29 +1,32 @@
 define internal fastcc void @df_regno_debug(%struct.df* nocapture %df, i32 %regno, %struct._IO_FILE* nocapture %file) #0 {
 entry:
-  %reg_size = getelementptr inbounds %struct.df* %df, i64 0, i32 6
-  %0 = load i32* %reg_size, align 4, !tbaa !4
-  %cmp = icmp ugt i32 %0, %regno
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.df* %df}, i64 0, metadata !1025), !dbg !3358
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !1026), !dbg !3359
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !1027), !dbg !3360
+  %reg_size = getelementptr inbounds %struct.df* %df, i64 0, i32 6, !dbg !3361
+  %0 = load i32* %reg_size, align 4, !dbg !3361, !tbaa !1899
+  %cmp = icmp ugt i32 %0, %regno, !dbg !3361
+  br i1 %cmp, label %if.end, label %return, !dbg !3361
 
 if.end:                                           ; preds = %entry
-  %idxprom = zext i32 %regno to i64
-  %regs = getelementptr inbounds %struct.df* %df, i64 0, i32 5
-  %1 = load %struct.reg_info** %regs, align 8, !tbaa !3
-  %lifetime = getelementptr inbounds %struct.reg_info* %1, i64 %idxprom, i32 2
-  %2 = load i32* %lifetime, align 4, !tbaa !4
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([21 x i8]* @.str30, i64 0, i64 0), i32 %regno, i32 %2) #8
-  %3 = load %struct.reg_info** %regs, align 8, !tbaa !3
-  %defs = getelementptr inbounds %struct.reg_info* %3, i64 %idxprom, i32 0
-  %4 = load %struct.df_link** %defs, align 8, !tbaa !3
-  tail call fastcc void @df_chain_dump(%struct.df_link* %4, %struct._IO_FILE* %file) #6
-  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str26, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %file)
-  %6 = load %struct.reg_info** %regs, align 8, !tbaa !3
-  %uses = getelementptr inbounds %struct.reg_info* %6, i64 %idxprom, i32 1
-  %7 = load %struct.df_link** %uses, align 8, !tbaa !3
-  tail call fastcc void @df_chain_dump(%struct.df_link* %7, %struct._IO_FILE* %file) #6
-  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #5
-  br label %return
+  %idxprom = zext i32 %regno to i64, !dbg !3362
+  %regs = getelementptr inbounds %struct.df* %df, i64 0, i32 5, !dbg !3362
+  %1 = load %struct.reg_info** %regs, align 8, !dbg !3362, !tbaa !1898
+  %lifetime = getelementptr inbounds %struct.reg_info* %1, i64 %idxprom, i32 2, !dbg !3362
+  %2 = load i32* %lifetime, align 4, !dbg !3362, !tbaa !1899
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([21 x i8]* @.str30, i64 0, i64 0), i32 %regno, i32 %2) #9, !dbg !3362
+  %3 = load %struct.reg_info** %regs, align 8, !dbg !3363, !tbaa !1898
+  %defs = getelementptr inbounds %struct.reg_info* %3, i64 %idxprom, i32 0, !dbg !3363
+  %4 = load %struct.df_link** %defs, align 8, !dbg !3363, !tbaa !1898
+  tail call fastcc void @df_chain_dump(%struct.df_link* %4, %struct._IO_FILE* %file) #7, !dbg !3363
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str26, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %file), !dbg !3364
+  %6 = load %struct.reg_info** %regs, align 8, !dbg !3365, !tbaa !1898
+  %uses = getelementptr inbounds %struct.reg_info* %6, i64 %idxprom, i32 1, !dbg !3365
+  %7 = load %struct.df_link** %uses, align 8, !dbg !3365, !tbaa !1898
+  tail call fastcc void @df_chain_dump(%struct.df_link* %7, %struct._IO_FILE* %file) #7, !dbg !3365
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #6, !dbg !3366
+  br label %return, !dbg !3366
 
 return:                                           ; preds = %entry, %if.end
-  ret void
+  ret void, !dbg !3366
 }

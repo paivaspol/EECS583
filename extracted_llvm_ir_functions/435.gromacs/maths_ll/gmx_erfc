@@ -1,222 +1,241 @@
-define float @gmx_erfc(float %x) #4 {
-  tail call void @llvm.dbg.value(metadata float %x, i64 0, metadata !239, metadata !333), !dbg !681
-  tail call void @llvm.dbg.declare(metadata %union.anon.3* undef, metadata !250, metadata !333), !dbg !682
-  %1 = bitcast float %x to i32, !dbg !683
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !250, metadata !333), !dbg !682
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !240, metadata !333), !dbg !684
-  %2 = and i32 %1, 2147483647, !dbg !685
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !241, metadata !333), !dbg !686
-  %3 = icmp ugt i32 %2, 2139095039, !dbg !687
-  br i1 %3, label %4, label %10, !dbg !689
+define float @gmx_erfc(float %x) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %x}, i64 0, metadata !46), !dbg !193
+  tail call void @llvm.dbg.declare(metadata !194, metadata !57), !dbg !195
+  %0 = bitcast float %x to i32, !dbg !196
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !47), !dbg !197
+  %and = and i32 %0, 2147483647, !dbg !198
+  tail call void @llvm.dbg.value(metadata !{i32 %and}, i64 0, metadata !48), !dbg !198
+  %cmp = icmp ugt i32 %and, 2139095039, !dbg !199
+  br i1 %cmp, label %if.then, label %if.end, !dbg !199
 
-; <label>:4                                       ; preds = %0
-  %5 = lshr i32 %1, 31, !dbg !690
-  %6 = shl nuw nsw i32 %5, 1, !dbg !692
-  %7 = uitofp i32 %6 to float, !dbg !693
-  %8 = fdiv float 1.000000e+00, %x, !dbg !694
-  %9 = fadd float %7, %8, !dbg !695
-  br label %148, !dbg !696
+if.then:                                          ; preds = %entry
+  %shr = lshr i32 %0, 31, !dbg !200
+  %shl = shl nuw nsw i32 %shr, 1, !dbg !200
+  %conv2 = uitofp i32 %shl to float, !dbg !200
+  %div = fdiv float 1.000000e+00, %x, !dbg !200
+  %add = fadd float %conv2, %div, !dbg !200
+  br label %return, !dbg !200
 
-; <label>:10                                      ; preds = %0
-  %11 = icmp ult i32 %2, 1062731776, !dbg !697
-  br i1 %11, label %12, label %46, !dbg !699
+if.end:                                           ; preds = %entry
+  %cmp3 = icmp ult i32 %and, 1062731776, !dbg !202
+  br i1 %cmp3, label %if.then5, label %if.end39, !dbg !202
 
-; <label>:12                                      ; preds = %10
-  %13 = icmp ult i32 %2, 595591168, !dbg !700
-  br i1 %13, label %14, label %16, !dbg !703
+if.then5:                                         ; preds = %if.end
+  %cmp6 = icmp ult i32 %and, 595591168, !dbg !203
+  br i1 %cmp6, label %if.then8, label %if.end9, !dbg !203
 
-; <label>:14                                      ; preds = %12
-  %15 = fsub float 1.000000e+00, %x, !dbg !704
-  br label %148, !dbg !705
+if.then8:                                         ; preds = %if.then5
+  %sub = fsub float 1.000000e+00, %x, !dbg !205
+  br label %return, !dbg !205
 
-; <label>:16                                      ; preds = %12
-  %17 = fmul float %x, %x, !dbg !706
-  tail call void @llvm.dbg.value(metadata float %17, i64 0, metadata !248, metadata !333), !dbg !707
-  %18 = fmul float %17, 0x3EF8EAD620000000, !dbg !708
-  %19 = fsub float 0xBF77A29120000000, %18, !dbg !708
-  %20 = fmul float %17, %19, !dbg !709
-  %21 = fadd float %20, 0xBF9D2A51E0000000, !dbg !710
-  %22 = fmul float %17, %21, !dbg !711
-  %23 = fadd float %22, 0xBFD4CD7D60000000, !dbg !712
-  %24 = fmul float %17, %23, !dbg !713
-  %25 = fadd float %24, 0x3FC06EBA80000000, !dbg !714
-  tail call void @llvm.dbg.value(metadata float %25, i64 0, metadata !249, metadata !333), !dbg !715
-  %26 = fmul float %17, 0x3ED09C4340000000, !dbg !716
-  %27 = fsub float 0x3F215DC920000000, %26, !dbg !716
-  %28 = fmul float %17, %27, !dbg !717
-  %29 = fadd float %28, 0x3F74D022C0000000, !dbg !718
-  %30 = fmul float %17, %29, !dbg !719
-  %31 = fadd float %30, 0x3FB0A54C60000000, !dbg !720
-  %32 = fmul float %17, %31, !dbg !721
-  %33 = fadd float %32, 0x3FD97779C0000000, !dbg !722
-  %34 = fmul float %17, %33, !dbg !723
-  %35 = fadd float %34, 1.000000e+00, !dbg !724
-  tail call void @llvm.dbg.value(metadata float %35, i64 0, metadata !246, metadata !333), !dbg !725
-  %36 = fdiv float %25, %35, !dbg !726
-  tail call void @llvm.dbg.value(metadata float %36, i64 0, metadata !247, metadata !333), !dbg !727
-  %37 = icmp slt i32 %1, 1048576000, !dbg !728
-  %38 = fmul float %36, %x, !dbg !730
-  br i1 %37, label %39, label %42, !dbg !732
+if.end9:                                          ; preds = %if.then5
+  %mul = fmul float %x, %x, !dbg !206
+  tail call void @llvm.dbg.value(metadata !{float %mul}, i64 0, metadata !55), !dbg !206
+  %mul10 = fmul float %mul, 0xBEF8EAD620000000, !dbg !207
+  %add11 = fadd float %mul10, 0xBF77A29120000000, !dbg !207
+  %mul12 = fmul float %mul, %add11, !dbg !207
+  %add13 = fadd float %mul12, 0xBF9D2A51E0000000, !dbg !207
+  %mul14 = fmul float %mul, %add13, !dbg !207
+  %add15 = fadd float %mul14, 0xBFD4CD7D60000000, !dbg !207
+  %mul16 = fmul float %mul, %add15, !dbg !207
+  %add17 = fadd float %mul16, 0x3FC06EBA80000000, !dbg !207
+  tail call void @llvm.dbg.value(metadata !{float %add17}, i64 0, metadata !56), !dbg !207
+  %mul18 = fmul float %mul, 0xBED09C4340000000, !dbg !208
+  %add19 = fadd float %mul18, 0x3F215DC920000000, !dbg !208
+  %mul20 = fmul float %mul, %add19, !dbg !208
+  %add21 = fadd float %mul20, 0x3F74D022C0000000, !dbg !208
+  %mul22 = fmul float %mul, %add21, !dbg !208
+  %add23 = fadd float %mul22, 0x3FB0A54C60000000, !dbg !208
+  %mul24 = fmul float %mul, %add23, !dbg !208
+  %add25 = fadd float %mul24, 0x3FD97779C0000000, !dbg !208
+  %mul26 = fmul float %mul, %add25, !dbg !208
+  %add27 = fadd float %mul26, 1.000000e+00, !dbg !208
+  tail call void @llvm.dbg.value(metadata !{float %add27}, i64 0, metadata !53), !dbg !208
+  %div28 = fdiv float %add17, %add27, !dbg !209
+  tail call void @llvm.dbg.value(metadata !{float %div28}, i64 0, metadata !54), !dbg !209
+  %cmp29 = icmp slt i32 %0, 1048576000, !dbg !210
+  %mul32 = fmul float %div28, %x, !dbg !211
+  br i1 %cmp29, label %if.then31, label %if.else, !dbg !210
 
-; <label>:39                                      ; preds = %16
-  %40 = fadd float %38, %x, !dbg !733
-  %41 = fsub float 1.000000e+00, %40, !dbg !734
-  br label %148, !dbg !735
+if.then31:                                        ; preds = %if.end9
+  %add33 = fadd float %mul32, %x, !dbg !211
+  %sub34 = fsub float 1.000000e+00, %add33, !dbg !211
+  br label %return, !dbg !211
 
-; <label>:42                                      ; preds = %16
-  tail call void @llvm.dbg.value(metadata float %38, i64 0, metadata !249, metadata !333), !dbg !715
-  %43 = fadd float %x, -5.000000e-01, !dbg !736
-  %44 = fadd float %43, %38, !dbg !738
-  tail call void @llvm.dbg.value(metadata float %44, i64 0, metadata !249, metadata !333), !dbg !715
-  %45 = fsub float 5.000000e-01, %44, !dbg !739
-  br label %148, !dbg !740
+if.else:                                          ; preds = %if.end9
+  tail call void @llvm.dbg.value(metadata !{float %mul32}, i64 0, metadata !56), !dbg !213
+  %sub36 = fadd float %x, -5.000000e-01, !dbg !215
+  %add37 = fadd float %sub36, %mul32, !dbg !215
+  tail call void @llvm.dbg.value(metadata !{float %add37}, i64 0, metadata !56), !dbg !215
+  %sub38 = fsub float 5.000000e-01, %add37, !dbg !216
+  br label %return, !dbg !216
 
-; <label>:46                                      ; preds = %10
-  %47 = icmp ult i32 %2, 1067450368, !dbg !741
-  br i1 %47, label %48, label %81, !dbg !743
+if.end39:                                         ; preds = %if.end
+  %cmp40 = icmp ult i32 %and, 1067450368, !dbg !217
+  br i1 %cmp40, label %if.then42, label %if.end79, !dbg !217
 
-; <label>:48                                      ; preds = %46
-  %fabsf2 = tail call float @fabsf(float %x) #5, !dbg !744
-  %49 = fadd float %fabsf2, -1.000000e+00, !dbg !744
-  tail call void @llvm.dbg.value(metadata float %49, i64 0, metadata !246, metadata !333), !dbg !725
-  %50 = fmul float %49, 0x3F61BF3800000000, !dbg !746
-  %51 = fsub float 0x3FA22A3660000000, %50, !dbg !746
-  %52 = fmul float %49, %51, !dbg !747
-  %53 = fadd float %52, 0xBFBC639840000000, !dbg !748
-  %54 = fmul float %49, %53, !dbg !749
-  %55 = fadd float %54, 0x3FD45FCA80000000, !dbg !750
-  %56 = fmul float %49, %55, !dbg !751
-  %57 = fadd float %56, 0xBFD7D24100000000, !dbg !752
-  %58 = fmul float %49, %57, !dbg !753
-  %59 = fadd float %58, 0x3FDA8D00A0000000, !dbg !754
-  %60 = fmul float %49, %59, !dbg !755
-  %61 = fadd float %60, 0xBF6359B8C0000000, !dbg !756
-  tail call void @llvm.dbg.value(metadata float %61, i64 0, metadata !244, metadata !333), !dbg !757
-  %62 = fmul float %49, 0x3F888B5460000000, !dbg !758
-  %63 = fadd float %62, 0x3F8BEDC260000000, !dbg !759
-  %64 = fmul float %49, %63, !dbg !760
-  %65 = fadd float %64, 0x3FC02660E0000000, !dbg !761
-  %66 = fmul float %49, %65, !dbg !762
-  %67 = fadd float %66, 0x3FB2635CE0000000, !dbg !763
-  %68 = fmul float %49, %67, !dbg !764
-  %69 = fadd float %68, 0x3FE14AF0A0000000, !dbg !765
-  %70 = fmul float %49, %69, !dbg !766
-  %71 = fadd float %70, 0x3FBB3E6620000000, !dbg !767
-  %72 = fmul float %49, %71, !dbg !768
-  %73 = fadd float %72, 1.000000e+00, !dbg !769
-  tail call void @llvm.dbg.value(metadata float %73, i64 0, metadata !245, metadata !333), !dbg !770
-  %74 = icmp sgt i32 %1, -1, !dbg !771
-  %75 = fdiv float %61, %73, !dbg !773
-  br i1 %74, label %76, label %78, !dbg !775
+if.then42:                                        ; preds = %if.end39
+  %fabsf273 = tail call float @fabsf(float %x) #4, !dbg !218
+  %conv45 = fadd float %fabsf273, -1.000000e+00, !dbg !218
+  tail call void @llvm.dbg.value(metadata !{float %conv45}, i64 0, metadata !53), !dbg !218
+  %mul46 = fmul float %conv45, 0xBF61BF3800000000, !dbg !220
+  %add47 = fadd float %mul46, 0x3FA22A3660000000, !dbg !220
+  %mul48 = fmul float %conv45, %add47, !dbg !220
+  %add49 = fadd float %mul48, 0xBFBC639840000000, !dbg !220
+  %mul50 = fmul float %conv45, %add49, !dbg !220
+  %add51 = fadd float %mul50, 0x3FD45FCA80000000, !dbg !220
+  %mul52 = fmul float %conv45, %add51, !dbg !220
+  %add53 = fadd float %mul52, 0xBFD7D24100000000, !dbg !220
+  %mul54 = fmul float %conv45, %add53, !dbg !220
+  %add55 = fadd float %mul54, 0x3FDA8D00A0000000, !dbg !220
+  %mul56 = fmul float %conv45, %add55, !dbg !220
+  %add57 = fadd float %mul56, 0xBF6359B8C0000000, !dbg !220
+  tail call void @llvm.dbg.value(metadata !{float %add57}, i64 0, metadata !51), !dbg !220
+  %mul58 = fmul float %conv45, 0x3F888B5460000000, !dbg !221
+  %add59 = fadd float %mul58, 0x3F8BEDC260000000, !dbg !221
+  %mul60 = fmul float %conv45, %add59, !dbg !221
+  %add61 = fadd float %mul60, 0x3FC02660E0000000, !dbg !221
+  %mul62 = fmul float %conv45, %add61, !dbg !221
+  %add63 = fadd float %mul62, 0x3FB2635CE0000000, !dbg !221
+  %mul64 = fmul float %conv45, %add63, !dbg !221
+  %add65 = fadd float %mul64, 0x3FE14AF0A0000000, !dbg !221
+  %mul66 = fmul float %conv45, %add65, !dbg !221
+  %add67 = fadd float %mul66, 0x3FBB3E6620000000, !dbg !221
+  %mul68 = fmul float %conv45, %add67, !dbg !221
+  %add69 = fadd float %mul68, 1.000000e+00, !dbg !221
+  tail call void @llvm.dbg.value(metadata !{float %add69}, i64 0, metadata !52), !dbg !221
+  %cmp70 = icmp sgt i32 %0, -1, !dbg !222
+  %div73 = fdiv float %add57, %add69, !dbg !223
+  br i1 %cmp70, label %if.then72, label %if.else75, !dbg !222
 
-; <label>:76                                      ; preds = %48
-  tail call void @llvm.dbg.value(metadata float 0x3FC3D4FA80000000, i64 0, metadata !248, metadata !333), !dbg !707
-  %77 = fsub float 0x3FC3D4FA80000000, %75, !dbg !776
-  br label %148, !dbg !777
+if.then72:                                        ; preds = %if.then42
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !55), !dbg !223
+  %sub74 = fsub float 0x3FC3D4FA80000000, %div73, !dbg !223
+  br label %return, !dbg !223
 
-; <label>:78                                      ; preds = %48
-  %79 = fadd float %75, 0x3FEB0AC160000000, !dbg !778
-  tail call void @llvm.dbg.value(metadata float %79, i64 0, metadata !248, metadata !333), !dbg !707
-  %80 = fadd float %79, 1.000000e+00, !dbg !780
-  br label %148, !dbg !781
+if.else75:                                        ; preds = %if.then42
+  %add77 = fadd float %div73, 0x3FEB0AC160000000, !dbg !226
+  tail call void @llvm.dbg.value(metadata !{float %add77}, i64 0, metadata !55), !dbg !226
+  %add78 = fadd float %add77, 1.000000e+00, !dbg !226
+  br label %return, !dbg !226
 
-; <label>:81                                      ; preds = %46
-  %82 = icmp ult i32 %2, 1105199104, !dbg !782
-  br i1 %82, label %83, label %146, !dbg !784
+if.end79:                                         ; preds = %if.end39
+  %cmp80 = icmp ult i32 %and, 1105199104, !dbg !228
+  br i1 %cmp80, label %if.then82, label %if.else181, !dbg !228
 
-; <label>:83                                      ; preds = %81
-  %fabsf = tail call float @fabsf(float %x) #5, !dbg !785
-  tail call void @llvm.dbg.value(metadata float %fabsf, i64 0, metadata !239, metadata !333), !dbg !681
-  %84 = fmul float %fabsf, %fabsf, !dbg !787
-  %85 = fdiv float 1.000000e+00, %84, !dbg !788
-  tail call void @llvm.dbg.value(metadata float %85, i64 0, metadata !246, metadata !333), !dbg !725
-  %86 = icmp ult i32 %2, 1077336941, !dbg !789
-  br i1 %86, label %87, label %104, !dbg !791
+if.then82:                                        ; preds = %if.end79
+  %fabsf = tail call float @fabsf(float %x) #4, !dbg !229
+  tail call void @llvm.dbg.value(metadata !{float %fabsf}, i64 0, metadata !46), !dbg !229
+  %mul86 = fmul float %fabsf, %fabsf, !dbg !231
+  %div87 = fdiv float 1.000000e+00, %mul86, !dbg !231
+  tail call void @llvm.dbg.value(metadata !{float %div87}, i64 0, metadata !53), !dbg !231
+  %cmp88 = icmp ult i32 %and, 1077336941, !dbg !232
+  br i1 %cmp88, label %if.then90, label %if.else121, !dbg !232
 
-; <label>:87                                      ; preds = %83
-  tail call void @llvm.dbg.value(metadata float undef, i64 0, metadata !242, metadata !333), !dbg !792
-  %88 = insertelement <2 x float> undef, float %85, i32 0, !dbg !793
-  %89 = insertelement <2 x float> %88, float %85, i32 1, !dbg !793
-  %90 = fmul <2 x float> %89, <float 0x3FAEEFF2E0000000, float 0x4023A0EFC0000000>, !dbg !793
-  %91 = fsub <2 x float> <float 0x401A47EF80000000, float 0xC054526560000000>, %90, !dbg !793
-  %92 = fmul <2 x float> %91, %89, !dbg !795
-  %93 = fadd <2 x float> %92, <float 0x405B28A3E0000000, float 0xC067135CE0000000>, !dbg !796
-  %94 = fmul <2 x float> %93, %89, !dbg !797
-  %95 = fadd <2 x float> %94, <float 0x407AD02160000000, float 0xC0644CB180000000>, !dbg !798
-  %96 = fmul <2 x float> %95, %89, !dbg !799
-  %97 = fadd <2 x float> %96, <float 0x40842B1920000000, float 0xC04F300AE0000000>, !dbg !800
-  %98 = fmul <2 x float> %97, %89, !dbg !801
-  %99 = fadd <2 x float> %98, <float 0x407B290DE0000000, float 0xC0251E0440000000>, !dbg !802
-  %100 = fmul <2 x float> %99, %89, !dbg !803
-  %101 = fadd <2 x float> %100, <float 0x4061350C60000000, float 0xBFE63416E0000000>, !dbg !804
-  %102 = fmul <2 x float> %101, %89, !dbg !805
-  %103 = fadd <2 x float> %102, <float 0x4033A6B9C0000000, float 0xBF84341260000000>, !dbg !806
-  br label %122, !dbg !807
+if.then90:                                        ; preds = %if.then82
+  %mul91 = fmul float %div87, 0xC023A0EFC0000000, !dbg !233
+  %add92 = fadd float %mul91, 0xC054526560000000, !dbg !233
+  %mul93 = fmul float %div87, %add92, !dbg !233
+  %add94 = fadd float %mul93, 0xC067135CE0000000, !dbg !233
+  %mul95 = fmul float %div87, %add94, !dbg !233
+  %add96 = fadd float %mul95, 0xC0644CB180000000, !dbg !233
+  %mul97 = fmul float %div87, %add96, !dbg !233
+  %add98 = fadd float %mul97, 0xC04F300AE0000000, !dbg !233
+  %mul99 = fmul float %div87, %add98, !dbg !233
+  %add100 = fadd float %mul99, 0xC0251E0440000000, !dbg !233
+  %mul101 = fmul float %div87, %add100, !dbg !233
+  %add102 = fadd float %mul101, 0xBFE63416E0000000, !dbg !233
+  %mul103 = fmul float %div87, %add102, !dbg !233
+  %add104 = fadd float %mul103, 0xBF84341260000000, !dbg !233
+  tail call void @llvm.dbg.value(metadata !{float %add104}, i64 0, metadata !49), !dbg !233
+  %mul105 = fmul float %div87, 0xBFAEEFF2E0000000, !dbg !235
+  %add106 = fadd float %mul105, 0x401A47EF80000000, !dbg !235
+  %mul107 = fmul float %div87, %add106, !dbg !235
+  %add108 = fadd float %mul107, 0x405B28A3E0000000, !dbg !235
+  %mul109 = fmul float %div87, %add108, !dbg !235
+  %add110 = fadd float %mul109, 0x407AD02160000000, !dbg !235
+  %mul111 = fmul float %div87, %add110, !dbg !235
+  %add112 = fadd float %mul111, 0x40842B1920000000, !dbg !235
+  %mul113 = fmul float %div87, %add112, !dbg !235
+  %add114 = fadd float %mul113, 0x407B290DE0000000, !dbg !235
+  %mul115 = fmul float %div87, %add114, !dbg !235
+  %add116 = fadd float %mul115, 0x4061350C60000000, !dbg !235
+  %mul117 = fmul float %div87, %add116, !dbg !235
+  %add118 = fadd float %mul117, 0x4033A6B9C0000000, !dbg !235
+  br label %if.end154, !dbg !236
 
-; <label>:104                                     ; preds = %83
-  %105 = icmp slt i32 %1, 0, !dbg !808
-  %106 = icmp ugt i32 %2, 1086324735, !dbg !811
-  %or.cond = and i1 %105, %106, !dbg !812
-  br i1 %or.cond, label %148, label %107, !dbg !812
+if.else121:                                       ; preds = %if.then82
+  %cmp122 = icmp slt i32 %0, 0, !dbg !237
+  %cmp124 = icmp ugt i32 %and, 1086324735, !dbg !237
+  %or.cond = and i1 %cmp122, %cmp124, !dbg !237
+  br i1 %or.cond, label %return, label %if.end127, !dbg !237
 
-; <label>:107                                     ; preds = %104
-  tail call void @llvm.dbg.value(metadata float undef, i64 0, metadata !242, metadata !333), !dbg !792
-  %108 = insertelement <2 x float> undef, float %85, i32 0, !dbg !813
-  %109 = insertelement <2 x float> %108, float %85, i32 1, !dbg !813
-  %110 = fmul <2 x float> %109, <float 0x403670E240000000, float 0x407E384EA0000000>, !dbg !813
-  %111 = fsub <2 x float> <float 0x407DA874E0000000, float 0xC090046160000000>, %110, !dbg !813
-  %112 = fmul <2 x float> %111, %109, !dbg !814
-  %113 = fadd <2 x float> %112, <float 0x40A3F219C0000000, float 0xC083EC8820000000>, !dbg !815
-  %114 = fmul <2 x float> %113, %109, !dbg !816
-  %115 = fadd <2 x float> %114, <float 0x40A8FFB760000000, float 0xC064145D40000000>, !dbg !817
-  %116 = fmul <2 x float> %115, %109, !dbg !818
-  %117 = fadd <2 x float> %116, <float 0x409802EB20000000, float 0xC031C20960000000>, !dbg !819
-  %118 = fmul <2 x float> %117, %109, !dbg !820
-  %119 = fadd <2 x float> %118, <float 0x40745CAE20000000, float 0xBFE993BA80000000>, !dbg !821
-  %120 = fmul <2 x float> %119, %109, !dbg !822
-  %121 = fadd <2 x float> %120, <float 0x403E568B20000000, float 0xBF84341240000000>, !dbg !823
-  br label %122
+if.end127:                                        ; preds = %if.else121
+  %mul128 = fmul float %div87, 0xC07E384EA0000000, !dbg !239
+  %add129 = fadd float %mul128, 0xC090046160000000, !dbg !239
+  %mul130 = fmul float %div87, %add129, !dbg !239
+  %add131 = fadd float %mul130, 0xC083EC8820000000, !dbg !239
+  %mul132 = fmul float %div87, %add131, !dbg !239
+  %add133 = fadd float %mul132, 0xC064145D40000000, !dbg !239
+  %mul134 = fmul float %div87, %add133, !dbg !239
+  %add135 = fadd float %mul134, 0xC031C20960000000, !dbg !239
+  %mul136 = fmul float %div87, %add135, !dbg !239
+  %add137 = fadd float %mul136, 0xBFE993BA80000000, !dbg !239
+  %mul138 = fmul float %div87, %add137, !dbg !239
+  %add139 = fadd float %mul138, 0xBF84341240000000, !dbg !239
+  tail call void @llvm.dbg.value(metadata !{float %add139}, i64 0, metadata !49), !dbg !239
+  %mul140 = fmul float %div87, 0xC03670E240000000, !dbg !240
+  %add141 = fadd float %mul140, 0x407DA874E0000000, !dbg !240
+  %mul142 = fmul float %div87, %add141, !dbg !240
+  %add143 = fadd float %mul142, 0x40A3F219C0000000, !dbg !240
+  %mul144 = fmul float %div87, %add143, !dbg !240
+  %add145 = fadd float %mul144, 0x40A8FFB760000000, !dbg !240
+  %mul146 = fmul float %div87, %add145, !dbg !240
+  %add147 = fadd float %mul146, 0x409802EB20000000, !dbg !240
+  %mul148 = fmul float %div87, %add147, !dbg !240
+  %add149 = fadd float %mul148, 0x40745CAE20000000, !dbg !240
+  %mul150 = fmul float %div87, %add149, !dbg !240
+  %add151 = fadd float %mul150, 0x403E568B20000000, !dbg !240
+  br label %if.end154
 
-; <label>:122                                     ; preds = %107, %87
-  %123 = phi <2 x float> [ %103, %87 ], [ %121, %107 ]
-  %124 = extractelement <2 x float> %123, i32 0, !dbg !824
-  %S.0.in = fmul float %85, %124, !dbg !824
-  %S.0 = fadd float %S.0.in, 1.000000e+00, !dbg !825
-  %125 = bitcast float %fabsf to i32, !dbg !826
-  tail call void @llvm.dbg.value(metadata i32 %125, i64 0, metadata !250, metadata !333), !dbg !682
-  %126 = and i32 %125, -4096, !dbg !827
-  tail call void @llvm.dbg.value(metadata i32 %126, i64 0, metadata !250, metadata !333), !dbg !682
-  %127 = bitcast i32 %126 to float, !dbg !828
-  tail call void @llvm.dbg.value(metadata float %127, i64 0, metadata !248, metadata !333), !dbg !707
-  %128 = fmul float %127, %127, !dbg !829
-  %129 = fsub float -5.625000e-01, %128, !dbg !830
-  %130 = fpext float %129 to double, !dbg !831
-  %131 = tail call double @exp(double %130) #9, !dbg !832
-  %132 = fsub float %127, %fabsf, !dbg !833
-  %133 = fadd float %fabsf, %127, !dbg !834
-  %134 = fmul float %132, %133, !dbg !835
-  %135 = extractelement <2 x float> %123, i32 1, !dbg !836
-  %136 = fdiv float %135, %S.0, !dbg !836
-  %137 = fadd float %134, %136, !dbg !837
-  %138 = fpext float %137 to double, !dbg !838
-  %139 = tail call double @exp(double %138) #9, !dbg !839
-  %140 = fmul double %131, %139, !dbg !840
-  %141 = fptrunc double %140 to float, !dbg !832
-  tail call void @llvm.dbg.value(metadata float %141, i64 0, metadata !249, metadata !333), !dbg !715
-  %142 = icmp sgt i32 %1, 0, !dbg !841
-  %143 = fdiv float %141, %fabsf, !dbg !843
-  br i1 %142, label %148, label %144, !dbg !844
+if.end154:                                        ; preds = %if.end127, %if.then90
+  %add118.pn = phi float [ %add118, %if.then90 ], [ %add151, %if.end127 ]
+  %R.0 = phi float [ %add104, %if.then90 ], [ %add139, %if.end127 ]
+  %S.0.in = fmul float %div87, %add118.pn, !dbg !235
+  %S.0 = fadd float %S.0.in, 1.000000e+00, !dbg !235
+  %1 = bitcast float %fabsf to i32, !dbg !241
+  %and157 = and i32 %1, -4096, !dbg !242
+  %2 = bitcast i32 %and157 to float, !dbg !243
+  tail call void @llvm.dbg.value(metadata !{float %2}, i64 0, metadata !55), !dbg !243
+  %3 = fmul float %2, %2, !dbg !244
+  %sub162 = fsub float -5.625000e-01, %3, !dbg !244
+  %conv163 = fpext float %sub162 to double, !dbg !244
+  %call164 = tail call double @exp(double %conv163) #5, !dbg !244
+  %sub165 = fsub float %2, %fabsf, !dbg !244
+  %add166 = fadd float %fabsf, %2, !dbg !244
+  %mul167 = fmul float %sub165, %add166, !dbg !244
+  %div168 = fdiv float %R.0, %S.0, !dbg !244
+  %add169 = fadd float %mul167, %div168, !dbg !244
+  %conv170 = fpext float %add169 to double, !dbg !244
+  %call171 = tail call double @exp(double %conv170) #5, !dbg !244
+  %mul172 = fmul double %call164, %call171, !dbg !244
+  %conv173 = fptrunc double %mul172 to float, !dbg !244
+  tail call void @llvm.dbg.value(metadata !{float %conv173}, i64 0, metadata !56), !dbg !244
+  %cmp174 = icmp sgt i32 %0, 0, !dbg !245
+  %div177 = fdiv float %conv173, %fabsf, !dbg !245
+  br i1 %cmp174, label %return, label %if.else178, !dbg !245
 
-; <label>:144                                     ; preds = %122
-  %145 = fsub float 2.000000e+00, %143, !dbg !845
-  br label %148, !dbg !846
+if.else178:                                       ; preds = %if.end154
+  %sub180 = fsub float 2.000000e+00, %div177, !dbg !245
+  br label %return, !dbg !245
 
-; <label>:146                                     ; preds = %81
-  %147 = icmp sgt i32 %1, 0, !dbg !847
-  %. = select i1 %147, float 0.000000e+00, float 2.000000e+00, !dbg !850
-  br label %148, !dbg !850
+if.else181:                                       ; preds = %if.end79
+  %cmp182 = icmp sgt i32 %0, 0, !dbg !246
+  %. = select i1 %cmp182, float 0.000000e+00, float 2.000000e+00, !dbg !246
+  br label %return, !dbg !246
 
-; <label>:148                                     ; preds = %146, %122, %104, %144, %78, %76, %42, %39, %14, %4
-  %.0 = phi float [ %9, %4 ], [ %15, %14 ], [ %41, %39 ], [ %45, %42 ], [ %77, %76 ], [ %80, %78 ], [ %145, %144 ], [ 2.000000e+00, %104 ], [ %143, %122 ], [ %., %146 ]
-  ret float %.0, !dbg !851
+return:                                           ; preds = %if.else181, %if.end154, %if.else121, %if.else178, %if.else75, %if.then72, %if.else, %if.then31, %if.then8, %if.then
+  %retval.0 = phi float [ %add, %if.then ], [ %sub, %if.then8 ], [ %sub34, %if.then31 ], [ %sub38, %if.else ], [ %sub74, %if.then72 ], [ %add78, %if.else75 ], [ %sub180, %if.else178 ], [ 2.000000e+00, %if.else121 ], [ %div177, %if.end154 ], [ %., %if.else181 ]
+  ret float %retval.0, !dbg !248
 }

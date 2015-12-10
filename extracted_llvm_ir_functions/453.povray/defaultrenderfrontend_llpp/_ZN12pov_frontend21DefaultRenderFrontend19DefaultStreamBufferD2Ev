@@ -1,39 +1,40 @@
 define void @_ZN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferD2Ev(%"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this, i64 0, metadata !877, metadata !1448), !dbg !1759
-  %1 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this, i64 0, i32 0, i32 0, !dbg !1760
-  store i32 (...)** bitcast (i8** getelementptr inbounds ([7 x i8*]* @_ZTVN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %1, align 8, !dbg !1760, !tbaa !1454
-  %2 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this, i64 0, i32 1, !dbg !1761
-  %3 = load %"class.pov_base::OStream"** %2, align 8, !dbg !1761, !tbaa !1666
-  %4 = icmp eq %"class.pov_base::OStream"* %3, null, !dbg !1764
-  br i1 %4, label %13, label %5, !dbg !1765
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this}, i64 0, metadata !712), !dbg !1029
+  %0 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this, i64 0, i32 0, i32 0, !dbg !1030
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([7 x i8*]* @_ZTVN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !1030, !tbaa !812
+  %handle = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this, i64 0, i32 1, !dbg !1031
+  %1 = load %"class.pov_base::OStream"** %handle, align 8, !dbg !1031, !tbaa !969
+  %cmp = icmp eq %"class.pov_base::OStream"* %1, null, !dbg !1031
+  br i1 %cmp, label %if.end, label %delete.notnull, !dbg !1031
 
-; <label>:5                                       ; preds = %0
-  %6 = bitcast %"class.pov_base::OStream"* %3 to void (%"class.pov_base::OStream"*)***, !dbg !1766
-  %7 = load void (%"class.pov_base::OStream"*)*** %6, align 8, !dbg !1766, !tbaa !1454
-  %8 = getelementptr inbounds void (%"class.pov_base::OStream"*)** %7, i64 1, !dbg !1766
-  %9 = load void (%"class.pov_base::OStream"*)** %8, align 8, !dbg !1766
-  invoke void %9(%"class.pov_base::OStream"* %3) #10
-          to label %13 unwind label %10, !dbg !1766
+delete.notnull:                                   ; preds = %entry
+  %2 = bitcast %"class.pov_base::OStream"* %1 to void (%"class.pov_base::OStream"*)***, !dbg !1033
+  %vtable = load void (%"class.pov_base::OStream"*)*** %2, align 8, !dbg !1033, !tbaa !812
+  %vfn = getelementptr inbounds void (%"class.pov_base::OStream"*)** %vtable, i64 1, !dbg !1033
+  %3 = load void (%"class.pov_base::OStream"*)** %vfn, align 8, !dbg !1033
+  invoke void %3(%"class.pov_base::OStream"* %1) #8
+          to label %if.end unwind label %lpad, !dbg !1033
 
-; <label>:10                                      ; preds = %5
-  %11 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !1767
-  %12 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this, i64 0, i32 0, !dbg !1768
-  invoke void @_ZN8pov_base16TextStreamBufferD2Ev(%"class.pov_base::TextStreamBuffer"* %12) #10
-          to label %15 unwind label %16, !dbg !1768
+lpad:                                             ; preds = %delete.notnull
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1033
+  %5 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this, i64 0, i32 0, !dbg !1034
+  invoke void @_ZN8pov_base16TextStreamBufferD2Ev(%"class.pov_base::TextStreamBuffer"* %5) #8
+          to label %eh.resume unwind label %terminate.lpad, !dbg !1034
 
-; <label>:13                                      ; preds = %0, %5
-  %14 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this, i64 0, i32 0, !dbg !1768
-  tail call void @_ZN8pov_base16TextStreamBufferD2Ev(%"class.pov_base::TextStreamBuffer"* %14) #10, !dbg !1768
-  ret void, !dbg !1769
+if.end:                                           ; preds = %entry, %delete.notnull
+  %6 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this, i64 0, i32 0, !dbg !1035
+  tail call void @_ZN8pov_base16TextStreamBufferD2Ev(%"class.pov_base::TextStreamBuffer"* %6) #8, !dbg !1035
+  ret void, !dbg !1034
 
-; <label>:15                                      ; preds = %10
-  resume { i8*, i32 } %11, !dbg !1768
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %4, !dbg !1034
 
-; <label>:16                                      ; preds = %10
-  %17 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          catch i8* null, !dbg !1768
-  %18 = extractvalue { i8*, i32 } %17, 0, !dbg !1768
-  tail call void @__clang_call_terminate(i8* %18) #11, !dbg !1768
-  unreachable, !dbg !1768
+terminate.lpad:                                   ; preds = %lpad
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !1034
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !1034
+  tail call void @__clang_call_terminate(i8* %8) #9, !dbg !1034
+  unreachable, !dbg !1034
 }

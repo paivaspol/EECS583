@@ -5,96 +5,113 @@ entry:
   %g = alloca [6 x i16], align 2
   %r.sroa.0 = alloca [3 x i64], align 8
   %l = alloca i64, align 8
-  %0 = bitcast [6 x i16]* %g to i8*
-  %1 = bitcast %struct.realvaluetype* %x to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
-  %arraydecay = getelementptr inbounds [6 x i16]* %g, i64 0, i64 0
-  %arrayidx.i = getelementptr inbounds [6 x i16]* %g, i64 0, i64 5
-  %2 = load i16* %arrayidx.i, align 2, !tbaa !0
-  %and.i = and i16 %2, 32767
-  %cmp.i = icmp eq i16 %and.i, 32767
-  br i1 %cmp.i, label %for.body.i, label %if.end
+  call void @llvm.dbg.declare(metadata !{%struct.realvaluetype* %x}, metadata !284), !dbg !1551
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %f}, metadata !285), !dbg !1552
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %g}, metadata !286), !dbg !1552
+  call void @llvm.dbg.declare(metadata !1553, metadata !287), !dbg !1554
+  call void @llvm.dbg.declare(metadata !{i64* %l}, metadata !288), !dbg !1555
+  %0 = bitcast [6 x i16]* %g to i8*, !dbg !1556
+  %1 = bitcast %struct.realvaluetype* %x to i8*, !dbg !1556
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false), !dbg !1556
+  %arraydecay = getelementptr inbounds [6 x i16]* %g, i64 0, i64 0, !dbg !1557
+  tail call void @llvm.dbg.value(metadata !{i16* %arraydecay}, i64 0, metadata !1558), !dbg !1559
+  %arrayidx.i = getelementptr inbounds [6 x i16]* %g, i64 0, i64 5, !dbg !1560
+  %2 = load i16* %arrayidx.i, align 2, !dbg !1560, !tbaa !1057
+  %and.i = and i16 %2, 32767, !dbg !1560
+  %cmp.i = icmp eq i16 %and.i, 32767, !dbg !1560
+  br i1 %cmp.i, label %for.body.i, label %if.end, !dbg !1560
 
 for.body.i:                                       ; preds = %entry, %for.inc.i
   %i.012.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %entry ]
   %x.addr.011.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %arraydecay, %entry ]
-  %3 = load i16* %x.addr.011.i, align 2, !tbaa !0
-  %cmp5.i = icmp eq i16 %3, 0
-  br i1 %cmp5.i, label %for.inc.i, label %if.then
+  %3 = load i16* %x.addr.011.i, align 2, !dbg !1561, !tbaa !1057
+  %cmp5.i = icmp eq i16 %3, 0, !dbg !1561
+  br i1 %cmp5.i, label %for.inc.i, label %if.then, !dbg !1561
 
 for.inc.i:                                        ; preds = %for.body.i
-  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1
-  %inc.i = add nsw i32 %i.012.i, 1
-  %cmp2.i = icmp slt i32 %inc.i, 5
-  br i1 %cmp2.i, label %for.body.i, label %if.end
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1, !dbg !1561
+  %inc.i = add nsw i32 %i.012.i, 1, !dbg !1562
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !1563), !dbg !1562
+  %cmp2.i = icmp slt i32 %inc.i, 5, !dbg !1562
+  br i1 %cmp2.i, label %for.body.i, label %if.end, !dbg !1562
 
 if.then:                                          ; preds = %for.body.i
-  %4 = bitcast %struct.realvaluetype* %agg.result to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %1, i64 24, i32 8, i1 false), !tbaa.struct !3
-  br label %return
+  %4 = bitcast %struct.realvaluetype* %agg.result to i8*, !dbg !1564
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %1, i64 24, i32 8, i1 false), !dbg !1564, !tbaa.struct !1565
+  br label %return, !dbg !1564
 
 if.end:                                           ; preds = %for.inc.i, %entry
-  %arraydecay2 = getelementptr inbounds [6 x i16]* %f, i64 0, i64 0
-  call fastcc void @eifrac(i16* %arraydecay, i64* %l, i16* %arraydecay2) #6
-  %5 = bitcast [9 x i16]* %yi.i to i8*
-  call void @llvm.lifetime.start(i64 18, i8* %5) #1
-  %arraydecay.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 0
-  call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 18, i32 16, i1 false) #1
-  %6 = load i64* %l, align 8, !tbaa !4
-  %cmp.i9 = icmp slt i64 %6, 0
-  br i1 %cmp.i9, label %if.then.i, label %if.end.i
+  %arraydecay2 = getelementptr inbounds [6 x i16]* %f, i64 0, i64 0, !dbg !1566
+  call fastcc void @eifrac(i16* %arraydecay, i64* %l, i16* %arraydecay2) #7, !dbg !1566
+  %5 = bitcast [9 x i16]* %yi.i to i8*, !dbg !1567
+  call void @llvm.lifetime.start(i64 18, i8* %5) #2, !dbg !1567
+  call void @llvm.dbg.value(metadata !{i64* %l}, i64 0, metadata !1569) #2, !dbg !1567
+  call void @llvm.dbg.value(metadata !{i16* %arraydecay}, i64 0, metadata !1570) #2, !dbg !1571
+  call void @llvm.dbg.declare(metadata !{[9 x i16]* %yi.i}, metadata !858) #2, !dbg !1572
+  %arraydecay.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 0, !dbg !1573
+  call void @llvm.dbg.value(metadata !{i16* %arraydecay.i}, i64 0, metadata !1574) #2, !dbg !1575
+  call void @llvm.dbg.value(metadata !250, i64 0, metadata !1576) #2, !dbg !1577
+  call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 18, i32 16, i1 false) #2, !dbg !1579
+  call void @llvm.dbg.value(metadata !{i64* %l}, i64 0, metadata !288), !dbg !1580
+  %6 = load i64* %l, align 8, !dbg !1580, !tbaa !1581
+  %cmp.i9 = icmp slt i64 %6, 0, !dbg !1580
+  br i1 %cmp.i9, label %if.then.i, label %if.end.i, !dbg !1580
 
 if.then.i:                                        ; preds = %if.end
-  %sub.i = sub nsw i64 0, %6
-  store i16 -1, i16* %arraydecay.i, align 16, !tbaa !0
-  br label %if.end.i
+  %sub.i = sub nsw i64 0, %6, !dbg !1582
+  call void @llvm.dbg.value(metadata !{i64 %sub.i}, i64 0, metadata !1584) #2, !dbg !1582
+  store i16 -1, i16* %arraydecay.i, align 16, !dbg !1585, !tbaa !1057
+  br label %if.end.i, !dbg !1586
 
 if.end.i:                                         ; preds = %if.then.i, %if.end
   %ll.0.i = phi i64 [ %sub.i, %if.then.i ], [ %6, %if.end ]
-  %shr.i = lshr i64 %ll.0.i, 48
-  %conv.i = trunc i64 %shr.i to i16
-  %arrayidx1.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 2
-  store i16 %conv.i, i16* %arrayidx1.i, align 4, !tbaa !0
-  %shr2.i = lshr i64 %ll.0.i, 32
-  %conv3.i = trunc i64 %shr2.i to i16
-  %arrayidx4.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 3
-  store i16 %conv3.i, i16* %arrayidx4.i, align 2, !tbaa !0
-  %shr5.i = lshr i64 %ll.0.i, 16
-  %conv6.i = trunc i64 %shr5.i to i16
-  %arrayidx7.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 4
-  store i16 %conv6.i, i16* %arrayidx7.i, align 8, !tbaa !0
-  %conv8.i = trunc i64 %ll.0.i to i16
-  %arrayidx9.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 5
-  store i16 %conv8.i, i16* %arrayidx9.i, align 2, !tbaa !0
-  %arrayidx10.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 1
-  store i16 16430, i16* %arrayidx10.i, align 2, !tbaa !0
-  %call.i = call fastcc i32 @enormlz(i16* %arraydecay.i) #7
-  %cmp12.i = icmp sgt i32 %call.i, 80
-  br i1 %cmp12.i, label %if.then14.i, label %if.else16.i
+  %shr.i = lshr i64 %ll.0.i, 48, !dbg !1587
+  %conv.i = trunc i64 %shr.i to i16, !dbg !1587
+  %arrayidx1.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 2, !dbg !1587
+  store i16 %conv.i, i16* %arrayidx1.i, align 4, !dbg !1587, !tbaa !1057
+  %shr2.i = lshr i64 %ll.0.i, 32, !dbg !1588
+  %conv3.i = trunc i64 %shr2.i to i16, !dbg !1588
+  %arrayidx4.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 3, !dbg !1588
+  store i16 %conv3.i, i16* %arrayidx4.i, align 2, !dbg !1588, !tbaa !1057
+  %shr5.i = lshr i64 %ll.0.i, 16, !dbg !1589
+  %conv6.i = trunc i64 %shr5.i to i16, !dbg !1589
+  %arrayidx7.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 4, !dbg !1589
+  store i16 %conv6.i, i16* %arrayidx7.i, align 8, !dbg !1589, !tbaa !1057
+  %conv8.i = trunc i64 %ll.0.i to i16, !dbg !1590
+  %arrayidx9.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 5, !dbg !1590
+  store i16 %conv8.i, i16* %arrayidx9.i, align 2, !dbg !1590, !tbaa !1057
+  %arrayidx10.i = getelementptr inbounds [9 x i16]* %yi.i, i64 0, i64 1, !dbg !1591
+  store i16 16430, i16* %arrayidx10.i, align 2, !dbg !1591, !tbaa !1057
+  %call.i = call fastcc i32 @enormlz(i16* %arraydecay.i) #8, !dbg !1592
+  call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !1593) #2, !dbg !1592
+  %cmp12.i = icmp sgt i32 %call.i, 80, !dbg !1592
+  br i1 %cmp12.i, label %if.then14.i, label %if.else16.i, !dbg !1592
 
 if.then14.i:                                      ; preds = %if.end.i
-  call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 18, i32 16, i1 false) #1
-  br label %ltoe.exit
+  call void @llvm.dbg.value(metadata !{i16* %arraydecay.i}, i64 0, metadata !1594) #2, !dbg !1596
+  call void @llvm.dbg.value(metadata !250, i64 0, metadata !1597) #2, !dbg !1598
+  call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 18, i32 16, i1 false) #2, !dbg !1599
+  br label %ltoe.exit, !dbg !1595
 
 if.else16.i:                                      ; preds = %if.end.i
-  %7 = load i16* %arrayidx10.i, align 2, !tbaa !0
-  %conv20.i = zext i16 %7 to i32
-  %sub21.i = sub nsw i32 %conv20.i, %call.i
-  %conv22.i = trunc i32 %sub21.i to i16
-  store i16 %conv22.i, i16* %arrayidx10.i, align 2, !tbaa !0
+  %7 = load i16* %arrayidx10.i, align 2, !dbg !1600, !tbaa !1057
+  %conv20.i = zext i16 %7 to i32, !dbg !1600
+  %sub21.i = sub nsw i32 %conv20.i, %call.i, !dbg !1600
+  %conv22.i = trunc i32 %sub21.i to i16, !dbg !1600
+  store i16 %conv22.i, i16* %arrayidx10.i, align 2, !dbg !1600, !tbaa !1057
   br label %ltoe.exit
 
 ltoe.exit:                                        ; preds = %if.then14.i, %if.else16.i
-  call fastcc void @emovo(i16* %arraydecay.i, i16* %arraydecay) #7
-  call void @llvm.lifetime.end(i64 18, i8* %5) #1
-  %r.sroa.0.0.cast4 = bitcast [3 x i64]* %r.sroa.0 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %r.sroa.0.0.cast4, i8* %0, i64 12, i32 2, i1 false)
-  %r.sroa.0.12.raw_idx = getelementptr inbounds i8* %r.sroa.0.0.cast4, i64 12
-  call void @llvm.memset.p0i8.i64(i8* %r.sroa.0.12.raw_idx, i8 0, i64 12, i32 4, i1 false)
-  %r.sroa.0.0.cast5 = bitcast %struct.realvaluetype* %agg.result to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %r.sroa.0.0.cast5, i8* %r.sroa.0.0.cast4, i64 24, i32 8, i1 false)
-  br label %return
+  call fastcc void @emovo(i16* %arraydecay.i, i16* %arraydecay) #8, !dbg !1601
+  call void @llvm.lifetime.end(i64 18, i8* %5) #2, !dbg !1602
+  %r.sroa.0.0.cast4 = bitcast [3 x i64]* %r.sroa.0 to i8*, !dbg !1603
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %r.sroa.0.0.cast4, i8* %0, i64 12, i32 2, i1 false), !dbg !1603
+  %r.sroa.0.12.raw_idx = getelementptr inbounds i8* %r.sroa.0.0.cast4, i64 12, !dbg !1603
+  call void @llvm.memset.p0i8.i64(i8* %r.sroa.0.12.raw_idx, i8 0, i64 12, i32 4, i1 false), !dbg !1603
+  %r.sroa.0.0.cast5 = bitcast %struct.realvaluetype* %agg.result to i8*, !dbg !1605
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %r.sroa.0.0.cast5, i8* %r.sroa.0.0.cast4, i64 24, i32 8, i1 false), !dbg !1605
+  br label %return, !dbg !1605
 
 return:                                           ; preds = %ltoe.exit, %if.then
-  ret void
+  ret void, !dbg !1606
 }

@@ -1,45 +1,46 @@
-define void @_ZN8EtherMAC22frameReceptionCompleteEP10EtherFrame(%class.EtherMAC* %this, %class.EtherFrame* %frame) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.EtherMAC* %this, i64 0, metadata !3905, metadata !5344), !dbg !7212
-  tail call void @llvm.dbg.value(metadata %class.EtherFrame* %frame, i64 0, metadata !3906, metadata !5344), !dbg !7213
-  %1 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 1, !dbg !7214
-  %2 = load i32* %1, align 4, !dbg !7214, !tbaa !6204
-  switch i32 %2, label %21 [
-    i32 2001, label %3
-    i32 2002, label %4
-  ], !dbg !7216
+define void @_ZN8EtherMAC22frameReceptionCompleteEP10EtherFrame(%class.EtherMAC* %this, %class.EtherFrame* %frame) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherMAC* %this}, i64 0, metadata !4975), !dbg !6614
+  tail call void @llvm.dbg.value(metadata !{%class.EtherFrame* %frame}, i64 0, metadata !4976), !dbg !6614
+  %msgkind.i = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 1, !dbg !6615
+  %0 = load i32* %msgkind.i, align 4, !dbg !6615, !tbaa !5376
+  switch i32 %0, label %sw.default [
+    i32 2001, label %sw.bb
+    i32 2002, label %delete.end
+  ], !dbg !6616
 
-; <label>:3                                       ; preds = %0
-  tail call void @_ZN8EtherMAC24processReceivedDataFrameEP10EtherFrame(%class.EtherMAC* %this, %class.EtherFrame* %frame) #11, !dbg !7217
-  br label %23, !dbg !7219
+sw.bb:                                            ; preds = %entry
+  tail call void @_ZN8EtherMAC24processReceivedDataFrameEP10EtherFrame(%class.EtherMAC* %this, %class.EtherFrame* %frame) #11, !dbg !6617
+  br label %sw.epilog, !dbg !6619
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast %class.EtherFrame* %frame to %class.EtherPauseFrame*, !dbg !7220
-  %6 = bitcast %class.EtherFrame* %frame to i32 (%class.EtherPauseFrame*)***, !dbg !7221
-  %7 = load i32 (%class.EtherPauseFrame*)*** %6, align 8, !dbg !7221, !tbaa !5464
-  %8 = getelementptr inbounds i32 (%class.EtherPauseFrame*)** %7, i64 23, !dbg !7221
-  %9 = load i32 (%class.EtherPauseFrame*)** %8, align 8, !dbg !7221
-  %10 = tail call i32 %9(%class.EtherPauseFrame* %5) #11, !dbg !7221
-  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !3907, metadata !5344), !dbg !7222
-  %11 = bitcast %class.EtherFrame* %frame to void (%class.EtherFrame*)***, !dbg !7223
-  %12 = load void (%class.EtherFrame*)*** %11, align 8, !dbg !7223, !tbaa !5464
-  %13 = getelementptr inbounds void (%class.EtherFrame*)** %12, i64 1, !dbg !7223
-  %14 = load void (%class.EtherFrame*)** %13, align 8, !dbg !7223
-  tail call void %14(%class.EtherFrame* %frame) #11, !dbg !7223
-  %15 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 45, !dbg !7224
-  %16 = load i64* %15, align 8, !dbg !7225, !tbaa !7226
-  %17 = add i64 %16, 1, !dbg !7225
-  store i64 %17, i64* %15, align 8, !dbg !7225, !tbaa !7226
-  %18 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 57, !dbg !7227
-  %19 = uitofp i64 %17 to double, !dbg !7228
-  %20 = tail call zeroext i1 @_ZN10cOutVector6recordEd(%class.cOutVector* %18, double %19) #11, !dbg !7227
-  tail call void @_ZN8EtherMAC19processPauseCommandEi(%class.EtherMAC* %this, i32 %10) #11, !dbg !7229
-  br label %23, !dbg !7230
+delete.end:                                       ; preds = %entry
+  %1 = bitcast %class.EtherFrame* %frame to %class.EtherPauseFrame*, !dbg !6620
+  %2 = bitcast %class.EtherFrame* %frame to i32 (%class.EtherPauseFrame*)***, !dbg !6620
+  %vtable = load i32 (%class.EtherPauseFrame*)*** %2, align 8, !dbg !6620, !tbaa !5419
+  %vfn = getelementptr inbounds i32 (%class.EtherPauseFrame*)** %vtable, i64 23, !dbg !6620
+  %3 = load i32 (%class.EtherPauseFrame*)** %vfn, align 8, !dbg !6620
+  %call3 = tail call i32 %3(%class.EtherPauseFrame* %1) #11, !dbg !6620
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !4977), !dbg !6620
+  %4 = bitcast %class.EtherFrame* %frame to void (%class.EtherFrame*)***, !dbg !6621
+  %vtable4 = load void (%class.EtherFrame*)*** %4, align 8, !dbg !6621, !tbaa !5419
+  %vfn5 = getelementptr inbounds void (%class.EtherFrame*)** %vtable4, i64 1, !dbg !6621
+  %5 = load void (%class.EtherFrame*)** %vfn5, align 8, !dbg !6621
+  tail call void %5(%class.EtherFrame* %frame) #11, !dbg !6621
+  %numPauseFramesRcvd = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 44, !dbg !6622
+  %6 = load i64* %numPauseFramesRcvd, align 8, !dbg !6622, !tbaa !5932
+  %inc = add i64 %6, 1, !dbg !6622
+  store i64 %inc, i64* %numPauseFramesRcvd, align 8, !dbg !6622, !tbaa !5932
+  %numPauseFramesRcvdVector = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 56, !dbg !6623
+  %conv = uitofp i64 %inc to double, !dbg !6623
+  %call7 = tail call zeroext i1 @_ZN10cOutVector6recordEd(%class.cOutVector* %numPauseFramesRcvdVector, double %conv) #11, !dbg !6623
+  tail call void @_ZN8EtherMAC19processPauseCommandEi(%class.EtherMAC* %this, i32 %call3) #11, !dbg !6624
+  br label %sw.epilog, !dbg !6625
 
-; <label>:21                                      ; preds = %0
-  %22 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !7231
-  tail call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %22, i8* getelementptr inbounds ([24 x i8]* @.str124, i64 0, i64 0), i32 %2) #11, !dbg !7231
-  br label %23, !dbg !7232
+sw.default:                                       ; preds = %entry
+  %7 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !6626
+  tail call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %7, i8* getelementptr inbounds ([24 x i8]* @.str125, i64 0, i64 0), i32 %0) #11, !dbg !6626
+  br label %sw.epilog, !dbg !6627
 
-; <label>:23                                      ; preds = %21, %4, %3
-  ret void, !dbg !7233
+sw.epilog:                                        ; preds = %sw.default, %delete.end, %sw.bb
+  ret void, !dbg !6628
 }

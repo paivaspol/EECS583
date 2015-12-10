@@ -1,42 +1,43 @@
-define i32 @Pencil_writeForHumanEye(%struct._Pencil* %pencil, %struct.__sFILE* %fp) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Pencil* %pencil, i64 0, metadata !132, metadata !142), !dbg !183
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !133, metadata !142), !dbg !184
-  %1 = icmp eq %struct._Pencil* %pencil, null, !dbg !185
-  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !187
-  %or.cond = or i1 %1, %2, !dbg !188
-  br i1 %or.cond, label %3, label %6, !dbg !188
+define i32 @Pencil_writeForHumanEye(%struct._Pencil* %pencil, %struct._IO_FILE* %fp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Pencil* %pencil}, i64 0, metadata !126), !dbg !153
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !127), !dbg !154
+  %cmp = icmp eq %struct._Pencil* %pencil, null, !dbg !155
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null, !dbg !155
+  %or.cond = or i1 %cmp, %cmp1, !dbg !155
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !155
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !189, !tbaa !154
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([60 x i8]* @.str2, i64 0, i64 0), %struct._Pencil* %pencil, %struct.__sFILE* %fp) #7, !dbg !191
-  tail call void @exit(i32 -1) #8, !dbg !192
-  unreachable, !dbg !192
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !156, !tbaa !140
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str2, i64 0, i64 0), %struct._Pencil* %pencil, %struct._IO_FILE* %fp) #7, !dbg !156
+  tail call void @exit(i32 -1) #9, !dbg !158
+  unreachable, !dbg !158
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 @Pencil_writeStats(%struct._Pencil* %pencil, %struct.__sFILE* %fp) #9, !dbg !193
-  %8 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2, !dbg !194
-  %9 = load %struct._InpMtx** %8, align 8, !dbg !194, !tbaa !166
-  %10 = icmp eq %struct._InpMtx* %9, null, !dbg !196
-  br i1 %10, label %15, label %11, !dbg !197
+if.end:                                           ; preds = %entry
+  %call2 = tail call i32 @Pencil_writeStats(%struct._Pencil* %pencil, %struct._IO_FILE* %fp) #10, !dbg !159
+  %inpmtxA = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2, !dbg !160
+  %1 = load %struct._InpMtx** %inpmtxA, align 8, !dbg !160, !tbaa !140
+  %cmp3 = icmp eq %struct._InpMtx* %1, null, !dbg !160
+  br i1 %cmp3, label %if.end8, label %if.then4, !dbg !160
 
-; <label>:11                                      ; preds = %6
-  %12 = tail call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0), i64 10, i64 1, %struct.__sFILE* %fp), !dbg !198
-  %13 = load %struct._InpMtx** %8, align 8, !dbg !200, !tbaa !166
-  %14 = tail call i32 @InpMtx_writeForHumanEye(%struct._InpMtx* %13, %struct.__sFILE* %fp) #7, !dbg !201
-  br label %15, !dbg !202
+if.then4:                                         ; preds = %if.end
+  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0), i64 10, i64 1, %struct._IO_FILE* %fp), !dbg !161
+  %3 = load %struct._InpMtx** %inpmtxA, align 8, !dbg !163, !tbaa !140
+  %call7 = tail call i32 @InpMtx_writeForHumanEye(%struct._InpMtx* %3, %struct._IO_FILE* %fp) #7, !dbg !163
+  br label %if.end8, !dbg !164
 
-; <label>:15                                      ; preds = %6, %11
-  %16 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3, !dbg !203
-  %17 = load %struct._InpMtx** %16, align 8, !dbg !203, !tbaa !179
-  %18 = icmp eq %struct._InpMtx* %17, null, !dbg !205
-  br i1 %18, label %23, label %19, !dbg !206
+if.end8:                                          ; preds = %if.end, %if.then4
+  %inpmtxB = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3, !dbg !165
+  %4 = load %struct._InpMtx** %inpmtxB, align 8, !dbg !165, !tbaa !140
+  %cmp9 = icmp eq %struct._InpMtx* %4, null, !dbg !165
+  br i1 %cmp9, label %if.end14, label %if.then10, !dbg !165
 
-; <label>:19                                      ; preds = %15
-  %20 = tail call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str4, i64 0, i64 0), i64 10, i64 1, %struct.__sFILE* %fp), !dbg !207
-  %21 = load %struct._InpMtx** %16, align 8, !dbg !209, !tbaa !179
-  %22 = tail call i32 @InpMtx_writeForHumanEye(%struct._InpMtx* %21, %struct.__sFILE* %fp) #7, !dbg !210
-  br label %23, !dbg !211
+if.then10:                                        ; preds = %if.end8
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str4, i64 0, i64 0), i64 10, i64 1, %struct._IO_FILE* %fp), !dbg !166
+  %6 = load %struct._InpMtx** %inpmtxB, align 8, !dbg !168, !tbaa !140
+  %call13 = tail call i32 @InpMtx_writeForHumanEye(%struct._InpMtx* %6, %struct._IO_FILE* %fp) #7, !dbg !168
+  br label %if.end14, !dbg !169
 
-; <label>:23                                      ; preds = %15, %19
-  ret i32 1, !dbg !212
+if.end14:                                         ; preds = %if.end8, %if.then10
+  ret i32 1, !dbg !170
 }

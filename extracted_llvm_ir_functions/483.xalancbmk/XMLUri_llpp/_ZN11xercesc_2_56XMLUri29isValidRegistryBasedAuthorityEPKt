@@ -1,0 +1,66 @@
+define zeroext i1 @_ZN11xercesc_2_56XMLUri29isValidRegistryBasedAuthorityEPKt(i16* %authority) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %authority}, i64 0, metadata !1521), !dbg !4325
+  %tobool = icmp eq i16* %authority, null, !dbg !4326
+  br i1 %tobool, label %return, label %while.cond.preheader, !dbg !4326
+
+while.cond.preheader:                             ; preds = %entry
+  %0 = load i16* %authority, align 2, !dbg !4327, !tbaa !2644
+  %tobool124 = icmp eq i16 %0, 0, !dbg !4327
+  br i1 %tobool124, label %return, label %while.body, !dbg !4327
+
+while.body:                                       ; preds = %while.cond.preheader, %while.cond.backedge
+  %1 = phi i16 [ %6, %while.cond.backedge ], [ %0, %while.cond.preheader ]
+  %tmpStr.025 = phi i16* [ %tmpStr.0.be, %while.cond.backedge ], [ %authority, %while.cond.preheader ]
+  tail call void @llvm.dbg.value(metadata !{i16 %1}, i64 0, metadata !4328), !dbg !4331
+  %call.i = tail call zeroext i1 @_ZN11xercesc_2_59XMLString10isAlphaNumEt(i16 zeroext %1) #9, !dbg !4332
+  br i1 %call.i, label %if.then3, label %_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit, !dbg !4332
+
+_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit: ; preds = %while.body
+  %call1.i = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* getelementptr inbounds ([10 x i16]* @_ZN11xercesc_2_56XMLUri15MARK_CHARACTERSE, i64 0, i64 0), i16 zeroext %1) #9, !dbg !4333
+  %cmp.i = icmp eq i32 %call1.i, -1, !dbg !4333
+  br i1 %cmp.i, label %lor.lhs.false, label %if.then3, !dbg !4329
+
+lor.lhs.false:                                    ; preds = %_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit
+  %2 = load i16* %tmpStr.025, align 2, !dbg !4334, !tbaa !2644
+  %call2 = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* getelementptr inbounds ([9 x i16]* @_ZN11xercesc_2_56XMLUri19REG_NAME_CHARACTERSE, i64 0, i64 0), i16 zeroext %2) #9, !dbg !4334
+  %cmp = icmp eq i32 %call2, -1, !dbg !4334
+  br i1 %cmp, label %if.else, label %if.then3, !dbg !4334
+
+if.then3:                                         ; preds = %_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit, %while.body, %lor.lhs.false
+  %incdec.ptr = getelementptr inbounds i16* %tmpStr.025, i64 1, !dbg !4335
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1522), !dbg !4335
+  br label %while.cond.backedge, !dbg !4337
+
+if.else:                                          ; preds = %lor.lhs.false
+  %3 = load i16* %tmpStr.025, align 2, !dbg !4338, !tbaa !2644
+  %cmp4 = icmp eq i16 %3, 37, !dbg !4338
+  br i1 %cmp4, label %if.then5, label %return, !dbg !4338
+
+if.then5:                                         ; preds = %if.else
+  %add.ptr = getelementptr inbounds i16* %tmpStr.025, i64 1, !dbg !4339
+  %4 = load i16* %add.ptr, align 2, !dbg !4339, !tbaa !2644
+  %call6 = tail call zeroext i1 @_ZN11xercesc_2_59XMLString5isHexEt(i16 zeroext %4) #9, !dbg !4339
+  br i1 %call6, label %land.lhs.true, label %return, !dbg !4339
+
+land.lhs.true:                                    ; preds = %if.then5
+  %add.ptr7 = getelementptr inbounds i16* %tmpStr.025, i64 2, !dbg !4341
+  %5 = load i16* %add.ptr7, align 2, !dbg !4341, !tbaa !2644
+  %call8 = tail call zeroext i1 @_ZN11xercesc_2_59XMLString5isHexEt(i16 zeroext %5) #9, !dbg !4341
+  br i1 %call8, label %if.then9, label %return, !dbg !4341
+
+if.then9:                                         ; preds = %land.lhs.true
+  %add.ptr10 = getelementptr inbounds i16* %tmpStr.025, i64 3, !dbg !4342
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr10}, i64 0, metadata !1522), !dbg !4342
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then9, %if.then3
+  %tmpStr.0.be = phi i16* [ %incdec.ptr, %if.then3 ], [ %add.ptr10, %if.then9 ]
+  %6 = load i16* %tmpStr.0.be, align 2, !dbg !4327, !tbaa !2644
+  %tobool1 = icmp eq i16 %6, 0, !dbg !4327
+  br i1 %tobool1, label %return, label %while.body, !dbg !4327
+
+return:                                           ; preds = %while.cond.preheader, %if.else, %if.then5, %land.lhs.true, %while.cond.backedge, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ true, %while.cond.preheader ], [ false, %if.else ], [ false, %if.then5 ], [ false, %land.lhs.true ], [ true, %while.cond.backedge ]
+  ret i1 %retval.0, !dbg !4344
+}

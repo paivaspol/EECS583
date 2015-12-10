@@ -1,15 +1,16 @@
-define void @save_free(i8* nocapture readnone %name, i8* nocapture readnone %file, i32 %line, i8* %ptr) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !54, metadata !74), !dbg !146
-  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !55, metadata !74), !dbg !147
-  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !56, metadata !74), !dbg !148
-  tail call void @llvm.dbg.value(metadata i8* %ptr, i64 0, metadata !57, metadata !74), !dbg !149
-  %1 = icmp eq i8* %ptr, null, !dbg !150
-  br i1 %1, label %3, label %2, !dbg !152
+define void @save_free(i8* nocapture %name, i8* nocapture %file, i32 %line, i8* %ptr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !43), !dbg !89
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !44), !dbg !89
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !45), !dbg !89
+  tail call void @llvm.dbg.value(metadata !{i8* %ptr}, i64 0, metadata !46), !dbg !89
+  %cmp = icmp eq i8* %ptr, null, !dbg !90
+  br i1 %cmp, label %if.end, label %if.then, !dbg !90
 
-; <label>:2                                       ; preds = %0
-  tail call void @free(i8* %ptr) #7, !dbg !153
-  br label %3, !dbg !153
+if.then:                                          ; preds = %entry
+  tail call void @free(i8* %ptr) #7, !dbg !91
+  br label %if.end, !dbg !91
 
-; <label>:3                                       ; preds = %0, %2
-  ret void, !dbg !154
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !92
 }

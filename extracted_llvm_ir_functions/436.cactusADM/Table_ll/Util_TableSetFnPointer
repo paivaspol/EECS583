@@ -1,15 +1,16 @@
 define i32 @Util_TableSetFnPointer(i32 %handle, void ()* %value, i8* %key) #1 {
-  %1 = alloca void ()*, align 8
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !192, metadata !608), !dbg !1197
-  tail call void @llvm.dbg.value(metadata void ()* %value, i64 0, metadata !193, metadata !608), !dbg !1198
-  store void ()* %value, void ()** %1, align 8, !tbaa !631
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !194, metadata !608), !dbg !1199
-  tail call void @llvm.dbg.value(metadata void ()** %1, i64 0, metadata !193, metadata !608), !dbg !1198
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !256, metadata !608) #8, !dbg !1200
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !257, metadata !608) #8, !dbg !1202
-  tail call void @llvm.dbg.value(metadata void ()** %1, i64 0, metadata !258, metadata !608) #8, !dbg !1203
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !259, metadata !608) #8, !dbg !1204
-  %2 = bitcast void ()** %1 to i8*, !dbg !1205
-  %3 = call fastcc i32 @internal_set(i32 %handle, i32 16, i32 1, i8* %2, i8* %key) #10, !dbg !1206
-  ret i32 %3, !dbg !1207
+entry:
+  %value.addr = alloca void ()*, align 8
+  call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !176), !dbg !943
+  call void @llvm.dbg.value(metadata !{void ()* %value}, i64 0, metadata !177), !dbg !943
+  store void ()* %value, void ()** %value.addr, align 8, !tbaa !602
+  call void @llvm.dbg.declare(metadata !{void ()** %value.addr}, metadata !177), !dbg !943
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !178), !dbg !943
+  call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !944) #8, !dbg !946
+  call void @llvm.dbg.value(metadata !792, i64 0, metadata !947) #8, !dbg !948
+  call void @llvm.dbg.value(metadata !{void ()** %value.addr}, i64 0, metadata !949) #8, !dbg !948
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !950) #8, !dbg !951
+  %0 = bitcast void ()** %value.addr to i8*, !dbg !952
+  %call.i = call fastcc i32 @internal_set(i32 %handle, i32 16, i32 1, i8* %0, i8* %key) #10, !dbg !952
+  ret i32 %call.i, !dbg !945
 }

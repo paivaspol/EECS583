@@ -1,100 +1,90 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/464.h264ref/src/specrand.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/464.h264ref/src/specrand.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 @seedi = internal unnamed_addr global i32 0, align 4
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @spec_srand(i32 %seed) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %seed, i64 0, metadata !11, metadata !24), !dbg !25
-  store i32 %seed, i32* @seedi, align 4, !dbg !26, !tbaa !27
-  ret void, !dbg !31
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %seed}, i64 0, metadata !10), !dbg !21
+  store i32 %seed, i32* @seedi, align 4, !dbg !22, !tbaa !23
+  ret void, !dbg !26
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define double @spec_rand() #0 {
-  %1 = load i32* @seedi, align 4, !dbg !32, !tbaa !27
-  %2 = sext i32 %1 to i64, !dbg !32
-  %3 = sdiv i64 %2, 127773, !dbg !33
-  %4 = srem i64 %2, 127773, !dbg !34
-  %5 = mul nsw i64 %4, 16807, !dbg !35
-  %6 = mul nsw i64 %3, -2836, !dbg !36
-  %7 = add i64 %5, %6, !dbg !36
-  %8 = trunc i64 %7 to i32, !dbg !37
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !17, metadata !24), !dbg !38
-  %9 = icmp sgt i32 %8, 0, !dbg !39
-  br i1 %9, label %13, label %10, !dbg !41
+entry:
+  %0 = load i32* @seedi, align 4, !dbg !27, !tbaa !23
+  %conv = sext i32 %0 to i64, !dbg !27
+  %div = sdiv i64 %conv, 127773, !dbg !27
+  %rem = srem i64 %conv, 127773, !dbg !28
+  %sext = shl i64 %rem, 32, !dbg !29
+  %conv4 = ashr exact i64 %sext, 32, !dbg !29
+  %mul = mul nsw i64 %conv4, 16807, !dbg !29
+  %sext14 = shl i64 %div, 32, !dbg !29
+  %conv5 = ashr exact i64 %sext14, 32, !dbg !29
+  %1 = mul i64 %conv5, -2836, !dbg !29
+  %sub = add i64 %mul, %1, !dbg !29
+  %conv7 = trunc i64 %sub to i32, !dbg !29
+  tail call void @llvm.dbg.value(metadata !{i32 %conv7}, i64 0, metadata !18), !dbg !29
+  %cmp = icmp sgt i32 %conv7, 0, !dbg !30
+  br i1 %cmp, label %if.end, label %if.else, !dbg !30
 
-; <label>:10                                      ; preds = %0
-  %11 = add i64 %7, 2147483647, !dbg !42
-  %12 = trunc i64 %11 to i32, !dbg !44
-  br label %13
+if.else:                                          ; preds = %entry
+  %add = add nsw i64 %sub, 2147483647, !dbg !31
+  %conv10 = trunc i64 %add to i32, !dbg !31
+  br label %if.end
 
-; <label>:13                                      ; preds = %0, %10
-  %storemerge = phi i32 [ %12, %10 ], [ %8, %0 ]
-  store i32 %storemerge, i32* @seedi, align 4, !dbg !45, !tbaa !27
-  %14 = sitofp i32 %storemerge to double, !dbg !47
-  %15 = fdiv double %14, 0x41DFFFFFFFC00000, !dbg !48
-  ret double %15, !dbg !49
+if.end:                                           ; preds = %entry, %if.else
+  %storemerge = phi i32 [ %conv10, %if.else ], [ %conv7, %entry ]
+  store i32 %storemerge, i32* @seedi, align 4, !dbg !33, !tbaa !23
+  %conv11 = sitofp i32 %storemerge to double, !dbg !35
+  %div12 = fdiv double %conv11, 0x41DFFFFFFFC00000, !dbg !35
+  ret double %div12, !dbg !35
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #1
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { nounwind readnone }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!20, !21, !22}
-!llvm.ident = !{!23}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !5, globals: !18, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/464.h264ref/src/specrand.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!5 = !{!6, !12}
-!6 = !DISubprogram(name: "spec_srand", scope: !1, file: !1, line: 16, type: !7, isLocal: false, isDefinition: true, scopeLine: 16, flags: DIFlagPrototyped, isOptimized: true, function: void (i32)* @spec_srand, variables: !10)
-!7 = !DISubroutineType(types: !8)
-!8 = !{null, !9}
-!9 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!10 = !{!11}
-!11 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "seed", arg: 1, scope: !6, file: !1, line: 16, type: !9)
-!12 = !DISubprogram(name: "spec_rand", scope: !1, file: !1, line: 25, type: !13, isLocal: false, isDefinition: true, scopeLine: 30, flags: DIFlagPrototyped, isOptimized: true, function: double ()* @spec_rand, variables: !14)
-!13 = !DISubroutineType(types: !3)
-!14 = !{!15, !16, !17}
-!15 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "lo", scope: !12, file: !1, line: 31, type: !9)
-!16 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "hi", scope: !12, file: !1, line: 32, type: !9)
-!17 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "test", scope: !12, file: !1, line: 33, type: !9)
-!18 = !{!19}
-!19 = !DIGlobalVariable(name: "seedi", scope: !0, file: !1, line: 14, type: !9, isLocal: true, isDefinition: true, variable: i32* @seedi)
-!20 = !{i32 2, !"Dwarf Version", i32 2}
-!21 = !{i32 2, !"Debug Info Version", i32 700000003}
-!22 = !{i32 1, !"PIC Level", i32 2}
-!23 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!24 = !DIExpression()
-!25 = !DILocation(line: 16, column: 21, scope: !6)
-!26 = !DILocation(line: 17, column: 9, scope: !6)
-!27 = !{!28, !28, i64 0}
-!28 = !{!"int", !29, i64 0}
-!29 = !{!"omnipotent char", !30, i64 0}
-!30 = !{!"Simple C/C++ TBAA"}
-!31 = !DILocation(line: 18, column: 1, scope: !6)
-!32 = !DILocation(line: 35, column: 8, scope: !12)
-!33 = !DILocation(line: 35, column: 14, scope: !12)
-!34 = !DILocation(line: 36, column: 14, scope: !12)
-!35 = !DILocation(line: 37, column: 24, scope: !12)
-!36 = !DILocation(line: 37, column: 29, scope: !12)
-!37 = !DILocation(line: 37, column: 10, scope: !12)
-!38 = !DILocation(line: 33, column: 7, scope: !12)
-!39 = !DILocation(line: 38, column: 12, scope: !40)
-!40 = distinct !DILexicalBlock(scope: !12, file: !1, line: 38, column: 7)
-!41 = !DILocation(line: 38, column: 7, scope: !12)
-!42 = !DILocation(line: 41, column: 18, scope: !43)
-!43 = distinct !DILexicalBlock(scope: !40, file: !1, line: 40, column: 10)
-!44 = !DILocation(line: 41, column: 13, scope: !43)
-!45 = !DILocation(line: 39, column: 11, scope: !46)
-!46 = distinct !DILexicalBlock(scope: !40, file: !1, line: 38, column: 17)
-!47 = !DILocation(line: 43, column: 12, scope: !12)
-!48 = !DILocation(line: 43, column: 27, scope: !12)
-!49 = !DILocation(line: 43, column: 3, scope: !12)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !19, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/464.h264ref/src/specrand.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/464.h264ref/src/specrand.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !11}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"spec_srand", metadata !"spec_srand", metadata !"", i32 16, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32)* @spec_srand, null, null, metadata !9, i32 16} ; [ DW_TAG_subprogram ] [line 16] [def] [spec_srand]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/464.h264ref/src/specrand.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{null, metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{metadata !10}
+!10 = metadata !{i32 786689, metadata !4, metadata !"seed", metadata !5, i32 16777232, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [seed] [line 16]
+!11 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"spec_rand", metadata !"spec_rand", metadata !"", i32 25, metadata !12, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, double ()* @spec_rand, null, null, metadata !15, i32 30} ; [ DW_TAG_subprogram ] [line 25] [def] [scope 30] [spec_rand]
+!12 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !13, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!13 = metadata !{metadata !14}
+!14 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!15 = metadata !{metadata !16, metadata !17, metadata !18}
+!16 = metadata !{i32 786688, metadata !11, metadata !"lo", metadata !5, i32 31, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [lo] [line 31]
+!17 = metadata !{i32 786688, metadata !11, metadata !"hi", metadata !5, i32 32, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [hi] [line 32]
+!18 = metadata !{i32 786688, metadata !11, metadata !"test", metadata !5, i32 33, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [test] [line 33]
+!19 = metadata !{metadata !20}
+!20 = metadata !{i32 786484, i32 0, null, metadata !"seedi", metadata !"seedi", metadata !"", metadata !5, i32 14, metadata !8, i32 1, i32 1, i32* @seedi, null} ; [ DW_TAG_variable ] [seedi] [line 14] [local] [def]
+!21 = metadata !{i32 16, i32 0, metadata !4, null}
+!22 = metadata !{i32 17, i32 0, metadata !4, null}
+!23 = metadata !{metadata !"int", metadata !24}
+!24 = metadata !{metadata !"omnipotent char", metadata !25}
+!25 = metadata !{metadata !"Simple C/C++ TBAA"}
+!26 = metadata !{i32 18, i32 0, metadata !4, null}
+!27 = metadata !{i32 35, i32 0, metadata !11, null}
+!28 = metadata !{i32 36, i32 0, metadata !11, null}
+!29 = metadata !{i32 37, i32 0, metadata !11, null}
+!30 = metadata !{i32 38, i32 0, metadata !11, null}
+!31 = metadata !{i32 41, i32 0, metadata !32, null}
+!32 = metadata !{i32 786443, metadata !1, metadata !11, i32 40, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/464.h264ref/src/specrand.c]
+!33 = metadata !{i32 39, i32 0, metadata !34, null}
+!34 = metadata !{i32 786443, metadata !1, metadata !11, i32 38, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/464.h264ref/src/specrand.c]
+!35 = metadata !{i32 43, i32 0, metadata !11, null}

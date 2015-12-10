@@ -1,25 +1,26 @@
 define i32 @CactusDefaultInitialise(%struct.tFleshConfig* %config) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.tFleshConfig* %config, i64 0, metadata !66, metadata !83), !dbg !84
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !68, metadata !83), !dbg !85
-  %1 = load %struct.cGH* (%struct.tFleshConfig*, i32)** @CCTK_SetupGH, align 8, !dbg !86, !tbaa !87
-  %2 = tail call %struct.cGH* %1(%struct.tFleshConfig* %config, i32 0) #4, !dbg !86
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %2, i64 0, metadata !67, metadata !83), !dbg !91
-  %3 = icmp eq %struct.cGH* %2, null, !dbg !92
-  br i1 %3, label %._crit_edge, label %.lr.ph, !dbg !92
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.tFleshConfig* %config}, i64 0, metadata !64), !dbg !79
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !66), !dbg !80
+  %0 = load %struct.cGH* (%struct.tFleshConfig*, i32)** @CCTK_SetupGH, align 8, !dbg !81, !tbaa !82
+  %call7 = tail call %struct.cGH* %0(%struct.tFleshConfig* %config, i32 0) #4, !dbg !81
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %call7}, i64 0, metadata !65), !dbg !81
+  %tobool8 = icmp eq %struct.cGH* %call7, null, !dbg !81
+  br i1 %tobool8, label %while.end, label %while.body, !dbg !81
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %4 = phi %struct.cGH* [ %9, %.lr.ph ], [ %2, %0 ]
-  %convergence_level.01 = phi i32 [ %7, %.lr.ph ], [ 0, %0 ]
-  %5 = tail call i32 @CCTKi_AddGH(%struct.tFleshConfig* %config, i32 %convergence_level.01, %struct.cGH* %4) #4, !dbg !93
-  %6 = tail call i32 @CactusInitialiseGH(%struct.cGH* %4) #5, !dbg !95
-  %7 = add nuw nsw i32 %convergence_level.01, 1, !dbg !96
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !68, metadata !83), !dbg !85
-  %8 = load %struct.cGH* (%struct.tFleshConfig*, i32)** @CCTK_SetupGH, align 8, !dbg !86, !tbaa !87
-  %9 = tail call %struct.cGH* %8(%struct.tFleshConfig* %config, i32 %7) #4, !dbg !86
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %9, i64 0, metadata !67, metadata !83), !dbg !91
-  %10 = icmp eq %struct.cGH* %9, null, !dbg !92
-  br i1 %10, label %._crit_edge, label %.lr.ph, !dbg !92
+while.body:                                       ; preds = %entry, %while.body
+  %call10 = phi %struct.cGH* [ %call, %while.body ], [ %call7, %entry ]
+  %convergence_level.09 = phi i32 [ %inc, %while.body ], [ 0, %entry ]
+  %call1 = tail call i32 @CCTKi_AddGH(%struct.tFleshConfig* %config, i32 %convergence_level.09, %struct.cGH* %call10) #4, !dbg !85
+  %call2 = tail call i32 @CactusInitialiseGH(%struct.cGH* %call10) #5, !dbg !87
+  %inc = add nsw i32 %convergence_level.09, 1, !dbg !88
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !66), !dbg !88
+  %1 = load %struct.cGH* (%struct.tFleshConfig*, i32)** @CCTK_SetupGH, align 8, !dbg !81, !tbaa !82
+  %call = tail call %struct.cGH* %1(%struct.tFleshConfig* %config, i32 %inc) #4, !dbg !81
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %call10}, i64 0, metadata !65), !dbg !81
+  %tobool = icmp eq %struct.cGH* %call, null, !dbg !81
+  br i1 %tobool, label %while.end, label %while.body, !dbg !81
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  ret i32 0, !dbg !97
+while.end:                                        ; preds = %while.body, %entry
+  ret i32 0, !dbg !89
 }

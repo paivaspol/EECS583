@@ -1,33 +1,34 @@
-define i32 @ue_v(i8* nocapture readnone %tracestring, i32 %value, %struct.datapartition* nocapture readonly %part) #0 {
+define i32 @ue_v(i8* nocapture %tracestring, i32 %value, %struct.datapartition* nocapture %part) #0 {
+entry:
   %symbol = alloca %struct.syntaxelement, align 8
-  tail call void @llvm.dbg.value(metadata i8* %tracestring, i64 0, metadata !121, metadata !814), !dbg !815
-  tail call void @llvm.dbg.value(metadata i32 %value, i64 0, metadata !122, metadata !814), !dbg !816
-  tail call void @llvm.dbg.value(metadata %struct.datapartition* %part, i64 0, metadata !123, metadata !814), !dbg !817
-  %1 = bitcast %struct.syntaxelement* %symbol to i8*, !dbg !818
-  call void @llvm.lifetime.start(i64 48, i8* %1) #1, !dbg !818
-  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %symbol, i64 0, metadata !125, metadata !814), !dbg !819
-  %2 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 0, !dbg !820
-  store i32 0, i32* %2, align 8, !dbg !821, !tbaa !822
-  %3 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 8, !dbg !828
-  store void (i32, i32, i32*, i32*)* @ue_linfo, void (i32, i32, i32*, i32*)** %3, align 8, !dbg !829, !tbaa !830
-  %4 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 1, !dbg !831
-  store i32 %value, i32* %4, align 4, !dbg !832, !tbaa !833
-  %5 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 2, !dbg !834
-  store i32 0, i32* %5, align 8, !dbg !835, !tbaa !836
-  %6 = getelementptr inbounds %struct.datapartition* %part, i64 0, i32 0, !dbg !837
-  %7 = load %struct.Bitstream** %6, align 8, !dbg !837, !tbaa !838
-  %8 = getelementptr inbounds %struct.Bitstream* %7, i64 0, i32 9, !dbg !837
-  %9 = load i8** %8, align 8, !dbg !837, !tbaa !841
-  %10 = icmp eq i8* %9, null, !dbg !837
-  br i1 %10, label %11, label %12, !dbg !837, !prof !843
+  call void @llvm.dbg.value(metadata !{i8* %tracestring}, i64 0, metadata !120), !dbg !803
+  call void @llvm.dbg.value(metadata !{i32 %value}, i64 0, metadata !121), !dbg !803
+  call void @llvm.dbg.value(metadata !{%struct.datapartition* %part}, i64 0, metadata !122), !dbg !803
+  %0 = bitcast %struct.syntaxelement* %symbol to i8*, !dbg !804
+  call void @llvm.lifetime.start(i64 48, i8* %0) #2, !dbg !804
+  call void @llvm.dbg.declare(metadata !{%struct.syntaxelement* %symbol}, metadata !123), !dbg !804
+  call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %symbol}, i64 0, metadata !124), !dbg !804
+  %type = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 0, !dbg !805
+  store i32 0, i32* %type, align 8, !dbg !805, !tbaa !806
+  %mapping = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 8, !dbg !809
+  store void (i32, i32, i32*, i32*)* @ue_linfo, void (i32, i32, i32*, i32*)** %mapping, align 8, !dbg !809, !tbaa !810
+  %value1 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 1, !dbg !811
+  store i32 %value, i32* %value1, align 4, !dbg !811, !tbaa !806
+  %value2 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 2, !dbg !812
+  store i32 0, i32* %value2, align 8, !dbg !812, !tbaa !806
+  %bitstream = getelementptr inbounds %struct.datapartition* %part, i64 0, i32 0, !dbg !813
+  %1 = load %struct.Bitstream** %bitstream, align 8, !dbg !813, !tbaa !810
+  %streamBuffer = getelementptr inbounds %struct.Bitstream* %1, i64 0, i32 9, !dbg !813
+  %2 = load i8** %streamBuffer, align 8, !dbg !813, !tbaa !810
+  %cmp = icmp eq i8* %2, null, !dbg !813
+  br i1 %cmp, label %cond.false, label %cond.end, !dbg !813
 
-; <label>:11                                      ; preds = %0
-  tail call void @__assert_rtn(i8* getelementptr inbounds ([5 x i8]* @__func__.ue_v, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i32 68, i8* getelementptr inbounds ([38 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !837
-  unreachable, !dbg !837
+cond.false:                                       ; preds = %entry
+  call void @__assert_fail(i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 68, i8* getelementptr inbounds ([39 x i8]* @__PRETTY_FUNCTION__.ue_v, i64 0, i64 0)) #5, !dbg !813
+  unreachable, !dbg !813
 
-; <label>:12                                      ; preds = %0
-  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %symbol, i64 0, metadata !124, metadata !814), !dbg !844
-  %13 = call i32 @writeSyntaxElement_UVLC(%struct.syntaxelement* %symbol, %struct.datapartition* %part) #6, !dbg !845
-  call void @llvm.lifetime.end(i64 48, i8* %1) #1, !dbg !846
-  ret i32 %13, !dbg !846
+cond.end:                                         ; preds = %entry
+  %call = call i32 @writeSyntaxElement_UVLC(%struct.syntaxelement* %symbol, %struct.datapartition* %part) #6, !dbg !814
+  call void @llvm.lifetime.end(i64 48, i8* %0) #2, !dbg !815
+  ret i32 %call, !dbg !815
 }

@@ -1,0 +1,72 @@
+define zeroext i1 @_ZNK11xercesc_2_59DOMString6equalsEPKt(%"class.xercesc_2_5::DOMString"* nocapture %this, i16* %other) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMString"* %this}, i64 0, metadata !1085), !dbg !2142
+  tail call void @llvm.dbg.value(metadata !{i16* %other}, i64 0, metadata !1086), !dbg !2142
+  %fHandle = getelementptr inbounds %"class.xercesc_2_5::DOMString"* %this, i64 0, i32 0, !dbg !2143
+  %0 = load %"class.xercesc_2_5::DOMStringHandle"** %fHandle, align 8, !dbg !2143, !tbaa !1648
+  %cmp = icmp eq %"class.xercesc_2_5::DOMStringHandle"* %0, null, !dbg !2143
+  %cmp2 = icmp eq i16* %other, null, !dbg !2143
+  %or.cond = or i1 %cmp, %cmp2, !dbg !2143
+  br i1 %or.cond, label %if.end23, label %if.then, !dbg !2143
+
+if.then:                                          ; preds = %entry
+  %fDSData = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %0, i64 0, i32 2, !dbg !2144
+  %1 = load %"class.xercesc_2_5::DOMStringData"** %fDSData, align 8, !dbg !2144, !tbaa !1648
+  %fLength = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %0, i64 0, i32 0, !dbg !2145
+  %2 = load i32* %fLength, align 4, !dbg !2145, !tbaa !1682
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !1089), !dbg !2145
+  tail call void @llvm.dbg.value(metadata !835, i64 0, metadata !1090), !dbg !2146
+  %cmp547 = icmp eq i32 %2, 0, !dbg !2146
+  br i1 %cmp547, label %for.end, label %for.body, !dbg !2146
+
+for.cond:                                         ; preds = %if.end
+  %cmp5 = icmp ult i32 %inc, %2, !dbg !2146
+  br i1 %cmp5, label %for.body, label %for.end, !dbg !2146
+
+for.body:                                         ; preds = %if.then, %for.cond
+  %i.048 = phi i32 [ %inc, %for.cond ], [ 0, %if.then ]
+  %idxprom = zext i32 %i.048 to i64, !dbg !2148
+  %arrayidx = getelementptr inbounds i16* %other, i64 %idxprom, !dbg !2148
+  %3 = load i16* %arrayidx, align 2, !dbg !2148, !tbaa !1685
+  %cmp6 = icmp eq i16 %3, 0, !dbg !2148
+  br i1 %cmp6, label %return, label %if.end, !dbg !2148
+
+if.end:                                           ; preds = %for.body
+  %arrayidx9 = getelementptr inbounds %"class.xercesc_2_5::DOMStringData"* %1, i64 0, i32 2, i64 %idxprom, !dbg !2150
+  %4 = load i16* %arrayidx9, align 2, !dbg !2150, !tbaa !1685
+  %cmp14 = icmp eq i16 %4, %3, !dbg !2150
+  %inc = add i32 %i.048, 1, !dbg !2146
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1090), !dbg !2146
+  br i1 %cmp14, label %for.cond, label %return, !dbg !2150
+
+for.end:                                          ; preds = %for.cond, %if.then
+  %idxprom17 = zext i32 %2 to i64, !dbg !2151
+  %arrayidx18 = getelementptr inbounds i16* %other, i64 %idxprom17, !dbg !2151
+  %5 = load i16* %arrayidx18, align 2, !dbg !2151, !tbaa !1685
+  %cmp20 = icmp eq i16 %5, 0, !dbg !2151
+  br label %return, !dbg !2152
+
+if.end23:                                         ; preds = %entry
+  br i1 %cmp, label %if.end30, label %land.lhs.true25, !dbg !2153
+
+land.lhs.true25:                                  ; preds = %if.end23
+  %fLength27 = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %0, i64 0, i32 0, !dbg !2153
+  %6 = load i32* %fLength27, align 4, !dbg !2153, !tbaa !1682
+  %cmp28 = icmp eq i32 %6, 0, !dbg !2153
+  br i1 %cmp28, label %if.end30, label %return, !dbg !2153
+
+if.end30:                                         ; preds = %land.lhs.true25, %if.end23
+  br i1 %cmp2, label %if.end36, label %land.lhs.true32, !dbg !2154
+
+land.lhs.true32:                                  ; preds = %if.end30
+  %7 = load i16* %other, align 2, !dbg !2154, !tbaa !1685
+  %cmp34 = icmp eq i16 %7, 0, !dbg !2154
+  br i1 %cmp34, label %if.end36, label %return, !dbg !2154
+
+if.end36:                                         ; preds = %land.lhs.true32, %if.end30
+  br label %return, !dbg !2155
+
+return:                                           ; preds = %if.end, %for.body, %land.lhs.true32, %land.lhs.true25, %for.end, %if.end36
+  %retval.0 = phi i1 [ true, %if.end36 ], [ %cmp20, %for.end ], [ false, %land.lhs.true25 ], [ false, %land.lhs.true32 ], [ false, %for.body ], [ false, %if.end ]
+  ret i1 %retval.0, !dbg !2155
+}

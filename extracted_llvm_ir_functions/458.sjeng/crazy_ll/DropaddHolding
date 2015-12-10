@@ -1,44 +1,45 @@
 define void @DropaddHolding(i32 %what, i32 %who) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %what, i64 0, metadata !45, metadata !77), !dbg !322
-  tail call void @llvm.dbg.value(metadata i32 %who, i64 0, metadata !46, metadata !77), !dbg !323
-  %1 = sext i32 %what to i64, !dbg !324
-  %2 = sext i32 %who to i64, !dbg !324
-  %3 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %2, i64 %1, !dbg !324
-  %4 = load i32* %3, align 4, !dbg !325, !tbaa !82
-  %5 = add nsw i32 %4, 1, !dbg !325
-  store i32 %5, i32* %3, align 4, !dbg !325, !tbaa !82
-  %6 = getelementptr inbounds [2 x i32]* @num_holding, i64 0, i64 %2, !dbg !326
-  %7 = load i32* %6, align 4, !dbg !327, !tbaa !82
-  %8 = add nsw i32 %7, 1, !dbg !327
-  store i32 %8, i32* %6, align 4, !dbg !327, !tbaa !82
-  %9 = sext i32 %5 to i64, !dbg !328
-  %10 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %1, i64 %9, !dbg !328
-  %11 = load i32* %10, align 4, !dbg !328, !tbaa !82
-  %12 = load i32* @hold_hash, align 4, !dbg !328, !tbaa !82
-  %13 = xor i32 %12, %11, !dbg !328
-  store i32 %13, i32* @hold_hash, align 4, !dbg !328, !tbaa !82
-  %14 = icmp eq i32 %who, 0, !dbg !329
-  %15 = getelementptr inbounds [0 x i32]* @hand_value, i64 0, i64 %1, !dbg !331
-  %16 = load i32* %15, align 4, !dbg !331, !tbaa !82
-  br i1 %14, label %17, label %20, !dbg !332
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %what}, i64 0, metadata !46), !dbg !229
+  tail call void @llvm.dbg.value(metadata !{i32 %who}, i64 0, metadata !47), !dbg !229
+  %idxprom = sext i32 %what to i64, !dbg !230
+  %idxprom1 = sext i32 %who to i64, !dbg !230
+  %arrayidx2 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %idxprom1, i64 %idxprom, !dbg !230
+  %0 = load i32* %arrayidx2, align 4, !dbg !230, !tbaa !78
+  %inc = add nsw i32 %0, 1, !dbg !230
+  store i32 %inc, i32* %arrayidx2, align 4, !dbg !230, !tbaa !78
+  %arrayidx4 = getelementptr inbounds [2 x i32]* @num_holding, i64 0, i64 %idxprom1, !dbg !231
+  %1 = load i32* %arrayidx4, align 4, !dbg !231, !tbaa !78
+  %inc5 = add nsw i32 %1, 1, !dbg !231
+  store i32 %inc5, i32* %arrayidx4, align 4, !dbg !231, !tbaa !78
+  %idxprom10 = sext i32 %inc to i64, !dbg !232
+  %arrayidx13 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %idxprom, i64 %idxprom10, !dbg !232
+  %2 = load i32* %arrayidx13, align 4, !dbg !232, !tbaa !78
+  %3 = load i32* @hold_hash, align 4, !dbg !232, !tbaa !78
+  %xor = xor i32 %3, %2, !dbg !232
+  store i32 %xor, i32* @hold_hash, align 4, !dbg !232, !tbaa !78
+  %cmp = icmp eq i32 %who, 0, !dbg !233
+  %arrayidx15 = getelementptr inbounds [0 x i32]* @hand_value, i64 0, i64 %idxprom, !dbg !234
+  %4 = load i32* %arrayidx15, align 4, !dbg !234, !tbaa !78
+  br i1 %cmp, label %if.then, label %if.else, !dbg !233
 
-; <label>:17                                      ; preds = %0
-  %18 = load i32* @white_hand_eval, align 4, !dbg !333, !tbaa !82
-  %19 = add nsw i32 %18, %16, !dbg !333
-  store i32 %19, i32* @white_hand_eval, align 4, !dbg !333, !tbaa !82
-  br label %23, !dbg !334
+if.then:                                          ; preds = %entry
+  %5 = load i32* @white_hand_eval, align 4, !dbg !234, !tbaa !78
+  %add = add nsw i32 %5, %4, !dbg !234
+  store i32 %add, i32* @white_hand_eval, align 4, !dbg !234, !tbaa !78
+  br label %if.end, !dbg !234
 
-; <label>:20                                      ; preds = %0
-  %21 = load i32* @black_hand_eval, align 4, !dbg !335, !tbaa !82
-  %22 = add nsw i32 %21, %16, !dbg !335
-  store i32 %22, i32* @black_hand_eval, align 4, !dbg !335, !tbaa !82
-  br label %23
+if.else:                                          ; preds = %entry
+  %6 = load i32* @black_hand_eval, align 4, !dbg !235, !tbaa !78
+  %add18 = add nsw i32 %6, %4, !dbg !235
+  store i32 %add18, i32* @black_hand_eval, align 4, !dbg !235, !tbaa !78
+  br label %if.end
 
-; <label>:23                                      ; preds = %20, %17
-  %24 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %1, !dbg !336
-  %25 = load i32* %24, align 4, !dbg !336, !tbaa !82
-  %26 = load i32* @Material, align 4, !dbg !337, !tbaa !82
-  %27 = add nsw i32 %26, %25, !dbg !337
-  store i32 %27, i32* @Material, align 4, !dbg !337, !tbaa !82
-  ret void, !dbg !338
+if.end:                                           ; preds = %if.else, %if.then
+  %arrayidx20 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom, !dbg !236
+  %7 = load i32* %arrayidx20, align 4, !dbg !236, !tbaa !78
+  %8 = load i32* @Material, align 4, !dbg !236, !tbaa !78
+  %add21 = add nsw i32 %8, %7, !dbg !236
+  store i32 %add21, i32* @Material, align 4, !dbg !236, !tbaa !78
+  ret void, !dbg !237
 }

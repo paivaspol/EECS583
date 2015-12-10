@@ -1,56 +1,54 @@
 define void @freenodes(%struct.node* %node) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.node* %node, i64 0, metadata !55, metadata !211), !dbg !226
-  %1 = icmp eq %struct.node* %node, null, !dbg !227
-  br i1 %1, label %23, label %2, !dbg !229
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %node}, i64 0, metadata !51), !dbg !213
+  %tobool = icmp eq %struct.node* %node, null, !dbg !214
+  br i1 %tobool, label %return, label %if.end, !dbg !214
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.node* %node, i64 0, i32 6, !dbg !230
-  %4 = load %struct.node*** %3, align 8, !dbg !230, !tbaa !232
-  %5 = icmp eq %struct.node** %4, null, !dbg !235
-  br i1 %5, label %21, label %6, !dbg !236
+if.end:                                           ; preds = %entry
+  %children = getelementptr inbounds %struct.node* %node, i64 0, i32 6, !dbg !215
+  %0 = load %struct.node*** %children, align 8, !dbg !215, !tbaa !210
+  %tobool1 = icmp eq %struct.node** %0, null, !dbg !215
+  br i1 %tobool1, label %if.end19, label %if.then2, !dbg !215
 
-; <label>:6                                       ; preds = %2
-  %7 = getelementptr inbounds %struct.node* %node, i64 0, i32 1, !dbg !237
-  %8 = load i8* %7, align 1, !dbg !237, !tbaa !240
-  %9 = icmp eq i8 %8, 0, !dbg !241
-  br i1 %9, label %21, label %.lr.ph, !dbg !242
+if.then2:                                         ; preds = %if.end
+  %num_children = getelementptr inbounds %struct.node* %node, i64 0, i32 1, !dbg !216
+  %1 = load i8* %num_children, align 1, !dbg !216, !tbaa !206
+  %cmp = icmp eq i8 %1, 0, !dbg !216
+  br i1 %cmp, label %if.end19, label %for.body, !dbg !216
 
-.lr.ph:                                           ; preds = %6, %._crit_edge2
-  %10 = phi i8 [ %17, %._crit_edge2 ], [ %8, %6 ]
-  %11 = phi %struct.node** [ %.pre, %._crit_edge2 ], [ %4, %6 ], !dbg !243
-  %indvars.iv = phi i64 [ %indvars.iv.next, %._crit_edge2 ], [ 0, %6 ]
-  %12 = getelementptr inbounds %struct.node** %11, i64 %indvars.iv, !dbg !249
-  %13 = load %struct.node** %12, align 8, !dbg !249, !tbaa !221
-  %14 = icmp eq %struct.node* %13, null, !dbg !250
-  br i1 %14, label %16, label %15, !dbg !251
+for.body:                                         ; preds = %for.inc, %if.then2
+  %2 = phi %struct.node** [ %0, %if.then2 ], [ %.pre34, %for.inc ], !dbg !218
+  %3 = phi i8 [ %1, %if.then2 ], [ %5, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %if.then2 ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct.node** %2, i64 %indvars.iv, !dbg !218
+  %4 = load %struct.node** %arrayidx, align 8, !dbg !218, !tbaa !210
+  %cmp10 = icmp eq %struct.node* %4, null, !dbg !218
+  br i1 %cmp10, label %for.inc, label %if.then12, !dbg !218
 
-; <label>:15                                      ; preds = %.lr.ph
-  tail call void @freenodes(%struct.node* %13) #5, !dbg !252
-  %.pre3 = load i8* %7, align 1, !dbg !254, !tbaa !240
-  br label %16, !dbg !255
+if.then12:                                        ; preds = %for.body
+  tail call void @freenodes(%struct.node* %4) #6, !dbg !222
+  %.pre33 = load i8* %num_children, align 1, !dbg !224, !tbaa !206
+  br label %for.inc, !dbg !225
 
-; <label>:16                                      ; preds = %.lr.ph, %15
-  %17 = phi i8 [ %10, %.lr.ph ], [ %.pre3, %15 ], !dbg !256
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !256
-  %18 = zext i8 %17 to i64, !dbg !257
-  %19 = icmp slt i64 %indvars.iv.next, %18, !dbg !257
-  br i1 %19, label %._crit_edge2, label %20, !dbg !256
+for.inc:                                          ; preds = %for.body, %if.then12
+  %5 = phi i8 [ %3, %for.body ], [ %.pre33, %if.then12 ], !dbg !224
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !224
+  %conv6 = zext i8 %5 to i32, !dbg !224
+  %6 = trunc i64 %indvars.iv.next to i32, !dbg !224
+  %cmp7 = icmp slt i32 %6, %conv6, !dbg !224
+  %.pre34 = load %struct.node*** %children, align 8, !dbg !218, !tbaa !210
+  br i1 %cmp7, label %for.body, label %for.end, !dbg !224
 
-._crit_edge2:                                     ; preds = %16
-  %.pre = load %struct.node*** %3, align 8, !dbg !243, !tbaa !232
-  br label %.lr.ph, !dbg !256
+for.end:                                          ; preds = %for.inc
+  %7 = bitcast %struct.node** %.pre34 to i8*, !dbg !226
+  tail call void @free(i8* %7) #7, !dbg !226
+  br label %if.end19, !dbg !227
 
-; <label>:20                                      ; preds = %16
-  %.phi.trans.insert = bitcast %struct.node*** %3 to i8**
-  %.pre4 = load i8** %.phi.trans.insert, align 8, !dbg !258, !tbaa !232
-  tail call void @free(i8* %.pre4) #5, !dbg !259
-  br label %21, !dbg !260
+if.end19:                                         ; preds = %if.then2, %if.end, %for.end
+  %8 = getelementptr inbounds %struct.node* %node, i64 0, i32 0, !dbg !228
+  tail call void @free(i8* %8) #7, !dbg !228
+  br label %return, !dbg !228
 
-; <label>:21                                      ; preds = %6, %2, %20
-  %22 = getelementptr inbounds %struct.node* %node, i64 0, i32 0, !dbg !261
-  tail call void @free(i8* %22) #5, !dbg !262
-  br label %23, !dbg !263
-
-; <label>:23                                      ; preds = %0, %21
-  ret void, !dbg !263
+return:                                           ; preds = %entry, %if.end19
+  ret void, !dbg !228
 }

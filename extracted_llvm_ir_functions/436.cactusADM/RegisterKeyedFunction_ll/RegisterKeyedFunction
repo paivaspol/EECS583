@@ -1,27 +1,28 @@
 define i32 @RegisterKeyedFunction(void ()** nocapture %array, i32 %min, i32 %max, i32 %key, void ()* %func) #1 {
-  tail call void @llvm.dbg.value(metadata void ()** %array, i64 0, metadata !28, metadata !48), !dbg !49
-  tail call void @llvm.dbg.value(metadata i32 %min, i64 0, metadata !29, metadata !48), !dbg !50
-  tail call void @llvm.dbg.value(metadata i32 %max, i64 0, metadata !30, metadata !48), !dbg !51
-  tail call void @llvm.dbg.value(metadata i32 %key, i64 0, metadata !31, metadata !48), !dbg !52
-  tail call void @llvm.dbg.value(metadata void ()* %func, i64 0, metadata !32, metadata !48), !dbg !53
-  %1 = icmp slt i32 %key, %min, !dbg !54
-  %2 = icmp sgt i32 %key, %max, !dbg !56
-  %or.cond = or i1 %1, %2, !dbg !57
-  br i1 %or.cond, label %9, label %3, !dbg !57
+entry:
+  tail call void @llvm.dbg.value(metadata !{void ()** %array}, i64 0, metadata !27), !dbg !43
+  tail call void @llvm.dbg.value(metadata !{i32 %min}, i64 0, metadata !28), !dbg !44
+  tail call void @llvm.dbg.value(metadata !{i32 %max}, i64 0, metadata !29), !dbg !44
+  tail call void @llvm.dbg.value(metadata !{i32 %key}, i64 0, metadata !30), !dbg !45
+  tail call void @llvm.dbg.value(metadata !{void ()* %func}, i64 0, metadata !31), !dbg !45
+  %cmp = icmp slt i32 %key, %min, !dbg !46
+  %cmp1 = icmp sgt i32 %key, %max, !dbg !46
+  %or.cond = or i1 %cmp, %cmp1, !dbg !46
+  br i1 %or.cond, label %if.end7, label %if.then, !dbg !46
 
-; <label>:3                                       ; preds = %0
-  %4 = sext i32 %key to i64, !dbg !58
-  %5 = getelementptr inbounds void ()** %array, i64 %4, !dbg !58
-  %6 = load void ()** %5, align 8, !dbg !58, !tbaa !61
-  %7 = icmp eq void ()* %6, null, !dbg !65
-  br i1 %7, label %8, label %9, !dbg !66
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %key to i64, !dbg !47
+  %arrayidx = getelementptr inbounds void ()** %array, i64 %idxprom, !dbg !47
+  %0 = load void ()** %arrayidx, align 8, !dbg !47, !tbaa !49
+  %cmp2 = icmp eq void ()* %0, null, !dbg !47
+  br i1 %cmp2, label %if.then3, label %if.end7, !dbg !47
 
-; <label>:8                                       ; preds = %3
-  store void ()* %func, void ()** %5, align 8, !dbg !67, !tbaa !61
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !33, metadata !48), !dbg !69
-  br label %9, !dbg !70
+if.then3:                                         ; preds = %if.then
+  store void ()* %func, void ()** %arrayidx, align 8, !dbg !52, !tbaa !49
+  tail call void @llvm.dbg.value(metadata !9, i64 0, metadata !32), !dbg !54
+  br label %if.end7, !dbg !55
 
-; <label>:9                                       ; preds = %0, %3, %8
-  %return_code.0 = phi i32 [ 0, %8 ], [ 1, %3 ], [ 2, %0 ]
-  ret i32 %return_code.0, !dbg !71
+if.end7:                                          ; preds = %entry, %if.then, %if.then3
+  %return_code.0 = phi i32 [ 0, %if.then3 ], [ 1, %if.then ], [ 2, %entry ]
+  ret i32 %return_code.0, !dbg !56
 }

@@ -1,0 +1,37 @@
+define void @_ZN11xercesc_2_59XMLString3cutEPtj(i16* nocapture %toCutFrom, i32 %count) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toCutFrom}, i64 0, metadata !1521), !dbg !2941
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !1522), !dbg !2942
+  %tobool = icmp eq i32 %count, 0, !dbg !2943
+  br i1 %tobool, label %return, label %if.end, !dbg !2943
+
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i16* %toCutFrom}, i64 0, metadata !1523), !dbg !2944
+  %idx.ext = zext i32 %count to i64, !dbg !2945
+  %add.ptr = getelementptr inbounds i16* %toCutFrom, i64 %idx.ext, !dbg !2945
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr}, i64 0, metadata !1524), !dbg !2945
+  %0 = load i16* %add.ptr, align 2, !dbg !2946, !tbaa !2947
+  %tobool17 = icmp eq i16 %0, 0, !dbg !2946
+  br i1 %tobool17, label %while.end, label %while.body, !dbg !2946
+
+while.body:                                       ; preds = %if.end, %while.body
+  %1 = phi i16 [ %2, %while.body ], [ %0, %if.end ]
+  %srcPtr.09 = phi i16* [ %incdec.ptr, %while.body ], [ %add.ptr, %if.end ]
+  %targetPtr.08 = phi i16* [ %incdec.ptr2, %while.body ], [ %toCutFrom, %if.end ]
+  %incdec.ptr = getelementptr inbounds i16* %srcPtr.09, i64 1, !dbg !2948
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1524), !dbg !2948
+  %incdec.ptr2 = getelementptr inbounds i16* %targetPtr.08, i64 1, !dbg !2948
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr2}, i64 0, metadata !1523), !dbg !2948
+  store i16 %1, i16* %targetPtr.08, align 2, !dbg !2948, !tbaa !2947
+  %2 = load i16* %incdec.ptr, align 2, !dbg !2946, !tbaa !2947
+  %tobool1 = icmp eq i16 %2, 0, !dbg !2946
+  br i1 %tobool1, label %while.end, label %while.body, !dbg !2946
+
+while.end:                                        ; preds = %while.body, %if.end
+  %targetPtr.0.lcssa = phi i16* [ %toCutFrom, %if.end ], [ %incdec.ptr2, %while.body ]
+  store i16 0, i16* %targetPtr.0.lcssa, align 2, !dbg !2949, !tbaa !2947
+  br label %return, !dbg !2949
+
+return:                                           ; preds = %entry, %while.end
+  ret void, !dbg !2949
+}

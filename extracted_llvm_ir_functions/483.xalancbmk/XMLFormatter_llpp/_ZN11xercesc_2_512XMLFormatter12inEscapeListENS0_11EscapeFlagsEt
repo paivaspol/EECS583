@@ -1,0 +1,44 @@
+define zeroext i1 @_ZN11xercesc_2_512XMLFormatter12inEscapeListENS0_11EscapeFlagsEt(%"class.xercesc_2_5::XMLFormatter"* nocapture %this, i32 %escStyle, i16 zeroext %toCheck) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLFormatter"* %this}, i64 0, metadata !1227), !dbg !2073
+  tail call void @llvm.dbg.value(metadata !{i32 %escStyle}, i64 0, metadata !1229), !dbg !2073
+  tail call void @llvm.dbg.value(metadata !{i16 %toCheck}, i64 0, metadata !1230), !dbg !2074
+  %idxprom = zext i32 %escStyle to i64, !dbg !2075
+  %arraydecay = getelementptr inbounds [4 x [6 x i16]]* @_ZN11xercesc_2_5L12gEscapeCharsE, i64 0, i64 %idxprom, i64 0, !dbg !2075
+  tail call void @llvm.dbg.value(metadata !{i16* %arraydecay}, i64 0, metadata !1231), !dbg !2075
+  br label %while.cond, !dbg !2076
+
+while.cond:                                       ; preds = %while.body, %entry
+  %escList.0 = phi i16* [ %arraydecay, %entry ], [ %incdec.ptr, %while.body ]
+  %0 = load i16* %escList.0, align 2, !dbg !2076, !tbaa !2077
+  %tobool = icmp eq i16 %0, 0, !dbg !2076
+  br i1 %tobool, label %while.end, label %while.body, !dbg !2076
+
+while.body:                                       ; preds = %while.cond
+  %incdec.ptr = getelementptr inbounds i16* %escList.0, i64 1, !dbg !2080
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1231), !dbg !2080
+  %cmp = icmp eq i16 %0, %toCheck, !dbg !2080
+  br i1 %cmp, label %return, label %while.cond, !dbg !2080
+
+while.end:                                        ; preds = %while.cond
+  %fIsXML11 = getelementptr inbounds %"class.xercesc_2_5::XMLFormatter"* %this, i64 0, i32 16, !dbg !2082
+  %1 = load i8* %fIsXML11, align 1, !dbg !2082, !tbaa !2083, !range !2084
+  %tobool3 = icmp eq i8 %1, 0, !dbg !2082
+  br i1 %tobool3, label %return, label %if.then4, !dbg !2082
+
+if.then4:                                         ; preds = %while.end
+  tail call void @llvm.dbg.value(metadata !{i16 %toCheck}, i64 0, metadata !2085), !dbg !2088
+  tail call void @llvm.dbg.value(metadata !2089, i64 0, metadata !2090), !dbg !2088
+  %idxprom.i = zext i16 %toCheck to i64, !dbg !2091
+  %arrayidx.i = getelementptr inbounds [65536 x i8]* @_ZN11xercesc_2_510XMLChar1_119fgCharCharsTable1_1E, i64 0, i64 %idxprom.i, !dbg !2091
+  %2 = load i8* %arrayidx.i, align 1, !dbg !2091, !tbaa !2078
+  %3 = and i8 %2, -96, !dbg !2086
+  tail call void @llvm.dbg.value(metadata !{i16 %toCheck}, i64 0, metadata !2092), !dbg !2094
+  tail call void @llvm.dbg.value(metadata !2089, i64 0, metadata !2095), !dbg !2094
+  %not. = icmp eq i8 %3, 32, !dbg !2086
+  ret i1 %not., !dbg !2086
+
+return:                                           ; preds = %while.body, %while.end
+  %retval.0 = phi i1 [ false, %while.end ], [ true, %while.body ]
+  ret i1 %retval.0, !dbg !2096
+}

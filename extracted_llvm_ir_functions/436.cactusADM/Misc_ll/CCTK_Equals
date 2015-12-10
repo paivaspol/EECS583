@@ -1,41 +1,42 @@
 define i32 @CCTK_Equals(i8* %string1, i8* %string2) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %string1, i64 0, metadata !22, metadata !252), !dbg !253
-  tail call void @llvm.dbg.value(metadata i8* %string2, i64 0, metadata !23, metadata !252), !dbg !254
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !24, metadata !252), !dbg !255
-  %1 = icmp ne i8* %string1, null, !dbg !256
-  %2 = icmp ne i8* %string2, null, !dbg !258
-  %or.cond = and i1 %1, %2, !dbg !259
-  br i1 %or.cond, label %12, label %3, !dbg !259
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %string1}, i64 0, metadata !16), !dbg !245
+  tail call void @llvm.dbg.value(metadata !{i8* %string2}, i64 0, metadata !17), !dbg !245
+  tail call void @llvm.dbg.value(metadata !246, i64 0, metadata !18), !dbg !247
+  %tobool = icmp ne i8* %string1, null, !dbg !248
+  %tobool.not = xor i1 %tobool, true, !dbg !248
+  %tobool2 = icmp eq i8* %string2, null, !dbg !248
+  %or.cond = or i1 %tobool2, %tobool.not, !dbg !248
+  br i1 %or.cond, label %if.then, label %if.else14, !dbg !248
 
-; <label>:3                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !24, metadata !252), !dbg !255
-  %4 = icmp eq i8* %string1, null, !dbg !260
-  %or.cond3 = and i1 %4, %2, !dbg !263
-  br i1 %or.cond3, label %5, label %7, !dbg !263
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !18), !dbg !249
+  %or.cond28 = or i1 %tobool, %tobool2, !dbg !251
+  br i1 %or.cond28, label %if.else, label %if.then5, !dbg !251
 
-; <label>:5                                       ; preds = %3
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 128, i8* getelementptr inbounds ([73 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str2, i64 0, i64 0), i8* %string2) #7, !dbg !264
-  br label %15, !dbg !266
+if.then5:                                         ; preds = %if.then
+  %call = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 128, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str2, i64 0, i64 0), i8* %string2) #7, !dbg !252
+  br label %if.end19, !dbg !254
 
-; <label>:7                                       ; preds = %3
-  %or.cond5 = or i1 %4, %2, !dbg !267
-  br i1 %or.cond5, label %10, label %8, !dbg !267
+if.else:                                          ; preds = %if.then
+  %or.cond29 = and i1 %tobool, %tobool2, !dbg !255
+  br i1 %or.cond29, label %if.then9, label %if.else11, !dbg !255
 
-; <label>:8                                       ; preds = %7
-  %9 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 134, i8* getelementptr inbounds ([73 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), i8* %string1) #7, !dbg !269
-  br label %15, !dbg !271
+if.then9:                                         ; preds = %if.else
+  %call10 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 134, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), i8* %string1) #7, !dbg !256
+  br label %if.end19, !dbg !258
 
-; <label>:10                                      ; preds = %7
-  %11 = tail call i32 @CCTK_Warn(i32 0, i32 139, i8* getelementptr inbounds ([73 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([31 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !272
-  br label %15
+if.else11:                                        ; preds = %if.else
+  %call12 = tail call i32 @CCTK_Warn(i32 0, i32 139, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([31 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !259
+  br label %if.end19
 
-; <label>:12                                      ; preds = %0
-  %13 = tail call i32 @Util_StrCmpi(i8* %string1, i8* %string2) #7, !dbg !274
-  %14 = icmp eq i32 %13, 0, !dbg !274
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !24, metadata !252), !dbg !255
-  %. = zext i1 %14 to i32, !dbg !277
-  ret i32 %., !dbg !277
+if.else14:                                        ; preds = %entry
+  %call15 = tail call i32 @Util_StrCmpi(i8* %string1, i8* %string2) #7, !dbg !261
+  %tobool16 = icmp eq i32 %call15, 0, !dbg !261
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !18), !dbg !263
+  %. = zext i1 %tobool16 to i32, !dbg !261
+  ret i32 %., !dbg !261
 
-; <label>:15                                      ; preds = %5, %10, %8
-  ret i32 0, !dbg !278
+if.end19:                                         ; preds = %if.then5, %if.else11, %if.then9
+  ret i32 0, !dbg !265
 }

@@ -1,23 +1,25 @@
-define void @add_nrnb(%struct.t_nrnb* nocapture %dest, %struct.t_nrnb* nocapture readonly %s1, %struct.t_nrnb* nocapture readonly %s2) #3 {
-  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %dest, i64 0, metadata !241, metadata !340), !dbg !397
-  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %s1, i64 0, metadata !242, metadata !340), !dbg !398
-  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %s2, i64 0, metadata !243, metadata !340), !dbg !399
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !244, metadata !340), !dbg !400
-  br label %1, !dbg !401
+define void @add_nrnb(%struct.t_nrnb* nocapture %dest, %struct.t_nrnb* nocapture %s1, %struct.t_nrnb* nocapture %s2) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_nrnb* %dest}, i64 0, metadata !167), !dbg !332
+  tail call void @llvm.dbg.value(metadata !{%struct.t_nrnb* %s1}, i64 0, metadata !168), !dbg !332
+  tail call void @llvm.dbg.value(metadata !{%struct.t_nrnb* %s2}, i64 0, metadata !169), !dbg !332
+  tail call void @llvm.dbg.value(metadata !137, i64 0, metadata !170), !dbg !333
+  br label %for.body, !dbg !333
 
-; <label>:1                                       ; preds = %1, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds %struct.t_nrnb* %s1, i64 0, i32 0, i64 %indvars.iv, !dbg !403
-  %3 = load double* %2, align 8, !dbg !403, !tbaa !392
-  %4 = getelementptr inbounds %struct.t_nrnb* %s2, i64 0, i32 0, i64 %indvars.iv, !dbg !405
-  %5 = load double* %4, align 8, !dbg !405, !tbaa !392
-  %6 = fadd double %3, %5, !dbg !406
-  %7 = getelementptr inbounds %struct.t_nrnb* %dest, i64 0, i32 0, i64 %indvars.iv, !dbg !407
-  store double %6, double* %7, align 8, !dbg !408, !tbaa !392
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !401
-  %exitcond = icmp eq i64 %indvars.iv.next, 129, !dbg !401
-  br i1 %exitcond, label %8, label %1, !dbg !401
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds %struct.t_nrnb* %s1, i64 0, i32 0, i64 %indvars.iv, !dbg !335
+  %0 = load double* %arrayidx, align 8, !dbg !335, !tbaa !328
+  %arrayidx3 = getelementptr inbounds %struct.t_nrnb* %s2, i64 0, i32 0, i64 %indvars.iv, !dbg !335
+  %1 = load double* %arrayidx3, align 8, !dbg !335, !tbaa !328
+  %add = fadd double %0, %1, !dbg !335
+  %arrayidx6 = getelementptr inbounds %struct.t_nrnb* %dest, i64 0, i32 0, i64 %indvars.iv, !dbg !335
+  store double %add, double* %arrayidx6, align 8, !dbg !335, !tbaa !328
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !333
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !333
+  %exitcond = icmp eq i32 %lftr.wideiv, 129, !dbg !333
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !333
 
-; <label>:8                                       ; preds = %1
-  ret void, !dbg !409
+for.end:                                          ; preds = %for.body
+  ret void, !dbg !336
 }

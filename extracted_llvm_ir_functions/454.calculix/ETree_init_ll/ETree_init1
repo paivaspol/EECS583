@@ -1,45 +1,46 @@
 define void @ETree_init1(%struct._ETree* %etree, i32 %nfront, i32 %nvtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ETree* %etree, i64 0, metadata !42, metadata !250), !dbg !251
-  tail call void @llvm.dbg.value(metadata i32 %nfront, i64 0, metadata !43, metadata !250), !dbg !252
-  tail call void @llvm.dbg.value(metadata i32 %nvtx, i64 0, metadata !44, metadata !250), !dbg !253
-  %1 = icmp eq %struct._ETree* %etree, null, !dbg !254
-  %2 = icmp slt i32 %nfront, 0, !dbg !256
-  %or.cond = or i1 %1, %2, !dbg !257
-  %3 = icmp slt i32 %nvtx, %nfront, !dbg !258
-  %or.cond2 = or i1 %or.cond, %3, !dbg !257
-  br i1 %or.cond2, label %4, label %7, !dbg !257
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !41), !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i32 %nfront}, i64 0, metadata !42), !dbg !240
+  tail call void @llvm.dbg.value(metadata !{i32 %nvtx}, i64 0, metadata !43), !dbg !241
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !242
+  %cmp1 = icmp slt i32 %nfront, 0, !dbg !242
+  %or.cond = or i1 %cmp, %cmp1, !dbg !242
+  %cmp3 = icmp slt i32 %nvtx, %nfront, !dbg !242
+  %or.cond39 = or i1 %or.cond, %cmp3, !dbg !242
+  br i1 %or.cond39, label %if.then, label %if.end, !dbg !242
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !259, !tbaa !261
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), %struct._ETree* %etree, i32 %nfront, i32 %nvtx) #7, !dbg !265
-  tail call void @exit(i32 -1) #8, !dbg !266
-  unreachable, !dbg !266
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !243, !tbaa !245
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), %struct._ETree* %etree, i32 %nfront, i32 %nvtx) #7, !dbg !243
+  tail call void @exit(i32 -1) #8, !dbg !248
+  unreachable, !dbg !248
 
-; <label>:7                                       ; preds = %0
-  tail call void @ETree_clearData(%struct._ETree* %etree) #7, !dbg !267
-  %8 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0, !dbg !268
-  store i32 %nfront, i32* %8, align 4, !dbg !269, !tbaa !270
-  %9 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 1, !dbg !273
-  store i32 %nvtx, i32* %9, align 4, !dbg !274, !tbaa !275
-  %10 = tail call %struct._Tree* @Tree_new() #7, !dbg !276
-  %11 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2, !dbg !277
-  store %struct._Tree* %10, %struct._Tree** %11, align 8, !dbg !278, !tbaa !279
-  tail call void @Tree_init1(%struct._Tree* %10, i32 %nfront) #7, !dbg !280
-  %12 = tail call %struct._IV* @IV_new() #7, !dbg !281
-  %13 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3, !dbg !282
-  store %struct._IV* %12, %struct._IV** %13, align 8, !dbg !283, !tbaa !284
-  tail call void @IV_init(%struct._IV* %12, i32 %nfront, i32* null) #7, !dbg !285
-  %14 = load %struct._IV** %13, align 8, !dbg !286, !tbaa !284
-  tail call void @IV_fill(%struct._IV* %14, i32 0) #7, !dbg !287
-  %15 = tail call %struct._IV* @IV_new() #7, !dbg !288
-  %16 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4, !dbg !289
-  store %struct._IV* %15, %struct._IV** %16, align 8, !dbg !290, !tbaa !291
-  tail call void @IV_init(%struct._IV* %15, i32 %nfront, i32* null) #7, !dbg !292
-  %17 = load %struct._IV** %16, align 8, !dbg !293, !tbaa !291
-  tail call void @IV_fill(%struct._IV* %17, i32 0) #7, !dbg !294
-  %18 = tail call %struct._IV* @IV_new() #7, !dbg !295
-  %19 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 5, !dbg !296
-  store %struct._IV* %18, %struct._IV** %19, align 8, !dbg !297, !tbaa !298
-  tail call void @IV_init(%struct._IV* %18, i32 %nvtx, i32* null) #7, !dbg !299
-  ret void, !dbg !300
+if.end:                                           ; preds = %entry
+  tail call void @ETree_clearData(%struct._ETree* %etree) #7, !dbg !249
+  %nfront4 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0, !dbg !250
+  store i32 %nfront, i32* %nfront4, align 4, !dbg !250, !tbaa !251
+  %nvtx5 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 1, !dbg !252
+  store i32 %nvtx, i32* %nvtx5, align 4, !dbg !252, !tbaa !251
+  %call6 = tail call %struct._Tree* @Tree_new() #7, !dbg !253
+  %tree = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2, !dbg !253
+  store %struct._Tree* %call6, %struct._Tree** %tree, align 8, !dbg !253, !tbaa !245
+  tail call void @Tree_init1(%struct._Tree* %call6, i32 %nfront) #7, !dbg !254
+  %call8 = tail call %struct._IV* @IV_new() #7, !dbg !255
+  %nodwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3, !dbg !255
+  store %struct._IV* %call8, %struct._IV** %nodwghtsIV, align 8, !dbg !255, !tbaa !245
+  tail call void @IV_init(%struct._IV* %call8, i32 %nfront, i32* null) #7, !dbg !256
+  %1 = load %struct._IV** %nodwghtsIV, align 8, !dbg !257, !tbaa !245
+  tail call void @IV_fill(%struct._IV* %1, i32 0) #7, !dbg !257
+  %call11 = tail call %struct._IV* @IV_new() #7, !dbg !258
+  %bndwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4, !dbg !258
+  store %struct._IV* %call11, %struct._IV** %bndwghtsIV, align 8, !dbg !258, !tbaa !245
+  tail call void @IV_init(%struct._IV* %call11, i32 %nfront, i32* null) #7, !dbg !259
+  %2 = load %struct._IV** %bndwghtsIV, align 8, !dbg !260, !tbaa !245
+  tail call void @IV_fill(%struct._IV* %2, i32 0) #7, !dbg !260
+  %call14 = tail call %struct._IV* @IV_new() #7, !dbg !261
+  %vtxToFrontIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 5, !dbg !261
+  store %struct._IV* %call14, %struct._IV** %vtxToFrontIV, align 8, !dbg !261, !tbaa !245
+  tail call void @IV_init(%struct._IV* %call14, i32 %nvtx, i32* null) #7, !dbg !262
+  ret void, !dbg !263
 }

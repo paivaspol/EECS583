@@ -1,0 +1,50 @@
+define void @_ZN11xercesc_2_59DOMParser10endElementERKNS_14XMLElementDeclEjbPKt(%"class.xercesc_2_5::DOMParser"* %this, %"class.xercesc_2_5::XMLElementDecl"* nocapture %elemDecl, i32 %urlId, i1 zeroext %isRoot, i16* nocapture %elemPrefix) unnamed_addr #3 align 2 {
+entry:
+  %ref.tmp = alloca %"class.xercesc_2_5::DOM_Node", align 8
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMParser"* %this}, i64 0, metadata !8856), !dbg !11328
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLElementDecl"* %elemDecl}, i64 0, metadata !8857), !dbg !11328
+  call void @llvm.dbg.value(metadata !{i32 %urlId}, i64 0, metadata !8858), !dbg !11329
+  call void @llvm.dbg.value(metadata !{i1 %isRoot}, i64 0, metadata !8859), !dbg !11330
+  call void @llvm.dbg.value(metadata !{i16* %elemPrefix}, i64 0, metadata !8860), !dbg !11331
+  %fCurrentNode = getelementptr inbounds %"class.xercesc_2_5::DOMParser"* %this, i64 0, i32 10, !dbg !11332
+  %fCurrentParent = getelementptr inbounds %"class.xercesc_2_5::DOMParser"* %this, i64 0, i32 9, !dbg !11332
+  %call = call %"class.xercesc_2_5::DOM_Node"* @_ZN11xercesc_2_58DOM_NodeaSERKS0_(%"class.xercesc_2_5::DOM_Node"* %fCurrentNode, %"class.xercesc_2_5::DOM_Node"* %fCurrentParent) #10, !dbg !11332
+  %fNodeStack = getelementptr inbounds %"class.xercesc_2_5::DOMParser"* %this, i64 0, i32 16, !dbg !11333
+  %0 = load %"class.xercesc_2_5::ValueStackOf"** %fNodeStack, align 8, !dbg !11333, !tbaa !10577
+  call void @_ZN11xercesc_2_512ValueStackOfINS_8DOM_NodeEE3popEv(%"class.xercesc_2_5::DOM_Node"* sret %ref.tmp, %"class.xercesc_2_5::ValueStackOf"* %0) #10, !dbg !11333
+  %call3 = invoke %"class.xercesc_2_5::DOM_Node"* @_ZN11xercesc_2_58DOM_NodeaSERKS0_(%"class.xercesc_2_5::DOM_Node"* %fCurrentParent, %"class.xercesc_2_5::DOM_Node"* %ref.tmp) #10
+          to label %invoke.cont unwind label %lpad, !dbg !11333
+
+invoke.cont:                                      ; preds = %entry
+  call void @_ZN11xercesc_2_58DOM_NodeD1Ev(%"class.xercesc_2_5::DOM_Node"* %ref.tmp) #10, !dbg !11333
+  %1 = load %"class.xercesc_2_5::ValueStackOf"** %fNodeStack, align 8, !dbg !11334, !tbaa !10577
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ValueStackOf"* %1}, i64 0, metadata !11335), !dbg !11336
+  %fCurCount.i.i = getelementptr inbounds %"class.xercesc_2_5::ValueStackOf"* %1, i64 0, i32 1, i32 1, !dbg !11337
+  %2 = load i32* %fCurCount.i.i, align 4, !dbg !11337, !tbaa !10645
+  %cmp.i = icmp eq i32 %2, 0, !dbg !11338
+  br i1 %cmp.i, label %if.then, label %if.end, !dbg !11334
+
+if.then:                                          ; preds = %invoke.cont
+  %fWithinElement = getelementptr inbounds %"class.xercesc_2_5::DOMParser"* %this, i64 0, i32 8, !dbg !11340
+  store i8 0, i8* %fWithinElement, align 1, !dbg !11340, !tbaa !10575
+  br label %if.end, !dbg !11340
+
+lpad:                                             ; preds = %entry
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !11333
+  invoke void @_ZN11xercesc_2_58DOM_NodeD1Ev(%"class.xercesc_2_5::DOM_Node"* %ref.tmp) #10
+          to label %eh.resume unwind label %terminate.lpad, !dbg !11333
+
+if.end:                                           ; preds = %if.then, %invoke.cont
+  ret void, !dbg !11341
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %3, !dbg !11333
+
+terminate.lpad:                                   ; preds = %lpad
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !11333
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !11333
+  call void @__clang_call_terminate(i8* %5) #9, !dbg !11333
+  unreachable, !dbg !11333
+}

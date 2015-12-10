@@ -1,38 +1,43 @@
 define i32 @read_integral_parameter(i8* nocapture %p, i8* %pname, i32 %defval) #0 {
 entry:
-  %0 = load i8* %p, align 1, !tbaa !1
-  %tobool20 = icmp eq i8 %0, 0
-  br i1 %tobool20, label %if.end11, label %while.body
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !712), !dbg !2078
+  tail call void @llvm.dbg.value(metadata !{i8* %pname}, i64 0, metadata !713), !dbg !2079
+  tail call void @llvm.dbg.value(metadata !{i32 %defval}, i64 0, metadata !714), !dbg !2080
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !715), !dbg !2081
+  %0 = load i8* %p, align 1, !dbg !2082, !tbaa !2060
+  %tobool20 = icmp eq i8 %0, 0, !dbg !2082
+  br i1 %tobool20, label %if.end11, label %while.body, !dbg !2082
 
 while.cond:                                       ; preds = %while.body
-  %1 = load i8* %incdec.ptr, align 1, !tbaa !1
-  %tobool = icmp eq i8 %1, 0
-  br i1 %tobool, label %if.end11, label %while.body
+  %1 = load i8* %incdec.ptr, align 1, !dbg !2082, !tbaa !2060
+  %tobool = icmp eq i8 %1, 0, !dbg !2082
+  br i1 %tobool, label %if.end11, label %while.body, !dbg !2082
 
 while.body:                                       ; preds = %entry, %while.cond
   %.pr = phi i8 [ %1, %while.cond ], [ %0, %entry ]
   %endp.021 = phi i8* [ %incdec.ptr, %while.cond ], [ %p, %entry ]
-  %idxprom = zext i8 %.pr to i64
-  %arrayidx = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom
-  %2 = load i16* %arrayidx, align 2, !tbaa !3
-  %and2 = and i16 %2, 4
-  %tobool3 = icmp eq i16 %and2, 0
-  %incdec.ptr = getelementptr inbounds i8* %endp.021, i64 1
-  br i1 %tobool3, label %if.then6, label %while.cond
+  %idxprom = zext i8 %.pr to i64, !dbg !2083
+  %arrayidx = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom, !dbg !2083
+  %2 = load i16* %arrayidx, align 2, !dbg !2083, !tbaa !2085
+  %and2 = and i16 %2, 4, !dbg !2083
+  %tobool3 = icmp eq i16 %and2, 0, !dbg !2083
+  %incdec.ptr = getelementptr inbounds i8* %endp.021, i64 1, !dbg !2086
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !715), !dbg !2086
+  br i1 %tobool3, label %if.then6, label %while.cond, !dbg !2083
 
 if.then6:                                         ; preds = %while.body
-  %cmp7 = icmp eq i8* %pname, null
-  br i1 %cmp7, label %return, label %if.then9
+  %cmp7 = icmp eq i8* %pname, null, !dbg !2087
+  br i1 %cmp7, label %return, label %if.then9, !dbg !2087
 
 if.then9:                                         ; preds = %if.then6
-  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([20 x i8]* @.str, i64 0, i64 0), i8* %pname) #11
-  br label %return
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([20 x i8]* @.str, i64 0, i64 0), i8* %pname) #12, !dbg !2089
+  br label %return, !dbg !2089
 
 if.end11:                                         ; preds = %entry, %while.cond
-  %call = tail call i32 @atoi(i8* %p) #12
-  br label %return
+  %call = tail call i32 @atoi(i8* %p) #13, !dbg !2090
+  br label %return, !dbg !2090
 
 return:                                           ; preds = %if.then9, %if.then6, %if.end11
   %retval.0 = phi i32 [ %call, %if.end11 ], [ %defval, %if.then6 ], [ %defval, %if.then9 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2091
 }

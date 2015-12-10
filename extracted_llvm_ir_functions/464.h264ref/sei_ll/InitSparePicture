@@ -1,51 +1,54 @@
 define void @InitSparePicture() #0 {
-  %1 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1190, !tbaa !962
-  %2 = icmp eq %struct.Bitstream* %1, null, !dbg !1192
-  br i1 %2, label %4, label %3, !dbg !1193
+entry:
+  %0 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1046, !tbaa !926
+  %cmp = icmp eq %struct.Bitstream* %0, null, !dbg !1046
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1046
 
-; <label>:3                                       ; preds = %0
-  tail call void @CloseSparePicture() #9, !dbg !1194
-  br label %4, !dbg !1194
+if.then:                                          ; preds = %entry
+  tail call void @CloseSparePicture() #9, !dbg !1046
+  br label %if.end, !dbg !1046
 
-; <label>:4                                       ; preds = %0, %3
-  %5 = tail call i8* @malloc(i64 48) #8, !dbg !1195
-  store i8* %5, i8** bitcast (%struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3) to i8**), align 8, !dbg !1196, !tbaa !962
-  %6 = icmp eq i8* %5, null, !dbg !1197
-  %7 = bitcast i8* %5 to %struct.Bitstream*
-  br i1 %6, label %8, label %9, !dbg !1199
+if.end:                                           ; preds = %entry, %if.then
+  %call = tail call noalias i8* @malloc(i64 48) #8, !dbg !1047
+  %1 = bitcast i8* %call to %struct.Bitstream*, !dbg !1047
+  store %struct.Bitstream* %1, %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1047, !tbaa !926
+  %cmp1 = icmp eq i8* %call, null, !dbg !1048
+  br i1 %cmp1, label %if.then2, label %if.end3, !dbg !1048
 
-; <label>:8                                       ; preds = %4
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([46 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !1200
-  %.pre = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1201, !tbaa !962
-  br label %9, !dbg !1200
+if.then2:                                         ; preds = %if.end
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([46 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !1048
+  %.pre = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1049, !tbaa !926
+  br label %if.end3, !dbg !1048
 
-; <label>:9                                       ; preds = %8, %4
-  %10 = phi %struct.Bitstream* [ %.pre, %8 ], [ %7, %4 ]
-  %11 = tail call i8* @malloc(i64 65496) #8, !dbg !1202
-  %12 = getelementptr inbounds %struct.Bitstream* %10, i64 0, i32 9, !dbg !1203
-  store i8* %11, i8** %12, align 8, !dbg !1204, !tbaa !1130
-  %13 = icmp eq i8* %11, null, !dbg !1205
-  br i1 %13, label %14, label %15, !dbg !1207
+if.end3:                                          ; preds = %if.then2, %if.end
+  %2 = phi %struct.Bitstream* [ %.pre, %if.then2 ], [ %1, %if.end ]
+  %call4 = tail call noalias i8* @malloc(i64 65496) #8, !dbg !1049
+  %streamBuffer = getelementptr inbounds %struct.Bitstream* %2, i64 0, i32 9, !dbg !1049
+  store i8* %call4, i8** %streamBuffer, align 8, !dbg !1049, !tbaa !926
+  %3 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1050, !tbaa !926
+  %streamBuffer5 = getelementptr inbounds %struct.Bitstream* %3, i64 0, i32 9, !dbg !1050
+  %4 = load i8** %streamBuffer5, align 8, !dbg !1050, !tbaa !926
+  %cmp6 = icmp eq i8* %4, null, !dbg !1050
+  br i1 %cmp6, label %if.then7, label %if.end8, !dbg !1050
 
-; <label>:14                                      ; preds = %9
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([60 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !1208
-  %.pre1 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1209, !tbaa !962
-  br label %15, !dbg !1208
+if.then7:                                         ; preds = %if.end3
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([60 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !1050
+  %.pre10 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1051, !tbaa !926
+  %streamBuffer9.phi.trans.insert = getelementptr inbounds %struct.Bitstream* %.pre10, i64 0, i32 9
+  %.pre11 = load i8** %streamBuffer9.phi.trans.insert, align 8, !dbg !1051, !tbaa !926
+  br label %if.end8, !dbg !1050
 
-; <label>:15                                      ; preds = %14, %9
-  %16 = phi %struct.Bitstream* [ %.pre1, %14 ], [ %10, %9 ]
-  %17 = getelementptr inbounds %struct.Bitstream* %16, i64 0, i32 9, !dbg !1209
-  %18 = load i8** %17, align 8, !dbg !1209, !tbaa !1130
-  %19 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %18, i1 false), !dbg !1209
-  %20 = tail call i8* @__memset_chk(i8* %18, i32 0, i64 65496, i64 %19) #8, !dbg !1209
-  store i32 0, i32* getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 1), align 4, !dbg !1210, !tbaa !1211
-  store i32 0, i32* getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 0), align 8, !dbg !1212, !tbaa !1213
-  %21 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1214, !tbaa !962
-  %22 = getelementptr inbounds %struct.Bitstream* %21, i64 0, i32 1, !dbg !1215
-  store i32 8, i32* %22, align 4, !dbg !1216, !tbaa !1138
-  %23 = getelementptr inbounds %struct.Bitstream* %21, i64 0, i32 0, !dbg !1217
-  store i32 0, i32* %23, align 4, !dbg !1218, !tbaa !1111
-  %24 = getelementptr inbounds %struct.Bitstream* %21, i64 0, i32 2, !dbg !1219
-  store i8 0, i8* %24, align 1, !dbg !1220, !tbaa !1128
-  ret void, !dbg !1221
+if.end8:                                          ; preds = %if.then7, %if.end3
+  %5 = phi i8* [ %.pre11, %if.then7 ], [ %4, %if.end3 ]
+  tail call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 65496, i32 1, i1 false), !dbg !1051
+  store i32 0, i32* getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 1), align 4, !dbg !1052, !tbaa !937
+  store i32 0, i32* getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 0), align 8, !dbg !1053, !tbaa !937
+  %6 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1054, !tbaa !926
+  %bits_to_go = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 1, !dbg !1054
+  store i32 8, i32* %bits_to_go, align 4, !dbg !1054, !tbaa !937
+  %byte_pos = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 0, !dbg !1055
+  store i32 0, i32* %byte_pos, align 4, !dbg !1055, !tbaa !937
+  %byte_buf = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 2, !dbg !1056
+  store i8 0, i8* %byte_buf, align 1, !dbg !1056, !tbaa !927
+  ret void, !dbg !1057
 }

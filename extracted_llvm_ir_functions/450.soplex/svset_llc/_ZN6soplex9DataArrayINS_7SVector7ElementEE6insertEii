@@ -1,36 +1,37 @@
-define linkonce_odr void @_ZN6soplex9DataArrayINS_7SVector7ElementEE6insertEii(%"class.soplex::DataArray"* nocapture %this, i32 %i, i32 %n) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray"* %this, i64 0, metadata !2941, metadata !3888), !dbg !4303
-  tail call void @llvm.dbg.value(metadata i32 %i, i64 0, metadata !2942, metadata !3888), !dbg !4304
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !2943, metadata !3888), !dbg !4305
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray"* %this, i64 0, metadata !2842, metadata !3888), !dbg !4306
-  %1 = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 0, !dbg !4308
-  %2 = load i32* %1, align 4, !dbg !4308, !tbaa !3895
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !2944, metadata !3888), !dbg !4309
-  %3 = add nsw i32 %2, %n, !dbg !4310
-  tail call void @_ZN6soplex9DataArrayINS_7SVector7ElementEE6reSizeEi(%"class.soplex::DataArray"* %this, i32 %3) #8, !dbg !4311
-  %4 = icmp sgt i32 %2, %i, !dbg !4312
-  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !4313
+define linkonce_odr void @_ZN6soplex9DataArrayINS_7SVector7ElementEE6insertEii(%"class.soplex::DataArray"* nocapture %this, i32 %i, i32 %n) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray"* %this}, i64 0, metadata !3483), !dbg !4044
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !3484), !dbg !4044
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !3485), !dbg !4044
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray"* %this}, i64 0, metadata !4045), !dbg !4047
+  %thesize.i = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 0, !dbg !4048
+  %0 = load i32* %thesize.i, align 4, !dbg !4048, !tbaa !3751
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !3486), !dbg !4046
+  %add = add nsw i32 %0, %n, !dbg !4049
+  tail call void @_ZN6soplex9DataArrayINS_7SVector7ElementEE6reSizeEi(%"class.soplex::DataArray"* %this, i32 %add) #9, !dbg !4049
+  %cmp10 = icmp sgt i32 %0, %i, !dbg !4050
+  br i1 %cmp10, label %while.body.lr.ph, label %while.end, !dbg !4050
 
-.lr.ph:                                           ; preds = %0
-  %5 = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 2, !dbg !4314
-  %6 = sext i32 %2 to i64
-  %7 = sext i32 %i to i64, !dbg !4313
-  %8 = sext i32 %n to i64, !dbg !4313
-  br label %9, !dbg !4313
+while.body.lr.ph:                                 ; preds = %entry
+  %data = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 2, !dbg !4051
+  %1 = sext i32 %0 to i64
+  %2 = sext i32 %n to i64, !dbg !4050
+  br label %while.body, !dbg !4050
 
-; <label>:9                                       ; preds = %.lr.ph, %9
-  %indvars.iv = phi i64 [ %6, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !4313
-  %10 = add nsw i64 %indvars.iv.next, %8, !dbg !4315
-  %11 = load %"struct.soplex::SVector::Element"** %5, align 8, !dbg !4314, !tbaa !4161
-  %12 = getelementptr inbounds %"struct.soplex::SVector::Element"* %11, i64 %10, !dbg !4314
-  %13 = getelementptr inbounds %"struct.soplex::SVector::Element"* %11, i64 %indvars.iv.next, !dbg !4316
-  %14 = bitcast %"struct.soplex::SVector::Element"* %12 to i8*, !dbg !4317
-  %15 = bitcast %"struct.soplex::SVector::Element"* %13 to i8*, !dbg !4317
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %14, i8* %15, i64 16, i32 8, i1 false), !dbg !4317, !tbaa.struct !4318
-  %16 = icmp sgt i64 %indvars.iv.next, %7, !dbg !4312
-  br i1 %16, label %9, label %._crit_edge, !dbg !4313
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %indvars.iv = phi i64 [ %1, %while.body.lr.ph ], [ %indvars.iv.next, %while.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !4050
+  %3 = add nsw i64 %indvars.iv.next, %2, !dbg !4051
+  %4 = load %"struct.soplex::SVector::Element"** %data, align 8, !dbg !4051, !tbaa !3778
+  %arrayidx = getelementptr inbounds %"struct.soplex::SVector::Element"* %4, i64 %3, !dbg !4051
+  %arrayidx5 = getelementptr inbounds %"struct.soplex::SVector::Element"* %4, i64 %indvars.iv.next, !dbg !4051
+  %5 = bitcast %"struct.soplex::SVector::Element"* %arrayidx to i8*, !dbg !4051
+  %6 = bitcast %"struct.soplex::SVector::Element"* %arrayidx5 to i8*, !dbg !4051
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %6, i64 16, i32 8, i1 false), !dbg !4051, !tbaa.struct !4052
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !4050
+  %cmp = icmp sgt i32 %7, %i, !dbg !4050
+  br i1 %cmp, label %while.body, label %while.end, !dbg !4050
 
-._crit_edge:                                      ; preds = %9, %0
-  ret void, !dbg !4320
+while.end:                                        ; preds = %while.body, %entry
+  ret void, !dbg !4053
 }

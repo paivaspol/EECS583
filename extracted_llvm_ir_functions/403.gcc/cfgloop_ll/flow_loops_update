@@ -1,15 +1,17 @@
 define i32 @flow_loops_update(%struct.loops* nocapture %loops, i32 %flags) #0 {
 entry:
-  %array = getelementptr inbounds %struct.loops* %loops, i64 0, i32 2
-  %0 = load %struct.loop** %array, align 8, !tbaa !0
-  %tobool = icmp eq %struct.loop* %0, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.loops* %loops}, i64 0, metadata !408), !dbg !927
+  tail call void @llvm.dbg.value(metadata !{i32 %flags}, i64 0, metadata !409), !dbg !928
+  %array = getelementptr inbounds %struct.loops* %loops, i64 0, i32 2, !dbg !929
+  %0 = load %struct.loop** %array, align 8, !dbg !929, !tbaa !563
+  %tobool = icmp eq %struct.loop* %0, null, !dbg !929
+  br i1 %tobool, label %if.end, label %if.then, !dbg !929
 
 if.then:                                          ; preds = %entry
-  tail call void @flow_loops_free(%struct.loops* %loops) #6
-  br label %if.end
+  tail call void @flow_loops_free(%struct.loops* %loops) #7, !dbg !930
+  br label %if.end, !dbg !930
 
 if.end:                                           ; preds = %entry, %if.then
-  %call = tail call i32 @flow_loops_find(%struct.loops* %loops, i32 %flags) #6
-  ret i32 %call
+  %call = tail call i32 @flow_loops_find(%struct.loops* %loops, i32 %flags) #7, !dbg !931
+  ret i32 %call, !dbg !931
 }

@@ -1,26 +1,27 @@
-define linkonce_odr %"class.soplex::SVector"* @_ZN6soplex6SoPlex11enterVectorERKNS_5SPxIdE(%"class.soplex::SoPlex"* nocapture readonly %this, %"class.soplex::SPxId"* dereferenceable(4) %p_id) unnamed_addr #0 align 2 {
-  %1 = alloca %"class.soplex::SPxRowId", align 4
-  %2 = alloca %"class.soplex::SPxColId", align 4
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SoPlex"* %this, i64 0, metadata !6898, metadata !7753), !dbg !8394
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxId"* %p_id, i64 0, metadata !6899, metadata !7753), !dbg !8395
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxId"* %p_id, i64 0, metadata !6902, metadata !7753), !dbg !8396
-  %3 = getelementptr inbounds %"class.soplex::SPxId"* %p_id, i64 0, i32 0, i32 0, !dbg !8398
-  %4 = load i32* %3, align 4, !dbg !8398
-  %.mask.i = and i32 %4, 128, !dbg !8399
-  %5 = icmp eq i32 %.mask.i, 0, !dbg !8399
-  br i1 %5, label %8, label %6, !dbg !8400
+define linkonce_odr %"class.soplex::SVector"* @_ZN6soplex6SoPlex11enterVectorERKNS_5SPxIdE(%"class.soplex::SoPlex"* nocapture %this, %"class.soplex::SPxId"* %p_id) unnamed_addr #2 align 2 {
+entry:
+  %ref.tmp = alloca %"class.soplex::SPxRowId", align 4
+  %ref.tmp3 = alloca %"class.soplex::SPxColId", align 4
+  call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !8109), !dbg !9270
+  call void @llvm.dbg.value(metadata !{%"class.soplex::SPxId"* %p_id}, i64 0, metadata !8110), !dbg !9270
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxId"* %p_id}, i64 0, metadata !9271), !dbg !9273
+  %0 = bitcast %"class.soplex::SPxId"* %p_id to i32*, !dbg !9274
+  %bf.load.i = load i32* %0, align 4, !dbg !9274
+  %bf.shl.mask.i = and i32 %bf.load.i, 128, !dbg !9274
+  %cmp.i = icmp eq i32 %bf.shl.mask.i, 0, !dbg !9274
+  br i1 %cmp.i, label %cond.false, label %cond.true, !dbg !9272
 
-; <label>:6                                       ; preds = %0
-  call void @_ZN6soplex8SPxRowIdC1ERKNS_5SPxIdE(%"class.soplex::SPxRowId"* %1, %"class.soplex::SPxId"* dereferenceable(4) %p_id) #12, !dbg !8401
-  %7 = call dereferenceable(8) %"class.soplex::SVector"* @_ZNK6soplex6SoPlex6vectorERKNS_8SPxRowIdE(%"class.soplex::SoPlex"* %this, %"class.soplex::SPxRowId"* dereferenceable(4) %1) #12, !dbg !8402
-  br label %10, !dbg !8400
+cond.true:                                        ; preds = %entry
+  call void @_ZN6soplex8SPxRowIdC1ERKNS_5SPxIdE(%"class.soplex::SPxRowId"* %ref.tmp, %"class.soplex::SPxId"* %p_id) #13, !dbg !9276
+  %call2 = call %"class.soplex::SVector"* @_ZNK6soplex6SoPlex6vectorERKNS_8SPxRowIdE(%"class.soplex::SoPlex"* %this, %"class.soplex::SPxRowId"* %ref.tmp) #13, !dbg !9276
+  br label %cond.end, !dbg !9276
 
-; <label>:8                                       ; preds = %0
-  call void @_ZN6soplex8SPxColIdC1ERKNS_5SPxIdE(%"class.soplex::SPxColId"* %2, %"class.soplex::SPxId"* dereferenceable(4) %p_id) #12, !dbg !8403
-  %9 = call dereferenceable(8) %"class.soplex::SVector"* @_ZNK6soplex6SoPlex6vectorERKNS_8SPxColIdE(%"class.soplex::SoPlex"* %this, %"class.soplex::SPxColId"* dereferenceable(4) %2) #12, !dbg !8404
-  br label %10, !dbg !8400
+cond.false:                                       ; preds = %entry
+  call void @_ZN6soplex8SPxColIdC1ERKNS_5SPxIdE(%"class.soplex::SPxColId"* %ref.tmp3, %"class.soplex::SPxId"* %p_id) #13, !dbg !9276
+  %call4 = call %"class.soplex::SVector"* @_ZNK6soplex6SoPlex6vectorERKNS_8SPxColIdE(%"class.soplex::SoPlex"* %this, %"class.soplex::SPxColId"* %ref.tmp3) #13, !dbg !9276
+  br label %cond.end, !dbg !9276
 
-; <label>:10                                      ; preds = %8, %6
-  %11 = phi %"class.soplex::SVector"* [ %7, %6 ], [ %9, %8 ], !dbg !8400
-  ret %"class.soplex::SVector"* %11, !dbg !8405
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi %"class.soplex::SVector"* [ %call2, %cond.true ], [ %call4, %cond.false ], !dbg !9276
+  ret %"class.soplex::SVector"* %cond, !dbg !9276
 }

@@ -1,32 +1,35 @@
 define internal void @_ZN3povL23Transform_Bicubic_PatchEPNS_13Object_StructEPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Transform_Struct"* %Trans) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !1470, metadata !1911), !dbg !3351
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1471, metadata !1911), !dbg !3352
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Bicubic_Patch_Struct"* %7, i64 0, metadata !1474, metadata !1911), !dbg !3353
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1472, metadata !1911), !dbg !3354
-  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !3355
-  %2 = bitcast %"struct.pov::Object_Struct"** %1 to [4 x [4 x [3 x double]]]*, !dbg !3355
-  br label %.preheader, !dbg !3362
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1029), !dbg !2044
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1030), !dbg !2044
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Bicubic_Patch_Struct"* %1}, i64 0, metadata !1033), !dbg !2045
+  tail call void @llvm.dbg.value(metadata !146, i64 0, metadata !1031), !dbg !2046
+  %Control_Points = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !2048
+  %0 = bitcast %"struct.pov::Object_Struct"** %Control_Points to [4 x [4 x [3 x double]]]*, !dbg !2048
+  br label %for.cond1.preheader, !dbg !2046
 
-.preheader:                                       ; preds = %5, %0
-  %indvars.iv3 = phi i64 [ 0, %0 ], [ %indvars.iv.next4, %5 ]
-  br label %3, !dbg !3363
+for.cond1.preheader:                              ; preds = %for.inc12, %entry
+  %indvars.iv26 = phi i64 [ 0, %entry ], [ %indvars.iv.next27, %for.inc12 ]
+  br label %for.body3, !dbg !2052
 
-; <label>:3                                       ; preds = %3, %.preheader
-  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds [4 x [4 x [3 x double]]]* %2, i64 0, i64 %indvars.iv3, i64 %indvars.iv, i64 0, !dbg !3364
-  tail call void @_ZN3pov11MTransPointEPdS0_PNS_16Transform_StructE(double* %4, double* %4, %"struct.pov::Transform_Struct"* %Trans) #8, !dbg !3365
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !3363
-  %exitcond = icmp eq i64 %indvars.iv.next, 4, !dbg !3363
-  br i1 %exitcond, label %5, label %3, !dbg !3363
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %arraydecay = getelementptr inbounds [4 x [4 x [3 x double]]]* %0, i64 0, i64 %indvars.iv26, i64 %indvars.iv, i64 0, !dbg !2048
+  tail call void @_ZN3pov11MTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay, double* %arraydecay, %"struct.pov::Transform_Struct"* %Trans) #9, !dbg !2048
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2052
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2052
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !2052
+  br i1 %exitcond, label %for.inc12, label %for.body3, !dbg !2052
 
-; <label>:5                                       ; preds = %3
-  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1, !dbg !3362
-  %exitcond5 = icmp eq i64 %indvars.iv.next4, 4, !dbg !3362
-  br i1 %exitcond5, label %6, label %.preheader, !dbg !3362
+for.inc12:                                        ; preds = %for.body3
+  %indvars.iv.next27 = add i64 %indvars.iv26, 1, !dbg !2046
+  %lftr.wideiv28 = trunc i64 %indvars.iv.next27 to i32, !dbg !2046
+  %exitcond29 = icmp eq i32 %lftr.wideiv28, 4, !dbg !2046
+  br i1 %exitcond29, label %for.end14, label %for.cond1.preheader, !dbg !2046
 
-; <label>:6                                       ; preds = %5
-  %7 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Bicubic_Patch_Struct"*, !dbg !3366
-  tail call void @_ZN3pov23Precompute_Patch_ValuesEPNS_20Bicubic_Patch_StructE(%"struct.pov::Bicubic_Patch_Struct"* %7) #8, !dbg !3367
-  tail call void @_ZN3pov26Compute_Bicubic_Patch_BBoxEPNS_20Bicubic_Patch_StructE(%"struct.pov::Bicubic_Patch_Struct"* %7) #8, !dbg !3368
-  ret void, !dbg !3369
+for.end14:                                        ; preds = %for.inc12
+  %1 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Bicubic_Patch_Struct"*, !dbg !2045
+  tail call void @_ZN3pov23Precompute_Patch_ValuesEPNS_20Bicubic_Patch_StructE(%"struct.pov::Bicubic_Patch_Struct"* %1) #9, !dbg !2053
+  tail call void @_ZN3pov26Compute_Bicubic_Patch_BBoxEPNS_20Bicubic_Patch_StructE(%"struct.pov::Bicubic_Patch_Struct"* %1) #9, !dbg !2054
+  ret void, !dbg !2055
 }

@@ -1,19 +1,20 @@
 define void @InpMtx_setResizeMultiple(%struct._InpMtx* %inpmtx, double %resizeMultiple) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !149, metadata !159), !dbg !600
-  tail call void @llvm.dbg.value(metadata double %resizeMultiple, i64 0, metadata !150, metadata !159), !dbg !601
-  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !602
-  %2 = fcmp olt double %resizeMultiple, 0.000000e+00, !dbg !604
-  %or.cond = or i1 %1, %2, !dbg !605
-  br i1 %or.cond, label %3, label %6, !dbg !605
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !148), !dbg !399
+  tail call void @llvm.dbg.value(metadata !{double %resizeMultiple}, i64 0, metadata !149), !dbg !400
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !401
+  %cmp1 = fcmp olt double %resizeMultiple, 0.000000e+00, !dbg !401
+  %or.cond = or i1 %cmp, %cmp1, !dbg !401
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !401
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !606, !tbaa !166
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([61 x i8]* @.str26, i64 0, i64 0), %struct._InpMtx* %inpmtx, double %resizeMultiple) #5, !dbg !608
-  tail call void @exit(i32 -1) #6, !dbg !609
-  unreachable, !dbg !609
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !402, !tbaa !158
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([61 x i8]* @.str26, i64 0, i64 0), %struct._InpMtx* %inpmtx, double %resizeMultiple) #5, !dbg !402
+  tail call void @exit(i32 -1) #6, !dbg !404
+  unreachable, !dbg !404
 
-; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 5, !dbg !610
-  store double %resizeMultiple, double* %7, align 8, !dbg !611, !tbaa !255
-  ret void, !dbg !612
+if.end:                                           ; preds = %entry
+  %resizeMultiple2 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 5, !dbg !405
+  store double %resizeMultiple, double* %resizeMultiple2, align 8, !dbg !405, !tbaa !206
+  ret void, !dbg !406
 }

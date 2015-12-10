@@ -1,18 +1,19 @@
 define noalias %struct._InpMtx* @InpMtx_free(%struct._InpMtx* %inpmtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !66, metadata !75), !dbg !158
-  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !159
-  br i1 %1, label %2, label %5, !dbg !161
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !61), !dbg !106
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !107
+  br i1 %cmp, label %if.then, label %if.end, !dbg !107
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !162, !tbaa !80
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([45 x i8]* @.str4, i64 0, i64 0), %struct._InpMtx* null) #5, !dbg !164
-  tail call void @exit(i32 -1) #6, !dbg !165
-  unreachable, !dbg !165
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !108, !tbaa !66
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str4, i64 0, i64 0), %struct._InpMtx* null) #5, !dbg !108
+  tail call void @exit(i32 -1) #6, !dbg !110
+  unreachable, !dbg !110
 
-; <label>:5                                       ; preds = %0
-  tail call void @InpMtx_clearData(%struct._InpMtx* %inpmtx) #7, !dbg !166
-  %6 = bitcast %struct._InpMtx* %inpmtx to i8*, !dbg !167
-  tail call void @free(i8* %6) #7, !dbg !167
-  tail call void @llvm.dbg.value(metadata %struct._InpMtx* null, i64 0, metadata !66, metadata !75), !dbg !158
-  ret %struct._InpMtx* null, !dbg !170
+if.end:                                           ; preds = %entry
+  tail call void @InpMtx_clearData(%struct._InpMtx* %inpmtx) #7, !dbg !111
+  %1 = bitcast %struct._InpMtx* %inpmtx to i8*, !dbg !112
+  tail call void @free(i8* %1) #5, !dbg !112
+  tail call void @llvm.dbg.value(metadata !114, i64 0, metadata !61), !dbg !112
+  ret %struct._InpMtx* null, !dbg !115
 }

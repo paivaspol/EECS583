@@ -1,261 +1,249 @@
-define internal i32 @_ZN3povL11Inside_MeshEPdPNS_13Object_StructE(double* nocapture readonly %IPoint, %"struct.pov::Object_Struct"* nocapture readonly %Object) #0 {
+define internal i32 @_ZN3povL11Inside_MeshEPdPNS_13Object_StructE(double* nocapture %IPoint, %"struct.pov::Object_Struct"* nocapture %Object) #0 {
+entry:
   %Depth.i = alloca double, align 8
   %rayinfo.i = alloca %"struct.pov::Rayinfo_Struct", align 8
   %Node.i = alloca %"struct.pov::BBox_Tree_Struct"*, align 8
   %t = alloca double, align 8
-  %Ray = alloca %"struct.pov::Ray_Struct", align 16
+  %Ray = alloca %"struct.pov::Ray_Struct", align 8
   %New_Ray = alloca %"struct.pov::Ray_Struct", align 8
-  tail call void @llvm.dbg.value(metadata double* %IPoint, i64 0, metadata !1265, metadata !2016), !dbg !2201
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !1266, metadata !2016), !dbg !2202
-  %1 = bitcast %"struct.pov::Ray_Struct"* %Ray to i8*, !dbg !2203
-  call void @llvm.lifetime.start(i64 856, i8* %1) #6, !dbg !2203
-  %2 = bitcast %"struct.pov::Ray_Struct"* %New_Ray to i8*, !dbg !2203
-  call void @llvm.lifetime.start(i64 856, i8* %2) #6, !dbg !2203
-  %3 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Mesh_Struct"*, !dbg !2204
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Mesh_Struct"* %3, i64 0, metadata !1274, metadata !2016), !dbg !2205
-  %4 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 3, !dbg !2206
-  %5 = bitcast %"struct.pov::Texture_Struct"** %4 to i16*, !dbg !2206
-  %6 = load i16* %5, align 2, !dbg !2206, !tbaa !2126
-  %7 = icmp eq i16 %6, 0, !dbg !2208
-  br i1 %7, label %132, label %8, !dbg !2209
+  call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1502), !dbg !1849
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1503), !dbg !1849
+  call void @llvm.dbg.declare(metadata !{double* %t}, metadata !1508), !dbg !1850
+  %0 = bitcast %"struct.pov::Ray_Struct"* %Ray to i8*, !dbg !1851
+  call void @llvm.lifetime.start(i64 856, i8* %0) #6, !dbg !1851
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::Ray_Struct"* %Ray}, metadata !1509), !dbg !1851
+  %1 = bitcast %"struct.pov::Ray_Struct"* %New_Ray to i8*, !dbg !1851
+  call void @llvm.lifetime.start(i64 856, i8* %1) #6, !dbg !1851
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::Ray_Struct"* %New_Ray}, metadata !1510), !dbg !1851
+  %2 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Mesh_Struct"*, !dbg !1852
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Mesh_Struct"* %2}, i64 0, metadata !1511), !dbg !1852
+  %has_inside_vector = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 3, !dbg !1853
+  %3 = bitcast %"struct.pov::Texture_Struct"** %has_inside_vector to i16*, !dbg !1853
+  %4 = load i16* %3, align 2, !dbg !1853, !tbaa !1804
+  %cmp = icmp eq i16 %4, 0, !dbg !1853
+  br i1 %cmp, label %cleanup, label %if.end, !dbg !1853
 
-; <label>:8                                       ; preds = %0
-  %9 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !2210
-  %10 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !2211
-  %11 = bitcast %"struct.pov::Object_Struct"* %10 to %"struct.pov::Mesh_Data_Struct"**, !dbg !2211
-  %12 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2211, !tbaa !2084
-  %13 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %12, i64 0, i32 10, i64 0, !dbg !2212
-  tail call void @llvm.dbg.value(metadata double* %9, i64 0, metadata !1454, metadata !2016), !dbg !2213
-  tail call void @llvm.dbg.value(metadata double* %13, i64 0, metadata !1455, metadata !2016), !dbg !2215
-  %14 = bitcast double* %13 to i64*, !dbg !2216
-  %15 = load i64* %14, align 8, !dbg !2216, !tbaa !2056
-  %16 = bitcast double* %9 to i64*, !dbg !2217
-  store i64 %15, i64* %16, align 8, !dbg !2217, !tbaa !2056
-  %17 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %12, i64 0, i32 10, i64 1, !dbg !2218
-  %18 = bitcast double* %17 to i64*, !dbg !2218
-  %19 = load i64* %18, align 8, !dbg !2218, !tbaa !2056
-  %20 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 1, !dbg !2219
-  %21 = bitcast double* %20 to i64*, !dbg !2220
-  store i64 %19, i64* %21, align 8, !dbg !2220, !tbaa !2056
-  %22 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %12, i64 0, i32 10, i64 2, !dbg !2221
-  %23 = bitcast double* %22 to i64*, !dbg !2221
-  %24 = load i64* %23, align 8, !dbg !2221, !tbaa !2056
-  %25 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !2222
-  %26 = bitcast double* %25 to i64*, !dbg !2223
-  store i64 %24, i64* %26, align 8, !dbg !2223, !tbaa !2056
-  tail call void @llvm.dbg.value(metadata double* %39, i64 0, metadata !1454, metadata !2016), !dbg !2224
-  tail call void @llvm.dbg.value(metadata double* %IPoint, i64 0, metadata !1455, metadata !2016), !dbg !2226
-  %27 = bitcast double* %IPoint to <2 x i64>*, !dbg !2227
-  %28 = load <2 x i64>* %27, align 8, !dbg !2227, !tbaa !2056
-  %29 = bitcast %"struct.pov::Ray_Struct"* %Ray to <2 x i64>*, !dbg !2228
-  store <2 x i64> %28, <2 x i64>* %29, align 16, !dbg !2228, !tbaa !2056
-  %30 = getelementptr inbounds double* %IPoint, i64 2, !dbg !2229
-  %31 = bitcast double* %30 to i64*, !dbg !2229
-  %32 = load i64* %31, align 8, !dbg !2229, !tbaa !2056
-  %33 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 2, !dbg !2230
-  %34 = bitcast double* %33 to i64*, !dbg !2231
-  store i64 %32, i64* %34, align 16, !dbg !2231, !tbaa !2056
-  %35 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !2232
-  %36 = load %"struct.pov::Transform_Struct"** %35, align 8, !dbg !2232, !tbaa !2036
-  %37 = icmp eq %"struct.pov::Transform_Struct"* %36, null, !dbg !2234
-  br i1 %37, label %61, label %38, !dbg !2235
+if.end:                                           ; preds = %entry
+  %arraydecay = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !1854
+  %Data = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1854
+  %5 = bitcast %"struct.pov::Object_Struct"* %Data to %"struct.pov::Mesh_Data_Struct"**, !dbg !1854
+  %6 = load %"struct.pov::Mesh_Data_Struct"** %5, align 8, !dbg !1854, !tbaa !1750
+  %arraydecay1 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %6, i64 0, i32 10, i64 0, !dbg !1854
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !1855), !dbg !1856
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay1}, i64 0, metadata !1857), !dbg !1856
+  %7 = load double* %arraydecay1, align 8, !dbg !1858, !tbaa !1758
+  store double %7, double* %arraydecay, align 8, !dbg !1858, !tbaa !1758
+  %arrayidx2.i = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %6, i64 0, i32 10, i64 1, !dbg !1860
+  %8 = load double* %arrayidx2.i, align 8, !dbg !1860, !tbaa !1758
+  %arrayidx3.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 1, !dbg !1860
+  store double %8, double* %arrayidx3.i, align 8, !dbg !1860, !tbaa !1758
+  %arrayidx4.i = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %6, i64 0, i32 10, i64 2, !dbg !1861
+  %9 = load double* %arrayidx4.i, align 8, !dbg !1861, !tbaa !1758
+  %arrayidx5.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !1861
+  store double %9, double* %arrayidx5.i, align 8, !dbg !1861, !tbaa !1758
+  %arraydecay2 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 0, !dbg !1862
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay2}, i64 0, metadata !1863), !dbg !1864
+  tail call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1865), !dbg !1864
+  %10 = load double* %IPoint, align 8, !dbg !1866, !tbaa !1758
+  store double %10, double* %arraydecay2, align 8, !dbg !1866, !tbaa !1758
+  %arrayidx2.i55 = getelementptr inbounds double* %IPoint, i64 1, !dbg !1867
+  %11 = load double* %arrayidx2.i55, align 8, !dbg !1867, !tbaa !1758
+  %arrayidx3.i56 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 1, !dbg !1867
+  store double %11, double* %arrayidx3.i56, align 8, !dbg !1867, !tbaa !1758
+  %arrayidx4.i57 = getelementptr inbounds double* %IPoint, i64 2, !dbg !1868
+  %12 = load double* %arrayidx4.i57, align 8, !dbg !1868, !tbaa !1758
+  %arrayidx5.i58 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 2, !dbg !1868
+  store double %12, double* %arrayidx5.i58, align 8, !dbg !1868, !tbaa !1758
+  %13 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !1869
+  %14 = load %"struct.pov::Transform_Struct"** %13, align 8, !dbg !1869, !tbaa !1750
+  %cmp3 = icmp eq %"struct.pov::Transform_Struct"* %14, null, !dbg !1869
+  br i1 %cmp3, label %if.else, label %if.then4, !dbg !1869
 
-; <label>:38                                      ; preds = %8
-  %39 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 0, !dbg !2236
-  %40 = getelementptr inbounds %"struct.pov::Ray_Struct"* %New_Ray, i64 0, i32 0, i64 0, !dbg !2237
-  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %40, double* %39, %"struct.pov::Transform_Struct"* %36) #7, !dbg !2239
-  %41 = getelementptr inbounds %"struct.pov::Ray_Struct"* %New_Ray, i64 0, i32 1, i64 0, !dbg !2240
-  %42 = load %"struct.pov::Transform_Struct"** %35, align 8, !dbg !2241, !tbaa !2036
-  call void @_ZN3pov18MInvTransDirectionEPdS0_PNS_16Transform_StructE(double* %41, double* %9, %"struct.pov::Transform_Struct"* %42) #7, !dbg !2242
-  call void @llvm.dbg.value(metadata double* %41, i64 0, metadata !1434, metadata !2016) #6, !dbg !2243
-  %43 = bitcast double* %41 to <2 x double>*, !dbg !2245
-  %44 = load <2 x double>* %43, align 8, !dbg !2245, !tbaa !2056
-  %45 = extractelement <2 x double> %44, i32 0, !dbg !2246
-  %46 = fmul double %45, %45, !dbg !2246
-  %47 = extractelement <2 x double> %44, i32 1, !dbg !2247
-  %48 = fmul double %47, %47, !dbg !2247
-  %49 = fadd double %46, %48, !dbg !2248
-  %50 = getelementptr inbounds %"struct.pov::Ray_Struct"* %New_Ray, i64 0, i32 1, i64 2, !dbg !2249
-  %51 = load double* %50, align 8, !dbg !2249, !tbaa !2056
-  %52 = fmul double %51, %51, !dbg !2250
-  %53 = fadd double %49, %52, !dbg !2251
-  %54 = call double @sqrt(double %53) #8, !dbg !2252
-  call void @llvm.dbg.value(metadata double %54, i64 0, metadata !1433, metadata !2016), !dbg !2253
-  call void @llvm.dbg.value(metadata double %54, i64 0, metadata !1270, metadata !2016), !dbg !2254
-  call void @llvm.dbg.value(metadata double %54, i64 0, metadata !1270, metadata !2016), !dbg !2254
-  tail call void @llvm.dbg.value(metadata double* %41, i64 0, metadata !1439, metadata !2016), !dbg !2255
-  tail call void @llvm.dbg.value(metadata double %54, i64 0, metadata !1440, metadata !2016), !dbg !2257
-  %55 = fdiv double 1.000000e+00, %54, !dbg !2258
-  tail call void @llvm.dbg.value(metadata double %55, i64 0, metadata !1441, metadata !2016), !dbg !2259
-  %56 = insertelement <2 x double> undef, double %55, i32 0, !dbg !2260
-  %57 = insertelement <2 x double> %56, double %55, i32 1, !dbg !2260
-  %58 = fmul <2 x double> %57, %44, !dbg !2260
-  %59 = bitcast double* %41 to <2 x double>*, !dbg !2260
-  store <2 x double> %58, <2 x double>* %59, align 8, !dbg !2260, !tbaa !2056
-  %60 = fmul double %55, %51, !dbg !2261
-  store double %60, double* %50, align 8, !dbg !2261, !tbaa !2056
-  %.pre = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2262, !tbaa !2084
-  br label %62, !dbg !2264
+if.then4:                                         ; preds = %if.end
+  %arraydecay6 = getelementptr inbounds %"struct.pov::Ray_Struct"* %New_Ray, i64 0, i32 0, i64 0, !dbg !1870
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay6, double* %arraydecay2, %"struct.pov::Transform_Struct"* %14) #7, !dbg !1870
+  %arraydecay11 = getelementptr inbounds %"struct.pov::Ray_Struct"* %New_Ray, i64 0, i32 1, i64 0, !dbg !1872
+  %15 = load %"struct.pov::Transform_Struct"** %13, align 8, !dbg !1872, !tbaa !1750
+  call void @_ZN3pov18MInvTransDirectionEPdS0_PNS_16Transform_StructE(double* %arraydecay11, double* %arraydecay, %"struct.pov::Transform_Struct"* %15) #7, !dbg !1872
+  call void @llvm.dbg.value(metadata !{double* %arraydecay11}, i64 0, metadata !1873) #6, !dbg !1875
+  %16 = load double* %arraydecay11, align 8, !dbg !1876, !tbaa !1758
+  %mul.i = fmul double %16, %16, !dbg !1876
+  %arrayidx2.i59 = getelementptr inbounds %"struct.pov::Ray_Struct"* %New_Ray, i64 0, i32 1, i64 1, !dbg !1876
+  %17 = load double* %arrayidx2.i59, align 8, !dbg !1876, !tbaa !1758
+  %mul4.i = fmul double %17, %17, !dbg !1876
+  %add.i = fadd double %mul.i, %mul4.i, !dbg !1876
+  %arrayidx5.i60 = getelementptr inbounds %"struct.pov::Ray_Struct"* %New_Ray, i64 0, i32 1, i64 2, !dbg !1876
+  %18 = load double* %arrayidx5.i60, align 8, !dbg !1876, !tbaa !1758
+  %mul7.i = fmul double %18, %18, !dbg !1876
+  %add8.i = fadd double %add.i, %mul7.i, !dbg !1876
+  %call.i61 = call double @sqrt(double %add8.i) #8, !dbg !1876
+  call void @llvm.dbg.value(metadata !{double %call.i61}, i64 0, metadata !1507), !dbg !1876
+  call void @llvm.dbg.value(metadata !{double %call.i61}, i64 0, metadata !1877), !dbg !1875
+  call void @llvm.dbg.value(metadata !{double %call.i61}, i64 0, metadata !1507), !dbg !1878
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay11}, i64 0, metadata !1879), !dbg !1880
+  tail call void @llvm.dbg.value(metadata !{double %call.i61}, i64 0, metadata !1881), !dbg !1880
+  %div.i = fdiv double 1.000000e+00, %call.i61, !dbg !1882
+  tail call void @llvm.dbg.value(metadata !{double %div.i}, i64 0, metadata !1883), !dbg !1882
+  %19 = load double* %arraydecay11, align 8, !dbg !1884, !tbaa !1758
+  %mul.i62 = fmul double %div.i, %19, !dbg !1884
+  store double %mul.i62, double* %arraydecay11, align 8, !dbg !1884, !tbaa !1758
+  %20 = load double* %arrayidx2.i59, align 8, !dbg !1885, !tbaa !1758
+  %mul2.i = fmul double %div.i, %20, !dbg !1885
+  store double %mul2.i, double* %arrayidx2.i59, align 8, !dbg !1885, !tbaa !1758
+  %21 = load double* %arrayidx5.i60, align 8, !dbg !1886, !tbaa !1758
+  %mul4.i64 = fmul double %div.i, %21, !dbg !1886
+  store double %mul4.i64, double* %arrayidx5.i60, align 8, !dbg !1886, !tbaa !1758
+  %.pre = load %"struct.pov::Mesh_Data_Struct"** %5, align 8, !dbg !1887, !tbaa !1750
+  br label %if.end19, !dbg !1888
 
-; <label>:61                                      ; preds = %8
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %1, i64 856, i32 8, i1 false), !dbg !2265, !tbaa.struct !2077
-  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1270, metadata !2016), !dbg !2254
-  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1433, metadata !2016), !dbg !2253
-  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1270, metadata !2016), !dbg !2254
-  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1270, metadata !2016), !dbg !2254
-  br label %62
+if.else:                                          ; preds = %if.end
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* %0, i64 856, i32 8, i1 false), !dbg !1889, !tbaa.struct !1781
+  call void @llvm.dbg.value(metadata !1783, i64 0, metadata !1507), !dbg !1891
+  call void @llvm.dbg.value(metadata !1783, i64 0, metadata !1877), !dbg !1875
+  call void @llvm.dbg.value(metadata !1783, i64 0, metadata !1507), !dbg !1878
+  br label %if.end19
 
-; <label>:62                                      ; preds = %61, %38
-  %63 = phi %"struct.pov::Mesh_Data_Struct"* [ %12, %61 ], [ %.pre, %38 ]
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1269, metadata !2016), !dbg !2267
-  %64 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %63, i64 0, i32 9, !dbg !2268
-  %65 = load %"struct.pov::BBox_Tree_Struct"** %64, align 8, !dbg !2268, !tbaa !2086
-  %66 = icmp eq %"struct.pov::BBox_Tree_Struct"* %65, null, !dbg !2269
-  br i1 %66, label %.preheader, label %80, !dbg !2270
+if.end19:                                         ; preds = %if.else, %if.then4
+  %22 = phi %"struct.pov::Mesh_Data_Struct"* [ %6, %if.else ], [ %.pre, %if.then4 ]
+  call void @llvm.dbg.value(metadata !146, i64 0, metadata !1506), !dbg !1892
+  %Tree = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %22, i64 0, i32 9, !dbg !1887
+  %23 = load %"struct.pov::BBox_Tree_Struct"** %Tree, align 8, !dbg !1887, !tbaa !1750
+  %cmp21 = icmp eq %"struct.pov::BBox_Tree_Struct"* %23, null, !dbg !1887
+  br i1 %cmp21, label %for.cond.preheader, label %if.else30, !dbg !1887
 
-.preheader:                                       ; preds = %62
-  %67 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %63, i64 0, i32 3, !dbg !2271
-  %68 = load i64* %67, align 8, !dbg !2271, !tbaa !2094
-  %69 = icmp sgt i64 %68, 0, !dbg !2275
-  br i1 %69, label %.lr.ph, label %.loopexit, !dbg !2276
+for.cond.preheader:                               ; preds = %if.end19
+  %Number_Of_Triangles65 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %22, i64 0, i32 3, !dbg !1893
+  %24 = load i64* %Number_Of_Triangles65, align 8, !dbg !1893, !tbaa !1739
+  %cmp2566 = icmp sgt i64 %24, 0, !dbg !1893
+  br i1 %cmp2566, label %for.body, label %if.end32, !dbg !1893
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %.preheader ]
-  %70 = phi %"struct.pov::Mesh_Data_Struct"* [ %76, %.lr.ph ], [ %63, %.preheader ]
-  %found.05 = phi i32 [ %found.0., %.lr.ph ], [ 0, %.preheader ]
-  %71 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %70, i64 0, i32 8, !dbg !2277
-  %72 = load %"struct.pov::Mesh_Triangle_Struct"** %71, align 8, !dbg !2277, !tbaa !2102
-  %73 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %72, i64 %indvars.iv, !dbg !2280
-  call void @llvm.dbg.value(metadata double* %t, i64 0, metadata !1271, metadata !2016), !dbg !2281
-  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %New_Ray, i64 0, metadata !1273, metadata !2016), !dbg !2282
-  %74 = call fastcc i32 @_ZN3povL23intersect_mesh_triangleEPNS_10Ray_StructEPNS_11Mesh_StructEPNS_20Mesh_Triangle_StructEPd(%"struct.pov::Ray_Struct"* %New_Ray, %"struct.pov::Mesh_Struct"* %3, %"struct.pov::Mesh_Triangle_Struct"* %73, double* %t) #7, !dbg !2283
-  %not. = icmp ne i32 %74, 0, !dbg !2284
-  %75 = zext i1 %not. to i32, !dbg !2284
-  %found.0. = add i32 %75, %found.05, !dbg !2284
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2276
-  %76 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2285, !tbaa !2084
-  %77 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %76, i64 0, i32 3, !dbg !2271
-  %78 = load i64* %77, align 8, !dbg !2271, !tbaa !2094
-  %79 = icmp slt i64 %indvars.iv.next, %78, !dbg !2275
-  br i1 %79, label %.lr.ph, label %.loopexit, !dbg !2276
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %25 = phi %"struct.pov::Mesh_Data_Struct"* [ %27, %for.body ], [ %22, %for.cond.preheader ]
+  %found.068 = phi i32 [ %found.0.inc, %for.body ], [ 0, %for.cond.preheader ]
+  %Triangles = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %25, i64 0, i32 8, !dbg !1896
+  %26 = load %"struct.pov::Mesh_Triangle_Struct"** %Triangles, align 8, !dbg !1896, !tbaa !1750
+  %arrayidx = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %26, i64 %indvars.iv, !dbg !1896
+  %call = call fastcc i32 @_ZN3povL23intersect_mesh_triangleEPNS_10Ray_StructEPNS_11Mesh_StructEPNS_20Mesh_Triangle_StructEPd(%"struct.pov::Ray_Struct"* %New_Ray, %"struct.pov::Mesh_Struct"* %2, %"struct.pov::Mesh_Triangle_Struct"* %arrayidx, double* %t) #7, !dbg !1896
+  %not.tobool = icmp ne i32 %call, 0, !dbg !1896
+  %inc = zext i1 %not.tobool to i32, !dbg !1896
+  %found.0.inc = add i32 %inc, %found.068, !dbg !1896
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1893
+  %27 = load %"struct.pov::Mesh_Data_Struct"** %5, align 8, !dbg !1893, !tbaa !1750
+  %Number_Of_Triangles = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %27, i64 0, i32 3, !dbg !1893
+  %28 = load i64* %Number_Of_Triangles, align 8, !dbg !1893, !tbaa !1739
+  %cmp25 = icmp slt i64 %indvars.iv.next, %28, !dbg !1893
+  br i1 %cmp25, label %for.body, label %if.end32, !dbg !1893
 
-; <label>:80                                      ; preds = %62
-  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %New_Ray, i64 0, metadata !1273, metadata !2016), !dbg !2282
-  %81 = bitcast double* %Depth.i to i8*, !dbg !2286
-  call void @llvm.lifetime.start(i64 8, i8* %81), !dbg !2286
-  %82 = bitcast %"struct.pov::BBox_Tree_Struct"** %Node.i to i8*, !dbg !2286
-  call void @llvm.lifetime.start(i64 8, i8* %82), !dbg !2286
-  call void @llvm.dbg.value(metadata %"struct.pov::Mesh_Struct"* %3, i64 0, metadata !1279, metadata !2016), !dbg !2286
-  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %New_Ray, i64 0, metadata !1280, metadata !2016), !dbg !2289
-  %83 = bitcast %"struct.pov::Rayinfo_Struct"* %rayinfo.i to i8*, !dbg !2290
-  call void @llvm.lifetime.start(i64 72, i8* %83) #6, !dbg !2290
-  call void @llvm.dbg.value(metadata %"struct.pov::Rayinfo_Struct"* %rayinfo.i, i64 0, metadata !1285, metadata !2016), !dbg !2291
-  call void @_ZN3pov14Create_RayinfoEPNS_10Ray_StructEPNS_14Rayinfo_StructE(%"struct.pov::Ray_Struct"* %New_Ray, %"struct.pov::Rayinfo_Struct"* %rayinfo.i) #7, !dbg !2292
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1282, metadata !2016), !dbg !2293
-  %84 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3povL10Mesh_QueueE, align 8, !dbg !2294, !tbaa !2132
-  %85 = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %84, i64 0, i32 0, !dbg !2295
-  store i32 0, i32* %85, align 4, !dbg !2296, !tbaa !2135
-  call void @llvm.dbg.value(metadata double 2.000000e+10, i64 0, metadata !1283, metadata !2016), !dbg !2297
-  call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 111), i64 0, metadata !1162, metadata !2016), !dbg !2298
-  %86 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 111), align 8, !dbg !2300, !tbaa !2023
-  %87 = add nsw i64 %86, 1, !dbg !2300
-  store i64 %87, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 111), align 8, !dbg !2300, !tbaa !2023
-  %88 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2301, !tbaa !2084
-  %89 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %88, i64 0, i32 9, !dbg !2302
-  %90 = load %"struct.pov::BBox_Tree_Struct"** %89, align 8, !dbg !2302, !tbaa !2086
-  call void @llvm.dbg.value(metadata %"struct.pov::BBox_Tree_Struct"* %90, i64 0, metadata !1287, metadata !2016), !dbg !2303
-  %91 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %90, i64 0, i32 2, !dbg !2304
-  call void @llvm.dbg.value(metadata %"struct.pov::Rayinfo_Struct"* %rayinfo.i, i64 0, metadata !1285, metadata !2016), !dbg !2291
-  call void @_ZN3pov17Check_And_EnqueueEPNS_21Priority_Queue_StructEPNS_16BBox_Tree_StructEPNS_19Bounding_Box_StructEPNS_14Rayinfo_StructE(%"struct.pov::Priority_Queue_Struct"* %84, %"struct.pov::BBox_Tree_Struct"* %90, %"struct.pov::Bounding_Box_Struct"* %91, %"struct.pov::Rayinfo_Struct"* %rayinfo.i) #7, !dbg !2305
-  %92 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3povL10Mesh_QueueE, align 8, !dbg !2306, !tbaa !2132
-  %93 = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %92, i64 0, i32 0, !dbg !2307
-  %94 = load i32* %93, align 4, !dbg !2307, !tbaa !2135
-  %95 = icmp eq i32 %94, 0, !dbg !2308
-  br i1 %95, label %_ZN3povL16inside_bbox_treeEPNS_11Mesh_StructEPNS_10Ray_StructE.exit, label %.lr.ph2.i, !dbg !2309
+if.else30:                                        ; preds = %if.end19
+  %29 = bitcast double* %Depth.i to i8*, !dbg !1898
+  call void @llvm.lifetime.start(i64 8, i8* %29), !dbg !1898
+  %30 = bitcast %"struct.pov::BBox_Tree_Struct"** %Node.i to i8*, !dbg !1898
+  call void @llvm.lifetime.start(i64 8, i8* %30), !dbg !1898
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Mesh_Struct"* %2}, i64 0, metadata !1901), !dbg !1898
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %New_Ray}, i64 0, metadata !1902), !dbg !1898
+  call void @llvm.dbg.declare(metadata !{double* %Depth.i}, metadata !1521), !dbg !1903
+  %31 = bitcast %"struct.pov::Rayinfo_Struct"* %rayinfo.i to i8*, !dbg !1904
+  call void @llvm.lifetime.start(i64 72, i8* %31) #6, !dbg !1904
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::Rayinfo_Struct"* %rayinfo.i}, metadata !1522), !dbg !1904
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::BBox_Tree_Struct"** %Node.i}, metadata !1539), !dbg !1905
+  call void @_ZN3pov14Create_RayinfoEPNS_10Ray_StructEPNS_14Rayinfo_StructE(%"struct.pov::Ray_Struct"* %New_Ray, %"struct.pov::Rayinfo_Struct"* %rayinfo.i) #7, !dbg !1906
+  call void @llvm.dbg.value(metadata !146, i64 0, metadata !1907), !dbg !1908
+  %32 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3povL10Mesh_QueueE, align 8, !dbg !1909, !tbaa !1750
+  %QSize.i = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %32, i64 0, i32 0, !dbg !1909
+  store i32 0, i32* %QSize.i, align 4, !dbg !1909, !tbaa !1782
+  call void @llvm.dbg.value(metadata !1810, i64 0, metadata !1910), !dbg !1911
+  call void @llvm.dbg.value(metadata !1813, i64 0, metadata !1912), !dbg !1914
+  %33 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 111), align 8, !dbg !1915, !tbaa !1739
+  %inc.i.i = add nsw i64 %33, 1, !dbg !1915
+  store i64 %inc.i.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 111), align 8, !dbg !1915, !tbaa !1739
+  %34 = load %"struct.pov::Mesh_Data_Struct"** %5, align 8, !dbg !1916, !tbaa !1750
+  %Tree.i = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %34, i64 0, i32 9, !dbg !1916
+  %35 = load %"struct.pov::BBox_Tree_Struct"** %Tree.i, align 8, !dbg !1916, !tbaa !1750
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"* %35}, i64 0, metadata !1917), !dbg !1916
+  %BBox.i = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %35, i64 0, i32 2, !dbg !1918
+  call void @_ZN3pov17Check_And_EnqueueEPNS_21Priority_Queue_StructEPNS_16BBox_Tree_StructEPNS_19Bounding_Box_StructEPNS_14Rayinfo_StructE(%"struct.pov::Priority_Queue_Struct"* %32, %"struct.pov::BBox_Tree_Struct"* %35, %"struct.pov::Bounding_Box_Struct"* %BBox.i, %"struct.pov::Rayinfo_Struct"* %rayinfo.i) #7, !dbg !1918
+  %36 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3povL10Mesh_QueueE, align 8, !dbg !1919, !tbaa !1750
+  %QSize12529.i = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %36, i64 0, i32 0, !dbg !1919
+  %37 = load i32* %QSize12529.i, align 4, !dbg !1919, !tbaa !1782
+  %cmp2630.i = icmp eq i32 %37, 0, !dbg !1919
+  br i1 %cmp2630.i, label %if.end32, label %while.body.lr.ph.i, !dbg !1919
 
-.lr.ph2.i:                                        ; preds = %80, %.outer.i
-  %96 = phi %"struct.pov::Priority_Queue_Struct"* [ %125, %.outer.i ], [ %92, %80 ], !dbg !2310
-  %found.0.ph4.i = phi i32 [ %found.0..i, %.outer.i ], [ 0, %80 ], !dbg !2310
-  br label %101, !dbg !2309
+while.body.lr.ph.i:                               ; preds = %if.else30, %if.else.i
+  %38 = phi %"struct.pov::Priority_Queue_Struct"* [ %53, %if.else.i ], [ %36, %if.else30 ]
+  %found.0.ph31.i = phi i32 [ %found.0.inc12.i, %if.else.i ], [ 0, %if.else30 ]
+  br label %while.body.i, !dbg !1919
 
-.loopexit.i:                                      ; preds = %.lr.ph.i, %.preheader.i
-  %97 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3povL10Mesh_QueueE, align 8, !dbg !2306, !tbaa !2132
-  %98 = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %97, i64 0, i32 0, !dbg !2307
-  %99 = load i32* %98, align 4, !dbg !2307, !tbaa !2135
-  %100 = icmp eq i32 %99, 0, !dbg !2308
-  br i1 %100, label %_ZN3povL16inside_bbox_treeEPNS_11Mesh_StructEPNS_10Ray_StructE.exit, label %101, !dbg !2309
+while.cond.loopexit.i:                            ; preds = %for.body.i, %for.cond.preheader.i
+  %39 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3povL10Mesh_QueueE, align 8, !dbg !1919, !tbaa !1750
+  %QSize1.i = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %39, i64 0, i32 0, !dbg !1919
+  %40 = load i32* %QSize1.i, align 4, !dbg !1919, !tbaa !1782
+  %cmp.i = icmp eq i32 %40, 0, !dbg !1919
+  br i1 %cmp.i, label %if.end32, label %while.body.i, !dbg !1919
 
-; <label>:101                                     ; preds = %.loopexit.i, %.lr.ph2.i
-  %102 = phi %"struct.pov::Priority_Queue_Struct"* [ %96, %.lr.ph2.i ], [ %97, %.loopexit.i ], !dbg !2310
-  call void @llvm.dbg.value(metadata double* %Depth.i, i64 0, metadata !1284, metadata !2016), !dbg !2311
-  call void @llvm.dbg.value(metadata %"struct.pov::BBox_Tree_Struct"** %Node.i, i64 0, metadata !1286, metadata !2016), !dbg !2312
-  call void @_ZN3pov21Priority_Queue_DeleteEPNS_21Priority_Queue_StructEPdPPNS_16BBox_Tree_StructE(%"struct.pov::Priority_Queue_Struct"* %102, double* %Depth.i, %"struct.pov::BBox_Tree_Struct"** %Node.i) #7, !dbg !2313
-  call void @llvm.dbg.value(metadata %"struct.pov::BBox_Tree_Struct"** %Node.i, i64 0, metadata !1286, metadata !2016), !dbg !2312
-  %103 = load %"struct.pov::BBox_Tree_Struct"** %Node.i, align 8, !dbg !2315, !tbaa !2132
-  %104 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %103, i64 0, i32 1, !dbg !2317
-  %105 = load i16* %104, align 2, !dbg !2317, !tbaa !2162
-  %106 = icmp eq i16 %105, 0, !dbg !2315
-  br i1 %106, label %.outer.i, label %.preheader.i, !dbg !2318
+while.body.i:                                     ; preds = %while.cond.loopexit.i, %while.body.lr.ph.i
+  %41 = phi %"struct.pov::Priority_Queue_Struct"* [ %38, %while.body.lr.ph.i ], [ %39, %while.cond.loopexit.i ]
+  call void @_ZN3pov21Priority_Queue_DeleteEPNS_21Priority_Queue_StructEPdPPNS_16BBox_Tree_StructE(%"struct.pov::Priority_Queue_Struct"* %41, double* %Depth.i, %"struct.pov::BBox_Tree_Struct"** %Node.i) #7, !dbg !1920
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %Node.i}, i64 0, metadata !1922), !dbg !1923
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %Node.i}, i64 0, metadata !1539), !dbg !1923
+  %42 = load %"struct.pov::BBox_Tree_Struct"** %Node.i, align 8, !dbg !1923, !tbaa !1750
+  %Entries.i = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %42, i64 0, i32 1, !dbg !1923
+  %43 = load i16* %Entries.i, align 2, !dbg !1923, !tbaa !1804
+  %tobool.i = icmp eq i16 %43, 0, !dbg !1923
+  br i1 %tobool.i, label %if.else.i, label %for.cond.preheader.i, !dbg !1923
 
-.preheader.i:                                     ; preds = %101
-  call void @llvm.dbg.value(metadata %"struct.pov::BBox_Tree_Struct"** %Node.i, i64 0, metadata !1286, metadata !2016), !dbg !2312
-  %107 = icmp sgt i16 %105, 0, !dbg !2319
-  br i1 %107, label %.lr.ph.i, label %.loopexit.i, !dbg !2323
+for.cond.preheader.i:                             ; preds = %while.body.i
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %Node.i}, i64 0, metadata !1922), !dbg !1924
+  %cmp323.i = icmp sgt i16 %43, 0, !dbg !1924
+  br i1 %cmp323.i, label %for.body.i, label %while.cond.loopexit.i, !dbg !1924
 
-.lr.ph.i:                                         ; preds = %.preheader.i, %.lr.ph.i
-  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %.lr.ph.i ], [ 0, %.preheader.i ], !dbg !2310
-  %108 = phi %"struct.pov::BBox_Tree_Struct"* [ %115, %.lr.ph.i ], [ %103, %.preheader.i ], !dbg !2310
-  %109 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3povL10Mesh_QueueE, align 8, !dbg !2324, !tbaa !2132
-  %110 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %108, i64 0, i32 3, !dbg !2325
-  %111 = load %"struct.pov::BBox_Tree_Struct"*** %110, align 8, !dbg !2325, !tbaa !2173
-  %112 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"** %111, i64 %indvars.iv.i, !dbg !2326
-  %113 = load %"struct.pov::BBox_Tree_Struct"** %112, align 8, !dbg !2326, !tbaa !2132
-  %114 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %113, i64 0, i32 2, !dbg !2327
-  call void @llvm.dbg.value(metadata %"struct.pov::Rayinfo_Struct"* %rayinfo.i, i64 0, metadata !1285, metadata !2016), !dbg !2291
-  call void @_ZN3pov17Check_And_EnqueueEPNS_21Priority_Queue_StructEPNS_16BBox_Tree_StructEPNS_19Bounding_Box_StructEPNS_14Rayinfo_StructE(%"struct.pov::Priority_Queue_Struct"* %109, %"struct.pov::BBox_Tree_Struct"* %113, %"struct.pov::Bounding_Box_Struct"* %114, %"struct.pov::Rayinfo_Struct"* %rayinfo.i) #7, !dbg !2328
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !2323
-  call void @llvm.dbg.value(metadata %"struct.pov::BBox_Tree_Struct"** %Node.i, i64 0, metadata !1286, metadata !2016), !dbg !2312
-  %115 = load %"struct.pov::BBox_Tree_Struct"** %Node.i, align 8, !dbg !2329, !tbaa !2132
-  %116 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %115, i64 0, i32 1, !dbg !2330
-  %117 = load i16* %116, align 2, !dbg !2330, !tbaa !2162
-  %118 = sext i16 %117 to i64, !dbg !2319
-  %119 = icmp slt i64 %indvars.iv.next.i, %118, !dbg !2319
-  br i1 %119, label %.lr.ph.i, label %.loopexit.i, !dbg !2323
+for.body.i:                                       ; preds = %for.cond.preheader.i, %for.body.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %for.cond.preheader.i ]
+  %44 = phi %"struct.pov::BBox_Tree_Struct"* [ %48, %for.body.i ], [ %42, %for.cond.preheader.i ]
+  %45 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3povL10Mesh_QueueE, align 8, !dbg !1927, !tbaa !1750
+  %Node4.i = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %44, i64 0, i32 3, !dbg !1927
+  %46 = load %"struct.pov::BBox_Tree_Struct"*** %Node4.i, align 8, !dbg !1927, !tbaa !1750
+  %arrayidx.i = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"** %46, i64 %indvars.iv.i, !dbg !1927
+  %47 = load %"struct.pov::BBox_Tree_Struct"** %arrayidx.i, align 8, !dbg !1927, !tbaa !1750
+  %BBox8.i = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %47, i64 0, i32 2, !dbg !1927
+  call void @_ZN3pov17Check_And_EnqueueEPNS_21Priority_Queue_StructEPNS_16BBox_Tree_StructEPNS_19Bounding_Box_StructEPNS_14Rayinfo_StructE(%"struct.pov::Priority_Queue_Struct"* %45, %"struct.pov::BBox_Tree_Struct"* %47, %"struct.pov::Bounding_Box_Struct"* %BBox8.i, %"struct.pov::Rayinfo_Struct"* %rayinfo.i) #7, !dbg !1927
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !1924
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %Node.i}, i64 0, metadata !1922), !dbg !1924
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %Node.i}, i64 0, metadata !1539), !dbg !1924
+  %48 = load %"struct.pov::BBox_Tree_Struct"** %Node.i, align 8, !dbg !1924, !tbaa !1750
+  %Entries2.i = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %48, i64 0, i32 1, !dbg !1924
+  %49 = load i16* %Entries2.i, align 2, !dbg !1924, !tbaa !1804
+  %conv.i = sext i16 %49 to i32, !dbg !1924
+  %50 = trunc i64 %indvars.iv.next.i to i32, !dbg !1924
+  %cmp3.i = icmp slt i32 %50, %conv.i, !dbg !1924
+  br i1 %cmp3.i, label %for.body.i, label %while.cond.loopexit.i, !dbg !1924
 
-.outer.i:                                         ; preds = %101
-  %120 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %103, i64 0, i32 3, !dbg !2331
-  %121 = bitcast %"struct.pov::BBox_Tree_Struct"*** %120 to %"struct.pov::Mesh_Triangle_Struct"**, !dbg !2331
-  %122 = load %"struct.pov::Mesh_Triangle_Struct"** %121, align 8, !dbg !2331, !tbaa !2173
-  call void @llvm.dbg.value(metadata double* %Depth.i, i64 0, metadata !1284, metadata !2016), !dbg !2311
-  %123 = call fastcc i32 @_ZN3povL23intersect_mesh_triangleEPNS_10Ray_StructEPNS_11Mesh_StructEPNS_20Mesh_Triangle_StructEPd(%"struct.pov::Ray_Struct"* %New_Ray, %"struct.pov::Mesh_Struct"* %3, %"struct.pov::Mesh_Triangle_Struct"* %122, double* %Depth.i) #7, !dbg !2334
-  %not..i = icmp ne i32 %123, 0, !dbg !2335
-  %124 = zext i1 %not..i to i32, !dbg !2335
-  %found.0..i = add nsw i32 %124, %found.0.ph4.i, !dbg !2335
-  %125 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3povL10Mesh_QueueE, align 8, !dbg !2306, !tbaa !2132
-  %126 = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %125, i64 0, i32 0, !dbg !2307
-  %127 = load i32* %126, align 4, !dbg !2307, !tbaa !2135
-  %128 = icmp eq i32 %127, 0, !dbg !2308
-  br i1 %128, label %_ZN3povL16inside_bbox_treeEPNS_11Mesh_StructEPNS_10Ray_StructE.exit, label %.lr.ph2.i, !dbg !2309
+if.else.i:                                        ; preds = %while.body.i
+  %Node9.i = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %42, i64 0, i32 3, !dbg !1928
+  %51 = load %"struct.pov::BBox_Tree_Struct"*** %Node9.i, align 8, !dbg !1928, !tbaa !1750
+  %52 = bitcast %"struct.pov::BBox_Tree_Struct"** %51 to %"struct.pov::Mesh_Triangle_Struct"*, !dbg !1928
+  %call.i = call fastcc i32 @_ZN3povL23intersect_mesh_triangleEPNS_10Ray_StructEPNS_11Mesh_StructEPNS_20Mesh_Triangle_StructEPd(%"struct.pov::Ray_Struct"* %New_Ray, %"struct.pov::Mesh_Struct"* %2, %"struct.pov::Mesh_Triangle_Struct"* %52, double* %Depth.i) #7, !dbg !1928
+  %not.tobool10.i = icmp ne i32 %call.i, 0, !dbg !1928
+  %inc12.i = zext i1 %not.tobool10.i to i32, !dbg !1928
+  %found.0.inc12.i = add nsw i32 %inc12.i, %found.0.ph31.i, !dbg !1928
+  %53 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3povL10Mesh_QueueE, align 8, !dbg !1919, !tbaa !1750
+  %QSize125.i = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %53, i64 0, i32 0, !dbg !1919
+  %54 = load i32* %QSize125.i, align 4, !dbg !1919, !tbaa !1782
+  %cmp26.i = icmp eq i32 %54, 0, !dbg !1919
+  br i1 %cmp26.i, label %if.end32, label %while.body.lr.ph.i, !dbg !1919
 
-_ZN3povL16inside_bbox_treeEPNS_11Mesh_StructEPNS_10Ray_StructE.exit: ; preds = %.outer.i, %.loopexit.i, %80
-  %found.0.ph.lcssa.i = phi i32 [ 0, %80 ], [ %found.0.ph4.i, %.loopexit.i ], [ %found.0..i, %.outer.i ], !dbg !2310
-  call void @llvm.lifetime.end(i64 72, i8* %83) #6, !dbg !2336
-  call void @llvm.lifetime.end(i64 8, i8* %81), !dbg !2336
-  call void @llvm.lifetime.end(i64 8, i8* %82), !dbg !2336
-  br label %.loopexit
+if.end32:                                         ; preds = %if.else.i, %while.cond.loopexit.i, %for.cond.preheader, %for.body, %if.else30
+  %inside.0.in = phi i32 [ 0, %if.else30 ], [ 0, %for.cond.preheader ], [ %found.0.inc, %for.body ], [ %found.0.ph31.i, %while.cond.loopexit.i ], [ %found.0.inc12.i, %if.else.i ]
+  %Flags = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !1930
+  %55 = load i32* %Flags, align 4, !dbg !1930, !tbaa !1782
+  %and34 = lshr i32 %55, 2, !dbg !1930
+  %inside.074 = xor i32 %inside.0.in, %and34, !dbg !1930
+  %inside.0. = and i32 %inside.074, 1, !dbg !1930
+  br label %cleanup, !dbg !1930
 
-.loopexit:                                        ; preds = %.lr.ph, %.preheader, %_ZN3povL16inside_bbox_treeEPNS_11Mesh_StructEPNS_10Ray_StructE.exit
-  %inside.0.in = phi i32 [ %found.0.ph.lcssa.i, %_ZN3povL16inside_bbox_treeEPNS_11Mesh_StructEPNS_10Ray_StructE.exit ], [ 0, %.preheader ], [ %found.0., %.lr.ph ]
-  %129 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !2337
-  %130 = load i32* %129, align 4, !dbg !2337, !tbaa !2339
-  %131 = lshr i32 %130, 2, !dbg !2341
-  %inside.07 = xor i32 %inside.0.in, %131, !dbg !2341
-  %inside.0. = and i32 %inside.07, 1, !dbg !2341
-  br label %132, !dbg !2341
-
-; <label>:132                                     ; preds = %.loopexit, %0
-  %.0 = phi i32 [ 0, %0 ], [ %inside.0., %.loopexit ]
-  call void @llvm.lifetime.end(i64 856, i8* %2) #6, !dbg !2342
-  call void @llvm.lifetime.end(i64 856, i8* %1) #6, !dbg !2342
-  ret i32 %.0, !dbg !2342
+cleanup:                                          ; preds = %if.end32, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ %inside.0., %if.end32 ]
+  call void @llvm.lifetime.end(i64 856, i8* %1) #6, !dbg !1931
+  call void @llvm.lifetime.end(i64 856, i8* %0) #6, !dbg !1931
+  ret i32 %retval.0, !dbg !1931
 }

@@ -1,32 +1,35 @@
-define void @_ZN6soplex8SPxBasis6setRepEv(%"class.soplex::SPxBasis"* %this) #2 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxBasis"* %this, i64 0, metadata !5228, metadata !6898), !dbg !7394
-  tail call void @_ZN6soplex8SPxBasis5reDimEv(%"class.soplex::SPxBasis"* %this) #10, !dbg !7395
-  store double 1.000000e-04, double* @_ZN6soplexL7minStabE, align 8, !dbg !7396, !tbaa !6953
-  %1 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 1, !dbg !7397
-  %2 = load %"class.soplex::SoPlex"** %1, align 8, !dbg !7397, !tbaa !6902
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SoPlex"* %2, i64 0, metadata !5548, metadata !6898), !dbg !7398
-  %3 = getelementptr inbounds %"class.soplex::SoPlex"* %2, i64 0, i32 4, !dbg !7400
-  %4 = load i32* %3, align 4, !dbg !7400, !tbaa !7208
-  %5 = icmp eq i32 %4, -1, !dbg !7401
-  %6 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, !dbg !7402
-  br i1 %5, label %7, label %10, !dbg !7403
+define void @_ZN6soplex8SPxBasis6setRepEv(%"class.soplex::SPxBasis"* %this) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxBasis"* %this}, i64 0, metadata !6945), !dbg !8058
+  tail call void @_ZN6soplex8SPxBasis5reDimEv(%"class.soplex::SPxBasis"* %this) #11, !dbg !8059
+  store double 1.000000e-04, double* @_ZN6soplexL7minStabE, align 8, !dbg !8060, !tbaa !7718
+  %theLP = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 1, !dbg !8061
+  %0 = load %"class.soplex::SoPlex"** %theLP, align 8, !dbg !8061, !tbaa !7690
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %0}, i64 0, metadata !8062), !dbg !8063
+  %therep.i = getelementptr inbounds %"class.soplex::SoPlex"* %0, i64 0, i32 4, !dbg !8064
+  %1 = load i32* %therep.i, align 4, !dbg !8064, !tbaa !7976
+  %cmp = icmp eq i32 %1, -1, !dbg !8061
+  %thedesc = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, !dbg !8065
+  br i1 %cmp, label %if.then, label %if.else, !dbg !8061
 
-; <label>:7                                       ; preds = %0
-  %8 = getelementptr inbounds %"class.soplex::SPxBasis::Desc"* %6, i64 0, i32 0, !dbg !7404
-  %9 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, i32 1, !dbg !7405
-  br label %13, !dbg !7406
+if.then:                                          ; preds = %entry
+  %rowstat = getelementptr inbounds %"class.soplex::SPxBasis::Desc"* %thedesc, i64 0, i32 0, !dbg !8065
+  %stat = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, i32 2, !dbg !8065
+  store %"class.soplex::DataArray.1"* %rowstat, %"class.soplex::DataArray.1"** %stat, align 8, !dbg !8065, !tbaa !7690
+  %colstat = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, i32 1, !dbg !8067
+  %costat = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, i32 3, !dbg !8067
+  store %"class.soplex::DataArray.1"* %colstat, %"class.soplex::DataArray.1"** %costat, align 8, !dbg !8067, !tbaa !7690
+  br label %if.end, !dbg !8068
 
-; <label>:10                                      ; preds = %0
-  %11 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, i32 1, !dbg !7407
-  %12 = getelementptr inbounds %"class.soplex::SPxBasis::Desc"* %6, i64 0, i32 0, !dbg !7408
-  br label %13
+if.else:                                          ; preds = %entry
+  %colstat6 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, i32 1, !dbg !8069
+  %stat8 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, i32 2, !dbg !8069
+  store %"class.soplex::DataArray.1"* %colstat6, %"class.soplex::DataArray.1"** %stat8, align 8, !dbg !8069, !tbaa !7690
+  %rowstat10 = getelementptr inbounds %"class.soplex::SPxBasis::Desc"* %thedesc, i64 0, i32 0, !dbg !8071
+  %costat12 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, i32 3, !dbg !8071
+  store %"class.soplex::DataArray.1"* %rowstat10, %"class.soplex::DataArray.1"** %costat12, align 8, !dbg !8071, !tbaa !7690
+  br label %if.end
 
-; <label>:13                                      ; preds = %10, %7
-  %.sink1 = phi %"class.soplex::DataArray.1"* [ %11, %10 ], [ %8, %7 ]
-  %.sink = phi %"class.soplex::DataArray.1"* [ %12, %10 ], [ %9, %7 ]
-  %14 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, i32 2, !dbg !7409
-  store %"class.soplex::DataArray.1"* %.sink1, %"class.soplex::DataArray.1"** %14, align 8
-  %15 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 18, i32 3, !dbg !7410
-  store %"class.soplex::DataArray.1"* %.sink, %"class.soplex::DataArray.1"** %15, align 8
-  ret void, !dbg !7411
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !8072
 }

@@ -1,12 +1,14 @@
-define i32 @reg_referenced_p(%struct.rtx_def* %x, %struct.rtx_def* %body) #1 {
+define i32 @reg_referenced_p(%struct.rtx_def* %x, %struct.rtx_def* %body) #2 {
 entry:
   br label %tailrecurse
 
 tailrecurse:                                      ; preds = %if.end178, %entry
   %body.tr = phi %struct.rtx_def* [ %body, %entry ], [ %35, %if.end178 ]
-  %0 = bitcast %struct.rtx_def* %body.tr to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !470), !dbg !1272
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %body.tr}, i64 0, metadata !471), !dbg !1273
+  %0 = bitcast %struct.rtx_def* %body.tr to i32*, !dbg !1274
+  %bf.load = load i32* %0, align 8, !dbg !1274
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1274
   switch i32 %bf.clear, label %return [
     i32 47, label %sw.bb
     i32 41, label %sw.bb78
@@ -20,199 +22,199 @@ tailrecurse:                                      ; preds = %if.end178, %entry
     i32 39, label %sw.bb128
     i32 49, label %sw.bb151
     i32 38, label %sw.bb171
-  ]
+  ], !dbg !1274
 
 sw.bb:                                            ; preds = %tailrecurse
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 1
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %call = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %1) #4
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.end, label %return
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 1, !dbg !1275
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1275
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1275, !tbaa !979
+  %call = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %1) #5, !dbg !1275
+  %tobool = icmp eq i32 %call, 0, !dbg !1275
+  br i1 %tobool, label %if.end, label %return, !dbg !1275
 
 if.end:                                           ; preds = %sw.bb
-  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0
-  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx3, align 8, !tbaa !0
-  %3 = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load4 = load i32* %3, align 8
-  %bf.clear5 = and i32 %bf.load4, 65535
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0, !dbg !1277
+  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**, !dbg !1277
+  %2 = load %struct.rtx_def** %rtx3, align 8, !dbg !1277, !tbaa !979
+  %3 = bitcast %struct.rtx_def* %2 to i32*, !dbg !1277
+  %bf.load4 = load i32* %3, align 8, !dbg !1277
+  %bf.clear5 = and i32 %bf.load4, 65535, !dbg !1277
   switch i32 %bf.clear5, label %land.lhs.true70 [
     i32 69, label %if.end77
     i32 59, label %if.end77
     i32 61, label %if.end77
     i32 63, label %land.lhs.true26
-  ]
+  ], !dbg !1277
 
 land.lhs.true26:                                  ; preds = %if.end
-  %arrayidx31 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
-  %rtx32 = bitcast %union.rtunion_def* %arrayidx31 to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %rtx32, align 8, !tbaa !0
-  %5 = bitcast %struct.rtx_def* %4 to i32*
-  %bf.load33 = load i32* %5, align 8
-  %bf.clear34 = and i32 %bf.load33, 65535
-  %cmp35 = icmp eq i32 %bf.clear34, 61
-  br i1 %cmp35, label %land.lhs.true36, label %land.lhs.true70
+  %arrayidx31 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0, !dbg !1277
+  %rtx32 = bitcast %union.rtunion_def* %arrayidx31 to %struct.rtx_def**, !dbg !1277
+  %4 = load %struct.rtx_def** %rtx32, align 8, !dbg !1277, !tbaa !979
+  %5 = bitcast %struct.rtx_def* %4 to i32*, !dbg !1277
+  %bf.load33 = load i32* %5, align 8, !dbg !1277
+  %bf.clear34 = and i32 %bf.load33, 65535, !dbg !1277
+  %cmp35 = icmp eq i32 %bf.clear34, 61, !dbg !1277
+  br i1 %cmp35, label %land.lhs.true36, label %land.lhs.true70, !dbg !1277
 
 land.lhs.true36:                                  ; preds = %land.lhs.true26
-  %bf.lshr = lshr i32 %bf.load33, 16
-  %bf.clear44 = and i32 %bf.lshr, 255
-  %idxprom223 = zext i32 %bf.clear44 to i64
-  %arrayidx45 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom223
-  %6 = load i8* %arrayidx45, align 1, !tbaa !1
-  %conv = zext i8 %6 to i32
-  %7 = load i32* @target_flags, align 4, !tbaa !3
-  %and = lshr i32 %7, 23
-  %8 = and i32 %and, 4
-  %9 = add i32 %8, 4
-  %sub224 = or i32 %8, 3
-  %add = add nsw i32 %sub224, %conv
-  %div = sdiv i32 %add, %9
-  %bf.lshr54 = lshr i32 %bf.load4, 16
-  %bf.clear55 = and i32 %bf.lshr54, 255
-  %idxprom56225 = zext i32 %bf.clear55 to i64
-  %arrayidx57 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom56225
-  %10 = load i8* %arrayidx57, align 1, !tbaa !1
-  %conv58 = zext i8 %10 to i32
-  %add63 = add nsw i32 %conv58, %sub224
-  %div67 = sdiv i32 %add63, %9
-  %cmp68 = icmp eq i32 %div, %div67
-  br i1 %cmp68, label %if.end77, label %land.lhs.true70
+  %bf.lshr = lshr i32 %bf.load33, 16, !dbg !1277
+  %bf.clear44 = and i32 %bf.lshr, 255, !dbg !1277
+  %idxprom223 = zext i32 %bf.clear44 to i64, !dbg !1277
+  %arrayidx45 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom223, !dbg !1277
+  %6 = load i8* %arrayidx45, align 1, !dbg !1277, !tbaa !980
+  %conv = zext i8 %6 to i32, !dbg !1277
+  %7 = load i32* @target_flags, align 4, !dbg !1277, !tbaa !992
+  %and = lshr i32 %7, 23, !dbg !1277
+  %8 = and i32 %and, 4, !dbg !1277
+  %9 = add i32 %8, 4, !dbg !1277
+  %sub224 = or i32 %8, 3, !dbg !1277
+  %add = add nsw i32 %sub224, %conv, !dbg !1277
+  %div = sdiv i32 %add, %9, !dbg !1277
+  %bf.lshr54 = lshr i32 %bf.load4, 16, !dbg !1277
+  %bf.clear55 = and i32 %bf.lshr54, 255, !dbg !1277
+  %idxprom56225 = zext i32 %bf.clear55 to i64, !dbg !1277
+  %arrayidx57 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom56225, !dbg !1277
+  %10 = load i8* %arrayidx57, align 1, !dbg !1277, !tbaa !980
+  %conv58 = zext i8 %10 to i32, !dbg !1277
+  %add63 = add nsw i32 %conv58, %sub224, !dbg !1277
+  %div67 = sdiv i32 %add63, %9, !dbg !1277
+  %cmp68 = icmp eq i32 %div, %div67, !dbg !1277
+  br i1 %cmp68, label %if.end77, label %land.lhs.true70, !dbg !1277
 
 land.lhs.true70:                                  ; preds = %if.end, %land.lhs.true36, %land.lhs.true26
-  %call74 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %2) #4
-  %tobool75 = icmp eq i32 %call74, 0
-  br i1 %tobool75, label %if.end77, label %return
+  %call74 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %2) #5, !dbg !1278
+  %tobool75 = icmp eq i32 %call74, 0, !dbg !1278
+  br i1 %tobool75, label %if.end77, label %return, !dbg !1278
 
 if.end77:                                         ; preds = %if.end, %if.end, %if.end, %land.lhs.true70, %land.lhs.true36
-  br label %return
+  br label %return, !dbg !1279
 
 sw.bb78:                                          ; preds = %tailrecurse
-  %arrayidx80 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 3
-  %rtvec = bitcast %union.rtunion_def* %arrayidx80 to %struct.rtvec_def**
-  %11 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
-  %num_elem = getelementptr inbounds %struct.rtvec_def* %11, i64 0, i32 0
-  %12 = load i32* %num_elem, align 4, !tbaa !3
+  %arrayidx80 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 3, !dbg !1280
+  %rtvec = bitcast %union.rtunion_def* %arrayidx80 to %struct.rtvec_def**, !dbg !1280
+  %11 = load %struct.rtvec_def** %rtvec, align 8, !dbg !1280, !tbaa !979
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %11, i64 0, i32 0, !dbg !1280
+  %12 = load i32* %num_elem, align 4, !dbg !1280, !tbaa !992
   %13 = sext i32 %12 to i64
-  br label %for.cond
+  br label %for.cond, !dbg !1280
 
 for.cond:                                         ; preds = %for.body, %sw.bb78
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ %13, %sw.bb78 ]
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %14 = trunc i64 %indvars.iv to i32
-  %cmp82 = icmp sgt i32 %14, 0
-  br i1 %cmp82, label %for.body, label %return
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !1282
+  %14 = trunc i64 %indvars.iv to i32, !dbg !1280
+  %cmp82 = icmp sgt i32 %14, 0, !dbg !1280
+  br i1 %cmp82, label %for.body, label %return, !dbg !1280
 
 for.body:                                         ; preds = %for.cond
-  %15 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
-  %arrayidx88 = getelementptr inbounds %struct.rtvec_def* %15, i64 0, i32 1, i64 %indvars.iv.next
-  %16 = load %struct.rtx_def** %arrayidx88, align 8, !tbaa !0
-  %call89 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %16) #4
-  %tobool90 = icmp eq i32 %call89, 0
-  br i1 %tobool90, label %for.cond, label %return
+  %15 = load %struct.rtvec_def** %rtvec, align 8, !dbg !1282, !tbaa !979
+  %arrayidx88 = getelementptr inbounds %struct.rtvec_def* %15, i64 0, i32 1, i64 %indvars.iv.next, !dbg !1282
+  %16 = load %struct.rtx_def** %arrayidx88, align 8, !dbg !1282, !tbaa !979
+  %call89 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %16) #5, !dbg !1282
+  %tobool90 = icmp eq i32 %call89, 0, !dbg !1282
+  br i1 %tobool90, label %for.cond, label %return, !dbg !1282
 
 sw.bb93:                                          ; preds = %tailrecurse, %tailrecurse, %tailrecurse
-  %call94 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %body.tr) #4
-  br label %return
+  %call94 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %body.tr) #5, !dbg !1283
+  br label %return, !dbg !1283
 
 sw.bb95:                                          ; preds = %tailrecurse
-  %arrayidx97 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0
-  %rtx98 = bitcast %union.rtunion_def* %arrayidx97 to %struct.rtx_def**
-  %17 = load %struct.rtx_def** %rtx98, align 8, !tbaa !0
-  %call99 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %17) #4
-  br label %return
+  %arrayidx97 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0, !dbg !1284
+  %rtx98 = bitcast %union.rtunion_def* %arrayidx97 to %struct.rtx_def**, !dbg !1284
+  %17 = load %struct.rtx_def** %rtx98, align 8, !dbg !1284, !tbaa !979
+  %call99 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %17) #5, !dbg !1284
+  br label %return, !dbg !1284
 
 sw.bb100:                                         ; preds = %tailrecurse
-  %arrayidx102 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0
-  %rtx103 = bitcast %union.rtunion_def* %arrayidx102 to %struct.rtx_def**
-  %18 = load %struct.rtx_def** %rtx103, align 8, !tbaa !0
-  %call104 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %18) #4
-  br label %return
+  %arrayidx102 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0, !dbg !1285
+  %rtx103 = bitcast %union.rtunion_def* %arrayidx102 to %struct.rtx_def**, !dbg !1285
+  %18 = load %struct.rtx_def** %rtx103, align 8, !dbg !1285, !tbaa !979
+  %call104 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %18) #5, !dbg !1285
+  br label %return, !dbg !1285
 
 sw.bb105:                                         ; preds = %tailrecurse, %tailrecurse
-  %arrayidx107 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0
-  %rtvec108 = bitcast %union.rtunion_def* %arrayidx107 to %struct.rtvec_def**
-  %19 = load %struct.rtvec_def** %rtvec108, align 8, !tbaa !0
-  %num_elem109 = getelementptr inbounds %struct.rtvec_def* %19, i64 0, i32 0
-  %20 = load i32* %num_elem109, align 4, !tbaa !3
+  %arrayidx107 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0, !dbg !1286
+  %rtvec108 = bitcast %union.rtunion_def* %arrayidx107 to %struct.rtvec_def**, !dbg !1286
+  %19 = load %struct.rtvec_def** %rtvec108, align 8, !dbg !1286, !tbaa !979
+  %num_elem109 = getelementptr inbounds %struct.rtvec_def* %19, i64 0, i32 0, !dbg !1286
+  %20 = load i32* %num_elem109, align 4, !dbg !1286, !tbaa !992
   %21 = sext i32 %20 to i64
-  br label %for.cond111
+  br label %for.cond111, !dbg !1286
 
 for.cond111:                                      ; preds = %for.body114, %sw.bb105
   %indvars.iv240 = phi i64 [ %indvars.iv.next241, %for.body114 ], [ %21, %sw.bb105 ]
-  %indvars.iv.next241 = add i64 %indvars.iv240, -1
-  %22 = trunc i64 %indvars.iv240 to i32
-  %cmp112 = icmp sgt i32 %22, 0
-  br i1 %cmp112, label %for.body114, label %return
+  %indvars.iv.next241 = add i64 %indvars.iv240, -1, !dbg !1288
+  %22 = trunc i64 %indvars.iv240 to i32, !dbg !1286
+  %cmp112 = icmp sgt i32 %22, 0, !dbg !1286
+  br i1 %cmp112, label %for.body114, label %return, !dbg !1286
 
 for.body114:                                      ; preds = %for.cond111
-  %23 = load %struct.rtvec_def** %rtvec108, align 8, !tbaa !0
-  %arrayidx120 = getelementptr inbounds %struct.rtvec_def* %23, i64 0, i32 1, i64 %indvars.iv.next241
-  %24 = load %struct.rtx_def** %arrayidx120, align 8, !tbaa !0
-  %call121 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %24) #4
-  %tobool122 = icmp eq i32 %call121, 0
-  br i1 %tobool122, label %for.cond111, label %return
+  %23 = load %struct.rtvec_def** %rtvec108, align 8, !dbg !1288, !tbaa !979
+  %arrayidx120 = getelementptr inbounds %struct.rtvec_def* %23, i64 0, i32 1, i64 %indvars.iv.next241, !dbg !1288
+  %24 = load %struct.rtx_def** %arrayidx120, align 8, !dbg !1288, !tbaa !979
+  %call121 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %24) #5, !dbg !1288
+  %tobool122 = icmp eq i32 %call121, 0, !dbg !1288
+  br i1 %tobool122, label %for.cond111, label %return, !dbg !1288
 
 sw.bb128:                                         ; preds = %tailrecurse
-  %arrayidx130 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0
-  %rtvec131 = bitcast %union.rtunion_def* %arrayidx130 to %struct.rtvec_def**
-  %25 = load %struct.rtvec_def** %rtvec131, align 8, !tbaa !0
-  %num_elem132 = getelementptr inbounds %struct.rtvec_def* %25, i64 0, i32 0
-  %26 = load i32* %num_elem132, align 4, !tbaa !3
+  %arrayidx130 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0, !dbg !1289
+  %rtvec131 = bitcast %union.rtunion_def* %arrayidx130 to %struct.rtvec_def**, !dbg !1289
+  %25 = load %struct.rtvec_def** %rtvec131, align 8, !dbg !1289, !tbaa !979
+  %num_elem132 = getelementptr inbounds %struct.rtvec_def* %25, i64 0, i32 0, !dbg !1289
+  %26 = load i32* %num_elem132, align 4, !dbg !1289, !tbaa !992
   %27 = sext i32 %26 to i64
-  br label %for.cond134
+  br label %for.cond134, !dbg !1289
 
 for.cond134:                                      ; preds = %for.body137, %sw.bb128
   %indvars.iv242 = phi i64 [ %indvars.iv.next243, %for.body137 ], [ %27, %sw.bb128 ]
-  %indvars.iv.next243 = add i64 %indvars.iv242, -1
-  %28 = trunc i64 %indvars.iv242 to i32
-  %cmp135 = icmp sgt i32 %28, 0
-  br i1 %cmp135, label %for.body137, label %return
+  %indvars.iv.next243 = add i64 %indvars.iv242, -1, !dbg !1291
+  %28 = trunc i64 %indvars.iv242 to i32, !dbg !1289
+  %cmp135 = icmp sgt i32 %28, 0, !dbg !1289
+  br i1 %cmp135, label %for.body137, label %return, !dbg !1289
 
 for.body137:                                      ; preds = %for.cond134
-  %29 = load %struct.rtvec_def** %rtvec131, align 8, !tbaa !0
-  %arrayidx143 = getelementptr inbounds %struct.rtvec_def* %29, i64 0, i32 1, i64 %indvars.iv.next243
-  %30 = load %struct.rtx_def** %arrayidx143, align 8, !tbaa !0
-  %call144 = tail call i32 @reg_referenced_p(%struct.rtx_def* %x, %struct.rtx_def* %30) #4
-  %tobool145 = icmp eq i32 %call144, 0
-  br i1 %tobool145, label %for.cond134, label %return
+  %29 = load %struct.rtvec_def** %rtvec131, align 8, !dbg !1291, !tbaa !979
+  %arrayidx143 = getelementptr inbounds %struct.rtvec_def* %29, i64 0, i32 1, i64 %indvars.iv.next243, !dbg !1291
+  %30 = load %struct.rtx_def** %arrayidx143, align 8, !dbg !1291, !tbaa !979
+  %call144 = tail call i32 @reg_referenced_p(%struct.rtx_def* %x, %struct.rtx_def* %30) #5, !dbg !1291
+  %tobool145 = icmp eq i32 %call144, 0, !dbg !1291
+  br i1 %tobool145, label %for.cond134, label %return, !dbg !1291
 
 sw.bb151:                                         ; preds = %tailrecurse
-  %arrayidx153 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0
-  %rtx154 = bitcast %union.rtunion_def* %arrayidx153 to %struct.rtx_def**
-  %31 = load %struct.rtx_def** %rtx154, align 8, !tbaa !0
-  %32 = bitcast %struct.rtx_def* %31 to i32*
-  %bf.load155 = load i32* %32, align 8
-  %bf.clear156 = and i32 %bf.load155, 65535
-  %cmp157 = icmp eq i32 %bf.clear156, 66
-  br i1 %cmp157, label %if.then159, label %if.end170
+  %arrayidx153 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 0, !dbg !1292
+  %rtx154 = bitcast %union.rtunion_def* %arrayidx153 to %struct.rtx_def**, !dbg !1292
+  %31 = load %struct.rtx_def** %rtx154, align 8, !dbg !1292, !tbaa !979
+  %32 = bitcast %struct.rtx_def* %31 to i32*, !dbg !1292
+  %bf.load155 = load i32* %32, align 8, !dbg !1292
+  %bf.clear156 = and i32 %bf.load155, 65535, !dbg !1292
+  %cmp157 = icmp eq i32 %bf.clear156, 66, !dbg !1292
+  br i1 %cmp157, label %if.then159, label %if.end170, !dbg !1292
 
 if.then159:                                       ; preds = %sw.bb151
-  %arrayidx164 = getelementptr inbounds %struct.rtx_def* %31, i64 0, i32 1, i64 0
-  %rtx165 = bitcast %union.rtunion_def* %arrayidx164 to %struct.rtx_def**
-  %33 = load %struct.rtx_def** %rtx165, align 8, !tbaa !0
-  %call166 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %33) #4
-  %tobool167 = icmp eq i32 %call166, 0
-  br i1 %tobool167, label %if.end170, label %return
+  %arrayidx164 = getelementptr inbounds %struct.rtx_def* %31, i64 0, i32 1, i64 0, !dbg !1293
+  %rtx165 = bitcast %union.rtunion_def* %arrayidx164 to %struct.rtx_def**, !dbg !1293
+  %33 = load %struct.rtx_def** %rtx165, align 8, !dbg !1293, !tbaa !979
+  %call166 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %33) #5, !dbg !1293
+  %tobool167 = icmp eq i32 %call166, 0, !dbg !1293
+  br i1 %tobool167, label %if.end170, label %return, !dbg !1293
 
 if.end170:                                        ; preds = %if.then159, %sw.bb151
-  br label %return
+  br label %return, !dbg !1294
 
 sw.bb171:                                         ; preds = %tailrecurse
-  %fld172 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1
-  %rtx174 = bitcast [1 x %union.rtunion_def]* %fld172 to %struct.rtx_def**
-  %34 = load %struct.rtx_def** %rtx174, align 8, !tbaa !0
-  %call175 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %34) #4
-  %tobool176 = icmp eq i32 %call175, 0
-  br i1 %tobool176, label %if.end178, label %return
+  %fld172 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, !dbg !1295
+  %rtx174 = bitcast [1 x %union.rtunion_def]* %fld172 to %struct.rtx_def**, !dbg !1295
+  %34 = load %struct.rtx_def** %rtx174, align 8, !dbg !1295, !tbaa !979
+  %call175 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %34) #5, !dbg !1295
+  %tobool176 = icmp eq i32 %call175, 0, !dbg !1295
+  br i1 %tobool176, label %if.end178, label %return, !dbg !1295
 
 if.end178:                                        ; preds = %sw.bb171
-  %arrayidx180 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 1
-  %rtx181 = bitcast %union.rtunion_def* %arrayidx180 to %struct.rtx_def**
-  %35 = load %struct.rtx_def** %rtx181, align 8, !tbaa !0
-  br label %tailrecurse
+  %arrayidx180 = getelementptr inbounds %struct.rtx_def* %body.tr, i64 0, i32 1, i64 1, !dbg !1296
+  %rtx181 = bitcast %union.rtunion_def* %arrayidx180 to %struct.rtx_def**, !dbg !1296
+  %35 = load %struct.rtx_def** %rtx181, align 8, !dbg !1296, !tbaa !979
+  br label %tailrecurse, !dbg !1296
 
 return:                                           ; preds = %tailrecurse, %sw.bb171, %for.cond134, %for.body137, %for.cond111, %for.body114, %for.cond, %for.body, %if.then159, %land.lhs.true70, %sw.bb, %if.end170, %sw.bb100, %sw.bb95, %sw.bb93, %if.end77
   %retval.0 = phi i32 [ 0, %if.end170 ], [ %call104, %sw.bb100 ], [ %call99, %sw.bb95 ], [ %call94, %sw.bb93 ], [ 0, %if.end77 ], [ 1, %sw.bb ], [ 1, %land.lhs.true70 ], [ 1, %if.then159 ], [ 0, %for.cond ], [ 1, %for.body ], [ 0, %for.cond111 ], [ 1, %for.body114 ], [ 0, %for.cond134 ], [ 1, %for.body137 ], [ 0, %tailrecurse ], [ 1, %sw.bb171 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1297
 }

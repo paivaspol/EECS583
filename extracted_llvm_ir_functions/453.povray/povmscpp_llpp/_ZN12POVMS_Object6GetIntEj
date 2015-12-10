@@ -1,23 +1,24 @@
 define i32 @_ZN12POVMS_Object6GetIntEj(%class.POVMS_Object* %this, i32 %key) #5 align 2 {
+entry:
   %value = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %class.POVMS_Object* %this, i64 0, metadata !873, metadata !1380), !dbg !2463
-  tail call void @llvm.dbg.value(metadata i32 %key, i64 0, metadata !874, metadata !1380), !dbg !2464
-  %1 = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !2465
-  tail call void @llvm.dbg.value(metadata i32* %value, i64 0, metadata !875, metadata !1380), !dbg !2466
-  %2 = call i32 @_Z16POVMSUtil_GetIntP9POVMSDatajPi(%struct.POVMSData* %1, i32 %key, i32* %value) #13, !dbg !2467
-  call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !876, metadata !1380), !dbg !2468
-  %3 = icmp eq i32 %2, 0, !dbg !2469
-  br i1 %3, label %7, label %4, !dbg !2471
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Object* %this}, i64 0, metadata !905), !dbg !1588
+  call void @llvm.dbg.value(metadata !{i32 %key}, i64 0, metadata !906), !dbg !1588
+  call void @llvm.dbg.declare(metadata !{i32* %value}, metadata !907), !dbg !1589
+  %data = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !1590
+  %call = call i32 @_Z16POVMSUtil_GetIntP9POVMSDatajPi(%struct.POVMSData* %data, i32 %key, i32* %value) #12, !dbg !1590
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !908), !dbg !1590
+  %cmp = icmp eq i32 %call, 0, !dbg !1591
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1591
 
-; <label>:4                                       ; preds = %0
-  %5 = call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !2472
-  %6 = bitcast i8* %5 to i32*, !dbg !2472
-  store i32 %2, i32* %6, align 4, !dbg !2472, !tbaa !1456
-  call void @__cxa_throw(i8* %5, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #14, !dbg !2472
-  unreachable, !dbg !2472
+if.then:                                          ; preds = %entry
+  %exception = call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !1592
+  %0 = bitcast i8* %exception to i32*, !dbg !1592
+  store i32 %call, i32* %0, align 4, !dbg !1592, !tbaa !1112
+  call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #13, !dbg !1592
+  unreachable, !dbg !1592
 
-; <label>:7                                       ; preds = %0
-  call void @llvm.dbg.value(metadata i32* %value, i64 0, metadata !875, metadata !1380), !dbg !2466
-  %8 = load i32* %value, align 4, !dbg !2473, !tbaa !1456
-  ret i32 %8, !dbg !2474
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.value(metadata !{i32* %value}, i64 0, metadata !907), !dbg !1593
+  %1 = load i32* %value, align 4, !dbg !1593, !tbaa !1112
+  ret i32 %1, !dbg !1593
 }

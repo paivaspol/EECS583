@@ -1,293 +1,295 @@
-define void @_ZN3pov9PPM_Image10Write_LineEPA5_f(%"class.pov::PPM_Image"* nocapture %this, [5 x float]* nocapture readonly %line_data) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.pov::PPM_Image"* %this, i64 0, metadata !481, metadata !861), !dbg !1076
-  tail call void @llvm.dbg.value(metadata [5 x float]* %line_data, i64 0, metadata !482, metadata !861), !dbg !1077
-  %1 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 0, i32 1, !dbg !1078
-  %2 = load i8* %1, align 1, !dbg !1078, !tbaa !873, !range !934
-  %3 = icmp eq i8 %2, 0, !dbg !1080
-  br i1 %3, label %4, label %.preheader, !dbg !1081
+define void @_ZN3pov9PPM_Image10Write_LineEPA5_f(%"class.pov::PPM_Image"* nocapture %this, [5 x float]* nocapture %line_data) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov::PPM_Image"* %this}, i64 0, metadata !471), !dbg !769
+  tail call void @llvm.dbg.value(metadata !{[5 x float]* %line_data}, i64 0, metadata !472), !dbg !769
+  %valid = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 0, i32 1, !dbg !770
+  %0 = load i8* %valid, align 1, !dbg !770, !tbaa !686, !range !711
+  %cmp = icmp eq i8 %0, 0, !dbg !770
+  br i1 %cmp, label %if.then, label %for.cond.preheader, !dbg !770
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([33 x i8]* @.str7, i64 0, i64 0)) #9, !dbg !1082
-  br label %.preheader, !dbg !1082
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([33 x i8]* @.str7, i64 0, i64 0)) #8, !dbg !771
+  br label %for.cond.preheader, !dbg !771
 
-.preheader:                                       ; preds = %4, %0
-  %6 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 3, !dbg !1083
-  %7 = load i32* %6, align 4, !dbg !1083, !tbaa !898
-  %8 = icmp sgt i32 %7, 0, !dbg !1086
-  %9 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 7, !dbg !1087
-  br i1 %8, label %.lr.ph, label %._crit_edge, !dbg !1093
+for.cond.preheader:                               ; preds = %if.then, %entry
+  %width = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 3, !dbg !772
+  %1 = load i32* %width, align 4, !dbg !772, !tbaa !694
+  %cmp2234 = icmp sgt i32 %1, 0, !dbg !772
+  %out_file60 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 7, !dbg !774
+  br i1 %cmp2234, label %for.body.lr.ph, label %for.end, !dbg !772
 
-.lr.ph:                                           ; preds = %.preheader
-  %10 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 1, !dbg !1094
-  br label %11, !dbg !1093
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %filename86 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 1, !dbg !778
+  br label %for.body, !dbg !772
 
-; <label>:11                                      ; preds = %.lr.ph, %156
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %156 ]
-  %12 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !1097, !tbaa !907
-  %13 = and i32 %12, 131072, !dbg !1098
-  %14 = icmp eq i32 %13, 0, !dbg !1098
-  br i1 %14, label %54, label %15, !dbg !1099
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %2 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !780, !tbaa !694
+  %and = and i32 %2, 131072, !dbg !780
+  %tobool4 = icmp eq i32 %and, 0, !dbg !780
+  br i1 %tobool4, label %if.else, label %if.then5, !dbg !780
 
-; <label>:15                                      ; preds = %11
-  %16 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 0, !dbg !1100
-  %17 = load float* %16, align 4, !dbg !1100, !tbaa !1102
-  %18 = fpext float %17 to double, !dbg !1100
-  %19 = fmul double %18, 2.970000e-01, !dbg !1100
-  %20 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 1, !dbg !1100
-  %21 = load float* %20, align 4, !dbg !1100, !tbaa !1102
-  %22 = fpext float %21 to double, !dbg !1100
-  %23 = fmul double %22, 5.890000e-01, !dbg !1100
-  %24 = fadd double %19, %23, !dbg !1100
-  %25 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 2, !dbg !1100
-  %26 = load float* %25, align 4, !dbg !1100, !tbaa !1102
-  %27 = fpext float %26 to double, !dbg !1100
-  %28 = fmul double %27, 1.140000e-01, !dbg !1100
-  %29 = fadd double %24, %28, !dbg !1100
-  %30 = fmul double %29, 6.553500e+04, !dbg !1103
-  %31 = tail call double @floor(double %30) #12, !dbg !1104
-  %32 = fptosi double %31 to i32, !dbg !1104
-  tail call void @llvm.dbg.value(metadata i32 %32, i64 0, metadata !487, metadata !861), !dbg !1105
-  %33 = load %"class.pov_base::OStream"** %9, align 8, !dbg !1106, !tbaa !1002
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %33, i64 0, metadata !557, metadata !861) #2, !dbg !1107
-  %34 = getelementptr inbounds %"class.pov_base::OStream"* %33, i64 0, i32 0, i32 1, !dbg !1109
-  %35 = load i8* %34, align 1, !dbg !1109, !tbaa !932, !range !934
-  %36 = icmp eq i8 %35, 0, !dbg !1109
-  br i1 %36, label %_ZN8pov_base7OStream10Write_ByteEh.exit, label %_ZN8pov_base7OStream10Write_ByteEh.exit3.thread, !dbg !1111
+if.then5:                                         ; preds = %for.body
+  %arrayidx6 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 0, !dbg !781
+  %3 = load float* %arrayidx6, align 4, !dbg !781, !tbaa !783
+  %conv7 = fpext float %3 to double, !dbg !781
+  %mul = fmul double %conv7, 2.970000e-01, !dbg !781
+  %arrayidx10 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 1, !dbg !781
+  %4 = load float* %arrayidx10, align 4, !dbg !781, !tbaa !783
+  %conv11 = fpext float %4 to double, !dbg !781
+  %mul12 = fmul double %conv11, 5.890000e-01, !dbg !781
+  %add = fadd double %mul, %mul12, !dbg !781
+  %arrayidx15 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 2, !dbg !781
+  %5 = load float* %arrayidx15, align 4, !dbg !781, !tbaa !783
+  %conv16 = fpext float %5 to double, !dbg !781
+  %mul17 = fmul double %conv16, 1.140000e-01, !dbg !781
+  %add18 = fadd double %add, %mul17, !dbg !781
+  %mul19 = fmul double %add18, 6.553500e+04, !dbg !781
+  %call20 = tail call double @floor(double %mul19) #11, !dbg !781
+  %conv21 = fptosi double %call20 to i32, !dbg !781
+  tail call void @llvm.dbg.value(metadata !{i32 %conv21}, i64 0, metadata !477), !dbg !781
+  %6 = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !784, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %6}, i64 0, metadata !785) #2, !dbg !786
+  %fail.i = getelementptr inbounds %"class.pov_base::OStream"* %6, i64 0, i32 0, i32 1, !dbg !786
+  %7 = load i8* %fail.i, align 1, !dbg !786, !tbaa !686, !range !711
+  %tobool.i = icmp eq i8 %7, 0, !dbg !786
+  br i1 %tobool.i, label %_ZN8pov_base7OStream10Write_ByteEh.exit, label %if.then30, !dbg !786
 
-_ZN8pov_base7OStream10Write_ByteEh.exit:          ; preds = %15
-  %37 = lshr i32 %32, 8, !dbg !1112
-  %38 = and i32 %37, 255, !dbg !1113
-  %39 = getelementptr inbounds %"class.pov_base::OStream"* %33, i64 0, i32 0, i32 2, !dbg !1114
-  %40 = load %struct.__sFILE** %39, align 8, !dbg !1114, !tbaa !1115
-  %41 = tail call i32 @fputc(i32 %38, %struct.__sFILE* %40) #10, !dbg !1116
-  %42 = icmp ne i32 %41, %38, !dbg !1117
-  %43 = zext i1 %42 to i8, !dbg !1118
-  store i8 %43, i8* %34, align 1, !dbg !1118, !tbaa !932
-  %.pre = load %"class.pov_base::OStream"** %9, align 8, !dbg !1119, !tbaa !1002
-  %.phi.trans.insert = getelementptr inbounds %"class.pov_base::OStream"* %.pre, i64 0, i32 0, i32 1
-  %.pre14 = load i8* %.phi.trans.insert, align 1, !dbg !1121, !tbaa !932
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %.pre, i64 0, metadata !557, metadata !861) #2, !dbg !1123
-  %44 = icmp eq i8 %.pre14, 0, !dbg !1121
-  br i1 %44, label %_ZN8pov_base7OStream10Write_ByteEh.exit3, label %_ZN8pov_base7OStream10Write_ByteEh.exit3.thread, !dbg !1124
+_ZN8pov_base7OStream10Write_ByteEh.exit:          ; preds = %if.then5
+  %shr = lshr i32 %conv21, 8, !dbg !784
+  %conv.i = and i32 %shr, 255, !dbg !786
+  %f.i = getelementptr inbounds %"class.pov_base::OStream"* %6, i64 0, i32 0, i32 2, !dbg !786
+  %8 = load %struct._IO_FILE** %f.i, align 8, !dbg !786, !tbaa !696
+  %call.i = tail call i32 @fputc(i32 %conv.i, %struct._IO_FILE* %8) #10, !dbg !786
+  %cmp.i = icmp ne i32 %call.i, %conv.i, !dbg !786
+  %frombool.i = zext i1 %cmp.i to i8, !dbg !786
+  store i8 %frombool.i, i8* %fail.i, align 1, !dbg !786, !tbaa !686
+  %.pre249 = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !787, !tbaa !696
+  %fail.i137.phi.trans.insert = getelementptr inbounds %"class.pov_base::OStream"* %.pre249, i64 0, i32 0, i32 1
+  %.pre250 = load i8* %fail.i137.phi.trans.insert, align 1, !dbg !788, !tbaa !686
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %.pre249}, i64 0, metadata !789) #2, !dbg !788
+  %tobool.i138 = icmp eq i8 %.pre250, 0, !dbg !788
+  br i1 %tobool.i138, label %_ZN8pov_base7OStream10Write_ByteEh.exit145, label %if.then30, !dbg !788
 
-_ZN8pov_base7OStream10Write_ByteEh.exit3:         ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit
-  %45 = getelementptr inbounds %"class.pov_base::OStream"* %.pre, i64 0, i32 0, i32 1, !dbg !1121
-  %46 = and i32 %32, 255, !dbg !1125
-  %47 = getelementptr inbounds %"class.pov_base::OStream"* %.pre, i64 0, i32 0, i32 2, !dbg !1126
-  %48 = load %struct.__sFILE** %47, align 8, !dbg !1126, !tbaa !1115
-  %49 = tail call i32 @fputc(i32 %46, %struct.__sFILE* %48) #10, !dbg !1127
-  %50 = icmp ne i32 %49, %46, !dbg !1128
-  %51 = zext i1 %50 to i8, !dbg !1129
-  store i8 %51, i8* %45, align 1, !dbg !1129, !tbaa !932
-  br i1 %50, label %_ZN8pov_base7OStream10Write_ByteEh.exit3.thread, label %156, !dbg !1130
+_ZN8pov_base7OStream10Write_ByteEh.exit145:       ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit
+  %fail.i137 = getelementptr inbounds %"class.pov_base::OStream"* %.pre249, i64 0, i32 0, i32 1, !dbg !788
+  %conv.i139 = and i32 %conv21, 255, !dbg !788
+  %f.i140 = getelementptr inbounds %"class.pov_base::OStream"* %.pre249, i64 0, i32 0, i32 2, !dbg !788
+  %9 = load %struct._IO_FILE** %f.i140, align 8, !dbg !788, !tbaa !696
+  %call.i141 = tail call i32 @fputc(i32 %conv.i139, %struct._IO_FILE* %9) #10, !dbg !788
+  %cmp.i142 = icmp ne i32 %call.i141, %conv.i139, !dbg !788
+  %frombool.i143 = zext i1 %cmp.i142 to i8, !dbg !788
+  store i8 %frombool.i143, i8* %fail.i137, align 1, !dbg !788, !tbaa !686
+  br i1 %cmp.i142, label %if.then30, label %for.inc, !dbg !787
 
-_ZN8pov_base7OStream10Write_ByteEh.exit3.thread:  ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit3, %15, %_ZN8pov_base7OStream10Write_ByteEh.exit
-  %52 = load i8** %10, align 8, !dbg !1131, !tbaa !892
-  %53 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([36 x i8]* @.str8, i64 0, i64 0), i8* %52) #9, !dbg !1132
-  br label %156, !dbg !1132
+if.then30:                                        ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit145, %if.then5, %_ZN8pov_base7OStream10Write_ByteEh.exit
+  %10 = load i8** %filename86, align 8, !dbg !790, !tbaa !696
+  %call31 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([36 x i8]* @.str8, i64 0, i64 0), i8* %10) #8, !dbg !790
+  br label %for.inc, !dbg !790
 
-; <label>:54                                      ; preds = %11
-  %55 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 4), align 8, !dbg !1133, !tbaa !1017
-  %56 = shl i32 1, %55, !dbg !1134
-  %57 = add nsw i32 %56, -1, !dbg !1135
-  tail call void @llvm.dbg.value(metadata i32 %57, i64 0, metadata !488, metadata !861), !dbg !1136
-  %58 = uitofp i32 %57 to float, !dbg !1137
-  tail call void @llvm.dbg.value(metadata float %58, i64 0, metadata !489, metadata !861), !dbg !1138
-  %59 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 0, !dbg !1139
-  %60 = load float* %59, align 4, !dbg !1139, !tbaa !1102
-  %61 = fmul float %60, %58, !dbg !1140
-  %floorf = tail call float @floorf(float %61) #6, !dbg !1141
-  %62 = fptoui float %floorf to i32, !dbg !1141
-  %63 = and i32 %62, %57, !dbg !1142
-  tail call void @llvm.dbg.value(metadata i32 %63, i64 0, metadata !484, metadata !861), !dbg !1143
-  %64 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 1, !dbg !1144
-  %65 = load float* %64, align 4, !dbg !1144, !tbaa !1102
-  %66 = fmul float %65, %58, !dbg !1145
-  %floorf1 = tail call float @floorf(float %66) #6, !dbg !1146
-  %67 = fptoui float %floorf1 to i32, !dbg !1146
-  %68 = and i32 %67, %57, !dbg !1147
-  tail call void @llvm.dbg.value(metadata i32 %68, i64 0, metadata !485, metadata !861), !dbg !1148
-  %69 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 2, !dbg !1149
-  %70 = load float* %69, align 4, !dbg !1149, !tbaa !1102
-  %71 = fmul float %58, %70, !dbg !1150
-  %floorf2 = tail call float @floorf(float %71) #6, !dbg !1151
-  %72 = fptoui float %floorf2 to i32, !dbg !1151
-  %73 = and i32 %72, %57, !dbg !1152
-  tail call void @llvm.dbg.value(metadata i32 %73, i64 0, metadata !486, metadata !861), !dbg !1153
-  %74 = icmp sgt i32 %55, 8, !dbg !1154
-  %75 = load %"class.pov_base::OStream"** %9, align 8, !dbg !1087, !tbaa !1002
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %75, i64 0, metadata !557, metadata !861) #2, !dbg !1155
-  %76 = getelementptr inbounds %"class.pov_base::OStream"* %75, i64 0, i32 0, i32 1, !dbg !1157
-  %77 = load i8* %76, align 1, !dbg !1157, !tbaa !932, !range !934
-  %78 = icmp eq i8 %77, 0, !dbg !1157
-  br i1 %74, label %79, label %131, !dbg !1158
+if.else:                                          ; preds = %for.body
+  %11 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 4), align 8, !dbg !791, !tbaa !694
+  %shl = shl i32 1, %11, !dbg !791
+  %sub = add nsw i32 %shl, -1, !dbg !791
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !478), !dbg !791
+  %conv33 = uitofp i32 %sub to float, !dbg !792
+  tail call void @llvm.dbg.value(metadata !{float %conv33}, i64 0, metadata !479), !dbg !792
+  %arrayidx36 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 0, !dbg !793
+  %12 = load float* %arrayidx36, align 4, !dbg !793, !tbaa !783
+  %mul37 = fmul float %12, %conv33, !dbg !793
+  %floorf = tail call float @floorf(float %mul37) #6, !dbg !793
+  %conv40 = fptoui float %floorf to i32, !dbg !793
+  %and41 = and i32 %conv40, %sub, !dbg !793
+  tail call void @llvm.dbg.value(metadata !{i32 %and41}, i64 0, metadata !474), !dbg !793
+  %arrayidx44 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 1, !dbg !794
+  %13 = load float* %arrayidx44, align 4, !dbg !794, !tbaa !783
+  %mul45 = fmul float %13, %conv33, !dbg !794
+  %floorf135 = tail call float @floorf(float %mul45) #6, !dbg !794
+  %conv48 = fptoui float %floorf135 to i32, !dbg !794
+  %and49 = and i32 %conv48, %sub, !dbg !794
+  tail call void @llvm.dbg.value(metadata !{i32 %and49}, i64 0, metadata !475), !dbg !794
+  %arrayidx52 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 2, !dbg !795
+  %14 = load float* %arrayidx52, align 4, !dbg !795, !tbaa !783
+  %mul53 = fmul float %conv33, %14, !dbg !795
+  %floorf136 = tail call float @floorf(float %mul53) #6, !dbg !795
+  %conv56 = fptoui float %floorf136 to i32, !dbg !795
+  %and57 = and i32 %conv56, %sub, !dbg !795
+  tail call void @llvm.dbg.value(metadata !{i32 %and57}, i64 0, metadata !476), !dbg !795
+  %cmp58 = icmp sgt i32 %11, 8, !dbg !796
+  %15 = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !774, !tbaa !696
+  %fail.i149 = getelementptr inbounds %"class.pov_base::OStream"* %15, i64 0, i32 0, i32 1, !dbg !797
+  %16 = load i8* %fail.i149, align 1, !dbg !797, !tbaa !686, !range !711
+  %tobool.i150 = icmp eq i8 %16, 0, !dbg !797
+  br i1 %cmp58, label %if.then59, label %if.else89, !dbg !796
 
-; <label>:79                                      ; preds = %54
-  br i1 %78, label %_ZN8pov_base7OStream10Write_ByteEh.exit4, label %_ZN8pov_base7OStream10Write_ByteEh.exit9.thread, !dbg !1159
+if.then59:                                        ; preds = %if.else
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %15}, i64 0, metadata !798) #2, !dbg !797
+  br i1 %tobool.i150, label %_ZN8pov_base7OStream10Write_ByteEh.exit157, label %if.then85, !dbg !797
 
-_ZN8pov_base7OStream10Write_ByteEh.exit4:         ; preds = %79
-  %80 = lshr i32 %63, 8, !dbg !1160
-  %81 = and i32 %80, 255, !dbg !1161
-  %82 = getelementptr inbounds %"class.pov_base::OStream"* %75, i64 0, i32 0, i32 2, !dbg !1162
-  %83 = load %struct.__sFILE** %82, align 8, !dbg !1162, !tbaa !1115
-  %84 = tail call i32 @fputc(i32 %81, %struct.__sFILE* %83) #10, !dbg !1163
-  %85 = icmp ne i32 %84, %81, !dbg !1164
-  %86 = zext i1 %85 to i8, !dbg !1165
-  store i8 %86, i8* %76, align 1, !dbg !1165, !tbaa !932
-  %.pre21 = load %"class.pov_base::OStream"** %9, align 8, !dbg !1166, !tbaa !1002
-  %.phi.trans.insert22 = getelementptr inbounds %"class.pov_base::OStream"* %.pre21, i64 0, i32 0, i32 1
-  %.pre23 = load i8* %.phi.trans.insert22, align 1, !dbg !1167, !tbaa !932
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %.pre21, i64 0, metadata !557, metadata !861) #2, !dbg !1169
-  %87 = icmp eq i8 %.pre23, 0, !dbg !1167
-  br i1 %87, label %_ZN8pov_base7OStream10Write_ByteEh.exit5, label %_ZN8pov_base7OStream10Write_ByteEh.exit9.thread, !dbg !1170
+_ZN8pov_base7OStream10Write_ByteEh.exit157:       ; preds = %if.then59
+  %shr61 = lshr i32 %and41, 8, !dbg !774
+  %conv.i151 = and i32 %shr61, 255, !dbg !797
+  %f.i152 = getelementptr inbounds %"class.pov_base::OStream"* %15, i64 0, i32 0, i32 2, !dbg !797
+  %17 = load %struct._IO_FILE** %f.i152, align 8, !dbg !797, !tbaa !696
+  %call.i153 = tail call i32 @fputc(i32 %conv.i151, %struct._IO_FILE* %17) #10, !dbg !797
+  %cmp.i154 = icmp ne i32 %call.i153, %conv.i151, !dbg !797
+  %frombool.i155 = zext i1 %cmp.i154 to i8, !dbg !797
+  store i8 %frombool.i155, i8* %fail.i149, align 1, !dbg !797, !tbaa !686
+  %.pre = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !799, !tbaa !696
+  %fail.i158.phi.trans.insert = getelementptr inbounds %"class.pov_base::OStream"* %.pre, i64 0, i32 0, i32 1
+  %.pre236 = load i8* %fail.i158.phi.trans.insert, align 1, !dbg !800, !tbaa !686
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %.pre}, i64 0, metadata !801) #2, !dbg !800
+  %tobool.i159 = icmp eq i8 %.pre236, 0, !dbg !800
+  br i1 %tobool.i159, label %_ZN8pov_base7OStream10Write_ByteEh.exit166, label %if.then85, !dbg !800
 
-_ZN8pov_base7OStream10Write_ByteEh.exit5:         ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit4
-  %88 = getelementptr inbounds %"class.pov_base::OStream"* %.pre21, i64 0, i32 0, i32 1, !dbg !1167
-  %89 = and i32 %63, 255, !dbg !1171
-  %90 = getelementptr inbounds %"class.pov_base::OStream"* %.pre21, i64 0, i32 0, i32 2, !dbg !1172
-  %91 = load %struct.__sFILE** %90, align 8, !dbg !1172, !tbaa !1115
-  %92 = tail call i32 @fputc(i32 %89, %struct.__sFILE* %91) #10, !dbg !1173
-  %93 = icmp ne i32 %92, %89, !dbg !1174
-  %94 = zext i1 %93 to i8, !dbg !1175
-  store i8 %94, i8* %88, align 1, !dbg !1175, !tbaa !932
-  %.pre24 = load %"class.pov_base::OStream"** %9, align 8, !dbg !1176, !tbaa !1002
-  %.phi.trans.insert25 = getelementptr inbounds %"class.pov_base::OStream"* %.pre24, i64 0, i32 0, i32 1
-  %.pre26 = load i8* %.phi.trans.insert25, align 1, !dbg !1177, !tbaa !932
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %.pre24, i64 0, metadata !557, metadata !861) #2, !dbg !1179
-  %95 = icmp eq i8 %.pre26, 0, !dbg !1177
-  br i1 %95, label %_ZN8pov_base7OStream10Write_ByteEh.exit6, label %_ZN8pov_base7OStream10Write_ByteEh.exit9.thread, !dbg !1180
+_ZN8pov_base7OStream10Write_ByteEh.exit166:       ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit157
+  %fail.i158 = getelementptr inbounds %"class.pov_base::OStream"* %.pre, i64 0, i32 0, i32 1, !dbg !800
+  %conv.i160 = and i32 %and41, 255, !dbg !800
+  %f.i161 = getelementptr inbounds %"class.pov_base::OStream"* %.pre, i64 0, i32 0, i32 2, !dbg !800
+  %18 = load %struct._IO_FILE** %f.i161, align 8, !dbg !800, !tbaa !696
+  %call.i162 = tail call i32 @fputc(i32 %conv.i160, %struct._IO_FILE* %18) #10, !dbg !800
+  %cmp.i163 = icmp ne i32 %call.i162, %conv.i160, !dbg !800
+  %frombool.i164 = zext i1 %cmp.i163 to i8, !dbg !800
+  store i8 %frombool.i164, i8* %fail.i158, align 1, !dbg !800, !tbaa !686
+  %.pre237 = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !802, !tbaa !696
+  %fail.i167.phi.trans.insert = getelementptr inbounds %"class.pov_base::OStream"* %.pre237, i64 0, i32 0, i32 1
+  %.pre238 = load i8* %fail.i167.phi.trans.insert, align 1, !dbg !803, !tbaa !686
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %.pre237}, i64 0, metadata !804) #2, !dbg !803
+  %tobool.i168 = icmp eq i8 %.pre238, 0, !dbg !803
+  br i1 %tobool.i168, label %_ZN8pov_base7OStream10Write_ByteEh.exit175, label %if.then85, !dbg !803
 
-_ZN8pov_base7OStream10Write_ByteEh.exit6:         ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit5
-  %96 = getelementptr inbounds %"class.pov_base::OStream"* %.pre24, i64 0, i32 0, i32 1, !dbg !1177
-  %97 = lshr i32 %68, 8, !dbg !1181
-  %98 = and i32 %97, 255, !dbg !1182
-  %99 = getelementptr inbounds %"class.pov_base::OStream"* %.pre24, i64 0, i32 0, i32 2, !dbg !1183
-  %100 = load %struct.__sFILE** %99, align 8, !dbg !1183, !tbaa !1115
-  %101 = tail call i32 @fputc(i32 %98, %struct.__sFILE* %100) #10, !dbg !1184
-  %102 = icmp ne i32 %101, %98, !dbg !1185
-  %103 = zext i1 %102 to i8, !dbg !1186
-  store i8 %103, i8* %96, align 1, !dbg !1186, !tbaa !932
-  %.pre27 = load %"class.pov_base::OStream"** %9, align 8, !dbg !1187, !tbaa !1002
-  %.phi.trans.insert28 = getelementptr inbounds %"class.pov_base::OStream"* %.pre27, i64 0, i32 0, i32 1
-  %.pre29 = load i8* %.phi.trans.insert28, align 1, !dbg !1188, !tbaa !932
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %.pre27, i64 0, metadata !557, metadata !861) #2, !dbg !1190
-  %104 = icmp eq i8 %.pre29, 0, !dbg !1188
-  br i1 %104, label %_ZN8pov_base7OStream10Write_ByteEh.exit7, label %_ZN8pov_base7OStream10Write_ByteEh.exit9.thread, !dbg !1191
+_ZN8pov_base7OStream10Write_ByteEh.exit175:       ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit166
+  %fail.i167 = getelementptr inbounds %"class.pov_base::OStream"* %.pre237, i64 0, i32 0, i32 1, !dbg !803
+  %shr69 = lshr i32 %and49, 8, !dbg !802
+  %conv.i169 = and i32 %shr69, 255, !dbg !803
+  %f.i170 = getelementptr inbounds %"class.pov_base::OStream"* %.pre237, i64 0, i32 0, i32 2, !dbg !803
+  %19 = load %struct._IO_FILE** %f.i170, align 8, !dbg !803, !tbaa !696
+  %call.i171 = tail call i32 @fputc(i32 %conv.i169, %struct._IO_FILE* %19) #10, !dbg !803
+  %cmp.i172 = icmp ne i32 %call.i171, %conv.i169, !dbg !803
+  %frombool.i173 = zext i1 %cmp.i172 to i8, !dbg !803
+  store i8 %frombool.i173, i8* %fail.i167, align 1, !dbg !803, !tbaa !686
+  %.pre239 = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !805, !tbaa !696
+  %fail.i176.phi.trans.insert = getelementptr inbounds %"class.pov_base::OStream"* %.pre239, i64 0, i32 0, i32 1
+  %.pre240 = load i8* %fail.i176.phi.trans.insert, align 1, !dbg !806, !tbaa !686
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %.pre239}, i64 0, metadata !807) #2, !dbg !806
+  %tobool.i177 = icmp eq i8 %.pre240, 0, !dbg !806
+  br i1 %tobool.i177, label %_ZN8pov_base7OStream10Write_ByteEh.exit184, label %if.then85, !dbg !806
 
-_ZN8pov_base7OStream10Write_ByteEh.exit7:         ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit6
-  %105 = getelementptr inbounds %"class.pov_base::OStream"* %.pre27, i64 0, i32 0, i32 1, !dbg !1188
-  %106 = and i32 %68, 255, !dbg !1192
-  %107 = getelementptr inbounds %"class.pov_base::OStream"* %.pre27, i64 0, i32 0, i32 2, !dbg !1193
-  %108 = load %struct.__sFILE** %107, align 8, !dbg !1193, !tbaa !1115
-  %109 = tail call i32 @fputc(i32 %106, %struct.__sFILE* %108) #10, !dbg !1194
-  %110 = icmp ne i32 %109, %106, !dbg !1195
-  %111 = zext i1 %110 to i8, !dbg !1196
-  store i8 %111, i8* %105, align 1, !dbg !1196, !tbaa !932
-  %.pre30 = load %"class.pov_base::OStream"** %9, align 8, !dbg !1197, !tbaa !1002
-  %.phi.trans.insert31 = getelementptr inbounds %"class.pov_base::OStream"* %.pre30, i64 0, i32 0, i32 1
-  %.pre32 = load i8* %.phi.trans.insert31, align 1, !dbg !1198, !tbaa !932
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %.pre30, i64 0, metadata !557, metadata !861) #2, !dbg !1200
-  %112 = icmp eq i8 %.pre32, 0, !dbg !1198
-  br i1 %112, label %_ZN8pov_base7OStream10Write_ByteEh.exit8, label %_ZN8pov_base7OStream10Write_ByteEh.exit9.thread, !dbg !1201
+_ZN8pov_base7OStream10Write_ByteEh.exit184:       ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit175
+  %fail.i176 = getelementptr inbounds %"class.pov_base::OStream"* %.pre239, i64 0, i32 0, i32 1, !dbg !806
+  %conv.i178 = and i32 %and49, 255, !dbg !806
+  %f.i179 = getelementptr inbounds %"class.pov_base::OStream"* %.pre239, i64 0, i32 0, i32 2, !dbg !806
+  %20 = load %struct._IO_FILE** %f.i179, align 8, !dbg !806, !tbaa !696
+  %call.i180 = tail call i32 @fputc(i32 %conv.i178, %struct._IO_FILE* %20) #10, !dbg !806
+  %cmp.i181 = icmp ne i32 %call.i180, %conv.i178, !dbg !806
+  %frombool.i182 = zext i1 %cmp.i181 to i8, !dbg !806
+  store i8 %frombool.i182, i8* %fail.i176, align 1, !dbg !806, !tbaa !686
+  %.pre241 = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !808, !tbaa !696
+  %fail.i185.phi.trans.insert = getelementptr inbounds %"class.pov_base::OStream"* %.pre241, i64 0, i32 0, i32 1
+  %.pre242 = load i8* %fail.i185.phi.trans.insert, align 1, !dbg !809, !tbaa !686
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %.pre241}, i64 0, metadata !810) #2, !dbg !809
+  %tobool.i186 = icmp eq i8 %.pre242, 0, !dbg !809
+  br i1 %tobool.i186, label %_ZN8pov_base7OStream10Write_ByteEh.exit193, label %if.then85, !dbg !809
 
-_ZN8pov_base7OStream10Write_ByteEh.exit8:         ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit7
-  %113 = getelementptr inbounds %"class.pov_base::OStream"* %.pre30, i64 0, i32 0, i32 1, !dbg !1198
-  %114 = lshr i32 %73, 8, !dbg !1202
-  %115 = and i32 %114, 255, !dbg !1203
-  %116 = getelementptr inbounds %"class.pov_base::OStream"* %.pre30, i64 0, i32 0, i32 2, !dbg !1204
-  %117 = load %struct.__sFILE** %116, align 8, !dbg !1204, !tbaa !1115
-  %118 = tail call i32 @fputc(i32 %115, %struct.__sFILE* %117) #10, !dbg !1205
-  %119 = icmp ne i32 %118, %115, !dbg !1206
-  %120 = zext i1 %119 to i8, !dbg !1207
-  store i8 %120, i8* %113, align 1, !dbg !1207, !tbaa !932
-  %.pre33 = load %"class.pov_base::OStream"** %9, align 8, !dbg !1208, !tbaa !1002
-  %.phi.trans.insert34 = getelementptr inbounds %"class.pov_base::OStream"* %.pre33, i64 0, i32 0, i32 1
-  %.pre35 = load i8* %.phi.trans.insert34, align 1, !dbg !1209, !tbaa !932
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %.pre33, i64 0, metadata !557, metadata !861) #2, !dbg !1211
-  %121 = icmp eq i8 %.pre35, 0, !dbg !1209
-  br i1 %121, label %_ZN8pov_base7OStream10Write_ByteEh.exit9, label %_ZN8pov_base7OStream10Write_ByteEh.exit9.thread, !dbg !1212
+_ZN8pov_base7OStream10Write_ByteEh.exit193:       ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit184
+  %fail.i185 = getelementptr inbounds %"class.pov_base::OStream"* %.pre241, i64 0, i32 0, i32 1, !dbg !809
+  %shr77 = lshr i32 %and57, 8, !dbg !808
+  %conv.i187 = and i32 %shr77, 255, !dbg !809
+  %f.i188 = getelementptr inbounds %"class.pov_base::OStream"* %.pre241, i64 0, i32 0, i32 2, !dbg !809
+  %21 = load %struct._IO_FILE** %f.i188, align 8, !dbg !809, !tbaa !696
+  %call.i189 = tail call i32 @fputc(i32 %conv.i187, %struct._IO_FILE* %21) #10, !dbg !809
+  %cmp.i190 = icmp ne i32 %call.i189, %conv.i187, !dbg !809
+  %frombool.i191 = zext i1 %cmp.i190 to i8, !dbg !809
+  store i8 %frombool.i191, i8* %fail.i185, align 1, !dbg !809, !tbaa !686
+  %.pre243 = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !811, !tbaa !696
+  %fail.i194.phi.trans.insert = getelementptr inbounds %"class.pov_base::OStream"* %.pre243, i64 0, i32 0, i32 1
+  %.pre244 = load i8* %fail.i194.phi.trans.insert, align 1, !dbg !812, !tbaa !686
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %.pre243}, i64 0, metadata !813) #2, !dbg !812
+  %tobool.i195 = icmp eq i8 %.pre244, 0, !dbg !812
+  br i1 %tobool.i195, label %_ZN8pov_base7OStream10Write_ByteEh.exit202, label %if.then85, !dbg !812
 
-_ZN8pov_base7OStream10Write_ByteEh.exit9:         ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit8
-  %122 = getelementptr inbounds %"class.pov_base::OStream"* %.pre33, i64 0, i32 0, i32 1, !dbg !1209
-  %123 = and i32 %73, 255, !dbg !1213
-  %124 = getelementptr inbounds %"class.pov_base::OStream"* %.pre33, i64 0, i32 0, i32 2, !dbg !1214
-  %125 = load %struct.__sFILE** %124, align 8, !dbg !1214, !tbaa !1115
-  %126 = tail call i32 @fputc(i32 %123, %struct.__sFILE* %125) #10, !dbg !1215
-  %127 = icmp ne i32 %126, %123, !dbg !1216
-  %128 = zext i1 %127 to i8, !dbg !1217
-  store i8 %128, i8* %122, align 1, !dbg !1217, !tbaa !932
-  br i1 %127, label %_ZN8pov_base7OStream10Write_ByteEh.exit9.thread, label %156, !dbg !1218
+_ZN8pov_base7OStream10Write_ByteEh.exit202:       ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit193
+  %fail.i194 = getelementptr inbounds %"class.pov_base::OStream"* %.pre243, i64 0, i32 0, i32 1, !dbg !812
+  %conv.i196 = and i32 %and57, 255, !dbg !812
+  %f.i197 = getelementptr inbounds %"class.pov_base::OStream"* %.pre243, i64 0, i32 0, i32 2, !dbg !812
+  %22 = load %struct._IO_FILE** %f.i197, align 8, !dbg !812, !tbaa !696
+  %call.i198 = tail call i32 @fputc(i32 %conv.i196, %struct._IO_FILE* %22) #10, !dbg !812
+  %cmp.i199 = icmp ne i32 %call.i198, %conv.i196, !dbg !812
+  %frombool.i200 = zext i1 %cmp.i199 to i8, !dbg !812
+  store i8 %frombool.i200, i8* %fail.i194, align 1, !dbg !812, !tbaa !686
+  br i1 %cmp.i199, label %if.then85, label %for.inc, !dbg !811
 
-_ZN8pov_base7OStream10Write_ByteEh.exit9.thread:  ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit9, %79, %_ZN8pov_base7OStream10Write_ByteEh.exit4, %_ZN8pov_base7OStream10Write_ByteEh.exit5, %_ZN8pov_base7OStream10Write_ByteEh.exit6, %_ZN8pov_base7OStream10Write_ByteEh.exit7, %_ZN8pov_base7OStream10Write_ByteEh.exit8
-  %129 = load i8** %10, align 8, !dbg !1094, !tbaa !892
-  %130 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([37 x i8]* @.str9, i64 0, i64 0), i8* %129) #9, !dbg !1219
-  br label %156, !dbg !1220
+if.then85:                                        ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit202, %if.then59, %_ZN8pov_base7OStream10Write_ByteEh.exit157, %_ZN8pov_base7OStream10Write_ByteEh.exit166, %_ZN8pov_base7OStream10Write_ByteEh.exit175, %_ZN8pov_base7OStream10Write_ByteEh.exit184, %_ZN8pov_base7OStream10Write_ByteEh.exit193
+  %23 = load i8** %filename86, align 8, !dbg !778, !tbaa !696
+  %call87 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([37 x i8]* @.str9, i64 0, i64 0), i8* %23) #8, !dbg !778
+  br label %for.inc, !dbg !814
 
-; <label>:131                                     ; preds = %54
-  br i1 %78, label %_ZN8pov_base7OStream10Write_ByteEh.exit11, label %_ZN8pov_base7OStream10Write_ByteEh.exit10.thread, !dbg !1221
+if.else89:                                        ; preds = %if.else
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %15}, i64 0, metadata !815) #2, !dbg !818
+  br i1 %tobool.i150, label %_ZN8pov_base7OStream10Write_ByteEh.exit224, label %if.then103, !dbg !818
 
-_ZN8pov_base7OStream10Write_ByteEh.exit11:        ; preds = %131
-  %132 = and i32 %63, 255, !dbg !1224
-  %133 = getelementptr inbounds %"class.pov_base::OStream"* %75, i64 0, i32 0, i32 2, !dbg !1225
-  %134 = load %struct.__sFILE** %133, align 8, !dbg !1225, !tbaa !1115
-  %135 = tail call i32 @fputc(i32 %132, %struct.__sFILE* %134) #10, !dbg !1226
-  %136 = icmp ne i32 %135, %132, !dbg !1227
-  %137 = zext i1 %136 to i8, !dbg !1228
-  store i8 %137, i8* %76, align 1, !dbg !1228, !tbaa !932
-  %.pre15 = load %"class.pov_base::OStream"** %9, align 8, !dbg !1229, !tbaa !1002
-  %.phi.trans.insert16 = getelementptr inbounds %"class.pov_base::OStream"* %.pre15, i64 0, i32 0, i32 1
-  %.pre17 = load i8* %.phi.trans.insert16, align 1, !dbg !1230, !tbaa !932
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %.pre15, i64 0, metadata !557, metadata !861) #2, !dbg !1232
-  %138 = icmp eq i8 %.pre17, 0, !dbg !1230
-  br i1 %138, label %_ZN8pov_base7OStream10Write_ByteEh.exit12, label %_ZN8pov_base7OStream10Write_ByteEh.exit10.thread, !dbg !1233
+_ZN8pov_base7OStream10Write_ByteEh.exit224:       ; preds = %if.else89
+  %conv.i218 = and i32 %and41, 255, !dbg !818
+  %f.i219 = getelementptr inbounds %"class.pov_base::OStream"* %15, i64 0, i32 0, i32 2, !dbg !818
+  %24 = load %struct._IO_FILE** %f.i219, align 8, !dbg !818, !tbaa !696
+  %call.i220 = tail call i32 @fputc(i32 %conv.i218, %struct._IO_FILE* %24) #10, !dbg !818
+  %cmp.i221 = icmp ne i32 %call.i220, %conv.i218, !dbg !818
+  %frombool.i222 = zext i1 %cmp.i221 to i8, !dbg !818
+  store i8 %frombool.i222, i8* %fail.i149, align 1, !dbg !818, !tbaa !686
+  %.pre245 = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !819, !tbaa !696
+  %fail.i225.phi.trans.insert = getelementptr inbounds %"class.pov_base::OStream"* %.pre245, i64 0, i32 0, i32 1
+  %.pre246 = load i8* %fail.i225.phi.trans.insert, align 1, !dbg !820, !tbaa !686
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %.pre245}, i64 0, metadata !821) #2, !dbg !820
+  %tobool.i226 = icmp eq i8 %.pre246, 0, !dbg !820
+  br i1 %tobool.i226, label %_ZN8pov_base7OStream10Write_ByteEh.exit233, label %if.then103, !dbg !820
 
-_ZN8pov_base7OStream10Write_ByteEh.exit12:        ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit11
-  %139 = getelementptr inbounds %"class.pov_base::OStream"* %.pre15, i64 0, i32 0, i32 1, !dbg !1230
-  %140 = and i32 %68, 255, !dbg !1234
-  %141 = getelementptr inbounds %"class.pov_base::OStream"* %.pre15, i64 0, i32 0, i32 2, !dbg !1235
-  %142 = load %struct.__sFILE** %141, align 8, !dbg !1235, !tbaa !1115
-  %143 = tail call i32 @fputc(i32 %140, %struct.__sFILE* %142) #10, !dbg !1236
-  %144 = icmp ne i32 %143, %140, !dbg !1237
-  %145 = zext i1 %144 to i8, !dbg !1238
-  store i8 %145, i8* %139, align 1, !dbg !1238, !tbaa !932
-  %.pre18 = load %"class.pov_base::OStream"** %9, align 8, !dbg !1239, !tbaa !1002
-  %.phi.trans.insert19 = getelementptr inbounds %"class.pov_base::OStream"* %.pre18, i64 0, i32 0, i32 1
-  %.pre20 = load i8* %.phi.trans.insert19, align 1, !dbg !1241, !tbaa !932
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %.pre18, i64 0, metadata !557, metadata !861) #2, !dbg !1243
-  %146 = icmp eq i8 %.pre20, 0, !dbg !1241
-  br i1 %146, label %_ZN8pov_base7OStream10Write_ByteEh.exit10, label %_ZN8pov_base7OStream10Write_ByteEh.exit10.thread, !dbg !1244
+_ZN8pov_base7OStream10Write_ByteEh.exit233:       ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit224
+  %fail.i225 = getelementptr inbounds %"class.pov_base::OStream"* %.pre245, i64 0, i32 0, i32 1, !dbg !820
+  %conv.i227 = and i32 %and49, 255, !dbg !820
+  %f.i228 = getelementptr inbounds %"class.pov_base::OStream"* %.pre245, i64 0, i32 0, i32 2, !dbg !820
+  %25 = load %struct._IO_FILE** %f.i228, align 8, !dbg !820, !tbaa !696
+  %call.i229 = tail call i32 @fputc(i32 %conv.i227, %struct._IO_FILE* %25) #10, !dbg !820
+  %cmp.i230 = icmp ne i32 %call.i229, %conv.i227, !dbg !820
+  %frombool.i231 = zext i1 %cmp.i230 to i8, !dbg !820
+  store i8 %frombool.i231, i8* %fail.i225, align 1, !dbg !820, !tbaa !686
+  %.pre247 = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !822, !tbaa !696
+  %fail.i207.phi.trans.insert = getelementptr inbounds %"class.pov_base::OStream"* %.pre247, i64 0, i32 0, i32 1
+  %.pre248 = load i8* %fail.i207.phi.trans.insert, align 1, !dbg !823, !tbaa !686
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %.pre247}, i64 0, metadata !824) #2, !dbg !823
+  %tobool.i208 = icmp eq i8 %.pre248, 0, !dbg !823
+  br i1 %tobool.i208, label %_ZN8pov_base7OStream10Write_ByteEh.exit215, label %if.then103, !dbg !823
 
-_ZN8pov_base7OStream10Write_ByteEh.exit10:        ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit12
-  %147 = getelementptr inbounds %"class.pov_base::OStream"* %.pre18, i64 0, i32 0, i32 1, !dbg !1241
-  %148 = and i32 %73, 255, !dbg !1245
-  %149 = getelementptr inbounds %"class.pov_base::OStream"* %.pre18, i64 0, i32 0, i32 2, !dbg !1246
-  %150 = load %struct.__sFILE** %149, align 8, !dbg !1246, !tbaa !1115
-  %151 = tail call i32 @fputc(i32 %148, %struct.__sFILE* %150) #10, !dbg !1247
-  %152 = icmp ne i32 %151, %148, !dbg !1248
-  %153 = zext i1 %152 to i8, !dbg !1249
-  store i8 %153, i8* %147, align 1, !dbg !1249, !tbaa !932
-  br i1 %152, label %_ZN8pov_base7OStream10Write_ByteEh.exit10.thread, label %156, !dbg !1250
+_ZN8pov_base7OStream10Write_ByteEh.exit215:       ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit233
+  %fail.i207 = getelementptr inbounds %"class.pov_base::OStream"* %.pre247, i64 0, i32 0, i32 1, !dbg !823
+  %conv.i209 = and i32 %and57, 255, !dbg !823
+  %f.i210 = getelementptr inbounds %"class.pov_base::OStream"* %.pre247, i64 0, i32 0, i32 2, !dbg !823
+  %26 = load %struct._IO_FILE** %f.i210, align 8, !dbg !823, !tbaa !696
+  %call.i211 = tail call i32 @fputc(i32 %conv.i209, %struct._IO_FILE* %26) #10, !dbg !823
+  %cmp.i212 = icmp ne i32 %call.i211, %conv.i209, !dbg !823
+  %frombool.i213 = zext i1 %cmp.i212 to i8, !dbg !823
+  store i8 %frombool.i213, i8* %fail.i207, align 1, !dbg !823, !tbaa !686
+  br i1 %cmp.i212, label %if.then103, label %for.inc, !dbg !822
 
-_ZN8pov_base7OStream10Write_ByteEh.exit10.thread: ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit10, %131, %_ZN8pov_base7OStream10Write_ByteEh.exit11, %_ZN8pov_base7OStream10Write_ByteEh.exit12
-  %154 = load i8** %10, align 8, !dbg !1251, !tbaa !892
-  %155 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([36 x i8]* @.str8, i64 0, i64 0), i8* %154) #9, !dbg !1253
-  br label %156, !dbg !1254
+if.then103:                                       ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit215, %if.else89, %_ZN8pov_base7OStream10Write_ByteEh.exit224, %_ZN8pov_base7OStream10Write_ByteEh.exit233
+  %27 = load i8** %filename86, align 8, !dbg !825, !tbaa !696
+  %call105 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([36 x i8]* @.str8, i64 0, i64 0), i8* %27) #8, !dbg !825
+  br label %for.inc, !dbg !827
 
-; <label>:156                                     ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit9, %_ZN8pov_base7OStream10Write_ByteEh.exit10, %_ZN8pov_base7OStream10Write_ByteEh.exit3, %_ZN8pov_base7OStream10Write_ByteEh.exit3.thread, %_ZN8pov_base7OStream10Write_ByteEh.exit10.thread, %_ZN8pov_base7OStream10Write_ByteEh.exit9.thread
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1093
-  %157 = load i32* %6, align 4, !dbg !1083, !tbaa !898
-  %158 = sext i32 %157 to i64, !dbg !1086
-  %159 = icmp slt i64 %indvars.iv.next, %158, !dbg !1086
-  br i1 %159, label %11, label %._crit_edge, !dbg !1093
+for.inc:                                          ; preds = %_ZN8pov_base7OStream10Write_ByteEh.exit202, %_ZN8pov_base7OStream10Write_ByteEh.exit215, %_ZN8pov_base7OStream10Write_ByteEh.exit145, %if.then30, %if.then103, %if.then85
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !772
+  %28 = load i32* %width, align 4, !dbg !772, !tbaa !694
+  %29 = trunc i64 %indvars.iv.next to i32, !dbg !772
+  %cmp2 = icmp slt i32 %29, %28, !dbg !772
+  br i1 %cmp2, label %for.body, label %for.end, !dbg !772
 
-._crit_edge:                                      ; preds = %156, %.preheader
-  %160 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 5, !dbg !1255
-  %161 = load i32* %160, align 4, !dbg !1256, !tbaa !904
-  %162 = add nsw i32 %161, 1, !dbg !1256
-  store i32 %162, i32* %160, align 4, !dbg !1256, !tbaa !904
-  %163 = load %"class.pov_base::OStream"** %9, align 8, !dbg !1257, !tbaa !1002
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %163, i64 0, metadata !554, metadata !861), !dbg !1258
-  %164 = getelementptr inbounds %"class.pov_base::OStream"* %163, i64 0, i32 0, !dbg !1260
-  %165 = tail call dereferenceable(40) %"class.pov_base::IOBase"* @_ZN8pov_base6IOBase5flushEv(%"class.pov_base::IOBase"* %164) #9, !dbg !1261
-  ret void, !dbg !1262
+for.end:                                          ; preds = %for.cond.preheader, %for.inc
+  %line_number = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 5, !dbg !828
+  %30 = load i32* %line_number, align 4, !dbg !828, !tbaa !694
+  %inc109 = add nsw i32 %30, 1, !dbg !828
+  store i32 %inc109, i32* %line_number, align 4, !dbg !828, !tbaa !694
+  %31 = load %"class.pov_base::OStream"** %out_file60, align 8, !dbg !829, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %31}, i64 0, metadata !830), !dbg !831
+  %32 = getelementptr inbounds %"class.pov_base::OStream"* %31, i64 0, i32 0, !dbg !831
+  %call.i148 = tail call %"class.pov_base::IOBase"* @_ZN8pov_base6IOBase5flushEv(%"class.pov_base::IOBase"* %32) #8, !dbg !831
+  ret void, !dbg !832
 }

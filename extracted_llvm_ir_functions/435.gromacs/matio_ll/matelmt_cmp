@@ -1,20 +1,22 @@
-define i32 @matelmt_cmp(i16 %e1.coerce, i16 %e2.coerce) #5 {
-  %1 = zext i16 %e1.coerce to i32
-  %2 = zext i16 %e2.coerce to i32
-  tail call void @llvm.dbg.declare(metadata %struct.t_xpmelmt* undef, metadata !123, metadata !477), !dbg !564
-  tail call void @llvm.dbg.declare(metadata %struct.t_xpmelmt* undef, metadata !124, metadata !477), !dbg !565
-  %sext = shl i32 %1, 24, !dbg !566
-  %sext1 = shl i32 %2, 24, !dbg !567
-  %3 = icmp eq i32 %sext, %sext1, !dbg !568
-  br i1 %3, label %4, label %6, !dbg !569
+define i32 @matelmt_cmp(i16 %e1.coerce, i16 %e2.coerce) #3 {
+entry:
+  %e1.sroa.0.0.extract.trunc = zext i16 %e1.coerce to i32
+  tail call void @llvm.dbg.declare(metadata !486, metadata !63), !dbg !487
+  %e2.sroa.0.0.extract.trunc = zext i16 %e2.coerce to i32
+  tail call void @llvm.dbg.declare(metadata !486, metadata !64), !dbg !487
+  %sext = shl i32 %e1.sroa.0.0.extract.trunc, 24, !dbg !488
+  %sext9 = shl i32 %e2.sroa.0.0.extract.trunc, 24, !dbg !488
+  %cmp = icmp eq i32 %sext, %sext9, !dbg !488
+  br i1 %cmp, label %land.rhs, label %land.end, !dbg !488
 
-; <label>:4                                       ; preds = %0
-  %.unshifted = xor i16 %e2.coerce, %e1.coerce, !dbg !570
-  %5 = icmp ult i16 %.unshifted, 256, !dbg !570
-  br label %6
+land.rhs:                                         ; preds = %entry
+  %e2.sroa.1.1.extract.shift = lshr i16 %e2.coerce, 8
+  %e1.sroa.1.1.extract.shift = lshr i16 %e1.coerce, 8
+  %cmp7 = icmp eq i16 %e1.sroa.1.1.extract.shift, %e2.sroa.1.1.extract.shift, !dbg !488
+  br label %land.end
 
-; <label>:6                                       ; preds = %4, %0
-  %7 = phi i1 [ false, %0 ], [ %5, %4 ]
-  %8 = zext i1 %7 to i32, !dbg !569
-  ret i32 %8, !dbg !571
+land.end:                                         ; preds = %land.rhs, %entry
+  %0 = phi i1 [ false, %entry ], [ %cmp7, %land.rhs ]
+  %land.ext = zext i1 %0 to i32
+  ret i32 %land.ext, !dbg !489
 }

@@ -1,43 +1,45 @@
 define i32 @_ZN3pov20Parse_Unknown_VectorEPdbPb(double* %Express, i1 zeroext %allow_identifier, i8* %had_identifier) #0 {
-  %Express2 = bitcast double* %Express to i8*
+entry:
+  %Express16 = bitcast double* %Express to i8*
   %Terms = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata double* %Express, i64 0, metadata !1763, metadata !2727), !dbg !4175
-  tail call void @llvm.dbg.value(metadata i1 %allow_identifier, i64 0, metadata !1764, metadata !2727), !dbg !4176
-  tail call void @llvm.dbg.value(metadata i8* %had_identifier, i64 0, metadata !1765, metadata !2727), !dbg !4177
-  %1 = load i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !4178, !tbaa !2735, !range !2737
-  %2 = zext i1 %allow_identifier to i8, !dbg !4179
-  store i8 %2, i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !4179, !tbaa !2735
-  store i8 0, i8* @_ZN3pov18Identifier_In_CallE, align 1, !dbg !4180, !tbaa !2735
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1766, metadata !2727), !dbg !4181
-  tail call void @llvm.dbg.value(metadata i32* %Terms, i64 0, metadata !1766, metadata !2727), !dbg !4181
-  call void @llvm.memset.p0i8.i64(i8* %Express2, i8 0, i64 40, i32 8, i1 false), !dbg !4182
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1766, metadata !2727), !dbg !4181
-  store i32 1, i32* %Terms, align 4, !dbg !4186, !tbaa !2730
-  %3 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !4187, !tbaa !2877
-  %4 = icmp slt i32 %3, 150, !dbg !4189
-  tail call void @llvm.dbg.value(metadata i32* %Terms, i64 0, metadata !1766, metadata !2727), !dbg !4181
-  br i1 %4, label %5, label %6, !dbg !4190
+  call void @llvm.dbg.value(metadata !{double* %Express}, i64 0, metadata !666), !dbg !3018
+  call void @llvm.dbg.value(metadata !{i1 %allow_identifier}, i64 0, metadata !667), !dbg !3018
+  call void @llvm.dbg.value(metadata !{i8* %had_identifier}, i64 0, metadata !668), !dbg !3018
+  call void @llvm.dbg.declare(metadata !{i32* %Terms}, metadata !669), !dbg !3019
+  %0 = load i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !3020, !tbaa !2103, !range !2104
+  %frombool3 = zext i1 %allow_identifier to i8, !dbg !3021
+  store i8 %frombool3, i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !3021, !tbaa !2103
+  store i8 0, i8* @_ZN3pov18Identifier_In_CallE, align 1, !dbg !3022, !tbaa !2103
+  call void @llvm.dbg.value(metadata !592, i64 0, metadata !669), !dbg !3023
+  call void @llvm.dbg.value(metadata !592, i64 0, metadata !669), !dbg !3023
+  call void @llvm.dbg.value(metadata !{i32* %Terms}, i64 0, metadata !669), !dbg !3023
+  call void @llvm.memset.p0i8.i64(i8* %Express16, i8 0, i64 40, i32 8, i1 false), !dbg !3025
+  call void @llvm.dbg.value(metadata !2098, i64 0, metadata !669), !dbg !3027
+  store i32 1, i32* %Terms, align 4, !dbg !3027, !tbaa !2099
+  %1 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !3028, !tbaa !2099
+  %cmp4 = icmp slt i32 %1, 150, !dbg !3028
+  br i1 %cmp4, label %if.then, label %if.else, !dbg !3028
 
-; <label>:5                                       ; preds = %0
-  call fastcc void @_ZN3povL16Parse_Num_FactorEPdPi(double* %Express, i32* %Terms) #7, !dbg !4191
-  br label %7, !dbg !4191
+if.then:                                          ; preds = %entry
+  call fastcc void @_ZN3povL16Parse_Num_FactorEPdPi(double* %Express, i32* %Terms) #8, !dbg !3029
+  br label %if.end, !dbg !3029
 
-; <label>:6                                       ; preds = %0
-  call fastcc void @_ZN3povL16Parse_Rel_FactorEPdPi(double* %Express, i32* %Terms) #7, !dbg !4192
-  br label %7
+if.else:                                          ; preds = %entry
+  call fastcc void @_ZN3povL16Parse_Rel_FactorEPdPi(double* %Express, i32* %Terms) #8, !dbg !3030
+  br label %if.end
 
-; <label>:7                                       ; preds = %6, %5
-  %8 = icmp eq i8* %had_identifier, null, !dbg !4193
-  br i1 %8, label %11, label %9, !dbg !4195
+if.end:                                           ; preds = %if.else, %if.then
+  %cmp5 = icmp eq i8* %had_identifier, null, !dbg !3031
+  br i1 %cmp5, label %if.end9, label %if.then6, !dbg !3031
 
-; <label>:9                                       ; preds = %7
-  %10 = load i8* @_ZN3pov18Identifier_In_CallE, align 1, !dbg !4196, !tbaa !2735, !range !2737
-  store i8 %10, i8* %had_identifier, align 1, !dbg !4197, !tbaa !2735
-  br label %11, !dbg !4198
+if.then6:                                         ; preds = %if.end
+  %2 = load i8* @_ZN3pov18Identifier_In_CallE, align 1, !dbg !3032, !tbaa !2103, !range !2104
+  store i8 %2, i8* %had_identifier, align 1, !dbg !3032, !tbaa !2103
+  br label %if.end9, !dbg !3032
 
-; <label>:11                                      ; preds = %7, %9
-  store i8 %1, i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !4199, !tbaa !2735
-  call void @llvm.dbg.value(metadata i32* %Terms, i64 0, metadata !1766, metadata !2727), !dbg !4181
-  %12 = load i32* %Terms, align 4, !dbg !4200, !tbaa !2730
-  ret i32 %12, !dbg !4201
+if.end9:                                          ; preds = %if.end, %if.then6
+  store i8 %0, i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !3033, !tbaa !2103
+  call void @llvm.dbg.value(metadata !{i32* %Terms}, i64 0, metadata !669), !dbg !3034
+  %3 = load i32* %Terms, align 4, !dbg !3034, !tbaa !2099
+  ret i32 %3, !dbg !3034
 }

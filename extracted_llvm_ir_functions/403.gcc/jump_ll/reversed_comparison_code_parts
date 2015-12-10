@@ -1,46 +1,52 @@
 define i32 @reversed_comparison_code_parts(i32 %code, %struct.rtx_def* %arg0, %struct.rtx_def* nocapture %arg1, %struct.rtx_def* %insn) #0 {
 entry:
-  %idxprom = sext i32 %code to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom
-  %0 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp = icmp eq i8 %0, 60
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !477), !dbg !1107
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %arg0}, i64 0, metadata !478), !dbg !1108
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %arg1}, i64 0, metadata !479), !dbg !1108
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !480), !dbg !1108
+  %idxprom = sext i32 %code to i64, !dbg !1109
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom, !dbg !1109
+  %0 = load i8* %arrayidx, align 1, !dbg !1109, !tbaa !807
+  %cmp = icmp eq i8 %0, 60, !dbg !1109
+  br i1 %cmp, label %if.end, label %return, !dbg !1109
 
 if.end:                                           ; preds = %entry
-  %1 = bitcast %struct.rtx_def* %arg0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %cmp2 = icmp eq i32 %bf.clear, 0
-  br i1 %cmp2, label %if.then4, label %if.end8
+  %1 = bitcast %struct.rtx_def* %arg0 to i32*, !dbg !1110
+  %bf.load = load i32* %1, align 8, !dbg !1110
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !1110
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !1110
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !481), !dbg !1110
+  %cmp2 = icmp eq i32 %bf.clear, 0, !dbg !1111
+  br i1 %cmp2, label %if.then4, label %if.end8, !dbg !1111
 
 if.then4:                                         ; preds = %if.end
-  %2 = bitcast %struct.rtx_def* %arg1 to i32*
-  %bf.load5 = load i32* %2, align 8
-  %bf.lshr6 = lshr i32 %bf.load5, 16
-  %bf.clear7 = and i32 %bf.lshr6, 255
-  br label %if.end8
+  %2 = bitcast %struct.rtx_def* %arg1 to i32*, !dbg !1112
+  %bf.load5 = load i32* %2, align 8, !dbg !1112
+  %bf.lshr6 = lshr i32 %bf.load5, 16, !dbg !1112
+  %bf.clear7 = and i32 %bf.lshr6, 255, !dbg !1112
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear7}, i64 0, metadata !481), !dbg !1112
+  br label %if.end8, !dbg !1112
 
 if.end8:                                          ; preds = %if.then4, %if.end
   %mode.0 = phi i32 [ %bf.clear7, %if.then4 ], [ %bf.clear, %if.end ]
-  %idxprom9154 = zext i32 %mode.0 to i64
-  %arrayidx10 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom9154
-  %3 = load i32* %arrayidx10, align 4, !tbaa !4
-  %cmp11 = icmp eq i32 %3, 4
-  br i1 %cmp11, label %if.then13, label %if.end19
+  %idxprom9154 = zext i32 %mode.0 to i64, !dbg !1113
+  %arrayidx10 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom9154, !dbg !1113
+  %3 = load i32* %arrayidx10, align 4, !dbg !1113, !tbaa !1114
+  %cmp11 = icmp eq i32 %3, 4, !dbg !1113
+  br i1 %cmp11, label %if.then13, label %if.end19, !dbg !1113
 
 if.then13:                                        ; preds = %if.end8
-  %mode.0.off = add i32 %mode.0, -57
-  %4 = icmp ugt i32 %mode.0.off, 1
-  br i1 %4, label %cond.true, label %cond.false
+  %mode.0.off = add i32 %mode.0, -57, !dbg !1115
+  %4 = icmp ugt i32 %mode.0.off, 1, !dbg !1115
+  br i1 %4, label %cond.true, label %cond.false, !dbg !1115
 
 cond.true:                                        ; preds = %if.then13
-  %call = tail call i32 @reverse_condition(i32 %code) #8
-  br label %return
+  %call = tail call i32 @reverse_condition(i32 %code) #10, !dbg !1115
+  br label %return, !dbg !1115
 
 cond.false:                                       ; preds = %if.then13
-  %call18 = tail call i32 @reverse_condition_maybe_unordered(i32 %code) #8
-  br label %return
+  %call18 = tail call i32 @reverse_condition_maybe_unordered(i32 %code) #10, !dbg !1115
+  br label %return, !dbg !1115
 
 if.end19:                                         ; preds = %if.end8
   switch i32 %code, label %sw.epilog [
@@ -58,51 +64,51 @@ if.end19:                                         ; preds = %if.end8
     i32 117, label %return
     i32 116, label %return
     i32 115, label %return
-  ]
+  ], !dbg !1117
 
 sw.bb:                                            ; preds = %if.end19, %if.end19, %if.end19, %if.end19, %if.end19, %if.end19
-  %call20 = tail call i32 @reverse_condition(i32 %code) #8
-  br label %return
+  %call20 = tail call i32 @reverse_condition(i32 %code) #10, !dbg !1118
+  br label %return, !dbg !1118
 
 sw.bb21:                                          ; preds = %if.end19, %if.end19, %if.end19, %if.end19
-  %call22 = tail call i32 @reverse_condition_maybe_unordered(i32 %code) #8
-  br label %return
+  %call22 = tail call i32 @reverse_condition_maybe_unordered(i32 %code) #10, !dbg !1120
+  br label %return, !dbg !1120
 
 sw.epilog:                                        ; preds = %if.end19
-  %5 = load i32* @flag_unsafe_math_optimizations, align 4, !tbaa !0
-  %tobool = icmp eq i32 %5, 0
-  br i1 %tobool, label %if.end90, label %if.then24
+  %5 = load i32* @flag_unsafe_math_optimizations, align 4, !dbg !1121, !tbaa !806
+  %tobool = icmp eq i32 %5, 0, !dbg !1121
+  br i1 %tobool, label %if.end90, label %if.then24, !dbg !1121
 
 if.then24:                                        ; preds = %sw.epilog
-  %call25 = tail call i32 @reverse_condition(i32 %code) #8
-  br label %return
+  %call25 = tail call i32 @reverse_condition(i32 %code) #10, !dbg !1122
+  br label %return, !dbg !1122
 
 if.end90:                                         ; preds = %sw.epilog
-  %bf.clear92 = and i32 %bf.load, 65535
-  %cmp93 = icmp eq i32 %bf.clear92, 54
-  br i1 %cmp93, label %if.then120, label %lor.lhs.false
+  %bf.clear92 = and i32 %bf.load, 65535, !dbg !1123
+  %cmp93 = icmp eq i32 %bf.clear92, 54, !dbg !1123
+  br i1 %cmp93, label %if.then120, label %lor.lhs.false, !dbg !1123
 
 lor.lhs.false:                                    ; preds = %if.end90
-  %bf.clear97 = and i32 %bf.load, 16711680
-  %cmp98 = icmp eq i32 %bf.clear97, 0
-  br i1 %cmp98, label %return, label %land.lhs.true100
+  %bf.clear97 = and i32 %bf.load, 16711680, !dbg !1123
+  %cmp98 = icmp eq i32 %bf.clear97, 0, !dbg !1123
+  br i1 %cmp98, label %return, label %land.lhs.true100, !dbg !1123
 
 land.lhs.true100:                                 ; preds = %lor.lhs.false
-  %idxprom101164 = zext i32 %mode.0 to i64
-  %arrayidx102 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom101164
-  %6 = load i32* %arrayidx102, align 4, !tbaa !4
+  %idxprom101164 = zext i32 %mode.0 to i64, !dbg !1123
+  %arrayidx102 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom101164, !dbg !1123
+  %6 = load i32* %arrayidx102, align 4, !dbg !1123, !tbaa !1114
   switch i32 %6, label %if.then120 [
     i32 4, label %return
     i32 2, label %return
     i32 6, label %return
     i32 8, label %return
-  ]
+  ], !dbg !1123
 
 if.then120:                                       ; preds = %land.lhs.true100, %if.end90
-  %call121 = tail call i32 @reverse_condition(i32 %code) #8
-  br label %return
+  %call121 = tail call i32 @reverse_condition(i32 %code) #10, !dbg !1124
+  br label %return, !dbg !1124
 
 return:                                           ; preds = %lor.lhs.false, %land.lhs.true100, %land.lhs.true100, %land.lhs.true100, %land.lhs.true100, %if.end19, %if.end19, %if.end19, %if.end19, %cond.true, %cond.false, %entry, %if.then120, %if.then24, %sw.bb21, %sw.bb
   %retval.0 = phi i32 [ %call25, %if.then24 ], [ %call121, %if.then120 ], [ %call22, %sw.bb21 ], [ %call20, %sw.bb ], [ 0, %entry ], [ %call, %cond.true ], [ %call18, %cond.false ], [ 0, %if.end19 ], [ 0, %if.end19 ], [ 0, %if.end19 ], [ 0, %if.end19 ], [ 0, %land.lhs.true100 ], [ 0, %land.lhs.true100 ], [ 0, %land.lhs.true100 ], [ 0, %land.lhs.true100 ], [ 0, %lor.lhs.false ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1125
 }

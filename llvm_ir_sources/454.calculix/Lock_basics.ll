@@ -1,125 +1,128 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 %struct._Lock = type { i8*, i32, i32 }
 
-@__stderrp = external global %struct.__sFILE*
+@stderr = external global %struct._IO_FILE*
 @.str = private unnamed_addr constant [49 x i8] c"\0A ALLOCATE failure : bytes %zd, line %d, file %s\00", align 1
-@.str1 = private unnamed_addr constant [89 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c\00", align 1
+@.str1 = private unnamed_addr constant [77 x i8] c"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c\00", align 1
 @.str2 = private unnamed_addr constant [54 x i8] c"\0A fatal error in Lock_setDefaultFields(%p)\0A bad input\00", align 1
 @.str3 = private unnamed_addr constant [48 x i8] c"\0A fatal error in Lock_clearData(%p)\0A bad input\0A\00", align 1
 @.str4 = private unnamed_addr constant [43 x i8] c"\0A fatal error in Lock_free(%p)\0A bad input\0A\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define %struct._Lock* @Lock_new() #0 {
-  %1 = tail call i8* @malloc(i64 16) #5, !dbg !39
-  %2 = bitcast i8* %1 to %struct._Lock*, !dbg !39
-  tail call void @llvm.dbg.value(metadata %struct._Lock* %2, i64 0, metadata !23, metadata !43), !dbg !44
-  %3 = icmp eq i8* %1, null, !dbg !39
-  br i1 %3, label %4, label %7, !dbg !45
+entry:
+  %call = tail call noalias i8* @malloc(i64 16) #5, !dbg !31
+  %0 = bitcast i8* %call to %struct._Lock*, !dbg !31
+  tail call void @llvm.dbg.value(metadata !{%struct._Lock* %0}, i64 0, metadata !19), !dbg !31
+  %cmp = icmp eq i8* %call, null, !dbg !31
+  br i1 %cmp, label %if.then, label %if.end, !dbg !31
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !46, !tbaa !48
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 16, i32 21, i8* getelementptr inbounds ([89 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !46
-  tail call void @exit(i32 -1) #6, !dbg !46
-  unreachable, !dbg !46
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !33, !tbaa !35
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 16, i32 21, i8* getelementptr inbounds ([77 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !33
+  tail call void @exit(i32 -1) #6, !dbg !33
+  unreachable, !dbg !33
 
-; <label>:7                                       ; preds = %0
-  tail call void @Lock_setDefaultFields(%struct._Lock* %2) #7, !dbg !52
-  ret %struct._Lock* %2, !dbg !53
+if.end:                                           ; preds = %entry
+  tail call void @Lock_setDefaultFields(%struct._Lock* %0) #7, !dbg !38
+  ret %struct._Lock* %0, !dbg !39
 }
 
 ; Function Attrs: nounwind optsize
 declare noalias i8* @malloc(i64) #1
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #1
+declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #1
 
-; Function Attrs: noreturn optsize
+; Function Attrs: noreturn nounwind optsize
 declare void @exit(i32) #2
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @Lock_setDefaultFields(%struct._Lock* %lock) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Lock* %lock, i64 0, metadata !28, metadata !43), !dbg !54
-  %1 = icmp eq %struct._Lock* %lock, null, !dbg !55
-  br i1 %1, label %2, label %5, !dbg !57
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Lock* %lock}, i64 0, metadata !24), !dbg !40
+  %cmp = icmp eq %struct._Lock* %lock, null, !dbg !41
+  br i1 %cmp, label %if.then, label %if.end, !dbg !41
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !58, !tbaa !48
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), %struct._Lock* null) #5, !dbg !60
-  tail call void @exit(i32 -1) #6, !dbg !61
-  unreachable, !dbg !61
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !42, !tbaa !35
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), %struct._Lock* null) #5, !dbg !42
+  tail call void @exit(i32 -1) #6, !dbg !44
+  unreachable, !dbg !44
 
-; <label>:5                                       ; preds = %0
-  %6 = bitcast %struct._Lock* %lock to i8*, !dbg !62
-  call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 16, i32 8, i1 false), !dbg !63
-  ret void, !dbg !62
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct._Lock* %lock to i8*, !dbg !45
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 16, i32 8, i1 false), !dbg !46
+  ret void, !dbg !45
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @Lock_clearData(%struct._Lock* %lock) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Lock* %lock, i64 0, metadata !31, metadata !43), !dbg !64
-  %1 = icmp eq %struct._Lock* %lock, null, !dbg !65
-  br i1 %1, label %2, label %5, !dbg !67
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Lock* %lock}, i64 0, metadata !27), !dbg !47
+  %cmp = icmp eq %struct._Lock* %lock, null, !dbg !48
+  br i1 %cmp, label %if.then, label %if.end, !dbg !48
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !68, !tbaa !48
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([48 x i8]* @.str3, i64 0, i64 0), %struct._Lock* null) #5, !dbg !70
-  tail call void @exit(i32 -1) #6, !dbg !71
-  unreachable, !dbg !71
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !49, !tbaa !35
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str3, i64 0, i64 0), %struct._Lock* null) #5, !dbg !49
+  tail call void @exit(i32 -1) #6, !dbg !51
+  unreachable, !dbg !51
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Lock* %lock, i64 0, i32 0, !dbg !72
-  %7 = load i8** %6, align 8, !dbg !72, !tbaa !74
-  %8 = icmp eq i8* %7, null, !dbg !77
-  br i1 %8, label %10, label %9, !dbg !78
+if.end:                                           ; preds = %entry
+  %mutex = getelementptr inbounds %struct._Lock* %lock, i64 0, i32 0, !dbg !52
+  %1 = load i8** %mutex, align 8, !dbg !52, !tbaa !35
+  %cmp1 = icmp eq i8* %1, null, !dbg !52
+  br i1 %cmp1, label %if.end9, label %if.then5, !dbg !52
 
-; <label>:9                                       ; preds = %5
-  tail call void @free(i8* %7) #7, !dbg !79
-  store i8* null, i8** %6, align 8, !dbg !79, !tbaa !74
-  br label %10, !dbg !79
+if.then5:                                         ; preds = %if.end
+  tail call void @free(i8* %1) #5, !dbg !53
+  store i8* null, i8** %mutex, align 8, !dbg !53, !tbaa !35
+  br label %if.end9, !dbg !53
 
-; <label>:10                                      ; preds = %5, %9
-  tail call void @Lock_setDefaultFields(%struct._Lock* %lock) #7, !dbg !83
-  ret void, !dbg !84
+if.end9:                                          ; preds = %if.end, %if.then5
+  tail call void @Lock_setDefaultFields(%struct._Lock* %lock) #7, !dbg !56
+  ret void, !dbg !57
 }
 
 ; Function Attrs: nounwind optsize
 declare void @free(i8* nocapture) #1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @Lock_free(%struct._Lock* %lock) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Lock* %lock, i64 0, metadata !34, metadata !43), !dbg !85
-  %1 = icmp eq %struct._Lock* %lock, null, !dbg !86
-  br i1 %1, label %2, label %5, !dbg !88
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Lock* %lock}, i64 0, metadata !30), !dbg !58
+  %cmp = icmp eq %struct._Lock* %lock, null, !dbg !59
+  br i1 %cmp, label %if.then, label %if.end, !dbg !59
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !89, !tbaa !48
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([43 x i8]* @.str4, i64 0, i64 0), %struct._Lock* null) #5, !dbg !91
-  tail call void @exit(i32 -1) #6, !dbg !92
-  unreachable, !dbg !92
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !60, !tbaa !35
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([43 x i8]* @.str4, i64 0, i64 0), %struct._Lock* null) #5, !dbg !60
+  tail call void @exit(i32 -1) #6, !dbg !62
+  unreachable, !dbg !62
 
-; <label>:5                                       ; preds = %0
-  tail call void @Lock_clearData(%struct._Lock* %lock) #7, !dbg !93
-  %6 = bitcast %struct._Lock* %lock to i8*, !dbg !94
-  tail call void @free(i8* %6) #7, !dbg !94
-  tail call void @llvm.dbg.value(metadata %struct._Lock* null, i64 0, metadata !34, metadata !43), !dbg !85
-  ret void, !dbg !97
+if.end:                                           ; preds = %entry
+  tail call void @Lock_clearData(%struct._Lock* %lock) #7, !dbg !63
+  %1 = bitcast %struct._Lock* %lock to i8*, !dbg !64
+  tail call void @free(i8* %1) #5, !dbg !64
+  tail call void @llvm.dbg.value(metadata !66, i64 0, metadata !30), !dbg !64
+  ret void, !dbg !67
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #3
+declare void @llvm.dbg.value(metadata, i64, metadata) #3
 
 ; Function Attrs: nounwind
 declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #4
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #3 = { nounwind readnone }
 attributes #4 = { nounwind }
 attributes #5 = { nounwind optsize }
@@ -127,104 +130,72 @@ attributes #6 = { noreturn nounwind optsize }
 attributes #7 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!35, !36, !37}
-!llvm.ident = !{!38}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !16, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !13, !9, !14}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DICompositeType(tag: DW_TAG_structure_type, name: "_Lock", file: !6, line: 37, size: 128, align: 64, elements: !7)
-!6 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/../Lock.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!7 = !{!8, !10, !12}
-!8 = !DIDerivedType(tag: DW_TAG_member, name: "mutex", scope: !5, file: !6, line: 45, baseType: !9, size: 64, align: 64)
-!9 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!10 = !DIDerivedType(tag: DW_TAG_member, name: "nlocks", scope: !5, file: !6, line: 47, baseType: !11, size: 32, align: 32, offset: 64)
-!11 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!12 = !DIDerivedType(tag: DW_TAG_member, name: "nunlocks", scope: !5, file: !6, line: 48, baseType: !11, size: 32, align: 32, offset: 96)
-!13 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!14 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !15, size: 64, align: 64)
-!15 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!16 = !{!17, !24, !29, !32}
-!17 = !DISubprogram(name: "Lock_new", scope: !1, file: !1, line: 16, type: !18, isLocal: false, isDefinition: true, scopeLine: 18, flags: DIFlagPrototyped, isOptimized: true, function: %struct._Lock* ()* @Lock_new, variables: !22)
-!18 = !DISubroutineType(types: !19)
-!19 = !{!20}
-!20 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !21, size: 64, align: 64)
-!21 = !DIDerivedType(tag: DW_TAG_typedef, name: "Lock", file: !6, line: 36, baseType: !5)
-!22 = !{!23}
-!23 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "lock", scope: !17, file: !1, line: 19, type: !20)
-!24 = !DISubprogram(name: "Lock_setDefaultFields", scope: !1, file: !1, line: 35, type: !25, isLocal: false, isDefinition: true, scopeLine: 37, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._Lock*)* @Lock_setDefaultFields, variables: !27)
-!25 = !DISubroutineType(types: !26)
-!26 = !{null, !20}
-!27 = !{!28}
-!28 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "lock", arg: 1, scope: !24, file: !1, line: 36, type: !20)
-!29 = !DISubprogram(name: "Lock_clearData", scope: !1, file: !1, line: 58, type: !25, isLocal: false, isDefinition: true, scopeLine: 60, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._Lock*)* @Lock_clearData, variables: !30)
-!30 = !{!31}
-!31 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "lock", arg: 1, scope: !29, file: !1, line: 59, type: !20)
-!32 = !DISubprogram(name: "Lock_free", scope: !1, file: !1, line: 108, type: !25, isLocal: false, isDefinition: true, scopeLine: 110, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._Lock*)* @Lock_free, variables: !33)
-!33 = !{!34}
-!34 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "lock", arg: 1, scope: !32, file: !1, line: 109, type: !20)
-!35 = !{i32 2, !"Dwarf Version", i32 2}
-!36 = !{i32 2, !"Debug Info Version", i32 700000003}
-!37 = !{i32 1, !"PIC Level", i32 2}
-!38 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!39 = !DILocation(line: 21, column: 1, scope: !40)
-!40 = distinct !DILexicalBlock(scope: !41, file: !1, line: 21, column: 1)
-!41 = distinct !DILexicalBlock(scope: !42, file: !1, line: 21, column: 1)
-!42 = distinct !DILexicalBlock(scope: !17, file: !1, line: 21, column: 1)
-!43 = !DIExpression()
-!44 = !DILocation(line: 19, column: 9, scope: !17)
-!45 = !DILocation(line: 21, column: 1, scope: !41)
-!46 = !DILocation(line: 21, column: 1, scope: !47)
-!47 = distinct !DILexicalBlock(scope: !40, file: !1, line: 21, column: 1)
-!48 = !{!49, !49, i64 0}
-!49 = !{!"any pointer", !50, i64 0}
-!50 = !{!"omnipotent char", !51, i64 0}
-!51 = !{!"Simple C/C++ TBAA"}
-!52 = !DILocation(line: 22, column: 1, scope: !17)
-!53 = !DILocation(line: 24, column: 1, scope: !17)
-!54 = !DILocation(line: 36, column: 12, scope: !24)
-!55 = !DILocation(line: 38, column: 11, scope: !56)
-!56 = distinct !DILexicalBlock(scope: !24, file: !1, line: 38, column: 6)
-!57 = !DILocation(line: 38, column: 6, scope: !24)
-!58 = !DILocation(line: 39, column: 12, scope: !59)
-!59 = distinct !DILexicalBlock(scope: !56, file: !1, line: 38, column: 21)
-!60 = !DILocation(line: 39, column: 4, scope: !59)
-!61 = !DILocation(line: 41, column: 4, scope: !59)
-!62 = !DILocation(line: 47, column: 1, scope: !24)
-!63 = !DILocation(line: 45, column: 16, scope: !24)
-!64 = !DILocation(line: 59, column: 12, scope: !29)
-!65 = !DILocation(line: 66, column: 11, scope: !66)
-!66 = distinct !DILexicalBlock(scope: !29, file: !1, line: 66, column: 6)
-!67 = !DILocation(line: 66, column: 6, scope: !29)
-!68 = !DILocation(line: 67, column: 12, scope: !69)
-!69 = distinct !DILexicalBlock(scope: !66, file: !1, line: 66, column: 21)
-!70 = !DILocation(line: 67, column: 4, scope: !69)
-!71 = !DILocation(line: 69, column: 4, scope: !69)
-!72 = !DILocation(line: 76, column: 12, scope: !73)
-!73 = distinct !DILexicalBlock(scope: !29, file: !1, line: 76, column: 6)
-!74 = !{!75, !49, i64 0}
-!75 = !{!"_Lock", !49, i64 0, !76, i64 8, !76, i64 12}
-!76 = !{!"int", !50, i64 0}
-!77 = !DILocation(line: 76, column: 18, scope: !73)
-!78 = !DILocation(line: 76, column: 6, scope: !29)
-!79 = !DILocation(line: 88, column: 4, scope: !80)
-!80 = distinct !DILexicalBlock(scope: !81, file: !1, line: 88, column: 4)
-!81 = distinct !DILexicalBlock(scope: !82, file: !1, line: 88, column: 4)
-!82 = distinct !DILexicalBlock(scope: !73, file: !1, line: 76, column: 28)
-!83 = !DILocation(line: 95, column: 1, scope: !29)
-!84 = !DILocation(line: 97, column: 1, scope: !29)
-!85 = !DILocation(line: 109, column: 12, scope: !32)
-!86 = !DILocation(line: 111, column: 11, scope: !87)
-!87 = distinct !DILexicalBlock(scope: !32, file: !1, line: 111, column: 6)
-!88 = !DILocation(line: 111, column: 6, scope: !32)
-!89 = !DILocation(line: 112, column: 12, scope: !90)
-!90 = distinct !DILexicalBlock(scope: !87, file: !1, line: 111, column: 21)
-!91 = !DILocation(line: 112, column: 4, scope: !90)
-!92 = !DILocation(line: 114, column: 4, scope: !90)
-!93 = !DILocation(line: 116, column: 1, scope: !32)
-!94 = !DILocation(line: 117, column: 1, scope: !95)
-!95 = distinct !DILexicalBlock(scope: !96, file: !1, line: 117, column: 1)
-!96 = distinct !DILexicalBlock(scope: !32, file: !1, line: 117, column: 1)
-!97 = !DILocation(line: 119, column: 1, scope: !32)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !20, metadata !25, metadata !28}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Lock_new", metadata !"Lock_new", metadata !"", i32 16, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct._Lock* ()* @Lock_new, null, null, metadata !18, i32 18} ; [ DW_TAG_subprogram ] [line 16] [def] [scope 18] [Lock_new]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from Lock]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"Lock", i32 36, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [Lock] [line 36, size 0, align 0, offset 0] [from _Lock]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"_Lock", i32 37, i64 128, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [_Lock] [line 37, size 128, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/../Lock.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13, metadata !15, metadata !17}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"mutex", i32 45, i64 64, i64 64, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [mutex] [line 45, size 64, align 64, offset 0] [from ]
+!14 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!15 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"nlocks", i32 47, i64 32, i64 32, i64 64, i32 0, metadata !16} ; [ DW_TAG_member ] [nlocks] [line 47, size 32, align 32, offset 64] [from int]
+!16 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!17 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"nunlocks", i32 48, i64 32, i64 32, i64 96, i32 0, metadata !16} ; [ DW_TAG_member ] [nunlocks] [line 48, size 32, align 32, offset 96] [from int]
+!18 = metadata !{metadata !19}
+!19 = metadata !{i32 786688, metadata !4, metadata !"lock", metadata !5, i32 19, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [lock] [line 19]
+!20 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Lock_setDefaultFields", metadata !"Lock_setDefaultFields", metadata !"", i32 35, metadata !21, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._Lock*)* @Lock_setDefaultFields, null, null, metadata !23, i32 37} ; [ DW_TAG_subprogram ] [line 35] [def] [scope 37] [Lock_setDefaultFields]
+!21 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !22, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!22 = metadata !{null, metadata !8}
+!23 = metadata !{metadata !24}
+!24 = metadata !{i32 786689, metadata !20, metadata !"lock", metadata !5, i32 16777252, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [lock] [line 36]
+!25 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Lock_clearData", metadata !"Lock_clearData", metadata !"", i32 58, metadata !21, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._Lock*)* @Lock_clearData, null, null, metadata !26, i32 60} ; [ DW_TAG_subprogram ] [line 58] [def] [scope 60] [Lock_clearData]
+!26 = metadata !{metadata !27}
+!27 = metadata !{i32 786689, metadata !25, metadata !"lock", metadata !5, i32 16777275, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [lock] [line 59]
+!28 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Lock_free", metadata !"Lock_free", metadata !"", i32 108, metadata !21, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._Lock*)* @Lock_free, null, null, metadata !29, i32 110} ; [ DW_TAG_subprogram ] [line 108] [def] [scope 110] [Lock_free]
+!29 = metadata !{metadata !30}
+!30 = metadata !{i32 786689, metadata !28, metadata !"lock", metadata !5, i32 16777325, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [lock] [line 109]
+!31 = metadata !{i32 21, i32 0, metadata !32, null}
+!32 = metadata !{i32 786443, metadata !1, metadata !4, i32 21, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c]
+!33 = metadata !{i32 21, i32 0, metadata !34, null}
+!34 = metadata !{i32 786443, metadata !1, metadata !32, i32 21, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c]
+!35 = metadata !{metadata !"any pointer", metadata !36}
+!36 = metadata !{metadata !"omnipotent char", metadata !37}
+!37 = metadata !{metadata !"Simple C/C++ TBAA"}
+!38 = metadata !{i32 22, i32 0, metadata !4, null}
+!39 = metadata !{i32 24, i32 0, metadata !4, null}
+!40 = metadata !{i32 36, i32 0, metadata !20, null}
+!41 = metadata !{i32 38, i32 0, metadata !20, null}
+!42 = metadata !{i32 39, i32 0, metadata !43, null}
+!43 = metadata !{i32 786443, metadata !1, metadata !20, i32 38, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c]
+!44 = metadata !{i32 41, i32 0, metadata !43, null}
+!45 = metadata !{i32 47, i32 0, metadata !20, null}
+!46 = metadata !{i32 45, i32 0, metadata !20, null}
+!47 = metadata !{i32 59, i32 0, metadata !25, null}
+!48 = metadata !{i32 66, i32 0, metadata !25, null}
+!49 = metadata !{i32 67, i32 0, metadata !50, null}
+!50 = metadata !{i32 786443, metadata !1, metadata !25, i32 66, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c]
+!51 = metadata !{i32 69, i32 0, metadata !50, null}
+!52 = metadata !{i32 76, i32 0, metadata !25, null}
+!53 = metadata !{i32 88, i32 0, metadata !54, null}
+!54 = metadata !{i32 786443, metadata !1, metadata !55, i32 88, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c]
+!55 = metadata !{i32 786443, metadata !1, metadata !25, i32 76, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c]
+!56 = metadata !{i32 95, i32 0, metadata !25, null}
+!57 = metadata !{i32 97, i32 0, metadata !25, null}
+!58 = metadata !{i32 109, i32 0, metadata !28, null}
+!59 = metadata !{i32 111, i32 0, metadata !28, null}
+!60 = metadata !{i32 112, i32 0, metadata !61, null}
+!61 = metadata !{i32 786443, metadata !1, metadata !28, i32 111, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c]
+!62 = metadata !{i32 114, i32 0, metadata !61, null}
+!63 = metadata !{i32 116, i32 0, metadata !28, null}
+!64 = metadata !{i32 117, i32 0, metadata !65, null}
+!65 = metadata !{i32 786443, metadata !1, metadata !28, i32 117, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Lock/src/Lock_basics.c]
+!66 = metadata !{%struct._Lock* null}
+!67 = metadata !{i32 119, i32 0, metadata !28, null}

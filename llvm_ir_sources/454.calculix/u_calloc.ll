@@ -1,96 +1,81 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/u_calloc.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/454.calculix/src/u_calloc.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 @.str1 = private unnamed_addr constant [18 x i8] c"num=%zd,size=%zd\0A\00", align 1
 @str = private unnamed_addr constant [44 x i8] c"*ERROR in u_calloc: error allocating memory\00"
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define noalias i8* @u_calloc(i64 %num, i64 %size) #0 {
-  tail call void @llvm.dbg.value(metadata i64 %num, i64 0, metadata !15, metadata !22), !dbg !23
-  tail call void @llvm.dbg.value(metadata i64 %size, i64 0, metadata !16, metadata !22), !dbg !24
-  %1 = icmp eq i64 %num, 0, !dbg !25
-  br i1 %1, label %7, label %2, !dbg !27
+entry:
+  tail call void @llvm.dbg.value(metadata !{i64 %num}, i64 0, metadata !12), !dbg !15
+  tail call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !13), !dbg !15
+  %cmp = icmp eq i64 %num, 0, !dbg !16
+  br i1 %cmp, label %return, label %if.end, !dbg !16
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i8* @calloc(i64 %num, i64 %size) #5, !dbg !28
-  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !17, metadata !22), !dbg !29
-  %4 = icmp eq i8* %3, null, !dbg !30
-  br i1 %4, label %5, label %7, !dbg !32
+if.end:                                           ; preds = %entry
+  %call = tail call noalias i8* @calloc(i64 %num, i64 %size) #5, !dbg !17
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !14), !dbg !17
+  %cmp1 = icmp eq i8* %call, null, !dbg !18
+  br i1 %cmp1, label %if.then2, label %return, !dbg !18
 
-; <label>:5                                       ; preds = %2
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([44 x i8]* @str, i64 0, i64 0)), !dbg !33
-  %6 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([18 x i8]* @.str1, i64 0, i64 0), i64 %num, i64 %size) #5, !dbg !35
-  tail call void @exit(i32 16) #6, !dbg !36
-  unreachable, !dbg !36
+if.then2:                                         ; preds = %if.end
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([44 x i8]* @str, i64 0, i64 0)), !dbg !19
+  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([18 x i8]* @.str1, i64 0, i64 0), i64 %num, i64 %size) #5, !dbg !21
+  tail call void @exit(i32 16) #6, !dbg !22
+  unreachable, !dbg !22
 
-; <label>:7                                       ; preds = %2, %0
-  %.0 = phi i8* [ null, %0 ], [ %3, %2 ]
-  ret i8* %.0, !dbg !37
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i8* [ null, %entry ], [ %call, %if.end ]
+  ret i8* %retval.0, !dbg !23
 }
 
 ; Function Attrs: nounwind optsize
 declare noalias i8* @calloc(i64, i64) #1
 
 ; Function Attrs: nounwind optsize
-declare i32 @printf(i8* nocapture readonly, ...) #1
+declare i32 @printf(i8* nocapture, ...) #1
 
-; Function Attrs: noreturn optsize
+; Function Attrs: noreturn nounwind optsize
 declare void @exit(i32) #2
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #3
+declare void @llvm.dbg.value(metadata, i64, metadata) #3
 
 ; Function Attrs: nounwind
-declare i32 @puts(i8* nocapture readonly) #4
+declare i32 @puts(i8* nocapture) #4
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #3 = { nounwind readnone }
 attributes #4 = { nounwind }
 attributes #5 = { nounwind optsize }
 attributes #6 = { noreturn nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!18, !19, !20}
-!llvm.ident = !{!21}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !5, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/u_calloc.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!5 = !{!6}
-!6 = !DISubprogram(name: "u_calloc", scope: !1, file: !1, line: 25, type: !7, isLocal: false, isDefinition: true, scopeLine: 25, flags: DIFlagPrototyped, isOptimized: true, function: i8* (i64, i64)* @u_calloc, variables: !14)
-!7 = !DISubroutineType(types: !8)
-!8 = !{!4, !9, !9}
-!9 = !DIDerivedType(tag: DW_TAG_typedef, name: "size_t", file: !10, line: 30, baseType: !11)
-!10 = !DIFile(filename: "/usr/include/sys/_types/_size_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!11 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_size_t", file: !12, line: 92, baseType: !13)
-!12 = !DIFile(filename: "/usr/include/i386/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!13 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!14 = !{!15, !16, !17}
-!15 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "num", arg: 1, scope: !6, file: !1, line: 25, type: !9)
-!16 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "size", arg: 2, scope: !6, file: !1, line: 25, type: !9)
-!17 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "a", scope: !6, file: !1, line: 27, type: !4)
-!18 = !{i32 2, !"Dwarf Version", i32 2}
-!19 = !{i32 2, !"Debug Info Version", i32 700000003}
-!20 = !{i32 1, !"PIC Level", i32 2}
-!21 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!22 = !DIExpression()
-!23 = !DILocation(line: 25, column: 23, scope: !6)
-!24 = !DILocation(line: 25, column: 34, scope: !6)
-!25 = !DILocation(line: 28, column: 9, scope: !26)
-!26 = distinct !DILexicalBlock(scope: !6, file: !1, line: 28, column: 6)
-!27 = !DILocation(line: 28, column: 6, scope: !6)
-!28 = !DILocation(line: 33, column: 5, scope: !6)
-!29 = !DILocation(line: 27, column: 9, scope: !6)
-!30 = !DILocation(line: 34, column: 7, scope: !31)
-!31 = distinct !DILexicalBlock(scope: !6, file: !1, line: 34, column: 6)
-!32 = !DILocation(line: 34, column: 6, scope: !6)
-!33 = !DILocation(line: 35, column: 5, scope: !34)
-!34 = distinct !DILexicalBlock(scope: !31, file: !1, line: 34, column: 14)
-!35 = !DILocation(line: 39, column: 5, scope: !34)
-!36 = !DILocation(line: 41, column: 5, scope: !34)
-!37 = !DILocation(line: 46, column: 1, scope: !6)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/u_calloc.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/u_calloc.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"u_calloc", metadata !"u_calloc", metadata !"", i32 25, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* (i64, i64)* @u_calloc, null, null, metadata !11, i32 25} ; [ DW_TAG_subprogram ] [line 25] [def] [u_calloc]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/u_calloc.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8, metadata !9, metadata !9}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"size_t", i32 42, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [size_t] [line 42, size 0, align 0, offset 0] [from long unsigned int]
+!10 = metadata !{i32 786468, null, null, metadata !"long unsigned int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [long unsigned int] [line 0, size 64, align 64, offset 0, enc DW_ATE_unsigned]
+!11 = metadata !{metadata !12, metadata !13, metadata !14}
+!12 = metadata !{i32 786689, metadata !4, metadata !"num", metadata !5, i32 16777241, metadata !9, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [num] [line 25]
+!13 = metadata !{i32 786689, metadata !4, metadata !"size", metadata !5, i32 33554457, metadata !9, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [size] [line 25]
+!14 = metadata !{i32 786688, metadata !4, metadata !"a", metadata !5, i32 27, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [a] [line 27]
+!15 = metadata !{i32 25, i32 0, metadata !4, null}
+!16 = metadata !{i32 28, i32 0, metadata !4, null}
+!17 = metadata !{i32 33, i32 0, metadata !4, null}
+!18 = metadata !{i32 34, i32 0, metadata !4, null}
+!19 = metadata !{i32 35, i32 0, metadata !20, null}
+!20 = metadata !{i32 786443, metadata !1, metadata !4, i32 34, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/u_calloc.c]
+!21 = metadata !{i32 39, i32 0, metadata !20, null}
+!22 = metadata !{i32 41, i32 0, metadata !20, null}
+!23 = metadata !{i32 46, i32 0, metadata !4, null}

@@ -1,16 +1,19 @@
 define internal fastcc i32 @target_char_cast(%union.tree_node* %cst, i8* nocapture %p) #0 {
 entry:
-  %call = tail call i32 @host_integerp(%union.tree_node* %cst, i32 1) #7
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %cst}, i64 0, metadata !2306), !dbg !4332
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !2307), !dbg !4333
+  %call = tail call i32 @host_integerp(%union.tree_node* %cst, i32 1) #8, !dbg !4334
+  %tobool = icmp eq i32 %call, 0, !dbg !4334
+  br i1 %tobool, label %return, label %if.end, !dbg !4334
 
 if.end:                                           ; preds = %entry
-  %call1 = tail call i64 @tree_low_cst(%union.tree_node* %cst, i32 1) #7
-  %conv = trunc i64 %call1 to i8
-  store i8 %conv, i8* %p, align 1, !tbaa !1
-  br label %return
+  %call1 = tail call i64 @tree_low_cst(%union.tree_node* %cst, i32 1) #8, !dbg !4335
+  tail call void @llvm.dbg.value(metadata !{i64 %call1}, i64 0, metadata !2308), !dbg !4335
+  %conv = trunc i64 %call1 to i8, !dbg !4336
+  store i8 %conv, i8* %p, align 1, !dbg !4336, !tbaa !2684
+  br label %return, !dbg !4337
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i32 [ 0, %if.end ], [ 1, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !4337
 }

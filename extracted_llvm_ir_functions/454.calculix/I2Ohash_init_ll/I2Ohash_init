@@ -1,107 +1,108 @@
 define void @I2Ohash_init(%struct._I2Ohash* %hashtable, i32 %nlist, i32 %nobj, i32 %grow) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._I2Ohash* %hashtable, i64 0, metadata !35, metadata !44), !dbg !45
-  tail call void @llvm.dbg.value(metadata i32 %nlist, i64 0, metadata !36, metadata !44), !dbg !46
-  tail call void @llvm.dbg.value(metadata i32 %nobj, i64 0, metadata !37, metadata !44), !dbg !47
-  tail call void @llvm.dbg.value(metadata i32 %grow, i64 0, metadata !38, metadata !44), !dbg !48
-  %1 = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !49
-  %2 = icmp slt i32 %nlist, 1, !dbg !51
-  %or.cond = or i1 %1, %2, !dbg !52
-  br i1 %or.cond, label %3, label %6, !dbg !52
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._I2Ohash* %hashtable}, i64 0, metadata !34), !dbg !39
+  tail call void @llvm.dbg.value(metadata !{i32 %nlist}, i64 0, metadata !35), !dbg !40
+  tail call void @llvm.dbg.value(metadata !{i32 %nobj}, i64 0, metadata !36), !dbg !41
+  tail call void @llvm.dbg.value(metadata !{i32 %grow}, i64 0, metadata !37), !dbg !42
+  %cmp = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !43
+  %cmp1 = icmp slt i32 %nlist, 1, !dbg !43
+  %or.cond = or i1 %cmp, %cmp1, !dbg !43
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !43
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !53, !tbaa !55
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([87 x i8]* @.str, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %nlist, i32 %nobj, i32 %grow, i32 %nlist) #5, !dbg !59
-  tail call void @exit(i32 -1) #6, !dbg !60
-  unreachable, !dbg !60
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !44, !tbaa !46
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([87 x i8]* @.str, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %nlist, i32 %nobj, i32 %grow, i32 %nlist) #5, !dbg !44
+  tail call void @exit(i32 -1) #6, !dbg !49
+  unreachable, !dbg !49
 
-; <label>:6                                       ; preds = %0
-  %7 = icmp slt i32 %nobj, 1, !dbg !61
-  %8 = icmp slt i32 %grow, 1, !dbg !63
-  %or.cond3 = and i1 %7, %8, !dbg !64
-  br i1 %or.cond3, label %9, label %12, !dbg !64
+if.end:                                           ; preds = %entry
+  %cmp2 = icmp slt i32 %nobj, 1, !dbg !50
+  %cmp3 = icmp slt i32 %grow, 1, !dbg !50
+  %or.cond71 = and i1 %cmp2, %cmp3, !dbg !50
+  br i1 %or.cond71, label %if.then4, label %if.end6, !dbg !50
 
-; <label>:9                                       ; preds = %6
-  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !65, !tbaa !55
-  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([61 x i8]* @.str1, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %nlist, i32 %nobj, i32 %grow, i32 %nobj, i32 %grow) #5, !dbg !67
-  tail call void @exit(i32 -1) #6, !dbg !68
-  unreachable, !dbg !68
+if.then4:                                         ; preds = %if.end
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !51, !tbaa !46
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([61 x i8]* @.str1, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %nlist, i32 %nobj, i32 %grow, i32 %nobj, i32 %grow) #5, !dbg !51
+  tail call void @exit(i32 -1) #6, !dbg !53
+  unreachable, !dbg !53
 
-; <label>:12                                      ; preds = %6
-  tail call void @I2Ohash_clearData(%struct._I2Ohash* %hashtable) #5, !dbg !69
-  %13 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !70
-  store i32 %nlist, i32* %13, align 4, !dbg !71, !tbaa !72
-  %14 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 1, !dbg !75
-  store i32 %grow, i32* %14, align 4, !dbg !76, !tbaa !77
-  %15 = icmp sgt i32 %nobj, 0, !dbg !78
-  br i1 %15, label %16, label %23, !dbg !80
+if.end6:                                          ; preds = %if.end
+  tail call void @I2Ohash_clearData(%struct._I2Ohash* %hashtable) #5, !dbg !54
+  %nlist7 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !55
+  store i32 %nlist, i32* %nlist7, align 4, !dbg !55, !tbaa !56
+  %grow8 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 1, !dbg !57
+  store i32 %grow, i32* %grow8, align 4, !dbg !57, !tbaa !56
+  %cmp9 = icmp sgt i32 %nobj, 0, !dbg !58
+  br i1 %cmp9, label %if.then10, label %if.end14, !dbg !58
 
-; <label>:16                                      ; preds = %12
-  %17 = add nsw i32 %nobj, 1, !dbg !81
-  %18 = tail call %struct._I2OP* @I2OP_init(i32 %17, i32 1) #5, !dbg !83
-  %19 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 3, !dbg !84
-  store %struct._I2OP* %18, %struct._I2OP** %19, align 8, !dbg !85, !tbaa !86
-  %20 = getelementptr inbounds %struct._I2OP* %18, i64 1, !dbg !87
-  %21 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 4, !dbg !88
-  store %struct._I2OP* %20, %struct._I2OP** %21, align 8, !dbg !89, !tbaa !90
-  %22 = getelementptr inbounds %struct._I2OP* %18, i64 0, i32 3, !dbg !91
-  store %struct._I2OP* null, %struct._I2OP** %22, align 8, !dbg !92, !tbaa !93
-  br label %23, !dbg !95
+if.then10:                                        ; preds = %if.end6
+  %add = add nsw i32 %nobj, 1, !dbg !59
+  %call11 = tail call %struct._I2OP* @I2OP_init(i32 %add, i32 1) #5, !dbg !59
+  %baseI2OP = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 3, !dbg !59
+  store %struct._I2OP* %call11, %struct._I2OP** %baseI2OP, align 8, !dbg !59, !tbaa !46
+  %add.ptr = getelementptr inbounds %struct._I2OP* %call11, i64 1, !dbg !61
+  %freeI2OP = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 4, !dbg !61
+  store %struct._I2OP* %add.ptr, %struct._I2OP** %freeI2OP, align 8, !dbg !61, !tbaa !46
+  %next = getelementptr inbounds %struct._I2OP* %call11, i64 0, i32 3, !dbg !62
+  store %struct._I2OP* null, %struct._I2OP** %next, align 8, !dbg !62, !tbaa !46
+  br label %if.end14, !dbg !63
 
-; <label>:23                                      ; preds = %16, %12
-  %24 = icmp sgt i32 %nlist, 0, !dbg !96
-  br i1 %24, label %25, label %35, !dbg !98
+if.end14:                                         ; preds = %if.then10, %if.end6
+  %cmp15 = icmp sgt i32 %nlist, 0, !dbg !64
+  br i1 %cmp15, label %if.then16, label %if.else25, !dbg !64
 
-; <label>:25                                      ; preds = %23
-  %26 = sext i32 %nlist to i64, !dbg !99
-  %27 = shl nsw i64 %26, 3, !dbg !99
-  %28 = tail call i8* @malloc(i64 %27) #5, !dbg !99
-  %29 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !99
-  %30 = bitcast %struct._I2OP*** %29 to i8**, !dbg !99
-  store i8* %28, i8** %30, align 8, !dbg !99, !tbaa !102
-  %31 = icmp eq i8* %28, null, !dbg !99
-  br i1 %31, label %32, label %.lr.ph, !dbg !103
+if.then16:                                        ; preds = %if.end14
+  %conv = sext i32 %nlist to i64, !dbg !65
+  %mul = shl nsw i64 %conv, 3, !dbg !65
+  %call17 = tail call noalias i8* @malloc(i64 %mul) #5, !dbg !65
+  %2 = bitcast i8* %call17 to %struct._I2OP**, !dbg !65
+  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !65
+  store %struct._I2OP** %2, %struct._I2OP*** %heads, align 8, !dbg !65, !tbaa !46
+  %cmp18 = icmp eq i8* %call17, null, !dbg !65
+  br i1 %cmp18, label %if.then20, label %for.body.lr.ph, !dbg !65
 
-; <label>:32                                      ; preds = %25
-  %33 = load %struct.__sFILE** @__stderrp, align 8, !dbg !104, !tbaa !55
-  %34 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %33, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), i64 %27, i32 45, i8* getelementptr inbounds ([93 x i8]* @.str3, i64 0, i64 0)) #5, !dbg !104
-  tail call void @exit(i32 -1) #6, !dbg !104
-  unreachable, !dbg !104
+if.then20:                                        ; preds = %if.then16
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !67, !tbaa !46
+  %call23 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), i64 %mul, i32 45, i8* getelementptr inbounds ([81 x i8]* @.str3, i64 0, i64 0)) #5, !dbg !67
+  tail call void @exit(i32 -1) #6, !dbg !67
+  unreachable, !dbg !67
 
-; <label>:35                                      ; preds = %23
-  %36 = icmp eq i32 %nlist, 0, !dbg !106
-  br i1 %36, label %.preheader, label %41, !dbg !96
+if.else25:                                        ; preds = %if.end14
+  %cmp26 = icmp eq i32 %nlist, 0, !dbg !64
+  br i1 %cmp26, label %for.cond.preheader, label %if.else30, !dbg !64
 
-.preheader:                                       ; preds = %35
-  %37 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !108
-  store %struct._I2OP** null, %struct._I2OP*** %37, align 8, !dbg !108, !tbaa !102
-  br label %._crit_edge
+for.cond.preheader:                               ; preds = %if.else25
+  %heads29 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !69
+  store %struct._I2OP** null, %struct._I2OP*** %heads29, align 8, !dbg !69, !tbaa !46
+  br label %for.end
 
-.lr.ph:                                           ; preds = %25
-  %38 = bitcast i8* %28 to %struct._I2OP**
-  %39 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !110
-  %40 = add i32 %nlist, -1, !dbg !114
-  store %struct._I2OP* null, %struct._I2OP** %38, align 8, !dbg !115, !tbaa !55
-  %exitcond6 = icmp eq i32 %40, 0, !dbg !114
-  br i1 %exitcond6, label %._crit_edge, label %._crit_edge5, !dbg !114
+for.body.lr.ph:                                   ; preds = %if.then16
+  %heads38 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !71
+  br label %for.body, !dbg !74
 
-; <label>:41                                      ; preds = %35
-  %42 = load %struct.__sFILE** @__stderrp, align 8, !dbg !116, !tbaa !55
-  %43 = sext i32 %nlist to i64, !dbg !116
-  %44 = shl nsw i64 %43, 3, !dbg !116
-  %45 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %42, i8* getelementptr inbounds ([47 x i8]* @.str4, i64 0, i64 0), i64 %44, i32 45, i8* getelementptr inbounds ([93 x i8]* @.str3, i64 0, i64 0)) #5, !dbg !116
-  tail call void @exit(i32 -1) #6, !dbg !116
-  unreachable, !dbg !116
+if.else30:                                        ; preds = %if.else25
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !75, !tbaa !46
+  %conv31 = sext i32 %nlist to i64, !dbg !75
+  %mul32 = shl nsw i64 %conv31, 3, !dbg !75
+  %call33 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([47 x i8]* @.str4, i64 0, i64 0), i64 %mul32, i32 45, i8* getelementptr inbounds ([81 x i8]* @.str3, i64 0, i64 0)) #5, !dbg !75
+  tail call void @exit(i32 -1) #6, !dbg !75
+  unreachable, !dbg !75
 
-._crit_edge5:                                     ; preds = %.lr.ph, %._crit_edge5
-  %indvars.iv7 = phi i64 [ %indvars.iv.next, %._crit_edge5 ], [ 0, %.lr.ph ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv7, 1, !dbg !114
-  %.pre = load %struct._I2OP*** %39, align 8, !dbg !110, !tbaa !102
-  %46 = getelementptr inbounds %struct._I2OP** %.pre, i64 %indvars.iv.next, !dbg !118
-  store %struct._I2OP* null, %struct._I2OP** %46, align 8, !dbg !115, !tbaa !55
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !114
-  %exitcond = icmp eq i32 %lftr.wideiv, %40, !dbg !114
-  br i1 %exitcond, label %._crit_edge, label %._crit_edge5, !dbg !114
+for.body:                                         ; preds = %for.body.for.body_crit_edge, %for.body.lr.ph
+  %5 = phi %struct._I2OP** [ %2, %for.body.lr.ph ], [ %.pre, %for.body.for.body_crit_edge ]
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body.for.body_crit_edge ]
+  %arrayidx = getelementptr inbounds %struct._I2OP** %5, i64 %indvars.iv, !dbg !71
+  store %struct._I2OP* null, %struct._I2OP** %arrayidx, align 8, !dbg !71, !tbaa !46
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !74
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !74
+  %exitcond = icmp eq i32 %lftr.wideiv, %nlist, !dbg !74
+  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge, !dbg !74
 
-._crit_edge:                                      ; preds = %.lr.ph, %._crit_edge5, %.preheader
-  ret void, !dbg !119
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %.pre = load %struct._I2OP*** %heads38, align 8, !dbg !71, !tbaa !46
+  br label %for.body, !dbg !74
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void, !dbg !77
 }

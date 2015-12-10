@@ -1,18 +1,19 @@
 define noalias %struct._Drand* @Drand_free(%struct._Drand* %drand) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !43, metadata !52), !dbg !112
-  %1 = icmp eq %struct._Drand* %drand, null, !dbg !113
-  br i1 %1, label %2, label %5, !dbg !115
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Drand* %drand}, i64 0, metadata !38), !dbg !72
+  %cmp = icmp eq %struct._Drand* %drand, null, !dbg !73
+  br i1 %cmp, label %if.then, label %if.end, !dbg !73
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !116, !tbaa !57
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str4, i64 0, i64 0), %struct._Drand* null) #4, !dbg !118
-  tail call void @exit(i32 -1) #5, !dbg !119
-  unreachable, !dbg !119
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !74, !tbaa !43
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str4, i64 0, i64 0), %struct._Drand* null) #4, !dbg !74
+  tail call void @exit(i32 -1) #5, !dbg !76
+  unreachable, !dbg !76
 
-; <label>:5                                       ; preds = %0
-  tail call void @Drand_clearData(%struct._Drand* %drand) #6, !dbg !120
-  %6 = bitcast %struct._Drand* %drand to i8*, !dbg !121
-  tail call void @free(i8* %6) #6, !dbg !121
-  tail call void @llvm.dbg.value(metadata %struct._Drand* null, i64 0, metadata !43, metadata !52), !dbg !112
-  ret %struct._Drand* null, !dbg !124
+if.end:                                           ; preds = %entry
+  tail call void @Drand_clearData(%struct._Drand* %drand) #6, !dbg !77
+  %1 = bitcast %struct._Drand* %drand to i8*, !dbg !78
+  tail call void @free(i8* %1) #4, !dbg !78
+  tail call void @llvm.dbg.value(metadata !80, i64 0, metadata !38), !dbg !78
+  ret %struct._Drand* null, !dbg !81
 }

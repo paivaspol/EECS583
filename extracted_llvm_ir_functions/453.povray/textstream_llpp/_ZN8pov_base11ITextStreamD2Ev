@@ -1,32 +1,33 @@
 define void @_ZN8pov_base11ITextStreamD2Ev(%"class.pov_base::ITextStream"* nocapture %this) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::ITextStream"* %this, i64 0, metadata !418, metadata !1049), !dbg !1210
-  %1 = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 0, !dbg !1211
-  store i32 (...)** bitcast (i8** getelementptr inbounds ([4 x i8*]* @_ZTVN8pov_base11ITextStreamE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %1, align 8, !dbg !1211, !tbaa !1054
-  %2 = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 7, !dbg !1212
-  %3 = load i8** %2, align 8, !dbg !1212, !tbaa !1081
-  %4 = icmp eq i8* %3, null, !dbg !1214
-  br i1 %4, label %6, label %5, !dbg !1214
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::ITextStream"* %this}, i64 0, metadata !363), !dbg !656
+  %0 = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 0, !dbg !657
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([4 x i8*]* @_ZTVN8pov_base11ITextStreamE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !657, !tbaa !582
+  %filename = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 7, !dbg !658
+  %1 = load i8** %filename, align 8, !dbg !658, !tbaa !590
+  %isnull = icmp eq i8* %1, null, !dbg !658
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !658
 
-; <label>:5                                       ; preds = %0
-  tail call void @_ZdaPv(i8* %3) #14, !dbg !1214
-  br label %6, !dbg !1214
+delete.notnull:                                   ; preds = %entry
+  tail call void @_ZdaPv(i8* %1) #11, !dbg !658
+  br label %delete.end, !dbg !658
 
-; <label>:6                                       ; preds = %5, %0
-  store i8* null, i8** %2, align 8, !dbg !1215, !tbaa !1081
-  %7 = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 1, !dbg !1216
-  %8 = load %"class.pov_base::IStream"** %7, align 8, !dbg !1216, !tbaa !1068
-  %9 = icmp eq %"class.pov_base::IStream"* %8, null, !dbg !1217
-  br i1 %9, label %15, label %10, !dbg !1217
+delete.end:                                       ; preds = %delete.notnull, %entry
+  store i8* null, i8** %filename, align 8, !dbg !660, !tbaa !590
+  %stream = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 1, !dbg !661
+  %2 = load %"class.pov_base::IStream"** %stream, align 8, !dbg !661, !tbaa !590
+  %isnull3 = icmp eq %"class.pov_base::IStream"* %2, null, !dbg !661
+  br i1 %isnull3, label %delete.end5, label %delete.notnull4, !dbg !661
 
-; <label>:10                                      ; preds = %6
-  %11 = bitcast %"class.pov_base::IStream"* %8 to void (%"class.pov_base::IStream"*)***, !dbg !1217
-  %12 = load void (%"class.pov_base::IStream"*)*** %11, align 8, !dbg !1217, !tbaa !1054
-  %13 = getelementptr inbounds void (%"class.pov_base::IStream"*)** %12, i64 1, !dbg !1217
-  %14 = load void (%"class.pov_base::IStream"*)** %13, align 8, !dbg !1217
-  tail call void %14(%"class.pov_base::IStream"* %8) #11, !dbg !1217
-  br label %15, !dbg !1217
+delete.notnull4:                                  ; preds = %delete.end
+  %3 = bitcast %"class.pov_base::IStream"* %2 to void (%"class.pov_base::IStream"*)***, !dbg !661
+  %vtable = load void (%"class.pov_base::IStream"*)*** %3, align 8, !dbg !661, !tbaa !582
+  %vfn = getelementptr inbounds void (%"class.pov_base::IStream"*)** %vtable, i64 1, !dbg !661
+  %4 = load void (%"class.pov_base::IStream"*)** %vfn, align 8, !dbg !661
+  tail call void %4(%"class.pov_base::IStream"* %2) #9, !dbg !661
+  br label %delete.end5, !dbg !661
 
-; <label>:15                                      ; preds = %10, %6
-  store %"class.pov_base::IStream"* null, %"class.pov_base::IStream"** %7, align 8, !dbg !1218, !tbaa !1068
-  ret void, !dbg !1219
+delete.end5:                                      ; preds = %delete.notnull4, %delete.end
+  store %"class.pov_base::IStream"* null, %"class.pov_base::IStream"** %stream, align 8, !dbg !662, !tbaa !590
+  ret void, !dbg !663
 }

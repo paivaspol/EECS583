@@ -1,6 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIDLinearWaves.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIDLinearWaves.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.anon.0 = type { double, double, double, double, double, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32 }
 
@@ -8,95 +8,85 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str = private unnamed_addr constant [11 x i8] c"planewaves\00", align 1
 @.str1 = private unnamed_addr constant [10 x i8] c"teukwaves\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTKi_BindingsParameterRecovery_IDLinearWaves() #0 {
-  %1 = load i8** getelementptr inbounds (%struct.anon.0* @einsteinrest_, i64 0, i32 7), align 8, !dbg !37, !tbaa !38
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !26, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !32, metadata !45), !dbg !46
-  %2 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([11 x i8]* @.str, i64 0, i64 0)) #3, !dbg !47
-  %3 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([10 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !49
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !29, metadata !45), !dbg !37
-  ret i32 0, !dbg !51
+entry:
+  %0 = load i8** getelementptr inbounds (%struct.anon.0* @einsteinrest_, i64 0, i32 7), align 8, !dbg !34, !tbaa !35
+  tail call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !27), !dbg !34
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !33), !dbg !38
+  %call = tail call i32 @CCTK_Equals(i8* %0, i8* getelementptr inbounds ([11 x i8]* @.str, i64 0, i64 0)) #3, !dbg !39
+  %call1 = tail call i32 @CCTK_Equals(i8* %0, i8* getelementptr inbounds ([10 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !40
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !30), !dbg !42
+  ret i32 0, !dbg !42
 }
 
 ; Function Attrs: optsize
 declare i32 @CCTK_Equals(i8*, i8*) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
 attributes #3 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!33, !34, !35}
-!llvm.ident = !{!36}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !2, subprograms: !3, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIDLinearWaves.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DISubprogram(name: "CCTKi_BindingsParameterRecovery_IDLinearWaves", scope: !1, file: !1, line: 30, type: !5, isLocal: false, isDefinition: true, scopeLine: 31, flags: DIFlagPrototyped, isOptimized: true, function: i32 ()* @CCTKi_BindingsParameterRecovery_IDLinearWaves, variables: !8)
-!5 = !DISubroutineType(types: !6)
-!6 = !{!7}
-!7 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!8 = !{!9, !12, !13, !14, !15, !16, !17, !21, !22, !23, !24, !26, !27, !28, !29, !32}
-!9 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "amplitude", scope: !4, file: !1, line: 32, type: !10)
-!10 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !11)
-!11 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!12 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "wavecenter", scope: !4, file: !1, line: 32, type: !10)
-!13 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "wavelength", scope: !4, file: !1, line: 32, type: !10)
-!14 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "wavephi", scope: !4, file: !1, line: 32, type: !10)
-!15 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "wavepulse", scope: !4, file: !1, line: 32, type: !10)
-!16 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "wavetheta", scope: !4, file: !1, line: 32, type: !10)
-!17 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "packet", scope: !4, file: !1, line: 32, type: !18)
-!18 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !19, size: 64, align: 64)
-!19 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !20)
-!20 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!21 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "parity", scope: !4, file: !1, line: 32, type: !18)
-!22 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "teuk_no_vee", scope: !4, file: !1, line: 32, type: !18)
-!23 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "wavesgoing", scope: !4, file: !1, line: 32, type: !18)
-!24 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "mvalue", scope: !4, file: !1, line: 32, type: !25)
-!25 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !7)
-!26 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "initial_data", scope: !4, file: !1, line: 32, type: !18)
-!27 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "use_conformal", scope: !4, file: !1, line: 32, type: !25)
-!28 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "use_conformal_derivs", scope: !4, file: !1, line: 32, type: !25)
-!29 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_pdummy_pointer", scope: !4, file: !1, line: 32, type: !30)
-!30 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !31, size: 64, align: 64)
-!31 = !DIDerivedType(tag: DW_TAG_const_type, baseType: null)
-!32 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "result", scope: !4, file: !1, line: 33, type: !7)
-!33 = !{i32 2, !"Dwarf Version", i32 2}
-!34 = !{i32 2, !"Debug Info Version", i32 700000003}
-!35 = !{i32 1, !"PIC Level", i32 2}
-!36 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!37 = !DILocation(line: 32, column: 3, scope: !4)
-!38 = !{!39, !43, i64 56}
-!39 = !{!"", !40, i64 0, !40, i64 8, !40, i64 16, !40, i64 24, !40, i64 32, !43, i64 40, !43, i64 48, !43, i64 56, !43, i64 64, !43, i64 72, !43, i64 80, !43, i64 88, !43, i64 96, !43, i64 104, !44, i64 112, !44, i64 116, !44, i64 120, !44, i64 124, !44, i64 128, !44, i64 132, !44, i64 136}
-!40 = !{!"double", !41, i64 0}
-!41 = !{!"omnipotent char", !42, i64 0}
-!42 = !{!"Simple C/C++ TBAA"}
-!43 = !{!"any pointer", !41, i64 0}
-!44 = !{!"int", !41, i64 0}
-!45 = !DIExpression()
-!46 = !DILocation(line: 33, column: 7, scope: !4)
-!47 = !DILocation(line: 35, column: 5, scope: !48)
-!48 = distinct !DILexicalBlock(scope: !4, file: !1, line: 35, column: 5)
-!49 = !DILocation(line: 42, column: 5, scope: !50)
-!50 = distinct !DILexicalBlock(scope: !4, file: !1, line: 42, column: 5)
-!51 = !DILocation(line: 50, column: 26, scope: !4)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIDLinearWaves.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIDLinearWaves.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_BindingsParameterRecovery_IDLinearWaves", metadata !"CCTKi_BindingsParameterRecovery_IDLinearWaves", metadata !"", i32 30, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 ()* @CCTKi_BindingsParameterRecovery_IDLinearWaves, null, null, metadata !9, i32 31} ; [ DW_TAG_subprogram ] [line 30] [def] [scope 31] [CCTKi_BindingsParameterRecovery_IDLinearWaves]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIDLinearWaves.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{metadata !10, metadata !13, metadata !14, metadata !15, metadata !16, metadata !17, metadata !18, metadata !22, metadata !23, metadata !24, metadata !25, metadata !27, metadata !28, metadata !29, metadata !30, metadata !33}
+!10 = metadata !{i32 786688, metadata !4, metadata !"amplitude", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [amplitude] [line 32]
+!11 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !12} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from double]
+!12 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!13 = metadata !{i32 786688, metadata !4, metadata !"wavecenter", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [wavecenter] [line 32]
+!14 = metadata !{i32 786688, metadata !4, metadata !"wavelength", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [wavelength] [line 32]
+!15 = metadata !{i32 786688, metadata !4, metadata !"wavephi", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [wavephi] [line 32]
+!16 = metadata !{i32 786688, metadata !4, metadata !"wavepulse", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [wavepulse] [line 32]
+!17 = metadata !{i32 786688, metadata !4, metadata !"wavetheta", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [wavetheta] [line 32]
+!18 = metadata !{i32 786688, metadata !4, metadata !"packet", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [packet] [line 32]
+!19 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !20} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!20 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !21} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!21 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!22 = metadata !{i32 786688, metadata !4, metadata !"parity", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [parity] [line 32]
+!23 = metadata !{i32 786688, metadata !4, metadata !"teuk_no_vee", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [teuk_no_vee] [line 32]
+!24 = metadata !{i32 786688, metadata !4, metadata !"wavesgoing", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [wavesgoing] [line 32]
+!25 = metadata !{i32 786688, metadata !4, metadata !"mvalue", metadata !5, i32 32, metadata !26, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [mvalue] [line 32]
+!26 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !8} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from int]
+!27 = metadata !{i32 786688, metadata !4, metadata !"initial_data", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [initial_data] [line 32]
+!28 = metadata !{i32 786688, metadata !4, metadata !"use_conformal", metadata !5, i32 32, metadata !26, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [use_conformal] [line 32]
+!29 = metadata !{i32 786688, metadata !4, metadata !"use_conformal_derivs", metadata !5, i32 32, metadata !26, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [use_conformal_derivs] [line 32]
+!30 = metadata !{i32 786688, metadata !4, metadata !"cctk_pdummy_pointer", metadata !5, i32 32, metadata !31, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_pdummy_pointer] [line 32]
+!31 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !32} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!32 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from ]
+!33 = metadata !{i32 786688, metadata !4, metadata !"result", metadata !5, i32 33, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [result] [line 33]
+!34 = metadata !{i32 32, i32 0, metadata !4, null}
+!35 = metadata !{metadata !"any pointer", metadata !36}
+!36 = metadata !{metadata !"omnipotent char", metadata !37}
+!37 = metadata !{metadata !"Simple C/C++ TBAA"}
+!38 = metadata !{i32 33, i32 0, metadata !4, null}
+!39 = metadata !{i32 35, i32 0, metadata !4, null}
+!40 = metadata !{i32 42, i32 0, metadata !4, null}
+!41 = metadata !{i8* undef}
+!42 = metadata !{i32 50, i32 0, metadata !4, null}

@@ -1,33 +1,35 @@
 define void @initialize_hash() #0 {
-  store i32 -559038737, i32* @hash, align 4, !dbg !147, !tbaa !123
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !48, metadata !131), !dbg !148
-  br label %1, !dbg !149
+entry:
+  store i32 -559038737, i32* @hash, align 4, !dbg !134, !tbaa !117
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !22), !dbg !135
+  br label %for.body, !dbg !135
 
-; <label>:1                                       ; preds = %10, %0
-  %2 = phi i32 [ -559038737, %0 ], [ %11, %10 ]
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %10 ]
-  %3 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv, !dbg !151
-  %4 = load i32* %3, align 4, !dbg !151, !tbaa !123
-  switch i32 %4, label %5 [
-    i32 13, label %10
-    i32 0, label %10
-  ], !dbg !155
+for.body:                                         ; preds = %for.inc, %entry
+  %0 = phi i32 [ -559038737, %entry ], [ %3, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv, !dbg !137
+  %1 = load i32* %arrayidx, align 4, !dbg !137, !tbaa !117
+  switch i32 %1, label %if.then [
+    i32 13, label %for.inc
+    i32 0, label %for.inc
+  ], !dbg !137
 
-; <label>:5                                       ; preds = %1
-  %6 = sext i32 %4 to i64, !dbg !156
-  %7 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %6, i64 %indvars.iv, !dbg !156
-  %8 = load i32* %7, align 4, !dbg !156, !tbaa !123
-  %9 = xor i32 %8, %2, !dbg !157
-  store i32 %9, i32* @hash, align 4, !dbg !158, !tbaa !123
-  br label %10, !dbg !159
+if.then:                                          ; preds = %for.body
+  %idxprom8 = sext i32 %1 to i64, !dbg !139
+  %arrayidx10 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %idxprom8, i64 %indvars.iv, !dbg !139
+  %2 = load i32* %arrayidx10, align 4, !dbg !139, !tbaa !117
+  %xor = xor i32 %2, %0, !dbg !139
+  store i32 %xor, i32* @hash, align 4, !dbg !139, !tbaa !117
+  br label %for.inc, !dbg !139
 
-; <label>:10                                      ; preds = %1, %1, %5
-  %11 = phi i32 [ %2, %1 ], [ %2, %1 ], [ %9, %5 ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !149
-  %exitcond = icmp eq i64 %indvars.iv.next, 144, !dbg !149
-  br i1 %exitcond, label %12, label %1, !dbg !149
+for.inc:                                          ; preds = %for.body, %for.body, %if.then
+  %3 = phi i32 [ %0, %for.body ], [ %0, %for.body ], [ %xor, %if.then ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !135
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !135
+  %exitcond = icmp eq i32 %lftr.wideiv, 144, !dbg !135
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !135
 
-; <label>:12                                      ; preds = %10
-  store i32 -1056969216, i32* @hold_hash, align 4, !dbg !160, !tbaa !123
-  ret void, !dbg !161
+for.end:                                          ; preds = %for.inc
+  store i32 -1056969216, i32* @hold_hash, align 4, !dbg !140, !tbaa !117
+  ret void, !dbg !141
 }

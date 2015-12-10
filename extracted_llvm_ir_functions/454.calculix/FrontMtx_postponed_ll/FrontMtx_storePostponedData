@@ -1,87 +1,88 @@
-define void @FrontMtx_storePostponedData(%struct._FrontMtx* nocapture readonly %frontmtx, %struct._Chv* %frontJ, i32 %npost, i32 %K, %struct._ChvList* %chvlist, %struct._ChvManager* %chvmanager) #0 {
+define void @FrontMtx_storePostponedData(%struct._FrontMtx* nocapture %frontmtx, %struct._Chv* %frontJ, i32 %npost, i32 %K, %struct._ChvList* %chvlist, %struct._ChvManager* %chvmanager) #0 {
+entry:
   %nD = alloca i32, align 4
   %nL = alloca i32, align 4
   %nU = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !243, metadata !260), !dbg !352
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %frontJ, i64 0, metadata !244, metadata !260), !dbg !353
-  tail call void @llvm.dbg.value(metadata i32 %npost, i64 0, metadata !245, metadata !260), !dbg !354
-  tail call void @llvm.dbg.value(metadata i32 %K, i64 0, metadata !246, metadata !260), !dbg !355
-  tail call void @llvm.dbg.value(metadata %struct._ChvList* %chvlist, i64 0, metadata !247, metadata !260), !dbg !356
-  tail call void @llvm.dbg.value(metadata %struct._ChvManager* %chvmanager, i64 0, metadata !248, metadata !260), !dbg !357
-  %1 = icmp slt i32 %npost, 1, !dbg !358
-  %2 = icmp ne %struct._ChvList* %chvlist, null, !dbg !360
-  %or.cond = and i1 %1, %2, !dbg !361
-  br i1 %or.cond, label %3, label %9, !dbg !361
+  call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !249), !dbg !306
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %frontJ}, i64 0, metadata !250), !dbg !307
+  call void @llvm.dbg.value(metadata !{i32 %npost}, i64 0, metadata !251), !dbg !308
+  call void @llvm.dbg.value(metadata !{i32 %K}, i64 0, metadata !252), !dbg !309
+  call void @llvm.dbg.value(metadata !{%struct._ChvList* %chvlist}, i64 0, metadata !253), !dbg !310
+  call void @llvm.dbg.value(metadata !{%struct._ChvManager* %chvmanager}, i64 0, metadata !254), !dbg !311
+  call void @llvm.dbg.declare(metadata !{i32* %nD}, metadata !257), !dbg !312
+  call void @llvm.dbg.declare(metadata !{i32* %nL}, metadata !260), !dbg !312
+  call void @llvm.dbg.declare(metadata !{i32* %nU}, metadata !261), !dbg !312
+  %cmp = icmp sgt i32 %npost, 0, !dbg !313
+  %cmp1 = icmp eq %struct._ChvList* %chvlist, null, !dbg !313
+  %or.cond = or i1 %cmp, %cmp1, !dbg !313
+  br i1 %or.cond, label %if.end4, label %if.then, !dbg !313
 
-; <label>:3                                       ; preds = %0
-  %4 = icmp eq i32 %K, -1, !dbg !362
-  br i1 %4, label %5, label %8, !dbg !365
+if.then:                                          ; preds = %entry
+  %cmp2 = icmp eq i32 %K, -1, !dbg !314
+  br i1 %cmp2, label %if.then3, label %if.else, !dbg !314
 
-; <label>:5                                       ; preds = %3
-  %6 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !366
-  %7 = load i32* %6, align 4, !dbg !366, !tbaa !368
-  tail call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* null, i32 %7) #3, !dbg !370
-  br label %40, !dbg !371
+if.then3:                                         ; preds = %if.then
+  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !316
+  %0 = load i32* %nfront, align 4, !dbg !316, !tbaa !268
+  call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* null, i32 %0) #3, !dbg !316
+  br label %return, !dbg !318
 
-; <label>:8                                       ; preds = %3
-  tail call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* null, i32 %K) #3, !dbg !372
-  br label %40
+if.else:                                          ; preds = %if.then
+  call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* null, i32 %K) #3, !dbg !319
+  br label %return
 
-; <label>:9                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32* %nD, i64 0, metadata !251, metadata !260), !dbg !374
-  tail call void @llvm.dbg.value(metadata i32* %nL, i64 0, metadata !254, metadata !260), !dbg !375
-  tail call void @llvm.dbg.value(metadata i32* %nU, i64 0, metadata !255, metadata !260), !dbg !376
-  call void @Chv_dimensions(%struct._Chv* %frontJ, i32* %nD, i32* %nL, i32* %nU) #3, !dbg !377
-  %10 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 5, !dbg !378
-  call void @llvm.dbg.value(metadata i32* %nL, i64 0, metadata !254, metadata !260), !dbg !375
-  %11 = load i32* %nL, align 4, !dbg !380, !tbaa !281
-  call void @llvm.dbg.value(metadata i32* %nU, i64 0, metadata !255, metadata !260), !dbg !376
-  %12 = load i32* %nU, align 4, !dbg !381, !tbaa !281
-  %13 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 4, !dbg !382
-  %14 = load i32* %13, align 4, !dbg !382, !tbaa !328
-  %15 = load i32* %10, align 4, !dbg !383, !tbaa !330
-  %16 = call i32 @Chv_nbytesNeeded(i32 %npost, i32 %11, i32 %12, i32 %14, i32 %15) #3, !dbg !384
-  call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !250, metadata !260), !dbg !385
-  %17 = call %struct._Chv* @ChvManager_newObjectOfSizeNbytes(%struct._ChvManager* %chvmanager, i32 %16) #3, !dbg !386
-  call void @llvm.dbg.value(metadata %struct._Chv* %17, i64 0, metadata !249, metadata !260), !dbg !387
-  %18 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 0, !dbg !388
-  %19 = load i32* %18, align 4, !dbg !388, !tbaa !268
-  call void @llvm.dbg.value(metadata i32* %nL, i64 0, metadata !254, metadata !260), !dbg !375
-  %20 = load i32* %nL, align 4, !dbg !389, !tbaa !281
-  call void @llvm.dbg.value(metadata i32* %nU, i64 0, metadata !255, metadata !260), !dbg !376
-  %21 = load i32* %nU, align 4, !dbg !390, !tbaa !281
-  %22 = load i32* %13, align 4, !dbg !391, !tbaa !328
-  %23 = load i32* %10, align 4, !dbg !392, !tbaa !330
-  call void @Chv_init(%struct._Chv* %17, i32 %19, i32 %npost, i32 %20, i32 %21, i32 %22, i32 %23) #3, !dbg !393
-  call void @llvm.dbg.value(metadata i32* %nD, i64 0, metadata !251, metadata !260), !dbg !374
-  %24 = load i32* %nD, align 4, !dbg !394, !tbaa !281
-  %25 = sub nsw i32 %24, %npost, !dbg !395
-  call void @Chv_copyTrailingPortion(%struct._Chv* %17, %struct._Chv* %frontJ, i32 %25) #3, !dbg !396
-  %26 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 1, !dbg !397
-  %27 = load i32* %26, align 4, !dbg !398, !tbaa !313
-  %28 = sub nsw i32 %27, %npost, !dbg !398
-  store i32 %28, i32* %26, align 4, !dbg !398, !tbaa !313
-  %29 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 2, !dbg !399
-  %30 = load i32* %29, align 4, !dbg !400, !tbaa !324
-  %31 = add nsw i32 %30, %npost, !dbg !400
-  store i32 %31, i32* %29, align 4, !dbg !400, !tbaa !324
-  %32 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 3, !dbg !401
-  %33 = load i32* %32, align 4, !dbg !402, !tbaa !326
-  %34 = add nsw i32 %33, %npost, !dbg !402
-  store i32 %34, i32* %32, align 4, !dbg !402, !tbaa !326
-  %35 = icmp eq i32 %K, -1, !dbg !403
-  br i1 %35, label %36, label %39, !dbg !405
+if.end4:                                          ; preds = %entry
+  call void @Chv_dimensions(%struct._Chv* %frontJ, i32* %nD, i32* %nL, i32* %nU) #3, !dbg !321
+  %symflag = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 5, !dbg !322
+  call void @llvm.dbg.value(metadata !{i32* %nL}, i64 0, metadata !260), !dbg !323
+  %1 = load i32* %nL, align 4, !dbg !323, !tbaa !268
+  call void @llvm.dbg.value(metadata !{i32* %nU}, i64 0, metadata !261), !dbg !323
+  %2 = load i32* %nU, align 4, !dbg !323, !tbaa !268
+  %type = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 4, !dbg !323
+  %3 = load i32* %type, align 4, !dbg !323, !tbaa !268
+  %4 = load i32* %symflag, align 4, !dbg !323, !tbaa !268
+  %call = call i32 @Chv_nbytesNeeded(i32 %npost, i32 %1, i32 %2, i32 %3, i32 %4) #3, !dbg !323
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !256), !dbg !323
+  %call24 = call %struct._Chv* @ChvManager_newObjectOfSizeNbytes(%struct._ChvManager* %chvmanager, i32 %call) #3, !dbg !324
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %call24}, i64 0, metadata !255), !dbg !324
+  %id = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 0, !dbg !325
+  %5 = load i32* %id, align 4, !dbg !325, !tbaa !268
+  call void @llvm.dbg.value(metadata !{i32* %nL}, i64 0, metadata !260), !dbg !325
+  %6 = load i32* %nL, align 4, !dbg !325, !tbaa !268
+  call void @llvm.dbg.value(metadata !{i32* %nU}, i64 0, metadata !261), !dbg !325
+  %7 = load i32* %nU, align 4, !dbg !325, !tbaa !268
+  %8 = load i32* %type, align 4, !dbg !325, !tbaa !268
+  %9 = load i32* %symflag, align 4, !dbg !325, !tbaa !268
+  call void @Chv_init(%struct._Chv* %call24, i32 %5, i32 %npost, i32 %6, i32 %7, i32 %8, i32 %9) #3, !dbg !325
+  call void @llvm.dbg.value(metadata !{i32* %nD}, i64 0, metadata !257), !dbg !326
+  %10 = load i32* %nD, align 4, !dbg !326, !tbaa !268
+  %sub = sub nsw i32 %10, %npost, !dbg !326
+  call void @Chv_copyTrailingPortion(%struct._Chv* %call24, %struct._Chv* %frontJ, i32 %sub) #3, !dbg !326
+  %nD27 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 1, !dbg !327
+  %11 = load i32* %nD27, align 4, !dbg !327, !tbaa !268
+  %sub28 = sub nsw i32 %11, %npost, !dbg !327
+  store i32 %sub28, i32* %nD27, align 4, !dbg !327, !tbaa !268
+  %nL29 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 2, !dbg !328
+  %12 = load i32* %nL29, align 4, !dbg !328, !tbaa !268
+  %add30 = add nsw i32 %12, %npost, !dbg !328
+  store i32 %add30, i32* %nL29, align 4, !dbg !328, !tbaa !268
+  %nU31 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 3, !dbg !329
+  %13 = load i32* %nU31, align 4, !dbg !329, !tbaa !268
+  %add32 = add nsw i32 %13, %npost, !dbg !329
+  store i32 %add32, i32* %nU31, align 4, !dbg !329, !tbaa !268
+  %cmp33 = icmp eq i32 %K, -1, !dbg !330
+  br i1 %cmp33, label %if.then34, label %if.else36, !dbg !330
 
-; <label>:36                                      ; preds = %9
-  %37 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !406
-  %38 = load i32* %37, align 4, !dbg !406, !tbaa !368
-  call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* %17, i32 %38) #3, !dbg !408
-  br label %40, !dbg !409
+if.then34:                                        ; preds = %if.end4
+  %nfront35 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !331
+  %14 = load i32* %nfront35, align 4, !dbg !331, !tbaa !268
+  call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* %call24, i32 %14) #3, !dbg !331
+  br label %return, !dbg !333
 
-; <label>:39                                      ; preds = %9
-  call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* %17, i32 %K) #3, !dbg !410
-  br label %40
+if.else36:                                        ; preds = %if.end4
+  call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* %call24, i32 %K) #3, !dbg !334
+  br label %return
 
-; <label>:40                                      ; preds = %36, %39, %5, %8
-  ret void, !dbg !412
+return:                                           ; preds = %if.then34, %if.else36, %if.then3, %if.else
+  ret void, !dbg !336
 }

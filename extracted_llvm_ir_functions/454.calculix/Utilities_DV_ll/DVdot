@@ -1,43 +1,40 @@
 define double @DVdot(i32 %size, double* %y, double* %x) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !80, metadata !696), !dbg !922
-  tail call void @llvm.dbg.value(metadata double* %y, i64 0, metadata !81, metadata !696), !dbg !923
-  tail call void @llvm.dbg.value(metadata double* %x, i64 0, metadata !82, metadata !696), !dbg !924
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !83, metadata !696), !dbg !925
-  %1 = icmp sgt i32 %size, 0, !dbg !926
-  br i1 %1, label %2, label %.loopexit, !dbg !927
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !68), !dbg !756
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !69), !dbg !757
+  tail call void @llvm.dbg.value(metadata !{double* %x}, i64 0, metadata !70), !dbg !758
+  tail call void @llvm.dbg.value(metadata !705, i64 0, metadata !71), !dbg !759
+  %cmp = icmp sgt i32 %size, 0, !dbg !760
+  br i1 %cmp, label %if.then, label %if.end7, !dbg !760
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp eq double* %y, null, !dbg !928
-  %4 = icmp eq double* %x, null, !dbg !929
-  %or.cond = or i1 %3, %4, !dbg !930
-  br i1 %or.cond, label %6, label %.lr.ph, !dbg !930
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq double* %y, null, !dbg !761
+  %cmp2 = icmp eq double* %x, null, !dbg !761
+  %or.cond = or i1 %cmp1, %cmp2, !dbg !761
+  br i1 %or.cond, label %if.then3, label %for.body, !dbg !761
 
-.lr.ph:                                           ; preds = %2
-  %5 = add i32 %size, -1, !dbg !931
-  br label %9, !dbg !931
+if.then3:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !762, !tbaa !629
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([65 x i8]* @.str5, i64 0, i64 0), i32 %size, double* %y, double* %x) #6, !dbg !762
+  tail call void @exit(i32 -1) #7, !dbg !764
+  unreachable, !dbg !764
 
-; <label>:6                                       ; preds = %2
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !933, !tbaa !709
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([65 x i8]* @.str5, i64 0, i64 0), i32 %size, double* %y, double* %x) #7, !dbg !935
-  tail call void @exit(i32 -1) #8, !dbg !936
-  unreachable, !dbg !936
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %sum.019 = phi double [ %add, %for.body ], [ 0.000000e+00, %if.then ]
+  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !765
+  %1 = load double* %arrayidx, align 8, !dbg !765, !tbaa !635
+  %arrayidx6 = getelementptr inbounds double* %x, i64 %indvars.iv, !dbg !765
+  %2 = load double* %arrayidx6, align 8, !dbg !765, !tbaa !635
+  %mul = fmul double %1, %2, !dbg !765
+  %add = fadd double %sum.019, %mul, !dbg !765
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !71), !dbg !765
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !768
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !768
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !768
+  br i1 %exitcond, label %if.end7, label %for.body, !dbg !768
 
-; <label>:9                                       ; preds = %9, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %sum.02 = phi double [ 0.000000e+00, %.lr.ph ], [ %15, %9 ]
-  %10 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !937
-  %11 = load double* %10, align 8, !dbg !937, !tbaa !718
-  %12 = getelementptr inbounds double* %x, i64 %indvars.iv, !dbg !940
-  %13 = load double* %12, align 8, !dbg !940, !tbaa !718
-  %14 = fmul double %11, %13, !dbg !941
-  %15 = fadd double %sum.02, %14, !dbg !942
-  tail call void @llvm.dbg.value(metadata double %15, i64 0, metadata !83, metadata !696), !dbg !925
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !931
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !931
-  %exitcond = icmp eq i32 %lftr.wideiv, %5, !dbg !931
-  br i1 %exitcond, label %.loopexit, label %9, !dbg !931
-
-.loopexit:                                        ; preds = %9, %0
-  %sum.1 = phi double [ 0.000000e+00, %0 ], [ %15, %9 ]
-  ret double %sum.1, !dbg !943
+if.end7:                                          ; preds = %for.body, %entry
+  %sum.1 = phi double [ 0.000000e+00, %entry ], [ %add, %for.body ]
+  ret double %sum.1, !dbg !769
 }

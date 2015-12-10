@@ -1,122 +1,118 @@
 define void @_ZN3pov46output_single_image_line_with_alpha_correctionEPA5_fi([5 x float]* %Line, i32 %y) #0 {
+entry:
   %Red = alloca i8, align 1
   %Green = alloca i8, align 1
   %Blue = alloca i8, align 1
   %Alpha = alloca i8, align 1
   %grey = alloca double, align 8
-  tail call void @llvm.dbg.value(metadata [5 x float]* %Line, i64 0, metadata !236, metadata !860), !dbg !1286
-  tail call void @llvm.dbg.value(metadata i32 %y, i64 0, metadata !237, metadata !860), !dbg !1287
-  %1 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !1288, !tbaa !885
-  %2 = and i32 %1, 65536, !dbg !1290
-  %3 = icmp eq i32 %2, 0, !dbg !1290
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !243, metadata !860), !dbg !1291
-  %4 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !1292, !tbaa !901
-  %5 = icmp slt i32 %4, 0, !dbg !1296
-  br i1 %3, label %.preheader, label %.preheader1, !dbg !1297
+  call void @llvm.dbg.value(metadata !{[5 x float]* %Line}, i64 0, metadata !137), !dbg !570
+  call void @llvm.dbg.value(metadata !{i32 %y}, i64 0, metadata !138), !dbg !570
+  call void @llvm.dbg.declare(metadata !{i8* %Red}, metadata !139), !dbg !571
+  call void @llvm.dbg.declare(metadata !{i8* %Green}, metadata !140), !dbg !571
+  call void @llvm.dbg.declare(metadata !{i8* %Blue}, metadata !141), !dbg !571
+  call void @llvm.dbg.declare(metadata !{i8* %Alpha}, metadata !142), !dbg !571
+  call void @llvm.dbg.declare(metadata !{double* %grey}, metadata !143), !dbg !572
+  %0 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !573, !tbaa !358
+  %and = and i32 %0, 65536, !dbg !573
+  %tobool = icmp eq i32 %and, 0, !dbg !573
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !144), !dbg !574
+  %1 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !577, !tbaa !358
+  %cmp1658 = icmp slt i32 %1, 0, !dbg !577
+  br i1 %tobool, label %for.cond15.preheader, label %for.cond.preheader, !dbg !573
 
-.preheader1:                                      ; preds = %0
-  br i1 %5, label %._crit_edge, label %.lr.ph4, !dbg !1298
+for.cond.preheader:                               ; preds = %entry
+  br i1 %cmp1658, label %for.end, label %for.body, !dbg !574
 
-.preheader:                                       ; preds = %0
-  br i1 %5, label %.loopexit, label %.lr.ph, !dbg !1301
+for.cond15.preheader:                             ; preds = %entry
+  br i1 %cmp1658, label %if.end, label %for.body17, !dbg !577
 
-.lr.ph4:                                          ; preds = %.preheader1, %.lr.ph4
-  %indvars.iv5 = phi i64 [ %indvars.iv.next6, %.lr.ph4 ], [ 0, %.preheader1 ]
-  %6 = load [5 x float]** @_ZN3pov9Temp_LineE, align 8, !dbg !1302, !tbaa !875
-  %7 = getelementptr inbounds [5 x float]* %6, i64 %indvars.iv5, i64 0, !dbg !1302
-  %8 = getelementptr inbounds [5 x float]* %Line, i64 %indvars.iv5, i64 0, !dbg !1305
-  call fastcc void @_ZN3povL23Compensate_For_Alpha_AAEPfS0_(float* %7, float* %8) #9, !dbg !1306
-  %9 = load [5 x float]** @_ZN3pov9Temp_LineE, align 8, !dbg !1307, !tbaa !875
-  %10 = getelementptr inbounds [5 x float]* %9, i64 %indvars.iv5, i64 0, !dbg !1307
-  call void @llvm.dbg.value(metadata i8* %Red, i64 0, metadata !238, metadata !860), !dbg !1308
-  call void @llvm.dbg.value(metadata i8* %Green, i64 0, metadata !239, metadata !860), !dbg !1309
-  call void @llvm.dbg.value(metadata i8* %Blue, i64 0, metadata !240, metadata !860), !dbg !1310
-  call void @llvm.dbg.value(metadata i8* %Alpha, i64 0, metadata !241, metadata !860), !dbg !1311
-  call void @llvm.dbg.value(metadata double* %grey, i64 0, metadata !242, metadata !860), !dbg !1312
-  call void @_ZN3pov14extract_colorsEPfPhS1_S1_S1_Pd(float* %10, i8* %Red, i8* %Green, i8* %Blue, i8* %Alpha, double* %grey) #9, !dbg !1313
-  call void @llvm.dbg.value(metadata i8* %Red, i64 0, metadata !238, metadata !860), !dbg !1308
-  %11 = load i8* %Red, align 1, !dbg !1314, !tbaa !864
-  %12 = load i8** @_ZN3pov11Red_Row_255E, align 8, !dbg !1315, !tbaa !875
-  %13 = getelementptr inbounds i8* %12, i64 %indvars.iv5, !dbg !1315
-  store i8 %11, i8* %13, align 1, !dbg !1316, !tbaa !864
-  call void @llvm.dbg.value(metadata i8* %Green, i64 0, metadata !239, metadata !860), !dbg !1309
-  %14 = load i8* %Green, align 1, !dbg !1317, !tbaa !864
-  %15 = load i8** @_ZN3pov13Green_Row_255E, align 8, !dbg !1318, !tbaa !875
-  %16 = getelementptr inbounds i8* %15, i64 %indvars.iv5, !dbg !1318
-  store i8 %14, i8* %16, align 1, !dbg !1319, !tbaa !864
-  call void @llvm.dbg.value(metadata i8* %Blue, i64 0, metadata !240, metadata !860), !dbg !1310
-  %17 = load i8* %Blue, align 1, !dbg !1320, !tbaa !864
-  %18 = load i8** @_ZN3pov12Blue_Row_255E, align 8, !dbg !1321, !tbaa !875
-  %19 = getelementptr inbounds i8* %18, i64 %indvars.iv5, !dbg !1321
-  store i8 %17, i8* %19, align 1, !dbg !1322, !tbaa !864
-  call void @llvm.dbg.value(metadata i8* %Alpha, i64 0, metadata !241, metadata !860), !dbg !1311
-  %20 = load i8* %Alpha, align 1, !dbg !1323, !tbaa !864
-  %21 = load i8** @_ZN3pov13Alpha_Row_255E, align 8, !dbg !1324, !tbaa !875
-  %22 = getelementptr inbounds i8* %21, i64 %indvars.iv5, !dbg !1324
-  store i8 %20, i8* %22, align 1, !dbg !1325, !tbaa !864
-  %indvars.iv.next6 = add nuw i64 %indvars.iv5, 1, !dbg !1298
-  %23 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !1326, !tbaa !901
-  %24 = sext i32 %23 to i64, !dbg !1327
-  %25 = icmp slt i64 %indvars.iv5, %24, !dbg !1327
-  br i1 %25, label %.lr.ph4, label %._crit_edge, !dbg !1298
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv62 = phi i64 [ %indvars.iv.next63, %for.body ], [ 0, %for.cond.preheader ]
+  %2 = load [5 x float]** @_ZN3pov9Temp_LineE, align 8, !dbg !580, !tbaa !354
+  %arraydecay = getelementptr inbounds [5 x float]* %2, i64 %indvars.iv62, i64 0, !dbg !580
+  %arraydecay3 = getelementptr inbounds [5 x float]* %Line, i64 %indvars.iv62, i64 0, !dbg !580
+  call fastcc void @_ZN3povL23Compensate_For_Alpha_AAEPfS0_(float* %arraydecay, float* %arraydecay3) #7, !dbg !580
+  %3 = load [5 x float]** @_ZN3pov9Temp_LineE, align 8, !dbg !582, !tbaa !354
+  %arraydecay6 = getelementptr inbounds [5 x float]* %3, i64 %indvars.iv62, i64 0, !dbg !582
+  call void @_ZN3pov14extract_colorsEPfPhS1_S1_S1_Pd(float* %arraydecay6, i8* %Red, i8* %Green, i8* %Blue, i8* %Alpha, double* %grey) #7, !dbg !582
+  call void @llvm.dbg.value(metadata !{i8* %Red}, i64 0, metadata !139), !dbg !583
+  %4 = load i8* %Red, align 1, !dbg !583, !tbaa !350
+  %5 = load i8** @_ZN3pov11Red_Row_255E, align 8, !dbg !583, !tbaa !354
+  %arrayidx8 = getelementptr inbounds i8* %5, i64 %indvars.iv62, !dbg !583
+  store i8 %4, i8* %arrayidx8, align 1, !dbg !583, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Green}, i64 0, metadata !140), !dbg !584
+  %6 = load i8* %Green, align 1, !dbg !584, !tbaa !350
+  %7 = load i8** @_ZN3pov13Green_Row_255E, align 8, !dbg !584, !tbaa !354
+  %arrayidx10 = getelementptr inbounds i8* %7, i64 %indvars.iv62, !dbg !584
+  store i8 %6, i8* %arrayidx10, align 1, !dbg !584, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Blue}, i64 0, metadata !141), !dbg !585
+  %8 = load i8* %Blue, align 1, !dbg !585, !tbaa !350
+  %9 = load i8** @_ZN3pov12Blue_Row_255E, align 8, !dbg !585, !tbaa !354
+  %arrayidx12 = getelementptr inbounds i8* %9, i64 %indvars.iv62, !dbg !585
+  store i8 %8, i8* %arrayidx12, align 1, !dbg !585, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Alpha}, i64 0, metadata !142), !dbg !586
+  %10 = load i8* %Alpha, align 1, !dbg !586, !tbaa !350
+  %11 = load i8** @_ZN3pov13Alpha_Row_255E, align 8, !dbg !586, !tbaa !354
+  %arrayidx14 = getelementptr inbounds i8* %11, i64 %indvars.iv62, !dbg !586
+  store i8 %10, i8* %arrayidx14, align 1, !dbg !586, !tbaa !350
+  %indvars.iv.next63 = add i64 %indvars.iv62, 1, !dbg !574
+  %12 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !574, !tbaa !358
+  %13 = trunc i64 %indvars.iv62 to i32, !dbg !574
+  %cmp = icmp slt i32 %13, %12, !dbg !574
+  br i1 %cmp, label %for.body, label %for.end, !dbg !574
 
-._crit_edge:                                      ; preds = %.lr.ph4, %.preheader1
-  %26 = load [5 x float]** @_ZN3pov9Temp_LineE, align 8, !dbg !1328, !tbaa !875
-  call void @llvm.dbg.value(metadata [5 x float]* %26, i64 0, metadata !236, metadata !860), !dbg !1286
-  br label %.loopexit, !dbg !1329
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %14 = load [5 x float]** @_ZN3pov9Temp_LineE, align 8, !dbg !587, !tbaa !354
+  call void @llvm.dbg.value(metadata !{[5 x float]* %14}, i64 0, metadata !137), !dbg !587
+  br label %if.end, !dbg !588
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %.preheader ]
-  %27 = getelementptr inbounds [5 x float]* %Line, i64 %indvars.iv, i64 0, !dbg !1330
-  call void @llvm.dbg.value(metadata i8* %Red, i64 0, metadata !238, metadata !860), !dbg !1308
-  call void @llvm.dbg.value(metadata i8* %Green, i64 0, metadata !239, metadata !860), !dbg !1309
-  call void @llvm.dbg.value(metadata i8* %Blue, i64 0, metadata !240, metadata !860), !dbg !1310
-  call void @llvm.dbg.value(metadata i8* %Alpha, i64 0, metadata !241, metadata !860), !dbg !1311
-  call void @llvm.dbg.value(metadata double* %grey, i64 0, metadata !242, metadata !860), !dbg !1312
-  call void @_ZN3pov14extract_colorsEPfPhS1_S1_S1_Pd(float* %27, i8* %Red, i8* %Green, i8* %Blue, i8* %Alpha, double* %grey) #9, !dbg !1332
-  call void @llvm.dbg.value(metadata i8* %Red, i64 0, metadata !238, metadata !860), !dbg !1308
-  %28 = load i8* %Red, align 1, !dbg !1333, !tbaa !864
-  %29 = load i8** @_ZN3pov11Red_Row_255E, align 8, !dbg !1334, !tbaa !875
-  %30 = getelementptr inbounds i8* %29, i64 %indvars.iv, !dbg !1334
-  store i8 %28, i8* %30, align 1, !dbg !1335, !tbaa !864
-  call void @llvm.dbg.value(metadata i8* %Green, i64 0, metadata !239, metadata !860), !dbg !1309
-  %31 = load i8* %Green, align 1, !dbg !1336, !tbaa !864
-  %32 = load i8** @_ZN3pov13Green_Row_255E, align 8, !dbg !1337, !tbaa !875
-  %33 = getelementptr inbounds i8* %32, i64 %indvars.iv, !dbg !1337
-  store i8 %31, i8* %33, align 1, !dbg !1338, !tbaa !864
-  call void @llvm.dbg.value(metadata i8* %Blue, i64 0, metadata !240, metadata !860), !dbg !1310
-  %34 = load i8* %Blue, align 1, !dbg !1339, !tbaa !864
-  %35 = load i8** @_ZN3pov12Blue_Row_255E, align 8, !dbg !1340, !tbaa !875
-  %36 = getelementptr inbounds i8* %35, i64 %indvars.iv, !dbg !1340
-  store i8 %34, i8* %36, align 1, !dbg !1341, !tbaa !864
-  call void @llvm.dbg.value(metadata i8* %Alpha, i64 0, metadata !241, metadata !860), !dbg !1311
-  %37 = load i8* %Alpha, align 1, !dbg !1342, !tbaa !864
-  %38 = load i8** @_ZN3pov13Alpha_Row_255E, align 8, !dbg !1343, !tbaa !875
-  %39 = getelementptr inbounds i8* %38, i64 %indvars.iv, !dbg !1343
-  store i8 %37, i8* %39, align 1, !dbg !1344, !tbaa !864
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !1301
-  %40 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !1292, !tbaa !901
-  %41 = sext i32 %40 to i64, !dbg !1296
-  %42 = icmp slt i64 %indvars.iv, %41, !dbg !1296
-  br i1 %42, label %.lr.ph, label %.loopexit, !dbg !1301
+for.body17:                                       ; preds = %for.cond15.preheader, %for.body17
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body17 ], [ 0, %for.cond15.preheader ]
+  %arraydecay20 = getelementptr inbounds [5 x float]* %Line, i64 %indvars.iv, i64 0, !dbg !589
+  call void @_ZN3pov14extract_colorsEPfPhS1_S1_S1_Pd(float* %arraydecay20, i8* %Red, i8* %Green, i8* %Blue, i8* %Alpha, double* %grey) #7, !dbg !589
+  call void @llvm.dbg.value(metadata !{i8* %Red}, i64 0, metadata !139), !dbg !591
+  %15 = load i8* %Red, align 1, !dbg !591, !tbaa !350
+  %16 = load i8** @_ZN3pov11Red_Row_255E, align 8, !dbg !591, !tbaa !354
+  %arrayidx22 = getelementptr inbounds i8* %16, i64 %indvars.iv, !dbg !591
+  store i8 %15, i8* %arrayidx22, align 1, !dbg !591, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Green}, i64 0, metadata !140), !dbg !592
+  %17 = load i8* %Green, align 1, !dbg !592, !tbaa !350
+  %18 = load i8** @_ZN3pov13Green_Row_255E, align 8, !dbg !592, !tbaa !354
+  %arrayidx24 = getelementptr inbounds i8* %18, i64 %indvars.iv, !dbg !592
+  store i8 %17, i8* %arrayidx24, align 1, !dbg !592, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Blue}, i64 0, metadata !141), !dbg !593
+  %19 = load i8* %Blue, align 1, !dbg !593, !tbaa !350
+  %20 = load i8** @_ZN3pov12Blue_Row_255E, align 8, !dbg !593, !tbaa !354
+  %arrayidx26 = getelementptr inbounds i8* %20, i64 %indvars.iv, !dbg !593
+  store i8 %19, i8* %arrayidx26, align 1, !dbg !593, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Alpha}, i64 0, metadata !142), !dbg !594
+  %21 = load i8* %Alpha, align 1, !dbg !594, !tbaa !350
+  %22 = load i8** @_ZN3pov13Alpha_Row_255E, align 8, !dbg !594, !tbaa !354
+  %arrayidx28 = getelementptr inbounds i8* %22, i64 %indvars.iv, !dbg !594
+  store i8 %21, i8* %arrayidx28, align 1, !dbg !594, !tbaa !350
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !577
+  %23 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !577, !tbaa !358
+  %24 = trunc i64 %indvars.iv to i32, !dbg !577
+  %cmp16 = icmp slt i32 %24, %23, !dbg !577
+  br i1 %cmp16, label %for.body17, label %if.end, !dbg !577
 
-.loopexit:                                        ; preds = %.lr.ph, %.preheader, %._crit_edge
-  %.0 = phi [5 x float]* [ %26, %._crit_edge ], [ %Line, %.preheader ], [ %Line, %.lr.ph ]
-  %43 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !1345, !tbaa !885
-  %44 = and i32 %43, 4, !dbg !1347
-  %45 = icmp eq i32 %44, 0, !dbg !1347
-  br i1 %45, label %52, label %46, !dbg !1348
+if.end:                                           ; preds = %for.cond15.preheader, %for.body17, %for.end
+  %Line.addr.0 = phi [5 x float]* [ %14, %for.end ], [ %Line, %for.body17 ], [ %Line, %for.cond15.preheader ]
+  %25 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !595, !tbaa !358
+  %and33 = and i32 %25, 4, !dbg !595
+  %tobool34 = icmp eq i32 %and33, 0, !dbg !595
+  br i1 %tobool34, label %if.end36, label %if.then35, !dbg !595
 
-; <label>:46                                      ; preds = %.loopexit
-  call void @_ZN3pov19prepare_output_lineEPA5_f([5 x float]* %.0) #9, !dbg !1349
-  %47 = load %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !1351, !tbaa !875
-  %48 = bitcast %"class.pov::Image_File_Class"* %47 to void (%"class.pov::Image_File_Class"*, [5 x float]*)***, !dbg !1351
-  %49 = load void (%"class.pov::Image_File_Class"*, [5 x float]*)*** %48, align 8, !dbg !1351, !tbaa !877
-  %50 = getelementptr inbounds void (%"class.pov::Image_File_Class"*, [5 x float]*)** %49, i64 2, !dbg !1351
-  %51 = load void (%"class.pov::Image_File_Class"*, [5 x float]*)** %50, align 8, !dbg !1351
-  call void %51(%"class.pov::Image_File_Class"* %47, [5 x float]* %.0) #9, !dbg !1351
-  br label %52, !dbg !1352
+if.then35:                                        ; preds = %if.end
+  call void @_ZN3pov19prepare_output_lineEPA5_f([5 x float]* %Line.addr.0) #7, !dbg !596
+  %26 = load %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !598, !tbaa !354
+  %27 = bitcast %"class.pov::Image_File_Class"* %26 to void (%"class.pov::Image_File_Class"*, [5 x float]*)***, !dbg !598
+  %vtable = load void (%"class.pov::Image_File_Class"*, [5 x float]*)*** %27, align 8, !dbg !598, !tbaa !355
+  %vfn = getelementptr inbounds void (%"class.pov::Image_File_Class"*, [5 x float]*)** %vtable, i64 2, !dbg !598
+  %28 = load void (%"class.pov::Image_File_Class"*, [5 x float]*)** %vfn, align 8, !dbg !598
+  call void %28(%"class.pov::Image_File_Class"* %26, [5 x float]* %Line.addr.0) #7, !dbg !598
+  br label %if.end36, !dbg !599
 
-; <label>:52                                      ; preds = %.loopexit, %46
-  ret void, !dbg !1353
+if.end36:                                         ; preds = %if.end, %if.then35
+  ret void, !dbg !600
 }

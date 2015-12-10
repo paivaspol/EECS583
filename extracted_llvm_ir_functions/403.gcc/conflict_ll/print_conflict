@@ -1,44 +1,47 @@
 define internal i32 @print_conflict(i32 %reg1, i32 %reg2, i8* nocapture %contextp) #0 {
 entry:
-  %started = getelementptr inbounds i8* %contextp, i64 12
-  %0 = bitcast i8* %started to i32*
-  %1 = load i32* %0, align 4, !tbaa !0
-  %tobool = icmp eq i32 %1, 0
-  br i1 %tobool, label %if.then, label %entry.if.end_crit_edge
+  tail call void @llvm.dbg.value(metadata !{i32 %reg1}, i64 0, metadata !694), !dbg !811
+  tail call void @llvm.dbg.value(metadata !{i32 %reg2}, i64 0, metadata !695), !dbg !812
+  tail call void @llvm.dbg.value(metadata !{i8* %contextp}, i64 0, metadata !696), !dbg !813
+  %started = getelementptr inbounds i8* %contextp, i64 12, !dbg !814
+  %0 = bitcast i8* %started to i32*, !dbg !814
+  %1 = load i32* %0, align 4, !dbg !814, !tbaa !718
+  %tobool = icmp eq i32 %1, 0, !dbg !814
+  br i1 %tobool, label %if.then, label %entry.if.end_crit_edge, !dbg !814
 
 entry.if.end_crit_edge:                           ; preds = %entry
-  %reg5.pre = getelementptr inbounds i8* %contextp, i64 8
-  %.pre = bitcast i8* %reg5.pre to i32*
-  br label %if.end
+  %reg5.pre = getelementptr inbounds i8* %contextp, i64 8, !dbg !815
+  %.pre = bitcast i8* %reg5.pre to i32*, !dbg !815
+  br label %if.end, !dbg !814
 
 if.then:                                          ; preds = %entry
-  %fp = bitcast i8* %contextp to %struct._IO_FILE**
-  %2 = load %struct._IO_FILE** %fp, align 8, !tbaa !3
-  %reg3 = getelementptr inbounds i8* %contextp, i64 8
-  %3 = bitcast i8* %reg3 to i32*
-  %4 = load i32* %3, align 4, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i32 %4) #6
-  store i32 1, i32* %0, align 4, !tbaa !0
-  br label %if.end
+  %fp = bitcast i8* %contextp to %struct._IO_FILE**, !dbg !816
+  %2 = load %struct._IO_FILE** %fp, align 8, !dbg !816, !tbaa !722
+  %reg3 = getelementptr inbounds i8* %contextp, i64 8, !dbg !816
+  %3 = bitcast i8* %reg3 to i32*, !dbg !816
+  %4 = load i32* %3, align 4, !dbg !816, !tbaa !718
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i32 %4) #7, !dbg !816
+  store i32 1, i32* %0, align 4, !dbg !818, !tbaa !718
+  br label %if.end, !dbg !819
 
 if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
-  %.pre-phi = phi i32* [ %.pre, %entry.if.end_crit_edge ], [ %3, %if.then ]
-  %5 = load i32* %.pre-phi, align 4, !tbaa !0
-  %cmp = icmp eq i32 %5, %reg1
-  br i1 %cmp, label %if.end12, label %if.else
+  %.pre-phi = phi i32* [ %.pre, %entry.if.end_crit_edge ], [ %3, %if.then ], !dbg !815
+  %5 = load i32* %.pre-phi, align 4, !dbg !815, !tbaa !718
+  %cmp = icmp eq i32 %5, %reg1, !dbg !815
+  br i1 %cmp, label %if.end12, label %if.else, !dbg !815
 
 if.else:                                          ; preds = %if.end
-  %cmp8 = icmp eq i32 %5, %reg2
-  br i1 %cmp8, label %if.end12, label %if.else10
+  %cmp8 = icmp eq i32 %5, %reg2, !dbg !820
+  br i1 %cmp8, label %if.end12, label %if.else10, !dbg !820
 
 if.else10:                                        ; preds = %if.else
-  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 356, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.print_conflict, i64 0, i64 0)) #7
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 356, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.print_conflict, i64 0, i64 0)) #8, !dbg !821
+  unreachable, !dbg !821
 
 if.end12:                                         ; preds = %if.else, %if.end
   %reg.0 = phi i32 [ %reg2, %if.end ], [ %reg1, %if.else ]
-  %fp13 = bitcast i8* %contextp to %struct._IO_FILE**
-  %6 = load %struct._IO_FILE** %fp13, align 8, !tbaa !3
-  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i32 %reg.0) #6
-  ret i32 0
+  %fp13 = bitcast i8* %contextp to %struct._IO_FILE**, !dbg !822
+  %6 = load %struct._IO_FILE** %fp13, align 8, !dbg !822, !tbaa !722
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i32 %reg.0) #7, !dbg !822
+  ret i32 0, !dbg !823
 }

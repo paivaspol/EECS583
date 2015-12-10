@@ -1,29 +1,33 @@
 define %struct.rtx_def* @gen_return() #0 {
 entry:
-  tail call void @start_sequence() #4
-  %0 = load %struct.function** @cfun, align 8, !tbaa !0
-  %pops_args = getelementptr inbounds %struct.function* %0, i64 0, i32 8
-  %1 = load i32* %pops_args, align 4, !tbaa !3
-  %tobool = icmp eq i32 %1, 0
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !6291, i64 0, metadata !4067), !dbg !9613
+  tail call void @start_sequence() #5, !dbg !9614
+  %0 = load %struct.function** @cfun, align 8, !dbg !9615, !tbaa !5356
+  %pops_args = getelementptr inbounds %struct.function* %0, i64 0, i32 8, !dbg !9615
+  %1 = load i32* %pops_args, align 4, !dbg !9615, !tbaa !6384
+  %tobool = icmp eq i32 %1, 0, !dbg !9615
+  br i1 %tobool, label %if.end, label %if.then, !dbg !9615
 
 if.then:                                          ; preds = %entry
-  %conv = sext i32 %1 to i64
-  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv) #4
-  %call2 = tail call %struct.rtx_def* @gen_return_pop_internal(%struct.rtx_def* %call) #6
-  %call3 = tail call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call2) #4
-  %call4 = tail call %struct.rtx_def* @gen_sequence() #4
-  tail call void @end_sequence() #4
-  br label %return
+  %conv = sext i32 %1 to i64, !dbg !9616
+  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv) #5, !dbg !9616
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !4068), !dbg !9616
+  %call2 = tail call %struct.rtx_def* @gen_return_pop_internal(%struct.rtx_def* %call) #7, !dbg !9617
+  %call3 = tail call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call2) #5, !dbg !9617
+  %call4 = tail call %struct.rtx_def* @gen_sequence() #5, !dbg !9618
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call4}, i64 0, metadata !4067), !dbg !9618
+  tail call void @end_sequence() #5, !dbg !9618
+  br label %return, !dbg !9618
 
 if.end:                                           ; preds = %entry
-  %call5 = tail call %struct.rtx_def* @gen_rtx_fmt_(i32 51, i32 0) #4
-  %call6 = tail call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call5) #4
-  %call7 = tail call %struct.rtx_def* @gen_sequence() #4
-  tail call void @end_sequence() #4
-  br label %return
+  %call5 = tail call %struct.rtx_def* @gen_rtx_fmt_(i32 51, i32 0) #5, !dbg !9619
+  %call6 = tail call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call5) #5, !dbg !9619
+  %call7 = tail call %struct.rtx_def* @gen_sequence() #5, !dbg !9620
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call7}, i64 0, metadata !4067), !dbg !9620
+  tail call void @end_sequence() #5, !dbg !9621
+  br label %return, !dbg !9622
 
 return:                                           ; preds = %if.end, %if.then
   %retval.0 = phi %struct.rtx_def* [ %call4, %if.then ], [ %call7, %if.end ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !9623
 }

@@ -1,210 +1,186 @@
-define void @_ZN3pov32Create_Blob_Element_Texture_ListEPNS_11Blob_StructEPNS_16Blob_List_StructEi(%"struct.pov::Blob_Struct"* nocapture %Blob, %"struct.pov::Blob_List_Struct"* nocapture readonly %BlobList, i32 %npoints) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_Struct"* %Blob, i64 0, metadata !1070, metadata !1893), !dbg !3892
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_List_Struct"* %BlobList, i64 0, metadata !1071, metadata !1893), !dbg !3893
-  tail call void @llvm.dbg.value(metadata i32 %npoints, i64 0, metadata !1072, metadata !1893), !dbg !3894
-  %1 = icmp slt i32 %npoints, 1, !dbg !3895
-  br i1 %1, label %.preheader1, label %.lr.ph16, !dbg !3897
+define void @_ZN3pov32Create_Blob_Element_Texture_ListEPNS_11Blob_StructEPNS_16Blob_List_StructEi(%"struct.pov::Blob_Struct"* nocapture %Blob, %"struct.pov::Blob_List_Struct"* nocapture %BlobList, i32 %npoints) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_Struct"* %Blob}, i64 0, metadata !1087), !dbg !2681
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_List_Struct"* %BlobList}, i64 0, metadata !1088), !dbg !2681
+  tail call void @llvm.dbg.value(metadata !{i32 %npoints}, i64 0, metadata !1089), !dbg !2681
+  %cmp = icmp slt i32 %npoints, 1, !dbg !2682
+  br i1 %cmp, label %for.cond.preheader, label %for.body, !dbg !2682
 
-.preheader1:                                      ; preds = %0
-  %2 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([39 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !3898
-  br label %._crit_edge17
+for.cond.preheader:                               ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([39 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !2683
+  br label %for.end
 
-.lr.ph16:                                         ; preds = %0
-  %3 = add i32 %npoints, -1, !dbg !3900
-  br label %4, !dbg !3900
+for.body:                                         ; preds = %entry, %for.inc
+  %temp.0135 = phi %"struct.pov::Blob_List_Struct"* [ %1, %for.inc ], [ %BlobList, %entry ]
+  %count.0134 = phi i32 [ %count.1, %for.inc ], [ 0, %entry ]
+  %i.0133 = phi i32 [ %inc8, %for.inc ], [ 0, %entry ]
+  %Type = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %temp.0135, i64 0, i32 0, i32 0, !dbg !2685
+  %0 = load i16* %Type, align 2, !dbg !2685, !tbaa !1725
+  %and = and i16 %0, 4, !dbg !2685
+  %tobool = icmp eq i16 %and, 0, !dbg !2685
+  %count.1.v = select i1 %tobool, i32 1, i32 3, !dbg !2685
+  %count.1 = add i32 %count.1.v, %count.0134, !dbg !2685
+  %next = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %temp.0135, i64 0, i32 1, !dbg !2688
+  %1 = load %"struct.pov::Blob_List_Struct"** %next, align 8, !dbg !2688, !tbaa !1639
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_List_Struct"* %1}, i64 0, metadata !1093), !dbg !2688
+  %cmp4 = icmp sgt i32 %count.1, 999999, !dbg !2689
+  br i1 %cmp4, label %if.then5, label %for.inc, !dbg !2689
 
-; <label>:4                                       ; preds = %16, %.lr.ph16
-  %temp.015 = phi %"struct.pov::Blob_List_Struct"* [ %BlobList, %.lr.ph16 ], [ %12, %16 ]
-  %count.014 = phi i32 [ 0, %.lr.ph16 ], [ %count.1, %16 ]
-  %i.013 = phi i32 [ 0, %.lr.ph16 ], [ %17, %16 ]
-  %5 = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %temp.015, i64 0, i32 0, i32 0, !dbg !3902
-  %6 = load i16* %5, align 2, !dbg !3902, !tbaa !3212
-  %7 = and i16 %6, 4, !dbg !3906
-  %8 = zext i16 %7 to i32, !dbg !3907
-  %9 = lshr exact i32 %8, 1, !dbg !3907
-  %10 = or i32 %9, 1, !dbg !3907
-  %count.1 = add i32 %10, %count.014, !dbg !3907
-  %11 = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %temp.015, i64 0, i32 1, !dbg !3908
-  %12 = load %"struct.pov::Blob_List_Struct"** %11, align 8, !dbg !3908, !tbaa !3217
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_List_Struct"* %12, i64 0, metadata !1076, metadata !1893), !dbg !3909
-  %13 = icmp sgt i32 %count.1, 999999, !dbg !3910
-  br i1 %13, label %14, label %16, !dbg !3912
+if.then5:                                         ; preds = %for.body
+  %call6 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([45 x i8]* @.str5, i64 0, i64 0), i32 1000000) #7, !dbg !2690
+  br label %for.inc, !dbg !2692
 
-; <label>:14                                      ; preds = %4
-  %15 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([45 x i8]* @.str5, i64 0, i64 0), i32 1000000) #6, !dbg !3913
-  br label %16, !dbg !3915
+for.inc:                                          ; preds = %for.body, %if.then5
+  %inc8 = add nsw i32 %i.0133, 1, !dbg !2693
+  tail call void @llvm.dbg.value(metadata !{i32 %inc8}, i64 0, metadata !1090), !dbg !2693
+  %exitcond141 = icmp eq i32 %inc8, %npoints, !dbg !2693
+  br i1 %exitcond141, label %for.end, label %for.body, !dbg !2693
 
-; <label>:16                                      ; preds = %4, %14
-  %17 = add nuw nsw i32 %i.013, 1, !dbg !3916
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !1073, metadata !1893), !dbg !3917
-  %exitcond23 = icmp eq i32 %i.013, %3, !dbg !3900
-  br i1 %exitcond23, label %._crit_edge17, label %4, !dbg !3900
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %cmp1132143 = phi i1 [ false, %for.cond.preheader ], [ true, %for.inc ]
+  %count.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %count.1, %for.inc ]
+  %call9 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 40, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 3504, i8* getelementptr inbounds ([10 x i8]* @.str8, i64 0, i64 0)) #7, !dbg !2694
+  %2 = bitcast i8* %call9 to %"struct.pov::Blob_Data_Struct"*, !dbg !2694
+  %Data = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 14, !dbg !2694
+  store %"struct.pov::Blob_Data_Struct"* %2, %"struct.pov::Blob_Data_Struct"** %Data, align 8, !dbg !2694, !tbaa !1639
+  %References = bitcast i8* %call9 to i32*, !dbg !2695
+  store i32 1, i32* %References, align 4, !dbg !2695, !tbaa !1693
+  %Number_Of_Components = getelementptr inbounds i8* %call9, i64 4, !dbg !2696
+  %3 = bitcast i8* %Number_Of_Components to i32*, !dbg !2696
+  store i32 %count.0.lcssa, i32* %3, align 4, !dbg !2696, !tbaa !1693
+  %conv12 = sext i32 %count.0.lcssa to i64, !dbg !2697
+  %mul = shl nsw i64 %conv12, 7, !dbg !2697
+  %call13 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 3510, i8* getelementptr inbounds ([10 x i8]* @.str8, i64 0, i64 0)) #7, !dbg !2697
+  %4 = bitcast i8* %call13 to %"struct.pov::Blob_Element_Struct"*, !dbg !2697
+  %5 = load %"struct.pov::Blob_Data_Struct"** %Data, align 8, !dbg !2697, !tbaa !1639
+  %Entry = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %5, i64 0, i32 3, !dbg !2697
+  store %"struct.pov::Blob_Element_Struct"* %4, %"struct.pov::Blob_Element_Struct"** %Entry, align 8, !dbg !2697, !tbaa !1639
+  %6 = load %"struct.pov::Blob_Data_Struct"** %Data, align 8, !dbg !2698, !tbaa !1639
+  %Number_Of_Components16 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %6, i64 0, i32 1, !dbg !2698
+  %7 = load i32* %Number_Of_Components16, align 4, !dbg !2698, !tbaa !1693
+  %mul17 = shl nsw i32 %7, 1, !dbg !2698
+  %conv18 = sext i32 %mul17 to i64, !dbg !2698
+  %mul19 = mul i64 %conv18, 24, !dbg !2698
+  %call20 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul19, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 3512, i8* getelementptr inbounds ([15 x i8]* @.str9, i64 0, i64 0)) #7, !dbg !2698
+  %8 = bitcast i8* %call20 to %"struct.pov::Blob_Interval_Struct"*, !dbg !2698
+  %9 = load %"struct.pov::Blob_Data_Struct"** %Data, align 8, !dbg !2698, !tbaa !1639
+  %Intervals = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %9, i64 0, i32 4, !dbg !2698
+  store %"struct.pov::Blob_Interval_Struct"* %8, %"struct.pov::Blob_Interval_Struct"** %Intervals, align 8, !dbg !2698, !tbaa !1639
+  %10 = load %"struct.pov::Blob_Data_Struct"** %Data, align 8, !dbg !2699, !tbaa !1639
+  %Tree = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %10, i64 0, i32 5, !dbg !2699
+  store %"struct.pov::BSphere_Tree_Struct"* null, %"struct.pov::BSphere_Tree_Struct"** %Tree, align 8, !dbg !2699, !tbaa !1639
+  tail call void @llvm.dbg.value(metadata !142, i64 0, metadata !1090), !dbg !2700
+  %cmp24130 = icmp sgt i32 %count.0.lcssa, 0, !dbg !2700
+  br i1 %cmp24130, label %for.body25, label %for.end30, !dbg !2700
 
-._crit_edge17:                                    ; preds = %16, %.preheader1
-  %18 = phi i1 [ false, %.preheader1 ], [ true, %16 ]
-  %count.0.lcssa = phi i32 [ 0, %.preheader1 ], [ %count.1, %16 ]
-  %19 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 40, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 3504, i8* getelementptr inbounds ([10 x i8]* @.str8, i64 0, i64 0)) #6, !dbg !3918
-  %20 = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 14, !dbg !3919
-  %21 = bitcast %"struct.pov::Blob_Data_Struct"** %20 to i8**, !dbg !3920
-  store i8* %19, i8** %21, align 8, !dbg !3920, !tbaa !1978
-  %22 = bitcast i8* %19 to i32*, !dbg !3921
-  store i32 1, i32* %22, align 4, !dbg !3922, !tbaa !3009
-  %23 = getelementptr inbounds i8* %19, i64 4, !dbg !3923
-  %24 = bitcast i8* %23 to i32*, !dbg !3923
-  store i32 %count.0.lcssa, i32* %24, align 4, !dbg !3924, !tbaa !1998
-  %25 = sext i32 %count.0.lcssa to i64, !dbg !3925
-  %26 = shl nsw i64 %25, 7, !dbg !3925
-  %27 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %26, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 3510, i8* getelementptr inbounds ([10 x i8]* @.str8, i64 0, i64 0)) #6, !dbg !3925
-  %28 = load %"struct.pov::Blob_Data_Struct"** %20, align 8, !dbg !3926, !tbaa !1978
-  %29 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %28, i64 0, i32 3, !dbg !3927
-  %30 = bitcast %"struct.pov::Blob_Element_Struct"** %29 to i8**, !dbg !3928
-  store i8* %27, i8** %30, align 8, !dbg !3928, !tbaa !2005
-  %31 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %28, i64 0, i32 1, !dbg !3929
-  %32 = load i32* %31, align 4, !dbg !3929, !tbaa !1998
-  %33 = shl nsw i32 %32, 1, !dbg !3929
-  %34 = sext i32 %33 to i64, !dbg !3929
-  %35 = mul nsw i64 %34, 24, !dbg !3929
-  %36 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %35, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 3512, i8* getelementptr inbounds ([15 x i8]* @.str9, i64 0, i64 0)) #6, !dbg !3929
-  %37 = load %"struct.pov::Blob_Data_Struct"** %20, align 8, !dbg !3930, !tbaa !1978
-  %38 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %37, i64 0, i32 4, !dbg !3931
-  %39 = bitcast %"struct.pov::Blob_Interval_Struct"** %38 to i8**, !dbg !3932
-  store i8* %36, i8** %39, align 8, !dbg !3932, !tbaa !1980
-  %40 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %37, i64 0, i32 5, !dbg !3933
-  store %"struct.pov::BSphere_Tree_Struct"* null, %"struct.pov::BSphere_Tree_Struct"** %40, align 8, !dbg !3934, !tbaa !1991
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1073, metadata !1893), !dbg !3917
-  %41 = icmp sgt i32 %count.0.lcssa, 0, !dbg !3935
-  br i1 %41, label %.lr.ph11, label %._crit_edge12, !dbg !3938
+for.body25:                                       ; preds = %for.end, %for.body25
+  %indvars.iv137 = phi i64 [ %indvars.iv.next138, %for.body25 ], [ 0, %for.end ]
+  %11 = load %"struct.pov::Blob_Data_Struct"** %Data, align 8, !dbg !2702, !tbaa !1639
+  %Entry27 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %11, i64 0, i32 3, !dbg !2702
+  %12 = load %"struct.pov::Blob_Element_Struct"** %Entry27, align 8, !dbg !2702, !tbaa !1639
+  %Type.i = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %12, i64 %indvars.iv137, i32 0, !dbg !2704
+  store i16 0, i16* %Type.i, align 2, !dbg !2704, !tbaa !1725
+  %index.i = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %12, i64 %indvars.iv137, i32 1, !dbg !2705
+  tail call void @llvm.dbg.value(metadata !1772, i64 0, metadata !2706) #5, !dbg !2708
+  tail call void @llvm.dbg.value(metadata !1772, i64 0, metadata !2709) #5, !dbg !2708
+  tail call void @llvm.dbg.value(metadata !1772, i64 0, metadata !2710) #5, !dbg !2708
+  %13 = bitcast i32* %index.i to i8*, !dbg !2711
+  tail call void @llvm.memset.p0i8.i64(i8* %13, i8 0, i64 124, i32 4, i1 false) #5, !dbg !2705
+  %indvars.iv.next138 = add i64 %indvars.iv137, 1, !dbg !2700
+  %lftr.wideiv139 = trunc i64 %indvars.iv.next138 to i32, !dbg !2700
+  %exitcond140 = icmp eq i32 %lftr.wideiv139, %count.0.lcssa, !dbg !2700
+  br i1 %exitcond140, label %for.end30, label %for.body25, !dbg !2700
 
-.lr.ph11:                                         ; preds = %._crit_edge17
-  %42 = add i32 %count.0.lcssa, -1, !dbg !3938
-  %43 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %37, i64 0, i32 3, !dbg !3939
-  %44 = load %"struct.pov::Blob_Element_Struct"** %43, align 8, !dbg !3939, !tbaa !2005
-  %45 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %44, i64 0, i32 0, !dbg !3941
-  store i16 0, i16* %45, align 2, !dbg !3943, !tbaa !2247
-  %46 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %44, i64 0, i32 1, !dbg !3944
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1322, metadata !1893) #5, !dbg !3945
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1323, metadata !1893) #5, !dbg !3947
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1324, metadata !1893) #5, !dbg !3948
-  %47 = bitcast i32* %46 to i8*, !dbg !3949
-  tail call void @llvm.memset.p0i8.i64(i8* %47, i8 0, i64 124, i32 4, i1 false) #5, !dbg !3950
-  %exitcond2229 = icmp eq i32 %42, 0, !dbg !3938
-  br i1 %exitcond2229, label %._crit_edge12, label %._crit_edge24, !dbg !3938
+for.end30:                                        ; preds = %for.body25, %for.end
+  %mul32 = shl nsw i64 %conv12, 3, !dbg !2712
+  %call33 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul32, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 3525, i8* getelementptr inbounds ([18 x i8]* @.str10, i64 0, i64 0)) #7, !dbg !2712
+  %14 = bitcast i8* %call33 to %"struct.pov::Texture_Struct"**, !dbg !2712
+  %Element_Texture = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 15, !dbg !2712
+  store %"struct.pov::Texture_Struct"** %14, %"struct.pov::Texture_Struct"*** %Element_Texture, align 8, !dbg !2712, !tbaa !1639
+  tail call void @llvm.dbg.value(metadata !142, i64 0, metadata !1090), !dbg !2713
+  br i1 %cmp24130, label %for.body36, label %for.cond43.preheader, !dbg !2713
 
-._crit_edge24:                                    ; preds = %.lr.ph11, %._crit_edge24
-  %indvars.iv1930 = phi i64 [ %indvars.iv.next20, %._crit_edge24 ], [ 0, %.lr.ph11 ]
-  %indvars.iv.next20 = add nuw nsw i64 %indvars.iv1930, 1, !dbg !3938
-  %.pre = load %"struct.pov::Blob_Data_Struct"** %20, align 8, !dbg !3951, !tbaa !1978
-  %48 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %.pre, i64 0, i32 3, !dbg !3939
-  %49 = load %"struct.pov::Blob_Element_Struct"** %48, align 8, !dbg !3939, !tbaa !2005
-  %50 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %49, i64 %indvars.iv.next20, i32 0, !dbg !3941
-  store i16 0, i16* %50, align 2, !dbg !3943, !tbaa !2247
-  %51 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %49, i64 %indvars.iv.next20, i32 1, !dbg !3944
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1322, metadata !1893) #5, !dbg !3945
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1323, metadata !1893) #5, !dbg !3947
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1324, metadata !1893) #5, !dbg !3948
-  %52 = bitcast i32* %51 to i8*, !dbg !3949
-  tail call void @llvm.memset.p0i8.i64(i8* %52, i8 0, i64 124, i32 4, i1 false) #5, !dbg !3950
-  %lftr.wideiv21 = trunc i64 %indvars.iv.next20 to i32, !dbg !3938
-  %exitcond22 = icmp eq i32 %lftr.wideiv21, %42, !dbg !3938
-  br i1 %exitcond22, label %._crit_edge12, label %._crit_edge24, !dbg !3938
+for.cond43.preheader:                             ; preds = %for.body36, %for.end30
+  br i1 %cmp1132143, label %for.body45, label %for.end80, !dbg !2715
 
-._crit_edge12:                                    ; preds = %.lr.ph11, %._crit_edge24, %._crit_edge17
-  %53 = shl nsw i64 %25, 3, !dbg !3952
-  %54 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %53, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 3525, i8* getelementptr inbounds ([18 x i8]* @.str10, i64 0, i64 0)) #6, !dbg !3952
-  %55 = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 15, !dbg !3953
-  %56 = bitcast %"struct.pov::Texture_Struct"*** %55 to i8**, !dbg !3954
-  store i8* %54, i8** %56, align 8, !dbg !3954, !tbaa !3013
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1073, metadata !1893), !dbg !3917
-  br i1 %41, label %.lr.ph8, label %.preheader, !dbg !3955
+for.body36:                                       ; preds = %for.end30, %for.body36.for.body36_crit_edge
+  %15 = phi %"struct.pov::Texture_Struct"** [ %.pre, %for.body36.for.body36_crit_edge ], [ %14, %for.end30 ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body36.for.body36_crit_edge ], [ 0, %for.end30 ]
+  %arrayidx39 = getelementptr inbounds %"struct.pov::Texture_Struct"** %15, i64 %indvars.iv, !dbg !2717
+  store %"struct.pov::Texture_Struct"* null, %"struct.pov::Texture_Struct"** %arrayidx39, align 8, !dbg !2717, !tbaa !1639
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2713
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2713
+  %exitcond136 = icmp eq i32 %lftr.wideiv, %count.0.lcssa, !dbg !2713
+  br i1 %exitcond136, label %for.cond43.preheader, label %for.body36.for.body36_crit_edge, !dbg !2713
 
-.lr.ph8:                                          ; preds = %._crit_edge12
-  %57 = bitcast i8* %54 to %"struct.pov::Texture_Struct"**
-  %58 = add i32 %count.0.lcssa, -1, !dbg !3955
-  store %"struct.pov::Texture_Struct"* null, %"struct.pov::Texture_Struct"** %57, align 8, !dbg !3957, !tbaa !2026
-  %exitcond1827 = icmp eq i32 %58, 0, !dbg !3955
-  br i1 %exitcond1827, label %.preheader, label %._crit_edge25, !dbg !3955
+for.body36.for.body36_crit_edge:                  ; preds = %for.body36
+  %.pre = load %"struct.pov::Texture_Struct"*** %Element_Texture, align 8, !dbg !2717, !tbaa !1639
+  br label %for.body36, !dbg !2713
 
-.preheader:                                       ; preds = %.lr.ph8, %._crit_edge25, %._crit_edge12
-  br i1 %18, label %.lr.ph, label %._crit_edge, !dbg !3960
+for.body45:                                       ; preds = %for.cond43.preheader, %sw.epilog
+  %element_count.0127 = phi i32 [ %element_count.1, %sw.epilog ], [ 0, %for.cond43.preheader ]
+  %i.3126 = phi i32 [ %inc79, %sw.epilog ], [ 0, %for.cond43.preheader ]
+  %BlobList.addr.0124 = phi %"struct.pov::Blob_List_Struct"* [ %25, %sw.epilog ], [ %BlobList, %for.cond43.preheader ]
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_List_Struct"* %BlobList.addr.0124}, i64 0, metadata !1093), !dbg !2719
+  %Type47 = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %BlobList.addr.0124, i64 0, i32 0, i32 0, !dbg !2721
+  %16 = load i16* %Type47, align 2, !dbg !2721, !tbaa !1725
+  %conv48 = sext i16 %16 to i32, !dbg !2721
+  switch i32 %conv48, label %sw.epilog [
+    i32 8, label %sw.bb
+    i32 2, label %sw.bb
+    i32 4, label %sw.bb55
+  ], !dbg !2721
 
-.lr.ph:                                           ; preds = %.preheader
-  %59 = add i32 %npoints, -1, !dbg !3960
-  br label %61, !dbg !3960
+sw.bb:                                            ; preds = %for.body45, %for.body45
+  %Texture = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %BlobList.addr.0124, i64 0, i32 0, i32 7, !dbg !2722
+  %17 = load %"struct.pov::Texture_Struct"** %Texture, align 8, !dbg !2722, !tbaa !1639
+  %call50 = tail call %"struct.pov::Texture_Struct"* @_ZN3pov13Copy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %17) #7, !dbg !2722
+  %inc51 = add nsw i32 %element_count.0127, 1, !dbg !2722
+  tail call void @llvm.dbg.value(metadata !{i32 %inc51}, i64 0, metadata !1091), !dbg !2722
+  %idxprom52 = sext i32 %element_count.0127 to i64, !dbg !2722
+  %18 = load %"struct.pov::Texture_Struct"*** %Element_Texture, align 8, !dbg !2722, !tbaa !1639
+  %arrayidx54 = getelementptr inbounds %"struct.pov::Texture_Struct"** %18, i64 %idxprom52, !dbg !2722
+  store %"struct.pov::Texture_Struct"* %call50, %"struct.pov::Texture_Struct"** %arrayidx54, align 8, !dbg !2722, !tbaa !1639
+  br label %sw.epilog, !dbg !2724
 
-._crit_edge25:                                    ; preds = %.lr.ph8, %._crit_edge25
-  %indvars.iv28 = phi i64 [ %indvars.iv.next, %._crit_edge25 ], [ 0, %.lr.ph8 ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv28, 1, !dbg !3955
-  %.pre26 = load %"struct.pov::Texture_Struct"*** %55, align 8, !dbg !3962, !tbaa !3013
-  %60 = getelementptr inbounds %"struct.pov::Texture_Struct"** %.pre26, i64 %indvars.iv.next, !dbg !3963
-  store %"struct.pov::Texture_Struct"* null, %"struct.pov::Texture_Struct"** %60, align 8, !dbg !3957, !tbaa !2026
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !3955
-  %exitcond18 = icmp eq i32 %lftr.wideiv, %58, !dbg !3955
-  br i1 %exitcond18, label %.preheader, label %._crit_edge25, !dbg !3955
+sw.bb55:                                          ; preds = %for.body45
+  %Texture57 = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %BlobList.addr.0124, i64 0, i32 0, i32 7, !dbg !2725
+  %19 = load %"struct.pov::Texture_Struct"** %Texture57, align 8, !dbg !2725, !tbaa !1639
+  %call58 = tail call %"struct.pov::Texture_Struct"* @_ZN3pov13Copy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %19) #7, !dbg !2725
+  %inc59 = add nsw i32 %element_count.0127, 1, !dbg !2725
+  tail call void @llvm.dbg.value(metadata !{i32 %inc59}, i64 0, metadata !1091), !dbg !2725
+  %idxprom60 = sext i32 %element_count.0127 to i64, !dbg !2725
+  %20 = load %"struct.pov::Texture_Struct"*** %Element_Texture, align 8, !dbg !2725, !tbaa !1639
+  %arrayidx62 = getelementptr inbounds %"struct.pov::Texture_Struct"** %20, i64 %idxprom60, !dbg !2725
+  store %"struct.pov::Texture_Struct"* %call58, %"struct.pov::Texture_Struct"** %arrayidx62, align 8, !dbg !2725, !tbaa !1639
+  %21 = load %"struct.pov::Texture_Struct"** %Texture57, align 8, !dbg !2726, !tbaa !1639
+  %call65 = tail call %"struct.pov::Texture_Struct"* @_ZN3pov13Copy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %21) #7, !dbg !2726
+  %inc66 = add nsw i32 %element_count.0127, 2, !dbg !2726
+  tail call void @llvm.dbg.value(metadata !{i32 %inc66}, i64 0, metadata !1091), !dbg !2726
+  %idxprom67 = sext i32 %inc59 to i64, !dbg !2726
+  %22 = load %"struct.pov::Texture_Struct"*** %Element_Texture, align 8, !dbg !2726, !tbaa !1639
+  %arrayidx69 = getelementptr inbounds %"struct.pov::Texture_Struct"** %22, i64 %idxprom67, !dbg !2726
+  store %"struct.pov::Texture_Struct"* %call65, %"struct.pov::Texture_Struct"** %arrayidx69, align 8, !dbg !2726, !tbaa !1639
+  %23 = load %"struct.pov::Texture_Struct"** %Texture57, align 8, !dbg !2727, !tbaa !1639
+  %call72 = tail call %"struct.pov::Texture_Struct"* @_ZN3pov13Copy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %23) #7, !dbg !2727
+  %inc73 = add nsw i32 %element_count.0127, 3, !dbg !2727
+  tail call void @llvm.dbg.value(metadata !{i32 %inc73}, i64 0, metadata !1091), !dbg !2727
+  %idxprom74 = sext i32 %inc66 to i64, !dbg !2727
+  %24 = load %"struct.pov::Texture_Struct"*** %Element_Texture, align 8, !dbg !2727, !tbaa !1639
+  %arrayidx76 = getelementptr inbounds %"struct.pov::Texture_Struct"** %24, i64 %idxprom74, !dbg !2727
+  store %"struct.pov::Texture_Struct"* %call72, %"struct.pov::Texture_Struct"** %arrayidx76, align 8, !dbg !2727, !tbaa !1639
+  br label %sw.epilog, !dbg !2728
 
-; <label>:61                                      ; preds = %93, %.lr.ph
-  %element_count.05 = phi i32 [ 0, %.lr.ph ], [ %element_count.1, %93 ]
-  %i.34 = phi i32 [ 0, %.lr.ph ], [ %96, %93 ]
-  %.02 = phi %"struct.pov::Blob_List_Struct"* [ %BlobList, %.lr.ph ], [ %95, %93 ]
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_List_Struct"* %95, i64 0, metadata !1076, metadata !1893), !dbg !3909
-  %62 = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %.02, i64 0, i32 0, i32 0, !dbg !3964
-  %63 = load i16* %62, align 2, !dbg !3964, !tbaa !3212
-  %64 = sext i16 %63 to i32, !dbg !3967
-  switch i32 %64, label %93 [
-    i32 8, label %65
-    i32 2, label %65
-    i32 4, label %73
-  ], !dbg !3968
+sw.epilog:                                        ; preds = %for.body45, %sw.bb55, %sw.bb
+  %element_count.1 = phi i32 [ %element_count.0127, %for.body45 ], [ %inc73, %sw.bb55 ], [ %inc51, %sw.bb ]
+  %next77 = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %BlobList.addr.0124, i64 0, i32 1, !dbg !2729
+  %25 = load %"struct.pov::Blob_List_Struct"** %next77, align 8, !dbg !2729, !tbaa !1639
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_List_Struct"* %25}, i64 0, metadata !1088), !dbg !2729
+  %inc79 = add nsw i32 %i.3126, 1, !dbg !2715
+  tail call void @llvm.dbg.value(metadata !{i32 %inc79}, i64 0, metadata !1090), !dbg !2715
+  %exitcond = icmp eq i32 %inc79, %npoints, !dbg !2715
+  br i1 %exitcond, label %for.end80, label %for.body45, !dbg !2715
 
-; <label>:65                                      ; preds = %61, %61
-  %66 = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %.02, i64 0, i32 0, i32 7, !dbg !3969
-  %67 = load %"struct.pov::Texture_Struct"** %66, align 8, !dbg !3969, !tbaa !3320
-  %68 = tail call %"struct.pov::Texture_Struct"* @_ZN3pov13Copy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %67) #6, !dbg !3971
-  %69 = add nsw i32 %element_count.05, 1, !dbg !3972
-  tail call void @llvm.dbg.value(metadata i32 %69, i64 0, metadata !1074, metadata !1893), !dbg !3973
-  %70 = sext i32 %element_count.05 to i64, !dbg !3974
-  %71 = load %"struct.pov::Texture_Struct"*** %55, align 8, !dbg !3975, !tbaa !3013
-  %72 = getelementptr inbounds %"struct.pov::Texture_Struct"** %71, i64 %70, !dbg !3974
-  store %"struct.pov::Texture_Struct"* %68, %"struct.pov::Texture_Struct"** %72, align 8, !dbg !3976, !tbaa !2026
-  br label %93, !dbg !3977
-
-; <label>:73                                      ; preds = %61
-  %74 = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %.02, i64 0, i32 0, i32 7, !dbg !3978
-  %75 = load %"struct.pov::Texture_Struct"** %74, align 8, !dbg !3978, !tbaa !3320
-  %76 = tail call %"struct.pov::Texture_Struct"* @_ZN3pov13Copy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %75) #6, !dbg !3979
-  %77 = add nsw i32 %element_count.05, 1, !dbg !3980
-  tail call void @llvm.dbg.value(metadata i32 %77, i64 0, metadata !1074, metadata !1893), !dbg !3973
-  %78 = sext i32 %element_count.05 to i64, !dbg !3981
-  %79 = load %"struct.pov::Texture_Struct"*** %55, align 8, !dbg !3982, !tbaa !3013
-  %80 = getelementptr inbounds %"struct.pov::Texture_Struct"** %79, i64 %78, !dbg !3981
-  store %"struct.pov::Texture_Struct"* %76, %"struct.pov::Texture_Struct"** %80, align 8, !dbg !3983, !tbaa !2026
-  %81 = load %"struct.pov::Texture_Struct"** %74, align 8, !dbg !3984, !tbaa !3320
-  %82 = tail call %"struct.pov::Texture_Struct"* @_ZN3pov13Copy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %81) #6, !dbg !3985
-  %83 = add nsw i32 %element_count.05, 2, !dbg !3986
-  tail call void @llvm.dbg.value(metadata i32 %83, i64 0, metadata !1074, metadata !1893), !dbg !3973
-  %84 = sext i32 %77 to i64, !dbg !3987
-  %85 = load %"struct.pov::Texture_Struct"*** %55, align 8, !dbg !3988, !tbaa !3013
-  %86 = getelementptr inbounds %"struct.pov::Texture_Struct"** %85, i64 %84, !dbg !3987
-  store %"struct.pov::Texture_Struct"* %82, %"struct.pov::Texture_Struct"** %86, align 8, !dbg !3989, !tbaa !2026
-  %87 = load %"struct.pov::Texture_Struct"** %74, align 8, !dbg !3990, !tbaa !3320
-  %88 = tail call %"struct.pov::Texture_Struct"* @_ZN3pov13Copy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %87) #6, !dbg !3991
-  %89 = add nsw i32 %element_count.05, 3, !dbg !3992
-  tail call void @llvm.dbg.value(metadata i32 %89, i64 0, metadata !1074, metadata !1893), !dbg !3973
-  %90 = sext i32 %83 to i64, !dbg !3993
-  %91 = load %"struct.pov::Texture_Struct"*** %55, align 8, !dbg !3994, !tbaa !3013
-  %92 = getelementptr inbounds %"struct.pov::Texture_Struct"** %91, i64 %90, !dbg !3993
-  store %"struct.pov::Texture_Struct"* %88, %"struct.pov::Texture_Struct"** %92, align 8, !dbg !3995, !tbaa !2026
-  br label %93, !dbg !3996
-
-; <label>:93                                      ; preds = %61, %73, %65
-  %element_count.1 = phi i32 [ %element_count.05, %61 ], [ %89, %73 ], [ %69, %65 ]
-  %94 = getelementptr inbounds %"struct.pov::Blob_List_Struct"* %.02, i64 0, i32 1, !dbg !3997
-  %95 = load %"struct.pov::Blob_List_Struct"** %94, align 8, !dbg !3997, !tbaa !3217
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_List_Struct"* %95, i64 0, metadata !1071, metadata !1893), !dbg !3893
-  %96 = add nuw nsw i32 %i.34, 1, !dbg !3998
-  tail call void @llvm.dbg.value(metadata i32 %96, i64 0, metadata !1073, metadata !1893), !dbg !3917
-  %exitcond = icmp eq i32 %i.34, %59, !dbg !3960
-  br i1 %exitcond, label %._crit_edge, label %61, !dbg !3960
-
-._crit_edge:                                      ; preds = %93, %.preheader
-  ret void, !dbg !3999
+for.end80:                                        ; preds = %sw.epilog, %for.cond43.preheader
+  ret void, !dbg !2730
 }

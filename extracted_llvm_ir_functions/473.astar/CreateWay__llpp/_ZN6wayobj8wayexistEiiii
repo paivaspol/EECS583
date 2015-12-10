@@ -1,43 +1,44 @@
 define zeroext i1 @_ZN6wayobj8wayexistEiiii(%class.wayobj* %this, i32 %startx, i32 %starty, i32 %endx, i32 %endy) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.wayobj* %this, i64 0, metadata !367, metadata !451), !dbg !1296
-  tail call void @llvm.dbg.value(metadata i32 %startx, i64 0, metadata !368, metadata !451), !dbg !1297
-  tail call void @llvm.dbg.value(metadata i32 %starty, i64 0, metadata !369, metadata !451), !dbg !1298
-  tail call void @llvm.dbg.value(metadata i32 %endx, i64 0, metadata !370, metadata !451), !dbg !1299
-  tail call void @llvm.dbg.value(metadata i32 %endy, i64 0, metadata !371, metadata !451), !dbg !1300
-  %1 = tail call zeroext i1 @_ZN6wayobj5ismapEii(%class.wayobj* %this, i32 %startx, i32 %starty) #9, !dbg !1301
-  br i1 %1, label %2, label %20, !dbg !1303
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.wayobj* %this}, i64 0, metadata !429), !dbg !876
+  tail call void @llvm.dbg.value(metadata !{i32 %startx}, i64 0, metadata !430), !dbg !876
+  tail call void @llvm.dbg.value(metadata !{i32 %starty}, i64 0, metadata !431), !dbg !876
+  tail call void @llvm.dbg.value(metadata !{i32 %endx}, i64 0, metadata !432), !dbg !876
+  tail call void @llvm.dbg.value(metadata !{i32 %endy}, i64 0, metadata !433), !dbg !876
+  %call = tail call zeroext i1 @_ZN6wayobj5ismapEii(%class.wayobj* %this, i32 %startx, i32 %starty) #6, !dbg !877
+  br i1 %call, label %lor.lhs.false, label %return, !dbg !877
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call zeroext i1 @_ZN6wayobj5ismapEii(%class.wayobj* %this, i32 %endx, i32 %endy) #9, !dbg !1304
-  br i1 %3, label %4, label %20, !dbg !1305
+lor.lhs.false:                                    ; preds = %entry
+  %call2 = tail call zeroext i1 @_ZN6wayobj5ismapEii(%class.wayobj* %this, i32 %endx, i32 %endy) #6, !dbg !877
+  br i1 %call2, label %if.end, label %return, !dbg !877
 
-; <label>:4                                       ; preds = %2
-  tail call void @llvm.dbg.value(metadata %class.wayobj* %this, i64 0, metadata !429, metadata !451), !dbg !1306
-  tail call void @llvm.dbg.value(metadata i32 %endx, i64 0, metadata !430, metadata !451), !dbg !1309
-  tail call void @llvm.dbg.value(metadata i32 %endy, i64 0, metadata !431, metadata !451), !dbg !1310
-  %5 = getelementptr inbounds %class.wayobj* %this, i64 0, i32 2, !dbg !1311
-  %6 = load i32* %5, align 4, !dbg !1311, !tbaa !566
-  %7 = shl i32 %endy, %6, !dbg !1312
-  %8 = or i32 %7, %endx, !dbg !1313
-  %9 = sext i32 %8 to i64, !dbg !1314
-  %10 = getelementptr inbounds %class.wayobj* %this, i64 0, i32 17, !dbg !1314
-  %11 = load i16** %10, align 8, !dbg !1314, !tbaa !1315
-  %12 = getelementptr inbounds i16* %11, i64 %9, !dbg !1314
-  %13 = load i16* %12, align 2, !dbg !1316, !tbaa !1317
-  %14 = icmp eq i16 %13, 0, !dbg !1318
-  br i1 %14, label %15, label %20, !dbg !1319
+if.end:                                           ; preds = %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%class.wayobj* %this}, i64 0, metadata !878), !dbg !880
+  tail call void @llvm.dbg.value(metadata !{i32 %endx}, i64 0, metadata !881), !dbg !880
+  tail call void @llvm.dbg.value(metadata !{i32 %endy}, i64 0, metadata !882), !dbg !880
+  %shift.i = getelementptr inbounds %class.wayobj* %this, i64 0, i32 2, !dbg !880
+  %0 = load i32* %shift.i, align 4, !dbg !880, !tbaa !539
+  %shl.i = shl i32 %endy, %0, !dbg !880
+  %or.i = or i32 %shl.i, %endx, !dbg !880
+  %idxprom.i = sext i32 %or.i to i64, !dbg !880
+  %maparp.i = getelementptr inbounds %class.wayobj* %this, i64 0, i32 16, !dbg !880
+  %1 = load i16** %maparp.i, align 8, !dbg !880, !tbaa !533
+  %arrayidx.i = getelementptr inbounds i16* %1, i64 %idxprom.i, !dbg !880
+  %2 = load i16* %arrayidx.i, align 2, !dbg !879, !tbaa !526
+  %cmp = icmp eq i16 %2, 0, !dbg !879
+  br i1 %cmp, label %if.end5, label %return, !dbg !879
 
-; <label>:15                                      ; preds = %4
-  %16 = icmp eq i32 %startx, %endx, !dbg !1320
-  %17 = icmp eq i32 %starty, %endy, !dbg !1322
-  %or.cond = and i1 %16, %17, !dbg !1323
-  br i1 %or.cond, label %20, label %18, !dbg !1323
+if.end5:                                          ; preds = %if.end
+  %cmp6 = icmp eq i32 %startx, %endx, !dbg !883
+  %cmp7 = icmp eq i32 %starty, %endy, !dbg !883
+  %or.cond = and i1 %cmp6, %cmp7, !dbg !883
+  br i1 %or.cond, label %return, label %if.end9, !dbg !883
 
-; <label>:18                                      ; preds = %15
-  %19 = tail call zeroext i1 @_ZN6wayobj4fillEiiii(%class.wayobj* %this, i32 %startx, i32 %starty, i32 %endx, i32 %endy) #9, !dbg !1324
-  br label %20, !dbg !1325
+if.end9:                                          ; preds = %if.end5
+  %call10 = tail call zeroext i1 @_ZN6wayobj4fillEiiii(%class.wayobj* %this, i32 %startx, i32 %starty, i32 %endx, i32 %endy) #6, !dbg !884
+  br label %return, !dbg !884
 
-; <label>:20                                      ; preds = %15, %4, %0, %2, %18
-  %.0 = phi i1 [ %19, %18 ], [ false, %2 ], [ false, %0 ], [ false, %4 ], [ true, %15 ]
-  ret i1 %.0, !dbg !1326
+return:                                           ; preds = %if.end5, %if.end, %entry, %lor.lhs.false, %if.end9
+  %retval.0 = phi i1 [ %call10, %if.end9 ], [ false, %lor.lhs.false ], [ false, %entry ], [ false, %if.end ], [ true, %if.end5 ]
+  ret i1 %retval.0, !dbg !885
 }

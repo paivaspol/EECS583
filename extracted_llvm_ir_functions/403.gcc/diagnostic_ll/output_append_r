@@ -1,29 +1,34 @@
 define internal fastcc void @output_append_r(%struct.output_buffer* %buffer, i8* nocapture %start, i32 %length) #2 {
 entry:
-  %next_free = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2, i32 3
-  %0 = load i8** %next_free, align 8, !tbaa !3
-  %idx.ext = sext i32 %length to i64
-  %add.ptr = getelementptr inbounds i8* %0, i64 %idx.ext
-  %chunk_limit = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2, i32 4
-  %1 = load i8** %chunk_limit, align 8, !tbaa !3
-  %cmp = icmp ugt i8* %add.ptr, %1
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.output_buffer* %buffer}, i64 0, metadata !1139), !dbg !1331
+  tail call void @llvm.dbg.value(metadata !{i8* %start}, i64 0, metadata !1140), !dbg !1332
+  tail call void @llvm.dbg.value(metadata !{i32 %length}, i64 0, metadata !1141), !dbg !1333
+  tail call void @llvm.dbg.value(metadata !{%struct.obstack* %obstack}, i64 0, metadata !1142), !dbg !1334
+  tail call void @llvm.dbg.value(metadata !{i32 %length}, i64 0, metadata !1144), !dbg !1334
+  %next_free = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2, i32 3, !dbg !1334
+  %0 = load i8** %next_free, align 8, !dbg !1334, !tbaa !1178
+  %idx.ext = sext i32 %length to i64, !dbg !1334
+  %add.ptr = getelementptr inbounds i8* %0, i64 %idx.ext, !dbg !1334
+  %chunk_limit = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2, i32 4, !dbg !1334
+  %1 = load i8** %chunk_limit, align 8, !dbg !1334, !tbaa !1178
+  %cmp = icmp ugt i8* %add.ptr, %1, !dbg !1334
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1334
 
 if.then:                                          ; preds = %entry
-  %obstack = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2
-  tail call void @_obstack_newchunk(%struct.obstack* %obstack, i32 %length) #10
-  %.pre = load i8** %next_free, align 8, !tbaa !3
-  br label %if.end
+  %obstack = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2, !dbg !1334
+  tail call void @_obstack_newchunk(%struct.obstack* %obstack, i32 %length) #11, !dbg !1334
+  %.pre = load i8** %next_free, align 8, !dbg !1334, !tbaa !1178
+  br label %if.end, !dbg !1334
 
 if.end:                                           ; preds = %if.then, %entry
   %2 = phi i8* [ %.pre, %if.then ], [ %0, %entry ]
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %start, i64 %idx.ext, i32 1, i1 false)
-  %3 = load i8** %next_free, align 8, !tbaa !3
-  %add.ptr4 = getelementptr inbounds i8* %3, i64 %idx.ext
-  store i8* %add.ptr4, i8** %next_free, align 8, !tbaa !3
-  %line_length = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 3
-  %4 = load i32* %line_length, align 4, !tbaa !0
-  %add = add nsw i32 %4, %length
-  store i32 %add, i32* %line_length, align 4, !tbaa !0
-  ret void
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %start, i64 %idx.ext, i32 1, i1 false), !dbg !1334
+  %3 = load i8** %next_free, align 8, !dbg !1334, !tbaa !1178
+  %add.ptr4 = getelementptr inbounds i8* %3, i64 %idx.ext, !dbg !1334
+  store i8* %add.ptr4, i8** %next_free, align 8, !dbg !1334, !tbaa !1178
+  %line_length = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 3, !dbg !1335
+  %4 = load i32* %line_length, align 4, !dbg !1335, !tbaa !1172
+  %add = add nsw i32 %4, %length, !dbg !1335
+  store i32 %add, i32* %line_length, align 4, !dbg !1335, !tbaa !1172
+  ret void, !dbg !1336
 }

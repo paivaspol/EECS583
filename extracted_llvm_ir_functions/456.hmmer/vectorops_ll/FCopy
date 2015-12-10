@@ -1,28 +1,23 @@
-define void @FCopy(float* nocapture %vec1, float* nocapture readonly %vec2, i32 %n) #0 {
-  tail call void @llvm.dbg.value(metadata float* %vec1, i64 0, metadata !78, metadata !206), !dbg !315
-  tail call void @llvm.dbg.value(metadata float* %vec2, i64 0, metadata !79, metadata !206), !dbg !316
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !80, metadata !206), !dbg !317
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !81, metadata !206), !dbg !318
-  %1 = icmp sgt i32 %n, 0, !dbg !319
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !322
+define void @FCopy(float* nocapture %vec1, float* nocapture %vec2, i32 %n) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %vec1}, i64 0, metadata !78), !dbg !246
+  tail call void @llvm.dbg.value(metadata !{float* %vec2}, i64 0, metadata !79), !dbg !246
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !80), !dbg !246
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !81), !dbg !247
+  %cmp6 = icmp sgt i32 %n, 0, !dbg !247
+  br i1 %cmp6, label %for.body, label %for.end, !dbg !247
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %n, -1, !dbg !322
-  br label %3, !dbg !322
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %vec2, i64 %indvars.iv, !dbg !247
+  %0 = load float* %arrayidx, align 4, !dbg !247, !tbaa !212
+  %arrayidx2 = getelementptr inbounds float* %vec1, i64 %indvars.iv, !dbg !247
+  store float %0, float* %arrayidx2, align 4, !dbg !247, !tbaa !212
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !247
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !247
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !247
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !247
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds float* %vec2, i64 %indvars.iv, !dbg !323
-  %5 = bitcast float* %4 to i32*, !dbg !323
-  %6 = load i32* %5, align 4, !dbg !323, !tbaa !232
-  %7 = getelementptr inbounds float* %vec1, i64 %indvars.iv, !dbg !324
-  %8 = bitcast float* %7 to i32*, !dbg !325
-  store i32 %6, i32* %8, align 4, !dbg !325, !tbaa !232
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !322
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !322
-  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !322
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !322
-
-._crit_edge:                                      ; preds = %3, %0
-  ret void, !dbg !326
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !249
 }

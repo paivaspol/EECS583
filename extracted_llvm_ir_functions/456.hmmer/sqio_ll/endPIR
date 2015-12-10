@@ -1,17 +1,18 @@
-define internal i32 @endPIR(i8* nocapture readonly %s, i32* nocapture %addend) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !596, metadata !624), !dbg !3093
-  tail call void @llvm.dbg.value(metadata i32* %addend, i64 0, metadata !597, metadata !624), !dbg !3094
-  store i32 0, i32* %addend, align 4, !dbg !3095, !tbaa !897
-  %1 = tail call i32 @strncmp(i8* %s, i8* getelementptr inbounds ([4 x i8]* @.str28, i64 0, i64 0), i64 3) #8, !dbg !3096
-  %2 = icmp eq i32 %1, 0, !dbg !3098
-  br i1 %2, label %6, label %3, !dbg !3099
+define internal i32 @endPIR(i8* nocapture %s, i32* nocapture %addend) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !525), !dbg !1544
+  tail call void @llvm.dbg.value(metadata !{i32* %addend}, i64 0, metadata !526), !dbg !1544
+  store i32 0, i32* %addend, align 4, !dbg !1545, !tbaa !600
+  %call = tail call i32 @strncmp(i8* %s, i8* getelementptr inbounds ([4 x i8]* @.str28, i64 0, i64 0), i64 3) #10, !dbg !1546
+  %cmp = icmp eq i32 %call, 0, !dbg !1546
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !1546
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @strncmp(i8* %s, i8* getelementptr inbounds ([6 x i8]* @.str137, i64 0, i64 0), i64 5) #8, !dbg !3100
-  %5 = icmp eq i32 %4, 0, !dbg !3101
-  %. = zext i1 %5 to i32, !dbg !3102
-  ret i32 %., !dbg !3102
+lor.lhs.false:                                    ; preds = %entry
+  %call1 = tail call i32 @strncmp(i8* %s, i8* getelementptr inbounds ([6 x i8]* @.str121, i64 0, i64 0), i64 5) #10, !dbg !1547
+  %cmp2 = icmp eq i32 %call1, 0, !dbg !1547
+  %. = zext i1 %cmp2 to i32, !dbg !1547
+  ret i32 %., !dbg !1547
 
-; <label>:6                                       ; preds = %0
-  ret i32 1, !dbg !3103
+return:                                           ; preds = %entry
+  ret i32 1, !dbg !1548
 }

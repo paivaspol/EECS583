@@ -1,70 +1,71 @@
-define void @FrontMtx_diagonalVisit(%struct._FrontMtx* %frontmtx, i32 %J, i32* readonly %owners, i32 %myid, %struct._SubMtx** nocapture %p_mtx, i8* nocapture %frontIsDone, %struct._SubMtx** nocapture %p_agg, i32 %msglvl, %struct.__sFILE* %msgFile) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !340, metadata !530), !dbg !1207
-  tail call void @llvm.dbg.value(metadata i32 %J, i64 0, metadata !341, metadata !530), !dbg !1208
-  tail call void @llvm.dbg.value(metadata i32* %owners, i64 0, metadata !342, metadata !530), !dbg !1209
-  tail call void @llvm.dbg.value(metadata i32 %myid, i64 0, metadata !343, metadata !530), !dbg !1210
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx** %p_mtx, i64 0, metadata !344, metadata !530), !dbg !1211
-  tail call void @llvm.dbg.value(metadata i8* %frontIsDone, i64 0, metadata !345, metadata !530), !dbg !1212
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx** %p_agg, i64 0, metadata !346, metadata !530), !dbg !1213
-  tail call void @llvm.dbg.value(metadata i32 %msglvl, i64 0, metadata !347, metadata !530), !dbg !1214
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %msgFile, i64 0, metadata !348, metadata !530), !dbg !1215
-  %1 = icmp eq i32* %owners, null, !dbg !1216
-  %.pre = sext i32 %J to i64, !dbg !1217
-  br i1 %1, label %._crit_edge, label %2, !dbg !1219
+define void @FrontMtx_diagonalVisit(%struct._FrontMtx* %frontmtx, i32 %J, i32* %owners, i32 %myid, %struct._SubMtx** nocapture %p_mtx, i8* nocapture %frontIsDone, %struct._SubMtx** nocapture %p_agg, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !337), !dbg !911
+  tail call void @llvm.dbg.value(metadata !{i32 %J}, i64 0, metadata !338), !dbg !912
+  tail call void @llvm.dbg.value(metadata !{i32* %owners}, i64 0, metadata !339), !dbg !913
+  tail call void @llvm.dbg.value(metadata !{i32 %myid}, i64 0, metadata !340), !dbg !914
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx** %p_mtx}, i64 0, metadata !341), !dbg !915
+  tail call void @llvm.dbg.value(metadata !{i8* %frontIsDone}, i64 0, metadata !342), !dbg !916
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx** %p_agg}, i64 0, metadata !343), !dbg !917
+  tail call void @llvm.dbg.value(metadata !{i32 %msglvl}, i64 0, metadata !344), !dbg !918
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %msgFile}, i64 0, metadata !345), !dbg !919
+  %cmp = icmp eq i32* %owners, null, !dbg !920
+  %idxprom2.pre = sext i32 %J to i64, !dbg !921
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !920
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds i32* %owners, i64 %.pre, !dbg !1220
-  %4 = load i32* %3, align 4, !dbg !1220, !tbaa !552
-  %5 = icmp eq i32 %4, %myid, !dbg !1221
-  br i1 %5, label %._crit_edge, label %29, !dbg !1222
+lor.lhs.false:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds i32* %owners, i64 %idxprom2.pre, !dbg !920
+  %0 = load i32* %arrayidx, align 4, !dbg !920, !tbaa !534
+  %cmp1 = icmp eq i32 %0, %myid, !dbg !920
+  br i1 %cmp1, label %if.then, label %if.end30, !dbg !920
 
-._crit_edge:                                      ; preds = %0, %2
-  %6 = getelementptr inbounds %struct._SubMtx** %p_mtx, i64 %.pre, !dbg !1217
-  %7 = load %struct._SubMtx** %6, align 8, !dbg !1217, !tbaa !600
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %7, i64 0, metadata !349, metadata !530), !dbg !1223
-  %8 = icmp eq %struct._SubMtx* %7, null, !dbg !1224
-  br i1 %8, label %27, label %9, !dbg !1225
+if.then:                                          ; preds = %entry, %lor.lhs.false
+  %arrayidx3 = getelementptr inbounds %struct._SubMtx** %p_mtx, i64 %idxprom2.pre, !dbg !921
+  %1 = load %struct._SubMtx** %arrayidx3, align 8, !dbg !921, !tbaa !542
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %1}, i64 0, metadata !346), !dbg !921
+  %cmp4 = icmp eq %struct._SubMtx* %1, null, !dbg !921
+  br i1 %cmp4, label %if.end27, label %if.then5, !dbg !921
 
-; <label>:9                                       ; preds = %._crit_edge
-  %10 = icmp sgt i32 %msglvl, 3, !dbg !1226
-  br i1 %10, label %.thread, label %18, !dbg !1229
+if.then5:                                         ; preds = %if.then
+  %cmp6 = icmp sgt i32 %msglvl, 3, !dbg !922
+  br i1 %cmp6, label %if.end16.thread, label %if.end16, !dbg !922
 
-.thread:                                          ; preds = %9
-  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([11 x i8]* @.str7, i64 0, i64 0), %struct._SubMtx* %7) #6, !dbg !1230
-  %12 = tail call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %7, %struct.__sFILE* %msgFile) #6, !dbg !1232
-  %13 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !1233
-  %14 = tail call %struct._SubMtx* @FrontMtx_diagMtx(%struct._FrontMtx* %frontmtx, i32 %J) #6, !dbg !1234
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %19, i64 0, metadata !352, metadata !530), !dbg !1235
-  %15 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), %struct._SubMtx* %14) #6, !dbg !1236
-  %16 = tail call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %14, %struct.__sFILE* %msgFile) #6, !dbg !1239
-  %17 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !1240
-  tail call void @SubMtx_solve(%struct._SubMtx* %14, %struct._SubMtx* %7) #6, !dbg !1241
-  br label %21, !dbg !1242
+if.end16.thread:                                  ; preds = %if.then5
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([11 x i8]* @.str7, i64 0, i64 0), %struct._SubMtx* %1) #6, !dbg !924
+  %call8 = tail call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %1, %struct._IO_FILE* %msgFile) #6, !dbg !926
+  %call9 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !927
+  %call1055 = tail call %struct._SubMtx* @FrontMtx_diagMtx(%struct._FrontMtx* %frontmtx, i32 %J) #6, !dbg !928
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %call10}, i64 0, metadata !348), !dbg !928
+  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), %struct._SubMtx* %call1055) #6, !dbg !929
+  %call14 = tail call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %call1055, %struct._IO_FILE* %msgFile) #6, !dbg !931
+  %call15 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !932
+  tail call void @SubMtx_solve(%struct._SubMtx* %call1055, %struct._SubMtx* %1) #6, !dbg !933
+  br label %if.then18, !dbg !934
 
-; <label>:18                                      ; preds = %9
-  %19 = tail call %struct._SubMtx* @FrontMtx_diagMtx(%struct._FrontMtx* %frontmtx, i32 %J) #6, !dbg !1234
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %19, i64 0, metadata !352, metadata !530), !dbg !1235
-  tail call void @SubMtx_solve(%struct._SubMtx* %19, %struct._SubMtx* %7) #6, !dbg !1241
-  %20 = icmp sgt i32 %msglvl, 1, !dbg !1243
-  br i1 %20, label %21, label %25, !dbg !1242
+if.end16:                                         ; preds = %if.then5
+  %call10 = tail call %struct._SubMtx* @FrontMtx_diagMtx(%struct._FrontMtx* %frontmtx, i32 %J) #6, !dbg !928
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %call10}, i64 0, metadata !348), !dbg !928
+  tail call void @SubMtx_solve(%struct._SubMtx* %call10, %struct._SubMtx* %1) #6, !dbg !933
+  %cmp17 = icmp sgt i32 %msglvl, 1, !dbg !934
+  br i1 %cmp17, label %if.then18, label %if.end22, !dbg !934
 
-; <label>:21                                      ; preds = %.thread, %18
-  %22 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([33 x i8]* @.str14, i64 0, i64 0), i32 %J) #6, !dbg !1245
-  %23 = tail call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %7, %struct.__sFILE* %msgFile) #6, !dbg !1247
-  %24 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !1248
-  br label %25, !dbg !1249
+if.then18:                                        ; preds = %if.end16.thread, %if.end16
+  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([33 x i8]* @.str14, i64 0, i64 0), i32 %J) #6, !dbg !935
+  %call20 = tail call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %1, %struct._IO_FILE* %msgFile) #6, !dbg !937
+  %call21 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !938
+  br label %if.end22, !dbg !939
 
-; <label>:25                                      ; preds = %21, %18
-  store %struct._SubMtx* null, %struct._SubMtx** %6, align 8, !dbg !1250, !tbaa !600
-  %26 = getelementptr inbounds %struct._SubMtx** %p_agg, i64 %.pre, !dbg !1251
-  store %struct._SubMtx* %7, %struct._SubMtx** %26, align 8, !dbg !1252, !tbaa !600
-  br label %27, !dbg !1253
+if.end22:                                         ; preds = %if.then18, %if.end16
+  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx3, align 8, !dbg !940, !tbaa !542
+  %arrayidx26 = getelementptr inbounds %struct._SubMtx** %p_agg, i64 %idxprom2.pre, !dbg !941
+  store %struct._SubMtx* %1, %struct._SubMtx** %arrayidx26, align 8, !dbg !941, !tbaa !542
+  br label %if.end27, !dbg !942
 
-; <label>:27                                      ; preds = %._crit_edge, %25
-  %28 = getelementptr inbounds i8* %frontIsDone, i64 %.pre, !dbg !1254
-  store i8 89, i8* %28, align 1, !dbg !1255, !tbaa !779
-  br label %29, !dbg !1256
+if.end27:                                         ; preds = %if.then, %if.end22
+  %arrayidx29 = getelementptr inbounds i8* %frontIsDone, i64 %idxprom2.pre, !dbg !943
+  store i8 89, i8* %arrayidx29, align 1, !dbg !943, !tbaa !535
+  br label %if.end30, !dbg !944
 
-; <label>:29                                      ; preds = %27, %2
-  ret void, !dbg !1257
+if.end30:                                         ; preds = %if.end27, %lor.lhs.false
+  ret void, !dbg !945
 }

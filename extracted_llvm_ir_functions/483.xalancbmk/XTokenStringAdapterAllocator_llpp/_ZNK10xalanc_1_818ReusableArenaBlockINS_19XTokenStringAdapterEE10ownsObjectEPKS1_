@@ -1,0 +1,47 @@
+define linkonce_odr zeroext i1 @_ZNK10xalanc_1_818ReusableArenaBlockINS_19XTokenStringAdapterEE10ownsObjectEPKS1_(%"class.xalanc_1_8::ReusableArenaBlock"* %this, %"class.xalanc_1_8::XTokenStringAdapter"* %theObject) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !4615), !dbg !5808
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XTokenStringAdapter"* %theObject}, i64 0, metadata !4616), !dbg !5808
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XTokenStringAdapter"* %theObject}, i64 0, metadata !5809), !dbg !5811
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XTokenStringAdapter"* %theObject}, i64 0, metadata !5812), !dbg !5814
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XTokenStringAdapter"* %theObject}, i64 0, metadata !5815), !dbg !5817
+  %m_objectBlock.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 4, !dbg !5816
+  %0 = load %"class.xalanc_1_8::XTokenStringAdapter"** %m_objectBlock.i, align 8, !dbg !5816, !tbaa !5006
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XTokenStringAdapter"* %0}, i64 0, metadata !5818), !dbg !5817
+  tail call void @llvm.dbg.value(metadata !5819, i64 0, metadata !5820), !dbg !5817
+  %cmp.i.i = icmp ugt %"class.xalanc_1_8::XTokenStringAdapter"* %0, %theObject, !dbg !5821
+  br i1 %cmp.i.i, label %land.end, label %land.lhs.true.i, !dbg !5816
+
+land.lhs.true.i:                                  ; preds = %entry
+  %m_objectCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 2, !dbg !5813
+  %1 = load i64* %m_objectCount.i, align 8, !dbg !5813, !tbaa !4992
+  %add.ptr.i = getelementptr inbounds %"class.xalanc_1_8::XTokenStringAdapter"* %0, i64 %1, !dbg !5813
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XTokenStringAdapter"* %add.ptr.i}, i64 0, metadata !5823), !dbg !5814
+  tail call void @llvm.dbg.value(metadata !5819, i64 0, metadata !5824), !dbg !5814
+  %cmp.i7.i = icmp ugt %"class.xalanc_1_8::XTokenStringAdapter"* %add.ptr.i, %theObject, !dbg !5825
+  br i1 %cmp.i7.i, label %land.rhs, label %land.end, !dbg !5813
+
+land.rhs:                                         ; preds = %land.lhs.true.i
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !5826), !dbg !5827
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XTokenStringAdapter"* %theObject}, i64 0, metadata !5828), !dbg !5827
+  %m_freeBlockCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 2, !dbg !5829
+  %2 = load i64* %m_freeBlockCount.i, align 8, !dbg !5829, !tbaa !4992
+  %cmp.i = icmp eq i64 %2, 0, !dbg !5829
+  br i1 %cmp.i, label %land.end, label %if.else.i4, !dbg !5829
+
+if.else.i4:                                       ; preds = %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XTokenStringAdapter"* %theObject}, i64 0, metadata !5830), !dbg !5832
+  %sub.ptr.lhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XTokenStringAdapter"* %theObject to i64, !dbg !5833
+  %sub.ptr.rhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XTokenStringAdapter"* %0 to i64, !dbg !5833
+  %sub.ptr.sub.i.i = sub i64 %sub.ptr.lhs.cast.i.i, %sub.ptr.rhs.cast.i.i, !dbg !5833
+  %sub.ptr.div.i.i = ashr exact i64 %sub.ptr.sub.i.i, 6, !dbg !5833
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.div.i.i}, i64 0, metadata !5834), !dbg !5831
+  %m_freeList.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 1, !dbg !5835
+  %call2.i = tail call zeroext i1 @_ZNK10xalanc_1_811XalanBitmap5isSetEm(%"class.xalanc_1_8::XalanBitmap"* %m_freeList.i, i64 %sub.ptr.div.i.i) #10, !dbg !5835
+  %phitmp = xor i1 %call2.i, true, !dbg !5835
+  br label %land.end, !dbg !5835
+
+land.end:                                         ; preds = %if.else.i4, %land.rhs, %land.lhs.true.i, %entry
+  %3 = phi i1 [ false, %entry ], [ false, %land.lhs.true.i ], [ %phitmp, %if.else.i4 ], [ true, %land.rhs ]
+  ret i1 %3, !dbg !5836
+}

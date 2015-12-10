@@ -1,38 +1,41 @@
 define internal void @find_evaluations_1(%struct.rtx_def* nocapture %dest, %struct.rtx_def* nocapture %set, i8* nocapture %data) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %dest to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 61
-  br i1 %cmp, label %land.lhs.true, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %dest}, i64 0, metadata !1069), !dbg !2160
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %set}, i64 0, metadata !1070), !dbg !2161
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !1071), !dbg !2162
+  %0 = bitcast %struct.rtx_def* %dest to i32*, !dbg !2163
+  %bf.load = load i32* %0, align 8, !dbg !2163
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2163
+  %cmp = icmp eq i32 %bf.clear, 61, !dbg !2163
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !2163
 
 land.lhs.true:                                    ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %1 = load i32* %rtuint, align 4, !tbaa !3
-  %cmp1 = icmp ugt i32 %1, 52
-  %.off = add i32 %1, -16
-  %switch = icmp ult i32 %.off, 2
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest, i64 0, i32 1, i64 0, !dbg !2163
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !2163
+  %1 = load i32* %rtuint, align 4, !dbg !2163, !tbaa !1224
+  %cmp1 = icmp ugt i32 %1, 52, !dbg !2163
+  %.off = add i32 %1, -16, !dbg !2163
+  %switch = icmp ult i32 %.off, 2, !dbg !2163
   %or.cond = or i1 %cmp1, %switch
   br i1 %or.cond, label %if.then, label %if.end
 
 if.then:                                          ; preds = %land.lhs.true
-  %2 = load i32* @fe_current_bb, align 4, !tbaa !3
-  %rem = and i32 %2, 63
-  %sh_prom = zext i32 %rem to i64
-  %shl = shl i64 1, %sh_prom
-  %div = lshr i32 %2, 6
-  %idxprom = zext i32 %div to i64
-  %idxprom14 = zext i32 %1 to i64
-  %3 = load %struct.simple_bitmap_def*** @fe_evals, align 8, !tbaa !0
-  %arrayidx15 = getelementptr inbounds %struct.simple_bitmap_def** %3, i64 %idxprom14
-  %4 = load %struct.simple_bitmap_def** %arrayidx15, align 8, !tbaa !0
-  %arrayidx16 = getelementptr inbounds %struct.simple_bitmap_def* %4, i64 0, i32 3, i64 %idxprom
-  %5 = load i64* %arrayidx16, align 8, !tbaa !4
-  %or = or i64 %5, %shl
-  store i64 %or, i64* %arrayidx16, align 8, !tbaa !4
-  br label %if.end
+  %2 = load i32* @fe_current_bb, align 4, !dbg !2164, !tbaa !1224
+  %rem = and i32 %2, 63, !dbg !2164
+  %sh_prom = zext i32 %rem to i64, !dbg !2164
+  %shl = shl i64 1, %sh_prom, !dbg !2164
+  %div = lshr i32 %2, 6, !dbg !2164
+  %idxprom = zext i32 %div to i64, !dbg !2164
+  %idxprom14 = zext i32 %1 to i64, !dbg !2164
+  %3 = load %struct.simple_bitmap_def*** @fe_evals, align 8, !dbg !2164, !tbaa !1216
+  %arrayidx15 = getelementptr inbounds %struct.simple_bitmap_def** %3, i64 %idxprom14, !dbg !2164
+  %4 = load %struct.simple_bitmap_def** %arrayidx15, align 8, !dbg !2164, !tbaa !1216
+  %arrayidx16 = getelementptr inbounds %struct.simple_bitmap_def* %4, i64 0, i32 3, i64 %idxprom, !dbg !2164
+  %5 = load i64* %arrayidx16, align 8, !dbg !2164, !tbaa !1234
+  %or = or i64 %5, %shl, !dbg !2164
+  store i64 %or, i64* %arrayidx16, align 8, !dbg !2164, !tbaa !1234
+  br label %if.end, !dbg !2164
 
 if.end:                                           ; preds = %land.lhs.true, %if.then, %entry
-  ret void
+  ret void, !dbg !2165
 }

@@ -1,96 +1,95 @@
 define %struct._SubMtx* @FrontMtx_upperMtx(%struct._FrontMtx* %frontmtx, i32 %J, i32 %K) #0 {
+entry:
   %mtx = alloca %struct._SubMtx*, align 8
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !240, metadata !284), !dbg !509
-  tail call void @llvm.dbg.value(metadata i32 %J, i64 0, metadata !241, metadata !284), !dbg !510
-  tail call void @llvm.dbg.value(metadata i32 %K, i64 0, metadata !242, metadata !284), !dbg !511
-  %1 = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !512
-  %2 = icmp slt i32 %J, 0, !dbg !514
-  %or.cond = or i1 %1, %2, !dbg !515
-  br i1 %or.cond, label %9, label %3, !dbg !515
+  call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !244), !dbg !390
+  call void @llvm.dbg.value(metadata !{i32 %J}, i64 0, metadata !245), !dbg !391
+  call void @llvm.dbg.value(metadata !{i32 %K}, i64 0, metadata !246), !dbg !392
+  call void @llvm.dbg.declare(metadata !{%struct._SubMtx** %mtx}, metadata !248), !dbg !393
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !394
+  %cmp1 = icmp slt i32 %J, 0, !dbg !394
+  %or.cond = or i1 %cmp, %cmp1, !dbg !394
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !394
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !516
-  %5 = load i32* %4, align 4, !dbg !516, !tbaa !298
-  %6 = icmp sle i32 %5, %J, !dbg !517
-  %7 = icmp slt i32 %K, %J, !dbg !518
-  %or.cond2 = or i1 %7, %6, !dbg !519
-  %8 = icmp slt i32 %5, %K, !dbg !520
-  %or.cond3 = or i1 %8, %or.cond2, !dbg !519
-  br i1 %or.cond3, label %9, label %12, !dbg !519
+lor.lhs.false2:                                   ; preds = %entry
+  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !394
+  %0 = load i32* %nfront, align 4, !dbg !394, !tbaa !293
+  %cmp3 = icmp sle i32 %0, %J, !dbg !394
+  %cmp5 = icmp slt i32 %K, %J, !dbg !394
+  %or.cond52 = or i1 %cmp3, %cmp5, !dbg !394
+  %cmp8 = icmp slt i32 %0, %K, !dbg !394
+  %or.cond53 = or i1 %or.cond52, %cmp8, !dbg !394
+  br i1 %or.cond53, label %if.then, label %if.end, !dbg !394
 
-; <label>:9                                       ; preds = %3, %0
-  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !521, !tbaa !291
-  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([57 x i8]* @.str11, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J, i32 %K) #6, !dbg !523
-  tail call void @exit(i32 -1) #7, !dbg !524
-  unreachable, !dbg !524
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !395, !tbaa !288
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([57 x i8]* @.str11, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J, i32 %K) #6, !dbg !395
+  call void @exit(i32 -1) #7, !dbg !397
+  unreachable, !dbg !397
 
-; <label>:12                                      ; preds = %3
-  %13 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6, !dbg !525
-  %14 = load i32* %13, align 4, !dbg !525, !tbaa !527
-  %15 = icmp eq i32 %14, 1, !dbg !525
-  br i1 %15, label %16, label %38, !dbg !528
+if.end:                                           ; preds = %lor.lhs.false2
+  %dataMode = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6, !dbg !398
+  %2 = load i32* %dataMode, align 4, !dbg !398, !tbaa !293
+  %cmp9 = icmp eq i32 %2, 1, !dbg !398
+  br i1 %cmp9, label %if.then10, label %if.else20, !dbg !398
 
-; <label>:16                                      ; preds = %12
-  %17 = icmp eq i32 %5, %K, !dbg !529
-  br i1 %17, label %18, label %27, !dbg !532
+if.then10:                                        ; preds = %if.end
+  %cmp12 = icmp eq i32 %0, %K, !dbg !399
+  br i1 %cmp12, label %if.then13, label %if.else, !dbg !399
 
-; <label>:18                                      ; preds = %16
-  %19 = sext i32 %J to i64, !dbg !533
-  %20 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 20, !dbg !535
-  %21 = load %struct._SubMtx*** %20, align 8, !dbg !535, !tbaa !536
-  %22 = getelementptr inbounds %struct._SubMtx** %21, i64 %19, !dbg !533
-  %23 = bitcast %struct._SubMtx** %22 to i64*, !dbg !533
-  %24 = load i64* %23, align 8, !dbg !533, !tbaa !291
-  %25 = bitcast %struct._SubMtx** %mtx to i64*, !dbg !537
-  store i64 %24, i64* %25, align 8, !dbg !537, !tbaa !291
-  %26 = inttoptr i64 %24 to %struct._SubMtx*
-  br label %48, !dbg !538
+if.then13:                                        ; preds = %if.then10
+  %idxprom = sext i32 %J to i64, !dbg !401
+  %p_mtxUJN = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 20, !dbg !401
+  %3 = load %struct._SubMtx*** %p_mtxUJN, align 8, !dbg !401, !tbaa !288
+  %arrayidx = getelementptr inbounds %struct._SubMtx** %3, i64 %idxprom, !dbg !401
+  %4 = load %struct._SubMtx** %arrayidx, align 8, !dbg !401, !tbaa !288
+  call void @llvm.dbg.value(metadata !{%struct._SubMtx* %4}, i64 0, metadata !248), !dbg !401
+  store %struct._SubMtx* %4, %struct._SubMtx** %mtx, align 8, !dbg !401, !tbaa !288
+  br label %if.end30, !dbg !403
 
-; <label>:27                                      ; preds = %16
-  %28 = icmp eq i32 %K, %J, !dbg !539
-  br i1 %28, label %29, label %48, !dbg !541
+if.else:                                          ; preds = %if.then10
+  %cmp14 = icmp eq i32 %K, %J, !dbg !404
+  br i1 %cmp14, label %if.then15, label %if.end30, !dbg !404
 
-; <label>:29                                      ; preds = %27
-  %30 = sext i32 %J to i64, !dbg !542
-  %31 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 19, !dbg !544
-  %32 = load %struct._SubMtx*** %31, align 8, !dbg !544, !tbaa !545
-  %33 = getelementptr inbounds %struct._SubMtx** %32, i64 %30, !dbg !542
-  %34 = bitcast %struct._SubMtx** %33 to i64*, !dbg !542
-  %35 = load i64* %34, align 8, !dbg !542, !tbaa !291
-  %36 = bitcast %struct._SubMtx** %mtx to i64*, !dbg !546
-  store i64 %35, i64* %36, align 8, !dbg !546, !tbaa !291
-  %37 = inttoptr i64 %35 to %struct._SubMtx*
-  br label %48, !dbg !547
+if.then15:                                        ; preds = %if.else
+  %idxprom16 = sext i32 %J to i64, !dbg !405
+  %p_mtxUJJ = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 19, !dbg !405
+  %5 = load %struct._SubMtx*** %p_mtxUJJ, align 8, !dbg !405, !tbaa !288
+  %arrayidx17 = getelementptr inbounds %struct._SubMtx** %5, i64 %idxprom16, !dbg !405
+  %6 = load %struct._SubMtx** %arrayidx17, align 8, !dbg !405, !tbaa !288
+  call void @llvm.dbg.value(metadata !{%struct._SubMtx* %6}, i64 0, metadata !248), !dbg !405
+  store %struct._SubMtx* %6, %struct._SubMtx** %mtx, align 8, !dbg !405, !tbaa !288
+  br label %if.end30, !dbg !407
 
-; <label>:38                                      ; preds = %12
-  %39 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 24, !dbg !548
-  %40 = load %struct._I2Ohash** %39, align 8, !dbg !548, !tbaa !550
-  %41 = icmp eq %struct._I2Ohash* %40, null, !dbg !551
-  br i1 %41, label %42, label %43, !dbg !552
+if.else20:                                        ; preds = %if.end
+  %upperhash = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 24, !dbg !408
+  %7 = load %struct._I2Ohash** %upperhash, align 8, !dbg !408, !tbaa !288
+  %cmp21 = icmp eq %struct._I2Ohash* %7, null, !dbg !408
+  br i1 %cmp21, label %if.then22, label %if.else23, !dbg !408
 
-; <label>:42                                      ; preds = %38
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* null, i64 0, metadata !244, metadata !284), !dbg !553
-  store %struct._SubMtx* null, %struct._SubMtx** %mtx, align 8, !dbg !554, !tbaa !291
-  br label %48, !dbg !556
+if.then22:                                        ; preds = %if.else20
+  call void @llvm.dbg.value(metadata !409, i64 0, metadata !248), !dbg !410
+  store %struct._SubMtx* null, %struct._SubMtx** %mtx, align 8, !dbg !410, !tbaa !288
+  br label %if.end30, !dbg !412
 
-; <label>:43                                      ; preds = %38
-  %44 = bitcast %struct._SubMtx** %mtx to i8**, !dbg !557
-  %45 = call i32 @I2Ohash_locate(%struct._I2Ohash* %40, i32 %J, i32 %K, i8** %44) #6, !dbg !559
-  call void @llvm.dbg.value(metadata i32 %45, i64 0, metadata !243, metadata !284), !dbg !560
-  %46 = icmp eq i32 %45, 0, !dbg !561
-  br i1 %46, label %47, label %._crit_edge, !dbg !563
+if.else23:                                        ; preds = %if.else20
+  %8 = bitcast %struct._SubMtx** %mtx to i8**, !dbg !413
+  %call25 = call i32 @I2Ohash_locate(%struct._I2Ohash* %7, i32 %J, i32 %K, i8** %8) #6, !dbg !413
+  call void @llvm.dbg.value(metadata !{i32 %call25}, i64 0, metadata !247), !dbg !413
+  %cmp26 = icmp eq i32 %call25, 0, !dbg !415
+  br i1 %cmp26, label %if.then27, label %if.else23.if.end30_crit_edge, !dbg !415
 
-._crit_edge:                                      ; preds = %43
-  %.pre = load %struct._SubMtx** %mtx, align 8, !dbg !564, !tbaa !291
-  br label %48, !dbg !563
+if.else23.if.end30_crit_edge:                     ; preds = %if.else23
+  call void @llvm.dbg.value(metadata !{%struct._SubMtx** %mtx}, i64 0, metadata !248), !dbg !416
+  %.pre = load %struct._SubMtx** %mtx, align 8, !dbg !416, !tbaa !288
+  br label %if.end30, !dbg !415
 
-; <label>:47                                      ; preds = %43
-  call void @llvm.dbg.value(metadata %struct._SubMtx* null, i64 0, metadata !244, metadata !284), !dbg !553
-  store %struct._SubMtx* null, %struct._SubMtx** %mtx, align 8, !dbg !565, !tbaa !291
-  br label %48, !dbg !567
+if.then27:                                        ; preds = %if.else23
+  call void @llvm.dbg.value(metadata !409, i64 0, metadata !248), !dbg !417
+  store %struct._SubMtx* null, %struct._SubMtx** %mtx, align 8, !dbg !417, !tbaa !288
+  br label %if.end30, !dbg !419
 
-; <label>:48                                      ; preds = %._crit_edge, %42, %47, %18, %29, %27
-  %49 = phi %struct._SubMtx* [ %.pre, %._crit_edge ], [ null, %42 ], [ null, %47 ], [ %26, %18 ], [ %37, %29 ], [ undef, %27 ]
-  call void @llvm.dbg.value(metadata %struct._SubMtx** %mtx, i64 0, metadata !244, metadata !284), !dbg !553
-  ret %struct._SubMtx* %49, !dbg !568
+if.end30:                                         ; preds = %if.else23.if.end30_crit_edge, %if.then22, %if.then27, %if.then13, %if.then15, %if.else
+  %9 = phi %struct._SubMtx* [ %.pre, %if.else23.if.end30_crit_edge ], [ null, %if.then22 ], [ null, %if.then27 ], [ %4, %if.then13 ], [ %6, %if.then15 ], [ undef, %if.else ]
+  call void @llvm.dbg.value(metadata !{%struct._SubMtx** %mtx}, i64 0, metadata !248), !dbg !416
+  ret %struct._SubMtx* %9, !dbg !416
 }

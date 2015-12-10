@@ -1,75 +1,71 @@
 define void @Network_clearData(%struct._Network* %network) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Network* %network, i64 0, metadata !115, metadata !128), !dbg !164
-  %1 = icmp eq %struct._Network* %network, null, !dbg !165
-  br i1 %1, label %2, label %5, !dbg !167
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Network* %network}, i64 0, metadata !107), !dbg !133
+  %cmp = icmp eq %struct._Network* %network, null, !dbg !134
+  br i1 %cmp, label %if.then, label %if.end, !dbg !134
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !168, !tbaa !133
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([51 x i8]* @.str3, i64 0, i64 0), %struct._Network* null) #5, !dbg !170
-  tail call void @exit(i32 -1) #6, !dbg !171
-  unreachable, !dbg !171
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !135, !tbaa !116
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([51 x i8]* @.str3, i64 0, i64 0), %struct._Network* null) #5, !dbg !135
+  tail call void @exit(i32 -1) #6, !dbg !137
+  unreachable, !dbg !137
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Network* %network, i64 0, i32 3, !dbg !172
-  %7 = load %struct._Arc*** %6, align 8, !dbg !172, !tbaa !174
-  %8 = icmp eq %struct._Arc** %7, null, !dbg !175
-  br i1 %8, label %11, label %9, !dbg !176
+if.end:                                           ; preds = %entry
+  %inheads = getelementptr inbounds %struct._Network* %network, i64 0, i32 3, !dbg !138
+  %1 = load %struct._Arc*** %inheads, align 8, !dbg !138, !tbaa !116
+  %cmp1 = icmp eq %struct._Arc** %1, null, !dbg !138
+  br i1 %cmp1, label %if.end9, label %if.then5, !dbg !138
 
-; <label>:9                                       ; preds = %5
-  %10 = bitcast %struct._Arc** %7 to i8*, !dbg !177
-  tail call void @free(i8* %10) #7, !dbg !177
-  store %struct._Arc** null, %struct._Arc*** %6, align 8, !dbg !177, !tbaa !174
-  br label %11, !dbg !177
+if.then5:                                         ; preds = %if.end
+  %2 = bitcast %struct._Arc** %1 to i8*, !dbg !139
+  tail call void @free(i8* %2) #5, !dbg !139
+  store %struct._Arc** null, %struct._Arc*** %inheads, align 8, !dbg !139, !tbaa !116
+  br label %if.end9, !dbg !139
 
-; <label>:11                                      ; preds = %5, %9
-  %12 = getelementptr inbounds %struct._Network* %network, i64 0, i32 4, !dbg !181
-  %13 = load %struct._Arc*** %12, align 8, !dbg !181, !tbaa !183
-  %14 = icmp eq %struct._Arc** %13, null, !dbg !184
-  br i1 %14, label %.preheader, label %15, !dbg !185
+if.end9:                                          ; preds = %if.end, %if.then5
+  %outheads = getelementptr inbounds %struct._Network* %network, i64 0, i32 4, !dbg !142
+  %3 = load %struct._Arc*** %outheads, align 8, !dbg !142, !tbaa !116
+  %cmp10 = icmp eq %struct._Arc** %3, null, !dbg !142
+  br i1 %cmp10, label %while.cond.preheader, label %if.then14, !dbg !142
 
-; <label>:15                                      ; preds = %11
-  %16 = bitcast %struct._Arc** %13 to i8*, !dbg !186
-  tail call void @free(i8* %16) #7, !dbg !186
-  store %struct._Arc** null, %struct._Arc*** %12, align 8, !dbg !186, !tbaa !183
-  br label %.preheader, !dbg !186
+if.then14:                                        ; preds = %if.end9
+  %4 = bitcast %struct._Arc** %3 to i8*, !dbg !143
+  tail call void @free(i8* %4) #5, !dbg !143
+  store %struct._Arc** null, %struct._Arc*** %outheads, align 8, !dbg !143, !tbaa !116
+  br label %while.cond.preheader, !dbg !143
 
-.preheader:                                       ; preds = %15, %11
-  %17 = getelementptr inbounds %struct._Network* %network, i64 0, i32 5, !dbg !190
-  %18 = load %struct._ArcChunk** %17, align 8, !dbg !190, !tbaa !191
-  tail call void @llvm.dbg.value(metadata %struct._ArcChunk* %18, i64 0, metadata !116, metadata !128), !dbg !192
-  %19 = icmp eq %struct._ArcChunk* %18, null, !dbg !193
-  br i1 %19, label %._crit_edge, label %.lr.ph, !dbg !194
+while.cond.preheader:                             ; preds = %if.then14, %if.end9
+  %chunk19 = getelementptr inbounds %struct._Network* %network, i64 0, i32 5, !dbg !146
+  %5 = load %struct._ArcChunk** %chunk19, align 8, !dbg !146, !tbaa !116
+  tail call void @llvm.dbg.value(metadata !{%struct._ArcChunk* %5}, i64 0, metadata !108), !dbg !146
+  %cmp2047 = icmp eq %struct._ArcChunk* %5, null, !dbg !146
+  br i1 %cmp2047, label %while.end, label %while.body, !dbg !146
 
-.lr.ph:                                           ; preds = %.preheader
-  %20 = bitcast %struct._ArcChunk** %17 to i64*, !dbg !195
-  br label %21, !dbg !194
+while.body:                                       ; preds = %while.cond.preheader, %if.then28
+  %6 = phi %struct._ArcChunk* [ %11, %if.then28 ], [ %5, %while.cond.preheader ]
+  %next = getelementptr inbounds %struct._ArcChunk* %6, i64 0, i32 3, !dbg !147
+  %7 = load %struct._ArcChunk** %next, align 8, !dbg !147, !tbaa !116
+  store %struct._ArcChunk* %7, %struct._ArcChunk** %chunk19, align 8, !dbg !147, !tbaa !116
+  %base = getelementptr inbounds %struct._ArcChunk* %6, i64 0, i32 2, !dbg !149
+  %8 = load %struct._Arc** %base, align 8, !dbg !149, !tbaa !116
+  %cmp22 = icmp eq %struct._Arc* %8, null, !dbg !149
+  br i1 %cmp22, label %if.then28, label %if.then23, !dbg !149
 
-; <label>:21                                      ; preds = %.lr.ph, %31
-  %22 = phi %struct._ArcChunk* [ %18, %.lr.ph ], [ %33, %31 ]
-  %23 = getelementptr inbounds %struct._ArcChunk* %22, i64 0, i32 3, !dbg !197
-  %24 = bitcast %struct._ArcChunk** %23 to i64*, !dbg !197
-  %25 = load i64* %24, align 8, !dbg !197, !tbaa !198
-  store i64 %25, i64* %20, align 8, !dbg !195, !tbaa !191
-  %26 = getelementptr inbounds %struct._ArcChunk* %22, i64 0, i32 2, !dbg !200
-  %27 = load %struct._Arc** %26, align 8, !dbg !200, !tbaa !202
-  %28 = icmp eq %struct._Arc* %27, null, !dbg !200
-  br i1 %28, label %31, label %29, !dbg !203
+if.then23:                                        ; preds = %while.body
+  %9 = bitcast %struct._Arc* %8 to i8*, !dbg !150
+  tail call void @free(i8* %9) #5, !dbg !150
+  br label %if.then28, !dbg !150
 
-; <label>:29                                      ; preds = %21
-  %30 = bitcast %struct._Arc* %27 to i8*, !dbg !204
-  tail call void @free(i8* %30) #7, !dbg !204
-  br label %31, !dbg !204
+if.then28:                                        ; preds = %if.then23, %while.body
+  %10 = bitcast %struct._ArcChunk* %6 to i8*, !dbg !152
+  tail call void @free(i8* %10) #5, !dbg !152
+  tail call void @llvm.dbg.value(metadata !154, i64 0, metadata !108), !dbg !152
+  %11 = load %struct._ArcChunk** %chunk19, align 8, !dbg !146, !tbaa !116
+  tail call void @llvm.dbg.value(metadata !{%struct._ArcChunk* %6}, i64 0, metadata !108), !dbg !146
+  %cmp20 = icmp eq %struct._ArcChunk* %11, null, !dbg !146
+  br i1 %cmp20, label %while.end, label %while.body, !dbg !146
 
-; <label>:31                                      ; preds = %29, %21
-  %32 = bitcast %struct._ArcChunk* %22 to i8*, !dbg !206
-  tail call void @free(i8* %32) #7, !dbg !206
-  tail call void @llvm.dbg.value(metadata %struct._ArcChunk* null, i64 0, metadata !116, metadata !128), !dbg !192
-  %33 = load %struct._ArcChunk** %17, align 8, !dbg !190, !tbaa !191
-  tail call void @llvm.dbg.value(metadata %struct._ArcChunk* %33, i64 0, metadata !116, metadata !128), !dbg !192
-  %34 = icmp eq %struct._ArcChunk* %33, null, !dbg !193
-  br i1 %34, label %._crit_edge, label %21, !dbg !194
-
-._crit_edge:                                      ; preds = %31, %.preheader
-  tail call void @Network_setDefaultFields(%struct._Network* %network) #7, !dbg !209
-  ret void, !dbg !210
+while.end:                                        ; preds = %if.then28, %while.cond.preheader
+  tail call void @Network_setDefaultFields(%struct._Network* %network) #7, !dbg !155
+  ret void, !dbg !156
 }

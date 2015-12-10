@@ -1,216 +1,207 @@
 define void @_ZN3pov22Do_Infinite_AtmosphereEPNS_10Ray_StructEPf(%"struct.pov::Ray_Struct"* %Ray, float* nocapture %Colour) #1 {
+entry:
   %Col_Temp.i = alloca [5 x float], align 16
   %P.i = alloca [3 x double], align 16
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !855, metadata !1510), !dbg !1511
-  tail call void @llvm.dbg.value(metadata float* %Colour, i64 0, metadata !856, metadata !1510), !dbg !1512
-  %1 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !1513, !tbaa !1515
-  %2 = and i32 %1, 65536, !dbg !1529
-  %3 = icmp eq i32 %2, 0, !dbg !1529
-  tail call void @llvm.dbg.declare(metadata [5 x float]* %Col_Temp.i, metadata !1107, metadata !1510), !dbg !1530
-  tail call void @llvm.dbg.declare(metadata [3 x double]* %P.i, metadata !1109, metadata !1510), !dbg !1533
-  br i1 %3, label %12, label %4, !dbg !1534
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Ray}, i64 0, metadata !788), !dbg !1240
+  call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !790), !dbg !1240
+  %0 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !1241, !tbaa !1242
+  %and = and i32 %0, 65536, !dbg !1241
+  %tobool = icmp eq i32 %and, 0, !dbg !1241
+  br i1 %tobool, label %if.else, label %land.lhs.true, !dbg !1241
 
-; <label>:4                                       ; preds = %0
-  %5 = load i8* @_ZN3pov17In_Reflection_RayE, align 1, !dbg !1535, !tbaa !1536, !range !1537
-  %6 = icmp ne i8 %5, 0, !dbg !1535
-  %7 = load i32* @_ZN3pov21Radiosity_Trace_LevelE, align 4
-  %8 = icmp sgt i32 %7, 1, !dbg !1538
-  %or.cond = or i1 %6, %8, !dbg !1539
-  br i1 %or.cond, label %12, label %9, !dbg !1539
+land.lhs.true:                                    ; preds = %entry
+  %1 = load i8* @_ZN3pov17In_Reflection_RayE, align 1, !dbg !1241, !tbaa !1245, !range !1246
+  %tobool1 = icmp ne i8 %1, 0, !dbg !1241
+  %2 = load i32* @_ZN3pov21Radiosity_Trace_LevelE, align 4, !dbg !1241, !tbaa !1242
+  %cmp = icmp sgt i32 %2, 1, !dbg !1241
+  %or.cond = or i1 %tobool1, %cmp, !dbg !1241
+  br i1 %or.cond, label %if.else, label %if.then, !dbg !1241
 
-; <label>:9                                       ; preds = %4
-  %10 = getelementptr inbounds float* %Colour, i64 4, !dbg !1540
-  %11 = bitcast float* %Colour to i8*, !dbg !1542
-  call void @llvm.memset.p0i8.i64(i8* %11, i8 0, i64 16, i32 4, i1 false), !dbg !1543
-  store float 1.000000e+00, float* %10, align 4, !dbg !1542, !tbaa !1544
-  br label %114, !dbg !1545
+if.then:                                          ; preds = %land.lhs.true
+  %arrayidx5 = getelementptr inbounds float* %Colour, i64 4, !dbg !1247
+  %3 = bitcast float* %Colour to i8*, !dbg !1247
+  call void @llvm.memset.p0i8.i64(i8* %3, i8 0, i64 16, i32 4, i1 false), !dbg !1249
+  store float 1.000000e+00, float* %arrayidx5, align 4, !dbg !1247, !tbaa !1250
+  br label %if.end, !dbg !1251
 
-; <label>:12                                      ; preds = %0, %4
-  tail call void @llvm.dbg.value(metadata float* %Colour, i64 0, metadata !944, metadata !1510), !dbg !1546
-  tail call void @llvm.dbg.value(metadata float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 9, i64 0), i64 0, metadata !945, metadata !1510), !dbg !1548
-  %13 = load i32* bitcast (float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 9, i64 0) to i32*), align 8, !dbg !1549, !tbaa !1544
-  %14 = bitcast float* %Colour to i32*, !dbg !1550
-  store i32 %13, i32* %14, align 4, !dbg !1550, !tbaa !1544
-  %15 = load i32* bitcast (float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 9, i64 1) to i32*), align 4, !dbg !1551, !tbaa !1544
-  %16 = getelementptr inbounds float* %Colour, i64 1, !dbg !1552
-  %17 = bitcast float* %16 to i32*, !dbg !1553
-  store i32 %15, i32* %17, align 4, !dbg !1553, !tbaa !1544
-  %18 = load i32* bitcast (float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 9, i64 2) to i32*), align 8, !dbg !1554, !tbaa !1544
-  %19 = getelementptr inbounds float* %Colour, i64 2, !dbg !1555
-  %20 = bitcast float* %19 to i32*, !dbg !1556
-  store i32 %18, i32* %20, align 4, !dbg !1556, !tbaa !1544
-  %21 = getelementptr inbounds float* %Colour, i64 3, !dbg !1557
-  %22 = getelementptr inbounds float* %Colour, i64 4, !dbg !1558
-  store float 0.000000e+00, float* %21, align 4, !dbg !1559, !tbaa !1544
-  store float 1.000000e+00, float* %22, align 4, !dbg !1560, !tbaa !1544
-  %23 = bitcast [5 x float]* %Col_Temp.i to i8*, !dbg !1561
-  call void @llvm.lifetime.start(i64 20, i8* %23), !dbg !1561
-  %24 = bitcast [3 x double]* %P.i to i8*, !dbg !1561
-  call void @llvm.lifetime.start(i64 24, i8* %24), !dbg !1561
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !1101, metadata !1510), !dbg !1561
-  tail call void @llvm.dbg.value(metadata float* %Colour, i64 0, metadata !1102, metadata !1510), !dbg !1562
-  tail call void @llvm.dbg.declare(metadata [5 x float]* undef, metadata !1106, metadata !1510), !dbg !1563
-  tail call void @llvm.dbg.declare(metadata [5 x float]* undef, metadata !1108, metadata !1510), !dbg !1564
-  %25 = load %"struct.pov::Skysphere_Struct"** getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 15), align 8, !dbg !1565, !tbaa !1567
-  %26 = icmp eq %"struct.pov::Skysphere_Struct"* %25, null, !dbg !1569
-  br i1 %26, label %_ZN3povL12do_skysphereEPNS_10Ray_StructEPf.exit, label %27, !dbg !1570
+if.else:                                          ; preds = %entry, %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !1252), !dbg !1255
+  tail call void @llvm.dbg.value(metadata !1256, i64 0, metadata !1257), !dbg !1255
+  %4 = load float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 9, i64 0), align 8, !dbg !1258, !tbaa !1250
+  store float %4, float* %Colour, align 4, !dbg !1258, !tbaa !1250
+  %5 = load float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 9, i64 1), align 4, !dbg !1260, !tbaa !1250
+  %arrayidx3.i = getelementptr inbounds float* %Colour, i64 1, !dbg !1260
+  store float %5, float* %arrayidx3.i, align 4, !dbg !1260, !tbaa !1250
+  %6 = load float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 9, i64 2), align 8, !dbg !1261, !tbaa !1250
+  %arrayidx5.i = getelementptr inbounds float* %Colour, i64 2, !dbg !1261
+  store float %6, float* %arrayidx5.i, align 4, !dbg !1261, !tbaa !1250
+  %arrayidx7.i = getelementptr inbounds float* %Colour, i64 3, !dbg !1262
+  %arrayidx9.i = getelementptr inbounds float* %Colour, i64 4, !dbg !1263
+  store float 0.000000e+00, float* %arrayidx7.i, align 4, !dbg !1264, !tbaa !1250
+  store float 1.000000e+00, float* %arrayidx9.i, align 4, !dbg !1265, !tbaa !1250
+  %7 = bitcast [5 x float]* %Col_Temp.i to i8*, !dbg !1266
+  call void @llvm.lifetime.start(i64 20, i8* %7), !dbg !1266
+  %8 = bitcast [3 x double]* %P.i to i8*, !dbg !1266
+  call void @llvm.lifetime.start(i64 24, i8* %8), !dbg !1266
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Ray}, i64 0, metadata !1268), !dbg !1266
+  call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !1269), !dbg !1266
+  call void @llvm.dbg.declare(metadata !1270, metadata !979), !dbg !1271
+  call void @llvm.dbg.declare(metadata !{[5 x float]* %Col_Temp.i}, metadata !980), !dbg !1271
+  call void @llvm.dbg.declare(metadata !1270, metadata !981), !dbg !1271
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %P.i}, metadata !982), !dbg !1272
+  %9 = load %"struct.pov::Skysphere_Struct"** getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 15), align 8, !dbg !1273, !tbaa !1274
+  %cmp.i = icmp eq %"struct.pov::Skysphere_Struct"* %9, null, !dbg !1273
+  br i1 %cmp.i, label %if.end, label %land.lhs.true.i, !dbg !1273
 
-; <label>:27                                      ; preds = %12
-  tail call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !1115, metadata !1510), !dbg !1571
-  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1116, metadata !1510), !dbg !1573
-  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1117, metadata !1510), !dbg !1574
-  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1118, metadata !1510), !dbg !1575
-  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1106, metadata !1576), !dbg !1563
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Skysphere_Struct"* %25, i64 0, metadata !1110, metadata !1510), !dbg !1577
-  %28 = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %25, i64 0, i32 1, !dbg !1578
-  %29 = load %"struct.pov::Pigment_Struct"*** %28, align 8, !dbg !1578, !tbaa !1580
-  %30 = icmp eq %"struct.pov::Pigment_Struct"** %29, null, !dbg !1582
-  br i1 %30, label %_ZN3povL12do_skysphereEPNS_10Ray_StructEPf.exit, label %31, !dbg !1583
+land.lhs.true.i:                                  ; preds = %if.else
+  call void @llvm.dbg.value(metadata !1275, i64 0, metadata !1276), !dbg !1278
+  call void @llvm.dbg.value(metadata !1279, i64 0, metadata !1280), !dbg !1278
+  call void @llvm.dbg.value(metadata !1279, i64 0, metadata !1281), !dbg !1278
+  call void @llvm.dbg.value(metadata !1279, i64 0, metadata !1282), !dbg !1278
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Skysphere_Struct"* %9}, i64 0, metadata !1283), !dbg !1284
+  %Pigments.i = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %9, i64 0, i32 1, !dbg !1284
+  %10 = load %"struct.pov::Pigment_Struct"*** %Pigments.i, align 8, !dbg !1284, !tbaa !1274
+  %cmp2.i = icmp eq %"struct.pov::Pigment_Struct"** %10, null, !dbg !1284
+  br i1 %cmp2.i, label %if.end, label %if.then3.i, !dbg !1284
 
-; <label>:31                                      ; preds = %27
-  tail call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !1129, metadata !1510), !dbg !1584
-  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1130, metadata !1510), !dbg !1587
-  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1131, metadata !1510), !dbg !1588
-  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1132, metadata !1510), !dbg !1589
-  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1133, metadata !1510), !dbg !1590
-  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1134, metadata !1510), !dbg !1591
-  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1108, metadata !1576), !dbg !1564
-  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1105, metadata !1510), !dbg !1592
-  %32 = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %25, i64 0, i32 2, !dbg !1593
-  %33 = load %"struct.pov::Transform_Struct"** %32, align 8, !dbg !1593, !tbaa !1595
-  %34 = icmp eq %"struct.pov::Transform_Struct"* %33, null, !dbg !1596
-  %35 = getelementptr inbounds [3 x double]* %P.i, i64 0, i64 0, !dbg !1597
-  %36 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !1599
-  br i1 %34, label %38, label %37, !dbg !1600
+if.then3.i:                                       ; preds = %land.lhs.true.i
+  call void @llvm.dbg.value(metadata !1275, i64 0, metadata !1285), !dbg !1288
+  call void @llvm.dbg.value(metadata !1289, i64 0, metadata !1290), !dbg !1288
+  call void @llvm.dbg.value(metadata !1289, i64 0, metadata !1291), !dbg !1288
+  call void @llvm.dbg.value(metadata !1289, i64 0, metadata !1292), !dbg !1288
+  call void @llvm.dbg.value(metadata !1289, i64 0, metadata !1293), !dbg !1288
+  call void @llvm.dbg.value(metadata !1289, i64 0, metadata !1294), !dbg !1288
+  call void @llvm.dbg.value(metadata !1295, i64 0, metadata !1296), !dbg !1297
+  %Trans.i = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %9, i64 0, i32 2, !dbg !1298
+  %11 = load %"struct.pov::Transform_Struct"** %Trans.i, align 8, !dbg !1298, !tbaa !1274
+  %cmp5.i = icmp eq %"struct.pov::Transform_Struct"* %11, null, !dbg !1298
+  %arraydecay7.i = getelementptr inbounds [3 x double]* %P.i, i64 0, i64 0, !dbg !1299
+  %arraydecay8.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !1299
+  br i1 %cmp5.i, label %if.else.i, label %if.then6.i, !dbg !1298
 
-; <label>:37                                      ; preds = %31
-  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %35, double* %36, %"struct.pov::Transform_Struct"* %33) #6, !dbg !1601
-  br label %47, !dbg !1602
+if.then6.i:                                       ; preds = %if.then3.i
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay7.i, double* %arraydecay8.i, %"struct.pov::Transform_Struct"* %11) #7, !dbg !1299
+  br label %if.end13.i, !dbg !1301
 
-; <label>:38                                      ; preds = %31
-  tail call void @llvm.dbg.value(metadata double* %35, i64 0, metadata !1123, metadata !1510), !dbg !1603
-  tail call void @llvm.dbg.value(metadata double* %36, i64 0, metadata !1124, metadata !1510), !dbg !1606
-  %39 = bitcast double* %36 to <2 x i64>*, !dbg !1607
-  %40 = load <2 x i64>* %39, align 8, !dbg !1607, !tbaa !1608
-  %41 = bitcast [3 x double]* %P.i to <2 x i64>*, !dbg !1609
-  store <2 x i64> %40, <2 x i64>* %41, align 16, !dbg !1609, !tbaa !1608
-  %42 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !1610
-  %43 = bitcast double* %42 to i64*, !dbg !1610
-  %44 = load i64* %43, align 8, !dbg !1610, !tbaa !1608
-  %45 = getelementptr inbounds [3 x double]* %P.i, i64 0, i64 2, !dbg !1611
-  %46 = bitcast double* %45 to i64*, !dbg !1612
-  store i64 %44, i64* %46, align 16, !dbg !1612, !tbaa !1608
-  br label %47, !dbg !1613
+if.else.i:                                        ; preds = %if.then3.i
+  call void @llvm.dbg.value(metadata !{double* %arraydecay7.i}, i64 0, metadata !1302), !dbg !1305
+  call void @llvm.dbg.value(metadata !{double* %arraydecay8.i}, i64 0, metadata !1306), !dbg !1305
+  %12 = load double* %arraydecay8.i, align 8, !dbg !1307, !tbaa !1309
+  store double %12, double* %arraydecay7.i, align 16, !dbg !1307, !tbaa !1309
+  %arrayidx2.i104.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 1, !dbg !1310
+  %13 = load double* %arrayidx2.i104.i, align 8, !dbg !1310, !tbaa !1309
+  %arrayidx3.i105.i = getelementptr inbounds [3 x double]* %P.i, i64 0, i64 1, !dbg !1310
+  store double %13, double* %arrayidx3.i105.i, align 8, !dbg !1310, !tbaa !1309
+  %arrayidx4.i106.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !1311
+  %14 = load double* %arrayidx4.i106.i, align 8, !dbg !1311, !tbaa !1309
+  %arrayidx5.i.i = getelementptr inbounds [3 x double]* %P.i, i64 0, i64 2, !dbg !1311
+  store double %14, double* %arrayidx5.i.i, align 16, !dbg !1311, !tbaa !1309
+  br label %if.end13.i
 
-; <label>:47                                      ; preds = %38, %37
-  %48 = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %25, i64 0, i32 0, !dbg !1614
-  %49 = load i32* %48, align 4, !dbg !1614, !tbaa !1616
-  %50 = icmp sgt i32 %49, 0, !dbg !1617
-  br i1 %50, label %.lr.ph.i, label %._crit_edge.i, !dbg !1619
+if.end13.i:                                       ; preds = %if.else.i, %if.then6.i
+  %Count.i = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %9, i64 0, i32 0, !dbg !1312
+  %15 = load i32* %Count.i, align 4, !dbg !1312, !tbaa !1242
+  %cmp14135.i = icmp sgt i32 %15, 0, !dbg !1312
+  br i1 %cmp14135.i, label %for.body.lr.ph.i, label %for.end.i, !dbg !1312
 
-.lr.ph.i:                                         ; preds = %47
-  %51 = getelementptr inbounds [5 x float]* %Col_Temp.i, i64 0, i64 0, !dbg !1620
-  %52 = getelementptr inbounds [5 x float]* %Col_Temp.i, i64 0, i64 4, !dbg !1622
-  %53 = sext i32 %49 to i64, !dbg !1613
-  br label %54, !dbg !1619
+for.body.lr.ph.i:                                 ; preds = %if.end13.i
+  %arraydecay15.i = getelementptr inbounds [5 x float]* %Col_Temp.i, i64 0, i64 0, !dbg !1314
+  %arrayidx18.i = getelementptr inbounds [5 x float]* %Col_Temp.i, i64 0, i64 3, !dbg !1316
+  %arrayidx20.i = getelementptr inbounds [5 x float]* %Col_Temp.i, i64 0, i64 4, !dbg !1316
+  %arrayidx2.i102.i = getelementptr inbounds [5 x float]* %Col_Temp.i, i64 0, i64 1, !dbg !1317
+  %arrayidx6.i.i = getelementptr inbounds [5 x float]* %Col_Temp.i, i64 0, i64 2, !dbg !1320
+  %16 = sext i32 %15 to i64
+  br label %for.body.i, !dbg !1312
 
-; <label>:54                                      ; preds = %54, %.lr.ph.i
-  %indvars.iv.i = phi i64 [ %53, %.lr.ph.i ], [ %indvars.iv.next.i, %54 ], !dbg !1613
-  %trans.010.i = phi double [ 1.000000e+00, %.lr.ph.i ], [ %88, %54 ], !dbg !1613
-  %55 = phi float [ 1.000000e+00, %.lr.ph.i ], [ %84, %54 ], !dbg !1613
-  %56 = phi float [ 0.000000e+00, %.lr.ph.i ], [ %76, %54 ], !dbg !1613
-  %57 = phi float [ 0.000000e+00, %.lr.ph.i ], [ %79, %54 ], !dbg !1613
-  %58 = phi float [ 0.000000e+00, %.lr.ph.i ], [ %82, %54 ], !dbg !1613
-  %59 = phi <4 x float> [ <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>, %.lr.ph.i ], [ %83, %54 ], !dbg !1613
-  %indvars.iv.next.i = add nsw i64 %indvars.iv.i, -1, !dbg !1619
-  %60 = load %"struct.pov::Pigment_Struct"*** %28, align 8, !dbg !1623, !tbaa !1580
-  %61 = getelementptr inbounds %"struct.pov::Pigment_Struct"** %60, i64 %indvars.iv.next.i, !dbg !1624
-  %62 = load %"struct.pov::Pigment_Struct"** %61, align 8, !dbg !1624, !tbaa !1625
-  %63 = call i32 @_ZN3pov15Compute_PigmentEPfPNS_14Pigment_StructEPdPNS_10istk_entryE(float* %51, %"struct.pov::Pigment_Struct"* %62, double* %35, %"struct.pov::istk_entry"* null) #6, !dbg !1626
-  %64 = bitcast [5 x float]* %Col_Temp.i to <4 x float>*, !dbg !1627
-  %65 = load <4 x float>* %64, align 16, !dbg !1627, !tbaa !1544
-  %66 = extractelement <4 x float> %65, i32 3, !dbg !1629
-  %67 = fpext float %66 to double, !dbg !1629
-  %68 = fsub double 1.000000e+00, %67, !dbg !1630
-  %69 = load float* %52, align 16, !dbg !1622, !tbaa !1544
-  %70 = fpext float %69 to double, !dbg !1622
-  %71 = fsub double %68, %70, !dbg !1631
-  %72 = fmul double %trans.010.i, %71, !dbg !1632
-  call void @llvm.dbg.value(metadata double %72, i64 0, metadata !1104, metadata !1510), !dbg !1633
-  %73 = fptrunc double %72 to float, !dbg !1634
-  call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !1062, metadata !1510), !dbg !1635
-  call void @llvm.dbg.value(metadata float %73, i64 0, metadata !1063, metadata !1510), !dbg !1636
-  call void @llvm.dbg.value(metadata float* %51, i64 0, metadata !1064, metadata !1510), !dbg !1637
-  %74 = extractelement <4 x float> %65, i32 0, !dbg !1638
-  %75 = fmul float %74, %73, !dbg !1638
-  %76 = fadd float %56, %75, !dbg !1639
-  call void @llvm.dbg.value(metadata float %76, i64 0, metadata !1106, metadata !1576), !dbg !1563
-  %77 = extractelement <4 x float> %65, i32 1, !dbg !1640
-  %78 = fmul float %77, %73, !dbg !1640
-  %79 = fadd float %57, %78, !dbg !1641
-  call void @llvm.dbg.value(metadata float %79, i64 0, metadata !1106, metadata !1642), !dbg !1563
-  %80 = extractelement <4 x float> %65, i32 2, !dbg !1643
-  %81 = fmul float %80, %73, !dbg !1643
-  %82 = fadd float %58, %81, !dbg !1644
-  call void @llvm.dbg.value(metadata float %82, i64 0, metadata !1106, metadata !1645), !dbg !1563
-  call void @llvm.dbg.value(metadata float undef, i64 0, metadata !1108, metadata !1576), !dbg !1564
-  call void @llvm.dbg.value(metadata float undef, i64 0, metadata !1108, metadata !1642), !dbg !1564
-  call void @llvm.dbg.value(metadata float undef, i64 0, metadata !1108, metadata !1645), !dbg !1564
-  %83 = fmul <4 x float> %59, %65, !dbg !1646
-  call void @llvm.dbg.value(metadata float undef, i64 0, metadata !1108, metadata !1647), !dbg !1564
-  %84 = fmul float %55, %69, !dbg !1648
-  call void @llvm.dbg.value(metadata float %84, i64 0, metadata !1108, metadata !1649), !dbg !1564
-  %85 = extractelement <4 x float> %83, i32 3, !dbg !1650
-  %fabsf.i = call float @fabsf(float %85) #5, !dbg !1650
-  %86 = fpext float %fabsf.i to double, !dbg !1650
-  %fabsf1.i = call float @fabsf(float %84) #5, !dbg !1651
-  %87 = fpext float %fabsf1.i to double, !dbg !1651
-  %88 = fadd double %86, %87, !dbg !1652
-  call void @llvm.dbg.value(metadata double %88, i64 0, metadata !1105, metadata !1510), !dbg !1592
-  %89 = icmp sgt i64 %indvars.iv.i, 1, !dbg !1617
-  br i1 %89, label %54, label %._crit_edge.i, !dbg !1619
+for.body.i:                                       ; preds = %for.body.for.body_crit_edge.i, %for.body.lr.ph.i
+  %indvars.iv.i = phi i64 [ %16, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.body.for.body_crit_edge.i ]
+  %trans.0144.i = phi double [ 1.000000e+00, %for.body.lr.ph.i ], [ %add.i, %for.body.for.body_crit_edge.i ]
+  %Filter.sroa.0.0.load111126143.i = phi float [ 1.000000e+00, %for.body.lr.ph.i ], [ %mul28.i, %for.body.for.body_crit_edge.i ]
+  %Filter.sroa.1.4.load112127142.i = phi float [ 1.000000e+00, %for.body.lr.ph.i ], [ %mul31.i, %for.body.for.body_crit_edge.i ]
+  %Filter.sroa.2.8.load113128141.i = phi float [ 1.000000e+00, %for.body.lr.ph.i ], [ %mul34.i, %for.body.for.body_crit_edge.i ]
+  %Filter.sroa.3.12.load118129140.i = phi float [ 1.000000e+00, %for.body.lr.ph.i ], [ %mul37.i, %for.body.for.body_crit_edge.i ]
+  %Filter.sroa.4.16.load122130139.i = phi float [ 1.000000e+00, %for.body.lr.ph.i ], [ %mul40.i, %for.body.for.body_crit_edge.i ]
+  %Col.sroa.0.0.load123131138.i = phi float [ 0.000000e+00, %for.body.lr.ph.i ], [ %add.i.i, %for.body.for.body_crit_edge.i ]
+  %Col.sroa.1.4.load124132137.i = phi float [ 0.000000e+00, %for.body.lr.ph.i ], [ %add5.i.i, %for.body.for.body_crit_edge.i ]
+  %Col.sroa.2.8.load125133136.i = phi float [ 0.000000e+00, %for.body.lr.ph.i ], [ %add9.i.i, %for.body.for.body_crit_edge.i ]
+  %indvars.iv.next.i = add i64 %indvars.iv.i, -1, !dbg !1312
+  %17 = load %"struct.pov::Pigment_Struct"*** %Pigments.i, align 8, !dbg !1314, !tbaa !1274
+  %arrayidx.i = getelementptr inbounds %"struct.pov::Pigment_Struct"** %17, i64 %indvars.iv.next.i, !dbg !1314
+  %18 = load %"struct.pov::Pigment_Struct"** %arrayidx.i, align 8, !dbg !1314, !tbaa !1274
+  %call.i = call i32 @_ZN3pov15Compute_PigmentEPfPNS_14Pigment_StructEPdPNS_10istk_entryE(float* %arraydecay15.i, %"struct.pov::Pigment_Struct"* %18, double* %arraydecay7.i, %"struct.pov::istk_entry"* null) #7, !dbg !1314
+  %19 = load float* %arrayidx18.i, align 4, !dbg !1316, !tbaa !1250
+  %conv.i = fpext float %19 to double, !dbg !1316
+  %sub19.i = fsub double 1.000000e+00, %conv.i, !dbg !1316
+  %20 = load float* %arrayidx20.i, align 16, !dbg !1316, !tbaa !1250
+  %conv21.i = fpext float %20 to double, !dbg !1316
+  %sub22.i = fsub double %sub19.i, %conv21.i, !dbg !1316
+  %mul.i = fmul double %trans.0144.i, %sub22.i, !dbg !1316
+  call void @llvm.dbg.value(metadata !{double %mul.i}, i64 0, metadata !1321), !dbg !1316
+  %conv24.i = fptrunc double %mul.i to float, !dbg !1319
+  call void @llvm.dbg.value(metadata !1275, i64 0, metadata !1322), !dbg !1323
+  call void @llvm.dbg.value(metadata !{float %conv24.i}, i64 0, metadata !1324), !dbg !1323
+  call void @llvm.dbg.value(metadata !{float* %arraydecay15.i}, i64 0, metadata !1325), !dbg !1323
+  %21 = load float* %arraydecay15.i, align 16, !dbg !1326, !tbaa !1250
+  %mul.i.i = fmul float %21, %conv24.i, !dbg !1326
+  %add.i.i = fadd float %Col.sroa.0.0.load123131138.i, %mul.i.i, !dbg !1326
+  %22 = load float* %arrayidx2.i102.i, align 4, !dbg !1317, !tbaa !1250
+  %mul3.i.i = fmul float %22, %conv24.i, !dbg !1317
+  %add5.i.i = fadd float %Col.sroa.1.4.load124132137.i, %mul3.i.i, !dbg !1317
+  %23 = load float* %arrayidx6.i.i, align 8, !dbg !1320, !tbaa !1250
+  %mul7.i.i = fmul float %23, %conv24.i, !dbg !1320
+  %add9.i.i = fadd float %Col.sroa.2.8.load125133136.i, %mul7.i.i, !dbg !1320
+  %mul28.i = fmul float %Filter.sroa.0.0.load111126143.i, %21, !dbg !1327
+  %mul31.i = fmul float %Filter.sroa.1.4.load112127142.i, %22, !dbg !1328
+  %mul34.i = fmul float %Filter.sroa.2.8.load113128141.i, %23, !dbg !1329
+  %mul37.i = fmul float %Filter.sroa.3.12.load118129140.i, %19, !dbg !1330
+  %mul40.i = fmul float %Filter.sroa.4.16.load122130139.i, %20, !dbg !1331
+  %24 = trunc i64 %indvars.iv.next.i to i32, !dbg !1312
+  %cmp14.i = icmp sgt i32 %24, 0, !dbg !1312
+  br i1 %cmp14.i, label %for.body.for.body_crit_edge.i, label %for.end.i, !dbg !1312
 
-._crit_edge.i:                                    ; preds = %54, %47
-  %.lcssa4.i = phi float [ 1.000000e+00, %47 ], [ %84, %54 ], !dbg !1613
-  %.lcssa3.i = phi float [ 0.000000e+00, %47 ], [ %76, %54 ], !dbg !1613
-  %.lcssa2.i = phi float [ 0.000000e+00, %47 ], [ %79, %54 ], !dbg !1613
-  %.lcssa.i = phi float [ 0.000000e+00, %47 ], [ %82, %54 ], !dbg !1613
-  %90 = phi <4 x float> [ <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>, %47 ], [ %83, %54 ], !dbg !1613
-  %91 = load float* %Colour, align 4, !dbg !1653, !tbaa !1544
-  %92 = extractelement <4 x float> %90, i32 0, !dbg !1654
-  %93 = extractelement <4 x float> %90, i32 3, !dbg !1654
-  %94 = fmul float %92, %93, !dbg !1654
-  %95 = fadd float %.lcssa4.i, %94, !dbg !1655
-  %96 = fmul float %95, %91, !dbg !1656
-  %97 = fadd float %.lcssa3.i, %96, !dbg !1657
-  store float %97, float* %Colour, align 4, !dbg !1658, !tbaa !1544
-  %98 = load float* %16, align 4, !dbg !1659, !tbaa !1544
-  %99 = extractelement <4 x float> %90, i32 1, !dbg !1660
-  %100 = fmul float %99, %93, !dbg !1660
-  %101 = fadd float %.lcssa4.i, %100, !dbg !1661
-  %102 = fmul float %101, %98, !dbg !1662
-  %103 = fadd float %.lcssa2.i, %102, !dbg !1663
-  store float %103, float* %16, align 4, !dbg !1664, !tbaa !1544
-  %104 = load float* %19, align 4, !dbg !1665, !tbaa !1544
-  %105 = extractelement <4 x float> %90, i32 2, !dbg !1666
-  %106 = fmul float %105, %93, !dbg !1666
-  %107 = fadd float %.lcssa4.i, %106, !dbg !1667
-  %108 = fmul float %107, %104, !dbg !1668
-  %109 = fadd float %.lcssa.i, %108, !dbg !1669
-  store float %109, float* %19, align 4, !dbg !1670, !tbaa !1544
-  %110 = load float* %21, align 4, !dbg !1671, !tbaa !1544
-  %111 = fmul float %93, %110, !dbg !1672
-  store float %111, float* %21, align 4, !dbg !1673, !tbaa !1544
-  %112 = load float* %22, align 4, !dbg !1674, !tbaa !1544
-  %113 = fmul float %.lcssa4.i, %112, !dbg !1675
-  store float %113, float* %22, align 4, !dbg !1676, !tbaa !1544
-  br label %_ZN3povL12do_skysphereEPNS_10Ray_StructEPf.exit, !dbg !1677
+for.body.for.body_crit_edge.i:                    ; preds = %for.body.i
+  %fabsf101.i = call float @fabsf(float %mul40.i) #5, !dbg !1332
+  %fabsf.i = call float @fabsf(float %mul37.i) #5, !dbg !1332
+  %25 = fpext float %fabsf101.i to double, !dbg !1332
+  %26 = fpext float %fabsf.i to double, !dbg !1332
+  %add.i = fadd double %25, %26, !dbg !1332
+  br label %for.body.i, !dbg !1312
 
-_ZN3povL12do_skysphereEPNS_10Ray_StructEPf.exit:  ; preds = %12, %27, %._crit_edge.i
-  call void @llvm.lifetime.end(i64 20, i8* %23), !dbg !1678
-  call void @llvm.lifetime.end(i64 24, i8* %24), !dbg !1678
-  br label %114
+for.end.i:                                        ; preds = %for.body.i, %if.end13.i
+  %Filter.sroa.0.0.load111126.lcssa.i = phi float [ 1.000000e+00, %if.end13.i ], [ %mul28.i, %for.body.i ]
+  %Filter.sroa.1.4.load112127.lcssa.i = phi float [ 1.000000e+00, %if.end13.i ], [ %mul31.i, %for.body.i ]
+  %Filter.sroa.2.8.load113128.lcssa.i = phi float [ 1.000000e+00, %if.end13.i ], [ %mul34.i, %for.body.i ]
+  %Filter.sroa.3.12.load118129.lcssa.i = phi float [ 1.000000e+00, %if.end13.i ], [ %mul37.i, %for.body.i ]
+  %Filter.sroa.4.16.load122130.lcssa.i = phi float [ 1.000000e+00, %if.end13.i ], [ %mul40.i, %for.body.i ]
+  %Col.sroa.0.0.load123131.lcssa.i = phi float [ 0.000000e+00, %if.end13.i ], [ %add.i.i, %for.body.i ]
+  %Col.sroa.1.4.load124132.lcssa.i = phi float [ 0.000000e+00, %if.end13.i ], [ %add5.i.i, %for.body.i ]
+  %Col.sroa.2.8.load125133.lcssa.i = phi float [ 0.000000e+00, %if.end13.i ], [ %add9.i.i, %for.body.i ]
+  %27 = load float* %Colour, align 4, !dbg !1333, !tbaa !1250
+  %mul51.i = fmul float %Filter.sroa.0.0.load111126.lcssa.i, %Filter.sroa.3.12.load118129.lcssa.i, !dbg !1333
+  %add53.i = fadd float %Filter.sroa.4.16.load122130.lcssa.i, %mul51.i, !dbg !1333
+  %mul54.i = fmul float %add53.i, %27, !dbg !1333
+  %add55.i = fadd float %Col.sroa.0.0.load123131.lcssa.i, %mul54.i, !dbg !1333
+  store float %add55.i, float* %Colour, align 4, !dbg !1333, !tbaa !1250
+  %28 = load float* %arrayidx3.i, align 4, !dbg !1334, !tbaa !1250
+  %mul61.i = fmul float %Filter.sroa.1.4.load112127.lcssa.i, %Filter.sroa.3.12.load118129.lcssa.i, !dbg !1334
+  %add63.i = fadd float %Filter.sroa.4.16.load122130.lcssa.i, %mul61.i, !dbg !1334
+  %mul64.i = fmul float %add63.i, %28, !dbg !1334
+  %add65.i = fadd float %Col.sroa.1.4.load124132.lcssa.i, %mul64.i, !dbg !1334
+  store float %add65.i, float* %arrayidx3.i, align 4, !dbg !1334, !tbaa !1250
+  %29 = load float* %arrayidx5.i, align 4, !dbg !1335, !tbaa !1250
+  %mul71.i = fmul float %Filter.sroa.2.8.load113128.lcssa.i, %Filter.sroa.3.12.load118129.lcssa.i, !dbg !1335
+  %add73.i = fadd float %Filter.sroa.4.16.load122130.lcssa.i, %mul71.i, !dbg !1335
+  %mul74.i = fmul float %add73.i, %29, !dbg !1335
+  %add75.i = fadd float %Col.sroa.2.8.load125133.lcssa.i, %mul74.i, !dbg !1335
+  store float %add75.i, float* %arrayidx5.i, align 4, !dbg !1335, !tbaa !1250
+  %30 = load float* %arrayidx7.i, align 4, !dbg !1336, !tbaa !1250
+  %mul79.i = fmul float %Filter.sroa.3.12.load118129.lcssa.i, %30, !dbg !1336
+  store float %mul79.i, float* %arrayidx7.i, align 4, !dbg !1336, !tbaa !1250
+  %31 = load float* %arrayidx9.i, align 4, !dbg !1337, !tbaa !1250
+  %mul83.i = fmul float %Filter.sroa.4.16.load122130.lcssa.i, %31, !dbg !1337
+  store float %mul83.i, float* %arrayidx9.i, align 4, !dbg !1337, !tbaa !1250
+  br label %if.end, !dbg !1338
 
-; <label>:114                                     ; preds = %_ZN3povL12do_skysphereEPNS_10Ray_StructEPf.exit, %9
-  ret void, !dbg !1679
+if.end:                                           ; preds = %for.end.i, %land.lhs.true.i, %if.else, %if.then
+  ret void, !dbg !1339
 }

@@ -1,26 +1,30 @@
 define void @alloc_hash() #0 {
-  %1 = load i32* @TTSize, align 4, !dbg !569, !tbaa !123
-  %2 = sext i32 %1 to i64, !dbg !569
-  %3 = mul nsw i64 %2, 20, !dbg !570
-  %4 = tail call i8* @malloc(i64 %3) #6, !dbg !571
-  store i8* %4, i8** bitcast (%struct.TType** @AS_TTable to i8**), align 8, !dbg !572, !tbaa !119
-  %5 = tail call i8* @malloc(i64 %3) #6, !dbg !573
-  store i8* %5, i8** bitcast (%struct.TType** @DP_TTable to i8**), align 8, !dbg !574, !tbaa !119
-  %6 = shl nsw i64 %2, 4, !dbg !575
-  %7 = tail call i8* @malloc(i64 %6) #6, !dbg !576
-  store i8* %7, i8** bitcast (%struct.QTType** @QS_TTable to i8**), align 8, !dbg !577, !tbaa !119
-  %8 = icmp eq i8* %4, null, !dbg !578
-  %9 = icmp eq i8* %5, null, !dbg !580
-  %or.cond = or i1 %8, %9, !dbg !581
-  %10 = icmp eq i8* %7, null, !dbg !582
-  %or.cond3 = or i1 %10, %or.cond, !dbg !581
-  br i1 %or.cond3, label %11, label %12, !dbg !581
+entry:
+  %0 = load i32* @TTSize, align 4, !dbg !278, !tbaa !117
+  %conv = sext i32 %0 to i64, !dbg !278
+  %mul = mul i64 %conv, 20, !dbg !278
+  %call = tail call noalias i8* @malloc(i64 %mul) #6, !dbg !278
+  %1 = bitcast i8* %call to %struct.TType*, !dbg !278
+  store %struct.TType* %1, %struct.TType** @AS_TTable, align 8, !dbg !278, !tbaa !114
+  %call3 = tail call noalias i8* @malloc(i64 %mul) #6, !dbg !279
+  %2 = bitcast i8* %call3 to %struct.TType*, !dbg !279
+  store %struct.TType* %2, %struct.TType** @DP_TTable, align 8, !dbg !279, !tbaa !114
+  %mul5 = shl nsw i64 %conv, 4, !dbg !280
+  %call6 = tail call noalias i8* @malloc(i64 %mul5) #6, !dbg !280
+  %3 = bitcast i8* %call6 to %struct.QTType*, !dbg !280
+  store %struct.QTType* %3, %struct.QTType** @QS_TTable, align 8, !dbg !280, !tbaa !114
+  %cmp = icmp eq i8* %call, null, !dbg !281
+  %cmp8 = icmp eq i8* %call3, null, !dbg !281
+  %or.cond = or i1 %cmp, %cmp8, !dbg !281
+  %cmp11 = icmp eq i8* %call6, null, !dbg !281
+  %or.cond14 = or i1 %or.cond, %cmp11, !dbg !281
+  br i1 %or.cond14, label %if.then, label %if.end, !dbg !281
 
-; <label>:11                                      ; preds = %0
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([37 x i8]* @str, i64 0, i64 0)), !dbg !583
-  tail call void @exit(i32 1) #7, !dbg !585
-  unreachable, !dbg !585
+if.then:                                          ; preds = %entry
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([37 x i8]* @str, i64 0, i64 0)), !dbg !282
+  tail call void @exit(i32 1) #7, !dbg !284
+  unreachable, !dbg !284
 
-; <label>:12                                      ; preds = %0
-  ret void, !dbg !586
+if.end:                                           ; preds = %entry
+  ret void, !dbg !285
 }

@@ -1,36 +1,35 @@
-define i32 @Util_SplitFilename(i8** nocapture %dir, i8** nocapture %file, i8* %string) #1 {
-  tail call void @llvm.dbg.value(metadata i8** %dir, i64 0, metadata !57, metadata !107), !dbg !248
-  tail call void @llvm.dbg.value(metadata i8** %file, i64 0, metadata !58, metadata !107), !dbg !249
-  tail call void @llvm.dbg.value(metadata i8* %string, i64 0, metadata !59, metadata !107), !dbg !250
-  %1 = tail call i8* @Util_Strdup(i8* %string) #8, !dbg !251
-  store i8* %1, i8** %file, align 8, !dbg !252, !tbaa !112
-  %2 = icmp eq i8* %1, null, !dbg !253
-  %3 = ptrtoint i8* %1 to i64
-  br i1 %2, label %12, label %4, !dbg !255
+define i32 @Util_SplitFilename(i8** nocapture %dir, i8** nocapture %file, i8* nocapture %string) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8** %dir}, i64 0, metadata !57), !dbg !174
+  tail call void @llvm.dbg.value(metadata !{i8** %file}, i64 0, metadata !58), !dbg !174
+  tail call void @llvm.dbg.value(metadata !{i8* %string}, i64 0, metadata !59), !dbg !174
+  %call = tail call i8* @Util_Strdup(i8* %string) #12, !dbg !175
+  store i8* %call, i8** %file, align 8, !dbg !175, !tbaa !101
+  %tobool = icmp eq i8* %call, null, !dbg !176
+  br i1 %tobool, label %if.end5, label %if.then, !dbg !176
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @strrchr(i8* %1, i32 47) #7, !dbg !256
-  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !60, metadata !107), !dbg !258
-  %6 = icmp eq i8* %5, null, !dbg !259
-  br i1 %6, label %11, label %7, !dbg !261
+if.then:                                          ; preds = %entry
+  %call1 = tail call i8* @strrchr(i8* %call, i32 47) #9, !dbg !177
+  tail call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !60), !dbg !177
+  %tobool2 = icmp eq i8* %call1, null, !dbg !179
+  br i1 %tobool2, label %if.else, label %if.then3, !dbg !179
 
-; <label>:7                                       ; preds = %4
-  %8 = bitcast i8** %dir to i64*, !dbg !262
-  store i64 %3, i64* %8, align 8, !dbg !262, !tbaa !112
-  store i8 0, i8* %5, align 1, !dbg !264, !tbaa !148
-  %9 = getelementptr inbounds i8* %5, i64 1, !dbg !265
-  %10 = tail call i8* @Util_Strdup(i8* %9) #8, !dbg !266
-  store i8* %10, i8** %file, align 8, !dbg !267, !tbaa !112
-  br label %12, !dbg !268
+if.then3:                                         ; preds = %if.then
+  store i8* %call, i8** %dir, align 8, !dbg !180, !tbaa !101
+  store i8 0, i8* %call1, align 1, !dbg !182, !tbaa !102
+  %add.ptr = getelementptr inbounds i8* %call1, i64 1, !dbg !183
+  %call4 = tail call i8* @Util_Strdup(i8* %add.ptr) #12, !dbg !183
+  store i8* %call4, i8** %file, align 8, !dbg !183, !tbaa !101
+  br label %if.end5, !dbg !184
 
-; <label>:11                                      ; preds = %4
-  store i8* null, i8** %dir, align 8, !dbg !269, !tbaa !112
-  %.pre = load i8** %file, align 8, !dbg !271, !tbaa !112
-  br label %12
+if.else:                                          ; preds = %if.then
+  store i8* null, i8** %dir, align 8, !dbg !185, !tbaa !101
+  %.pre = load i8** %file, align 8, !dbg !187, !tbaa !101
+  br label %if.end5
 
-; <label>:12                                      ; preds = %0, %7, %11
-  %13 = phi i8* [ null, %0 ], [ %10, %7 ], [ %.pre, %11 ]
-  %not. = icmp eq i8* %13, null, !dbg !271
-  %14 = sext i1 %not. to i32, !dbg !271
-  ret i32 %14, !dbg !272
+if.end5:                                          ; preds = %entry, %if.then3, %if.else
+  %0 = phi i8* [ null, %entry ], [ %call4, %if.then3 ], [ %.pre, %if.else ]
+  %not.tobool6 = icmp eq i8* %0, null, !dbg !187
+  %cond = sext i1 %not.tobool6 to i32, !dbg !187
+  ret i32 %cond, !dbg !187
 }

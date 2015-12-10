@@ -1,15 +1,16 @@
 define zeroext i8 @get_serverbyte() #0 {
-  br label %1, !dbg !49
+entry:
+  br label %while.cond, !dbg !43
 
-; <label>:1                                       ; preds = %1, %0
-  %2 = load volatile i8* inttoptr (i64 2952794304 to i8*), align 64, !dbg !50, !tbaa !42
-  %3 = and i8 %2, 1, !dbg !51
-  %4 = icmp eq i8 %3, 0, !dbg !51
-  br i1 %4, label %1, label %5, !dbg !49
+while.cond:                                       ; preds = %while.cond, %entry
+  %0 = load volatile i8* inttoptr (i64 2952794304 to i8*), align 64, !dbg !43, !tbaa !38
+  %and = and i8 %0, 1, !dbg !43
+  %cmp = icmp eq i8 %and, 0, !dbg !43
+  br i1 %cmp, label %while.cond, label %while.end, !dbg !43
 
-; <label>:5                                       ; preds = %1
-  %6 = load volatile i8* inttoptr (i64 2952794320 to i8*), align 16, !dbg !52, !tbaa !42
-  tail call void @llvm.dbg.value(metadata i8 %6, i64 0, metadata !14, metadata !39), !dbg !53
-  store volatile i8 0, i8* inttoptr (i64 2952794304 to i8*), align 64, !dbg !54, !tbaa !42
-  ret i8 %6, !dbg !55
+while.end:                                        ; preds = %while.cond
+  %1 = load volatile i8* inttoptr (i64 2952794320 to i8*), align 16, !dbg !44, !tbaa !38
+  tail call void @llvm.dbg.value(metadata !{i8 %1}, i64 0, metadata !15), !dbg !44
+  store volatile i8 0, i8* inttoptr (i64 2952794304 to i8*), align 64, !dbg !45, !tbaa !38
+  ret i8 %1, !dbg !46
 }

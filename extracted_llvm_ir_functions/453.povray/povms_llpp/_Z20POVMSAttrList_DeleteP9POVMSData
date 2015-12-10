@@ -1,31 +1,33 @@
 define i32 @_Z20POVMSAttrList_DeleteP9POVMSData(%struct.POVMSData* %attr) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.POVMSData* %attr, i64 0, metadata !649, metadata !1201), !dbg !3689
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !650, metadata !1201), !dbg !3690
-  %1 = icmp eq %struct.POVMSData* %attr, null, !dbg !3691
-  br i1 %1, label %12, label %2, !dbg !3693
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSData* %attr}, i64 0, metadata !618), !dbg !2197
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !619), !dbg !2198
+  %cmp = icmp eq %struct.POVMSData* %attr, null, !dbg !2199
+  br i1 %cmp, label %return, label %if.end, !dbg !2199
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 2, !dbg !3694
-  %4 = bitcast %union.anon* %3 to %struct.POVMSData**, !dbg !3694
-  %5 = load %struct.POVMSData** %4, align 8, !dbg !3694, !tbaa !1210
-  %6 = icmp eq %struct.POVMSData* %5, null, !dbg !3695
-  br i1 %6, label %9, label %7, !dbg !3696
+if.end:                                           ; preds = %entry
+  %0 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 2, !dbg !2200
+  %items = bitcast %union.anon* %0 to %struct.POVMSData**, !dbg !2200
+  %1 = load %struct.POVMSData** %items, align 8, !dbg !2200, !tbaa !917
+  %cmp1 = icmp eq %struct.POVMSData* %1, null, !dbg !2200
+  br i1 %cmp1, label %if.end3, label %if.then2, !dbg !2200
 
-; <label>:7                                       ; preds = %2
-  %8 = tail call i32 @_Z19POVMSAttrList_ClearP9POVMSData(%struct.POVMSData* %attr) #8, !dbg !3697
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !650, metadata !1201), !dbg !3690
-  br label %9, !dbg !3698
+if.then2:                                         ; preds = %if.end
+  %call = tail call i32 @_Z19POVMSAttrList_ClearP9POVMSData(%struct.POVMSData* %attr) #8, !dbg !2201
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !619), !dbg !2201
+  br label %if.end3, !dbg !2201
 
-; <label>:9                                       ; preds = %2, %7
-  %ret.0 = phi i32 [ %8, %7 ], [ 0, %2 ]
-  %10 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 0, !dbg !3699
-  store i32 1314212940, i32* %10, align 4, !dbg !3700, !tbaa !1539
-  %11 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 1, !dbg !3701
-  store i32 0, i32* %11, align 4, !dbg !3702, !tbaa !1542
-  store %struct.POVMSData* null, %struct.POVMSData** %4, align 8, !dbg !3703, !tbaa !1210
-  br label %12, !dbg !3704
+if.end3:                                          ; preds = %if.end, %if.then2
+  %ret.0 = phi i32 [ %call, %if.then2 ], [ 0, %if.end ]
+  %type = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 0, !dbg !2202
+  store i32 1314212940, i32* %type, align 4, !dbg !2202, !tbaa !937
+  %size = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 1, !dbg !2203
+  store i32 0, i32* %size, align 4, !dbg !2203, !tbaa !937
+  %2 = getelementptr inbounds %union.anon* %0, i64 0, i32 0, !dbg !2204
+  store i8* null, i8** %2, align 8, !dbg !2204, !tbaa !917
+  br label %return, !dbg !2205
 
-; <label>:12                                      ; preds = %0, %9
-  %.0 = phi i32 [ %ret.0, %9 ], [ -1, %0 ]
-  ret i32 %.0, !dbg !3705
+return:                                           ; preds = %entry, %if.end3
+  %retval.0 = phi i32 [ %ret.0, %if.end3 ], [ -1, %entry ]
+  ret i32 %retval.0, !dbg !2206
 }

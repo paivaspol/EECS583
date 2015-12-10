@@ -1,20 +1,21 @@
-define i32 @gmx_nint(float %a) #4 {
-  tail call void @llvm.dbg.value(metadata float %a, i64 0, metadata !205, metadata !333), !dbg !496
-  tail call void @llvm.dbg.value(metadata float 5.000000e-01, i64 0, metadata !206, metadata !333), !dbg !497
-  %1 = fcmp olt float %a, 0.000000e+00, !dbg !498
-  br i1 %1, label %2, label %4, !dbg !499
+define i32 @gmx_nint(float %a) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %a}, i64 0, metadata !12), !dbg !137
+  tail call void @llvm.dbg.value(metadata !138, i64 0, metadata !13), !dbg !139
+  %cmp = fcmp olt float %a, 0.000000e+00, !dbg !140
+  br i1 %cmp, label %cond.true, label %cond.false, !dbg !140
 
-; <label>:2                                       ; preds = %0
-  %3 = fadd float %a, -5.000000e-01, !dbg !500
-  br label %6, !dbg !499
+cond.true:                                        ; preds = %entry
+  %sub = fadd float %a, -5.000000e-01, !dbg !140
+  br label %cond.end, !dbg !140
 
-; <label>:4                                       ; preds = %0
-  %5 = fadd float %a, 5.000000e-01, !dbg !501
-  br label %6, !dbg !499
+cond.false:                                       ; preds = %entry
+  %add = fadd float %a, 5.000000e-01, !dbg !140
+  br label %cond.end, !dbg !140
 
-; <label>:6                                       ; preds = %4, %2
-  %.sink = phi float [ %3, %2 ], [ %5, %4 ]
-  %7 = fptosi float %.sink to i32, !dbg !502
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !208, metadata !333), !dbg !503
-  ret i32 %7, !dbg !504
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %sub.sink = phi float [ %sub, %cond.true ], [ %add, %cond.false ]
+  %conv2 = fptosi float %sub.sink to i32, !dbg !140
+  tail call void @llvm.dbg.value(metadata !{i32 %conv2}, i64 0, metadata !15), !dbg !140
+  ret i32 %conv2, !dbg !141
 }

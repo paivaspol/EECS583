@@ -1,0 +1,86 @@
+define i32 @XalanCompileStylesheetFromStream(i8* %theXSLStream, i64 %theXSLStreamLength, i8* %theXalanHandle, i8** nocapture %theCSSHandle) #2 {
+entry:
+  %theCompiledStylesheet = alloca %"class.xalanc_1_8::XalanCompiledStylesheet"*, align 8
+  %theInputStream = alloca %"class.std::istrstream", align 8
+  %ref.tmp = alloca %"class.xalanc_1_8::XSLTInputSource", align 8
+  call void @llvm.dbg.value(metadata !{i8* %theXSLStream}, i64 0, metadata !6068), !dbg !6550
+  call void @llvm.dbg.value(metadata !{i64 %theXSLStreamLength}, i64 0, metadata !6069), !dbg !6551
+  call void @llvm.dbg.value(metadata !{i8* %theXalanHandle}, i64 0, metadata !6070), !dbg !6552
+  call void @llvm.dbg.value(metadata !{i8** %theCSSHandle}, i64 0, metadata !6071), !dbg !6553
+  call void @llvm.dbg.declare(metadata !{%"class.xalanc_1_8::XalanCompiledStylesheet"** %theCompiledStylesheet}, metadata !6072), !dbg !6554
+  call void @llvm.dbg.value(metadata !6534, i64 0, metadata !6072), !dbg !6554
+  store %"class.xalanc_1_8::XalanCompiledStylesheet"* null, %"class.xalanc_1_8::XalanCompiledStylesheet"** %theCompiledStylesheet, align 8, !dbg !6554, !tbaa !6369
+  %0 = bitcast %"class.std::istrstream"* %theInputStream to i8*, !dbg !6555
+  call void @llvm.lifetime.start(i64 368, i8* %0) #5, !dbg !6555
+  call void @llvm.dbg.declare(metadata !{%"class.std::istrstream"* %theInputStream}, metadata !6073), !dbg !6555
+  call void @_ZNSt10istrstreamC1EPKcl(%"class.std::istrstream"* %theInputStream, i8* %theXSLStream, i64 %theXSLStreamLength) #8, !dbg !6555
+  tail call void @llvm.dbg.value(metadata !{i8* %theXalanHandle}, i64 0, metadata !6556), !dbg !6558
+  %1 = bitcast %"class.std::istrstream"* %theInputStream to %"class.std::basic_istream"*, !dbg !6557
+  invoke void @_ZN10xalanc_1_815XSLTInputSourceC1EPSi(%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, %"class.std::basic_istream"* %1) #8
+          to label %invoke.cont1 unwind label %lpad, !dbg !6557
+
+invoke.cont1:                                     ; preds = %entry
+  %2 = bitcast i8* %theXalanHandle to %"class.xalanc_1_8::XalanTransformer"*, !dbg !6559
+  %call4 = invoke i32 @_ZN10xalanc_1_816XalanTransformer17compileStylesheetERKNS_15XSLTInputSourceERPKNS_23XalanCompiledStylesheetE(%"class.xalanc_1_8::XalanTransformer"* %2, %"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, %"class.xalanc_1_8::XalanCompiledStylesheet"** %theCompiledStylesheet) #8
+          to label %invoke.cont3 unwind label %lpad2, !dbg !6557
+
+invoke.cont3:                                     ; preds = %invoke.cont1
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6560), !dbg !6561
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6562), !dbg !6564
+  %3 = getelementptr inbounds %"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, i64 0, i32 0, !dbg !6565
+  invoke void @_ZN11xercesc_2_511InputSourceD2Ev(%"class.xercesc_2_5::InputSource"* %3) #8
+          to label %invoke.cont5 unwind label %lpad
+
+invoke.cont5:                                     ; preds = %invoke.cont3
+  call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !6109), !dbg !6557
+  %cmp = icmp eq i32 %call4, 0, !dbg !6566
+  br i1 %cmp, label %if.then, label %if.end, !dbg !6566
+
+if.then:                                          ; preds = %invoke.cont5
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanCompiledStylesheet"** %theCompiledStylesheet}, i64 0, metadata !6072), !dbg !6567
+  %4 = load %"class.xalanc_1_8::XalanCompiledStylesheet"** %theCompiledStylesheet, align 8, !dbg !6567, !tbaa !6369
+  %5 = bitcast %"class.xalanc_1_8::XalanCompiledStylesheet"* %4 to i8*, !dbg !6567
+  store i8* %5, i8** %theCSSHandle, align 8, !dbg !6567, !tbaa !6369
+  br label %if.end, !dbg !6569
+
+lpad:                                             ; preds = %invoke.cont3, %entry
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !6557
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !6557
+  %8 = extractvalue { i8*, i32 } %6, 1, !dbg !6557
+  br label %ehcleanup, !dbg !6557
+
+lpad2:                                            ; preds = %invoke.cont1
+  %9 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !6557
+  %10 = extractvalue { i8*, i32 } %9, 0, !dbg !6557
+  %11 = extractvalue { i8*, i32 } %9, 1, !dbg !6557
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6560), !dbg !6561
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6562), !dbg !6564
+  %12 = getelementptr inbounds %"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, i64 0, i32 0, !dbg !6565
+  invoke void @_ZN11xercesc_2_511InputSourceD2Ev(%"class.xercesc_2_5::InputSource"* %12) #8
+          to label %ehcleanup unwind label %terminate.lpad
+
+if.end:                                           ; preds = %if.then, %invoke.cont5
+  call void @_ZNSt10istrstreamD1Ev(%"class.std::istrstream"* %theInputStream) #8, !dbg !6570
+  call void @llvm.lifetime.end(i64 368, i8* %0) #5, !dbg !6570
+  ret i32 %call4, !dbg !6570
+
+ehcleanup:                                        ; preds = %lpad2, %lpad
+  %ehselector.slot.0 = phi i32 [ %8, %lpad ], [ %11, %lpad2 ]
+  %exn.slot.0 = phi i8* [ %7, %lpad ], [ %10, %lpad2 ]
+  invoke void @_ZNSt10istrstreamD1Ev(%"class.std::istrstream"* %theInputStream) #8
+          to label %eh.resume unwind label %terminate.lpad, !dbg !6570
+
+eh.resume:                                        ; preds = %ehcleanup
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !6570
+  %lpad.val8 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !6570
+  resume { i8*, i32 } %lpad.val8, !dbg !6570
+
+terminate.lpad:                                   ; preds = %lpad2, %ehcleanup
+  %13 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !6557
+  %14 = extractvalue { i8*, i32 } %13, 0, !dbg !6557
+  call void @__clang_call_terminate(i8* %14) #10, !dbg !6557
+  unreachable, !dbg !6557
+}

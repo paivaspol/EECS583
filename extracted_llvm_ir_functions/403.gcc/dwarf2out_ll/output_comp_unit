@@ -1,46 +1,49 @@
 define internal fastcc void @output_comp_unit(%struct.die_struct* %die) #1 {
 entry:
-  call fastcc void @mark_dies(%struct.die_struct* %die) #10
-  call fastcc void @build_abbrev_table(%struct.die_struct* %die) #10
-  store i64 11, i64* @next_die_offset, align 8, !tbaa !6
-  call fastcc void @calc_die_sizes(%struct.die_struct* %die) #10
-  %die_symbol = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 1
-  %0 = load i8** %die_symbol, align 8, !tbaa !4
-  %tobool = icmp eq i8* %0, null
-  br i1 %tobool, label %if.end, label %if.then
+  call void @llvm.dbg.value(metadata !{%struct.die_struct* %die}, i64 0, metadata !2096), !dbg !6877
+  call fastcc void @mark_dies(%struct.die_struct* %die) #11, !dbg !6878
+  call fastcc void @build_abbrev_table(%struct.die_struct* %die) #11, !dbg !6879
+  store i64 11, i64* @next_die_offset, align 8, !dbg !6880, !tbaa !3782
+  call fastcc void @calc_die_sizes(%struct.die_struct* %die) #11, !dbg !6881
+  %die_symbol = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 1, !dbg !6882
+  %0 = load i8** %die_symbol, align 8, !dbg !6882, !tbaa !3768
+  %tobool = icmp eq i8* %0, null, !dbg !6882
+  br i1 %tobool, label %if.end, label %if.then, !dbg !6882
 
 if.then:                                          ; preds = %entry
-  %call = call i64 @strlen(i8* %0) #11
-  %add = add i64 %call, 24
-  %1 = alloca i8, i64 %add, align 1
-  %call3 = call i32 (i8*, i8*, ...)* @sprintf(i8* %1, i8* getelementptr inbounds ([20 x i8]* @.str210, i64 0, i64 0), i8* %0) #9
-  store i8* null, i8** %die_symbol, align 8, !tbaa !4
-  br label %if.end
+  %call = call i64 @strlen(i8* %0) #12, !dbg !6883
+  %add = add i64 %call, 24, !dbg !6883
+  %1 = alloca i8, i64 %add, align 1, !dbg !6883
+  call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !2098), !dbg !6883
+  %call3 = call i32 (i8*, i8*, ...)* @sprintf(i8* %1, i8* getelementptr inbounds ([20 x i8]* @.str210, i64 0, i64 0), i8* %0) #10, !dbg !6884
+  call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !2097), !dbg !6885
+  store i8* null, i8** %die_symbol, align 8, !dbg !6886, !tbaa !3768
+  br label %if.end, !dbg !6887
 
 if.end:                                           ; preds = %entry, %if.then
   %secname.0 = phi i8* [ %1, %if.then ], [ getelementptr inbounds ([12 x i8]* @.str211, i64 0, i64 0), %entry ]
-  call void @named_section_flags(i8* %secname.0, i32 1024) #9
-  %2 = load i64* @next_die_offset, align 8, !tbaa !6
-  %sub.i = add i64 %2, -4
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 4, i64 %sub.i, i8* getelementptr inbounds ([32 x i8]* @.str369, i64 0, i64 0)) #9
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 2, i64 2, i8* getelementptr inbounds ([21 x i8]* @.str370, i64 0, i64 0)) #9
-  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 4, i8* getelementptr inbounds ([30 x i8]* @abbrev_section_label, i64 0, i64 0), i8* getelementptr inbounds ([28 x i8]* @.str371, i64 0, i64 0)) #9
-  %3 = load i32* @target_flags, align 4, !tbaa !0
-  %and.i = lshr i32 %3, 20
-  %4 = and i32 %and.i, 32
-  %5 = add i32 %4, 32
-  %div.i = sdiv i32 %5, 8
-  %conv.i = sext i32 %div.i to i64
-  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %conv.i, i8* getelementptr inbounds ([24 x i8]* @.str372, i64 0, i64 0)) #9
-  call fastcc void @output_die(%struct.die_struct* %die) #10
-  %6 = load i8** %die_symbol, align 8, !tbaa !4
-  %tobool6 = icmp eq i8* %6, null
-  br i1 %tobool6, label %if.end8, label %if.then7
+  call void @named_section_flags(i8* %secname.0, i32 1024) #10, !dbg !6888
+  %2 = load i64* @next_die_offset, align 8, !dbg !6889, !tbaa !3782
+  %sub.i = add i64 %2, -4, !dbg !6889
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 4, i64 %sub.i, i8* getelementptr inbounds ([32 x i8]* @.str369, i64 0, i64 0)) #10, !dbg !6889
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 2, i64 2, i8* getelementptr inbounds ([21 x i8]* @.str370, i64 0, i64 0)) #10, !dbg !6891
+  call void (i32, i8*, i8*, ...)* @dw2_asm_output_offset(i32 4, i8* getelementptr inbounds ([30 x i8]* @abbrev_section_label, i64 0, i64 0), i8* getelementptr inbounds ([28 x i8]* @.str371, i64 0, i64 0)) #10, !dbg !6892
+  %3 = load i32* @target_flags, align 4, !dbg !6893, !tbaa !3758
+  %and.i = lshr i32 %3, 20, !dbg !6893
+  %4 = and i32 %and.i, 32, !dbg !6893
+  %5 = add i32 %4, 32, !dbg !6893
+  %div.i = sdiv i32 %5, 8, !dbg !6893
+  %conv.i = sext i32 %div.i to i64, !dbg !6893
+  call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %conv.i, i8* getelementptr inbounds ([24 x i8]* @.str372, i64 0, i64 0)) #10, !dbg !6893
+  call fastcc void @output_die(%struct.die_struct* %die) #11, !dbg !6894
+  %6 = load i8** %die_symbol, align 8, !dbg !6895, !tbaa !3768
+  %tobool6 = icmp eq i8* %6, null, !dbg !6895
+  br i1 %tobool6, label %if.end8, label %if.then7, !dbg !6895
 
 if.then7:                                         ; preds = %if.end
-  call fastcc void @unmark_dies(%struct.die_struct* %die) #10
-  br label %if.end8
+  call fastcc void @unmark_dies(%struct.die_struct* %die) #11, !dbg !6896
+  br label %if.end8, !dbg !6896
 
 if.end8:                                          ; preds = %if.end, %if.then7
-  ret void
+  ret void, !dbg !6897
 }

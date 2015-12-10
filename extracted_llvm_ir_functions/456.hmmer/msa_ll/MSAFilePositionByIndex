@@ -1,30 +1,30 @@
-define i32 @MSAFilePositionByIndex(%struct.msafile_struct* nocapture readonly %afp, i32 %idx) #0 {
+define i32 @MSAFilePositionByIndex(%struct.msafile_struct* nocapture %afp, i32 %idx) #0 {
+entry:
   %fh = alloca i32, align 4
   %offset = alloca %struct.ssioffset_s, align 8
-  tail call void @llvm.dbg.value(metadata %struct.msafile_struct* %afp, i64 0, metadata !325, metadata !481), !dbg !1596
-  tail call void @llvm.dbg.value(metadata i32 %idx, i64 0, metadata !326, metadata !481), !dbg !1597
-  %1 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 5, !dbg !1598
-  %2 = load %struct.ssifile_s** %1, align 8, !dbg !1598, !tbaa !1453
-  %3 = icmp eq %struct.ssifile_s* %2, null, !dbg !1600
-  br i1 %3, label %12, label %4, !dbg !1601
+  call void @llvm.dbg.value(metadata !{%struct.msafile_struct* %afp}, i64 0, metadata !310), !dbg !849
+  call void @llvm.dbg.value(metadata !{i32 %idx}, i64 0, metadata !311), !dbg !849
+  call void @llvm.dbg.declare(metadata !{i32* %fh}, metadata !312), !dbg !850
+  call void @llvm.dbg.declare(metadata !{%struct.ssioffset_s* %offset}, metadata !313), !dbg !851
+  %ssi = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 5, !dbg !852
+  %0 = load %struct.ssifile_s** %ssi, align 8, !dbg !852, !tbaa !466
+  %cmp = icmp eq %struct.ssifile_s* %0, null, !dbg !852
+  br i1 %cmp, label %return, label %if.end, !dbg !852
 
-; <label>:4                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32* %fh, i64 0, metadata !327, metadata !481), !dbg !1602
-  tail call void @llvm.dbg.value(metadata %struct.ssioffset_s* %offset, i64 0, metadata !328, metadata !481), !dbg !1603
-  %5 = call i32 @SSIGetOffsetByNumber(%struct.ssifile_s* %2, i32 %idx, i32* %fh, %struct.ssioffset_s* %offset) #7, !dbg !1604
-  %6 = icmp eq i32 %5, 0, !dbg !1606
-  br i1 %6, label %7, label %12, !dbg !1607
+if.end:                                           ; preds = %entry
+  %call = call i32 @SSIGetOffsetByNumber(%struct.ssifile_s* %0, i32 %idx, i32* %fh, %struct.ssioffset_s* %offset) #7, !dbg !853
+  %cmp2 = icmp eq i32 %call, 0, !dbg !853
+  br i1 %cmp2, label %if.end4, label %return, !dbg !853
 
-; <label>:7                                       ; preds = %4
-  %8 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !1608
-  %9 = load %struct.__sFILE** %8, align 8, !dbg !1608, !tbaa !1439
-  call void @llvm.dbg.value(metadata %struct.ssioffset_s* %offset, i64 0, metadata !328, metadata !481), !dbg !1603
-  %10 = call i32 @SSISetFilePosition(%struct.__sFILE* %9, %struct.ssioffset_s* %offset) #7, !dbg !1610
-  %11 = icmp eq i32 %10, 0, !dbg !1611
-  %. = zext i1 %11 to i32, !dbg !1612
-  br label %12, !dbg !1612
+if.end4:                                          ; preds = %if.end
+  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !854
+  %1 = load %struct._IO_FILE** %f, align 8, !dbg !854, !tbaa !466
+  %call5 = call i32 @SSISetFilePosition(%struct._IO_FILE* %1, %struct.ssioffset_s* %offset) #7, !dbg !854
+  %cmp6 = icmp eq i32 %call5, 0, !dbg !854
+  %. = zext i1 %cmp6 to i32, !dbg !855
+  br label %return, !dbg !855
 
-; <label>:12                                      ; preds = %7, %4, %0
-  %.0 = phi i32 [ 0, %0 ], [ 0, %4 ], [ %., %7 ]
-  ret i32 %.0, !dbg !1613
+return:                                           ; preds = %if.end4, %if.end, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 0, %if.end ], [ %., %if.end4 ]
+  ret i32 %retval.0, !dbg !855
 }

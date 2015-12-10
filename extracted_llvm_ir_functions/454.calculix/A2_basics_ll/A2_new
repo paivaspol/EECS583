@@ -1,17 +1,18 @@
 define %struct._A2* @A2_new() #0 {
-  %1 = tail call i8* @malloc(i64 32) #6, !dbg !45
-  %2 = bitcast i8* %1 to %struct._A2*, !dbg !45
-  tail call void @llvm.dbg.value(metadata %struct._A2* %2, i64 0, metadata !29, metadata !49), !dbg !50
-  %3 = icmp eq i8* %1, null, !dbg !45
-  br i1 %3, label %4, label %7, !dbg !51
+entry:
+  %call = tail call noalias i8* @malloc(i64 32) #6, !dbg !36
+  %0 = bitcast i8* %call to %struct._A2*, !dbg !36
+  tail call void @llvm.dbg.value(metadata !{%struct._A2* %0}, i64 0, metadata !24), !dbg !36
+  %cmp = icmp eq i8* %call, null, !dbg !36
+  br i1 %cmp, label %if.then, label %if.end, !dbg !36
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !52, !tbaa !54
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 32, i32 21, i8* getelementptr inbounds ([85 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !52
-  tail call void @exit(i32 -1) #7, !dbg !52
-  unreachable, !dbg !52
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !38, !tbaa !40
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 32, i32 21, i8* getelementptr inbounds ([73 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !38
+  tail call void @exit(i32 -1) #7, !dbg !38
+  unreachable, !dbg !38
 
-; <label>:7                                       ; preds = %0
-  tail call void @A2_setDefaultFields(%struct._A2* %2) #8, !dbg !58
-  ret %struct._A2* %2, !dbg !59
+if.end:                                           ; preds = %entry
+  tail call void @A2_setDefaultFields(%struct._A2* %0) #8, !dbg !43
+  ret %struct._A2* %0, !dbg !44
 }

@@ -1,16 +1,17 @@
-define void @print_warn_num() #5 {
-  %1 = load i32* @nwarn, align 4, !dbg !787, !tbaa !382
-  %2 = icmp sgt i32 %1, 0, !dbg !789
-  br i1 %2, label %3, label %9, !dbg !790
+define void @print_warn_num() #1 {
+entry:
+  %0 = load i32* @nwarn, align 4, !dbg !425, !tbaa !264
+  %cmp = icmp sgt i32 %0, 0, !dbg !425
+  br i1 %cmp, label %if.then, label %if.end, !dbg !425
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !791, !tbaa !503
-  %5 = icmp eq i32 %1, 1, !dbg !792
-  %6 = select i1 %5, i8* getelementptr inbounds ([4 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0), !dbg !793
-  %7 = select i1 %5, i8* getelementptr inbounds ([1 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str23, i64 0, i64 0), !dbg !794
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([23 x i8]* @.str19, i64 0, i64 0), i8* %6, i32 %1, i8* %7) #12, !dbg !795
-  br label %9, !dbg !795
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !426, !tbaa !251
+  %cmp1 = icmp eq i32 %0, 1, !dbg !426
+  %cond = select i1 %cmp1, i8* getelementptr inbounds ([4 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0), !dbg !426
+  %cond3 = select i1 %cmp1, i8* getelementptr inbounds ([1 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str23, i64 0, i64 0), !dbg !426
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([23 x i8]* @.str19, i64 0, i64 0), i8* %cond, i32 %0, i8* %cond3) #11, !dbg !426
+  br label %if.end, !dbg !426
 
-; <label>:9                                       ; preds = %3, %0
-  ret void, !dbg !796
+if.end:                                           ; preds = %if.then, %entry
+  ret void, !dbg !427
 }

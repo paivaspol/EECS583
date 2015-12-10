@@ -1,0 +1,65 @@
+define i32 @_ZN10xalanc_1_822compareIgnoreCaseASCIIEPKtjS1_j(i16* nocapture %theLHS, i32 %theLHSLength, i16* nocapture %theRHS, i32 %theRHSLength) #8 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %theLHS}, i64 0, metadata !4359), !dbg !7825
+  tail call void @llvm.dbg.value(metadata !{i32 %theLHSLength}, i64 0, metadata !4360), !dbg !7826
+  tail call void @llvm.dbg.value(metadata !{i16* %theRHS}, i64 0, metadata !4361), !dbg !7827
+  tail call void @llvm.dbg.value(metadata !{i32 %theRHSLength}, i64 0, metadata !4362), !dbg !7828
+  tail call void @llvm.dbg.value(metadata !{i16* %theLHS}, i64 0, metadata !7829), !dbg !7831
+  tail call void @llvm.dbg.value(metadata !{i32 %theLHSLength}, i64 0, metadata !7832), !dbg !7833
+  tail call void @llvm.dbg.value(metadata !{i16* %theRHS}, i64 0, metadata !7834), !dbg !7835
+  tail call void @llvm.dbg.value(metadata !{i32 %theRHSLength}, i64 0, metadata !7836), !dbg !7837
+  tail call void @llvm.dbg.value(metadata !7838, i64 0, metadata !7839), !dbg !7840
+  %cmp.i = icmp ult i32 %theLHSLength, %theRHSLength, !dbg !7841
+  br i1 %cmp.i, label %_ZN10xalanc_1_89doCompareItjPFttEEEiPKT_T0_S5_S6_T1_.exit, label %if.else.i, !dbg !7841
+
+if.else.i:                                        ; preds = %entry
+  %cmp1.i = icmp ult i32 %theRHSLength, %theLHSLength, !dbg !7842
+  br i1 %cmp1.i, label %_ZN10xalanc_1_89doCompareItjPFttEEEiPKT_T0_S5_S6_T1_.exit, label %for.cond.preheader.i, !dbg !7842
+
+for.cond.preheader.i:                             ; preds = %if.else.i
+  %cmp422.i = icmp eq i32 %theLHSLength, 0, !dbg !7843
+  br i1 %cmp422.i, label %for.end.i, label %for.body.i, !dbg !7843
+
+for.cond.i:                                       ; preds = %for.body.i
+  %0 = trunc i64 %indvars.iv.next.i to i32, !dbg !7843
+  %cmp4.i = icmp ult i32 %0, %theLHSLength, !dbg !7843
+  br i1 %cmp4.i, label %for.body.i, label %for.end.i.loopexit, !dbg !7843
+
+for.body.i:                                       ; preds = %for.cond.preheader.i, %for.cond.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.cond.i ], [ 0, %for.cond.preheader.i ]
+  %arrayidx.i = getelementptr inbounds i16* %theLHS, i64 %indvars.iv.i, !dbg !7844
+  %1 = load i16* %arrayidx.i, align 2, !dbg !7844, !tbaa !6609
+  tail call void @llvm.dbg.value(metadata !{i16 %1}, i64 0, metadata !7846), !dbg !7847
+  %theChar.off.i2 = add i16 %1, -97, !dbg !7848
+  %2 = icmp ult i16 %theChar.off.i2, 26, !dbg !7848
+  %add.i3 = add i16 %1, -32, !dbg !7849
+  %retval.0.i4 = select i1 %2, i16 %add.i3, i16 %1, !dbg !7848
+  tail call void @llvm.dbg.value(metadata !{i16 %retval.0.i4}, i64 0, metadata !7850), !dbg !7844
+  %arrayidx6.i = getelementptr inbounds i16* %theRHS, i64 %indvars.iv.i, !dbg !7851
+  %3 = load i16* %arrayidx6.i, align 2, !dbg !7851, !tbaa !6609
+  tail call void @llvm.dbg.value(metadata !{i16 %3}, i64 0, metadata !7852), !dbg !7853
+  %theChar.off.i = add i16 %3, -97, !dbg !7854
+  %4 = icmp ult i16 %theChar.off.i, 26, !dbg !7854
+  %add.i = add i16 %3, -32, !dbg !7855
+  %retval.0.i1 = select i1 %4, i16 %add.i, i16 %3, !dbg !7854
+  tail call void @llvm.dbg.value(metadata !{i16 %retval.0.i4}, i64 0, metadata !7856), !dbg !7851
+  %cmp9.i = icmp eq i16 %retval.0.i4, %retval.0.i1, !dbg !7857
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !7843
+  br i1 %cmp9.i, label %for.cond.i, label %for.end.i.loopexit, !dbg !7857
+
+for.end.i.loopexit:                               ; preds = %for.cond.i, %for.body.i
+  %theRHSChar.1.i.ph = phi i16 [ %retval.0.i1, %for.body.i ], [ %retval.0.i4, %for.cond.i ]
+  %phitmp = zext i16 %retval.0.i4 to i32
+  br label %for.end.i
+
+for.end.i:                                        ; preds = %for.end.i.loopexit, %for.cond.preheader.i
+  %theLHSChar.1.i = phi i32 [ 0, %for.cond.preheader.i ], [ %phitmp, %for.end.i.loopexit ]
+  %theRHSChar.1.i = phi i16 [ 0, %for.cond.preheader.i ], [ %theRHSChar.1.i.ph, %for.end.i.loopexit ]
+  %conv12.i = zext i16 %theRHSChar.1.i to i32, !dbg !7858
+  %sub.i = sub nsw i32 %theLHSChar.1.i, %conv12.i, !dbg !7858
+  br label %_ZN10xalanc_1_89doCompareItjPFttEEEiPKT_T0_S5_S6_T1_.exit, !dbg !7858
+
+_ZN10xalanc_1_89doCompareItjPFttEEEiPKT_T0_S5_S6_T1_.exit: ; preds = %entry, %if.else.i, %for.end.i
+  %retval.0.i = phi i32 [ %sub.i, %for.end.i ], [ -1, %entry ], [ 1, %if.else.i ]
+  ret i32 %retval.0.i, !dbg !7830
+}

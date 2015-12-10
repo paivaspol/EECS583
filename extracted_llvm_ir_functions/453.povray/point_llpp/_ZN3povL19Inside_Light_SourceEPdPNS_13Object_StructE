@@ -1,20 +1,21 @@
-define internal i32 @_ZN3povL19Inside_Light_SourceEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* nocapture readonly %Object) #0 {
-  tail call void @llvm.dbg.value(metadata double* %IPoint, i64 0, metadata !819, metadata !1254), !dbg !1288
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !820, metadata !1254), !dbg !1289
-  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1290
-  %2 = bitcast %"struct.pov::Object_Struct"* %1 to %"struct.pov::Object_Struct"**, !dbg !1290
-  %3 = load %"struct.pov::Object_Struct"** %2, align 8, !dbg !1290, !tbaa !1260
-  %4 = icmp eq %"struct.pov::Object_Struct"* %3, null, !dbg !1292
-  br i1 %4, label %7, label %5, !dbg !1293
+define internal i32 @_ZN3povL19Inside_Light_SourceEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* nocapture %Object) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !966), !dbg !1044
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !967), !dbg !1044
+  %Children = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1045
+  %0 = bitcast %"struct.pov::Object_Struct"* %Children to %"struct.pov::Object_Struct"**, !dbg !1045
+  %1 = load %"struct.pov::Object_Struct"** %0, align 8, !dbg !1045, !tbaa !1036
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %1, null, !dbg !1045
+  br i1 %cmp, label %if.end3, label %if.then, !dbg !1045
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call zeroext i1 @_ZN3pov13Inside_ObjectEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* %3) #6, !dbg !1294
-  br i1 %6, label %8, label %7, !dbg !1297
+if.then:                                          ; preds = %entry
+  %call = tail call zeroext i1 @_ZN3pov13Inside_ObjectEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* %1) #7, !dbg !1046
+  br i1 %call, label %return, label %if.end3, !dbg !1046
 
-; <label>:7                                       ; preds = %0, %5
-  br label %8, !dbg !1298
+if.end3:                                          ; preds = %entry, %if.then
+  br label %return, !dbg !1048
 
-; <label>:8                                       ; preds = %5, %7
-  %.0 = phi i32 [ 0, %7 ], [ 1, %5 ]
-  ret i32 %.0, !dbg !1299
+return:                                           ; preds = %if.then, %if.end3
+  %retval.0 = phi i32 [ 0, %if.end3 ], [ 1, %if.then ]
+  ret i32 %retval.0, !dbg !1048
 }

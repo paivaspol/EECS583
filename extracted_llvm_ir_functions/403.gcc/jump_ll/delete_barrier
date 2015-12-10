@@ -1,16 +1,17 @@
 define void @delete_barrier(%struct.rtx_def* %insn) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %insn to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 35
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !593), !dbg !862
+  %0 = bitcast %struct.rtx_def* %insn to i32*, !dbg !863
+  %bf.load = load i32* %0, align 8, !dbg !863
+  %bf.clear = and i32 %bf.load, 65535, !dbg !863
+  %cmp = icmp eq i32 %bf.clear, 35, !dbg !863
+  br i1 %cmp, label %if.end, label %if.then, !dbg !863
 
 if.then:                                          ; preds = %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 1531, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.delete_barrier, i64 0, i64 0)) #9
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 1531, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.delete_barrier, i64 0, i64 0)) #11, !dbg !864
+  unreachable, !dbg !864
 
 if.end:                                           ; preds = %entry
-  %call = tail call %struct.rtx_def* @delete_insn(%struct.rtx_def* %insn) #7
-  ret void
+  %call = tail call %struct.rtx_def* @delete_insn(%struct.rtx_def* %insn) #9, !dbg !865
+  ret void, !dbg !866
 }

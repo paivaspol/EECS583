@@ -1,19 +1,20 @@
 define i32 @CCTK_RegisterIOMethodOutputGH(i32 %handle, i32 (%struct.cGH*)* %OutputGH) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !81, metadata !237), !dbg !294
-  tail call void @llvm.dbg.value(metadata i32 (%struct.cGH*)* %OutputGH, i64 0, metadata !82, metadata !237), !dbg !295
-  %1 = load %struct.cHandledData** @IOMethods, align 8, !dbg !296, !tbaa !241
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #6, !dbg !297
-  %3 = icmp ne i8* %2, null, !dbg !298
-  br i1 %3, label %4, label %7, !dbg !300
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !81), !dbg !272
+  tail call void @llvm.dbg.value(metadata !{i32 (%struct.cGH*)* %OutputGH}, i64 0, metadata !82), !dbg !272
+  %0 = load %struct.cHandledData** @IOMethods, align 8, !dbg !273, !tbaa !235
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %handle) #6, !dbg !273
+  %tobool = icmp ne i8* %call, null, !dbg !274
+  br i1 %tobool, label %if.then, label %if.end, !dbg !274
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds i8* %2, i64 16, !dbg !301
-  %6 = bitcast i8* %5 to i32 (%struct.cGH*)**, !dbg !301
-  store i32 (%struct.cGH*)* %OutputGH, i32 (%struct.cGH*)** %6, align 8, !dbg !303, !tbaa !267
-  br label %7, !dbg !304
+if.then:                                          ; preds = %entry
+  %OutputGH1 = getelementptr inbounds i8* %call, i64 16, !dbg !275
+  %1 = bitcast i8* %OutputGH1 to i32 (%struct.cGH*)**, !dbg !275
+  store i32 (%struct.cGH*)* %OutputGH, i32 (%struct.cGH*)** %1, align 8, !dbg !275, !tbaa !235
+  br label %if.end, !dbg !277
 
-; <label>:7                                       ; preds = %4, %0
-  %not. = xor i1 %3, true, !dbg !305
-  %8 = sext i1 %not. to i32, !dbg !305
-  ret i32 %8, !dbg !306
+if.end:                                           ; preds = %if.then, %entry
+  %not.tobool = xor i1 %tobool, true, !dbg !278
+  %cond = sext i1 %not.tobool to i32, !dbg !278
+  ret i32 %cond, !dbg !278
 }

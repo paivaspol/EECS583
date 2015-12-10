@@ -1,21 +1,22 @@
 define internal fastcc i32 @ParameterGetScope(i8* %scope) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %scope, i64 0, metadata !289, metadata !369), !dbg !617
-  %1 = tail call i32 @STR_cmpi(i8* %scope, i8* getelementptr inbounds ([7 x i8]* @.str19, i64 0, i64 0)) #8, !dbg !618
-  %2 = icmp eq i32 %1, 0, !dbg !618
-  br i1 %2, label %9, label %3, !dbg !620
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %scope}, i64 0, metadata !288), !dbg !497
+  %call = tail call i32 @STR_cmpi(i8* %scope, i8* getelementptr inbounds ([7 x i8]* @.str20, i64 0, i64 0)) #8, !dbg !498
+  %tobool = icmp eq i32 %call, 0, !dbg !498
+  br i1 %tobool, label %if.end11, label %if.else, !dbg !498
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @STR_cmpi(i8* %scope, i8* getelementptr inbounds ([11 x i8]* @.str20, i64 0, i64 0)) #8, !dbg !621
-  %5 = icmp eq i32 %4, 0, !dbg !621
-  br i1 %5, label %9, label %6, !dbg !623
+if.else:                                          ; preds = %entry
+  %call2 = tail call i32 @STR_cmpi(i8* %scope, i8* getelementptr inbounds ([11 x i8]* @.str21, i64 0, i64 0)) #8, !dbg !499
+  %tobool3 = icmp eq i32 %call2, 0, !dbg !499
+  br i1 %tobool3, label %if.end11, label %if.else5, !dbg !499
 
-; <label>:6                                       ; preds = %3
-  %7 = tail call i32 @STR_cmpi(i8* %scope, i8* getelementptr inbounds ([8 x i8]* @.str21, i64 0, i64 0)) #8, !dbg !624
-  %8 = icmp eq i32 %7, 0, !dbg !624
-  %. = select i1 %8, i32 3, i32 -1, !dbg !626
-  br label %9, !dbg !626
+if.else5:                                         ; preds = %if.else
+  %call6 = tail call i32 @STR_cmpi(i8* %scope, i8* getelementptr inbounds ([8 x i8]* @.str22, i64 0, i64 0)) #8, !dbg !500
+  %tobool7 = icmp eq i32 %call6, 0, !dbg !500
+  %. = select i1 %tobool7, i32 3, i32 -1, !dbg !501
+  br label %if.end11, !dbg !501
 
-; <label>:9                                       ; preds = %6, %3, %0
-  %retval.0 = phi i32 [ 1, %0 ], [ 2, %3 ], [ %., %6 ]
-  ret i32 %retval.0, !dbg !628
+if.end11:                                         ; preds = %if.else5, %if.else, %entry
+  %retval1.0 = phi i32 [ 1, %entry ], [ 2, %if.else ], [ %., %if.else5 ]
+  ret i32 %retval1.0, !dbg !503
 }

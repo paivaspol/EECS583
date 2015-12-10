@@ -1,69 +1,62 @@
-define i32 @main(i32 %argc, i8** nocapture readonly %argv) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %argc, i64 0, metadata !13, metadata !22), !dbg !23
-  tail call void @llvm.dbg.value(metadata i8** %argv, i64 0, metadata !14, metadata !22), !dbg !24
-  %1 = icmp slt i32 %argc, 2, !dbg !25
-  br i1 %1, label %2, label %3, !dbg !27
+define i32 @main(i32 %argc, i8** nocapture %argv) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %argc}, i64 0, metadata !13), !dbg !18
+  tail call void @llvm.dbg.value(metadata !{i8** %argv}, i64 0, metadata !14), !dbg !18
+  %cmp = icmp slt i32 %argc, 2, !dbg !19
+  br i1 %cmp, label %if.then, label %if.end, !dbg !19
 
-; <label>:2                                       ; preds = %0
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([29 x i8]* @str, i64 0, i64 0)), !dbg !28
-  br label %.loopexit, !dbg !30
+if.then:                                          ; preds = %entry
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([29 x i8]* @str, i64 0, i64 0)), !dbg !20
+  br label %return, !dbg !22
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds i8** %argv, i64 1, !dbg !31
-  %5 = load i8** %4, align 8, !dbg !31, !tbaa !32
-  %6 = tail call i32 @atoi(i8* %5) #6, !dbg !36
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !15, metadata !22), !dbg !37
-  %7 = getelementptr inbounds i8** %argv, i64 2, !dbg !38
-  %8 = load i8** %7, align 8, !dbg !38, !tbaa !32
-  %9 = tail call i32 @atoi(i8* %8) #6, !dbg !39
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !16, metadata !22), !dbg !40
-  %10 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([22 x i8]* @.str1, i64 0, i64 0), i32 %6, i32 %9) #6, !dbg !41
-  %11 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([15 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !42
-  tail call void @spec_srand(i32 %6) #6, !dbg !43
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !17, metadata !22), !dbg !44
-  %12 = icmp sgt i32 %9, 0, !dbg !45
-  br i1 %12, label %.lr.ph3, label %._crit_edge.thread, !dbg !48
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds i8** %argv, i64 1, !dbg !23
+  %0 = load i8** %arrayidx, align 8, !dbg !23, !tbaa !24
+  %call1 = tail call i32 @atoi(i8* %0) #6, !dbg !23
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !15), !dbg !23
+  %arrayidx2 = getelementptr inbounds i8** %argv, i64 2, !dbg !27
+  %1 = load i8** %arrayidx2, align 8, !dbg !27, !tbaa !24
+  %call3 = tail call i32 @atoi(i8* %1) #6, !dbg !27
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !16), !dbg !27
+  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([22 x i8]* @.str1, i64 0, i64 0), i32 %call1, i32 %call3) #7, !dbg !28
+  %call5 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([15 x i8]* @.str2, i64 0, i64 0)) #7, !dbg !29
+  tail call void @spec_srand(i32 %call1) #7, !dbg !30
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !17), !dbg !31
+  %cmp627 = icmp sgt i32 %call3, 0, !dbg !31
+  br i1 %cmp627, label %for.body, label %for.end.thread, !dbg !31
 
-._crit_edge.thread:                               ; preds = %3
-  %13 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !49
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !17, metadata !22), !dbg !44
-  br label %.loopexit, !dbg !50
+for.end.thread:                                   ; preds = %if.end
+  %call930 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !33
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !17), !dbg !34
+  br label %return, !dbg !34
 
-.lr.ph3:                                          ; preds = %3
-  %14 = add i32 %9, -1, !dbg !48
-  br label %15, !dbg !48
+for.body:                                         ; preds = %if.end, %for.body
+  %i.028 = phi i32 [ %inc, %for.body ], [ 0, %if.end ]
+  %call7 = tail call double @spec_rand() #7, !dbg !36
+  %call8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), double %call7) #7, !dbg !36
+  %inc = add nsw i32 %i.028, 1, !dbg !31
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !17), !dbg !31
+  %exitcond29 = icmp eq i32 %inc, %call3, !dbg !31
+  br i1 %exitcond29, label %for.end, label %for.body, !dbg !31
 
-; <label>:15                                      ; preds = %15, %.lr.ph3
-  %i.02 = phi i32 [ 0, %.lr.ph3 ], [ %18, %15 ]
-  %16 = tail call double @spec_rand() #6, !dbg !52
-  %17 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), double %16) #6, !dbg !54
-  %18 = add nuw nsw i32 %i.02, 1, !dbg !55
-  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !17, metadata !22), !dbg !44
-  %exitcond4 = icmp eq i32 %i.02, %14, !dbg !48
-  br i1 %exitcond4, label %._crit_edge, label %15, !dbg !48
+for.end:                                          ; preds = %for.body
+  %call9 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !33
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !17), !dbg !34
+  br i1 %cmp627, label %for.body12, label %return, !dbg !34
 
-._crit_edge:                                      ; preds = %15
-  %19 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !49
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !17, metadata !22), !dbg !44
-  br i1 %12, label %.lr.ph, label %.loopexit, !dbg !50
+for.body12:                                       ; preds = %for.end, %for.body12
+  %i.126 = phi i32 [ %inc16, %for.body12 ], [ 0, %for.end ]
+  %call13 = tail call double @spec_rand() #7, !dbg !38
+  %mul = fmul double %call13, 2.048000e+06, !dbg !38
+  %add = fadd double %mul, 1.000000e+00, !dbg !38
+  %conv = fptosi double %add to i32, !dbg !38
+  %call14 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i32 %conv) #7, !dbg !38
+  %inc16 = add nsw i32 %i.126, 1, !dbg !34
+  tail call void @llvm.dbg.value(metadata !{i32 %inc16}, i64 0, metadata !17), !dbg !34
+  %exitcond = icmp eq i32 %inc16, %call3, !dbg !34
+  br i1 %exitcond, label %return, label %for.body12, !dbg !34
 
-.lr.ph:                                           ; preds = %._crit_edge
-  %20 = add i32 %9, -1, !dbg !50
-  br label %21, !dbg !50
-
-; <label>:21                                      ; preds = %21, %.lr.ph
-  %i.11 = phi i32 [ 0, %.lr.ph ], [ %27, %21 ]
-  %22 = tail call double @spec_rand() #6, !dbg !56
-  %23 = fmul double %22, 2.048000e+06, !dbg !59
-  %24 = fadd double %23, 1.000000e+00, !dbg !60
-  %25 = fptosi double %24 to i32, !dbg !61
-  %26 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i32 %25) #6, !dbg !62
-  %27 = add nuw nsw i32 %i.11, 1, !dbg !63
-  tail call void @llvm.dbg.value(metadata i32 %27, i64 0, metadata !17, metadata !22), !dbg !44
-  %exitcond = icmp eq i32 %i.11, %20, !dbg !50
-  br i1 %exitcond, label %.loopexit, label %21, !dbg !50
-
-.loopexit:                                        ; preds = %21, %._crit_edge, %._crit_edge.thread, %2
-  %.0 = phi i32 [ 1, %2 ], [ 0, %._crit_edge.thread ], [ 0, %._crit_edge ], [ 0, %21 ]
-  ret i32 %.0, !dbg !64
+return:                                           ; preds = %for.end, %for.end.thread, %for.body12, %if.then
+  %retval.0 = phi i32 [ 1, %if.then ], [ 0, %for.body12 ], [ 0, %for.end.thread ], [ 0, %for.end ]
+  ret i32 %retval.0, !dbg !40
 }

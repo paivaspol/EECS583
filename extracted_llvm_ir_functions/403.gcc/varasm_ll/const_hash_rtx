@@ -1,25 +1,34 @@
 define internal fastcc i32 @const_hash_rtx(i32 %mode, %struct.rtx_def* %x) #0 {
 entry:
   %value = alloca %struct.rtx_const, align 8
-  %0 = getelementptr inbounds %struct.rtx_const* %value, i64 0, i32 0, i64 0
-  call void @llvm.lifetime.start(i64 136, i8* %0) #6
-  call fastcc void @decode_rtx_const(i32 %mode, %struct.rtx_def* %x, %struct.rtx_const* %value) #10
-  %1 = bitcast %struct.rtx_const* %value to i32*
-  br label %for.body
+  call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2009), !dbg !3627
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !2010), !dbg !3628
+  %0 = getelementptr inbounds %struct.rtx_const* %value, i64 0, i32 0, i64 0, !dbg !3629
+  call void @llvm.lifetime.start(i64 136, i8* %0) #7, !dbg !3629
+  call void @llvm.dbg.declare(metadata !{%struct.rtx_const* %value}, metadata !2013), !dbg !3629
+  call fastcc void @decode_rtx_const(i32 %mode, %struct.rtx_def* %x, %struct.rtx_const* %value) #11, !dbg !3630
+  call void @llvm.dbg.value(metadata !1148, i64 0, metadata !2011), !dbg !3631
+  call void @llvm.dbg.value(metadata !3209, i64 0, metadata !2012), !dbg !3632
+  %1 = bitcast %struct.rtx_const* %value to i32*, !dbg !3634
+  br label %for.body, !dbg !3632
 
 for.body:                                         ; preds = %for.body, %entry
   %hi.07 = phi i32 [ 0, %entry ], [ %add, %for.body ]
   %i.06 = phi i64 [ 0, %entry ], [ %inc, %for.body ]
-  %arrayidx = getelementptr inbounds i32* %1, i64 %i.06
-  %2 = load i32* %arrayidx, align 4, !tbaa !4
-  %add = add nsw i32 %2, %hi.07
-  %inc = add i64 %i.06, 1
-  %exitcond = icmp eq i64 %inc, 34
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds i32* %1, i64 %i.06, !dbg !3634
+  %2 = load i32* %arrayidx, align 4, !dbg !3634, !tbaa !2382
+  %add = add nsw i32 %2, %hi.07, !dbg !3634
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !2011), !dbg !3634
+  %inc = add i64 %i.06, 1, !dbg !3632
+  call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !2012), !dbg !3632
+  %exitcond = icmp eq i64 %inc, 34, !dbg !3632
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !3632
 
 for.end:                                          ; preds = %for.body
-  %and = and i32 %add, 1073741823
-  %rem = urem i32 %and, 61
-  call void @llvm.lifetime.end(i64 136, i8* %0) #6
-  ret i32 %rem
+  %and = and i32 %add, 1073741823, !dbg !3635
+  call void @llvm.dbg.value(metadata !{i32 %and}, i64 0, metadata !2011), !dbg !3635
+  %rem = urem i32 %and, 61, !dbg !3636
+  call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !2011), !dbg !3636
+  call void @llvm.lifetime.end(i64 136, i8* %0) #7, !dbg !3637
+  ret i32 %rem, !dbg !3637
 }

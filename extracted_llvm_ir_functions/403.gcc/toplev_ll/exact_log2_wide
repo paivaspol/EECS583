@@ -1,23 +1,27 @@
-define i32 @exact_log2_wide(i64 %x) #5 {
+define i32 @exact_log2_wide(i64 %x) #6 {
 entry:
-  %cmp = icmp eq i64 %x, 0
-  br i1 %cmp, label %return, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{i64 %x}, i64 0, metadata !727), !dbg !2095
+  tail call void @llvm.dbg.value(metadata !691, i64 0, metadata !728), !dbg !2096
+  %cmp = icmp eq i64 %x, 0, !dbg !2097
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !2097
 
 lor.lhs.false:                                    ; preds = %entry
-  %sub = sub i64 0, %x
-  %and = and i64 %x, %sub
-  %cmp1 = icmp eq i64 %and, %x
-  br i1 %cmp1, label %while.cond, label %return
+  %sub = sub i64 0, %x, !dbg !2097
+  %and = and i64 %x, %sub, !dbg !2097
+  %cmp1 = icmp eq i64 %and, %x, !dbg !2097
+  br i1 %cmp1, label %while.cond, label %return, !dbg !2097
 
 while.cond:                                       ; preds = %lor.lhs.false, %while.cond
   %x.addr.0 = phi i64 [ %shr, %while.cond ], [ %x, %lor.lhs.false ]
   %log.0 = phi i32 [ %inc, %while.cond ], [ 0, %lor.lhs.false ]
-  %shr = lshr i64 %x.addr.0, 1
-  %cmp2 = icmp eq i64 %shr, 0
-  %inc = add nsw i32 %log.0, 1
-  br i1 %cmp2, label %return, label %while.cond
+  %shr = lshr i64 %x.addr.0, 1, !dbg !2098
+  tail call void @llvm.dbg.value(metadata !{i64 %shr}, i64 0, metadata !727), !dbg !2098
+  %cmp2 = icmp eq i64 %shr, 0, !dbg !2098
+  %inc = add nsw i32 %log.0, 1, !dbg !2099
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !728), !dbg !2099
+  br i1 %cmp2, label %return, label %while.cond, !dbg !2098
 
 return:                                           ; preds = %while.cond, %entry, %lor.lhs.false
   %retval.0 = phi i32 [ -1, %lor.lhs.false ], [ -1, %entry ], [ %log.0, %while.cond ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2100
 }

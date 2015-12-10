@@ -1,0 +1,45 @@
+define double @_ZN10xalanc_1_813DoubleSupport3addEdd(double %theLHS, double %theRHS) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %theLHS}, i64 0, metadata !1656), !dbg !2205
+  tail call void @llvm.dbg.value(metadata !{double %theRHS}, i64 0, metadata !1657), !dbg !2206
+  tail call void @llvm.dbg.value(metadata !{double %theLHS}, i64 0, metadata !2207), !dbg !2209
+  tail call void @llvm.dbg.declare(metadata !2159, metadata !2130), !dbg !2210
+  %0 = load i64* bitcast (%"union.xalanc_1_8::DoubleSupport::NumberUnion"* @_ZN10xalanc_1_813DoubleSupport5s_NaNE to i64*), align 8, !dbg !2211
+  %1 = trunc i64 %0 to i32, !dbg !2211
+  %2 = bitcast double %theLHS to i64, !dbg !2211
+  %temp.sroa.0.0.extract.trunc.i = trunc i64 %2 to i32, !dbg !2211
+  %cmp.i = icmp eq i32 %1, %temp.sroa.0.0.extract.trunc.i, !dbg !2211
+  br i1 %cmp.i, label %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit, label %if.else, !dbg !2211
+
+_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit:      ; preds = %entry
+  %3 = lshr i64 %0, 32
+  %4 = trunc i64 %3 to i32
+  %temp.sroa.0.4.extract.shift.i = lshr i64 %2, 32, !dbg !2211
+  %temp.sroa.0.4.extract.trunc.i = trunc i64 %temp.sroa.0.4.extract.shift.i to i32, !dbg !2211
+  %cmp2.i = icmp eq i32 %4, %temp.sroa.0.4.extract.trunc.i, !dbg !2211
+  br i1 %cmp2.i, label %return, label %if.else, !dbg !2208
+
+if.else:                                          ; preds = %entry, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit
+  tail call void @llvm.dbg.value(metadata !{double %theRHS}, i64 0, metadata !2212), !dbg !2214
+  tail call void @llvm.dbg.declare(metadata !2159, metadata !2130), !dbg !2215
+  %5 = bitcast double %theRHS to i64, !dbg !2216
+  %temp.sroa.0.0.extract.trunc.i10 = trunc i64 %5 to i32, !dbg !2216
+  %cmp.i11 = icmp eq i32 %1, %temp.sroa.0.0.extract.trunc.i10, !dbg !2216
+  br i1 %cmp.i11, label %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit16, label %if.else5, !dbg !2216
+
+_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit16:    ; preds = %if.else
+  %6 = lshr i64 %0, 32
+  %7 = trunc i64 %6 to i32
+  %temp.sroa.0.4.extract.shift.i12 = lshr i64 %5, 32, !dbg !2216
+  %temp.sroa.0.4.extract.trunc.i13 = trunc i64 %temp.sroa.0.4.extract.shift.i12 to i32, !dbg !2216
+  %cmp2.i14 = icmp eq i32 %7, %temp.sroa.0.4.extract.trunc.i13, !dbg !2216
+  br i1 %cmp2.i14, label %return, label %if.else5, !dbg !2213
+
+if.else5:                                         ; preds = %if.else, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit16
+  %add = fadd double %theLHS, %theRHS, !dbg !2217
+  br label %return, !dbg !2217
+
+return:                                           ; preds = %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit16, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit, %if.else5
+  %retval.0 = phi double [ %add, %if.else5 ], [ %theLHS, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit ], [ %theRHS, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit16 ]
+  ret double %retval.0, !dbg !2219
+}

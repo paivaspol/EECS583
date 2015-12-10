@@ -1,17 +1,18 @@
-define linkonce_odr void @_ZN7cModule10initializeEi(%class.cModule* %this, i32 %stage) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.cModule* %this, i64 0, metadata !4215, metadata !5468), !dbg !5895
-  tail call void @llvm.dbg.value(metadata i32 %stage, i64 0, metadata !4216, metadata !5468), !dbg !5896
-  %1 = icmp eq i32 %stage, 0, !dbg !5897
-  br i1 %1, label %2, label %7, !dbg !5899
+define linkonce_odr void @_ZN7cModule10initializeEi(%class.cModule* %this, i32 %stage) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.cModule* %this}, i64 0, metadata !4545), !dbg !5072
+  tail call void @llvm.dbg.value(metadata !{i32 %stage}, i64 0, metadata !4546), !dbg !5072
+  %cmp = icmp eq i32 %stage, 0, !dbg !5072
+  br i1 %cmp, label %if.then, label %if.end, !dbg !5072
 
-; <label>:2                                       ; preds = %0
-  %3 = bitcast %class.cModule* %this to void (%class.cModule*)***, !dbg !5900
-  %4 = load void (%class.cModule*)*** %3, align 8, !dbg !5900, !tbaa !5487
-  %5 = getelementptr inbounds void (%class.cModule*)** %4, i64 18, !dbg !5900
-  %6 = load void (%class.cModule*)** %5, align 8, !dbg !5900
-  tail call void %6(%class.cModule* %this) #10, !dbg !5900
-  br label %7, !dbg !5900
+if.then:                                          ; preds = %entry
+  %0 = bitcast %class.cModule* %this to void (%class.cModule*)***, !dbg !5072
+  %vtable = load void (%class.cModule*)*** %0, align 8, !dbg !5072, !tbaa !4831
+  %vfn = getelementptr inbounds void (%class.cModule*)** %vtable, i64 18, !dbg !5072
+  %1 = load void (%class.cModule*)** %vfn, align 8, !dbg !5072
+  tail call void %1(%class.cModule* %this) #9, !dbg !5072
+  br label %if.end, !dbg !5072
 
-; <label>:7                                       ; preds = %2, %0
-  ret void, !dbg !5901
+if.end:                                           ; preds = %if.then, %entry
+  ret void, !dbg !5072
 }

@@ -1,20 +1,23 @@
-define i32 @chain_member(%union.tree_node* %elem, %union.tree_node* %chain) #3 {
+define i32 @chain_member(%union.tree_node* %elem, %union.tree_node* %chain) #4 {
 entry:
-  %tobool4 = icmp eq %union.tree_node* %chain, null
-  br i1 %tobool4, label %return, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %elem}, i64 0, metadata !1084), !dbg !2272
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %chain}, i64 0, metadata !1085), !dbg !2272
+  %tobool4 = icmp eq %union.tree_node* %chain, null, !dbg !2273
+  br i1 %tobool4, label %return, label %while.body, !dbg !2273
 
 while.body:                                       ; preds = %entry, %if.end
   %chain.addr.05 = phi %union.tree_node* [ %0, %if.end ], [ %chain, %entry ]
-  %cmp = icmp eq %union.tree_node* %chain.addr.05, %elem
-  br i1 %cmp, label %return, label %if.end
+  %cmp = icmp eq %union.tree_node* %chain.addr.05, %elem, !dbg !2274
+  br i1 %cmp, label %return, label %if.end, !dbg !2274
 
 if.end:                                           ; preds = %while.body
-  %chain1 = getelementptr inbounds %union.tree_node* %chain.addr.05, i64 0, i32 0, i32 0, i32 0
-  %0 = load %union.tree_node** %chain1, align 8, !tbaa !0
-  %tobool = icmp eq %union.tree_node* %0, null
-  br i1 %tobool, label %return, label %while.body
+  %chain1 = getelementptr inbounds %union.tree_node* %chain.addr.05, i64 0, i32 0, i32 0, i32 0, !dbg !2276
+  %0 = load %union.tree_node** %chain1, align 8, !dbg !2276, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %0}, i64 0, metadata !1085), !dbg !2276
+  %tobool = icmp eq %union.tree_node* %0, null, !dbg !2273
+  br i1 %tobool, label %return, label %while.body, !dbg !2273
 
 return:                                           ; preds = %if.end, %while.body, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ 1, %while.body ], [ 0, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2277
 }

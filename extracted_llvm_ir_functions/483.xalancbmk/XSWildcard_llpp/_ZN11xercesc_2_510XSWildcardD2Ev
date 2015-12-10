@@ -1,0 +1,40 @@
+define void @_ZN11xercesc_2_510XSWildcardD2Ev(%"class.xercesc_2_5::XSWildcard"* %this) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSWildcard"* %this}, i64 0, metadata !2839), !dbg !4005
+  %0 = getelementptr inbounds %"class.xercesc_2_5::XSWildcard"* %this, i64 0, i32 0, i32 0, !dbg !4006
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([8 x i8*]* @_ZTVN11xercesc_2_510XSWildcardE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !4006, !tbaa !3687
+  %fNsConstraintList = getelementptr inbounds %"class.xercesc_2_5::XSWildcard"* %this, i64 0, i32 3, !dbg !4007
+  %1 = load %"class.xercesc_2_5::RefArrayVectorOf"** %fNsConstraintList, align 8, !dbg !4007, !tbaa !3692
+  %tobool = icmp eq %"class.xercesc_2_5::RefArrayVectorOf"* %1, null, !dbg !4007
+  br i1 %tobool, label %if.end, label %delete.notnull, !dbg !4007
+
+delete.notnull:                                   ; preds = %entry
+  %2 = bitcast %"class.xercesc_2_5::RefArrayVectorOf"* %1 to void (%"class.xercesc_2_5::RefArrayVectorOf"*)***, !dbg !4009
+  %vtable = load void (%"class.xercesc_2_5::RefArrayVectorOf"*)*** %2, align 8, !dbg !4009, !tbaa !3687
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::RefArrayVectorOf"*)** %vtable, i64 1, !dbg !4009
+  %3 = load void (%"class.xercesc_2_5::RefArrayVectorOf"*)** %vfn, align 8, !dbg !4009
+  invoke void %3(%"class.xercesc_2_5::RefArrayVectorOf"* %1) #9
+          to label %if.end unwind label %lpad, !dbg !4009
+
+lpad:                                             ; preds = %delete.notnull
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4009
+  %5 = getelementptr inbounds %"class.xercesc_2_5::XSWildcard"* %this, i64 0, i32 0, !dbg !4010
+  invoke void @_ZN11xercesc_2_58XSObjectD2Ev(%"class.xercesc_2_5::XSObject"* %5) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !4010
+
+if.end:                                           ; preds = %entry, %delete.notnull
+  %6 = getelementptr inbounds %"class.xercesc_2_5::XSWildcard"* %this, i64 0, i32 0, !dbg !4011
+  tail call void @_ZN11xercesc_2_58XSObjectD2Ev(%"class.xercesc_2_5::XSObject"* %6) #9, !dbg !4011
+  ret void, !dbg !4010
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %4, !dbg !4010
+
+terminate.lpad:                                   ; preds = %lpad
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !4010
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !4010
+  tail call void @__clang_call_terminate(i8* %8) #8, !dbg !4010
+  unreachable, !dbg !4010
+}

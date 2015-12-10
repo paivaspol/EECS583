@@ -1,28 +1,29 @@
 define i32 @RandomIntra(i32 %mb) #3 {
-  tail call void @llvm.dbg.value(metadata i32 %mb, i64 0, metadata !25, metadata !586), !dbg !641
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !26, metadata !586), !dbg !642
-  %1 = load i32* @NumberIntraPerPicture, align 4, !dbg !643, !tbaa !593
-  %2 = icmp sgt i32 %1, 0, !dbg !646
-  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !647
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %mb}, i64 0, metadata !25), !dbg !598
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !26), !dbg !599
+  %0 = load i32* @NumberIntraPerPicture, align 4, !dbg !599, !tbaa !578
+  %cmp4 = icmp sgt i32 %0, 0, !dbg !599
+  br i1 %cmp4, label %for.body.lr.ph, label %return, !dbg !599
 
-.lr.ph:                                           ; preds = %0
-  %3 = load i32** @IntraMBs, align 8, !dbg !648, !tbaa !602
-  %4 = sext i32 %1 to i64, !dbg !647
-  br label %7, !dbg !647
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = load i32** @IntraMBs, align 8, !dbg !601, !tbaa !583
+  br label %for.body, !dbg !599
 
-; <label>:5                                       ; preds = %7
-  %6 = icmp slt i64 %indvars.iv.next, %4, !dbg !646
-  br i1 %6, label %7, label %._crit_edge, !dbg !647
+for.cond:                                         ; preds = %for.body
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !599
+  %cmp = icmp slt i32 %2, %0, !dbg !599
+  br i1 %cmp, label %for.body, label %return, !dbg !599
 
-; <label>:7                                       ; preds = %.lr.ph, %5
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %5 ]
-  %8 = getelementptr inbounds i32* %3, i64 %indvars.iv, !dbg !648
-  %9 = load i32* %8, align 4, !dbg !648, !tbaa !593
-  %10 = icmp eq i32 %9, %mb, !dbg !650
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !647
-  br i1 %10, label %._crit_edge, label %5, !dbg !651
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv, !dbg !601
+  %3 = load i32* %arrayidx, align 4, !dbg !601, !tbaa !578
+  %cmp1 = icmp eq i32 %3, %mb, !dbg !601
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !599
+  br i1 %cmp1, label %return, label %for.cond, !dbg !601
 
-._crit_edge:                                      ; preds = %7, %5, %0
-  %.0 = phi i32 [ 0, %0 ], [ 1, %7 ], [ 0, %5 ]
-  ret i32 %.0, !dbg !652
+return:                                           ; preds = %for.cond, %for.body, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %for.body ], [ 0, %for.cond ]
+  ret i32 %retval.0, !dbg !602
 }

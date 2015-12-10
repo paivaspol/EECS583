@@ -1,47 +1,46 @@
-define i32 @CCTKi_PrintImps(%struct.__sFILE* nocapture %file, i8* nocapture readonly %format, i32 %active) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %file, i64 0, metadata !224, metadata !358), !dbg !781
-  tail call void @llvm.dbg.value(metadata i8* %format, i64 0, metadata !225, metadata !358), !dbg !782
-  tail call void @llvm.dbg.value(metadata i32 %active, i64 0, metadata !226, metadata !358), !dbg !783
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !227, metadata !358), !dbg !784
-  %1 = load %struct.T_SKTREE** @implist, align 8, !dbg !785, !tbaa !381
-  %2 = tail call %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %1) #8, !dbg !787
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %2, i64 0, metadata !228, metadata !358), !dbg !788
-  %3 = icmp eq %struct.T_SKTREE* %2, null, !dbg !789
-  br i1 %3, label %._crit_edge, label %.lr.ph, !dbg !789
+define i32 @CCTKi_PrintImps(%struct._IO_FILE* nocapture %file, i8* nocapture %format, i32 %active) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !220), !dbg !610
+  tail call void @llvm.dbg.value(metadata !{i8* %format}, i64 0, metadata !221), !dbg !610
+  tail call void @llvm.dbg.value(metadata !{i32 %active}, i64 0, metadata !222), !dbg !610
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !223), !dbg !611
+  %0 = load %struct.T_SKTREE** @implist, align 8, !dbg !612, !tbaa !357
+  %call = tail call %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %0) #9, !dbg !612
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call}, i64 0, metadata !224), !dbg !612
+  %tobool10 = icmp eq %struct.T_SKTREE* %call, null, !dbg !612
+  br i1 %tobool10, label %for.end, label %for.body.lr.ph, !dbg !612
 
-.lr.ph:                                           ; preds = %0
-  %4 = icmp ne i32 %active, 0, !dbg !790
-  br label %5, !dbg !789
+for.body.lr.ph:                                   ; preds = %entry
+  %tobool4 = icmp eq i32 %active, 0, !dbg !614
+  br label %for.body, !dbg !612
 
-; <label>:5                                       ; preds = %.lr.ph, %16
-  %retval.03 = phi i32 [ 0, %.lr.ph ], [ %19, %16 ]
-  %node.02 = phi %struct.T_SKTREE* [ %2, %.lr.ph ], [ %18, %16 ]
-  %6 = getelementptr inbounds %struct.T_SKTREE* %node.02, i64 0, i32 5, !dbg !794
-  %7 = bitcast i8** %6 to %struct.IMPLEMENTATION**, !dbg !794
-  %8 = load %struct.IMPLEMENTATION** %7, align 8, !dbg !794, !tbaa !555
-  tail call void @llvm.dbg.value(metadata %struct.IMPLEMENTATION* %8, i64 0, metadata !229, metadata !358), !dbg !795
-  %9 = getelementptr inbounds %struct.IMPLEMENTATION* %8, i64 0, i32 0, !dbg !796
-  %10 = load i32* %9, align 4, !dbg !796, !tbaa !469
-  %11 = icmp eq i32 %10, 0, !dbg !797
-  %or.cond = and i1 %4, %11, !dbg !798
-  br i1 %or.cond, label %16, label %12, !dbg !798
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %retval1.012 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %node.011 = phi %struct.T_SKTREE* [ %call, %for.body.lr.ph ], [ %4, %for.inc ]
+  %data = getelementptr inbounds %struct.T_SKTREE* %node.011, i64 0, i32 5, !dbg !616
+  %1 = load i8** %data, align 8, !dbg !616, !tbaa !357
+  %active2 = bitcast i8* %1 to i32*, !dbg !614
+  %2 = load i32* %active2, align 4, !dbg !614, !tbaa !387
+  %tobool3 = icmp ne i32 %2, 0, !dbg !614
+  %or.cond = or i1 %tobool3, %tobool4, !dbg !614
+  br i1 %or.cond, label %if.then, label %for.inc, !dbg !614
 
-; <label>:12                                      ; preds = %5
-  %13 = getelementptr inbounds %struct.T_SKTREE* %node.02, i64 0, i32 4, !dbg !799
-  %14 = load i8** %13, align 8, !dbg !799, !tbaa !673
-  %15 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %file, i8* %format, i8* %14) #8, !dbg !801
-  br label %16, !dbg !802
+if.then:                                          ; preds = %for.body
+  %key = getelementptr inbounds %struct.T_SKTREE* %node.011, i64 0, i32 4, !dbg !617
+  %3 = load i8** %key, align 8, !dbg !617, !tbaa !357
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %format, i8* %3) #9, !dbg !617
+  br label %for.inc, !dbg !619
 
-; <label>:16                                      ; preds = %12, %5
-  %17 = getelementptr inbounds %struct.T_SKTREE* %node.02, i64 0, i32 2, !dbg !803
-  %18 = load %struct.T_SKTREE** %17, align 8, !dbg !803, !tbaa !778
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %18, i64 0, metadata !228, metadata !358), !dbg !788
-  %19 = add nuw nsw i32 %retval.03, 1, !dbg !804
-  tail call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !227, metadata !358), !dbg !784
-  %20 = icmp eq %struct.T_SKTREE* %18, null, !dbg !789
-  br i1 %20, label %._crit_edge, label %5, !dbg !789
+for.inc:                                          ; preds = %for.body, %if.then
+  %next = getelementptr inbounds %struct.T_SKTREE* %node.011, i64 0, i32 2, !dbg !620
+  %4 = load %struct.T_SKTREE** %next, align 8, !dbg !620, !tbaa !357
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %4}, i64 0, metadata !224), !dbg !620
+  %inc = add nsw i32 %retval1.012, 1, !dbg !620
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !223), !dbg !620
+  %tobool = icmp eq %struct.T_SKTREE* %4, null, !dbg !612
+  br i1 %tobool, label %for.end, label %for.body, !dbg !612
 
-._crit_edge:                                      ; preds = %16, %0
-  %retval.0.lcssa = phi i32 [ 0, %0 ], [ %19, %16 ]
-  ret i32 %retval.0.lcssa, !dbg !805
+for.end:                                          ; preds = %for.inc, %entry
+  %retval1.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %for.inc ]
+  ret i32 %retval1.0.lcssa, !dbg !621
 }

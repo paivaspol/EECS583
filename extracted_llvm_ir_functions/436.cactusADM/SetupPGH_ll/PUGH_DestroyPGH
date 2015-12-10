@@ -1,224 +1,225 @@
 define void @PUGH_DestroyPGH(%struct.PGH** nocapture %GHin) #1 {
+entry:
   %pgroup = alloca %struct.cGroup, align 4
-  tail call void @llvm.dbg.value(metadata %struct.PGH** %GHin, i64 0, metadata !243, metadata !370), !dbg !516
-  %1 = load %struct.PGH** %GHin, align 8, !dbg !517, !tbaa !446
-  tail call void @llvm.dbg.value(metadata %struct.PGH* %1, i64 0, metadata !244, metadata !370), !dbg !518
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !260, metadata !370), !dbg !519
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !261, metadata !370), !dbg !520
-  %2 = call i32 @CCTK_NumGroups() #8, !dbg !521
-  %3 = icmp sgt i32 %2, 0, !dbg !524
-  br i1 %3, label %.lr.ph14, label %.preheader, !dbg !525
+  call void @llvm.dbg.value(metadata !{%struct.PGH** %GHin}, i64 0, metadata !207), !dbg !433
+  call void @llvm.dbg.declare(metadata !{%struct.cGroup* %pgroup}, metadata !244), !dbg !434
+  %0 = load %struct.PGH** %GHin, align 8, !dbg !435, !tbaa !376
+  call void @llvm.dbg.value(metadata !{%struct.PGH* %0}, i64 0, metadata !208), !dbg !435
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !258), !dbg !436
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !259), !dbg !437
+  %call139 = call i32 @CCTK_NumGroups() #8, !dbg !437
+  %cmp140 = icmp sgt i32 %call139, 0, !dbg !437
+  br i1 %cmp140, label %for.body.lr.ph, label %for.cond65.preheader, !dbg !437
 
-.lr.ph14:                                         ; preds = %0
-  %4 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 0, !dbg !526
-  %5 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 7, !dbg !529
-  %6 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 4, !dbg !531
-  %7 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 22, !dbg !533
-  %8 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 21, !dbg !534
-  %9 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 5, !dbg !536
-  %10 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 6, !dbg !539
-  %11 = bitcast i8**** %5 to %struct.PGA****, !dbg !543
-  br label %17, !dbg !525
+for.body.lr.ph:                                   ; preds = %entry
+  %grouptype = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 0, !dbg !439
+  %variables = getelementptr inbounds %struct.PGH* %0, i64 0, i32 7, !dbg !441
+  %dim = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 4, !dbg !443
+  %Connectivity = getelementptr inbounds %struct.PGH* %0, i64 0, i32 22, !dbg !443
+  %GFExtras = getelementptr inbounds %struct.PGH* %0, i64 0, i32 21, !dbg !444
+  %numvars = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 5, !dbg !445
+  %numtimelevels = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 6, !dbg !447
+  br label %for.body, !dbg !437
 
-.preheader:                                       ; preds = %91, %0
-  %12 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 1, !dbg !546
-  %13 = load i32* %12, align 4, !dbg !546, !tbaa !411
-  %14 = icmp slt i32 %13, 1, !dbg !549
-  br i1 %14, label %._crit_edge, label %.lr.ph, !dbg !550
+for.cond65.preheader:                             ; preds = %for.inc62, %entry
+  %dim66 = getelementptr inbounds %struct.PGH* %0, i64 0, i32 1, !dbg !450
+  %1 = load i32* %dim66, align 4, !dbg !450, !tbaa !371
+  %cmp67131 = icmp slt i32 %1, 1, !dbg !450
+  br i1 %cmp67131, label %for.end79, label %for.body68.lr.ph, !dbg !450
 
-.lr.ph:                                           ; preds = %.preheader
-  %15 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 22, !dbg !551
-  %16 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 21, !dbg !553
-  br label %95, !dbg !550
+for.body68.lr.ph:                                 ; preds = %for.cond65.preheader
+  %Connectivity71 = getelementptr inbounds %struct.PGH* %0, i64 0, i32 22, !dbg !452
+  %GFExtras75 = getelementptr inbounds %struct.PGH* %0, i64 0, i32 21, !dbg !454
+  br label %for.body68, !dbg !450
 
-; <label>:17                                      ; preds = %.lr.ph14, %91
-  %group.012 = phi i32 [ 0, %.lr.ph14 ], [ %92, %91 ]
-  %variable.011 = phi i32 [ 0, %.lr.ph14 ], [ %variable.1.lcssa, %91 ]
-  call void @llvm.dbg.value(metadata %struct.cGroup* %pgroup, i64 0, metadata !246, metadata !370), !dbg !554
-  %18 = call i32 @CCTK_GroupData(i32 %group.012, %struct.cGroup* %pgroup) #8, !dbg !555
-  %19 = load i32* %4, align 4, !dbg !526, !tbaa !556
-  %20 = and i32 %19, -2, !dbg !558
-  %switch = icmp eq i32 %20, 2, !dbg !558
-  br i1 %switch, label %21, label %.preheader2, !dbg !558
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc62
+  %group.0142 = phi i32 [ 0, %for.body.lr.ph ], [ %inc63, %for.inc62 ]
+  %variable.0141 = phi i32 [ 0, %for.body.lr.ph ], [ %variable.1.lcssa, %for.inc62 ]
+  %call1 = call i32 @CCTK_GroupData(i32 %group.0142, %struct.cGroup* %pgroup) #8, !dbg !455
+  %2 = load i32* %grouptype, align 4, !dbg !439, !tbaa !371
+  %.off = add i32 %2, -2, !dbg !439
+  %switch = icmp ult i32 %.off, 2, !dbg !439
+  br i1 %switch, label %if.then, label %for.cond29.preheader, !dbg !439
 
-; <label>:21                                      ; preds = %17
-  %22 = sext i32 %variable.011 to i64, !dbg !559
-  %23 = load i8**** %5, align 8, !dbg !529, !tbaa !560
-  %24 = getelementptr inbounds i8*** %23, i64 %22, !dbg !559
-  %25 = bitcast i8*** %24 to %struct.PGA***, !dbg !559
-  %26 = load %struct.PGA*** %25, align 8, !dbg !559, !tbaa !446
-  %27 = load %struct.PGA** %26, align 8, !dbg !559, !tbaa !446
-  call void @llvm.dbg.value(metadata %struct.PGA* %27, i64 0, metadata !245, metadata !370), !dbg !561
-  %28 = getelementptr inbounds %struct.PGA* %27, i64 0, i32 13, !dbg !562
-  %29 = load %struct.PComm** %28, align 8, !dbg !562, !tbaa !564
-  %30 = icmp eq %struct.PComm* %29, null, !dbg !566
-  br i1 %30, label %38, label %31, !dbg !567
+if.then:                                          ; preds = %for.body
+  %idxprom = sext i32 %variable.0141 to i64, !dbg !441
+  %3 = load i8**** %variables, align 8, !dbg !441, !tbaa !376
+  %arrayidx = getelementptr inbounds i8*** %3, i64 %idxprom, !dbg !441
+  %4 = load i8*** %arrayidx, align 8, !dbg !441, !tbaa !376
+  %5 = load i8** %4, align 8, !dbg !441, !tbaa !376
+  %groupcomm = getelementptr inbounds i8* %5, i64 80, !dbg !456
+  %6 = bitcast i8* %groupcomm to %struct.PComm**, !dbg !456
+  %7 = load %struct.PComm** %6, align 8, !dbg !456, !tbaa !376
+  %tobool = icmp eq %struct.PComm* %7, null, !dbg !456
+  br i1 %tobool, label %if.end13, label %if.then6, !dbg !456
 
-; <label>:31                                      ; preds = %21
-  %32 = getelementptr inbounds %struct.PComm* %29, i64 0, i32 3, !dbg !568
-  %33 = load i32* %32, align 4, !dbg !568, !tbaa !571
-  %34 = icmp eq i32 %33, 0, !dbg !573
-  br i1 %34, label %37, label %35, !dbg !574
+if.then6:                                         ; preds = %if.then
+  %commflag = getelementptr inbounds %struct.PComm* %7, i64 0, i32 3, !dbg !457
+  %8 = load i32* %commflag, align 4, !dbg !457, !tbaa !371
+  %cmp8 = icmp eq i32 %8, 0, !dbg !457
+  br i1 %cmp8, label %if.end, label %if.then9, !dbg !457
 
-; <label>:35                                      ; preds = %31
-  %36 = call i32 @PUGH_DisableGArrayGroupComm(%struct.PGH* %1, i32 %variable.011, %struct.PComm* %29) #8, !dbg !575
-  br label %37, !dbg !577
+if.then9:                                         ; preds = %if.then6
+  %call11 = call i32 @PUGH_DisableGArrayGroupComm(%struct.PGH* %0, i32 %variable.0141, %struct.PComm* %7) #8, !dbg !459
+  br label %if.end, !dbg !461
 
-; <label>:37                                      ; preds = %31, %35
-  call void @PUGH_DestroyComm(%struct.PComm** %28) #8, !dbg !578
-  br label %38, !dbg !579
+if.end:                                           ; preds = %if.then6, %if.then9
+  call void @PUGH_DestroyComm(%struct.PComm** %6) #8, !dbg !462
+  br label %if.end13, !dbg !463
 
-; <label>:38                                      ; preds = %21, %37
-  %39 = getelementptr inbounds %struct.PGA* %27, i64 0, i32 11, !dbg !580
-  %40 = load %struct.PConnectivity** %39, align 8, !dbg !580, !tbaa !581
-  %41 = load i32* %6, align 4, !dbg !531, !tbaa !582
-  %42 = add nsw i32 %41, -1, !dbg !583
-  %43 = sext i32 %42 to i64, !dbg !584
-  %44 = load %struct.PConnectivity*** %7, align 8, !dbg !533, !tbaa !401
-  %45 = getelementptr inbounds %struct.PConnectivity** %44, i64 %43, !dbg !584
-  %46 = load %struct.PConnectivity** %45, align 8, !dbg !584, !tbaa !446
-  %47 = icmp eq %struct.PConnectivity* %40, %46, !dbg !585
-  br i1 %47, label %49, label %48, !dbg !586
+if.end13:                                         ; preds = %if.then, %if.end
+  %connectivity = getelementptr inbounds i8* %5, i64 64, !dbg !443
+  %9 = bitcast i8* %connectivity to %struct.PConnectivity**, !dbg !443
+  %10 = load %struct.PConnectivity** %9, align 8, !dbg !443, !tbaa !376
+  %11 = load i32* %dim, align 4, !dbg !443, !tbaa !371
+  %sub = add nsw i32 %11, -1, !dbg !443
+  %idxprom14 = sext i32 %sub to i64, !dbg !443
+  %12 = load %struct.PConnectivity*** %Connectivity, align 8, !dbg !443, !tbaa !376
+  %arrayidx15 = getelementptr inbounds %struct.PConnectivity** %12, i64 %idxprom14, !dbg !443
+  %13 = load %struct.PConnectivity** %arrayidx15, align 8, !dbg !443, !tbaa !376
+  %cmp16 = icmp eq %struct.PConnectivity* %10, %13, !dbg !443
+  br i1 %cmp16, label %if.end19, label %if.then17, !dbg !443
 
-; <label>:48                                      ; preds = %38
-  call void @PUGH_DestroyConnectivity(%struct.PConnectivity** %39) #8, !dbg !587
-  %.pre = load i32* %6, align 4, !dbg !589, !tbaa !582
-  br label %49, !dbg !590
+if.then17:                                        ; preds = %if.end13
+  call void @PUGH_DestroyConnectivity(%struct.PConnectivity** %9) #8, !dbg !464
+  %.pre = load i32* %dim, align 4, !dbg !444, !tbaa !371
+  br label %if.end19, !dbg !466
 
-; <label>:49                                      ; preds = %38, %48
-  %50 = phi i32 [ %41, %38 ], [ %.pre, %48 ]
-  %51 = getelementptr inbounds %struct.PGA* %27, i64 0, i32 10, !dbg !591
-  %52 = load %struct.PGExtras** %51, align 8, !dbg !591, !tbaa !592
-  %53 = add nsw i32 %50, -1, !dbg !593
-  %54 = sext i32 %53 to i64, !dbg !594
-  %55 = load %struct.PGExtras*** %8, align 8, !dbg !534, !tbaa !397
-  %56 = getelementptr inbounds %struct.PGExtras** %55, i64 %54, !dbg !594
-  %57 = load %struct.PGExtras** %56, align 8, !dbg !594, !tbaa !446
-  %58 = icmp eq %struct.PGExtras* %52, %57, !dbg !595
-  br i1 %58, label %.preheader2, label %59, !dbg !596
+if.end19:                                         ; preds = %if.end13, %if.then17
+  %14 = phi i32 [ %11, %if.end13 ], [ %.pre, %if.then17 ]
+  %extras = getelementptr inbounds i8* %5, i64 56, !dbg !444
+  %15 = bitcast i8* %extras to %struct.PGExtras**, !dbg !444
+  %16 = load %struct.PGExtras** %15, align 8, !dbg !444, !tbaa !376
+  %sub21 = add nsw i32 %14, -1, !dbg !444
+  %idxprom22 = sext i32 %sub21 to i64, !dbg !444
+  %17 = load %struct.PGExtras*** %GFExtras, align 8, !dbg !444, !tbaa !376
+  %arrayidx23 = getelementptr inbounds %struct.PGExtras** %17, i64 %idxprom22, !dbg !444
+  %18 = load %struct.PGExtras** %arrayidx23, align 8, !dbg !444, !tbaa !376
+  %cmp24 = icmp eq %struct.PGExtras* %16, %18, !dbg !444
+  br i1 %cmp24, label %for.cond29.preheader, label %if.then25, !dbg !444
 
-; <label>:59                                      ; preds = %49
-  call void @PUGH_DestroyPGExtras(%struct.PGExtras** %51) #8, !dbg !597
-  br label %.preheader2, !dbg !599
+if.then25:                                        ; preds = %if.end19
+  call void @PUGH_DestroyPGExtras(%struct.PGExtras** %15) #8, !dbg !467
+  br label %for.cond29.preheader, !dbg !469
 
-.preheader2:                                      ; preds = %49, %59, %17
-  %60 = load i32* %9, align 4, !dbg !536, !tbaa !600
-  %61 = icmp sgt i32 %60, 0, !dbg !601
-  br i1 %61, label %.preheader1.lr.ph, label %91, !dbg !602
+for.cond29.preheader:                             ; preds = %if.end19, %if.then25, %for.body
+  %19 = load i32* %numvars, align 4, !dbg !445, !tbaa !371
+  %cmp30136 = icmp sgt i32 %19, 0, !dbg !445
+  br i1 %cmp30136, label %for.cond32.preheader.lr.ph, label %for.inc62, !dbg !445
 
-.preheader1.lr.ph:                                ; preds = %.preheader2
-  %62 = sext i32 %variable.011 to i64
-  br label %.preheader1, !dbg !602
+for.cond32.preheader.lr.ph:                       ; preds = %for.cond29.preheader
+  %20 = sext i32 %variable.0141 to i64
+  br label %for.cond32.preheader, !dbg !445
 
-.preheader1:                                      ; preds = %.preheader1.lr.ph, %._crit_edge7
-  %indvars.iv17 = phi i64 [ %62, %.preheader1.lr.ph ], [ %indvars.iv.next18, %._crit_edge7 ]
-  %this_var.09 = phi i32 [ 0, %.preheader1.lr.ph ], [ %87, %._crit_edge7 ]
-  %63 = load i32* %10, align 4, !dbg !539, !tbaa !603
-  %64 = icmp sgt i32 %63, 0, !dbg !604
-  br i1 %64, label %.lr.ph6, label %._crit_edge7, !dbg !605
+for.cond32.preheader:                             ; preds = %for.cond32.preheader.lr.ph, %for.end
+  %indvars.iv146 = phi i64 [ %20, %for.cond32.preheader.lr.ph ], [ %indvars.iv.next147, %for.end ]
+  %this_var.0138 = phi i32 [ 0, %for.cond32.preheader.lr.ph ], [ %inc59, %for.end ]
+  %variable.1137 = phi i32 [ %variable.0141, %for.cond32.preheader.lr.ph ], [ %inc60, %for.end ]
+  %21 = load i32* %numtimelevels, align 4, !dbg !447, !tbaa !371
+  %cmp33133 = icmp sgt i32 %21, 0, !dbg !447
+  br i1 %cmp33133, label %for.body34, label %for.end, !dbg !447
 
-.lr.ph6:                                          ; preds = %.preheader1, %79
-  %indvars.iv15 = phi i64 [ %indvars.iv.next16, %79 ], [ 0, %.preheader1 ]
-  %65 = load i32* %4, align 4, !dbg !606, !tbaa !556
-  switch i32 %65, label %79 [
-    i32 2, label %66
-    i32 3, label %66
-    i32 1, label %71
-  ], !dbg !607
+for.body34:                                       ; preds = %for.inc, %for.cond32.preheader
+  %indvars.iv144 = phi i64 [ 0, %for.cond32.preheader ], [ %indvars.iv.next145, %for.inc ]
+  %22 = load i32* %grouptype, align 4, !dbg !470, !tbaa !371
+  switch i32 %22, label %for.inc [
+    i32 2, label %sw.bb
+    i32 3, label %sw.bb
+    i32 1, label %sw.bb41
+  ], !dbg !470
 
-; <label>:66                                      ; preds = %.lr.ph6, %.lr.ph6
-  %67 = load %struct.PGA**** %11, align 8, !dbg !543, !tbaa !560
-  %68 = getelementptr inbounds %struct.PGA*** %67, i64 %indvars.iv17, !dbg !608
-  %69 = load %struct.PGA*** %68, align 8, !dbg !608, !tbaa !446
-  %70 = getelementptr inbounds %struct.PGA** %69, i64 %indvars.iv15, !dbg !608
-  call void @PUGH_DestroyGArray(%struct.PGA** %70) #8, !dbg !609
-  br label %79, !dbg !610
+sw.bb:                                            ; preds = %for.body34, %for.body34
+  %23 = load i8**** %variables, align 8, !dbg !472, !tbaa !376
+  %arrayidx39128 = getelementptr inbounds i8*** %23, i64 %indvars.iv146, !dbg !472
+  %arrayidx39129 = load i8*** %arrayidx39128, align 8, !dbg !472
+  %arrayidx40130 = getelementptr inbounds i8** %arrayidx39129, i64 %indvars.iv144, !dbg !472
+  %arrayidx40 = bitcast i8** %arrayidx40130 to %struct.PGA**, !dbg !472
+  call void @PUGH_DestroyGArray(%struct.PGA** %arrayidx40) #8, !dbg !472
+  br label %for.inc, !dbg !474
 
-; <label>:71                                      ; preds = %.lr.ph6
-  %72 = load i8**** %5, align 8, !dbg !611, !tbaa !560
-  %73 = getelementptr inbounds i8*** %72, i64 %indvars.iv17, !dbg !613
-  %74 = load i8*** %73, align 8, !dbg !613, !tbaa !446
-  %75 = getelementptr inbounds i8** %74, i64 %indvars.iv15, !dbg !613
-  %76 = load i8** %75, align 8, !dbg !613, !tbaa !446
-  %77 = icmp eq i8* %76, null, !dbg !613
-  br i1 %77, label %79, label %78, !dbg !614
+sw.bb41:                                          ; preds = %for.body34
+  %24 = load i8**** %variables, align 8, !dbg !475, !tbaa !376
+  %arrayidx45 = getelementptr inbounds i8*** %24, i64 %indvars.iv146, !dbg !475
+  %25 = load i8*** %arrayidx45, align 8, !dbg !475, !tbaa !376
+  %arrayidx46 = getelementptr inbounds i8** %25, i64 %indvars.iv144, !dbg !475
+  %26 = load i8** %arrayidx46, align 8, !dbg !475, !tbaa !376
+  %tobool47 = icmp eq i8* %26, null, !dbg !475
+  br i1 %tobool47, label %for.inc, label %if.then48, !dbg !475
 
-; <label>:78                                      ; preds = %71
-  call void @free(i8* %76) #9, !dbg !615
-  br label %79, !dbg !617
+if.then48:                                        ; preds = %sw.bb41
+  call void @free(i8* %26) #8, !dbg !476
+  br label %for.inc, !dbg !478
 
-; <label>:79                                      ; preds = %71, %66, %.lr.ph6, %78
-  %indvars.iv.next16 = add nuw nsw i64 %indvars.iv15, 1, !dbg !605
-  %80 = load i32* %10, align 4, !dbg !539, !tbaa !603
-  %81 = sext i32 %80 to i64, !dbg !604
-  %82 = icmp slt i64 %indvars.iv.next16, %81, !dbg !604
-  br i1 %82, label %.lr.ph6, label %._crit_edge7, !dbg !605
+for.inc:                                          ; preds = %sw.bb41, %sw.bb, %for.body34, %if.then48
+  %indvars.iv.next145 = add i64 %indvars.iv144, 1, !dbg !447
+  %27 = load i32* %numtimelevels, align 4, !dbg !447, !tbaa !371
+  %28 = trunc i64 %indvars.iv.next145 to i32, !dbg !447
+  %cmp33 = icmp slt i32 %28, %27, !dbg !447
+  br i1 %cmp33, label %for.body34, label %for.end, !dbg !447
 
-._crit_edge7:                                     ; preds = %79, %.preheader1
-  %83 = load i8**** %5, align 8, !dbg !618, !tbaa !560
-  %84 = getelementptr inbounds i8*** %83, i64 %indvars.iv17, !dbg !619
-  %85 = bitcast i8*** %84 to i8**, !dbg !619
-  %86 = load i8** %85, align 8, !dbg !619, !tbaa !446
-  call void @free(i8* %86) #9, !dbg !620
-  %87 = add nuw nsw i32 %this_var.09, 1, !dbg !621
-  call void @llvm.dbg.value(metadata i32 %87, i64 0, metadata !262, metadata !370), !dbg !622
-  %indvars.iv.next18 = add i64 %indvars.iv17, 1, !dbg !602
-  %88 = load i32* %9, align 4, !dbg !536, !tbaa !600
-  %89 = icmp slt i32 %87, %88, !dbg !601
-  br i1 %89, label %.preheader1, label %._crit_edge10, !dbg !602
+for.end:                                          ; preds = %for.inc, %for.cond32.preheader
+  %29 = load i8**** %variables, align 8, !dbg !479, !tbaa !376
+  %arrayidx57 = getelementptr inbounds i8*** %29, i64 %indvars.iv146, !dbg !479
+  %30 = load i8*** %arrayidx57, align 8, !dbg !479, !tbaa !376
+  %31 = bitcast i8** %30 to i8*, !dbg !479
+  call void @free(i8* %31) #8, !dbg !479
+  %inc59 = add nsw i32 %this_var.0138, 1, !dbg !445
+  call void @llvm.dbg.value(metadata !{i32 %inc59}, i64 0, metadata !260), !dbg !445
+  %indvars.iv.next147 = add i64 %indvars.iv146, 1, !dbg !445
+  %inc60 = add nsw i32 %variable.1137, 1, !dbg !445
+  call void @llvm.dbg.value(metadata !{i32 %inc60}, i64 0, metadata !258), !dbg !445
+  %32 = load i32* %numvars, align 4, !dbg !445, !tbaa !371
+  %cmp30 = icmp slt i32 %inc59, %32, !dbg !445
+  br i1 %cmp30, label %for.cond32.preheader, label %for.inc62, !dbg !445
 
-._crit_edge10:                                    ; preds = %._crit_edge7
-  %90 = trunc i64 %indvars.iv.next18 to i32, !dbg !602
-  br label %91, !dbg !602
+for.inc62:                                        ; preds = %for.end, %for.cond29.preheader
+  %variable.1.lcssa = phi i32 [ %variable.0141, %for.cond29.preheader ], [ %inc60, %for.end ]
+  %inc63 = add nsw i32 %group.0142, 1, !dbg !437
+  call void @llvm.dbg.value(metadata !{i32 %inc63}, i64 0, metadata !259), !dbg !437
+  %call = call i32 @CCTK_NumGroups() #8, !dbg !437
+  %cmp = icmp slt i32 %inc63, %call, !dbg !437
+  br i1 %cmp, label %for.body, label %for.cond65.preheader, !dbg !437
 
-; <label>:91                                      ; preds = %._crit_edge10, %.preheader2
-  %variable.1.lcssa = phi i32 [ %90, %._crit_edge10 ], [ %variable.011, %.preheader2 ]
-  %92 = add nuw nsw i32 %group.012, 1, !dbg !623
-  call void @llvm.dbg.value(metadata i32 %92, i64 0, metadata !261, metadata !370), !dbg !520
-  %93 = call i32 @CCTK_NumGroups() #8, !dbg !521
-  %94 = icmp slt i32 %92, %93, !dbg !524
-  br i1 %94, label %17, label %.preheader, !dbg !525
+for.body68:                                       ; preds = %for.body68, %for.body68.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body68 ], [ 1, %for.body68.lr.ph ]
+  %33 = add nsw i64 %indvars.iv, -1, !dbg !452
+  %34 = load %struct.PConnectivity*** %Connectivity71, align 8, !dbg !452, !tbaa !376
+  %arrayidx72 = getelementptr inbounds %struct.PConnectivity** %34, i64 %33, !dbg !452
+  call void @PUGH_DestroyConnectivity(%struct.PConnectivity** %arrayidx72) #8, !dbg !452
+  %35 = load %struct.PGExtras*** %GFExtras75, align 8, !dbg !454, !tbaa !376
+  %arrayidx76 = getelementptr inbounds %struct.PGExtras** %35, i64 %33, !dbg !454
+  call void @PUGH_DestroyPGExtras(%struct.PGExtras** %arrayidx76) #8, !dbg !454
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !450
+  %36 = load i32* %dim66, align 4, !dbg !450, !tbaa !371
+  %37 = trunc i64 %indvars.iv to i32, !dbg !450
+  %cmp67 = icmp slt i32 %37, %36, !dbg !450
+  br i1 %cmp67, label %for.body68, label %for.end79, !dbg !450
 
-; <label>:95                                      ; preds = %95, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %95 ], [ 1, %.lr.ph ]
-  %96 = add nsw i64 %indvars.iv, -1, !dbg !624
-  %97 = load %struct.PConnectivity*** %15, align 8, !dbg !551, !tbaa !401
-  %98 = getelementptr inbounds %struct.PConnectivity** %97, i64 %96, !dbg !625
-  call void @PUGH_DestroyConnectivity(%struct.PConnectivity** %98) #8, !dbg !626
-  %99 = load %struct.PGExtras*** %16, align 8, !dbg !553, !tbaa !397
-  %100 = getelementptr inbounds %struct.PGExtras** %99, i64 %96, !dbg !627
-  call void @PUGH_DestroyPGExtras(%struct.PGExtras** %100) #8, !dbg !628
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !550
-  %101 = load i32* %12, align 4, !dbg !546, !tbaa !411
-  %102 = sext i32 %101 to i64, !dbg !549
-  %103 = icmp slt i64 %indvars.iv, %102, !dbg !549
-  br i1 %103, label %95, label %._crit_edge, !dbg !550
+for.end79:                                        ; preds = %for.body68, %for.cond65.preheader
+  %identity_string = getelementptr inbounds %struct.PGH* %0, i64 0, i32 23, !dbg !480
+  %38 = load i8** %identity_string, align 8, !dbg !480, !tbaa !376
+  %tobool80 = icmp eq i8* %38, null, !dbg !480
+  br i1 %tobool80, label %if.end83, label %if.then81, !dbg !480
 
-._crit_edge:                                      ; preds = %95, %.preheader
-  %104 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 23, !dbg !629
-  %105 = load i8** %104, align 8, !dbg !629, !tbaa !468
-  %106 = icmp eq i8* %105, null, !dbg !631
-  br i1 %106, label %108, label %107, !dbg !632
+if.then81:                                        ; preds = %for.end79
+  call void @free(i8* %38) #8, !dbg !481
+  br label %if.end83, !dbg !483
 
-; <label>:107                                     ; preds = %._crit_edge
-  call void @free(i8* %105) #9, !dbg !633
-  br label %108, !dbg !635
-
-; <label>:108                                     ; preds = %._crit_edge, %107
-  %109 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 22, !dbg !636
-  %110 = bitcast %struct.PConnectivity*** %109 to i8**, !dbg !636
-  %111 = load i8** %110, align 8, !dbg !636, !tbaa !401
-  call void @free(i8* %111) #9, !dbg !637
-  %112 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 21, !dbg !638
-  %113 = bitcast %struct.PGExtras*** %112 to i8**, !dbg !638
-  %114 = load i8** %113, align 8, !dbg !638, !tbaa !397
-  call void @free(i8* %114) #9, !dbg !639
-  %115 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 7, !dbg !640
-  %116 = bitcast i8**** %115 to i8**, !dbg !640
-  %117 = load i8** %116, align 8, !dbg !640, !tbaa !560
-  call void @free(i8* %117) #9, !dbg !641
-  %118 = bitcast %struct.PGH* %1 to i8*, !dbg !642
-  call void @free(i8* %118) #9, !dbg !643
-  store %struct.PGH* null, %struct.PGH** %GHin, align 8, !dbg !644, !tbaa !446
-  ret void, !dbg !645
+if.end83:                                         ; preds = %for.end79, %if.then81
+  %Connectivity84 = getelementptr inbounds %struct.PGH* %0, i64 0, i32 22, !dbg !484
+  %39 = load %struct.PConnectivity*** %Connectivity84, align 8, !dbg !484, !tbaa !376
+  %40 = bitcast %struct.PConnectivity** %39 to i8*, !dbg !484
+  call void @free(i8* %40) #8, !dbg !484
+  %GFExtras85 = getelementptr inbounds %struct.PGH* %0, i64 0, i32 21, !dbg !485
+  %41 = load %struct.PGExtras*** %GFExtras85, align 8, !dbg !485, !tbaa !376
+  %42 = bitcast %struct.PGExtras** %41 to i8*, !dbg !485
+  call void @free(i8* %42) #8, !dbg !485
+  %variables86 = getelementptr inbounds %struct.PGH* %0, i64 0, i32 7, !dbg !486
+  %43 = load i8**** %variables86, align 8, !dbg !486, !tbaa !376
+  %44 = bitcast i8*** %43 to i8*, !dbg !486
+  call void @free(i8* %44) #8, !dbg !486
+  %45 = bitcast %struct.PGH* %0 to i8*, !dbg !487
+  call void @free(i8* %45) #8, !dbg !487
+  store %struct.PGH* null, %struct.PGH** %GHin, align 8, !dbg !488, !tbaa !376
+  ret void, !dbg !489
 }

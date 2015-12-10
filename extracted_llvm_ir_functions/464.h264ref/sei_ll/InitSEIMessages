@@ -1,68 +1,71 @@
 define void @InitSEIMessages() #0 {
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !69, metadata !931), !dbg !932
-  br label %1, !dbg !933
+entry:
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !67), !dbg !922
+  br label %for.body, !dbg !922
 
-; <label>:1                                       ; preds = %6, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %6 ]
-  %2 = tail call i8* @malloc(i64 65496) #8, !dbg !935
-  %3 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 3, !dbg !938
-  store i8* %2, i8** %3, align 8, !dbg !939, !tbaa !940
-  %4 = icmp eq i8* %2, null, !dbg !946
-  br i1 %4, label %5, label %6, !dbg !948
+for.body:                                         ; preds = %if.end, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %if.end ]
+  %call = tail call noalias i8* @malloc(i64 65496) #8, !dbg !924
+  %data = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 3, !dbg !924
+  store i8* %call, i8** %data, align 8, !dbg !924, !tbaa !926
+  %cmp4 = icmp eq i8* %call, null, !dbg !929
+  br i1 %cmp4, label %if.then, label %if.end, !dbg !929
 
-; <label>:5                                       ; preds = %1
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([37 x i8]* @.str, i64 0, i64 0)) #8, !dbg !949
-  %.pre = load i8** %3, align 8, !dbg !950, !tbaa !940
-  br label %6, !dbg !949
+if.then:                                          ; preds = %for.body
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([37 x i8]* @.str, i64 0, i64 0)) #8, !dbg !929
+  %.pre = load i8** %data, align 8, !dbg !930, !tbaa !926
+  br label %if.end, !dbg !929
 
-; <label>:6                                       ; preds = %5, %1
-  %7 = phi i8* [ %.pre, %5 ], [ %2, %1 ]
-  %8 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 2, !dbg !952
-  store i8 5, i8* %8, align 8, !dbg !953, !tbaa !954
-  %9 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %7, i1 false) #7, !dbg !950
-  %10 = tail call i8* @__memset_chk(i8* %7, i32 0, i64 65496, i64 %9) #8, !dbg !950
-  %11 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 1, !dbg !955
-  store i32 0, i32* %11, align 4, !dbg !956, !tbaa !957
-  %12 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 0, !dbg !958
-  store i32 0, i32* %12, align 8, !dbg !959, !tbaa !960
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !933
-  %exitcond = icmp eq i64 %indvars.iv.next, 2, !dbg !933
-  br i1 %exitcond, label %13, label %1, !dbg !933
+if.end:                                           ; preds = %if.then, %for.body
+  %0 = phi i8* [ %.pre, %if.then ], [ %call, %for.body ]
+  %subPacketType = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 2, !dbg !932
+  store i8 5, i8* %subPacketType, align 8, !dbg !932, !tbaa !927
+  tail call void @llvm.dbg.value(metadata !933, i64 0, metadata !934) #6, !dbg !935
+  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 65496, i32 1, i1 false) #6, !dbg !930
+  %payloadSize.i = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 1, !dbg !936
+  store i32 0, i32* %payloadSize.i, align 4, !dbg !936, !tbaa !937
+  %available.i = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 0, !dbg !938
+  store i32 0, i32* %available.i, align 8, !dbg !938, !tbaa !927
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !922
+  %lftr.wideiv16 = trunc i64 %indvars.iv.next to i32, !dbg !922
+  %exitcond17 = icmp eq i32 %lftr.wideiv16, 2, !dbg !922
+  br i1 %exitcond17, label %for.end, label %for.body, !dbg !922
 
-; <label>:13                                      ; preds = %6
-  store %struct.Bitstream* null, %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !961, !tbaa !962
-  tail call void @InitSparePicture() #9, !dbg !964
-  tail call void @InitSubseqChar() #9, !dbg !965
-  %14 = load %struct.InputParameters** @input, align 8, !dbg !966, !tbaa !968
-  %15 = getelementptr inbounds %struct.InputParameters* %14, i64 0, i32 99, !dbg !969
-  %16 = load i32* %15, align 4, !dbg !969, !tbaa !970
-  %17 = icmp eq i32 %16, 0, !dbg !973
-  br i1 %17, label %InitSubseqLayerInfo.exit, label %18, !dbg !974
+for.end:                                          ; preds = %if.end
+  store %struct.Bitstream* null, %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !939, !tbaa !926
+  tail call void @InitSparePicture() #9, !dbg !940
+  tail call void @InitSubseqChar() #9, !dbg !941
+  %1 = load %struct.InputParameters** @input, align 8, !dbg !942, !tbaa !926
+  %NumFramesInELSubSeq = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 99, !dbg !942
+  %2 = load i32* %NumFramesInELSubSeq, align 4, !dbg !942, !tbaa !937
+  %cmp7 = icmp eq i32 %2, 0, !dbg !942
+  br i1 %cmp7, label %if.end9, label %if.then8, !dbg !942
 
-; <label>:18                                      ; preds = %13
-  store i32 1, i32* @seiHasSubseqLayerInfo, align 4, !dbg !975, !tbaa !977
-  store i32 0, i32* getelementptr inbounds (%struct.subseq_layer_information_struct* @seiSubseqLayerInfo, i64 0, i32 3), align 4, !dbg !978, !tbaa !979
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !239, metadata !931), !dbg !981
-  br label %19, !dbg !982
+if.then8:                                         ; preds = %for.end
+  store i32 1, i32* @seiHasSubseqLayerInfo, align 4, !dbg !943, !tbaa !927
+  store i32 0, i32* getelementptr inbounds (%struct.subseq_layer_information_struct* @seiSubseqLayerInfo, i64 0, i32 3), align 4, !dbg !945, !tbaa !937
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !946), !dbg !947
+  br label %for.body.i, !dbg !947
 
-; <label>:19                                      ; preds = %19, %18
-  %indvars.iv.i = phi i64 [ 0, %18 ], [ %indvars.iv.next.i, %19 ], !dbg !984
-  %20 = getelementptr inbounds %struct.subseq_layer_information_struct* @seiSubseqLayerInfo, i64 0, i32 0, i64 %indvars.iv.i, !dbg !985
-  store i16 0, i16* %20, align 2, !dbg !988, !tbaa !989
-  %21 = getelementptr inbounds %struct.subseq_layer_information_struct* @seiSubseqLayerInfo, i64 0, i32 1, i64 %indvars.iv.i, !dbg !991
-  store i16 0, i16* %21, align 2, !dbg !992, !tbaa !989
-  %22 = load i32* getelementptr inbounds (%struct.subseq_layer_information_struct* @seiSubseqLayerInfo, i64 0, i32 3), align 4, !dbg !993, !tbaa !979
-  %23 = add nsw i32 %22, 1, !dbg !993
-  store i32 %23, i32* getelementptr inbounds (%struct.subseq_layer_information_struct* @seiSubseqLayerInfo, i64 0, i32 3), align 4, !dbg !993, !tbaa !979
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !982
-  %exitcond.i = icmp eq i64 %indvars.iv.next.i, 2, !dbg !982
-  br i1 %exitcond.i, label %InitSubseqLayerInfo.exit, label %19, !dbg !982
+for.body.i:                                       ; preds = %for.body.i, %if.then8
+  %indvars.iv.i = phi i64 [ 0, %if.then8 ], [ %indvars.iv.next.i, %for.body.i ]
+  %arrayidx.i = getelementptr inbounds %struct.subseq_layer_information_struct* @seiSubseqLayerInfo, i64 0, i32 0, i64 %indvars.iv.i, !dbg !949
+  store i16 0, i16* %arrayidx.i, align 2, !dbg !949, !tbaa !951
+  %arrayidx2.i = getelementptr inbounds %struct.subseq_layer_information_struct* @seiSubseqLayerInfo, i64 0, i32 1, i64 %indvars.iv.i, !dbg !952
+  store i16 0, i16* %arrayidx2.i, align 2, !dbg !952, !tbaa !951
+  %3 = load i32* getelementptr inbounds (%struct.subseq_layer_information_struct* @seiSubseqLayerInfo, i64 0, i32 3), align 4, !dbg !953, !tbaa !937
+  %inc.i = add nsw i32 %3, 1, !dbg !953
+  store i32 %inc.i, i32* getelementptr inbounds (%struct.subseq_layer_information_struct* @seiSubseqLayerInfo, i64 0, i32 3), align 4, !dbg !953, !tbaa !937
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !947
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32, !dbg !947
+  %exitcond = icmp eq i32 %lftr.wideiv, 2, !dbg !947
+  br i1 %exitcond, label %if.end9, label %for.body.i, !dbg !947
 
-InitSubseqLayerInfo.exit:                         ; preds = %19, %13
-  tail call void @InitSceneInformation() #9, !dbg !994
-  tail call void @InitPanScanRectInfo() #9, !dbg !995
-  tail call void @InitUser_data_unregistered() #9, !dbg !996
-  tail call void @InitUser_data_registered_itu_t_t35() #9, !dbg !997
-  tail call void @InitRandomAccess() #9, !dbg !998
-  ret void, !dbg !999
+if.end9:                                          ; preds = %for.body.i, %for.end
+  tail call void @InitSceneInformation() #9, !dbg !954
+  tail call void @InitPanScanRectInfo() #9, !dbg !955
+  tail call void @InitUser_data_unregistered() #9, !dbg !956
+  tail call void @InitUser_data_registered_itu_t_t35() #9, !dbg !957
+  tail call void @InitRandomAccess() #9, !dbg !958
+  ret void, !dbg !959
 }

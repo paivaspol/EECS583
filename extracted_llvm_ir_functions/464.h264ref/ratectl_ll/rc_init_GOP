@@ -1,151 +1,152 @@
 define void @rc_init_GOP(i32 %np, i32 %nb) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %np, i64 0, metadata !46, metadata !1021), !dbg !1078
-  tail call void @llvm.dbg.value(metadata i32 %nb, i64 0, metadata !47, metadata !1021), !dbg !1079
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !48, metadata !1021), !dbg !1080
-  %1 = load i32* @R, align 4, !dbg !1081, !tbaa !946
-  %2 = sitofp i32 %1 to double, !dbg !1083
-  %3 = load double* @bit_rate, align 8, !dbg !1084, !tbaa !952
-  %4 = load double* @frame_rate, align 8, !dbg !1085, !tbaa !952
-  %5 = fdiv double %3, %4, !dbg !1086
-  %6 = fadd double %2, %5, !dbg !1087
-  %7 = fptosi double %6 to i64, !dbg !1088
-  store i64 %7, i64* @LowerBound, align 8, !dbg !1089, !tbaa !1090
-  %8 = load double* @InitialDelayOffset, align 8, !dbg !1092, !tbaa !952
-  %9 = fadd double %2, %8, !dbg !1093
-  %10 = fptosi double %9 to i64, !dbg !1094
-  store i64 %10, i64* @UpperBound1, align 8, !dbg !1095, !tbaa !1090
-  %11 = add i32 %np, 1, !dbg !1096
-  %12 = add i32 %11, %nb, !dbg !1097
-  %13 = sitofp i32 %12 to double, !dbg !1098
-  %14 = fmul double %13, %3, !dbg !1099
-  %15 = fdiv double %14, %4, !dbg !1100
-  %16 = fadd double %15, 5.000000e-01, !dbg !1101
-  %17 = tail call double @floor(double %16) #10, !dbg !1102
-  %18 = fptosi double %17 to i32, !dbg !1103
-  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !52, metadata !1021), !dbg !1104
-  %19 = add nsw i32 %1, %18, !dbg !1105
-  store i32 %19, i32* @R, align 4, !dbg !1105, !tbaa !946
-  store i32 %np, i32* @Np, align 4, !dbg !1106, !tbaa !946
-  store i32 %nb, i32* @Nb, align 4, !dbg !1107, !tbaa !946
-  store i32 0, i32* @GOPOverdue, align 4, !dbg !1108, !tbaa !1109
-  %20 = load %struct.ImageParameters** @img, align 8, !dbg !1110, !tbaa !815
-  %21 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 137, !dbg !1111
-  store i32 1, i32* %21, align 4, !dbg !1112, !tbaa !1113
-  store i32 %np, i32* @TotalPFrame, align 4, !dbg !1114, !tbaa !946
-  %22 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 128, !dbg !1115
-  %23 = load i32* %22, align 4, !dbg !1116, !tbaa !1006
-  %24 = add nsw i32 %23, 1, !dbg !1116
-  store i32 %24, i32* %22, align 4, !dbg !1116, !tbaa !1006
-  %25 = icmp eq i32 %23, 0, !dbg !1117
-  %26 = load %struct.InputParameters** @input, align 8, !dbg !1119, !tbaa !815
-  br i1 %25, label %27, label %31, !dbg !1121
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %np}, i64 0, metadata !42), !dbg !932
+  tail call void @llvm.dbg.value(metadata !{i32 %nb}, i64 0, metadata !43), !dbg !932
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !44), !dbg !933
+  %0 = load i32* @R, align 4, !dbg !934, !tbaa !807
+  %conv = sitofp i32 %0 to double, !dbg !935
+  %1 = load double* @bit_rate, align 8, !dbg !935, !tbaa !862
+  %2 = load double* @frame_rate, align 8, !dbg !935, !tbaa !862
+  %div = fdiv double %1, %2, !dbg !935
+  %add = fadd double %conv, %div, !dbg !935
+  %conv1 = fptosi double %add to i64, !dbg !935
+  store i64 %conv1, i64* @LowerBound, align 8, !dbg !935, !tbaa !936
+  %3 = load double* @InitialDelayOffset, align 8, !dbg !937, !tbaa !862
+  %add3 = fadd double %conv, %3, !dbg !937
+  %conv4 = fptosi double %add3 to i64, !dbg !937
+  store i64 %conv4, i64* @UpperBound1, align 8, !dbg !937, !tbaa !936
+  %add5 = add i32 %np, 1, !dbg !938
+  %add6 = add i32 %add5, %nb, !dbg !938
+  %conv7 = sitofp i32 %add6 to double, !dbg !938
+  %mul = fmul double %conv7, %1, !dbg !938
+  %div8 = fdiv double %mul, %2, !dbg !938
+  %add9 = fadd double %div8, 5.000000e-01, !dbg !938
+  %call = tail call double @floor(double %add9) #9, !dbg !938
+  %conv10 = fptosi double %call to i32, !dbg !938
+  tail call void @llvm.dbg.value(metadata !{i32 %conv10}, i64 0, metadata !48), !dbg !938
+  %add11 = add nsw i32 %0, %conv10, !dbg !939
+  store i32 %add11, i32* @R, align 4, !dbg !939, !tbaa !807
+  store i32 %np, i32* @Np, align 4, !dbg !940, !tbaa !807
+  store i32 %nb, i32* @Nb, align 4, !dbg !941, !tbaa !807
+  store i32 0, i32* @GOPOverdue, align 4, !dbg !942, !tbaa !805
+  %4 = load %struct.ImageParameters** @img, align 8, !dbg !943, !tbaa !804
+  %IFLAG = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 137, !dbg !943
+  store i32 1, i32* %IFLAG, align 4, !dbg !943, !tbaa !807
+  store i32 %np, i32* @TotalPFrame, align 4, !dbg !944, !tbaa !807
+  %NumberofGOP = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 128, !dbg !945
+  %5 = load i32* %NumberofGOP, align 4, !dbg !945, !tbaa !807
+  %inc = add nsw i32 %5, 1, !dbg !945
+  store i32 %inc, i32* %NumberofGOP, align 4, !dbg !945, !tbaa !807
+  %cmp18 = icmp eq i32 %5, 0, !dbg !946
+  %6 = load %struct.InputParameters** @input, align 8, !dbg !947, !tbaa !804
+  br i1 %cmp18, label %if.then20, label %if.else, !dbg !946
 
-; <label>:27                                      ; preds = %0
-  %28 = getelementptr inbounds %struct.InputParameters* %26, i64 0, i32 129, !dbg !1122
-  %29 = load i32* %28, align 4, !dbg !1122, !tbaa !1063
-  store i32 %29, i32* @MyInitialQp, align 4, !dbg !1123, !tbaa !946
-  %30 = add nsw i32 %29, -1, !dbg !1124
-  store i32 %30, i32* @PreviousQp2, align 4, !dbg !1125, !tbaa !946
-  store i32 %29, i32* @QPLastGOP, align 4, !dbg !1126, !tbaa !946
-  %.pre2 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 129, !dbg !1127
-  %.pre3 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 130, !dbg !1128
-  br label %87, !dbg !1129
+if.then20:                                        ; preds = %entry
+  %SeinitialQP = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 129, !dbg !947
+  %7 = load i32* %SeinitialQP, align 4, !dbg !947, !tbaa !807
+  store i32 %7, i32* @MyInitialQp, align 4, !dbg !947, !tbaa !807
+  %sub21 = add nsw i32 %7, -1, !dbg !949
+  store i32 %sub21, i32* @PreviousQp2, align 4, !dbg !949, !tbaa !807
+  store i32 %7, i32* @QPLastGOP, align 4, !dbg !950, !tbaa !807
+  %TotalQpforPPicture84.pre = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 129, !dbg !951
+  %NumberofPPicture85.pre = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 130, !dbg !952
+  br label %if.end83, !dbg !953
 
-; <label>:31                                      ; preds = %0
-  %32 = getelementptr inbounds %struct.InputParameters* %26, i64 0, i32 91, !dbg !1130
-  %33 = load i32* %32, align 4, !dbg !1130, !tbaa !1133
-  %34 = icmp eq i32 %33, 2, !dbg !1134
-  br i1 %34, label %39, label %35, !dbg !1135
+if.else:                                          ; preds = %entry
+  %PicInterlace = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 91, !dbg !954
+  %8 = load i32* %PicInterlace, align 4, !dbg !954, !tbaa !807
+  %cmp22 = icmp eq i32 %8, 2, !dbg !954
+  br i1 %cmp22, label %if.then24, label %lor.lhs.false, !dbg !954
 
-; <label>:35                                      ; preds = %31
-  %36 = getelementptr inbounds %struct.InputParameters* %26, i64 0, i32 92, !dbg !1136
-  %37 = load i32* %36, align 4, !dbg !1136, !tbaa !1137
-  %38 = icmp eq i32 %37, 0, !dbg !1138
-  br i1 %38, label %._crit_edge, label %39, !dbg !1139
+lor.lhs.false:                                    ; preds = %if.else
+  %MbInterlace = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 92, !dbg !954
+  %9 = load i32* %MbInterlace, align 4, !dbg !954, !tbaa !807
+  %tobool = icmp eq i32 %9, 0, !dbg !954
+  br i1 %tobool, label %lor.lhs.false.if.end33_crit_edge, label %if.then24, !dbg !954
 
-._crit_edge:                                      ; preds = %35
-  %.pre = load i32* @QPLastPFrame, align 4, !dbg !1140, !tbaa !946
-  %.pre5 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 129, !dbg !1142
-  br label %55, !dbg !1139
+lor.lhs.false.if.end33_crit_edge:                 ; preds = %lor.lhs.false
+  %.pre = load i32* @QPLastPFrame, align 4, !dbg !956, !tbaa !807
+  %TotalQpforPPicture34.pre = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 129, !dbg !957
+  br label %if.end33, !dbg !954
 
-; <label>:39                                      ; preds = %35, %31
-  %40 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 135, !dbg !1143
-  %41 = load i32* %40, align 4, !dbg !1143, !tbaa !1146
-  %42 = icmp eq i32 %41, 1, !dbg !1147
-  br i1 %42, label %43, label %49, !dbg !1148
+if.then24:                                        ; preds = %lor.lhs.false, %if.else
+  %FieldFrame = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 135, !dbg !958
+  %10 = load i32* %FieldFrame, align 4, !dbg !958, !tbaa !807
+  %cmp25 = icmp eq i32 %10, 1, !dbg !958
+  br i1 %cmp25, label %if.then27, label %if.else29, !dbg !958
 
-; <label>:43                                      ; preds = %39
-  %44 = load i32* @FrameQPBuffer, align 4, !dbg !1149, !tbaa !946
-  %45 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 129, !dbg !1151
-  %46 = load i32* %45, align 4, !dbg !1152, !tbaa !1153
-  %47 = add nsw i32 %46, %44, !dbg !1152
-  store i32 %47, i32* %45, align 4, !dbg !1152, !tbaa !1153
-  %48 = load i32* @FrameQPBuffer, align 4, !dbg !1154, !tbaa !946
-  store i32 %48, i32* @QPLastPFrame, align 4, !dbg !1155, !tbaa !946
-  br label %55, !dbg !1156
+if.then27:                                        ; preds = %if.then24
+  %11 = load i32* @FrameQPBuffer, align 4, !dbg !960, !tbaa !807
+  %TotalQpforPPicture = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 129, !dbg !960
+  %12 = load i32* %TotalQpforPPicture, align 4, !dbg !960, !tbaa !807
+  %add28 = add nsw i32 %12, %11, !dbg !960
+  store i32 %add28, i32* %TotalQpforPPicture, align 4, !dbg !960, !tbaa !807
+  %13 = load i32* @FrameQPBuffer, align 4, !dbg !962, !tbaa !807
+  store i32 %13, i32* @QPLastPFrame, align 4, !dbg !962, !tbaa !807
+  br label %if.end33, !dbg !963
 
-; <label>:49                                      ; preds = %39
-  %50 = load i32* @FieldQPBuffer, align 4, !dbg !1157, !tbaa !946
-  %51 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 129, !dbg !1159
-  %52 = load i32* %51, align 4, !dbg !1160, !tbaa !1153
-  %53 = add nsw i32 %52, %50, !dbg !1160
-  store i32 %53, i32* %51, align 4, !dbg !1160, !tbaa !1153
-  %54 = load i32* @FieldQPBuffer, align 4, !dbg !1161, !tbaa !946
-  store i32 %54, i32* @QPLastPFrame, align 4, !dbg !1162, !tbaa !946
-  br label %55
+if.else29:                                        ; preds = %if.then24
+  %14 = load i32* @FieldQPBuffer, align 4, !dbg !964, !tbaa !807
+  %TotalQpforPPicture30 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 129, !dbg !964
+  %15 = load i32* %TotalQpforPPicture30, align 4, !dbg !964, !tbaa !807
+  %add31 = add nsw i32 %15, %14, !dbg !964
+  store i32 %add31, i32* %TotalQpforPPicture30, align 4, !dbg !964, !tbaa !807
+  %16 = load i32* @FieldQPBuffer, align 4, !dbg !966, !tbaa !807
+  store i32 %16, i32* @QPLastPFrame, align 4, !dbg !966, !tbaa !807
+  br label %if.end33
 
-; <label>:55                                      ; preds = %._crit_edge, %43, %49
-  %.pre-phi6 = phi i32* [ %.pre5, %._crit_edge ], [ %45, %43 ], [ %51, %49 ], !dbg !1142
-  %56 = phi i32 [ %.pre, %._crit_edge ], [ %48, %43 ], [ %54, %49 ]
-  %57 = load i32* %.pre-phi6, align 4, !dbg !1142, !tbaa !1153
-  %58 = sitofp i32 %57 to double, !dbg !1163
-  %59 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 130, !dbg !1164
-  %60 = load i32* %59, align 4, !dbg !1164, !tbaa !1165
-  %61 = sitofp i32 %60 to double, !dbg !1166
-  %62 = fdiv double %58, %61, !dbg !1167
-  %63 = fadd double %62, 5.000000e-01, !dbg !1168
-  %64 = fptosi double %63 to i32, !dbg !1169
-  %65 = fdiv double %13, 1.500000e+01, !dbg !1170
-  %66 = fadd double %65, 5.000000e-01, !dbg !1171
-  %67 = fptosi double %66 to i32, !dbg !1172
-  tail call void @llvm.dbg.value(metadata i32 %67, i64 0, metadata !53, metadata !1021), !dbg !1173
-  %68 = icmp sgt i32 %67, 2, !dbg !1174
-  %.1 = select i1 %68, i32 2, i32 %67, !dbg !1176
-  tail call void @llvm.dbg.value(metadata i32 %.1, i64 0, metadata !53, metadata !1021), !dbg !1173
-  %69 = sub nsw i32 %64, %.1, !dbg !1177
-  %70 = add nsw i32 %56, -2, !dbg !1178
-  %71 = icmp sgt i32 %69, %70, !dbg !1179
-  %72 = sext i1 %71 to i32, !dbg !1180
-  %.7 = add nsw i32 %69, %72, !dbg !1180
-  %73 = load i32* @QPLastGOP, align 4, !dbg !1181, !tbaa !946
-  %74 = add nsw i32 %73, -2, !dbg !1181
-  %75 = icmp slt i32 %74, %.7, !dbg !1181
-  %. = select i1 %75, i32 %.7, i32 %74, !dbg !1181
-  %76 = add nsw i32 %73, 2, !dbg !1182
-  %77 = icmp slt i32 %76, %., !dbg !1182
-  %78 = select i1 %77, i32 %76, i32 %., !dbg !1182
-  %79 = load i32* @RC_MAX_QUANT, align 4, !dbg !1183, !tbaa !946
-  %80 = icmp slt i32 %79, %78, !dbg !1183
-  %81 = select i1 %80, i32 %79, i32 %78, !dbg !1183
-  %82 = load i32* @RC_MIN_QUANT, align 4, !dbg !1184, !tbaa !946
-  %83 = icmp slt i32 %82, %81, !dbg !1184
-  %84 = select i1 %83, i32 %81, i32 %82, !dbg !1184
-  store i32 %84, i32* @PAverageQp, align 4, !dbg !1185, !tbaa !946
-  store i32 %84, i32* @MyInitialQp, align 4, !dbg !1186, !tbaa !946
-  store i32 %84, i32* @QPLastGOP, align 4, !dbg !1187, !tbaa !946
-  store i32 %84, i32* @Pm_Qp, align 4, !dbg !1188, !tbaa !946
-  store i32 %84, i32* @PAveFrameQP, align 4, !dbg !1189, !tbaa !946
-  %85 = load i32* @PreviousQp2, align 4, !dbg !1190, !tbaa !946
-  store i32 %85, i32* @PreviousQp1, align 4, !dbg !1191, !tbaa !946
-  %86 = add nsw i32 %84, -1, !dbg !1192
-  store i32 %86, i32* @PreviousQp2, align 4, !dbg !1193, !tbaa !946
-  br label %87
+if.end33:                                         ; preds = %lor.lhs.false.if.end33_crit_edge, %if.then27, %if.else29
+  %TotalQpforPPicture34.pre-phi = phi i32* [ %TotalQpforPPicture34.pre, %lor.lhs.false.if.end33_crit_edge ], [ %TotalQpforPPicture, %if.then27 ], [ %TotalQpforPPicture30, %if.else29 ], !dbg !957
+  %17 = phi i32 [ %.pre, %lor.lhs.false.if.end33_crit_edge ], [ %13, %if.then27 ], [ %16, %if.else29 ]
+  %18 = load i32* %TotalQpforPPicture34.pre-phi, align 4, !dbg !957, !tbaa !807
+  %conv35 = sitofp i32 %18 to double, !dbg !957
+  %NumberofPPicture = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 130, !dbg !957
+  %19 = load i32* %NumberofPPicture, align 4, !dbg !957, !tbaa !807
+  %conv37 = sitofp i32 %19 to double, !dbg !957
+  %div38 = fdiv double %conv35, %conv37, !dbg !957
+  %add39 = fadd double %div38, 5.000000e-01, !dbg !957
+  %conv40 = fptosi double %add39 to i32, !dbg !957
+  %div45 = fdiv double %conv7, 1.500000e+01, !dbg !967
+  %add46 = fadd double %div45, 5.000000e-01, !dbg !967
+  %conv47 = fptosi double %add46 to i32, !dbg !967
+  tail call void @llvm.dbg.value(metadata !{i32 %conv47}, i64 0, metadata !49), !dbg !967
+  %cmp48 = icmp sgt i32 %conv47, 2, !dbg !968
+  %.conv47 = select i1 %cmp48, i32 2, i32 %conv47, !dbg !968
+  tail call void @llvm.dbg.value(metadata !{i32 %.conv47}, i64 0, metadata !49), !dbg !969
+  %sub52 = sub nsw i32 %conv40, %.conv47, !dbg !970
+  %sub53 = add nsw i32 %17, -2, !dbg !956
+  %cmp54 = icmp sgt i32 %sub52, %sub53, !dbg !956
+  %dec = sext i1 %cmp54 to i32, !dbg !956
+  %dec.sub52 = add nsw i32 %sub52, %dec, !dbg !956
+  %20 = load i32* @QPLastGOP, align 4, !dbg !971, !tbaa !807
+  %sub58 = add nsw i32 %20, -2, !dbg !971
+  %cmp59 = icmp slt i32 %sub58, %dec.sub52, !dbg !971
+  %.sub58 = select i1 %cmp59, i32 %dec.sub52, i32 %sub58, !dbg !971
+  %add62 = add nsw i32 %20, 2, !dbg !972
+  %cmp63 = icmp slt i32 %add62, %.sub58, !dbg !972
+  %cond69 = select i1 %cmp63, i32 %add62, i32 %.sub58, !dbg !972
+  %21 = load i32* @RC_MAX_QUANT, align 4, !dbg !973, !tbaa !807
+  %cmp70 = icmp slt i32 %21, %cond69, !dbg !973
+  %cond75 = select i1 %cmp70, i32 %21, i32 %cond69, !dbg !973
+  %22 = load i32* @RC_MIN_QUANT, align 4, !dbg !974, !tbaa !807
+  %cmp76 = icmp slt i32 %22, %cond75, !dbg !974
+  %cond81 = select i1 %cmp76, i32 %cond75, i32 %22, !dbg !974
+  store i32 %cond81, i32* @PAverageQp, align 4, !dbg !974, !tbaa !807
+  store i32 %cond81, i32* @MyInitialQp, align 4, !dbg !975, !tbaa !807
+  store i32 %cond81, i32* @QPLastGOP, align 4, !dbg !976, !tbaa !807
+  store i32 %cond81, i32* @Pm_Qp, align 4, !dbg !977, !tbaa !807
+  store i32 %cond81, i32* @PAveFrameQP, align 4, !dbg !978, !tbaa !807
+  %23 = load i32* @PreviousQp2, align 4, !dbg !979, !tbaa !807
+  store i32 %23, i32* @PreviousQp1, align 4, !dbg !979, !tbaa !807
+  %sub82 = add nsw i32 %cond81, -1, !dbg !980
+  store i32 %sub82, i32* @PreviousQp2, align 4, !dbg !980, !tbaa !807
+  br label %if.end83
 
-; <label>:87                                      ; preds = %55, %27
-  %.pre-phi4 = phi i32* [ %59, %55 ], [ %.pre3, %27 ], !dbg !1128
-  %.pre-phi = phi i32* [ %.pre-phi6, %55 ], [ %.pre2, %27 ], !dbg !1127
-  store i32 0, i32* %.pre-phi, align 4, !dbg !1194, !tbaa !1153
-  store i32 0, i32* %.pre-phi4, align 4, !dbg !1195, !tbaa !1165
-  store i32 0, i32* @NumberofBFrames, align 4, !dbg !1196, !tbaa !946
-  ret void, !dbg !1197
+if.end83:                                         ; preds = %if.end33, %if.then20
+  %NumberofPPicture85.pre-phi = phi i32* [ %NumberofPPicture, %if.end33 ], [ %NumberofPPicture85.pre, %if.then20 ], !dbg !952
+  %TotalQpforPPicture84.pre-phi = phi i32* [ %TotalQpforPPicture34.pre-phi, %if.end33 ], [ %TotalQpforPPicture84.pre, %if.then20 ], !dbg !951
+  store i32 0, i32* %TotalQpforPPicture84.pre-phi, align 4, !dbg !951, !tbaa !807
+  store i32 0, i32* %NumberofPPicture85.pre-phi, align 4, !dbg !952, !tbaa !807
+  store i32 0, i32* @NumberofBFrames, align 4, !dbg !981, !tbaa !807
+  ret void, !dbg !982
 }

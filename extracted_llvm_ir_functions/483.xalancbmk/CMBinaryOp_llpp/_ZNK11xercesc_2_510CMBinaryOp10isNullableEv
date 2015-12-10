@@ -1,0 +1,46 @@
+define zeroext i1 @_ZNK11xercesc_2_510CMBinaryOp10isNullableEv(%"class.xercesc_2_5::CMBinaryOp"* nocapture %this) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::CMBinaryOp"* %this}, i64 0, metadata !1648), !dbg !2053
+  %fType.i = getelementptr inbounds %"class.xercesc_2_5::CMBinaryOp"* %this, i64 0, i32 0, i32 2, !dbg !2054
+  %0 = load i32* %fType.i, align 4, !dbg !2054, !tbaa !1961
+  %and = and i32 %0, 15, !dbg !2056
+  %cmp = icmp eq i32 %and, 4, !dbg !2056
+  %fLeftChild = getelementptr inbounds %"class.xercesc_2_5::CMBinaryOp"* %this, i64 0, i32 1, !dbg !2057
+  %1 = load %"class.xercesc_2_5::CMNode"** %fLeftChild, align 8, !dbg !2057, !tbaa !1907
+  %2 = bitcast %"class.xercesc_2_5::CMNode"* %1 to i1 (%"class.xercesc_2_5::CMNode"*)***, !dbg !2057
+  %vtable = load i1 (%"class.xercesc_2_5::CMNode"*)*** %2, align 8, !dbg !2057, !tbaa !1903
+  %vfn = getelementptr inbounds i1 (%"class.xercesc_2_5::CMNode"*)** %vtable, i64 2, !dbg !2057
+  %3 = load i1 (%"class.xercesc_2_5::CMNode"*)** %vfn, align 8, !dbg !2057
+  %call2 = tail call zeroext i1 %3(%"class.xercesc_2_5::CMNode"* %1) #10, !dbg !2057
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2056
+
+if.then:                                          ; preds = %entry
+  br i1 %call2, label %return, label %lor.rhs, !dbg !2057
+
+lor.rhs:                                          ; preds = %if.then
+  %fRightChild = getelementptr inbounds %"class.xercesc_2_5::CMBinaryOp"* %this, i64 0, i32 2, !dbg !2057
+  %4 = load %"class.xercesc_2_5::CMNode"** %fRightChild, align 8, !dbg !2057, !tbaa !1907
+  %5 = bitcast %"class.xercesc_2_5::CMNode"* %4 to i1 (%"class.xercesc_2_5::CMNode"*)***, !dbg !2057
+  %vtable3 = load i1 (%"class.xercesc_2_5::CMNode"*)*** %5, align 8, !dbg !2057, !tbaa !1903
+  %vfn4 = getelementptr inbounds i1 (%"class.xercesc_2_5::CMNode"*)** %vtable3, i64 2, !dbg !2057
+  %6 = load i1 (%"class.xercesc_2_5::CMNode"*)** %vfn4, align 8, !dbg !2057
+  %call5 = tail call zeroext i1 %6(%"class.xercesc_2_5::CMNode"* %4) #10, !dbg !2057
+  br label %return, !dbg !2057
+
+if.end:                                           ; preds = %entry
+  br i1 %call2, label %land.rhs, label %return, !dbg !2058
+
+land.rhs:                                         ; preds = %if.end
+  %fRightChild10 = getelementptr inbounds %"class.xercesc_2_5::CMBinaryOp"* %this, i64 0, i32 2, !dbg !2058
+  %7 = load %"class.xercesc_2_5::CMNode"** %fRightChild10, align 8, !dbg !2058, !tbaa !1907
+  %8 = bitcast %"class.xercesc_2_5::CMNode"* %7 to i1 (%"class.xercesc_2_5::CMNode"*)***, !dbg !2058
+  %vtable11 = load i1 (%"class.xercesc_2_5::CMNode"*)*** %8, align 8, !dbg !2058, !tbaa !1903
+  %vfn12 = getelementptr inbounds i1 (%"class.xercesc_2_5::CMNode"*)** %vtable11, i64 2, !dbg !2058
+  %9 = load i1 (%"class.xercesc_2_5::CMNode"*)** %vfn12, align 8, !dbg !2058
+  %call13 = tail call zeroext i1 %9(%"class.xercesc_2_5::CMNode"* %7) #10, !dbg !2058
+  br label %return
+
+return:                                           ; preds = %if.end, %land.rhs, %if.then, %lor.rhs
+  %retval.0 = phi i1 [ true, %if.then ], [ %call5, %lor.rhs ], [ false, %if.end ], [ %call13, %land.rhs ]
+  ret i1 %retval.0, !dbg !2059
+}

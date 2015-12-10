@@ -1,55 +1,56 @@
-define i32 @ETree_readFromFormattedFile(%struct._ETree* %etree, %struct.__sFILE* %fp) #0 {
+define i32 @ETree_readFromFormattedFile(%struct._ETree* %etree, %struct._IO_FILE* %fp) #0 {
+entry:
   %itemp = alloca [2 x i32], align 4
-  tail call void @llvm.dbg.value(metadata %struct._ETree* %etree, i64 0, metadata !114, metadata !170), !dbg !282
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !115, metadata !170), !dbg !283
-  tail call void @llvm.dbg.declare(metadata [2 x i32]* %itemp, metadata !117, metadata !170), !dbg !284
-  %1 = icmp eq %struct._ETree* %etree, null, !dbg !285
-  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !287
-  %or.cond = or i1 %1, %2, !dbg !288
-  br i1 %or.cond, label %3, label %6, !dbg !288
+  call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !108), !dbg !224
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !109), !dbg !225
+  call void @llvm.dbg.declare(metadata !{[2 x i32]* %itemp}, metadata !111), !dbg !226
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !227
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null, !dbg !227
+  %or.cond = or i1 %cmp, %cmp1, !dbg !227
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !227
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !289, !tbaa !179
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([58 x i8]* @.str5, i64 0, i64 0), %struct._ETree* %etree, %struct.__sFILE* %fp) #7, !dbg !291
-  br label %31, !dbg !292
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !228, !tbaa !167
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str5, i64 0, i64 0), %struct._ETree* %etree, %struct._IO_FILE* %fp) #6, !dbg !228
+  br label %return, !dbg !230
 
-; <label>:6                                       ; preds = %0
-  tail call void @ETree_clearData(%struct._ETree* %etree) #7, !dbg !293
-  tail call void @ETree_init1(%struct._ETree* %etree, i32 0, i32 0) #7, !dbg !294
-  %7 = getelementptr inbounds [2 x i32]* %itemp, i64 0, i64 0, !dbg !295
-  %8 = call i32 @IVfscanf(%struct.__sFILE* %fp, i32 2, i32* %7) #7, !dbg !297
-  call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !116, metadata !170), !dbg !298
-  %9 = icmp eq i32 %8, 2, !dbg !299
-  br i1 %9, label %13, label %10, !dbg !300
+if.end:                                           ; preds = %entry
+  call void @ETree_clearData(%struct._ETree* %etree) #6, !dbg !231
+  call void @ETree_init1(%struct._ETree* %etree, i32 0, i32 0) #6, !dbg !232
+  %arraydecay = getelementptr inbounds [2 x i32]* %itemp, i64 0, i64 0, !dbg !233
+  %call2 = call i32 @IVfscanf(%struct._IO_FILE* %fp, i32 2, i32* %arraydecay) #6, !dbg !233
+  call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !110), !dbg !233
+  %cmp3 = icmp eq i32 %call2, 2, !dbg !233
+  br i1 %cmp3, label %if.end6, label %if.then4, !dbg !233
 
-; <label>:10                                      ; preds = %6
-  %11 = load %struct.__sFILE** @__stderrp, align 8, !dbg !301, !tbaa !179
-  %12 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %11, i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), %struct._ETree* %etree, %struct.__sFILE* %fp, i32 %8, i32 2) #7, !dbg !303
-  br label %31, !dbg !304
+if.then4:                                         ; preds = %if.end
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !234, !tbaa !167
+  %call5 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), %struct._ETree* %etree, %struct._IO_FILE* %fp, i32 %call2, i32 2) #6, !dbg !234
+  br label %return, !dbg !236
 
-; <label>:13                                      ; preds = %6
-  %14 = load i32* %7, align 4, !dbg !305, !tbaa !258
-  %15 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0, !dbg !306
-  store i32 %14, i32* %15, align 4, !dbg !307, !tbaa !262
-  %16 = getelementptr inbounds [2 x i32]* %itemp, i64 0, i64 1, !dbg !308
-  %17 = load i32* %16, align 4, !dbg !308, !tbaa !258
-  %18 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 1, !dbg !309
-  store i32 %17, i32* %18, align 4, !dbg !310, !tbaa !267
-  %19 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2, !dbg !311
-  %20 = load %struct._Tree** %19, align 8, !dbg !311, !tbaa !269
-  %21 = call i32 @Tree_readFromFormattedFile(%struct._Tree* %20, %struct.__sFILE* %fp) #7, !dbg !312
-  %22 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3, !dbg !313
-  %23 = load %struct._IV** %22, align 8, !dbg !313, !tbaa !272
-  %24 = call i32 @IV_readFromFormattedFile(%struct._IV* %23, %struct.__sFILE* %fp) #7, !dbg !314
-  %25 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4, !dbg !315
-  %26 = load %struct._IV** %25, align 8, !dbg !315, !tbaa !275
-  %27 = call i32 @IV_readFromFormattedFile(%struct._IV* %26, %struct.__sFILE* %fp) #7, !dbg !316
-  %28 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 5, !dbg !317
-  %29 = load %struct._IV** %28, align 8, !dbg !317, !tbaa !278
-  %30 = call i32 @IV_readFromFormattedFile(%struct._IV* %29, %struct.__sFILE* %fp) #7, !dbg !318
-  br label %31, !dbg !319
+if.end6:                                          ; preds = %if.end
+  %2 = load i32* %arraydecay, align 4, !dbg !237, !tbaa !217
+  %nfront = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0, !dbg !237
+  store i32 %2, i32* %nfront, align 4, !dbg !237, !tbaa !217
+  %arrayidx7 = getelementptr inbounds [2 x i32]* %itemp, i64 0, i64 1, !dbg !238
+  %3 = load i32* %arrayidx7, align 4, !dbg !238, !tbaa !217
+  %nvtx = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 1, !dbg !238
+  store i32 %3, i32* %nvtx, align 4, !dbg !238, !tbaa !217
+  %tree = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2, !dbg !239
+  %4 = load %struct._Tree** %tree, align 8, !dbg !239, !tbaa !167
+  %call8 = call i32 @Tree_readFromFormattedFile(%struct._Tree* %4, %struct._IO_FILE* %fp) #6, !dbg !239
+  %nodwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3, !dbg !240
+  %5 = load %struct._IV** %nodwghtsIV, align 8, !dbg !240, !tbaa !167
+  %call9 = call i32 @IV_readFromFormattedFile(%struct._IV* %5, %struct._IO_FILE* %fp) #6, !dbg !240
+  %bndwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4, !dbg !241
+  %6 = load %struct._IV** %bndwghtsIV, align 8, !dbg !241, !tbaa !167
+  %call10 = call i32 @IV_readFromFormattedFile(%struct._IV* %6, %struct._IO_FILE* %fp) #6, !dbg !241
+  %vtxToFrontIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 5, !dbg !242
+  %7 = load %struct._IV** %vtxToFrontIV, align 8, !dbg !242, !tbaa !167
+  %call11 = call i32 @IV_readFromFormattedFile(%struct._IV* %7, %struct._IO_FILE* %fp) #6, !dbg !242
+  br label %return, !dbg !243
 
-; <label>:31                                      ; preds = %13, %10, %3
-  %.0 = phi i32 [ 0, %3 ], [ 0, %10 ], [ 1, %13 ]
-  ret i32 %.0, !dbg !320
+return:                                           ; preds = %if.end6, %if.then4, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then4 ], [ 1, %if.end6 ]
+  ret i32 %retval.0, !dbg !243
 }

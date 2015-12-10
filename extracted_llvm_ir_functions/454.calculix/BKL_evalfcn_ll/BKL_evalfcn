@@ -1,51 +1,52 @@
 define float @BKL_evalfcn(%struct._BKL* %bkl) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._BKL* %bkl, i64 0, metadata !79, metadata !116), !dbg !117
-  %1 = icmp eq %struct._BKL* %bkl, null, !dbg !118
-  br i1 %1, label %2, label %5, !dbg !120
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._BKL* %bkl}, i64 0, metadata !78), !dbg !111
+  %cmp = icmp eq %struct._BKL* %bkl, null, !dbg !112
+  br i1 %cmp, label %if.then, label %if.end, !dbg !112
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !121, !tbaa !123
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([45 x i8]* @.str, i64 0, i64 0), %struct._BKL* null) #5, !dbg !127
-  tail call void @exit(i32 -1) #6, !dbg !128
-  unreachable, !dbg !128
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !113, !tbaa !115
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str, i64 0, i64 0), %struct._BKL* null) #5, !dbg !113
+  tail call void @exit(i32 -1) #6, !dbg !118
+  unreachable, !dbg !118
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 1, !dbg !129
-  %7 = load i32* %6, align 4, !dbg !129, !tbaa !131
-  %8 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 2, !dbg !133
-  %9 = load i32* %8, align 4, !dbg !133, !tbaa !131
-  %10 = icmp sgt i32 %7, %9, !dbg !134
-  %.1 = select i1 %10, i32 %9, i32 %7
-  %11 = icmp eq i32 %.1, 0, !dbg !135
-  br i1 %11, label %12, label %17, !dbg !137
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 1, !dbg !119
+  %1 = load i32* %arrayidx, align 4, !dbg !119, !tbaa !120
+  %arrayidx2 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 2, !dbg !119
+  %2 = load i32* %arrayidx2, align 4, !dbg !119, !tbaa !120
+  %cmp3 = icmp sgt i32 %1, %2, !dbg !119
+  %.39 = select i1 %cmp3, i32 %2, i32 %1
+  %cmp14 = icmp eq i32 %.39, 0, !dbg !121
+  br i1 %cmp14, label %if.then15, label %if.else18, !dbg !121
 
-; <label>:12                                      ; preds = %5
-  %13 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 4, !dbg !138
-  %14 = load i32* %13, align 4, !dbg !138, !tbaa !140
-  %15 = sitofp i32 %14 to float, !dbg !143
-  %16 = fmul float %15, %15, !dbg !144
-  tail call void @llvm.dbg.value(metadata float %16, i64 0, metadata !80, metadata !116), !dbg !145
-  br label %31, !dbg !146
+if.then15:                                        ; preds = %if.end
+  %totweight = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 4, !dbg !122
+  %3 = load i32* %totweight, align 4, !dbg !122, !tbaa !120
+  %conv = sitofp i32 %3 to float, !dbg !122
+  %mul = fmul float %conv, %conv, !dbg !122
+  tail call void @llvm.dbg.value(metadata !{float %mul}, i64 0, metadata !79), !dbg !122
+  br label %if.end28, !dbg !124
 
-; <label>:17                                      ; preds = %5
-  %. = select i1 %10, i32 %7, i32 %9
-  %18 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 0, !dbg !147
-  %19 = load i32* %18, align 4, !dbg !147, !tbaa !131
-  %20 = sitofp i32 %19 to double, !dbg !147
-  %21 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 13, !dbg !149
-  %22 = load float* %21, align 4, !dbg !149, !tbaa !150
-  %23 = sitofp i32 %. to float, !dbg !151
-  %24 = fmul float %23, %22, !dbg !152
-  %25 = sitofp i32 %.1 to float, !dbg !153
-  %26 = fdiv float %24, %25, !dbg !154
-  %27 = fpext float %26 to double, !dbg !155
-  %28 = fadd double %27, 1.000000e+00, !dbg !156
-  %29 = fmul double %20, %28, !dbg !157
-  %30 = fptrunc double %29 to float, !dbg !147
-  tail call void @llvm.dbg.value(metadata float %30, i64 0, metadata !80, metadata !116), !dbg !145
-  br label %31
+if.else18:                                        ; preds = %if.end
+  %. = select i1 %cmp3, i32 %1, i32 %2
+  %arrayidx20 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 0, !dbg !125
+  %4 = load i32* %arrayidx20, align 4, !dbg !125, !tbaa !120
+  %conv21 = sitofp i32 %4 to double, !dbg !125
+  %alpha = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 13, !dbg !125
+  %5 = load float* %alpha, align 4, !dbg !125, !tbaa !127
+  %conv22 = sitofp i32 %. to float, !dbg !125
+  %mul23 = fmul float %conv22, %5, !dbg !125
+  %conv24 = sitofp i32 %.39 to float, !dbg !125
+  %div = fdiv float %mul23, %conv24, !dbg !125
+  %conv25 = fpext float %div to double, !dbg !125
+  %add = fadd double %conv25, 1.000000e+00, !dbg !125
+  %mul26 = fmul double %conv21, %add, !dbg !125
+  %conv27 = fptrunc double %mul26 to float, !dbg !125
+  tail call void @llvm.dbg.value(metadata !{float %conv27}, i64 0, metadata !79), !dbg !125
+  br label %if.end28
 
-; <label>:31                                      ; preds = %17, %12
-  %cost.0 = phi float [ %16, %12 ], [ %30, %17 ]
-  ret float %cost.0, !dbg !158
+if.end28:                                         ; preds = %if.else18, %if.then15
+  %cost.0 = phi float [ %mul, %if.then15 ], [ %conv27, %if.else18 ]
+  ret float %cost.0, !dbg !128
 }

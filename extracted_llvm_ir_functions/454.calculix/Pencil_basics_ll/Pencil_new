@@ -1,17 +1,18 @@
 define %struct._Pencil* @Pencil_new() #0 {
-  %1 = tail call i8* @malloc(i64 40) #6, !dbg !84
-  %2 = bitcast i8* %1 to %struct._Pencil*, !dbg !84
-  tail call void @llvm.dbg.value(metadata %struct._Pencil* %2, i64 0, metadata !66, metadata !88), !dbg !89
-  %3 = icmp eq i8* %1, null, !dbg !84
-  br i1 %3, label %4, label %7, !dbg !90
+entry:
+  %call = tail call noalias i8* @malloc(i64 40) #6, !dbg !75
+  %0 = bitcast i8* %call to %struct._Pencil*, !dbg !75
+  tail call void @llvm.dbg.value(metadata !{%struct._Pencil* %0}, i64 0, metadata !61), !dbg !75
+  %cmp = icmp eq i8* %call, null, !dbg !75
+  br i1 %cmp, label %if.then, label %if.end, !dbg !75
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !91, !tbaa !93
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 40, i32 21, i8* getelementptr inbounds ([93 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !91
-  tail call void @exit(i32 -1) #7, !dbg !91
-  unreachable, !dbg !91
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !77, !tbaa !79
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 40, i32 21, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !77
+  tail call void @exit(i32 -1) #7, !dbg !77
+  unreachable, !dbg !77
 
-; <label>:7                                       ; preds = %0
-  tail call void @Pencil_setDefaultFields(%struct._Pencil* %2) #8, !dbg !97
-  ret %struct._Pencil* %2, !dbg !98
+if.end:                                           ; preds = %entry
+  tail call void @Pencil_setDefaultFields(%struct._Pencil* %0) #8, !dbg !82
+  ret %struct._Pencil* %0, !dbg !83
 }

@@ -1,50 +1,51 @@
 define void @cancel_changes(i32 %num) #0 {
 entry:
-  %0 = load i32* @num_changes, align 4, !tbaa !0
-  %cmp24 = icmp sgt i32 %0, %num
-  br i1 %cmp24, label %for.body.lr.ph, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i32 %num}, i64 0, metadata !566), !dbg !1623
+  %0 = load i32* @num_changes, align 4, !dbg !1624, !tbaa !1168
+  %cmp24 = icmp sgt i32 %0, %num, !dbg !1624
+  br i1 %cmp24, label %for.body.lr.ph, label %for.end, !dbg !1624
 
 for.body.lr.ph:                                   ; preds = %entry
   %1 = sext i32 %0 to i64
-  %.pre = load %struct.change_t** @changes, align 8, !tbaa !3
-  br label %for.body
+  %.pre = load %struct.change_t** @changes, align 8, !dbg !1626, !tbaa !1177
+  br label %for.body, !dbg !1624
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
-  %2 = phi %struct.change_t* [ %.pre, %for.body.lr.ph ], [ %5, %for.cond.backedge ]
+  %2 = phi %struct.change_t* [ %.pre, %for.body.lr.ph ], [ %5, %for.cond.backedge ], !dbg !1624
   %indvars.iv = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond.backedge ]
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %old = getelementptr inbounds %struct.change_t* %2, i64 %indvars.iv.next, i32 3
-  %3 = load %struct.rtx_def** %old, align 8, !tbaa !3
-  %loc = getelementptr inbounds %struct.change_t* %2, i64 %indvars.iv.next, i32 2
-  %4 = load %struct.rtx_def*** %loc, align 8, !tbaa !3
-  store %struct.rtx_def* %3, %struct.rtx_def** %4, align 8, !tbaa !3
-  %5 = load %struct.change_t** @changes, align 8, !tbaa !3
-  %object = getelementptr inbounds %struct.change_t* %5, i64 %indvars.iv.next, i32 0
-  %6 = load %struct.rtx_def** %object, align 8, !tbaa !3
-  %tobool = icmp eq %struct.rtx_def* %6, null
-  br i1 %tobool, label %for.cond.backedge, label %land.lhs.true
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !1624
+  %old = getelementptr inbounds %struct.change_t* %2, i64 %indvars.iv.next, i32 3, !dbg !1626
+  %3 = load %struct.rtx_def** %old, align 8, !dbg !1626, !tbaa !1177
+  %loc = getelementptr inbounds %struct.change_t* %2, i64 %indvars.iv.next, i32 2, !dbg !1626
+  %4 = load %struct.rtx_def*** %loc, align 8, !dbg !1626, !tbaa !1177
+  store %struct.rtx_def* %3, %struct.rtx_def** %4, align 8, !dbg !1626, !tbaa !1177
+  %5 = load %struct.change_t** @changes, align 8, !dbg !1628, !tbaa !1177
+  %object = getelementptr inbounds %struct.change_t* %5, i64 %indvars.iv.next, i32 0, !dbg !1628
+  %6 = load %struct.rtx_def** %object, align 8, !dbg !1628, !tbaa !1177
+  %tobool = icmp eq %struct.rtx_def* %6, null, !dbg !1628
+  br i1 %tobool, label %for.cond.backedge, label %land.lhs.true, !dbg !1628
 
 land.lhs.true:                                    ; preds = %for.body
-  %7 = bitcast %struct.rtx_def* %6 to i32*
-  %bf.load = load i32* %7, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp8 = icmp eq i32 %bf.clear, 66
-  br i1 %cmp8, label %for.cond.backedge, label %if.then
+  %7 = bitcast %struct.rtx_def* %6 to i32*, !dbg !1628
+  %bf.load = load i32* %7, align 8, !dbg !1628
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1628
+  %cmp8 = icmp eq i32 %bf.clear, 66, !dbg !1628
+  br i1 %cmp8, label %for.cond.backedge, label %if.then, !dbg !1628
 
 for.cond.backedge:                                ; preds = %land.lhs.true, %for.body, %if.then
-  %8 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp sgt i32 %8, %num
-  br i1 %cmp, label %for.body, label %for.end
+  %8 = trunc i64 %indvars.iv.next to i32, !dbg !1624
+  %cmp = icmp sgt i32 %8, %num, !dbg !1624
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1624
 
 if.then:                                          ; preds = %land.lhs.true
-  %old_code = getelementptr inbounds %struct.change_t* %5, i64 %indvars.iv.next, i32 1
-  %9 = load i32* %old_code, align 4, !tbaa !0
-  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 4
-  %rtint = bitcast %union.rtunion_def* %arrayidx14 to i32*
-  store i32 %9, i32* %rtint, align 4, !tbaa !0
-  br label %for.cond.backedge
+  %old_code = getelementptr inbounds %struct.change_t* %5, i64 %indvars.iv.next, i32 1, !dbg !1629
+  %9 = load i32* %old_code, align 4, !dbg !1629, !tbaa !1168
+  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 4, !dbg !1629
+  %rtint = bitcast %union.rtunion_def* %arrayidx14 to i32*, !dbg !1629
+  store i32 %9, i32* %rtint, align 4, !dbg !1629, !tbaa !1168
+  br label %for.cond.backedge, !dbg !1629
 
 for.end:                                          ; preds = %for.cond.backedge, %entry
-  store i32 %num, i32* @num_changes, align 4, !tbaa !0
-  ret void
+  store i32 %num, i32* @num_changes, align 4, !dbg !1630, !tbaa !1168
+  ret void, !dbg !1631
 }

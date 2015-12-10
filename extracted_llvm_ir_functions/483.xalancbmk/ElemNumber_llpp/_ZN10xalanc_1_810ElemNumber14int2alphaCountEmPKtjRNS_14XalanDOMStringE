@@ -1,0 +1,88 @@
+define void @_ZN10xalanc_1_810ElemNumber14int2alphaCountEmPKtjRNS_14XalanDOMStringE(i64 %val, i16* nocapture %table, i32 %length, %"class.xalanc_1_8::XalanDOMString"* %theResult) #2 align 2 {
+entry:
+  %buf = alloca [101 x i16], align 16
+  call void @llvm.dbg.value(metadata !{i64 %val}, i64 0, metadata !14409), !dbg !21046
+  call void @llvm.dbg.value(metadata !{i16* %table}, i64 0, metadata !14410), !dbg !21047
+  call void @llvm.dbg.value(metadata !{i32 %length}, i64 0, metadata !14411), !dbg !21048
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMString"* %theResult}, i64 0, metadata !14412), !dbg !21049
+  %conv = zext i32 %length to i64, !dbg !21050
+  call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !14413), !dbg !21050
+  call void @llvm.dbg.value(metadata !21051, i64 0, metadata !14414), !dbg !21052
+  %0 = bitcast [101 x i16]* %buf to i8*, !dbg !21053
+  call void @llvm.lifetime.start(i64 202, i8* %0) #6, !dbg !21053
+  call void @llvm.dbg.declare(metadata !{[101 x i16]* %buf}, metadata !14416), !dbg !21053
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 202, i32 16, i1 false), !dbg !21054
+  call void @llvm.dbg.value(metadata !21055, i64 0, metadata !14420), !dbg !21056
+  call void @llvm.dbg.value(metadata !19086, i64 0, metadata !14421), !dbg !21057
+  call void @llvm.dbg.value(metadata !17785, i64 0, metadata !14422), !dbg !21058
+  %sub3 = add i64 %conv, -1, !dbg !21059
+  br label %do.body, !dbg !21061
+
+do.body:                                          ; preds = %if.end, %entry
+  %val.addr.0 = phi i64 [ %val, %entry ], [ %div, %if.end ]
+  %charPos.0 = phi i32 [ 99, %entry ], [ %dec, %if.end ]
+  %lookupIndex.0 = phi i64 [ 1, %entry ], [ %rem, %if.end ]
+  %correction.0 = phi i64 [ 0, %entry ], [ %cond, %if.end ]
+  %cmp = icmp eq i64 %lookupIndex.0, 0, !dbg !21059
+  br i1 %cmp, label %cond.true, label %lor.lhs.false, !dbg !21059
+
+lor.lhs.false:                                    ; preds = %do.body
+  %cmp1 = icmp ne i64 %correction.0, 0, !dbg !21059
+  %cmp2 = icmp eq i64 %lookupIndex.0, %sub3, !dbg !21059
+  %or.cond = and i1 %cmp1, %cmp2, !dbg !21059
+  br i1 %or.cond, label %cond.true, label %cond.end, !dbg !21059
+
+cond.true:                                        ; preds = %lor.lhs.false, %do.body
+  br label %cond.end, !dbg !21059
+
+cond.end:                                         ; preds = %lor.lhs.false, %cond.true
+  %cond = phi i64 [ %sub3, %cond.true ], [ 0, %lor.lhs.false ], !dbg !21059
+  call void @llvm.dbg.value(metadata !{i64 %cond}, i64 0, metadata !14422), !dbg !21059
+  %add = add i64 %cond, %val.addr.0, !dbg !21062
+  %rem = urem i64 %add, %conv, !dbg !21062
+  call void @llvm.dbg.value(metadata !{i64 %rem}, i64 0, metadata !14421), !dbg !21062
+  %div = udiv i64 %val.addr.0, %conv, !dbg !21063
+  call void @llvm.dbg.value(metadata !{i64 %div}, i64 0, metadata !14409), !dbg !21063
+  %1 = or i64 %div, %rem, !dbg !21064
+  %2 = icmp eq i64 %1, 0, !dbg !21064
+  br i1 %2, label %do.end, label %if.end, !dbg !21064
+
+if.end:                                           ; preds = %cond.end
+  %cmp6 = icmp eq i64 %div, 0, !dbg !21064
+  %arrayidx = getelementptr inbounds i16* %table, i64 %rem, !dbg !21065
+  %3 = load i16* %arrayidx, align 2, !dbg !21065, !tbaa !17690
+  %dec = add i32 %charPos.0, -1, !dbg !21065
+  call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !14420), !dbg !21065
+  %idxprom = zext i32 %charPos.0 to i64, !dbg !21065
+  %arrayidx7 = getelementptr inbounds [101 x i16]* %buf, i64 0, i64 %idxprom, !dbg !21065
+  store i16 %3, i16* %arrayidx7, align 2, !dbg !21065, !tbaa !17690
+  br i1 %cmp6, label %do.end, label %do.body, !dbg !21066
+
+do.end:                                           ; preds = %cond.end, %if.end
+  %charPos.1 = phi i32 [ %dec, %if.end ], [ %charPos.0, %cond.end ]
+  %idx.ext = zext i32 %charPos.1 to i64, !dbg !21067
+  %add.ptr.sum = add i64 %idx.ext, 1, !dbg !21067
+  %add.ptr9 = getelementptr inbounds [101 x i16]* %buf, i64 0, i64 %add.ptr.sum, !dbg !21067
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMString"* %theResult}, i64 0, metadata !21068), !dbg !21069
+  call void @llvm.dbg.value(metadata !{i16* %add.ptr9}, i64 0, metadata !21070), !dbg !21071
+  call void @llvm.dbg.value(metadata !{i32 %sub12}, i64 0, metadata !21072), !dbg !21073
+  %cmp.i = icmp eq i32 %charPos.1, 100, !dbg !21074
+  br i1 %cmp.i, label %if.then.i, label %if.else.i, !dbg !21074
+
+if.then.i:                                        ; preds = %do.end
+  %call.i = call %"class.xalanc_1_8::XalanDOMString"* @_ZN10xalanc_1_814XalanDOMString6assignEPKt(%"class.xalanc_1_8::XalanDOMString"* %theResult, i16* %add.ptr9) #10, !dbg !21075
+  br label %_ZN10xalanc_1_86assignERNS_14XalanDOMStringEPKtj.exit, !dbg !21077
+
+if.else.i:                                        ; preds = %do.end
+  %sub12 = sub i32 99, %charPos.1, !dbg !21067
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMString"* %theResult}, i64 0, metadata !21078), !dbg !21080
+  call void @llvm.dbg.value(metadata !{i16* %add.ptr9}, i64 0, metadata !21081), !dbg !21082
+  call void @llvm.dbg.value(metadata !{i32 %sub12}, i64 0, metadata !21083), !dbg !21084
+  call void @_ZN10xalanc_1_814XalanDOMString5eraseEjj(%"class.xalanc_1_8::XalanDOMString"* %theResult, i32 0, i32 -1) #10, !dbg !21085
+  %call.i.i = call %"class.xalanc_1_8::XalanDOMString"* @_ZN10xalanc_1_814XalanDOMString6appendEPKtj(%"class.xalanc_1_8::XalanDOMString"* %theResult, i16* %add.ptr9, i32 %sub12) #10, !dbg !21086
+  br label %_ZN10xalanc_1_86assignERNS_14XalanDOMStringEPKtj.exit
+
+_ZN10xalanc_1_86assignERNS_14XalanDOMStringEPKtj.exit: ; preds = %if.then.i, %if.else.i
+  call void @llvm.lifetime.end(i64 202, i8* %0) #6, !dbg !21087
+  ret void, !dbg !21087
+}

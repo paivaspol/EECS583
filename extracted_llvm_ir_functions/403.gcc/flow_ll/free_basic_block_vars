@@ -1,32 +1,33 @@
 define void @free_basic_block_vars(i32 %keep_head_end_p) #0 {
 entry:
-  %tobool = icmp eq i32 %keep_head_end_p, 0
-  br i1 %tobool, label %if.then, label %if.end6
+  tail call void @llvm.dbg.value(metadata !{i32 %keep_head_end_p}, i64 0, metadata !1302), !dbg !2585
+  %tobool = icmp eq i32 %keep_head_end_p, 0, !dbg !2586
+  br i1 %tobool, label %if.then, label %if.end6, !dbg !2586
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
-  %tobool1 = icmp eq %struct.varray_head_tag* %0, null
-  br i1 %tobool1, label %if.end5, label %if.then2
+  %0 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !2587, !tbaa !2131
+  %tobool1 = icmp eq %struct.varray_head_tag* %0, null, !dbg !2587
+  br i1 %tobool1, label %if.end5, label %if.then2, !dbg !2587
 
 if.then2:                                         ; preds = %if.then
-  tail call void @clear_edges() #6
-  %1 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
-  %tobool3 = icmp eq %struct.varray_head_tag* %1, null
-  br i1 %tobool3, label %if.end5, label %if.then4
+  tail call void @clear_edges() #7, !dbg !2589
+  %1 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !2591, !tbaa !2131
+  %tobool3 = icmp eq %struct.varray_head_tag* %1, null, !dbg !2591
+  br i1 %tobool3, label %if.end5, label %if.then4, !dbg !2591
 
 if.then4:                                         ; preds = %if.then2
-  %2 = bitcast %struct.varray_head_tag* %1 to i8*
-  tail call void @free(i8* %2) #6
-  store %struct.varray_head_tag* null, %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
-  br label %if.end5
+  %2 = bitcast %struct.varray_head_tag* %1 to i8*, !dbg !2593
+  tail call void @free(i8* %2) #7, !dbg !2593
+  store %struct.varray_head_tag* null, %struct.varray_head_tag** @basic_block_info, align 8, !dbg !2593, !tbaa !2131
+  br label %if.end5, !dbg !2593
 
 if.end5:                                          ; preds = %if.then2, %if.then, %if.then4
-  store i32 0, i32* @n_basic_blocks, align 4, !tbaa !0
-  store i8* null, i8** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1, i32 10), align 8, !tbaa !3
-  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1, i32 8), align 8, !tbaa !3
-  call void @llvm.memset.p0i8.i64(i8* bitcast (%struct.bitmap_head_def** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0, i32 9) to i8*), i8 0, i64 16, i32 8, i1 false)
-  br label %if.end6
+  store i32 0, i32* @n_basic_blocks, align 4, !dbg !2595, !tbaa !2128
+  store i8* null, i8** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1, i32 10), align 8, !dbg !2596, !tbaa !2131
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1, i32 8), align 8, !dbg !2597, !tbaa !2131
+  call void @llvm.memset.p0i8.i64(i8* bitcast (%struct.bitmap_head_def** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0, i32 9) to i8*), i8 0, i64 16, i32 8, i1 false), !dbg !2598
+  br label %if.end6, !dbg !2599
 
 if.end6:                                          ; preds = %entry, %if.end5
-  ret void
+  ret void, !dbg !2600
 }

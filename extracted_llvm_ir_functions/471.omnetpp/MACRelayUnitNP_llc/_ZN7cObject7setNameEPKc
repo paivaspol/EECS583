@@ -1,17 +1,18 @@
-define linkonce_odr void @_ZN7cObject7setNameEPKc(%class.cObject* nocapture %this, i8* %s) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.cObject* %this, i64 0, metadata !5019, metadata !6374), !dbg !6669
-  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !5020, metadata !6374), !dbg !6670
-  %1 = getelementptr inbounds %class.cObject* %this, i64 0, i32 1, !dbg !6671
-  %2 = load i8** %1, align 8, !dbg !6671, !tbaa !6672
-  %3 = icmp eq i8* %2, null, !dbg !6674
-  br i1 %3, label %5, label %4, !dbg !6674
+define linkonce_odr void @_ZN7cObject7setNameEPKc(%class.cObject* nocapture %this, i8* %s) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.cObject* %this}, i64 0, metadata !5880), !dbg !6156
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !5881), !dbg !6156
+  %namestr = getelementptr inbounds %class.cObject* %this, i64 0, i32 1, !dbg !6157
+  %0 = load i8** %namestr, align 8, !dbg !6157, !tbaa !5998
+  %isnull = icmp eq i8* %0, null, !dbg !6157
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !6157
 
-; <label>:4                                       ; preds = %0
-  tail call void @_ZdlPv(i8* %2) #12, !dbg !6674
-  br label %5, !dbg !6674
+delete.notnull:                                   ; preds = %entry
+  tail call void @_ZdlPv(i8* %0) #10, !dbg !6157
+  br label %delete.end, !dbg !6157
 
-; <label>:5                                       ; preds = %4, %0
-  %6 = tail call i8* @_Z10opp_strdupPKc(i8* %s) #11, !dbg !6675
-  store i8* %6, i8** %1, align 8, !dbg !6676, !tbaa !6672
-  ret void, !dbg !6677
+delete.end:                                       ; preds = %delete.notnull, %entry
+  %call = tail call i8* @_Z10opp_strdupPKc(i8* %s) #9, !dbg !6157
+  store i8* %call, i8** %namestr, align 8, !dbg !6157, !tbaa !5998
+  ret void, !dbg !6157
 }

@@ -1,63 +1,64 @@
 define void @_ZN3pov9close_allEv() #0 {
-  %1 = load i32* @_ZN3pov11closed_flagE, align 4, !dbg !2896, !tbaa !2010
-  %2 = icmp eq i32 %1, 0, !dbg !2896
-  br i1 %2, label %3, label %21, !dbg !2898
+entry:
+  %0 = load i32* @_ZN3pov11closed_flagE, align 4, !dbg !1937, !tbaa !1405
+  %tobool = icmp eq i32 %0, 0, !dbg !1937
+  br i1 %tobool, label %if.end, label %return, !dbg !1937
 
-; <label>:3                                       ; preds = %0
-  tail call void @_ZN3pov23FlushDebugMessageBufferEv() #6, !dbg !2899
-  tail call void @_ZN3pov23FreeBacktraceEverythingEv() #6, !dbg !2900
-  %4 = load %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !2901, !tbaa !2187
-  %5 = icmp eq %"class.pov::Image_File_Class"* %4, null, !dbg !2903
-  br i1 %5, label %11, label %6, !dbg !2904
+if.end:                                           ; preds = %entry
+  tail call void @_ZN3pov23FlushDebugMessageBufferEv() #7, !dbg !1938
+  tail call void @_ZN3pov23FreeBacktraceEverythingEv() #7, !dbg !1939
+  %1 = load %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !1940, !tbaa !1475
+  %cmp = icmp eq %"class.pov::Image_File_Class"* %1, null, !dbg !1940
+  br i1 %cmp, label %if.end2, label %delete.notnull, !dbg !1940
 
-; <label>:6                                       ; preds = %3
-  %7 = bitcast %"class.pov::Image_File_Class"* %4 to void (%"class.pov::Image_File_Class"*)***, !dbg !2905
-  %8 = load void (%"class.pov::Image_File_Class"*)*** %7, align 8, !dbg !2905, !tbaa !2192
-  %9 = getelementptr inbounds void (%"class.pov::Image_File_Class"*)** %8, i64 1, !dbg !2905
-  %10 = load void (%"class.pov::Image_File_Class"*)** %9, align 8, !dbg !2905
-  tail call void %10(%"class.pov::Image_File_Class"* %4) #6, !dbg !2905
-  store %"class.pov::Image_File_Class"* null, %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !2907, !tbaa !2187
-  br label %11, !dbg !2908
+delete.notnull:                                   ; preds = %if.end
+  %2 = bitcast %"class.pov::Image_File_Class"* %1 to void (%"class.pov::Image_File_Class"*)***, !dbg !1941
+  %vtable = load void (%"class.pov::Image_File_Class"*)*** %2, align 8, !dbg !1941, !tbaa !1557
+  %vfn = getelementptr inbounds void (%"class.pov::Image_File_Class"*)** %vtable, i64 1, !dbg !1941
+  %3 = load void (%"class.pov::Image_File_Class"*)** %vfn, align 8, !dbg !1941
+  tail call void %3(%"class.pov::Image_File_Class"* %1) #7, !dbg !1941
+  store %"class.pov::Image_File_Class"* null, %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !1943, !tbaa !1475
+  br label %if.end2, !dbg !1944
 
-; <label>:11                                      ; preds = %3, %6
-  tail call void @_ZN3pov17destroy_librariesEv() #6, !dbg !2909
-  tail call void @_ZN3pov18Terminate_RendererEv() #6, !dbg !2910
-  tail call void @_ZN3pov22Destroy_Bounding_SlabsEv() #6, !dbg !2911
-  tail call void @_ZN3pov20Destroy_Vista_BufferEv() #6, !dbg !2912
-  tail call void @_ZN3pov21Destroy_Light_BuffersEv() #6, !dbg !2913
-  tail call void @_ZN3pov25Destroy_Random_GeneratorsEv() #6, !dbg !2914
-  %12 = tail call zeroext i1 @_ZN3pov27Deinitialize_Radiosity_CodeEv() #6, !dbg !2915
-  tail call void @_ZN3pov20Free_Iteration_StackEv() #6, !dbg !2916
-  tail call void @_ZN3pov17Free_Noise_TablesEv() #6, !dbg !2917
-  tail call void @_ZN3pov17destroy_histogramEv() #6, !dbg !2918
-  tail call void @_ZN3pov28Deinitialize_Atmosphere_CodeEv() #6, !dbg !2919
-  tail call void @_ZN3pov22Deinitialize_BBox_CodeEv() #6, !dbg !2920
-  tail call void @_ZN3pov26Deinitialize_Lighting_CodeEv() #6, !dbg !2921
-  tail call void @_ZN3pov22Deinitialize_Mesh_CodeEv() #6, !dbg !2922
-  tail call void @_ZN3pov26Deinitialize_VLBuffer_CodeEv() #6, !dbg !2923
-  tail call void @_ZN3pov13Destroy_FrameEv() #6, !dbg !2924
-  tail call void @_ZN3pov15Destroy_IStacksEv() #6, !dbg !2925
-  tail call void @_ZN3pov12FreeFontInfoEv() #6, !dbg !2926
-  tail call void @_ZN3pov16POVFPU_TerminateEv() #6, !dbg !2927
-  %13 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !2928, !tbaa !1896
-  %14 = and i32 %13, 1, !dbg !2930
-  %15 = icmp ne i32 %14, 0, !dbg !2930
-  %16 = load i32* @_ZN3pov15Display_StartedE, align 4
-  %17 = icmp ne i32 %16, 0, !dbg !2931
-  %or.cond = and i1 %15, %17, !dbg !2932
-  br i1 %or.cond, label %18, label %19, !dbg !2932
+if.end2:                                          ; preds = %if.end, %delete.notnull
+  tail call void @_ZN3pov17destroy_librariesEv() #7, !dbg !1945
+  tail call void @_ZN3pov18Terminate_RendererEv() #7, !dbg !1946
+  tail call void @_ZN3pov22Destroy_Bounding_SlabsEv() #7, !dbg !1947
+  tail call void @_ZN3pov20Destroy_Vista_BufferEv() #7, !dbg !1948
+  tail call void @_ZN3pov21Destroy_Light_BuffersEv() #7, !dbg !1949
+  tail call void @_ZN3pov25Destroy_Random_GeneratorsEv() #7, !dbg !1950
+  %call = tail call zeroext i1 @_ZN3pov27Deinitialize_Radiosity_CodeEv() #7, !dbg !1951
+  tail call void @_ZN3pov20Free_Iteration_StackEv() #7, !dbg !1952
+  tail call void @_ZN3pov17Free_Noise_TablesEv() #7, !dbg !1953
+  tail call void @_ZN3pov17destroy_histogramEv() #7, !dbg !1954
+  tail call void @_ZN3pov28Deinitialize_Atmosphere_CodeEv() #7, !dbg !1955
+  tail call void @_ZN3pov22Deinitialize_BBox_CodeEv() #7, !dbg !1956
+  tail call void @_ZN3pov26Deinitialize_Lighting_CodeEv() #7, !dbg !1957
+  tail call void @_ZN3pov22Deinitialize_Mesh_CodeEv() #7, !dbg !1958
+  tail call void @_ZN3pov26Deinitialize_VLBuffer_CodeEv() #7, !dbg !1959
+  tail call void @_ZN3pov13Destroy_FrameEv() #7, !dbg !1960
+  tail call void @_ZN3pov15Destroy_IStacksEv() #7, !dbg !1961
+  tail call void @_ZN3pov12FreeFontInfoEv() #7, !dbg !1962
+  tail call void @_ZN3pov16POVFPU_TerminateEv() #7, !dbg !1963
+  %4 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !1964, !tbaa !1405
+  %and = and i32 %4, 1, !dbg !1964
+  %tobool3 = icmp ne i32 %and, 0, !dbg !1964
+  %5 = load i32* @_ZN3pov15Display_StartedE, align 4, !dbg !1964, !tbaa !1405
+  %tobool4 = icmp ne i32 %5, 0, !dbg !1964
+  %or.cond = and i1 %tobool3, %tobool4, !dbg !1964
+  br i1 %or.cond, label %if.then5, label %if.end6, !dbg !1964
 
-; <label>:18                                      ; preds = %11
-  tail call void @_ZN3pov21POV_Std_Display_CloseEv() #6, !dbg !2933
-  br label %19, !dbg !2935
+if.then5:                                         ; preds = %if.end2
+  tail call void @_ZN3pov21POV_Std_Display_CloseEv() #7, !dbg !1965
+  br label %if.end6, !dbg !1967
 
-; <label>:19                                      ; preds = %18, %11
-  %20 = tail call i32 @_Z20POVMSAttrList_DeleteP9POVMSData(%struct.POVMSData* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 77)) #6, !dbg !2936
-  tail call void @_ZN3pov23FlushDebugMessageBufferEv() #6, !dbg !2937
-  tail call void @_ZN3pov14init_shelloutsEv() #6, !dbg !2938
-  store i32 1, i32* @_ZN3pov11closed_flagE, align 4, !dbg !2939, !tbaa !2010
-  br label %21, !dbg !2940
+if.end6:                                          ; preds = %if.then5, %if.end2
+  %call7 = tail call i32 @_Z20POVMSAttrList_DeleteP9POVMSData(%struct.POVMSData* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 77)) #7, !dbg !1968
+  tail call void @_ZN3pov23FlushDebugMessageBufferEv() #7, !dbg !1969
+  tail call void @_ZN3pov14init_shelloutsEv() #7, !dbg !1970
+  store i32 1, i32* @_ZN3pov11closed_flagE, align 4, !dbg !1971, !tbaa !1405
+  br label %return, !dbg !1971
 
-; <label>:21                                      ; preds = %0, %19
-  ret void, !dbg !2940
+return:                                           ; preds = %entry, %if.end6
+  ret void, !dbg !1971
 }

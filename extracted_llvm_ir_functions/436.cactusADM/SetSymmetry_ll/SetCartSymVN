@@ -1,21 +1,22 @@
-define i32 @SetCartSymVN(%struct.cGH* nocapture readonly %GH, i32* nocapture readonly %sym, i8* %vn) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !120, metadata !209), !dbg !260
-  tail call void @llvm.dbg.value(metadata i32* %sym, i64 0, metadata !121, metadata !209), !dbg !261
-  tail call void @llvm.dbg.value(metadata i8* %vn, i64 0, metadata !122, metadata !209), !dbg !262
-  %1 = tail call i32 @CCTK_VarIndex(i8* %vn) #5, !dbg !263
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !123, metadata !209), !dbg !264
-  %2 = icmp sgt i32 %1, -1, !dbg !265
-  br i1 %2, label %3, label %5, !dbg !267
+define i32 @SetCartSymVN(%struct.cGH* nocapture %GH, i32* nocapture %sym, i8* %vn) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !120), !dbg !227
+  tail call void @llvm.dbg.value(metadata !{i32* %sym}, i64 0, metadata !121), !dbg !227
+  tail call void @llvm.dbg.value(metadata !{i8* %vn}, i64 0, metadata !122), !dbg !227
+  %call = tail call i32 @CCTK_VarIndex(i8* %vn) #5, !dbg !228
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !123), !dbg !228
+  %cmp = icmp sgt i32 %call, -1, !dbg !229
+  br i1 %cmp, label %if.then, label %if.else, !dbg !229
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @SetCartSymVI(%struct.cGH* %GH, i32* %sym, i32 %1) #6, !dbg !268
-  br label %7, !dbg !270
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @SetCartSymVI(%struct.cGH* %GH, i32* %sym, i32 %call) #6, !dbg !230
+  br label %return, !dbg !230
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 151, i8* getelementptr inbounds ([84 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str3, i64 0, i64 0), i8* %vn) #5, !dbg !271
-  br label %7, !dbg !273
+if.else:                                          ; preds = %entry
+  %call2 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 151, i8* getelementptr inbounds ([72 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str3, i64 0, i64 0), i8* %vn) #5, !dbg !232
+  br label %return, !dbg !234
 
-; <label>:7                                       ; preds = %5, %3
-  %.0 = phi i32 [ 0, %3 ], [ -1, %5 ]
-  ret i32 %.0, !dbg !274
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ -1, %if.else ]
+  ret i32 %retval.0, !dbg !235
 }

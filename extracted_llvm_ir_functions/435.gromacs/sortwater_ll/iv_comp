@@ -1,44 +1,45 @@
-define internal i32 @iv_comp(i8* nocapture readonly %a, i8* nocapture readonly %b) #5 {
-  tail call void @llvm.dbg.value(metadata i8* %a, i64 0, metadata !352, metadata !405), !dbg !1189
-  tail call void @llvm.dbg.value(metadata i8* %b, i64 0, metadata !353, metadata !405), !dbg !1190
-  %1 = bitcast i8* %a to i32*, !dbg !1191
-  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !354, metadata !405), !dbg !1192
-  %2 = bitcast i8* %b to i32*, !dbg !1193
-  tail call void @llvm.dbg.value(metadata i32* %2, i64 0, metadata !355, metadata !405), !dbg !1194
-  %3 = load i32* %1, align 4, !dbg !1195, !tbaa !596
-  %4 = load i32* %2, align 4, !dbg !1197, !tbaa !596
-  %5 = icmp eq i32 %3, %4, !dbg !1198
-  br i1 %5, label %8, label %6, !dbg !1199
+define internal i32 @iv_comp(i8* nocapture %a, i8* nocapture %b) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %a}, i64 0, metadata !117), !dbg !564
+  tail call void @llvm.dbg.value(metadata !{i8* %b}, i64 0, metadata !118), !dbg !564
+  %0 = bitcast i8* %a to i32*, !dbg !565
+  tail call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !119), !dbg !565
+  %1 = bitcast i8* %b to i32*, !dbg !566
+  tail call void @llvm.dbg.value(metadata !{i32* %1}, i64 0, metadata !121), !dbg !566
+  %2 = load i32* %0, align 4, !dbg !567, !tbaa !228
+  %3 = load i32* %1, align 4, !dbg !567, !tbaa !228
+  %cmp = icmp eq i32 %2, %3, !dbg !567
+  br i1 %cmp, label %if.else, label %if.then, !dbg !567
 
-; <label>:6                                       ; preds = %0
-  %7 = sub nsw i32 %3, %4, !dbg !1200
-  br label %26, !dbg !1201
+if.then:                                          ; preds = %entry
+  %sub = sub nsw i32 %2, %3, !dbg !568
+  br label %return, !dbg !568
 
-; <label>:8                                       ; preds = %0
-  %9 = getelementptr inbounds i8* %a, i64 4, !dbg !1202
-  %10 = bitcast i8* %9 to i32*, !dbg !1202
-  %11 = load i32* %10, align 4, !dbg !1202, !tbaa !596
-  %12 = getelementptr inbounds i8* %b, i64 4, !dbg !1204
-  %13 = bitcast i8* %12 to i32*, !dbg !1204
-  %14 = load i32* %13, align 4, !dbg !1204, !tbaa !596
-  %15 = icmp eq i32 %11, %14, !dbg !1205
-  br i1 %15, label %18, label %16, !dbg !1206
+if.else:                                          ; preds = %entry
+  %arrayidx4 = getelementptr inbounds i8* %a, i64 4, !dbg !569
+  %4 = bitcast i8* %arrayidx4 to i32*, !dbg !569
+  %5 = load i32* %4, align 4, !dbg !569, !tbaa !228
+  %arrayidx5 = getelementptr inbounds i8* %b, i64 4, !dbg !569
+  %6 = bitcast i8* %arrayidx5 to i32*, !dbg !569
+  %7 = load i32* %6, align 4, !dbg !569, !tbaa !228
+  %cmp6 = icmp eq i32 %5, %7, !dbg !569
+  br i1 %cmp6, label %if.else11, label %if.then7, !dbg !569
 
-; <label>:16                                      ; preds = %8
-  %17 = sub nsw i32 %11, %14, !dbg !1207
-  br label %26, !dbg !1208
+if.then7:                                         ; preds = %if.else
+  %sub10 = sub nsw i32 %5, %7, !dbg !570
+  br label %return, !dbg !570
 
-; <label>:18                                      ; preds = %8
-  %19 = getelementptr inbounds i8* %a, i64 8, !dbg !1209
-  %20 = bitcast i8* %19 to i32*, !dbg !1209
-  %21 = load i32* %20, align 4, !dbg !1209, !tbaa !596
-  %22 = getelementptr inbounds i8* %b, i64 8, !dbg !1210
-  %23 = bitcast i8* %22 to i32*, !dbg !1210
-  %24 = load i32* %23, align 4, !dbg !1210, !tbaa !596
-  %25 = sub nsw i32 %21, %24, !dbg !1211
-  br label %26, !dbg !1212
+if.else11:                                        ; preds = %if.else
+  %arrayidx12 = getelementptr inbounds i8* %a, i64 8, !dbg !571
+  %8 = bitcast i8* %arrayidx12 to i32*, !dbg !571
+  %9 = load i32* %8, align 4, !dbg !571, !tbaa !228
+  %arrayidx13 = getelementptr inbounds i8* %b, i64 8, !dbg !571
+  %10 = bitcast i8* %arrayidx13 to i32*, !dbg !571
+  %11 = load i32* %10, align 4, !dbg !571, !tbaa !228
+  %sub14 = sub nsw i32 %9, %11, !dbg !571
+  br label %return, !dbg !571
 
-; <label>:26                                      ; preds = %18, %16, %6
-  %.0 = phi i32 [ %7, %6 ], [ %17, %16 ], [ %25, %18 ]
-  ret i32 %.0, !dbg !1213
+return:                                           ; preds = %if.else11, %if.then7, %if.then
+  %retval.0 = phi i32 [ %sub, %if.then ], [ %sub10, %if.then7 ], [ %sub14, %if.else11 ]
+  ret i32 %retval.0, !dbg !572
 }

@@ -1,25 +1,27 @@
-define i8* @_ZNK10MACAddress11toHexStringEPc(%class.MACAddress* nocapture readonly %this, i8* %buf) #7 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.MACAddress* %this, i64 0, metadata !1567, metadata !2864), !dbg !3069
-  tail call void @llvm.dbg.value(metadata i8* %buf, i64 0, metadata !1568, metadata !2864), !dbg !3070
-  tail call void @llvm.dbg.value(metadata i8* %buf, i64 0, metadata !1569, metadata !2864), !dbg !3071
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1570, metadata !2864), !dbg !3072
-  br label %1, !dbg !3073
+define i8* @_ZNK10MACAddress11toHexStringEPc(%class.MACAddress* nocapture %this, i8* %buf) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MACAddress* %this}, i64 0, metadata !1307), !dbg !1436
+  tail call void @llvm.dbg.value(metadata !{i8* %buf}, i64 0, metadata !1308), !dbg !1436
+  tail call void @llvm.dbg.value(metadata !{i8* %buf}, i64 0, metadata !1309), !dbg !1437
+  tail call void @llvm.dbg.value(metadata !1145, i64 0, metadata !1310), !dbg !1438
+  br label %for.body, !dbg !1438
 
-; <label>:1                                       ; preds = %1, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %s.01 = phi i8* [ %buf, %0 ], [ %6, %1 ]
-  %2 = getelementptr inbounds %class.MACAddress* %this, i64 0, i32 1, i64 %indvars.iv, !dbg !3074
-  %3 = load i8* %2, align 1, !dbg !3074, !tbaa !2909
-  %4 = zext i8 %3 to i32, !dbg !3074
-  %5 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %s.01, i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i32 %4) #13, !dbg !3076
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !3073
-  %6 = getelementptr inbounds i8* %s.01, i64 3, !dbg !3077
-  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !1569, metadata !2864), !dbg !3071
-  %exitcond = icmp eq i64 %indvars.iv.next, 6, !dbg !3073
-  br i1 %exitcond, label %7, label %1, !dbg !3073
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %s.07 = phi i8* [ %buf, %entry ], [ %add.ptr, %for.body ]
+  %arrayidx = getelementptr inbounds %class.MACAddress* %this, i64 0, i32 1, i64 %indvars.iv, !dbg !1439
+  %0 = load i8* %arrayidx, align 1, !dbg !1439, !tbaa !1385
+  %conv = zext i8 %0 to i32, !dbg !1439
+  %call = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %s.07, i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i32 %conv) #14, !dbg !1439
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1438
+  %add.ptr = getelementptr inbounds i8* %s.07, i64 3, !dbg !1438
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !1309), !dbg !1438
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1438
+  %exitcond = icmp eq i32 %lftr.wideiv, 6, !dbg !1438
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1438
 
-; <label>:7                                       ; preds = %1
-  %8 = getelementptr inbounds i8* %buf, i64 17, !dbg !3078
-  store i8 0, i8* %8, align 1, !dbg !3079, !tbaa !2909
-  ret i8* %buf, !dbg !3080
+for.end:                                          ; preds = %for.body
+  %add.ptr2 = getelementptr inbounds i8* %buf, i64 17, !dbg !1440
+  store i8 0, i8* %add.ptr2, align 1, !dbg !1440, !tbaa !1385
+  ret i8* %buf, !dbg !1441
 }

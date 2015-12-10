@@ -1,70 +1,79 @@
 define void @reorder_basic_blocks() #0 {
 entry:
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !0
-  %cmp = icmp slt i32 %0, 2
-  br i1 %cmp, label %return, label %if.end
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !608, !tbaa !609
+  %cmp = icmp slt i32 %0, 2, !dbg !608
+  br i1 %cmp, label %return, label %if.end, !dbg !608
 
 if.end:                                           ; preds = %entry
-  %1 = load i1 ()** getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 15), align 8, !tbaa !3
-  %call = tail call zeroext i1 %1() #4
-  br i1 %call, label %return, label %if.end2
+  %1 = load i1 ()** getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 15), align 8, !dbg !612, !tbaa !613
+  %call = tail call zeroext i1 %1() #5, !dbg !612
+  br i1 %call, label %return, label %if.end2, !dbg !612
 
 if.end2:                                          ; preds = %if.end
-  tail call void @cfg_layout_initialize() #4
-  %2 = load i32* @n_basic_blocks, align 4, !tbaa !0
-  %sub.i = add nsw i32 %2, -1
-  br label %for.body.lr.ph.i
+  tail call void @cfg_layout_initialize() #5, !dbg !614
+  tail call void @llvm.dbg.value(metadata !615, i64 0, metadata !616) #6, !dbg !618
+  %2 = load i32* @n_basic_blocks, align 4, !dbg !619, !tbaa !609
+  %sub.i = add nsw i32 %2, -1, !dbg !619
+  tail call void @llvm.dbg.value(metadata !{i32 %sub.i}, i64 0, metadata !620) #6, !dbg !619
+  tail call void @llvm.dbg.value(metadata !615, i64 0, metadata !621) #6, !dbg !622
+  tail call void @llvm.dbg.value(metadata !198, i64 0, metadata !623) #6, !dbg !624
+  br label %for.body.lr.ph.i, !dbg !624
 
 for.body.lr.ph.i:                                 ; preds = %if.end2, %do.cond.thread.i
   %prev.0.i5 = phi %struct.basic_block_def* [ %call.i, %do.cond.thread.i ], [ null, %if.end2 ]
-  %3 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
-  %data.i = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 4
-  %bb1.i = bitcast %union.varray_data_tag* %data.i to [1 x %struct.basic_block_def*]*
-  br label %for.body.i
+  %3 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !625, !tbaa !613
+  %data.i = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 4, !dbg !625
+  %bb1.i = bitcast %union.varray_data_tag* %data.i to [1 x %struct.basic_block_def*]*, !dbg !625
+  br label %for.body.i, !dbg !624
 
 for.body.i:                                       ; preds = %for.body.i, %for.body.lr.ph.i
   %indvars.iv.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.body.i ]
-  %arrayidx.i = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb1.i, i64 0, i64 %indvars.iv.i
-  %4 = load %struct.basic_block_def** %arrayidx.i, align 8, !tbaa !3
-  %aux.i = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 10
-  %5 = load i8** %aux.i, align 8, !tbaa !3
-  %visited.i = getelementptr inbounds i8* %5, i64 24
-  %6 = bitcast i8* %visited.i to i32*
-  %7 = load i32* %6, align 4, !tbaa !0
-  %tobool2.i = icmp eq i32 %7, 0
-  %.next.0.i = select i1 %tobool2.i, %struct.basic_block_def* %4, %struct.basic_block_def* null
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %8 = trunc i64 %indvars.iv.i to i32
-  %cmp.i = icmp slt i32 %8, %sub.i
-  %lnot.i = icmp eq %struct.basic_block_def* %.next.0.i, null
-  %or.cond.i = and i1 %cmp.i, %lnot.i
-  br i1 %or.cond.i, label %for.body.i, label %for.end.i
+  %arrayidx.i = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb1.i, i64 0, i64 %indvars.iv.i, !dbg !625
+  %4 = load %struct.basic_block_def** %arrayidx.i, align 8, !dbg !625, !tbaa !613
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %4}, i64 0, metadata !626) #6, !dbg !625
+  %aux.i = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 10, !dbg !627
+  %5 = load i8** %aux.i, align 8, !dbg !627, !tbaa !613
+  %visited.i = getelementptr inbounds i8* %5, i64 24, !dbg !627
+  %6 = bitcast i8* %visited.i to i32*, !dbg !627
+  %7 = load i32* %6, align 4, !dbg !627, !tbaa !609
+  %tobool2.i = icmp eq i32 %7, 0, !dbg !627
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %4}, i64 0, metadata !621) #6, !dbg !628
+  %.next.0.i = select i1 %tobool2.i, %struct.basic_block_def* %4, %struct.basic_block_def* null, !dbg !627
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !624
+  %8 = trunc i64 %indvars.iv.i to i32, !dbg !624
+  %cmp.i = icmp slt i32 %8, %sub.i, !dbg !624
+  %lnot.i = icmp eq %struct.basic_block_def* %.next.0.i, null, !dbg !624
+  %or.cond.i = and i1 %cmp.i, %lnot.i, !dbg !624
+  br i1 %or.cond.i, label %for.body.i, label %for.end.i, !dbg !624
 
 for.end.i:                                        ; preds = %for.body.i
-  br i1 %lnot.i, label %make_reorder_chain.exit, label %do.cond.thread.i
+  br i1 %lnot.i, label %make_reorder_chain.exit, label %do.cond.thread.i, !dbg !629
 
 do.cond.thread.i:                                 ; preds = %for.end.i
-  %call.i = tail call fastcc %struct.basic_block_def* @make_reorder_chain_1(%struct.basic_block_def* %.next.0.i, %struct.basic_block_def* %prev.0.i5) #4
-  br label %for.body.lr.ph.i
+  %call.i = tail call fastcc %struct.basic_block_def* @make_reorder_chain_1(%struct.basic_block_def* %.next.0.i, %struct.basic_block_def* %prev.0.i5) #5, !dbg !630
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %call.i}, i64 0, metadata !616) #6, !dbg !630
+  tail call void @llvm.dbg.value(metadata !615, i64 0, metadata !621) #6, !dbg !622
+  tail call void @llvm.dbg.value(metadata !198, i64 0, metadata !623) #6, !dbg !624
+  br label %for.body.lr.ph.i, !dbg !624
 
 make_reorder_chain.exit:                          ; preds = %for.end.i
-  %aux7.i = getelementptr inbounds %struct.basic_block_def* %prev.0.i5, i64 0, i32 10
-  %9 = load i8** %aux7.i, align 8, !tbaa !3
-  %next8.i = getelementptr inbounds i8* %9, i64 16
-  %10 = bitcast i8* %next8.i to %struct.basic_block_def**
-  store %struct.basic_block_def* null, %struct.basic_block_def** %10, align 8, !tbaa !3
-  %11 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !3
-  %tobool = icmp eq %struct._IO_FILE* %11, null
-  br i1 %tobool, label %if.end4, label %if.then3
+  %aux7.i = getelementptr inbounds %struct.basic_block_def* %prev.0.i5, i64 0, i32 10, !dbg !631
+  %9 = load i8** %aux7.i, align 8, !dbg !631, !tbaa !613
+  %next8.i = getelementptr inbounds i8* %9, i64 16, !dbg !631
+  %10 = bitcast i8* %next8.i to %struct.basic_block_def**, !dbg !631
+  store %struct.basic_block_def* null, %struct.basic_block_def** %10, align 8, !dbg !631, !tbaa !613
+  %11 = load %struct._IO_FILE** @rtl_dump_file, align 8, !dbg !632, !tbaa !613
+  %tobool = icmp eq %struct._IO_FILE* %11, null, !dbg !632
+  br i1 %tobool, label %if.end4, label %if.then3, !dbg !632
 
 if.then3:                                         ; preds = %make_reorder_chain.exit
-  tail call void @dump_flow_info(%struct._IO_FILE* %11) #4
-  br label %if.end4
+  tail call void @dump_flow_info(%struct._IO_FILE* %11) #5, !dbg !633
+  br label %if.end4, !dbg !633
 
 if.end4:                                          ; preds = %make_reorder_chain.exit, %if.then3
-  tail call void @cfg_layout_finalize() #4
-  br label %return
+  tail call void @cfg_layout_finalize() #5, !dbg !634
+  br label %return, !dbg !634
 
 return:                                           ; preds = %if.end, %entry, %if.end4
-  ret void
+  ret void, !dbg !634
 }

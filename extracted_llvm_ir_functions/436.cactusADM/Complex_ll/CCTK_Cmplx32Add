@@ -1,22 +1,30 @@
-define void @CCTK_Cmplx32Add(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %a, %struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %b) #4 {
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX32* %a, metadata !195, metadata !243), !dbg !343
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX32* %b, metadata !196, metadata !243), !dbg !343
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX32* undef, metadata !197, metadata !243), !dbg !343
-  %1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 0, !dbg !343
-  %2 = load x86_fp80* %1, align 16, !dbg !343, !tbaa !334
-  %3 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 0, !dbg !343
-  %4 = load x86_fp80* %3, align 16, !dbg !343, !tbaa !334
-  %5 = fadd x86_fp80 %2, %4, !dbg !343
-  tail call void @llvm.dbg.value(metadata x86_fp80 %5, i64 0, metadata !197, metadata !331), !dbg !343
-  %6 = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 1, !dbg !343
-  %7 = load x86_fp80* %6, align 16, !dbg !343, !tbaa !340
-  %8 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 1, !dbg !343
-  %9 = load x86_fp80* %8, align 16, !dbg !343, !tbaa !340
-  %10 = fadd x86_fp80 %7, %9, !dbg !343
-  tail call void @llvm.dbg.value(metadata x86_fp80 %10, i64 0, metadata !197, metadata !332), !dbg !343
-  %11 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0, !dbg !343
-  store x86_fp80 %5, x86_fp80* %11, align 16, !dbg !343
-  %12 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1, !dbg !343
-  store x86_fp80 %10, x86_fp80* %12, align 16, !dbg !343
-  ret void, !dbg !343
+define void @CCTK_Cmplx32Add(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture align 16 %a, %struct.CCTK_COMPLEX32* byval nocapture align 16 %b) #3 {
+entry:
+  %result.sroa.1 = alloca [6 x i8], align 2
+  %result.sroa.3 = alloca [6 x i8], align 2
+  call void @llvm.dbg.declare(metadata !{%struct.CCTK_COMPLEX32* %a}, metadata !196), !dbg !313
+  call void @llvm.dbg.declare(metadata !{%struct.CCTK_COMPLEX32* %b}, metadata !197), !dbg !313
+  call void @llvm.dbg.declare(metadata !305, metadata !198), !dbg !313
+  %Re = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 0, !dbg !313
+  %0 = load x86_fp80* %Re, align 16, !dbg !313, !tbaa !307
+  %Re1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 0, !dbg !313
+  %1 = load x86_fp80* %Re1, align 16, !dbg !313, !tbaa !307
+  %add = fadd x86_fp80 %0, %1, !dbg !313
+  %Im = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 1, !dbg !313
+  %2 = load x86_fp80* %Im, align 16, !dbg !313, !tbaa !307
+  %Im3 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 1, !dbg !313
+  %3 = load x86_fp80* %Im3, align 16, !dbg !313, !tbaa !307
+  %add4 = fadd x86_fp80 %2, %3, !dbg !313
+  %result.sroa.0.0.idx = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0, !dbg !313
+  store x86_fp80 %add, x86_fp80* %result.sroa.0.0.idx, align 16, !dbg !313
+  %result.sroa.1.10.raw_cast = bitcast %struct.CCTK_COMPLEX32* %agg.result to i8*, !dbg !313
+  %result.sroa.1.10.raw_idx = getelementptr inbounds i8* %result.sroa.1.10.raw_cast, i64 10, !dbg !313
+  %result.sroa.1.10.idx = getelementptr inbounds [6 x i8]* %result.sroa.1, i64 0, i64 0, !dbg !313
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %result.sroa.1.10.raw_idx, i8* %result.sroa.1.10.idx, i64 6, i32 2, i1 false), !dbg !313
+  %result.sroa.2.16.idx6 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1, !dbg !313
+  store x86_fp80 %add4, x86_fp80* %result.sroa.2.16.idx6, align 16, !dbg !313
+  %result.sroa.3.26.raw_idx = getelementptr inbounds i8* %result.sroa.1.10.raw_cast, i64 26, !dbg !313
+  %result.sroa.3.26.idx = getelementptr inbounds [6 x i8]* %result.sroa.3, i64 0, i64 0, !dbg !313
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %result.sroa.3.26.raw_idx, i8* %result.sroa.3.26.idx, i64 6, i32 2, i1 false), !dbg !313
+  ret void, !dbg !313
 }

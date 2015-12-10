@@ -1,30 +1,31 @@
 define internal void @dbxout_global_decl(%union.tree_node* %decl) #0 {
 entry:
-  %code = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 34
-  br i1 %cmp, label %land.lhs.true, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !1273), !dbg !1592
+  %code = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2, !dbg !1593
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !1593
+  %bf.load = load i32* %0, align 8, !dbg !1593
+  %bf.clear = and i32 %bf.load, 255, !dbg !1593
+  %cmp = icmp eq i32 %bf.clear, 34, !dbg !1593
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !1593
 
 land.lhs.true:                                    ; preds = %entry
-  %external_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5
-  %1 = bitcast [8 x i8]* %external_flag to i64*
-  %bf.load2 = load i64* %1, align 8
-  %bf.cast = and i64 %bf.load2, 256
-  %tobool = icmp eq i64 %bf.cast, 0
-  br i1 %tobool, label %land.lhs.true4, label %if.end
+  %external_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5, !dbg !1593
+  %1 = bitcast [8 x i8]* %external_flag to i64*, !dbg !1593
+  %bf.load2 = load i64* %1, align 8, !dbg !1593
+  %bf.cast = and i64 %bf.load2, 256, !dbg !1593
+  %tobool = icmp eq i64 %bf.cast, 0, !dbg !1593
+  br i1 %tobool, label %land.lhs.true4, label %if.end, !dbg !1593
 
 land.lhs.true4:                                   ; preds = %land.lhs.true
-  %rtl = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 17
-  %2 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
-  %cmp6 = icmp eq %struct.rtx_def* %2, null
-  br i1 %cmp6, label %if.end, label %if.then
+  %rtl = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 17, !dbg !1593
+  %2 = load %struct.rtx_def** %rtl, align 8, !dbg !1593, !tbaa !1468
+  %cmp6 = icmp eq %struct.rtx_def* %2, null, !dbg !1593
+  br i1 %cmp6, label %if.end, label %if.then, !dbg !1593
 
 if.then:                                          ; preds = %land.lhs.true4
-  %call = tail call i32 @dbxout_symbol(%union.tree_node* %decl, i32 undef) #8
-  br label %if.end
+  %call = tail call i32 @dbxout_symbol(%union.tree_node* %decl, i32 undef) #9, !dbg !1594
+  br label %if.end, !dbg !1594
 
 if.end:                                           ; preds = %land.lhs.true4, %land.lhs.true, %if.then, %entry
-  ret void
+  ret void, !dbg !1595
 }

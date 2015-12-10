@@ -1,0 +1,35 @@
+define i32 @_ZN11xercesc_2_518IconvLCPTranscoder16calcRequiredSizeEPKcPNS_13MemoryManagerE(%"class.xercesc_2_5::IconvLCPTranscoder"* nocapture %this, i8* %srcText, %"class.xercesc_2_5::MemoryManager"* nocapture) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::IconvLCPTranscoder"* %this}, i64 0, metadata !768), !dbg !969
+  tail call void @llvm.dbg.value(metadata !{i8* %srcText}, i64 0, metadata !770), !dbg !969
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %0}, i64 0, metadata !771), !dbg !970
+  %tobool = icmp eq i8* %srcText, null, !dbg !971
+  br i1 %tobool, label %return, label %if.end, !dbg !971
+
+if.end:                                           ; preds = %entry
+  %call = tail call i64 @__ctype_get_mb_cur_max() #11, !dbg !972
+  %call2 = tail call i32 @mblen(i8* %srcText, i64 %call) #11, !dbg !972
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !772), !dbg !972
+  switch i32 %call2, label %if.then5 [
+    i32 -1, label %return
+    i32 0, label %if.end9
+  ], !dbg !973
+
+if.then5:                                         ; preds = %if.end
+  %call6 = tail call i64 @strlen(i8* %srcText) #12, !dbg !974
+  %conv = zext i32 %call2 to i64, !dbg !974
+  %div = udiv i64 %call6, %conv, !dbg !974
+  %conv7 = trunc i64 %div to i32, !dbg !974
+  tail call void @llvm.dbg.value(metadata !{i32 %conv7}, i64 0, metadata !772), !dbg !974
+  br label %if.end9, !dbg !974
+
+if.end9:                                          ; preds = %if.end, %if.then5
+  %charLen.0 = phi i32 [ %conv7, %if.then5 ], [ 0, %if.end ]
+  %cmp10 = icmp eq i32 %charLen.0, -1, !dbg !975
+  %.charLen.0 = select i1 %cmp10, i32 0, i32 %charLen.0, !dbg !976
+  br label %return, !dbg !976
+
+return:                                           ; preds = %if.end9, %if.end, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 0, %if.end ], [ %.charLen.0, %if.end9 ]
+  ret i32 %retval.0, !dbg !977
+}

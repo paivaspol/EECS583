@@ -1,0 +1,79 @@
+define zeroext i1 @_ZN11xercesc_2_56XMLUri27isValidServerBasedAuthorityEPKtiiS2_i(i16* %host, i32 %hostLen, i32 %port, i16* nocapture %userinfo, i32 %userLen) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %host}, i64 0, metadata !1501), !dbg !4576
+  tail call void @llvm.dbg.value(metadata !{i32 %hostLen}, i64 0, metadata !1502), !dbg !4577
+  tail call void @llvm.dbg.value(metadata !{i32 %port}, i64 0, metadata !1503), !dbg !4578
+  tail call void @llvm.dbg.value(metadata !{i16* %userinfo}, i64 0, metadata !1504), !dbg !4579
+  tail call void @llvm.dbg.value(metadata !{i32 %userLen}, i64 0, metadata !1505), !dbg !4580
+  %call = tail call zeroext i1 @_ZN11xercesc_2_56XMLUri19isWellFormedAddressEPKti(i16* %host, i32 %hostLen) #9, !dbg !4581
+  br i1 %call, label %if.end, label %return, !dbg !4581
+
+if.end:                                           ; preds = %entry
+  %port.off = add i32 %port, 1, !dbg !4582
+  %0 = icmp ugt i32 %port.off, 65536, !dbg !4582
+  br i1 %0, label %return, label %while.cond.preheader, !dbg !4582
+
+while.cond.preheader:                             ; preds = %if.end
+  %cmp545 = icmp sgt i32 %userLen, 0, !dbg !4583
+  br i1 %cmp545, label %while.body, label %return, !dbg !4583
+
+while.body:                                       ; preds = %while.cond.preheader, %while.cond.backedge
+  %index.046 = phi i32 [ %index.0.be, %while.cond.backedge ], [ 0, %while.cond.preheader ]
+  %idxprom = sext i32 %index.046 to i64, !dbg !4584
+  %arrayidx = getelementptr inbounds i16* %userinfo, i64 %idxprom, !dbg !4584
+  %1 = load i16* %arrayidx, align 2, !dbg !4584, !tbaa !2644
+  tail call void @llvm.dbg.value(metadata !{i16 %1}, i64 0, metadata !4586), !dbg !4587
+  %call.i = tail call zeroext i1 @_ZN11xercesc_2_59XMLString10isAlphaNumEt(i16 zeroext %1) #9, !dbg !4588
+  br i1 %call.i, label %if.then12, label %_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit, !dbg !4588
+
+_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit: ; preds = %while.body
+  %call1.i = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* getelementptr inbounds ([10 x i16]* @_ZN11xercesc_2_56XMLUri15MARK_CHARACTERSE, i64 0, i64 0), i16 zeroext %1) #9, !dbg !4589
+  %cmp.i = icmp eq i32 %call1.i, -1, !dbg !4589
+  br i1 %cmp.i, label %lor.lhs.false7, label %if.then12, !dbg !4584
+
+lor.lhs.false7:                                   ; preds = %_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit
+  %2 = load i16* %arrayidx, align 2, !dbg !4590, !tbaa !2644
+  %call10 = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* getelementptr inbounds ([8 x i16]* @_ZN11xercesc_2_56XMLUri19USERINFO_CHARACTERSE, i64 0, i64 0), i16 zeroext %2) #9, !dbg !4590
+  %cmp11 = icmp eq i32 %call10, -1, !dbg !4590
+  br i1 %cmp11, label %if.else, label %if.then12, !dbg !4590
+
+if.then12:                                        ; preds = %_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit, %while.body, %lor.lhs.false7
+  %inc = add nsw i32 %index.046, 1, !dbg !4591
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1506), !dbg !4591
+  br label %while.cond.backedge, !dbg !4593
+
+if.else:                                          ; preds = %lor.lhs.false7
+  %3 = load i16* %arrayidx, align 2, !dbg !4594, !tbaa !2644
+  %cmp15 = icmp eq i16 %3, 37, !dbg !4594
+  br i1 %cmp15, label %if.then16, label %return, !dbg !4594
+
+if.then16:                                        ; preds = %if.else
+  %add = add nsw i32 %index.046, 1, !dbg !4595
+  %idxprom17 = sext i32 %add to i64, !dbg !4595
+  %arrayidx18 = getelementptr inbounds i16* %userinfo, i64 %idxprom17, !dbg !4595
+  %4 = load i16* %arrayidx18, align 2, !dbg !4595, !tbaa !2644
+  %call19 = tail call zeroext i1 @_ZN11xercesc_2_59XMLString5isHexEt(i16 zeroext %4) #9, !dbg !4595
+  br i1 %call19, label %land.lhs.true20, label %return, !dbg !4595
+
+land.lhs.true20:                                  ; preds = %if.then16
+  %add21 = add nsw i32 %index.046, 2, !dbg !4597
+  %idxprom22 = sext i32 %add21 to i64, !dbg !4597
+  %arrayidx23 = getelementptr inbounds i16* %userinfo, i64 %idxprom22, !dbg !4597
+  %5 = load i16* %arrayidx23, align 2, !dbg !4597, !tbaa !2644
+  %call24 = tail call zeroext i1 @_ZN11xercesc_2_59XMLString5isHexEt(i16 zeroext %5) #9, !dbg !4597
+  br i1 %call24, label %if.then25, label %return, !dbg !4597
+
+if.then25:                                        ; preds = %land.lhs.true20
+  %add26 = add nsw i32 %index.046, 3, !dbg !4598
+  tail call void @llvm.dbg.value(metadata !{i32 %add26}, i64 0, metadata !1506), !dbg !4598
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then25, %if.then12
+  %index.0.be = phi i32 [ %inc, %if.then12 ], [ %add26, %if.then25 ]
+  %cmp5 = icmp slt i32 %index.0.be, %userLen, !dbg !4583
+  br i1 %cmp5, label %while.body, label %return, !dbg !4583
+
+return:                                           ; preds = %while.cond.preheader, %if.else, %if.then16, %land.lhs.true20, %while.cond.backedge, %if.end, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ false, %if.end ], [ true, %while.cond.preheader ], [ false, %if.else ], [ false, %if.then16 ], [ false, %land.lhs.true20 ], [ true, %while.cond.backedge ]
+  ret i1 %retval.0, !dbg !4599
+}

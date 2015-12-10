@@ -1,16 +1,17 @@
 define i8* @CCTK_VarTypeName(i32 %vtype) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %vtype, i64 0, metadata !169, metadata !483), !dbg !838
-  %switch.tableidx = add i32 %vtype, -1, !dbg !839
-  %1 = icmp ult i32 %switch.tableidx, 14, !dbg !839
-  br i1 %1, label %switch.lookup, label %3, !dbg !839
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %vtype}, i64 0, metadata !155), !dbg !668
+  %switch.tableidx = add i32 %vtype, -1, !dbg !669
+  %0 = icmp ult i32 %switch.tableidx, 14, !dbg !669
+  br i1 %0, label %switch.lookup, label %sw.epilog, !dbg !669
 
-switch.lookup:                                    ; preds = %0
-  %2 = sext i32 %switch.tableidx to i64, !dbg !839
-  %switch.gep = getelementptr inbounds [14 x i8*]* @switch.table, i64 0, i64 %2, !dbg !839
-  %switch.load = load i8** %switch.gep, align 8, !dbg !839
-  ret i8* %switch.load, !dbg !839
+switch.lookup:                                    ; preds = %entry
+  %1 = sext i32 %switch.tableidx to i64, !dbg !669
+  %switch.gep = getelementptr inbounds [14 x i8*]* @switch.table, i64 0, i64 %1, !dbg !669
+  %switch.load = load i8** %switch.gep, align 8, !dbg !669
+  ret i8* %switch.load, !dbg !669
 
-; <label>:3                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !170, metadata !483), !dbg !840
-  ret i8* null, !dbg !841
+sw.epilog:                                        ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !478, i64 0, metadata !156), !dbg !670
+  ret i8* null, !dbg !672
 }

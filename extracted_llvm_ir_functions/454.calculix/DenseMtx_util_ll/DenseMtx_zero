@@ -1,45 +1,46 @@
 define void @DenseMtx_zero(%struct._DenseMtx* %mtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !97, metadata !195), !dbg !480
-  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !481
-  br i1 %1, label %2, label %5, !dbg !483
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DenseMtx* %mtx}, i64 0, metadata !98), !dbg !296
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null, !dbg !297
+  br i1 %cmp, label %if.then, label %if.end, !dbg !297
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !484, !tbaa !202
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([47 x i8]* @.str3, i64 0, i64 0), %struct._DenseMtx* null) #7, !dbg !486
-  tail call void @exit(i32 -1) #8, !dbg !487
-  unreachable, !dbg !487
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !298, !tbaa !199
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str3, i64 0, i64 0), %struct._DenseMtx* null) #7, !dbg !298
+  tail call void @exit(i32 -1) #8, !dbg !300
+  unreachable, !dbg !300
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0, !dbg !488
-  %7 = load i32* %6, align 4, !dbg !488, !tbaa !302
-  switch i32 %7, label %25 [
-    i32 1, label %8
-    i32 2, label %16
-  ], !dbg !490
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0, !dbg !301
+  %1 = load i32* %type, align 4, !dbg !301, !tbaa !206
+  switch i32 %1, label %if.end12 [
+    i32 1, label %if.then2
+    i32 2, label %if.then5
+  ], !dbg !301
 
-; <label>:8                                       ; preds = %5
-  %9 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !491
-  %10 = load i32* %9, align 4, !dbg !491, !tbaa !275
-  %11 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4, !dbg !493
-  %12 = load i32* %11, align 4, !dbg !493, !tbaa !286
-  %13 = mul nsw i32 %12, %10, !dbg !494
-  %14 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9, !dbg !495
-  %15 = load double** %14, align 8, !dbg !495, !tbaa !308
-  tail call void @DVzero(i32 %13, double* %15) #7, !dbg !496
-  br label %25, !dbg !497
+if.then2:                                         ; preds = %if.end
+  %nrow = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !302
+  %2 = load i32* %nrow, align 4, !dbg !302, !tbaa !206
+  %ncol = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4, !dbg !302
+  %3 = load i32* %ncol, align 4, !dbg !302, !tbaa !206
+  %mul = mul nsw i32 %3, %2, !dbg !302
+  %entries = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9, !dbg !302
+  %4 = load double** %entries, align 8, !dbg !302, !tbaa !199
+  tail call void @DVzero(i32 %mul, double* %4) #7, !dbg !302
+  br label %if.end12, !dbg !304
 
-; <label>:16                                      ; preds = %5
-  %17 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !498
-  %18 = load i32* %17, align 4, !dbg !498, !tbaa !275
-  %19 = shl i32 %18, 1, !dbg !501
-  %20 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4, !dbg !502
-  %21 = load i32* %20, align 4, !dbg !502, !tbaa !286
-  %22 = mul nsw i32 %19, %21, !dbg !503
-  %23 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9, !dbg !504
-  %24 = load double** %23, align 8, !dbg !504, !tbaa !308
-  tail call void @DVzero(i32 %22, double* %24) #7, !dbg !505
-  br label %25, !dbg !506
+if.then5:                                         ; preds = %if.end
+  %nrow6 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !305
+  %5 = load i32* %nrow6, align 4, !dbg !305, !tbaa !206
+  %mul7 = shl i32 %5, 1, !dbg !305
+  %ncol8 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4, !dbg !305
+  %6 = load i32* %ncol8, align 4, !dbg !305, !tbaa !206
+  %mul9 = mul nsw i32 %mul7, %6, !dbg !305
+  %entries10 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9, !dbg !305
+  %7 = load double** %entries10, align 8, !dbg !305, !tbaa !199
+  tail call void @DVzero(i32 %mul9, double* %7) #7, !dbg !305
+  br label %if.end12, !dbg !307
 
-; <label>:25                                      ; preds = %5, %16, %8
-  ret void, !dbg !507
+if.end12:                                         ; preds = %if.end, %if.then5, %if.then2
+  ret void, !dbg !308
 }

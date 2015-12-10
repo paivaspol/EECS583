@@ -1,25 +1,25 @@
 define i8* @CCTK_ImplementationThorn(i8* %name) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !113, metadata !358), !dbg !660
-  %1 = load %struct.T_SKTREE** @implist, align 8, !dbg !661, !tbaa !381
-  %2 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %1, i8* %name) #8, !dbg !662
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %2, i64 0, metadata !115, metadata !358), !dbg !663
-  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !114, metadata !358), !dbg !664
-  %3 = icmp eq %struct.T_SKTREE* %2, null, !dbg !665
-  br i1 %3, label %12, label %4, !dbg !667
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !113), !dbg !524
+  %0 = load %struct.T_SKTREE** @implist, align 8, !dbg !525, !tbaa !357
+  %call = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %0, i8* %name) #9, !dbg !525
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call}, i64 0, metadata !115), !dbg !525
+  tail call void @llvm.dbg.value(metadata !351, i64 0, metadata !114), !dbg !526
+  %tobool = icmp eq %struct.T_SKTREE* %call, null, !dbg !527
+  br i1 %tobool, label %if.end, label %if.then, !dbg !527
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.T_SKTREE* %2, i64 0, i32 5, !dbg !668
-  %6 = bitcast i8** %5 to %struct.IMPLEMENTATION**, !dbg !668
-  %7 = load %struct.IMPLEMENTATION** %6, align 8, !dbg !668, !tbaa !555
-  tail call void @llvm.dbg.value(metadata %struct.IMPLEMENTATION* %7, i64 0, metadata !116, metadata !358), !dbg !670
-  %8 = getelementptr inbounds %struct.IMPLEMENTATION* %7, i64 0, i32 1, !dbg !671
-  %9 = load %struct.T_SKTREE** %8, align 8, !dbg !671, !tbaa !474
-  %10 = getelementptr inbounds %struct.T_SKTREE* %9, i64 0, i32 4, !dbg !672
-  %11 = load i8** %10, align 8, !dbg !672, !tbaa !673
-  tail call void @llvm.dbg.value(metadata i8* %11, i64 0, metadata !114, metadata !358), !dbg !664
-  br label %12, !dbg !674
+if.then:                                          ; preds = %entry
+  %data = getelementptr inbounds %struct.T_SKTREE* %call, i64 0, i32 5, !dbg !528
+  %1 = load i8** %data, align 8, !dbg !528, !tbaa !357
+  %thornlist = getelementptr inbounds i8* %1, i64 8, !dbg !530
+  %2 = bitcast i8* %thornlist to %struct.T_SKTREE**, !dbg !530
+  %3 = load %struct.T_SKTREE** %2, align 8, !dbg !530, !tbaa !357
+  %key = getelementptr inbounds %struct.T_SKTREE* %3, i64 0, i32 4, !dbg !530
+  %4 = load i8** %key, align 8, !dbg !530, !tbaa !357
+  tail call void @llvm.dbg.value(metadata !{i8* %4}, i64 0, metadata !114), !dbg !530
+  br label %if.end, !dbg !531
 
-; <label>:12                                      ; preds = %0, %4
-  %retval.0 = phi i8* [ %11, %4 ], [ null, %0 ]
-  ret i8* %retval.0, !dbg !675
+if.end:                                           ; preds = %entry, %if.then
+  %retval1.0 = phi i8* [ %4, %if.then ], [ null, %entry ]
+  ret i8* %retval1.0, !dbg !532
 }

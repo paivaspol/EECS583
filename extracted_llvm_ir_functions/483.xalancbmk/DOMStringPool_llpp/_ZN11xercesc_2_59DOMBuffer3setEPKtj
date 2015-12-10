@@ -1,0 +1,84 @@
+define void @_ZN11xercesc_2_59DOMBuffer3setEPKtj(%"class.xercesc_2_5::DOMBuffer"* nocapture %this, i16* %chars, i32 %count) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMBuffer"* %this}, i64 0, metadata !1654), !dbg !2317
+  tail call void @llvm.dbg.value(metadata !{i16* %chars}, i64 0, metadata !1655), !dbg !2317
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !1656), !dbg !2317
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !1657), !dbg !2318
+  %tobool = icmp eq i32 %count, 0, !dbg !2319
+  br i1 %tobool, label %if.then, label %if.end, !dbg !2319
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i16* %chars}, i64 0, metadata !2320), !dbg !2322
+  %cmp.i = icmp eq i16* %chars, null, !dbg !2323
+  br i1 %cmp.i, label %if.end, label %lor.lhs.false.i, !dbg !2323
+
+lor.lhs.false.i:                                  ; preds = %if.then
+  %0 = load i16* %chars, align 2, !dbg !2323, !tbaa !2236
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !2323
+  br i1 %cmp1.i, label %if.end, label %while.cond.i, !dbg !2323
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %chars, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !2324
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !2325, !tbaa !2236
+  %tobool.i = icmp eq i16 %1, 0, !dbg !2325
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !2325
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !2326
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %chars to i64, !dbg !2326
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !2326
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !2326
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !2326
+  br label %if.end, !dbg !2326
+
+if.end:                                           ; preds = %while.end.i, %lor.lhs.false.i, %if.then, %entry
+  %actualCount.0 = phi i32 [ %count, %entry ], [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %if.then ]
+  %fIndex = getelementptr inbounds %"class.xercesc_2_5::DOMBuffer"* %this, i64 0, i32 1, !dbg !2327
+  store i32 0, i32* %fIndex, align 4, !dbg !2327, !tbaa !2206
+  %fCapacity = getelementptr inbounds %"class.xercesc_2_5::DOMBuffer"* %this, i64 0, i32 2, !dbg !2328
+  %2 = load i32* %fCapacity, align 4, !dbg !2328, !tbaa !2206
+  %cmp = icmp ult i32 %actualCount.0, %2, !dbg !2328
+  br i1 %cmp, label %if.end.if.end4_crit_edge, label %if.then3, !dbg !2328
+
+if.end.if.end4_crit_edge:                         ; preds = %if.end
+  %fBuffer.phi.trans.insert = getelementptr inbounds %"class.xercesc_2_5::DOMBuffer"* %this, i64 0, i32 0
+  %.pre = load i16** %fBuffer.phi.trans.insert, align 8, !dbg !2329, !tbaa !2203
+  br label %if.end4, !dbg !2328
+
+if.then3:                                         ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMBuffer"* %this}, i64 0, metadata !2330), !dbg !2332
+  tail call void @llvm.dbg.value(metadata !{i32 %actualCount.0}, i64 0, metadata !2333), !dbg !2332
+  %conv.i = uitofp i32 %actualCount.0 to double, !dbg !2334
+  %mul.i = fmul double %conv.i, 1.250000e+00, !dbg !2334
+  %conv2.i11 = fptoui double %mul.i to i32, !dbg !2334
+  tail call void @llvm.dbg.value(metadata !{i32 %conv2.i11}, i64 0, metadata !2335), !dbg !2334
+  %fDoc.i = getelementptr inbounds %"class.xercesc_2_5::DOMBuffer"* %this, i64 0, i32 3, !dbg !2336
+  %3 = load %"class.xercesc_2_5::DOMDocumentImpl"** %fDoc.i, align 8, !dbg !2336, !tbaa !2203
+  %add3.i = add i32 %conv2.i11, 1, !dbg !2336
+  %conv4.i = zext i32 %add3.i to i64, !dbg !2336
+  %mul5.i = shl nuw nsw i64 %conv4.i, 1, !dbg !2336
+  %call.i = tail call i8* @_ZN11xercesc_2_515DOMDocumentImpl8allocateEm(%"class.xercesc_2_5::DOMDocumentImpl"* %3, i64 %mul5.i) #5, !dbg !2336
+  %4 = bitcast i8* %call.i to i16*, !dbg !2336
+  tail call void @llvm.dbg.value(metadata !{i16* %4}, i64 0, metadata !2337), !dbg !2336
+  %fBuffer.i = getelementptr inbounds %"class.xercesc_2_5::DOMBuffer"* %this, i64 0, i32 0, !dbg !2338
+  %5 = load i16** %fBuffer.i, align 8, !dbg !2338, !tbaa !2203
+  %6 = bitcast i16* %5 to i8*, !dbg !2338
+  %7 = load i32* %fCapacity, align 4, !dbg !2338, !tbaa !2206
+  %conv6.i = zext i32 %7 to i64, !dbg !2338
+  %mul7.i = shl nuw nsw i64 %conv6.i, 1, !dbg !2338
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call.i, i8* %6, i64 %mul7.i, i32 2, i1 false), !dbg !2338
+  store i16* %4, i16** %fBuffer.i, align 8, !dbg !2339, !tbaa !2203
+  store i32 %conv2.i11, i32* %fCapacity, align 4, !dbg !2340, !tbaa !2206
+  br label %if.end4, !dbg !2331
+
+if.end4:                                          ; preds = %if.end.if.end4_crit_edge, %if.then3
+  %8 = phi i16* [ %.pre, %if.end.if.end4_crit_edge ], [ %4, %if.then3 ]
+  %9 = bitcast i16* %8 to i8*, !dbg !2329
+  %10 = bitcast i16* %chars to i8*, !dbg !2329
+  %conv = zext i32 %actualCount.0 to i64, !dbg !2329
+  %mul = shl nuw nsw i64 %conv, 1, !dbg !2329
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %9, i8* %10, i64 %mul, i32 2, i1 false), !dbg !2329
+  store i32 %actualCount.0, i32* %fIndex, align 4, !dbg !2341, !tbaa !2206
+  ret void, !dbg !2342
+}

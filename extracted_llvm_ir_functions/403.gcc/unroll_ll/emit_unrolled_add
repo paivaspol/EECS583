@@ -1,17 +1,21 @@
 define void @emit_unrolled_add(%struct.rtx_def* %dest_reg, %struct.rtx_def* %src_reg, %struct.rtx_def* %increment) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %dest_reg to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %call = tail call %struct.rtx_def* @expand_simple_binop(i32 %bf.clear, i32 75, %struct.rtx_def* %src_reg, %struct.rtx_def* %increment, %struct.rtx_def* %dest_reg, i32 0, i32 3) #6
-  %cmp = icmp eq %struct.rtx_def* %call, %dest_reg
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %dest_reg}, i64 0, metadata !882), !dbg !2246
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %src_reg}, i64 0, metadata !883), !dbg !2246
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %increment}, i64 0, metadata !884), !dbg !2246
+  %0 = bitcast %struct.rtx_def* %dest_reg to i32*, !dbg !2247
+  %bf.load = load i32* %0, align 8, !dbg !2247
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !2247
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !2247
+  %call = tail call %struct.rtx_def* @expand_simple_binop(i32 %bf.clear, i32 75, %struct.rtx_def* %src_reg, %struct.rtx_def* %increment, %struct.rtx_def* %dest_reg, i32 0, i32 3) #7, !dbg !2247
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !885), !dbg !2247
+  %cmp = icmp eq %struct.rtx_def* %call, %dest_reg, !dbg !2248
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2248
 
 if.then:                                          ; preds = %entry
-  %call1 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %dest_reg, %struct.rtx_def* %call) #6
-  br label %if.end
+  %call1 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %dest_reg, %struct.rtx_def* %call) #7, !dbg !2249
+  br label %if.end, !dbg !2249
 
 if.end:                                           ; preds = %entry, %if.then
-  ret void
+  ret void, !dbg !2250
 }

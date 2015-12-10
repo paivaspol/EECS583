@@ -1,793 +1,641 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 %struct._I2Ohash = type { i32, i32, i32, %struct._I2OP*, %struct._I2OP*, %struct._I2OP** }
 %struct._I2OP = type { i32, i32, i8*, %struct._I2OP* }
 
-@__stderrp = external global %struct.__sFILE*
+@stderr = external global %struct._IO_FILE*
 @.str = private unnamed_addr constant [60 x i8] c"\0A error in I2Ohash_insert(%p,%d,%d,%p)\0A hashtable is NULL \0A\00", align 1
 @.str1 = private unnamed_addr constant [76 x i8] c"\0A fatal error in I2Ohash_insert(%p,%d,%d,%p)\0A no free list items, grow = %d\00", align 1
 @.str2 = private unnamed_addr constant [69 x i8] c"\0A error in I2Ohash_locate(%p,%d,%d,%p)\0A hashtable or pvalue is NULL\0A\00", align 1
 @.str3 = private unnamed_addr constant [69 x i8] c"\0A error in I2Ohash_remove(%p,%d,%d,%p)\0A hashtable or pvalue is NULL\0A\00", align 1
 @.str4 = private unnamed_addr constant [57 x i8] c"\0A fatal error in I2Ohash_measure(%p)\0A hashtable is NULL\0A\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @I2Ohash_insert(%struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8* %value) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._I2Ohash* %hashtable, i64 0, metadata !33, metadata !82), !dbg !83
-  tail call void @llvm.dbg.value(metadata i32 %key1, i64 0, metadata !34, metadata !82), !dbg !84
-  tail call void @llvm.dbg.value(metadata i32 %key2, i64 0, metadata !35, metadata !82), !dbg !85
-  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !36, metadata !82), !dbg !86
-  %1 = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !87
-  br i1 %1, label %2, label %5, !dbg !89
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._I2Ohash* %hashtable}, i64 0, metadata !34), !dbg !80
+  tail call void @llvm.dbg.value(metadata !{i32 %key1}, i64 0, metadata !35), !dbg !81
+  tail call void @llvm.dbg.value(metadata !{i32 %key2}, i64 0, metadata !36), !dbg !82
+  tail call void @llvm.dbg.value(metadata !{i8* %value}, i64 0, metadata !37), !dbg !83
+  %cmp = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !84
+  br i1 %cmp, label %if.then, label %if.end, !dbg !84
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !90, !tbaa !92
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([60 x i8]* @.str, i64 0, i64 0), %struct._I2Ohash* null, i32 %key1, i32 %key2, i8* %value) #6, !dbg !96
-  tail call void @exit(i32 -1) #7, !dbg !97
-  unreachable, !dbg !97
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !85, !tbaa !87
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str, i64 0, i64 0), %struct._I2Ohash* null, i32 %key1, i32 %key2, i8* %value) #5, !dbg !85
+  tail call void @exit(i32 -1) #6, !dbg !90
+  unreachable, !dbg !90
 
-; <label>:5                                       ; preds = %0
-  %6 = add nsw i32 %key1, 1, !dbg !98
-  %7 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !99
-  %8 = load i32* %7, align 4, !dbg !99, !tbaa !100
-  %9 = srem i32 %6, %8, !dbg !103
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !38, metadata !82), !dbg !104
-  %10 = add nsw i32 %key2, 1, !dbg !105
-  %11 = srem i32 %10, %8, !dbg !106
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !39, metadata !82), !dbg !107
-  %12 = mul nsw i32 %11, %9, !dbg !108
-  %13 = srem i32 %12, %8, !dbg !109
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !37, metadata !82), !dbg !110
-  %14 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 4, !dbg !111
-  %15 = load %struct._I2OP** %14, align 8, !dbg !111, !tbaa !113
-  tail call void @llvm.dbg.value(metadata %struct._I2OP* %15, i64 0, metadata !40, metadata !82), !dbg !114
-  %16 = icmp eq %struct._I2OP* %15, null, !dbg !115
-  br i1 %16, label %17, label %32, !dbg !116
+if.end:                                           ; preds = %entry
+  %add = add nsw i32 %key1, 1, !dbg !91
+  %nlist = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !91
+  %1 = load i32* %nlist, align 4, !dbg !91, !tbaa !92
+  %rem = srem i32 %add, %1, !dbg !91
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !39), !dbg !91
+  %add1 = add nsw i32 %key2, 1, !dbg !93
+  %rem3 = srem i32 %add1, %1, !dbg !93
+  tail call void @llvm.dbg.value(metadata !{i32 %rem3}, i64 0, metadata !40), !dbg !93
+  %mul = mul nsw i32 %rem3, %rem, !dbg !94
+  %rem5 = srem i32 %mul, %1, !dbg !94
+  tail call void @llvm.dbg.value(metadata !{i32 %rem5}, i64 0, metadata !38), !dbg !94
+  %freeI2OP = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 4, !dbg !95
+  %2 = load %struct._I2OP** %freeI2OP, align 8, !dbg !95, !tbaa !87
+  tail call void @llvm.dbg.value(metadata !{%struct._I2OP* %2}, i64 0, metadata !41), !dbg !95
+  %cmp6 = icmp eq %struct._I2OP* %2, null, !dbg !95
+  br i1 %cmp6, label %if.then7, label %if.end18, !dbg !95
 
-; <label>:17                                      ; preds = %5
-  %18 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 1, !dbg !117
-  %19 = load i32* %18, align 4, !dbg !117, !tbaa !120
-  %20 = icmp slt i32 %19, 1, !dbg !121
-  br i1 %20, label %21, label %24, !dbg !122
+if.then7:                                         ; preds = %if.end
+  %grow = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 1, !dbg !96
+  %3 = load i32* %grow, align 4, !dbg !96, !tbaa !92
+  %cmp8 = icmp slt i32 %3, 1, !dbg !96
+  br i1 %cmp8, label %if.then9, label %if.end12, !dbg !96
 
-; <label>:21                                      ; preds = %17
-  %22 = load %struct.__sFILE** @__stderrp, align 8, !dbg !123, !tbaa !92
-  %23 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %22, i8* getelementptr inbounds ([76 x i8]* @.str1, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8* %value, i32 %19) #6, !dbg !125
-  tail call void @exit(i32 -1) #7, !dbg !126
-  unreachable, !dbg !126
+if.then9:                                         ; preds = %if.then7
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !98, !tbaa !87
+  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([76 x i8]* @.str1, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8* %value, i32 %3) #5, !dbg !98
+  tail call void @exit(i32 -1) #6, !dbg !100
+  unreachable, !dbg !100
 
-; <label>:24                                      ; preds = %17
-  %25 = tail call %struct._I2OP* @I2OP_init(i32 %19, i32 1) #6, !dbg !127
-  tail call void @llvm.dbg.value(metadata %struct._I2OP* %25, i64 0, metadata !40, metadata !82), !dbg !114
-  %26 = getelementptr inbounds %struct._I2OP* %25, i64 1, !dbg !128
-  store %struct._I2OP* %26, %struct._I2OP** %14, align 8, !dbg !129, !tbaa !113
-  %27 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 3, !dbg !130
-  %28 = bitcast %struct._I2OP** %27 to i64*, !dbg !130
-  %29 = load i64* %28, align 8, !dbg !130, !tbaa !131
-  %30 = getelementptr inbounds %struct._I2OP* %25, i64 0, i32 3, !dbg !132
-  %31 = bitcast %struct._I2OP** %30 to i64*, !dbg !133
-  store i64 %29, i64* %31, align 8, !dbg !133, !tbaa !134
-  store %struct._I2OP* %25, %struct._I2OP** %27, align 8, !dbg !136, !tbaa !131
-  tail call void @llvm.dbg.value(metadata %struct._I2OP* %26, i64 0, metadata !40, metadata !82), !dbg !114
-  br label %32, !dbg !137
+if.end12:                                         ; preds = %if.then7
+  %call14 = tail call %struct._I2OP* @I2OP_init(i32 %3, i32 1) #5, !dbg !101
+  tail call void @llvm.dbg.value(metadata !{%struct._I2OP* %call14}, i64 0, metadata !41), !dbg !101
+  %add.ptr = getelementptr inbounds %struct._I2OP* %call14, i64 1, !dbg !102
+  store %struct._I2OP* %add.ptr, %struct._I2OP** %freeI2OP, align 8, !dbg !102, !tbaa !87
+  %baseI2OP = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 3, !dbg !103
+  %5 = load %struct._I2OP** %baseI2OP, align 8, !dbg !103, !tbaa !87
+  %next = getelementptr inbounds %struct._I2OP* %call14, i64 0, i32 3, !dbg !103
+  store %struct._I2OP* %5, %struct._I2OP** %next, align 8, !dbg !103, !tbaa !87
+  store %struct._I2OP* %call14, %struct._I2OP** %baseI2OP, align 8, !dbg !104, !tbaa !87
+  %6 = load %struct._I2OP** %freeI2OP, align 8, !dbg !105, !tbaa !87
+  tail call void @llvm.dbg.value(metadata !{%struct._I2OP* %6}, i64 0, metadata !41), !dbg !105
+  br label %if.end18, !dbg !106
 
-; <label>:32                                      ; preds = %24, %5
-  %i2op.0 = phi %struct._I2OP* [ %26, %24 ], [ %15, %5 ]
-  %33 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 3, !dbg !138
-  %34 = bitcast %struct._I2OP** %33 to i64*, !dbg !138
-  %35 = load i64* %34, align 8, !dbg !138, !tbaa !134
-  %36 = bitcast %struct._I2OP** %14 to i64*, !dbg !139
-  store i64 %35, i64* %36, align 8, !dbg !139, !tbaa !113
-  %37 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 0, !dbg !140
-  store i32 %key1, i32* %37, align 4, !dbg !141, !tbaa !142
-  %38 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 1, !dbg !143
-  store i32 %key2, i32* %38, align 4, !dbg !144, !tbaa !145
-  %39 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 2, !dbg !146
-  store i8* %value, i8** %39, align 8, !dbg !147, !tbaa !148
-  store %struct._I2OP* null, %struct._I2OP** %33, align 8, !dbg !149, !tbaa !134
-  %40 = sext i32 %13 to i64, !dbg !150
-  %41 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !152
-  %42 = load %struct._I2OP*** %41, align 8, !dbg !152, !tbaa !153
-  %43 = getelementptr inbounds %struct._I2OP** %42, i64 %40, !dbg !150
-  tail call void @llvm.dbg.value(metadata %struct._I2OP* null, i64 0, metadata !42, metadata !82), !dbg !154
-  %j2op.01 = load %struct._I2OP** %43, align 8, !dbg !150
-  %44 = icmp eq %struct._I2OP* %j2op.01, null, !dbg !155
-  br i1 %44, label %._crit_edge.thread, label %.lr.ph, !dbg !157
+if.end18:                                         ; preds = %if.end12, %if.end
+  %i2op.0 = phi %struct._I2OP* [ %6, %if.end12 ], [ %2, %if.end ]
+  %next19 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 3, !dbg !107
+  %7 = load %struct._I2OP** %next19, align 8, !dbg !107, !tbaa !87
+  store %struct._I2OP* %7, %struct._I2OP** %freeI2OP, align 8, !dbg !107, !tbaa !87
+  %value0 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 0, !dbg !108
+  store i32 %key1, i32* %value0, align 4, !dbg !108, !tbaa !92
+  %value1 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 1, !dbg !109
+  store i32 %key2, i32* %value1, align 4, !dbg !109, !tbaa !92
+  %value2 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 2, !dbg !110
+  store i8* %value, i8** %value2, align 8, !dbg !110, !tbaa !87
+  store %struct._I2OP* null, %struct._I2OP** %next19, align 8, !dbg !111, !tbaa !87
+  %idxprom = sext i32 %rem5 to i64, !dbg !112
+  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !112
+  %8 = load %struct._I2OP*** %heads, align 8, !dbg !112, !tbaa !87
+  %arrayidx = getelementptr inbounds %struct._I2OP** %8, i64 %idxprom, !dbg !112
+  tail call void @llvm.dbg.value(metadata !114, i64 0, metadata !43), !dbg !112
+  %j2op.085 = load %struct._I2OP** %arrayidx, align 8, !dbg !112
+  %cmp2286 = icmp eq %struct._I2OP* %j2op.085, null, !dbg !112
+  br i1 %cmp2286, label %if.then33, label %for.body, !dbg !112
 
-.lr.ph:                                           ; preds = %32, %54
-  %j2op.03 = phi %struct._I2OP* [ %j2op.0, %54 ], [ %j2op.01, %32 ]
-  %prev.02 = phi %struct._I2OP* [ %j2op.03, %54 ], [ null, %32 ]
-  %45 = getelementptr inbounds %struct._I2OP* %j2op.03, i64 0, i32 0, !dbg !158
-  %46 = load i32* %45, align 4, !dbg !158, !tbaa !142
-  %47 = icmp sgt i32 %46, %key1, !dbg !161
-  br i1 %47, label %._crit_edge, label %48, !dbg !162
+for.body:                                         ; preds = %if.end18, %if.end30
+  %j2op.088 = phi %struct._I2OP* [ %j2op.0, %if.end30 ], [ %j2op.085, %if.end18 ]
+  %prev.087 = phi %struct._I2OP* [ %j2op.088, %if.end30 ], [ null, %if.end18 ]
+  %value023 = getelementptr inbounds %struct._I2OP* %j2op.088, i64 0, i32 0, !dbg !115
+  %9 = load i32* %value023, align 4, !dbg !115, !tbaa !92
+  %cmp24 = icmp sgt i32 %9, %key1, !dbg !115
+  br i1 %cmp24, label %for.end, label %lor.lhs.false, !dbg !115
 
-; <label>:48                                      ; preds = %.lr.ph
-  %49 = icmp eq i32 %46, %key1, !dbg !163
-  br i1 %49, label %50, label %54, !dbg !164
+lor.lhs.false:                                    ; preds = %for.body
+  %cmp26 = icmp eq i32 %9, %key1, !dbg !115
+  br i1 %cmp26, label %land.lhs.true, label %if.end30, !dbg !115
 
-; <label>:50                                      ; preds = %48
-  %51 = getelementptr inbounds %struct._I2OP* %j2op.03, i64 0, i32 1, !dbg !165
-  %52 = load i32* %51, align 4, !dbg !165, !tbaa !145
-  %53 = icmp slt i32 %52, %key2, !dbg !166
-  br i1 %53, label %54, label %._crit_edge, !dbg !167
+land.lhs.true:                                    ; preds = %lor.lhs.false
+  %value127 = getelementptr inbounds %struct._I2OP* %j2op.088, i64 0, i32 1, !dbg !115
+  %10 = load i32* %value127, align 4, !dbg !115, !tbaa !92
+  %cmp28 = icmp slt i32 %10, %key2, !dbg !115
+  br i1 %cmp28, label %if.end30, label %for.end, !dbg !115
 
-; <label>:54                                      ; preds = %50, %48
-  tail call void @llvm.dbg.value(metadata %struct._I2OP* %j2op.0, i64 0, metadata !42, metadata !82), !dbg !154
-  %55 = getelementptr inbounds %struct._I2OP* %j2op.03, i64 0, i32 3, !dbg !168
-  %j2op.0 = load %struct._I2OP** %55, align 8, !dbg !150
-  %56 = icmp eq %struct._I2OP* %j2op.0, null, !dbg !155
-  br i1 %56, label %._crit_edge.thread18, label %.lr.ph, !dbg !157
+if.end30:                                         ; preds = %land.lhs.true, %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct._I2OP* %j2op.0.lcssa94}, i64 0, metadata !43), !dbg !117
+  %next31 = getelementptr inbounds %struct._I2OP* %j2op.088, i64 0, i32 3, !dbg !118
+  %j2op.0 = load %struct._I2OP** %next31, align 8, !dbg !112
+  %cmp22 = icmp eq %struct._I2OP* %j2op.0, null, !dbg !112
+  br i1 %cmp22, label %for.end, label %for.body, !dbg !112
 
-._crit_edge:                                      ; preds = %.lr.ph, %50
-  %57 = icmp eq %struct._I2OP* %prev.02, null, !dbg !169
-  br i1 %57, label %._crit_edge.thread, label %._crit_edge.thread18, !dbg !171
+for.end:                                          ; preds = %if.end30, %land.lhs.true, %for.body
+  %j2op.0.lcssa = phi %struct._I2OP* [ %j2op.088, %for.body ], [ %j2op.088, %land.lhs.true ], [ null, %if.end30 ]
+  %prev.0.lcssa = phi %struct._I2OP* [ %prev.087, %for.body ], [ %prev.087, %land.lhs.true ], [ %j2op.088, %if.end30 ]
+  %cmp32 = icmp eq %struct._I2OP* %prev.0.lcssa, null, !dbg !119
+  br i1 %cmp32, label %if.then33, label %if.else, !dbg !119
 
-._crit_edge.thread:                               ; preds = %32, %._crit_edge
-  %j2op.0.lcssa17 = phi %struct._I2OP* [ %j2op.03, %._crit_edge ], [ null, %32 ]
-  store %struct._I2OP* %i2op.0, %struct._I2OP** %43, align 8, !dbg !172, !tbaa !92
-  br label %59, !dbg !174
+if.then33:                                        ; preds = %if.end18, %for.end
+  %j2op.0.lcssa95 = phi %struct._I2OP* [ %j2op.0.lcssa, %for.end ], [ null, %if.end18 ]
+  store %struct._I2OP* %i2op.0, %struct._I2OP** %arrayidx, align 8, !dbg !120, !tbaa !87
+  br label %if.end38, !dbg !122
 
-._crit_edge.thread18:                             ; preds = %54, %._crit_edge
-  %prev.0.lcssa20 = phi %struct._I2OP* [ %prev.02, %._crit_edge ], [ %j2op.03, %54 ]
-  %j2op.0.lcssa19 = phi %struct._I2OP* [ %j2op.03, %._crit_edge ], [ null, %54 ]
-  %58 = getelementptr inbounds %struct._I2OP* %prev.0.lcssa20, i64 0, i32 3, !dbg !175
-  store %struct._I2OP* %i2op.0, %struct._I2OP** %58, align 8, !dbg !177, !tbaa !134
-  br label %59
+if.else:                                          ; preds = %for.end
+  %next37 = getelementptr inbounds %struct._I2OP* %prev.0.lcssa, i64 0, i32 3, !dbg !123
+  store %struct._I2OP* %i2op.0, %struct._I2OP** %next37, align 8, !dbg !123, !tbaa !87
+  br label %if.end38
 
-; <label>:59                                      ; preds = %._crit_edge.thread18, %._crit_edge.thread
-  %j2op.0.lcssa16 = phi %struct._I2OP* [ %j2op.0.lcssa19, %._crit_edge.thread18 ], [ %j2op.0.lcssa17, %._crit_edge.thread ]
-  store %struct._I2OP* %j2op.0.lcssa16, %struct._I2OP** %33, align 8, !dbg !178, !tbaa !134
-  %60 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 2, !dbg !179
-  %61 = load i32* %60, align 4, !dbg !180, !tbaa !181
-  %62 = add nsw i32 %61, 1, !dbg !180
-  store i32 %62, i32* %60, align 4, !dbg !180, !tbaa !181
-  ret void, !dbg !182
+if.end38:                                         ; preds = %if.else, %if.then33
+  %j2op.0.lcssa94 = phi %struct._I2OP* [ %j2op.0.lcssa, %if.else ], [ %j2op.0.lcssa95, %if.then33 ]
+  store %struct._I2OP* %j2op.0.lcssa94, %struct._I2OP** %next19, align 8, !dbg !125, !tbaa !87
+  %nitem = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 2, !dbg !126
+  %11 = load i32* %nitem, align 4, !dbg !126, !tbaa !92
+  %inc = add nsw i32 %11, 1, !dbg !126
+  store i32 %inc, i32* %nitem, align 4, !dbg !126, !tbaa !92
+  ret void, !dbg !127
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #1
+declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #1
 
-; Function Attrs: noreturn optsize
+; Function Attrs: noreturn nounwind optsize
 declare void @exit(i32) #2
 
 ; Function Attrs: optsize
 declare %struct._I2OP* @I2OP_init(i32, i32) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @I2Ohash_locate(%struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8** %pvalue) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._I2Ohash* %hashtable, i64 0, metadata !48, metadata !82), !dbg !183
-  tail call void @llvm.dbg.value(metadata i32 %key1, i64 0, metadata !49, metadata !82), !dbg !184
-  tail call void @llvm.dbg.value(metadata i32 %key2, i64 0, metadata !50, metadata !82), !dbg !185
-  tail call void @llvm.dbg.value(metadata i8** %pvalue, i64 0, metadata !51, metadata !82), !dbg !186
-  %1 = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !187
-  %2 = icmp eq i8** %pvalue, null, !dbg !189
-  %or.cond = or i1 %1, %2, !dbg !190
-  br i1 %or.cond, label %3, label %6, !dbg !190
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._I2Ohash* %hashtable}, i64 0, metadata !49), !dbg !128
+  tail call void @llvm.dbg.value(metadata !{i32 %key1}, i64 0, metadata !50), !dbg !129
+  tail call void @llvm.dbg.value(metadata !{i32 %key2}, i64 0, metadata !51), !dbg !130
+  tail call void @llvm.dbg.value(metadata !{i8** %pvalue}, i64 0, metadata !52), !dbg !131
+  %cmp = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !132
+  %cmp1 = icmp eq i8** %pvalue, null, !dbg !132
+  %or.cond = or i1 %cmp, %cmp1, !dbg !132
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !132
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !191, !tbaa !92
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([69 x i8]* @.str2, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8** %pvalue) #6, !dbg !193
-  tail call void @exit(i32 -1) #7, !dbg !194
-  unreachable, !dbg !194
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !133, !tbaa !87
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([69 x i8]* @.str2, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8** %pvalue) #5, !dbg !133
+  tail call void @exit(i32 -1) #6, !dbg !135
+  unreachable, !dbg !135
 
-; <label>:6                                       ; preds = %0
-  %7 = add nsw i32 %key1, 1, !dbg !195
-  %8 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !196
-  %9 = load i32* %8, align 4, !dbg !196, !tbaa !100
-  %10 = srem i32 %7, %9, !dbg !197
-  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !53, metadata !82), !dbg !198
-  %11 = add nsw i32 %key2, 1, !dbg !199
-  %12 = srem i32 %11, %9, !dbg !200
-  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !54, metadata !82), !dbg !201
-  %13 = mul nsw i32 %12, %10, !dbg !202
-  %14 = srem i32 %13, %9, !dbg !203
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !52, metadata !82), !dbg !204
-  %15 = sext i32 %14 to i64, !dbg !205
-  %16 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !207
-  %17 = load %struct._I2OP*** %16, align 8, !dbg !207, !tbaa !153
-  %18 = getelementptr inbounds %struct._I2OP** %17, i64 %15, !dbg !205
-  %i2op.03 = load %struct._I2OP** %18, align 8, !dbg !205
-  %19 = icmp eq %struct._I2OP* %i2op.03, null, !dbg !208
-  br i1 %19, label %.critedge, label %.lr.ph, !dbg !210
+if.end:                                           ; preds = %entry
+  %add = add nsw i32 %key1, 1, !dbg !136
+  %nlist = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !136
+  %1 = load i32* %nlist, align 4, !dbg !136, !tbaa !92
+  %rem = srem i32 %add, %1, !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !54), !dbg !136
+  %add2 = add nsw i32 %key2, 1, !dbg !137
+  %rem4 = srem i32 %add2, %1, !dbg !137
+  tail call void @llvm.dbg.value(metadata !{i32 %rem4}, i64 0, metadata !55), !dbg !137
+  %mul = mul nsw i32 %rem4, %rem, !dbg !138
+  %rem6 = srem i32 %mul, %1, !dbg !138
+  tail call void @llvm.dbg.value(metadata !{i32 %rem6}, i64 0, metadata !53), !dbg !138
+  %idxprom = sext i32 %rem6 to i64, !dbg !139
+  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !139
+  %2 = load %struct._I2OP*** %heads, align 8, !dbg !139, !tbaa !87
+  %arrayidx = getelementptr inbounds %struct._I2OP** %2, i64 %idxprom, !dbg !139
+  %i2op.053 = load %struct._I2OP** %arrayidx, align 8, !dbg !139
+  %cmp754 = icmp eq %struct._I2OP* %i2op.053, null, !dbg !139
+  br i1 %cmp754, label %if.end23, label %for.body, !dbg !139
 
-.lr.ph:                                           ; preds = %6, %29
-  %i2op.04 = phi %struct._I2OP* [ %i2op.0, %29 ], [ %i2op.03, %6 ]
-  %20 = getelementptr inbounds %struct._I2OP* %i2op.04, i64 0, i32 0, !dbg !211
-  %21 = load i32* %20, align 4, !dbg !211, !tbaa !142
-  %22 = icmp sgt i32 %21, %key1, !dbg !214
-  br i1 %22, label %32, label %23, !dbg !215
+for.body:                                         ; preds = %if.end, %for.inc
+  %i2op.055 = phi %struct._I2OP* [ %i2op.0, %for.inc ], [ %i2op.053, %if.end ]
+  %value0 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 0, !dbg !141
+  %3 = load i32* %value0, align 4, !dbg !141, !tbaa !92
+  %cmp8 = icmp sgt i32 %3, %key1, !dbg !141
+  br i1 %cmp8, label %land.lhs.true16, label %lor.lhs.false9, !dbg !141
 
-; <label>:23                                      ; preds = %.lr.ph
-  %24 = icmp eq i32 %21, %key1, !dbg !216
-  br i1 %24, label %25, label %29, !dbg !217
+lor.lhs.false9:                                   ; preds = %for.body
+  %cmp11 = icmp eq i32 %3, %key1, !dbg !141
+  br i1 %cmp11, label %land.lhs.true, label %for.inc, !dbg !141
 
-; <label>:25                                      ; preds = %23
-  %26 = getelementptr inbounds %struct._I2OP* %i2op.04, i64 0, i32 1, !dbg !218
-  %27 = load i32* %26, align 4, !dbg !218, !tbaa !145
-  %28 = icmp slt i32 %27, %key2, !dbg !219
-  br i1 %28, label %29, label %32, !dbg !220
+land.lhs.true:                                    ; preds = %lor.lhs.false9
+  %value1 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 1, !dbg !141
+  %4 = load i32* %value1, align 4, !dbg !141, !tbaa !92
+  %cmp12 = icmp slt i32 %4, %key2, !dbg !141
+  br i1 %cmp12, label %for.inc, label %land.lhs.true16, !dbg !141
 
-; <label>:29                                      ; preds = %25, %23
-  %30 = getelementptr inbounds %struct._I2OP* %i2op.04, i64 0, i32 3, !dbg !221
-  %i2op.0 = load %struct._I2OP** %30, align 8, !dbg !205
-  %31 = icmp eq %struct._I2OP* %i2op.0, null, !dbg !208
-  br i1 %31, label %.critedge, label %.lr.ph, !dbg !210
+for.inc:                                          ; preds = %land.lhs.true, %lor.lhs.false9
+  %next = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 3, !dbg !143
+  %i2op.0 = load %struct._I2OP** %next, align 8, !dbg !139
+  %cmp7 = icmp eq %struct._I2OP* %i2op.0, null, !dbg !139
+  br i1 %cmp7, label %if.end23, label %for.body, !dbg !139
 
-; <label>:32                                      ; preds = %.lr.ph, %25
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !55, metadata !82), !dbg !222
-  %33 = icmp eq i32 %21, %key1, !dbg !223
-  br i1 %33, label %34, label %.critedge, !dbg !225
+land.lhs.true16:                                  ; preds = %for.body, %land.lhs.true
+  %cmp18 = icmp eq i32 %3, %key1, !dbg !144
+  br i1 %cmp18, label %land.lhs.true19, label %if.end23, !dbg !144
 
-; <label>:34                                      ; preds = %32
-  %35 = getelementptr inbounds %struct._I2OP* %i2op.04, i64 0, i32 1, !dbg !226
-  %36 = load i32* %35, align 4, !dbg !226, !tbaa !145
-  %37 = icmp eq i32 %36, %key2, !dbg !227
-  br i1 %37, label %38, label %.critedge, !dbg !228
+land.lhs.true19:                                  ; preds = %land.lhs.true16
+  %value120 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 1, !dbg !144
+  %5 = load i32* %value120, align 4, !dbg !144, !tbaa !92
+  %cmp21 = icmp eq i32 %5, %key2, !dbg !144
+  br i1 %cmp21, label %if.then22, label %if.end23, !dbg !144
 
-; <label>:38                                      ; preds = %34
-  %39 = getelementptr inbounds %struct._I2OP* %i2op.04, i64 0, i32 2, !dbg !229
-  %40 = bitcast i8** %39 to i64*, !dbg !229
-  %41 = load i64* %40, align 8, !dbg !229, !tbaa !148
-  %42 = bitcast i8** %pvalue to i64*, !dbg !231
-  store i64 %41, i64* %42, align 8, !dbg !231, !tbaa !92
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !55, metadata !82), !dbg !222
-  br label %.critedge, !dbg !232
+if.then22:                                        ; preds = %land.lhs.true19
+  %value2 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 2, !dbg !145
+  %6 = load i8** %value2, align 8, !dbg !145, !tbaa !87
+  store i8* %6, i8** %pvalue, align 8, !dbg !145, !tbaa !87
+  tail call void @llvm.dbg.value(metadata !147, i64 0, metadata !56), !dbg !148
+  br label %if.end23, !dbg !149
 
-.critedge:                                        ; preds = %29, %6, %38, %34, %32
-  %rc.0 = phi i32 [ 1, %38 ], [ 0, %34 ], [ 0, %32 ], [ 0, %6 ], [ 0, %29 ]
-  ret i32 %rc.0, !dbg !233
+if.end23:                                         ; preds = %if.end, %for.inc, %if.then22, %land.lhs.true19, %land.lhs.true16
+  %rc.0 = phi i32 [ 1, %if.then22 ], [ 0, %land.lhs.true19 ], [ 0, %land.lhs.true16 ], [ 0, %for.inc ], [ 0, %if.end ]
+  ret i32 %rc.0, !dbg !150
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @I2Ohash_remove(%struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8** %pvalue) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._I2Ohash* %hashtable, i64 0, metadata !59, metadata !82), !dbg !234
-  tail call void @llvm.dbg.value(metadata i32 %key1, i64 0, metadata !60, metadata !82), !dbg !235
-  tail call void @llvm.dbg.value(metadata i32 %key2, i64 0, metadata !61, metadata !82), !dbg !236
-  tail call void @llvm.dbg.value(metadata i8** %pvalue, i64 0, metadata !62, metadata !82), !dbg !237
-  %1 = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !238
-  %2 = icmp eq i8** %pvalue, null, !dbg !240
-  %or.cond = or i1 %1, %2, !dbg !241
-  br i1 %or.cond, label %3, label %6, !dbg !241
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._I2Ohash* %hashtable}, i64 0, metadata !60), !dbg !151
+  tail call void @llvm.dbg.value(metadata !{i32 %key1}, i64 0, metadata !61), !dbg !152
+  tail call void @llvm.dbg.value(metadata !{i32 %key2}, i64 0, metadata !62), !dbg !153
+  tail call void @llvm.dbg.value(metadata !{i8** %pvalue}, i64 0, metadata !63), !dbg !154
+  %cmp = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !155
+  %cmp1 = icmp eq i8** %pvalue, null, !dbg !155
+  %or.cond = or i1 %cmp, %cmp1, !dbg !155
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !155
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !242, !tbaa !92
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([69 x i8]* @.str3, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8** %pvalue) #6, !dbg !244
-  tail call void @exit(i32 -1) #7, !dbg !245
-  unreachable, !dbg !245
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !156, !tbaa !87
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([69 x i8]* @.str3, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8** %pvalue) #5, !dbg !156
+  tail call void @exit(i32 -1) #6, !dbg !158
+  unreachable, !dbg !158
 
-; <label>:6                                       ; preds = %0
-  %7 = add nsw i32 %key1, 1, !dbg !246
-  %8 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !247
-  %9 = load i32* %8, align 4, !dbg !247, !tbaa !100
-  %10 = srem i32 %7, %9, !dbg !248
-  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !64, metadata !82), !dbg !249
-  %11 = add nsw i32 %key2, 1, !dbg !250
-  %12 = srem i32 %11, %9, !dbg !251
-  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !65, metadata !82), !dbg !252
-  %13 = mul nsw i32 %12, %10, !dbg !253
-  %14 = srem i32 %13, %9, !dbg !254
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !63, metadata !82), !dbg !255
-  %15 = sext i32 %14 to i64, !dbg !256
-  %16 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !258
-  %17 = load %struct._I2OP*** %16, align 8, !dbg !258, !tbaa !153
-  %18 = getelementptr inbounds %struct._I2OP** %17, i64 %15, !dbg !256
-  tail call void @llvm.dbg.value(metadata %struct._I2OP* null, i64 0, metadata !68, metadata !82), !dbg !259
-  %i2op.04 = load %struct._I2OP** %18, align 8, !dbg !256
-  %19 = icmp eq %struct._I2OP* %i2op.04, null, !dbg !260
-  br i1 %19, label %.critedge, label %.lr.ph, !dbg !262
+if.end:                                           ; preds = %entry
+  %add = add nsw i32 %key1, 1, !dbg !159
+  %nlist = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !159
+  %1 = load i32* %nlist, align 4, !dbg !159, !tbaa !92
+  %rem = srem i32 %add, %1, !dbg !159
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !65), !dbg !159
+  %add2 = add nsw i32 %key2, 1, !dbg !160
+  %rem4 = srem i32 %add2, %1, !dbg !160
+  tail call void @llvm.dbg.value(metadata !{i32 %rem4}, i64 0, metadata !66), !dbg !160
+  %mul = mul nsw i32 %rem4, %rem, !dbg !161
+  %rem6 = srem i32 %mul, %1, !dbg !161
+  tail call void @llvm.dbg.value(metadata !{i32 %rem6}, i64 0, metadata !64), !dbg !161
+  %idxprom = sext i32 %rem6 to i64, !dbg !162
+  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !162
+  %2 = load %struct._I2OP*** %heads, align 8, !dbg !162, !tbaa !87
+  %arrayidx = getelementptr inbounds %struct._I2OP** %2, i64 %idxprom, !dbg !162
+  tail call void @llvm.dbg.value(metadata !114, i64 0, metadata !69), !dbg !162
+  %i2op.077 = load %struct._I2OP** %arrayidx, align 8, !dbg !162
+  %cmp778 = icmp eq %struct._I2OP* %i2op.077, null, !dbg !162
+  br i1 %cmp778, label %if.end34, label %for.body, !dbg !162
 
-.lr.ph:                                           ; preds = %6, %29
-  %i2op.06 = phi %struct._I2OP* [ %i2op.0, %29 ], [ %i2op.04, %6 ]
-  %prev.05 = phi %struct._I2OP* [ %i2op.06, %29 ], [ null, %6 ]
-  %20 = getelementptr inbounds %struct._I2OP* %i2op.06, i64 0, i32 0, !dbg !263
-  %21 = load i32* %20, align 4, !dbg !263, !tbaa !142
-  %22 = icmp sgt i32 %21, %key1, !dbg !266
-  br i1 %22, label %32, label %23, !dbg !267
+for.body:                                         ; preds = %if.end, %if.end14
+  %i2op.080 = phi %struct._I2OP* [ %i2op.0, %if.end14 ], [ %i2op.077, %if.end ]
+  %prev.079 = phi %struct._I2OP* [ %i2op.080, %if.end14 ], [ null, %if.end ]
+  %value0 = getelementptr inbounds %struct._I2OP* %i2op.080, i64 0, i32 0, !dbg !164
+  %3 = load i32* %value0, align 4, !dbg !164, !tbaa !92
+  %cmp8 = icmp sgt i32 %3, %key1, !dbg !164
+  br i1 %cmp8, label %land.lhs.true16, label %lor.lhs.false9, !dbg !164
 
-; <label>:23                                      ; preds = %.lr.ph
-  %24 = icmp eq i32 %21, %key1, !dbg !268
-  br i1 %24, label %25, label %29, !dbg !269
+lor.lhs.false9:                                   ; preds = %for.body
+  %cmp11 = icmp eq i32 %3, %key1, !dbg !164
+  br i1 %cmp11, label %land.lhs.true, label %if.end14, !dbg !164
 
-; <label>:25                                      ; preds = %23
-  %26 = getelementptr inbounds %struct._I2OP* %i2op.06, i64 0, i32 1, !dbg !270
-  %27 = load i32* %26, align 4, !dbg !270, !tbaa !145
-  %28 = icmp slt i32 %27, %key2, !dbg !271
-  br i1 %28, label %29, label %32, !dbg !272
+land.lhs.true:                                    ; preds = %lor.lhs.false9
+  %value1 = getelementptr inbounds %struct._I2OP* %i2op.080, i64 0, i32 1, !dbg !164
+  %4 = load i32* %value1, align 4, !dbg !164, !tbaa !92
+  %cmp12 = icmp slt i32 %4, %key2, !dbg !164
+  br i1 %cmp12, label %if.end14, label %land.lhs.true16, !dbg !164
 
-; <label>:29                                      ; preds = %25, %23
-  tail call void @llvm.dbg.value(metadata %struct._I2OP* %i2op.0, i64 0, metadata !68, metadata !82), !dbg !259
-  %30 = getelementptr inbounds %struct._I2OP* %i2op.06, i64 0, i32 3, !dbg !273
-  %i2op.0 = load %struct._I2OP** %30, align 8, !dbg !256
-  %31 = icmp eq %struct._I2OP* %i2op.0, null, !dbg !260
-  br i1 %31, label %.critedge, label %.lr.ph, !dbg !262
+if.end14:                                         ; preds = %land.lhs.true, %lor.lhs.false9
+  tail call void @llvm.dbg.value(metadata !{%struct._I2OP* %i2op.080}, i64 0, metadata !69), !dbg !166
+  %next = getelementptr inbounds %struct._I2OP* %i2op.080, i64 0, i32 3, !dbg !167
+  %i2op.0 = load %struct._I2OP** %next, align 8, !dbg !162
+  %cmp7 = icmp eq %struct._I2OP* %i2op.0, null, !dbg !162
+  br i1 %cmp7, label %if.end34, label %for.body, !dbg !162
 
-; <label>:32                                      ; preds = %.lr.ph, %25
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !66, metadata !82), !dbg !274
-  %33 = icmp eq i32 %21, %key1, !dbg !275
-  br i1 %33, label %34, label %.critedge, !dbg !277
+land.lhs.true16:                                  ; preds = %for.body, %land.lhs.true
+  %cmp18 = icmp eq i32 %3, %key1, !dbg !168
+  br i1 %cmp18, label %land.lhs.true19, label %if.end34, !dbg !168
 
-; <label>:34                                      ; preds = %32
-  %35 = getelementptr inbounds %struct._I2OP* %i2op.06, i64 0, i32 1, !dbg !278
-  %36 = load i32* %35, align 4, !dbg !278, !tbaa !145
-  %37 = icmp eq i32 %36, %key2, !dbg !279
-  br i1 %37, label %38, label %.critedge, !dbg !280
+land.lhs.true19:                                  ; preds = %land.lhs.true16
+  %value120 = getelementptr inbounds %struct._I2OP* %i2op.080, i64 0, i32 1, !dbg !168
+  %5 = load i32* %value120, align 4, !dbg !168, !tbaa !92
+  %cmp21 = icmp eq i32 %5, %key2, !dbg !168
+  br i1 %cmp21, label %if.then22, label %if.end34, !dbg !168
 
-; <label>:38                                      ; preds = %34
-  %39 = icmp eq %struct._I2OP* %prev.05, null, !dbg !281
-  %40 = getelementptr inbounds %struct._I2OP* %i2op.06, i64 0, i32 3, !dbg !284
-  %41 = bitcast %struct._I2OP** %40 to i64*, !dbg !284
-  %42 = load i64* %41, align 8, !dbg !284, !tbaa !134
-  br i1 %39, label %43, label %45, !dbg !286
+if.then22:                                        ; preds = %land.lhs.true19
+  %cmp23 = icmp eq %struct._I2OP* %prev.079, null, !dbg !169
+  %next25 = getelementptr inbounds %struct._I2OP* %i2op.080, i64 0, i32 3, !dbg !171
+  %6 = load %struct._I2OP** %next25, align 8, !dbg !171, !tbaa !87
+  br i1 %cmp23, label %if.then24, label %if.else, !dbg !169
 
-; <label>:43                                      ; preds = %38
-  %44 = bitcast %struct._I2OP** %18 to i64*, !dbg !287
-  store i64 %42, i64* %44, align 8, !dbg !287, !tbaa !92
-  br label %48, !dbg !288
+if.then24:                                        ; preds = %if.then22
+  store %struct._I2OP* %6, %struct._I2OP** %arrayidx, align 8, !dbg !171, !tbaa !87
+  br label %if.end31, !dbg !173
 
-; <label>:45                                      ; preds = %38
-  %46 = getelementptr inbounds %struct._I2OP* %prev.05, i64 0, i32 3, !dbg !289
-  %47 = bitcast %struct._I2OP** %46 to i64*, !dbg !291
-  store i64 %42, i64* %47, align 8, !dbg !291, !tbaa !134
-  br label %48
+if.else:                                          ; preds = %if.then22
+  %next30 = getelementptr inbounds %struct._I2OP* %prev.079, i64 0, i32 3, !dbg !174
+  store %struct._I2OP* %6, %struct._I2OP** %next30, align 8, !dbg !174, !tbaa !87
+  br label %if.end31
 
-; <label>:48                                      ; preds = %45, %43
-  %49 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 4, !dbg !292
-  %50 = bitcast %struct._I2OP** %49 to i64*, !dbg !292
-  %51 = load i64* %50, align 8, !dbg !292, !tbaa !113
-  store i64 %51, i64* %41, align 8, !dbg !293, !tbaa !134
-  store %struct._I2OP* %i2op.06, %struct._I2OP** %49, align 8, !dbg !294, !tbaa !113
-  %52 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 2, !dbg !295
-  %53 = load i32* %52, align 4, !dbg !296, !tbaa !181
-  %54 = add nsw i32 %53, -1, !dbg !296
-  store i32 %54, i32* %52, align 4, !dbg !296, !tbaa !181
-  %55 = getelementptr inbounds %struct._I2OP* %i2op.06, i64 0, i32 2, !dbg !297
-  %56 = bitcast i8** %55 to i64*, !dbg !297
-  %57 = load i64* %56, align 8, !dbg !297, !tbaa !148
-  %58 = bitcast i8** %pvalue to i64*, !dbg !298
-  store i64 %57, i64* %58, align 8, !dbg !298, !tbaa !92
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !66, metadata !82), !dbg !274
-  br label %.critedge, !dbg !299
+if.end31:                                         ; preds = %if.else, %if.then24
+  %freeI2OP = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 4, !dbg !176
+  %7 = load %struct._I2OP** %freeI2OP, align 8, !dbg !176, !tbaa !87
+  store %struct._I2OP* %7, %struct._I2OP** %next25, align 8, !dbg !176, !tbaa !87
+  store %struct._I2OP* %i2op.080, %struct._I2OP** %freeI2OP, align 8, !dbg !177, !tbaa !87
+  %nitem = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 2, !dbg !178
+  %8 = load i32* %nitem, align 4, !dbg !178, !tbaa !92
+  %dec = add nsw i32 %8, -1, !dbg !178
+  store i32 %dec, i32* %nitem, align 4, !dbg !178, !tbaa !92
+  %value2 = getelementptr inbounds %struct._I2OP* %i2op.080, i64 0, i32 2, !dbg !179
+  %9 = load i8** %value2, align 8, !dbg !179, !tbaa !87
+  store i8* %9, i8** %pvalue, align 8, !dbg !179, !tbaa !87
+  tail call void @llvm.dbg.value(metadata !147, i64 0, metadata !67), !dbg !180
+  br label %if.end34, !dbg !181
 
-.critedge:                                        ; preds = %29, %6, %48, %34, %32
-  %rc.0 = phi i32 [ 1, %48 ], [ 0, %34 ], [ 0, %32 ], [ 0, %6 ], [ 0, %29 ]
-  ret i32 %rc.0, !dbg !300
+if.end34:                                         ; preds = %if.end, %if.end14, %if.end31, %land.lhs.true19, %land.lhs.true16
+  %rc.0 = phi i32 [ 1, %if.end31 ], [ 0, %land.lhs.true19 ], [ 0, %land.lhs.true16 ], [ 0, %if.end14 ], [ 0, %if.end ]
+  ret i32 %rc.0, !dbg !182
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define double @I2Ohash_measure(%struct._I2Ohash* %hashtable) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._I2Ohash* %hashtable, i64 0, metadata !73, metadata !82), !dbg !301
-  %1 = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !302
-  br i1 %1, label %8, label %.preheader1, !dbg !304
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._I2Ohash* %hashtable}, i64 0, metadata !75), !dbg !183
+  %cmp = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !184
+  br i1 %cmp, label %if.then, label %for.cond.preheader, !dbg !184
 
-.preheader1:                                      ; preds = %0
-  %2 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !305
-  %3 = load i32* %2, align 4, !dbg !305, !tbaa !100
-  %4 = icmp sgt i32 %3, 0, !dbg !308
-  br i1 %4, label %.lr.ph6, label %._crit_edge7, !dbg !309
+for.cond.preheader:                               ; preds = %entry
+  %nlist = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !185
+  %0 = load i32* %nlist, align 4, !dbg !185, !tbaa !92
+  %cmp128 = icmp sgt i32 %0, 0, !dbg !185
+  br i1 %cmp128, label %for.body.lr.ph, label %for.end, !dbg !185
 
-.lr.ph6:                                          ; preds = %.preheader1
-  %5 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !310
-  %6 = load %struct._I2OP*** %5, align 8, !dbg !310, !tbaa !153
-  %7 = sext i32 %3 to i64, !dbg !309
-  br label %11, !dbg !309
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !187
+  %1 = load %struct._I2OP*** %heads, align 8, !dbg !187, !tbaa !87
+  br label %for.body, !dbg !185
 
-; <label>:8                                       ; preds = %0
-  %9 = load %struct.__sFILE** @__stderrp, align 8, !dbg !313, !tbaa !92
-  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* getelementptr inbounds ([57 x i8]* @.str4, i64 0, i64 0), %struct._I2Ohash* null) #6, !dbg !315
-  tail call void @exit(i32 -1) #7, !dbg !316
-  unreachable, !dbg !316
+if.then:                                          ; preds = %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !189, !tbaa !87
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([57 x i8]* @.str4, i64 0, i64 0), %struct._I2Ohash* null) #5, !dbg !189
+  tail call void @exit(i32 -1) #6, !dbg !191
+  unreachable, !dbg !191
 
-; <label>:11                                      ; preds = %.lr.ph6, %22
-  %indvars.iv = phi i64 [ 0, %.lr.ph6 ], [ %indvars.iv.next, %22 ]
-  %measure.04 = phi double [ 0.000000e+00, %.lr.ph6 ], [ %measure.1, %22 ]
-  %12 = getelementptr inbounds %struct._I2OP** %6, i64 %indvars.iv, !dbg !317
-  %13 = load %struct._I2OP** %12, align 8, !dbg !317, !tbaa !92
-  tail call void @llvm.dbg.value(metadata %struct._I2OP* %13, i64 0, metadata !77, metadata !82), !dbg !318
-  %14 = icmp eq %struct._I2OP* %13, null, !dbg !319
-  br i1 %14, label %22, label %.lr.ph, !dbg !320
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %measure.029 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %measure.1, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct._I2OP** %1, i64 %indvars.iv, !dbg !187
+  %3 = load %struct._I2OP** %arrayidx, align 8, !dbg !187, !tbaa !87
+  tail call void @llvm.dbg.value(metadata !{%struct._I2OP* %3}, i64 0, metadata !79), !dbg !187
+  %cmp2 = icmp eq %struct._I2OP* %3, null, !dbg !187
+  br i1 %cmp2, label %for.inc, label %while.body, !dbg !187
 
-.lr.ph:                                           ; preds = %11, %.lr.ph
-  %i2op.03 = phi %struct._I2OP* [ %17, %.lr.ph ], [ %13, %11 ]
-  %count.02 = phi i32 [ %15, %.lr.ph ], [ 0, %11 ]
-  %15 = add nuw nsw i32 %count.02, 1, !dbg !321
-  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !75, metadata !82), !dbg !324
-  %16 = getelementptr inbounds %struct._I2OP* %i2op.03, i64 0, i32 3, !dbg !325
-  %17 = load %struct._I2OP** %16, align 8, !dbg !325, !tbaa !134
-  tail call void @llvm.dbg.value(metadata %struct._I2OP* %17, i64 0, metadata !77, metadata !82), !dbg !318
-  %18 = icmp eq %struct._I2OP* %17, null, !dbg !326
-  br i1 %18, label %._crit_edge, label %.lr.ph, !dbg !327
+while.body:                                       ; preds = %for.body, %while.body
+  %i2op.027 = phi %struct._I2OP* [ %4, %while.body ], [ %3, %for.body ]
+  %count.026 = phi i32 [ %inc, %while.body ], [ 0, %for.body ]
+  %inc = add nsw i32 %count.026, 1, !dbg !192
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !77), !dbg !192
+  %next = getelementptr inbounds %struct._I2OP* %i2op.027, i64 0, i32 3, !dbg !195
+  %4 = load %struct._I2OP** %next, align 8, !dbg !195, !tbaa !87
+  tail call void @llvm.dbg.value(metadata !{%struct._I2OP* %4}, i64 0, metadata !79), !dbg !195
+  %cmp4 = icmp eq %struct._I2OP* %4, null, !dbg !196
+  br i1 %cmp4, label %while.end, label %while.body, !dbg !196
 
-._crit_edge:                                      ; preds = %.lr.ph
-  %19 = mul nsw i32 %15, %15, !dbg !328
-  %20 = sitofp i32 %19 to double, !dbg !329
-  %21 = fadd double %measure.04, %20, !dbg !330
-  tail call void @llvm.dbg.value(metadata double %21, i64 0, metadata !74, metadata !82), !dbg !331
-  br label %22, !dbg !332
+while.end:                                        ; preds = %while.body
+  %mul = mul nsw i32 %inc, %inc, !dbg !197
+  %conv = sitofp i32 %mul to double, !dbg !197
+  %add = fadd double %measure.029, %conv, !dbg !197
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !76), !dbg !197
+  br label %for.inc, !dbg !198
 
-; <label>:22                                      ; preds = %11, %._crit_edge
-  %measure.1 = phi double [ %21, %._crit_edge ], [ %measure.04, %11 ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !309
-  %23 = icmp slt i64 %indvars.iv.next, %7, !dbg !308
-  br i1 %23, label %11, label %._crit_edge7, !dbg !309
+for.inc:                                          ; preds = %for.body, %while.end
+  %measure.1 = phi double [ %add, %while.end ], [ %measure.029, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !185
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !185
+  %cmp1 = icmp slt i32 %5, %0, !dbg !185
+  br i1 %cmp1, label %for.body, label %for.end, !dbg !185
 
-._crit_edge7:                                     ; preds = %22, %.preheader1
-  %measure.0.lcssa = phi double [ 0.000000e+00, %.preheader1 ], [ %measure.1, %22 ]
-  %24 = tail call double @sqrt(double %measure.0.lcssa) #8, !dbg !333
-  tail call void @llvm.dbg.value(metadata double %24, i64 0, metadata !74, metadata !82), !dbg !331
-  %25 = sitofp i32 %3 to double, !dbg !334
-  %26 = tail call double @sqrt(double %25) #8, !dbg !335
-  %27 = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 2, !dbg !336
-  %28 = load i32* %27, align 4, !dbg !336, !tbaa !181
-  %29 = sitofp i32 %28 to double, !dbg !337
-  %30 = fdiv double %26, %29, !dbg !338
-  %31 = fmul double %24, %30, !dbg !339
-  tail call void @llvm.dbg.value(metadata double %31, i64 0, metadata !74, metadata !82), !dbg !331
-  ret double %31, !dbg !340
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %measure.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %measure.1, %for.inc ]
+  %call7 = tail call double @sqrt(double %measure.0.lcssa) #5, !dbg !199
+  tail call void @llvm.dbg.value(metadata !{double %call7}, i64 0, metadata !76), !dbg !199
+  %6 = load i32* %nlist, align 4, !dbg !200, !tbaa !92
+  %conv9 = sitofp i32 %6 to double, !dbg !200
+  %call10 = tail call double @sqrt(double %conv9) #5, !dbg !200
+  %nitem = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 2, !dbg !200
+  %7 = load i32* %nitem, align 4, !dbg !200, !tbaa !92
+  %conv11 = sitofp i32 %7 to double, !dbg !200
+  %div = fdiv double %call10, %conv11, !dbg !200
+  %mul12 = fmul double %call7, %div, !dbg !200
+  tail call void @llvm.dbg.value(metadata !{double %mul12}, i64 0, metadata !76), !dbg !200
+  ret double %mul12, !dbg !201
 }
 
-; Function Attrs: nounwind optsize readnone
-declare double @sqrt(double) #4
+; Function Attrs: nounwind optsize
+declare double @sqrt(double) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #5
+declare void @llvm.dbg.value(metadata, i64, metadata) #4
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #5 = { nounwind readnone }
-attributes #6 = { nounwind optsize }
-attributes #7 = { noreturn nounwind optsize }
-attributes #8 = { nounwind optsize readnone }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind readnone }
+attributes #5 = { nounwind optsize }
+attributes #6 = { noreturn nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!78, !79, !80}
-!llvm.ident = !{!81}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !6, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !5}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!5 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!6 = !{!7, !43, !57, !69}
-!7 = !DISubprogram(name: "I2Ohash_insert", scope: !1, file: !1, line: 16, type: !8, isLocal: false, isDefinition: true, scopeLine: 21, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._I2Ohash*, i32, i32, i8*)* @I2Ohash_insert, variables: !32)
-!8 = !DISubroutineType(types: !9)
-!9 = !{null, !10, !16, !16, !4}
-!10 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !11, size: 64, align: 64)
-!11 = !DIDerivedType(tag: DW_TAG_typedef, name: "I2Ohash", file: !12, line: 6, baseType: !13)
-!12 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/../I2Ohash.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!13 = !DICompositeType(tag: DW_TAG_structure_type, name: "_I2Ohash", file: !12, line: 7, size: 320, align: 64, elements: !14)
-!14 = !{!15, !17, !18, !19, !29, !30}
-!15 = !DIDerivedType(tag: DW_TAG_member, name: "nlist", scope: !13, file: !12, line: 8, baseType: !16, size: 32, align: 32)
-!16 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!17 = !DIDerivedType(tag: DW_TAG_member, name: "grow", scope: !13, file: !12, line: 9, baseType: !16, size: 32, align: 32, offset: 32)
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "nitem", scope: !13, file: !12, line: 10, baseType: !16, size: 32, align: 32, offset: 64)
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "baseI2OP", scope: !13, file: !12, line: 11, baseType: !20, size: 64, align: 64, offset: 128)
-!20 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !21, size: 64, align: 64)
-!21 = !DIDerivedType(tag: DW_TAG_typedef, name: "I2OP", file: !22, line: 5, baseType: !23)
-!22 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/../../Utilities/I2OP.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!23 = !DICompositeType(tag: DW_TAG_structure_type, name: "_I2OP", file: !22, line: 6, size: 192, align: 64, elements: !24)
-!24 = !{!25, !26, !27, !28}
-!25 = !DIDerivedType(tag: DW_TAG_member, name: "value0", scope: !23, file: !22, line: 7, baseType: !16, size: 32, align: 32)
-!26 = !DIDerivedType(tag: DW_TAG_member, name: "value1", scope: !23, file: !22, line: 8, baseType: !16, size: 32, align: 32, offset: 32)
-!27 = !DIDerivedType(tag: DW_TAG_member, name: "value2", scope: !23, file: !22, line: 9, baseType: !4, size: 64, align: 64, offset: 64)
-!28 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !23, file: !22, line: 10, baseType: !20, size: 64, align: 64, offset: 128)
-!29 = !DIDerivedType(tag: DW_TAG_member, name: "freeI2OP", scope: !13, file: !12, line: 12, baseType: !20, size: 64, align: 64, offset: 192)
-!30 = !DIDerivedType(tag: DW_TAG_member, name: "heads", scope: !13, file: !12, line: 13, baseType: !31, size: 64, align: 64, offset: 256)
-!31 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64, align: 64)
-!32 = !{!33, !34, !35, !36, !37, !38, !39, !40, !41, !42}
-!33 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "hashtable", arg: 1, scope: !7, file: !1, line: 17, type: !10)
-!34 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "key1", arg: 2, scope: !7, file: !1, line: 18, type: !16)
-!35 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "key2", arg: 3, scope: !7, file: !1, line: 19, type: !16)
-!36 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "value", arg: 4, scope: !7, file: !1, line: 20, type: !4)
-!37 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "loc", scope: !7, file: !1, line: 22, type: !16)
-!38 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "loc1", scope: !7, file: !1, line: 22, type: !16)
-!39 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "loc2", scope: !7, file: !1, line: 22, type: !16)
-!40 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i2op", scope: !7, file: !1, line: 23, type: !20)
-!41 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "j2op", scope: !7, file: !1, line: 23, type: !20)
-!42 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "prev", scope: !7, file: !1, line: 23, type: !20)
-!43 = !DISubprogram(name: "I2Ohash_locate", scope: !1, file: !1, line: 135, type: !44, isLocal: false, isDefinition: true, scopeLine: 140, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct._I2Ohash*, i32, i32, i8**)* @I2Ohash_locate, variables: !47)
-!44 = !DISubroutineType(types: !45)
-!45 = !{!16, !10, !16, !16, !46}
-!46 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !4, size: 64, align: 64)
-!47 = !{!48, !49, !50, !51, !52, !53, !54, !55, !56}
-!48 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "hashtable", arg: 1, scope: !43, file: !1, line: 136, type: !10)
-!49 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "key1", arg: 2, scope: !43, file: !1, line: 137, type: !16)
-!50 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "key2", arg: 3, scope: !43, file: !1, line: 138, type: !16)
-!51 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "pvalue", arg: 4, scope: !43, file: !1, line: 139, type: !46)
-!52 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "loc", scope: !43, file: !1, line: 141, type: !16)
-!53 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "loc1", scope: !43, file: !1, line: 141, type: !16)
-!54 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "loc2", scope: !43, file: !1, line: 141, type: !16)
-!55 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "rc", scope: !43, file: !1, line: 141, type: !16)
-!56 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i2op", scope: !43, file: !1, line: 142, type: !20)
-!57 = !DISubprogram(name: "I2Ohash_remove", scope: !1, file: !1, line: 211, type: !44, isLocal: false, isDefinition: true, scopeLine: 216, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct._I2Ohash*, i32, i32, i8**)* @I2Ohash_remove, variables: !58)
-!58 = !{!59, !60, !61, !62, !63, !64, !65, !66, !67, !68}
-!59 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "hashtable", arg: 1, scope: !57, file: !1, line: 212, type: !10)
-!60 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "key1", arg: 2, scope: !57, file: !1, line: 213, type: !16)
-!61 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "key2", arg: 3, scope: !57, file: !1, line: 214, type: !16)
-!62 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "pvalue", arg: 4, scope: !57, file: !1, line: 215, type: !46)
-!63 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "loc", scope: !57, file: !1, line: 217, type: !16)
-!64 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "loc1", scope: !57, file: !1, line: 217, type: !16)
-!65 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "loc2", scope: !57, file: !1, line: 217, type: !16)
-!66 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "rc", scope: !57, file: !1, line: 217, type: !16)
-!67 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i2op", scope: !57, file: !1, line: 218, type: !20)
-!68 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "prev", scope: !57, file: !1, line: 218, type: !20)
-!69 = !DISubprogram(name: "I2Ohash_measure", scope: !1, file: !1, line: 277, type: !70, isLocal: false, isDefinition: true, scopeLine: 279, flags: DIFlagPrototyped, isOptimized: true, function: double (%struct._I2Ohash*)* @I2Ohash_measure, variables: !72)
-!70 = !DISubroutineType(types: !71)
-!71 = !{!5, !10}
-!72 = !{!73, !74, !75, !76, !77}
-!73 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "hashtable", arg: 1, scope: !69, file: !1, line: 278, type: !10)
-!74 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "measure", scope: !69, file: !1, line: 280, type: !5)
-!75 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "count", scope: !69, file: !1, line: 281, type: !16)
-!76 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "loc", scope: !69, file: !1, line: 281, type: !16)
-!77 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i2op", scope: !69, file: !1, line: 282, type: !20)
-!78 = !{i32 2, !"Dwarf Version", i32 2}
-!79 = !{i32 2, !"Debug Info Version", i32 700000003}
-!80 = !{i32 1, !"PIC Level", i32 2}
-!81 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!82 = !DIExpression()
-!83 = !DILocation(line: 17, column: 15, scope: !7)
-!84 = !DILocation(line: 18, column: 14, scope: !7)
-!85 = !DILocation(line: 19, column: 14, scope: !7)
-!86 = !DILocation(line: 20, column: 15, scope: !7)
-!87 = !DILocation(line: 25, column: 16, scope: !88)
-!88 = distinct !DILexicalBlock(scope: !7, file: !1, line: 25, column: 6)
-!89 = !DILocation(line: 25, column: 6, scope: !7)
-!90 = !DILocation(line: 26, column: 12, scope: !91)
-!91 = distinct !DILexicalBlock(scope: !88, file: !1, line: 25, column: 26)
-!92 = !{!93, !93, i64 0}
-!93 = !{!"any pointer", !94, i64 0}
-!94 = !{!"omnipotent char", !95, i64 0}
-!95 = !{!"Simple C/C++ TBAA"}
-!96 = !DILocation(line: 26, column: 4, scope: !91)
-!97 = !DILocation(line: 28, column: 4, scope: !91)
-!98 = !DILocation(line: 40, column: 14, scope: !7)
-!99 = !DILocation(line: 40, column: 32, scope: !7)
-!100 = !{!101, !102, i64 0}
-!101 = !{!"_I2Ohash", !102, i64 0, !102, i64 4, !102, i64 8, !93, i64 16, !93, i64 24, !93, i64 32}
-!102 = !{!"int", !94, i64 0}
-!103 = !DILocation(line: 40, column: 19, scope: !7)
-!104 = !DILocation(line: 22, column: 12, scope: !7)
-!105 = !DILocation(line: 41, column: 14, scope: !7)
-!106 = !DILocation(line: 41, column: 19, scope: !7)
-!107 = !DILocation(line: 22, column: 18, scope: !7)
-!108 = !DILocation(line: 42, column: 13, scope: !7)
-!109 = !DILocation(line: 42, column: 20, scope: !7)
-!110 = !DILocation(line: 22, column: 7, scope: !7)
-!111 = !DILocation(line: 56, column: 25, scope: !112)
-!112 = distinct !DILexicalBlock(scope: !7, file: !1, line: 56, column: 6)
-!113 = !{!101, !93, i64 24}
-!114 = !DILocation(line: 23, column: 8, scope: !7)
-!115 = !DILocation(line: 56, column: 35, scope: !112)
-!116 = !DILocation(line: 56, column: 6, scope: !7)
-!117 = !DILocation(line: 57, column: 20, scope: !118)
-!118 = distinct !DILexicalBlock(scope: !119, file: !1, line: 57, column: 9)
-!119 = distinct !DILexicalBlock(scope: !112, file: !1, line: 56, column: 45)
-!120 = !{!101, !102, i64 4}
-!121 = !DILocation(line: 57, column: 25, scope: !118)
-!122 = !DILocation(line: 57, column: 9, scope: !119)
-!123 = !DILocation(line: 58, column: 15, scope: !124)
-!124 = distinct !DILexicalBlock(scope: !118, file: !1, line: 57, column: 32)
-!125 = !DILocation(line: 58, column: 7, scope: !124)
-!126 = !DILocation(line: 61, column: 7, scope: !124)
-!127 = !DILocation(line: 63, column: 11, scope: !119)
-!128 = !DILocation(line: 64, column: 31, scope: !119)
-!129 = !DILocation(line: 64, column: 24, scope: !119)
-!130 = !DILocation(line: 65, column: 28, scope: !119)
-!131 = !{!101, !93, i64 16}
-!132 = !DILocation(line: 65, column: 10, scope: !119)
-!133 = !DILocation(line: 65, column: 15, scope: !119)
-!134 = !{!135, !93, i64 16}
-!135 = !{!"_I2OP", !102, i64 0, !102, i64 4, !93, i64 8, !93, i64 16}
-!136 = !DILocation(line: 66, column: 24, scope: !119)
-!137 = !DILocation(line: 68, column: 1, scope: !119)
-!138 = !DILocation(line: 69, column: 29, scope: !7)
-!139 = !DILocation(line: 69, column: 21, scope: !7)
-!140 = !DILocation(line: 75, column: 7, scope: !7)
-!141 = !DILocation(line: 75, column: 14, scope: !7)
-!142 = !{!135, !102, i64 0}
-!143 = !DILocation(line: 76, column: 7, scope: !7)
-!144 = !DILocation(line: 76, column: 14, scope: !7)
-!145 = !{!135, !102, i64 4}
-!146 = !DILocation(line: 77, column: 7, scope: !7)
-!147 = !DILocation(line: 77, column: 14, scope: !7)
-!148 = !{!135, !93, i64 8}
-!149 = !DILocation(line: 78, column: 14, scope: !7)
-!150 = !DILocation(line: 89, column: 14, scope: !151)
-!151 = distinct !DILexicalBlock(scope: !7, file: !1, line: 89, column: 1)
-!152 = !DILocation(line: 89, column: 25, scope: !151)
-!153 = !{!101, !93, i64 32}
-!154 = !DILocation(line: 23, column: 22, scope: !7)
-!155 = !DILocation(line: 90, column: 12, scope: !156)
-!156 = distinct !DILexicalBlock(scope: !151, file: !1, line: 89, column: 1)
-!157 = !DILocation(line: 89, column: 1, scope: !151)
-!158 = !DILocation(line: 96, column: 16, scope: !159)
-!159 = distinct !DILexicalBlock(scope: !160, file: !1, line: 96, column: 10)
-!160 = distinct !DILexicalBlock(scope: !156, file: !1, line: 90, column: 42)
-!161 = !DILocation(line: 96, column: 23, scope: !159)
-!162 = !DILocation(line: 97, column: 7, scope: !159)
-!163 = !DILocation(line: 97, column: 24, scope: !159)
-!164 = !DILocation(line: 97, column: 32, scope: !159)
-!165 = !DILocation(line: 97, column: 41, scope: !159)
-!166 = !DILocation(line: 97, column: 48, scope: !159)
-!167 = !DILocation(line: 96, column: 10, scope: !160)
-!168 = !DILocation(line: 90, column: 35, scope: !156)
-!169 = !DILocation(line: 102, column: 11, scope: !170)
-!170 = distinct !DILexicalBlock(scope: !7, file: !1, line: 102, column: 6)
-!171 = !DILocation(line: 102, column: 6, scope: !7)
-!172 = !DILocation(line: 106, column: 26, scope: !173)
-!173 = distinct !DILexicalBlock(scope: !170, file: !1, line: 102, column: 21)
-!174 = !DILocation(line: 107, column: 1, scope: !173)
-!175 = !DILocation(line: 111, column: 10, scope: !176)
-!176 = distinct !DILexicalBlock(scope: !170, file: !1, line: 107, column: 8)
-!177 = !DILocation(line: 111, column: 15, scope: !176)
-!178 = !DILocation(line: 116, column: 12, scope: !7)
-!179 = !DILocation(line: 117, column: 12, scope: !7)
-!180 = !DILocation(line: 117, column: 17, scope: !7)
-!181 = !{!101, !102, i64 8}
-!182 = !DILocation(line: 119, column: 1, scope: !7)
-!183 = !DILocation(line: 136, column: 15, scope: !43)
-!184 = !DILocation(line: 137, column: 14, scope: !43)
-!185 = !DILocation(line: 138, column: 14, scope: !43)
-!186 = !DILocation(line: 139, column: 16, scope: !43)
-!187 = !DILocation(line: 148, column: 16, scope: !188)
-!188 = distinct !DILexicalBlock(scope: !43, file: !1, line: 148, column: 6)
-!189 = !DILocation(line: 148, column: 34, scope: !188)
-!190 = !DILocation(line: 148, column: 24, scope: !188)
-!191 = !DILocation(line: 149, column: 12, scope: !192)
-!192 = distinct !DILexicalBlock(scope: !188, file: !1, line: 148, column: 44)
-!193 = !DILocation(line: 149, column: 4, scope: !192)
-!194 = !DILocation(line: 152, column: 4, scope: !192)
-!195 = !DILocation(line: 159, column: 14, scope: !43)
-!196 = !DILocation(line: 159, column: 32, scope: !43)
-!197 = !DILocation(line: 159, column: 19, scope: !43)
-!198 = !DILocation(line: 141, column: 12, scope: !43)
-!199 = !DILocation(line: 160, column: 14, scope: !43)
-!200 = !DILocation(line: 160, column: 19, scope: !43)
-!201 = !DILocation(line: 141, column: 18, scope: !43)
-!202 = !DILocation(line: 161, column: 13, scope: !43)
-!203 = !DILocation(line: 161, column: 20, scope: !43)
-!204 = !DILocation(line: 141, column: 7, scope: !43)
-!205 = !DILocation(line: 171, column: 14, scope: !206)
-!206 = distinct !DILexicalBlock(scope: !43, file: !1, line: 171, column: 1)
-!207 = !DILocation(line: 171, column: 25, scope: !206)
-!208 = !DILocation(line: 172, column: 12, scope: !209)
-!209 = distinct !DILexicalBlock(scope: !206, file: !1, line: 171, column: 1)
-!210 = !DILocation(line: 171, column: 1, scope: !206)
-!211 = !DILocation(line: 180, column: 16, scope: !212)
-!212 = distinct !DILexicalBlock(scope: !213, file: !1, line: 180, column: 10)
-!213 = distinct !DILexicalBlock(scope: !209, file: !1, line: 173, column: 27)
-!214 = !DILocation(line: 180, column: 23, scope: !212)
-!215 = !DILocation(line: 181, column: 6, scope: !212)
-!216 = !DILocation(line: 181, column: 23, scope: !212)
-!217 = !DILocation(line: 181, column: 31, scope: !212)
-!218 = !DILocation(line: 181, column: 40, scope: !212)
-!219 = !DILocation(line: 181, column: 47, scope: !212)
-!220 = !DILocation(line: 180, column: 10, scope: !213)
-!221 = !DILocation(line: 173, column: 20, scope: !209)
-!222 = !DILocation(line: 141, column: 24, scope: !43)
-!223 = !DILocation(line: 186, column: 35, scope: !224)
-!224 = distinct !DILexicalBlock(scope: !43, file: !1, line: 186, column: 6)
-!225 = !DILocation(line: 186, column: 43, scope: !224)
-!226 = !DILocation(line: 186, column: 52, scope: !224)
-!227 = !DILocation(line: 186, column: 59, scope: !224)
-!228 = !DILocation(line: 186, column: 6, scope: !43)
-!229 = !DILocation(line: 192, column: 20, scope: !230)
-!230 = distinct !DILexicalBlock(scope: !224, file: !1, line: 186, column: 69)
-!231 = !DILocation(line: 192, column: 12, scope: !230)
-!232 = !DILocation(line: 194, column: 1, scope: !230)
-!233 = !DILocation(line: 195, column: 1, scope: !43)
-!234 = !DILocation(line: 212, column: 15, scope: !57)
-!235 = !DILocation(line: 213, column: 14, scope: !57)
-!236 = !DILocation(line: 214, column: 14, scope: !57)
-!237 = !DILocation(line: 215, column: 16, scope: !57)
-!238 = !DILocation(line: 224, column: 16, scope: !239)
-!239 = distinct !DILexicalBlock(scope: !57, file: !1, line: 224, column: 6)
-!240 = !DILocation(line: 224, column: 34, scope: !239)
-!241 = !DILocation(line: 224, column: 24, scope: !239)
-!242 = !DILocation(line: 225, column: 12, scope: !243)
-!243 = distinct !DILexicalBlock(scope: !239, file: !1, line: 224, column: 44)
-!244 = !DILocation(line: 225, column: 4, scope: !243)
-!245 = !DILocation(line: 228, column: 4, scope: !243)
-!246 = !DILocation(line: 230, column: 14, scope: !57)
-!247 = !DILocation(line: 230, column: 32, scope: !57)
-!248 = !DILocation(line: 230, column: 19, scope: !57)
-!249 = !DILocation(line: 217, column: 12, scope: !57)
-!250 = !DILocation(line: 231, column: 14, scope: !57)
-!251 = !DILocation(line: 231, column: 19, scope: !57)
-!252 = !DILocation(line: 217, column: 18, scope: !57)
-!253 = !DILocation(line: 232, column: 13, scope: !57)
-!254 = !DILocation(line: 232, column: 20, scope: !57)
-!255 = !DILocation(line: 217, column: 7, scope: !57)
-!256 = !DILocation(line: 238, column: 14, scope: !257)
-!257 = distinct !DILexicalBlock(scope: !57, file: !1, line: 238, column: 1)
-!258 = !DILocation(line: 238, column: 25, scope: !257)
-!259 = !DILocation(line: 218, column: 16, scope: !57)
-!260 = !DILocation(line: 239, column: 12, scope: !261)
-!261 = distinct !DILexicalBlock(scope: !257, file: !1, line: 238, column: 1)
-!262 = !DILocation(line: 238, column: 1, scope: !257)
-!263 = !DILocation(line: 241, column: 16, scope: !264)
-!264 = distinct !DILexicalBlock(scope: !265, file: !1, line: 241, column: 10)
-!265 = distinct !DILexicalBlock(scope: !261, file: !1, line: 240, column: 27)
-!266 = !DILocation(line: 241, column: 23, scope: !264)
-!267 = !DILocation(line: 242, column: 6, scope: !264)
-!268 = !DILocation(line: 242, column: 23, scope: !264)
-!269 = !DILocation(line: 242, column: 31, scope: !264)
-!270 = !DILocation(line: 242, column: 40, scope: !264)
-!271 = !DILocation(line: 242, column: 47, scope: !264)
-!272 = !DILocation(line: 241, column: 10, scope: !265)
-!273 = !DILocation(line: 240, column: 20, scope: !261)
-!274 = !DILocation(line: 217, column: 24, scope: !57)
-!275 = !DILocation(line: 248, column: 35, scope: !276)
-!276 = distinct !DILexicalBlock(scope: !57, file: !1, line: 248, column: 6)
-!277 = !DILocation(line: 248, column: 43, scope: !276)
-!278 = !DILocation(line: 248, column: 52, scope: !276)
-!279 = !DILocation(line: 248, column: 59, scope: !276)
-!280 = !DILocation(line: 248, column: 6, scope: !57)
-!281 = !DILocation(line: 254, column: 14, scope: !282)
-!282 = distinct !DILexicalBlock(scope: !283, file: !1, line: 254, column: 9)
-!283 = distinct !DILexicalBlock(scope: !276, file: !1, line: 248, column: 69)
-!284 = !DILocation(line: 255, column: 37, scope: !285)
-!285 = distinct !DILexicalBlock(scope: !282, file: !1, line: 254, column: 24)
-!286 = !DILocation(line: 254, column: 9, scope: !283)
-!287 = !DILocation(line: 255, column: 29, scope: !285)
-!288 = !DILocation(line: 256, column: 4, scope: !285)
-!289 = !DILocation(line: 257, column: 13, scope: !290)
-!290 = distinct !DILexicalBlock(scope: !282, file: !1, line: 256, column: 11)
-!291 = !DILocation(line: 257, column: 18, scope: !290)
-!292 = !DILocation(line: 259, column: 28, scope: !283)
-!293 = !DILocation(line: 259, column: 15, scope: !283)
-!294 = !DILocation(line: 260, column: 24, scope: !283)
-!295 = !DILocation(line: 261, column: 15, scope: !283)
-!296 = !DILocation(line: 261, column: 20, scope: !283)
-!297 = !DILocation(line: 262, column: 20, scope: !283)
-!298 = !DILocation(line: 262, column: 12, scope: !283)
-!299 = !DILocation(line: 264, column: 1, scope: !283)
-!300 = !DILocation(line: 265, column: 1, scope: !57)
-!301 = !DILocation(line: 278, column: 15, scope: !69)
-!302 = !DILocation(line: 284, column: 16, scope: !303)
-!303 = distinct !DILexicalBlock(scope: !69, file: !1, line: 284, column: 6)
-!304 = !DILocation(line: 284, column: 6, scope: !69)
-!305 = !DILocation(line: 290, column: 34, scope: !306)
-!306 = distinct !DILexicalBlock(scope: !307, file: !1, line: 290, column: 1)
-!307 = distinct !DILexicalBlock(scope: !69, file: !1, line: 290, column: 1)
-!308 = !DILocation(line: 290, column: 21, scope: !306)
-!309 = !DILocation(line: 290, column: 1, scope: !307)
-!310 = !DILocation(line: 291, column: 28, scope: !311)
-!311 = distinct !DILexicalBlock(scope: !312, file: !1, line: 291, column: 9)
-!312 = distinct !DILexicalBlock(scope: !306, file: !1, line: 290, column: 50)
-!313 = !DILocation(line: 285, column: 12, scope: !314)
-!314 = distinct !DILexicalBlock(scope: !303, file: !1, line: 284, column: 26)
-!315 = !DILocation(line: 285, column: 4, scope: !314)
-!316 = !DILocation(line: 287, column: 4, scope: !314)
-!317 = !DILocation(line: 291, column: 17, scope: !311)
-!318 = !DILocation(line: 282, column: 12, scope: !69)
-!319 = !DILocation(line: 291, column: 40, scope: !311)
-!320 = !DILocation(line: 291, column: 9, scope: !312)
-!321 = !DILocation(line: 294, column: 15, scope: !322)
-!322 = distinct !DILexicalBlock(scope: !323, file: !1, line: 293, column: 30)
-!323 = distinct !DILexicalBlock(scope: !311, file: !1, line: 291, column: 50)
-!324 = !DILocation(line: 281, column: 10, scope: !69)
-!325 = !DILocation(line: 295, column: 23, scope: !322)
-!326 = !DILocation(line: 293, column: 20, scope: !323)
-!327 = !DILocation(line: 293, column: 7, scope: !323)
-!328 = !DILocation(line: 297, column: 23, scope: !323)
-!329 = !DILocation(line: 297, column: 18, scope: !323)
-!330 = !DILocation(line: 297, column: 15, scope: !323)
-!331 = !DILocation(line: 280, column: 10, scope: !69)
-!332 = !DILocation(line: 298, column: 4, scope: !323)
-!333 = !DILocation(line: 300, column: 11, scope: !69)
-!334 = !DILocation(line: 301, column: 17, scope: !69)
-!335 = !DILocation(line: 301, column: 12, scope: !69)
-!336 = !DILocation(line: 301, column: 55, scope: !69)
-!337 = !DILocation(line: 301, column: 44, scope: !69)
-!338 = !DILocation(line: 301, column: 43, scope: !69)
-!339 = !DILocation(line: 301, column: 9, scope: !69)
-!340 = !DILocation(line: 303, column: 1, scope: !69)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !44, metadata !58, metadata !70}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"I2Ohash_insert", metadata !"I2Ohash_insert", metadata !"", i32 16, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._I2Ohash*, i32, i32, i8*)* @I2Ohash_insert, null, null, metadata !33, i32 21} ; [ DW_TAG_subprogram ] [line 16] [def] [scope 21] [I2Ohash_insert]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{null, metadata !8, metadata !14, metadata !14, metadata !26}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from I2Ohash]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"I2Ohash", i32 6, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [I2Ohash] [line 6, size 0, align 0, offset 0] [from _I2Ohash]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"_I2Ohash", i32 7, i64 320, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [_I2Ohash] [line 7, size 320, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/../I2Ohash.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13, metadata !15, metadata !16, metadata !17, metadata !30, metadata !31}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"nlist", i32 8, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [nlist] [line 8, size 32, align 32, offset 0] [from int]
+!14 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!15 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"grow", i32 9, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [grow] [line 9, size 32, align 32, offset 32] [from int]
+!16 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"nitem", i32 10, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [nitem] [line 10, size 32, align 32, offset 64] [from int]
+!17 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"baseI2OP", i32 11, i64 64, i64 64, i64 128, i32 0, metadata !18} ; [ DW_TAG_member ] [baseI2OP] [line 11, size 64, align 64, offset 128] [from ]
+!18 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !19} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from I2OP]
+!19 = metadata !{i32 786454, metadata !11, null, metadata !"I2OP", i32 5, i64 0, i64 0, i64 0, i32 0, metadata !20} ; [ DW_TAG_typedef ] [I2OP] [line 5, size 0, align 0, offset 0] [from _I2OP]
+!20 = metadata !{i32 786451, metadata !21, null, metadata !"_I2OP", i32 6, i64 192, i64 64, i32 0, i32 0, null, metadata !22, i32 0, null, null} ; [ DW_TAG_structure_type ] [_I2OP] [line 6, size 192, align 64, offset 0] [from ]
+!21 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/../../Utilities/I2OP.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!22 = metadata !{metadata !23, metadata !24, metadata !25, metadata !27}
+!23 = metadata !{i32 786445, metadata !21, metadata !20, metadata !"value0", i32 7, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [value0] [line 7, size 32, align 32, offset 0] [from int]
+!24 = metadata !{i32 786445, metadata !21, metadata !20, metadata !"value1", i32 8, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [value1] [line 8, size 32, align 32, offset 32] [from int]
+!25 = metadata !{i32 786445, metadata !21, metadata !20, metadata !"value2", i32 9, i64 64, i64 64, i64 64, i32 0, metadata !26} ; [ DW_TAG_member ] [value2] [line 9, size 64, align 64, offset 64] [from ]
+!26 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!27 = metadata !{i32 786445, metadata !21, metadata !20, metadata !"next", i32 10, i64 64, i64 64, i64 128, i32 0, metadata !28} ; [ DW_TAG_member ] [next] [line 10, size 64, align 64, offset 128] [from ]
+!28 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !29} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from I2OP]
+!29 = metadata !{i32 786454, metadata !21, null, metadata !"I2OP", i32 5, i64 0, i64 0, i64 0, i32 0, metadata !20} ; [ DW_TAG_typedef ] [I2OP] [line 5, size 0, align 0, offset 0] [from _I2OP]
+!30 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"freeI2OP", i32 12, i64 64, i64 64, i64 192, i32 0, metadata !18} ; [ DW_TAG_member ] [freeI2OP] [line 12, size 64, align 64, offset 192] [from ]
+!31 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"heads", i32 13, i64 64, i64 64, i64 256, i32 0, metadata !32} ; [ DW_TAG_member ] [heads] [line 13, size 64, align 64, offset 256] [from ]
+!32 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !18} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!33 = metadata !{metadata !34, metadata !35, metadata !36, metadata !37, metadata !38, metadata !39, metadata !40, metadata !41, metadata !42, metadata !43}
+!34 = metadata !{i32 786689, metadata !4, metadata !"hashtable", metadata !5, i32 16777233, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hashtable] [line 17]
+!35 = metadata !{i32 786689, metadata !4, metadata !"key1", metadata !5, i32 33554450, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [key1] [line 18]
+!36 = metadata !{i32 786689, metadata !4, metadata !"key2", metadata !5, i32 50331667, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [key2] [line 19]
+!37 = metadata !{i32 786689, metadata !4, metadata !"value", metadata !5, i32 67108884, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [value] [line 20]
+!38 = metadata !{i32 786688, metadata !4, metadata !"loc", metadata !5, i32 22, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [loc] [line 22]
+!39 = metadata !{i32 786688, metadata !4, metadata !"loc1", metadata !5, i32 22, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [loc1] [line 22]
+!40 = metadata !{i32 786688, metadata !4, metadata !"loc2", metadata !5, i32 22, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [loc2] [line 22]
+!41 = metadata !{i32 786688, metadata !4, metadata !"i2op", metadata !5, i32 23, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i2op] [line 23]
+!42 = metadata !{i32 786688, metadata !4, metadata !"j2op", metadata !5, i32 23, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [j2op] [line 23]
+!43 = metadata !{i32 786688, metadata !4, metadata !"prev", metadata !5, i32 23, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [prev] [line 23]
+!44 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"I2Ohash_locate", metadata !"I2Ohash_locate", metadata !"", i32 135, metadata !45, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct._I2Ohash*, i32, i32, i8**)* @I2Ohash_locate, null, null, metadata !48, i32 140} ; [ DW_TAG_subprogram ] [line 135] [def] [scope 140] [I2Ohash_locate]
+!45 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !46, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!46 = metadata !{metadata !14, metadata !8, metadata !14, metadata !14, metadata !47}
+!47 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !26} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!48 = metadata !{metadata !49, metadata !50, metadata !51, metadata !52, metadata !53, metadata !54, metadata !55, metadata !56, metadata !57}
+!49 = metadata !{i32 786689, metadata !44, metadata !"hashtable", metadata !5, i32 16777352, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hashtable] [line 136]
+!50 = metadata !{i32 786689, metadata !44, metadata !"key1", metadata !5, i32 33554569, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [key1] [line 137]
+!51 = metadata !{i32 786689, metadata !44, metadata !"key2", metadata !5, i32 50331786, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [key2] [line 138]
+!52 = metadata !{i32 786689, metadata !44, metadata !"pvalue", metadata !5, i32 67109003, metadata !47, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [pvalue] [line 139]
+!53 = metadata !{i32 786688, metadata !44, metadata !"loc", metadata !5, i32 141, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [loc] [line 141]
+!54 = metadata !{i32 786688, metadata !44, metadata !"loc1", metadata !5, i32 141, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [loc1] [line 141]
+!55 = metadata !{i32 786688, metadata !44, metadata !"loc2", metadata !5, i32 141, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [loc2] [line 141]
+!56 = metadata !{i32 786688, metadata !44, metadata !"rc", metadata !5, i32 141, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [rc] [line 141]
+!57 = metadata !{i32 786688, metadata !44, metadata !"i2op", metadata !5, i32 142, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i2op] [line 142]
+!58 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"I2Ohash_remove", metadata !"I2Ohash_remove", metadata !"", i32 211, metadata !45, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct._I2Ohash*, i32, i32, i8**)* @I2Ohash_remove, null, null, metadata !59, i32 216} ; [ DW_TAG_subprogram ] [line 211] [def] [scope 216] [I2Ohash_remove]
+!59 = metadata !{metadata !60, metadata !61, metadata !62, metadata !63, metadata !64, metadata !65, metadata !66, metadata !67, metadata !68, metadata !69}
+!60 = metadata !{i32 786689, metadata !58, metadata !"hashtable", metadata !5, i32 16777428, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hashtable] [line 212]
+!61 = metadata !{i32 786689, metadata !58, metadata !"key1", metadata !5, i32 33554645, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [key1] [line 213]
+!62 = metadata !{i32 786689, metadata !58, metadata !"key2", metadata !5, i32 50331862, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [key2] [line 214]
+!63 = metadata !{i32 786689, metadata !58, metadata !"pvalue", metadata !5, i32 67109079, metadata !47, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [pvalue] [line 215]
+!64 = metadata !{i32 786688, metadata !58, metadata !"loc", metadata !5, i32 217, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [loc] [line 217]
+!65 = metadata !{i32 786688, metadata !58, metadata !"loc1", metadata !5, i32 217, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [loc1] [line 217]
+!66 = metadata !{i32 786688, metadata !58, metadata !"loc2", metadata !5, i32 217, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [loc2] [line 217]
+!67 = metadata !{i32 786688, metadata !58, metadata !"rc", metadata !5, i32 217, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [rc] [line 217]
+!68 = metadata !{i32 786688, metadata !58, metadata !"i2op", metadata !5, i32 218, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i2op] [line 218]
+!69 = metadata !{i32 786688, metadata !58, metadata !"prev", metadata !5, i32 218, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [prev] [line 218]
+!70 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"I2Ohash_measure", metadata !"I2Ohash_measure", metadata !"", i32 277, metadata !71, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, double (%struct._I2Ohash*)* @I2Ohash_measure, null, null, metadata !74, i32 279} ; [ DW_TAG_subprogram ] [line 277] [def] [scope 279] [I2Ohash_measure]
+!71 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !72, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!72 = metadata !{metadata !73, metadata !8}
+!73 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!74 = metadata !{metadata !75, metadata !76, metadata !77, metadata !78, metadata !79}
+!75 = metadata !{i32 786689, metadata !70, metadata !"hashtable", metadata !5, i32 16777494, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hashtable] [line 278]
+!76 = metadata !{i32 786688, metadata !70, metadata !"measure", metadata !5, i32 280, metadata !73, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [measure] [line 280]
+!77 = metadata !{i32 786688, metadata !70, metadata !"count", metadata !5, i32 281, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [count] [line 281]
+!78 = metadata !{i32 786688, metadata !70, metadata !"loc", metadata !5, i32 281, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [loc] [line 281]
+!79 = metadata !{i32 786688, metadata !70, metadata !"i2op", metadata !5, i32 282, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i2op] [line 282]
+!80 = metadata !{i32 17, i32 0, metadata !4, null}
+!81 = metadata !{i32 18, i32 0, metadata !4, null}
+!82 = metadata !{i32 19, i32 0, metadata !4, null}
+!83 = metadata !{i32 20, i32 0, metadata !4, null}
+!84 = metadata !{i32 25, i32 0, metadata !4, null}
+!85 = metadata !{i32 26, i32 0, metadata !86, null}
+!86 = metadata !{i32 786443, metadata !1, metadata !4, i32 25, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!87 = metadata !{metadata !"any pointer", metadata !88}
+!88 = metadata !{metadata !"omnipotent char", metadata !89}
+!89 = metadata !{metadata !"Simple C/C++ TBAA"}
+!90 = metadata !{i32 28, i32 0, metadata !86, null}
+!91 = metadata !{i32 40, i32 0, metadata !4, null}
+!92 = metadata !{metadata !"int", metadata !88}
+!93 = metadata !{i32 41, i32 0, metadata !4, null}
+!94 = metadata !{i32 42, i32 0, metadata !4, null}
+!95 = metadata !{i32 56, i32 0, metadata !4, null}
+!96 = metadata !{i32 57, i32 0, metadata !97, null}
+!97 = metadata !{i32 786443, metadata !1, metadata !4, i32 56, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!98 = metadata !{i32 58, i32 0, metadata !99, null} ; [ DW_TAG_imported_module ]
+!99 = metadata !{i32 786443, metadata !1, metadata !97, i32 57, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!100 = metadata !{i32 61, i32 0, metadata !99, null}
+!101 = metadata !{i32 63, i32 0, metadata !97, null}
+!102 = metadata !{i32 64, i32 0, metadata !97, null}
+!103 = metadata !{i32 65, i32 0, metadata !97, null}
+!104 = metadata !{i32 66, i32 0, metadata !97, null}
+!105 = metadata !{i32 67, i32 0, metadata !97, null}
+!106 = metadata !{i32 68, i32 0, metadata !97, null}
+!107 = metadata !{i32 69, i32 0, metadata !4, null}
+!108 = metadata !{i32 75, i32 0, metadata !4, null}
+!109 = metadata !{i32 76, i32 0, metadata !4, null}
+!110 = metadata !{i32 77, i32 0, metadata !4, null}
+!111 = metadata !{i32 78, i32 0, metadata !4, null}
+!112 = metadata !{i32 89, i32 0, metadata !113, null}
+!113 = metadata !{i32 786443, metadata !1, metadata !4, i32 89, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!114 = metadata !{%struct._I2OP* null}
+!115 = metadata !{i32 96, i32 0, metadata !116, null}
+!116 = metadata !{i32 786443, metadata !1, metadata !113, i32 90, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!117 = metadata !{i32 100, i32 0, metadata !116, null}
+!118 = metadata !{i32 90, i32 0, metadata !113, null}
+!119 = metadata !{i32 102, i32 0, metadata !4, null}
+!120 = metadata !{i32 106, i32 0, metadata !121, null}
+!121 = metadata !{i32 786443, metadata !1, metadata !4, i32 102, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!122 = metadata !{i32 107, i32 0, metadata !121, null}
+!123 = metadata !{i32 111, i32 0, metadata !124, null}
+!124 = metadata !{i32 786443, metadata !1, metadata !4, i32 107, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!125 = metadata !{i32 116, i32 0, metadata !4, null}
+!126 = metadata !{i32 117, i32 0, metadata !4, null}
+!127 = metadata !{i32 119, i32 0, metadata !4, null}
+!128 = metadata !{i32 136, i32 0, metadata !44, null}
+!129 = metadata !{i32 137, i32 0, metadata !44, null}
+!130 = metadata !{i32 138, i32 0, metadata !44, null}
+!131 = metadata !{i32 139, i32 0, metadata !44, null}
+!132 = metadata !{i32 148, i32 0, metadata !44, null}
+!133 = metadata !{i32 149, i32 0, metadata !134, null}
+!134 = metadata !{i32 786443, metadata !1, metadata !44, i32 148, i32 0, i32 8} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!135 = metadata !{i32 152, i32 0, metadata !134, null}
+!136 = metadata !{i32 159, i32 0, metadata !44, null}
+!137 = metadata !{i32 160, i32 0, metadata !44, null}
+!138 = metadata !{i32 161, i32 0, metadata !44, null}
+!139 = metadata !{i32 171, i32 0, metadata !140, null}
+!140 = metadata !{i32 786443, metadata !1, metadata !44, i32 171, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!141 = metadata !{i32 180, i32 0, metadata !142, null}
+!142 = metadata !{i32 786443, metadata !1, metadata !140, i32 173, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!143 = metadata !{i32 173, i32 0, metadata !140, null}
+!144 = metadata !{i32 186, i32 0, metadata !44, null}
+!145 = metadata !{i32 192, i32 0, metadata !146, null}
+!146 = metadata !{i32 786443, metadata !1, metadata !44, i32 186, i32 0, i32 12} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!147 = metadata !{i32 1}
+!148 = metadata !{i32 193, i32 0, metadata !146, null}
+!149 = metadata !{i32 194, i32 0, metadata !146, null}
+!150 = metadata !{i32 195, i32 0, metadata !44, null}
+!151 = metadata !{i32 212, i32 0, metadata !58, null}
+!152 = metadata !{i32 213, i32 0, metadata !58, null}
+!153 = metadata !{i32 214, i32 0, metadata !58, null}
+!154 = metadata !{i32 215, i32 0, metadata !58, null}
+!155 = metadata !{i32 224, i32 0, metadata !58, null}
+!156 = metadata !{i32 225, i32 0, metadata !157, null}
+!157 = metadata !{i32 786443, metadata !1, metadata !58, i32 224, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!158 = metadata !{i32 228, i32 0, metadata !157, null}
+!159 = metadata !{i32 230, i32 0, metadata !58, null}
+!160 = metadata !{i32 231, i32 0, metadata !58, null}
+!161 = metadata !{i32 232, i32 0, metadata !58, null}
+!162 = metadata !{i32 238, i32 0, metadata !163, null}
+!163 = metadata !{i32 786443, metadata !1, metadata !58, i32 238, i32 0, i32 14} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!164 = metadata !{i32 241, i32 0, metadata !165, null}
+!165 = metadata !{i32 786443, metadata !1, metadata !163, i32 240, i32 0, i32 15} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!166 = metadata !{i32 245, i32 0, metadata !165, null}
+!167 = metadata !{i32 240, i32 0, metadata !163, null}
+!168 = metadata !{i32 248, i32 0, metadata !58, null}
+!169 = metadata !{i32 254, i32 0, metadata !170, null}
+!170 = metadata !{i32 786443, metadata !1, metadata !58, i32 248, i32 0, i32 17} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!171 = metadata !{i32 255, i32 0, metadata !172, null}
+!172 = metadata !{i32 786443, metadata !1, metadata !170, i32 254, i32 0, i32 18} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!173 = metadata !{i32 256, i32 0, metadata !172, null}
+!174 = metadata !{i32 257, i32 0, metadata !175, null}
+!175 = metadata !{i32 786443, metadata !1, metadata !170, i32 256, i32 0, i32 19} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!176 = metadata !{i32 259, i32 0, metadata !170, null}
+!177 = metadata !{i32 260, i32 0, metadata !170, null}
+!178 = metadata !{i32 261, i32 0, metadata !170, null}
+!179 = metadata !{i32 262, i32 0, metadata !170, null}
+!180 = metadata !{i32 263, i32 0, metadata !170, null}
+!181 = metadata !{i32 264, i32 0, metadata !170, null}
+!182 = metadata !{i32 265, i32 0, metadata !58, null}
+!183 = metadata !{i32 278, i32 0, metadata !70, null}
+!184 = metadata !{i32 284, i32 0, metadata !70, null}
+!185 = metadata !{i32 290, i32 0, metadata !186, null}
+!186 = metadata !{i32 786443, metadata !1, metadata !70, i32 290, i32 0, i32 21} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!187 = metadata !{i32 291, i32 0, metadata !188, null}
+!188 = metadata !{i32 786443, metadata !1, metadata !186, i32 290, i32 0, i32 22} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!189 = metadata !{i32 285, i32 0, metadata !190, null}
+!190 = metadata !{i32 786443, metadata !1, metadata !70, i32 284, i32 0, i32 20} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!191 = metadata !{i32 287, i32 0, metadata !190, null}
+!192 = metadata !{i32 294, i32 0, metadata !193, null}
+!193 = metadata !{i32 786443, metadata !1, metadata !194, i32 293, i32 0, i32 24} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!194 = metadata !{i32 786443, metadata !1, metadata !188, i32 291, i32 0, i32 23} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/I2Ohash/src/I2Ohash_util.c]
+!195 = metadata !{i32 295, i32 0, metadata !193, null}
+!196 = metadata !{i32 293, i32 0, metadata !194, null}
+!197 = metadata !{i32 297, i32 0, metadata !194, null}
+!198 = metadata !{i32 298, i32 0, metadata !194, null}
+!199 = metadata !{i32 300, i32 0, metadata !70, null}
+!200 = metadata !{i32 301, i32 0, metadata !70, null}
+!201 = metadata !{i32 303, i32 0, metadata !70, null}

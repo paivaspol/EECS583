@@ -1,21 +1,23 @@
 define i32 @any_uncondjump_p(%struct.rtx_def* nocapture %insn) #2 {
 entry:
-  %call = tail call %struct.rtx_def* @pc_set(%struct.rtx_def* %insn) #8
-  %tobool = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !539), !dbg !993
+  %call = tail call %struct.rtx_def* @pc_set(%struct.rtx_def* %insn) #10, !dbg !994
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !540), !dbg !994
+  %tobool = icmp eq %struct.rtx_def* %call, null, !dbg !995
+  br i1 %tobool, label %return, label %if.end, !dbg !995
 
 if.end:                                           ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 1
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 67
-  %. = zext i1 %cmp to i32
-  br label %return
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 1, !dbg !996
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !996
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !996, !tbaa !810
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !996
+  %bf.load = load i32* %1, align 8, !dbg !996
+  %bf.clear = and i32 %bf.load, 65535, !dbg !996
+  %cmp = icmp eq i32 %bf.clear, 67, !dbg !996
+  %. = zext i1 %cmp to i32, !dbg !997
+  br label %return, !dbg !997
 
 return:                                           ; preds = %if.end, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ %., %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !997
 }

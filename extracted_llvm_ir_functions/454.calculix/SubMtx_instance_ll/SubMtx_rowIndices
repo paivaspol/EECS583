@@ -1,21 +1,22 @@
-define void @SubMtx_rowIndices(%struct._SubMtx* nocapture readonly %mtx, i32* nocapture %pnrow, i32** %prowind) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %mtx, i64 0, metadata !61, metadata !480), !dbg !554
-  tail call void @llvm.dbg.value(metadata i32* %pnrow, i64 0, metadata !62, metadata !480), !dbg !555
-  tail call void @llvm.dbg.value(metadata i32** %prowind, i64 0, metadata !63, metadata !480), !dbg !556
-  %1 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 4, !dbg !557
-  %2 = load i32* %1, align 4, !dbg !557, !tbaa !545
-  store i32 %2, i32* %pnrow, align 4, !dbg !558, !tbaa !503
-  %3 = icmp eq i32** %prowind, null, !dbg !559
-  br i1 %3, label %9, label %4, !dbg !561
+define void @SubMtx_rowIndices(%struct._SubMtx* nocapture %mtx, i32* nocapture %pnrow, i32** %prowind) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %mtx}, i64 0, metadata !62), !dbg !514
+  tail call void @llvm.dbg.value(metadata !{i32* %pnrow}, i64 0, metadata !63), !dbg !515
+  tail call void @llvm.dbg.value(metadata !{i32** %prowind}, i64 0, metadata !64), !dbg !516
+  %nrow = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 4, !dbg !517
+  %0 = load i32* %nrow, align 4, !dbg !517, !tbaa !488
+  store i32 %0, i32* %pnrow, align 4, !dbg !517, !tbaa !488
+  %cmp = icmp eq i32** %prowind, null, !dbg !518
+  br i1 %cmp, label %if.end, label %if.then, !dbg !518
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8, i32 3, !dbg !562
-  %6 = bitcast double** %5 to i32**, !dbg !562
-  %7 = load i32** %6, align 8, !dbg !562, !tbaa !519
-  %8 = getelementptr inbounds i32* %7, i64 7, !dbg !564
-  store i32* %8, i32** %prowind, align 8, !dbg !565, !tbaa !491
-  br label %9, !dbg !566
+if.then:                                          ; preds = %entry
+  %vec = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8, i32 3, !dbg !519
+  %1 = load double** %vec, align 8, !dbg !519, !tbaa !483
+  %2 = bitcast double* %1 to i32*, !dbg !519
+  %add.ptr = getelementptr inbounds i32* %2, i64 7, !dbg !519
+  store i32* %add.ptr, i32** %prowind, align 8, !dbg !519, !tbaa !483
+  br label %if.end, !dbg !521
 
-; <label>:9                                       ; preds = %0, %4
-  ret void, !dbg !567
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !522
 }

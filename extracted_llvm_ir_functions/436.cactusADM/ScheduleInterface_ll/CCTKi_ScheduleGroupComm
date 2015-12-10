@@ -1,28 +1,30 @@
 define i32 @CCTKi_ScheduleGroupComm(i8* %group) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %group, i64 0, metadata !226, metadata !498), !dbg !891
-  %1 = load i8** bitcast (i32** @scheduled_comm_groups to i8**), align 8, !dbg !892, !tbaa !593
-  %2 = load i32* @n_scheduled_comm_groups, align 4, !dbg !893, !tbaa !873
-  %3 = add nsw i32 %2, 1, !dbg !894
-  %4 = sext i32 %3 to i64, !dbg !895
-  %5 = shl nsw i64 %4, 2, !dbg !896
-  %6 = tail call i8* @realloc(i8* %1, i64 %5) #8, !dbg !897
-  tail call void @llvm.dbg.value(metadata i32* %9, i64 0, metadata !227, metadata !498), !dbg !898
-  %7 = icmp eq i8* %6, null, !dbg !899
-  br i1 %7, label %.critedge, label %8, !dbg !901
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %group}, i64 0, metadata !216), !dbg !686
+  %0 = load i32** @scheduled_comm_groups, align 8, !dbg !687, !tbaa !504
+  %1 = bitcast i32* %0 to i8*, !dbg !687
+  %2 = load i32* @n_scheduled_comm_groups, align 4, !dbg !687, !tbaa !592
+  %add = add nsw i32 %2, 1, !dbg !687
+  %conv = sext i32 %add to i64, !dbg !687
+  %mul = shl nsw i64 %conv, 2, !dbg !687
+  %call = tail call i8* @realloc(i8* %1, i64 %mul) #8, !dbg !687
+  %3 = bitcast i8* %call to i32*, !dbg !687
+  tail call void @llvm.dbg.value(metadata !{i32* %3}, i64 0, metadata !217), !dbg !687
+  %tobool = icmp eq i8* %call, null, !dbg !688
+  br i1 %tobool, label %cond.end, label %if.then, !dbg !688
 
-; <label>:8                                       ; preds = %0
-  %9 = bitcast i8* %6 to i32*, !dbg !902
-  %10 = tail call i32 @CCTK_GroupIndex(i8* %group) #8, !dbg !903
-  %11 = load i32* @n_scheduled_comm_groups, align 4, !dbg !905, !tbaa !873
-  %12 = add nsw i32 %11, 1, !dbg !905
-  store i32 %12, i32* @n_scheduled_comm_groups, align 4, !dbg !905, !tbaa !873
-  %13 = sext i32 %11 to i64, !dbg !906
-  %14 = getelementptr inbounds i32* %9, i64 %13, !dbg !906
-  store i32 %10, i32* %14, align 4, !dbg !907, !tbaa !873
-  store i8* %6, i8** bitcast (i32** @scheduled_comm_groups to i8**), align 8, !dbg !908, !tbaa !593
-  br label %.critedge, !dbg !909
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @CCTK_GroupIndex(i8* %group) #8, !dbg !689
+  %4 = load i32* @n_scheduled_comm_groups, align 4, !dbg !689, !tbaa !592
+  %inc = add nsw i32 %4, 1, !dbg !689
+  store i32 %inc, i32* @n_scheduled_comm_groups, align 4, !dbg !689, !tbaa !592
+  %idxprom = sext i32 %4 to i64, !dbg !689
+  %arrayidx = getelementptr inbounds i32* %3, i64 %idxprom, !dbg !689
+  store i32 %call1, i32* %arrayidx, align 4, !dbg !689, !tbaa !592
+  store i32* %3, i32** @scheduled_comm_groups, align 8, !dbg !691, !tbaa !504
+  br label %cond.end, !dbg !692
 
-.critedge:                                        ; preds = %0, %8
-  %15 = phi i32 [ %10, %8 ], [ -1, %0 ], !dbg !909
-  ret i32 %15, !dbg !910
+cond.end:                                         ; preds = %entry, %if.then
+  %cond = phi i32 [ %call1, %if.then ], [ -1, %entry ], !dbg !692
+  ret i32 %cond, !dbg !692
 }

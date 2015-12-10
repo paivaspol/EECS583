@@ -1,23 +1,24 @@
-define i32 @MSAFileRewind(%struct.msafile_struct* nocapture readonly %afp) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.msafile_struct* %afp, i64 0, metadata !312, metadata !481), !dbg !1566
-  %1 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 6, !dbg !1567
-  %2 = load i32* %1, align 4, !dbg !1567, !tbaa !1446
-  %3 = icmp eq i32 %2, 0, !dbg !1569
-  br i1 %3, label %4, label %11, !dbg !1570
+define i32 @MSAFileRewind(%struct.msafile_struct* nocapture %afp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.msafile_struct* %afp}, i64 0, metadata !297), !dbg !838
+  %do_gzip = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 6, !dbg !839
+  %0 = load i32* %do_gzip, align 4, !dbg !839, !tbaa !478
+  %tobool = icmp eq i32 %0, 0, !dbg !839
+  br i1 %tobool, label %lor.lhs.false, label %return, !dbg !839
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 7, !dbg !1571
-  %6 = load i32* %5, align 4, !dbg !1571, !tbaa !1443
-  %7 = icmp eq i32 %6, 0, !dbg !1572
-  br i1 %7, label %8, label %11, !dbg !1573
+lor.lhs.false:                                    ; preds = %entry
+  %do_stdin = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 7, !dbg !839
+  %1 = load i32* %do_stdin, align 4, !dbg !839, !tbaa !478
+  %tobool1 = icmp eq i32 %1, 0, !dbg !839
+  br i1 %tobool1, label %if.end, label %return, !dbg !839
 
-; <label>:8                                       ; preds = %4
-  %9 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !1574
-  %10 = load %struct.__sFILE** %9, align 8, !dbg !1574, !tbaa !1439
-  tail call void @rewind(%struct.__sFILE* %10) #7, !dbg !1575
-  br label %11, !dbg !1576
+if.end:                                           ; preds = %lor.lhs.false
+  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !840
+  %2 = load %struct._IO_FILE** %f, align 8, !dbg !840, !tbaa !466
+  tail call void @rewind(%struct._IO_FILE* %2) #7, !dbg !840
+  br label %return, !dbg !841
 
-; <label>:11                                      ; preds = %0, %4, %8
-  %.0 = phi i32 [ 1, %8 ], [ 0, %4 ], [ 0, %0 ]
-  ret i32 %.0, !dbg !1577
+return:                                           ; preds = %entry, %lor.lhs.false, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %lor.lhs.false ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !841
 }

@@ -1,13 +1,14 @@
-define void @update_time() #4 {
-  %1 = tail call i64 @"\01_clock"() #10, !dbg !2315
-  tail call void @llvm.dbg.value(metadata i64 %1, i64 0, metadata !1255, metadata !1624), !dbg !2316
-  %2 = load i64* @cprev, align 8, !dbg !2317, !tbaa !1787
-  %3 = sub i64 %1, %2, !dbg !2318
-  %4 = uitofp i64 %3 to double, !dbg !2319
-  %5 = fdiv double %4, 1.000000e+06, !dbg !2320
-  %6 = load double* @runtime, align 8, !dbg !2321, !tbaa !1735
-  %7 = fadd double %5, %6, !dbg !2321
-  store double %7, double* @runtime, align 8, !dbg !2321, !tbaa !1735
-  store i64 %1, i64* @cprev, align 8, !dbg !2322, !tbaa !1787
-  ret void, !dbg !2323
+define void @update_time() #0 {
+entry:
+  %call = tail call i64 @clock() #7, !dbg !1787
+  tail call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !1128), !dbg !1787
+  %0 = load i64* @cprev, align 8, !dbg !1788, !tbaa !1513
+  %sub = sub nsw i64 %call, %0, !dbg !1788
+  %conv = sitofp i64 %sub to double, !dbg !1788
+  %div = fdiv double %conv, 1.000000e+06, !dbg !1788
+  %1 = load double* @runtime, align 8, !dbg !1788, !tbaa !1563
+  %add = fadd double %div, %1, !dbg !1788
+  store double %add, double* @runtime, align 8, !dbg !1788, !tbaa !1563
+  store i64 %call, i64* @cprev, align 8, !dbg !1789, !tbaa !1513
+  ret void, !dbg !1790
 }

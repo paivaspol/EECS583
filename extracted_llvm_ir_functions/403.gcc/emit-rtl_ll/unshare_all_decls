@@ -1,43 +1,44 @@
 define internal fastcc void @unshare_all_decls(%union.tree_node* nocapture %blk) #0 {
 entry:
-  %vars = getelementptr inbounds %union.tree_node* %blk, i64 0, i32 0, i32 2
-  %0 = bitcast i32* %vars to %union.tree_node**
-  %t.031 = load %union.tree_node** %0, align 8
-  %tobool32 = icmp eq %union.tree_node* %t.031, null
-  br i1 %tobool32, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %blk}, i64 0, metadata !2153), !dbg !3044
+  %vars = getelementptr inbounds %union.tree_node* %blk, i64 0, i32 0, i32 2, !dbg !3045
+  %0 = bitcast i32* %vars to %union.tree_node**, !dbg !3045
+  %t.031 = load %union.tree_node** %0, align 8, !dbg !3045
+  %tobool32 = icmp eq %union.tree_node* %t.031, null, !dbg !3045
+  br i1 %tobool32, label %for.end, label %for.body, !dbg !3045
 
 for.body:                                         ; preds = %entry, %for.inc
   %t.033 = phi %union.tree_node* [ %t.0, %for.inc ], [ %t.031, %entry ]
-  %rtl = getelementptr inbounds %union.tree_node* %t.033, i64 0, i32 0, i32 17
-  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !4
-  %cmp = icmp eq %struct.rtx_def* %1, null
-  br i1 %cmp, label %for.inc, label %cond.end
+  %rtl = getelementptr inbounds %union.tree_node* %t.033, i64 0, i32 0, i32 17, !dbg !3047
+  %1 = load %struct.rtx_def** %rtl, align 8, !dbg !3047, !tbaa !2272
+  %cmp = icmp eq %struct.rtx_def* %1, null, !dbg !3047
+  br i1 %cmp, label %for.inc, label %cond.end, !dbg !3047
 
 cond.end:                                         ; preds = %for.body
-  %call = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %1) #9
-  store %struct.rtx_def* %call, %struct.rtx_def** %rtl, align 8, !tbaa !4
-  br label %for.inc
+  %call = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %1) #10, !dbg !3048
+  store %struct.rtx_def* %call, %struct.rtx_def** %rtl, align 8, !dbg !3048, !tbaa !2272
+  br label %for.inc, !dbg !3048
 
 for.inc:                                          ; preds = %for.body, %cond.end
-  %chain = getelementptr inbounds %union.tree_node* %t.033, i64 0, i32 0, i32 0, i32 0
-  %t.0 = load %union.tree_node** %chain, align 8
-  %tobool = icmp eq %union.tree_node* %t.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %chain = getelementptr inbounds %union.tree_node* %t.033, i64 0, i32 0, i32 0, i32 0, !dbg !3045
+  %t.0 = load %union.tree_node** %chain, align 8, !dbg !3045
+  %tobool = icmp eq %union.tree_node* %t.0, null, !dbg !3045
+  br i1 %tobool, label %for.end, label %for.body, !dbg !3045
 
 for.end:                                          ; preds = %for.inc, %entry
-  %2 = getelementptr inbounds %union.tree_node* %blk, i64 0, i32 0, i32 4
-  %t.128 = load %union.tree_node** %2, align 8
-  %tobool1229 = icmp eq %union.tree_node* %t.128, null
-  br i1 %tobool1229, label %for.end17, label %for.body13
+  %2 = getelementptr inbounds %union.tree_node* %blk, i64 0, i32 0, i32 4, !dbg !3049
+  %t.128 = load %union.tree_node** %2, align 8, !dbg !3049
+  %tobool1229 = icmp eq %union.tree_node* %t.128, null, !dbg !3049
+  br i1 %tobool1229, label %for.end17, label %for.body13, !dbg !3049
 
 for.body13:                                       ; preds = %for.end, %for.body13
   %t.130 = phi %union.tree_node* [ %t.1, %for.body13 ], [ %t.128, %for.end ]
-  tail call fastcc void @unshare_all_decls(%union.tree_node* %t.130) #9
-  %chain16 = getelementptr inbounds %union.tree_node* %t.130, i64 0, i32 0, i32 0, i32 0
-  %t.1 = load %union.tree_node** %chain16, align 8
-  %tobool12 = icmp eq %union.tree_node* %t.1, null
-  br i1 %tobool12, label %for.end17, label %for.body13
+  tail call fastcc void @unshare_all_decls(%union.tree_node* %t.130) #10, !dbg !3051
+  %chain16 = getelementptr inbounds %union.tree_node* %t.130, i64 0, i32 0, i32 0, i32 0, !dbg !3049
+  %t.1 = load %union.tree_node** %chain16, align 8, !dbg !3049
+  %tobool12 = icmp eq %union.tree_node* %t.1, null, !dbg !3049
+  br i1 %tobool12, label %for.end17, label %for.body13, !dbg !3049
 
 for.end17:                                        ; preds = %for.body13, %for.end
-  ret void
+  ret void, !dbg !3052
 }

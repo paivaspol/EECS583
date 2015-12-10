@@ -1,54 +1,52 @@
-define float** @mk_matrix(i32 %nx, i32 %ny, i32 %b1D) #4 {
-  tail call void @llvm.dbg.value(metadata i32 %nx, i64 0, metadata !91, metadata !477), !dbg !516
-  tail call void @llvm.dbg.value(metadata i32 %ny, i64 0, metadata !92, metadata !477), !dbg !517
-  tail call void @llvm.dbg.value(metadata i32 %b1D, i64 0, metadata !93, metadata !477), !dbg !518
-  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 55, i32 %nx, i32 8) #10, !dbg !519
-  %2 = bitcast i8* %1 to float**, !dbg !519
-  tail call void @llvm.dbg.value(metadata float** %2, i64 0, metadata !95, metadata !477), !dbg !520
-  %3 = icmp ne i32 %b1D, 0, !dbg !521
-  br i1 %3, label %4, label %.preheader, !dbg !523
+define float** @mk_matrix(i32 %nx, i32 %ny, i32 %b1D) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %nx}, i64 0, metadata !30), !dbg !459
+  tail call void @llvm.dbg.value(metadata !{i32 %ny}, i64 0, metadata !31), !dbg !459
+  tail call void @llvm.dbg.value(metadata !{i32 %b1D}, i64 0, metadata !32), !dbg !459
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 55, i32 %nx, i32 8) #9, !dbg !460
+  %0 = bitcast i8* %call to float**, !dbg !460
+  tail call void @llvm.dbg.value(metadata !{float** %0}, i64 0, metadata !34), !dbg !460
+  %tobool = icmp ne i32 %b1D, 0, !dbg !461
+  br i1 %tobool, label %if.then, label %for.cond.preheader, !dbg !461
 
-; <label>:4                                       ; preds = %0
-  %5 = mul nsw i32 %ny, %nx, !dbg !524
-  %6 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 57, i32 %5, i32 4) #10, !dbg !524
-  %7 = bitcast i8* %1 to i8**, !dbg !524
-  store i8* %6, i8** %7, align 8, !dbg !524, !tbaa !525
-  br label %.preheader, !dbg !524
+if.then:                                          ; preds = %entry
+  %mul = mul nsw i32 %ny, %nx, !dbg !462
+  %call1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 57, i32 %mul, i32 4) #9, !dbg !462
+  %1 = bitcast i8* %call1 to float*, !dbg !462
+  store float* %1, float** %0, align 8, !dbg !462, !tbaa !463
+  br label %for.cond.preheader, !dbg !462
 
-.preheader:                                       ; preds = %4, %0
-  %8 = icmp sgt i32 %nx, 0, !dbg !526
-  br i1 %8, label %.lr.ph, label %._crit_edge, !dbg !529
+for.cond.preheader:                               ; preds = %if.then, %entry
+  %cmp26 = icmp sgt i32 %nx, 0, !dbg !466
+  br i1 %cmp26, label %for.body, label %for.end, !dbg !466
 
-.lr.ph:                                           ; preds = %.preheader
-  %9 = sext i32 %ny to i64, !dbg !529
-  %10 = add i32 %nx, -1, !dbg !529
-  br label %11, !dbg !529
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
+  br i1 %tobool, label %if.then3, label %if.else, !dbg !468
 
-; <label>:11                                      ; preds = %21, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %21 ]
-  br i1 %3, label %12, label %17, !dbg !530
+if.then3:                                         ; preds = %for.body
+  %2 = trunc i64 %indvars.iv to i32, !dbg !469
+  %mul4 = mul nsw i32 %2, %ny, !dbg !469
+  %idxprom = sext i32 %mul4 to i64, !dbg !469
+  %3 = load float** %0, align 8, !dbg !469, !tbaa !463
+  %arrayidx6 = getelementptr inbounds float* %3, i64 %idxprom, !dbg !469
+  %arrayidx8 = getelementptr inbounds float** %0, i64 %indvars.iv, !dbg !469
+  store float* %arrayidx6, float** %arrayidx8, align 8, !dbg !469, !tbaa !463
+  br label %for.inc, !dbg !469
 
-; <label>:12                                      ; preds = %11
-  %13 = mul nsw i64 %indvars.iv, %9, !dbg !531
-  %14 = load float** %2, align 8, !dbg !533, !tbaa !525
-  %15 = getelementptr inbounds float* %14, i64 %13, !dbg !533
-  %16 = getelementptr inbounds float** %2, i64 %indvars.iv, !dbg !534
-  store float* %15, float** %16, align 8, !dbg !535, !tbaa !525
-  br label %21, !dbg !534
+if.else:                                          ; preds = %for.body
+  %call9 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 63, i32 %ny, i32 4) #9, !dbg !470
+  %4 = bitcast i8* %call9 to float*, !dbg !470
+  %arrayidx11 = getelementptr inbounds float** %0, i64 %indvars.iv, !dbg !470
+  store float* %4, float** %arrayidx11, align 8, !dbg !470, !tbaa !463
+  br label %for.inc
 
-; <label>:17                                      ; preds = %11
-  %18 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 63, i32 %ny, i32 4) #10, !dbg !536
-  %19 = getelementptr inbounds float** %2, i64 %indvars.iv, !dbg !536
-  %20 = bitcast float** %19 to i8**, !dbg !536
-  store i8* %18, i8** %20, align 8, !dbg !536, !tbaa !525
-  br label %21
+for.inc:                                          ; preds = %if.then3, %if.else
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !466
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !466
+  %exitcond = icmp eq i32 %lftr.wideiv, %nx, !dbg !466
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !466
 
-; <label>:21                                      ; preds = %12, %17
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !529
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !529
-  %exitcond = icmp eq i32 %lftr.wideiv, %10, !dbg !529
-  br i1 %exitcond, label %._crit_edge, label %11, !dbg !529
-
-._crit_edge:                                      ; preds = %21, %.preheader
-  ret float** %2, !dbg !537
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  ret float** %0, !dbg !471
 }

@@ -1,53 +1,54 @@
 define internal fastcc i32 @IOUtil_RecoverFromFile(%struct.cGH* %GH, i8* %basefilename, i32 %called_from) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !528, metadata !598), !dbg !699
-  tail call void @llvm.dbg.value(metadata i8* %basefilename, i64 0, metadata !529, metadata !598), !dbg !700
-  tail call void @llvm.dbg.value(metadata i32 %called_from, i64 0, metadata !530, metadata !598), !dbg !701
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !532, metadata !598), !dbg !702
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !531, metadata !598), !dbg !703
-  %1 = load i32* @num_functions, align 4, !dbg !704, !tbaa !615
-  %2 = icmp sgt i32 %1, 0, !dbg !707
-  br i1 %2, label %.lr.ph, label %.loopexit.thread, !dbg !708
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !525), !dbg !614
+  tail call void @llvm.dbg.value(metadata !{i8* %basefilename}, i64 0, metadata !526), !dbg !615
+  tail call void @llvm.dbg.value(metadata !{i32 %called_from}, i64 0, metadata !527), !dbg !616
+  tail call void @llvm.dbg.value(metadata !617, i64 0, metadata !529), !dbg !618
+  tail call void @llvm.dbg.value(metadata !26, i64 0, metadata !528), !dbg !619
+  %0 = load i32* @num_functions, align 4, !dbg !619, !tbaa !562
+  %cmp16 = icmp sgt i32 %0, 0, !dbg !619
+  br i1 %cmp16, label %for.body, label %if.then7, !dbg !619
 
-.lr.ph:                                           ; preds = %0, %10
-  %handle.05 = phi i32 [ %11, %10 ], [ 0, %0 ]
-  %retval.04 = phi i32 [ %retval.1, %10 ], [ -1, %0 ]
-  %3 = load %struct.cHandledData** @RecoverFunctions, align 8, !dbg !709, !tbaa !602
-  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.05) #7, !dbg !711
-  tail call void @llvm.dbg.value(metadata i32 (%struct.cGH*, i8*, i32)* %7, i64 0, metadata !533, metadata !598), !dbg !712
-  %5 = icmp eq i8* %4, null, !dbg !713
-  br i1 %5, label %10, label %6, !dbg !715
+for.body:                                         ; preds = %entry, %for.inc
+  %handle.018 = phi i32 [ %inc, %for.inc ], [ 0, %entry ]
+  %retval1.017 = phi i32 [ %retval1.1, %for.inc ], [ -1, %entry ]
+  %1 = load %struct.cHandledData** @RecoverFunctions, align 8, !dbg !621, !tbaa !555
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle.018) #9, !dbg !621
+  tail call void @llvm.dbg.value(metadata !{i32 (%struct.cGH*, i8*, i32)* %2}, i64 0, metadata !530), !dbg !621
+  %tobool = icmp eq i8* %call, null, !dbg !623
+  br i1 %tobool, label %for.inc, label %if.then, !dbg !623
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = bitcast i8* %4 to i32 (%struct.cGH*, i8*, i32)*, !dbg !716
-  %8 = tail call i32 %7(%struct.cGH* %GH, i8* %basefilename, i32 %called_from) #7, !dbg !717
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !532, metadata !598), !dbg !702
-  %9 = icmp sgt i32 %8, -1, !dbg !719
-  br i1 %9, label %thread-pre-split, label %10, !dbg !721
+if.then:                                          ; preds = %for.body
+  %2 = bitcast i8* %call to i32 (%struct.cGH*, i8*, i32)*, !dbg !621
+  %call2 = tail call i32 %2(%struct.cGH* %GH, i8* %basefilename, i32 %called_from) #9, !dbg !624
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !529), !dbg !624
+  %cmp3 = icmp sgt i32 %call2, -1, !dbg !626
+  br i1 %cmp3, label %for.endthread-pre-split, label %for.inc, !dbg !626
 
-; <label>:10                                      ; preds = %.lr.ph, %6
-  %retval.1 = phi i32 [ %8, %6 ], [ %retval.04, %.lr.ph ]
-  %11 = add nuw nsw i32 %handle.05, 1, !dbg !722
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !531, metadata !598), !dbg !703
-  %12 = load i32* @num_functions, align 4, !dbg !704, !tbaa !615
-  %13 = icmp slt i32 %11, %12, !dbg !707
-  br i1 %13, label %.lr.ph, label %.loopexit, !dbg !708
+for.inc:                                          ; preds = %for.body, %if.then
+  %retval1.1 = phi i32 [ %call2, %if.then ], [ %retval1.017, %for.body ]
+  %inc = add nsw i32 %handle.018, 1, !dbg !619
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !528), !dbg !619
+  %3 = load i32* @num_functions, align 4, !dbg !619, !tbaa !562
+  %cmp = icmp slt i32 %inc, %3, !dbg !619
+  br i1 %cmp, label %for.body, label %for.end, !dbg !619
 
-thread-pre-split:                                 ; preds = %6
-  %.pr = load i32* @num_functions, align 4, !dbg !723, !tbaa !615
-  br label %.loopexit
+for.endthread-pre-split:                          ; preds = %if.then
+  %.pr = load i32* @num_functions, align 4, !dbg !627, !tbaa !562
+  br label %for.end
 
-.loopexit:                                        ; preds = %10, %thread-pre-split
-  %14 = phi i32 [ %.pr, %thread-pre-split ], [ %12, %10 ], !dbg !723
-  %retval.2 = phi i32 [ %8, %thread-pre-split ], [ %retval.1, %10 ]
-  %15 = icmp slt i32 %14, 1, !dbg !725
-  br i1 %15, label %.loopexit.thread, label %17, !dbg !726
+for.end:                                          ; preds = %for.inc, %for.endthread-pre-split
+  %4 = phi i32 [ %.pr, %for.endthread-pre-split ], [ %3, %for.inc ], !dbg !627
+  %retval1.2 = phi i32 [ %call2, %for.endthread-pre-split ], [ %retval1.1, %for.inc ]
+  %cmp6 = icmp slt i32 %4, 1, !dbg !627
+  br i1 %cmp6, label %if.then7, label %if.end9, !dbg !627
 
-.loopexit.thread:                                 ; preds = %0, %.loopexit
-  %retval.210 = phi i32 [ %retval.2, %.loopexit ], [ -1, %0 ]
-  %16 = tail call i32 @CCTK_Warn(i32 1, i32 305, i8* getelementptr inbounds ([87 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([61 x i8]* @.str30, i64 0, i64 0)) #7, !dbg !727
-  br label %17, !dbg !729
+if.then7:                                         ; preds = %entry, %for.end
+  %retval1.223 = phi i32 [ %retval1.2, %for.end ], [ -1, %entry ]
+  %call8 = tail call i32 @CCTK_Warn(i32 1, i32 305, i8* getelementptr inbounds ([75 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([61 x i8]* @.str30, i64 0, i64 0)) #9, !dbg !628
+  br label %if.end9, !dbg !630
 
-; <label>:17                                      ; preds = %.loopexit.thread, %.loopexit
-  %retval.29 = phi i32 [ %retval.210, %.loopexit.thread ], [ %retval.2, %.loopexit ]
-  ret i32 %retval.29, !dbg !730
+if.end9:                                          ; preds = %if.then7, %for.end
+  %retval1.222 = phi i32 [ %retval1.223, %if.then7 ], [ %retval1.2, %for.end ]
+  ret i32 %retval1.222, !dbg !631
 }

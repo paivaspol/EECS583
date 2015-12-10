@@ -1,0 +1,22 @@
+define %"class.pov_base::IOBase"* @_ZN8pov_base6IOBase5seekgEmj(%"class.pov_base::IOBase"* %this, i64 %pos, i32 %whence) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IOBase"* %this}, i64 0, metadata !196), !dbg !764
+  tail call void @llvm.dbg.value(metadata !{i64 %pos}, i64 0, metadata !197), !dbg !764
+  tail call void @llvm.dbg.value(metadata !{i32 %whence}, i64 0, metadata !198), !dbg !764
+  %fail = getelementptr inbounds %"class.pov_base::IOBase"* %this, i64 0, i32 1, !dbg !765
+  %0 = load i8* %fail, align 1, !dbg !765, !tbaa !687, !range !766
+  %tobool = icmp eq i8 %0, 0, !dbg !765
+  br i1 %tobool, label %if.then, label %if.end, !dbg !765
+
+if.then:                                          ; preds = %entry
+  %f = getelementptr inbounds %"class.pov_base::IOBase"* %this, i64 0, i32 2, !dbg !767
+  %1 = load %struct._IO_FILE** %f, align 8, !dbg !767, !tbaa !689
+  %call = tail call i32 @fseek(%struct._IO_FILE* %1, i64 %pos, i32 %whence) #9, !dbg !767
+  %cmp = icmp ne i32 %call, 0, !dbg !767
+  %frombool = zext i1 %cmp to i8, !dbg !767
+  store i8 %frombool, i8* %fail, align 1, !dbg !767, !tbaa !687
+  br label %if.end, !dbg !767
+
+if.end:                                           ; preds = %entry, %if.then
+  ret %"class.pov_base::IOBase"* %this, !dbg !768
+}

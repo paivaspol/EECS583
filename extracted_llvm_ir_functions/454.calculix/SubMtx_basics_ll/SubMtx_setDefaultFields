@@ -1,32 +1,33 @@
 define void @SubMtx_setDefaultFields(%struct._SubMtx* %mtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %mtx, i64 0, metadata !45, metadata !60), !dbg !71
-  %1 = icmp eq %struct._SubMtx* %mtx, null, !dbg !72
-  br i1 %1, label %2, label %5, !dbg !74
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %mtx}, i64 0, metadata !42), !dbg !58
+  %cmp = icmp eq %struct._SubMtx* %mtx, null, !dbg !59
+  br i1 %cmp, label %if.then, label %if.end, !dbg !59
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !75, !tbaa !65
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), %struct._SubMtx* null) #5, !dbg !77
-  tail call void @exit(i32 -1) #6, !dbg !78
-  unreachable, !dbg !78
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !60, !tbaa !53
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), %struct._SubMtx* null) #5, !dbg !60
+  tail call void @exit(i32 -1) #6, !dbg !62
+  unreachable, !dbg !62
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 0, !dbg !79
-  store i32 1, i32* %6, align 4, !dbg !80, !tbaa !81
-  %7 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 1, !dbg !85
-  store i32 1, i32* %7, align 4, !dbg !86, !tbaa !87
-  %8 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 2, !dbg !88
-  store i32 -1, i32* %8, align 4, !dbg !89, !tbaa !90
-  %9 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 3, !dbg !91
-  store i32 -1, i32* %9, align 4, !dbg !92, !tbaa !93
-  %10 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 4, !dbg !94
-  store i32 0, i32* %10, align 4, !dbg !95, !tbaa !96
-  %11 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 5, !dbg !97
-  store i32 0, i32* %11, align 4, !dbg !98, !tbaa !99
-  %12 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 6, !dbg !100
-  store i32 0, i32* %12, align 4, !dbg !101, !tbaa !102
-  %13 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 9, !dbg !103
-  store %struct._SubMtx* null, %struct._SubMtx** %13, align 8, !dbg !104, !tbaa !105
-  %14 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8, !dbg !106
-  tail call void @DV_setDefaultFields(%struct._DV* %14) #5, !dbg !107
-  ret void, !dbg !108
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 0, !dbg !63
+  store i32 1, i32* %type, align 4, !dbg !63, !tbaa !64
+  %mode = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 1, !dbg !65
+  store i32 1, i32* %mode, align 4, !dbg !65, !tbaa !64
+  %rowid = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 2, !dbg !66
+  store i32 -1, i32* %rowid, align 4, !dbg !66, !tbaa !64
+  %colid = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 3, !dbg !67
+  store i32 -1, i32* %colid, align 4, !dbg !67, !tbaa !64
+  %nrow = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 4, !dbg !68
+  store i32 0, i32* %nrow, align 4, !dbg !68, !tbaa !64
+  %ncol = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 5, !dbg !69
+  store i32 0, i32* %ncol, align 4, !dbg !69, !tbaa !64
+  %nent = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 6, !dbg !70
+  store i32 0, i32* %nent, align 4, !dbg !70, !tbaa !64
+  %next = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 9, !dbg !71
+  store %struct._SubMtx* null, %struct._SubMtx** %next, align 8, !dbg !71, !tbaa !53
+  %wrkDV = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8, !dbg !72
+  tail call void @DV_setDefaultFields(%struct._DV* %wrkDV) #5, !dbg !72
+  ret void, !dbg !73
 }

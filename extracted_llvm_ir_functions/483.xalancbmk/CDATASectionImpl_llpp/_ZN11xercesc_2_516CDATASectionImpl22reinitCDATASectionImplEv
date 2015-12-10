@@ -1,0 +1,36 @@
+define void @_ZN11xercesc_2_516CDATASectionImpl22reinitCDATASectionImplEv() #0 align 2 {
+entry:
+  %0 = load %"class.xercesc_2_5::DOMString"** @_ZN11xercesc_2_5L14gcdata_sectionE, align 8, !dbg !1360, !tbaa !1352
+  %isnull = icmp eq %"class.xercesc_2_5::DOMString"* %0, null, !dbg !1360
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !1360
+
+delete.notnull:                                   ; preds = %entry
+  invoke void @_ZN11xercesc_2_59DOMStringD1Ev(%"class.xercesc_2_5::DOMString"* %0) #5
+          to label %invoke.cont unwind label %lpad, !dbg !1360
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %1 = bitcast %"class.xercesc_2_5::DOMString"* %0 to i8*, !dbg !1360
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %1) #5, !dbg !1360
+  br label %delete.end, !dbg !1360
+
+delete.end:                                       ; preds = %invoke.cont, %entry
+  store %"class.xercesc_2_5::DOMString"* null, %"class.xercesc_2_5::DOMString"** @_ZN11xercesc_2_5L14gcdata_sectionE, align 8, !dbg !1361, !tbaa !1352
+  ret void, !dbg !1362
+
+lpad:                                             ; preds = %delete.notnull
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1360
+  %3 = bitcast %"class.xercesc_2_5::DOMString"* %0 to i8*, !dbg !1360
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %3) #5
+          to label %eh.resume unwind label %terminate.lpad, !dbg !1360
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %2, !dbg !1360
+
+terminate.lpad:                                   ; preds = %lpad
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !1360
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !1360
+  tail call void @__clang_call_terminate(i8* %5) #6, !dbg !1360
+  unreachable, !dbg !1360
+}

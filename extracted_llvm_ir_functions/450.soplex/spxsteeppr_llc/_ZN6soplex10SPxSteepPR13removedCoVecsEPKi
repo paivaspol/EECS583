@@ -1,55 +1,54 @@
-define void @_ZN6soplex10SPxSteepPR13removedCoVecsEPKi(%"class.soplex::SPxSteepPR"* %this, i32* nocapture readonly %perm) unnamed_addr #2 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxSteepPR"* %this, i64 0, metadata !5495, metadata !7037), !dbg !8735
-  tail call void @llvm.dbg.value(metadata i32* %perm, i64 0, metadata !5496, metadata !7037), !dbg !8736
-  %1 = getelementptr inbounds %"class.soplex::SPxSteepPR"* %this, i64 0, i32 2, !dbg !8737
-  %2 = getelementptr inbounds %"class.soplex::DVector"* %1, i64 0, i32 0, i32 0, !dbg !8738
-  %3 = load i32* %2, align 4, !dbg !8738, !tbaa !7071
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !5498, metadata !7037), !dbg !8740
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !5497, metadata !7037), !dbg !8741
-  %4 = icmp sgt i32 %3, 0, !dbg !8742
-  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !8745
+define void @_ZN6soplex10SPxSteepPR13removedCoVecsEPKi(%"class.soplex::SPxSteepPR"* %this, i32* nocapture %perm) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxSteepPR"* %this}, i64 0, metadata !7236), !dbg !9069
+  tail call void @llvm.dbg.value(metadata !{i32* %perm}, i64 0, metadata !7237), !dbg !9069
+  %coPenalty = getelementptr inbounds %"class.soplex::SPxSteepPR"* %this, i64 0, i32 2, !dbg !9070
+  %dimen.i = getelementptr inbounds %"class.soplex::DVector"* %coPenalty, i64 0, i32 0, i32 0, !dbg !9071
+  %0 = load i32* %dimen.i, align 4, !dbg !9071, !tbaa !7871
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !7239), !dbg !9070
+  tail call void @llvm.dbg.value(metadata !7063, i64 0, metadata !7238), !dbg !9072
+  %cmp19 = icmp sgt i32 %0, 0, !dbg !9072
+  br i1 %cmp19, label %for.body.lr.ph, label %for.end, !dbg !9072
 
-.lr.ph:                                           ; preds = %0
-  %5 = getelementptr inbounds %"class.soplex::SPxSteepPR"* %this, i64 0, i32 2, i32 0, i32 1, !dbg !8746
-  %6 = add i32 %3, -1, !dbg !8745
-  br label %7, !dbg !8745
+for.body.lr.ph:                                   ; preds = %entry
+  %val.i17 = getelementptr inbounds %"class.soplex::SPxSteepPR"* %this, i64 0, i32 2, i32 0, i32 1, !dbg !9074
+  br label %for.body, !dbg !9072
 
-; <label>:7                                       ; preds = %19, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %19 ]
-  %8 = getelementptr inbounds i32* %perm, i64 %indvars.iv, !dbg !8749
-  %9 = load i32* %8, align 4, !dbg !8749, !tbaa !7735
-  %10 = icmp sgt i32 %9, -1, !dbg !8750
-  br i1 %10, label %11, label %19, !dbg !8751
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds i32* %perm, i64 %indvars.iv, !dbg !9076
+  %1 = load i32* %arrayidx, align 4, !dbg !9076, !tbaa !7871
+  %cmp2 = icmp sgt i32 %1, -1, !dbg !9076
+  br i1 %cmp2, label %if.then, label %for.inc, !dbg !9076
 
-; <label>:11                                      ; preds = %7
-  %12 = load double** %5, align 8, !dbg !8746, !tbaa !7075
-  %13 = getelementptr inbounds double* %12, i64 %indvars.iv, !dbg !8746
-  %14 = bitcast double* %13 to i64*, !dbg !8752
-  %15 = load i64* %14, align 8, !dbg !8752, !tbaa !7237
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !5538, metadata !7037), !dbg !8753
-  %16 = sext i32 %9 to i64, !dbg !8755
-  %17 = getelementptr inbounds double* %12, i64 %16, !dbg !8755
-  %18 = bitcast double* %17 to i64*, !dbg !8756
-  store i64 %15, i64* %18, align 8, !dbg !8756, !tbaa !7237
-  br label %19, !dbg !8757
+if.then:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !8003, i64 0, metadata !9077), !dbg !9078
+  %2 = load double** %val.i17, align 8, !dbg !9074, !tbaa !7867
+  %arrayidx.i18 = getelementptr inbounds double* %2, i64 %indvars.iv, !dbg !9074
+  %3 = load double* %arrayidx.i18, align 8, !dbg !9075, !tbaa !7931
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !9077), !dbg !9078
+  %idxprom.i = sext i32 %1 to i64, !dbg !9074
+  %arrayidx.i = getelementptr inbounds double* %2, i64 %idxprom.i, !dbg !9074
+  store double %3, double* %arrayidx.i, align 8, !dbg !9075, !tbaa !7931
+  br label %for.inc, !dbg !9075
 
-; <label>:19                                      ; preds = %7, %11
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !8745
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !8745
-  %exitcond = icmp eq i32 %lftr.wideiv, %6, !dbg !8745
-  br i1 %exitcond, label %._crit_edge, label %7, !dbg !8745
+for.inc:                                          ; preds = %for.body, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !9072
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !9072
+  %exitcond = icmp eq i32 %lftr.wideiv, %0, !dbg !9072
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !9072
 
-._crit_edge:                                      ; preds = %19, %0
-  %20 = getelementptr inbounds %"class.soplex::SPxSteepPR"* %this, i64 0, i32 0, i32 2, !dbg !8758
-  %21 = load %"class.soplex::SoPlex"** %20, align 8, !dbg !8758, !tbaa !7041
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SoPlex"* %21, i64 0, metadata !5516, metadata !7037), !dbg !8759
-  %22 = getelementptr inbounds %"class.soplex::SoPlex"* %21, i64 0, i32 23, !dbg !8761
-  %23 = load %"class.soplex::SVSet"** %22, align 8, !dbg !8761, !tbaa !7082
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SVSet"* %23, i64 0, metadata !5520, metadata !7037), !dbg !8762
-  %24 = getelementptr inbounds %"class.soplex::SVSet"* %23, i64 0, i32 1, i32 4, !dbg !8764
-  %25 = load i32* %24, align 4, !dbg !8764, !tbaa !7097
-  tail call void @_ZN6soplex7DVector5reDimEi(%"class.soplex::DVector"* %1, i32 %25) #12, !dbg !8766
-  %26 = getelementptr inbounds %"class.soplex::SPxSteepPR"* %this, i64 0, i32 8, !dbg !8767
-  store i32 0, i32* %26, align 4, !dbg !8768, !tbaa !7049
-  ret void, !dbg !8769
+for.end:                                          ; preds = %for.inc, %entry
+  %thesolver = getelementptr inbounds %"class.soplex::SPxSteepPR"* %this, i64 0, i32 0, i32 2, !dbg !9079
+  %4 = load %"class.soplex::SoPlex"** %thesolver, align 8, !dbg !9079, !tbaa !7867
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %4}, i64 0, metadata !9080), !dbg !9081
+  %thecovectors.i = getelementptr inbounds %"class.soplex::SoPlex"* %4, i64 0, i32 23, !dbg !9082
+  %5 = load %"class.soplex::SVSet"** %thecovectors.i, align 8, !dbg !9082, !tbaa !7867
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %5}, i64 0, metadata !9083), !dbg !9084
+  %thenum.i.i.i = getelementptr inbounds %"class.soplex::SVSet"* %5, i64 0, i32 1, i32 4, !dbg !9085
+  %6 = load i32* %thenum.i.i.i, align 4, !dbg !9085, !tbaa !7871
+  tail call void @_ZN6soplex7DVector5reDimEi(%"class.soplex::DVector"* %coPenalty, i32 %6) #12, !dbg !9079
+  %prefSetup = getelementptr inbounds %"class.soplex::SPxSteepPR"* %this, i64 0, i32 8, !dbg !9087
+  store i32 0, i32* %prefSetup, align 4, !dbg !9087, !tbaa !7871
+  ret void, !dbg !9088
 }

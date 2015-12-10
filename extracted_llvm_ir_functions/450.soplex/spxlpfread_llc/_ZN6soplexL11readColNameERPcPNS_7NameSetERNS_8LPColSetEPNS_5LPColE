@@ -1,115 +1,117 @@
-define internal fastcc i32 @_ZN6soplexL11readColNameERPcPNS_7NameSetERNS_8LPColSetEPNS_5LPColE(i8** nocapture dereferenceable(8) %pos, %"class.soplex::NameSet"* %colnames, %"class.soplex::LPColSet"* dereferenceable(184) %colset, %"class.soplex::LPCol"* %emptycol) #0 {
-  %k.i = alloca %"class.soplex::DataKey", align 4
+define internal fastcc i32 @_ZN6soplexL11readColNameERPcPNS_7NameSetERNS_8LPColSetEPNS_5LPColE(i8** nocapture %pos, %"class.soplex::NameSet"* %colnames, %"class.soplex::LPColSet"* %colset, %"class.soplex::LPCol"* %emptycol) #2 {
+entry:
+  %k.i = alloca i32, align 4, !dbg !6351
   %name = alloca [257 x i8], align 16
-  tail call void @llvm.dbg.value(metadata i8** %pos, i64 0, metadata !4121, metadata !5395), !dbg !6675
-  tail call void @llvm.dbg.value(metadata %"class.soplex::NameSet"* %colnames, i64 0, metadata !4122, metadata !5395), !dbg !6676
-  tail call void @llvm.dbg.value(metadata %"class.soplex::LPColSet"* %colset, i64 0, metadata !4123, metadata !5395), !dbg !6677
-  tail call void @llvm.dbg.value(metadata %"class.soplex::LPCol"* %emptycol, i64 0, metadata !4124, metadata !5395), !dbg !6678
-  %1 = getelementptr inbounds [257 x i8]* %name, i64 0, i64 0, !dbg !6679
-  call void @llvm.lifetime.start(i64 257, i8* %1) #2, !dbg !6679
-  tail call void @llvm.dbg.declare(metadata [257 x i8]* %name, metadata !4125, metadata !5395), !dbg !6680
-  %2 = load i8** %pos, align 8, !dbg !6681, !tbaa !5632
-  tail call void @llvm.dbg.value(metadata i8* %2, i64 0, metadata !4126, metadata !5395), !dbg !6682
-  br label %3, !dbg !6683
+  call void @llvm.dbg.value(metadata !{i8** %pos}, i64 0, metadata !5407), !dbg !6357
+  call void @llvm.dbg.value(metadata !{%"class.soplex::NameSet"* %colnames}, i64 0, metadata !5408), !dbg !6357
+  call void @llvm.dbg.value(metadata !{%"class.soplex::LPColSet"* %colset}, i64 0, metadata !5409), !dbg !6357
+  call void @llvm.dbg.value(metadata !{%"class.soplex::LPCol"* %emptycol}, i64 0, metadata !5410), !dbg !6357
+  %0 = getelementptr inbounds [257 x i8]* %name, i64 0, i64 0, !dbg !6358
+  call void @llvm.lifetime.start(i64 257, i8* %0) #1, !dbg !6358
+  call void @llvm.dbg.declare(metadata !{[257 x i8]* %name}, metadata !5411), !dbg !6358
+  %1 = load i8** %pos, align 8, !dbg !6359, !tbaa !5855
+  call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !5413), !dbg !6359
+  br label %while.cond, !dbg !6360
 
-; <label>:3                                       ; preds = %3, %0
-  %s.0 = phi i8* [ %2, %0 ], [ %8, %3 ]
-  %4 = load i8* %s.0, align 1, !dbg !6684, !tbaa !5639
-  %5 = sext i8 %4 to i32, !dbg !6684
-  %memchr = tail call i8* @memchr(i8* getelementptr inbounds ([8 x i8]* @.str22, i64 0, i64 0), i32 %5, i64 8), !dbg !6685
-  %6 = icmp ne i8* %memchr, null, !dbg !6686
-  %7 = icmp eq i8 %4, 0, !dbg !6687
-  %or.cond = or i1 %7, %6, !dbg !6688
-  %8 = getelementptr inbounds i8* %s.0, i64 1, !dbg !6689
-  tail call void @llvm.dbg.value(metadata i8* %8, i64 0, metadata !4126, metadata !5395), !dbg !6682
-  br i1 %or.cond, label %.critedge.preheader, label %3, !dbg !6688
+while.cond:                                       ; preds = %while.cond, %entry
+  %s.0 = phi i8* [ %1, %entry ], [ %incdec.ptr, %while.cond ]
+  %2 = load i8* %s.0, align 1, !dbg !6361, !tbaa !5728
+  %conv = sext i8 %2 to i32, !dbg !6361
+  %memchr = call i8* @memchr(i8* getelementptr inbounds ([8 x i8]* @.str21, i64 0, i64 0), i32 %conv, i64 8), !dbg !6361
+  %cmp = icmp ne i8* %memchr, null, !dbg !6361
+  %cmp2 = icmp eq i8 %2, 0, !dbg !6361
+  %or.cond = or i1 %cmp, %cmp2, !dbg !6361
+  %incdec.ptr = getelementptr inbounds i8* %s.0, i64 1, !dbg !6362
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !5413), !dbg !6362
+  br i1 %or.cond, label %for.cond.preheader, label %while.cond, !dbg !6361
 
-.critedge.preheader:                              ; preds = %3
-  %9 = icmp eq i8* %2, %s.0, !dbg !6690
-  br i1 %9, label %15, label %.critedge, !dbg !6693
+for.cond.preheader:                               ; preds = %while.cond
+  %cmp333 = icmp eq i8* %1, %s.0, !dbg !6363
+  br i1 %cmp333, label %for.end, label %for.body, !dbg !6363
 
-.critedge:                                        ; preds = %.critedge.preheader, %.critedge
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.critedge ], [ 0, %.critedge.preheader ]
-  %10 = phi i8* [ %13, %.critedge ], [ %2, %.critedge.preheader ]
-  %11 = load i8* %10, align 1, !dbg !6694, !tbaa !5639
-  %12 = getelementptr inbounds [257 x i8]* %name, i64 0, i64 %indvars.iv, !dbg !6695
-  store i8 %11, i8* %12, align 1, !dbg !6696, !tbaa !5639
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !6693
-  %13 = getelementptr inbounds i8* %10, i64 1, !dbg !6697
-  store i8* %13, i8** %pos, align 8, !dbg !6697, !tbaa !5632
-  %14 = icmp eq i8* %13, %s.0, !dbg !6690
-  br i1 %14, label %.critedge._crit_edge, label %.critedge, !dbg !6693
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %3 = phi i8* [ %incdec.ptr4, %for.body ], [ %1, %for.cond.preheader ]
+  %i.034 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
+  %4 = load i8* %3, align 1, !dbg !6365, !tbaa !5728
+  %arrayidx = getelementptr inbounds [257 x i8]* %name, i64 0, i64 %indvars.iv, !dbg !6365
+  store i8 %4, i8* %arrayidx, align 1, !dbg !6365, !tbaa !5728
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !6363
+  %inc = add nsw i32 %i.034, 1, !dbg !6363
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !5414), !dbg !6363
+  %incdec.ptr4 = getelementptr inbounds i8* %3, i64 1, !dbg !6363
+  store i8* %incdec.ptr4, i8** %pos, align 8, !dbg !6363, !tbaa !5855
+  %cmp3 = icmp eq i8* %incdec.ptr4, %s.0, !dbg !6363
+  br i1 %cmp3, label %for.cond.for.end_crit_edge, label %for.body, !dbg !6363
 
-.critedge._crit_edge:                             ; preds = %.critedge
-  %sext = shl i64 %indvars.iv.next, 32, !dbg !6693
-  %phitmp = ashr exact i64 %sext, 32, !dbg !6693
-  br label %15, !dbg !6693
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %phitmp = sext i32 %inc to i64, !dbg !6363
+  br label %for.end, !dbg !6363
 
-; <label>:15                                      ; preds = %.critedge._crit_edge, %.critedge.preheader
-  %i.0.lcssa = phi i64 [ %phitmp, %.critedge._crit_edge ], [ 0, %.critedge.preheader ]
-  %16 = getelementptr inbounds [257 x i8]* %name, i64 0, i64 %i.0.lcssa, !dbg !6698
-  store i8 0, i8* %16, align 1, !dbg !6699, !tbaa !5639
-  %17 = call i32 @_ZNK6soplex7NameSet6numberEPKc(%"class.soplex::NameSet"* %colnames, i8* %1) #12, !dbg !6700
-  call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !4128, metadata !5395), !dbg !6702
-  %18 = icmp slt i32 %17, 0, !dbg !6703
-  br i1 %18, label %19, label %38, !dbg !6704
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %for.cond.preheader
+  %i.0.lcssa = phi i64 [ %phitmp, %for.cond.for.end_crit_edge ], [ 0, %for.cond.preheader ]
+  %arrayidx6 = getelementptr inbounds [257 x i8]* %name, i64 0, i64 %i.0.lcssa, !dbg !6366
+  store i8 0, i8* %arrayidx6, align 1, !dbg !6366, !tbaa !5728
+  %call7 = call i32 @_ZNK6soplex7NameSet6numberEPKc(%"class.soplex::NameSet"* %colnames, i8* %0) #13, !dbg !6367
+  call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !5415), !dbg !6367
+  %cmp8 = icmp slt i32 %call7, 0, !dbg !6367
+  br i1 %cmp8, label %if.then, label %if.end17, !dbg !6367
 
-; <label>:19                                      ; preds = %15
-  %20 = icmp eq %"class.soplex::LPCol"* %emptycol, null, !dbg !6705
-  br i1 %20, label %21, label %26, !dbg !6708
+if.then:                                          ; preds = %for.end
+  %cmp9 = icmp eq %"class.soplex::LPCol"* %emptycol, null, !dbg !6368
+  br i1 %cmp9, label %if.then10, label %if.else, !dbg !6368
 
-; <label>:21                                      ; preds = %19
-  call void @llvm.dbg.value(metadata %"class.std::__1::basic_ostream"* @_ZNSt3__14cerrE, i64 0, metadata !4378, metadata !5395), !dbg !6709
-  call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([19 x i8]* @.str23, i64 0, i64 0), i64 0, metadata !4379, metadata !5395), !dbg !6711
-  call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([19 x i8]* @.str23, i64 0, i64 0), i64 0, metadata !4571, metadata !5395) #2, !dbg !6712
-  %22 = call dereferenceable(160) %"class.std::__1::basic_ostream"* @_ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m(%"class.std::__1::basic_ostream"* dereferenceable(160) @_ZNSt3__14cerrE, i8* getelementptr inbounds ([19 x i8]* @.str23, i64 0, i64 0), i64 18) #12, !dbg !6714
-  call void @llvm.dbg.value(metadata %"class.std::__1::basic_ostream"* %22, i64 0, metadata !4378, metadata !5395), !dbg !6715
-  call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !4379, metadata !5395), !dbg !6717
-  call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !4571, metadata !5395) #2, !dbg !6718
-  %23 = call i64 @strlen(i8* %1) #17, !dbg !6720
-  %24 = call dereferenceable(160) %"class.std::__1::basic_ostream"* @_ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m(%"class.std::__1::basic_ostream"* dereferenceable(160) %22, i8* %1, i64 %23) #12, !dbg !6721
-  call void @llvm.dbg.value(metadata %"class.std::__1::basic_ostream"* %24, i64 0, metadata !4378, metadata !5395), !dbg !6722
-  call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([3 x i8]* @.str24, i64 0, i64 0), i64 0, metadata !4379, metadata !5395), !dbg !6724
-  call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([3 x i8]* @.str24, i64 0, i64 0), i64 0, metadata !4571, metadata !5395) #2, !dbg !6725
-  %25 = call dereferenceable(160) %"class.std::__1::basic_ostream"* @_ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m(%"class.std::__1::basic_ostream"* dereferenceable(160) %24, i8* getelementptr inbounds ([3 x i8]* @.str24, i64 0, i64 0), i64 2) #12, !dbg !6727
-  br label %38, !dbg !6728
+if.then10:                                        ; preds = %if.then
+  call void @llvm.dbg.value(metadata !5821, i64 0, metadata !6369), !dbg !6371
+  call void @llvm.dbg.value(metadata !6372, i64 0, metadata !6373), !dbg !6371
+  call void @llvm.dbg.value(metadata !6372, i64 0, metadata !6374) #1, !dbg !6376
+  %call1.i = call %"class.std::basic_ostream"* @_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l(%"class.std::basic_ostream"* @_ZSt4cerr, i8* getelementptr inbounds ([19 x i8]* @.str22, i64 0, i64 0), i64 18) #13, !dbg !6375
+  call void @llvm.dbg.value(metadata !5821, i64 0, metadata !6369), !dbg !6371
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !6373), !dbg !6371
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !6374) #1, !dbg !6376
+  %call.i.i29 = call i64 @strlen(i8* %0) #15, !dbg !6377
+  %call1.i30 = call %"class.std::basic_ostream"* @_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l(%"class.std::basic_ostream"* @_ZSt4cerr, i8* %0, i64 %call.i.i29) #13, !dbg !6375
+  call void @llvm.dbg.value(metadata !5821, i64 0, metadata !6369), !dbg !6371
+  call void @llvm.dbg.value(metadata !6379, i64 0, metadata !6373), !dbg !6371
+  call void @llvm.dbg.value(metadata !6379, i64 0, metadata !6374) #1, !dbg !6376
+  %call1.i32 = call %"class.std::basic_ostream"* @_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l(%"class.std::basic_ostream"* @_ZSt4cerr, i8* getelementptr inbounds ([3 x i8]* @.str23, i64 0, i64 0), i64 2) #13, !dbg !6375
+  br label %if.end17, !dbg !6370
 
-; <label>:26                                      ; preds = %19
-  tail call void @llvm.dbg.value(metadata %"class.soplex::NameSet"* %colnames, i64 0, metadata !4195, metadata !5395), !dbg !6729
-  %27 = getelementptr inbounds %"class.soplex::NameSet"* %colnames, i64 0, i32 0, i32 4, !dbg !6732
-  %28 = load i32* %27, align 4, !dbg !6732, !tbaa !6734
-  call void @llvm.dbg.value(metadata i32 %28, i64 0, metadata !4128, metadata !5395), !dbg !6702
-  call void @_ZN6soplex7NameSet3addEPKc(%"class.soplex::NameSet"* %colnames, i8* %1) #12, !dbg !6736
-  %29 = bitcast %"class.soplex::DataKey"* %k.i to i8*, !dbg !6737
-  call void @llvm.lifetime.start(i64 4, i8* %29), !dbg !6737
-  call void @llvm.dbg.value(metadata %"class.soplex::LPColSet"* %colset, i64 0, metadata !4201, metadata !5395), !dbg !6737
-  call void @llvm.dbg.value(metadata %"class.soplex::LPCol"* %emptycol, i64 0, metadata !4202, metadata !5395), !dbg !6739
-  call void @llvm.dbg.value(metadata %"class.soplex::DataKey"* %k.i, i64 0, metadata !4203, metadata !5395), !dbg !6740
-  call void @llvm.dbg.value(metadata %"class.soplex::DataKey"* %k.i, i64 0, metadata !4206, metadata !5395), !dbg !6741
-  call void @llvm.dbg.value(metadata %"class.soplex::DataKey"* %k.i, i64 0, metadata !4209, metadata !5395), !dbg !6743
-  %30 = getelementptr inbounds %"class.soplex::DataKey"* %k.i, i64 0, i32 0, !dbg !6745
-  store i32 -256, i32* %30, align 4, !dbg !6746
-  call void @llvm.dbg.value(metadata %"class.soplex::DataKey"* %k.i, i64 0, metadata !4203, metadata !5395), !dbg !6740
-  call void @llvm.dbg.value(metadata %"class.soplex::LPColSet"* %colset, i64 0, metadata !4212, metadata !5395), !dbg !6747
-  call void @llvm.dbg.value(metadata %"class.soplex::DataKey"* %k.i, i64 0, metadata !4213, metadata !5395), !dbg !6749
-  call void @llvm.dbg.value(metadata %"class.soplex::LPCol"* %emptycol, i64 0, metadata !4214, metadata !5395), !dbg !6750
-  call void @llvm.dbg.value(metadata %"class.soplex::LPCol"* %emptycol, i64 0, metadata !4217, metadata !5395), !dbg !6751
-  %31 = getelementptr inbounds %"class.soplex::LPCol"* %emptycol, i64 0, i32 2, !dbg !6753
-  %32 = load double* %31, align 8, !dbg !6753, !tbaa !6754
-  call void @llvm.dbg.value(metadata %"class.soplex::LPCol"* %emptycol, i64 0, metadata !4221, metadata !5395), !dbg !6755
-  %33 = getelementptr inbounds %"class.soplex::LPCol"* %emptycol, i64 0, i32 1, !dbg !6757
-  %34 = load double* %33, align 8, !dbg !6757, !tbaa !6758
-  call void @llvm.dbg.value(metadata %"class.soplex::LPCol"* %emptycol, i64 0, metadata !4224, metadata !5395), !dbg !6759
-  %35 = getelementptr inbounds %"class.soplex::LPCol"* %emptycol, i64 0, i32 3, i32 0, !dbg !6761
-  call void @llvm.dbg.value(metadata %"class.soplex::LPCol"* %emptycol, i64 0, metadata !4227, metadata !5395), !dbg !6762
-  %36 = getelementptr inbounds %"class.soplex::LPCol"* %emptycol, i64 0, i32 0, !dbg !6764
-  %37 = load double* %36, align 8, !dbg !6764, !tbaa !5428
-  call void @_ZN6soplex8LPColSet3addERNS_7DataKeyEddRKNS_7SVectorEd(%"class.soplex::LPColSet"* %colset, %"class.soplex::DataKey"* dereferenceable(4) %k.i, double %32, double %34, %"class.soplex::SVector"* dereferenceable(8) %35, double %37) #12, !dbg !6765
-  call void @llvm.lifetime.end(i64 4, i8* %29), !dbg !6766
-  br label %38
+if.else:                                          ; preds = %if.then
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::NameSet"* %colnames}, i64 0, metadata !6380), !dbg !6382
+  %thenum.i.i = getelementptr inbounds %"class.soplex::NameSet"* %colnames, i64 0, i32 0, i32 4, !dbg !6383
+  %5 = load i32* %thenum.i.i, align 4, !dbg !6383, !tbaa !5868
+  call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !5415), !dbg !6381
+  call void @_ZN6soplex7NameSet3addEPKc(%"class.soplex::NameSet"* %colnames, i8* %0) #13, !dbg !6387
+  %6 = bitcast i32* %k.i to i8*, !dbg !6351
+  call void @llvm.lifetime.start(i64 4, i8* %6), !dbg !6351
+  %tmpcast.i = bitcast i32* %k.i to %"class.soplex::DataKey"*, !dbg !6351
+  call void @llvm.dbg.value(metadata !{%"class.soplex::LPColSet"* %colset}, i64 0, metadata !6388), !dbg !6389
+  call void @llvm.dbg.value(metadata !{%"class.soplex::LPCol"* %emptycol}, i64 0, metadata !6390), !dbg !6389
+  call void @llvm.dbg.declare(metadata !{%"class.soplex::DataKey"* %tmpcast.i}, metadata !5420), !dbg !6353
+  call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %tmpcast.i}, i64 0, metadata !6391), !dbg !6392
+  call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %tmpcast.i}, i64 0, metadata !6393), !dbg !6394
+  store i32 -256, i32* %k.i, align 4, !dbg !6351
+  call void @llvm.dbg.value(metadata !{%"class.soplex::LPColSet"* %colset}, i64 0, metadata !6395), !dbg !6397
+  call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %tmpcast.i}, i64 0, metadata !6398), !dbg !6397
+  call void @llvm.dbg.value(metadata !{%"class.soplex::LPCol"* %emptycol}, i64 0, metadata !6399), !dbg !6397
+  call void @llvm.dbg.value(metadata !{%"class.soplex::LPCol"* %emptycol}, i64 0, metadata !6400), !dbg !6402
+  %object.i.i.i = getelementptr inbounds %"class.soplex::LPCol"* %emptycol, i64 0, i32 2, !dbg !6403
+  %7 = load double* %object.i.i.i, align 8, !dbg !6403, !tbaa !5727
+  call void @llvm.dbg.value(metadata !{%"class.soplex::LPCol"* %emptycol}, i64 0, metadata !6404), !dbg !6405
+  %low.i.i.i = getelementptr inbounds %"class.soplex::LPCol"* %emptycol, i64 0, i32 1, !dbg !6406
+  %8 = load double* %low.i.i.i, align 8, !dbg !6406, !tbaa !5727
+  call void @llvm.dbg.value(metadata !{%"class.soplex::LPCol"* %emptycol}, i64 0, metadata !6407), !dbg !6409
+  %9 = getelementptr inbounds %"class.soplex::LPCol"* %emptycol, i64 0, i32 3, i32 0, !dbg !6410
+  call void @llvm.dbg.value(metadata !{%"class.soplex::LPCol"* %emptycol}, i64 0, metadata !6411), !dbg !6412
+  %up.i.i.i = getelementptr inbounds %"class.soplex::LPCol"* %emptycol, i64 0, i32 0, !dbg !6413
+  %10 = load double* %up.i.i.i, align 8, !dbg !6413, !tbaa !5727
+  call void @_ZN6soplex8LPColSet3addERNS_7DataKeyEddRKNS_7SVectorEd(%"class.soplex::LPColSet"* %colset, %"class.soplex::DataKey"* %tmpcast.i, double %7, double %8, %"class.soplex::SVector"* %9, double %10) #13, !dbg !6408
+  call void @llvm.lifetime.end(i64 4, i8* %6), !dbg !6415
+  br label %if.end17
 
-; <label>:38                                      ; preds = %21, %26, %15
-  %colidx.0 = phi i32 [ %17, %21 ], [ %28, %26 ], [ %17, %15 ]
-  call void @llvm.lifetime.end(i64 257, i8* %1) #2, !dbg !6767
-  ret i32 %colidx.0, !dbg !6767
+if.end17:                                         ; preds = %if.then10, %if.else, %for.end
+  %colidx.0 = phi i32 [ %call7, %if.then10 ], [ %5, %if.else ], [ %call7, %for.end ]
+  call void @llvm.lifetime.end(i64 257, i8* %0) #1, !dbg !6416
+  ret i32 %colidx.0, !dbg !6416
 }

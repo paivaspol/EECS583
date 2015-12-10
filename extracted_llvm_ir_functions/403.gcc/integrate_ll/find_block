@@ -1,20 +1,25 @@
-define internal i32 @find_block(i8* %v1, i8* nocapture %v2) #5 {
+define internal i32 @find_block(i8* %v1, i8* nocapture %v2) #6 {
 entry:
-  %0 = bitcast i8* %v2 to %union.tree_node**
-  %1 = load %union.tree_node** %0, align 8, !tbaa !0
-  %abstract_origin = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 6
-  %2 = bitcast %union.anon* %abstract_origin to %union.tree_node**
-  %3 = load %union.tree_node** %2, align 8, !tbaa !0
-  %4 = bitcast %union.tree_node* %3 to i8*
-  %cmp = icmp eq i8* %4, %v1
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8* %v1}, i64 0, metadata !1786), !dbg !3015
+  tail call void @llvm.dbg.value(metadata !{i8* %v2}, i64 0, metadata !1787), !dbg !3016
+  %0 = bitcast i8* %v2 to %union.tree_node**, !dbg !3017
+  %1 = load %union.tree_node** %0, align 8, !dbg !3017, !tbaa !1854
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %1}, i64 0, metadata !1791), !dbg !3017
+  tail call void @llvm.dbg.value(metadata !{i8* %v1}, i64 0, metadata !1792), !dbg !3018
+  %abstract_origin = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 6, !dbg !3019
+  %2 = bitcast %union.anon* %abstract_origin to %union.tree_node**, !dbg !3019
+  %3 = load %union.tree_node** %2, align 8, !dbg !3019, !tbaa !1854
+  %4 = bitcast %union.tree_node* %3 to i8*, !dbg !3019
+  tail call void @llvm.dbg.value(metadata !{i8* %4}, i64 0, metadata !1793), !dbg !3019
+  %cmp = icmp eq i8* %4, %v1, !dbg !3020
+  br i1 %cmp, label %return, label %if.end, !dbg !3020
 
 if.end:                                           ; preds = %entry
-  %cmp1 = icmp ugt i8* %4, %v1
-  %cond = select i1 %cmp1, i32 -1, i32 1
-  br label %return
+  %cmp1 = icmp ugt i8* %4, %v1, !dbg !3021
+  %cond = select i1 %cmp1, i32 -1, i32 1, !dbg !3021
+  br label %return, !dbg !3021
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i32 [ %cond, %if.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3022
 }

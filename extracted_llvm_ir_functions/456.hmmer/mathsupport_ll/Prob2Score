@@ -1,29 +1,30 @@
 define i32 @Prob2Score(float %p, float %null) #0 {
-  tail call void @llvm.dbg.value(metadata float %p, i64 0, metadata !12, metadata !184), !dbg !185
-  tail call void @llvm.dbg.value(metadata float %null, i64 0, metadata !13, metadata !184), !dbg !186
-  %1 = fcmp oeq float %p, 0.000000e+00, !dbg !187
-  br i1 %1, label %13, label %2, !dbg !189
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %p}, i64 0, metadata !11), !dbg !179
+  tail call void @llvm.dbg.value(metadata !{float %null}, i64 0, metadata !12), !dbg !179
+  %cmp = fcmp oeq float %p, 0.000000e+00, !dbg !180
+  br i1 %cmp, label %return, label %if.else, !dbg !180
 
-; <label>:2                                       ; preds = %0
-  %3 = fdiv float %p, %null, !dbg !190
-  %4 = fcmp ogt float %3, 0.000000e+00, !dbg !190
-  br i1 %4, label %5, label %9, !dbg !190
+if.else:                                          ; preds = %entry
+  %div = fdiv float %p, %null, !dbg !181
+  %cmp2 = fcmp ogt float %div, 0.000000e+00, !dbg !181
+  br i1 %cmp2, label %cond.true, label %cond.end, !dbg !181
 
-; <label>:5                                       ; preds = %2
-  %6 = fpext float %3 to double, !dbg !190
-  %7 = tail call double @log(double %6) #5, !dbg !190
-  %8 = fmul double %7, 0x3FF7154764EE6C2F, !dbg !190
-  %phitmp = fmul double %8, 1.000000e+03, !dbg !190
-  %phitmp1 = fadd double %phitmp, 5.000000e-01, !dbg !190
-  br label %9, !dbg !190
+cond.true:                                        ; preds = %if.else
+  %conv5 = fpext float %div to double, !dbg !181
+  %call = tail call double @log(double %conv5) #6, !dbg !181
+  %mul = fmul double %call, 0x3FF7154764EE6C2F, !dbg !181
+  %phitmp = fmul double %mul, 1.000000e+03, !dbg !181
+  %phitmp12 = fadd double %phitmp, 5.000000e-01, !dbg !181
+  br label %cond.end, !dbg !181
 
-; <label>:9                                       ; preds = %2, %5
-  %10 = phi double [ %phitmp1, %5 ], [ 0xC1631252F0000000, %2 ]
-  %11 = tail call double @floor(double %10) #5, !dbg !191
-  %12 = fptosi double %11 to i32, !dbg !192
-  br label %13, !dbg !193
+cond.end:                                         ; preds = %if.else, %cond.true
+  %cond = phi double [ %phitmp12, %cond.true ], [ 0xC1631252F0000000, %if.else ]
+  %call7 = tail call double @floor(double %cond) #7, !dbg !181
+  %conv8 = fptosi double %call7 to i32, !dbg !181
+  br label %return, !dbg !181
 
-; <label>:13                                      ; preds = %0, %9
-  %.0 = phi i32 [ %12, %9 ], [ -987654321, %0 ]
-  ret i32 %.0, !dbg !194
+return:                                           ; preds = %entry, %cond.end
+  %retval.0 = phi i32 [ %conv8, %cond.end ], [ -987654321, %entry ]
+  ret i32 %retval.0, !dbg !182
 }

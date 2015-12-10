@@ -1,26 +1,26 @@
 define i64 @get_varargs_alias_set() #0 {
 entry:
-  %0 = load i64* @get_varargs_alias_set.set, align 8, !tbaa !3
-  %cmp = icmp eq i64 %0, -1
-  br i1 %cmp, label %if.then, label %if.end
+  %0 = load i64* @get_varargs_alias_set.set, align 8, !dbg !1754, !tbaa !1584
+  %cmp = icmp eq i64 %0, -1, !dbg !1754
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1754
 
 if.then:                                          ; preds = %entry
-  %1 = load i32* @flag_strict_aliasing, align 4, !tbaa !4
-  %tobool.i = icmp eq i32 %1, 0
-  br i1 %tobool.i, label %new_alias_set.exit, label %if.then.i
+  %1 = load i32* @flag_strict_aliasing, align 4, !dbg !1755, !tbaa !1586
+  %tobool.i = icmp eq i32 %1, 0, !dbg !1755
+  br i1 %tobool.i, label %new_alias_set.exit, label %if.then.i, !dbg !1755
 
 if.then.i:                                        ; preds = %if.then
-  %2 = load i64* @new_alias_set.last_alias_set, align 8, !tbaa !3
-  %inc.i = add nsw i64 %2, 1
-  store i64 %inc.i, i64* @new_alias_set.last_alias_set, align 8, !tbaa !3
-  br label %new_alias_set.exit
+  %2 = load i64* @new_alias_set.last_alias_set, align 8, !dbg !1757, !tbaa !1584
+  %inc.i = add nsw i64 %2, 1, !dbg !1757
+  store i64 %inc.i, i64* @new_alias_set.last_alias_set, align 8, !dbg !1757, !tbaa !1584
+  br label %new_alias_set.exit, !dbg !1757
 
 new_alias_set.exit:                               ; preds = %if.then, %if.then.i
   %retval.0.i = phi i64 [ %inc.i, %if.then.i ], [ 0, %if.then ]
-  store i64 %retval.0.i, i64* @get_varargs_alias_set.set, align 8, !tbaa !3
-  br label %if.end
+  store i64 %retval.0.i, i64* @get_varargs_alias_set.set, align 8, !dbg !1756, !tbaa !1584
+  br label %if.end, !dbg !1756
 
 if.end:                                           ; preds = %new_alias_set.exit, %entry
   %3 = phi i64 [ %retval.0.i, %new_alias_set.exit ], [ %0, %entry ]
-  ret i64 %3
+  ret i64 %3, !dbg !1758
 }

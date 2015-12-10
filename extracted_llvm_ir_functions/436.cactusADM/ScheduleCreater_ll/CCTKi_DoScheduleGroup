@@ -1,55 +1,56 @@
 define i32 @CCTKi_DoScheduleGroup(i8* %gname, i8* %thisname, %struct.T_SCHED_MODIFIER* %modifiers, i8* %attributes) #1 {
-  %this_group = alloca i8*, align 8, !dbg !442
-  tail call void @llvm.dbg.value(metadata i8* %gname, i64 0, metadata !86, metadata !195), !dbg !443
-  tail call void @llvm.dbg.value(metadata i8* %thisname, i64 0, metadata !87, metadata !195), !dbg !444
-  tail call void @llvm.dbg.value(metadata %struct.T_SCHED_MODIFIER* %modifiers, i64 0, metadata !88, metadata !195), !dbg !445
-  tail call void @llvm.dbg.value(metadata i8* %attributes, i64 0, metadata !89, metadata !195), !dbg !446
-  %1 = load %struct.cHandledData** @schedule_groups, align 8, !dbg !447, !tbaa !250
-  %2 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %gname, i8** %this_group) #8, !dbg !448
-  call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !91, metadata !195), !dbg !449
-  %3 = icmp slt i32 %2, 0, !dbg !450
-  br i1 %3, label %4, label %6, !dbg !452
+entry:
+  %this_group = alloca i8*, align 8, !dbg !323
+  call void @llvm.dbg.value(metadata !{i8* %gname}, i64 0, metadata !85), !dbg !324
+  call void @llvm.dbg.value(metadata !{i8* %thisname}, i64 0, metadata !86), !dbg !325
+  call void @llvm.dbg.value(metadata !{%struct.T_SCHED_MODIFIER* %modifiers}, i64 0, metadata !87), !dbg !326
+  call void @llvm.dbg.value(metadata !{i8* %attributes}, i64 0, metadata !88), !dbg !327
+  %0 = load %struct.cHandledData** @schedule_groups, align 8, !dbg !323, !tbaa !197
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %gname, i8** %this_group) #8, !dbg !323
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !90), !dbg !323
+  %cmp = icmp slt i32 %call, 0, !dbg !328
+  br i1 %cmp, label %if.then, label %if.end, !dbg !328
 
-; <label>:4                                       ; preds = %0
-  %5 = call fastcc i32 @ScheduleCreateGroup(i8* %gname) #9, !dbg !453
-  call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !91, metadata !195), !dbg !449
-  br label %6, !dbg !455
+if.then:                                          ; preds = %entry
+  %call1 = call fastcc i32 @ScheduleCreateGroup(i8* %gname) #10, !dbg !329
+  call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !90), !dbg !329
+  br label %if.end, !dbg !331
 
-; <label>:6                                       ; preds = %4, %0
-  %handle.0 = phi i32 [ %5, %4 ], [ %2, %0 ]
-  %7 = load %struct.cHandledData** @schedule_groups, align 8, !dbg !456, !tbaa !250
-  %8 = call i32 @Util_GetHandle(%struct.cHandledData* %7, i8* %thisname, i8** %this_group) #8, !dbg !457
-  call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !92, metadata !195), !dbg !458
-  %9 = icmp slt i32 %8, 0, !dbg !459
-  br i1 %9, label %10, label %12, !dbg !461
+if.end:                                           ; preds = %if.then, %entry
+  %handle.0 = phi i32 [ %call1, %if.then ], [ %call, %entry ]
+  %1 = load %struct.cHandledData** @schedule_groups, align 8, !dbg !332, !tbaa !197
+  %call2 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %thisname, i8** %this_group) #8, !dbg !332
+  call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !91), !dbg !332
+  %cmp3 = icmp slt i32 %call2, 0, !dbg !333
+  br i1 %cmp3, label %if.then4, label %if.end6, !dbg !333
 
-; <label>:10                                      ; preds = %6
-  %11 = call fastcc i32 @ScheduleCreateGroup(i8* %thisname) #9, !dbg !462
-  call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !92, metadata !195), !dbg !458
-  br label %12, !dbg !464
+if.then4:                                         ; preds = %if.end
+  %call5 = call fastcc i32 @ScheduleCreateGroup(i8* %thisname) #10, !dbg !334
+  call void @llvm.dbg.value(metadata !{i32 %call5}, i64 0, metadata !91), !dbg !334
+  br label %if.end6, !dbg !336
 
-; <label>:12                                      ; preds = %10, %6
-  %thishandle.0 = phi i32 [ %11, %10 ], [ %8, %6 ]
-  %13 = or i32 %thishandle.0, %handle.0, !dbg !465
-  %14 = icmp slt i32 %13, 0, !dbg !465
-  br i1 %14, label %22, label %15, !dbg !465
+if.end6:                                          ; preds = %if.then4, %if.end
+  %thishandle.0 = phi i32 [ %call5, %if.then4 ], [ %call2, %if.end ]
+  %2 = or i32 %thishandle.0, %handle.0, !dbg !337
+  %3 = icmp slt i32 %2, 0, !dbg !337
+  br i1 %3, label %if.end15, label %if.else, !dbg !337
 
-; <label>:15                                      ; preds = %12
-  %16 = call fastcc %struct.t_sched_item* @ScheduleCreateItem(i8* %thisname, %struct.T_SCHED_MODIFIER* %modifiers, i8* %attributes) #9, !dbg !467
-  call void @llvm.dbg.value(metadata %struct.t_sched_item* %16, i64 0, metadata !94, metadata !195), !dbg !469
-  %17 = icmp eq %struct.t_sched_item* %16, null, !dbg !470
-  br i1 %17, label %22, label %18, !dbg !472
+if.else:                                          ; preds = %if.end6
+  %call10 = call fastcc %struct.t_sched_item* @ScheduleCreateItem(i8* %thisname, %struct.T_SCHED_MODIFIER* %modifiers, i8* %attributes) #10, !dbg !338
+  call void @llvm.dbg.value(metadata !{%struct.t_sched_item* %call10}, i64 0, metadata !93), !dbg !338
+  %tobool = icmp eq %struct.t_sched_item* %call10, null, !dbg !340
+  br i1 %tobool, label %if.end15, label %if.then11, !dbg !340
 
-; <label>:18                                      ; preds = %15
-  %19 = getelementptr inbounds %struct.t_sched_item* %16, i64 0, i32 1, !dbg !473
-  store i32 1, i32* %19, align 4, !dbg !475, !tbaa !270
-  %20 = getelementptr inbounds %struct.t_sched_item* %16, i64 0, i32 3, !dbg !476
-  store i32 %thishandle.0, i32* %20, align 4, !dbg !477, !tbaa !357
-  %21 = call fastcc i32 @ScheduleAddItem(i32 %handle.0, %struct.t_sched_item* %16) #9, !dbg !478
-  call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !90, metadata !195), !dbg !479
-  br label %22, !dbg !480
+if.then11:                                        ; preds = %if.else
+  %type = getelementptr inbounds %struct.t_sched_item* %call10, i64 0, i32 1, !dbg !341
+  store i32 1, i32* %type, align 4, !dbg !341, !tbaa !198
+  %group = getelementptr inbounds %struct.t_sched_item* %call10, i64 0, i32 3, !dbg !343
+  store i32 %thishandle.0, i32* %group, align 4, !dbg !343, !tbaa !254
+  %call12 = call fastcc i32 @ScheduleAddItem(i32 %handle.0, %struct.t_sched_item* %call10) #10, !dbg !344
+  call void @llvm.dbg.value(metadata !{i32 %call12}, i64 0, metadata !89), !dbg !344
+  br label %if.end15, !dbg !345
 
-; <label>:22                                      ; preds = %15, %12, %18
-  %retcode.0 = phi i32 [ %21, %18 ], [ -1, %12 ], [ -1, %15 ]
-  ret i32 %retcode.0, !dbg !481
+if.end15:                                         ; preds = %if.else, %if.end6, %if.then11
+  %retcode.0 = phi i32 [ %call12, %if.then11 ], [ -1, %if.end6 ], [ -1, %if.else ]
+  ret i32 %retcode.0, !dbg !346
 }

@@ -1,37 +1,40 @@
 define internal fastcc void @dbxout_finish_symbol(%union.tree_node* %sym) #0 {
 entry:
-  %0 = load i32* @use_gnu_debug_info_extensions, align 4, !tbaa !3
-  %tobool = icmp eq i32 %0, 0
-  %cmp = icmp eq %union.tree_node* %sym, null
-  %or.cond = or i1 %tobool, %cmp
-  br i1 %or.cond, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %sym}, i64 0, metadata !1136), !dbg !2176
+  tail call void @llvm.dbg.value(metadata !598, i64 0, metadata !1137), !dbg !2177
+  %0 = load i32* @use_gnu_debug_info_extensions, align 4, !dbg !2178, !tbaa !1472
+  %tobool = icmp eq i32 %0, 0, !dbg !2178
+  %cmp = icmp eq %union.tree_node* %sym, null, !dbg !2178
+  %or.cond = or i1 %tobool, %cmp, !dbg !2178
+  br i1 %or.cond, label %if.end, label %if.then, !dbg !2178
 
 if.then:                                          ; preds = %entry
-  %linenum = getelementptr inbounds %union.tree_node* %sym, i64 0, i32 0, i32 2
-  %1 = load i32* %linenum, align 4, !tbaa !3
-  br label %if.end
+  %linenum = getelementptr inbounds %union.tree_node* %sym, i64 0, i32 0, i32 2, !dbg !2179
+  %1 = load i32* %linenum, align 4, !dbg !2179, !tbaa !1472
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !1137), !dbg !2179
+  br label %if.end, !dbg !2179
 
 if.end:                                           ; preds = %entry, %if.then
   %line.0 = phi i32 [ %1, %if.then ], [ 0, %entry ]
-  %2 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  %3 = load i32* @current_sym_code, align 4, !tbaa !6
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([11 x i8]* @.str13, i64 0, i64 0), i32 %3, i32 %line.0) #6
-  %4 = load %struct.rtx_def** @current_sym_addr, align 8, !tbaa !0
-  %tobool1 = icmp eq %struct.rtx_def* %4, null
-  %5 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  br i1 %tobool1, label %if.else, label %if.then2
+  %2 = load %struct._IO_FILE** @asmfile, align 8, !dbg !2180, !tbaa !1468
+  %3 = load i32* @current_sym_code, align 4, !dbg !2180, !tbaa !1603
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([11 x i8]* @.str13, i64 0, i64 0), i32 %3, i32 %line.0) #7, !dbg !2180
+  %4 = load %struct.rtx_def** @current_sym_addr, align 8, !dbg !2181, !tbaa !1468
+  %tobool1 = icmp eq %struct.rtx_def* %4, null, !dbg !2181
+  %5 = load %struct._IO_FILE** @asmfile, align 8, !dbg !2182, !tbaa !1468
+  br i1 %tobool1, label %if.else, label %if.then2, !dbg !2181
 
 if.then2:                                         ; preds = %if.end
-  tail call void @output_addr_const(%struct._IO_FILE* %5, %struct.rtx_def* %4) #6
-  br label %if.end4
+  tail call void @output_addr_const(%struct._IO_FILE* %5, %struct.rtx_def* %4) #7, !dbg !2182
+  br label %if.end4, !dbg !2182
 
 if.else:                                          ; preds = %if.end
-  %6 = load i32* @current_sym_value, align 4, !tbaa !3
-  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([3 x i8]* @.str14, i64 0, i64 0), i32 %6) #6
+  %6 = load i32* @current_sym_value, align 4, !dbg !2183, !tbaa !1472
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([3 x i8]* @.str14, i64 0, i64 0), i32 %6) #7, !dbg !2183
   br label %if.end4
 
 if.end4:                                          ; preds = %if.else, %if.then2
-  %7 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  %call5 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %7) #6
-  ret void
+  %7 = load %struct._IO_FILE** @asmfile, align 8, !dbg !2184, !tbaa !1468
+  %call5 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %7) #7, !dbg !2184
+  ret void, !dbg !2185
 }

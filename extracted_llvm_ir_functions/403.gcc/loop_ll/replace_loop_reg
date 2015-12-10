@@ -1,25 +1,28 @@
 define internal i32 @replace_loop_reg(%struct.rtx_def** %px, i8* nocapture %data) #0 {
 entry:
-  %0 = load %struct.rtx_def** %px, align 8, !tbaa !4
-  %cmp = icmp eq %struct.rtx_def* %0, null
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %px}, i64 0, metadata !2665), !dbg !7168
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !2666), !dbg !7169
+  %0 = load %struct.rtx_def** %px, align 8, !dbg !7170, !tbaa !2982
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !2667), !dbg !7170
+  %cmp = icmp eq %struct.rtx_def* %0, null, !dbg !7171
+  br i1 %cmp, label %return, label %if.end, !dbg !7171
 
 if.end:                                           ; preds = %entry
-  %match = bitcast i8* %data to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %match, align 8, !tbaa !4
-  %cmp1 = icmp eq %struct.rtx_def* %0, %1
-  br i1 %cmp1, label %if.then2, label %return
+  %match = bitcast i8* %data to %struct.rtx_def**, !dbg !7172
+  %1 = load %struct.rtx_def** %match, align 8, !dbg !7172, !tbaa !2982
+  %cmp1 = icmp eq %struct.rtx_def* %0, %1, !dbg !7172
+  br i1 %cmp1, label %if.then2, label %return, !dbg !7172
 
 if.then2:                                         ; preds = %if.end
-  %insn = getelementptr inbounds i8* %data, i64 16
-  %2 = bitcast i8* %insn to %struct.rtx_def**
-  %3 = load %struct.rtx_def** %2, align 8, !tbaa !4
-  %replacement = getelementptr inbounds i8* %data, i64 8
-  %4 = bitcast i8* %replacement to %struct.rtx_def**
-  %5 = load %struct.rtx_def** %4, align 8, !tbaa !4
-  %call = tail call i32 @validate_change(%struct.rtx_def* %3, %struct.rtx_def** %px, %struct.rtx_def* %5, i32 1) #8
-  br label %return
+  %insn = getelementptr inbounds i8* %data, i64 16, !dbg !7173
+  %2 = bitcast i8* %insn to %struct.rtx_def**, !dbg !7173
+  %3 = load %struct.rtx_def** %2, align 8, !dbg !7173, !tbaa !2982
+  %replacement = getelementptr inbounds i8* %data, i64 8, !dbg !7173
+  %4 = bitcast i8* %replacement to %struct.rtx_def**, !dbg !7173
+  %5 = load %struct.rtx_def** %4, align 8, !dbg !7173, !tbaa !2982
+  %call = tail call i32 @validate_change(%struct.rtx_def* %3, %struct.rtx_def** %px, %struct.rtx_def* %5, i32 1) #8, !dbg !7173
+  br label %return, !dbg !7173
 
 return:                                           ; preds = %if.end, %if.then2, %entry
-  ret i32 0
+  ret i32 0, !dbg !7174
 }

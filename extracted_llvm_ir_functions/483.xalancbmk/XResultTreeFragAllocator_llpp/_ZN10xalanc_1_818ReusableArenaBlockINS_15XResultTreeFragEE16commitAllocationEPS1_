@@ -1,0 +1,38 @@
+define linkonce_odr void @_ZN10xalanc_1_818ReusableArenaBlockINS_15XResultTreeFragEE16commitAllocationEPS1_(%"class.xalanc_1_8::ReusableArenaBlock"* %this, %"class.xalanc_1_8::XResultTreeFrag"* %theBlock) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !4075), !dbg !5174
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %theBlock}, i64 0, metadata !4076), !dbg !5174
+  %m_freeBlockCount = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 2, !dbg !5175
+  %0 = load i64* %m_freeBlockCount, align 8, !dbg !5175, !tbaa !4392
+  %cmp = icmp eq i64 %0, 0, !dbg !5175
+  br i1 %cmp, label %if.then, label %if.else, !dbg !5175
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !5177, i64 0, metadata !5178), !dbg !5181
+  %m_objectCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 2, !dbg !5182
+  %1 = load i64* %m_objectCount.i, align 8, !dbg !5182, !tbaa !4392
+  %inc.i = add i64 %1, 1, !dbg !5182
+  store i64 %inc.i, i64* %m_objectCount.i, align 8, !dbg !5182, !tbaa !4392
+  br label %if.end, !dbg !5184
+
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !5185), !dbg !5188
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %theBlock}, i64 0, metadata !5189), !dbg !5188
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %theBlock}, i64 0, metadata !5190), !dbg !5192
+  %m_objectBlock.i.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 4, !dbg !5193
+  %2 = load %"class.xalanc_1_8::XResultTreeFrag"** %m_objectBlock.i.i, align 8, !dbg !5193, !tbaa !4406
+  %sub.ptr.lhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XResultTreeFrag"* %theBlock to i64, !dbg !5193
+  %sub.ptr.rhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XResultTreeFrag"* %2 to i64, !dbg !5193
+  %sub.ptr.sub.i.i = sub i64 %sub.ptr.lhs.cast.i.i, %sub.ptr.rhs.cast.i.i, !dbg !5193
+  %sub.ptr.div.i.i = sdiv exact i64 %sub.ptr.sub.i.i, 88, !dbg !5193
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.div.i.i}, i64 0, metadata !5194), !dbg !5191
+  %m_freeList.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 1, !dbg !5195
+  tail call void @_ZN10xalanc_1_811XalanBitmap5clearEm(%"class.xalanc_1_8::XalanBitmap"* %m_freeList.i, i64 %sub.ptr.div.i.i) #10, !dbg !5195
+  %3 = load i64* %m_freeBlockCount, align 8, !dbg !5196, !tbaa !4392
+  %dec.i = add i64 %3, -1, !dbg !5196
+  store i64 %dec.i, i64* %m_freeBlockCount, align 8, !dbg !5196, !tbaa !4392
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !5197
+}

@@ -1,41 +1,42 @@
 define float @LogSum(float %p1, float %p2) #0 {
-  tail call void @llvm.dbg.value(metadata float %p1, i64 0, metadata !104, metadata !184), !dbg !248
-  tail call void @llvm.dbg.value(metadata float %p2, i64 0, metadata !105, metadata !184), !dbg !249
-  %1 = fcmp ogt float %p1, %p2, !dbg !250
-  br i1 %1, label %2, label %13, !dbg !252
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %p1}, i64 0, metadata !103), !dbg !202
+  tail call void @llvm.dbg.value(metadata !{float %p2}, i64 0, metadata !104), !dbg !202
+  %cmp = fcmp ogt float %p1, %p2, !dbg !203
+  br i1 %cmp, label %if.then, label %if.else, !dbg !203
 
-; <label>:2                                       ; preds = %0
-  %3 = fsub float %p1, %p2, !dbg !253
-  %4 = fcmp ogt float %3, 5.000000e+01, !dbg !254
-  %5 = fpext float %p1 to double, !dbg !255
-  br i1 %4, label %24, label %6, !dbg !256
+if.then:                                          ; preds = %entry
+  %sub = fsub float %p1, %p2, !dbg !204
+  %cmp1 = fcmp ogt float %sub, 5.000000e+01, !dbg !204
+  %conv3 = fpext float %p1 to double, !dbg !204
+  br i1 %cmp1, label %return, label %cond.false, !dbg !204
 
-; <label>:6                                       ; preds = %2
-  %7 = fsub float %p2, %p1, !dbg !257
-  %8 = fpext float %7 to double, !dbg !258
-  %9 = tail call double @exp(double %8) #5, !dbg !259
-  %10 = fadd double %9, 1.000000e+00, !dbg !260
-  %11 = tail call double @log(double %10) #5, !dbg !261
-  %12 = fadd double %5, %11, !dbg !262
-  br label %24, !dbg !256
+cond.false:                                       ; preds = %if.then
+  %sub5 = fsub float %p2, %p1, !dbg !204
+  %conv6 = fpext float %sub5 to double, !dbg !204
+  %call = tail call double @exp(double %conv6) #6, !dbg !204
+  %add = fadd double %call, 1.000000e+00, !dbg !204
+  %call7 = tail call double @log(double %add) #6, !dbg !204
+  %add8 = fadd double %conv3, %call7, !dbg !204
+  br label %return, !dbg !204
 
-; <label>:13                                      ; preds = %0
-  %14 = fsub float %p2, %p1, !dbg !263
-  %15 = fcmp ogt float %14, 5.000000e+01, !dbg !264
-  %16 = fpext float %p2 to double, !dbg !265
-  br i1 %15, label %24, label %17, !dbg !266
+if.else:                                          ; preds = %entry
+  %sub10 = fsub float %p2, %p1, !dbg !205
+  %cmp12 = fcmp ogt float %sub10, 5.000000e+01, !dbg !205
+  %conv15 = fpext float %p2 to double, !dbg !205
+  br i1 %cmp12, label %return, label %cond.false16, !dbg !205
 
-; <label>:17                                      ; preds = %13
-  %18 = fsub float %p1, %p2, !dbg !267
-  %19 = fpext float %18 to double, !dbg !268
-  %20 = tail call double @exp(double %19) #5, !dbg !269
-  %21 = fadd double %20, 1.000000e+00, !dbg !270
-  %22 = tail call double @log(double %21) #5, !dbg !271
-  %23 = fadd double %16, %22, !dbg !272
-  br label %24, !dbg !266
+cond.false16:                                     ; preds = %if.else
+  %sub18 = fsub float %p1, %p2, !dbg !205
+  %conv19 = fpext float %sub18 to double, !dbg !205
+  %call20 = tail call double @exp(double %conv19) #6, !dbg !205
+  %add21 = fadd double %call20, 1.000000e+00, !dbg !205
+  %call22 = tail call double @log(double %add21) #6, !dbg !205
+  %add23 = fadd double %conv15, %call22, !dbg !205
+  br label %return, !dbg !205
 
-; <label>:24                                      ; preds = %17, %13, %6, %2
-  %.0.in = phi double [ %12, %6 ], [ %5, %2 ], [ %23, %17 ], [ %16, %13 ]
-  %.0 = fptrunc double %.0.in to float, !dbg !256
-  ret float %.0, !dbg !273
+return:                                           ; preds = %cond.false16, %if.else, %cond.false, %if.then
+  %retval.0.in = phi double [ %add8, %cond.false ], [ %conv3, %if.then ], [ %add23, %cond.false16 ], [ %conv15, %if.else ]
+  %retval.0 = fptrunc double %retval.0.in to float, !dbg !204
+  ret float %retval.0, !dbg !206
 }

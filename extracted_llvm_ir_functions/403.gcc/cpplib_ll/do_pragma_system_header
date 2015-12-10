@@ -1,22 +1,24 @@
 define internal void @do_pragma_system_header(%struct.cpp_reader* %pfile) #0 {
 entry:
-  %buffer1 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
-  %0 = load %struct.cpp_buffer** %buffer1, align 8, !tbaa !3
-  %prev = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 4
-  %1 = load %struct.cpp_buffer** %prev, align 8, !tbaa !3
-  %cmp = icmp eq %struct.cpp_buffer* %1, null
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !832), !dbg !1248
+  %buffer1 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0, !dbg !1249
+  %0 = load %struct.cpp_buffer** %buffer1, align 8, !dbg !1249, !tbaa !1070
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_buffer* %0}, i64 0, metadata !833), !dbg !1249
+  %prev = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 4, !dbg !1250
+  %1 = load %struct.cpp_buffer** %prev, align 8, !dbg !1250, !tbaa !1070
+  %cmp = icmp eq %struct.cpp_buffer* %1, null, !dbg !1250
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1250
 
 if.then:                                          ; preds = %entry
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([51 x i8]* @.str24, i64 0, i64 0)) #8
-  br label %if.end
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([51 x i8]* @.str24, i64 0, i64 0)) #9, !dbg !1251
+  br label %if.end, !dbg !1251
 
 if.else:                                          ; preds = %entry
-  tail call fastcc void @check_eol(%struct.cpp_reader* %pfile) #9
-  tail call fastcc void @skip_rest_of_line(%struct.cpp_reader* %pfile) #9
-  tail call void @cpp_make_system_header(%struct.cpp_reader* %pfile, i32 1, i32 0) #8
+  tail call fastcc void @check_eol(%struct.cpp_reader* %pfile) #10, !dbg !1252
+  tail call fastcc void @skip_rest_of_line(%struct.cpp_reader* %pfile) #10, !dbg !1254
+  tail call void @cpp_make_system_header(%struct.cpp_reader* %pfile, i32 1, i32 0) #9, !dbg !1255
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  ret void
+  ret void, !dbg !1256
 }

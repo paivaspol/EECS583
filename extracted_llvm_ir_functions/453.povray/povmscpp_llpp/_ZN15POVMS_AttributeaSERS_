@@ -1,0 +1,28 @@
+define %class.POVMS_Attribute* @_ZN15POVMS_AttributeaSERS_(%class.POVMS_Attribute* %this, %class.POVMS_Attribute* %source) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Attribute* %this}, i64 0, metadata !652), !dbg !1266
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Attribute* %source}, i64 0, metadata !653), !dbg !1266
+  %data = getelementptr inbounds %class.POVMS_Attribute* %this, i64 0, i32 0, i32 1, !dbg !1267
+  %call = tail call i32 @_Z16POVMSAttr_DeleteP9POVMSData(%struct.POVMSData* %data) #12, !dbg !1267
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !654), !dbg !1267
+  %cmp = icmp eq i32 %call, 0, !dbg !1268
+  br i1 %cmp, label %if.end, label %if.then6, !dbg !1268
+
+if.end:                                           ; preds = %entry
+  %data2 = getelementptr inbounds %class.POVMS_Attribute* %source, i64 0, i32 0, i32 1, !dbg !1269
+  %call4 = tail call i32 @_Z14POVMSAttr_CopyP9POVMSDataS0_(%struct.POVMSData* %data2, %struct.POVMSData* %data) #12, !dbg !1269
+  tail call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !654), !dbg !1269
+  %cmp5 = icmp eq i32 %call4, 0, !dbg !1270
+  br i1 %cmp5, label %if.end7, label %if.then6, !dbg !1270
+
+if.then6:                                         ; preds = %entry, %if.end
+  %err.011 = phi i32 [ %call4, %if.end ], [ %call, %entry ]
+  %exception = tail call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !1271
+  %0 = bitcast i8* %exception to i32*, !dbg !1271
+  store i32 %err.011, i32* %0, align 4, !dbg !1271, !tbaa !1112
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #13, !dbg !1271
+  unreachable, !dbg !1271
+
+if.end7:                                          ; preds = %if.end
+  ret %class.POVMS_Attribute* %this, !dbg !1272
+}

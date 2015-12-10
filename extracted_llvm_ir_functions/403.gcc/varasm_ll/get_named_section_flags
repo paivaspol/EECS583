@@ -1,19 +1,20 @@
 define i32 @get_named_section_flags(i8* %section) #0 {
 entry:
-  %0 = load %struct.htab** @in_named_htab, align 8, !tbaa !3
-  %call = tail call i32 @htab_hash_string(i8* %section) #9
-  %call1 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %0, i8* %section, i32 %call, i32 0) #9
-  %tobool = icmp eq i8** %call1, null
-  br i1 %tobool, label %cond.end, label %cond.true
+  tail call void @llvm.dbg.value(metadata !{i8* %section}, i64 0, metadata !1165), !dbg !2378
+  %0 = load %struct.htab** @in_named_htab, align 8, !dbg !2379, !tbaa !2357
+  %call = tail call i32 @htab_hash_string(i8* %section) #10, !dbg !2380
+  %call1 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %0, i8* %section, i32 %call, i32 0) #10, !dbg !2380
+  %tobool = icmp eq i8** %call1, null, !dbg !2381
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !2381
 
 cond.true:                                        ; preds = %entry
-  %1 = load i8** %call1, align 8
-  %flags = getelementptr inbounds i8* %1, i64 8
-  %2 = bitcast i8* %flags to i32*
-  %3 = load i32* %2, align 4, !tbaa !4
-  br label %cond.end
+  %1 = load i8** %call1, align 8, !dbg !2381
+  %flags = getelementptr inbounds i8* %1, i64 8, !dbg !2381
+  %2 = bitcast i8* %flags to i32*, !dbg !2381
+  %3 = load i32* %2, align 4, !dbg !2381, !tbaa !2382
+  br label %cond.end, !dbg !2381
 
 cond.end:                                         ; preds = %entry, %cond.true
-  %cond = phi i32 [ %3, %cond.true ], [ 0, %entry ]
-  ret i32 %cond
+  %cond = phi i32 [ %3, %cond.true ], [ 0, %entry ], !dbg !2381
+  ret i32 %cond, !dbg !2381
 }

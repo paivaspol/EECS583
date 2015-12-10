@@ -1,52 +1,53 @@
 define void @ZV_pointersToEntry(%struct._ZV* %dv, i32 %loc, double** %ppReal, double** %ppImag) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ZV* %dv, i64 0, metadata !42, metadata !74), !dbg !150
-  tail call void @llvm.dbg.value(metadata i32 %loc, i64 0, metadata !43, metadata !74), !dbg !151
-  tail call void @llvm.dbg.value(metadata double** %ppReal, i64 0, metadata !44, metadata !74), !dbg !152
-  tail call void @llvm.dbg.value(metadata double** %ppImag, i64 0, metadata !45, metadata !74), !dbg !153
-  %1 = icmp eq %struct._ZV* %dv, null, !dbg !154
-  %2 = icmp eq double** %ppReal, null, !dbg !156
-  %or.cond = or i1 %1, %2, !dbg !157
-  %3 = icmp eq double** %ppImag, null, !dbg !158
-  %or.cond3 = or i1 %or.cond, %3, !dbg !157
-  br i1 %or.cond3, label %4, label %7, !dbg !157
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ZV* %dv}, i64 0, metadata !41), !dbg !106
+  tail call void @llvm.dbg.value(metadata !{i32 %loc}, i64 0, metadata !42), !dbg !107
+  tail call void @llvm.dbg.value(metadata !{double** %ppReal}, i64 0, metadata !43), !dbg !108
+  tail call void @llvm.dbg.value(metadata !{double** %ppImag}, i64 0, metadata !44), !dbg !109
+  %cmp = icmp eq %struct._ZV* %dv, null, !dbg !110
+  %cmp1 = icmp eq double** %ppReal, null, !dbg !110
+  %or.cond = or i1 %cmp, %cmp1, !dbg !110
+  %cmp3 = icmp eq double** %ppImag, null, !dbg !110
+  %or.cond39 = or i1 %or.cond, %cmp3, !dbg !110
+  br i1 %or.cond39, label %if.then, label %if.end, !dbg !110
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !159, !tbaa !81
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([61 x i8]* @.str5, i64 0, i64 0), %struct._ZV* %dv, i32 %loc, double** %ppReal, double** %ppImag) #5, !dbg !161
-  tail call void @exit(i32 -1) #6, !dbg !162
-  unreachable, !dbg !162
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !111, !tbaa !72
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([61 x i8]* @.str5, i64 0, i64 0), %struct._ZV* %dv, i32 %loc, double** %ppReal, double** %ppImag) #5, !dbg !111
+  tail call void @exit(i32 -1) #6, !dbg !113
+  unreachable, !dbg !113
 
-; <label>:7                                       ; preds = %0
-  %8 = icmp sgt i32 %loc, -1, !dbg !163
-  %.phi.trans.insert = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 0
-  %.pre = load i32* %.phi.trans.insert, align 4, !dbg !165, !tbaa !112
-  %9 = icmp sgt i32 %.pre, %loc, !dbg !167
-  %or.cond4 = and i1 %8, %9, !dbg !168
-  br i1 %or.cond4, label %10, label %._crit_edge, !dbg !168
+if.end:                                           ; preds = %entry
+  %cmp4 = icmp sgt i32 %loc, -1, !dbg !114
+  %size10.phi.trans.insert = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 0
+  %.pre = load i32* %size10.phi.trans.insert, align 4, !dbg !115, !tbaa !77
+  %cmp6 = icmp sgt i32 %.pre, %loc, !dbg !114
+  %or.cond40 = and i1 %cmp4, %cmp6, !dbg !114
+  br i1 %or.cond40, label %lor.lhs.false7, label %if.then9, !dbg !114
 
-; <label>:10                                      ; preds = %7
-  %11 = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 3, !dbg !169
-  %12 = load double** %11, align 8, !dbg !169, !tbaa !134
-  %13 = icmp eq double* %12, null, !dbg !170
-  br i1 %13, label %._crit_edge, label %18, !dbg !171
+lor.lhs.false7:                                   ; preds = %if.end
+  %vec = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 3, !dbg !114
+  %1 = load double** %vec, align 8, !dbg !114, !tbaa !72
+  %cmp8 = icmp eq double* %1, null, !dbg !114
+  br i1 %cmp8, label %if.then9, label %if.end13, !dbg !114
 
-._crit_edge:                                      ; preds = %7, %10
-  %14 = load %struct.__sFILE** @__stderrp, align 8, !dbg !172, !tbaa !81
-  %15 = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 3, !dbg !173
-  %16 = load double** %15, align 8, !dbg !173, !tbaa !134
-  %17 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %14, i8* getelementptr inbounds ([82 x i8]* @.str6, i64 0, i64 0), %struct._ZV* %dv, i32 %loc, double** %ppReal, double** %ppImag, i32 %.pre, double* %16) #5, !dbg !174
-  tail call void @exit(i32 -1) #6, !dbg !175
-  unreachable, !dbg !175
+if.then9:                                         ; preds = %if.end, %lor.lhs.false7
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !115, !tbaa !72
+  %vec11 = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 3, !dbg !115
+  %3 = load double** %vec11, align 8, !dbg !115, !tbaa !72
+  %call12 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([82 x i8]* @.str6, i64 0, i64 0), %struct._ZV* %dv, i32 %loc, double** %ppReal, double** %ppImag, i32 %.pre, double* %3) #5, !dbg !115
+  tail call void @exit(i32 -1) #6, !dbg !117
+  unreachable, !dbg !117
 
-; <label>:18                                      ; preds = %10
-  %19 = shl nsw i32 %loc, 1, !dbg !176
-  %20 = sext i32 %19 to i64, !dbg !177
-  %21 = getelementptr inbounds double* %12, i64 %20, !dbg !177
-  store double* %21, double** %ppReal, align 8, !dbg !178, !tbaa !81
-  %22 = or i32 %19, 1, !dbg !179
-  %23 = sext i32 %22 to i64, !dbg !180
-  %24 = load double** %11, align 8, !dbg !181, !tbaa !134
-  %25 = getelementptr inbounds double* %24, i64 %23, !dbg !180
-  store double* %25, double** %ppImag, align 8, !dbg !182, !tbaa !81
-  ret void, !dbg !183
+if.end13:                                         ; preds = %lor.lhs.false7
+  %mul = shl nsw i32 %loc, 1, !dbg !118
+  %idxprom = sext i32 %mul to i64, !dbg !118
+  %arrayidx = getelementptr inbounds double* %1, i64 %idxprom, !dbg !118
+  store double* %arrayidx, double** %ppReal, align 8, !dbg !118, !tbaa !72
+  %add38 = or i32 %mul, 1, !dbg !119
+  %idxprom16 = sext i32 %add38 to i64, !dbg !119
+  %4 = load double** %vec, align 8, !dbg !119, !tbaa !72
+  %arrayidx18 = getelementptr inbounds double* %4, i64 %idxprom16, !dbg !119
+  store double* %arrayidx18, double** %ppImag, align 8, !dbg !119, !tbaa !72
+  ret void, !dbg !120
 }

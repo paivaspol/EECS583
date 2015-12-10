@@ -1,54 +1,54 @@
-define i32 @StoreNamedData(%struct.PNamedData** nocapture %list, i8* %name, i8* %data) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.PNamedData** %list, i64 0, metadata !29, metadata !56), !dbg !57
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !30, metadata !56), !dbg !58
-  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !31, metadata !56), !dbg !59
-  %1 = tail call i8* @malloc(i64 32) #6, !dbg !60
-  %2 = icmp eq i8* %1, null, !dbg !61
-  br i1 %2, label %26, label %3, !dbg !63
+define i32 @StoreNamedData(%struct.PNamedData** nocapture %list, i8* nocapture %name, i8* %data) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.PNamedData** %list}, i64 0, metadata !29), !dbg !52
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !30), !dbg !52
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !31), !dbg !52
+  %call = tail call noalias i8* @malloc(i64 32) #6, !dbg !53
+  %0 = bitcast i8* %call to %struct.PNamedData*, !dbg !53
+  tail call void @llvm.dbg.value(metadata !{%struct.PNamedData* %0}, i64 0, metadata !33), !dbg !53
+  %tobool = icmp eq i8* %call, null, !dbg !54
+  br i1 %tobool, label %if.end17, label %if.then, !dbg !54
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i64 @strlen(i8* %name) #6, !dbg !64
-  %5 = add i64 %4, 1, !dbg !66
-  %6 = tail call i8* @malloc(i64 %5) #6, !dbg !67
-  %7 = getelementptr inbounds i8* %1, i64 16, !dbg !68
-  %8 = bitcast i8* %7 to i8**, !dbg !68
-  store i8* %6, i8** %8, align 8, !dbg !69, !tbaa !70
-  %9 = icmp eq i8* %6, null, !dbg !75
-  br i1 %9, label %25, label %10, !dbg !77
+if.then:                                          ; preds = %entry
+  %call1 = tail call i64 @strlen(i8* %name) #7, !dbg !55
+  %add = add i64 %call1, 1, !dbg !55
+  %call2 = tail call noalias i8* @malloc(i64 %add) #6, !dbg !55
+  %name3 = getelementptr inbounds i8* %call, i64 16, !dbg !55
+  %1 = bitcast i8* %name3 to i8**, !dbg !55
+  store i8* %call2, i8** %1, align 8, !dbg !55, !tbaa !57
+  %tobool5 = icmp eq i8* %call2, null, !dbg !60
+  br i1 %tobool5, label %if.else, label %if.then6, !dbg !60
 
-; <label>:10                                      ; preds = %3
-  %11 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %6, i1 false), !dbg !78
-  %12 = tail call i8* @__strcpy_chk(i8* %6, i8* %name, i64 %11) #6, !dbg !78
-  %13 = getelementptr inbounds i8* %1, i64 24, !dbg !80
-  %14 = bitcast i8* %13 to i8**, !dbg !80
-  store i8* %data, i8** %14, align 8, !dbg !81, !tbaa !82
-  %15 = bitcast %struct.PNamedData** %list to i64*, !dbg !83
-  %16 = load i64* %15, align 8, !dbg !83, !tbaa !84
-  %17 = getelementptr inbounds i8* %1, i64 8, !dbg !85
-  %18 = bitcast i8* %17 to i64*, !dbg !86
-  store i64 %16, i64* %18, align 8, !dbg !86, !tbaa !87
-  %19 = bitcast i8* %1 to %struct.PNamedData**, !dbg !88
-  store %struct.PNamedData* null, %struct.PNamedData** %19, align 8, !dbg !89, !tbaa !90
-  %20 = icmp eq i64 %16, 0, !dbg !91
-  br i1 %20, label %23, label %21, !dbg !93
+if.then6:                                         ; preds = %if.then
+  %call8 = tail call i8* @strcpy(i8* %call2, i8* %name) #6, !dbg !61
+  %data9 = getelementptr inbounds i8* %call, i64 24, !dbg !63
+  %2 = bitcast i8* %data9 to i8**, !dbg !63
+  store i8* %data, i8** %2, align 8, !dbg !63, !tbaa !57
+  %3 = load %struct.PNamedData** %list, align 8, !dbg !64, !tbaa !57
+  %next = getelementptr inbounds i8* %call, i64 8, !dbg !64
+  %4 = bitcast i8* %next to %struct.PNamedData**, !dbg !64
+  store %struct.PNamedData* %3, %struct.PNamedData** %4, align 8, !dbg !64, !tbaa !57
+  %last = bitcast i8* %call to %struct.PNamedData**, !dbg !65
+  store %struct.PNamedData* null, %struct.PNamedData** %last, align 8, !dbg !65, !tbaa !57
+  %tobool11 = icmp eq %struct.PNamedData* %3, null, !dbg !66
+  br i1 %tobool11, label %if.end, label %if.then12, !dbg !66
 
-; <label>:21                                      ; preds = %10
-  %22 = inttoptr i64 %16 to i8**, !dbg !94
-  store i8* %1, i8** %22, align 8, !dbg !94, !tbaa !90
-  br label %23, !dbg !95
+if.then12:                                        ; preds = %if.then6
+  %last14 = getelementptr inbounds %struct.PNamedData* %3, i64 0, i32 0, !dbg !66
+  store %struct.PNamedData* %0, %struct.PNamedData** %last14, align 8, !dbg !66, !tbaa !57
+  br label %if.end, !dbg !66
 
-; <label>:23                                      ; preds = %10, %21
-  %24 = bitcast %struct.PNamedData** %list to i8**, !dbg !96
-  store i8* %1, i8** %24, align 8, !dbg !96, !tbaa !84
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !32, metadata !56), !dbg !97
-  br label %26, !dbg !98
+if.end:                                           ; preds = %if.then6, %if.then12
+  store %struct.PNamedData* %0, %struct.PNamedData** %list, align 8, !dbg !67, !tbaa !57
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !32), !dbg !68
+  br label %if.end17, !dbg !69
 
-; <label>:25                                      ; preds = %3
-  tail call void @free(i8* %1) #7, !dbg !99
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !32, metadata !56), !dbg !97
-  br label %26
+if.else:                                          ; preds = %if.then
+  tail call void @free(i8* %call) #6, !dbg !70
+  tail call void @llvm.dbg.value(metadata !72, i64 0, metadata !32), !dbg !73
+  br label %if.end17
 
-; <label>:26                                      ; preds = %0, %23, %25
-  %return_code.0 = phi i32 [ 0, %23 ], [ 1, %25 ], [ 1, %0 ]
-  ret i32 %return_code.0, !dbg !101
+if.end17:                                         ; preds = %entry, %if.end, %if.else
+  %return_code.0 = phi i32 [ 0, %if.end ], [ 1, %if.else ], [ 1, %entry ]
+  ret i32 %return_code.0, !dbg !74
 }

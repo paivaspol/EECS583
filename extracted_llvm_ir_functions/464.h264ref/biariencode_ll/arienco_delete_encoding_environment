@@ -1,18 +1,19 @@
 define void @arienco_delete_encoding_environment(%struct.EncodingEnvironment* %eep) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %eep, i64 0, metadata !53, metadata !634), !dbg !640
-  %1 = icmp eq %struct.EncodingEnvironment* %eep, null, !dbg !641
-  br i1 %1, label %2, label %4, !dbg !643
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %eep}, i64 0, metadata !53), !dbg !625
+  %cmp = icmp eq %struct.EncodingEnvironment* %eep, null, !dbg !626
+  br i1 %cmp, label %if.then, label %if.else, !dbg !626
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i32 (i8*, i64, i32, i64, i8*, ...)* @__snprintf_chk(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i32 0, i64 300, i8* getelementptr inbounds ([33 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !644
-  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 200) #5, !dbg !646
-  br label %6, !dbg !647
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([33 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !627
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 200) #5, !dbg !629
+  br label %if.end, !dbg !630
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast %struct.EncodingEnvironment* %eep to i8*, !dbg !648
-  tail call void @free(i8* %5) #6, !dbg !649
-  br label %6
+if.else:                                          ; preds = %entry
+  %0 = bitcast %struct.EncodingEnvironment* %eep to i8*, !dbg !631
+  tail call void @free(i8* %0) #5, !dbg !631
+  br label %if.end
 
-; <label>:6                                       ; preds = %4, %2
-  ret void, !dbg !650
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !632
 }

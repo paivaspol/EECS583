@@ -1,19 +1,20 @@
 define void @FmoSetLastMacroblockInSlice(i32 %mb) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %mb, i64 0, metadata !662, metadata !943), !dbg !1454
-  %1 = tail call i32 @FmoMB2SliceGroup(i32 %mb) #10, !dbg !1455
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !663, metadata !943), !dbg !1456
-  %2 = icmp slt i32 %mb, 0, !dbg !1457
-  br i1 %2, label %3, label %4, !dbg !1457, !prof !1381
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %mb}, i64 0, metadata !659), !dbg !1193
+  %call = tail call i32 @FmoMB2SliceGroup(i32 %mb) #10, !dbg !1194
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !660), !dbg !1194
+  %cmp = icmp sgt i32 %mb, -1, !dbg !1195
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !1195
 
-; <label>:3                                       ; preds = %0
-  tail call void @__assert_rtn(i8* getelementptr inbounds ([28 x i8]* @__func__.FmoSetLastMacroblockInSlice, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i32 708, i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0)) #9, !dbg !1457
-  unreachable, !dbg !1457
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 708, i8* getelementptr inbounds ([38 x i8]* @__PRETTY_FUNCTION__.FmoSetLastMacroblockInSlice, i64 0, i64 0)) #9, !dbg !1195
+  unreachable, !dbg !1195
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @FmoGetNextMBNr(i32 %mb) #10, !dbg !1458
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !662, metadata !943), !dbg !1454
-  %6 = sext i32 %1 to i64, !dbg !1459
-  %7 = getelementptr inbounds [8 x i32]* @FirstMBInSlice, i64 0, i64 %6, !dbg !1459
-  store i32 %5, i32* %7, align 4, !dbg !1460, !tbaa !965
-  ret void, !dbg !1461
+cond.end:                                         ; preds = %entry
+  %call1 = tail call i32 @FmoGetNextMBNr(i32 %mb) #10, !dbg !1196
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !659), !dbg !1196
+  %idxprom = sext i32 %call to i64, !dbg !1197
+  %arrayidx = getelementptr inbounds [8 x i32]* @FirstMBInSlice, i64 0, i64 %idxprom, !dbg !1197
+  store i32 %call1, i32* %arrayidx, align 4, !dbg !1197, !tbaa !938
+  ret void, !dbg !1198
 }

@@ -1,26 +1,28 @@
-define void @_ZN3pov14sum_statisticsEPlS0_(i64* nocapture %ptotalstats, i64* nocapture readonly %pstats) #0 {
-  tail call void @llvm.dbg.value(metadata i64* %ptotalstats, i64 0, metadata !166, metadata !492), !dbg !500
-  tail call void @llvm.dbg.value(metadata i64* %pstats, i64 0, metadata !167, metadata !492), !dbg !501
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !168, metadata !492), !dbg !502
-  br label %1, !dbg !503
+define void @_ZN3pov14sum_statisticsEPlS0_(i64* nocapture %ptotalstats, i64* nocapture %pstats) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i64* %ptotalstats}, i64 0, metadata !154), !dbg !362
+  tail call void @llvm.dbg.value(metadata !{i64* %pstats}, i64 0, metadata !155), !dbg !362
+  tail call void @llvm.dbg.value(metadata !134, i64 0, metadata !156), !dbg !363
+  br label %for.body, !dbg !363
 
-; <label>:1                                       ; preds = %1, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds i64* %pstats, i64 %indvars.iv, !dbg !505
-  %3 = load i64* %2, align 8, !dbg !505, !tbaa !508
-  %4 = getelementptr inbounds i64* %ptotalstats, i64 %indvars.iv, !dbg !512
-  %5 = load i64* %4, align 8, !dbg !512, !tbaa !508
-  tail call void @llvm.dbg.value(metadata i64 %3, i64 0, metadata !181, metadata !492), !dbg !513
-  tail call void @llvm.dbg.value(metadata i64 %5, i64 0, metadata !182, metadata !492), !dbg !515
-  %6 = add nsw i64 %5, %3, !dbg !516
-  tail call void @llvm.dbg.value(metadata i64 %6, i64 0, metadata !180, metadata !492), !dbg !517
-  tail call void @llvm.dbg.value(metadata i64 %6, i64 0, metadata !169, metadata !492), !dbg !518
-  tail call void @llvm.dbg.value(metadata i64 %6, i64 0, metadata !169, metadata !492), !dbg !518
-  store i64 %6, i64* %4, align 8, !dbg !519, !tbaa !508
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !503
-  %exitcond = icmp eq i64 %indvars.iv.next, 126, !dbg !503
-  br i1 %exitcond, label %7, label %1, !dbg !503
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds i64* %pstats, i64 %indvars.iv, !dbg !365
+  %0 = load i64* %arrayidx, align 8, !dbg !365, !tbaa !367
+  %arrayidx2 = getelementptr inbounds i64* %ptotalstats, i64 %indvars.iv, !dbg !365
+  %1 = load i64* %arrayidx2, align 8, !dbg !365, !tbaa !367
+  tail call void @llvm.dbg.value(metadata !{i64 %0}, i64 0, metadata !370), !dbg !371
+  tail call void @llvm.dbg.value(metadata !{i64 %1}, i64 0, metadata !372), !dbg !371
+  %add.i = add nsw i64 %1, %0, !dbg !373
+  tail call void @llvm.dbg.value(metadata !{i64 %add.i}, i64 0, metadata !157), !dbg !373
+  tail call void @llvm.dbg.value(metadata !{i64 %add.i}, i64 0, metadata !375), !dbg !371
+  tail call void @llvm.dbg.value(metadata !{i64 %add.i}, i64 0, metadata !157), !dbg !376
+  store i64 %add.i, i64* %arrayidx2, align 8, !dbg !376, !tbaa !367
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !363
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !363
+  %exitcond = icmp eq i32 %lftr.wideiv, 126, !dbg !363
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !363
 
-; <label>:7                                       ; preds = %1
-  ret void, !dbg !520
+for.end:                                          ; preds = %for.body
+  ret void, !dbg !377
 }

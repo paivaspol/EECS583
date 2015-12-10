@@ -1,86 +1,87 @@
 define void @_ZN3pov12Scale_ObjectEPNS_13Object_StructEPdPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Object, double* %Vector, %"struct.pov::Transform_Struct"* %Trans) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !950, metadata !1323), !dbg !1609
-  tail call void @llvm.dbg.value(metadata double* %Vector, i64 0, metadata !951, metadata !1323), !dbg !1610
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !952, metadata !1323), !dbg !1611
-  %1 = icmp eq %"struct.pov::Object_Struct"* %Object, null, !dbg !1612
-  br i1 %1, label %39, label %2, !dbg !1614
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !959), !dbg !1261
+  tail call void @llvm.dbg.value(metadata !{double* %Vector}, i64 0, metadata !960), !dbg !1261
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !961), !dbg !1261
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %Object, null, !dbg !1262
+  br i1 %cmp, label %return, label %if.end, !dbg !1262
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 6, !dbg !1615
-  %Sib.02 = load %"struct.pov::Object_Struct"** %3, align 8, !dbg !1615
-  %4 = icmp eq %"struct.pov::Object_Struct"* %Sib.02, null, !dbg !1617
-  br i1 %4, label %7, label %.lr.ph4, !dbg !1619
+if.end:                                           ; preds = %entry
+  %Bound = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 6, !dbg !1263
+  %Sib.048 = load %"struct.pov::Object_Struct"** %Bound, align 8, !dbg !1263
+  %cmp149 = icmp eq %"struct.pov::Object_Struct"* %Sib.048, null, !dbg !1263
+  br i1 %cmp149, label %for.end, label %for.body, !dbg !1263
 
-.lr.ph4:                                          ; preds = %2, %.lr.ph4
-  %Sib.03 = phi %"struct.pov::Object_Struct"* [ %Sib.0, %.lr.ph4 ], [ %Sib.02, %2 ]
-  tail call void @_ZN3pov12Scale_ObjectEPNS_13Object_StructEPdPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Sib.03, double* %Vector, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1620
-  %5 = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.03, i64 0, i32 2, !dbg !1622
-  %Sib.0 = load %"struct.pov::Object_Struct"** %5, align 8, !dbg !1615
-  %6 = icmp eq %"struct.pov::Object_Struct"* %Sib.0, null, !dbg !1617
-  br i1 %6, label %._crit_edge, label %.lr.ph4, !dbg !1619
+for.body:                                         ; preds = %if.end, %for.body
+  %Sib.050 = phi %"struct.pov::Object_Struct"* [ %Sib.0, %for.body ], [ %Sib.048, %if.end ]
+  tail call void @_ZN3pov12Scale_ObjectEPNS_13Object_StructEPdPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Sib.050, double* %Vector, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1265
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.050, i64 0, i32 2, !dbg !1263
+  %Sib.0 = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !1263
+  %cmp1 = icmp eq %"struct.pov::Object_Struct"* %Sib.0, null, !dbg !1263
+  br i1 %cmp1, label %for.cond.for.end_crit_edge, label %for.body, !dbg !1263
 
-._crit_edge:                                      ; preds = %.lr.ph4
-  %.pre = load %"struct.pov::Object_Struct"** %3, align 8, !dbg !1623, !tbaa !1333
-  br label %7, !dbg !1619
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %.pre = load %"struct.pov::Object_Struct"** %Bound, align 8, !dbg !1267, !tbaa !1116
+  br label %for.end, !dbg !1263
 
-; <label>:7                                       ; preds = %._crit_edge, %2
-  %8 = phi %"struct.pov::Object_Struct"* [ %.pre, %._crit_edge ], [ null, %2 ]
-  %9 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 7, !dbg !1625
-  %10 = load %"struct.pov::Object_Struct"** %9, align 8, !dbg !1625, !tbaa !1520
-  %11 = icmp eq %"struct.pov::Object_Struct"* %10, %8, !dbg !1626
-  %12 = icmp eq %"struct.pov::Object_Struct"* %10, null, !dbg !1627
-  %or.cond = or i1 %11, %12, !dbg !1631
-  br i1 %or.cond, label %.loopexit, label %.lr.ph, !dbg !1631
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %if.end
+  %0 = phi %"struct.pov::Object_Struct"* [ %.pre, %for.cond.for.end_crit_edge ], [ null, %if.end ]
+  %Clip = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 7, !dbg !1267
+  %1 = load %"struct.pov::Object_Struct"** %Clip, align 8, !dbg !1267, !tbaa !1116
+  %cmp3 = icmp eq %"struct.pov::Object_Struct"* %1, %0, !dbg !1267
+  %cmp746 = icmp eq %"struct.pov::Object_Struct"* %1, null, !dbg !1268
+  %or.cond = or i1 %cmp3, %cmp746, !dbg !1267
+  br i1 %or.cond, label %if.end12, label %for.body8, !dbg !1267
 
-.lr.ph:                                           ; preds = %7, %.lr.ph
-  %Sib.11 = phi %"struct.pov::Object_Struct"* [ %14, %.lr.ph ], [ %10, %7 ]
-  tail call void @_ZN3pov12Scale_ObjectEPNS_13Object_StructEPdPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Sib.11, double* %Vector, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1632
-  %13 = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.11, i64 0, i32 2, !dbg !1634
-  %14 = load %"struct.pov::Object_Struct"** %13, align 8, !dbg !1634, !tbaa !1425
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %14, i64 0, metadata !953, metadata !1323), !dbg !1635
-  %15 = icmp eq %"struct.pov::Object_Struct"* %14, null, !dbg !1627
-  br i1 %15, label %.loopexit, label %.lr.ph, !dbg !1636
+for.body8:                                        ; preds = %for.end, %for.body8
+  %Sib.147 = phi %"struct.pov::Object_Struct"* [ %2, %for.body8 ], [ %1, %for.end ]
+  tail call void @_ZN3pov12Scale_ObjectEPNS_13Object_StructEPdPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Sib.147, double* %Vector, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1271
+  %Sibling10 = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.147, i64 0, i32 2, !dbg !1268
+  %2 = load %"struct.pov::Object_Struct"** %Sibling10, align 8, !dbg !1268, !tbaa !1116
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %2}, i64 0, metadata !962), !dbg !1268
+  %cmp7 = icmp eq %"struct.pov::Object_Struct"* %2, null, !dbg !1268
+  br i1 %cmp7, label %if.end12, label %for.body8, !dbg !1268
 
-.loopexit:                                        ; preds = %.lr.ph, %7
-  %16 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !1637
-  %17 = load i32* %16, align 4, !dbg !1637, !tbaa !1534
-  %18 = and i32 %17, 8192, !dbg !1637
-  %19 = icmp eq i32 %18, 0, !dbg !1637
-  br i1 %19, label %20, label %25, !dbg !1639
+if.end12:                                         ; preds = %for.body8, %for.end
+  %Flags = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !1273
+  %3 = load i32* %Flags, align 4, !dbg !1273, !tbaa !1128
+  %and = and i32 %3, 8192, !dbg !1273
+  %tobool = icmp eq i32 %and, 0, !dbg !1273
+  br i1 %tobool, label %if.then13, label %if.end14, !dbg !1273
 
-; <label>:20                                      ; preds = %.loopexit
-  %21 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 3, !dbg !1640
-  %22 = load %"struct.pov::Texture_Struct"** %21, align 8, !dbg !1640, !tbaa !1538
-  tail call void @_ZN3pov18Transform_TexturesEPNS_14Texture_StructEPNS_16Transform_StructE(%"struct.pov::Texture_Struct"* %22, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1642
-  %23 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 4, !dbg !1643
-  %24 = load %"struct.pov::Texture_Struct"** %23, align 8, !dbg !1643, !tbaa !1541
-  tail call void @_ZN3pov18Transform_TexturesEPNS_14Texture_StructEPNS_16Transform_StructE(%"struct.pov::Texture_Struct"* %24, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1644
-  br label %25, !dbg !1645
+if.then13:                                        ; preds = %if.end12
+  %Texture = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 3, !dbg !1274
+  %4 = load %"struct.pov::Texture_Struct"** %Texture, align 8, !dbg !1274, !tbaa !1116
+  tail call void @_ZN3pov18Transform_TexturesEPNS_14Texture_StructEPNS_16Transform_StructE(%"struct.pov::Texture_Struct"* %4, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1274
+  %Interior_Texture = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 4, !dbg !1276
+  %5 = load %"struct.pov::Texture_Struct"** %Interior_Texture, align 8, !dbg !1276, !tbaa !1116
+  tail call void @_ZN3pov18Transform_TexturesEPNS_14Texture_StructEPNS_16Transform_StructE(%"struct.pov::Texture_Struct"* %5, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1276
+  br label %if.end14, !dbg !1277
 
-; <label>:25                                      ; preds = %.loopexit, %20
-  %26 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 11, !dbg !1646
-  %27 = load %"struct.pov::Transform_Struct"** %26, align 8, !dbg !1646, !tbaa !1546
-  %28 = icmp eq %"struct.pov::Transform_Struct"* %27, null, !dbg !1648
-  br i1 %28, label %29, label %31, !dbg !1649
+if.end14:                                         ; preds = %if.end12, %if.then13
+  %UV_Trans = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 11, !dbg !1278
+  %6 = load %"struct.pov::Transform_Struct"** %UV_Trans, align 8, !dbg !1278, !tbaa !1116
+  %cmp15 = icmp eq %"struct.pov::Transform_Struct"* %6, null, !dbg !1278
+  br i1 %cmp15, label %if.then16, label %if.end18, !dbg !1278
 
-; <label>:29                                      ; preds = %25
-  %30 = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #5, !dbg !1650
-  store %"struct.pov::Transform_Struct"* %30, %"struct.pov::Transform_Struct"** %26, align 8, !dbg !1651, !tbaa !1546
-  br label %31, !dbg !1652
+if.then16:                                        ; preds = %if.end14
+  %call = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #5, !dbg !1279
+  store %"struct.pov::Transform_Struct"* %call, %"struct.pov::Transform_Struct"** %UV_Trans, align 8, !dbg !1279, !tbaa !1116
+  br label %if.end18, !dbg !1279
 
-; <label>:31                                      ; preds = %29, %25
-  %32 = phi %"struct.pov::Transform_Struct"* [ %30, %29 ], [ %27, %25 ]
-  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %32, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1653
-  %33 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 5, !dbg !1654
-  %34 = load %"struct.pov::Interior_Struct"** %33, align 8, !dbg !1654, !tbaa !1554
-  tail call void @_ZN3pov18Transform_InteriorEPNS_15Interior_StructEPNS_16Transform_StructE(%"struct.pov::Interior_Struct"* %34, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1655
-  %35 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 0, !dbg !1656
-  %36 = load %"struct.pov::Method_Struct"** %35, align 8, !dbg !1656, !tbaa !1347
-  %37 = getelementptr inbounds %"struct.pov::Method_Struct"* %36, i64 0, i32 7, !dbg !1656
-  %38 = load void (%"struct.pov::Object_Struct"*, double*, %"struct.pov::Transform_Struct"*)** %37, align 8, !dbg !1656, !tbaa !1657
-  tail call void %38(%"struct.pov::Object_Struct"* %Object, double* %Vector, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1656
-  br label %39, !dbg !1658
+if.end18:                                         ; preds = %if.then16, %if.end14
+  %7 = phi %"struct.pov::Transform_Struct"* [ %call, %if.then16 ], [ %6, %if.end14 ]
+  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %7, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1280
+  %Interior = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 5, !dbg !1281
+  %8 = load %"struct.pov::Interior_Struct"** %Interior, align 8, !dbg !1281, !tbaa !1116
+  tail call void @_ZN3pov18Transform_InteriorEPNS_15Interior_StructEPNS_16Transform_StructE(%"struct.pov::Interior_Struct"* %8, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1281
+  %Methods = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 0, !dbg !1282
+  %9 = load %"struct.pov::Method_Struct"** %Methods, align 8, !dbg !1282, !tbaa !1116
+  %Scale_Method = getelementptr inbounds %"struct.pov::Method_Struct"* %9, i64 0, i32 7, !dbg !1282
+  %10 = load void (%"struct.pov::Object_Struct"*, double*, %"struct.pov::Transform_Struct"*)** %Scale_Method, align 8, !dbg !1282, !tbaa !1116
+  tail call void %10(%"struct.pov::Object_Struct"* %Object, double* %Vector, %"struct.pov::Transform_Struct"* %Trans) #5, !dbg !1282
+  br label %return, !dbg !1282
 
-; <label>:39                                      ; preds = %0, %31
-  ret void, !dbg !1658
+return:                                           ; preds = %entry, %if.end18
+  ret void, !dbg !1282
 }

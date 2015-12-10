@@ -1,0 +1,28 @@
+define zeroext i1 @_ZNK10xalanc_1_811XalanBitmap5isSetEm(%"class.xalanc_1_8::XalanBitmap"* nocapture %this, i64 %theBit) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanBitmap"* %this}, i64 0, metadata !506), !dbg !949
+  tail call void @llvm.dbg.value(metadata !{i64 %theBit}, i64 0, metadata !508), !dbg !949
+  %m_size = getelementptr inbounds %"class.xalanc_1_8::XalanBitmap"* %this, i64 0, i32 0, !dbg !950
+  %0 = load i64* %m_size, align 8, !dbg !950, !tbaa !838
+  %cmp = icmp ugt i64 %0, %theBit, !dbg !950
+  br i1 %cmp, label %if.else, label %return, !dbg !950
+
+if.else:                                          ; preds = %entry
+  %div = lshr i64 %theBit, 3, !dbg !951
+  tail call void @llvm.dbg.value(metadata !{i64 %div}, i64 0, metadata !953), !dbg !954
+  %_M_start.i = getelementptr inbounds %"class.xalanc_1_8::XalanBitmap"* %this, i64 0, i32 1, i32 0, i32 0, i32 0, !dbg !955
+  %1 = load i8** %_M_start.i, align 8, !dbg !955, !tbaa !897
+  %add.ptr.i = getelementptr inbounds i8* %1, i64 %div, !dbg !955
+  %2 = load i8* %add.ptr.i, align 1, !dbg !951, !tbaa !839
+  %conv = sext i8 %2 to i32, !dbg !951
+  %rem = and i64 %theBit, 7, !dbg !951
+  %arrayidx = getelementptr inbounds [8 x i32]* @_ZN10xalanc_1_8L11theSetMasksE, i64 0, i64 %rem, !dbg !951
+  %3 = load i32* %arrayidx, align 4, !dbg !951, !tbaa !956
+  %and = and i32 %conv, %3, !dbg !951
+  %tobool = icmp ne i32 %and, 0, !dbg !951
+  br label %return, !dbg !951
+
+return:                                           ; preds = %entry, %if.else
+  %retval.0 = phi i1 [ %tobool, %if.else ], [ false, %entry ]
+  ret i1 %retval.0, !dbg !957
+}

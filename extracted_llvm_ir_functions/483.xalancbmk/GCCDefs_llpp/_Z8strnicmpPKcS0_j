@@ -1,16 +1,17 @@
-define i32 @_Z8strnicmpPKcS0_j(i8* nocapture readonly %str1, i8* nocapture readonly %str2, i32 %count) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %str1, i64 0, metadata !27, metadata !34), !dbg !39
-  tail call void @llvm.dbg.value(metadata i8* %str2, i64 0, metadata !28, metadata !34), !dbg !40
-  tail call void @llvm.dbg.value(metadata i32 %count, i64 0, metadata !29, metadata !34), !dbg !41
-  %1 = icmp eq i32 %count, 0, !dbg !42
-  br i1 %1, label %5, label %2, !dbg !44
+define i32 @_Z8strnicmpPKcS0_j(i8* nocapture %str1, i8* nocapture %str2, i32 %count) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str1}, i64 0, metadata !22), !dbg !27
+  tail call void @llvm.dbg.value(metadata !{i8* %str2}, i64 0, metadata !23), !dbg !27
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !24), !dbg !27
+  %cmp = icmp eq i32 %count, 0, !dbg !28
+  br i1 %cmp, label %return, label %if.end, !dbg !28
 
-; <label>:2                                       ; preds = %0
-  %3 = zext i32 %count to i64, !dbg !45
-  %4 = tail call i32 @strncasecmp(i8* %str1, i8* %str2, i64 %3) #3, !dbg !46
-  br label %5, !dbg !47
+if.end:                                           ; preds = %entry
+  %conv = zext i32 %count to i64, !dbg !29
+  %call = tail call i32 @strncasecmp(i8* %str1, i8* %str2, i64 %conv) #3, !dbg !29
+  br label %return, !dbg !29
 
-; <label>:5                                       ; preds = %0, %2
-  %.0 = phi i32 [ %4, %2 ], [ 0, %0 ]
-  ret i32 %.0, !dbg !48
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ %call, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !30
 }

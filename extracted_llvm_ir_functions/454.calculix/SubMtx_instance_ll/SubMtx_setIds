@@ -1,28 +1,30 @@
 define void @SubMtx_setIds(%struct._SubMtx* %mtx, i32 %rowid, i32 %colid) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %mtx, i64 0, metadata !44, metadata !480), !dbg !508
-  tail call void @llvm.dbg.value(metadata i32 %rowid, i64 0, metadata !45, metadata !480), !dbg !509
-  tail call void @llvm.dbg.value(metadata i32 %colid, i64 0, metadata !46, metadata !480), !dbg !510
-  %1 = icmp eq %struct._SubMtx* %mtx, null, !dbg !511
-  br i1 %1, label %2, label %5, !dbg !513
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %mtx}, i64 0, metadata !45), !dbg !491
+  tail call void @llvm.dbg.value(metadata !{i32 %rowid}, i64 0, metadata !46), !dbg !492
+  tail call void @llvm.dbg.value(metadata !{i32 %colid}, i64 0, metadata !47), !dbg !493
+  %cmp = icmp eq %struct._SubMtx* %mtx, null, !dbg !494
+  br i1 %cmp, label %if.then, label %if.end, !dbg !494
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !514, !tbaa !491
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([50 x i8]* @.str1, i64 0, i64 0), %struct._SubMtx* null, i32 %rowid, i32 %colid) #5, !dbg !516
-  tail call void @exit(i32 -1) #6, !dbg !517
-  unreachable, !dbg !517
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !495, !tbaa !483
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str1, i64 0, i64 0), %struct._SubMtx* null, i32 %rowid, i32 %colid) #5, !dbg !495
+  tail call void @exit(i32 -1) #6, !dbg !497
+  unreachable, !dbg !497
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8, i32 3, !dbg !518
-  %7 = bitcast double** %6 to i32**, !dbg !518
-  %8 = load i32** %7, align 8, !dbg !518, !tbaa !519
-  tail call void @llvm.dbg.value(metadata i32* %8, i64 0, metadata !47, metadata !480), !dbg !520
-  %9 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 2, !dbg !521
-  store i32 %rowid, i32* %9, align 4, !dbg !522, !tbaa !498
-  %10 = getelementptr inbounds i32* %8, i64 2, !dbg !523
-  store i32 %rowid, i32* %10, align 4, !dbg !524, !tbaa !503
-  %11 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 3, !dbg !525
-  store i32 %colid, i32* %11, align 4, !dbg !526, !tbaa !505
-  %12 = getelementptr inbounds i32* %8, i64 3, !dbg !527
-  store i32 %colid, i32* %12, align 4, !dbg !528, !tbaa !503
-  ret void, !dbg !529
+if.end:                                           ; preds = %entry
+  %vec = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8, i32 3, !dbg !498
+  %1 = load double** %vec, align 8, !dbg !498, !tbaa !483
+  %2 = bitcast double* %1 to i32*, !dbg !498
+  tail call void @llvm.dbg.value(metadata !{i32* %2}, i64 0, metadata !48), !dbg !498
+  %rowid1 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 2, !dbg !499
+  store i32 %rowid, i32* %rowid1, align 4, !dbg !499, !tbaa !488
+  %arrayidx11 = getelementptr inbounds double* %1, i64 1, !dbg !499
+  %arrayidx = bitcast double* %arrayidx11 to i32*, !dbg !499
+  store i32 %rowid, i32* %arrayidx, align 4, !dbg !499, !tbaa !488
+  %colid2 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 3, !dbg !500
+  store i32 %colid, i32* %colid2, align 4, !dbg !500, !tbaa !488
+  %arrayidx3 = getelementptr inbounds i32* %2, i64 3, !dbg !500
+  store i32 %colid, i32* %arrayidx3, align 4, !dbg !500, !tbaa !488
+  ret void, !dbg !501
 }

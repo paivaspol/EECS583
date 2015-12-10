@@ -1,19 +1,20 @@
 define i32 @CCTK_NumVarsInGroupI(i32 %group) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %group, i64 0, metadata !239, metadata !483), !dbg !981
-  %1 = icmp sgt i32 %group, -1, !dbg !982
-  %2 = load i32* @n_groups, align 4
-  %3 = icmp sgt i32 %2, %group, !dbg !983
-  %or.cond = and i1 %1, %3, !dbg !984
-  br i1 %or.cond, label %4, label %9, !dbg !984
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %group}, i64 0, metadata !225), !dbg !744
+  %cmp = icmp sgt i32 %group, -1, !dbg !745
+  %0 = load i32* @n_groups, align 4, !dbg !745, !tbaa !488
+  %cmp1 = icmp sgt i32 %0, %group, !dbg !745
+  %or.cond = and i1 %cmp, %cmp1, !dbg !745
+  br i1 %or.cond, label %cond.true, label %cond.end, !dbg !745
 
-; <label>:4                                       ; preds = %0
-  %5 = sext i32 %group to i64, !dbg !985
-  %6 = load %struct.cGroupDefinition** @groups, align 8, !dbg !985, !tbaa !487
-  %7 = getelementptr inbounds %struct.cGroupDefinition* %6, i64 %5, i32 11, !dbg !986
-  %8 = load i32* %7, align 4, !dbg !986, !tbaa !594
-  br label %9, !dbg !987
+cond.true:                                        ; preds = %entry
+  %idxprom = sext i32 %group to i64, !dbg !745
+  %1 = load %struct.cGroupDefinition** @groups, align 8, !dbg !745, !tbaa !480
+  %n_variables = getelementptr inbounds %struct.cGroupDefinition* %1, i64 %idxprom, i32 11, !dbg !745
+  %2 = load i32* %n_variables, align 4, !dbg !745, !tbaa !488
+  br label %cond.end, !dbg !745
 
-; <label>:9                                       ; preds = %0, %4
-  %10 = phi i32 [ %8, %4 ], [ -1, %0 ], !dbg !987
-  ret i32 %10, !dbg !988
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i32 [ %2, %cond.true ], [ -1, %entry ], !dbg !745
+  ret i32 %cond, !dbg !745
 }

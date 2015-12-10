@@ -1,235 +1,237 @@
 define %struct.cGH* @CactusDefaultSetupGH(%struct.tFleshConfig* %config, i32 %convergence_level) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.tFleshConfig* %config, i64 0, metadata !64, metadata !104), !dbg !105
-  tail call void @llvm.dbg.value(metadata i32 %convergence_level, i64 0, metadata !65, metadata !104), !dbg !106
-  %1 = icmp sgt i32 %convergence_level, 0, !dbg !107
-  br i1 %1, label %.thread, label %2, !dbg !109
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.tFleshConfig* %config}, i64 0, metadata !64), !dbg !100
+  tail call void @llvm.dbg.value(metadata !{i32 %convergence_level}, i64 0, metadata !65), !dbg !100
+  %cmp = icmp sgt i32 %convergence_level, 0, !dbg !101
+  br i1 %cmp, label %return, label %if.end, !dbg !101
 
-; <label>:2                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !69, metadata !104), !dbg !110
-  %3 = tail call i8* @malloc(i64 152) #8, !dbg !111
-  %4 = bitcast i8* %3 to %struct.cGH*, !dbg !112
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %4, i64 0, metadata !66, metadata !104), !dbg !113
-  %5 = icmp eq i8* %3, null, !dbg !114
-  br i1 %5, label %.thread, label %6, !dbg !116
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !102, i64 0, metadata !69), !dbg !103
+  %call = tail call noalias i8* @malloc(i64 152) #8, !dbg !104
+  %0 = bitcast i8* %call to %struct.cGH*, !dbg !104
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %0}, i64 0, metadata !66), !dbg !104
+  %tobool = icmp eq i8* %call, null, !dbg !105
+  br i1 %tobool, label %return, label %if.then1, !dbg !105
 
-; <label>:6                                       ; preds = %2
-  %7 = tail call i32 @CCTK_MaxDim() #8, !dbg !117
-  %8 = bitcast i8* %3 to i32*, !dbg !119
-  store i32 %7, i32* %8, align 4, !dbg !120, !tbaa !121
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !71, metadata !104), !dbg !128
-  %9 = icmp eq i32 %7, 0, !dbg !129
-  %. = select i1 %9, i32 1, i32 %7, !dbg !131
-  tail call void @llvm.dbg.value(metadata i32 %., i64 0, metadata !71, metadata !104), !dbg !128
-  %10 = getelementptr inbounds i8* %3, i64 4, !dbg !132
-  %11 = bitcast i8* %10 to i32*, !dbg !132
-  store i32 0, i32* %11, align 4, !dbg !133, !tbaa !134
-  %12 = sext i32 %. to i64, !dbg !135
-  %13 = shl nsw i64 %12, 2, !dbg !136
-  %14 = tail call i8* @malloc(i64 %13) #8, !dbg !137
-  %15 = getelementptr inbounds i8* %3, i64 8, !dbg !138
-  %16 = bitcast i8* %15 to i8**, !dbg !139
-  store i8* %14, i8** %16, align 8, !dbg !139, !tbaa !140
-  %17 = tail call i8* @malloc(i64 %13) #8, !dbg !141
-  %18 = getelementptr inbounds i8* %3, i64 16, !dbg !142
-  %19 = bitcast i8* %18 to i8**, !dbg !143
-  store i8* %17, i8** %19, align 8, !dbg !143, !tbaa !144
-  %20 = tail call i8* @malloc(i64 %13) #8, !dbg !145
-  %21 = getelementptr inbounds i8* %3, i64 24, !dbg !146
-  %22 = bitcast i8* %21 to i8**, !dbg !147
-  store i8* %20, i8** %22, align 8, !dbg !147, !tbaa !148
-  %23 = tail call i8* @malloc(i64 %13) #8, !dbg !149
-  %24 = getelementptr inbounds i8* %3, i64 32, !dbg !150
-  %25 = bitcast i8* %24 to i8**, !dbg !151
-  store i8* %23, i8** %25, align 8, !dbg !151, !tbaa !152
-  %26 = mul nsw i32 %., 3, !dbg !153
-  %27 = sext i32 %26 to i64, !dbg !154
-  %28 = shl nsw i64 %27, 2, !dbg !155
-  %29 = tail call i8* @malloc(i64 %28) #8, !dbg !156
-  %30 = getelementptr inbounds i8* %3, i64 40, !dbg !157
-  %31 = bitcast i8* %30 to i8**, !dbg !158
-  store i8* %29, i8** %31, align 8, !dbg !158, !tbaa !159
-  %32 = tail call i8* @malloc(i64 %13) #8, !dbg !160
-  %33 = getelementptr inbounds i8* %3, i64 48, !dbg !161
-  %34 = bitcast i8* %33 to i8**, !dbg !162
-  store i8* %32, i8** %34, align 8, !dbg !162, !tbaa !163
-  %35 = tail call i8* @malloc(i64 %13) #8, !dbg !164
-  %36 = getelementptr inbounds i8* %3, i64 56, !dbg !165
-  %37 = bitcast i8* %36 to i8**, !dbg !166
-  store i8* %35, i8** %37, align 8, !dbg !166, !tbaa !167
-  %38 = shl nsw i32 %., 1, !dbg !168
-  %39 = sext i32 %38 to i64, !dbg !169
-  %40 = shl nsw i64 %39, 2, !dbg !170
-  %41 = tail call i8* @malloc(i64 %40) #8, !dbg !171
-  %42 = getelementptr inbounds i8* %3, i64 88, !dbg !172
-  %43 = bitcast i8* %42 to i8**, !dbg !173
-  store i8* %41, i8** %43, align 8, !dbg !173, !tbaa !174
-  %44 = tail call i8* @malloc(i64 %40) #8, !dbg !175
-  %45 = getelementptr inbounds i8* %3, i64 112, !dbg !176
-  %46 = bitcast i8* %45 to i8**, !dbg !177
-  store i8* %44, i8** %46, align 8, !dbg !177, !tbaa !178
-  %47 = tail call i8* @malloc(i64 %13) #8, !dbg !179
-  %48 = getelementptr inbounds i8* %3, i64 96, !dbg !180
-  %49 = bitcast i8* %48 to i8**, !dbg !181
-  store i8* %47, i8** %49, align 8, !dbg !181, !tbaa !182
-  %50 = shl nsw i64 %12, 3, !dbg !183
-  %51 = tail call i8* @malloc(i64 %50) #8, !dbg !184
-  %52 = getelementptr inbounds i8* %3, i64 72, !dbg !185
-  %53 = bitcast i8* %52 to i8**, !dbg !186
-  store i8* %51, i8** %53, align 8, !dbg !186, !tbaa !187
-  %54 = tail call i8* @malloc(i64 %50) #8, !dbg !188
-  %55 = getelementptr inbounds i8* %3, i64 80, !dbg !189
-  %56 = bitcast i8* %55 to i8**, !dbg !190
-  store i8* %54, i8** %56, align 8, !dbg !190, !tbaa !191
-  %57 = getelementptr inbounds i8* %3, i64 64, !dbg !192
-  %58 = bitcast i8* %57 to double*, !dbg !192
-  store double 1.000000e+00, double* %58, align 8, !dbg !193, !tbaa !194
-  %59 = getelementptr inbounds i8* %3, i64 104, !dbg !195
-  %60 = bitcast i8* %59 to i32*, !dbg !195
-  store i32 0, i32* %60, align 4, !dbg !196, !tbaa !197
-  %61 = tail call i32 @CCTK_NumVars() #8, !dbg !198
-  tail call void @llvm.dbg.value(metadata i32 %61, i64 0, metadata !68, metadata !104), !dbg !199
-  %62 = icmp ne i32 %61, 0, !dbg !200
-  %63 = sext i32 %61 to i64, !dbg !201
-  %.op = shl nsw i64 %63, 3, !dbg !202
-  %64 = select i1 %62, i64 %.op, i64 8, !dbg !202
-  %65 = tail call i8* @malloc(i64 %64) #8, !dbg !203
-  %66 = getelementptr inbounds i8* %3, i64 128, !dbg !204
-  %67 = bitcast i8* %66 to i8****, !dbg !204
-  %68 = bitcast i8* %66 to i8**, !dbg !205
-  store i8* %65, i8** %68, align 8, !dbg !205, !tbaa !206
-  %69 = icmp eq i8* %65, null, !dbg !207
-  br i1 %69, label %.loopexit, label %.preheader, !dbg !209
+if.then1:                                         ; preds = %if.end
+  %call2 = tail call i32 @CCTK_MaxDim() #8, !dbg !106
+  %cctk_dim3 = bitcast i8* %call to i32*, !dbg !106
+  store i32 %call2, i32* %cctk_dim3, align 4, !dbg !106, !tbaa !108
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !71), !dbg !111
+  %cmp6 = icmp eq i32 %call2, 0, !dbg !112
+  %. = select i1 %cmp6, i32 1, i32 %call2, !dbg !112
+  tail call void @llvm.dbg.value(metadata !{i32 %.}, i64 0, metadata !71), !dbg !112
+  %cctk_iteration = getelementptr inbounds i8* %call, i64 4, !dbg !113
+  %1 = bitcast i8* %cctk_iteration to i32*, !dbg !113
+  store i32 0, i32* %1, align 4, !dbg !113, !tbaa !108
+  %conv = sext i32 %. to i64, !dbg !114
+  %mul = shl nsw i64 %conv, 2, !dbg !114
+  %call9 = tail call noalias i8* @malloc(i64 %mul) #8, !dbg !114
+  %2 = bitcast i8* %call9 to i32*, !dbg !114
+  %cctk_gsh = getelementptr inbounds i8* %call, i64 8, !dbg !114
+  %3 = bitcast i8* %cctk_gsh to i32**, !dbg !114
+  store i32* %2, i32** %3, align 8, !dbg !114, !tbaa !115
+  %call12 = tail call noalias i8* @malloc(i64 %mul) #8, !dbg !116
+  %4 = bitcast i8* %call12 to i32*, !dbg !116
+  %cctk_lsh = getelementptr inbounds i8* %call, i64 16, !dbg !116
+  %5 = bitcast i8* %cctk_lsh to i32**, !dbg !116
+  store i32* %4, i32** %5, align 8, !dbg !116, !tbaa !115
+  %call15 = tail call noalias i8* @malloc(i64 %mul) #8, !dbg !117
+  %6 = bitcast i8* %call15 to i32*, !dbg !117
+  %cctk_lbnd = getelementptr inbounds i8* %call, i64 24, !dbg !117
+  %7 = bitcast i8* %cctk_lbnd to i32**, !dbg !117
+  store i32* %6, i32** %7, align 8, !dbg !117, !tbaa !115
+  %call18 = tail call noalias i8* @malloc(i64 %mul) #8, !dbg !118
+  %8 = bitcast i8* %call18 to i32*, !dbg !118
+  %cctk_ubnd = getelementptr inbounds i8* %call, i64 32, !dbg !118
+  %9 = bitcast i8* %cctk_ubnd to i32**, !dbg !118
+  store i32* %8, i32** %9, align 8, !dbg !118, !tbaa !115
+  %mul19 = mul nsw i32 %., 3, !dbg !119
+  %conv20 = sext i32 %mul19 to i64, !dbg !119
+  %mul21 = shl nsw i64 %conv20, 2, !dbg !119
+  %call22 = tail call noalias i8* @malloc(i64 %mul21) #8, !dbg !119
+  %10 = bitcast i8* %call22 to i32*, !dbg !119
+  %cctk_lssh = getelementptr inbounds i8* %call, i64 40, !dbg !119
+  %11 = bitcast i8* %cctk_lssh to i32**, !dbg !119
+  store i32* %10, i32** %11, align 8, !dbg !119, !tbaa !115
+  %call25 = tail call noalias i8* @malloc(i64 %mul) #8, !dbg !120
+  %12 = bitcast i8* %call25 to i32*, !dbg !120
+  %cctk_to = getelementptr inbounds i8* %call, i64 48, !dbg !120
+  %13 = bitcast i8* %cctk_to to i32**, !dbg !120
+  store i32* %12, i32** %13, align 8, !dbg !120, !tbaa !115
+  %call28 = tail call noalias i8* @malloc(i64 %mul) #8, !dbg !121
+  %14 = bitcast i8* %call28 to i32*, !dbg !121
+  %cctk_from = getelementptr inbounds i8* %call, i64 56, !dbg !121
+  %15 = bitcast i8* %cctk_from to i32**, !dbg !121
+  store i32* %14, i32** %15, align 8, !dbg !121, !tbaa !115
+  %mul29 = shl nsw i32 %., 1, !dbg !122
+  %conv30 = sext i32 %mul29 to i64, !dbg !122
+  %mul31 = shl nsw i64 %conv30, 2, !dbg !122
+  %call32 = tail call noalias i8* @malloc(i64 %mul31) #8, !dbg !122
+  %16 = bitcast i8* %call32 to i32*, !dbg !122
+  %cctk_bbox = getelementptr inbounds i8* %call, i64 88, !dbg !122
+  %17 = bitcast i8* %cctk_bbox to i32**, !dbg !122
+  store i32* %16, i32** %17, align 8, !dbg !122, !tbaa !115
+  %call36 = tail call noalias i8* @malloc(i64 %mul31) #8, !dbg !123
+  %18 = bitcast i8* %call36 to i32*, !dbg !123
+  %cctk_nghostzones = getelementptr inbounds i8* %call, i64 112, !dbg !123
+  %19 = bitcast i8* %cctk_nghostzones to i32**, !dbg !123
+  store i32* %18, i32** %19, align 8, !dbg !123, !tbaa !115
+  %call39 = tail call noalias i8* @malloc(i64 %mul) #8, !dbg !124
+  %20 = bitcast i8* %call39 to i32*, !dbg !124
+  %cctk_levfac = getelementptr inbounds i8* %call, i64 96, !dbg !124
+  %21 = bitcast i8* %cctk_levfac to i32**, !dbg !124
+  store i32* %20, i32** %21, align 8, !dbg !124, !tbaa !115
+  %mul41 = shl nsw i64 %conv, 3, !dbg !125
+  %call42 = tail call noalias i8* @malloc(i64 %mul41) #8, !dbg !125
+  %22 = bitcast i8* %call42 to double*, !dbg !125
+  %cctk_delta_space = getelementptr inbounds i8* %call, i64 72, !dbg !125
+  %23 = bitcast i8* %cctk_delta_space to double**, !dbg !125
+  store double* %22, double** %23, align 8, !dbg !125, !tbaa !115
+  %call45 = tail call noalias i8* @malloc(i64 %mul41) #8, !dbg !126
+  %24 = bitcast i8* %call45 to double*, !dbg !126
+  %cctk_origin_space = getelementptr inbounds i8* %call, i64 80, !dbg !126
+  %25 = bitcast i8* %cctk_origin_space to double**, !dbg !126
+  store double* %24, double** %25, align 8, !dbg !126, !tbaa !115
+  %cctk_delta_time = getelementptr inbounds i8* %call, i64 64, !dbg !127
+  %26 = bitcast i8* %cctk_delta_time to double*, !dbg !127
+  store double 1.000000e+00, double* %26, align 8, !dbg !127, !tbaa !128
+  %cctk_convlevel = getelementptr inbounds i8* %call, i64 104, !dbg !129
+  %27 = bitcast i8* %cctk_convlevel to i32*, !dbg !129
+  store i32 0, i32* %27, align 4, !dbg !129, !tbaa !108
+  %call46 = tail call i32 @CCTK_NumVars() #8, !dbg !130
+  tail call void @llvm.dbg.value(metadata !{i32 %call46}, i64 0, metadata !68), !dbg !130
+  %tobool47 = icmp ne i32 %call46, 0, !dbg !131
+  %28 = sext i32 %call46 to i64, !dbg !131
+  %.op = shl nsw i64 %28, 3, !dbg !131
+  %mul49 = select i1 %tobool47, i64 %.op, i64 8, !dbg !131
+  %call50 = tail call noalias i8* @malloc(i64 %mul49) #8, !dbg !131
+  %29 = bitcast i8* %call50 to i8***, !dbg !131
+  %data = getelementptr inbounds i8* %call, i64 128, !dbg !131
+  %30 = bitcast i8* %data to i8****, !dbg !131
+  store i8*** %29, i8**** %30, align 8, !dbg !131, !tbaa !115
+  %tobool52 = icmp eq i8* %call50, null, !dbg !132
+  br i1 %tobool52, label %land.lhs.true, label %for.cond.preheader, !dbg !132
 
-.preheader:                                       ; preds = %6
-  %70 = icmp sgt i32 %61, 0, !dbg !210
-  br i1 %70, label %.lr.ph, label %.loopexit, !dbg !214
+for.cond.preheader:                               ; preds = %if.then1
+  %cmp54189 = icmp sgt i32 %call46, 0, !dbg !133
+  br i1 %cmp54189, label %for.body, label %land.lhs.true, !dbg !133
 
-.lr.ph:                                           ; preds = %.preheader, %82
-  %indvars.iv = phi i64 [ %indvars.iv.next, %82 ], [ 0, %.preheader ]
-  %71 = trunc i64 %indvars.iv to i32, !dbg !215
-  %72 = tail call i32 @CCTK_NumTimeLevelsFromVarI(i32 %71) #8, !dbg !215
-  tail call void @llvm.dbg.value(metadata i32 %72, i64 0, metadata !70, metadata !104), !dbg !217
-  %73 = sext i32 %72 to i64, !dbg !218
-  %74 = tail call i8* @calloc(i64 %73, i64 8) #8, !dbg !219
-  %75 = load i8**** %67, align 8, !dbg !220, !tbaa !206
-  %76 = getelementptr inbounds i8*** %75, i64 %indvars.iv, !dbg !221
-  %77 = bitcast i8*** %76 to i8**, !dbg !222
-  store i8* %74, i8** %77, align 8, !dbg !222, !tbaa !223
-  %78 = load i8**** %67, align 8, !dbg !224, !tbaa !206
-  %79 = getelementptr inbounds i8*** %78, i64 %indvars.iv, !dbg !226
-  %80 = load i8*** %79, align 8, !dbg !226, !tbaa !223
-  %81 = icmp eq i8** %80, null, !dbg !227
-  br i1 %81, label %.loopexit, label %82, !dbg !228
+for.cond:                                         ; preds = %for.body
+  %31 = trunc i64 %indvars.iv.next to i32, !dbg !133
+  %cmp54 = icmp slt i32 %31, %call46, !dbg !133
+  br i1 %cmp54, label %for.body, label %land.lhs.true, !dbg !133
 
-; <label>:82                                      ; preds = %.lr.ph
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !214
-  %83 = icmp slt i64 %indvars.iv.next, %63, !dbg !210
-  br i1 %83, label %.lr.ph, label %..loopexit_crit_edge, !dbg !214
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %for.cond.preheader ]
+  %variable.0190 = phi i32 [ %inc, %for.cond ], [ 0, %for.cond.preheader ]
+  %32 = trunc i64 %indvars.iv to i32, !dbg !136
+  %call56 = tail call i32 @CCTK_NumTimeLevelsFromVarI(i32 %32) #8, !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i32 %call56}, i64 0, metadata !70), !dbg !136
+  %conv57 = sext i32 %call56 to i64, !dbg !138
+  %call58 = tail call noalias i8* @calloc(i64 %conv57, i64 8) #8, !dbg !138
+  %33 = bitcast i8* %call58 to i8**, !dbg !138
+  %34 = load i8**** %30, align 8, !dbg !138, !tbaa !115
+  %arrayidx = getelementptr inbounds i8*** %34, i64 %indvars.iv, !dbg !138
+  store i8** %33, i8*** %arrayidx, align 8, !dbg !138, !tbaa !115
+  %35 = load i8**** %30, align 8, !dbg !139, !tbaa !115
+  %arrayidx62 = getelementptr inbounds i8*** %35, i64 %indvars.iv, !dbg !139
+  %36 = load i8*** %arrayidx62, align 8, !dbg !139, !tbaa !115
+  %cmp63 = icmp eq i8** %36, null, !dbg !139
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !133
+  %inc = add nsw i32 %variable.0190, 1, !dbg !133
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !69), !dbg !133
+  br i1 %cmp63, label %land.lhs.true, label %for.cond, !dbg !139
 
-..loopexit_crit_edge:                             ; preds = %82
-  %84 = trunc i64 %indvars.iv.next to i32, !dbg !214
-  br label %.loopexit, !dbg !214
+land.lhs.true:                                    ; preds = %if.then1, %for.cond, %for.body, %for.cond.preheader
+  %variable.1 = phi i32 [ -1, %if.then1 ], [ 0, %for.cond.preheader ], [ %variable.0190, %for.body ], [ %inc, %for.cond ]
+  %extensions = getelementptr inbounds i8* %call, i64 136, !dbg !140
+  %37 = bitcast i8* %extensions to i8***, !dbg !140
+  store i8** null, i8*** %37, align 8, !dbg !140, !tbaa !115
+  %call68 = tail call i32 @CCTK_NumGroups() #8, !dbg !141
+  tail call void @llvm.dbg.value(metadata !{i32 %call68}, i64 0, metadata !67), !dbg !141
+  %tobool69 = icmp ne i32 %call68, 0, !dbg !142
+  %38 = sext i32 %call68 to i64, !dbg !142
+  %.op188 = shl nsw i64 %38, 1, !dbg !142
+  %mul75 = select i1 %tobool69, i64 %.op188, i64 2, !dbg !142
+  %call76 = tail call noalias i8* @malloc(i64 %mul75) #8, !dbg !142
+  %39 = bitcast i8* %call76 to %struct.cGHGroupData*, !dbg !142
+  %GroupData = getelementptr inbounds i8* %call, i64 144, !dbg !142
+  %40 = bitcast i8* %GroupData to %struct.cGHGroupData**, !dbg !142
+  store %struct.cGHGroupData* %39, %struct.cGHGroupData** %40, align 8, !dbg !142, !tbaa !115
+  %41 = load i32** %3, align 8, !dbg !143, !tbaa !115
+  %tobool80 = icmp eq i32* %41, null, !dbg !143
+  br i1 %tobool80, label %return, label %land.lhs.true81, !dbg !143
 
-.loopexit:                                        ; preds = %.lr.ph, %6, %..loopexit_crit_edge, %.preheader
-  %variable.1 = phi i32 [ -1, %6 ], [ %84, %..loopexit_crit_edge ], [ 0, %.preheader ], [ %71, %.lr.ph ]
-  %85 = getelementptr inbounds i8* %3, i64 136, !dbg !229
-  %86 = bitcast i8* %85 to i8***, !dbg !229
-  store i8** null, i8*** %86, align 8, !dbg !230, !tbaa !231
-  %87 = tail call i32 @CCTK_NumGroups() #8, !dbg !232
-  tail call void @llvm.dbg.value(metadata i32 %87, i64 0, metadata !67, metadata !104), !dbg !233
-  %88 = icmp ne i32 %87, 0, !dbg !234
-  %89 = sext i32 %87 to i64, !dbg !235
-  %.op1 = shl nsw i64 %89, 1, !dbg !236
-  %90 = select i1 %88, i64 %.op1, i64 2, !dbg !236
-  %91 = tail call i8* @malloc(i64 %90) #8, !dbg !237
-  %92 = getelementptr inbounds i8* %3, i64 144, !dbg !238
-  %93 = bitcast i8* %92 to i8**, !dbg !239
-  store i8* %91, i8** %93, align 8, !dbg !239, !tbaa !240
-  %94 = bitcast i8* %15 to i32**, !dbg !241
-  %95 = load i32** %94, align 8, !dbg !241, !tbaa !140
-  %96 = icmp eq i32* %95, null, !dbg !243
-  br i1 %96, label %.thread, label %97, !dbg !244
+land.lhs.true81:                                  ; preds = %land.lhs.true
+  %42 = load i32** %5, align 8, !dbg !143, !tbaa !115
+  %tobool83 = icmp eq i32* %42, null, !dbg !143
+  br i1 %tobool83, label %return, label %land.lhs.true84, !dbg !143
 
-; <label>:97                                      ; preds = %.loopexit
-  %98 = bitcast i8* %18 to i32**, !dbg !245
-  %99 = load i32** %98, align 8, !dbg !245, !tbaa !144
-  %100 = icmp eq i32* %99, null, !dbg !246
-  br i1 %100, label %.thread, label %101, !dbg !247
+land.lhs.true84:                                  ; preds = %land.lhs.true81
+  %43 = load i32** %7, align 8, !dbg !143, !tbaa !115
+  %tobool86 = icmp eq i32* %43, null, !dbg !143
+  br i1 %tobool86, label %return, label %land.lhs.true87, !dbg !143
 
-; <label>:101                                     ; preds = %97
-  %102 = bitcast i8* %21 to i32**, !dbg !248
-  %103 = load i32** %102, align 8, !dbg !248, !tbaa !148
-  %104 = icmp eq i32* %103, null, !dbg !249
-  br i1 %104, label %.thread, label %105, !dbg !250
+land.lhs.true87:                                  ; preds = %land.lhs.true84
+  %44 = load i32** %9, align 8, !dbg !143, !tbaa !115
+  %tobool89 = icmp eq i32* %44, null, !dbg !143
+  br i1 %tobool89, label %return, label %land.lhs.true90, !dbg !143
 
-; <label>:105                                     ; preds = %101
-  %106 = bitcast i8* %24 to i32**, !dbg !251
-  %107 = load i32** %106, align 8, !dbg !251, !tbaa !152
-  %108 = icmp eq i32* %107, null, !dbg !252
-  br i1 %108, label %.thread, label %109, !dbg !253
+land.lhs.true90:                                  ; preds = %land.lhs.true87
+  %45 = load i32** %11, align 8, !dbg !143, !tbaa !115
+  %tobool92 = icmp eq i32* %45, null, !dbg !143
+  br i1 %tobool92, label %return, label %land.lhs.true93, !dbg !143
 
-; <label>:109                                     ; preds = %105
-  %110 = bitcast i8* %30 to i32**, !dbg !254
-  %111 = load i32** %110, align 8, !dbg !254, !tbaa !159
-  %112 = icmp eq i32* %111, null, !dbg !255
-  br i1 %112, label %.thread, label %113, !dbg !256
+land.lhs.true93:                                  ; preds = %land.lhs.true90
+  %46 = load i32** %15, align 8, !dbg !143, !tbaa !115
+  %tobool95 = icmp eq i32* %46, null, !dbg !143
+  br i1 %tobool95, label %return, label %land.lhs.true96, !dbg !143
 
-; <label>:113                                     ; preds = %109
-  %114 = bitcast i8* %36 to i32**, !dbg !257
-  %115 = load i32** %114, align 8, !dbg !257, !tbaa !167
-  %116 = icmp eq i32* %115, null, !dbg !258
-  br i1 %116, label %.thread, label %117, !dbg !259
+land.lhs.true96:                                  ; preds = %land.lhs.true93
+  %47 = load i32** %13, align 8, !dbg !143, !tbaa !115
+  %tobool98 = icmp eq i32* %47, null, !dbg !143
+  br i1 %tobool98, label %return, label %land.lhs.true99, !dbg !143
 
-; <label>:117                                     ; preds = %113
-  %118 = bitcast i8* %33 to i32**, !dbg !260
-  %119 = load i32** %118, align 8, !dbg !260, !tbaa !163
-  %120 = icmp eq i32* %119, null, !dbg !261
-  br i1 %120, label %.thread, label %121, !dbg !262
+land.lhs.true99:                                  ; preds = %land.lhs.true96
+  %48 = load i32** %17, align 8, !dbg !143, !tbaa !115
+  %tobool101 = icmp eq i32* %48, null, !dbg !143
+  br i1 %tobool101, label %return, label %land.lhs.true102, !dbg !143
 
-; <label>:121                                     ; preds = %117
-  %122 = bitcast i8* %42 to i32**, !dbg !263
-  %123 = load i32** %122, align 8, !dbg !263, !tbaa !174
-  %124 = icmp eq i32* %123, null, !dbg !264
-  br i1 %124, label %.thread, label %125, !dbg !265
+land.lhs.true102:                                 ; preds = %land.lhs.true99
+  %49 = load i32** %19, align 8, !dbg !143, !tbaa !115
+  %tobool104 = icmp eq i32* %49, null, !dbg !143
+  br i1 %tobool104, label %return, label %land.lhs.true105, !dbg !143
 
-; <label>:125                                     ; preds = %121
-  %126 = bitcast i8* %45 to i32**, !dbg !266
-  %127 = load i32** %126, align 8, !dbg !266, !tbaa !178
-  %128 = icmp eq i32* %127, null, !dbg !267
-  br i1 %128, label %.thread, label %129, !dbg !268
+land.lhs.true105:                                 ; preds = %land.lhs.true102
+  %50 = load i32** %21, align 8, !dbg !143, !tbaa !115
+  %tobool107 = icmp eq i32* %50, null, !dbg !143
+  br i1 %tobool107, label %return, label %land.lhs.true108, !dbg !143
 
-; <label>:129                                     ; preds = %125
-  %130 = bitcast i8* %48 to i32**, !dbg !269
-  %131 = load i32** %130, align 8, !dbg !269, !tbaa !182
-  %132 = icmp eq i32* %131, null, !dbg !270
-  br i1 %132, label %.thread, label %133, !dbg !271
+land.lhs.true108:                                 ; preds = %land.lhs.true105
+  %51 = load double** %23, align 8, !dbg !143, !tbaa !115
+  %tobool110 = icmp eq double* %51, null, !dbg !143
+  br i1 %tobool110, label %return, label %land.lhs.true111, !dbg !143
 
-; <label>:133                                     ; preds = %129
-  %134 = bitcast i8* %52 to double**, !dbg !272
-  %135 = load double** %134, align 8, !dbg !272, !tbaa !187
-  %136 = icmp eq double* %135, null, !dbg !273
-  br i1 %136, label %.thread, label %137, !dbg !274
+land.lhs.true111:                                 ; preds = %land.lhs.true108
+  %52 = load double** %25, align 8, !dbg !143, !tbaa !115
+  %tobool113 = icmp eq double* %52, null, !dbg !143
+  br i1 %tobool113, label %return, label %land.lhs.true114, !dbg !143
 
-; <label>:137                                     ; preds = %133
-  %138 = bitcast i8* %55 to double**, !dbg !275
-  %139 = load double** %138, align 8, !dbg !275, !tbaa !191
-  %140 = icmp eq double* %139, null, !dbg !276
-  br i1 %140, label %.thread, label %141, !dbg !277
+land.lhs.true114:                                 ; preds = %land.lhs.true111
+  %53 = load i8**** %30, align 8, !dbg !143, !tbaa !115
+  %notlhs = icmp eq i8*** %53, null, !dbg !143
+  %notrhs = icmp ne i32 %variable.1, %call46, !dbg !143
+  %or.cond.not = or i1 %notrhs, %notlhs, !dbg !143
+  %tobool122 = icmp eq i8* %call76, null, !dbg !143
+  %or.cond193 = or i1 %or.cond.not, %tobool122, !dbg !143
+  br i1 %or.cond193, label %return, label %if.then123, !dbg !143
 
-; <label>:141                                     ; preds = %137
-  %142 = load i8**** %67, align 8, !dbg !278, !tbaa !206
-  %notlhs = icmp ne i32 %variable.1, %61, !dbg !279
-  %notrhs = icmp eq i8*** %142, null, !dbg !279
-  %or.cond.not = or i1 %notrhs, %notlhs, !dbg !279
-  %143 = icmp eq i8* %91, null, !dbg !280
-  %or.cond6 = or i1 %or.cond.not, %143, !dbg !279
-  br i1 %or.cond6, label %.thread, label %144, !dbg !279
+if.then123:                                       ; preds = %land.lhs.true114
+  %call124 = tail call i32 @CCTKi_SetupGHExtensions(%struct.tFleshConfig* %config, i32 %convergence_level, %struct.cGH* %0) #8, !dbg !144
+  br label %return, !dbg !146
 
-; <label>:144                                     ; preds = %141
-  %145 = tail call i32 @CCTKi_SetupGHExtensions(%struct.tFleshConfig* %config, i32 %convergence_level, %struct.cGH* %4) #8, !dbg !281
-  br label %.thread, !dbg !283
-
-.thread:                                          ; preds = %141, %2, %144, %137, %133, %129, %125, %121, %117, %113, %109, %105, %101, %97, %.loopexit, %0
-  %.0 = phi %struct.cGH* [ null, %0 ], [ %4, %144 ], [ null, %141 ], [ null, %137 ], [ null, %133 ], [ null, %129 ], [ null, %125 ], [ null, %121 ], [ null, %117 ], [ null, %113 ], [ null, %109 ], [ null, %105 ], [ null, %101 ], [ null, %97 ], [ null, %.loopexit ], [ null, %2 ]
-  ret %struct.cGH* %.0, !dbg !284
+return:                                           ; preds = %land.lhs.true114, %if.end, %if.then123, %land.lhs.true111, %land.lhs.true108, %land.lhs.true105, %land.lhs.true102, %land.lhs.true99, %land.lhs.true96, %land.lhs.true93, %land.lhs.true90, %land.lhs.true87, %land.lhs.true84, %land.lhs.true81, %land.lhs.true, %entry
+  %retval.0 = phi %struct.cGH* [ null, %entry ], [ %0, %if.then123 ], [ null, %land.lhs.true114 ], [ null, %land.lhs.true111 ], [ null, %land.lhs.true108 ], [ null, %land.lhs.true105 ], [ null, %land.lhs.true102 ], [ null, %land.lhs.true99 ], [ null, %land.lhs.true96 ], [ null, %land.lhs.true93 ], [ null, %land.lhs.true90 ], [ null, %land.lhs.true87 ], [ null, %land.lhs.true84 ], [ null, %land.lhs.true81 ], [ null, %land.lhs.true ], [ null, %if.end ]
+  ret %struct.cGH* %retval.0, !dbg !147
 }

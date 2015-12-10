@@ -1,48 +1,50 @@
 define i32 @call_insn_operand(%struct.rtx_def* %op, i32 %mode) #1 {
 entry:
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2326), !dbg !6173
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2327), !dbg !6174
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !6175
+  %bf.load = load i32* %0, align 8, !dbg !6175
+  %bf.clear = and i32 %bf.load, 65535, !dbg !6175
   switch i32 %bf.clear, label %if.end19 [
     i32 61, label %land.lhs.true
     i32 54, label %return
     i32 68, label %if.then18
-  ]
+  ], !dbg !6175
 
 land.lhs.true:                                    ; preds = %entry
-  %1 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 5), align 8, !tbaa !4
-  %cmp1 = icmp eq %struct.rtx_def* %1, %op
-  %2 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 3), align 8, !tbaa !4
-  %cmp2 = icmp eq %struct.rtx_def* %2, %op
-  %or.cond = or i1 %cmp1, %cmp2
-  br i1 %or.cond, label %return, label %lor.lhs.false3
+  %1 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 5), align 8, !dbg !6175, !tbaa !4365
+  %cmp1 = icmp eq %struct.rtx_def* %1, %op, !dbg !6175
+  %2 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 3), align 8, !dbg !6175, !tbaa !4365
+  %cmp2 = icmp eq %struct.rtx_def* %2, %op, !dbg !6175
+  %or.cond = or i1 %cmp1, %cmp2, !dbg !6175
+  br i1 %or.cond, label %return, label %lor.lhs.false3, !dbg !6175
 
 lor.lhs.false3:                                   ; preds = %land.lhs.true
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %3 = load i32* %rtuint, align 4, !tbaa !0
-  %.off = add i32 %3, -53
-  %4 = icmp ult i32 %.off, 5
-  br i1 %4, label %return, label %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, !dbg !6175
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !6175
+  %3 = load i32* %rtuint, align 4, !dbg !6175, !tbaa !4347
+  %.off = add i32 %3, -53, !dbg !6175
+  %4 = icmp ult i32 %.off, 5, !dbg !6175
+  br i1 %4, label %return, label %if.end, !dbg !6175
 
 if.end:                                           ; preds = %lor.lhs.false3
   switch i32 %bf.clear, label %if.end19 [
     i32 54, label %return
     i32 68, label %if.then18
-  ]
+  ], !dbg !6176
 
 if.then18:                                        ; preds = %entry, %if.end
-  br label %return
+  br label %return, !dbg !6177
 
 if.end19:                                         ; preds = %entry, %if.end
-  %5 = load i32* @target_flags, align 4, !tbaa !0
-  %and = lshr i32 %5, 25
-  %6 = and i32 %and, 1
-  %7 = or i32 %6, 4
-  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %7) #9
-  br label %return
+  %5 = load i32* @target_flags, align 4, !dbg !6178, !tbaa !4347
+  %and = lshr i32 %5, 25, !dbg !6178
+  %6 = and i32 %and, 1, !dbg !6178
+  %7 = or i32 %6, 4, !dbg !6178
+  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %7) #10, !dbg !6178
+  br label %return, !dbg !6178
 
 return:                                           ; preds = %entry, %if.end, %land.lhs.true, %lor.lhs.false3, %if.end19, %if.then18
   %retval.0 = phi i32 [ 1, %if.then18 ], [ %call, %if.end19 ], [ 0, %lor.lhs.false3 ], [ 0, %land.lhs.true ], [ 0, %if.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6179
 }

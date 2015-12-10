@@ -1,0 +1,39 @@
+define internal fastcc i32 @CaseIndependentHash(i32 %klen, i8* nocapture %key) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %klen}, i64 0, metadata !67), !dbg !120
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !68), !dbg !121
+  tail call void @llvm.dbg.value(metadata !{i32 %klen}, i64 0, metadata !70), !dbg !122
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !71), !dbg !123
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !69), !dbg !124
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !70), !dbg !125
+  %tobool1 = icmp eq i32 %klen, 0, !dbg !125
+  br i1 %tobool1, label %while.end, label %while.body.lr.ph, !dbg !125
+
+while.body.lr.ph:                                 ; preds = %entry
+  %call = tail call i32** @__ctype_toupper_loc() #11, !dbg !126
+  %0 = load i32** %call, align 8, !dbg !126, !tbaa !105
+  br label %while.body, !dbg !125
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %hash.04 = phi i32 [ 0, %while.body.lr.ph ], [ %add, %while.body ]
+  %pos.03 = phi i8* [ %key, %while.body.lr.ph ], [ %incdec.ptr, %while.body ]
+  %i.02 = phi i32 [ %klen, %while.body.lr.ph ], [ %dec, %while.body ]
+  %dec = add nsw i32 %i.02, -1, !dbg !125
+  %mul = mul i32 %hash.04, 33, !dbg !127
+  %incdec.ptr = getelementptr inbounds i8* %pos.03, i64 1, !dbg !126
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !71), !dbg !126
+  %1 = load i8* %pos.03, align 1, !dbg !126, !tbaa !106
+  %idxprom = sext i8 %1 to i64, !dbg !126
+  %arrayidx = getelementptr inbounds i32* %0, i64 %idxprom, !dbg !126
+  %2 = load i32* %arrayidx, align 4, !dbg !126, !tbaa !115
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !72), !dbg !126
+  %add = add i32 %2, %mul, !dbg !126
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !69), !dbg !126
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !70), !dbg !125
+  %tobool = icmp eq i32 %dec, 0, !dbg !125
+  br i1 %tobool, label %while.end, label %while.body, !dbg !125
+
+while.end:                                        ; preds = %while.body, %entry
+  %hash.0.lcssa = phi i32 [ 0, %entry ], [ %add, %while.body ]
+  ret i32 %hash.0.lcssa, !dbg !128
+}

@@ -1,0 +1,41 @@
+define %"class.soplex::Vector"* @_ZN6soplex6Vector6assignERKNS_7SVectorE(%"class.soplex::Vector"* %this, %"class.soplex::SVector"* nocapture %psv) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %this}, i64 0, metadata !1741), !dbg !2948
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVector"* %psv}, i64 0, metadata !1742), !dbg !2948
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVector"* %psv}, i64 0, metadata !2949), !dbg !2951
+  %m_elem.i = getelementptr inbounds %"class.soplex::SVector"* %psv, i64 0, i32 0, !dbg !2952
+  %0 = load %"struct.soplex::SVector::Element"** %m_elem.i, align 8, !dbg !2952, !tbaa !2933
+  %cmp.i = icmp eq %"struct.soplex::SVector::Element"* %0, null, !dbg !2952
+  br i1 %cmp.i, label %for.end, label %for.cond.preheader, !dbg !2952
+
+for.cond.preheader:                               ; preds = %entry
+  %idx.i = getelementptr inbounds %"struct.soplex::SVector::Element"* %0, i64 -1, i32 1, !dbg !2953
+  %1 = load i32* %idx.i, align 4, !dbg !2953, !tbaa !2936
+  %cmp13 = icmp sgt i32 %1, 0, !dbg !2950
+  br i1 %cmp13, label %for.body.lr.ph, label %for.end, !dbg !2950
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %val = getelementptr inbounds %"class.soplex::Vector"* %this, i64 0, i32 1, !dbg !2954
+  %2 = load double** %val, align 8, !dbg !2954, !tbaa !2933
+  %3 = sext i32 %1 to i64
+  br label %for.body, !dbg !2950
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %3, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !2950
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVector"* %psv}, i64 0, metadata !2955), !dbg !2956
+  %val.i = getelementptr inbounds %"struct.soplex::SVector::Element"* %0, i64 %indvars.iv.next, i32 0, !dbg !2957
+  %4 = load double* %val.i, align 8, !dbg !2957, !tbaa !2958
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVector"* %psv}, i64 0, metadata !2959), !dbg !2960
+  %idx.i9 = getelementptr inbounds %"struct.soplex::SVector::Element"* %0, i64 %indvars.iv.next, i32 1, !dbg !2961
+  %5 = load i32* %idx.i9, align 4, !dbg !2961, !tbaa !2936
+  %idxprom = sext i32 %5 to i64, !dbg !2954
+  %arrayidx = getelementptr inbounds double* %2, i64 %idxprom, !dbg !2954
+  store double %4, double* %arrayidx, align 8, !dbg !2954, !tbaa !2958
+  %6 = trunc i64 %indvars.iv.next to i32, !dbg !2950
+  %cmp = icmp sgt i32 %6, 0, !dbg !2950
+  br i1 %cmp, label %for.body, label %for.end, !dbg !2950
+
+for.end:                                          ; preds = %entry, %for.body, %for.cond.preheader
+  ret %"class.soplex::Vector"* %this, !dbg !2963
+}

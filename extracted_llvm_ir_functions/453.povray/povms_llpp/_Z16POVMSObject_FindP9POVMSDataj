@@ -1,31 +1,32 @@
-define %struct.POVMSNode* @_Z16POVMSObject_FindP9POVMSDataj(%struct.POVMSData* readonly %object, i32 %key) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.POVMSData* %object, i64 0, metadata !578, metadata !1201), !dbg !3516
-  tail call void @llvm.dbg.value(metadata i32 %key, i64 0, metadata !579, metadata !1201), !dbg !3517
-  tail call void @llvm.dbg.value(metadata %struct.POVMSNode* null, i64 0, metadata !580, metadata !1201), !dbg !3518
-  %1 = icmp eq %struct.POVMSData* %object, null, !dbg !3519
-  br i1 %1, label %.loopexit, label %2, !dbg !3521
+define %struct.POVMSNode* @_Z16POVMSObject_FindP9POVMSDataj(%struct.POVMSData* %object, i32 %key) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSData* %object}, i64 0, metadata !547), !dbg !2119
+  tail call void @llvm.dbg.value(metadata !{i32 %key}, i64 0, metadata !548), !dbg !2119
+  tail call void @llvm.dbg.value(metadata !1895, i64 0, metadata !549), !dbg !2120
+  %cmp = icmp eq %struct.POVMSData* %object, null, !dbg !2121
+  br i1 %cmp, label %return, label %if.end, !dbg !2121
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.POVMSData* %object, i64 0, i32 2, !dbg !3522
-  %4 = bitcast %union.anon* %3 to %struct.POVMSNode**, !dbg !3522
-  %cur.01 = load %struct.POVMSNode** %4, align 8, !dbg !3522
-  %5 = icmp eq %struct.POVMSNode* %cur.01, null, !dbg !3523
-  br i1 %5, label %.loopexit, label %.lr.ph, !dbg !3524
+if.end:                                           ; preds = %entry
+  %0 = getelementptr inbounds %struct.POVMSData* %object, i64 0, i32 2, !dbg !2122
+  %root = bitcast %union.anon* %0 to %struct.POVMSNode**, !dbg !2122
+  %cur.09 = load %struct.POVMSNode** %root, align 8, !dbg !2122
+  %cmp110 = icmp eq %struct.POVMSNode* %cur.09, null, !dbg !2122
+  br i1 %cmp110, label %return, label %for.body, !dbg !2122
 
-.lr.ph:                                           ; preds = %2, %9
-  %cur.02 = phi %struct.POVMSNode* [ %cur.0, %9 ], [ %cur.01, %2 ]
-  %6 = getelementptr inbounds %struct.POVMSNode* %cur.02, i64 0, i32 2, !dbg !3525
-  %7 = load i32* %6, align 4, !dbg !3525, !tbaa !2586
-  %8 = icmp eq i32 %7, %key, !dbg !3526
-  br i1 %8, label %.loopexit, label %9, !dbg !3527
+for.cond:                                         ; preds = %for.body
+  %next = getelementptr inbounds %struct.POVMSNode* %cur.011, i64 0, i32 1, !dbg !2122
+  %cur.0 = load %struct.POVMSNode** %next, align 8, !dbg !2122
+  %cmp1 = icmp eq %struct.POVMSNode* %cur.0, null, !dbg !2122
+  br i1 %cmp1, label %return, label %for.body, !dbg !2122
 
-; <label>:9                                       ; preds = %.lr.ph
-  %10 = getelementptr inbounds %struct.POVMSNode* %cur.02, i64 0, i32 1, !dbg !3528
-  %cur.0 = load %struct.POVMSNode** %10, align 8, !dbg !3522
-  %11 = icmp eq %struct.POVMSNode* %cur.0, null, !dbg !3523
-  br i1 %11, label %.loopexit, label %.lr.ph, !dbg !3524
+for.body:                                         ; preds = %if.end, %for.cond
+  %cur.011 = phi %struct.POVMSNode* [ %cur.0, %for.cond ], [ %cur.09, %if.end ]
+  %key2 = getelementptr inbounds %struct.POVMSNode* %cur.011, i64 0, i32 2, !dbg !2123
+  %1 = load i32* %key2, align 4, !dbg !2123, !tbaa !937
+  %cmp3 = icmp eq i32 %1, %key, !dbg !2123
+  br i1 %cmp3, label %return, label %for.cond, !dbg !2123
 
-.loopexit:                                        ; preds = %.lr.ph, %9, %2, %0
-  %.0 = phi %struct.POVMSNode* [ null, %0 ], [ null, %2 ], [ null, %9 ], [ %cur.02, %.lr.ph ]
-  ret %struct.POVMSNode* %.0, !dbg !3529
+return:                                           ; preds = %if.end, %for.body, %for.cond, %entry
+  %retval.0 = phi %struct.POVMSNode* [ null, %entry ], [ null, %if.end ], [ %cur.011, %for.body ], [ null, %for.cond ]
+  ret %struct.POVMSNode* %retval.0, !dbg !2124
 }

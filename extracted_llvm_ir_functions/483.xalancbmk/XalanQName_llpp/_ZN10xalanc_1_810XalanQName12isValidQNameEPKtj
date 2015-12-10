@@ -1,0 +1,53 @@
+define zeroext i1 @_ZN10xalanc_1_810XalanQName12isValidQNameEPKtj(i16* %theQName, i32 %theLength) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %theQName}, i64 0, metadata !2846), !dbg !3928
+  tail call void @llvm.dbg.value(metadata !{i32 %theLength}, i64 0, metadata !2847), !dbg !3929
+  tail call void @llvm.dbg.value(metadata !{i16* %theQName}, i64 0, metadata !3930), !dbg !3932
+  tail call void @llvm.dbg.value(metadata !3933, i64 0, metadata !3934), !dbg !3935
+  tail call void @llvm.dbg.value(metadata !{i16* %theQName}, i64 0, metadata !3936), !dbg !3937
+  br label %while.cond.i, !dbg !3938
+
+while.cond.i:                                     ; preds = %while.cond.i, %entry
+  %thePointer.0.i = phi i16* [ %theQName, %entry ], [ %incdec.ptr.i, %while.cond.i ]
+  %0 = load i16* %thePointer.0.i, align 2, !dbg !3938, !tbaa !3849
+  %incdec.ptr.i = getelementptr inbounds i16* %thePointer.0.i, i64 1, !dbg !3939
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr.i}, i64 0, metadata !3936), !dbg !3939
+  switch i16 %0, label %while.cond.i [
+    i16 58, label %_ZN10xalanc_1_87indexOfEPKtt.exit
+    i16 0, label %_ZN10xalanc_1_87indexOfEPKtt.exit
+  ]
+
+_ZN10xalanc_1_87indexOfEPKtt.exit:                ; preds = %while.cond.i, %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %thePointer.0.i to i64, !dbg !3941
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %theQName to i64, !dbg !3941
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !3941
+  %sub.ptr.div8.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !3941
+  %conv4.i = trunc i64 %sub.ptr.div8.i to i32, !dbg !3941
+  tail call void @llvm.dbg.value(metadata !{i32 %conv4.i}, i64 0, metadata !2848), !dbg !3931
+  %cmp = icmp eq i32 %conv4.i, %theLength, !dbg !3942
+  br i1 %cmp, label %if.then, label %if.else, !dbg !3942
+
+if.then:                                          ; preds = %_ZN10xalanc_1_87indexOfEPKtt.exit
+  %call1 = tail call zeroext i1 @_ZN10xalanc_1_810XalanQName13isValidNCNameEPKtj(i16* %theQName, i32 %theLength) #8, !dbg !3943
+  br label %return, !dbg !3943
+
+if.else:                                          ; preds = %_ZN10xalanc_1_87indexOfEPKtt.exit
+  tail call void @llvm.dbg.value(metadata !{i16* %theQName}, i64 0, metadata !3945), !dbg !3947
+  tail call void @llvm.dbg.value(metadata !{i16* %theQName}, i64 0, metadata !2849), !dbg !3946
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr3}, i64 0, metadata !2852), !dbg !3948
+  %call4 = tail call zeroext i1 @_ZN10xalanc_1_810XalanQName13isValidNCNameEPKtj(i16* %theQName, i32 %conv4.i) #8, !dbg !3949
+  br i1 %call4, label %land.rhs, label %return, !dbg !3949
+
+land.rhs:                                         ; preds = %if.else
+  %idx.ext = and i64 %sub.ptr.div8.i, 4294967295, !dbg !3948
+  %add.ptr.sum = add i64 %idx.ext, 1, !dbg !3948
+  %add.ptr3 = getelementptr inbounds i16* %theQName, i64 %add.ptr.sum, !dbg !3948
+  %sub = add i32 %theLength, -1, !dbg !3950
+  %sub5 = sub i32 %sub, %conv4.i, !dbg !3950
+  %call6 = tail call zeroext i1 @_ZN10xalanc_1_810XalanQName13isValidNCNameEPKtj(i16* %add.ptr3, i32 %sub5) #8, !dbg !3950
+  br label %return
+
+return:                                           ; preds = %if.else, %land.rhs, %if.then
+  %retval.0 = phi i1 [ %call1, %if.then ], [ false, %if.else ], [ %call6, %land.rhs ]
+  ret i1 %retval.0, !dbg !3951
+}

@@ -1,0 +1,79 @@
+define void @_ZN11xercesc_2_519EntityReferenceImpl11setReadOnlyEbb(%"class.xercesc_2_5::EntityReferenceImpl"* %this, i1 zeroext %readOnl, i1 zeroext %deep) unnamed_addr #0 align 2 {
+entry:
+  %ref.tmp = alloca %"class.xercesc_2_5::DOMString", align 8
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::EntityReferenceImpl"* %this}, i64 0, metadata !1302), !dbg !1374
+  call void @llvm.dbg.value(metadata !{i1 %readOnl}, i64 0, metadata !1303), !dbg !1374
+  call void @llvm.dbg.value(metadata !{i1 %deep}, i64 0, metadata !1304), !dbg !1374
+  %0 = getelementptr inbounds %"class.xercesc_2_5::EntityReferenceImpl"* %this, i64 0, i32 0, !dbg !1375
+  %1 = bitcast %"class.xercesc_2_5::EntityReferenceImpl"* %this to %"class.xercesc_2_5::DocumentImpl"* (%"class.xercesc_2_5::ParentNode"*)***, !dbg !1375
+  %vtable = load %"class.xercesc_2_5::DocumentImpl"* (%"class.xercesc_2_5::ParentNode"*)*** %1, align 8, !dbg !1375, !tbaa !1321
+  %vfn = getelementptr inbounds %"class.xercesc_2_5::DocumentImpl"* (%"class.xercesc_2_5::ParentNode"*)** %vtable, i64 26, !dbg !1375
+  %2 = load %"class.xercesc_2_5::DocumentImpl"* (%"class.xercesc_2_5::ParentNode"*)** %vfn, align 8, !dbg !1375
+  %call = call %"class.xercesc_2_5::DocumentImpl"* %2(%"class.xercesc_2_5::ParentNode"* %0) #5, !dbg !1375
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DocumentImpl"* %call}, i64 0, metadata !1376), !dbg !1377
+  %errorChecking.i = getelementptr inbounds %"class.xercesc_2_5::DocumentImpl"* %call, i64 0, i32 10, !dbg !1378
+  %3 = load i8* %errorChecking.i, align 1, !dbg !1378, !tbaa !1380, !range !1381
+  %call3.not = icmp eq i8 %3, 0, !dbg !1375
+  %brmerge = or i1 %call3.not, %readOnl, !dbg !1375
+  br i1 %brmerge, label %if.end, label %if.then, !dbg !1375
+
+if.then:                                          ; preds = %entry
+  %exception = call i8* @__cxa_allocate_exception(i64 24) #7, !dbg !1382
+  invoke void @_ZN11xercesc_2_59DOMStringC1Ei(%"class.xercesc_2_5::DOMString"* %ref.tmp, i32 0) #5
+          to label %invoke.cont unwind label %ehcleanup.thread, !dbg !1382
+
+invoke.cont:                                      ; preds = %if.then
+  %4 = bitcast i8* %exception to %"class.xercesc_2_5::DOM_DOMException"*, !dbg !1382
+  invoke void @_ZN11xercesc_2_516DOM_DOMExceptionC1EsRKNS_9DOMStringE(%"class.xercesc_2_5::DOM_DOMException"* %4, i16 signext 7, %"class.xercesc_2_5::DOMString"* %ref.tmp) #5
+          to label %invoke.cont5 unwind label %lpad4, !dbg !1382
+
+invoke.cont5:                                     ; preds = %invoke.cont
+  invoke void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIN11xercesc_2_516DOM_DOMExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::DOM_DOMException"*)* @_ZN11xercesc_2_516DOM_DOMExceptionD1Ev to i8*)) #8
+          to label %unreachable unwind label %lpad4, !dbg !1382
+
+ehcleanup.thread:                                 ; preds = %if.then
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1382
+  %6 = extractvalue { i8*, i32 } %5, 0, !dbg !1382
+  %7 = extractvalue { i8*, i32 } %5, 1, !dbg !1382
+  br label %cleanup.action, !dbg !1382
+
+lpad4:                                            ; preds = %invoke.cont5, %invoke.cont
+  %cleanup.isactive.0 = phi i1 [ false, %invoke.cont5 ], [ true, %invoke.cont ]
+  %8 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1382
+  %9 = extractvalue { i8*, i32 } %8, 0, !dbg !1382
+  %10 = extractvalue { i8*, i32 } %8, 1, !dbg !1382
+  invoke void @_ZN11xercesc_2_59DOMStringD1Ev(%"class.xercesc_2_5::DOMString"* %ref.tmp) #5
+          to label %ehcleanup unwind label %terminate.lpad, !dbg !1382
+
+ehcleanup:                                        ; preds = %lpad4
+  br i1 %cleanup.isactive.0, label %cleanup.action, label %eh.resume, !dbg !1382
+
+cleanup.action:                                   ; preds = %ehcleanup.thread, %ehcleanup
+  %ehselector.slot.015 = phi i32 [ %7, %ehcleanup.thread ], [ %10, %ehcleanup ]
+  %exn.slot.013 = phi i8* [ %6, %ehcleanup.thread ], [ %9, %ehcleanup ]
+  call void @__cxa_free_exception(i8* %exception) #7, !dbg !1382
+  br label %eh.resume, !dbg !1382
+
+if.end:                                           ; preds = %entry
+  call void @_ZN11xercesc_2_510ParentNode11setReadOnlyEbb(%"class.xercesc_2_5::ParentNode"* %0, i1 zeroext %readOnl, i1 zeroext %deep) #5, !dbg !1383
+  ret void, !dbg !1384
+
+eh.resume:                                        ; preds = %ehcleanup, %cleanup.action
+  %ehselector.slot.014 = phi i32 [ %10, %ehcleanup ], [ %ehselector.slot.015, %cleanup.action ]
+  %exn.slot.012 = phi i8* [ %9, %ehcleanup ], [ %exn.slot.013, %cleanup.action ]
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.012, 0, !dbg !1382
+  %lpad.val10 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.014, 1, !dbg !1382
+  resume { i8*, i32 } %lpad.val10, !dbg !1382
+
+terminate.lpad:                                   ; preds = %lpad4
+  %11 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !1382
+  %12 = extractvalue { i8*, i32 } %11, 0, !dbg !1382
+  call void @__clang_call_terminate(i8* %12) #6, !dbg !1382
+  unreachable, !dbg !1382
+
+unreachable:                                      ; preds = %invoke.cont5
+  unreachable
+}

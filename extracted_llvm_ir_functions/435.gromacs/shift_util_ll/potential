@@ -1,45 +1,46 @@
-define float @potential(float %r1, float %rc, float %R) #5 {
-  tail call void @llvm.dbg.value(metadata float %r1, i64 0, metadata !312, metadata !655), !dbg !1227
-  tail call void @llvm.dbg.value(metadata float %rc, i64 0, metadata !313, metadata !655), !dbg !1228
-  tail call void @llvm.dbg.value(metadata float %R, i64 0, metadata !314, metadata !655), !dbg !1229
-  %1 = fcmp olt float %R, %r1, !dbg !1230
-  br i1 %1, label %2, label %9, !dbg !1232
+define float @potential(float %r1, float %rc, float %R) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %r1}, i64 0, metadata !301), !dbg !804
+  tail call void @llvm.dbg.value(metadata !{float %rc}, i64 0, metadata !302), !dbg !804
+  tail call void @llvm.dbg.value(metadata !{float %R}, i64 0, metadata !303), !dbg !804
+  %cmp = fcmp olt float %R, %r1, !dbg !805
+  br i1 %cmp, label %if.then, label %if.else, !dbg !805
 
-; <label>:2                                       ; preds = %0
-  %3 = fpext float %R to double, !dbg !1233
-  %4 = fdiv double 1.000000e+00, %3, !dbg !1234
-  %5 = load float* @C, align 4, !dbg !1235, !tbaa !679
-  %6 = fpext float %5 to double, !dbg !1235
-  %7 = fsub double %4, %6, !dbg !1236
-  %8 = fptrunc double %7 to float, !dbg !1237
-  br label %30, !dbg !1238
+if.then:                                          ; preds = %entry
+  %conv = fpext float %R to double, !dbg !806
+  %div = fdiv double 1.000000e+00, %conv, !dbg !806
+  %0 = load float* @C, align 4, !dbg !806, !tbaa !645
+  %conv1 = fpext float %0 to double, !dbg !806
+  %sub = fsub double %div, %conv1, !dbg !806
+  %conv2 = fptrunc double %sub to float, !dbg !806
+  br label %return, !dbg !806
 
-; <label>:9                                       ; preds = %0
-  %10 = fcmp ugt float %R, %rc, !dbg !1239
-  br i1 %10, label %30, label %11, !dbg !1241
+if.else:                                          ; preds = %entry
+  %cmp3 = fcmp ugt float %R, %rc, !dbg !807
+  br i1 %cmp3, label %return, label %if.then5, !dbg !807
 
-; <label>:11                                      ; preds = %9
-  %12 = fpext float %R to double, !dbg !1242
-  %13 = fdiv double 1.000000e+00, %12, !dbg !1243
-  %14 = load float* @A_3, align 4, !dbg !1244, !tbaa !679
-  %15 = fsub float %R, %r1, !dbg !1245
-  %16 = fmul float %15, %15, !dbg !1245
-  %17 = fmul float %15, %16, !dbg !1245
-  %18 = fmul float %17, %14, !dbg !1246
-  %19 = fpext float %18 to double, !dbg !1244
-  %20 = fsub double %13, %19, !dbg !1247
-  %21 = load float* @B_4, align 4, !dbg !1248, !tbaa !679
-  %22 = fmul float %15, %17, !dbg !1249
-  %23 = fmul float %22, %21, !dbg !1250
-  %24 = fpext float %23 to double, !dbg !1248
-  %25 = fsub double %20, %24, !dbg !1251
-  %26 = load float* @C, align 4, !dbg !1252, !tbaa !679
-  %27 = fpext float %26 to double, !dbg !1252
-  %28 = fsub double %25, %27, !dbg !1253
-  %29 = fptrunc double %28 to float, !dbg !1254
-  br label %30, !dbg !1255
+if.then5:                                         ; preds = %if.else
+  %conv6 = fpext float %R to double, !dbg !808
+  %div7 = fdiv double 1.000000e+00, %conv6, !dbg !808
+  %1 = load float* @A_3, align 4, !dbg !808, !tbaa !645
+  %sub8 = fsub float %R, %r1, !dbg !808
+  %mul = fmul float %sub8, %sub8, !dbg !808
+  %mul11 = fmul float %sub8, %mul, !dbg !808
+  %mul12 = fmul float %mul11, %1, !dbg !808
+  %conv13 = fpext float %mul12 to double, !dbg !808
+  %sub14 = fsub double %div7, %conv13, !dbg !808
+  %2 = load float* @B_4, align 4, !dbg !808, !tbaa !645
+  %mul21 = fmul float %sub8, %mul11, !dbg !808
+  %mul22 = fmul float %mul21, %2, !dbg !808
+  %conv23 = fpext float %mul22 to double, !dbg !808
+  %sub24 = fsub double %sub14, %conv23, !dbg !808
+  %3 = load float* @C, align 4, !dbg !808, !tbaa !645
+  %conv25 = fpext float %3 to double, !dbg !808
+  %sub26 = fsub double %sub24, %conv25, !dbg !808
+  %conv27 = fptrunc double %sub26 to float, !dbg !808
+  br label %return, !dbg !808
 
-; <label>:30                                      ; preds = %9, %11, %2
-  %.0 = phi float [ %8, %2 ], [ %29, %11 ], [ 0.000000e+00, %9 ]
-  ret float %.0, !dbg !1256
+return:                                           ; preds = %if.else, %if.then5, %if.then
+  %retval.0 = phi float [ %conv2, %if.then ], [ %conv27, %if.then5 ], [ 0.000000e+00, %if.else ]
+  ret float %retval.0, !dbg !809
 }

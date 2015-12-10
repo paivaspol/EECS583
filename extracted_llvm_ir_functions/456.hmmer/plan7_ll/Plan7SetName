@@ -1,18 +1,19 @@
 define void @Plan7SetName(%struct.plan7_s* nocapture %hmm, i8* %name) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.plan7_s* %hmm, i64 0, metadata !106, metadata !327), !dbg !790
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !107, metadata !327), !dbg !791
-  %1 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 0, !dbg !792
-  %2 = load i8** %1, align 8, !dbg !792, !tbaa !564
-  %3 = icmp eq i8* %2, null, !dbg !794
-  br i1 %3, label %5, label %4, !dbg !795
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.plan7_s* %hmm}, i64 0, metadata !105), !dbg !451
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !106), !dbg !451
+  %name1 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 0, !dbg !452
+  %0 = load i8** %name1, align 8, !dbg !452, !tbaa !354
+  %cmp = icmp eq i8* %0, null, !dbg !452
+  br i1 %cmp, label %if.end, label %if.then, !dbg !452
 
-; <label>:4                                       ; preds = %0
-  tail call void @free(i8* %2) #10, !dbg !796
-  br label %5, !dbg !796
+if.then:                                          ; preds = %entry
+  tail call void @free(i8* %0) #8, !dbg !452
+  br label %if.end, !dbg !452
 
-; <label>:5                                       ; preds = %0, %4
-  %6 = tail call i8* @Strdup(i8* %name) #9, !dbg !797
-  store i8* %6, i8** %1, align 8, !dbg !798, !tbaa !564
-  tail call void @StringChop(i8* %6) #9, !dbg !799
-  ret void, !dbg !800
+if.end:                                           ; preds = %entry, %if.then
+  %call = tail call i8* @Strdup(i8* %name) #8, !dbg !453
+  store i8* %call, i8** %name1, align 8, !dbg !453, !tbaa !354
+  tail call void @StringChop(i8* %call) #8, !dbg !454
+  ret void, !dbg !455
 }

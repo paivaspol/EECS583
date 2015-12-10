@@ -1,0 +1,31 @@
+define %"class.soplex::Vector"* @_ZN6soplex6VectormLEd(%"class.soplex::Vector"* %this, double %x) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %this}, i64 0, metadata !1771), !dbg !3021
+  tail call void @llvm.dbg.value(metadata !{double %x}, i64 0, metadata !1772), !dbg !3021
+  tail call void @llvm.dbg.value(metadata !1145, i64 0, metadata !1773), !dbg !3022
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %this}, i64 0, metadata !3023), !dbg !3024
+  %dimen.i = getelementptr inbounds %"class.soplex::Vector"* %this, i64 0, i32 0, !dbg !3025
+  %0 = load i32* %dimen.i, align 4, !dbg !3025, !tbaa !2936
+  %cmp4 = icmp sgt i32 %0, 0, !dbg !3022
+  br i1 %cmp4, label %for.body.lr.ph, label %for.end, !dbg !3022
+
+for.body.lr.ph:                                   ; preds = %entry
+  %val = getelementptr inbounds %"class.soplex::Vector"* %this, i64 0, i32 1, !dbg !3026
+  %1 = load double** %val, align 8, !dbg !3026, !tbaa !2933
+  br label %for.body, !dbg !3022
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds double* %1, i64 %indvars.iv, !dbg !3026
+  %2 = load double* %arrayidx, align 8, !dbg !3026, !tbaa !2958
+  %mul = fmul double %2, %x, !dbg !3026
+  store double %mul, double* %arrayidx, align 8, !dbg !3026, !tbaa !2958
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3022
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %this}, i64 0, metadata !3023), !dbg !3024
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !3022
+  %cmp = icmp slt i32 %3, %0, !dbg !3022
+  br i1 %cmp, label %for.body, label %for.end, !dbg !3022
+
+for.end:                                          ; preds = %for.body, %entry
+  ret %"class.soplex::Vector"* %this, !dbg !3027
+}

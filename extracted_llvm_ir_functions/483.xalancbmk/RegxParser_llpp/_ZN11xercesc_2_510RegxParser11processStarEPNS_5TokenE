@@ -1,0 +1,28 @@
+define %"class.xercesc_2_5::Token"* @_ZN11xercesc_2_510RegxParser11processStarEPNS_5TokenE(%"class.xercesc_2_5::RegxParser"* nocapture %this, %"class.xercesc_2_5::Token"* %tok) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RegxParser"* %this}, i64 0, metadata !2197), !dbg !3823
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::Token"* %tok}, i64 0, metadata !2198), !dbg !3823
+  tail call void @_ZN11xercesc_2_510RegxParser11processNextEv(%"class.xercesc_2_5::RegxParser"* %this) #9, !dbg !3824
+  %fState = getelementptr inbounds %"class.xercesc_2_5::RegxParser"* %this, i64 0, i32 8, !dbg !3825
+  %0 = load i16* %fState, align 2, !dbg !3825, !tbaa !3280
+  %cmp = icmp eq i16 %0, 5, !dbg !3825
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3825
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN11xercesc_2_510RegxParser11processNextEv(%"class.xercesc_2_5::RegxParser"* %this) #9, !dbg !3826
+  %fTokenFactory = getelementptr inbounds %"class.xercesc_2_5::RegxParser"* %this, i64 0, i32 12, !dbg !3828
+  %1 = load %"class.xercesc_2_5::TokenFactory"** %fTokenFactory, align 8, !dbg !3828, !tbaa !3278
+  %call = tail call %"class.xercesc_2_5::ClosureToken"* @_ZN11xercesc_2_512TokenFactory13createClosureEPNS_5TokenEb(%"class.xercesc_2_5::TokenFactory"* %1, %"class.xercesc_2_5::Token"* %tok, i1 zeroext true) #9, !dbg !3828
+  br label %return, !dbg !3828
+
+if.end:                                           ; preds = %entry
+  %fTokenFactory2 = getelementptr inbounds %"class.xercesc_2_5::RegxParser"* %this, i64 0, i32 12, !dbg !3829
+  %2 = load %"class.xercesc_2_5::TokenFactory"** %fTokenFactory2, align 8, !dbg !3829, !tbaa !3278
+  %call3 = tail call %"class.xercesc_2_5::ClosureToken"* @_ZN11xercesc_2_512TokenFactory13createClosureEPNS_5TokenEb(%"class.xercesc_2_5::TokenFactory"* %2, %"class.xercesc_2_5::Token"* %tok, i1 zeroext false) #9, !dbg !3829
+  br label %return, !dbg !3829
+
+return:                                           ; preds = %if.end, %if.then
+  %call.pn = phi %"class.xercesc_2_5::ClosureToken"* [ %call, %if.then ], [ %call3, %if.end ]
+  %retval.0 = getelementptr inbounds %"class.xercesc_2_5::ClosureToken"* %call.pn, i64 0, i32 0, !dbg !3828
+  ret %"class.xercesc_2_5::Token"* %retval.0, !dbg !3830
+}

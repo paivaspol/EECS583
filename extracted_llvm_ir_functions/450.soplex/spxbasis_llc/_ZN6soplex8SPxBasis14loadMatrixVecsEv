@@ -1,79 +1,81 @@
-define void @_ZN6soplex8SPxBasis14loadMatrixVecsEv(%"class.soplex::SPxBasis"* nocapture %this) #2 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxBasis"* %this, i64 0, metadata !5205, metadata !6898), !dbg !7062
-  %1 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 11, !dbg !7063
-  store i32 0, i32* %1, align 4, !dbg !7064, !tbaa !7065
-  %2 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 1, !dbg !7066
-  %3 = load %"class.soplex::SoPlex"** %2, align 8, !dbg !7066, !tbaa !6902
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SoPlex"* %3, i64 0, metadata !5383, metadata !6898), !dbg !7068
-  %4 = getelementptr inbounds %"class.soplex::SoPlex"* %3, i64 0, i32 23, !dbg !7070
-  %5 = load %"class.soplex::SVSet"** %4, align 8, !dbg !7070, !tbaa !7071
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SVSet"* %5, i64 0, metadata !5387, metadata !6898), !dbg !7084
-  %6 = getelementptr inbounds %"class.soplex::SVSet"* %5, i64 0, i32 1, i32 4, !dbg !7086
-  %7 = load i32* %6, align 4, !dbg !7086, !tbaa !7088
-  %8 = icmp sgt i32 %7, 0, !dbg !7089
-  br i1 %8, label %.lr.ph, label %._crit_edge, !dbg !7091
+define void @_ZN6soplex8SPxBasis14loadMatrixVecsEv(%"class.soplex::SPxBasis"* nocapture %this) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxBasis"* %this}, i64 0, metadata !6925), !dbg !7811
+  %nzCount = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 11, !dbg !7812
+  store i32 0, i32* %nzCount, align 4, !dbg !7812, !tbaa !7704
+  %theLP = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 1, !dbg !7813
+  %0 = load %"class.soplex::SoPlex"** %theLP, align 8, !dbg !7813, !tbaa !7690
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %0}, i64 0, metadata !7815), !dbg !7816
+  %thecovectors.i = getelementptr inbounds %"class.soplex::SoPlex"* %0, i64 0, i32 23, !dbg !7817
+  %1 = load %"class.soplex::SVSet"** %thecovectors.i, align 8, !dbg !7817, !tbaa !7690
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %1}, i64 0, metadata !7819), !dbg !7820
+  %thenum.i.i.i = getelementptr inbounds %"class.soplex::SVSet"* %1, i64 0, i32 1, i32 4, !dbg !7821
+  %2 = load i32* %thenum.i.i.i, align 4, !dbg !7821, !tbaa !7704
+  %cmp20 = icmp sgt i32 %2, 0, !dbg !7813
+  br i1 %cmp20, label %for.body.lr.ph, label %for.end, !dbg !7813
 
-.lr.ph:                                           ; preds = %0
-  %9 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 2, i32 2, !dbg !7092
-  %10 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 3, i32 2, !dbg !7096
-  %11 = sext i32 %7 to i64
-  br label %12, !dbg !7091
+for.body.lr.ph:                                   ; preds = %entry
+  %data.i.i = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 2, i32 2, !dbg !7825
+  %data.i17 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 3, i32 2, !dbg !7830
+  %3 = sext i32 %2 to i64
+  br label %for.body, !dbg !7813
 
-; <label>:12                                      ; preds = %_ZNK6soplex7SVector4sizeEv.exit._crit_edge, %.lr.ph
-  %13 = phi %"class.soplex::SoPlex"* [ %3, %.lr.ph ], [ %.pre, %_ZNK6soplex7SVector4sizeEv.exit._crit_edge ]
-  %indvars.iv = phi i64 [ %11, %.lr.ph ], [ %indvars.iv.next, %_ZNK6soplex7SVector4sizeEv.exit._crit_edge ]
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !7091
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxBasis"* %this, i64 0, metadata !5400, metadata !6898), !dbg !7098
-  %14 = load %"class.soplex::SPxId"** %9, align 8, !dbg !7092, !tbaa !7099
-  %15 = getelementptr inbounds %"class.soplex::SPxId"* %14, i64 %indvars.iv.next, !dbg !7092
-  %16 = tail call dereferenceable(8) %"class.soplex::SVector"* @_ZNK6soplex6SoPlex6vectorERKNS_5SPxIdE(%"class.soplex::SoPlex"* %13, %"class.soplex::SPxId"* dereferenceable(4) %15) #10, !dbg !7100
-  %17 = load %"class.soplex::SVector"*** %10, align 8, !dbg !7096, !tbaa !7101
-  %18 = getelementptr inbounds %"class.soplex::SVector"** %17, i64 %indvars.iv.next, !dbg !7096
-  store %"class.soplex::SVector"* %16, %"class.soplex::SVector"** %18, align 8, !dbg !7102, !tbaa !7103
-  %19 = load %"class.soplex::SVector"*** %10, align 8, !dbg !7104, !tbaa !7101
-  %20 = getelementptr inbounds %"class.soplex::SVector"** %19, i64 %indvars.iv.next, !dbg !7104
-  %21 = load %"class.soplex::SVector"** %20, align 8, !dbg !7106, !tbaa !7103
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SVector"* %21, i64 0, metadata !5404, metadata !6898), !dbg !7107
-  %22 = getelementptr inbounds %"class.soplex::SVector"* %21, i64 0, i32 0, !dbg !7109
-  %23 = load %"struct.soplex::SVector::Element"** %22, align 8, !dbg !7109, !tbaa !7111
-  %24 = icmp eq %"struct.soplex::SVector::Element"* %23, null, !dbg !7113
-  br i1 %24, label %_ZNK6soplex7SVector4sizeEv.exit, label %25, !dbg !7114
+for.body:                                         ; preds = %_ZNK6soplex7SVector4sizeEv.exit.for.body_crit_edge, %for.body.lr.ph
+  %4 = phi %"class.soplex::SoPlex"* [ %0, %for.body.lr.ph ], [ %.pre, %_ZNK6soplex7SVector4sizeEv.exit.for.body_crit_edge ]
+  %indvars.iv = phi i64 [ %3, %for.body.lr.ph ], [ %indvars.iv.next, %_ZNK6soplex7SVector4sizeEv.exit.for.body_crit_edge ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !7813
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxBasis"* %this}, i64 0, metadata !7831), !dbg !7832
+  %5 = load %"class.soplex::SPxId"** %data.i.i, align 8, !dbg !7825, !tbaa !7690
+  %arrayidx.i.i = getelementptr inbounds %"class.soplex::SPxId"* %5, i64 %indvars.iv.next, !dbg !7825
+  %call4 = tail call %"class.soplex::SVector"* @_ZNK6soplex6SoPlex6vectorERKNS_5SPxIdE(%"class.soplex::SoPlex"* %4, %"class.soplex::SPxId"* %arrayidx.i.i) #11, !dbg !7828
+  %6 = load %"class.soplex::SVector"*** %data.i17, align 8, !dbg !7830, !tbaa !7690
+  %arrayidx.i18 = getelementptr inbounds %"class.soplex::SVector"** %6, i64 %indvars.iv.next, !dbg !7830
+  store %"class.soplex::SVector"* %call4, %"class.soplex::SVector"** %arrayidx.i18, align 8, !dbg !7828, !tbaa !7690
+  %7 = load %"class.soplex::SVector"*** %data.i17, align 8, !dbg !7833, !tbaa !7690
+  %arrayidx.i = getelementptr inbounds %"class.soplex::SVector"** %7, i64 %indvars.iv.next, !dbg !7833
+  %8 = load %"class.soplex::SVector"** %arrayidx.i, align 8, !dbg !7834, !tbaa !7690
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVector"* %8}, i64 0, metadata !7835), !dbg !7836
+  %m_elem.i = getelementptr inbounds %"class.soplex::SVector"* %8, i64 0, i32 0, !dbg !7837
+  %9 = load %"struct.soplex::SVector::Element"** %m_elem.i, align 8, !dbg !7837, !tbaa !7690
+  %cmp.i = icmp eq %"struct.soplex::SVector::Element"* %9, null, !dbg !7837
+  br i1 %cmp.i, label %_ZNK6soplex7SVector4sizeEv.exit, label %if.then.i, !dbg !7837
 
-; <label>:25                                      ; preds = %12
-  %26 = getelementptr inbounds %"struct.soplex::SVector::Element"* %23, i64 -1, i32 1, !dbg !7115
-  %27 = load i32* %26, align 4, !dbg !7115, !tbaa !7116
-  br label %_ZNK6soplex7SVector4sizeEv.exit, !dbg !7118
+if.then.i:                                        ; preds = %for.body
+  %idx.i = getelementptr inbounds %"struct.soplex::SVector::Element"* %9, i64 -1, i32 1, !dbg !7839
+  %10 = load i32* %idx.i, align 4, !dbg !7839, !tbaa !7704
+  br label %_ZNK6soplex7SVector4sizeEv.exit, !dbg !7839
 
-_ZNK6soplex7SVector4sizeEv.exit:                  ; preds = %12, %25
-  %.0.i = phi i32 [ %27, %25 ], [ 0, %12 ], !dbg !7106
-  %28 = load i32* %1, align 4, !dbg !7119, !tbaa !7065
-  %29 = add nsw i32 %28, %.0.i, !dbg !7119
-  store i32 %29, i32* %1, align 4, !dbg !7119, !tbaa !7065
-  %30 = icmp sgt i64 %indvars.iv, 1, !dbg !7089
-  br i1 %30, label %_ZNK6soplex7SVector4sizeEv.exit._crit_edge, label %._crit_edge, !dbg !7091
+_ZNK6soplex7SVector4sizeEv.exit:                  ; preds = %for.body, %if.then.i
+  %retval.0.i = phi i32 [ %10, %if.then.i ], [ 0, %for.body ]
+  %11 = load i32* %nzCount, align 4, !dbg !7834, !tbaa !7704
+  %add = add nsw i32 %11, %retval.0.i, !dbg !7834
+  store i32 %add, i32* %nzCount, align 4, !dbg !7834, !tbaa !7704
+  %12 = trunc i64 %indvars.iv.next to i32, !dbg !7813
+  %cmp = icmp sgt i32 %12, 0, !dbg !7813
+  br i1 %cmp, label %_ZNK6soplex7SVector4sizeEv.exit.for.body_crit_edge, label %for.end, !dbg !7813
 
-_ZNK6soplex7SVector4sizeEv.exit._crit_edge:       ; preds = %_ZNK6soplex7SVector4sizeEv.exit
-  %.pre = load %"class.soplex::SoPlex"** %2, align 8, !dbg !7100, !tbaa !6902
-  br label %12, !dbg !7091
+_ZNK6soplex7SVector4sizeEv.exit.for.body_crit_edge: ; preds = %_ZNK6soplex7SVector4sizeEv.exit
+  %.pre = load %"class.soplex::SoPlex"** %theLP, align 8, !dbg !7828, !tbaa !7690
+  br label %for.body, !dbg !7813
 
-._crit_edge:                                      ; preds = %_ZNK6soplex7SVector4sizeEv.exit, %0
-  %31 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 4, !dbg !7120
-  store i8 1, i8* %31, align 1, !dbg !7121, !tbaa !7122
-  %32 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 6, !dbg !7123
-  store i8 0, i8* %32, align 1, !dbg !7124, !tbaa !7125
-  %33 = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 5, !dbg !7126
-  %34 = load %"class.soplex::SLinSolver"** %33, align 8, !dbg !7126, !tbaa !7128
-  %35 = icmp eq %"class.soplex::SLinSolver"* %34, null, !dbg !7129
-  br i1 %35, label %41, label %36, !dbg !7130
+for.end:                                          ; preds = %_ZNK6soplex7SVector4sizeEv.exit, %entry
+  %matrixIsSetup = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 4, !dbg !7840
+  store i8 1, i8* %matrixIsSetup, align 1, !dbg !7840, !tbaa !7841
+  %factorized = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 6, !dbg !7842
+  store i8 0, i8* %factorized, align 1, !dbg !7842, !tbaa !7841
+  %factor = getelementptr inbounds %"class.soplex::SPxBasis"* %this, i64 0, i32 5, !dbg !7843
+  %13 = load %"class.soplex::SLinSolver"** %factor, align 8, !dbg !7843, !tbaa !7690
+  %cmp10 = icmp eq %"class.soplex::SLinSolver"* %13, null, !dbg !7843
+  br i1 %cmp10, label %if.end, label %if.then, !dbg !7843
 
-; <label>:36                                      ; preds = %._crit_edge
-  %37 = bitcast %"class.soplex::SLinSolver"* %34 to void (%"class.soplex::SLinSolver"*)***, !dbg !7131
-  %38 = load void (%"class.soplex::SLinSolver"*)*** %37, align 8, !dbg !7131, !tbaa !7132
-  %39 = getelementptr inbounds void (%"class.soplex::SLinSolver"*)** %38, i64 1, !dbg !7131
-  %40 = load void (%"class.soplex::SLinSolver"*)** %39, align 8, !dbg !7131
-  tail call void %40(%"class.soplex::SLinSolver"* %34) #10, !dbg !7131
-  br label %41, !dbg !7131
+if.then:                                          ; preds = %for.end
+  %14 = bitcast %"class.soplex::SLinSolver"* %13 to void (%"class.soplex::SLinSolver"*)***, !dbg !7844
+  %vtable = load void (%"class.soplex::SLinSolver"*)*** %14, align 8, !dbg !7844, !tbaa !7845
+  %vfn = getelementptr inbounds void (%"class.soplex::SLinSolver"*)** %vtable, i64 1, !dbg !7844
+  %15 = load void (%"class.soplex::SLinSolver"*)** %vfn, align 8, !dbg !7844
+  tail call void %15(%"class.soplex::SLinSolver"* %13) #11, !dbg !7844
+  br label %if.end, !dbg !7844
 
-; <label>:41                                      ; preds = %._crit_edge, %36
-  ret void, !dbg !7134
+if.end:                                           ; preds = %for.end, %if.then
+  ret void, !dbg !7846
 }

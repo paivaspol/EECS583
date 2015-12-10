@@ -1,16 +1,17 @@
 define void @Graph_setDefaultFields(%struct._Graph* %g) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Graph* %g, i64 0, metadata !57, metadata !72), !dbg !83
-  %1 = icmp eq %struct._Graph* %g, null, !dbg !84
-  br i1 %1, label %2, label %5, !dbg !86
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Graph* %g}, i64 0, metadata !52), !dbg !68
+  %cmp = icmp eq %struct._Graph* %g, null, !dbg !69
+  br i1 %cmp, label %if.then, label %if.end, !dbg !69
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !87, !tbaa !77
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([60 x i8]* @.str2, i64 0, i64 0), %struct._Graph* null) #6, !dbg !89
-  tail call void @exit(i32 -1) #7, !dbg !90
-  unreachable, !dbg !90
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !70, !tbaa !63
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str2, i64 0, i64 0), %struct._Graph* null) #6, !dbg !70
+  tail call void @exit(i32 -1) #7, !dbg !72
+  unreachable, !dbg !72
 
-; <label>:5                                       ; preds = %0
-  %6 = bitcast %struct._Graph* %g to i8*, !dbg !91
-  call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 48, i32 4, i1 false), !dbg !92
-  ret void, !dbg !91
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct._Graph* %g to i8*, !dbg !73
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 48, i32 4, i1 false), !dbg !74
+  ret void, !dbg !73
 }

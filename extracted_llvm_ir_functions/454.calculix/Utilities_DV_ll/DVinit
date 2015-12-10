@@ -1,17 +1,18 @@
 define double* @DVinit(i32 %size, double %dval) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !238, metadata !696), !dbg !888
-  tail call void @llvm.dbg.value(metadata double %dval, i64 0, metadata !239, metadata !696), !dbg !889
-  tail call void @llvm.dbg.value(metadata double* null, i64 0, metadata !240, metadata !696), !dbg !890
-  %1 = icmp sgt i32 %size, 0, !dbg !891
-  br i1 %1, label %2, label %4, !dbg !893
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !211), !dbg !730
+  tail call void @llvm.dbg.value(metadata !{double %dval}, i64 0, metadata !212), !dbg !731
+  tail call void @llvm.dbg.value(metadata !728, i64 0, metadata !213), !dbg !732
+  %cmp = icmp sgt i32 %size, 0, !dbg !733
+  br i1 %cmp, label %if.then, label %if.end, !dbg !733
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call double* @DVinit2(i32 %size) #9, !dbg !894
-  tail call void @llvm.dbg.value(metadata double* %3, i64 0, metadata !240, metadata !696), !dbg !890
-  tail call void @DVfill(i32 %size, double* %3, double %dval) #9, !dbg !896
-  br label %4, !dbg !897
+if.then:                                          ; preds = %entry
+  %call = tail call double* @DVinit2(i32 %size) #8, !dbg !734
+  tail call void @llvm.dbg.value(metadata !{double* %call}, i64 0, metadata !213), !dbg !734
+  tail call void @DVfill(i32 %size, double* %call, double %dval) #8, !dbg !736
+  br label %if.end, !dbg !737
 
-; <label>:4                                       ; preds = %2, %0
-  %y.0 = phi double* [ %3, %2 ], [ null, %0 ]
-  ret double* %y.0, !dbg !898
+if.end:                                           ; preds = %if.then, %entry
+  %y.0 = phi double* [ %call, %if.then ], [ null, %entry ]
+  ret double* %y.0, !dbg !738
 }

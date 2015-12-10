@@ -1,40 +1,42 @@
 define noalias %struct.T_HASH* @Util_HashCreate(i32 %initial_size) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %initial_size, i64 0, metadata !39, metadata !143), !dbg !144
-  %1 = tail call i8* @malloc(i64 24) #6, !dbg !145
-  %2 = bitcast i8* %1 to %struct.T_HASH*, !dbg !146
-  tail call void @llvm.dbg.value(metadata %struct.T_HASH* %2, i64 0, metadata !40, metadata !143), !dbg !147
-  %3 = icmp eq i8* %1, null, !dbg !148
-  br i1 %3, label %18, label %.preheader, !dbg !150
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %initial_size}, i64 0, metadata !39), !dbg !139
+  %call = tail call noalias i8* @malloc(i64 24) #6, !dbg !140
+  %0 = bitcast i8* %call to %struct.T_HASH*, !dbg !140
+  tail call void @llvm.dbg.value(metadata !{%struct.T_HASH* %0}, i64 0, metadata !40), !dbg !140
+  %tobool = icmp eq i8* %call, null, !dbg !141
+  br i1 %tobool, label %if.end9, label %while.cond, !dbg !141
 
-.preheader:                                       ; preds = %0, %.preheader
-  %storemerge = phi i32 [ %5, %.preheader ], [ 2, %0 ]
-  %4 = icmp ult i32 %storemerge, %initial_size, !dbg !151
-  %5 = shl i32 %storemerge, 1, !dbg !153
-  br i1 %4, label %.preheader, label %6, !dbg !154
+while.cond:                                       ; preds = %entry, %while.cond
+  %storemerge = phi i32 [ %mul, %while.cond ], [ 2, %entry ]
+  %cmp = icmp ult i32 %storemerge, %initial_size, !dbg !142
+  %mul = shl i32 %storemerge, 1, !dbg !142
+  br i1 %cmp, label %while.cond, label %while.end, !dbg !142
 
-; <label>:6                                       ; preds = %.preheader
-  %7 = bitcast i8* %1 to i32*, !dbg !155
-  store i32 %storemerge, i32* %7, align 4, !dbg !153, !tbaa !156
-  %8 = getelementptr inbounds i8* %1, i64 4, !dbg !162
-  %9 = bitcast i8* %8 to i32*, !dbg !162
-  store i32 0, i32* %9, align 4, !dbg !163, !tbaa !164
-  %10 = getelementptr inbounds i8* %1, i64 8, !dbg !165
-  %11 = bitcast i8* %10 to i32*, !dbg !165
-  store i32 0, i32* %11, align 4, !dbg !166, !tbaa !167
-  %12 = zext i32 %storemerge to i64, !dbg !168
-  %13 = tail call i8* @calloc(i64 8, i64 %12) #6, !dbg !169
-  %14 = getelementptr inbounds i8* %1, i64 16, !dbg !170
-  %15 = bitcast i8* %14 to i8**, !dbg !171
-  store i8* %13, i8** %15, align 8, !dbg !171, !tbaa !172
-  %16 = icmp eq i8* %13, null, !dbg !173
-  br i1 %16, label %17, label %18, !dbg !175
+while.end:                                        ; preds = %while.cond
+  %size = bitcast i8* %call to i32*, !dbg !144
+  store i32 %storemerge, i32* %size, align 4, !dbg !142, !tbaa !145
+  %fill = getelementptr inbounds i8* %call, i64 4, !dbg !148
+  %1 = bitcast i8* %fill to i32*, !dbg !148
+  store i32 0, i32* %1, align 4, !dbg !148, !tbaa !145
+  %keys = getelementptr inbounds i8* %call, i64 8, !dbg !149
+  %2 = bitcast i8* %keys to i32*, !dbg !149
+  store i32 0, i32* %2, align 4, !dbg !149, !tbaa !145
+  %conv = zext i32 %storemerge to i64, !dbg !150
+  %call5 = tail call noalias i8* @calloc(i64 8, i64 %conv) #6, !dbg !150
+  %3 = bitcast i8* %call5 to %struct.T_HASH_ENTRY**, !dbg !150
+  %array = getelementptr inbounds i8* %call, i64 16, !dbg !150
+  %4 = bitcast i8* %array to %struct.T_HASH_ENTRY***, !dbg !150
+  store %struct.T_HASH_ENTRY** %3, %struct.T_HASH_ENTRY*** %4, align 8, !dbg !150, !tbaa !151
+  %tobool7 = icmp eq i8* %call5, null, !dbg !152
+  br i1 %tobool7, label %if.then8, label %if.end9, !dbg !152
 
-; <label>:17                                      ; preds = %6
-  tail call void @free(i8* %1) #7, !dbg !176
-  tail call void @llvm.dbg.value(metadata %struct.T_HASH* null, i64 0, metadata !40, metadata !143), !dbg !147
-  br label %18, !dbg !178
+if.then8:                                         ; preds = %while.end
+  tail call void @free(i8* %call) #6, !dbg !153
+  tail call void @llvm.dbg.value(metadata !155, i64 0, metadata !40), !dbg !156
+  br label %if.end9, !dbg !157
 
-; <label>:18                                      ; preds = %6, %0, %17
-  %retval.0 = phi %struct.T_HASH* [ %2, %6 ], [ null, %17 ], [ %2, %0 ]
-  ret %struct.T_HASH* %retval.0, !dbg !179
+if.end9:                                          ; preds = %while.end, %entry, %if.then8
+  %retval1.0 = phi %struct.T_HASH* [ %0, %while.end ], [ null, %if.then8 ], [ %0, %entry ]
+  ret %struct.T_HASH* %retval1.0, !dbg !158
 }

@@ -1,27 +1,30 @@
 define internal void @check_store(%struct.rtx_def* nocapture %x, %struct.rtx_def* nocapture %pat, i8* nocapture %data) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 66
-  br i1 %cmp, label %land.lhs.true, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !2399), !dbg !6450
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pat}, i64 0, metadata !2400), !dbg !6450
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !2401), !dbg !6451
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !6452
+  %bf.load = load i32* %0, align 8, !dbg !6452
+  %bf.clear = and i32 %bf.load, 65535, !dbg !6452
+  %cmp = icmp eq i32 %bf.clear, 66, !dbg !6452
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !6452
 
 land.lhs.true:                                    ; preds = %entry
-  %mem_address = bitcast i8* %data to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %mem_address, align 8, !tbaa !4
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %1, %struct.rtx_def* %2) #8
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.end, label %if.then
+  %mem_address = bitcast i8* %data to %struct.rtx_def**, !dbg !6452
+  %1 = load %struct.rtx_def** %mem_address, align 8, !dbg !6452, !tbaa !2982
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !6452
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !6452
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !6452, !tbaa !2982
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %1, %struct.rtx_def* %2) #8, !dbg !6452
+  %tobool = icmp eq i32 %call, 0, !dbg !6452
+  br i1 %tobool, label %if.end, label %if.then, !dbg !6452
 
 if.then:                                          ; preds = %land.lhs.true
-  %mem_write = getelementptr inbounds i8* %data, i64 8
-  %3 = bitcast i8* %mem_write to i32*
-  store i32 1, i32* %3, align 4, !tbaa !3
-  br label %if.end
+  %mem_write = getelementptr inbounds i8* %data, i64 8, !dbg !6453
+  %3 = bitcast i8* %mem_write to i32*, !dbg !6453
+  store i32 1, i32* %3, align 4, !dbg !6453, !tbaa !2973
+  br label %if.end, !dbg !6453
 
 if.end:                                           ; preds = %land.lhs.true, %if.then, %entry
-  ret void
+  ret void, !dbg !6454
 }

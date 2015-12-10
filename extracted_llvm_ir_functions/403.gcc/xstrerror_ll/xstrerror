@@ -1,16 +1,17 @@
 define i8* @xstrerror(i32 %errnum) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %errnum, i64 0, metadata !11, metadata !22), !dbg !23
-  %1 = tail call i8* @strerror(i32 %errnum) #3, !dbg !24
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !12, metadata !22), !dbg !25
-  %2 = icmp eq i8* %1, null, !dbg !26
-  br i1 %2, label %3, label %5, !dbg !28
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %errnum}, i64 0, metadata !12), !dbg !19
+  %call = tail call i8* @strerror(i32 %errnum) #4, !dbg !20
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !13), !dbg !20
+  %tobool = icmp eq i8* %call, null, !dbg !21
+  br i1 %tobool, label %if.then, label %if.end, !dbg !21
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([43 x i8]* @xstrerror_buf, i64 0, i64 0), i32 0, i64 43, i8* getelementptr inbounds ([23 x i8]* @.str, i64 0, i64 0), i32 %errnum) #3, !dbg !29
-  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !12, metadata !22), !dbg !25
-  br label %5, !dbg !31
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([43 x i8]* @xstrerror_buf, i64 0, i64 0), i8* getelementptr inbounds ([23 x i8]* @.str, i64 0, i64 0), i32 %errnum) #4, !dbg !22
+  tail call void @llvm.dbg.value(metadata !24, i64 0, metadata !13), !dbg !25
+  br label %if.end, !dbg !26
 
-; <label>:5                                       ; preds = %0, %3
-  %errstr.0 = phi i8* [ %1, %0 ], [ getelementptr inbounds ([43 x i8]* @xstrerror_buf, i64 0, i64 0), %3 ]
-  ret i8* %errstr.0, !dbg !32
+if.end:                                           ; preds = %entry, %if.then
+  %errstr.0 = phi i8* [ %call, %entry ], [ getelementptr inbounds ([43 x i8]* @xstrerror_buf, i64 0, i64 0), %if.then ]
+  ret i8* %errstr.0, !dbg !27
 }

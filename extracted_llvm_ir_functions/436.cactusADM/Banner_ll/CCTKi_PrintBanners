@@ -1,51 +1,56 @@
 define i32 @CCTKi_PrintBanners() #1 {
+entry:
   %i = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !48, metadata !61), !dbg !130
-  %1 = call i8* @CCTK_ParameterGet(i8* getelementptr inbounds ([18 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i32* %i) #6, !dbg !131
-  %2 = bitcast i8* %1 to i32*, !dbg !132
-  call void @llvm.dbg.value(metadata i32* %2, i64 0, metadata !49, metadata !61), !dbg !133
-  %3 = load i32* %2, align 4, !dbg !134, !tbaa !76
-  %4 = icmp eq i32 %3, 0, !dbg !134
-  br i1 %4, label %21, label %.preheader, !dbg !136
+  call void @llvm.dbg.declare(metadata !{i32* %i}, metadata !45), !dbg !101
+  %call = call i8* @CCTK_ParameterGet(i8* getelementptr inbounds ([18 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i32* %i) #6, !dbg !102
+  %0 = bitcast i8* %call to i32*, !dbg !102
+  call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !46), !dbg !102
+  %1 = load i32* %0, align 4, !dbg !103, !tbaa !69
+  %tobool = icmp eq i32 %1, 0, !dbg !103
+  br i1 %tobool, label %if.end7, label %for.cond.preheader, !dbg !103
 
-.preheader:                                       ; preds = %0
-  store i32 0, i32* %i, align 4, !dbg !137, !tbaa !76
-  call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !48, metadata !61), !dbg !130
-  %5 = load i32* @number_banners, align 4, !dbg !141, !tbaa !76
-  %6 = icmp sgt i32 %5, 0, !dbg !142
-  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !143
+for.cond.preheader:                               ; preds = %entry
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !45), !dbg !104
+  store i32 0, i32* %i, align 4, !dbg !104, !tbaa !69
+  call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !45), !dbg !104
+  %2 = load i32* @number_banners, align 4, !dbg !104, !tbaa !69
+  %cmp8 = icmp sgt i32 %2, 0, !dbg !104
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !104
 
-.lr.ph:                                           ; preds = %.preheader, %15
-  %7 = phi i32 [ %16, %15 ], [ %5, %.preheader ]
-  %storemerge1 = phi i32 [ %18, %15 ], [ 0, %.preheader ]
-  %8 = sext i32 %storemerge1 to i64, !dbg !144
-  %9 = load i8*** @banner_strings, align 8, !dbg !144, !tbaa !88
-  %10 = getelementptr inbounds i8** %9, i64 %8, !dbg !144
-  %11 = load i8** %10, align 8, !dbg !144, !tbaa !88
-  %12 = icmp eq i8* %11, null, !dbg !144
-  br i1 %12, label %15, label %13, !dbg !147
+for.body:                                         ; preds = %for.inc, %for.cond.preheader
+  %3 = phi i32 [ %2, %for.cond.preheader ], [ %6, %for.inc ]
+  %storemerge9 = phi i32 [ 0, %for.cond.preheader ], [ %inc, %for.inc ]
+  %idxprom = sext i32 %storemerge9 to i64, !dbg !107
+  %4 = load i8*** @banner_strings, align 8, !dbg !107, !tbaa !75
+  %arrayidx = getelementptr inbounds i8** %4, i64 %idxprom, !dbg !107
+  %5 = load i8** %arrayidx, align 8, !dbg !107, !tbaa !75
+  %tobool1 = icmp eq i8* %5, null, !dbg !107
+  br i1 %tobool1, label %for.inc, label %if.then2, !dbg !107
 
-; <label>:13                                      ; preds = %.lr.ph
-  %14 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([82 x i8]* @.str7, i64 0, i64 0), i8* %11) #6, !dbg !148
-  %.pre = load i32* %i, align 4, !dbg !137, !tbaa !76
-  %.pre2 = load i32* @number_banners, align 4, !dbg !141, !tbaa !76
-  br label %15, !dbg !150
+if.then2:                                         ; preds = %for.body
+  %call5 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([82 x i8]* @.str6, i64 0, i64 0), i8* %5) #6, !dbg !109
+  call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !45), !dbg !104
+  %.pre = load i32* %i, align 4, !dbg !104, !tbaa !69
+  %.pre10 = load i32* @number_banners, align 4, !dbg !104, !tbaa !69
+  br label %for.inc, !dbg !111
 
-; <label>:15                                      ; preds = %.lr.ph, %13
-  %16 = phi i32 [ %7, %.lr.ph ], [ %.pre2, %13 ], !dbg !130
-  %17 = phi i32 [ %storemerge1, %.lr.ph ], [ %.pre, %13 ], !dbg !130
-  call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !48, metadata !61), !dbg !130
-  %18 = add nsw i32 %17, 1, !dbg !137
-  call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !48, metadata !61), !dbg !130
-  store i32 %18, i32* %i, align 4, !dbg !137, !tbaa !76
-  call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !48, metadata !61), !dbg !130
-  %19 = icmp slt i32 %18, %16, !dbg !142
-  br i1 %19, label %.lr.ph, label %._crit_edge, !dbg !143
+for.inc:                                          ; preds = %for.body, %if.then2
+  %6 = phi i32 [ %3, %for.body ], [ %.pre10, %if.then2 ], !dbg !104
+  %7 = phi i32 [ %storemerge9, %for.body ], [ %.pre, %if.then2 ], !dbg !104
+  call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !45), !dbg !104
+  %inc = add nsw i32 %7, 1, !dbg !104
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !45), !dbg !104
+  call void @llvm.dbg.value(metadata !{i32 %storemerge9}, i64 0, metadata !45), !dbg !104
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !45), !dbg !104
+  store i32 %inc, i32* %i, align 4, !dbg !104, !tbaa !69
+  call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !45), !dbg !104
+  %cmp = icmp slt i32 %inc, %6, !dbg !104
+  br i1 %cmp, label %for.body, label %for.end, !dbg !104
 
-._crit_edge:                                      ; preds = %15, %.preheader
-  %20 = call i32 @puts(i8* getelementptr inbounds ([82 x i8]* @.str7, i64 0, i64 0)) #6, !dbg !151
-  br label %21, !dbg !152
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %call6 = call i32 @puts(i8* getelementptr inbounds ([82 x i8]* @.str6, i64 0, i64 0)) #6, !dbg !112
+  br label %if.end7, !dbg !113
 
-; <label>:21                                      ; preds = %0, %._crit_edge
-  ret i32 0, !dbg !153
+if.end7:                                          ; preds = %entry, %for.end
+  ret i32 0, !dbg !114
 }

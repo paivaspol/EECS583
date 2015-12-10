@@ -1,31 +1,30 @@
 define i32 @cctk_isthornactive_(i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %cctk_str1, i64 0, metadata !99, metadata !358), !dbg !629
-  tail call void @llvm.dbg.value(metadata i32 %cctk_strlen1, i64 0, metadata !100, metadata !358), !dbg !629
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !630
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !102, metadata !358), !dbg !630
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !90, metadata !358) #7, !dbg !631
-  %2 = load %struct.T_SKTREE** @thornlist, align 8, !dbg !633, !tbaa !381
-  %3 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %2, i8* %1) #8, !dbg !634
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %3, i64 0, metadata !92, metadata !358) #7, !dbg !635
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !91, metadata !358) #7, !dbg !636
-  %4 = icmp eq %struct.T_SKTREE* %3, null, !dbg !637
-  br i1 %4, label %CCTK_IsThornActive.exit, label %5, !dbg !638
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !99), !dbg !500
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !100), !dbg !500
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #9, !dbg !501
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !102), !dbg !501
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !502) #7, !dbg !504
+  %0 = load %struct.T_SKTREE** @thornlist, align 8, !dbg !505, !tbaa !357
+  %call.i = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %0, i8* %call) #9, !dbg !505
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call.i}, i64 0, metadata !506) #7, !dbg !505
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !507) #7, !dbg !508
+  %tobool.i = icmp eq %struct.T_SKTREE* %call.i, null, !dbg !509
+  br i1 %tobool.i, label %CCTK_IsThornActive.exit, label %if.then.i, !dbg !509
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct.T_SKTREE* %3, i64 0, i32 5, !dbg !639
-  %7 = bitcast i8** %6 to %struct.THORN**, !dbg !639
-  %8 = load %struct.THORN** %7, align 8, !dbg !639, !tbaa !555
-  tail call void @llvm.dbg.value(metadata %struct.THORN* %8, i64 0, metadata !93, metadata !358) #7, !dbg !640
-  %9 = getelementptr inbounds %struct.THORN* %8, i64 0, i32 0, !dbg !641
-  %10 = load i32* %9, align 4, !dbg !641, !tbaa !439
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !91, metadata !358) #7, !dbg !636
-  %not..i = icmp ne i32 %10, 0, !dbg !642
-  %..i = zext i1 %not..i to i32, !dbg !642
-  br label %CCTK_IsThornActive.exit, !dbg !642
+if.then.i:                                        ; preds = %entry
+  %data.i = getelementptr inbounds %struct.T_SKTREE* %call.i, i64 0, i32 5, !dbg !510
+  %1 = load i8** %data.i, align 8, !dbg !510, !tbaa !357
+  %active.i = bitcast i8* %1 to i32*, !dbg !511
+  %2 = load i32* %active.i, align 4, !dbg !511, !tbaa !387
+  tail call void @llvm.dbg.value(metadata !496, i64 0, metadata !507) #7, !dbg !512
+  %not.tobool2.i = icmp ne i32 %2, 0, !dbg !511
+  %..i = zext i1 %not.tobool2.i to i32, !dbg !511
+  br label %CCTK_IsThornActive.exit, !dbg !511
 
-CCTK_IsThornActive.exit:                          ; preds = %0, %5
-  %11 = phi i32 [ %..i, %5 ], [ 0, %0 ]
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !101, metadata !358), !dbg !643
-  tail call void @free(i8* %1) #9, !dbg !644
-  ret i32 %11, !dbg !645
+CCTK_IsThornActive.exit:                          ; preds = %entry, %if.then.i
+  %call24 = phi i32 [ %..i, %if.then.i ], [ 0, %entry ]
+  tail call void @llvm.dbg.value(metadata !{i32 %call24}, i64 0, metadata !101), !dbg !503
+  tail call void @free(i8* %call) #9, !dbg !513
+  ret i32 %call24, !dbg !514
 }

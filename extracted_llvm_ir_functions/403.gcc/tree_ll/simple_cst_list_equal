@@ -1,41 +1,45 @@
 define i32 @simple_cst_list_equal(%union.tree_node* %l1, %union.tree_node* %l2) #0 {
 entry:
-  %cmp115 = icmp ne %union.tree_node* %l2, null
-  %not.cmp16 = icmp ne %union.tree_node* %l1, null
-  %.cmp117 = and i1 %cmp115, %not.cmp16
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %l1}, i64 0, metadata !1533), !dbg !3186
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %l2}, i64 0, metadata !1534), !dbg !3186
+  %cmp115 = icmp ne %union.tree_node* %l2, null, !dbg !3187
+  %not.cmp16 = icmp ne %union.tree_node* %l1, null, !dbg !3187
+  %.cmp117 = and i1 %cmp115, %not.cmp16, !dbg !3187
   br i1 %.cmp117, label %while.body, label %while.end
 
 while.body:                                       ; preds = %entry, %if.end
   %l2.addr.019 = phi %union.tree_node* [ %5, %if.end ], [ %l2, %entry ]
   %l1.addr.018 = phi %union.tree_node* [ %4, %if.end ], [ %l1, %entry ]
-  %value = getelementptr inbounds %union.tree_node* %l1.addr.018, i64 0, i32 0, i32 2
-  %0 = bitcast i32* %value to %union.tree_node**
-  %1 = load %union.tree_node** %0, align 8, !tbaa !0
-  %value3 = getelementptr inbounds %union.tree_node* %l2.addr.019, i64 0, i32 0, i32 2
-  %2 = bitcast i32* %value3 to %union.tree_node**
-  %3 = load %union.tree_node** %2, align 8, !tbaa !0
-  %call = tail call i32 @simple_cst_equal(%union.tree_node* %1, %union.tree_node* %3) #10
-  %cmp4 = icmp eq i32 %call, 1
-  br i1 %cmp4, label %if.end, label %return
+  %value = getelementptr inbounds %union.tree_node* %l1.addr.018, i64 0, i32 0, i32 2, !dbg !3188
+  %0 = bitcast i32* %value to %union.tree_node**, !dbg !3188
+  %1 = load %union.tree_node** %0, align 8, !dbg !3188, !tbaa !1913
+  %value3 = getelementptr inbounds %union.tree_node* %l2.addr.019, i64 0, i32 0, i32 2, !dbg !3188
+  %2 = bitcast i32* %value3 to %union.tree_node**, !dbg !3188
+  %3 = load %union.tree_node** %2, align 8, !dbg !3188, !tbaa !1913
+  %call = tail call i32 @simple_cst_equal(%union.tree_node* %1, %union.tree_node* %3) #11, !dbg !3188
+  %cmp4 = icmp eq i32 %call, 1, !dbg !3188
+  br i1 %cmp4, label %if.end, label %return, !dbg !3188
 
 if.end:                                           ; preds = %while.body
-  %chain = getelementptr inbounds %union.tree_node* %l1.addr.018, i64 0, i32 0, i32 0, i32 0
-  %4 = load %union.tree_node** %chain, align 8, !tbaa !0
-  %chain6 = getelementptr inbounds %union.tree_node* %l2.addr.019, i64 0, i32 0, i32 0, i32 0
-  %5 = load %union.tree_node** %chain6, align 8, !tbaa !0
-  %cmp1 = icmp ne %union.tree_node* %5, null
-  %not.cmp = icmp ne %union.tree_node* %4, null
-  %.cmp1 = and i1 %cmp1, %not.cmp
+  %chain = getelementptr inbounds %union.tree_node* %l1.addr.018, i64 0, i32 0, i32 0, i32 0, !dbg !3190
+  %4 = load %union.tree_node** %chain, align 8, !dbg !3190, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %4}, i64 0, metadata !1533), !dbg !3190
+  %chain6 = getelementptr inbounds %union.tree_node* %l2.addr.019, i64 0, i32 0, i32 0, i32 0, !dbg !3191
+  %5 = load %union.tree_node** %chain6, align 8, !dbg !3191, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %5}, i64 0, metadata !1534), !dbg !3191
+  %cmp1 = icmp ne %union.tree_node* %5, null, !dbg !3187
+  %not.cmp = icmp ne %union.tree_node* %4, null, !dbg !3187
+  %.cmp1 = and i1 %cmp1, %not.cmp, !dbg !3187
   br i1 %.cmp1, label %while.body, label %while.end
 
 while.end:                                        ; preds = %if.end, %entry
   %l2.addr.0.lcssa = phi %union.tree_node* [ %l2, %entry ], [ %5, %if.end ]
   %l1.addr.0.lcssa = phi %union.tree_node* [ %l1, %entry ], [ %4, %if.end ]
-  %cmp7 = icmp eq %union.tree_node* %l1.addr.0.lcssa, %l2.addr.0.lcssa
-  %conv = zext i1 %cmp7 to i32
-  br label %return
+  %cmp7 = icmp eq %union.tree_node* %l1.addr.0.lcssa, %l2.addr.0.lcssa, !dbg !3192
+  %conv = zext i1 %cmp7 to i32, !dbg !3192
+  br label %return, !dbg !3192
 
 return:                                           ; preds = %while.body, %while.end
   %retval.0 = phi i32 [ %conv, %while.end ], [ 0, %while.body ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3193
 }

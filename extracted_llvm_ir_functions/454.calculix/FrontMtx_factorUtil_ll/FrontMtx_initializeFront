@@ -1,56 +1,55 @@
-define void @FrontMtx_initializeFront(%struct._FrontMtx* nocapture readonly %frontmtx, %struct._Chv* %frontJ, i32 %J) #0 {
+define void @FrontMtx_initializeFront(%struct._FrontMtx* nocapture %frontmtx, %struct._Chv* %frontJ, i32 %J) #0 {
+entry:
   %ncolJ = alloca i32, align 4
   %nrowJ = alloca i32, align 4
   %colindJ = alloca i32*, align 8
   %ivec = alloca i32*, align 8
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !206, metadata !608), !dbg !609
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %frontJ, i64 0, metadata !207, metadata !608), !dbg !610
-  tail call void @llvm.dbg.value(metadata i32 %J, i64 0, metadata !208, metadata !608), !dbg !611
-  %1 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 11, !dbg !612
-  %2 = load %struct._ETree** %1, align 8, !dbg !612, !tbaa !613
-  %3 = tail call i32 @ETree_frontSize(%struct._ETree* %2, i32 %J) #6, !dbg !619
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !210, metadata !608), !dbg !620
-  %4 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 13, !dbg !621
-  %5 = load %struct._IVL** %4, align 8, !dbg !621, !tbaa !622
-  tail call void @llvm.dbg.value(metadata i32* %ncolJ, i64 0, metadata !209, metadata !608), !dbg !623
-  tail call void @llvm.dbg.value(metadata i32** %colindJ, i64 0, metadata !212, metadata !608), !dbg !624
-  call void @IVL_listAndSize(%struct._IVL* %5, i32 %J, i32* %ncolJ, i32** %colindJ) #6, !dbg !625
-  call void @llvm.dbg.value(metadata i32* %ncolJ, i64 0, metadata !209, metadata !608), !dbg !623
-  %6 = load i32* %ncolJ, align 4, !dbg !626, !tbaa !627
-  %7 = sub nsw i32 %6, %3, !dbg !628
-  %8 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 2, !dbg !629
-  %9 = load i32* %8, align 4, !dbg !629, !tbaa !630
-  %10 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !631
-  %11 = load i32* %10, align 4, !dbg !631, !tbaa !632
-  call void @Chv_init(%struct._Chv* %frontJ, i32 %J, i32 %3, i32 %7, i32 %7, i32 %9, i32 %11) #6, !dbg !633
-  call void @llvm.dbg.value(metadata i32* %ncolJ, i64 0, metadata !209, metadata !608), !dbg !623
-  call void @llvm.dbg.value(metadata i32** %ivec, i64 0, metadata !213, metadata !608), !dbg !634
-  call void @Chv_columnIndices(%struct._Chv* %frontJ, i32* %ncolJ, i32** %ivec) #6, !dbg !635
-  call void @llvm.dbg.value(metadata i32* %ncolJ, i64 0, metadata !209, metadata !608), !dbg !623
-  %12 = load i32* %ncolJ, align 4, !dbg !636, !tbaa !627
-  call void @llvm.dbg.value(metadata i32** %ivec, i64 0, metadata !213, metadata !608), !dbg !634
-  %13 = load i32** %ivec, align 8, !dbg !637, !tbaa !638
-  call void @llvm.dbg.value(metadata i32** %colindJ, i64 0, metadata !212, metadata !608), !dbg !624
-  %14 = load i32** %colindJ, align 8, !dbg !639, !tbaa !638
-  call void @IVcopy(i32 %12, i32* %13, i32* %14) #6, !dbg !640
-  %15 = load i32* %10, align 4, !dbg !641, !tbaa !632
-  %16 = icmp eq i32 %15, 2, !dbg !641
-  br i1 %16, label %17, label %21, !dbg !643
+  call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !202), !dbg !601
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %frontJ}, i64 0, metadata !203), !dbg !602
+  call void @llvm.dbg.value(metadata !{i32 %J}, i64 0, metadata !204), !dbg !603
+  call void @llvm.dbg.declare(metadata !{i32* %ncolJ}, metadata !205), !dbg !604
+  call void @llvm.dbg.declare(metadata !{i32* %nrowJ}, metadata !207), !dbg !604
+  call void @llvm.dbg.declare(metadata !{i32** %colindJ}, metadata !208), !dbg !605
+  call void @llvm.dbg.declare(metadata !{i32** %ivec}, metadata !209), !dbg !605
+  %frontETree = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 11, !dbg !606
+  %0 = load %struct._ETree** %frontETree, align 8, !dbg !606, !tbaa !607
+  %call = call i32 @ETree_frontSize(%struct._ETree* %0, i32 %J) #6, !dbg !606
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !206), !dbg !606
+  %symbfacIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 13, !dbg !610
+  %1 = load %struct._IVL** %symbfacIVL, align 8, !dbg !610, !tbaa !607
+  call void @IVL_listAndSize(%struct._IVL* %1, i32 %J, i32* %ncolJ, i32** %colindJ) #6, !dbg !610
+  call void @llvm.dbg.value(metadata !{i32* %ncolJ}, i64 0, metadata !205), !dbg !611
+  %2 = load i32* %ncolJ, align 4, !dbg !611, !tbaa !612
+  %sub = sub nsw i32 %2, %call, !dbg !611
+  %type = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 2, !dbg !611
+  %3 = load i32* %type, align 4, !dbg !611, !tbaa !612
+  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !611
+  %4 = load i32* %symmetryflag, align 4, !dbg !611, !tbaa !612
+  call void @Chv_init(%struct._Chv* %frontJ, i32 %J, i32 %call, i32 %sub, i32 %sub, i32 %3, i32 %4) #6, !dbg !611
+  call void @Chv_columnIndices(%struct._Chv* %frontJ, i32* %ncolJ, i32** %ivec) #6, !dbg !613
+  call void @llvm.dbg.value(metadata !{i32* %ncolJ}, i64 0, metadata !205), !dbg !614
+  %5 = load i32* %ncolJ, align 4, !dbg !614, !tbaa !612
+  call void @llvm.dbg.value(metadata !{i32** %ivec}, i64 0, metadata !209), !dbg !614
+  %6 = load i32** %ivec, align 8, !dbg !614, !tbaa !607
+  call void @llvm.dbg.value(metadata !{i32** %colindJ}, i64 0, metadata !208), !dbg !614
+  %7 = load i32** %colindJ, align 8, !dbg !614, !tbaa !607
+  call void @IVcopy(i32 %5, i32* %6, i32* %7) #6, !dbg !614
+  %8 = load i32* %symmetryflag, align 4, !dbg !615, !tbaa !612
+  %cmp = icmp eq i32 %8, 2, !dbg !615
+  br i1 %cmp, label %if.then, label %if.end, !dbg !615
 
-; <label>:17                                      ; preds = %0
-  call void @llvm.dbg.value(metadata i32* %nrowJ, i64 0, metadata !211, metadata !608), !dbg !644
-  call void @llvm.dbg.value(metadata i32** %ivec, i64 0, metadata !213, metadata !608), !dbg !634
-  call void @Chv_rowIndices(%struct._Chv* %frontJ, i32* %nrowJ, i32** %ivec) #6, !dbg !645
-  call void @llvm.dbg.value(metadata i32* %nrowJ, i64 0, metadata !211, metadata !608), !dbg !644
-  %18 = load i32* %nrowJ, align 4, !dbg !647, !tbaa !627
-  call void @llvm.dbg.value(metadata i32** %ivec, i64 0, metadata !213, metadata !608), !dbg !634
-  %19 = load i32** %ivec, align 8, !dbg !648, !tbaa !638
-  call void @llvm.dbg.value(metadata i32** %colindJ, i64 0, metadata !212, metadata !608), !dbg !624
-  %20 = load i32** %colindJ, align 8, !dbg !649, !tbaa !638
-  call void @IVcopy(i32 %18, i32* %19, i32* %20) #6, !dbg !650
-  br label %21, !dbg !651
+if.then:                                          ; preds = %entry
+  call void @Chv_rowIndices(%struct._Chv* %frontJ, i32* %nrowJ, i32** %ivec) #6, !dbg !616
+  call void @llvm.dbg.value(metadata !{i32* %nrowJ}, i64 0, metadata !207), !dbg !618
+  %9 = load i32* %nrowJ, align 4, !dbg !618, !tbaa !612
+  call void @llvm.dbg.value(metadata !{i32** %ivec}, i64 0, metadata !209), !dbg !618
+  %10 = load i32** %ivec, align 8, !dbg !618, !tbaa !607
+  call void @llvm.dbg.value(metadata !{i32** %colindJ}, i64 0, metadata !208), !dbg !618
+  %11 = load i32** %colindJ, align 8, !dbg !618, !tbaa !607
+  call void @IVcopy(i32 %9, i32* %10, i32* %11) #6, !dbg !618
+  br label %if.end, !dbg !619
 
-; <label>:21                                      ; preds = %17, %0
-  call void @Chv_zero(%struct._Chv* %frontJ) #6, !dbg !652
-  ret void, !dbg !653
+if.end:                                           ; preds = %if.then, %entry
+  call void @Chv_zero(%struct._Chv* %frontJ) #6, !dbg !620
+  ret void, !dbg !621
 }

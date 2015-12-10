@@ -1,34 +1,35 @@
-define void @IP_fprintf(%struct.__sFILE* %fp, %struct._IP* readonly %ip) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !82, metadata !176), !dbg !177
-  tail call void @llvm.dbg.value(metadata %struct._IP* %ip, i64 0, metadata !83, metadata !176), !dbg !178
-  %1 = icmp ne %struct.__sFILE* %fp, null, !dbg !179
-  %2 = icmp ne %struct._IP* %ip, null, !dbg !180
-  %or.cond = and i1 %1, %2, !dbg !181
-  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !181
+define void @IP_fprintf(%struct._IO_FILE* %fp, %struct._IP* %ip) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !76), !dbg !161
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %ip}, i64 0, metadata !77), !dbg !162
+  %cmp = icmp eq %struct._IO_FILE* %fp, null, !dbg !163
+  %cmp1 = icmp eq %struct._IP* %ip, null, !dbg !163
+  %or.cond = or i1 %cmp, %cmp1, !dbg !163
+  br i1 %or.cond, label %if.end6, label %while.body, !dbg !163
 
-.lr.ph:                                           ; preds = %0, %7
-  %i.03 = phi i32 [ %13, %7 ], [ 0, %0 ]
-  %.02 = phi %struct._IP* [ %12, %7 ], [ %ip, %0 ]
-  %3 = and i32 %i.03, 15, !dbg !182
-  %4 = icmp eq i32 %3, 0, !dbg !182
-  br i1 %4, label %5, label %7, !dbg !185
+while.body:                                       ; preds = %entry, %if.end
+  %i.016 = phi i32 [ %inc, %if.end ], [ 0, %entry ]
+  %ip.addr.015 = phi %struct._IP* [ %2, %if.end ], [ %ip, %entry ]
+  %rem13 = and i32 %i.016, 15, !dbg !164
+  %cmp3 = icmp eq i32 %rem13, 0, !dbg !164
+  br i1 %cmp3, label %if.then4, label %if.end, !dbg !164
 
-; <label>:5                                       ; preds = %.lr.ph
-  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i64 2, i64 1, %struct.__sFILE* %fp), !dbg !186
-  br label %7, !dbg !186
+if.then4:                                         ; preds = %while.body
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp), !dbg !164
+  br label %if.end, !dbg !164
 
-; <label>:7                                       ; preds = %5, %.lr.ph
-  %8 = getelementptr inbounds %struct._IP* %.02, i64 0, i32 0, !dbg !187
-  %9 = load i32* %8, align 4, !dbg !187, !tbaa !188
-  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i32 %9) #5, !dbg !194
-  %11 = getelementptr inbounds %struct._IP* %.02, i64 0, i32 1, !dbg !195
-  %12 = load %struct._IP** %11, align 8, !dbg !195, !tbaa !196
-  tail call void @llvm.dbg.value(metadata %struct._IP* %12, i64 0, metadata !83, metadata !176), !dbg !178
-  %13 = add nuw nsw i32 %i.03, 1, !dbg !197
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !84, metadata !176), !dbg !198
-  %14 = icmp eq %struct._IP* %12, null, !dbg !199
-  br i1 %14, label %.loopexit, label %.lr.ph, !dbg !200
+if.end:                                           ; preds = %if.then4, %while.body
+  %val = getelementptr inbounds %struct._IP* %ip.addr.015, i64 0, i32 0, !dbg !166
+  %1 = load i32* %val, align 4, !dbg !166, !tbaa !167
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i32 %1) #5, !dbg !166
+  %next = getelementptr inbounds %struct._IP* %ip.addr.015, i64 0, i32 1, !dbg !170
+  %2 = load %struct._IP** %next, align 8, !dbg !170, !tbaa !171
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %2}, i64 0, metadata !77), !dbg !170
+  %inc = add nsw i32 %i.016, 1, !dbg !172
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !78), !dbg !172
+  %cmp2 = icmp eq %struct._IP* %2, null, !dbg !173
+  br i1 %cmp2, label %if.end6, label %while.body, !dbg !173
 
-.loopexit:                                        ; preds = %7, %0
-  ret void, !dbg !201
+if.end6:                                          ; preds = %if.end, %entry
+  ret void, !dbg !174
 }

@@ -1,9 +1,12 @@
-define internal i32 @ttypes_filter_eq(i8* nocapture %pentry, i8* %pdata) #2 {
+define internal i32 @ttypes_filter_eq(i8* nocapture %pentry, i8* %pdata) #3 {
 entry:
-  %0 = bitcast i8* %pdata to %union.tree_node*
-  %t = bitcast i8* %pentry to %union.tree_node**
-  %1 = load %union.tree_node** %t, align 8, !tbaa !3
-  %cmp = icmp eq %union.tree_node* %1, %0
-  %conv = zext i1 %cmp to i32
-  ret i32 %conv
+  tail call void @llvm.dbg.value(metadata !{i8* %pentry}, i64 0, metadata !2042), !dbg !3629
+  tail call void @llvm.dbg.value(metadata !{i8* %pdata}, i64 0, metadata !2043), !dbg !3630
+  %0 = bitcast i8* %pdata to %union.tree_node*, !dbg !3631
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %0}, i64 0, metadata !2045), !dbg !3631
+  %t = bitcast i8* %pentry to %union.tree_node**, !dbg !3632
+  %1 = load %union.tree_node** %t, align 8, !dbg !3632, !tbaa !2232
+  %cmp = icmp eq %union.tree_node* %1, %0, !dbg !3632
+  %conv = zext i1 %cmp to i32, !dbg !3632
+  ret i32 %conv, !dbg !3632
 }

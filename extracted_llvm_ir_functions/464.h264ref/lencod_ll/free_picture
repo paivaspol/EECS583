@@ -1,14 +1,15 @@
 define void @free_picture(%struct.Picture* %pic) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.Picture* %pic, i64 0, metadata !353, metadata !1429), !dbg !1848
-  %1 = icmp eq %struct.Picture* %pic, null, !dbg !1849
-  br i1 %1, label %4, label %2, !dbg !1851
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.Picture* %pic}, i64 0, metadata !270), !dbg !1581
+  %cmp = icmp eq %struct.Picture* %pic, null, !dbg !1582
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1582
 
-; <label>:2                                       ; preds = %0
-  tail call void @free_slice_list(%struct.Picture* %pic) #7, !dbg !1852
-  %3 = bitcast %struct.Picture* %pic to i8*, !dbg !1854
-  tail call void @free(i8* %3) #8, !dbg !1855
-  br label %4, !dbg !1856
+if.then:                                          ; preds = %entry
+  tail call void @free_slice_list(%struct.Picture* %pic) #7, !dbg !1583
+  %0 = bitcast %struct.Picture* %pic to i8*, !dbg !1585
+  tail call void @free(i8* %0) #7, !dbg !1585
+  br label %if.end, !dbg !1586
 
-; <label>:4                                       ; preds = %0, %2
-  ret void, !dbg !1857
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !1587
 }

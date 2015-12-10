@@ -1,16 +1,17 @@
 define void @free_stmt_status(%struct.function* nocapture %f) #0 {
 entry:
-  %stmt = getelementptr inbounds %struct.function* %f, i64 0, i32 1
-  %0 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
-  %tobool = icmp eq %struct.stmt_status* %0, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.function* %f}, i64 0, metadata !1307), !dbg !2436
+  %stmt = getelementptr inbounds %struct.function* %f, i64 0, i32 1, !dbg !2437
+  %0 = load %struct.stmt_status** %stmt, align 8, !dbg !2437, !tbaa !2438
+  %tobool = icmp eq %struct.stmt_status* %0, null, !dbg !2437
+  br i1 %tobool, label %if.end, label %if.then, !dbg !2437
 
 if.then:                                          ; preds = %entry
-  %1 = bitcast %struct.stmt_status* %0 to i8*
-  tail call void @free(i8* %1) #7
-  br label %if.end
+  %1 = bitcast %struct.stmt_status* %0 to i8*, !dbg !2441
+  tail call void @free(i8* %1) #8, !dbg !2441
+  br label %if.end, !dbg !2441
 
 if.end:                                           ; preds = %entry, %if.then
-  store %struct.stmt_status* null, %struct.stmt_status** %stmt, align 8, !tbaa !0
-  ret void
+  store %struct.stmt_status* null, %struct.stmt_status** %stmt, align 8, !dbg !2442, !tbaa !2438
+  ret void, !dbg !2443
 }

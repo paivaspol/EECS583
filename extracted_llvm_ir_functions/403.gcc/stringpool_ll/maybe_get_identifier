@@ -1,18 +1,20 @@
 define %union.tree_node* @maybe_get_identifier(i8* %text) #0 {
 entry:
-  %0 = load %struct.ht** @ident_hash, align 8, !tbaa !0
-  %call = tail call i64 @strlen(i8* %text) #5
-  %conv = trunc i64 %call to i32
-  %call1 = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %0, i8* %text, i32 %conv, i32 0) #4
-  %tobool = icmp eq %struct.ht_identifier* %call1, null
-  br i1 %tobool, label %return, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %text}, i64 0, metadata !611), !dbg !695
+  %0 = load %struct.ht** @ident_hash, align 8, !dbg !696, !tbaa !662
+  %call = tail call i64 @strlen(i8* %text) #6, !dbg !697
+  %conv = trunc i64 %call to i32, !dbg !697
+  %call1 = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %0, i8* %text, i32 %conv, i32 0) #5, !dbg !697
+  tail call void @llvm.dbg.value(metadata !{%struct.ht_identifier* %call1}, i64 0, metadata !612), !dbg !697
+  %tobool = icmp eq %struct.ht_identifier* %call1, null, !dbg !698
+  br i1 %tobool, label %return, label %if.then, !dbg !698
 
 if.then:                                          ; preds = %entry
-  %add.ptr = getelementptr inbounds %struct.ht_identifier* %call1, i64 -2, i32 1
-  %1 = bitcast i8** %add.ptr to %union.tree_node*
-  br label %return
+  %add.ptr = getelementptr inbounds %struct.ht_identifier* %call1, i64 -2, i32 1, !dbg !699
+  %1 = bitcast i8** %add.ptr to %union.tree_node*, !dbg !699
+  br label %return, !dbg !699
 
 return:                                           ; preds = %entry, %if.then
   %retval.0 = phi %union.tree_node* [ %1, %if.then ], [ null, %entry ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !700
 }

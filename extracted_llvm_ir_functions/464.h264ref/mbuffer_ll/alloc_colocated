@@ -1,74 +1,75 @@
-define %struct.colocated_params* @alloc_colocated(i32 %size_x, i32 %size_y, i32 %mb_adaptive_frame_field_flag) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %size_x, i64 0, metadata !817, metadata !1408), !dbg !5395
-  tail call void @llvm.dbg.value(metadata i32 %size_y, i64 0, metadata !818, metadata !1408), !dbg !5396
-  tail call void @llvm.dbg.value(metadata i32 %mb_adaptive_frame_field_flag, i64 0, metadata !819, metadata !1408), !dbg !5397
-  %1 = tail call i8* @calloc(i64 1, i64 4880) #8, !dbg !5398
-  %2 = bitcast i8* %1 to %struct.colocated_params*, !dbg !5398
-  tail call void @llvm.dbg.value(metadata %struct.colocated_params* %2, i64 0, metadata !820, metadata !1408), !dbg !5399
-  %3 = icmp eq i8* %1, null, !dbg !5400
-  br i1 %3, label %4, label %5, !dbg !5402
+define %struct.colocated_params* @alloc_colocated(i32 %size_x, i32 %size_y, i32 %mb_adaptive_frame_field_flag) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size_x}, i64 0, metadata !804), !dbg !3016
+  tail call void @llvm.dbg.value(metadata !{i32 %size_y}, i64 0, metadata !805), !dbg !3016
+  tail call void @llvm.dbg.value(metadata !{i32 %mb_adaptive_frame_field_flag}, i64 0, metadata !806), !dbg !3016
+  %call = tail call noalias i8* @calloc(i64 1, i64 4880) #8, !dbg !3017
+  %0 = bitcast i8* %call to %struct.colocated_params*, !dbg !3017
+  tail call void @llvm.dbg.value(metadata !{%struct.colocated_params* %0}, i64 0, metadata !807), !dbg !3017
+  %cmp = icmp eq i8* %call, null, !dbg !3018
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3018
 
-; <label>:4                                       ; preds = %0
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([19 x i8]* @.str24, i64 0, i64 0)) #8, !dbg !5403
-  br label %5, !dbg !5403
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([19 x i8]* @.str24, i64 0, i64 0)) #8, !dbg !3019
+  br label %if.end, !dbg !3019
 
-; <label>:5                                       ; preds = %4, %0
-  %6 = getelementptr inbounds i8* %1, i64 4, !dbg !5404
-  %7 = bitcast i8* %6 to i32*, !dbg !5404
-  store i32 %size_x, i32* %7, align 4, !dbg !5405, !tbaa !5406
-  %8 = getelementptr inbounds i8* %1, i64 8, !dbg !5408
-  %9 = bitcast i8* %8 to i32*, !dbg !5408
-  store i32 %size_y, i32* %9, align 4, !dbg !5409, !tbaa !5410
-  %10 = getelementptr inbounds i8* %1, i64 1600, !dbg !5411
-  %11 = bitcast i8* %10 to i16****, !dbg !5411
-  %12 = sdiv i32 %size_x, 4, !dbg !5412
-  %13 = sdiv i32 %size_y, 4, !dbg !5413
-  %14 = tail call i32 @get_mem3Dshort(i16**** %11, i32 2, i32 %12, i32 %13) #8, !dbg !5414
-  %15 = getelementptr inbounds i8* %1, i64 1608, !dbg !5415
-  %16 = bitcast i8* %15 to i64****, !dbg !5415
-  %17 = tail call i32 @get_mem3Dint64(i64**** %16, i32 2, i32 %12, i32 %13) #8, !dbg !5416
-  %18 = getelementptr inbounds i8* %1, i64 1616, !dbg !5417
-  %19 = bitcast i8* %18 to i16*****, !dbg !5417
-  %20 = tail call i32 @get_mem4Dshort(i16***** %19, i32 2, i32 %12, i32 %13, i32 2) #8, !dbg !5418
-  %21 = getelementptr inbounds i8* %1, i64 1624, !dbg !5419
-  %22 = bitcast i8* %21 to i8***, !dbg !5419
-  %23 = tail call i32 @get_mem2D(i8*** %22, i32 %12, i32 %13) #8, !dbg !5420
-  %24 = getelementptr inbounds i8* %1, i64 4872, !dbg !5421
-  %25 = bitcast i8* %24 to i8***, !dbg !5421
-  %26 = tail call i32 @get_mem2D(i8*** %25, i32 %12, i32 %13) #8, !dbg !5422
-  %27 = icmp eq i32 %mb_adaptive_frame_field_flag, 0, !dbg !5423
-  br i1 %27, label %54, label %28, !dbg !5425
+if.end:                                           ; preds = %if.then, %entry
+  %size_x1 = getelementptr inbounds i8* %call, i64 4, !dbg !3020
+  %1 = bitcast i8* %size_x1 to i32*, !dbg !3020
+  store i32 %size_x, i32* %1, align 4, !dbg !3020, !tbaa !1366
+  %size_y2 = getelementptr inbounds i8* %call, i64 8, !dbg !3021
+  %2 = bitcast i8* %size_y2 to i32*, !dbg !3021
+  store i32 %size_y, i32* %2, align 4, !dbg !3021, !tbaa !1366
+  %ref_idx = getelementptr inbounds i8* %call, i64 1600, !dbg !3022
+  %3 = bitcast i8* %ref_idx to i16****, !dbg !3022
+  %div = sdiv i32 %size_x, 4, !dbg !3022
+  %div3 = sdiv i32 %size_y, 4, !dbg !3022
+  %call4 = tail call i32 @get_mem3Dshort(i16**** %3, i32 2, i32 %div, i32 %div3) #8, !dbg !3022
+  %ref_pic_id = getelementptr inbounds i8* %call, i64 1608, !dbg !3023
+  %4 = bitcast i8* %ref_pic_id to i64****, !dbg !3023
+  %call7 = tail call i32 @get_mem3Dint64(i64**** %4, i32 2, i32 %div, i32 %div3) #8, !dbg !3023
+  %mv = getelementptr inbounds i8* %call, i64 1616, !dbg !3024
+  %5 = bitcast i8* %mv to i16*****, !dbg !3024
+  %call10 = tail call i32 @get_mem4Dshort(i16***** %5, i32 2, i32 %div, i32 %div3, i32 2) #8, !dbg !3024
+  %moving_block = getelementptr inbounds i8* %call, i64 1624, !dbg !3025
+  %6 = bitcast i8* %moving_block to i8***, !dbg !3025
+  %call13 = tail call i32 @get_mem2D(i8*** %6, i32 %div, i32 %div3) #8, !dbg !3025
+  %field_frame = getelementptr inbounds i8* %call, i64 4872, !dbg !3026
+  %7 = bitcast i8* %field_frame to i8***, !dbg !3026
+  %call16 = tail call i32 @get_mem2D(i8*** %7, i32 %div, i32 %div3) #8, !dbg !3026
+  %tobool = icmp eq i32 %mb_adaptive_frame_field_flag, 0, !dbg !3027
+  br i1 %tobool, label %if.end50, label %if.then17, !dbg !3027
 
-; <label>:28                                      ; preds = %5
-  %29 = getelementptr inbounds i8* %1, i64 3216, !dbg !5426
-  %30 = bitcast i8* %29 to i16****, !dbg !5426
-  %31 = sdiv i32 %size_y, 8, !dbg !5428
-  %32 = tail call i32 @get_mem3Dshort(i16**** %30, i32 2, i32 %12, i32 %31) #8, !dbg !5429
-  %33 = getelementptr inbounds i8* %1, i64 3224, !dbg !5430
-  %34 = bitcast i8* %33 to i64****, !dbg !5430
-  %35 = tail call i32 @get_mem3Dint64(i64**** %34, i32 2, i32 %12, i32 %31) #8, !dbg !5431
-  %36 = getelementptr inbounds i8* %1, i64 3232, !dbg !5432
-  %37 = bitcast i8* %36 to i16*****, !dbg !5432
-  %38 = tail call i32 @get_mem4Dshort(i16***** %37, i32 2, i32 %12, i32 %31, i32 2) #8, !dbg !5433
-  %39 = getelementptr inbounds i8* %1, i64 3240, !dbg !5434
-  %40 = bitcast i8* %39 to i8***, !dbg !5434
-  %41 = tail call i32 @get_mem2D(i8*** %40, i32 %12, i32 %31) #8, !dbg !5435
-  %42 = getelementptr inbounds i8* %1, i64 4832, !dbg !5436
-  %43 = bitcast i8* %42 to i16****, !dbg !5436
-  %44 = tail call i32 @get_mem3Dshort(i16**** %43, i32 2, i32 %12, i32 %31) #8, !dbg !5437
-  %45 = getelementptr inbounds i8* %1, i64 4840, !dbg !5438
-  %46 = bitcast i8* %45 to i64****, !dbg !5438
-  %47 = tail call i32 @get_mem3Dint64(i64**** %46, i32 2, i32 %12, i32 %31) #8, !dbg !5439
-  %48 = getelementptr inbounds i8* %1, i64 4848, !dbg !5440
-  %49 = bitcast i8* %48 to i16*****, !dbg !5440
-  %50 = tail call i32 @get_mem4Dshort(i16***** %49, i32 2, i32 %12, i32 %31, i32 2) #8, !dbg !5441
-  %51 = getelementptr inbounds i8* %1, i64 4856, !dbg !5442
-  %52 = bitcast i8* %51 to i8***, !dbg !5442
-  %53 = tail call i32 @get_mem2D(i8*** %52, i32 %12, i32 %31) #8, !dbg !5443
-  br label %54, !dbg !5444
+if.then17:                                        ; preds = %if.end
+  %top_ref_idx = getelementptr inbounds i8* %call, i64 3216, !dbg !3028
+  %8 = bitcast i8* %top_ref_idx to i16****, !dbg !3028
+  %div20 = sdiv i32 %size_y, 8, !dbg !3028
+  %call21 = tail call i32 @get_mem3Dshort(i16**** %8, i32 2, i32 %div, i32 %div20) #8, !dbg !3028
+  %top_ref_pic_id = getelementptr inbounds i8* %call, i64 3224, !dbg !3030
+  %9 = bitcast i8* %top_ref_pic_id to i64****, !dbg !3030
+  %call25 = tail call i32 @get_mem3Dint64(i64**** %9, i32 2, i32 %div, i32 %div20) #8, !dbg !3030
+  %top_mv = getelementptr inbounds i8* %call, i64 3232, !dbg !3031
+  %10 = bitcast i8* %top_mv to i16*****, !dbg !3031
+  %call29 = tail call i32 @get_mem4Dshort(i16***** %10, i32 2, i32 %div, i32 %div20, i32 2) #8, !dbg !3031
+  %top_moving_block = getelementptr inbounds i8* %call, i64 3240, !dbg !3032
+  %11 = bitcast i8* %top_moving_block to i8***, !dbg !3032
+  %call33 = tail call i32 @get_mem2D(i8*** %11, i32 %div, i32 %div20) #8, !dbg !3032
+  %bottom_ref_idx = getelementptr inbounds i8* %call, i64 4832, !dbg !3033
+  %12 = bitcast i8* %bottom_ref_idx to i16****, !dbg !3033
+  %call37 = tail call i32 @get_mem3Dshort(i16**** %12, i32 2, i32 %div, i32 %div20) #8, !dbg !3033
+  %bottom_ref_pic_id = getelementptr inbounds i8* %call, i64 4840, !dbg !3034
+  %13 = bitcast i8* %bottom_ref_pic_id to i64****, !dbg !3034
+  %call41 = tail call i32 @get_mem3Dint64(i64**** %13, i32 2, i32 %div, i32 %div20) #8, !dbg !3034
+  %bottom_mv = getelementptr inbounds i8* %call, i64 4848, !dbg !3035
+  %14 = bitcast i8* %bottom_mv to i16*****, !dbg !3035
+  %call45 = tail call i32 @get_mem4Dshort(i16***** %14, i32 2, i32 %div, i32 %div20, i32 2) #8, !dbg !3035
+  %bottom_moving_block = getelementptr inbounds i8* %call, i64 4856, !dbg !3036
+  %15 = bitcast i8* %bottom_moving_block to i8***, !dbg !3036
+  %call49 = tail call i32 @get_mem2D(i8*** %15, i32 %div, i32 %div20) #8, !dbg !3036
+  br label %if.end50, !dbg !3037
 
-; <label>:54                                      ; preds = %5, %28
-  %55 = bitcast i8* %1 to i32*, !dbg !5445
-  store i32 %mb_adaptive_frame_field_flag, i32* %55, align 4, !dbg !5446, !tbaa !5447
-  ret %struct.colocated_params* %2, !dbg !5448
+if.end50:                                         ; preds = %if.end, %if.then17
+  %mb_adaptive_frame_field_flag51 = bitcast i8* %call to i32*, !dbg !3038
+  store i32 %mb_adaptive_frame_field_flag, i32* %mb_adaptive_frame_field_flag51, align 4, !dbg !3038, !tbaa !1366
+  ret %struct.colocated_params* %0, !dbg !3039
 }

@@ -1,19 +1,23 @@
 define internal %struct.rtx_def* @builtin_strncpy_read_str(i8* nocapture %data, i64 %offset, i32 %mode) #0 {
 entry:
-  %call = tail call i64 @strlen(i8* %data) #10
-  %cmp = icmp ult i64 %call, %offset
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !2449), !dbg !4374
+  tail call void @llvm.dbg.value(metadata !{i64 %offset}, i64 0, metadata !2450), !dbg !4375
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2451), !dbg !4376
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !2452), !dbg !4377
+  %call = tail call i64 @strlen(i8* %data) #11, !dbg !4378
+  %cmp = icmp ult i64 %call, %offset, !dbg !4378
+  br i1 %cmp, label %if.then, label %if.end, !dbg !4378
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
-  br label %return
+  %0 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !dbg !4379, !tbaa !2691
+  br label %return, !dbg !4379
 
 if.end:                                           ; preds = %entry
-  %add.ptr = getelementptr inbounds i8* %data, i64 %offset
-  %call1 = tail call fastcc %struct.rtx_def* @c_readstr(i8* %add.ptr, i32 %mode) #9
-  br label %return
+  %add.ptr = getelementptr inbounds i8* %data, i64 %offset, !dbg !4380
+  %call1 = tail call fastcc %struct.rtx_def* @c_readstr(i8* %add.ptr, i32 %mode) #10, !dbg !4380
+  br label %return, !dbg !4380
 
 return:                                           ; preds = %if.end, %if.then
   %retval.0 = phi %struct.rtx_def* [ %0, %if.then ], [ %call1, %if.end ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !4381
 }

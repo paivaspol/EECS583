@@ -1,52 +1,53 @@
-define internal fastcc void @_ZN3povL21Set_CSG_Children_FlagEPNS_13Object_StructEjjj(%"struct.pov::Object_Struct"* nocapture readonly %Object, i32 %f, i32 %flag, i32 %set_flag) #5 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !4126, metadata !4736), !dbg !12326
-  tail call void @llvm.dbg.value(metadata i32 %f, i64 0, metadata !4127, metadata !4736), !dbg !12327
-  tail call void @llvm.dbg.value(metadata i32 %flag, i64 0, metadata !4128, metadata !4736), !dbg !12328
-  tail call void @llvm.dbg.value(metadata i32 %set_flag, i64 0, metadata !4129, metadata !4736), !dbg !12329
-  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !12330
-  %2 = bitcast %"struct.pov::Object_Struct"* %1 to %"struct.pov::Object_Struct"**, !dbg !12330
-  %Sib.02 = load %"struct.pov::Object_Struct"** %2, align 8, !dbg !12330
-  %3 = icmp eq %"struct.pov::Object_Struct"* %Sib.02, null, !dbg !12332
-  br i1 %3, label %._crit_edge, label %.lr.ph, !dbg !12334
+define internal fastcc void @_ZN3povL21Set_CSG_Children_FlagEPNS_13Object_StructEjjj(%"struct.pov::Object_Struct"* nocapture %Object, i32 %f, i32 %flag, i32 %set_flag) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !2243), !dbg !9014
+  tail call void @llvm.dbg.value(metadata !{i32 %f}, i64 0, metadata !2244), !dbg !9014
+  tail call void @llvm.dbg.value(metadata !{i32 %flag}, i64 0, metadata !2245), !dbg !9014
+  tail call void @llvm.dbg.value(metadata !{i32 %set_flag}, i64 0, metadata !2246), !dbg !9014
+  %Children = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !9015
+  %0 = bitcast %"struct.pov::Object_Struct"* %Children to %"struct.pov::Object_Struct"**, !dbg !9015
+  %Sib.024 = load %"struct.pov::Object_Struct"** %0, align 8, !dbg !9015
+  %cmp25 = icmp eq %"struct.pov::Object_Struct"* %Sib.024, null, !dbg !9015
+  br i1 %cmp25, label %for.end, label %for.body.lr.ph, !dbg !9015
 
-.lr.ph:                                           ; preds = %0
-  %4 = xor i32 %flag, -1, !dbg !12335
-  br label %5, !dbg !12334
+for.body.lr.ph:                                   ; preds = %entry
+  %neg = xor i32 %flag, -1, !dbg !9017
+  br label %for.body, !dbg !9015
 
-; <label>:5                                       ; preds = %.lr.ph, %20
-  %Sib.03 = phi %"struct.pov::Object_Struct"* [ %Sib.02, %.lr.ph ], [ %Sib.0, %20 ]
-  %6 = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.03, i64 0, i32 13, !dbg !12341
-  %7 = load i32* %6, align 4, !dbg !12341, !tbaa !8790
-  %8 = and i32 %7, %set_flag, !dbg !12341
-  %9 = icmp eq i32 %8, 0, !dbg !12341
-  br i1 %9, label %10, label %20, !dbg !12342
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %Sib.026 = phi %"struct.pov::Object_Struct"* [ %Sib.024, %for.body.lr.ph ], [ %Sib.0, %for.inc ]
+  %Flags = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.026, i64 0, i32 13, !dbg !9021
+  %1 = load i32* %Flags, align 4, !dbg !9021, !tbaa !4092
+  %and = and i32 %1, %set_flag, !dbg !9021
+  %tobool = icmp eq i32 %and, 0, !dbg !9021
+  br i1 %tobool, label %if.then, label %for.inc, !dbg !9021
 
-; <label>:10                                      ; preds = %5
-  %11 = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.03, i64 0, i32 0, !dbg !12343
-  %12 = load %"struct.pov::Method_Struct"** %11, align 8, !dbg !12343, !tbaa !9836
-  %13 = icmp eq %"struct.pov::Method_Struct"* %12, @_ZN3pov24CSG_Intersection_MethodsE, !dbg !12344
-  %14 = icmp eq %"struct.pov::Method_Struct"* %12, @_ZN3pov17CSG_Merge_MethodsE, !dbg !12345
-  %or.cond = or i1 %13, %14, !dbg !12346
-  %15 = icmp eq %"struct.pov::Method_Struct"* %12, @_ZN3pov17CSG_Union_MethodsE, !dbg !12347
-  %or.cond1 = or i1 %15, %or.cond, !dbg !12346
-  br i1 %or.cond1, label %16, label %17, !dbg !12346
+if.then:                                          ; preds = %for.body
+  %Methods = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.026, i64 0, i32 0, !dbg !9022
+  %2 = load %"struct.pov::Method_Struct"** %Methods, align 8, !dbg !9022, !tbaa !4088
+  %cmp1 = icmp eq %"struct.pov::Method_Struct"* %2, @_ZN3pov24CSG_Intersection_MethodsE, !dbg !9022
+  %cmp3 = icmp eq %"struct.pov::Method_Struct"* %2, @_ZN3pov17CSG_Merge_MethodsE, !dbg !9022
+  %or.cond = or i1 %cmp1, %cmp3, !dbg !9022
+  %cmp6 = icmp eq %"struct.pov::Method_Struct"* %2, @_ZN3pov17CSG_Union_MethodsE, !dbg !9022
+  %or.cond23 = or i1 %or.cond, %cmp6, !dbg !9022
+  br i1 %or.cond23, label %if.then7, label %if.else, !dbg !9022
 
-; <label>:16                                      ; preds = %10
-  tail call fastcc void @_ZN3povL21Set_CSG_Children_FlagEPNS_13Object_StructEjjj(%"struct.pov::Object_Struct"* %Sib.03, i32 %f, i32 %flag, i32 %set_flag) #9, !dbg !12348
-  br label %20, !dbg !12350
+if.then7:                                         ; preds = %if.then
+  tail call fastcc void @_ZN3povL21Set_CSG_Children_FlagEPNS_13Object_StructEjjj(%"struct.pov::Object_Struct"* %Sib.026, i32 %f, i32 %flag, i32 %set_flag) #9, !dbg !9023
+  br label %for.inc, !dbg !9025
 
-; <label>:17                                      ; preds = %10
-  %18 = and i32 %7, %4, !dbg !12351
-  %19 = or i32 %18, %f, !dbg !12352
-  store i32 %19, i32* %6, align 4, !dbg !12353, !tbaa !8790
-  br label %20
+if.else:                                          ; preds = %if.then
+  %and9 = and i32 %1, %neg, !dbg !9017
+  %or = or i32 %and9, %f, !dbg !9017
+  store i32 %or, i32* %Flags, align 4, !dbg !9017, !tbaa !4092
+  br label %for.inc
 
-; <label>:20                                      ; preds = %5, %17, %16
-  %21 = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.03, i64 0, i32 2, !dbg !12354
-  %Sib.0 = load %"struct.pov::Object_Struct"** %21, align 8, !dbg !12330
-  %22 = icmp eq %"struct.pov::Object_Struct"* %Sib.0, null, !dbg !12332
-  br i1 %22, label %._crit_edge, label %5, !dbg !12334
+for.inc:                                          ; preds = %for.body, %if.else, %if.then7
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.026, i64 0, i32 2, !dbg !9015
+  %Sib.0 = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !9015
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %Sib.0, null, !dbg !9015
+  br i1 %cmp, label %for.end, label %for.body, !dbg !9015
 
-._crit_edge:                                      ; preds = %20, %0
-  ret void, !dbg !12355
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !9026
 }

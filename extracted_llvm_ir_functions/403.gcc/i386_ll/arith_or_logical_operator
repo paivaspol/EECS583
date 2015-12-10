@@ -1,28 +1,30 @@
 define i32 @arith_or_logical_operator(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
 entry:
-  %cmp = icmp eq i32 %mode, 0
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2429), !dbg !6362
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2430), !dbg !6363
+  %cmp = icmp eq i32 %mode, 0, !dbg !6364
   %.phi.trans.insert = bitcast %struct.rtx_def* %op to i32*
-  %bf.load2.pre = load i32* %.phi.trans.insert, align 8
-  br i1 %cmp, label %land.rhs, label %lor.lhs.false
+  %bf.load2.pre = load i32* %.phi.trans.insert, align 8, !dbg !6364
+  br i1 %cmp, label %land.rhs, label %lor.lhs.false, !dbg !6364
 
 lor.lhs.false:                                    ; preds = %entry
-  %bf.lshr = lshr i32 %bf.load2.pre, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %cmp1 = icmp eq i32 %bf.clear, %mode
-  br i1 %cmp1, label %land.rhs, label %land.end
+  %bf.lshr = lshr i32 %bf.load2.pre, 16, !dbg !6364
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !6364
+  %cmp1 = icmp eq i32 %bf.clear, %mode, !dbg !6364
+  br i1 %cmp1, label %land.rhs, label %land.end, !dbg !6364
 
 land.rhs:                                         ; preds = %entry, %lor.lhs.false
-  %bf.clear3 = and i32 %bf.load2.pre, 65535
-  %idxprom16 = zext i32 %bf.clear3 to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom16
-  %0 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp4 = icmp eq i8 %0, 99
-  %cmp11 = icmp eq i8 %0, 50
-  %.cmp11 = or i1 %cmp4, %cmp11
-  br label %land.end
+  %bf.clear3 = and i32 %bf.load2.pre, 65535, !dbg !6364
+  %idxprom16 = zext i32 %bf.clear3 to i64, !dbg !6364
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom16, !dbg !6364
+  %0 = load i8* %arrayidx, align 1, !dbg !6364, !tbaa !4348
+  %cmp4 = icmp eq i8 %0, 99, !dbg !6364
+  %cmp11 = icmp eq i8 %0, 50, !dbg !6364
+  %.cmp11 = or i1 %cmp4, %cmp11, !dbg !6364
+  br label %land.end, !dbg !6364
 
 land.end:                                         ; preds = %land.rhs, %lor.lhs.false
   %1 = phi i1 [ false, %lor.lhs.false ], [ %.cmp11, %land.rhs ]
   %land.ext = zext i1 %1 to i32
-  ret i32 %land.ext
+  ret i32 %land.ext, !dbg !6365
 }

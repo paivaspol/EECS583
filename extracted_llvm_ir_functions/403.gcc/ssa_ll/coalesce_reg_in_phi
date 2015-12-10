@@ -1,15 +1,19 @@
 define internal i32 @coalesce_reg_in_phi(%struct.rtx_def* nocapture %insn, i32 %dest_regno, i32 %src_regno, i8* nocapture %data) #0 {
 entry:
-  %p = bitcast i8* %data to %struct.partition_def**
-  %0 = load %struct.partition_def** %p, align 8, !tbaa !0
-  %conflicts = getelementptr inbounds i8* %data, i64 8
-  %1 = bitcast i8* %conflicts to %struct.conflict_graph_def**
-  %2 = load %struct.conflict_graph_def** %1, align 8, !tbaa !0
-  %call = tail call fastcc i32 @coalesce_if_unconflicting(%struct.partition_def* %0, %struct.conflict_graph_def* %2, i32 %dest_regno, i32 %src_regno) #7
-  %changed = getelementptr inbounds i8* %data, i64 16
-  %3 = bitcast i8* %changed to i32*
-  %4 = load i32* %3, align 4, !tbaa !3
-  %add = add nsw i32 %4, %call
-  store i32 %add, i32* %3, align 4, !tbaa !3
-  ret i32 0
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !757), !dbg !1913
+  tail call void @llvm.dbg.value(metadata !{i32 %dest_regno}, i64 0, metadata !758), !dbg !1914
+  tail call void @llvm.dbg.value(metadata !{i32 %src_regno}, i64 0, metadata !759), !dbg !1915
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !760), !dbg !1916
+  %p = bitcast i8* %data to %struct.partition_def**, !dbg !1917
+  %0 = load %struct.partition_def** %p, align 8, !dbg !1917, !tbaa !1216
+  %conflicts = getelementptr inbounds i8* %data, i64 8, !dbg !1917
+  %1 = bitcast i8* %conflicts to %struct.conflict_graph_def**, !dbg !1917
+  %2 = load %struct.conflict_graph_def** %1, align 8, !dbg !1917, !tbaa !1216
+  %call = tail call fastcc i32 @coalesce_if_unconflicting(%struct.partition_def* %0, %struct.conflict_graph_def* %2, i32 %dest_regno, i32 %src_regno) #8, !dbg !1917
+  %changed = getelementptr inbounds i8* %data, i64 16, !dbg !1917
+  %3 = bitcast i8* %changed to i32*, !dbg !1917
+  %4 = load i32* %3, align 4, !dbg !1917, !tbaa !1224
+  %add = add nsw i32 %4, %call, !dbg !1917
+  store i32 %add, i32* %3, align 4, !dbg !1917, !tbaa !1224
+  ret i32 0, !dbg !1918
 }

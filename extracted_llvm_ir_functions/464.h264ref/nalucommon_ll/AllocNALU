@@ -1,31 +1,32 @@
 define noalias %struct.NALU_t* @AllocNALU(i32 %buffersize) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %buffersize, i64 0, metadata !33, metadata !587), !dbg !588
-  %1 = tail call i8* @calloc(i64 1, i64 32) #4, !dbg !589
-  %2 = bitcast i8* %1 to %struct.NALU_t*, !dbg !591
-  tail call void @llvm.dbg.value(metadata %struct.NALU_t* %2, i64 0, metadata !34, metadata !587), !dbg !592
-  %3 = icmp eq i8* %1, null, !dbg !593
-  br i1 %3, label %4, label %5, !dbg !594
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %buffersize}, i64 0, metadata !32), !dbg !577
+  %call = tail call noalias i8* @calloc(i64 1, i64 32) #4, !dbg !578
+  %0 = bitcast i8* %call to %struct.NALU_t*, !dbg !578
+  tail call void @llvm.dbg.value(metadata !{%struct.NALU_t* %0}, i64 0, metadata !33), !dbg !578
+  %cmp = icmp eq i8* %call, null, !dbg !578
+  br i1 %cmp, label %if.then, label %if.end, !dbg !578
 
-; <label>:4                                       ; preds = %0
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([13 x i8]* @.str, i64 0, i64 0)) #4, !dbg !595
-  br label %5, !dbg !595
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([13 x i8]* @.str, i64 0, i64 0)) #4, !dbg !578
+  br label %if.end, !dbg !578
 
-; <label>:5                                       ; preds = %4, %0
-  %6 = getelementptr inbounds i8* %1, i64 8, !dbg !596
-  %7 = bitcast i8* %6 to i32*, !dbg !596
-  store i32 %buffersize, i32* %7, align 4, !dbg !597, !tbaa !598
-  %8 = sext i32 %buffersize to i64, !dbg !604
-  %9 = tail call i8* @calloc(i64 %8, i64 1) #4, !dbg !606
-  %10 = getelementptr inbounds i8* %1, i64 24, !dbg !607
-  %11 = bitcast i8* %10 to i8**, !dbg !607
-  store i8* %9, i8** %11, align 8, !dbg !608, !tbaa !609
-  %12 = icmp eq i8* %9, null, !dbg !610
-  br i1 %12, label %13, label %14, !dbg !611
+if.end:                                           ; preds = %if.then, %entry
+  %max_size = getelementptr inbounds i8* %call, i64 8, !dbg !579
+  %1 = bitcast i8* %max_size to i32*, !dbg !579
+  store i32 %buffersize, i32* %1, align 4, !dbg !579, !tbaa !580
+  %conv = sext i32 %buffersize to i64, !dbg !583
+  %call1 = tail call noalias i8* @calloc(i64 %conv, i64 1) #4, !dbg !583
+  %buf = getelementptr inbounds i8* %call, i64 24, !dbg !583
+  %2 = bitcast i8* %buf to i8**, !dbg !583
+  store i8* %call1, i8** %2, align 8, !dbg !583, !tbaa !584
+  %cmp2 = icmp eq i8* %call1, null, !dbg !583
+  br i1 %cmp2, label %if.then4, label %if.end5, !dbg !583
 
-; <label>:13                                      ; preds = %5
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([18 x i8]* @.str1, i64 0, i64 0)) #4, !dbg !612
-  br label %14, !dbg !612
+if.then4:                                         ; preds = %if.end
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([18 x i8]* @.str1, i64 0, i64 0)) #4, !dbg !583
+  br label %if.end5, !dbg !583
 
-; <label>:14                                      ; preds = %13, %5
-  ret %struct.NALU_t* %2, !dbg !613
+if.end5:                                          ; preds = %if.then4, %if.end
+  ret %struct.NALU_t* %0, !dbg !585
 }

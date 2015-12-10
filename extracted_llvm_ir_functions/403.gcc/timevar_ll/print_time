@@ -1,33 +1,37 @@
 define void @print_time(i8* %str, i64 %total) #0 {
 entry:
   %total_elapsed.i = alloca %struct.timevar_time_def, align 4
-  %0 = bitcast %struct.timevar_time_def* %total_elapsed.i to i8*
-  call void @llvm.lifetime.start(i64 12, i8* %0) #1
-  call void @timevar_get(i32 0, %struct.timevar_time_def* %total_elapsed.i) #7
-  %user.i = getelementptr inbounds %struct.timevar_time_def* %total_elapsed.i, i64 0, i32 0
-  %1 = load float* %user.i, align 4, !tbaa !4
-  %sys.i = getelementptr inbounds %struct.timevar_time_def* %total_elapsed.i, i64 0, i32 1
-  %2 = load float* %sys.i, align 4, !tbaa !4
-  %add.i = fadd float %1, %2
-  %conv.i = fptosi float %add.i to i64
-  call void @llvm.lifetime.end(i64 12, i8* %0) #1
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %div = sdiv i64 %total, 1000000
-  %rem = srem i64 %total, 1000000
-  %cmp = icmp eq i64 %conv.i, 0
-  br i1 %cmp, label %cond.end, label %cond.false
+  call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !192), !dbg !414
+  call void @llvm.dbg.value(metadata !{i64 %total}, i64 0, metadata !193), !dbg !415
+  %0 = bitcast %struct.timevar_time_def* %total_elapsed.i to i8*, !dbg !416
+  call void @llvm.lifetime.start(i64 12, i8* %0) #1, !dbg !416
+  call void @llvm.dbg.declare(metadata !{%struct.timevar_time_def* %total_elapsed.i}, metadata !187) #1, !dbg !416
+  call void @timevar_get(i32 0, %struct.timevar_time_def* %total_elapsed.i) #8, !dbg !418
+  %user.i = getelementptr inbounds %struct.timevar_time_def* %total_elapsed.i, i64 0, i32 0, !dbg !419
+  %1 = load float* %user.i, align 4, !dbg !419, !tbaa !272
+  %sys.i = getelementptr inbounds %struct.timevar_time_def* %total_elapsed.i, i64 0, i32 1, !dbg !419
+  %2 = load float* %sys.i, align 4, !dbg !419, !tbaa !272
+  %add.i = fadd float %1, %2, !dbg !419
+  %conv.i = fptosi float %add.i to i64, !dbg !419
+  call void @llvm.lifetime.end(i64 12, i8* %0) #1, !dbg !419
+  call void @llvm.dbg.value(metadata !{i64 %conv.i}, i64 0, metadata !194), !dbg !417
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !420, !tbaa !225
+  %div = sdiv i64 %total, 1000000, !dbg !420
+  %rem = srem i64 %total, 1000000, !dbg !420
+  %cmp = icmp eq i64 %conv.i, 0, !dbg !420
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !420
 
 cond.false:                                       ; preds = %entry
-  %conv = sitofp i64 %total to double
-  %mul = fmul double %conv, 1.000000e+02
-  %conv1 = sitofp i64 %conv.i to double
-  %div2 = fdiv double %mul, %conv1
-  %add = fadd double %div2, 5.000000e-01
-  %conv3 = fptosi double %add to i64
-  br label %cond.end
+  %conv = sitofp i64 %total to double, !dbg !420
+  %mul = fmul double %conv, 1.000000e+02, !dbg !420
+  %conv1 = sitofp i64 %conv.i to double, !dbg !420
+  %div2 = fdiv double %mul, %conv1, !dbg !420
+  %add = fadd double %div2, 5.000000e-01, !dbg !420
+  %conv3 = fptosi double %add to i64, !dbg !420
+  br label %cond.end, !dbg !420
 
 cond.end:                                         ; preds = %entry, %cond.false
-  %cond = phi i64 [ %conv3, %cond.false ], [ 0, %entry ]
-  %call4 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([31 x i8]* @.str51, i64 0, i64 0), i8* %str, i64 %div, i64 %rem, i64 %cond) #7
-  ret void
+  %cond = phi i64 [ %conv3, %cond.false ], [ 0, %entry ], !dbg !420
+  %call4 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([31 x i8]* @.str51, i64 0, i64 0), i8* %str, i64 %div, i64 %rem, i64 %cond) #8, !dbg !420
+  ret void, !dbg !421
 }

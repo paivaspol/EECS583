@@ -1,0 +1,51 @@
+define void @_ZN11xercesc_2_58AttrImpl11setReadOnlyEbb(%"class.xercesc_2_5::AttrImpl"* %this, i1 zeroext %readOnl, i1 zeroext %deep) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::AttrImpl"* %this}, i64 0, metadata !3472), !dbg !4204
+  tail call void @llvm.dbg.value(metadata !{i1 %readOnl}, i64 0, metadata !3473), !dbg !4204
+  tail call void @llvm.dbg.value(metadata !{i1 %deep}, i64 0, metadata !3474), !dbg !4204
+  %0 = getelementptr inbounds %"class.xercesc_2_5::AttrImpl"* %this, i64 0, i32 0, !dbg !4205
+  tail call void @_ZN11xercesc_2_58NodeImpl11setReadOnlyEbb(%"class.xercesc_2_5::NodeImpl"* %0, i1 zeroext %readOnl, i1 zeroext %deep) #8, !dbg !4205
+  br i1 %deep, label %if.then, label %if.end12, !dbg !4206
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::NodeImpl"* %0}, i64 0, metadata !4207), !dbg !4209
+  %flags.i = getelementptr inbounds %"class.xercesc_2_5::AttrImpl"* %this, i64 0, i32 0, i32 2, !dbg !4210
+  %1 = load i16* %flags.i, align 2, !dbg !4210, !tbaa !3718
+  %2 = load i16* @_ZN11xercesc_2_58NodeImpl9HASSTRINGE, align 2, !dbg !4210, !tbaa !3718
+  %and3.i = and i16 %2, %1, !dbg !4210
+  %cmp.i = icmp eq i16 %and3.i, 0, !dbg !4210
+  br i1 %cmp.i, label %if.end, label %if.end12, !dbg !4208
+
+if.end:                                           ; preds = %if.then
+  %child = getelementptr inbounds %"class.xercesc_2_5::AttrImpl"* %this, i64 0, i32 2, i32 0, !dbg !4211
+  %mykid.018 = load %"class.xercesc_2_5::ChildNode"** %child, align 8, !dbg !4211
+  %cmp19 = icmp eq %"class.xercesc_2_5::ChildNode"* %mykid.018, null, !dbg !4211
+  br i1 %cmp19, label %if.end12, label %for.body, !dbg !4211
+
+for.body:                                         ; preds = %if.end, %for.inc
+  %mykid.020 = phi %"class.xercesc_2_5::ChildNode"* [ %mykid.0, %for.inc ], [ %mykid.018, %if.end ]
+  %3 = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %mykid.020, i64 0, i32 0, !dbg !4212
+  %4 = bitcast %"class.xercesc_2_5::ChildNode"* %mykid.020 to i1 (%"class.xercesc_2_5::NodeImpl"*)***, !dbg !4212
+  %vtable = load i1 (%"class.xercesc_2_5::NodeImpl"*)*** %4, align 8, !dbg !4212, !tbaa !3708
+  %vfn = getelementptr inbounds i1 (%"class.xercesc_2_5::NodeImpl"*)** %vtable, i64 12, !dbg !4212
+  %5 = load i1 (%"class.xercesc_2_5::NodeImpl"*)** %vfn, align 8, !dbg !4212
+  %call6 = tail call zeroext i1 %5(%"class.xercesc_2_5::NodeImpl"* %3) #8, !dbg !4212
+  br i1 %call6, label %for.inc, label %if.then7, !dbg !4212
+
+if.then7:                                         ; preds = %for.body
+  %6 = bitcast %"class.xercesc_2_5::ChildNode"* %mykid.020 to void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)***, !dbg !4213
+  %vtable8 = load void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)*** %6, align 8, !dbg !4213, !tbaa !3708
+  %vfn9 = getelementptr inbounds void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)** %vtable8, i64 35, !dbg !4213
+  %7 = load void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)** %vfn9, align 8, !dbg !4213
+  tail call void %7(%"class.xercesc_2_5::NodeImpl"* %3, i1 zeroext %readOnl, i1 zeroext true) #8, !dbg !4213
+  br label %for.inc, !dbg !4213
+
+for.inc:                                          ; preds = %for.body, %if.then7
+  %nextSibling = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %mykid.020, i64 0, i32 2, !dbg !4214
+  %mykid.0 = load %"class.xercesc_2_5::ChildNode"** %nextSibling, align 8, !dbg !4211
+  %cmp = icmp eq %"class.xercesc_2_5::ChildNode"* %mykid.0, null, !dbg !4211
+  br i1 %cmp, label %if.end12, label %for.body, !dbg !4211
+
+if.end12:                                         ; preds = %if.end, %for.inc, %if.then, %entry
+  ret void, !dbg !4215
+}

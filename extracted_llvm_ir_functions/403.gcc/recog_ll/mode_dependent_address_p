@@ -1,10 +1,11 @@
-define i32 @mode_dependent_address_p(%struct.rtx_def* nocapture %addr) #2 {
+define i32 @mode_dependent_address_p(%struct.rtx_def* nocapture %addr) #3 {
 entry:
-  %0 = bitcast %struct.rtx_def* %addr to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %bf.clear.off = add i32 %bf.clear, -98
-  %switch = icmp ult i32 %bf.clear.off, 2
-  %. = zext i1 %switch to i32
-  ret i32 %.
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %addr}, i64 0, metadata !769), !dbg !1970
+  %0 = bitcast %struct.rtx_def* %addr to i32*, !dbg !1971
+  %bf.load = load i32* %0, align 8, !dbg !1971
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1971
+  %bf.clear.off = add i32 %bf.clear, -98, !dbg !1971
+  %switch = icmp ult i32 %bf.clear.off, 2, !dbg !1971
+  %. = zext i1 %switch to i32, !dbg !1971
+  ret i32 %., !dbg !1972
 }

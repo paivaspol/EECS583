@@ -1,75 +1,76 @@
 define void @decide_intrabk_SAD() #0 {
-  %1 = load %struct.ImageParameters** @img, align 8, !dbg !2264, !tbaa !906
-  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 6, !dbg !2266
-  %3 = load i32* %2, align 4, !dbg !2266, !tbaa !923
-  %4 = icmp eq i32 %3, 0, !dbg !2267
-  br i1 %4, label %46, label %5, !dbg !2268
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1463, !tbaa !895
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6, !dbg !1463
+  %1 = load i32* %type, align 4, !dbg !1463, !tbaa !896
+  %cmp = icmp eq i32 %1, 0, !dbg !1463
+  br i1 %cmp, label %if.end34, label %if.then, !dbg !1463
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 33, !dbg !2269
-  %7 = load i32* %6, align 4, !dbg !2269, !tbaa !2272
-  %8 = icmp eq i32 %7, 0, !dbg !2273
-  %9 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 34, !dbg !2274
-  %10 = load i32* %9, align 4, !dbg !2274, !tbaa !2275
-  %11 = icmp eq i32 %10, 0, !dbg !2276
-  br i1 %8, label %12, label %17, !dbg !2277
+if.then:                                          ; preds = %entry
+  %pix_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 33, !dbg !1464
+  %2 = load i32* %pix_x, align 4, !dbg !1464, !tbaa !896
+  %cmp1 = icmp eq i32 %2, 0, !dbg !1464
+  %pix_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 34, !dbg !1464
+  %3 = load i32* %pix_y, align 4, !dbg !1464, !tbaa !896
+  %cmp2 = icmp eq i32 %3, 0, !dbg !1464
+  br i1 %cmp1, label %land.lhs.true, label %if.else8, !dbg !1464
 
-; <label>:12                                      ; preds = %5
-  br i1 %11, label %13, label %14, !dbg !2278
+land.lhs.true:                                    ; preds = %if.then
+  br i1 %cmp2, label %if.then3, label %if.then6, !dbg !1464
 
-; <label>:13                                      ; preds = %12
-  store i32 0, i32* @flag_intra_SAD, align 4, !dbg !2279, !tbaa !934
-  br label %46, !dbg !2281
+if.then3:                                         ; preds = %land.lhs.true
+  store i32 0, i32* @flag_intra_SAD, align 4, !dbg !1466, !tbaa !896
+  br label %if.end34, !dbg !1468
 
-; <label>:14                                      ; preds = %12
-  %15 = load i32** @flag_intra, align 8, !dbg !2282, !tbaa !906
-  %16 = load i32* %15, align 4, !dbg !2282, !tbaa !934
-  store i32 %16, i32* @flag_intra_SAD, align 4, !dbg !2285, !tbaa !934
-  br label %46, !dbg !2286
+if.then6:                                         ; preds = %land.lhs.true
+  %4 = load i32** @flag_intra, align 8, !dbg !1469, !tbaa !895
+  %5 = load i32* %4, align 4, !dbg !1469, !tbaa !896
+  store i32 %5, i32* @flag_intra_SAD, align 4, !dbg !1469, !tbaa !896
+  br label %if.end34, !dbg !1471
 
-; <label>:17                                      ; preds = %5
-  %18 = ashr i32 %7, 4, !dbg !2287
-  br i1 %11, label %19, label %25, !dbg !2290
+if.else8:                                         ; preds = %if.then
+  %shr13 = ashr i32 %2, 4, !dbg !1472
+  br i1 %cmp2, label %if.then11, label %if.else16, !dbg !1474
 
-; <label>:19                                      ; preds = %17
-  %20 = add nsw i32 %18, -1, !dbg !2291
-  %21 = sext i32 %20 to i64, !dbg !2292
-  %22 = load i32** @flag_intra, align 8, !dbg !2292, !tbaa !906
-  %23 = getelementptr inbounds i32* %22, i64 %21, !dbg !2292
-  %24 = load i32* %23, align 4, !dbg !2292, !tbaa !934
-  store i32 %24, i32* @flag_intra_SAD, align 4, !dbg !2293, !tbaa !934
-  br label %46, !dbg !2294
+if.then11:                                        ; preds = %if.else8
+  %sub = add nsw i32 %shr13, -1, !dbg !1472
+  %idxprom14 = sext i32 %sub to i64, !dbg !1472
+  %6 = load i32** @flag_intra, align 8, !dbg !1472, !tbaa !895
+  %arrayidx15 = getelementptr inbounds i32* %6, i64 %idxprom14, !dbg !1472
+  %7 = load i32* %arrayidx15, align 4, !dbg !1472, !tbaa !896
+  store i32 %7, i32* @flag_intra_SAD, align 4, !dbg !1472, !tbaa !896
+  br label %if.end34, !dbg !1475
 
-; <label>:25                                      ; preds = %17
-  %26 = sext i32 %18 to i64, !dbg !2295
-  %27 = load i32** @flag_intra, align 8, !dbg !2295, !tbaa !906
-  %28 = getelementptr inbounds i32* %27, i64 %26, !dbg !2295
-  %29 = load i32* %28, align 4, !dbg !2295, !tbaa !934
-  %30 = icmp eq i32 %29, 0, !dbg !2297
-  br i1 %30, label %31, label %43, !dbg !2298
+if.else16:                                        ; preds = %if.else8
+  %idxprom19 = sext i32 %shr13 to i64, !dbg !1476
+  %8 = load i32** @flag_intra, align 8, !dbg !1476, !tbaa !895
+  %arrayidx20 = getelementptr inbounds i32* %8, i64 %idxprom19, !dbg !1476
+  %9 = load i32* %arrayidx20, align 4, !dbg !1476, !tbaa !896
+  %tobool = icmp eq i32 %9, 0, !dbg !1476
+  br i1 %tobool, label %lor.lhs.false, label %lor.end, !dbg !1476
 
-; <label>:31                                      ; preds = %25
-  %32 = add nsw i32 %18, -1, !dbg !2299
-  %33 = sext i32 %32 to i64, !dbg !2300
-  %34 = getelementptr inbounds i32* %27, i64 %33, !dbg !2300
-  %35 = load i32* %34, align 4, !dbg !2300, !tbaa !934
-  %36 = icmp eq i32 %35, 0, !dbg !2301
-  br i1 %36, label %37, label %43, !dbg !2302
+lor.lhs.false:                                    ; preds = %if.else16
+  %sub23 = add nsw i32 %shr13, -1, !dbg !1476
+  %idxprom24 = sext i32 %sub23 to i64, !dbg !1476
+  %arrayidx25 = getelementptr inbounds i32* %8, i64 %idxprom24, !dbg !1476
+  %10 = load i32* %arrayidx25, align 4, !dbg !1476, !tbaa !896
+  %tobool26 = icmp eq i32 %10, 0, !dbg !1476
+  br i1 %tobool26, label %lor.rhs, label %lor.end, !dbg !1476
 
-; <label>:37                                      ; preds = %31
-  %38 = add nsw i32 %18, 1, !dbg !2303
-  %39 = sext i32 %38 to i64, !dbg !2304
-  %40 = getelementptr inbounds i32* %27, i64 %39, !dbg !2304
-  %41 = load i32* %40, align 4, !dbg !2304, !tbaa !934
-  %42 = icmp ne i32 %41, 0, !dbg !2302
-  br label %43, !dbg !2302
+lor.rhs:                                          ; preds = %lor.lhs.false
+  %add = add nsw i32 %shr13, 1, !dbg !1476
+  %idxprom29 = sext i32 %add to i64, !dbg !1476
+  %arrayidx30 = getelementptr inbounds i32* %8, i64 %idxprom29, !dbg !1476
+  %11 = load i32* %arrayidx30, align 4, !dbg !1476, !tbaa !896
+  %tobool31 = icmp ne i32 %11, 0, !dbg !1476
+  br label %lor.end, !dbg !1476
 
-; <label>:43                                      ; preds = %31, %25, %37
-  %44 = phi i1 [ true, %31 ], [ true, %25 ], [ %42, %37 ]
-  %45 = zext i1 %44 to i32, !dbg !2302
-  store i32 %45, i32* @flag_intra_SAD, align 4, !dbg !2305, !tbaa !934
-  br label %46
+lor.end:                                          ; preds = %lor.lhs.false, %if.else16, %lor.rhs
+  %12 = phi i1 [ true, %lor.lhs.false ], [ true, %if.else16 ], [ %tobool31, %lor.rhs ]
+  %lor.ext = zext i1 %12 to i32, !dbg !1476
+  store i32 %lor.ext, i32* @flag_intra_SAD, align 4, !dbg !1476, !tbaa !896
+  br label %if.end34
 
-; <label>:46                                      ; preds = %0, %13, %19, %43, %14
-  ret void, !dbg !2306
+if.end34:                                         ; preds = %entry, %if.then3, %if.then11, %lor.end, %if.then6
+  ret void, !dbg !1478
 }

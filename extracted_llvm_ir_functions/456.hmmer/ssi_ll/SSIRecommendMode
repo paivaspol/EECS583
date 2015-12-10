@@ -1,22 +1,23 @@
-define i32 @SSIRecommendMode(i8* %file) #0 {
+define i32 @SSIRecommendMode(i8* nocapture %file) #0 {
+entry:
   %s2 = alloca %struct.stat, align 8
-  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !204, metadata !535), !dbg !1229
-  %1 = bitcast %struct.stat* %s2 to i8*, !dbg !1230
-  call void @llvm.lifetime.start(i64 144, i8* %1) #4, !dbg !1230
-  tail call void @llvm.dbg.value(metadata %struct.stat* %s2, i64 0, metadata !205, metadata !535), !dbg !1231
-  %2 = call i32 @"\01_stat$INODE64"(i8* %file, %struct.stat* %s2) #9, !dbg !1232
-  %3 = icmp eq i32 %2, 0, !dbg !1234
-  br i1 %3, label %4, label %7, !dbg !1235
+  call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !179), !dbg !735
+  %0 = bitcast %struct.stat* %s2 to i8*, !dbg !736
+  call void @llvm.lifetime.start(i64 144, i8* %0) #3, !dbg !736
+  call void @llvm.dbg.declare(metadata !{%struct.stat* %s2}, metadata !180), !dbg !736
+  %call = call i32 @stat(i8* %file, %struct.stat* %s2) #9, !dbg !737
+  %cmp = icmp eq i32 %call, 0, !dbg !737
+  br i1 %cmp, label %if.then, label %cleanup, !dbg !737
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.stat* %s2, i64 0, i32 11, !dbg !1236
-  %6 = load i64* %5, align 8, !dbg !1236, !tbaa !1239
-  %not. = icmp sgt i64 %6, 2146483647, !dbg !1243
-  %. = zext i1 %not. to i32, !dbg !1243
-  br label %7, !dbg !1243
+if.then:                                          ; preds = %entry
+  %st_size = getelementptr inbounds %struct.stat* %s2, i64 0, i32 8, !dbg !738
+  %1 = load i64* %st_size, align 8, !dbg !738, !tbaa !740
+  %not.cmp1 = icmp sgt i64 %1, 2146483647, !dbg !738
+  %. = zext i1 %not.cmp1 to i32, !dbg !738
+  br label %cleanup, !dbg !738
 
-; <label>:7                                       ; preds = %0, %4
-  %.0 = phi i32 [ %., %4 ], [ -1, %0 ]
-  call void @llvm.lifetime.end(i64 144, i8* %1) #4, !dbg !1244
-  ret i32 %.0, !dbg !1244
+cleanup:                                          ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ %., %if.then ], [ -1, %entry ]
+  call void @llvm.lifetime.end(i64 144, i8* %0) #3, !dbg !741
+  ret i32 %retval.0, !dbg !742
 }

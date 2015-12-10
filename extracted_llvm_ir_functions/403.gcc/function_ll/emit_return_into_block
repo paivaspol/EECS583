@@ -1,26 +1,29 @@
 define internal fastcc void @emit_return_into_block(%struct.basic_block_def* nocapture %bb, %struct.rtx_def* %line_note) #0 {
 entry:
-  %end1 = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1
-  %call = tail call %struct.rtx_def* @gen_return() #10
-  %0 = load %struct.rtx_def** %end1, align 8, !tbaa !0
-  %call3 = tail call %struct.rtx_def* @emit_jump_insn_after(%struct.rtx_def* %call, %struct.rtx_def* %0) #10
-  %tobool = icmp eq %struct.rtx_def* %line_note, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %bb}, i64 0, metadata !2124), !dbg !5008
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %line_note}, i64 0, metadata !2125), !dbg !5009
+  %end1 = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1, !dbg !5010
+  %call = tail call %struct.rtx_def* @gen_return() #11, !dbg !5011
+  %0 = load %struct.rtx_def** %end1, align 8, !dbg !5011, !tbaa !2729
+  %call3 = tail call %struct.rtx_def* @emit_jump_insn_after(%struct.rtx_def* %call, %struct.rtx_def* %0) #11, !dbg !5011
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call3}, i64 0, metadata !2127), !dbg !5011
+  %tobool = icmp eq %struct.rtx_def* %line_note, null, !dbg !5012
+  br i1 %tobool, label %if.end, label %if.then, !dbg !5012
 
 if.then:                                          ; preds = %entry
-  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %line_note, i64 0, i32 1, i64 3
-  %rtstr = bitcast %union.rtunion_def* %arrayidx5 to i8**
-  %1 = load i8** %rtstr, align 8, !tbaa !0
-  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %line_note, i64 0, i32 1, i64 4
-  %rtint = bitcast %union.rtunion_def* %arrayidx7 to i32*
-  %2 = load i32* %rtint, align 4, !tbaa !4
-  %3 = load %struct.rtx_def** %end1, align 8, !tbaa !0
-  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 1
-  %rtx11 = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %rtx11, align 8, !tbaa !0
-  %call12 = tail call %struct.rtx_def* @emit_line_note_after(i8* %1, i32 %2, %struct.rtx_def* %4) #10
-  br label %if.end
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %line_note, i64 0, i32 1, i64 3, !dbg !5013
+  %rtstr = bitcast %union.rtunion_def* %arrayidx5 to i8**, !dbg !5013
+  %1 = load i8** %rtstr, align 8, !dbg !5013, !tbaa !2729
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %line_note, i64 0, i32 1, i64 4, !dbg !5013
+  %rtint = bitcast %union.rtunion_def* %arrayidx7 to i32*, !dbg !5013
+  %2 = load i32* %rtint, align 4, !dbg !5013, !tbaa !2768
+  %3 = load %struct.rtx_def** %end1, align 8, !dbg !5013, !tbaa !2729
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 1, !dbg !5013
+  %rtx11 = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**, !dbg !5013
+  %4 = load %struct.rtx_def** %rtx11, align 8, !dbg !5013, !tbaa !2729
+  %call12 = tail call %struct.rtx_def* @emit_line_note_after(i8* %1, i32 %2, %struct.rtx_def* %4) #11, !dbg !5013
+  br label %if.end, !dbg !5013
 
 if.end:                                           ; preds = %entry, %if.then
-  ret void
+  ret void, !dbg !5014
 }

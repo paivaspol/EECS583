@@ -1,179 +1,180 @@
-define void @writeB8_typeInfo_CABAC(%struct.syntaxelement* nocapture readonly %se, %struct.EncodingEnvironment* %eep_dp) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %se, i64 0, metadata !352, metadata !1011), !dbg !1584
-  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %eep_dp, i64 0, metadata !353, metadata !1011), !dbg !1585
-  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1586, !tbaa !1001
-  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 6, !dbg !1587
-  %3 = load i32* %2, align 4, !dbg !1587, !tbaa !1159
-  %4 = icmp eq i32 %3, 1, !dbg !1588
-  %5 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 50, !dbg !1589
-  %6 = load %struct.Slice** %5, align 8, !dbg !1589, !tbaa !1106
-  %7 = getelementptr inbounds %struct.Slice* %6, i64 0, i32 7, !dbg !1590
-  %8 = load %struct.MotionInfoContexts** %7, align 8, !dbg !1590, !tbaa !1108
-  tail call void @llvm.dbg.value(metadata %struct.MotionInfoContexts* %8, i64 0, metadata !358, metadata !1011), !dbg !1591
-  %9 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1, !dbg !1592
-  %10 = load i32* %9, align 4, !dbg !1592, !tbaa !1115
-  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !355, metadata !1011), !dbg !1593
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !354, metadata !1011), !dbg !1594
-  br i1 %4, label %25, label %11, !dbg !1595
+define void @writeB8_typeInfo_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %se}, i64 0, metadata !348), !dbg !1267
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %eep_dp}, i64 0, metadata !349), !dbg !1267
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1268, !tbaa !989
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6, !dbg !1268
+  %1 = load i32* %type, align 4, !dbg !1268, !tbaa !984
+  %cmp = icmp eq i32 %1, 1, !dbg !1268
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50, !dbg !1269
+  %2 = load %struct.Slice** %currentSlice, align 8, !dbg !1269, !tbaa !989
+  %mot_ctx = getelementptr inbounds %struct.Slice* %2, i64 0, i32 7, !dbg !1269
+  %3 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !dbg !1269, !tbaa !989
+  tail call void @llvm.dbg.value(metadata !{%struct.MotionInfoContexts* %3}, i64 0, metadata !354), !dbg !1269
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1, !dbg !1270
+  %4 = load i32* %value1, align 4, !dbg !1270, !tbaa !984
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !351), !dbg !1270
+  tail call void @llvm.dbg.value(metadata !45, i64 0, metadata !350), !dbg !1271
+  br i1 %cmp, label %if.else, label %if.then, !dbg !1272
 
-; <label>:11                                      ; preds = %0
-  switch i32 %10, label %73 [
-    i32 0, label %12
-    i32 1, label %14
-    i32 2, label %17
-    i32 3, label %21
-  ], !dbg !1596
+if.then:                                          ; preds = %entry
+  switch i32 %4, label %if.end147 [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb2
+    i32 2, label %sw.bb9
+    i32 3, label %sw.bb19
+  ], !dbg !1273
 
-; <label>:12                                      ; preds = %11
-  %13 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 0, i64 1, !dbg !1599
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %13) #6, !dbg !1601
-  br label %73, !dbg !1602
+sw.bb:                                            ; preds = %if.then
+  %arrayidx1 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 0, i64 1, !dbg !1275
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx1) #6, !dbg !1275
+  br label %if.end147, !dbg !1277
 
-; <label>:14                                      ; preds = %11
-  %15 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 0, i64 1, !dbg !1603
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %15) #6, !dbg !1604
-  %16 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 0, i64 3, !dbg !1605
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %16) #6, !dbg !1606
-  br label %73, !dbg !1607
+sw.bb2:                                           ; preds = %if.then
+  %arrayidx5 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 0, i64 1, !dbg !1278
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx5) #6, !dbg !1278
+  %arrayidx8 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 0, i64 3, !dbg !1279
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx8) #6, !dbg !1279
+  br label %if.end147, !dbg !1280
 
-; <label>:17                                      ; preds = %11
-  %18 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 0, i64 1, !dbg !1608
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %18) #6, !dbg !1609
-  %19 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 0, i64 3, !dbg !1610
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %19) #6, !dbg !1611
-  %20 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 0, i64 4, !dbg !1612
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %20) #6, !dbg !1613
-  br label %73, !dbg !1614
+sw.bb9:                                           ; preds = %if.then
+  %arrayidx12 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 0, i64 1, !dbg !1281
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx12) #6, !dbg !1281
+  %arrayidx15 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 0, i64 3, !dbg !1282
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx15) #6, !dbg !1282
+  %arrayidx18 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 0, i64 4, !dbg !1283
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx18) #6, !dbg !1283
+  br label %if.end147, !dbg !1284
 
-; <label>:21                                      ; preds = %11
-  %22 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 0, i64 1, !dbg !1615
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %22) #6, !dbg !1616
-  %23 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 0, i64 3, !dbg !1617
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %23) #6, !dbg !1618
-  %24 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 0, i64 4, !dbg !1619
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %24) #6, !dbg !1620
-  br label %73, !dbg !1621
+sw.bb19:                                          ; preds = %if.then
+  %arrayidx22 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 0, i64 1, !dbg !1285
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx22) #6, !dbg !1285
+  %arrayidx25 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 0, i64 3, !dbg !1286
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx25) #6, !dbg !1286
+  %arrayidx28 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 0, i64 4, !dbg !1287
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx28) #6, !dbg !1287
+  br label %if.end147, !dbg !1288
 
-; <label>:25                                      ; preds = %0
-  %26 = icmp eq i32 %10, 0, !dbg !1622
-  %27 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 1, i64 0, !dbg !1625
-  br i1 %26, label %28, label %29, !dbg !1627
+if.else:                                          ; preds = %entry
+  %cmp29 = icmp eq i32 %4, 0, !dbg !1289
+  %arrayidx34 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 1, i64 0, !dbg !1291
+  br i1 %cmp29, label %if.then31, label %if.else35, !dbg !1289
 
-; <label>:28                                      ; preds = %25
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %27) #6, !dbg !1628
-  br label %73, !dbg !1629
+if.then31:                                        ; preds = %if.else
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx34) #6, !dbg !1291
+  br label %if.end147, !dbg !1293
 
-; <label>:29                                      ; preds = %25
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %27) #6, !dbg !1630
-  %30 = icmp slt i32 %10, 3, !dbg !1632
-  br i1 %30, label %31, label %37, !dbg !1634
+if.else35:                                        ; preds = %if.else
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx34) #6, !dbg !1294
+  %cmp39 = icmp slt i32 %4, 3, !dbg !1296
+  br i1 %cmp39, label %if.then41, label %if.else56, !dbg !1296
 
-; <label>:31                                      ; preds = %29
-  %32 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 1, i64 1, !dbg !1635
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %32) #6, !dbg !1637
-  %33 = icmp eq i32 %10, 1, !dbg !1638
-  %34 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 1, i64 3, !dbg !1640
-  br i1 %33, label %35, label %36, !dbg !1641
+if.then41:                                        ; preds = %if.else35
+  %arrayidx44 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 1, i64 1, !dbg !1297
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx44) #6, !dbg !1297
+  %cmp45 = icmp eq i32 %4, 1, !dbg !1299
+  %arrayidx50 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 1, i64 3, !dbg !1299
+  br i1 %cmp45, label %if.then47, label %if.else51, !dbg !1299
 
-; <label>:35                                      ; preds = %31
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %34) #6, !dbg !1642
-  br label %73, !dbg !1642
+if.then47:                                        ; preds = %if.then41
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx50) #6, !dbg !1299
+  br label %if.end147, !dbg !1299
 
-; <label>:36                                      ; preds = %31
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %34) #6, !dbg !1643
-  br label %73
+if.else51:                                        ; preds = %if.then41
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx50) #6, !dbg !1300
+  br label %if.end147
 
-; <label>:37                                      ; preds = %29
-  %38 = icmp slt i32 %10, 7, !dbg !1644
-  %39 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 1, i64 1, !dbg !1646
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %39) #6, !dbg !1648
-  %40 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 1, i64 2, !dbg !1649
-  br i1 %38, label %41, label %53, !dbg !1650
+if.else56:                                        ; preds = %if.else35
+  %cmp57 = icmp slt i32 %4, 7, !dbg !1301
+  %arrayidx62 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 1, i64 1, !dbg !1302
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx62) #6, !dbg !1302
+  %arrayidx65 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 1, i64 2, !dbg !1304
+  br i1 %cmp57, label %if.then59, label %if.else88, !dbg !1301
 
-; <label>:41                                      ; preds = %37
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %40) #6, !dbg !1651
-  %42 = add nsw i32 %10, -3, !dbg !1652
-  %43 = and i32 %42, 2, !dbg !1653
-  tail call void @llvm.dbg.value(metadata i32 %43, i64 0, metadata !356, metadata !1011), !dbg !1654
-  %44 = icmp eq i32 %43, 0, !dbg !1655
-  %45 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 1, i64 3, !dbg !1657
-  br i1 %44, label %47, label %46, !dbg !1658
+if.then59:                                        ; preds = %if.else56
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx65) #6, !dbg !1304
+  %sub = add nsw i32 %4, -3, !dbg !1305
+  %and = and i32 %sub, 2, !dbg !1305
+  tail call void @llvm.dbg.value(metadata !{i32 %and}, i64 0, metadata !352), !dbg !1305
+  %tobool66 = icmp eq i32 %and, 0, !dbg !1306
+  %arrayidx70 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 1, i64 3, !dbg !1306
+  br i1 %tobool66, label %if.else71, label %if.then67, !dbg !1306
 
-; <label>:46                                      ; preds = %41
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %45) #6, !dbg !1659
-  br label %48, !dbg !1659
+if.then67:                                        ; preds = %if.then59
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx70) #6, !dbg !1306
+  br label %if.end75, !dbg !1306
 
-; <label>:47                                      ; preds = %41
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %45) #6, !dbg !1660
-  br label %48
+if.else71:                                        ; preds = %if.then59
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx70) #6, !dbg !1307
+  br label %if.end75
 
-; <label>:48                                      ; preds = %47, %46
-  %49 = and i32 %42, 1, !dbg !1661
-  tail call void @llvm.dbg.value(metadata i32 %49, i64 0, metadata !356, metadata !1011), !dbg !1654
-  %50 = icmp eq i32 %49, 0, !dbg !1662
-  br i1 %50, label %52, label %51, !dbg !1664
+if.end75:                                         ; preds = %if.else71, %if.then67
+  %and77 = and i32 %sub, 1, !dbg !1308
+  tail call void @llvm.dbg.value(metadata !{i32 %and77}, i64 0, metadata !352), !dbg !1308
+  %tobool78 = icmp eq i32 %and77, 0, !dbg !1309
+  br i1 %tobool78, label %if.else83, label %if.then79, !dbg !1309
 
-; <label>:51                                      ; preds = %48
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %45) #6, !dbg !1665
-  br label %73, !dbg !1665
+if.then79:                                        ; preds = %if.end75
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx70) #6, !dbg !1309
+  br label %if.end147, !dbg !1309
 
-; <label>:52                                      ; preds = %48
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %45) #6, !dbg !1666
-  br label %73
+if.else83:                                        ; preds = %if.end75
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx70) #6, !dbg !1310
+  br label %if.end147
 
-; <label>:53                                      ; preds = %37
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %40) #6, !dbg !1667
-  %54 = add nsw i32 %10, -7, !dbg !1669
-  %55 = and i32 %54, 4, !dbg !1670
-  tail call void @llvm.dbg.value(metadata i32 %55, i64 0, metadata !356, metadata !1011), !dbg !1654
-  %56 = icmp eq i32 %55, 0, !dbg !1671
-  %57 = getelementptr inbounds %struct.MotionInfoContexts* %8, i64 0, i32 1, i64 1, i64 3, !dbg !1673
-  br i1 %56, label %63, label %58, !dbg !1675
+if.else88:                                        ; preds = %if.else56
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx65) #6, !dbg !1311
+  %sub95 = add nsw i32 %4, -7, !dbg !1313
+  %and97 = and i32 %sub95, 4, !dbg !1313
+  tail call void @llvm.dbg.value(metadata !{i32 %and97}, i64 0, metadata !352), !dbg !1313
+  %tobool98 = icmp eq i32 %and97, 0, !dbg !1314
+  %arrayidx102 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 1, i64 1, i64 3, !dbg !1315
+  br i1 %tobool98, label %if.else115, label %if.then99, !dbg !1314
 
-; <label>:58                                      ; preds = %53
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %57) #6, !dbg !1676
-  %59 = and i32 %54, 1, !dbg !1677
-  tail call void @llvm.dbg.value(metadata i32 %59, i64 0, metadata !356, metadata !1011), !dbg !1654
-  %60 = icmp eq i32 %59, 0, !dbg !1678
-  br i1 %60, label %62, label %61, !dbg !1680
+if.then99:                                        ; preds = %if.else88
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx102) #6, !dbg !1315
+  %and104 = and i32 %sub95, 1, !dbg !1317
+  tail call void @llvm.dbg.value(metadata !{i32 %and104}, i64 0, metadata !352), !dbg !1317
+  %tobool105 = icmp eq i32 %and104, 0, !dbg !1318
+  br i1 %tobool105, label %if.else110, label %if.then106, !dbg !1318
 
-; <label>:61                                      ; preds = %58
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %57) #6, !dbg !1681
-  br label %73, !dbg !1681
+if.then106:                                       ; preds = %if.then99
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx102) #6, !dbg !1318
+  br label %if.end147, !dbg !1318
 
-; <label>:62                                      ; preds = %58
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %57) #6, !dbg !1682
-  br label %73
+if.else110:                                       ; preds = %if.then99
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx102) #6, !dbg !1319
+  br label %if.end147
 
-; <label>:63                                      ; preds = %53
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %57) #6, !dbg !1683
-  %64 = and i32 %54, 2, !dbg !1685
-  tail call void @llvm.dbg.value(metadata i32 %64, i64 0, metadata !356, metadata !1011), !dbg !1654
-  %65 = icmp eq i32 %64, 0, !dbg !1686
-  br i1 %65, label %67, label %66, !dbg !1688
+if.else115:                                       ; preds = %if.else88
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx102) #6, !dbg !1320
+  %and121 = and i32 %sub95, 2, !dbg !1322
+  tail call void @llvm.dbg.value(metadata !{i32 %and121}, i64 0, metadata !352), !dbg !1322
+  %tobool122 = icmp eq i32 %and121, 0, !dbg !1323
+  br i1 %tobool122, label %if.else127, label %if.then123, !dbg !1323
 
-; <label>:66                                      ; preds = %63
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %57) #6, !dbg !1689
-  br label %68, !dbg !1689
+if.then123:                                       ; preds = %if.else115
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx102) #6, !dbg !1323
+  br label %if.end131, !dbg !1323
 
-; <label>:67                                      ; preds = %63
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %57) #6, !dbg !1690
-  br label %68
+if.else127:                                       ; preds = %if.else115
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx102) #6, !dbg !1324
+  br label %if.end131
 
-; <label>:68                                      ; preds = %67, %66
-  %69 = and i32 %54, 1, !dbg !1691
-  tail call void @llvm.dbg.value(metadata i32 %69, i64 0, metadata !356, metadata !1011), !dbg !1654
-  %70 = icmp eq i32 %69, 0, !dbg !1692
-  br i1 %70, label %72, label %71, !dbg !1694
+if.end131:                                        ; preds = %if.else127, %if.then123
+  %and133 = and i32 %sub95, 1, !dbg !1325
+  tail call void @llvm.dbg.value(metadata !{i32 %and133}, i64 0, metadata !352), !dbg !1325
+  %tobool134 = icmp eq i32 %and133, 0, !dbg !1326
+  br i1 %tobool134, label %if.else139, label %if.then135, !dbg !1326
 
-; <label>:71                                      ; preds = %68
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %57) #6, !dbg !1695
-  br label %73, !dbg !1695
+if.then135:                                       ; preds = %if.end131
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx102) #6, !dbg !1326
+  br label %if.end147, !dbg !1326
 
-; <label>:72                                      ; preds = %68
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %57) #6, !dbg !1696
-  br label %73
+if.else139:                                       ; preds = %if.end131
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx102) #6, !dbg !1327
+  br label %if.end147
 
-; <label>:73                                      ; preds = %36, %35, %62, %61, %72, %71, %51, %52, %12, %14, %17, %21, %11, %28
-  ret void, !dbg !1697
+if.end147:                                        ; preds = %if.else51, %if.then47, %if.else110, %if.then106, %if.else139, %if.then135, %if.then79, %if.else83, %sw.bb, %sw.bb2, %sw.bb9, %sw.bb19, %if.then, %if.then31
+  ret void, !dbg !1328
 }

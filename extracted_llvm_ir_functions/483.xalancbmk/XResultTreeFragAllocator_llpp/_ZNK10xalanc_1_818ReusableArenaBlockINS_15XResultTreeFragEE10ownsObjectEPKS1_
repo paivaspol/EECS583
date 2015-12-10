@@ -1,0 +1,47 @@
+define linkonce_odr zeroext i1 @_ZNK10xalanc_1_818ReusableArenaBlockINS_15XResultTreeFragEE10ownsObjectEPKS1_(%"class.xalanc_1_8::ReusableArenaBlock"* %this, %"class.xalanc_1_8::XResultTreeFrag"* %theObject) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !4015), !dbg !5208
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %theObject}, i64 0, metadata !4016), !dbg !5208
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %theObject}, i64 0, metadata !5209), !dbg !5211
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %theObject}, i64 0, metadata !5212), !dbg !5214
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %theObject}, i64 0, metadata !5215), !dbg !5217
+  %m_objectBlock.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 4, !dbg !5216
+  %0 = load %"class.xalanc_1_8::XResultTreeFrag"** %m_objectBlock.i, align 8, !dbg !5216, !tbaa !4406
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %0}, i64 0, metadata !5218), !dbg !5217
+  tail call void @llvm.dbg.value(metadata !5219, i64 0, metadata !5220), !dbg !5217
+  %cmp.i.i = icmp ugt %"class.xalanc_1_8::XResultTreeFrag"* %0, %theObject, !dbg !5221
+  br i1 %cmp.i.i, label %land.end, label %land.lhs.true.i, !dbg !5216
+
+land.lhs.true.i:                                  ; preds = %entry
+  %m_objectCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 2, !dbg !5213
+  %1 = load i64* %m_objectCount.i, align 8, !dbg !5213, !tbaa !4392
+  %add.ptr.i = getelementptr inbounds %"class.xalanc_1_8::XResultTreeFrag"* %0, i64 %1, !dbg !5213
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %add.ptr.i}, i64 0, metadata !5223), !dbg !5214
+  tail call void @llvm.dbg.value(metadata !5219, i64 0, metadata !5224), !dbg !5214
+  %cmp.i7.i = icmp ugt %"class.xalanc_1_8::XResultTreeFrag"* %add.ptr.i, %theObject, !dbg !5225
+  br i1 %cmp.i7.i, label %land.rhs, label %land.end, !dbg !5213
+
+land.rhs:                                         ; preds = %land.lhs.true.i
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !5226), !dbg !5227
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %theObject}, i64 0, metadata !5228), !dbg !5227
+  %m_freeBlockCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 2, !dbg !5229
+  %2 = load i64* %m_freeBlockCount.i, align 8, !dbg !5229, !tbaa !4392
+  %cmp.i = icmp eq i64 %2, 0, !dbg !5229
+  br i1 %cmp.i, label %land.end, label %if.else.i4, !dbg !5229
+
+if.else.i4:                                       ; preds = %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XResultTreeFrag"* %theObject}, i64 0, metadata !5230), !dbg !5232
+  %sub.ptr.lhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XResultTreeFrag"* %theObject to i64, !dbg !5233
+  %sub.ptr.rhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XResultTreeFrag"* %0 to i64, !dbg !5233
+  %sub.ptr.sub.i.i = sub i64 %sub.ptr.lhs.cast.i.i, %sub.ptr.rhs.cast.i.i, !dbg !5233
+  %sub.ptr.div.i.i = sdiv exact i64 %sub.ptr.sub.i.i, 88, !dbg !5233
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.div.i.i}, i64 0, metadata !5234), !dbg !5231
+  %m_freeList.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 1, !dbg !5235
+  %call2.i = tail call zeroext i1 @_ZNK10xalanc_1_811XalanBitmap5isSetEm(%"class.xalanc_1_8::XalanBitmap"* %m_freeList.i, i64 %sub.ptr.div.i.i) #10, !dbg !5235
+  %phitmp = xor i1 %call2.i, true, !dbg !5235
+  br label %land.end, !dbg !5235
+
+land.end:                                         ; preds = %if.else.i4, %land.rhs, %land.lhs.true.i, %entry
+  %3 = phi i1 [ false, %entry ], [ false, %land.lhs.true.i ], [ %phitmp, %if.else.i4 ], [ true, %land.rhs ]
+  ret i1 %3, !dbg !5236
+}

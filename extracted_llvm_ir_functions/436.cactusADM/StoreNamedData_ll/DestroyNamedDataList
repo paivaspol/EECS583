@@ -1,20 +1,21 @@
 define void @DestroyNamedDataList(%struct.PNamedData* %list) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.PNamedData* %list, i64 0, metadata !46, metadata !56), !dbg !123
-  tail call void @llvm.dbg.value(metadata %struct.PNamedData* %list, i64 0, metadata !47, metadata !56), !dbg !124
-  %1 = icmp eq %struct.PNamedData* %list, null, !dbg !125
-  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !125
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.PNamedData* %list}, i64 0, metadata !46), !dbg !88
+  tail call void @llvm.dbg.value(metadata !{%struct.PNamedData* %list}, i64 0, metadata !47), !dbg !89
+  %tobool4 = icmp eq %struct.PNamedData* %list, null, !dbg !89
+  br i1 %tobool4, label %for.end, label %for.body, !dbg !89
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %current.01 = phi %struct.PNamedData* [ %3, %.lr.ph ], [ %list, %0 ]
-  %2 = getelementptr inbounds %struct.PNamedData* %current.01, i64 0, i32 1, !dbg !127
-  %3 = load %struct.PNamedData** %2, align 8, !dbg !127, !tbaa !87
-  tail call void @llvm.dbg.value(metadata %struct.PNamedData* %3, i64 0, metadata !48, metadata !56), !dbg !130
-  %4 = bitcast %struct.PNamedData* %current.01 to i8*, !dbg !131
-  tail call void @free(i8* %4) #7, !dbg !132
-  tail call void @llvm.dbg.value(metadata %struct.PNamedData* %3, i64 0, metadata !47, metadata !56), !dbg !124
-  %5 = icmp eq %struct.PNamedData* %3, null, !dbg !125
-  br i1 %5, label %._crit_edge, label %.lr.ph, !dbg !125
+for.body:                                         ; preds = %entry, %for.body
+  %current.05 = phi %struct.PNamedData* [ %0, %for.body ], [ %list, %entry ]
+  %next1 = getelementptr inbounds %struct.PNamedData* %current.05, i64 0, i32 1, !dbg !91
+  %0 = load %struct.PNamedData** %next1, align 8, !dbg !91, !tbaa !57
+  tail call void @llvm.dbg.value(metadata !{%struct.PNamedData* %0}, i64 0, metadata !48), !dbg !91
+  %1 = bitcast %struct.PNamedData* %current.05 to i8*, !dbg !93
+  tail call void @free(i8* %1) #6, !dbg !93
+  tail call void @llvm.dbg.value(metadata !{%struct.PNamedData* %0}, i64 0, metadata !47), !dbg !89
+  %tobool = icmp eq %struct.PNamedData* %0, null, !dbg !89
+  br i1 %tobool, label %for.end, label %for.body, !dbg !89
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  ret void, !dbg !133
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !94
 }

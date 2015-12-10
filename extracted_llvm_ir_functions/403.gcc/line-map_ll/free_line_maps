@@ -1,46 +1,49 @@
 define void @free_line_maps(%struct.line_maps* nocapture %set) #0 {
 entry:
-  %maps = getelementptr inbounds %struct.line_maps* %set, i64 0, i32 0
-  %0 = load %struct.line_map** %maps, align 8, !tbaa !4
-  %tobool = icmp eq %struct.line_map* %0, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.line_maps* %set}, i64 0, metadata !44), !dbg !97
+  %maps = getelementptr inbounds %struct.line_maps* %set, i64 0, i32 0, !dbg !98
+  %0 = load %struct.line_map** %maps, align 8, !dbg !98, !tbaa !99
+  %tobool = icmp eq %struct.line_map* %0, null, !dbg !98
+  br i1 %tobool, label %if.end, label %if.then, !dbg !98
 
 if.then:                                          ; preds = %entry
-  %used = getelementptr inbounds %struct.line_maps* %set, i64 0, i32 2
-  %1 = load i32* %used, align 4, !tbaa !0
-  %idx.ext = zext i32 %1 to i64
-  %add.ptr.sum = add i64 %idx.ext, -1
-  %included_from12 = getelementptr inbounds %struct.line_map* %0, i64 %add.ptr.sum, i32 3
-  %2 = load i32* %included_from12, align 4, !tbaa !0
-  %lnot13 = icmp sgt i32 %2, -1
-  br i1 %lnot13, label %for.body.lr.ph, label %for.end
+  %used = getelementptr inbounds %struct.line_maps* %set, i64 0, i32 2, !dbg !100
+  %1 = load i32* %used, align 4, !dbg !100, !tbaa !90
+  %idx.ext = zext i32 %1 to i64, !dbg !100
+  %add.ptr.sum = add i64 %idx.ext, -1, !dbg !100
+  tail call void @llvm.dbg.value(metadata !{%struct.line_map* %add.ptr2}, i64 0, metadata !45), !dbg !100
+  %included_from12 = getelementptr inbounds %struct.line_map* %0, i64 %add.ptr.sum, i32 3, !dbg !100
+  %2 = load i32* %included_from12, align 4, !dbg !100, !tbaa !90
+  %lnot13 = icmp sgt i32 %2, -1, !dbg !100
+  br i1 %lnot13, label %for.body.lr.ph, label %for.end, !dbg !100
 
 for.body.lr.ph:                                   ; preds = %if.then
-  %add.ptr2 = getelementptr inbounds %struct.line_map* %0, i64 %add.ptr.sum
-  br label %for.body
+  %add.ptr2 = getelementptr inbounds %struct.line_map* %0, i64 %add.ptr.sum, !dbg !100
+  br label %for.body, !dbg !100
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %included_from15 = phi i32* [ %included_from12, %for.body.lr.ph ], [ %included_from, %for.body ]
   %map.014 = phi %struct.line_map* [ %add.ptr2, %for.body.lr.ph ], [ %arrayidx, %for.body ]
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
-  %to_file = getelementptr inbounds %struct.line_map* %map.014, i64 0, i32 0
-  %4 = load i8** %to_file, align 8, !tbaa !4
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), i8* %4) #6
-  %5 = load i32* %included_from15, align 4, !tbaa !0
-  %idxprom = sext i32 %5 to i64
-  %6 = load %struct.line_map** %maps, align 8, !tbaa !4
-  %arrayidx = getelementptr inbounds %struct.line_map* %6, i64 %idxprom
-  %included_from = getelementptr inbounds %struct.line_map* %6, i64 %idxprom, i32 3
-  %7 = load i32* %included_from, align 4, !tbaa !0
-  %lnot = icmp sgt i32 %7, -1
-  br i1 %lnot, label %for.body, label %for.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !102, !tbaa !99
+  %to_file = getelementptr inbounds %struct.line_map* %map.014, i64 0, i32 0, !dbg !102
+  %4 = load i8** %to_file, align 8, !dbg !102, !tbaa !99
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), i8* %4) #7, !dbg !102
+  %5 = load i32* %included_from15, align 4, !dbg !103, !tbaa !90
+  %idxprom = sext i32 %5 to i64, !dbg !103
+  %6 = load %struct.line_map** %maps, align 8, !dbg !103, !tbaa !99
+  %arrayidx = getelementptr inbounds %struct.line_map* %6, i64 %idxprom, !dbg !103
+  tail call void @llvm.dbg.value(metadata !{%struct.line_map* %arrayidx}, i64 0, metadata !45), !dbg !103
+  %included_from = getelementptr inbounds %struct.line_map* %6, i64 %idxprom, i32 3, !dbg !100
+  %7 = load i32* %included_from, align 4, !dbg !100, !tbaa !90
+  %lnot = icmp sgt i32 %7, -1, !dbg !100
+  br i1 %lnot, label %for.body, label %for.end, !dbg !100
 
 for.end:                                          ; preds = %for.body, %if.then
   %8 = phi %struct.line_map* [ %0, %if.then ], [ %6, %for.body ]
-  %9 = bitcast %struct.line_map* %8 to i8*
-  tail call void @free(i8* %9) #6
-  br label %if.end
+  %9 = bitcast %struct.line_map* %8 to i8*, !dbg !104
+  tail call void @free(i8* %9) #7, !dbg !104
+  br label %if.end, !dbg !105
 
 if.end:                                           ; preds = %entry, %for.end
-  ret void
+  ret void, !dbg !106
 }

@@ -1,88 +1,77 @@
 define void @GKIFree(%struct.GKI* %hash) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.GKI* %hash, i64 0, metadata !35, metadata !93), !dbg !133
-  %1 = icmp eq %struct.GKI* %hash, null, !dbg !134
-  br i1 %1, label %43, label %.preheader1, !dbg !136
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.GKI* %hash}, i64 0, metadata !33), !dbg !104
+  %cmp = icmp eq %struct.GKI* %hash, null, !dbg !105
+  br i1 %cmp, label %return, label %for.cond.preheader, !dbg !105
 
-.preheader1:                                      ; preds = %0
-  %2 = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 2, !dbg !137
-  %3 = load i32* %2, align 4, !dbg !137, !tbaa !114
-  %4 = icmp sgt i32 %3, 0, !dbg !140
-  br i1 %4, label %.preheader.lr.ph, label %.preheader1._crit_edge, !dbg !141
+for.cond.preheader:                               ; preds = %entry
+  %nhash = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 2, !dbg !106
+  %0 = load i32* %nhash, align 4, !dbg !106, !tbaa !93
+  %cmp140 = icmp sgt i32 %0, 0, !dbg !106
+  %table = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 0, !dbg !108
+  %.pre = load %struct.gki_elem*** %table, align 8, !dbg !108, !tbaa !98
+  br i1 %cmp140, label %while.cond.preheader, label %for.end, !dbg !106
 
-.preheader1._crit_edge:                           ; preds = %.preheader1
-  %.phi.trans.insert = bitcast %struct.GKI* %hash to i8**
-  %.pre6 = load i8** %.phi.trans.insert, align 8, !dbg !142, !tbaa !118
-  br label %._crit_edge3, !dbg !141
+while.cond.preheader:                             ; preds = %for.cond.preheader, %for.inc
+  %1 = phi i32 [ %14, %for.inc ], [ %0, %for.cond.preheader ]
+  %2 = phi %struct.gki_elem** [ %15, %for.inc ], [ %.pre, %for.cond.preheader ], !dbg !108
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
+  %arrayidx38 = getelementptr inbounds %struct.gki_elem** %2, i64 %indvars.iv, !dbg !108
+  %3 = load %struct.gki_elem** %arrayidx38, align 8, !dbg !108, !tbaa !98
+  %cmp239 = icmp eq %struct.gki_elem* %3, null, !dbg !108
+  br i1 %cmp239, label %for.inc, label %while.body, !dbg !108
 
-.preheader.lr.ph:                                 ; preds = %.preheader1
-  %5 = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 0, !dbg !143
-  %.pre = load %struct.gki_elem*** %5, align 8, !dbg !143, !tbaa !118
-  %6 = bitcast %struct.gki_elem** %.pre to i8*
-  br label %.preheader, !dbg !141
+while.body:                                       ; preds = %while.cond.preheader, %if.end15
+  %4 = phi %struct.gki_elem** [ %12, %if.end15 ], [ %2, %while.cond.preheader ]
+  %5 = phi %struct.gki_elem* [ %13, %if.end15 ], [ %3, %while.cond.preheader ]
+  %nxt = getelementptr inbounds %struct.gki_elem* %5, i64 0, i32 2, !dbg !109
+  %6 = load %struct.gki_elem** %nxt, align 8, !dbg !109, !tbaa !98
+  tail call void @llvm.dbg.value(metadata !{%struct.gki_elem* %6}, i64 0, metadata !34), !dbg !109
+  %key = getelementptr inbounds %struct.gki_elem* %5, i64 0, i32 0, !dbg !111
+  %7 = load i8** %key, align 8, !dbg !111, !tbaa !98
+  %cmp9 = icmp eq i8* %7, null, !dbg !111
+  br i1 %cmp9, label %if.end15, label %if.then10, !dbg !111
 
-.preheader:                                       ; preds = %.preheader.lr.ph, %35
-  %7 = phi i8* [ %6, %.preheader.lr.ph ], [ %36, %35 ]
-  %8 = phi i32 [ %3, %.preheader.lr.ph ], [ %37, %35 ]
-  %9 = phi %struct.gki_elem** [ %.pre, %.preheader.lr.ph ], [ %38, %35 ], !dbg !143
-  %indvars.iv = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next, %35 ]
-  %10 = getelementptr inbounds %struct.gki_elem** %9, i64 %indvars.iv, !dbg !144
-  %11 = load %struct.gki_elem** %10, align 8, !dbg !144, !tbaa !126
-  %12 = icmp eq %struct.gki_elem* %11, null, !dbg !145
-  br i1 %12, label %35, label %.lr.ph, !dbg !146
+if.then10:                                        ; preds = %while.body
+  tail call void @free(i8* %7) #7, !dbg !111
+  %.pre43 = load %struct.gki_elem*** %table, align 8, !dbg !112, !tbaa !98
+  br label %if.end15, !dbg !111
 
-.lr.ph:                                           ; preds = %.preheader, %22
-  %13 = phi %struct.gki_elem** [ %30, %22 ], [ %9, %.preheader ]
-  %14 = phi %struct.gki_elem* [ %32, %22 ], [ %11, %.preheader ]
-  %15 = getelementptr inbounds %struct.gki_elem* %14, i64 0, i32 2, !dbg !147
-  %16 = bitcast %struct.gki_elem** %15 to i64*, !dbg !147
-  %17 = load i64* %16, align 8, !dbg !147, !tbaa !149
-  %18 = getelementptr inbounds %struct.gki_elem* %14, i64 0, i32 0, !dbg !151
-  %19 = load i8** %18, align 8, !dbg !151, !tbaa !153
-  %20 = icmp eq i8* %19, null, !dbg !154
-  br i1 %20, label %22, label %21, !dbg !155
+if.end15:                                         ; preds = %while.body, %if.then10
+  %8 = phi %struct.gki_elem** [ %4, %while.body ], [ %.pre43, %if.then10 ], !dbg !112
+  %arrayidx18 = getelementptr inbounds %struct.gki_elem** %8, i64 %indvars.iv, !dbg !112
+  %9 = load %struct.gki_elem** %arrayidx18, align 8, !dbg !112, !tbaa !98
+  %10 = bitcast %struct.gki_elem* %9 to i8*, !dbg !112
+  tail call void @free(i8* %10) #7, !dbg !112
+  %11 = load %struct.gki_elem*** %table, align 8, !dbg !113, !tbaa !98
+  %arrayidx21 = getelementptr inbounds %struct.gki_elem** %11, i64 %indvars.iv, !dbg !113
+  store %struct.gki_elem* %6, %struct.gki_elem** %arrayidx21, align 8, !dbg !113, !tbaa !98
+  %12 = load %struct.gki_elem*** %table, align 8, !dbg !108, !tbaa !98
+  %arrayidx = getelementptr inbounds %struct.gki_elem** %12, i64 %indvars.iv, !dbg !108
+  %13 = load %struct.gki_elem** %arrayidx, align 8, !dbg !108, !tbaa !98
+  %cmp2 = icmp eq %struct.gki_elem* %13, null, !dbg !108
+  br i1 %cmp2, label %while.cond.for.inc_crit_edge, label %while.body, !dbg !108
 
-; <label>:21                                      ; preds = %.lr.ph
-  tail call void @free(i8* %19) #6, !dbg !156
-  %.pre4 = load %struct.gki_elem*** %5, align 8, !dbg !157, !tbaa !118
-  br label %22, !dbg !156
+while.cond.for.inc_crit_edge:                     ; preds = %if.end15
+  %.pre42 = load i32* %nhash, align 4, !dbg !106, !tbaa !93
+  br label %for.inc, !dbg !108
 
-; <label>:22                                      ; preds = %.lr.ph, %21
-  %23 = phi %struct.gki_elem** [ %13, %.lr.ph ], [ %.pre4, %21 ], !dbg !157
-  %24 = getelementptr inbounds %struct.gki_elem** %23, i64 %indvars.iv, !dbg !158
-  %25 = bitcast %struct.gki_elem** %24 to i8**, !dbg !158
-  %26 = load i8** %25, align 8, !dbg !158, !tbaa !126
-  tail call void @free(i8* %26) #6, !dbg !159
-  %27 = load %struct.gki_elem*** %5, align 8, !dbg !160, !tbaa !118
-  %28 = getelementptr inbounds %struct.gki_elem** %27, i64 %indvars.iv, !dbg !161
-  %29 = bitcast %struct.gki_elem** %28 to i64*, !dbg !162
-  store i64 %17, i64* %29, align 8, !dbg !162, !tbaa !126
-  %30 = load %struct.gki_elem*** %5, align 8, !dbg !143, !tbaa !118
-  %31 = getelementptr inbounds %struct.gki_elem** %30, i64 %indvars.iv, !dbg !144
-  %32 = load %struct.gki_elem** %31, align 8, !dbg !144, !tbaa !126
-  %33 = icmp eq %struct.gki_elem* %32, null, !dbg !145
-  br i1 %33, label %._crit_edge, label %.lr.ph, !dbg !146
+for.inc:                                          ; preds = %while.cond.for.inc_crit_edge, %while.cond.preheader
+  %14 = phi i32 [ %.pre42, %while.cond.for.inc_crit_edge ], [ %1, %while.cond.preheader ], !dbg !106
+  %15 = phi %struct.gki_elem** [ %12, %while.cond.for.inc_crit_edge ], [ %2, %while.cond.preheader ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !106
+  %16 = trunc i64 %indvars.iv.next to i32, !dbg !106
+  %cmp1 = icmp slt i32 %16, %14, !dbg !106
+  br i1 %cmp1, label %while.cond.preheader, label %for.end, !dbg !106
 
-._crit_edge:                                      ; preds = %22
-  %34 = bitcast %struct.gki_elem** %30 to i8*
-  %.pre5 = load i32* %2, align 4, !dbg !137, !tbaa !114
-  br label %35, !dbg !146
+for.end:                                          ; preds = %for.cond.preheader, %for.inc
+  %17 = phi %struct.gki_elem** [ %15, %for.inc ], [ %.pre, %for.cond.preheader ]
+  %18 = bitcast %struct.gki_elem** %17 to i8*, !dbg !114
+  tail call void @free(i8* %18) #7, !dbg !114
+  %19 = bitcast %struct.GKI* %hash to i8*, !dbg !115
+  tail call void @free(i8* %19) #7, !dbg !115
+  br label %return, !dbg !115
 
-; <label>:35                                      ; preds = %._crit_edge, %.preheader
-  %36 = phi i8* [ %34, %._crit_edge ], [ %7, %.preheader ]
-  %37 = phi i32 [ %.pre5, %._crit_edge ], [ %8, %.preheader ], !dbg !141
-  %38 = phi %struct.gki_elem** [ %30, %._crit_edge ], [ %9, %.preheader ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !141
-  %39 = sext i32 %37 to i64, !dbg !140
-  %40 = icmp slt i64 %indvars.iv.next, %39, !dbg !140
-  br i1 %40, label %.preheader, label %._crit_edge3, !dbg !141
-
-._crit_edge3:                                     ; preds = %35, %.preheader1._crit_edge
-  %41 = phi i8* [ %.pre6, %.preheader1._crit_edge ], [ %36, %35 ]
-  tail call void @free(i8* %41) #6, !dbg !163
-  %42 = bitcast %struct.GKI* %hash to i8*, !dbg !164
-  tail call void @free(i8* %42) #6, !dbg !165
-  br label %43, !dbg !166
-
-; <label>:43                                      ; preds = %0, %._crit_edge3
-  ret void, !dbg !166
+return:                                           ; preds = %entry, %for.end
+  ret void, !dbg !115
 }

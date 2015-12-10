@@ -1,178 +1,167 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIOUtil.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIOUtil.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.anon = type { double, double, double, double, double, double, double, double, double, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 }
 
 @iorest_ = external global %struct.anon
 @.str = private unnamed_addr constant [3 x i8] c"no\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTKi_BindingsParameterRecovery_IOUtil() #0 {
-  %1 = load i8** getelementptr inbounds (%struct.anon* @iorest_, i64 0, i32 17), align 8, !dbg !74, !tbaa !75
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !31, metadata !82), !dbg !74
-  %2 = load i8** getelementptr inbounds (%struct.anon* @iorest_, i64 0, i32 18), align 8, !dbg !74, !tbaa !83
-  tail call void @llvm.dbg.value(metadata i8* %2, i64 0, metadata !32, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !69, metadata !82), !dbg !84
-  %3 = tail call i32 @CCTK_Equals(i8* %2, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0)) #3, !dbg !85
-  %4 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0)) #3, !dbg !87
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !66, metadata !82), !dbg !74
-  ret i32 0, !dbg !89
+entry:
+  %0 = load i8** getelementptr inbounds (%struct.anon* @iorest_, i64 0, i32 17), align 8, !dbg !71, !tbaa !72
+  tail call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !32), !dbg !71
+  %1 = load i8** getelementptr inbounds (%struct.anon* @iorest_, i64 0, i32 18), align 8, !dbg !71, !tbaa !72
+  tail call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !33), !dbg !71
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !70), !dbg !75
+  %call = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0)) #3, !dbg !76
+  %call4 = tail call i32 @CCTK_Equals(i8* %0, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0)) #3, !dbg !77
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  tail call void @llvm.dbg.value(metadata !78, i64 0, metadata !67), !dbg !79
+  ret i32 0, !dbg !79
 }
 
 ; Function Attrs: optsize
 declare i32 @CCTK_Equals(i8*, i8*) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
 attributes #3 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!70, !71, !72}
-!llvm.ident = !{!73}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !2, subprograms: !3, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIOUtil.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DISubprogram(name: "CCTKi_BindingsParameterRecovery_IOUtil", scope: !1, file: !1, line: 30, type: !5, isLocal: false, isDefinition: true, scopeLine: 31, flags: DIFlagPrototyped, isOptimized: true, function: i32 ()* @CCTKi_BindingsParameterRecovery_IOUtil, variables: !8)
-!5 = !DISubroutineType(types: !6)
-!6 = !{!7}
-!7 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!8 = !{!9, !12, !13, !14, !15, !16, !17, !18, !19, !20, !24, !25, !26, !27, !28, !29, !30, !31, !32, !33, !34, !35, !36, !37, !39, !40, !41, !42, !43, !44, !45, !46, !47, !48, !49, !50, !51, !52, !53, !54, !55, !56, !57, !58, !59, !60, !61, !62, !63, !64, !65, !66, !69}
-!9 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_xline_y", scope: !4, file: !1, line: 32, type: !10)
-!10 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !11)
-!11 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!12 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_xline_z", scope: !4, file: !1, line: 32, type: !10)
-!13 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_xyplane_z", scope: !4, file: !1, line: 32, type: !10)
-!14 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_xzplane_y", scope: !4, file: !1, line: 32, type: !10)
-!15 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_yline_x", scope: !4, file: !1, line: 32, type: !10)
-!16 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_yline_z", scope: !4, file: !1, line: 32, type: !10)
-!17 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_yzplane_x", scope: !4, file: !1, line: 32, type: !10)
-!18 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_zline_x", scope: !4, file: !1, line: 32, type: !10)
-!19 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_zline_y", scope: !4, file: !1, line: 32, type: !10)
-!20 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "checkpoint_ID_file", scope: !4, file: !1, line: 32, type: !21)
-!21 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !22, size: 64, align: 64)
-!22 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !23)
-!23 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!24 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "checkpoint_dir", scope: !4, file: !1, line: 32, type: !21)
-!25 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "checkpoint_file", scope: !4, file: !1, line: 32, type: !21)
-!26 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "newverbose", scope: !4, file: !1, line: 32, type: !21)
-!27 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out3D_mode", scope: !4, file: !1, line: 32, type: !21)
-!28 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_fileinfo", scope: !4, file: !1, line: 32, type: !21)
-!29 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "outdir", scope: !4, file: !1, line: 32, type: !21)
-!30 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "parfile_name", scope: !4, file: !1, line: 32, type: !21)
-!31 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "parfile_write", scope: !4, file: !1, line: 32, type: !21)
-!32 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "recover", scope: !4, file: !1, line: 32, type: !21)
-!33 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "recover_ID_files", scope: !4, file: !1, line: 32, type: !21)
-!34 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "recover_ID_vars", scope: !4, file: !1, line: 32, type: !21)
-!35 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "recover_file", scope: !4, file: !1, line: 32, type: !21)
-!36 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "recovery_dir", scope: !4, file: !1, line: 32, type: !21)
-!37 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "checkpoint_ID", scope: !4, file: !1, line: 32, type: !38)
-!38 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !7)
-!39 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "checkpoint_every", scope: !4, file: !1, line: 32, type: !38)
-!40 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "checkpoint_keep", scope: !4, file: !1, line: 32, type: !38)
-!41 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "checkpoint_keep_all", scope: !4, file: !1, line: 32, type: !38)
-!42 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "checkpoint_on_terminate", scope: !4, file: !1, line: 32, type: !38)
-!43 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "new_filename_scheme", scope: !4, file: !1, line: 32, type: !38)
-!44 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out3D_downsample_x", scope: !4, file: !1, line: 32, type: !38)
-!45 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out3D_downsample_y", scope: !4, file: !1, line: 32, type: !38)
-!46 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out3D_downsample_z", scope: !4, file: !1, line: 32, type: !38)
-!47 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out3D_parameters", scope: !4, file: !1, line: 32, type: !38)
-!48 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out3D_procs", scope: !4, file: !1, line: 32, type: !38)
-!49 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out3D_septimefiles", scope: !4, file: !1, line: 32, type: !38)
-!50 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out3D_single", scope: !4, file: !1, line: 32, type: !38)
-!51 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out3D_unchunked", scope: !4, file: !1, line: 32, type: !38)
-!52 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_every", scope: !4, file: !1, line: 32, type: !38)
-!53 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_xline_yi", scope: !4, file: !1, line: 32, type: !38)
-!54 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_xline_zi", scope: !4, file: !1, line: 32, type: !38)
-!55 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_xyplane_zi", scope: !4, file: !1, line: 32, type: !38)
-!56 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_xzplane_yi", scope: !4, file: !1, line: 32, type: !38)
-!57 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_yline_xi", scope: !4, file: !1, line: 32, type: !38)
-!58 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_yline_zi", scope: !4, file: !1, line: 32, type: !38)
-!59 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_yzplane_xi", scope: !4, file: !1, line: 32, type: !38)
-!60 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_zline_xi", scope: !4, file: !1, line: 32, type: !38)
-!61 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "out_zline_yi", scope: !4, file: !1, line: 32, type: !38)
-!62 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "parfile_update_every", scope: !4, file: !1, line: 32, type: !38)
-!63 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "print_timing_info", scope: !4, file: !1, line: 32, type: !38)
-!64 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "recover_and_remove", scope: !4, file: !1, line: 32, type: !38)
-!65 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "verbose", scope: !4, file: !1, line: 32, type: !38)
-!66 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_pdummy_pointer", scope: !4, file: !1, line: 32, type: !67)
-!67 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !68, size: 64, align: 64)
-!68 = !DIDerivedType(tag: DW_TAG_const_type, baseType: null)
-!69 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "result", scope: !4, file: !1, line: 33, type: !7)
-!70 = !{i32 2, !"Dwarf Version", i32 2}
-!71 = !{i32 2, !"Debug Info Version", i32 700000003}
-!72 = !{i32 1, !"PIC Level", i32 2}
-!73 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!74 = !DILocation(line: 32, column: 3, scope: !4)
-!75 = !{!76, !80, i64 136}
-!76 = !{!"", !77, i64 0, !77, i64 8, !77, i64 16, !77, i64 24, !77, i64 32, !77, i64 40, !77, i64 48, !77, i64 56, !77, i64 64, !80, i64 72, !80, i64 80, !80, i64 88, !80, i64 96, !80, i64 104, !80, i64 112, !80, i64 120, !80, i64 128, !80, i64 136, !80, i64 144, !80, i64 152, !80, i64 160, !80, i64 168, !80, i64 176, !81, i64 184, !81, i64 188, !81, i64 192, !81, i64 196, !81, i64 200, !81, i64 204, !81, i64 208, !81, i64 212, !81, i64 216, !81, i64 220, !81, i64 224, !81, i64 228, !81, i64 232, !81, i64 236, !81, i64 240, !81, i64 244, !81, i64 248, !81, i64 252, !81, i64 256, !81, i64 260, !81, i64 264, !81, i64 268, !81, i64 272, !81, i64 276, !81, i64 280, !81, i64 284, !81, i64 288, !81, i64 292}
-!77 = !{!"double", !78, i64 0}
-!78 = !{!"omnipotent char", !79, i64 0}
-!79 = !{!"Simple C/C++ TBAA"}
-!80 = !{!"any pointer", !78, i64 0}
-!81 = !{!"int", !78, i64 0}
-!82 = !DIExpression()
-!83 = !{!76, !80, i64 144}
-!84 = !DILocation(line: 33, column: 7, scope: !4)
-!85 = !DILocation(line: 36, column: 7, scope: !86)
-!86 = distinct !DILexicalBlock(scope: !4, file: !1, line: 36, column: 5)
-!87 = !DILocation(line: 50, column: 7, scope: !88)
-!88 = distinct !DILexicalBlock(scope: !4, file: !1, line: 50, column: 5)
-!89 = !DILocation(line: 58, column: 26, scope: !4)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIOUtil.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIOUtil.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_BindingsParameterRecovery_IOUtil", metadata !"CCTKi_BindingsParameterRecovery_IOUtil", metadata !"", i32 30, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 ()* @CCTKi_BindingsParameterRecovery_IOUtil, null, null, metadata !9, i32 31} ; [ DW_TAG_subprogram ] [line 30] [def] [scope 31] [CCTKi_BindingsParameterRecovery_IOUtil]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryIOUtil.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{metadata !10, metadata !13, metadata !14, metadata !15, metadata !16, metadata !17, metadata !18, metadata !19, metadata !20, metadata !21, metadata !25, metadata !26, metadata !27, metadata !28, metadata !29, metadata !30, metadata !31, metadata !32, metadata !33, metadata !34, metadata !35, metadata !36, metadata !37, metadata !38, metadata !40, metadata !41, metadata !42, metadata !43, metadata !44, metadata !45, metadata !46, metadata !47, metadata !48, metadata !49, metadata !50, metadata !51, metadata !52, metadata !53, metadata !54, metadata !55, metadata !56, metadata !57, metadata !58, metadata !59, metadata !60, metadata !61, metadata !62, metadata !63, metadata !64, metadata !65, metadata !66, metadata !67, metadata !70}
+!10 = metadata !{i32 786688, metadata !4, metadata !"out_xline_y", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_xline_y] [line 32]
+!11 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !12} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from double]
+!12 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!13 = metadata !{i32 786688, metadata !4, metadata !"out_xline_z", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_xline_z] [line 32]
+!14 = metadata !{i32 786688, metadata !4, metadata !"out_xyplane_z", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_xyplane_z] [line 32]
+!15 = metadata !{i32 786688, metadata !4, metadata !"out_xzplane_y", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_xzplane_y] [line 32]
+!16 = metadata !{i32 786688, metadata !4, metadata !"out_yline_x", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_yline_x] [line 32]
+!17 = metadata !{i32 786688, metadata !4, metadata !"out_yline_z", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_yline_z] [line 32]
+!18 = metadata !{i32 786688, metadata !4, metadata !"out_yzplane_x", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_yzplane_x] [line 32]
+!19 = metadata !{i32 786688, metadata !4, metadata !"out_zline_x", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_zline_x] [line 32]
+!20 = metadata !{i32 786688, metadata !4, metadata !"out_zline_y", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_zline_y] [line 32]
+!21 = metadata !{i32 786688, metadata !4, metadata !"checkpoint_ID_file", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [checkpoint_ID_file] [line 32]
+!22 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !23} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!23 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !24} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!24 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!25 = metadata !{i32 786688, metadata !4, metadata !"checkpoint_dir", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [checkpoint_dir] [line 32]
+!26 = metadata !{i32 786688, metadata !4, metadata !"checkpoint_file", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [checkpoint_file] [line 32]
+!27 = metadata !{i32 786688, metadata !4, metadata !"newverbose", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [newverbose] [line 32]
+!28 = metadata !{i32 786688, metadata !4, metadata !"out3D_mode", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out3D_mode] [line 32]
+!29 = metadata !{i32 786688, metadata !4, metadata !"out_fileinfo", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_fileinfo] [line 32]
+!30 = metadata !{i32 786688, metadata !4, metadata !"outdir", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [outdir] [line 32]
+!31 = metadata !{i32 786688, metadata !4, metadata !"parfile_name", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [parfile_name] [line 32]
+!32 = metadata !{i32 786688, metadata !4, metadata !"parfile_write", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [parfile_write] [line 32]
+!33 = metadata !{i32 786688, metadata !4, metadata !"recover", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [recover] [line 32]
+!34 = metadata !{i32 786688, metadata !4, metadata !"recover_ID_files", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [recover_ID_files] [line 32]
+!35 = metadata !{i32 786688, metadata !4, metadata !"recover_ID_vars", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [recover_ID_vars] [line 32]
+!36 = metadata !{i32 786688, metadata !4, metadata !"recover_file", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [recover_file] [line 32]
+!37 = metadata !{i32 786688, metadata !4, metadata !"recovery_dir", metadata !5, i32 32, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [recovery_dir] [line 32]
+!38 = metadata !{i32 786688, metadata !4, metadata !"checkpoint_ID", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [checkpoint_ID] [line 32]
+!39 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !8} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from int]
+!40 = metadata !{i32 786688, metadata !4, metadata !"checkpoint_every", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [checkpoint_every] [line 32]
+!41 = metadata !{i32 786688, metadata !4, metadata !"checkpoint_keep", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [checkpoint_keep] [line 32]
+!42 = metadata !{i32 786688, metadata !4, metadata !"checkpoint_keep_all", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [checkpoint_keep_all] [line 32]
+!43 = metadata !{i32 786688, metadata !4, metadata !"checkpoint_on_terminate", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [checkpoint_on_terminate] [line 32]
+!44 = metadata !{i32 786688, metadata !4, metadata !"new_filename_scheme", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [new_filename_scheme] [line 32]
+!45 = metadata !{i32 786688, metadata !4, metadata !"out3D_downsample_x", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out3D_downsample_x] [line 32]
+!46 = metadata !{i32 786688, metadata !4, metadata !"out3D_downsample_y", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out3D_downsample_y] [line 32]
+!47 = metadata !{i32 786688, metadata !4, metadata !"out3D_downsample_z", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out3D_downsample_z] [line 32]
+!48 = metadata !{i32 786688, metadata !4, metadata !"out3D_parameters", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out3D_parameters] [line 32]
+!49 = metadata !{i32 786688, metadata !4, metadata !"out3D_procs", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out3D_procs] [line 32]
+!50 = metadata !{i32 786688, metadata !4, metadata !"out3D_septimefiles", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out3D_septimefiles] [line 32]
+!51 = metadata !{i32 786688, metadata !4, metadata !"out3D_single", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out3D_single] [line 32]
+!52 = metadata !{i32 786688, metadata !4, metadata !"out3D_unchunked", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out3D_unchunked] [line 32]
+!53 = metadata !{i32 786688, metadata !4, metadata !"out_every", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_every] [line 32]
+!54 = metadata !{i32 786688, metadata !4, metadata !"out_xline_yi", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_xline_yi] [line 32]
+!55 = metadata !{i32 786688, metadata !4, metadata !"out_xline_zi", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_xline_zi] [line 32]
+!56 = metadata !{i32 786688, metadata !4, metadata !"out_xyplane_zi", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_xyplane_zi] [line 32]
+!57 = metadata !{i32 786688, metadata !4, metadata !"out_xzplane_yi", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_xzplane_yi] [line 32]
+!58 = metadata !{i32 786688, metadata !4, metadata !"out_yline_xi", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_yline_xi] [line 32]
+!59 = metadata !{i32 786688, metadata !4, metadata !"out_yline_zi", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_yline_zi] [line 32]
+!60 = metadata !{i32 786688, metadata !4, metadata !"out_yzplane_xi", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_yzplane_xi] [line 32]
+!61 = metadata !{i32 786688, metadata !4, metadata !"out_zline_xi", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_zline_xi] [line 32]
+!62 = metadata !{i32 786688, metadata !4, metadata !"out_zline_yi", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [out_zline_yi] [line 32]
+!63 = metadata !{i32 786688, metadata !4, metadata !"parfile_update_every", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [parfile_update_every] [line 32]
+!64 = metadata !{i32 786688, metadata !4, metadata !"print_timing_info", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [print_timing_info] [line 32]
+!65 = metadata !{i32 786688, metadata !4, metadata !"recover_and_remove", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [recover_and_remove] [line 32]
+!66 = metadata !{i32 786688, metadata !4, metadata !"verbose", metadata !5, i32 32, metadata !39, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [verbose] [line 32]
+!67 = metadata !{i32 786688, metadata !4, metadata !"cctk_pdummy_pointer", metadata !5, i32 32, metadata !68, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_pdummy_pointer] [line 32]
+!68 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !69} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!69 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from ]
+!70 = metadata !{i32 786688, metadata !4, metadata !"result", metadata !5, i32 33, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [result] [line 33]
+!71 = metadata !{i32 32, i32 0, metadata !4, null}
+!72 = metadata !{metadata !"any pointer", metadata !73}
+!73 = metadata !{metadata !"omnipotent char", metadata !74}
+!74 = metadata !{metadata !"Simple C/C++ TBAA"}
+!75 = metadata !{i32 33, i32 0, metadata !4, null}
+!76 = metadata !{i32 36, i32 0, metadata !4, null}
+!77 = metadata !{i32 50, i32 0, metadata !4, null}
+!78 = metadata !{i8* undef}
+!79 = metadata !{i32 58, i32 0, metadata !4, null} ; [ DW_TAG_imported_module ]

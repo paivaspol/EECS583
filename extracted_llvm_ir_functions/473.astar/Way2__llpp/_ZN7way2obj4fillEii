@@ -1,100 +1,102 @@
-define zeroext i1 @_ZN7way2obj4fillEii(%class.way2obj* nocapture %this, i32 %startx, i32 %starty) #1 align 2 {
-  %1 = alloca %struct.pointt, align 4
-  tail call void @llvm.dbg.value(metadata %class.way2obj* %this, i64 0, metadata !178, metadata !293), !dbg !549
-  tail call void @llvm.dbg.value(metadata i32 %startx, i64 0, metadata !179, metadata !293), !dbg !550
-  tail call void @llvm.dbg.value(metadata i32 %starty, i64 0, metadata !180, metadata !293), !dbg !551
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !181, metadata !293), !dbg !552
-  br label %2, !dbg !553
+define zeroext i1 @_ZN7way2obj4fillEii(%class.way2obj* nocapture %this, i32 %startx, i32 %starty) #2 align 2 {
+entry:
+  %ref.tmp = alloca %struct.pointt, align 4
+  call void @llvm.dbg.value(metadata !{%class.way2obj* %this}, i64 0, metadata !200), !dbg !417
+  call void @llvm.dbg.value(metadata !{i32 %startx}, i64 0, metadata !201), !dbg !417
+  call void @llvm.dbg.value(metadata !{i32 %starty}, i64 0, metadata !202), !dbg !417
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !203), !dbg !418
+  br label %for.body, !dbg !418
 
-; <label>:2                                       ; preds = %2, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %2 ]
-  %3 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %indvars.iv, i32 1, !dbg !555
-  store i32 0, i32* %3, align 4, !dbg !558, !tbaa !359
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !553
-  %exitcond = icmp eq i64 %indvars.iv.next, 256, !dbg !553
-  br i1 %exitcond, label %4, label %2, !dbg !553
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %elemqu.i = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %indvars.iv, i32 1, !dbg !420
+  store i32 0, i32* %elemqu.i, align 4, !dbg !420, !tbaa !324
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !418
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !418
+  %exitcond = icmp eq i32 %lftr.wideiv, 256, !dbg !418
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !418
 
-; <label>:4                                       ; preds = %2
-  %5 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 2, !dbg !559
-  %6 = load i16* %5, align 2, !dbg !560, !tbaa !406
-  %7 = add i16 %6, 1, !dbg !560
-  store i16 %7, i16* %5, align 2, !dbg !560, !tbaa !406
-  %8 = icmp eq i16 %7, -1, !dbg !561
-  br i1 %8, label %9, label %._crit_edge, !dbg !563
+for.end:                                          ; preds = %for.body
+  %fillnum = getelementptr inbounds %class.way2obj* %this, i64 0, i32 2, !dbg !422
+  %0 = load i16* %fillnum, align 2, !dbg !422, !tbaa !357
+  %inc2 = add i16 %0, 1, !dbg !422
+  store i16 %inc2, i16* %fillnum, align 2, !dbg !422, !tbaa !357
+  %cmp4 = icmp eq i16 %inc2, -1, !dbg !423
+  br i1 %cmp4, label %if.then, label %for.end.if.end_crit_edge, !dbg !423
 
-._crit_edge:                                      ; preds = %4
-  %.pre = getelementptr inbounds %class.way2obj* %this, i64 0, i32 15, !dbg !564
-  %.pre4 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 1, !dbg !565
-  br label %20, !dbg !563
+for.end.if.end_crit_edge:                         ; preds = %for.end
+  %mapsizex10.pre = getelementptr inbounds %class.way2obj* %this, i64 0, i32 15, !dbg !424
+  %waymap13.pre = getelementptr inbounds %class.way2obj* %this, i64 0, i32 1, !dbg !424
+  br label %if.end, !dbg !423
 
-; <label>:9                                       ; preds = %4
-  %10 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 1, !dbg !566
-  %11 = bitcast %"struct.way2obj::waymapcellt"** %10 to i8**, !dbg !566
-  %12 = load i8** %11, align 8, !dbg !566, !tbaa !401
-  %13 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 15, !dbg !568
-  %14 = load i32* %13, align 4, !dbg !568, !tbaa !303
-  %15 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 16, !dbg !569
-  %16 = load i32* %15, align 4, !dbg !569, !tbaa !570
-  %17 = mul nsw i32 %16, %14, !dbg !571
-  %18 = sext i32 %17 to i64, !dbg !568
-  %19 = shl nsw i64 %18, 2, !dbg !572
-  tail call void @llvm.memset.p0i8.i64(i8* %12, i8 0, i64 %19, i32 2, i1 false), !dbg !573
-  store i16 1, i16* %5, align 2, !dbg !574, !tbaa !406
-  br label %20, !dbg !575
+if.then:                                          ; preds = %for.end
+  %waymap = getelementptr inbounds %class.way2obj* %this, i64 0, i32 1, !dbg !425
+  %1 = load %"struct.way2obj::waymapcellt"** %waymap, align 8, !dbg !425, !tbaa !327
+  %2 = bitcast %"struct.way2obj::waymapcellt"* %1 to i8*, !dbg !425
+  %mapsizex = getelementptr inbounds %class.way2obj* %this, i64 0, i32 15, !dbg !425
+  %3 = load i32* %mapsizex, align 4, !dbg !425, !tbaa !324
+  %mapsizey = getelementptr inbounds %class.way2obj* %this, i64 0, i32 16, !dbg !425
+  %4 = load i32* %mapsizey, align 4, !dbg !425, !tbaa !324
+  %mul = mul nsw i32 %4, %3, !dbg !425
+  %conv5 = sext i32 %mul to i64, !dbg !425
+  %mul6 = shl nsw i64 %conv5, 2, !dbg !425
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 %mul6, i32 2, i1 false), !dbg !425
+  store i16 1, i16* %fillnum, align 2, !dbg !427, !tbaa !357
+  br label %if.end, !dbg !428
 
-; <label>:20                                      ; preds = %._crit_edge, %9
-  %.pre-phi5 = phi %"struct.way2obj::waymapcellt"** [ %.pre4, %._crit_edge ], [ %10, %9 ], !dbg !565
-  %.pre-phi = phi i32* [ %.pre, %._crit_edge ], [ %13, %9 ], !dbg !564
-  %21 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 12, !dbg !576
-  store i8 0, i8* %21, align 1, !dbg !577, !tbaa !517
-  %22 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 6, !dbg !578
-  store i32 0, i32* %22, align 4, !dbg !579, !tbaa !528
-  %23 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 0, !dbg !580
-  tail call void @llvm.dbg.value(metadata %struct.pointt* %1, i64 0, metadata !239, metadata !293), !dbg !581
-  tail call void @llvm.dbg.value(metadata i32 %startx, i64 0, metadata !240, metadata !293), !dbg !583
-  tail call void @llvm.dbg.value(metadata i32 %starty, i64 0, metadata !241, metadata !293), !dbg !584
-  tail call void @llvm.dbg.value(metadata %struct.pointt* %1, i64 0, metadata !244, metadata !293), !dbg !585
-  tail call void @llvm.dbg.value(metadata i32 %startx, i64 0, metadata !245, metadata !293), !dbg !587
-  tail call void @llvm.dbg.value(metadata i32 %starty, i64 0, metadata !246, metadata !293), !dbg !588
-  %24 = getelementptr inbounds %struct.pointt* %1, i64 0, i32 0, !dbg !589
-  store i32 %startx, i32* %24, align 4, !dbg !590, !tbaa !349
-  %25 = getelementptr inbounds %struct.pointt* %1, i64 0, i32 1, !dbg !591
-  store i32 %starty, i32* %25, align 4, !dbg !592, !tbaa !353
-  call void @_ZN9flexarrayI6pointtE3addERKS0_(%class.flexarray* %23, %struct.pointt* dereferenceable(8) %1) #7, !dbg !580
-  %26 = load i32* %.pre-phi, align 4, !dbg !564, !tbaa !303
-  %27 = mul nsw i32 %26, %starty, !dbg !593
-  %28 = add nsw i32 %27, %startx, !dbg !594
-  %29 = sext i32 %28 to i64, !dbg !565
-  %30 = load %"struct.way2obj::waymapcellt"** %.pre-phi5, align 8, !dbg !565, !tbaa !401
-  %31 = getelementptr inbounds %"struct.way2obj::waymapcellt"* %30, i64 %29, i32 1, !dbg !595
-  store i16 0, i16* %31, align 2, !dbg !596, !tbaa !464
-  %32 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 5, !dbg !597
-  store i32 0, i32* %32, align 4, !dbg !598, !tbaa !522
-  %33 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 7, !dbg !599
-  store i32 0, i32* %33, align 4, !dbg !600, !tbaa !323
-  %34 = load i8* %21, align 1, !dbg !602, !tbaa !517, !range !603
-  %35 = icmp eq i8 %34, 0, !dbg !604
-  br i1 %35, label %.lr.ph, label %.critedge, !dbg !605
+if.end:                                           ; preds = %for.end.if.end_crit_edge, %if.then
+  %waymap13.pre-phi = phi %"struct.way2obj::waymapcellt"** [ %waymap13.pre, %for.end.if.end_crit_edge ], [ %waymap, %if.then ], !dbg !424
+  %mapsizex10.pre-phi = phi i32* [ %mapsizex10.pre, %for.end.if.end_crit_edge ], [ %mapsizex, %if.then ], !dbg !424
+  %flend = getelementptr inbounds %class.way2obj* %this, i64 0, i32 12, !dbg !429
+  store i8 0, i8* %flend, align 1, !dbg !429, !tbaa !403
+  %nonboundqu = getelementptr inbounds %class.way2obj* %this, i64 0, i32 6, !dbg !430
+  store i32 0, i32* %nonboundqu, align 4, !dbg !430, !tbaa !324
+  %arrayidx9 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 0, !dbg !431
+  tail call void @llvm.dbg.value(metadata !{%struct.pointt* %ref.tmp}, i64 0, metadata !432), !dbg !433
+  tail call void @llvm.dbg.value(metadata !{i32 %startx}, i64 0, metadata !434), !dbg !433
+  tail call void @llvm.dbg.value(metadata !{i32 %starty}, i64 0, metadata !435), !dbg !433
+  tail call void @llvm.dbg.value(metadata !{%struct.pointt* %ref.tmp}, i64 0, metadata !436), !dbg !437
+  tail call void @llvm.dbg.value(metadata !{i32 %startx}, i64 0, metadata !438), !dbg !437
+  tail call void @llvm.dbg.value(metadata !{i32 %starty}, i64 0, metadata !439), !dbg !437
+  %x.i.i = getelementptr inbounds %struct.pointt* %ref.tmp, i64 0, i32 0, !dbg !440
+  store i32 %startx, i32* %x.i.i, align 4, !dbg !440, !tbaa !324
+  %y.i.i = getelementptr inbounds %struct.pointt* %ref.tmp, i64 0, i32 1, !dbg !440
+  store i32 %starty, i32* %y.i.i, align 4, !dbg !440, !tbaa !324
+  call void @_ZN9flexarrayI6pointtE3addERKS0_(%class.flexarray* %arrayidx9, %struct.pointt* %ref.tmp) #7, !dbg !431
+  %5 = load i32* %mapsizex10.pre-phi, align 4, !dbg !424, !tbaa !324
+  %mul11 = mul nsw i32 %5, %starty, !dbg !424
+  %add = add nsw i32 %mul11, %startx, !dbg !424
+  %idxprom12 = sext i32 %add to i64, !dbg !424
+  %6 = load %"struct.way2obj::waymapcellt"** %waymap13.pre-phi, align 8, !dbg !424, !tbaa !327
+  %num = getelementptr inbounds %"struct.way2obj::waymapcellt"* %6, i64 %idxprom12, i32 1, !dbg !424
+  store i16 0, i16* %num, align 2, !dbg !424, !tbaa !357
+  %curbound = getelementptr inbounds %class.way2obj* %this, i64 0, i32 5, !dbg !441
+  store i32 0, i32* %curbound, align 4, !dbg !441, !tbaa !324
+  %filltact = getelementptr inbounds %class.way2obj* %this, i64 0, i32 7, !dbg !442
+  store i32 0, i32* %filltact, align 4, !dbg !443, !tbaa !324
+  %7 = load i8* %flend, align 1, !dbg !445, !tbaa !403, !range !446
+  %cmp1730 = icmp eq i8 %7, 0, !dbg !445
+  br i1 %cmp1730, label %land.rhs, label %while.end, !dbg !445
 
-.lr.ph:                                           ; preds = %20, %38
-  %storemerge1 = phi i32 [ %41, %38 ], [ 0, %20 ]
-  %36 = load i32* %22, align 4, !dbg !606, !tbaa !528
-  %37 = icmp slt i32 %36, 265, !dbg !607
-  br i1 %37, label %38, label %.critedge, !dbg !608
+land.rhs:                                         ; preds = %if.end, %while.body
+  %storemerge31 = phi i32 [ %inc23, %while.body ], [ 0, %if.end ]
+  %8 = load i32* %nonboundqu, align 4, !dbg !445, !tbaa !324
+  %cmp19 = icmp slt i32 %8, 265, !dbg !445
+  br i1 %cmp19, label %while.body, label %while.end
 
-; <label>:38                                      ; preds = %.lr.ph
-  %39 = srem i32 %storemerge1, 256, !dbg !609
-  store i32 %39, i32* %32, align 4, !dbg !610, !tbaa !522
-  tail call void @_ZN7way2obj12releaseboundEv(%class.way2obj* %this) #7, !dbg !611
-  %40 = load i32* %33, align 4, !dbg !600, !tbaa !323
-  %41 = add nsw i32 %40, 1, !dbg !600
-  store i32 %41, i32* %33, align 4, !dbg !600, !tbaa !323
-  %42 = load i8* %21, align 1, !dbg !602, !tbaa !517, !range !603
-  %43 = icmp eq i8 %42, 0, !dbg !604
-  br i1 %43, label %.lr.ph, label %.critedge, !dbg !605
+while.body:                                       ; preds = %land.rhs
+  %rem = srem i32 %storemerge31, 256, !dbg !447
+  store i32 %rem, i32* %curbound, align 4, !dbg !447, !tbaa !324
+  call void @_ZN7way2obj12releaseboundEv(%class.way2obj* %this) #7, !dbg !448
+  %9 = load i32* %filltact, align 4, !dbg !443, !tbaa !324
+  %inc23 = add nsw i32 %9, 1, !dbg !443
+  store i32 %inc23, i32* %filltact, align 4, !dbg !443, !tbaa !324
+  %10 = load i8* %flend, align 1, !dbg !445, !tbaa !403, !range !446
+  %cmp17 = icmp eq i8 %10, 0, !dbg !445
+  br i1 %cmp17, label %land.rhs, label %while.end, !dbg !445
 
-.critedge:                                        ; preds = %.lr.ph, %38, %20
-  %44 = phi i8 [ %34, %20 ], [ 0, %.lr.ph ], [ %42, %38 ]
-  %45 = icmp ne i8 %44, 0, !dbg !612
-  ret i1 %45, !dbg !613
+while.end:                                        ; preds = %while.body, %land.rhs, %if.end
+  %11 = phi i8 [ %7, %if.end ], [ 0, %land.rhs ], [ %10, %while.body ]
+  %tobool25 = icmp ne i8 %11, 0, !dbg !449
+  ret i1 %tobool25, !dbg !449
 }

@@ -2,20 +2,25 @@ define void @copy_replacements(%struct.rtx_def* %x, %struct.rtx_def* %y) #0 {
 entry:
   %x.addr = alloca %struct.rtx_def*, align 8
   %y.addr = alloca %struct.rtx_def*, align 8
-  store %struct.rtx_def* %x, %struct.rtx_def** %x.addr, align 8, !tbaa !5
-  store %struct.rtx_def* %y, %struct.rtx_def** %y.addr, align 8, !tbaa !5
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 63
-  br i1 %cmp, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1342), !dbg !3918
+  store %struct.rtx_def* %x, %struct.rtx_def** %x.addr, align 8, !tbaa !1970
+  call void @llvm.dbg.declare(metadata !{%struct.rtx_def** %x.addr}, metadata !1342), !dbg !3918
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %y}, i64 0, metadata !1343), !dbg !3918
+  store %struct.rtx_def* %y, %struct.rtx_def** %y.addr, align 8, !tbaa !1970
+  call void @llvm.dbg.declare(metadata !{%struct.rtx_def** %y.addr}, metadata !1343), !dbg !3918
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def** %x.addr}, i64 0, metadata !1342), !dbg !3919
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !3919
+  %bf.load = load i32* %0, align 8, !dbg !3919
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3919
+  %cmp = icmp eq i32 %bf.clear, 63, !dbg !3919
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3919
 
 if.then:                                          ; preds = %entry
-  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 5935, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.copy_replacements, i64 0, i64 0)) #8
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 5935, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.copy_replacements, i64 0, i64 0)) #9, !dbg !3920
+  unreachable, !dbg !3920
 
 if.end:                                           ; preds = %entry
-  %1 = load i32* @n_replacements, align 4, !tbaa !3
-  call fastcc void @copy_replacements_1(%struct.rtx_def** %x.addr, %struct.rtx_def** %y.addr, i32 %1) #7
-  ret void
+  %1 = load i32* @n_replacements, align 4, !dbg !3921, !tbaa !1966
+  call fastcc void @copy_replacements_1(%struct.rtx_def** %x.addr, %struct.rtx_def** %y.addr, i32 %1) #8, !dbg !3921
+  ret void, !dbg !3922
 }

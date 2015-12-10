@@ -1,70 +1,73 @@
 define i32 @_Z19POVMSAttrList_ClearP9POVMSData(%struct.POVMSData* %attr) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.POVMSData* %attr, i64 0, metadata !693, metadata !1201), !dbg !3823
-  %1 = icmp eq %struct.POVMSData* %attr, null, !dbg !3824
-  br i1 %1, label %29, label %2, !dbg !3826
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSData* %attr}, i64 0, metadata !662), !dbg !2272
+  %cmp = icmp eq %struct.POVMSData* %attr, null, !dbg !2273
+  br i1 %cmp, label %return, label %if.end, !dbg !2273
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 0, !dbg !3827
-  %4 = load i32* %3, align 4, !dbg !3827, !tbaa !1539
-  %5 = icmp eq i32 %4, 1279873876, !dbg !3829
-  br i1 %5, label %6, label %29, !dbg !3830
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 0, !dbg !2274
+  %0 = load i32* %type, align 4, !dbg !2274, !tbaa !937
+  %cmp1 = icmp eq i32 %0, 1279873876, !dbg !2274
+  br i1 %cmp1, label %if.end3, label %return, !dbg !2274
 
-; <label>:6                                       ; preds = %2
-  %7 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 2, !dbg !3831
-  %8 = bitcast %union.anon* %7 to %struct.POVMSData**, !dbg !3831
-  %9 = load %struct.POVMSData** %8, align 8, !dbg !3831, !tbaa !1210
-  %10 = icmp eq %struct.POVMSData* %9, null, !dbg !3833
-  br i1 %10, label %29, label %11, !dbg !3834
+if.end3:                                          ; preds = %if.end
+  %1 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 2, !dbg !2275
+  %items = bitcast %union.anon* %1 to %struct.POVMSData**, !dbg !2275
+  %2 = load %struct.POVMSData** %items, align 8, !dbg !2275, !tbaa !917
+  %cmp4 = icmp eq %struct.POVMSData* %2, null, !dbg !2275
+  br i1 %cmp4, label %return, label %if.end6, !dbg !2275
 
-; <label>:11                                      ; preds = %6
-  %12 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 1, !dbg !3835
-  %13 = load i32* %12, align 4, !dbg !3835, !tbaa !1542
-  %14 = icmp slt i32 %13, 1, !dbg !3837
-  br i1 %14, label %29, label %.lr.ph, !dbg !3838
+if.end6:                                          ; preds = %if.end3
+  %size = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 1, !dbg !2276
+  %3 = load i32* %size, align 4, !dbg !2276, !tbaa !937
+  %cmp7 = icmp slt i32 %3, 1, !dbg !2276
+  br i1 %cmp7, label %return, label %for.body.lr.ph, !dbg !2276
 
-.lr.ph:                                           ; preds = %11
-  %15 = sext i32 %13 to i64
-  br label %_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge._crit_edge, !dbg !3839
+for.body.lr.ph:                                   ; preds = %if.end6
+  %4 = sext i32 %3 to i64
+  br label %for.body, !dbg !2277
 
-_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge._crit_edge: ; preds = %_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge, %.lr.ph
-  %16 = phi %struct.POVMSData* [ %9, %.lr.ph ], [ %.pre, %_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge ]
-  %indvars.iv = phi i64 [ %15, %.lr.ph ], [ %indvars.iv.next, %_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge ]
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !3839
-  %17 = getelementptr inbounds %struct.POVMSData* %16, i64 %indvars.iv.next, !dbg !3841
-  %18 = tail call i32 @_Z16POVMSAttr_DeleteP9POVMSData(%struct.POVMSData* %17) #8, !dbg !3844
-  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !695, metadata !1201), !dbg !3845
-  %19 = icmp eq i32 %18, 0, !dbg !3846
-  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([70 x i8]* @.str14, i64 0, i64 0), i64 0, metadata !198, metadata !1201) #6, !dbg !3847
-  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i64 0, metadata !199, metadata !1201) #6, !dbg !3849
-  tail call void @llvm.dbg.value(metadata i32 3275, i64 0, metadata !200, metadata !1201) #6, !dbg !3850
-  br i1 %19, label %_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge, label %20, !dbg !3851
+for.body:                                         ; preds = %for.cond.backedge, %for.body.lr.ph
+  %5 = phi %struct.POVMSData* [ %2, %for.body.lr.ph ], [ %.pre38, %for.cond.backedge ]
+  %indvars.iv = phi i64 [ %4, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond.backedge ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !2277
+  %arrayidx = getelementptr inbounds %struct.POVMSData* %5, i64 %indvars.iv.next, !dbg !2279
+  %call = tail call i32 @_Z16POVMSAttr_DeleteP9POVMSData(%struct.POVMSData* %arrayidx) #8, !dbg !2279
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !664), !dbg !2279
+  %cmp13 = icmp eq i32 %call, 0, !dbg !2281
+  tail call void @llvm.dbg.value(metadata !2282, i64 0, metadata !2283) #6, !dbg !2284
+  tail call void @llvm.dbg.value(metadata !925, i64 0, metadata !2285) #6, !dbg !2284
+  tail call void @llvm.dbg.value(metadata !2286, i64 0, metadata !2287) #6, !dbg !2284
+  br i1 %cmp13, label %for.cond.backedge, label %if.then.i, !dbg !2288
 
-; <label>:20                                      ; preds = %_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge._crit_edge
-  %21 = load %struct.__sFILE** @__stderrp, align 8, !dbg !3852, !tbaa !1210
-  %22 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %21, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 3275, i8* getelementptr inbounds ([70 x i8]* @.str14, i64 0, i64 0)) #9, !dbg !3852
-  br label %_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge, !dbg !3853
+if.then.i:                                        ; preds = %for.body
+  %6 = load %struct._IO_FILE** @stderr, align 8, !dbg !2289, !tbaa !917
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 3275, i8* getelementptr inbounds ([70 x i8]* @.str14, i64 0, i64 0)) #9, !dbg !2289
+  br label %for.cond.backedge, !dbg !2290
 
-_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge:   ; preds = %20, %_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge._crit_edge
-  %23 = icmp sgt i64 %indvars.iv, 1, !dbg !3854
-  %.pre = load %struct.POVMSData** %8, align 8, !dbg !3855, !tbaa !1210
-  br i1 %23, label %_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge._crit_edge, label %24, !dbg !3839
+for.cond.backedge:                                ; preds = %if.then.i, %for.body
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !2277
+  %cmp11 = icmp sgt i32 %7, 0, !dbg !2277
+  %.pre38 = load %struct.POVMSData** %items, align 8, !dbg !2279, !tbaa !917
+  br i1 %cmp11, label %for.body, label %for.end, !dbg !2277
 
-; <label>:24                                      ; preds = %_Z20POVMS_AssertFunctioniPKcS0_i.exit.backedge
-  %25 = icmp eq %struct.POVMSData* %.pre, null, !dbg !3856
-  br i1 %25, label %28, label %26, !dbg !3858
+for.end:                                          ; preds = %for.cond.backedge
+  %cmp16 = icmp eq %struct.POVMSData* %.pre38, null, !dbg !2291
+  br i1 %cmp16, label %if.end19, label %if.then17, !dbg !2291
 
-; <label>:26                                      ; preds = %24
-  %27 = bitcast %struct.POVMSData* %.pre to i8*, !dbg !3859
-  tail call void @free(i8* %27) #8, !dbg !3859
-  br label %28, !dbg !3859
+if.then17:                                        ; preds = %for.end
+  %8 = bitcast %struct.POVMSData* %.pre38 to i8*, !dbg !2292
+  tail call void @free(i8* %8) #9, !dbg !2292
+  br label %if.end19, !dbg !2292
 
-; <label>:28                                      ; preds = %24, %26
-  store i32 1314212940, i32* %3, align 4, !dbg !3860, !tbaa !1539
-  store i32 0, i32* %12, align 4, !dbg !3861, !tbaa !1542
-  store %struct.POVMSData* null, %struct.POVMSData** %8, align 8, !dbg !3862, !tbaa !1210
-  br label %29, !dbg !3863
+if.end19:                                         ; preds = %for.end, %if.then17
+  store i32 1314212940, i32* %type, align 4, !dbg !2293, !tbaa !937
+  store i32 0, i32* %size, align 4, !dbg !2294, !tbaa !937
+  %9 = getelementptr inbounds %union.anon* %1, i64 0, i32 0, !dbg !2295
+  store i8* null, i8** %9, align 8, !dbg !2295, !tbaa !917
+  br label %return, !dbg !2296
 
-; <label>:29                                      ; preds = %11, %6, %2, %0, %28
-  %.0 = phi i32 [ 0, %28 ], [ -1, %0 ], [ -19, %2 ], [ -1, %6 ], [ -1, %11 ]
-  ret i32 %.0, !dbg !3864
+return:                                           ; preds = %if.end6, %if.end3, %if.end, %entry, %if.end19
+  %retval.0 = phi i32 [ 0, %if.end19 ], [ -1, %entry ], [ -19, %if.end ], [ -1, %if.end3 ], [ -1, %if.end6 ]
+  ret i32 %retval.0, !dbg !2296
 }

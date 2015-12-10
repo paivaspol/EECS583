@@ -1,42 +1,43 @@
-define i32 @ValidateModifiers(%struct.T_SCHED_MODIFIER* readonly %modifier) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.T_SCHED_MODIFIER* %modifier, i64 0, metadata !293, metadata !498), !dbg !808
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !294, metadata !498), !dbg !809
-  %1 = icmp eq %struct.T_SCHED_MODIFIER* %modifier, null, !dbg !810
-  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !810
+define i32 @ValidateModifiers(%struct.T_SCHED_MODIFIER* %modifier) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SCHED_MODIFIER* %modifier}, i64 0, metadata !283), !dbg !639
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !284), !dbg !640
+  %tobool13 = icmp eq %struct.T_SCHED_MODIFIER* %modifier, null, !dbg !641
+  br i1 %tobool13, label %for.end, label %for.body, !dbg !641
 
-.lr.ph:                                           ; preds = %0, %14
-  %.02 = phi %struct.T_SCHED_MODIFIER* [ %16, %14 ], [ %modifier, %0 ]
-  %retval.01 = phi i32 [ %retval.1, %14 ], [ 0, %0 ]
-  %2 = getelementptr inbounds %struct.T_SCHED_MODIFIER* %.02, i64 0, i32 1, !dbg !812
-  %3 = load i32* %2, align 4, !dbg !812, !tbaa !816
-  %4 = icmp eq i32 %3, 3, !dbg !818
-  br i1 %4, label %5, label %14, !dbg !819
+for.body:                                         ; preds = %entry, %for.inc
+  %modifier.addr.015 = phi %struct.T_SCHED_MODIFIER* [ %3, %for.inc ], [ %modifier, %entry ]
+  %retval1.014 = phi i32 [ %retval1.1, %for.inc ], [ 0, %entry ]
+  %type2 = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.addr.015, i64 0, i32 1, !dbg !643
+  %0 = load i32* %type2, align 4, !dbg !643, !tbaa !489
+  %cmp = icmp eq i32 %0, 3, !dbg !643
+  br i1 %cmp, label %if.then, label %for.inc, !dbg !643
 
-; <label>:5                                       ; preds = %.lr.ph
-  %6 = getelementptr inbounds %struct.T_SCHED_MODIFIER* %.02, i64 0, i32 2, !dbg !820
-  %7 = load i8** %6, align 8, !dbg !820, !tbaa !822
-  %8 = tail call i32 @CCTK_VarIndex(i8* %7) #8, !dbg !823
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !295, metadata !498), !dbg !824
-  %9 = tail call i32 @CCTK_VarTypeI(i32 %8) #8, !dbg !825
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !296, metadata !498), !dbg !826
-  %10 = icmp eq i32 %9, 2, !dbg !827
-  br i1 %10, label %14, label %11, !dbg !829
+if.then:                                          ; preds = %for.body
+  %argument = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.addr.015, i64 0, i32 2, !dbg !645
+  %1 = load i8** %argument, align 8, !dbg !645, !tbaa !504
+  %call = tail call i32 @CCTK_VarIndex(i8* %1) #8, !dbg !645
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !285), !dbg !645
+  %call3 = tail call i32 @CCTK_VarTypeI(i32 %call) #8, !dbg !647
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !286), !dbg !647
+  %cmp4 = icmp eq i32 %call3, 2, !dbg !648
+  br i1 %cmp4, label %for.inc, label %if.then5, !dbg !648
 
-; <label>:11                                      ; preds = %5
-  %12 = load i8** %6, align 8, !dbg !830, !tbaa !822
-  %13 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 1345, i8* getelementptr inbounds ([86 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str62, i64 0, i64 0), i8* %12) #8, !dbg !832
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !294, metadata !498), !dbg !809
-  br label %14, !dbg !833
+if.then5:                                         ; preds = %if.then
+  %2 = load i8** %argument, align 8, !dbg !649, !tbaa !504
+  %call7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 1345, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str62, i64 0, i64 0), i8* %2) #8, !dbg !649
+  tail call void @llvm.dbg.value(metadata !651, i64 0, metadata !284), !dbg !652
+  br label %for.inc, !dbg !653
 
-; <label>:14                                      ; preds = %5, %.lr.ph, %11
-  %retval.1 = phi i32 [ -1, %11 ], [ %retval.01, %5 ], [ %retval.01, %.lr.ph ]
-  %15 = getelementptr inbounds %struct.T_SCHED_MODIFIER* %.02, i64 0, i32 0, !dbg !834
-  %16 = load %struct.T_SCHED_MODIFIER** %15, align 8, !dbg !834, !tbaa !835
-  tail call void @llvm.dbg.value(metadata %struct.T_SCHED_MODIFIER* %16, i64 0, metadata !293, metadata !498), !dbg !808
-  %17 = icmp eq %struct.T_SCHED_MODIFIER* %16, null, !dbg !810
-  br i1 %17, label %._crit_edge, label %.lr.ph, !dbg !810
+for.inc:                                          ; preds = %if.then, %for.body, %if.then5
+  %retval1.1 = phi i32 [ -1, %if.then5 ], [ %retval1.014, %if.then ], [ %retval1.014, %for.body ]
+  %next = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.addr.015, i64 0, i32 0, !dbg !641
+  %3 = load %struct.T_SCHED_MODIFIER** %next, align 8, !dbg !641, !tbaa !504
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SCHED_MODIFIER* %3}, i64 0, metadata !283), !dbg !641
+  %tobool = icmp eq %struct.T_SCHED_MODIFIER* %3, null, !dbg !641
+  br i1 %tobool, label %for.end, label %for.body, !dbg !641
 
-._crit_edge:                                      ; preds = %14, %0
-  %retval.0.lcssa = phi i32 [ 0, %0 ], [ %retval.1, %14 ]
-  ret i32 %retval.0.lcssa, !dbg !836
+for.end:                                          ; preds = %for.inc, %entry
+  %retval1.0.lcssa = phi i32 [ 0, %entry ], [ %retval1.1, %for.inc ]
+  ret i32 %retval1.0.lcssa, !dbg !654
 }

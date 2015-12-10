@@ -1,0 +1,63 @@
+define i32 @_ZN11xercesc_2_59XMLString5hashNEPKtjjPNS_13MemoryManagerE(i16* %tohash, i32 %n, i32 %hashModulus, %"class.xercesc_2_5::MemoryManager"* %manager) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %tohash}, i64 0, metadata !1881), !dbg !3612
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !1882), !dbg !3613
+  tail call void @llvm.dbg.value(metadata !{i32 %hashModulus}, i64 0, metadata !1883), !dbg !3614
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !1884), !dbg !3615
+  %tobool = icmp eq i32 %hashModulus, 0, !dbg !3616
+  br i1 %tobool, label %if.then, label %if.end, !dbg !3616
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #3, !dbg !3617
+  %0 = bitcast i8* %exception to %"class.xercesc_2_5::IllegalArgumentException"*, !dbg !3617
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::IllegalArgumentException"* %0}, i64 0, metadata !3618), !dbg !3619
+  tail call void @llvm.dbg.value(metadata !2808, i64 0, metadata !3620), !dbg !3619
+  tail call void @llvm.dbg.value(metadata !3621, i64 0, metadata !3622), !dbg !3619
+  tail call void @llvm.dbg.value(metadata !2960, i64 0, metadata !3623), !dbg !3619
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !3624), !dbg !3619
+  invoke void @_ZN11xercesc_2_524IllegalArgumentExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::IllegalArgumentException"* %0, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 1192, i32 67, %"class.xercesc_2_5::MemoryManager"* %manager) #11
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_524IllegalArgumentExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::IllegalArgumentException"*)* @_ZN11xercesc_2_524IllegalArgumentExceptionD1Ev to i8*)) #12, !dbg !3617
+  unreachable, !dbg !3617
+
+lpad:                                             ; preds = %if.then
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3617
+  tail call void @__cxa_free_exception(i8* %exception) #3, !dbg !3617
+  resume { i8*, i32 } %1, !dbg !3617
+
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !1004, i64 0, metadata !1885), !dbg !3625
+  %tobool1 = icmp eq i16* %tohash, null, !dbg !3626
+  %tobool314 = icmp eq i32 %n, 0, !dbg !3627
+  %or.cond = or i1 %tobool1, %tobool314, !dbg !3626
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !1888), !dbg !3627
+  br i1 %or.cond, label %if.end6, label %while.body, !dbg !3626
+
+while.body:                                       ; preds = %if.end, %while.body
+  %hashVal.017 = phi i32 [ %add5, %while.body ], [ 0, %if.end ]
+  %i.016 = phi i32 [ %dec, %while.body ], [ %n, %if.end ]
+  %curCh.015 = phi i16* [ %incdec.ptr, %while.body ], [ %tohash, %if.end ]
+  %dec = add nsw i32 %i.016, -1, !dbg !3627
+  %shr = lshr i32 %hashVal.017, 24, !dbg !3628
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !1889), !dbg !3628
+  %mul = mul i32 %hashVal.017, 37, !dbg !3629
+  %2 = load i16* %curCh.015, align 2, !dbg !3629, !tbaa !2947
+  %conv = zext i16 %2 to i32, !dbg !3629
+  %add = add i32 %shr, %hashVal.017, !dbg !3629
+  %add4 = add i32 %add, %mul, !dbg !3629
+  %add5 = add i32 %add4, %conv, !dbg !3629
+  tail call void @llvm.dbg.value(metadata !{i32 %add5}, i64 0, metadata !1885), !dbg !3629
+  %incdec.ptr = getelementptr inbounds i16* %curCh.015, i64 1, !dbg !3630
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1886), !dbg !3630
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !1888), !dbg !3627
+  %tobool3 = icmp eq i32 %dec, 0, !dbg !3627
+  br i1 %tobool3, label %if.end6, label %while.body, !dbg !3627
+
+if.end6:                                          ; preds = %while.body, %if.end
+  %hashVal.1 = phi i32 [ 0, %if.end ], [ %add5, %while.body ]
+  %rem = urem i32 %hashVal.1, %hashModulus, !dbg !3631
+  ret i32 %rem, !dbg !3631
+}

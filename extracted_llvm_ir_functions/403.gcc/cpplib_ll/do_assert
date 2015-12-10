@@ -1,59 +1,67 @@
 define internal void @do_assert(%struct.cpp_reader* %pfile) #0 {
 entry:
   %new_answer = alloca %struct.answer*, align 8
-  %call = call fastcc %struct.cpp_hashnode* @parse_assertion(%struct.cpp_reader* %pfile, %struct.answer** %new_answer, i32 16) #9
-  %tobool = icmp eq %struct.cpp_hashnode* %call, null
-  br i1 %tobool, label %if.end11, label %if.then
+  call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !931), !dbg !1864
+  call void @llvm.dbg.declare(metadata !{%struct.answer** %new_answer}, metadata !932), !dbg !1865
+  %call = call fastcc %struct.cpp_hashnode* @parse_assertion(%struct.cpp_reader* %pfile, %struct.answer** %new_answer, i32 16) #10, !dbg !1866
+  call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %call}, i64 0, metadata !933), !dbg !1866
+  %tobool = icmp eq %struct.cpp_hashnode* %call, null, !dbg !1867
+  br i1 %tobool, label %if.end11, label %if.then, !dbg !1867
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct.answer** %new_answer, align 8, !tbaa !3
-  %next = getelementptr inbounds %struct.answer* %0, i64 0, i32 0
-  store %struct.answer* null, %struct.answer** %next, align 8, !tbaa !3
-  %type = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 4
-  %bf.load = load i8* %type, align 4
-  %cmp = icmp eq i8 %bf.load, 2
-  br i1 %cmp, label %if.then1, label %if.end6
+  call void @llvm.dbg.value(metadata !{%struct.answer** %new_answer}, i64 0, metadata !932), !dbg !1868
+  %0 = load %struct.answer** %new_answer, align 8, !dbg !1868, !tbaa !1070
+  %next = getelementptr inbounds %struct.answer* %0, i64 0, i32 0, !dbg !1868
+  store %struct.answer* null, %struct.answer** %next, align 8, !dbg !1868, !tbaa !1070
+  %type = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 4, !dbg !1870
+  %bf.load = load i8* %type, align 4, !dbg !1870
+  %cmp = icmp eq i8 %bf.load, 2, !dbg !1870
+  br i1 %cmp, label %if.then1, label %if.end6, !dbg !1870
 
 if.then1:                                         ; preds = %if.then
-  %call2 = call fastcc %struct.answer** @find_answer(%struct.cpp_hashnode* %call, %struct.answer* %0) #9
-  %1 = load %struct.answer** %call2, align 8, !tbaa !3
-  %tobool3 = icmp eq %struct.answer* %1, null
-  br i1 %tobool3, label %if.end, label %if.then4
+  call void @llvm.dbg.value(metadata !{%struct.answer** %new_answer}, i64 0, metadata !932), !dbg !1871
+  %call2 = call fastcc %struct.answer** @find_answer(%struct.cpp_hashnode* %call, %struct.answer* %0) #10, !dbg !1871
+  %1 = load %struct.answer** %call2, align 8, !dbg !1871, !tbaa !1070
+  %tobool3 = icmp eq %struct.answer* %1, null, !dbg !1871
+  br i1 %tobool3, label %if.end, label %if.then4, !dbg !1871
 
 if.then4:                                         ; preds = %if.then1
-  %str = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 0, i32 1
-  %2 = load i8** %str, align 8, !tbaa !3
-  %add.ptr = getelementptr inbounds i8* %2, i64 1
-  call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([17 x i8]* @.str57, i64 0, i64 0), i8* %add.ptr) #8
-  br label %if.end11
+  %str = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 0, i32 1, !dbg !1873
+  %2 = load i8** %str, align 8, !dbg !1873, !tbaa !1070
+  %add.ptr = getelementptr inbounds i8* %2, i64 1, !dbg !1873
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([17 x i8]* @.str57, i64 0, i64 0), i8* %add.ptr) #9, !dbg !1873
+  br label %if.end11, !dbg !1875
 
 if.end:                                           ; preds = %if.then1
-  %value = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 6
-  %answers = bitcast %union.anon* %value to %struct.answer**
-  %3 = load %struct.answer** %answers, align 8, !tbaa !3
-  store %struct.answer* %3, %struct.answer** %next, align 8, !tbaa !3
-  br label %if.end6
+  %value = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 6, !dbg !1876
+  %answers = bitcast %union.anon* %value to %struct.answer**, !dbg !1876
+  %3 = load %struct.answer** %answers, align 8, !dbg !1876, !tbaa !1070
+  call void @llvm.dbg.value(metadata !{%struct.answer** %new_answer}, i64 0, metadata !932), !dbg !1876
+  store %struct.answer* %3, %struct.answer** %next, align 8, !dbg !1876, !tbaa !1070
+  br label %if.end6, !dbg !1877
 
 if.end6:                                          ; preds = %if.end, %if.then
-  store i8 2, i8* %type, align 4
-  %4 = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 6, i32 0
-  %.c = bitcast %struct.answer* %0 to %struct.cpp_macro*
-  store %struct.cpp_macro* %.c, %struct.cpp_macro** %4, align 8, !tbaa !3
-  %count = getelementptr inbounds %struct.answer* %0, i64 0, i32 1
-  %5 = load i32* %count, align 4, !tbaa !2
-  %sub = add i32 %5, -1
-  %conv = zext i32 %sub to i64
-  %mul = mul i64 %conv, 24
-  %add = add i64 %mul, 40
-  %a_buff = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 6
-  %6 = load %struct._cpp_buff** %a_buff, align 8, !tbaa !3
-  %cur = getelementptr inbounds %struct._cpp_buff* %6, i64 0, i32 2
-  %7 = load i8** %cur, align 8, !tbaa !3
-  %add.ptr10 = getelementptr inbounds i8* %7, i64 %add
-  store i8* %add.ptr10, i8** %cur, align 8, !tbaa !3
-  call fastcc void @check_eol(%struct.cpp_reader* %pfile) #9
-  br label %if.end11
+  store i8 2, i8* %type, align 4, !dbg !1878
+  call void @llvm.dbg.value(metadata !{%struct.answer** %new_answer}, i64 0, metadata !932), !dbg !1879
+  %4 = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 6, i32 0, !dbg !1879
+  %.c = bitcast %struct.answer* %0 to %struct.cpp_macro*, !dbg !1879
+  store %struct.cpp_macro* %.c, %struct.cpp_macro** %4, align 8, !dbg !1879, !tbaa !1070
+  call void @llvm.dbg.value(metadata !{%struct.answer** %new_answer}, i64 0, metadata !932), !dbg !1880
+  %count = getelementptr inbounds %struct.answer* %0, i64 0, i32 1, !dbg !1880
+  %5 = load i32* %count, align 4, !dbg !1880, !tbaa !1065
+  %sub = add i32 %5, -1, !dbg !1880
+  %conv = zext i32 %sub to i64, !dbg !1880
+  %mul = mul i64 %conv, 24, !dbg !1880
+  %add = add i64 %mul, 40, !dbg !1880
+  %a_buff = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 6, !dbg !1880
+  %6 = load %struct._cpp_buff** %a_buff, align 8, !dbg !1880, !tbaa !1070
+  %cur = getelementptr inbounds %struct._cpp_buff* %6, i64 0, i32 2, !dbg !1880
+  %7 = load i8** %cur, align 8, !dbg !1880, !tbaa !1070
+  %add.ptr10 = getelementptr inbounds i8* %7, i64 %add, !dbg !1880
+  store i8* %add.ptr10, i8** %cur, align 8, !dbg !1880, !tbaa !1070
+  call fastcc void @check_eol(%struct.cpp_reader* %pfile) #10, !dbg !1881
+  br label %if.end11, !dbg !1882
 
 if.end11:                                         ; preds = %entry, %if.then4, %if.end6
-  ret void
+  ret void, !dbg !1883
 }

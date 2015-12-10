@@ -1,87 +1,139 @@
 define i8* @revcomp(i8* %comp, i8* %seq) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %comp, i64 0, metadata !13, metadata !39), !dbg !40
-  tail call void @llvm.dbg.value(metadata i8* %seq, i64 0, metadata !14, metadata !39), !dbg !41
-  %1 = icmp eq i8* %comp, null, !dbg !42
-  %2 = icmp eq i8* %seq, null, !dbg !44
-  %or.cond = or i1 %1, %2, !dbg !46
-  br i1 %or.cond, label %.loopexit, label %3, !dbg !46
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %comp}, i64 0, metadata !27), !dbg !31
+  tail call void @llvm.dbg.value(metadata !{i8* %seq}, i64 0, metadata !28), !dbg !31
+  %cmp = icmp eq i8* %comp, null, !dbg !32
+  %cmp1 = icmp eq i8* %seq, null, !dbg !33
+  %or.cond = or i1 %cmp, %cmp1, !dbg !32
+  br i1 %or.cond, label %return, label %if.end3, !dbg !32
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @StrReverse(i8* %comp, i8* %seq) #3, !dbg !47
-  tail call void @llvm.dbg.value(metadata i8* %comp, i64 0, metadata !15, metadata !39), !dbg !48
-  %5 = load i8* %comp, align 1, !dbg !49, !tbaa !52
-  %6 = icmp eq i8 %5, 0, !dbg !55
-  br i1 %6, label %.loopexit, label %.lr.ph, !dbg !56
+if.end3:                                          ; preds = %entry
+  %call = tail call i32 @StrReverse(i8* %comp, i8* %seq) #4, !dbg !34
+  tail call void @llvm.dbg.value(metadata !{i8* %comp}, i64 0, metadata !29), !dbg !35
+  %0 = load i8* %comp, align 1, !dbg !35, !tbaa !37
+  %cmp443 = icmp eq i8 %0, 0, !dbg !35
+  br i1 %cmp443, label %return, label %for.body.lr.ph, !dbg !35
 
-.lr.ph:                                           ; preds = %3, %29
-  %7 = phi i8 [ %31, %29 ], [ %5, %3 ]
-  %s.02 = phi i8* [ %30, %29 ], [ %comp, %3 ]
-  %8 = sext i8 %7 to i32, !dbg !49
-  tail call void @llvm.dbg.value(metadata i8 %31, i64 0, metadata !16, metadata !39), !dbg !57
-  %9 = tail call i32 @sre_toupper(i32 %8) #3, !dbg !58
-  %10 = trunc i32 %9 to i8, !dbg !58
-  tail call void @llvm.dbg.value(metadata i8 %10, i64 0, metadata !16, metadata !39), !dbg !57
-  %sext = shl i32 %9, 24, !dbg !60
-  %11 = ashr exact i32 %sext, 24, !dbg !60
-  %switch.tableidx = add nsw i32 %11, -65, !dbg !61
-  %12 = icmp ult i32 %switch.tableidx, 25, !dbg !61
-  br i1 %12, label %switch.hole_check, label %15, !dbg !61
+for.body.lr.ph:                                   ; preds = %if.end3
+  %call25 = tail call i16** @__ctype_b_loc() #5, !dbg !39
+  br label %for.body, !dbg !35
 
-switch.hole_check:                                ; preds = %.lr.ph
-  %switch.shifted = lshr i32 25040079, %switch.tableidx, !dbg !61
-  %13 = and i32 %switch.shifted, 1, !dbg !61
-  %switch.lobit = icmp eq i32 %13, 0, !dbg !61
-  br i1 %switch.lobit, label %15, label %switch.lookup, !dbg !61
+for.body:                                         ; preds = %for.body.lr.ph, %if.end31
+  %1 = phi i8 [ %0, %for.body.lr.ph ], [ %5, %if.end31 ]
+  %s.044 = phi i8* [ %comp, %for.body.lr.ph ], [ %incdec.ptr, %if.end31 ]
+  %conv = sext i8 %1 to i32, !dbg !35
+  tail call void @llvm.dbg.value(metadata !{i8 %1}, i64 0, metadata !30), !dbg !41
+  %call7 = tail call i32 @sre_toupper(i32 %conv) #4, !dbg !42
+  %conv8 = trunc i32 %call7 to i8, !dbg !42
+  tail call void @llvm.dbg.value(metadata !{i8 %conv8}, i64 0, metadata !30), !dbg !42
+  %sext = shl i32 %call7, 24, !dbg !43
+  %conv9 = ashr exact i32 %sext, 24, !dbg !43
+  switch i32 %conv9, label %sw.epilog [
+    i32 65, label %sw.bb
+    i32 67, label %sw.bb10
+    i32 71, label %sw.bb11
+    i32 84, label %sw.bb12
+    i32 85, label %sw.bb13
+    i32 82, label %sw.bb14
+    i32 89, label %sw.bb15
+    i32 77, label %sw.bb16
+    i32 75, label %sw.bb17
+    i32 83, label %sw.bb18
+    i32 87, label %sw.bb19
+    i32 72, label %sw.bb20
+    i32 68, label %sw.bb21
+    i32 66, label %sw.bb22
+    i32 86, label %sw.bb23
+  ], !dbg !43
 
-switch.lookup:                                    ; preds = %switch.hole_check
-  %14 = sext i32 %switch.tableidx to i64, !dbg !61
-  %switch.gep = getelementptr inbounds [25 x i8]* @switch.table, i64 0, i64 %14, !dbg !61
-  %switch.load = load i8* %switch.gep, align 1, !dbg !61
-  br label %15, !dbg !61
+sw.bb:                                            ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !44, i64 0, metadata !30), !dbg !45
+  br label %sw.epilog, !dbg !45
 
-; <label>:15                                      ; preds = %switch.hole_check, %switch.lookup, %.lr.ph
-  %c.0 = phi i8 [ %10, %.lr.ph ], [ %10, %switch.hole_check ], [ %switch.load, %switch.lookup ]
-  %16 = load i8* %s.02, align 1, !dbg !62, !tbaa !52
-  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !22, metadata !39) #4, !dbg !64
-  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !30, metadata !39) #4, !dbg !66
-  tail call void @llvm.dbg.value(metadata i64 4096, i64 0, metadata !31, metadata !39) #4, !dbg !68
-  %isascii.i.i1 = icmp sgt i8 %16, -1, !dbg !69
-  br i1 %isascii.i.i1, label %17, label %22, !dbg !69
+sw.bb10:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !47, i64 0, metadata !30), !dbg !48
+  br label %sw.epilog, !dbg !48
 
-; <label>:17                                      ; preds = %15
-  %18 = sext i8 %16 to i64, !dbg !70
-  %19 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %18, !dbg !70
-  %20 = load i32* %19, align 4, !dbg !70, !tbaa !71
-  %21 = and i32 %20, 4096, !dbg !73
-  br label %islower.exit, !dbg !69
+sw.bb11:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !49, i64 0, metadata !30), !dbg !50
+  br label %sw.epilog, !dbg !50
 
-; <label>:22                                      ; preds = %15
-  %23 = sext i8 %16 to i32, !dbg !74
-  %24 = tail call i32 @__maskrune(i32 %23, i64 4096) #3, !dbg !75
-  br label %islower.exit, !dbg !69
+sw.bb12:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !51, i64 0, metadata !30), !dbg !52
+  br label %sw.epilog, !dbg !52
 
-islower.exit:                                     ; preds = %17, %22
-  %.sink.i.in.i = phi i32 [ %21, %17 ], [ %24, %22 ], !dbg !76
-  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0, !dbg !77
-  br i1 %.sink.i.i, label %29, label %25, !dbg !78
+sw.bb13:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !51, i64 0, metadata !30), !dbg !53
+  br label %sw.epilog, !dbg !53
 
-; <label>:25                                      ; preds = %islower.exit
-  %26 = sext i8 %c.0 to i32, !dbg !79
-  %27 = tail call i32 @sre_tolower(i32 %26) #3, !dbg !80
-  %28 = trunc i32 %27 to i8, !dbg !81
-  tail call void @llvm.dbg.value(metadata i8 %28, i64 0, metadata !16, metadata !39), !dbg !57
-  br label %29, !dbg !82
+sw.bb14:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !30), !dbg !55
+  br label %sw.epilog, !dbg !55
 
-; <label>:29                                      ; preds = %islower.exit, %25
-  %c.1 = phi i8 [ %28, %25 ], [ %c.0, %islower.exit ]
-  store i8 %c.1, i8* %s.02, align 1, !dbg !83, !tbaa !52
-  %30 = getelementptr inbounds i8* %s.02, i64 1, !dbg !84
-  tail call void @llvm.dbg.value(metadata i8* %30, i64 0, metadata !15, metadata !39), !dbg !48
-  %31 = load i8* %30, align 1, !dbg !49, !tbaa !52
-  %32 = icmp eq i8 %31, 0, !dbg !55
-  br i1 %32, label %.loopexit, label %.lr.ph, !dbg !56
+sw.bb15:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !56, i64 0, metadata !30), !dbg !57
+  br label %sw.epilog, !dbg !57
 
-.loopexit:                                        ; preds = %29, %3, %0
-  %.0 = phi i8* [ null, %0 ], [ %comp, %3 ], [ %comp, %29 ]
-  ret i8* %.0, !dbg !85
+sw.bb16:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !58, i64 0, metadata !30), !dbg !59
+  br label %sw.epilog, !dbg !59
+
+sw.bb17:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !30), !dbg !61
+  br label %sw.epilog, !dbg !61
+
+sw.bb18:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !62, i64 0, metadata !30), !dbg !63
+  br label %sw.epilog, !dbg !63
+
+sw.bb19:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !64, i64 0, metadata !30), !dbg !65
+  br label %sw.epilog, !dbg !65
+
+sw.bb20:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !66, i64 0, metadata !30), !dbg !67
+  br label %sw.epilog, !dbg !67
+
+sw.bb21:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !68, i64 0, metadata !30), !dbg !69
+  br label %sw.epilog, !dbg !69
+
+sw.bb22:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !70, i64 0, metadata !30), !dbg !71
+  br label %sw.epilog, !dbg !71
+
+sw.bb23:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !72, i64 0, metadata !30), !dbg !73
+  br label %sw.epilog, !dbg !73
+
+sw.epilog:                                        ; preds = %for.body, %sw.bb23, %sw.bb22, %sw.bb21, %sw.bb20, %sw.bb19, %sw.bb18, %sw.bb17, %sw.bb16, %sw.bb15, %sw.bb14, %sw.bb13, %sw.bb12, %sw.bb11, %sw.bb10, %sw.bb
+  %c.0 = phi i8 [ %conv8, %for.body ], [ 66, %sw.bb23 ], [ 86, %sw.bb22 ], [ 72, %sw.bb21 ], [ 68, %sw.bb20 ], [ 87, %sw.bb19 ], [ 83, %sw.bb18 ], [ 77, %sw.bb17 ], [ 75, %sw.bb16 ], [ 82, %sw.bb15 ], [ 89, %sw.bb14 ], [ 65, %sw.bb13 ], [ 65, %sw.bb12 ], [ 67, %sw.bb11 ], [ 71, %sw.bb10 ], [ 84, %sw.bb ]
+  %2 = load i8* %s.044, align 1, !dbg !39, !tbaa !37
+  %idxprom = sext i8 %2 to i64, !dbg !39
+  %3 = load i16** %call25, align 8, !dbg !39, !tbaa !74
+  %arrayidx = getelementptr inbounds i16* %3, i64 %idxprom, !dbg !39
+  %4 = load i16* %arrayidx, align 2, !dbg !39, !tbaa !75
+  %and = and i16 %4, 512, !dbg !39
+  %tobool = icmp eq i16 %and, 0, !dbg !39
+  br i1 %tobool, label %if.end31, label %if.then27, !dbg !39
+
+if.then27:                                        ; preds = %sw.epilog
+  %conv28 = sext i8 %c.0 to i32, !dbg !39
+  %call29 = tail call i32 @sre_tolower(i32 %conv28) #4, !dbg !39
+  %conv30 = trunc i32 %call29 to i8, !dbg !39
+  tail call void @llvm.dbg.value(metadata !{i8 %conv30}, i64 0, metadata !30), !dbg !39
+  br label %if.end31, !dbg !39
+
+if.end31:                                         ; preds = %sw.epilog, %if.then27
+  %c.1 = phi i8 [ %conv30, %if.then27 ], [ %c.0, %sw.epilog ]
+  store i8 %c.1, i8* %s.044, align 1, !dbg !76, !tbaa !37
+  %incdec.ptr = getelementptr inbounds i8* %s.044, i64 1, !dbg !35
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !29), !dbg !35
+  %5 = load i8* %incdec.ptr, align 1, !dbg !35, !tbaa !37
+  %cmp4 = icmp eq i8 %5, 0, !dbg !35
+  br i1 %cmp4, label %return, label %for.body, !dbg !35
+
+return:                                           ; preds = %if.end3, %if.end31, %entry
+  %retval.0 = phi i8* [ null, %entry ], [ %comp, %if.end31 ], [ %comp, %if.end3 ]
+  ret i8* %retval.0, !dbg !77
 }

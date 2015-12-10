@@ -1,15 +1,16 @@
 define void @_ZN10MemManagerC2Ei(%class.MemManager* nocapture %this, i32 %mps) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.MemManager* %this, i64 0, metadata !42, metadata !259), !dbg !260
-  tail call void @llvm.dbg.value(metadata i32 %mps, i64 0, metadata !44, metadata !259), !dbg !261
-  %1 = getelementptr inbounds %class.MemManager* %this, i64 0, i32 1, !dbg !262
-  store i32 %mps, i32* %1, align 4, !dbg !264, !tbaa !265
-  %2 = sext i32 %mps to i64, !dbg !272
-  %3 = tail call i8* @malloc(i64 %2) #10, !dbg !273
-  %4 = getelementptr inbounds %class.MemManager* %this, i64 0, i32 0, !dbg !274
-  store i8* %3, i8** %4, align 8, !dbg !275, !tbaa !276
-  %5 = icmp eq i8* %3, null, !dbg !277
-  %6 = getelementptr inbounds %class.MemManager* %this, i64 0, i32 2, !dbg !278
-  %7 = zext i1 %5 to i8, !dbg !279
-  store i8 %7, i8* %6, align 1, !dbg !279, !tbaa !280
-  ret void, !dbg !281
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MemManager* %this}, i64 0, metadata !31), !dbg !70
+  tail call void @llvm.dbg.value(metadata !{i32 %mps}, i64 0, metadata !34), !dbg !70
+  %maxpoolsize = getelementptr inbounds %class.MemManager* %this, i64 0, i32 1, !dbg !71
+  store i32 %mps, i32* %maxpoolsize, align 4, !dbg !71, !tbaa !73
+  %conv = sext i32 %mps to i64, !dbg !76
+  %call = tail call noalias i8* @malloc(i64 %conv) #8, !dbg !76
+  %safetypool = getelementptr inbounds %class.MemManager* %this, i64 0, i32 0, !dbg !76
+  store i8* %call, i8** %safetypool, align 8, !dbg !76, !tbaa !77
+  %cmp = icmp eq i8* %call, null, !dbg !78
+  %lowmem = getelementptr inbounds %class.MemManager* %this, i64 0, i32 2, !dbg !78
+  %frombool = zext i1 %cmp to i8, !dbg !78
+  store i8 %frombool, i8* %lowmem, align 1, !dbg !78, !tbaa !79
+  ret void, !dbg !80
 }

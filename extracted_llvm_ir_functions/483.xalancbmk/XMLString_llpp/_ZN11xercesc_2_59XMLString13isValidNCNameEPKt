@@ -1,0 +1,32 @@
+define zeroext i1 @_ZN11xercesc_2_59XMLString13isValidNCNameEPKt(i16* %name) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %name}, i64 0, metadata !1718), !dbg !3202
+  tail call void @llvm.dbg.value(metadata !{i16* %name}, i64 0, metadata !3203), !dbg !3205
+  %cmp.i = icmp eq i16* %name, null, !dbg !3206
+  br i1 %cmp.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %lor.lhs.false.i, !dbg !3206
+
+lor.lhs.false.i:                                  ; preds = %entry
+  %0 = load i16* %name, align 2, !dbg !3206, !tbaa !2947
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !3206
+  br i1 %cmp1.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !3206
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %name, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !3207
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !3208, !tbaa !2947
+  %tobool.i = icmp eq i16 %1, 0, !dbg !3208
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !3208
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !3209
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %name to i64, !dbg !3209
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !3209
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !3209
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !3209
+  br label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, !dbg !3209
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %entry, %lor.lhs.false.i, %while.end.i
+  %retval.0.i = phi i32 [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %entry ]
+  %call1 = tail call zeroext i1 @_ZN11xercesc_2_510XMLChar1_013isValidNCNameEPKtj(i16* %name, i32 %retval.0.i) #11, !dbg !3204
+  ret i1 %call1, !dbg !3204
+}

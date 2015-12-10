@@ -1,11 +1,16 @@
 define void @predict_insn_def(%struct.rtx_def* %insn, i32 %predictor, i32 %taken) #0 {
 entry:
-  %idxprom = sext i32 %predictor to i64
-  %hitrate = getelementptr inbounds [20 x %struct.predictor_info]* @predictor_info, i64 0, i64 %idxprom, i32 1
-  %0 = load i32* %hitrate, align 8, !tbaa !3
-  %cmp = icmp eq i32 %taken, 1
-  %sub = sub nsw i32 10000, %0
-  %.sub = select i1 %cmp, i32 %0, i32 %sub
-  tail call void @predict_insn(%struct.rtx_def* %insn, i32 %predictor, i32 %.sub) #7
-  ret void
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !965), !dbg !1236
+  tail call void @llvm.dbg.value(metadata !{i32 %predictor}, i64 0, metadata !966), !dbg !1237
+  tail call void @llvm.dbg.value(metadata !{i32 %taken}, i64 0, metadata !967), !dbg !1238
+  %idxprom = sext i32 %predictor to i64, !dbg !1239
+  %hitrate = getelementptr inbounds [20 x %struct.predictor_info]* @predictor_info, i64 0, i64 %idxprom, i32 1, !dbg !1239
+  %0 = load i32* %hitrate, align 8, !dbg !1239, !tbaa !1240
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !968), !dbg !1239
+  %cmp = icmp eq i32 %taken, 1, !dbg !1241
+  %sub = sub nsw i32 10000, %0, !dbg !1242
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !968), !dbg !1242
+  %.sub = select i1 %cmp, i32 %0, i32 %sub, !dbg !1241
+  tail call void @predict_insn(%struct.rtx_def* %insn, i32 %predictor, i32 %.sub) #8, !dbg !1243
+  ret void, !dbg !1244
 }

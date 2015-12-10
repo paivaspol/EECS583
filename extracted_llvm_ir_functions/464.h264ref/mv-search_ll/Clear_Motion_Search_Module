@@ -1,45 +1,51 @@
 define void @Clear_Motion_Search_Module() #0 {
-  %1 = load i32* @max_mvd, align 4, !dbg !2765, !tbaa !1657
-  %2 = load i32** @mvbits, align 8, !dbg !2766, !tbaa !1457
-  %3 = sext i32 %1 to i64, !dbg !2766
-  %4 = sub nsw i64 0, %3, !dbg !2766
-  %5 = getelementptr inbounds i32* %2, i64 %4, !dbg !2766
-  store i32* %5, i32** @mvbits, align 8, !dbg !2766, !tbaa !1457
-  %6 = load %struct.ImageParameters** @img, align 8, !dbg !2767, !tbaa !1457
-  %7 = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 155, !dbg !2768
-  %8 = load i32* %7, align 4, !dbg !2768, !tbaa !2581
-  %9 = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 156, !dbg !2769
-  %10 = load i32* %9, align 4, !dbg !2769, !tbaa !2583
-  %11 = icmp sgt i32 %8, %10, !dbg !2770
-  %. = select i1 %11, i32 %8, i32 %10, !dbg !2771
-  %12 = add nsw i32 %., 1, !dbg !2772
-  %13 = load i32** @byte_abs, align 8, !dbg !2773, !tbaa !1457
-  %14 = sext i32 %12 to i64, !dbg !2773
-  %15 = sub nsw i64 0, %14, !dbg !2773
-  %16 = getelementptr inbounds i32* %13, i64 %15, !dbg !2773
-  store i32* %16, i32** @byte_abs, align 8, !dbg !2773, !tbaa !1457
-  %17 = load i8** bitcast (i32** @spiral_search_x to i8**), align 8, !dbg !2774, !tbaa !1457
-  tail call void @free(i8* %17) #9, !dbg !2775
-  %18 = load i8** bitcast (i32** @spiral_search_y to i8**), align 8, !dbg !2776, !tbaa !1457
-  tail call void @free(i8* %18) #9, !dbg !2777
-  %19 = load i8** bitcast (i32** @mvbits to i8**), align 8, !dbg !2778, !tbaa !1457
-  tail call void @free(i8* %19) #9, !dbg !2779
-  %20 = load i8** bitcast (i32** @refbits to i8**), align 8, !dbg !2780, !tbaa !1457
-  tail call void @free(i8* %20) #9, !dbg !2781
-  %21 = load i8** bitcast (i32** @byte_abs to i8**), align 8, !dbg !2782, !tbaa !1457
-  tail call void @free(i8* %21) #9, !dbg !2783
-  %22 = load i32***** @motion_cost, align 8, !dbg !2784, !tbaa !1457
-  tail call void @free_mem4Dint(i32**** %22, i32 8, i32 2) #8, !dbg !2785
-  %23 = load %struct.InputParameters** @input, align 8, !dbg !2786, !tbaa !1457
-  %24 = getelementptr inbounds %struct.InputParameters* %23, i64 0, i32 134, !dbg !2788
-  %25 = load i32* %24, align 4, !dbg !2788, !tbaa !2254
-  %26 = icmp eq i32 %25, 0, !dbg !2786
-  br i1 %26, label %27, label %28, !dbg !2789
+entry:
+  %0 = load i32* @max_mvd, align 4, !dbg !1910, !tbaa !1441
+  %1 = load i32** @mvbits, align 8, !dbg !1910, !tbaa !1438
+  %idx.ext = sext i32 %0 to i64, !dbg !1910
+  %idx.neg = sub i64 0, %idx.ext, !dbg !1910
+  %add.ptr = getelementptr inbounds i32* %1, i64 %idx.neg, !dbg !1910
+  store i32* %add.ptr, i32** @mvbits, align 8, !dbg !1910, !tbaa !1438
+  %2 = load %struct.ImageParameters** @img, align 8, !dbg !1911, !tbaa !1438
+  %max_imgpel_value = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 155, !dbg !1911
+  %3 = load i32* %max_imgpel_value, align 4, !dbg !1911, !tbaa !1441
+  %max_imgpel_value_uv = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 156, !dbg !1911
+  %4 = load i32* %max_imgpel_value_uv, align 4, !dbg !1911, !tbaa !1441
+  %cmp = icmp sgt i32 %3, %4, !dbg !1911
+  %. = select i1 %cmp, i32 %3, i32 %4, !dbg !1911
+  %add = add nsw i32 %., 1, !dbg !1911
+  %5 = load i32** @byte_abs, align 8, !dbg !1911, !tbaa !1438
+  %idx.ext4 = sext i32 %add to i64, !dbg !1911
+  %idx.neg5 = sub i64 0, %idx.ext4, !dbg !1911
+  %add.ptr6 = getelementptr inbounds i32* %5, i64 %idx.neg5, !dbg !1911
+  store i32* %add.ptr6, i32** @byte_abs, align 8, !dbg !1911, !tbaa !1438
+  %6 = load i32** @spiral_search_x, align 8, !dbg !1912, !tbaa !1438
+  %7 = bitcast i32* %6 to i8*, !dbg !1912
+  tail call void @free(i8* %7) #8, !dbg !1912
+  %8 = load i32** @spiral_search_y, align 8, !dbg !1913, !tbaa !1438
+  %9 = bitcast i32* %8 to i8*, !dbg !1913
+  tail call void @free(i8* %9) #8, !dbg !1913
+  %10 = load i32** @mvbits, align 8, !dbg !1914, !tbaa !1438
+  %11 = bitcast i32* %10 to i8*, !dbg !1914
+  tail call void @free(i8* %11) #8, !dbg !1914
+  %12 = load i32** @refbits, align 8, !dbg !1915, !tbaa !1438
+  %13 = bitcast i32* %12 to i8*, !dbg !1915
+  tail call void @free(i8* %13) #8, !dbg !1915
+  %14 = load i32** @byte_abs, align 8, !dbg !1916, !tbaa !1438
+  %15 = bitcast i32* %14 to i8*, !dbg !1916
+  tail call void @free(i8* %15) #8, !dbg !1916
+  %16 = load i32***** @motion_cost, align 8, !dbg !1917, !tbaa !1438
+  tail call void @free_mem4Dint(i32**** %16, i32 8, i32 2) #8, !dbg !1917
+  %17 = load %struct.InputParameters** @input, align 8, !dbg !1918, !tbaa !1438
+  %FMEnable = getelementptr inbounds %struct.InputParameters* %17, i64 0, i32 134, !dbg !1918
+  %18 = load i32* %FMEnable, align 4, !dbg !1918, !tbaa !1441
+  %tobool = icmp eq i32 %18, 0, !dbg !1918
+  br i1 %tobool, label %if.then, label %if.end, !dbg !1918
 
-; <label>:27                                      ; preds = %0
-  tail call void @ClearFastFullIntegerSearch() #9, !dbg !2790
-  br label %28, !dbg !2790
+if.then:                                          ; preds = %entry
+  tail call void @ClearFastFullIntegerSearch() #9, !dbg !1919
+  br label %if.end, !dbg !1919
 
-; <label>:28                                      ; preds = %0, %27
-  ret void, !dbg !2791
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !1920
 }

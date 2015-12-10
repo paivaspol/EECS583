@@ -1,0 +1,28 @@
+define zeroext i1 @_ZN11xercesc_2_59ReaderMgr11skipIfQuoteERt(%"class.xercesc_2_5::ReaderMgr"* nocapture %this, i16* %chGotten) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ReaderMgr"* %this}, i64 0, metadata !2251), !dbg !4157
+  tail call void @llvm.dbg.value(metadata !{i16* %chGotten}, i64 0, metadata !2252), !dbg !4157
+  %fCurReader = getelementptr inbounds %"class.xercesc_2_5::ReaderMgr"* %this, i64 0, i32 2, !dbg !4158
+  br label %while.body, !dbg !4160
+
+while.body:                                       ; preds = %if.end5, %entry
+  %0 = load %"class.xercesc_2_5::XMLReader"** %fCurReader, align 8, !dbg !4158, !tbaa !3955
+  %call = tail call zeroext i1 @_ZN11xercesc_2_59XMLReader11skipIfQuoteERt(%"class.xercesc_2_5::XMLReader"* %0, i16* %chGotten) #9, !dbg !4158
+  br i1 %call, label %return, label %if.end, !dbg !4158
+
+if.end:                                           ; preds = %while.body
+  %1 = load %"class.xercesc_2_5::XMLReader"** %fCurReader, align 8, !dbg !4161, !tbaa !3955
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %1}, i64 0, metadata !4162), !dbg !4163
+  %fNoMore.i = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %1, i64 0, i32 9, !dbg !4164
+  %2 = load i8* %fNoMore.i, align 1, !dbg !4164, !tbaa !3956, !range !4009
+  %tobool.i = icmp eq i8 %2, 0, !dbg !4164
+  br i1 %tobool.i, label %return, label %if.end5, !dbg !4161
+
+if.end5:                                          ; preds = %if.end
+  %call6 = tail call zeroext i1 @_ZN11xercesc_2_59ReaderMgr9popReaderEv(%"class.xercesc_2_5::ReaderMgr"* %this) #9, !dbg !4165
+  br i1 %call6, label %while.body, label %return, !dbg !4165
+
+return:                                           ; preds = %if.end, %if.end5, %while.body
+  %retval.0 = phi i1 [ true, %while.body ], [ false, %if.end5 ], [ false, %if.end ]
+  ret i1 %retval.0, !dbg !4166
+}

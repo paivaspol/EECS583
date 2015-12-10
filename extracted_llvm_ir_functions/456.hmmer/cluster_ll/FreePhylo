@@ -1,26 +1,24 @@
 define void @FreePhylo(%struct.phylo_s* nocapture %tree, i32 %N) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.phylo_s* %tree, i64 0, metadata !65, metadata !220), !dbg !524
-  tail call void @llvm.dbg.value(metadata i32 %N, i64 0, metadata !66, metadata !220), !dbg !525
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !67, metadata !220), !dbg !526
-  %1 = icmp sgt i32 %N, 1, !dbg !527
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !530
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.phylo_s* %tree}, i64 0, metadata !64), !dbg !327
+  tail call void @llvm.dbg.value(metadata !{i32 %N}, i64 0, metadata !65), !dbg !327
+  tail call void @llvm.dbg.value(metadata !9, i64 0, metadata !66), !dbg !328
+  %sub = add i32 %N, -1, !dbg !328
+  %cmp4 = icmp sgt i32 %sub, 0, !dbg !328
+  br i1 %cmp4, label %for.body, label %for.end, !dbg !328
 
-.lr.ph:                                           ; preds = %0
-  %2 = add nsw i32 %N, -1, !dbg !531
-  %3 = sext i32 %2 to i64, !dbg !530
-  br label %4, !dbg !530
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %is_in = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 6, !dbg !330
+  %0 = load i8** %is_in, align 8, !dbg !330, !tbaa !215
+  tail call void @free(i8* %0) #5, !dbg !330
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !328
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !328
+  %exitcond = icmp eq i32 %lftr.wideiv, %sub, !dbg !328
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !328
 
-; <label>:4                                       ; preds = %.lr.ph, %4
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %4 ]
-  %5 = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 6, !dbg !532
-  %6 = load i8** %5, align 8, !dbg !532, !tbaa !354
-  tail call void @free(i8* %6) #6, !dbg !533
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !530
-  %7 = icmp slt i64 %indvars.iv.next, %3, !dbg !527
-  br i1 %7, label %4, label %._crit_edge, !dbg !530
-
-._crit_edge:                                      ; preds = %4, %0
-  %8 = bitcast %struct.phylo_s* %tree to i8*, !dbg !534
-  tail call void @free(i8* %8) #6, !dbg !535
-  ret void, !dbg !536
+for.end:                                          ; preds = %for.body, %entry
+  %1 = bitcast %struct.phylo_s* %tree to i8*, !dbg !331
+  tail call void @free(i8* %1) #5, !dbg !331
+  ret void, !dbg !332
 }

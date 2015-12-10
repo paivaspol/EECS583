@@ -1,26 +1,27 @@
 define i32 @terminate_sequence() #4 {
-  %1 = load %struct.InputParameters** @input, align 8, !dbg !664, !tbaa !601
-  %2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 60, !dbg !665
-  %3 = load i32* %2, align 4, !dbg !665, !tbaa !626
-  switch i32 %3, label %6 [
-    i32 0, label %4
-    i32 1, label %5
-  ], !dbg !666
+entry:
+  %0 = load %struct.InputParameters** @input, align 8, !dbg !631, !tbaa !590
+  %of_mode = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 60, !dbg !631
+  %1 = load i32* %of_mode, align 4, !dbg !631, !tbaa !603
+  switch i32 %1, label %sw.default [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb1
+  ], !dbg !631
 
-; <label>:4                                       ; preds = %0
-  tail call void (...)* @CloseAnnexbFile() #6, !dbg !667
-  br label %8, !dbg !669
+sw.bb:                                            ; preds = %entry
+  tail call void (...)* @CloseAnnexbFile() #6, !dbg !632
+  br label %return, !dbg !634
 
-; <label>:5                                       ; preds = %0
-  tail call void (...)* @CloseRTPFile() #6, !dbg !670
-  br label %8, !dbg !671
+sw.bb1:                                           ; preds = %entry
+  tail call void (...)* @CloseRTPFile() #6, !dbg !635
+  br label %return, !dbg !636
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 (i8*, i64, i32, i64, i8*, ...)* @__snprintf_chk(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i32 0, i64 300, i8* getelementptr inbounds ([34 x i8]* @.str1, i64 0, i64 0), i32 %3) #6, !dbg !672
-  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 1) #8, !dbg !673
+sw.default:                                       ; preds = %entry
+  %call = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([34 x i8]* @.str1, i64 0, i64 0), i32 %1) #6, !dbg !637
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 1) #8, !dbg !638
   unreachable
 
-; <label>:8                                       ; preds = %4, %5
-  %.0 = phi i32 [ 0, %5 ], [ 1, %4 ]
-  ret i32 %.0, !dbg !674
+return:                                           ; preds = %sw.bb, %sw.bb1
+  %retval.0 = phi i32 [ 0, %sw.bb1 ], [ 1, %sw.bb ]
+  ret i32 %retval.0, !dbg !634
 }

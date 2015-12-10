@@ -1,75 +1,85 @@
 define internal fastcc void @dump_hash_table(%struct._IO_FILE* %file, i8* %name, %struct.expr** nocapture %table, i32 %table_size, i32 %total_size) #0 {
 entry:
-  %conv = sext i32 %total_size to i64
-  %call = tail call noalias i8* @xcalloc(i64 %conv, i64 8) #6
-  %0 = bitcast i8* %call to %struct.expr**
-  %mul = shl nsw i64 %conv, 2
-  %call2 = tail call noalias i8* @xmalloc(i64 %mul) #6
-  %1 = bitcast i8* %call2 to i32*
-  %cmp71 = icmp sgt i32 %table_size, 0
-  br i1 %cmp71, label %for.body, label %for.end14
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !791), !dbg !3026
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !792), !dbg !3027
+  tail call void @llvm.dbg.value(metadata !{%struct.expr** %table}, i64 0, metadata !793), !dbg !3028
+  tail call void @llvm.dbg.value(metadata !{i32 %table_size}, i64 0, metadata !794), !dbg !3029
+  tail call void @llvm.dbg.value(metadata !{i32 %total_size}, i64 0, metadata !795), !dbg !3029
+  %conv = sext i32 %total_size to i64, !dbg !3030
+  %call = tail call noalias i8* @xcalloc(i64 %conv, i64 8) #7, !dbg !3030
+  %0 = bitcast i8* %call to %struct.expr**, !dbg !3030
+  tail call void @llvm.dbg.value(metadata !{%struct.expr** %0}, i64 0, metadata !797), !dbg !3030
+  %mul = shl nsw i64 %conv, 2, !dbg !3031
+  %call2 = tail call noalias i8* @xmalloc(i64 %mul) #7, !dbg !3031
+  %1 = bitcast i8* %call2 to i32*, !dbg !3031
+  tail call void @llvm.dbg.value(metadata !{i32* %1}, i64 0, metadata !798), !dbg !3031
+  tail call void @llvm.dbg.value(metadata !321, i64 0, metadata !796), !dbg !3032
+  %cmp71 = icmp sgt i32 %table_size, 0, !dbg !3032
+  br i1 %cmp71, label %for.body, label %for.end14, !dbg !3032
 
 for.body:                                         ; preds = %entry, %for.inc13
   %indvars.iv73 = phi i64 [ %indvars.iv.next74, %for.inc13 ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds %struct.expr** %table, i64 %indvars.iv73
-  %expr.068 = load %struct.expr** %arrayidx, align 8
-  %cmp569 = icmp eq %struct.expr* %expr.068, null
-  br i1 %cmp569, label %for.inc13, label %for.body7
+  %arrayidx = getelementptr inbounds %struct.expr** %table, i64 %indvars.iv73, !dbg !3034
+  %expr.068 = load %struct.expr** %arrayidx, align 8, !dbg !3034
+  %cmp569 = icmp eq %struct.expr* %expr.068, null, !dbg !3034
+  br i1 %cmp569, label %for.inc13, label %for.body7, !dbg !3034
 
 for.body7:                                        ; preds = %for.body, %for.body7
   %expr.070 = phi %struct.expr* [ %expr.0, %for.body7 ], [ %expr.068, %for.body ]
-  %bitmap_index = getelementptr inbounds %struct.expr* %expr.070, i64 0, i32 1
-  %2 = load i32* %bitmap_index, align 4, !tbaa !3
-  %idxprom8 = sext i32 %2 to i64
-  %arrayidx9 = getelementptr inbounds %struct.expr** %0, i64 %idxprom8
-  store %struct.expr* %expr.070, %struct.expr** %arrayidx9, align 8, !tbaa !0
-  %arrayidx12 = getelementptr inbounds i32* %1, i64 %idxprom8
-  %3 = trunc i64 %indvars.iv73 to i32
-  store i32 %3, i32* %arrayidx12, align 4, !tbaa !3
-  %next_same_hash = getelementptr inbounds %struct.expr* %expr.070, i64 0, i32 2
-  %expr.0 = load %struct.expr** %next_same_hash, align 8
-  %cmp5 = icmp eq %struct.expr* %expr.0, null
-  br i1 %cmp5, label %for.inc13, label %for.body7
+  %bitmap_index = getelementptr inbounds %struct.expr* %expr.070, i64 0, i32 1, !dbg !3036
+  %2 = load i32* %bitmap_index, align 4, !dbg !3036, !tbaa !1735
+  %idxprom8 = sext i32 %2 to i64, !dbg !3036
+  %arrayidx9 = getelementptr inbounds %struct.expr** %0, i64 %idxprom8, !dbg !3036
+  store %struct.expr* %expr.070, %struct.expr** %arrayidx9, align 8, !dbg !3036, !tbaa !1729
+  %arrayidx12 = getelementptr inbounds i32* %1, i64 %idxprom8, !dbg !3038
+  %3 = trunc i64 %indvars.iv73 to i32, !dbg !3038
+  store i32 %3, i32* %arrayidx12, align 4, !dbg !3038, !tbaa !1735
+  %next_same_hash = getelementptr inbounds %struct.expr* %expr.070, i64 0, i32 2, !dbg !3034
+  %expr.0 = load %struct.expr** %next_same_hash, align 8, !dbg !3034
+  %cmp5 = icmp eq %struct.expr* %expr.0, null, !dbg !3034
+  br i1 %cmp5, label %for.inc13, label %for.body7, !dbg !3034
 
 for.inc13:                                        ; preds = %for.body7, %for.body
-  %indvars.iv.next74 = add i64 %indvars.iv73, 1
-  %lftr.wideiv75 = trunc i64 %indvars.iv.next74 to i32
-  %exitcond76 = icmp eq i32 %lftr.wideiv75, %table_size
-  br i1 %exitcond76, label %for.end14, label %for.body
+  %indvars.iv.next74 = add i64 %indvars.iv73, 1, !dbg !3032
+  %lftr.wideiv75 = trunc i64 %indvars.iv.next74 to i32, !dbg !3032
+  %exitcond76 = icmp eq i32 %lftr.wideiv75, %table_size, !dbg !3032
+  br i1 %exitcond76, label %for.end14, label %for.body, !dbg !3032
 
 for.end14:                                        ; preds = %for.inc13, %entry
-  %call15 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([40 x i8]* @.str13, i64 0, i64 0), i8* %name, i32 %table_size, i32 %total_size) #6
-  %cmp1766 = icmp sgt i32 %total_size, 0
-  br i1 %cmp1766, label %for.body19, label %for.end34
+  %call15 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([40 x i8]* @.str13, i64 0, i64 0), i8* %name, i32 %table_size, i32 %total_size) #7, !dbg !3039
+  tail call void @llvm.dbg.value(metadata !321, i64 0, metadata !796), !dbg !3040
+  %cmp1766 = icmp sgt i32 %total_size, 0, !dbg !3040
+  br i1 %cmp1766, label %for.body19, label %for.end34, !dbg !3040
 
 for.body19:                                       ; preds = %for.end14, %for.inc32
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc32 ], [ 0, %for.end14 ]
-  %arrayidx21 = getelementptr inbounds %struct.expr** %0, i64 %indvars.iv
-  %4 = load %struct.expr** %arrayidx21, align 8, !tbaa !0
-  %cmp22 = icmp eq %struct.expr* %4, null
-  br i1 %cmp22, label %for.inc32, label %if.then
+  %arrayidx21 = getelementptr inbounds %struct.expr** %0, i64 %indvars.iv, !dbg !3042
+  %4 = load %struct.expr** %arrayidx21, align 8, !dbg !3042, !tbaa !1729
+  %cmp22 = icmp eq %struct.expr* %4, null, !dbg !3042
+  br i1 %cmp22, label %for.inc32, label %if.then, !dbg !3042
 
 if.then:                                          ; preds = %for.body19
-  %bitmap_index26 = getelementptr inbounds %struct.expr* %4, i64 0, i32 1
-  %5 = load i32* %bitmap_index26, align 4, !tbaa !3
-  %arrayidx28 = getelementptr inbounds i32* %1, i64 %indvars.iv
-  %6 = load i32* %arrayidx28, align 4, !tbaa !3
-  %call29 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([28 x i8]* @.str14, i64 0, i64 0), i32 %5, i32 %6) #6
-  %expr30 = getelementptr inbounds %struct.expr* %4, i64 0, i32 0
-  %7 = load %struct.rtx_def** %expr30, align 8, !tbaa !0
-  tail call void @print_rtl(%struct._IO_FILE* %file, %struct.rtx_def* %7) #6
-  %fputc65 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file)
-  br label %for.inc32
+  tail call void @llvm.dbg.value(metadata !{%struct.expr* %4}, i64 0, metadata !799), !dbg !3043
+  %bitmap_index26 = getelementptr inbounds %struct.expr* %4, i64 0, i32 1, !dbg !3045
+  %5 = load i32* %bitmap_index26, align 4, !dbg !3045, !tbaa !1735
+  %arrayidx28 = getelementptr inbounds i32* %1, i64 %indvars.iv, !dbg !3045
+  %6 = load i32* %arrayidx28, align 4, !dbg !3045, !tbaa !1735
+  %call29 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([28 x i8]* @.str14, i64 0, i64 0), i32 %5, i32 %6) #7, !dbg !3045
+  %expr30 = getelementptr inbounds %struct.expr* %4, i64 0, i32 0, !dbg !3046
+  %7 = load %struct.rtx_def** %expr30, align 8, !dbg !3046, !tbaa !1729
+  tail call void @print_rtl(%struct._IO_FILE* %file, %struct.rtx_def* %7) #7, !dbg !3046
+  %fputc65 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file), !dbg !3047
+  br label %for.inc32, !dbg !3048
 
 for.inc32:                                        ; preds = %for.body19, %if.then
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %total_size
-  br i1 %exitcond, label %for.end34, label %for.body19
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3040
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !3040
+  %exitcond = icmp eq i32 %lftr.wideiv, %total_size, !dbg !3040
+  br i1 %exitcond, label %for.end34, label %for.body19, !dbg !3040
 
 for.end34:                                        ; preds = %for.inc32, %for.end14
-  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file)
-  tail call void @free(i8* %call) #6
-  tail call void @free(i8* %call2) #6
-  ret void
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file), !dbg !3049
+  tail call void @free(i8* %call) #7, !dbg !3050
+  tail call void @free(i8* %call2) #7, !dbg !3051
+  ret void, !dbg !3052
 }

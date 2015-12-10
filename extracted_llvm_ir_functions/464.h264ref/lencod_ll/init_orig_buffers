@@ -1,105 +1,107 @@
 define i32 @init_orig_buffers() #0 {
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !471, metadata !1429), !dbg !4444
-  %1 = load %struct.ImageParameters** @img, align 8, !dbg !4445, !tbaa !1439
-  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 15, !dbg !4446
-  %3 = load i32* %2, align 4, !dbg !4446, !tbaa !2247
-  %4 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 13, !dbg !4447
-  %5 = load i32* %4, align 4, !dbg !4447, !tbaa !2239
-  %6 = tail call i32 @get_mem2Dpel(i16*** @imgY_org_frm, i32 %3, i32 %5) #7, !dbg !4448
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !471, metadata !1429), !dbg !4444
-  %7 = load %struct.ImageParameters** @img, align 8, !dbg !4449, !tbaa !1439
-  %8 = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 159, !dbg !4451
-  %9 = load i32* %8, align 4, !dbg !4451, !tbaa !2006
-  %10 = icmp eq i32 %9, 0, !dbg !4452
-  br i1 %10, label %18, label %11, !dbg !4453
+entry:
+  tail call void @llvm.dbg.value(metadata !30, i64 0, metadata !386), !dbg !2453
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !2454, !tbaa !1428
+  %height = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 15, !dbg !2454
+  %1 = load i32* %height, align 4, !dbg !2454, !tbaa !1424
+  %width = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 13, !dbg !2454
+  %2 = load i32* %width, align 4, !dbg !2454, !tbaa !1424
+  %call = tail call i32 @get_mem2Dpel(i16*** @imgY_org_frm, i32 %1, i32 %2) #7, !dbg !2454
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !386), !dbg !2454
+  %3 = load %struct.ImageParameters** @img, align 8, !dbg !2455, !tbaa !1428
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 159, !dbg !2455
+  %4 = load i32* %yuv_format, align 4, !dbg !2455, !tbaa !1424
+  %cmp = icmp eq i32 %4, 0, !dbg !2455
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2455
 
-; <label>:11                                      ; preds = %0
-  %12 = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 16, !dbg !4454
-  %13 = load i32* %12, align 4, !dbg !4454, !tbaa !2264
-  %14 = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 14, !dbg !4455
-  %15 = load i32* %14, align 4, !dbg !4455, !tbaa !2258
-  %16 = tail call i32 @get_mem3Dpel(i16**** @imgUV_org_frm, i32 2, i32 %13, i32 %15) #7, !dbg !4456
-  %17 = add nsw i32 %16, %6, !dbg !4457
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !471, metadata !1429), !dbg !4444
-  br label %18, !dbg !4458
+if.then:                                          ; preds = %entry
+  %height_cr = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 16, !dbg !2456
+  %5 = load i32* %height_cr, align 4, !dbg !2456, !tbaa !1424
+  %width_cr = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 14, !dbg !2456
+  %6 = load i32* %width_cr, align 4, !dbg !2456, !tbaa !1424
+  %call1 = tail call i32 @get_mem3Dpel(i16**** @imgUV_org_frm, i32 2, i32 %5, i32 %6) #7, !dbg !2456
+  %add2 = add nsw i32 %call1, %call, !dbg !2456
+  tail call void @llvm.dbg.value(metadata !{i32 %add2}, i64 0, metadata !386), !dbg !2456
+  br label %if.end, !dbg !2456
 
-; <label>:18                                      ; preds = %0, %11
-  %memory_size.0 = phi i32 [ %17, %11 ], [ %6, %0 ]
-  %19 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !dbg !4459, !tbaa !1439
-  %20 = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %19, i64 0, i32 25, !dbg !4461
-  %21 = load i32* %20, align 4, !dbg !4461, !tbaa !2120
-  %22 = icmp eq i32 %21, 0, !dbg !4459
-  br i1 %22, label %23, label %71, !dbg !4462
+if.end:                                           ; preds = %entry, %if.then
+  %memory_size.0 = phi i32 [ %add2, %if.then ], [ %call, %entry ]
+  %7 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !dbg !2457, !tbaa !1428
+  %frame_mbs_only_flag = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %7, i64 0, i32 25, !dbg !2457
+  %8 = load i32* %frame_mbs_only_flag, align 4, !dbg !2457, !tbaa !1425
+  %tobool = icmp eq i32 %8, 0, !dbg !2457
+  br i1 %tobool, label %if.then3, label %if.end34, !dbg !2457
 
-; <label>:23                                      ; preds = %18
-  %24 = load i16*** @imgY_org_frm, align 8, !dbg !4463, !tbaa !1439
-  %25 = load %struct.ImageParameters** @img, align 8, !dbg !4465, !tbaa !1439
-  %26 = getelementptr inbounds %struct.ImageParameters* %25, i64 0, i32 15, !dbg !4466
-  %27 = load i32* %26, align 4, !dbg !4466, !tbaa !2247
-  %28 = getelementptr inbounds %struct.ImageParameters* %25, i64 0, i32 13, !dbg !4467
-  %29 = load i32* %28, align 4, !dbg !4467, !tbaa !2239
-  %30 = tail call i32 @init_top_bot_planes(i16** %24, i32 %27, i32 %29, i16*** @imgY_org_top, i16*** @imgY_org_bot) #7, !dbg !4468
-  %31 = load %struct.ImageParameters** @img, align 8, !dbg !4469, !tbaa !1439
-  %32 = getelementptr inbounds %struct.ImageParameters* %31, i64 0, i32 159, !dbg !4471
-  %33 = load i32* %32, align 4, !dbg !4471, !tbaa !2006
-  %34 = icmp eq i32 %33, 0, !dbg !4472
-  br i1 %34, label %71, label %35, !dbg !4473
+if.then3:                                         ; preds = %if.end
+  %9 = load i16*** @imgY_org_frm, align 8, !dbg !2458, !tbaa !1428
+  %10 = load %struct.ImageParameters** @img, align 8, !dbg !2458, !tbaa !1428
+  %height4 = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 15, !dbg !2458
+  %11 = load i32* %height4, align 4, !dbg !2458, !tbaa !1424
+  %width5 = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 13, !dbg !2458
+  %12 = load i32* %width5, align 4, !dbg !2458, !tbaa !1424
+  %call6 = tail call i32 @init_top_bot_planes(i16** %9, i32 %11, i32 %12, i16*** @imgY_org_top, i16*** @imgY_org_bot) #7, !dbg !2458
+  %13 = load %struct.ImageParameters** @img, align 8, !dbg !2460, !tbaa !1428
+  %yuv_format7 = getelementptr inbounds %struct.ImageParameters* %13, i64 0, i32 159, !dbg !2460
+  %14 = load i32* %yuv_format7, align 4, !dbg !2460, !tbaa !1424
+  %cmp8 = icmp eq i32 %14, 0, !dbg !2460
+  br i1 %cmp8, label %if.end34, label %if.then9, !dbg !2460
 
-; <label>:35                                      ; preds = %23
-  %36 = tail call i8* @calloc(i64 2, i64 8) #7, !dbg !4474
-  store i8* %36, i8** bitcast (i16**** @imgUV_org_top to i8**), align 8, !dbg !4477, !tbaa !1439
-  %37 = icmp eq i8* %36, null, !dbg !4478
-  br i1 %37, label %38, label %39, !dbg !4479
+if.then9:                                         ; preds = %if.then3
+  %call10 = tail call noalias i8* @calloc(i64 2, i64 8) #7, !dbg !2461
+  %15 = bitcast i8* %call10 to i16***, !dbg !2461
+  store i16*** %15, i16**** @imgUV_org_top, align 8, !dbg !2461, !tbaa !1428
+  %cmp11 = icmp eq i8* %call10, null, !dbg !2461
+  br i1 %cmp11, label %if.then12, label %if.end13, !dbg !2461
 
-; <label>:38                                      ; preds = %35
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([35 x i8]* @.str195, i64 0, i64 0)) #7, !dbg !4480
-  br label %39, !dbg !4480
+if.then12:                                        ; preds = %if.then9
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([35 x i8]* @.str195, i64 0, i64 0)) #7, !dbg !2463
+  br label %if.end13, !dbg !2463
 
-; <label>:39                                      ; preds = %38, %35
-  %40 = tail call i8* @calloc(i64 2, i64 8) #7, !dbg !4481
-  store i8* %40, i8** bitcast (i16**** @imgUV_org_bot to i8**), align 8, !dbg !4483, !tbaa !1439
-  %41 = icmp eq i8* %40, null, !dbg !4484
-  %42 = bitcast i8* %40 to i16***
-  br i1 %41, label %43, label %44, !dbg !4485
+if.end13:                                         ; preds = %if.then12, %if.then9
+  %call14 = tail call noalias i8* @calloc(i64 2, i64 8) #7, !dbg !2464
+  %16 = bitcast i8* %call14 to i16***, !dbg !2464
+  store i16*** %16, i16**** @imgUV_org_bot, align 8, !dbg !2464, !tbaa !1428
+  %cmp15 = icmp eq i8* %call14, null, !dbg !2464
+  br i1 %cmp15, label %if.then16, label %if.end17, !dbg !2464
 
-; <label>:43                                      ; preds = %39
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([35 x i8]* @.str196, i64 0, i64 0)) #7, !dbg !4486
-  %.pre = load i16**** @imgUV_org_bot, align 8, !dbg !4487, !tbaa !1439
-  br label %44, !dbg !4486
+if.then16:                                        ; preds = %if.end13
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([35 x i8]* @.str196, i64 0, i64 0)) #7, !dbg !2465
+  %.pre = load i16**** @imgUV_org_bot, align 8, !dbg !2466, !tbaa !1428
+  br label %if.end17, !dbg !2465
 
-; <label>:44                                      ; preds = %43, %39
-  %45 = phi i16*** [ %.pre, %43 ], [ %42, %39 ]
-  %46 = add i32 %memory_size.0, 32, !dbg !4488
-  tail call void @llvm.dbg.value(metadata i32 %46, i64 0, metadata !471, metadata !1429), !dbg !4444
-  %47 = load i16**** @imgUV_org_frm, align 8, !dbg !4489, !tbaa !1439
-  %48 = load i16*** %47, align 8, !dbg !4489, !tbaa !1439
-  %49 = load %struct.ImageParameters** @img, align 8, !dbg !4490, !tbaa !1439
-  %50 = getelementptr inbounds %struct.ImageParameters* %49, i64 0, i32 16, !dbg !4491
-  %51 = load i32* %50, align 4, !dbg !4491, !tbaa !2264
-  %52 = getelementptr inbounds %struct.ImageParameters* %49, i64 0, i32 14, !dbg !4492
-  %53 = load i32* %52, align 4, !dbg !4492, !tbaa !2258
-  %54 = load i16**** @imgUV_org_top, align 8, !dbg !4493, !tbaa !1439
-  %55 = tail call i32 @init_top_bot_planes(i16** %48, i32 %51, i32 %53, i16*** %54, i16*** %45) #7, !dbg !4494
-  %56 = add nsw i32 %46, %55, !dbg !4495
-  tail call void @llvm.dbg.value(metadata i32 %56, i64 0, metadata !471, metadata !1429), !dbg !4444
-  %57 = load i16**** @imgUV_org_frm, align 8, !dbg !4496, !tbaa !1439
-  %58 = getelementptr inbounds i16*** %57, i64 1, !dbg !4496
-  %59 = load i16*** %58, align 8, !dbg !4496, !tbaa !1439
-  %60 = load %struct.ImageParameters** @img, align 8, !dbg !4497, !tbaa !1439
-  %61 = getelementptr inbounds %struct.ImageParameters* %60, i64 0, i32 16, !dbg !4498
-  %62 = load i32* %61, align 4, !dbg !4498, !tbaa !2264
-  %63 = getelementptr inbounds %struct.ImageParameters* %60, i64 0, i32 14, !dbg !4499
-  %64 = load i32* %63, align 4, !dbg !4499, !tbaa !2258
-  %65 = load i16**** @imgUV_org_top, align 8, !dbg !4500, !tbaa !1439
-  %66 = getelementptr inbounds i16*** %65, i64 1, !dbg !4500
-  %67 = load i16**** @imgUV_org_bot, align 8, !dbg !4501, !tbaa !1439
-  %68 = getelementptr inbounds i16*** %67, i64 1, !dbg !4501
-  %69 = tail call i32 @init_top_bot_planes(i16** %59, i32 %62, i32 %64, i16*** %66, i16*** %68) #7, !dbg !4502
-  %70 = add nsw i32 %56, %69, !dbg !4503
-  tail call void @llvm.dbg.value(metadata i32 %70, i64 0, metadata !471, metadata !1429), !dbg !4444
-  br label %71, !dbg !4504
+if.end17:                                         ; preds = %if.end13, %if.then16
+  %17 = phi i16*** [ %.pre, %if.then16 ], [ %16, %if.end13 ]
+  %add18 = add i32 %memory_size.0, 32, !dbg !2467
+  tail call void @llvm.dbg.value(metadata !{i32 %add18}, i64 0, metadata !386), !dbg !2467
+  %18 = load i16**** @imgUV_org_frm, align 8, !dbg !2466, !tbaa !1428
+  %19 = load i16*** %18, align 8, !dbg !2466, !tbaa !1428
+  %20 = load %struct.ImageParameters** @img, align 8, !dbg !2466, !tbaa !1428
+  %height_cr20 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 16, !dbg !2466
+  %21 = load i32* %height_cr20, align 4, !dbg !2466, !tbaa !1424
+  %width_cr21 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 14, !dbg !2466
+  %22 = load i32* %width_cr21, align 4, !dbg !2466, !tbaa !1424
+  %23 = load i16**** @imgUV_org_top, align 8, !dbg !2466, !tbaa !1428
+  %call24 = tail call i32 @init_top_bot_planes(i16** %19, i32 %21, i32 %22, i16*** %23, i16*** %17) #7, !dbg !2466
+  %add25 = add nsw i32 %add18, %call24, !dbg !2466
+  tail call void @llvm.dbg.value(metadata !{i32 %add25}, i64 0, metadata !386), !dbg !2466
+  %24 = load i16**** @imgUV_org_frm, align 8, !dbg !2468, !tbaa !1428
+  %arrayidx26 = getelementptr inbounds i16*** %24, i64 1, !dbg !2468
+  %25 = load i16*** %arrayidx26, align 8, !dbg !2468, !tbaa !1428
+  %26 = load %struct.ImageParameters** @img, align 8, !dbg !2468, !tbaa !1428
+  %height_cr27 = getelementptr inbounds %struct.ImageParameters* %26, i64 0, i32 16, !dbg !2468
+  %27 = load i32* %height_cr27, align 4, !dbg !2468, !tbaa !1424
+  %width_cr28 = getelementptr inbounds %struct.ImageParameters* %26, i64 0, i32 14, !dbg !2468
+  %28 = load i32* %width_cr28, align 4, !dbg !2468, !tbaa !1424
+  %29 = load i16**** @imgUV_org_top, align 8, !dbg !2468, !tbaa !1428
+  %arrayidx29 = getelementptr inbounds i16*** %29, i64 1, !dbg !2468
+  %30 = load i16**** @imgUV_org_bot, align 8, !dbg !2468, !tbaa !1428
+  %arrayidx30 = getelementptr inbounds i16*** %30, i64 1, !dbg !2468
+  %call31 = tail call i32 @init_top_bot_planes(i16** %25, i32 %27, i32 %28, i16*** %arrayidx29, i16*** %arrayidx30) #7, !dbg !2468
+  %add32 = add nsw i32 %add25, %call31, !dbg !2468
+  tail call void @llvm.dbg.value(metadata !{i32 %add32}, i64 0, metadata !386), !dbg !2468
+  br label %if.end34, !dbg !2469
 
-; <label>:71                                      ; preds = %23, %18, %44
-  %memory_size.1 = phi i32 [ %memory_size.0, %18 ], [ %70, %44 ], [ %memory_size.0, %23 ]
-  ret i32 %memory_size.1, !dbg !4505
+if.end34:                                         ; preds = %if.then3, %if.end, %if.end17
+  %memory_size.1 = phi i32 [ %memory_size.0, %if.end ], [ %add32, %if.end17 ], [ %memory_size.0, %if.then3 ]
+  ret i32 %memory_size.1, !dbg !2470
 }

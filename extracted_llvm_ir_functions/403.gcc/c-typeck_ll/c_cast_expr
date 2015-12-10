@@ -1,20 +1,24 @@
 define %union.tree_node* @c_cast_expr(%union.tree_node* %type, %union.tree_node* %expr) #0 {
 entry:
-  %0 = load i32* @warn_strict_prototypes, align 4, !tbaa !3
-  %code = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 0, i32 2
-  %1 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 25
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1337), !dbg !3613
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %expr}, i64 0, metadata !1338), !dbg !3613
+  %0 = load i32* @warn_strict_prototypes, align 4, !dbg !3614, !tbaa !2105
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !1339), !dbg !3614
+  %code = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 0, i32 2, !dbg !3615
+  %1 = bitcast [4 x i8]* %code to i32*, !dbg !3615
+  %bf.load = load i32* %1, align 8, !dbg !3615
+  %bf.clear = and i32 %bf.load, 255, !dbg !3615
+  %cmp = icmp eq i32 %bf.clear, 25, !dbg !3615
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3615
 
 if.then:                                          ; preds = %entry
-  store i32 0, i32* @warn_strict_prototypes, align 4, !tbaa !3
-  br label %if.end
+  store i32 0, i32* @warn_strict_prototypes, align 4, !dbg !3616, !tbaa !2105
+  br label %if.end, !dbg !3616
 
 if.end:                                           ; preds = %if.then, %entry
-  %call = tail call %union.tree_node* @groktypename(%union.tree_node* %type) #8
-  store i32 %0, i32* @warn_strict_prototypes, align 4, !tbaa !3
-  %call1 = tail call %union.tree_node* @build_c_cast(%union.tree_node* %call, %union.tree_node* %expr) #7
-  ret %union.tree_node* %call1
+  %call = tail call %union.tree_node* @groktypename(%union.tree_node* %type) #9, !dbg !3617
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1337), !dbg !3617
+  store i32 %0, i32* @warn_strict_prototypes, align 4, !dbg !3618, !tbaa !2105
+  %call1 = tail call %union.tree_node* @build_c_cast(%union.tree_node* %call, %union.tree_node* %expr) #8, !dbg !3619
+  ret %union.tree_node* %call1, !dbg !3619
 }

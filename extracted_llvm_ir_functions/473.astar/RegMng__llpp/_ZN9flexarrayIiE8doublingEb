@@ -1,0 +1,35 @@
+define linkonce_odr void @_ZN9flexarrayIiE8doublingEb(%class.flexarray.0* nocapture %this, i1 zeroext %flcopy) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray.0* %this}, i64 0, metadata !716), !dbg !1540
+  tail call void @llvm.dbg.value(metadata !{i1 %flcopy}, i64 0, metadata !718), !dbg !1540
+  %maxelemqu = getelementptr inbounds %class.flexarray.0* %this, i64 0, i32 2, !dbg !1541
+  %0 = load i32* %maxelemqu, align 4, !dbg !1541, !tbaa !781
+  %shl = shl i32 %0, 1, !dbg !1541
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !720), !dbg !1541
+  %mul = shl i32 %0, 3, !dbg !1542
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !1543) #5, !dbg !1544
+  tail call void @llvm.dbg.value(metadata !796, i64 0, metadata !1545) #5, !dbg !1544
+  %conv.i = sext i32 %mul to i64, !dbg !1546
+  %call.i = tail call noalias i8* @malloc(i64 %conv.i) #8, !dbg !1546
+  %1 = bitcast i8* %call.i to i32*, !dbg !1542
+  tail call void @llvm.dbg.value(metadata !{i32* %1}, i64 0, metadata !719), !dbg !1542
+  %ep = getelementptr inbounds %class.flexarray.0* %this, i64 0, i32 0, !dbg !1547
+  %2 = load i32** %ep, align 8, !dbg !1547, !tbaa !777
+  br i1 %flcopy, label %if.then, label %if.end, !dbg !1548
+
+if.then:                                          ; preds = %entry
+  %3 = bitcast i32* %2 to i8*, !dbg !1547
+  %conv4 = sext i32 %0 to i64, !dbg !1547
+  %mul5 = shl nsw i64 %conv4, 2, !dbg !1547
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call.i, i8* %3, i64 %mul5, i32 4, i1 false), !dbg !1547
+  br label %if.end, !dbg !1547
+
+if.end:                                           ; preds = %entry, %if.then
+  %ep6 = getelementptr inbounds %class.flexarray.0* %this, i64 0, i32 0, !dbg !1549
+  %4 = bitcast i32* %2 to i8*, !dbg !1549
+  tail call void @llvm.dbg.value(metadata !{i8* %4}, i64 0, metadata !1550) #5, !dbg !1551
+  tail call void @free(i8* %4) #8, !dbg !1552
+  store i32* %1, i32** %ep6, align 8, !dbg !1553, !tbaa !777
+  store i32 %shl, i32* %maxelemqu, align 4, !dbg !1554, !tbaa !781
+  ret void, !dbg !1555
+}

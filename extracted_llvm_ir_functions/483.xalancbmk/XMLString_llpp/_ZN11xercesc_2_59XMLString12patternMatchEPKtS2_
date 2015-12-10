@@ -1,0 +1,88 @@
+define i32 @_ZN11xercesc_2_59XMLString12patternMatchEPKtS2_(i16* %toSearch, i16* %pattern) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toSearch}, i64 0, metadata !1873), !dbg !3590
+  tail call void @llvm.dbg.value(metadata !{i16* %pattern}, i64 0, metadata !1874), !dbg !3591
+  %tobool = icmp eq i16* %toSearch, null, !dbg !3592
+  br i1 %tobool, label %return, label %lor.lhs.false, !dbg !3592
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = load i16* %toSearch, align 2, !dbg !3592, !tbaa !2947
+  %tobool1 = icmp eq i16 %0, 0, !dbg !3592
+  %cmp.i = icmp eq i16* %pattern, null, !dbg !3593
+  %or.cond = or i1 %tobool1, %cmp.i, !dbg !3592
+  tail call void @llvm.dbg.value(metadata !{i16* %pattern}, i64 0, metadata !3595), !dbg !3596
+  br i1 %or.cond, label %return, label %lor.lhs.false.i, !dbg !3592
+
+lor.lhs.false.i:                                  ; preds = %lor.lhs.false
+  %1 = load i16* %pattern, align 2, !dbg !3593, !tbaa !2947
+  %cmp1.i = icmp eq i16 %1, 0, !dbg !3593
+  br i1 %cmp1.i, label %return, label %while.cond.i, !dbg !3593
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %pattern, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !3597
+  %2 = load i16* %pszTmp.0.i, align 2, !dbg !3598, !tbaa !2947
+  %tobool.i = icmp eq i16 %2, 0, !dbg !3598
+  br i1 %tobool.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !3598
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !3599
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %pattern to i64, !dbg !3599
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !3599
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !3599
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !3599
+  tail call void @llvm.dbg.value(metadata !{i32 %conv2.i}, i64 0, metadata !1875), !dbg !3594
+  %tobool2 = icmp eq i32 %conv2.i, 0, !dbg !3600
+  br i1 %tobool2, label %return, label %while.cond.outer, !dbg !3600
+
+while.cond.outer:                                 ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, %if.then7
+  %patnStart.0.ph = phi i16* [ %incdec.ptr8, %if.then7 ], [ %toSearch, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ]
+  br label %while.cond
+
+while.cond:                                       ; preds = %if.else.while.cond_crit_edge, %while.cond.outer
+  %indvars.iv = phi i64 [ 0, %while.cond.outer ], [ %indvars.iv.next, %if.else.while.cond_crit_edge ]
+  %srcPtr.0 = phi i16* [ %patnStart.0.ph, %while.cond.outer ], [ %incdec.ptr, %if.else.while.cond_crit_edge ]
+  %3 = load i16* %srcPtr.0, align 2, !dbg !3601, !tbaa !2947
+  %tobool5 = icmp eq i16 %3, 0, !dbg !3601
+  br i1 %tobool5, label %return, label %while.body, !dbg !3601
+
+while.body:                                       ; preds = %while.cond
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1876), !dbg !3602
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3604
+  %arrayidx = getelementptr inbounds i16* %pattern, i64 %indvars.iv, !dbg !3602
+  %4 = load i16* %arrayidx, align 2, !dbg !3602, !tbaa !2947
+  %cmp = icmp eq i16 %3, %4, !dbg !3602
+  br i1 %cmp, label %if.else, label %if.then7, !dbg !3602
+
+if.then7:                                         ; preds = %while.body
+  tail call void @llvm.dbg.value(metadata !1004, i64 0, metadata !1878), !dbg !3606
+  %incdec.ptr8 = getelementptr inbounds i16* %patnStart.0.ph, i64 1, !dbg !3608
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr8}, i64 0, metadata !1877), !dbg !3608
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr8}, i64 0, metadata !1876), !dbg !3608
+  br label %while.cond.outer, !dbg !3609
+
+if.else:                                          ; preds = %while.body
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !3604
+  %cmp9 = icmp eq i32 %5, %conv2.i, !dbg !3604
+  br i1 %cmp9, label %if.then10, label %if.else.while.cond_crit_edge, !dbg !3604
+
+if.else.while.cond_crit_edge:                     ; preds = %if.else
+  %incdec.ptr = getelementptr inbounds i16* %srcPtr.0, i64 1, !dbg !3602
+  br label %while.cond, !dbg !3604
+
+if.then10:                                        ; preds = %if.else
+  %sext = shl i64 %sub.ptr.sub.i, 31, !dbg !3610
+  %idx.ext = ashr exact i64 %sext, 32, !dbg !3610
+  %incdec.ptr.sum = sub i64 1, %idx.ext, !dbg !3610
+  %add.ptr = getelementptr inbounds i16* %srcPtr.0, i64 %incdec.ptr.sum, !dbg !3610
+  %sub.ptr.lhs.cast = ptrtoint i16* %add.ptr to i64, !dbg !3610
+  %sub.ptr.rhs.cast = ptrtoint i16* %toSearch to i64, !dbg !3610
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !3610
+  %sub.ptr.div24 = lshr exact i64 %sub.ptr.sub, 1, !dbg !3610
+  %conv11 = trunc i64 %sub.ptr.div24 to i32, !dbg !3610
+  br label %return, !dbg !3610
+
+return:                                           ; preds = %while.cond, %lor.lhs.false.i, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, %entry, %lor.lhs.false, %if.then10
+  %retval.0 = phi i32 [ %conv11, %if.then10 ], [ -1, %lor.lhs.false ], [ -1, %entry ], [ -1, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ], [ -1, %lor.lhs.false.i ], [ -1, %while.cond ]
+  ret i32 %retval.0, !dbg !3611
+}

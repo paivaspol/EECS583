@@ -1,30 +1,31 @@
 define i32 @Ideq_tail(%struct._Ideq* %deq) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Ideq* %deq, i64 0, metadata !51, metadata !68), !dbg !193
-  %1 = icmp eq %struct._Ideq* %deq, null, !dbg !194
-  br i1 %1, label %2, label %5, !dbg !196
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Ideq* %deq}, i64 0, metadata !50), !dbg !129
+  %cmp = icmp eq %struct._Ideq* %deq, null, !dbg !130
+  br i1 %cmp, label %if.then, label %if.end, !dbg !130
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !197, !tbaa !75
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([43 x i8]* @.str4, i64 0, i64 0), %struct._Ideq* null) #4, !dbg !199
-  tail call void @exit(i32 -1) #5, !dbg !200
-  unreachable, !dbg !200
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !131, !tbaa !67
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([43 x i8]* @.str4, i64 0, i64 0), %struct._Ideq* null) #4, !dbg !131
+  tail call void @exit(i32 -1) #5, !dbg !133
+  unreachable, !dbg !133
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 2, !dbg !201
-  %7 = load i32* %6, align 4, !dbg !201, !tbaa !83
-  %8 = icmp eq i32 %7, -1, !dbg !203
-  br i1 %8, label %15, label %9, !dbg !204
+if.end:                                           ; preds = %entry
+  %tail = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 2, !dbg !134
+  %1 = load i32* %tail, align 4, !dbg !134, !tbaa !72
+  %cmp1 = icmp eq i32 %1, -1, !dbg !134
+  br i1 %cmp1, label %if.end4, label %if.else, !dbg !134
 
-; <label>:9                                       ; preds = %5
-  %10 = sext i32 %7 to i64, !dbg !205
-  %11 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, i32 3, !dbg !207
-  %12 = load i32** %11, align 8, !dbg !207, !tbaa !106
-  %13 = getelementptr inbounds i32* %12, i64 %10, !dbg !205
-  %14 = load i32* %13, align 4, !dbg !205, !tbaa !107
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !52, metadata !68), !dbg !208
-  br label %15
+if.else:                                          ; preds = %if.end
+  %idxprom = sext i32 %1 to i64, !dbg !135
+  %vec = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, i32 3, !dbg !135
+  %2 = load i32** %vec, align 8, !dbg !135, !tbaa !67
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !135
+  %3 = load i32* %arrayidx, align 4, !dbg !135, !tbaa !72
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !51), !dbg !135
+  br label %if.end4
 
-; <label>:15                                      ; preds = %5, %9
-  %val.0 = phi i32 [ %14, %9 ], [ -1, %5 ]
-  ret i32 %val.0, !dbg !209
+if.end4:                                          ; preds = %if.end, %if.else
+  %val.0 = phi i32 [ %3, %if.else ], [ -1, %if.end ]
+  ret i32 %val.0, !dbg !137
 }

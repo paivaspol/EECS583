@@ -1,24 +1,25 @@
 define i32 @CCTK_TimerDestroyData(%struct.cTimerData* %info) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* %info, i64 0, metadata !241, metadata !354), !dbg !904
-  %1 = icmp eq %struct.cTimerData* %info, null, !dbg !905
-  br i1 %1, label %10, label %2, !dbg !907
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %info}, i64 0, metadata !241), !dbg !640
+  %tobool = icmp eq %struct.cTimerData* %info, null, !dbg !641
+  br i1 %tobool, label %if.end5, label %if.then, !dbg !641
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 1, !dbg !908
-  %4 = load %struct.cTimerVal** %3, align 8, !dbg !908, !tbaa !859
-  %5 = icmp eq %struct.cTimerVal* %4, null, !dbg !911
-  br i1 %5, label %8, label %6, !dbg !912
+if.then:                                          ; preds = %entry
+  %vals = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 1, !dbg !642
+  %0 = load %struct.cTimerVal** %vals, align 8, !dbg !642, !tbaa !355
+  %tobool1 = icmp eq %struct.cTimerVal* %0, null, !dbg !642
+  br i1 %tobool1, label %if.end, label %if.then2, !dbg !642
 
-; <label>:6                                       ; preds = %2
-  %7 = bitcast %struct.cTimerVal* %4 to i8*, !dbg !913
-  tail call void @free(i8* %7) #9, !dbg !915
-  br label %8, !dbg !916
+if.then2:                                         ; preds = %if.then
+  %1 = bitcast %struct.cTimerVal* %0 to i8*, !dbg !644
+  tail call void @free(i8* %1) #8, !dbg !644
+  br label %if.end, !dbg !646
 
-; <label>:8                                       ; preds = %2, %6
-  %9 = bitcast %struct.cTimerData* %info to i8*, !dbg !917
-  tail call void @free(i8* %9) #9, !dbg !918
-  br label %10, !dbg !919
+if.end:                                           ; preds = %if.then, %if.then2
+  %2 = bitcast %struct.cTimerData* %info to i8*, !dbg !647
+  tail call void @free(i8* %2) #8, !dbg !647
+  br label %if.end5, !dbg !648
 
-; <label>:10                                      ; preds = %0, %8
-  ret i32 0, !dbg !920
+if.end5:                                          ; preds = %entry, %if.end
+  ret i32 0, !dbg !649
 }

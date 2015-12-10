@@ -1,18 +1,19 @@
 define void @_ZN3pov19Transform_SkysphereEPNS_16Skysphere_StructEPNS_16Transform_StructE(%"struct.pov::Skysphere_Struct"* nocapture %Skysphere, %"struct.pov::Transform_Struct"* %Trans) #1 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Skysphere_Struct"* %Skysphere, i64 0, metadata !938, metadata !1510), !dbg !2526
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !939, metadata !1510), !dbg !2527
-  %1 = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %Skysphere, i64 0, i32 2, !dbg !2528
-  %2 = load %"struct.pov::Transform_Struct"** %1, align 8, !dbg !2528, !tbaa !1595
-  %3 = icmp eq %"struct.pov::Transform_Struct"* %2, null, !dbg !2530
-  br i1 %3, label %4, label %6, !dbg !2531
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Skysphere_Struct"* %Skysphere}, i64 0, metadata !950), !dbg !1813
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !951), !dbg !1813
+  %Trans1 = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %Skysphere, i64 0, i32 2, !dbg !1814
+  %0 = load %"struct.pov::Transform_Struct"** %Trans1, align 8, !dbg !1814, !tbaa !1274
+  %cmp = icmp eq %"struct.pov::Transform_Struct"* %0, null, !dbg !1814
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1814
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #6, !dbg !2532
-  store %"struct.pov::Transform_Struct"* %5, %"struct.pov::Transform_Struct"** %1, align 8, !dbg !2534, !tbaa !1595
-  br label %6, !dbg !2535
+if.then:                                          ; preds = %entry
+  %call = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #7, !dbg !1815
+  store %"struct.pov::Transform_Struct"* %call, %"struct.pov::Transform_Struct"** %Trans1, align 8, !dbg !1815, !tbaa !1274
+  br label %if.end, !dbg !1817
 
-; <label>:6                                       ; preds = %4, %0
-  %7 = phi %"struct.pov::Transform_Struct"* [ %5, %4 ], [ %2, %0 ]
-  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %7, %"struct.pov::Transform_Struct"* %Trans) #6, !dbg !2536
-  ret void, !dbg !2537
+if.end:                                           ; preds = %if.then, %entry
+  %1 = phi %"struct.pov::Transform_Struct"* [ %call, %if.then ], [ %0, %entry ]
+  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %1, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !1818
+  ret void, !dbg !1819
 }

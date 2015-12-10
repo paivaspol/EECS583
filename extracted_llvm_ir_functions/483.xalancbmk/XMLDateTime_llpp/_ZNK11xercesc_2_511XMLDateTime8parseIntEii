@@ -1,0 +1,63 @@
+define i32 @_ZNK11xercesc_2_511XMLDateTime8parseIntEii(%"class.xercesc_2_5::XMLDateTime"* nocapture %this, i32 %start, i32 %end) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLDateTime"* %this}, i64 0, metadata !1459), !dbg !3335
+  tail call void @llvm.dbg.value(metadata !{i32 %start}, i64 0, metadata !1460), !dbg !3335
+  tail call void @llvm.dbg.value(metadata !{i32 %end}, i64 0, metadata !1461), !dbg !3335
+  tail call void @llvm.dbg.value(metadata !1251, i64 0, metadata !1462), !dbg !3336
+  tail call void @llvm.dbg.value(metadata !{i32 %start}, i64 0, metadata !1463), !dbg !3337
+  %cmp19 = icmp slt i32 %start, %end, !dbg !3337
+  br i1 %cmp19, label %for.body.lr.ph, label %for.end, !dbg !3337
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fBuffer = getelementptr inbounds %"class.xercesc_2_5::XMLDateTime"* %this, i64 0, i32 6, !dbg !3338
+  %0 = load i16** %fBuffer, align 8, !dbg !3338, !tbaa !2446
+  %1 = sext i32 %start to i64
+  br label %for.body, !dbg !3337
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end
+  %indvars.iv = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next, %if.end ]
+  %retVal.021 = phi i32 [ 0, %for.body.lr.ph ], [ %add, %if.end ]
+  %arrayidx = getelementptr inbounds i16* %0, i64 %indvars.iv, !dbg !3338
+  %2 = load i16* %arrayidx, align 2, !dbg !3338, !tbaa !2552
+  %.off = add i16 %2, -48, !dbg !3338
+  %3 = icmp ugt i16 %.off, 9, !dbg !3338
+  br i1 %3, label %if.then, label %if.end, !dbg !3338
+
+if.then:                                          ; preds = %for.body
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #2, !dbg !3340
+  %4 = bitcast i8* %exception to %"class.xercesc_2_5::NumberFormatException"*, !dbg !3340
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::XMLDateTime"* %this, i64 0, i32 7, !dbg !3340
+  %5 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !3340, !tbaa !2446
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::NumberFormatException"* %4}, i64 0, metadata !3341), !dbg !3342
+  tail call void @llvm.dbg.value(metadata !2954, i64 0, metadata !3343), !dbg !3342
+  tail call void @llvm.dbg.value(metadata !3344, i64 0, metadata !3345), !dbg !3342
+  tail call void @llvm.dbg.value(metadata !3346, i64 0, metadata !3347), !dbg !3342
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %5}, i64 0, metadata !3348), !dbg !3342
+  invoke void @_ZN11xercesc_2_521NumberFormatExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::NumberFormatException"* %4, i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i32 1469, i32 257, %"class.xercesc_2_5::MemoryManager"* %5) #9
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_521NumberFormatExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::NumberFormatException"*)* @_ZN11xercesc_2_521NumberFormatExceptionD1Ev to i8*)) #12, !dbg !3340
+  unreachable, !dbg !3340
+
+lpad:                                             ; preds = %if.then
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3340
+  tail call void @__cxa_free_exception(i8* %exception) #2, !dbg !3340
+  resume { i8*, i32 } %6, !dbg !3340
+
+if.end:                                           ; preds = %for.body
+  %conv = zext i16 %2 to i32, !dbg !3338
+  %mul = mul i32 %retVal.021, 10, !dbg !3349
+  %sub = add i32 %mul, -48, !dbg !3349
+  %add = add i32 %sub, %conv, !dbg !3349
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !1462), !dbg !3349
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3337
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !3337
+  %cmp = icmp slt i32 %7, %end, !dbg !3337
+  br i1 %cmp, label %for.body, label %for.end, !dbg !3337
+
+for.end:                                          ; preds = %if.end, %entry
+  %retVal.0.lcssa = phi i32 [ 0, %entry ], [ %add, %if.end ]
+  ret i32 %retVal.0.lcssa, !dbg !3350
+}

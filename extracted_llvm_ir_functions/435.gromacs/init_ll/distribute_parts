@@ -1,4 +1,5 @@
-define void @distribute_parts(i32 %left, i32 %right, i32 %nodeid, i32 %nnodes, %struct.t_parm* %parm, i8* %tpxfile, i32 %nstDlb) #4 {
+define void @distribute_parts(i32 %left, i32 %right, i32 %nodeid, i32 %nnodes, %struct.t_parm* %parm, i8* %tpxfile, i32 %nstDlb) #0 {
+entry:
   %natoms = alloca i32, align 4
   %step = alloca i32, align 4
   %t = alloca float, align 4
@@ -6,53 +7,49 @@ define void @distribute_parts(i32 %left, i32 %right, i32 %nodeid, i32 %nnodes, %
   %tpx = alloca %struct.t_tpxheader, align 4
   %top = alloca %struct.t_topology, align 8
   %nsb = alloca %struct.t_nsborder, align 4
-  tail call void @llvm.dbg.value(metadata i32 %left, i64 0, metadata !675, metadata !752), !dbg !964
-  tail call void @llvm.dbg.value(metadata i32 %right, i64 0, metadata !676, metadata !752), !dbg !965
-  tail call void @llvm.dbg.value(metadata i32 %nodeid, i64 0, metadata !677, metadata !752), !dbg !966
-  tail call void @llvm.dbg.value(metadata i32 %nnodes, i64 0, metadata !678, metadata !752), !dbg !967
-  tail call void @llvm.dbg.value(metadata %struct.t_parm* %parm, i64 0, metadata !679, metadata !752), !dbg !968
-  tail call void @llvm.dbg.value(metadata i8* %tpxfile, i64 0, metadata !680, metadata !752), !dbg !969
-  tail call void @llvm.dbg.value(metadata i32 %nstDlb, i64 0, metadata !681, metadata !752), !dbg !970
-  %1 = bitcast %struct.t_tpxheader* %tpx to i8*, !dbg !971
-  call void @llvm.lifetime.start(i64 40, i8* %1) #5, !dbg !971
-  %2 = bitcast %struct.t_topology* %top to i8*, !dbg !972
-  call void @llvm.lifetime.start(i64 50264, i8* %2) #5, !dbg !972
-  %3 = bitcast %struct.t_nsborder* %nsb to i8*, !dbg !973
-  call void @llvm.lifetime.start(i64 4124, i8* %3) #5, !dbg !973
-  tail call void @llvm.dbg.value(metadata %struct.t_tpxheader* %tpx, i64 0, metadata !686, metadata !752), !dbg !974
-  call void @read_tpxheader(i8* %tpxfile, %struct.t_tpxheader* %tpx) #8, !dbg !975
-  %4 = getelementptr inbounds %struct.t_tpxheader* %tpx, i64 0, i32 6, !dbg !976
-  %5 = load i32* %4, align 4, !dbg !976, !tbaa !919
-  %6 = call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 147, i32 %5, i32 12) #8, !dbg !976
-  %7 = bitcast i8* %6 to [3 x float]*, !dbg !976
-  call void @llvm.dbg.value(metadata [3 x float]* %7, i64 0, metadata !689, metadata !752), !dbg !977
-  %8 = load i32* %4, align 4, !dbg !978, !tbaa !919
-  %9 = call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 148, i32 %8, i32 12) #8, !dbg !978
-  %10 = bitcast i8* %9 to [3 x float]*, !dbg !978
-  call void @llvm.dbg.value(metadata [3 x float]* %10, i64 0, metadata !690, metadata !752), !dbg !979
-  %11 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, !dbg !980
-  %12 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0, !dbg !981
-  call void @llvm.dbg.value(metadata i32* %natoms, i64 0, metadata !682, metadata !752), !dbg !982
-  call void @llvm.dbg.value(metadata i32* %step, i64 0, metadata !683, metadata !752), !dbg !983
-  call void @llvm.dbg.value(metadata float* %t, i64 0, metadata !684, metadata !752), !dbg !984
-  call void @llvm.dbg.value(metadata float* %lambda, i64 0, metadata !685, metadata !752), !dbg !985
-  call void @llvm.dbg.value(metadata %struct.t_topology* %top, i64 0, metadata !687, metadata !752), !dbg !986
-  call void @read_tpx(i8* %tpxfile, i32* %step, float* %t, float* %lambda, %struct.t_inputrec* %11, [3 x float]* %12, i32* %natoms, [3 x float]* %7, [3 x float]* %10, [3 x float]* null, %struct.t_topology* %top) #8, !dbg !987
-  call void @llvm.dbg.value(metadata %struct.t_topology* %top, i64 0, metadata !687, metadata !752), !dbg !986
-  call void @check_nnodes_top(i8* %tpxfile, %struct.t_topology* %top, i32 %nnodes) #9, !dbg !988
-  %13 = load %struct.__sFILE** @stdlog, align 8, !dbg !989, !tbaa !921
-  %14 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, !dbg !990
-  call void @llvm.dbg.value(metadata %struct.t_nsborder* %nsb, i64 0, metadata !688, metadata !752), !dbg !991
-  call void @calc_nsb(%struct.__sFILE* %13, %struct.t_block* %14, i32 %nnodes, %struct.t_nsborder* %nsb, i32 %nstDlb) #8, !dbg !992
-  call void @llvm.dbg.value(metadata %struct.t_topology* %top, i64 0, metadata !687, metadata !752), !dbg !986
-  call void @llvm.dbg.value(metadata %struct.t_nsborder* %nsb, i64 0, metadata !688, metadata !752), !dbg !991
-  call void @mv_data(i32 %left, i32 %right, %struct.t_parm* %parm, %struct.t_nsborder* %nsb, %struct.t_topology* %top, [3 x float]* %7, [3 x float]* %10) #8, !dbg !993
-  call void @llvm.dbg.value(metadata %struct.t_topology* %top, i64 0, metadata !687, metadata !752), !dbg !986
-  call void @done_top(%struct.t_topology* %top) #8, !dbg !994
-  call void @save_free(i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 156, i8* %6) #8, !dbg !995
-  call void @save_free(i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 157, i8* %9) #8, !dbg !996
-  call void @llvm.lifetime.end(i64 4124, i8* %3) #5, !dbg !997
-  call void @llvm.lifetime.end(i64 50264, i8* %2) #5, !dbg !997
-  call void @llvm.lifetime.end(i64 40, i8* %1) #5, !dbg !997
-  ret void, !dbg !997
+  call void @llvm.dbg.value(metadata !{i32 %left}, i64 0, metadata !550), !dbg !655
+  call void @llvm.dbg.value(metadata !{i32 %right}, i64 0, metadata !551), !dbg !655
+  call void @llvm.dbg.value(metadata !{i32 %nodeid}, i64 0, metadata !552), !dbg !655
+  call void @llvm.dbg.value(metadata !{i32 %nnodes}, i64 0, metadata !553), !dbg !655
+  call void @llvm.dbg.value(metadata !{%struct.t_parm* %parm}, i64 0, metadata !554), !dbg !655
+  call void @llvm.dbg.value(metadata !{i8* %tpxfile}, i64 0, metadata !555), !dbg !656
+  call void @llvm.dbg.value(metadata !{i32 %nstDlb}, i64 0, metadata !556), !dbg !656
+  call void @llvm.dbg.declare(metadata !{i32* %natoms}, metadata !557), !dbg !657
+  call void @llvm.dbg.declare(metadata !{i32* %step}, metadata !558), !dbg !657
+  call void @llvm.dbg.declare(metadata !{float* %t}, metadata !559), !dbg !658
+  call void @llvm.dbg.declare(metadata !{float* %lambda}, metadata !560), !dbg !658
+  %0 = bitcast %struct.t_tpxheader* %tpx to i8*, !dbg !659
+  call void @llvm.lifetime.start(i64 40, i8* %0) #3, !dbg !659
+  call void @llvm.dbg.declare(metadata !{%struct.t_tpxheader* %tpx}, metadata !561), !dbg !659
+  %1 = bitcast %struct.t_topology* %top to i8*, !dbg !660
+  call void @llvm.lifetime.start(i64 50264, i8* %1) #3, !dbg !660
+  call void @llvm.dbg.declare(metadata !{%struct.t_topology* %top}, metadata !562), !dbg !660
+  %2 = bitcast %struct.t_nsborder* %nsb to i8*, !dbg !661
+  call void @llvm.lifetime.start(i64 4124, i8* %2) #3, !dbg !661
+  call void @llvm.dbg.declare(metadata !{%struct.t_nsborder* %nsb}, metadata !563), !dbg !661
+  call void @read_tpxheader(i8* %tpxfile, %struct.t_tpxheader* %tpx) #5, !dbg !662
+  %natoms1 = getelementptr inbounds %struct.t_tpxheader* %tpx, i64 0, i32 6, !dbg !663
+  %3 = load i32* %natoms1, align 4, !dbg !663, !tbaa !627
+  %call = call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str2, i64 0, i64 0), i32 147, i32 %3, i32 12) #5, !dbg !663
+  %4 = bitcast i8* %call to [3 x float]*, !dbg !663
+  call void @llvm.dbg.value(metadata !{[3 x float]* %4}, i64 0, metadata !564), !dbg !663
+  %5 = load i32* %natoms1, align 4, !dbg !664, !tbaa !627
+  %call3 = call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str2, i64 0, i64 0), i32 148, i32 %5, i32 12) #5, !dbg !664
+  %6 = bitcast i8* %call3 to [3 x float]*, !dbg !664
+  call void @llvm.dbg.value(metadata !{[3 x float]* %6}, i64 0, metadata !565), !dbg !664
+  %ir = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, !dbg !665
+  %arraydecay = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0, !dbg !665
+  call void @read_tpx(i8* %tpxfile, i32* %step, float* %t, float* %lambda, %struct.t_inputrec* %ir, [3 x float]* %arraydecay, i32* %natoms, [3 x float]* %4, [3 x float]* %6, [3 x float]* null, %struct.t_topology* %top) #5, !dbg !665
+  call void @check_nnodes_top(i8* %tpxfile, %struct.t_topology* %top, i32 %nnodes) #6, !dbg !666
+  %7 = load %struct._IO_FILE** @stdlog, align 8, !dbg !667, !tbaa !643
+  %arrayidx = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, !dbg !667
+  call void @calc_nsb(%struct._IO_FILE* %7, %struct.t_block* %arrayidx, i32 %nnodes, %struct.t_nsborder* %nsb, i32 %nstDlb) #5, !dbg !667
+  call void @mv_data(i32 %left, i32 %right, %struct.t_parm* %parm, %struct.t_nsborder* %nsb, %struct.t_topology* %top, [3 x float]* %4, [3 x float]* %6) #5, !dbg !668
+  call void @done_top(%struct.t_topology* %top) #5, !dbg !669
+  call void @save_free(i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str2, i64 0, i64 0), i32 156, i8* %call) #5, !dbg !670
+  call void @save_free(i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str2, i64 0, i64 0), i32 157, i8* %call3) #5, !dbg !671
+  call void @llvm.lifetime.end(i64 4124, i8* %2) #3, !dbg !672
+  call void @llvm.lifetime.end(i64 50264, i8* %1) #3, !dbg !672
+  call void @llvm.lifetime.end(i64 40, i8* %0) #3, !dbg !672
+  ret void, !dbg !672
 }

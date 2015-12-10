@@ -1,0 +1,34 @@
+define linkonce_odr void @_ZN11xercesc_2_512ArrayJanitorItE5resetEPt(%"class.xercesc_2_5::ArrayJanitor"* nocapture %this, i16* %p) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ArrayJanitor"* %this}, i64 0, metadata !2163), !dbg !3536
+  tail call void @llvm.dbg.value(metadata !{i16* %p}, i64 0, metadata !2164), !dbg !3536
+  %fData = getelementptr inbounds %"class.xercesc_2_5::ArrayJanitor"* %this, i64 0, i32 0, !dbg !3537
+  %0 = load i16** %fData, align 8, !dbg !3537, !tbaa !2891
+  %tobool = icmp eq i16* %0, null, !dbg !3537
+  %fMemoryManager9.pre = getelementptr inbounds %"class.xercesc_2_5::ArrayJanitor"* %this, i64 0, i32 1, !dbg !3538
+  br i1 %tobool, label %if.end7, label %if.then, !dbg !3537
+
+if.then:                                          ; preds = %entry
+  %1 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager9.pre, align 8, !dbg !3539, !tbaa !2891
+  %tobool2 = icmp eq %"class.xercesc_2_5::MemoryManager"* %1, null, !dbg !3539
+  br i1 %tobool2, label %delete.notnull, label %if.then3, !dbg !3539
+
+if.then3:                                         ; preds = %if.then
+  %2 = bitcast %"class.xercesc_2_5::MemoryManager"* %1 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !3541
+  %vtable = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %2, align 8, !dbg !3541, !tbaa !2978
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable, i64 3, !dbg !3541
+  %3 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn, align 8, !dbg !3541
+  %4 = bitcast i16* %0 to i8*, !dbg !3541
+  tail call void %3(%"class.xercesc_2_5::MemoryManager"* %1, i8* %4) #8, !dbg !3541
+  br label %if.end7, !dbg !3541
+
+delete.notnull:                                   ; preds = %if.then
+  %5 = bitcast i16* %0 to i8*, !dbg !3542
+  tail call void @_ZdaPv(i8* %5) #9, !dbg !3542
+  br label %if.end7, !dbg !3542
+
+if.end7:                                          ; preds = %entry, %if.then3, %delete.notnull
+  store i16* %p, i16** %fData, align 8, !dbg !3543, !tbaa !2891
+  store %"class.xercesc_2_5::MemoryManager"* null, %"class.xercesc_2_5::MemoryManager"** %fMemoryManager9.pre, align 8, !dbg !3538, !tbaa !2891
+  ret void, !dbg !3544
+}

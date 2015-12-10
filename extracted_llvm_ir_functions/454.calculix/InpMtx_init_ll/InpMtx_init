@@ -1,73 +1,74 @@
 define void @InpMtx_init(%struct._InpMtx* %inpmtx, i32 %coordType, i32 %inputMode, i32 %maxnent, i32 %maxnvector) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !49, metadata !79), !dbg !80
-  tail call void @llvm.dbg.value(metadata i32 %coordType, i64 0, metadata !50, metadata !79), !dbg !81
-  tail call void @llvm.dbg.value(metadata i32 %inputMode, i64 0, metadata !51, metadata !79), !dbg !82
-  tail call void @llvm.dbg.value(metadata i32 %maxnent, i64 0, metadata !52, metadata !79), !dbg !83
-  tail call void @llvm.dbg.value(metadata i32 %maxnvector, i64 0, metadata !53, metadata !79), !dbg !84
-  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !85
-  br i1 %1, label %2, label %5, !dbg !87
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !48), !dbg !74
+  tail call void @llvm.dbg.value(metadata !{i32 %coordType}, i64 0, metadata !49), !dbg !75
+  tail call void @llvm.dbg.value(metadata !{i32 %inputMode}, i64 0, metadata !50), !dbg !76
+  tail call void @llvm.dbg.value(metadata !{i32 %maxnent}, i64 0, metadata !51), !dbg !77
+  tail call void @llvm.dbg.value(metadata !{i32 %maxnvector}, i64 0, metadata !52), !dbg !78
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !79
+  br i1 %cmp, label %if.then, label %if.end, !dbg !79
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !88, !tbaa !90
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), %struct._InpMtx* null, i32 %coordType, i32 %inputMode, i32 %maxnent, i32 %maxnvector) #5, !dbg !94
-  tail call void @exit(i32 -1) #6, !dbg !95
-  unreachable, !dbg !95
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !80, !tbaa !82
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), %struct._InpMtx* null, i32 %coordType, i32 %inputMode, i32 %maxnent, i32 %maxnvector) #5, !dbg !80
+  tail call void @exit(i32 -1) #6, !dbg !85
+  unreachable, !dbg !85
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 0, !dbg !96
-  %7 = load i32* %6, align 4, !dbg !96, !tbaa !98
-  %.off = add i32 %7, -1, !dbg !104
-  %switch = icmp ult i32 %.off, 3, !dbg !104
-  br i1 %switch, label %11, label %8, !dbg !104
+if.end:                                           ; preds = %entry
+  %coordType1 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 0, !dbg !86
+  %1 = load i32* %coordType1, align 4, !dbg !86, !tbaa !87
+  %.off = add i32 %1, -1, !dbg !86
+  %switch = icmp ult i32 %.off, 3, !dbg !86
+  br i1 %switch, label %if.end10, label %if.then8, !dbg !86
 
-; <label>:8                                       ; preds = %5
-  %9 = load %struct.__sFILE** @__stderrp, align 8, !dbg !105, !tbaa !90
-  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* getelementptr inbounds ([62 x i8]* @.str1, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %coordType, i32 %inputMode, i32 %maxnent, i32 %maxnvector) #5, !dbg !107
-  tail call void @exit(i32 -1) #6, !dbg !108
-  unreachable, !dbg !108
+if.then8:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !88, !tbaa !82
+  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([62 x i8]* @.str1, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %coordType, i32 %inputMode, i32 %maxnent, i32 %maxnvector) #5, !dbg !88
+  tail call void @exit(i32 -1) #6, !dbg !90
+  unreachable, !dbg !90
 
-; <label>:11                                      ; preds = %5
-  %12 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2, !dbg !109
-  %13 = load i32* %12, align 4, !dbg !109, !tbaa !111
-  %switch2 = icmp ult i32 %13, 3, !dbg !112
-  br i1 %switch2, label %17, label %14, !dbg !112
+if.end10:                                         ; preds = %if.end
+  %inputMode11 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2, !dbg !91
+  %3 = load i32* %inputMode11, align 4, !dbg !91, !tbaa !87
+  %switch73 = icmp ult i32 %3, 3, !dbg !91
+  br i1 %switch73, label %if.end21, label %if.then19, !dbg !91
 
-; <label>:14                                      ; preds = %11
-  %15 = load %struct.__sFILE** @__stderrp, align 8, !dbg !113, !tbaa !90
-  %16 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %15, i8* getelementptr inbounds ([62 x i8]* @.str2, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %coordType, i32 %inputMode, i32 %maxnent, i32 %maxnvector) #5, !dbg !115
-  tail call void @exit(i32 -1) #6, !dbg !116
-  unreachable, !dbg !116
+if.then19:                                        ; preds = %if.end10
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !92, !tbaa !82
+  %call20 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([62 x i8]* @.str2, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %coordType, i32 %inputMode, i32 %maxnent, i32 %maxnvector) #5, !dbg !92
+  tail call void @exit(i32 -1) #6, !dbg !94
+  unreachable, !dbg !94
 
-; <label>:17                                      ; preds = %11
-  %18 = or i32 %maxnvector, %maxnent, !dbg !117
-  %19 = icmp slt i32 %18, 0, !dbg !117
-  br i1 %19, label %20, label %23, !dbg !117
+if.end21:                                         ; preds = %if.end10
+  %5 = or i32 %maxnvector, %maxnent, !dbg !95
+  %6 = icmp slt i32 %5, 0, !dbg !95
+  br i1 %6, label %if.then25, label %if.end27, !dbg !95
 
-; <label>:20                                      ; preds = %17
-  %21 = load %struct.__sFILE** @__stderrp, align 8, !dbg !119, !tbaa !90
-  %22 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %21, i8* getelementptr inbounds ([78 x i8]* @.str3, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %coordType, i32 %inputMode, i32 %maxnent, i32 %maxnvector, i32 %maxnent, i32 %maxnvector) #5, !dbg !121
-  tail call void @exit(i32 -1) #6, !dbg !122
-  unreachable, !dbg !122
+if.then25:                                        ; preds = %if.end21
+  %7 = load %struct._IO_FILE** @stderr, align 8, !dbg !96, !tbaa !82
+  %call26 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([78 x i8]* @.str3, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %coordType, i32 %inputMode, i32 %maxnent, i32 %maxnvector, i32 %maxnent, i32 %maxnvector) #5, !dbg !96
+  tail call void @exit(i32 -1) #6, !dbg !98
+  unreachable, !dbg !98
 
-; <label>:23                                      ; preds = %17
-  tail call void @InpMtx_clearData(%struct._InpMtx* %inpmtx) #5, !dbg !123
-  store i32 %coordType, i32* %6, align 4, !dbg !124, !tbaa !98
-  store i32 %inputMode, i32* %12, align 4, !dbg !125, !tbaa !111
-  %24 = icmp sgt i32 %maxnent, 0, !dbg !126
-  br i1 %24, label %25, label %26, !dbg !128
+if.end27:                                         ; preds = %if.end21
+  tail call void @InpMtx_clearData(%struct._InpMtx* %inpmtx) #5, !dbg !99
+  store i32 %coordType, i32* %coordType1, align 4, !dbg !100, !tbaa !87
+  store i32 %inputMode, i32* %inputMode11, align 4, !dbg !101, !tbaa !87
+  %cmp30 = icmp sgt i32 %maxnent, 0, !dbg !102
+  br i1 %cmp30, label %if.then31, label %if.end32, !dbg !102
 
-; <label>:25                                      ; preds = %23
-  tail call void @InpMtx_setMaxnent(%struct._InpMtx* %inpmtx, i32 %maxnent) #5, !dbg !129
-  br label %26, !dbg !131
+if.then31:                                        ; preds = %if.end27
+  tail call void @InpMtx_setMaxnent(%struct._InpMtx* %inpmtx, i32 %maxnent) #5, !dbg !103
+  br label %if.end32, !dbg !105
 
-; <label>:26                                      ; preds = %25, %23
-  %27 = icmp sgt i32 %maxnvector, 0, !dbg !132
-  br i1 %27, label %28, label %29, !dbg !134
+if.end32:                                         ; preds = %if.then31, %if.end27
+  %cmp33 = icmp sgt i32 %maxnvector, 0, !dbg !106
+  br i1 %cmp33, label %if.then34, label %if.end35, !dbg !106
 
-; <label>:28                                      ; preds = %26
-  tail call void @InpMtx_setMaxnvector(%struct._InpMtx* %inpmtx, i32 %maxnvector) #5, !dbg !135
-  br label %29, !dbg !137
+if.then34:                                        ; preds = %if.end32
+  tail call void @InpMtx_setMaxnvector(%struct._InpMtx* %inpmtx, i32 %maxnvector) #5, !dbg !107
+  br label %if.end35, !dbg !109
 
-; <label>:29                                      ; preds = %28, %26
-  ret void, !dbg !138
+if.end35:                                         ; preds = %if.then34, %if.end32
+  ret void, !dbg !110
 }

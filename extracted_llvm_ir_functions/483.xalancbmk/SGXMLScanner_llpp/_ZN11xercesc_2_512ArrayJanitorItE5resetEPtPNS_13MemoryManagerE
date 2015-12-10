@@ -1,0 +1,35 @@
+define linkonce_odr void @_ZN11xercesc_2_512ArrayJanitorItE5resetEPtPNS_13MemoryManagerE(%"class.xercesc_2_5::ArrayJanitor"* nocapture %this, i16* %p, %"class.xercesc_2_5::MemoryManager"* %manager) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ArrayJanitor"* %this}, i64 0, metadata !16498), !dbg !23358
+  tail call void @llvm.dbg.value(metadata !{i16* %p}, i64 0, metadata !16500), !dbg !23358
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !16501), !dbg !23358
+  %fData = getelementptr inbounds %"class.xercesc_2_5::ArrayJanitor"* %this, i64 0, i32 0, !dbg !23359
+  %0 = load i16** %fData, align 8, !dbg !23359, !tbaa !18999
+  %tobool = icmp eq i16* %0, null, !dbg !23359
+  %fMemoryManager9.pre = getelementptr inbounds %"class.xercesc_2_5::ArrayJanitor"* %this, i64 0, i32 1, !dbg !23360
+  br i1 %tobool, label %if.end7, label %if.then, !dbg !23359
+
+if.then:                                          ; preds = %entry
+  %1 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager9.pre, align 8, !dbg !23361, !tbaa !18999
+  %tobool2 = icmp eq %"class.xercesc_2_5::MemoryManager"* %1, null, !dbg !23361
+  br i1 %tobool2, label %delete.notnull, label %if.then3, !dbg !23361
+
+if.then3:                                         ; preds = %if.then
+  %2 = bitcast %"class.xercesc_2_5::MemoryManager"* %1 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !23363
+  %vtable = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %2, align 8, !dbg !23363, !tbaa !18993
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable, i64 3, !dbg !23363
+  %3 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn, align 8, !dbg !23363
+  %4 = bitcast i16* %0 to i8*, !dbg !23363
+  tail call void %3(%"class.xercesc_2_5::MemoryManager"* %1, i8* %4) #11, !dbg !23363
+  br label %if.end7, !dbg !23363
+
+delete.notnull:                                   ; preds = %if.then
+  %5 = bitcast i16* %0 to i8*, !dbg !23364
+  tail call void @_ZdaPv(i8* %5) #13, !dbg !23364
+  br label %if.end7, !dbg !23364
+
+if.end7:                                          ; preds = %entry, %if.then3, %delete.notnull
+  store i16* %p, i16** %fData, align 8, !dbg !23365, !tbaa !18999
+  store %"class.xercesc_2_5::MemoryManager"* %manager, %"class.xercesc_2_5::MemoryManager"** %fMemoryManager9.pre, align 8, !dbg !23360, !tbaa !18999
+  ret void, !dbg !23366
+}

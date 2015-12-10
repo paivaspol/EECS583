@@ -1,0 +1,114 @@
+define void @_ZN11xercesc_2_511WFElemStackD2Ev(%"class.xercesc_2_5::WFElemStack"* %this) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::WFElemStack"* %this}, i64 0, metadata !2056), !dbg !3229
+  tail call void @llvm.dbg.value(metadata !1909, i64 0, metadata !2057), !dbg !3230
+  %fStackCapacity = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 2, !dbg !3230
+  %0 = load i32* %fStackCapacity, align 4, !dbg !3230, !tbaa !2939
+  %cmp31 = icmp eq i32 %0, 0, !dbg !3230
+  br i1 %cmp31, label %for.end, label %for.body.lr.ph, !dbg !3230
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fStack = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 11, !dbg !3231
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 13, !dbg !3233
+  br label %for.body, !dbg !3230
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %stackInd.032 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %idxprom = zext i32 %stackInd.032 to i64, !dbg !3231
+  %1 = load %"struct.xercesc_2_5::WFElemStack::StackElem"*** %fStack, align 8, !dbg !3231, !tbaa !2942
+  %arrayidx = getelementptr inbounds %"struct.xercesc_2_5::WFElemStack::StackElem"** %1, i64 %idxprom, !dbg !3231
+  %2 = load %"struct.xercesc_2_5::WFElemStack::StackElem"** %arrayidx, align 8, !dbg !3231, !tbaa !2942
+  %tobool = icmp eq %"struct.xercesc_2_5::WFElemStack::StackElem"* %2, null, !dbg !3231
+  br i1 %tobool, label %for.end, label %if.end, !dbg !3231
+
+if.end:                                           ; preds = %for.body
+  %3 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !3233, !tbaa !2942
+  %4 = bitcast %"class.xercesc_2_5::MemoryManager"* %3 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !3233
+  %vtable = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %4, align 8, !dbg !3233, !tbaa !2945
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable, i64 3, !dbg !3233
+  %5 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn, align 8, !dbg !3233
+  %fThisElement = getelementptr inbounds %"struct.xercesc_2_5::WFElemStack::StackElem"* %2, i64 0, i32 4, !dbg !3233
+  %6 = load i16** %fThisElement, align 8, !dbg !3233, !tbaa !2942
+  %7 = bitcast i16* %6 to i8*, !dbg !3233
+  invoke void %5(%"class.xercesc_2_5::MemoryManager"* %3, i8* %7) #7
+          to label %invoke.cont unwind label %lpad.loopexit, !dbg !3233
+
+invoke.cont:                                      ; preds = %if.end
+  %8 = load %"struct.xercesc_2_5::WFElemStack::StackElem"*** %fStack, align 8, !dbg !3234, !tbaa !2942
+  %arrayidx7 = getelementptr inbounds %"struct.xercesc_2_5::WFElemStack::StackElem"** %8, i64 %idxprom, !dbg !3234
+  %9 = load %"struct.xercesc_2_5::WFElemStack::StackElem"** %arrayidx7, align 8, !dbg !3234, !tbaa !2942
+  %isnull = icmp eq %"struct.xercesc_2_5::WFElemStack::StackElem"* %9, null, !dbg !3234
+  br i1 %isnull, label %for.inc, label %delete.notnull, !dbg !3234
+
+delete.notnull:                                   ; preds = %invoke.cont
+  %10 = bitcast %"struct.xercesc_2_5::WFElemStack::StackElem"* %9 to i8*, !dbg !3234
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %10) #7
+          to label %for.inc unwind label %lpad.loopexit, !dbg !3234
+
+for.inc:                                          ; preds = %invoke.cont, %delete.notnull
+  %inc = add i32 %stackInd.032, 1, !dbg !3230
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !2057), !dbg !3230
+  %11 = load i32* %fStackCapacity, align 4, !dbg !3230, !tbaa !2939
+  %cmp = icmp ult i32 %inc, %11, !dbg !3230
+  br i1 %cmp, label %for.body, label %for.end, !dbg !3230
+
+lpad.loopexit:                                    ; preds = %if.end, %delete.notnull
+  %lpad.loopexit29 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3233
+  br label %lpad
+
+lpad.nonloopexit:                                 ; preds = %if.then10, %if.end16
+  %lpad.nonloopexit30 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3233
+  br label %lpad
+
+lpad:                                             ; preds = %lpad.nonloopexit, %lpad.loopexit
+  %lpad.phi = phi { i8*, i32 } [ %lpad.loopexit29, %lpad.loopexit ], [ %lpad.nonloopexit30, %lpad.nonloopexit ]
+  %fPrefixPool22 = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 12, !dbg !3235
+  invoke void @_ZN11xercesc_2_513XMLStringPoolD1Ev(%"class.xercesc_2_5::XMLStringPool"* %fPrefixPool22) #7
+          to label %eh.resume unwind label %terminate.lpad, !dbg !3235
+
+for.end:                                          ; preds = %for.inc, %for.body, %entry
+  %fMap = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 10, !dbg !3236
+  %12 = load %"struct.xercesc_2_5::PrefMapElem"** %fMap, align 8, !dbg !3236, !tbaa !2942
+  %tobool9 = icmp eq %"struct.xercesc_2_5::PrefMapElem"* %12, null, !dbg !3236
+  %fMemoryManager17.pre = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 13, !dbg !3237
+  br i1 %tobool9, label %if.end16, label %if.then10, !dbg !3236
+
+if.then10:                                        ; preds = %for.end
+  %13 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager17.pre, align 8, !dbg !3238, !tbaa !2942
+  %14 = bitcast %"class.xercesc_2_5::MemoryManager"* %13 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !3238
+  %vtable12 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %14, align 8, !dbg !3238, !tbaa !2945
+  %vfn13 = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable12, i64 3, !dbg !3238
+  %15 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn13, align 8, !dbg !3238
+  %16 = bitcast %"struct.xercesc_2_5::PrefMapElem"* %12 to i8*, !dbg !3238
+  invoke void %15(%"class.xercesc_2_5::MemoryManager"* %13, i8* %16) #7
+          to label %if.end16 unwind label %lpad.nonloopexit, !dbg !3238
+
+if.end16:                                         ; preds = %for.end, %if.then10
+  %17 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager17.pre, align 8, !dbg !3237, !tbaa !2942
+  %18 = bitcast %"class.xercesc_2_5::MemoryManager"* %17 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !3237
+  %vtable18 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %18, align 8, !dbg !3237, !tbaa !2945
+  %vfn19 = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable18, i64 3, !dbg !3237
+  %19 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn19, align 8, !dbg !3237
+  %fStack20 = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 11, !dbg !3237
+  %20 = load %"struct.xercesc_2_5::WFElemStack::StackElem"*** %fStack20, align 8, !dbg !3237, !tbaa !2942
+  %21 = bitcast %"struct.xercesc_2_5::WFElemStack::StackElem"** %20 to i8*, !dbg !3237
+  invoke void %19(%"class.xercesc_2_5::MemoryManager"* %17, i8* %21) #7
+          to label %invoke.cont21 unwind label %lpad.nonloopexit, !dbg !3237
+
+invoke.cont21:                                    ; preds = %if.end16
+  %fPrefixPool = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 12, !dbg !3239
+  tail call void @_ZN11xercesc_2_513XMLStringPoolD1Ev(%"class.xercesc_2_5::XMLStringPool"* %fPrefixPool) #7, !dbg !3239
+  ret void, !dbg !3235
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %lpad.phi, !dbg !3235
+
+terminate.lpad:                                   ; preds = %lpad
+  %22 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !3235
+  %23 = extractvalue { i8*, i32 } %22, 0, !dbg !3235
+  tail call void @__clang_call_terminate(i8* %23) #6, !dbg !3235
+  unreachable, !dbg !3235
+}

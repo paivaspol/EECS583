@@ -1,23 +1,24 @@
 define void @_ZN3pov17Transform_DensityEPNS_14Pigment_StructEPNS_16Transform_StructE(%"struct.pov::Pigment_Struct"* %Density, %"struct.pov::Transform_Struct"* %Trans) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Pigment_Struct"* %Density, i64 0, metadata !1124, metadata !1851), !dbg !4068
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1125, metadata !1851), !dbg !4069
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Pattern_Struct"* %2, i64 0, metadata !1126, metadata !1851), !dbg !4070
-  %1 = icmp eq %"struct.pov::Pigment_Struct"* %Density, null, !dbg !4071
-  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !4072
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Pigment_Struct"* %Density}, i64 0, metadata !1117), !dbg !2601
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1118), !dbg !2601
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Pattern_Struct"* %0}, i64 0, metadata !1119), !dbg !2602
+  %cmp3 = icmp eq %"struct.pov::Pigment_Struct"* %Density, null, !dbg !2603
+  br i1 %cmp3, label %while.end, label %while.body.lr.ph, !dbg !2603
 
-.lr.ph:                                           ; preds = %0
-  %2 = bitcast %"struct.pov::Pigment_Struct"* %Density to %"struct.pov::Pattern_Struct"*, !dbg !4073
-  br label %3, !dbg !4072
+while.body.lr.ph:                                 ; preds = %entry
+  %0 = bitcast %"struct.pov::Pigment_Struct"* %Density to %"struct.pov::Pattern_Struct"*, !dbg !2602
+  br label %while.body, !dbg !2603
 
-; <label>:3                                       ; preds = %.lr.ph, %3
-  %Temp.01 = phi %"struct.pov::Pattern_Struct"* [ %2, %.lr.ph ], [ %5, %3 ]
-  tail call void @_ZN3pov18Transform_TpatternEPNS_14Pattern_StructEPNS_16Transform_StructE(%"struct.pov::Pattern_Struct"* %Temp.01, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !4074
-  %4 = getelementptr inbounds %"struct.pov::Pattern_Struct"* %Temp.01, i64 0, i32 8, !dbg !4075
-  %5 = load %"struct.pov::Pattern_Struct"** %4, align 8, !dbg !4075, !tbaa !4060
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Pattern_Struct"* %5, i64 0, metadata !1126, metadata !1851), !dbg !4070
-  %6 = icmp eq %"struct.pov::Pattern_Struct"* %5, null, !dbg !4071
-  br i1 %6, label %._crit_edge, label %3, !dbg !4072
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %Temp.04 = phi %"struct.pov::Pattern_Struct"* [ %0, %while.body.lr.ph ], [ %1, %while.body ]
+  tail call void @_ZN3pov18Transform_TpatternEPNS_14Pattern_StructEPNS_16Transform_StructE(%"struct.pov::Pattern_Struct"* %Temp.04, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !2604
+  %Next = getelementptr inbounds %"struct.pov::Pattern_Struct"* %Temp.04, i64 0, i32 8, !dbg !2605
+  %1 = load %"struct.pov::Pattern_Struct"** %Next, align 8, !dbg !2605, !tbaa !1570
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Pattern_Struct"* %1}, i64 0, metadata !1119), !dbg !2605
+  %cmp = icmp eq %"struct.pov::Pattern_Struct"* %1, null, !dbg !2603
+  br i1 %cmp, label %while.end, label %while.body, !dbg !2603
 
-._crit_edge:                                      ; preds = %3, %0
-  ret void, !dbg !4076
+while.end:                                        ; preds = %while.body, %entry
+  ret void, !dbg !2606
 }

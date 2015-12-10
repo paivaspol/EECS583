@@ -1,22 +1,23 @@
 define internal void @dwarf2out_global_decl(%union.tree_node* %decl) #1 {
 entry:
-  %code = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 30
-  br i1 %cmp, label %lor.lhs.false, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !3281), !dbg !5567
+  %code = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2, !dbg !5568
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !5568
+  %bf.load = load i32* %0, align 8, !dbg !5568
+  %bf.clear = and i32 %bf.load, 255, !dbg !5568
+  %cmp = icmp eq i32 %bf.clear, 30, !dbg !5568
+  br i1 %cmp, label %lor.lhs.false, label %if.then, !dbg !5568
 
 lor.lhs.false:                                    ; preds = %entry
-  %initial = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 12
-  %1 = load %union.tree_node** %initial, align 8, !tbaa !4
-  %tobool = icmp eq %union.tree_node* %1, null
-  br i1 %tobool, label %if.then, label %if.end
+  %initial = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 12, !dbg !5568
+  %1 = load %union.tree_node** %initial, align 8, !dbg !5568, !tbaa !3768
+  %tobool = icmp eq %union.tree_node* %1, null, !dbg !5568
+  br i1 %tobool, label %if.then, label %if.end, !dbg !5568
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  tail call void @dwarf2out_decl(%union.tree_node* %decl) #10
-  br label %if.end
+  tail call void @dwarf2out_decl(%union.tree_node* %decl) #11, !dbg !5569
+  br label %if.end, !dbg !5569
 
 if.end:                                           ; preds = %lor.lhs.false, %if.then
-  ret void
+  ret void, !dbg !5570
 }

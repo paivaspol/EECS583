@@ -1,0 +1,57 @@
+define i32 @_ZN10xalanc_1_87indexOfEPKtjS1_j(i16* nocapture %theString, i32 %theStringLength, i16* nocapture %theSubstring, i32 %theSubstringLength) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !3002), !dbg !6602
+  tail call void @llvm.dbg.value(metadata !{i32 %theStringLength}, i64 0, metadata !3004), !dbg !6603
+  tail call void @llvm.dbg.value(metadata !{i16* %theSubstring}, i64 0, metadata !3005), !dbg !6604
+  tail call void @llvm.dbg.value(metadata !{i32 %theSubstringLength}, i64 0, metadata !3006), !dbg !6605
+  %cmp = icmp ult i32 %theStringLength, %theSubstringLength, !dbg !6606
+  br i1 %cmp, label %return, label %while.cond.preheader, !dbg !6606
+
+while.cond.preheader:                             ; preds = %entry
+  %cmp746 = icmp ne i32 %theSubstringLength, 0, !dbg !6607
+  br label %land.lhs.true, !dbg !6608
+
+land.lhs.true:                                    ; preds = %while.end, %while.cond.preheader
+  %theStringIndex.051 = phi i32 [ 0, %while.cond.preheader ], [ %theStringIndex.0.inc20, %while.end ]
+  %cmp2 = icmp ult i32 %theStringIndex.051, %theStringLength, !dbg !6608
+  %cmp2.not = xor i1 %cmp2, true, !dbg !6608
+  %sub = sub i32 %theStringLength, %theStringIndex.051, !dbg !6608
+  %cmp3 = icmp ult i32 %sub, %theSubstringLength, !dbg !6608
+  %or.cond = or i1 %cmp3, %cmp2.not, !dbg !6608
+  br i1 %or.cond, label %return, label %while.cond4.preheader, !dbg !6608
+
+while.cond4.preheader:                            ; preds = %land.lhs.true
+  %or.cond4547 = and i1 %cmp2, %cmp746, !dbg !6607
+  br i1 %or.cond4547, label %land.rhs8, label %while.end, !dbg !6607
+
+land.rhs8:                                        ; preds = %while.cond4.preheader, %while.body15
+  %theOffset.049 = phi i32 [ %inc, %while.body15 ], [ 0, %while.cond4.preheader ]
+  %add = add i32 %theOffset.049, %theStringIndex.051, !dbg !6607
+  %idxprom = zext i32 %add to i64, !dbg !6607
+  %arrayidx = getelementptr inbounds i16* %theString, i64 %idxprom, !dbg !6607
+  %0 = load i16* %arrayidx, align 2, !dbg !6607, !tbaa !6609
+  %idxprom10 = zext i32 %theOffset.049 to i64, !dbg !6607
+  %arrayidx11 = getelementptr inbounds i16* %theSubstring, i64 %idxprom10, !dbg !6607
+  %1 = load i16* %arrayidx11, align 2, !dbg !6607, !tbaa !6609
+  %cmp13 = icmp eq i16 %0, %1, !dbg !6607
+  br i1 %cmp13, label %while.body15, label %while.end
+
+while.body15:                                     ; preds = %land.rhs8
+  %inc = add i32 %theOffset.049, 1, !dbg !6612
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !3013), !dbg !6612
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !3011), !dbg !6614
+  %cmp7 = icmp ult i32 %inc, %theSubstringLength, !dbg !6607
+  br i1 %cmp7, label %land.rhs8, label %while.end, !dbg !6607
+
+while.end:                                        ; preds = %while.body15, %land.rhs8, %while.cond4.preheader
+  %theSubstringIndex.0.lcssa = phi i32 [ 0, %while.cond4.preheader ], [ %theOffset.049, %land.rhs8 ], [ %inc, %while.body15 ]
+  %cmp17 = icmp eq i32 %theSubstringIndex.0.lcssa, %theSubstringLength, !dbg !6615
+  %2 = zext i1 %cmp17 to i32, !dbg !6615
+  %inc20 = xor i32 %2, 1, !dbg !6615
+  %theStringIndex.0.inc20 = add i32 %inc20, %theStringIndex.051, !dbg !6615
+  br i1 %cmp17, label %return, label %land.lhs.true, !dbg !6608
+
+return:                                           ; preds = %land.lhs.true, %while.end, %entry
+  %retval.0 = phi i32 [ %theStringLength, %entry ], [ %theStringLength, %land.lhs.true ], [ %theStringIndex.0.inc20, %while.end ]
+  ret i32 %retval.0, !dbg !6616
+}

@@ -1,0 +1,31 @@
+define i32 @_ZN10xalanc_1_814XalanDOMString4hashEPKtj(i16* %theString, i32 %theLength) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !1733), !dbg !6307
+  tail call void @llvm.dbg.value(metadata !{i32 %theLength}, i64 0, metadata !1734), !dbg !6308
+  tail call void @llvm.dbg.value(metadata !64, i64 0, metadata !1735), !dbg !6309
+  %idx.ext = zext i32 %theLength to i64, !dbg !6310
+  %add.ptr = getelementptr inbounds i16* %theString, i64 %idx.ext, !dbg !6310
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr}, i64 0, metadata !1736), !dbg !6310
+  %cmp8 = icmp eq i32 %theLength, 0, !dbg !6311
+  br i1 %cmp8, label %while.end, label %while.body, !dbg !6311
+
+while.body:                                       ; preds = %entry, %while.body
+  %theString.addr.010 = phi i16* [ %incdec.ptr, %while.body ], [ %theString, %entry ]
+  %theResult.09 = phi i32 [ %add2, %while.body ], [ 0, %entry ]
+  %mul = mul i32 %theResult.09, 37, !dbg !6312
+  %shr = lshr i32 %theResult.09, 24, !dbg !6312
+  %0 = load i16* %theString.addr.010, align 2, !dbg !6312, !tbaa !4434
+  %conv = zext i16 %0 to i32, !dbg !6312
+  %add = add i32 %shr, %theResult.09, !dbg !6312
+  %add1 = add i32 %add, %mul, !dbg !6312
+  %add2 = add i32 %add1, %conv, !dbg !6312
+  tail call void @llvm.dbg.value(metadata !{i32 %add2}, i64 0, metadata !1735), !dbg !6312
+  %incdec.ptr = getelementptr inbounds i16* %theString.addr.010, i64 1, !dbg !6314
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1733), !dbg !6314
+  %cmp = icmp eq i16* %incdec.ptr, %add.ptr, !dbg !6311
+  br i1 %cmp, label %while.end, label %while.body, !dbg !6311
+
+while.end:                                        ; preds = %while.body, %entry
+  %theResult.0.lcssa = phi i32 [ 0, %entry ], [ %add2, %while.body ]
+  ret i32 %theResult.0.lcssa, !dbg !6315
+}

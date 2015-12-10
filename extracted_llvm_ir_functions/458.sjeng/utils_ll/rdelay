@@ -1,19 +1,23 @@
-define void @rdelay(i32 %time_in_s) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %time_in_s, i64 0, metadata !241, metadata !388), !dbg !1362
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !249, metadata !388), !dbg !1363
-  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !242, metadata !388), !dbg !1364
-  %1 = icmp sgt i32 %time_in_s, 0, !dbg !1365
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !1366
+define void @rdelay(i32 %time_in_s) #10 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %time_in_s}, i64 0, metadata !256), !dbg !877
+  tail call void @llvm.dbg.value(metadata !23, i64 0, metadata !262), !dbg !878
+  tail call void @llvm.dbg.value(metadata !772, i64 0, metadata !257), !dbg !879
+  %cmp3 = icmp sgt i32 %time_in_s, 0, !dbg !880
+  br i1 %cmp3, label %while.body.lr.ph, label %while.end, !dbg !880
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !248, metadata !388), !dbg !1367
-  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !254, metadata !388) #2, !dbg !1368
-  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !255, metadata !388) #2, !dbg !1371
-  %2 = tail call double @difftime(i64 0, i64 0) #10, !dbg !1372
-  %3 = fptosi double %2 to i32, !dbg !1373
-  %4 = icmp slt i32 %3, %time_in_s, !dbg !1365
-  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !1366
+while.body.lr.ph:                                 ; preds = %entry
+  %call.i = tail call double @difftime(i64 0, i64 0) #15, !dbg !881
+  %conv.i = fptosi double %call.i to i32, !dbg !881
+  %cmp = icmp slt i32 %conv.i, %time_in_s, !dbg !880
+  br i1 %cmp, label %while.body, label %while.end
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  ret void, !dbg !1374
+while.body:                                       ; preds = %while.body, %while.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !772, i64 0, metadata !261), !dbg !884
+  tail call void @llvm.dbg.value(metadata !772, i64 0, metadata !885) #2, !dbg !886
+  tail call void @llvm.dbg.value(metadata !772, i64 0, metadata !887) #2, !dbg !886
+  br label %while.body, !dbg !880
+
+while.end:                                        ; preds = %while.body.lr.ph, %entry
+  ret void, !dbg !888
 }

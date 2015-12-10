@@ -1,17 +1,18 @@
 define %struct._DDsepInfo* @DDsepInfo_new() #0 {
-  %1 = tail call i8* @malloc(i64 120) #5, !dbg !122
-  %2 = bitcast i8* %1 to %struct._DDsepInfo*, !dbg !122
-  tail call void @llvm.dbg.value(metadata %struct._DDsepInfo* %2, i64 0, metadata !99, metadata !126), !dbg !127
-  %3 = icmp eq i8* %1, null, !dbg !122
-  br i1 %3, label %4, label %7, !dbg !128
+entry:
+  %call = tail call noalias i8* @malloc(i64 120) #5, !dbg !110
+  %0 = bitcast i8* %call to %struct._DDsepInfo*, !dbg !110
+  tail call void @llvm.dbg.value(metadata !{%struct._DDsepInfo* %0}, i64 0, metadata !91), !dbg !110
+  %cmp = icmp eq i8* %call, null, !dbg !110
+  br i1 %cmp, label %if.then, label %if.end, !dbg !110
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !129, !tbaa !131
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 120, i32 21, i8* getelementptr inbounds ([94 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !129
-  tail call void @exit(i32 -1) #6, !dbg !129
-  unreachable, !dbg !129
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !112, !tbaa !114
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 120, i32 21, i8* getelementptr inbounds ([82 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !112
+  tail call void @exit(i32 -1) #6, !dbg !112
+  unreachable, !dbg !112
 
-; <label>:7                                       ; preds = %0
-  tail call void @DDsepInfo_setDefaultFields(%struct._DDsepInfo* %2) #7, !dbg !135
-  ret %struct._DDsepInfo* %2, !dbg !136
+if.end:                                           ; preds = %entry
+  tail call void @DDsepInfo_setDefaultFields(%struct._DDsepInfo* %0) #7, !dbg !117
+  ret %struct._DDsepInfo* %0, !dbg !118
 }

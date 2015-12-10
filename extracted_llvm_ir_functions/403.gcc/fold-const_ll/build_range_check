@@ -7,107 +7,116 @@ tailrecurse.outer:                                ; preds = %if.then49, %if.then
   %in_p.tr.ph = phi i32 [ %in_p, %entry ], [ 1, %if.then35 ], [ 1, %if.then49 ]
   %low.tr.ph = phi %union.tree_node* [ %low, %entry ], [ null, %if.then35 ], [ %call52, %if.then49 ]
   %high.tr.ph = phi %union.tree_node* [ %high, %entry ], [ %call38, %if.then35 ], [ %call41, %if.then49 ]
-  %type1 = getelementptr inbounds %union.tree_node* %exp.tr.ph, i64 0, i32 0, i32 0, i32 1
-  %cmp5 = icmp eq %union.tree_node* %high.tr.ph, null
+  %type1 = getelementptr inbounds %union.tree_node* %exp.tr.ph, i64 0, i32 0, i32 0, i32 1, !dbg !4936
+  %cmp5 = icmp eq %union.tree_node* %high.tr.ph, null, !dbg !4937
   br label %tailrecurse
 
 tailrecurse:                                      ; preds = %tailrecurse.outer, %land.lhs.true27
   %in_p.tr = phi i32 [ 1, %land.lhs.true27 ], [ %in_p.tr.ph, %tailrecurse.outer ]
   %low.tr = phi %union.tree_node* [ null, %land.lhs.true27 ], [ %low.tr.ph, %tailrecurse.outer ]
-  %0 = load %union.tree_node** %type1, align 8, !tbaa !3
-  %tobool = icmp eq i32 %in_p.tr, 0
-  br i1 %tobool, label %land.lhs.true, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1381), !dbg !4938
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %exp.tr.ph}, i64 0, metadata !1382), !dbg !4939
+  tail call void @llvm.dbg.value(metadata !{i32 %in_p.tr}, i64 0, metadata !1383), !dbg !4940
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %low.tr}, i64 0, metadata !1384), !dbg !4941
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %high.tr.ph}, i64 0, metadata !1385), !dbg !4941
+  %0 = load %union.tree_node** %type1, align 8, !dbg !4936, !tbaa !1705
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %0}, i64 0, metadata !1386), !dbg !4936
+  %tobool = icmp eq i32 %in_p.tr, 0, !dbg !4942
+  br i1 %tobool, label %land.lhs.true, label %if.else, !dbg !4942
 
 land.lhs.true:                                    ; preds = %tailrecurse
-  %call = tail call fastcc %union.tree_node* @build_range_check(%union.tree_node* %type, %union.tree_node* %exp.tr.ph, i32 1, %union.tree_node* %low.tr, %union.tree_node* %high.tr.ph) #7
-  %cmp = icmp eq %union.tree_node* %call, null
-  br i1 %cmp, label %if.else, label %if.then
+  %call = tail call fastcc %union.tree_node* @build_range_check(%union.tree_node* %type, %union.tree_node* %exp.tr.ph, i32 1, %union.tree_node* %low.tr, %union.tree_node* %high.tr.ph) #7, !dbg !4943
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1388), !dbg !4943
+  %cmp = icmp eq %union.tree_node* %call, null, !dbg !4943
+  br i1 %cmp, label %if.else, label %if.then, !dbg !4943
 
 if.then:                                          ; preds = %land.lhs.true
-  %call2 = tail call %union.tree_node* @invert_truthvalue(%union.tree_node* %call) #7
-  br label %return
+  %call2 = tail call %union.tree_node* @invert_truthvalue(%union.tree_node* %call) #7, !dbg !4944
+  br label %return, !dbg !4944
 
 if.else:                                          ; preds = %land.lhs.true, %tailrecurse
-  %cmp3 = icmp eq %union.tree_node* %low.tr, null
-  %or.cond = and i1 %cmp3, %cmp5
-  br i1 %or.cond, label %if.then6, label %if.else8
+  %cmp3 = icmp eq %union.tree_node* %low.tr, null, !dbg !4937
+  %or.cond = and i1 %cmp3, %cmp5, !dbg !4937
+  br i1 %or.cond, label %if.then6, label %if.else8, !dbg !4937
 
 if.then6:                                         ; preds = %if.else
-  %1 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 12), align 8, !tbaa !3
-  %call7 = tail call %union.tree_node* @convert(%union.tree_node* %type, %union.tree_node* %1) #9
-  br label %return
+  %1 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 12), align 8, !dbg !4945, !tbaa !1705
+  %call7 = tail call %union.tree_node* @convert(%union.tree_node* %type, %union.tree_node* %1) #9, !dbg !4945
+  br label %return, !dbg !4945
 
 if.else8:                                         ; preds = %if.else
-  br i1 %cmp3, label %if.then10, label %if.else13
+  br i1 %cmp3, label %if.then10, label %if.else13, !dbg !4946
 
 if.then10:                                        ; preds = %if.else8
-  %call11 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 98, %union.tree_node* %type, %union.tree_node* %exp.tr.ph, %union.tree_node* %high.tr.ph) #9
-  %call12 = tail call %union.tree_node* @fold(%union.tree_node* %call11) #7
-  br label %return
+  %call11 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 98, %union.tree_node* %type, %union.tree_node* %exp.tr.ph, %union.tree_node* %high.tr.ph) #9, !dbg !4947
+  %call12 = tail call %union.tree_node* @fold(%union.tree_node* %call11) #7, !dbg !4947
+  br label %return, !dbg !4947
 
 if.else13:                                        ; preds = %if.else8
-  br i1 %cmp5, label %if.then15, label %if.else18
+  br i1 %cmp5, label %if.then15, label %if.else18, !dbg !4948
 
 if.then15:                                        ; preds = %if.else13
-  %call16 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 100, %union.tree_node* %type, %union.tree_node* %exp.tr.ph, %union.tree_node* %low.tr) #9
-  %call17 = tail call %union.tree_node* @fold(%union.tree_node* %call16) #7
-  br label %return
+  %call16 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 100, %union.tree_node* %type, %union.tree_node* %exp.tr.ph, %union.tree_node* %low.tr) #9, !dbg !4949
+  %call17 = tail call %union.tree_node* @fold(%union.tree_node* %call16) #7, !dbg !4949
+  br label %return, !dbg !4949
 
 if.else18:                                        ; preds = %if.else13
-  %call19 = tail call i32 @operand_equal_p(%union.tree_node* %low.tr, %union.tree_node* %high.tr.ph, i32 0) #7
-  %tobool20 = icmp eq i32 %call19, 0
-  br i1 %tobool20, label %if.else24, label %if.then21
+  %call19 = tail call i32 @operand_equal_p(%union.tree_node* %low.tr, %union.tree_node* %high.tr.ph, i32 0) #7, !dbg !4950
+  %tobool20 = icmp eq i32 %call19, 0, !dbg !4950
+  br i1 %tobool20, label %if.else24, label %if.then21, !dbg !4950
 
 if.then21:                                        ; preds = %if.else18
-  %call22 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 101, %union.tree_node* %type, %union.tree_node* %exp.tr.ph, %union.tree_node* %low.tr) #9
-  %call23 = tail call %union.tree_node* @fold(%union.tree_node* %call22) #7
-  br label %return
+  %call22 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 101, %union.tree_node* %type, %union.tree_node* %exp.tr.ph, %union.tree_node* %low.tr) #9, !dbg !4951
+  %call23 = tail call %union.tree_node* @fold(%union.tree_node* %call22) #7, !dbg !4951
+  br label %return, !dbg !4951
 
 if.else24:                                        ; preds = %if.else18
-  %unsigned_flag = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
-  %2 = bitcast [4 x i8]* %unsigned_flag to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.clear = and i32 %bf.load, 8192
-  %tobool26 = icmp eq i32 %bf.clear, 0
-  br i1 %tobool26, label %if.else32, label %land.lhs.true27
+  %unsigned_flag = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2, !dbg !4952
+  %2 = bitcast [4 x i8]* %unsigned_flag to i32*, !dbg !4952
+  %bf.load = load i32* %2, align 8, !dbg !4952
+  %bf.clear = and i32 %bf.load, 8192, !dbg !4952
+  %tobool26 = icmp eq i32 %bf.clear, 0, !dbg !4952
+  br i1 %tobool26, label %if.else32, label %land.lhs.true27, !dbg !4952
 
 land.lhs.true27:                                  ; preds = %if.else24
-  %call28 = tail call i32 @integer_zerop(%union.tree_node* %low.tr) #9
-  %tobool29 = icmp eq i32 %call28, 0
-  br i1 %tobool29, label %if.else32, label %tailrecurse
+  %call28 = tail call i32 @integer_zerop(%union.tree_node* %low.tr) #9, !dbg !4952
+  %tobool29 = icmp eq i32 %call28, 0, !dbg !4952
+  br i1 %tobool29, label %if.else32, label %tailrecurse, !dbg !4952
 
 if.else32:                                        ; preds = %land.lhs.true27, %if.else24
-  %call33 = tail call i32 @integer_zerop(%union.tree_node* %low.tr) #9
-  %tobool34 = icmp eq i32 %call33, 0
-  br i1 %tobool34, label %if.else40, label %if.then35
+  %call33 = tail call i32 @integer_zerop(%union.tree_node* %low.tr) #9, !dbg !4953
+  %tobool34 = icmp eq i32 %call33, 0, !dbg !4953
+  br i1 %tobool34, label %if.else40, label %if.then35, !dbg !4953
 
 if.then35:                                        ; preds = %if.else32
-  %call36 = tail call %union.tree_node* @unsigned_type(%union.tree_node* %0) #9
-  %call37 = tail call %union.tree_node* @convert(%union.tree_node* %call36, %union.tree_node* %exp.tr.ph) #9
-  %call38 = tail call %union.tree_node* @convert(%union.tree_node* %call36, %union.tree_node* %high.tr.ph) #9
-  br label %tailrecurse.outer
+  %call36 = tail call %union.tree_node* @unsigned_type(%union.tree_node* %0) #9, !dbg !4954
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call36}, i64 0, metadata !1387), !dbg !4954
+  %call37 = tail call %union.tree_node* @convert(%union.tree_node* %call36, %union.tree_node* %exp.tr.ph) #9, !dbg !4956
+  %call38 = tail call %union.tree_node* @convert(%union.tree_node* %call36, %union.tree_node* %high.tr.ph) #9, !dbg !4957
+  br label %tailrecurse.outer, !dbg !4957
 
 if.else40:                                        ; preds = %if.else32
-  %call41 = tail call fastcc %union.tree_node* @const_binop(i32 60, %union.tree_node* %high.tr.ph, %union.tree_node* %low.tr) #7
-  %cmp42 = icmp eq %union.tree_node* %call41, null
-  br i1 %cmp42, label %return, label %land.lhs.true43
+  %call41 = tail call fastcc %union.tree_node* @const_binop(i32 60, %union.tree_node* %high.tr.ph, %union.tree_node* %low.tr) #7, !dbg !4958
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call41}, i64 0, metadata !1388), !dbg !4958
+  %cmp42 = icmp eq %union.tree_node* %call41, null, !dbg !4958
+  br i1 %cmp42, label %return, label %land.lhs.true43, !dbg !4958
 
 land.lhs.true43:                                  ; preds = %if.else40
-  %public_flag = getelementptr inbounds %union.tree_node* %call41, i64 0, i32 0, i32 0, i32 2
-  %3 = bitcast [4 x i8]* %public_flag to i32*
-  %bf.load45 = load i32* %3, align 8
-  %bf.clear47 = and i32 %bf.load45, 524288
-  %tobool48 = icmp eq i32 %bf.clear47, 0
-  br i1 %tobool48, label %if.then49, label %return
+  %public_flag = getelementptr inbounds %union.tree_node* %call41, i64 0, i32 0, i32 0, i32 2, !dbg !4958
+  %3 = bitcast [4 x i8]* %public_flag to i32*, !dbg !4958
+  %bf.load45 = load i32* %3, align 8, !dbg !4958
+  %bf.clear47 = and i32 %bf.load45, 524288, !dbg !4958
+  %tobool48 = icmp eq i32 %bf.clear47, 0, !dbg !4958
+  br i1 %tobool48, label %if.then49, label %return, !dbg !4958
 
 if.then49:                                        ; preds = %land.lhs.true43
-  %call50 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 60, %union.tree_node* %0, %union.tree_node* %exp.tr.ph, %union.tree_node* %low.tr) #9
-  %call51 = tail call %union.tree_node* @fold(%union.tree_node* %call50) #7
-  %4 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 11), align 8, !tbaa !3
-  %call52 = tail call %union.tree_node* @convert(%union.tree_node* %0, %union.tree_node* %4) #9
-  br label %tailrecurse.outer
+  %call50 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 60, %union.tree_node* %0, %union.tree_node* %exp.tr.ph, %union.tree_node* %low.tr) #9, !dbg !4959
+  %call51 = tail call %union.tree_node* @fold(%union.tree_node* %call50) #7, !dbg !4959
+  %4 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 11), align 8, !dbg !4960, !tbaa !1705
+  %call52 = tail call %union.tree_node* @convert(%union.tree_node* %0, %union.tree_node* %4) #9, !dbg !4960
+  br label %tailrecurse.outer, !dbg !4960
 
 return:                                           ; preds = %if.else40, %land.lhs.true43, %if.then21, %if.then15, %if.then10, %if.then6, %if.then
   %retval.0 = phi %union.tree_node* [ %call7, %if.then6 ], [ %call12, %if.then10 ], [ %call17, %if.then15 ], [ %call23, %if.then21 ], [ %call2, %if.then ], [ null, %land.lhs.true43 ], [ null, %if.else40 ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !4961
 }

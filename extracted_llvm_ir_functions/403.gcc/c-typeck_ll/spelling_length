@@ -1,39 +1,44 @@
-define internal fastcc i32 @spelling_length() #3 {
+define internal fastcc i32 @spelling_length() #4 {
 entry:
-  %0 = load %struct.spelling** @spelling_base, align 8, !tbaa !0
-  %1 = load %struct.spelling** @spelling, align 8, !tbaa !0
-  %cmp11 = icmp ult %struct.spelling* %0, %1
-  br i1 %cmp11, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !675, i64 0, metadata !1766), !dbg !3773
+  %0 = load %struct.spelling** @spelling_base, align 8, !dbg !3774, !tbaa !1977
+  tail call void @llvm.dbg.value(metadata !{%struct.spelling* %0}, i64 0, metadata !1767), !dbg !3774
+  %1 = load %struct.spelling** @spelling, align 8, !dbg !3774, !tbaa !1977
+  %cmp11 = icmp ult %struct.spelling* %0, %1, !dbg !3774
+  br i1 %cmp11, label %for.body, label %for.end, !dbg !3774
 
 for.body:                                         ; preds = %entry, %for.inc
   %p.013 = phi %struct.spelling* [ %incdec.ptr, %for.inc ], [ %0, %entry ]
   %size.012 = phi i32 [ %size.1, %for.inc ], [ 0, %entry ]
-  %kind = getelementptr inbounds %struct.spelling* %p.013, i64 0, i32 0
-  %2 = load i32* %kind, align 4, !tbaa !3
-  %cmp1 = icmp eq i32 %2, 3
-  br i1 %cmp1, label %if.then, label %if.else
+  %kind = getelementptr inbounds %struct.spelling* %p.013, i64 0, i32 0, !dbg !3776
+  %2 = load i32* %kind, align 4, !dbg !3776, !tbaa !2105
+  %cmp1 = icmp eq i32 %2, 3, !dbg !3776
+  br i1 %cmp1, label %if.then, label %if.else, !dbg !3776
 
 if.then:                                          ; preds = %for.body
-  %add = add nsw i32 %size.012, 25
-  br label %for.inc
+  %add = add nsw i32 %size.012, 25, !dbg !3778
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !1766), !dbg !3778
+  br label %for.inc, !dbg !3778
 
 if.else:                                          ; preds = %for.body
-  %s = getelementptr inbounds %struct.spelling* %p.013, i64 0, i32 1, i32 0
-  %3 = load i8** %s, align 8, !tbaa !0
-  %call = tail call i64 @strlen(i8* %3) #10
-  %conv10 = zext i32 %size.012 to i64
-  %add2 = add i64 %conv10, 1
-  %add3 = add i64 %add2, %call
-  %conv4 = trunc i64 %add3 to i32
+  %s = getelementptr inbounds %struct.spelling* %p.013, i64 0, i32 1, i32 0, !dbg !3779
+  %3 = load i8** %s, align 8, !dbg !3779, !tbaa !1977
+  %call = tail call i64 @strlen(i8* %3) #11, !dbg !3779
+  %conv10 = zext i32 %size.012 to i64, !dbg !3779
+  %add2 = add i64 %conv10, 1, !dbg !3779
+  %add3 = add i64 %add2, %call, !dbg !3779
+  %conv4 = trunc i64 %add3 to i32, !dbg !3779
+  tail call void @llvm.dbg.value(metadata !{i32 %conv4}, i64 0, metadata !1766), !dbg !3779
   br label %for.inc
 
 for.inc:                                          ; preds = %if.then, %if.else
   %size.1 = phi i32 [ %add, %if.then ], [ %conv4, %if.else ]
-  %incdec.ptr = getelementptr inbounds %struct.spelling* %p.013, i64 1
-  %cmp = icmp ult %struct.spelling* %incdec.ptr, %1
-  br i1 %cmp, label %for.body, label %for.end
+  %incdec.ptr = getelementptr inbounds %struct.spelling* %p.013, i64 1, !dbg !3774
+  tail call void @llvm.dbg.value(metadata !{%struct.spelling* %incdec.ptr}, i64 0, metadata !1767), !dbg !3774
+  %cmp = icmp ult %struct.spelling* %incdec.ptr, %1, !dbg !3774
+  br i1 %cmp, label %for.body, label %for.end, !dbg !3774
 
 for.end:                                          ; preds = %for.inc, %entry
   %size.0.lcssa = phi i32 [ 0, %entry ], [ %size.1, %for.inc ]
-  ret i32 %size.0.lcssa
+  ret i32 %size.0.lcssa, !dbg !3780
 }

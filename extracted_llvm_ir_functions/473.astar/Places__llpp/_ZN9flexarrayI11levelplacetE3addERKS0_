@@ -1,51 +1,30 @@
-define linkonce_odr void @_ZN9flexarrayI11levelplacetE3addERKS0_(%class.flexarray* nocapture %this, %struct.levelplacet* nocapture readonly dereferenceable(16) %e) #4 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.flexarray* %this, i64 0, metadata !371, metadata !394), !dbg !671
-  tail call void @llvm.dbg.value(metadata %struct.levelplacet* %e, i64 0, metadata !372, metadata !394), !dbg !672
-  %1 = getelementptr inbounds %class.flexarray* %this, i64 0, i32 1, !dbg !673
-  %2 = load i32* %1, align 4, !dbg !673, !tbaa !484
-  %3 = getelementptr inbounds %class.flexarray* %this, i64 0, i32 2, !dbg !675
-  %4 = load i32* %3, align 4, !dbg !675, !tbaa !480
-  %5 = icmp eq i32 %2, %4, !dbg !676
-  br i1 %5, label %6, label %._crit_edge, !dbg !677
+define linkonce_odr void @_ZN9flexarrayI11levelplacetE3addERKS0_(%class.flexarray* nocapture %this, %struct.levelplacet* nocapture %e) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray* %this}, i64 0, metadata !415), !dbg !586
+  tail call void @llvm.dbg.value(metadata !{%struct.levelplacet* %e}, i64 0, metadata !416), !dbg !586
+  %elemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 1, !dbg !587
+  %0 = load i32* %elemqu, align 4, !dbg !587, !tbaa !470
+  %maxelemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 2, !dbg !587
+  %1 = load i32* %maxelemqu, align 4, !dbg !587, !tbaa !470
+  %cmp = icmp eq i32 %0, %1, !dbg !587
+  br i1 %cmp, label %if.then, label %if.end, !dbg !587
 
-._crit_edge:                                      ; preds = %0
-  %.phi.trans.insert = getelementptr inbounds %class.flexarray* %this, i64 0, i32 0
-  %.pre1 = load %struct.levelplacet** %.phi.trans.insert, align 8, !dbg !678, !tbaa !492
-  br label %16, !dbg !677
+if.then:                                          ; preds = %entry
+  tail call void @_ZN9flexarrayI11levelplacetE8doublingEb(%class.flexarray* %this, i1 zeroext true) #6, !dbg !587
+  %.pre = load i32* %elemqu, align 4, !dbg !588, !tbaa !470
+  br label %if.end, !dbg !587
 
-; <label>:6                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata %class.flexarray* %this, i64 0, metadata !375, metadata !394) #1, !dbg !679
-  tail call void @llvm.dbg.value(metadata i1 true, i64 0, metadata !376, metadata !394) #1, !dbg !681
-  %7 = shl i32 %2, 1, !dbg !682
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !378, metadata !394) #1, !dbg !683
-  %8 = shl i32 %2, 5, !dbg !684
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !364, metadata !394) #1, !dbg !685
-  tail call void @llvm.dbg.value(metadata i32 16, i64 0, metadata !365, metadata !394) #1, !dbg !687
-  %9 = sext i32 %8 to i64, !dbg !688
-  %10 = tail call i8* @malloc(i64 %9) #8, !dbg !689
-  %11 = bitcast %class.flexarray* %this to i8**, !dbg !690
-  %12 = load i8** %11, align 8, !dbg !690, !tbaa !492
-  %13 = sext i32 %2 to i64, !dbg !692
-  %14 = shl nsw i64 %13, 4, !dbg !693
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %12, i64 %14, i32 4, i1 false) #1, !dbg !694
-  tail call void @llvm.dbg.value(metadata i8* %12, i64 0, metadata !383, metadata !394) #1, !dbg !695
-  tail call void @free(i8* %12) #8, !dbg !697
-  store i8* %10, i8** %11, align 8, !dbg !698, !tbaa !492
-  store i32 %7, i32* %3, align 4, !dbg !699, !tbaa !480
-  %.pre = load i32* %1, align 4, !dbg !700, !tbaa !484
-  %15 = bitcast i8* %10 to %struct.levelplacet*
-  br label %16, !dbg !701
-
-; <label>:16                                      ; preds = %._crit_edge, %6
-  %17 = phi %struct.levelplacet* [ %15, %6 ], [ %.pre1, %._crit_edge ]
-  %18 = phi i32 [ %.pre, %6 ], [ %2, %._crit_edge ]
-  %19 = sext i32 %18 to i64, !dbg !678
-  %20 = getelementptr inbounds %struct.levelplacet* %17, i64 %19, !dbg !678
-  %21 = bitcast %struct.levelplacet* %20 to i8*, !dbg !702
-  %22 = bitcast %struct.levelplacet* %e to i8*, !dbg !702
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %21, i8* %22, i64 16, i32 4, i1 false), !dbg !702, !tbaa.struct !703
-  %23 = load i32* %1, align 4, !dbg !705, !tbaa !484
-  %24 = add nsw i32 %23, 1, !dbg !705
-  store i32 %24, i32* %1, align 4, !dbg !705, !tbaa !484
-  ret void, !dbg !706
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %idxprom = sext i32 %2 to i64, !dbg !588
+  %ep = getelementptr inbounds %class.flexarray* %this, i64 0, i32 0, !dbg !588
+  %3 = load %struct.levelplacet** %ep, align 8, !dbg !588, !tbaa !485
+  %arrayidx = getelementptr inbounds %struct.levelplacet* %3, i64 %idxprom, !dbg !588
+  %4 = bitcast %struct.levelplacet* %arrayidx to i8*, !dbg !588
+  %5 = bitcast %struct.levelplacet* %e to i8*, !dbg !588
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %5, i64 16, i32 4, i1 false), !dbg !588, !tbaa.struct !589
+  %6 = load i32* %elemqu, align 4, !dbg !590, !tbaa !470
+  %inc = add nsw i32 %6, 1, !dbg !590
+  store i32 %inc, i32* %elemqu, align 4, !dbg !590, !tbaa !470
+  ret void, !dbg !591
 }

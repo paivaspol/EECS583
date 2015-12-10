@@ -1,29 +1,31 @@
-define i32 @really_constant_p(%union.tree_node* nocapture %exp) #3 {
+define i32 @really_constant_p(%union.tree_node* nocapture %exp) #4 {
 entry:
-  %code18 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code18 to i32*
-  %bf.load19 = load i32* %0, align 8
-  %bf.clear20 = and i32 %bf.load19, 255
-  %bf.clear.off21 = add i32 %bf.clear20, -114
-  %switch22 = icmp ult i32 %bf.clear.off21, 3
-  br i1 %switch22, label %while.body, label %lor.rhs
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %exp}, i64 0, metadata !1067), !dbg !2250
+  %code18 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 2, !dbg !2251
+  %0 = bitcast [4 x i8]* %code18 to i32*, !dbg !2251
+  %bf.load19 = load i32* %0, align 8, !dbg !2251
+  %bf.clear20 = and i32 %bf.load19, 255, !dbg !2251
+  %bf.clear.off21 = add i32 %bf.clear20, -114, !dbg !2251
+  %switch22 = icmp ult i32 %bf.clear.off21, 3, !dbg !2251
+  br i1 %switch22, label %while.body, label %lor.rhs, !dbg !2251
 
 lor.rhs:                                          ; preds = %while.body, %entry
   %bf.load.lcssa = phi i32 [ %bf.load19, %entry ], [ %bf.load, %while.body ]
-  %bf.lshr = lshr i32 %bf.load.lcssa, 9
-  %bf.clear14 = and i32 %bf.lshr, 1
-  ret i32 %bf.clear14
+  %bf.lshr = lshr i32 %bf.load.lcssa, 9, !dbg !2252
+  %bf.clear14 = and i32 %bf.lshr, 1, !dbg !2252
+  ret i32 %bf.clear14, !dbg !2252
 
 while.body:                                       ; preds = %entry, %while.body
   %exp.addr.023 = phi %union.tree_node* [ %1, %while.body ], [ %exp, %entry ]
-  %operands = getelementptr inbounds %union.tree_node* %exp.addr.023, i64 0, i32 0, i32 2
-  %arrayidx = bitcast i32* %operands to %union.tree_node**
-  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
-  %code = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2
-  %2 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %bf.clear.off = add i32 %bf.clear, -114
-  %switch = icmp ult i32 %bf.clear.off, 3
-  br i1 %switch, label %while.body, label %lor.rhs
+  %operands = getelementptr inbounds %union.tree_node* %exp.addr.023, i64 0, i32 0, i32 2, !dbg !2253
+  %arrayidx = bitcast i32* %operands to %union.tree_node**, !dbg !2253
+  %1 = load %union.tree_node** %arrayidx, align 8, !dbg !2253, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %1}, i64 0, metadata !1067), !dbg !2253
+  %code = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2, !dbg !2251
+  %2 = bitcast [4 x i8]* %code to i32*, !dbg !2251
+  %bf.load = load i32* %2, align 8, !dbg !2251
+  %bf.clear = and i32 %bf.load, 255, !dbg !2251
+  %bf.clear.off = add i32 %bf.clear, -114, !dbg !2251
+  %switch = icmp ult i32 %bf.clear.off, 3, !dbg !2251
+  br i1 %switch, label %while.body, label %lor.rhs, !dbg !2251
 }

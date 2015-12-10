@@ -1,45 +1,48 @@
 define internal zeroext i1 @ggc_mark_tree_hash_table_entry(%struct.hash_entry* nocapture %he, i8* nocapture %k) #0 {
 entry:
-  %key = getelementptr inbounds %struct.hash_entry* %he, i64 0, i32 1
-  %0 = load i8** %key, align 8, !tbaa !0
-  %1 = bitcast i8* %0 to %union.tree_node*
-  %cmp = icmp eq i8* %0, null
-  br i1 %cmp, label %do.end8, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{%struct.hash_entry* %he}, i64 0, metadata !1186), !dbg !1755
+  tail call void @llvm.dbg.value(metadata !{i8* %k}, i64 0, metadata !1187), !dbg !1756
+  %key = getelementptr inbounds %struct.hash_entry* %he, i64 0, i32 1, !dbg !1757
+  %0 = load i8** %key, align 8, !dbg !1757, !tbaa !1351
+  %1 = bitcast i8* %0 to %union.tree_node*, !dbg !1757
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %1}, i64 0, metadata !1188), !dbg !1757
+  %cmp = icmp eq i8* %0, null, !dbg !1757
+  br i1 %cmp, label %do.end8, label %land.lhs.true, !dbg !1757
 
 land.lhs.true:                                    ; preds = %entry
-  %call = tail call i32 @ggc_set_mark(i8* %0) #5
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %do.body1, label %do.end8
+  %call = tail call i32 @ggc_set_mark(i8* %0) #6, !dbg !1757
+  %tobool = icmp eq i32 %call, 0, !dbg !1757
+  br i1 %tobool, label %do.body1, label %do.end8, !dbg !1757
 
 do.body1:                                         ; preds = %land.lhs.true
-  %2 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !0
-  %elements_used = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 1
-  %3 = load i64* %elements_used, align 8, !tbaa !4
-  %num_elements = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 0
-  %4 = load i64* %num_elements, align 8, !tbaa !4
-  %cmp2 = icmp ult i64 %3, %4
-  br i1 %cmp2, label %if.end, label %if.then3
+  %2 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !dbg !1758, !tbaa !1351
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 1, !dbg !1758
+  %3 = load i64* %elements_used, align 8, !dbg !1758, !tbaa !1409
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 0, !dbg !1758
+  %4 = load i64* %num_elements, align 8, !dbg !1758, !tbaa !1409
+  %cmp2 = icmp ult i64 %3, %4, !dbg !1758
+  br i1 %cmp2, label %if.end, label %if.then3, !dbg !1758
 
 if.then3:                                         ; preds = %do.body1
-  %mul = shl i64 %4, 1
-  %call5 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %2, i64 %mul) #5
-  store %struct.varray_head_tag* %call5, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !0
+  %mul = shl i64 %4, 1, !dbg !1758
+  %call5 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %2, i64 %mul) #6, !dbg !1758
+  store %struct.varray_head_tag* %call5, %struct.varray_head_tag** @ggc_pending_trees, align 8, !dbg !1758, !tbaa !1351
   %elements_used6.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call5, i64 0, i32 1
-  %.pre = load i64* %elements_used6.phi.trans.insert, align 8, !tbaa !4
-  br label %if.end
+  %.pre = load i64* %elements_used6.phi.trans.insert, align 8, !dbg !1758, !tbaa !1409
+  br label %if.end, !dbg !1758
 
 if.end:                                           ; preds = %do.body1, %if.then3
   %5 = phi i64 [ %3, %do.body1 ], [ %.pre, %if.then3 ]
   %6 = phi %struct.varray_head_tag* [ %2, %do.body1 ], [ %call5, %if.then3 ]
-  %elements_used6 = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 1
-  %inc = add i64 %5, 1
-  store i64 %inc, i64* %elements_used6, align 8, !tbaa !4
-  %data = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 4
-  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*
-  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %5
-  store %union.tree_node* %1, %union.tree_node** %arrayidx, align 8, !tbaa !0
-  br label %do.end8
+  %elements_used6 = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 1, !dbg !1758
+  %inc = add i64 %5, 1, !dbg !1758
+  store i64 %inc, i64* %elements_used6, align 8, !dbg !1758, !tbaa !1409
+  %data = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 4, !dbg !1758
+  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*, !dbg !1758
+  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %5, !dbg !1758
+  store %union.tree_node* %1, %union.tree_node** %arrayidx, align 8, !dbg !1758, !tbaa !1351
+  br label %do.end8, !dbg !1758
 
 do.end8:                                          ; preds = %land.lhs.true, %entry, %if.end
-  ret i1 true
+  ret i1 true, !dbg !1760
 }

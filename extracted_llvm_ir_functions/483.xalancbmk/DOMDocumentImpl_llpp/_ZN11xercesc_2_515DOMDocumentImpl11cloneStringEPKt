@@ -1,0 +1,44 @@
+define i16* @_ZN11xercesc_2_515DOMDocumentImpl11cloneStringEPKt(%"class.xercesc_2_5::DOMDocumentImpl"* nocapture %this, i16* %src) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMDocumentImpl"* %this}, i64 0, metadata !6182), !dbg !9930
+  tail call void @llvm.dbg.value(metadata !{i16* %src}, i64 0, metadata !6183), !dbg !9930
+  %tobool = icmp eq i16* %src, null, !dbg !9931
+  br i1 %tobool, label %return, label %lor.lhs.false.i, !dbg !9931
+
+lor.lhs.false.i:                                  ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i16* %src}, i64 0, metadata !9932), !dbg !9934
+  %0 = load i16* %src, align 2, !dbg !9935, !tbaa !9273
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !9935
+  br i1 %cmp1.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !9935
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %src, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !9936
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !9937, !tbaa !9273
+  %tobool.i = icmp eq i16 %1, 0, !dbg !9937
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !9937
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !9938
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %src to i64, !dbg !9938
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !9938
+  %phitmp = and i64 %sub.ptr.sub.i, 8589934590, !dbg !9938
+  %phitmp10 = add i64 %phitmp, 2, !dbg !9938
+  br label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, !dbg !9938
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %lor.lhs.false.i, %while.end.i
+  %retval.0.i = phi i64 [ %phitmp10, %while.end.i ], [ 2, %lor.lhs.false.i ]
+  tail call void @llvm.dbg.value(metadata !{i64 %retval.0.i}, i64 0, metadata !6184), !dbg !9939
+  %rem = and i64 %retval.0.i, 2, !dbg !9940
+  %add2 = add i64 %rem, %retval.0.i, !dbg !9940
+  tail call void @llvm.dbg.value(metadata !{i64 %add2}, i64 0, metadata !6184), !dbg !9940
+  %call3 = tail call i8* @_ZN11xercesc_2_515DOMDocumentImpl8allocateEm(%"class.xercesc_2_5::DOMDocumentImpl"* %this, i64 %add2) #10, !dbg !9941
+  %2 = bitcast i8* %call3 to i16*, !dbg !9941
+  tail call void @llvm.dbg.value(metadata !{i16* %2}, i64 0, metadata !6185), !dbg !9941
+  tail call void @_ZN11xercesc_2_59XMLString10copyStringEPtPKt(i16* %2, i16* %src) #10, !dbg !9942
+  br label %return, !dbg !9943
+
+return:                                           ; preds = %entry, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %retval.0 = phi i16* [ %2, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ], [ null, %entry ]
+  ret i16* %retval.0, !dbg !9944
+}

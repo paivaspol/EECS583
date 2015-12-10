@@ -1,17 +1,20 @@
 define internal %struct.hash_entry* @insns_for_mem_newfunc(%struct.hash_entry* %he, %struct.hash_table* %ht, i8* nocapture %k) #0 {
 entry:
-  %tobool = icmp eq %struct.hash_entry* %he, null
-  br i1 %tobool, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.hash_entry* %he}, i64 0, metadata !2415), !dbg !3346
+  tail call void @llvm.dbg.value(metadata !{%struct.hash_table* %ht}, i64 0, metadata !2416), !dbg !3347
+  tail call void @llvm.dbg.value(metadata !{i8* %k}, i64 0, metadata !2417), !dbg !3348
+  %tobool = icmp eq %struct.hash_entry* %he, null, !dbg !3349
+  br i1 %tobool, label %if.end, label %return, !dbg !3349
 
 if.end:                                           ; preds = %entry
-  %call = tail call i8* @hash_allocate(%struct.hash_table* %ht, i32 32) #10
-  %insns = getelementptr inbounds i8* %call, i64 24
-  %0 = bitcast i8* %insns to %struct.rtx_def**
-  store %struct.rtx_def* null, %struct.rtx_def** %0, align 8, !tbaa !0
-  %he1 = bitcast i8* %call to %struct.hash_entry*
-  br label %return
+  %call = tail call i8* @hash_allocate(%struct.hash_table* %ht, i32 32) #11, !dbg !3350
+  %insns = getelementptr inbounds i8* %call, i64 24, !dbg !3351
+  %0 = bitcast i8* %insns to %struct.rtx_def**, !dbg !3351
+  store %struct.rtx_def* null, %struct.rtx_def** %0, align 8, !dbg !3351, !tbaa !2729
+  %he1 = bitcast i8* %call to %struct.hash_entry*, !dbg !3352
+  br label %return, !dbg !3352
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi %struct.hash_entry* [ %he1, %if.end ], [ %he, %entry ]
-  ret %struct.hash_entry* %retval.0
+  ret %struct.hash_entry* %retval.0, !dbg !3353
 }

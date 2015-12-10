@@ -1,37 +1,38 @@
 define i32 @ChvList_isCountZero(%struct._ChvList* %chvlist, i32 %ilist) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ChvList* %chvlist, i64 0, metadata !64, metadata !84), !dbg !110
-  tail call void @llvm.dbg.value(metadata i32 %ilist, i64 0, metadata !65, metadata !84), !dbg !111
-  %1 = icmp eq %struct._ChvList* %chvlist, null, !dbg !112
-  %2 = icmp slt i32 %ilist, 0, !dbg !114
-  %or.cond = or i1 %1, %2, !dbg !115
-  br i1 %or.cond, label %7, label %3, !dbg !115
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvList* %chvlist}, i64 0, metadata !66), !dbg !93
+  tail call void @llvm.dbg.value(metadata !{i32 %ilist}, i64 0, metadata !67), !dbg !94
+  %cmp = icmp eq %struct._ChvList* %chvlist, null, !dbg !95
+  %cmp1 = icmp slt i32 %ilist, 0, !dbg !95
+  %or.cond = or i1 %cmp, %cmp1, !dbg !95
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !95
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0, !dbg !116
-  %5 = load i32* %4, align 4, !dbg !116, !tbaa !92
-  %6 = icmp sgt i32 %5, %ilist, !dbg !117
-  br i1 %6, label %10, label %7, !dbg !118
+lor.lhs.false2:                                   ; preds = %entry
+  %nlist = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0, !dbg !95
+  %0 = load i32* %nlist, align 4, !dbg !95, !tbaa !85
+  %cmp3 = icmp sgt i32 %0, %ilist, !dbg !95
+  br i1 %cmp3, label %if.end, label %if.then, !dbg !95
 
-; <label>:7                                       ; preds = %3, %0
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !119, !tbaa !102
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([56 x i8]* @.str1, i64 0, i64 0), %struct._ChvList* %chvlist, i32 %ilist) #5, !dbg !121
-  br label %10, !dbg !122
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !96, !tbaa !90
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([56 x i8]* @.str1, i64 0, i64 0), %struct._ChvList* %chvlist, i32 %ilist) #5, !dbg !96
+  br label %if.end, !dbg !98
 
-; <label>:10                                      ; preds = %3, %7
-  %11 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 2, !dbg !123
-  %12 = load i32** %11, align 8, !dbg !123, !tbaa !125
-  %13 = icmp eq i32* %12, null, !dbg !126
-  br i1 %13, label %20, label %14, !dbg !127
+if.end:                                           ; preds = %lor.lhs.false2, %if.then
+  %counts = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 2, !dbg !99
+  %2 = load i32** %counts, align 8, !dbg !99, !tbaa !90
+  %cmp4 = icmp eq i32* %2, null, !dbg !99
+  br i1 %cmp4, label %return, label %if.else, !dbg !99
 
-; <label>:14                                      ; preds = %10
-  %15 = sext i32 %ilist to i64, !dbg !128
-  %16 = getelementptr inbounds i32* %12, i64 %15, !dbg !128
-  %17 = load i32* %16, align 4, !dbg !128, !tbaa !130
-  %18 = icmp eq i32 %17, 0, !dbg !131
-  %19 = zext i1 %18 to i32, !dbg !131
-  br label %20, !dbg !132
+if.else:                                          ; preds = %if.end
+  %idxprom = sext i32 %ilist to i64, !dbg !100
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !100
+  %3 = load i32* %arrayidx, align 4, !dbg !100, !tbaa !85
+  %cmp7 = icmp eq i32 %3, 0, !dbg !100
+  %conv = zext i1 %cmp7 to i32, !dbg !100
+  br label %return, !dbg !100
 
-; <label>:20                                      ; preds = %10, %14
-  %.0 = phi i32 [ %19, %14 ], [ 1, %10 ]
-  ret i32 %.0, !dbg !133
+return:                                           ; preds = %if.end, %if.else
+  %retval.0 = phi i32 [ %conv, %if.else ], [ 1, %if.end ]
+  ret i32 %retval.0, !dbg !102
 }

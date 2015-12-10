@@ -1,62 +1,64 @@
-define i32 @ILogsum(i32 %p1, i32 %p2) #2 {
-  tail call void @llvm.dbg.value(metadata i32 %p1, i64 0, metadata !110, metadata !184), !dbg !274
-  tail call void @llvm.dbg.value(metadata i32 %p2, i64 0, metadata !111, metadata !184), !dbg !275
+define i32 @ILogsum(i32 %p1, i32 %p2) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %p1}, i64 0, metadata !109), !dbg !207
+  tail call void @llvm.dbg.value(metadata !{i32 %p2}, i64 0, metadata !110), !dbg !207
   %.b = load i1* @ILogsum.firsttime, align 1
-  br i1 %.b, label %13, label %.preheader, !dbg !276
+  br i1 %.b, label %if.end, label %for.body.i, !dbg !208
 
-.preheader:                                       ; preds = %0, %.preheader
-  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %.preheader ], [ 0, %0 ], !dbg !277
-  %1 = sub nsw i64 0, %indvars.iv.i, !dbg !280
-  %2 = trunc i64 %1 to i32, !dbg !284
-  %3 = sitofp i32 %2 to float, !dbg !284
-  %4 = fpext float %3 to double, !dbg !284
-  %5 = fmul double %4, 0x3FE62E42FEAD449C, !dbg !285
-  %6 = fdiv double %5, 1.000000e+03, !dbg !286
-  %7 = tail call double @exp(double %6) #5, !dbg !287
-  %8 = fadd double %7, 1.000000e+00, !dbg !288
-  %9 = tail call double @log(double %8) #5, !dbg !289
-  %10 = fmul double %9, 0x40968AC7B890D5A6, !dbg !290
-  %11 = fptosi double %10 to i32, !dbg !291
-  %12 = getelementptr inbounds [20000 x i32]* @ilogsum_lookup, i64 0, i64 %indvars.iv.i, !dbg !292
-  store i32 %11, i32* %12, align 4, !dbg !293, !tbaa !294
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !295
-  %exitcond.i = icmp eq i64 %indvars.iv.next.i, 20000, !dbg !295
-  br i1 %exitcond.i, label %init_ilogsum.exit, label %.preheader, !dbg !295
+for.body.i:                                       ; preds = %entry, %for.body.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %entry ]
+  %0 = sub nsw i64 0, %indvars.iv.i, !dbg !209
+  %1 = trunc i64 %0 to i32, !dbg !209
+  %conv.i = sitofp i32 %1 to float, !dbg !209
+  %conv1.i = fpext float %conv.i to double, !dbg !209
+  %mul.i = fmul double %conv1.i, 0x3FE62E42FEAD449C, !dbg !209
+  %div.i = fdiv double %mul.i, 1.000000e+03, !dbg !209
+  %call.i = tail call double @exp(double %div.i) #6, !dbg !209
+  %add.i = fadd double %call.i, 1.000000e+00, !dbg !209
+  %call2.i = tail call double @log(double %add.i) #6, !dbg !209
+  %mul3.i = fmul double %call2.i, 0x40968AC7B890D5A6, !dbg !209
+  %conv4.i = fptosi double %mul3.i to i32, !dbg !209
+  %arrayidx.i = getelementptr inbounds [20000 x i32]* @ilogsum_lookup, i64 0, i64 %indvars.iv.i, !dbg !209
+  store i32 %conv4.i, i32* %arrayidx.i, align 4, !dbg !209, !tbaa !194
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !213
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32, !dbg !213
+  %exitcond = icmp eq i32 %lftr.wideiv, 20000, !dbg !213
+  br i1 %exitcond, label %init_ilogsum.exit, label %for.body.i, !dbg !213
 
-init_ilogsum.exit:                                ; preds = %.preheader
+init_ilogsum.exit:                                ; preds = %for.body.i
   store i1 true, i1* @ILogsum.firsttime, align 1
-  br label %13, !dbg !296
+  br label %if.end, !dbg !211
 
-; <label>:13                                      ; preds = %0, %init_ilogsum.exit
-  %14 = sub nsw i32 %p1, %p2, !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !112, metadata !184), !dbg !298
-  %15 = icmp sgt i32 %14, 19999, !dbg !299
-  br i1 %15, label %31, label %16, !dbg !301
+if.end:                                           ; preds = %entry, %init_ilogsum.exit
+  %sub = sub nsw i32 %p1, %p2, !dbg !214
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !111), !dbg !214
+  %cmp = icmp sgt i32 %sub, 19999, !dbg !215
+  br i1 %cmp, label %return, label %if.else, !dbg !215
 
-; <label>:16                                      ; preds = %13
-  %17 = icmp slt i32 %14, -19999, !dbg !302
-  br i1 %17, label %31, label %18, !dbg !304
+if.else:                                          ; preds = %if.end
+  %cmp2 = icmp slt i32 %sub, -19999, !dbg !216
+  br i1 %cmp2, label %return, label %if.else4, !dbg !216
 
-; <label>:18                                      ; preds = %16
-  %19 = icmp sgt i32 %14, 0, !dbg !305
-  br i1 %19, label %20, label %25, !dbg !307
+if.else4:                                         ; preds = %if.else
+  %cmp5 = icmp sgt i32 %sub, 0, !dbg !217
+  br i1 %cmp5, label %if.then6, label %if.else7, !dbg !217
 
-; <label>:20                                      ; preds = %18
-  %21 = sext i32 %14 to i64, !dbg !308
-  %22 = getelementptr inbounds [20000 x i32]* @ilogsum_lookup, i64 0, i64 %21, !dbg !308
-  %23 = load i32* %22, align 4, !dbg !308, !tbaa !294
-  %24 = add nsw i32 %23, %p1, !dbg !309
-  br label %31, !dbg !310
+if.then6:                                         ; preds = %if.else4
+  %idxprom = sext i32 %sub to i64, !dbg !217
+  %arrayidx = getelementptr inbounds [20000 x i32]* @ilogsum_lookup, i64 0, i64 %idxprom, !dbg !217
+  %2 = load i32* %arrayidx, align 4, !dbg !217, !tbaa !194
+  %add = add nsw i32 %2, %p1, !dbg !217
+  br label %return, !dbg !217
 
-; <label>:25                                      ; preds = %18
-  %26 = sub nsw i32 0, %14, !dbg !311
-  %27 = sext i32 %26 to i64, !dbg !312
-  %28 = getelementptr inbounds [20000 x i32]* @ilogsum_lookup, i64 0, i64 %27, !dbg !312
-  %29 = load i32* %28, align 4, !dbg !312, !tbaa !294
-  %30 = add nsw i32 %29, %p2, !dbg !313
-  br label %31, !dbg !314
+if.else7:                                         ; preds = %if.else4
+  %sub8 = sub nsw i32 0, %sub, !dbg !218
+  %idxprom9 = sext i32 %sub8 to i64, !dbg !218
+  %arrayidx10 = getelementptr inbounds [20000 x i32]* @ilogsum_lookup, i64 0, i64 %idxprom9, !dbg !218
+  %3 = load i32* %arrayidx10, align 4, !dbg !218, !tbaa !194
+  %add11 = add nsw i32 %3, %p2, !dbg !218
+  br label %return, !dbg !218
 
-; <label>:31                                      ; preds = %16, %13, %25, %20
-  %.0 = phi i32 [ %24, %20 ], [ %30, %25 ], [ %p1, %13 ], [ %p2, %16 ]
-  ret i32 %.0, !dbg !315
+return:                                           ; preds = %if.else, %if.end, %if.else7, %if.then6
+  %retval.0 = phi i32 [ %add, %if.then6 ], [ %add11, %if.else7 ], [ %p1, %if.end ], [ %p2, %if.else ]
+  ret i32 %retval.0, !dbg !219
 }

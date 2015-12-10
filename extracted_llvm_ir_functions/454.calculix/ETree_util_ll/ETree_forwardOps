@@ -1,48 +1,46 @@
 define %struct._DV* @ETree_forwardOps(%struct._ETree* %etree, i32 %type, i32 %symflag) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ETree* %etree, i64 0, metadata !181, metadata !258), !dbg !703
-  tail call void @llvm.dbg.value(metadata i32 %type, i64 0, metadata !182, metadata !258), !dbg !704
-  tail call void @llvm.dbg.value(metadata i32 %symflag, i64 0, metadata !183, metadata !258), !dbg !705
-  %1 = icmp eq %struct._ETree* %etree, null, !dbg !706
-  br i1 %1, label %2, label %5, !dbg !708
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !180), !dbg !479
+  tail call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !181), !dbg !480
+  tail call void @llvm.dbg.value(metadata !{i32 %symflag}, i64 0, metadata !182), !dbg !481
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !482
+  br i1 %cmp, label %if.then, label %if.end, !dbg !482
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !709, !tbaa !265
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([50 x i8]* @.str12, i64 0, i64 0), %struct._ETree* null) #5, !dbg !711
-  tail call void @exit(i32 -1) #6, !dbg !712
-  unreachable, !dbg !712
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !483, !tbaa !257
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str12, i64 0, i64 0), %struct._ETree* null) #5, !dbg !483
+  tail call void @exit(i32 -1) #6, !dbg !485
+  unreachable, !dbg !485
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0, !dbg !713
-  %7 = load i32* %6, align 4, !dbg !713, !tbaa !316
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !187, metadata !258), !dbg !714
-  %8 = tail call %struct._DV* @DV_new() #5, !dbg !715
-  tail call void @llvm.dbg.value(metadata %struct._DV* %8, i64 0, metadata !185, metadata !258), !dbg !716
-  tail call void @DV_init(%struct._DV* %8, i32 %7, double* null) #5, !dbg !717
-  %9 = tail call double* @DV_entries(%struct._DV* %8) #5, !dbg !718
-  tail call void @llvm.dbg.value(metadata double* %9, i64 0, metadata !184, metadata !258), !dbg !719
-  tail call void @DV_fill(%struct._DV* %8, double 0.000000e+00) #5, !dbg !720
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !186, metadata !258), !dbg !721
-  %10 = icmp sgt i32 %7, 0, !dbg !722
-  br i1 %10, label %.lr.ph, label %._crit_edge, !dbg !725
+if.end:                                           ; preds = %entry
+  %nfront1 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0, !dbg !486
+  %1 = load i32* %nfront1, align 4, !dbg !486, !tbaa !281
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !186), !dbg !486
+  %call2 = tail call %struct._DV* @DV_new() #5, !dbg !487
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %call2}, i64 0, metadata !184), !dbg !487
+  tail call void @DV_init(%struct._DV* %call2, i32 %1, double* null) #5, !dbg !488
+  %call3 = tail call double* @DV_entries(%struct._DV* %call2) #5, !dbg !489
+  tail call void @llvm.dbg.value(metadata !{double* %call3}, i64 0, metadata !183), !dbg !489
+  tail call void @DV_fill(%struct._DV* %call2, double 0.000000e+00) #5, !dbg !490
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !185), !dbg !491
+  %cmp422 = icmp sgt i32 %1, 0, !dbg !491
+  br i1 %cmp422, label %for.body, label %for.end, !dbg !491
 
-.lr.ph:                                           ; preds = %5
-  %11 = add i32 %7, -1, !dbg !725
-  br label %12, !dbg !725
+for.body:                                         ; preds = %if.end, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end ]
+  %2 = trunc i64 %indvars.iv to i32, !dbg !493
+  %call5 = tail call double @ETree_nInternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %2) #7, !dbg !493
+  %call6 = tail call double @ETree_nExternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %2) #7, !dbg !495
+  %add = fadd double %call5, %call6, !dbg !495
+  %arrayidx = getelementptr inbounds double* %call3, i64 %indvars.iv, !dbg !495
+  %3 = load double* %arrayidx, align 8, !dbg !495, !tbaa !418
+  %add7 = fadd double %3, %add, !dbg !495
+  store double %add7, double* %arrayidx, align 8, !dbg !495, !tbaa !418
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !491
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !491
+  %exitcond = icmp eq i32 %lftr.wideiv, %1, !dbg !491
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !491
 
-; <label>:12                                      ; preds = %12, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %12 ]
-  %13 = trunc i64 %indvars.iv to i32, !dbg !726
-  %14 = tail call double @ETree_nInternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %13) #7, !dbg !726
-  %15 = tail call double @ETree_nExternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %13) #7, !dbg !728
-  %16 = fadd double %14, %15, !dbg !729
-  %17 = getelementptr inbounds double* %9, i64 %indvars.iv, !dbg !730
-  %18 = load double* %17, align 8, !dbg !731, !tbaa !588
-  %19 = fadd double %18, %16, !dbg !731
-  store double %19, double* %17, align 8, !dbg !731, !tbaa !588
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !725
-  %exitcond = icmp eq i32 %13, %11, !dbg !725
-  br i1 %exitcond, label %._crit_edge, label %12, !dbg !725
-
-._crit_edge:                                      ; preds = %12, %5
-  ret %struct._DV* %8, !dbg !732
+for.end:                                          ; preds = %for.body, %if.end
+  ret %struct._DV* %call2, !dbg !496
 }

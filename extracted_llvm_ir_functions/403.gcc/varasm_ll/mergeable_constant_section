@@ -1,50 +1,55 @@
 define void @mergeable_constant_section(i32 %mode, i64 %align, i32 %flags) #0 {
 entry:
   %name = alloca [24 x i8], align 16
-  %idxprom = sext i32 %mode to i64
-  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
-  %0 = load i16* %arrayidx, align 2, !tbaa !7
-  %1 = load i32* @flag_merge_constants, align 4, !tbaa !4
-  %tobool = icmp eq i32 %1, 0
-  br i1 %tobool, label %if.end, label %land.lhs.true
+  call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !1239), !dbg !2520
+  call void @llvm.dbg.value(metadata !{i64 %align}, i64 0, metadata !1240), !dbg !2521
+  call void @llvm.dbg.value(metadata !{i32 %flags}, i64 0, metadata !1241), !dbg !2522
+  %idxprom = sext i32 %mode to i64, !dbg !2523
+  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom, !dbg !2523
+  %0 = load i16* %arrayidx, align 2, !dbg !2523, !tbaa !2494
+  %1 = load i32* @flag_merge_constants, align 4, !dbg !2524, !tbaa !2382
+  %tobool = icmp eq i32 %1, 0, !dbg !2524
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !2524
 
 land.lhs.true:                                    ; preds = %entry
   switch i32 %mode, label %land.lhs.true5 [
     i32 51, label %if.end
     i32 0, label %if.end
-  ]
+  ], !dbg !2524
 
 land.lhs.true5:                                   ; preds = %land.lhs.true
-  %conv6 = zext i16 %0 to i64
-  %cmp7 = icmp ule i64 %conv6, %align
-  %cmp10 = icmp ugt i64 %align, 7
-  %or.cond24 = and i1 %cmp7, %cmp10
-  %cmp13 = icmp ult i64 %align, 257
-  %or.cond25 = and i1 %or.cond24, %cmp13
-  br i1 %or.cond25, label %land.lhs.true15, label %if.end
+  %conv6 = zext i16 %0 to i64, !dbg !2524
+  %cmp7 = icmp ule i64 %conv6, %align, !dbg !2524
+  %cmp10 = icmp ugt i64 %align, 7, !dbg !2524
+  %or.cond24 = and i1 %cmp7, %cmp10, !dbg !2524
+  %cmp13 = icmp ult i64 %align, 257, !dbg !2524
+  %or.cond25 = and i1 %or.cond24, %cmp13, !dbg !2524
+  br i1 %or.cond25, label %land.lhs.true15, label %if.end, !dbg !2524
 
 land.lhs.true15:                                  ; preds = %land.lhs.true5
-  %sub = add i64 %align, -1
-  %and = and i64 %sub, %align
-  %cmp16 = icmp eq i64 %and, 0
-  br i1 %cmp16, label %if.then, label %if.end
+  %sub = add i64 %align, -1, !dbg !2524
+  %and = and i64 %sub, %align, !dbg !2524
+  %cmp16 = icmp eq i64 %and, 0, !dbg !2524
+  br i1 %cmp16, label %if.then, label %if.end, !dbg !2524
 
 if.then:                                          ; preds = %land.lhs.true15
-  %arraydecay = getelementptr inbounds [24 x i8]* %name, i64 0, i64 0
-  %div = lshr i64 %align, 3
-  %conv18 = trunc i64 %div to i32
-  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([14 x i8]* @.str14, i64 0, i64 0), i32 %conv18) #9
-  %conv20 = zext i32 %flags to i64
-  %or = or i64 %div, %conv20
-  %or21 = or i64 %or, 32768
-  %conv22 = trunc i64 %or21 to i32
-  call void @named_section_flags(i8* %arraydecay, i32 %conv22) #10
-  br label %return
+  call void @llvm.dbg.declare(metadata !{[24 x i8]* %name}, metadata !1243), !dbg !2525
+  %arraydecay = getelementptr inbounds [24 x i8]* %name, i64 0, i64 0, !dbg !2526
+  %div = lshr i64 %align, 3, !dbg !2526
+  %conv18 = trunc i64 %div to i32, !dbg !2526
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([14 x i8]* @.str14, i64 0, i64 0), i32 %conv18) #10, !dbg !2526
+  %conv20 = zext i32 %flags to i64, !dbg !2527
+  %or = or i64 %div, %conv20, !dbg !2527
+  %or21 = or i64 %or, 32768, !dbg !2527
+  %conv22 = trunc i64 %or21 to i32, !dbg !2527
+  call void @llvm.dbg.value(metadata !{i32 %conv22}, i64 0, metadata !1241), !dbg !2527
+  call void @named_section_flags(i8* %arraydecay, i32 %conv22) #11, !dbg !2528
+  br label %return, !dbg !2529
 
 if.end:                                           ; preds = %land.lhs.true, %land.lhs.true, %entry, %land.lhs.true15, %land.lhs.true5
-  call void @const_section() #9
-  br label %return
+  call void @const_section() #10, !dbg !2530
+  br label %return, !dbg !2531
 
 return:                                           ; preds = %if.end, %if.then
-  ret void
+  ret void, !dbg !2531
 }

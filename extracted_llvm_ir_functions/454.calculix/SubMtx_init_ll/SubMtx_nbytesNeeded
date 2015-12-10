@@ -1,101 +1,102 @@
 define i32 @SubMtx_nbytesNeeded(i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %type, i64 0, metadata !14, metadata !102), !dbg !103
-  tail call void @llvm.dbg.value(metadata i32 %mode, i64 0, metadata !15, metadata !102), !dbg !104
-  tail call void @llvm.dbg.value(metadata i32 %nrow, i64 0, metadata !16, metadata !102), !dbg !105
-  tail call void @llvm.dbg.value(metadata i32 %ncol, i64 0, metadata !17, metadata !102), !dbg !106
-  tail call void @llvm.dbg.value(metadata i32 %nent, i64 0, metadata !18, metadata !102), !dbg !107
-  %1 = icmp slt i32 %nrow, 1, !dbg !108
-  %2 = icmp slt i32 %ncol, 1, !dbg !110
-  %or.cond = or i1 %1, %2, !dbg !111
-  %3 = icmp slt i32 %nent, 0, !dbg !112
-  %or.cond3 = or i1 %or.cond, %3, !dbg !111
-  br i1 %or.cond3, label %4, label %7, !dbg !111
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !10), !dbg !100
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !11), !dbg !101
+  tail call void @llvm.dbg.value(metadata !{i32 %nrow}, i64 0, metadata !12), !dbg !102
+  tail call void @llvm.dbg.value(metadata !{i32 %ncol}, i64 0, metadata !13), !dbg !103
+  tail call void @llvm.dbg.value(metadata !{i32 %nent}, i64 0, metadata !14), !dbg !104
+  %cmp = icmp slt i32 %nrow, 1, !dbg !105
+  %cmp1 = icmp slt i32 %ncol, 1, !dbg !105
+  %or.cond = or i1 %cmp, %cmp1, !dbg !105
+  %cmp3 = icmp slt i32 %nent, 0, !dbg !105
+  %or.cond76 = or i1 %or.cond, %cmp3, !dbg !105
+  br i1 %or.cond76, label %if.then, label %if.end, !dbg !105
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !113, !tbaa !115
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #6, !dbg !119
-  tail call void @exit(i32 -1) #7, !dbg !120
-  unreachable, !dbg !120
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !106, !tbaa !108
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #6, !dbg !106
+  tail call void @exit(i32 -1) #7, !dbg !111
+  unreachable, !dbg !111
 
-; <label>:7                                       ; preds = %0
-  %.off = add i32 %type, -1, !dbg !121
-  %switch = icmp ult i32 %.off, 2, !dbg !121
-  br i1 %switch, label %11, label %8, !dbg !121
+if.end:                                           ; preds = %entry
+  %.off = add i32 %type, -1, !dbg !112
+  %switch = icmp ult i32 %.off, 2, !dbg !112
+  br i1 %switch, label %sw.epilog, label %sw.default, !dbg !112
 
-; <label>:8                                       ; preds = %7
-  %9 = load %struct.__sFILE** @__stderrp, align 8, !dbg !122, !tbaa !115
-  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #6, !dbg !124
-  tail call void @exit(i32 -1) #7, !dbg !125
-  unreachable, !dbg !125
+sw.default:                                       ; preds = %if.end
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !113, !tbaa !108
+  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #6, !dbg !113
+  tail call void @exit(i32 -1) #7, !dbg !115
+  unreachable, !dbg !115
 
-; <label>:11                                      ; preds = %7
-  %switch4 = icmp ult i32 %mode, 10, !dbg !126
-  br i1 %switch4, label %15, label %12, !dbg !126
+sw.epilog:                                        ; preds = %if.end
+  %switch39 = icmp ult i32 %mode, 10, !dbg !116
+  br i1 %switch39, label %sw.epilog8, label %sw.default6, !dbg !116
 
-; <label>:12                                      ; preds = %11
-  %13 = load %struct.__sFILE** @__stderrp, align 8, !dbg !127, !tbaa !115
-  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %13, i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #6, !dbg !129
-  tail call void @exit(i32 -1) #7, !dbg !130
-  unreachable, !dbg !130
+sw.default6:                                      ; preds = %sw.epilog
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !117, !tbaa !108
+  %call7 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #6, !dbg !117
+  tail call void @exit(i32 -1) #7, !dbg !119
+  unreachable, !dbg !119
 
-; <label>:15                                      ; preds = %11
-  %16 = add nsw i32 %nrow, 7, !dbg !131
-  %17 = add nsw i32 %16, %ncol, !dbg !132
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !21, metadata !102), !dbg !133
-  %not. = icmp ne i32 %type, 1, !dbg !134
-  %18 = zext i1 %not. to i32, !dbg !134
-  %nent. = shl nsw i32 %nent, %18, !dbg !134
-  switch i32 %mode, label %36 [
-    i32 2, label %19
-    i32 3, label %22
-    i32 4, label %25
-    i32 5, label %28
-    i32 6, label %31
-    i32 9, label %34
-    i32 8, label %34
-  ], !dbg !135
+sw.epilog8:                                       ; preds = %sw.epilog
+  %add = add nsw i32 %nrow, 7, !dbg !120
+  %add9 = add nsw i32 %add, %ncol, !dbg !120
+  tail call void @llvm.dbg.value(metadata !{i32 %add9}, i64 0, metadata !17), !dbg !120
+  %not.cmp10 = icmp ne i32 %type, 1, !dbg !121
+  %mul = zext i1 %not.cmp10 to i32, !dbg !121
+  %nent.mul = shl nsw i32 %nent, %mul, !dbg !121
+  switch i32 %mode, label %sw.epilog34 [
+    i32 2, label %sw.bb16
+    i32 3, label %sw.bb19
+    i32 4, label %sw.bb22
+    i32 5, label %sw.bb25
+    i32 6, label %sw.bb28
+    i32 9, label %sw.bb31
+    i32 8, label %sw.bb31
+  ], !dbg !122
 
-; <label>:19                                      ; preds = %15
-  %20 = add nsw i32 %nent, %nrow, !dbg !136
-  %21 = add nsw i32 %20, %17, !dbg !138
-  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !21, metadata !102), !dbg !133
-  br label %36, !dbg !139
+sw.bb16:                                          ; preds = %sw.epilog8
+  %add17 = add nsw i32 %nent, %nrow, !dbg !123
+  %add18 = add nsw i32 %add17, %add9, !dbg !123
+  tail call void @llvm.dbg.value(metadata !{i32 %add18}, i64 0, metadata !17), !dbg !123
+  br label %sw.epilog34, !dbg !125
 
-; <label>:22                                      ; preds = %15
-  %23 = add nsw i32 %nent, %ncol, !dbg !140
-  %24 = add nsw i32 %23, %17, !dbg !141
-  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !21, metadata !102), !dbg !133
-  br label %36, !dbg !142
+sw.bb19:                                          ; preds = %sw.epilog8
+  %add20 = add nsw i32 %nent, %ncol, !dbg !126
+  %add21 = add nsw i32 %add20, %add9, !dbg !126
+  tail call void @llvm.dbg.value(metadata !{i32 %add21}, i64 0, metadata !17), !dbg !126
+  br label %sw.epilog34, !dbg !127
 
-; <label>:25                                      ; preds = %15
-  %26 = shl i32 %nent, 1, !dbg !143
-  %27 = add nsw i32 %26, %17, !dbg !144
-  tail call void @llvm.dbg.value(metadata i32 %27, i64 0, metadata !21, metadata !102), !dbg !133
-  br label %36, !dbg !145
+sw.bb22:                                          ; preds = %sw.epilog8
+  %mul23 = shl i32 %nent, 1, !dbg !128
+  %add24 = add nsw i32 %mul23, %add9, !dbg !128
+  tail call void @llvm.dbg.value(metadata !{i32 %add24}, i64 0, metadata !17), !dbg !128
+  br label %sw.epilog34, !dbg !129
 
-; <label>:28                                      ; preds = %15
-  %29 = shl i32 %nrow, 1, !dbg !146
-  %30 = add nsw i32 %17, %29, !dbg !147
-  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !21, metadata !102), !dbg !133
-  br label %36, !dbg !148
+sw.bb25:                                          ; preds = %sw.epilog8
+  %mul26 = shl i32 %nrow, 1, !dbg !130
+  %add27 = add nsw i32 %add9, %mul26, !dbg !130
+  tail call void @llvm.dbg.value(metadata !{i32 %add27}, i64 0, metadata !17), !dbg !130
+  br label %sw.epilog34, !dbg !131
 
-; <label>:31                                      ; preds = %15
-  %32 = shl i32 %ncol, 1, !dbg !149
-  %33 = add nsw i32 %17, %32, !dbg !150
-  tail call void @llvm.dbg.value(metadata i32 %33, i64 0, metadata !21, metadata !102), !dbg !133
-  br label %36, !dbg !151
+sw.bb28:                                          ; preds = %sw.epilog8
+  %mul29 = shl i32 %ncol, 1, !dbg !132
+  %add30 = add nsw i32 %add9, %mul29, !dbg !132
+  tail call void @llvm.dbg.value(metadata !{i32 %add30}, i64 0, metadata !17), !dbg !132
+  br label %sw.epilog34, !dbg !133
 
-; <label>:34                                      ; preds = %15, %15
-  %35 = add nsw i32 %17, %ncol, !dbg !152
-  tail call void @llvm.dbg.value(metadata i32 %35, i64 0, metadata !21, metadata !102), !dbg !133
-  br label %36, !dbg !153
+sw.bb31:                                          ; preds = %sw.epilog8, %sw.epilog8
+  %add32 = add nsw i32 %add9, %ncol, !dbg !134
+  tail call void @llvm.dbg.value(metadata !{i32 %add32}, i64 0, metadata !17), !dbg !134
+  br label %sw.epilog34, !dbg !135
 
-; <label>:36                                      ; preds = %15, %34, %31, %28, %25, %22, %19
-  %nint.0 = phi i32 [ %17, %15 ], [ %35, %34 ], [ %33, %31 ], [ %30, %28 ], [ %27, %25 ], [ %24, %22 ], [ %21, %19 ]
-  %37 = add nsw i32 %nint.0, 1, !dbg !154
-  %38 = sdiv i32 %37, 2, !dbg !158
-  %39 = add nsw i32 %38, %nent., !dbg !159
-  %40 = shl i32 %39, 3, !dbg !160
-  tail call void @llvm.dbg.value(metadata i32 %40, i64 0, metadata !19, metadata !102), !dbg !161
-  ret i32 %40, !dbg !162
+sw.epilog34:                                      ; preds = %sw.epilog8, %sw.bb31, %sw.bb28, %sw.bb25, %sw.bb22, %sw.bb19, %sw.bb16
+  %nint.0 = phi i32 [ %add9, %sw.epilog8 ], [ %add32, %sw.bb31 ], [ %add30, %sw.bb28 ], [ %add27, %sw.bb25 ], [ %add24, %sw.bb22 ], [ %add21, %sw.bb19 ], [ %add18, %sw.bb16 ]
+  %add35 = add nsw i32 %nint.0, 1, !dbg !136
+  %div = sdiv i32 %add35, 2, !dbg !136
+  %add36 = add nsw i32 %div, %nent.mul, !dbg !136
+  %mul37 = shl i32 %add36, 3, !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i32 %mul37}, i64 0, metadata !15), !dbg !136
+  ret i32 %mul37, !dbg !138
 }

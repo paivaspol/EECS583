@@ -1,374 +1,399 @@
 define internal fastcc void @emit_case_nodes(%struct.rtx_def* %index, %struct.case_node* %node, %struct.rtx_def* %default_label, %union.tree_node* %index_type) #0 {
 entry:
-  %unsigned_flag = getelementptr inbounds %union.tree_node* %index_type, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %unsigned_flag to i32*
-  %bf.load518 = load i32* %0, align 8
-  %1 = bitcast %struct.rtx_def* %index to i32*
-  %bf.load1521 = load i32* %1, align 8
-  %type = bitcast %union.tree_node* %index_type to %struct.tree_type*
-  %mode4 = getelementptr inbounds %struct.tree_type* %type, i64 0, i32 6
-  %2 = bitcast [4 x i8]* %mode4 to i32*
-  %bf.load5524 = load i32* %2, align 4
-  %call527 = tail call fastcc i32 @node_is_bounded(%struct.case_node* %node, %union.tree_node* %index_type) #9
-  %tobool528 = icmp eq i32 %call527, 0
-  br i1 %tobool528, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %index}, i64 0, metadata !2018), !dbg !4666
+  tail call void @llvm.dbg.value(metadata !{%struct.case_node* %node.tr529}, i64 0, metadata !2019), !dbg !4667
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %default_label}, i64 0, metadata !2020), !dbg !4668
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %index_type}, i64 0, metadata !2021), !dbg !4669
+  %unsigned_flag = getelementptr inbounds %union.tree_node* %index_type, i64 0, i32 0, i32 0, i32 2, !dbg !4670
+  %0 = bitcast [4 x i8]* %unsigned_flag to i32*, !dbg !4670
+  %bf.load518 = load i32* %0, align 8, !dbg !4670
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear530}, i64 0, metadata !2022), !dbg !4670
+  %1 = bitcast %struct.rtx_def* %index to i32*, !dbg !4671
+  %bf.load1521 = load i32* %1, align 8, !dbg !4671
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear3531}, i64 0, metadata !2023), !dbg !4671
+  %type = bitcast %union.tree_node* %index_type to %struct.tree_type*, !dbg !4672
+  %mode4 = getelementptr inbounds %struct.tree_type* %type, i64 0, i32 6, !dbg !4672
+  %2 = bitcast [4 x i8]* %mode4 to i32*, !dbg !4672
+  %bf.load5524 = load i32* %2, align 4, !dbg !4672
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear7532}, i64 0, metadata !2024), !dbg !4672
+  %call527 = tail call fastcc i32 @node_is_bounded(%struct.case_node* %node, %union.tree_node* %index_type) #10, !dbg !4673
+  %tobool528 = icmp eq i32 %call527, 0, !dbg !4673
+  br i1 %tobool528, label %if.else, label %if.then, !dbg !4673
 
 if.then:                                          ; preds = %tailrecurse.backedge, %entry
   %node.tr.lcssa = phi %struct.case_node* [ %node, %entry ], [ %node.tr.be, %tailrecurse.backedge ]
-  %code_label = getelementptr inbounds %struct.case_node* %node.tr.lcssa, i64 0, i32 5
-  %3 = load %union.tree_node** %code_label, align 8, !tbaa !0
-  %call8 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %3) #9
-  tail call void @emit_jump(%struct.rtx_def* %call8) #9
-  br label %if.end251
+  %code_label = getelementptr inbounds %struct.case_node* %node.tr.lcssa, i64 0, i32 5, !dbg !4674
+  %3 = load %union.tree_node** %code_label, align 8, !dbg !4674, !tbaa !2438
+  %call8 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %3) #10, !dbg !4674
+  tail call void @emit_jump(%struct.rtx_def* %call8) #10, !dbg !4674
+  br label %if.end251, !dbg !4674
 
 if.else:                                          ; preds = %entry, %tailrecurse.backedge
   %bf.clear7532.in.in = phi i32 [ %bf.load5, %tailrecurse.backedge ], [ %bf.load5524, %entry ]
   %bf.clear3531.in.in = phi i32 [ %bf.load1, %tailrecurse.backedge ], [ %bf.load1521, %entry ]
   %bf.clear530.in.in = phi i32 [ %bf.load, %tailrecurse.backedge ], [ %bf.load518, %entry ]
   %node.tr529 = phi %struct.case_node* [ %node.tr.be, %tailrecurse.backedge ], [ %node, %entry ]
-  %bf.clear530.in = lshr i32 %bf.clear530.in.in, 13
-  %bf.clear3531.in = lshr i32 %bf.clear3531.in.in, 16
-  %bf.clear7532.in = lshr i32 %bf.clear7532.in.in, 9
-  %bf.clear530 = and i32 %bf.clear530.in, 1
-  %bf.clear3531 = and i32 %bf.clear3531.in, 255
-  %bf.clear7532 = and i32 %bf.clear7532.in, 127
-  %low = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 3
-  %4 = load %union.tree_node** %low, align 8, !tbaa !0
-  %high = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 4
-  %5 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call9 = tail call i32 @tree_int_cst_equal(%union.tree_node* %4, %union.tree_node* %5) #7
-  %tobool10 = icmp eq i32 %call9, 0
-  br i1 %tobool10, label %if.else131, label %if.then11
+  %bf.clear530.in = lshr i32 %bf.clear530.in.in, 13, !dbg !4670
+  %bf.clear3531.in = lshr i32 %bf.clear3531.in.in, 16, !dbg !4671
+  %bf.clear7532.in = lshr i32 %bf.clear7532.in.in, 9, !dbg !4672
+  %bf.clear530 = and i32 %bf.clear530.in, 1, !dbg !4670
+  %bf.clear3531 = and i32 %bf.clear3531.in, 255, !dbg !4671
+  %bf.clear7532 = and i32 %bf.clear7532.in, 127, !dbg !4672
+  %low = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 3, !dbg !4675
+  %4 = load %union.tree_node** %low, align 8, !dbg !4675, !tbaa !2438
+  %high = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 4, !dbg !4675
+  %5 = load %union.tree_node** %high, align 8, !dbg !4675, !tbaa !2438
+  %call9 = tail call i32 @tree_int_cst_equal(%union.tree_node* %4, %union.tree_node* %5) #8, !dbg !4675
+  %tobool10 = icmp eq i32 %call9, 0, !dbg !4675
+  br i1 %tobool10, label %if.else131, label %if.then11, !dbg !4675
 
 if.then11:                                        ; preds = %if.else
-  %6 = load %union.tree_node** %low, align 8, !tbaa !0
-  %call13 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %6, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call14 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call13, i32 %bf.clear530) #7
-  %code_label15 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 5
-  %7 = load %union.tree_node** %code_label15, align 8, !tbaa !0
-  %call16 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %7) #9
-  tail call fastcc void @do_jump_if_equal(%struct.rtx_def* %index, %struct.rtx_def* %call14, %struct.rtx_def* %call16, i32 %bf.clear530) #9
-  %right = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 1
-  %8 = load %struct.case_node** %right, align 8, !tbaa !0
-  %cmp = icmp eq %struct.case_node* %8, null
+  %6 = load %union.tree_node** %low, align 8, !dbg !4676, !tbaa !2438
+  %call13 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %6, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4676
+  %call14 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call13, i32 %bf.clear530) #8, !dbg !4676
+  %code_label15 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 5, !dbg !4677
+  %7 = load %union.tree_node** %code_label15, align 8, !dbg !4677, !tbaa !2438
+  %call16 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %7) #10, !dbg !4677
+  tail call fastcc void @do_jump_if_equal(%struct.rtx_def* %index, %struct.rtx_def* %call14, %struct.rtx_def* %call16, i32 %bf.clear530) #10, !dbg !4677
+  %right = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 1, !dbg !4678
+  %8 = load %struct.case_node** %right, align 8, !dbg !4678, !tbaa !2438
+  %cmp = icmp eq %struct.case_node* %8, null, !dbg !4678
   %left93.phi.trans.insert = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 0
-  %.pre558 = load %struct.case_node** %left93.phi.trans.insert, align 8, !tbaa !0
-  br i1 %cmp, label %land.lhs.true92, label %land.lhs.true
+  %.pre558 = load %struct.case_node** %left93.phi.trans.insert, align 8, !dbg !4679, !tbaa !2438
+  br i1 %cmp, label %land.lhs.true92, label %land.lhs.true, !dbg !4678
 
 land.lhs.true:                                    ; preds = %if.then11
-  %cmp17 = icmp eq %struct.case_node* %.pre558, null
-  br i1 %cmp17, label %if.then57, label %if.then18
+  %cmp17 = icmp eq %struct.case_node* %.pre558, null, !dbg !4678
+  br i1 %cmp17, label %if.then57, label %if.then18, !dbg !4678
 
 if.then18:                                        ; preds = %land.lhs.true
-  %call20 = tail call fastcc i32 @node_is_bounded(%struct.case_node* %8, %union.tree_node* %index_type) #9
-  %tobool21 = icmp eq i32 %call20, 0
-  br i1 %tobool21, label %if.else30, label %if.then22
+  %call20 = tail call fastcc i32 @node_is_bounded(%struct.case_node* %8, %union.tree_node* %index_type) #10, !dbg !4680
+  %tobool21 = icmp eq i32 %call20, 0, !dbg !4680
+  br i1 %tobool21, label %if.else30, label %if.then22, !dbg !4680
 
 if.then22:                                        ; preds = %if.then18
-  %9 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call24 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %9, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call25 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call24, i32 %bf.clear530) #7
-  %10 = load %struct.case_node** %right, align 8, !tbaa !0
-  %code_label27 = getelementptr inbounds %struct.case_node* %10, i64 0, i32 5
-  %11 = load %union.tree_node** %code_label27, align 8, !tbaa !0
-  %call28 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %11) #9
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call25, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call28) #7
-  br label %tailrecurse.backedge
+  %9 = load %union.tree_node** %high, align 8, !dbg !4681, !tbaa !2438
+  %call24 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %9, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4681
+  %call25 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call24, i32 %bf.clear530) #8, !dbg !4681
+  %10 = load %struct.case_node** %right, align 8, !dbg !4683, !tbaa !2438
+  %code_label27 = getelementptr inbounds %struct.case_node* %10, i64 0, i32 5, !dbg !4683
+  %11 = load %union.tree_node** %code_label27, align 8, !dbg !4683, !tbaa !2438
+  %call28 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %11) #10, !dbg !4683
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call25, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call28) #8, !dbg !4683
+  br label %tailrecurse.backedge, !dbg !4684
 
 if.else30:                                        ; preds = %if.then18
-  %12 = load %struct.case_node** %left93.phi.trans.insert, align 8, !tbaa !0
-  %call32 = tail call fastcc i32 @node_is_bounded(%struct.case_node* %12, %union.tree_node* %index_type) #9
-  %tobool33 = icmp eq i32 %call32, 0
-  br i1 %tobool33, label %if.else42, label %if.then34
+  %12 = load %struct.case_node** %left93.phi.trans.insert, align 8, !dbg !4685, !tbaa !2438
+  %call32 = tail call fastcc i32 @node_is_bounded(%struct.case_node* %12, %union.tree_node* %index_type) #10, !dbg !4685
+  %tobool33 = icmp eq i32 %call32, 0, !dbg !4685
+  br i1 %tobool33, label %if.else42, label %if.then34, !dbg !4685
 
 if.then34:                                        ; preds = %if.else30
-  %13 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call36 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %13, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call37 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call36, i32 %bf.clear530) #7
-  %14 = load %struct.case_node** %left93.phi.trans.insert, align 8, !tbaa !0
-  %code_label39 = getelementptr inbounds %struct.case_node* %14, i64 0, i32 5
-  %15 = load %union.tree_node** %code_label39, align 8, !tbaa !0
-  %call40 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %15) #9
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call37, i32 107, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call40) #7
-  br label %tailrecurse.backedge
+  %13 = load %union.tree_node** %high, align 8, !dbg !4686, !tbaa !2438
+  %call36 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %13, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4686
+  %call37 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call36, i32 %bf.clear530) #8, !dbg !4686
+  %14 = load %struct.case_node** %left93.phi.trans.insert, align 8, !dbg !4688, !tbaa !2438
+  %code_label39 = getelementptr inbounds %struct.case_node* %14, i64 0, i32 5, !dbg !4688
+  %15 = load %union.tree_node** %code_label39, align 8, !dbg !4688, !tbaa !2438
+  %call40 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %15) #10, !dbg !4688
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call37, i32 107, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call40) #8, !dbg !4688
+  br label %tailrecurse.backedge, !dbg !4689
 
 if.else42:                                        ; preds = %if.else30
-  %call43 = tail call %union.tree_node* @build_decl(i32 31, %union.tree_node* null, %union.tree_node* null) #7
-  %16 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call45 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %16, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call46 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call45, i32 %bf.clear530) #7
-  %call47 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %call43) #9
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call46, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call47) #7
-  %17 = load %struct.case_node** %left93.phi.trans.insert, align 8, !tbaa !0
-  tail call fastcc void @emit_case_nodes(%struct.rtx_def* %index, %struct.case_node* %17, %struct.rtx_def* %default_label, %union.tree_node* %index_type) #9
-  tail call fastcc void @emit_jump_if_reachable(%struct.rtx_def* %default_label) #9
-  tail call void @expand_label(%union.tree_node* %call43) #9
-  br label %tailrecurse.backedge
+  %call43 = tail call %union.tree_node* @build_decl(i32 31, %union.tree_node* null, %union.tree_node* null) #8, !dbg !4690
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call43}, i64 0, metadata !2025), !dbg !4690
+  %16 = load %union.tree_node** %high, align 8, !dbg !4691, !tbaa !2438
+  %call45 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %16, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4691
+  %call46 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call45, i32 %bf.clear530) #8, !dbg !4691
+  %call47 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %call43) #10, !dbg !4692
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call46, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call47) #8, !dbg !4692
+  %17 = load %struct.case_node** %left93.phi.trans.insert, align 8, !dbg !4693, !tbaa !2438
+  tail call fastcc void @emit_case_nodes(%struct.rtx_def* %index, %struct.case_node* %17, %struct.rtx_def* %default_label, %union.tree_node* %index_type) #10, !dbg !4693
+  tail call fastcc void @emit_jump_if_reachable(%struct.rtx_def* %default_label) #10, !dbg !4694
+  tail call void @expand_label(%union.tree_node* %call43) #10, !dbg !4695
+  br label %tailrecurse.backedge, !dbg !4696
 
 if.then57:                                        ; preds = %land.lhs.true
-  %right59 = getelementptr inbounds %struct.case_node* %8, i64 0, i32 1
-  %18 = load %struct.case_node** %right59, align 8, !tbaa !0
-  %tobool60 = icmp eq %struct.case_node* %18, null
-  br i1 %tobool60, label %lor.lhs.false, label %if.then71
+  %right59 = getelementptr inbounds %struct.case_node* %8, i64 0, i32 1, !dbg !4697
+  %18 = load %struct.case_node** %right59, align 8, !dbg !4697, !tbaa !2438
+  %tobool60 = icmp eq %struct.case_node* %18, null, !dbg !4697
+  br i1 %tobool60, label %lor.lhs.false, label %if.then71, !dbg !4697
 
 lor.lhs.false:                                    ; preds = %if.then57
-  %left62 = getelementptr inbounds %struct.case_node* %8, i64 0, i32 0
-  %19 = load %struct.case_node** %left62, align 8, !tbaa !0
-  %tobool63 = icmp eq %struct.case_node* %19, null
-  br i1 %tobool63, label %lor.lhs.false64, label %if.then71
+  %left62 = getelementptr inbounds %struct.case_node* %8, i64 0, i32 0, !dbg !4697
+  %19 = load %struct.case_node** %left62, align 8, !dbg !4697, !tbaa !2438
+  %tobool63 = icmp eq %struct.case_node* %19, null, !dbg !4697
+  br i1 %tobool63, label %lor.lhs.false64, label %if.then71, !dbg !4697
 
 lor.lhs.false64:                                  ; preds = %lor.lhs.false
-  %low66 = getelementptr inbounds %struct.case_node* %8, i64 0, i32 3
-  %20 = load %union.tree_node** %low66, align 8, !tbaa !0
-  %high68 = getelementptr inbounds %struct.case_node* %8, i64 0, i32 4
-  %21 = load %union.tree_node** %high68, align 8, !tbaa !0
-  %call69 = tail call i32 @tree_int_cst_equal(%union.tree_node* %20, %union.tree_node* %21) #7
-  %tobool70 = icmp eq i32 %call69, 0
-  br i1 %tobool70, label %if.then71, label %if.else80
+  %low66 = getelementptr inbounds %struct.case_node* %8, i64 0, i32 3, !dbg !4699
+  %20 = load %union.tree_node** %low66, align 8, !dbg !4699, !tbaa !2438
+  %high68 = getelementptr inbounds %struct.case_node* %8, i64 0, i32 4, !dbg !4699
+  %21 = load %union.tree_node** %high68, align 8, !dbg !4699, !tbaa !2438
+  %call69 = tail call i32 @tree_int_cst_equal(%union.tree_node* %20, %union.tree_node* %21) #8, !dbg !4699
+  %tobool70 = icmp eq i32 %call69, 0, !dbg !4699
+  br i1 %tobool70, label %if.then71, label %if.else80, !dbg !4699
 
 if.then71:                                        ; preds = %lor.lhs.false64, %lor.lhs.false, %if.then57
-  %call72 = tail call fastcc i32 @node_has_low_bound(%struct.case_node* %node.tr529, %union.tree_node* %index_type) #9
-  %tobool73 = icmp eq i32 %call72, 0
-  br i1 %tobool73, label %if.then74, label %tailrecurse.backedge
+  %call72 = tail call fastcc i32 @node_has_low_bound(%struct.case_node* %node.tr529, %union.tree_node* %index_type) #10, !dbg !4700
+  %tobool73 = icmp eq i32 %call72, 0, !dbg !4700
+  br i1 %tobool73, label %if.then74, label %tailrecurse.backedge, !dbg !4700
 
 if.then74:                                        ; preds = %if.then71
-  %22 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call76 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %22, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call77 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call76, i32 %bf.clear530) #7
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call77, i32 107, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #7
-  br label %tailrecurse.backedge
+  %22 = load %union.tree_node** %high, align 8, !dbg !4702, !tbaa !2438
+  %call76 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %22, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4702
+  %call77 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call76, i32 %bf.clear530) #8, !dbg !4702
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call77, i32 107, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #8, !dbg !4702
+  br label %tailrecurse.backedge, !dbg !4704
 
 if.else80:                                        ; preds = %lor.lhs.false64
-  %23 = load %struct.case_node** %right, align 8, !tbaa !0
-  %low82 = getelementptr inbounds %struct.case_node* %23, i64 0, i32 3
-  %24 = load %union.tree_node** %low82, align 8, !tbaa !0
-  %call83 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %24, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call84 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call83, i32 %bf.clear530) #7
-  %25 = load %struct.case_node** %right, align 8, !tbaa !0
-  %code_label86 = getelementptr inbounds %struct.case_node* %25, i64 0, i32 5
-  %26 = load %union.tree_node** %code_label86, align 8, !tbaa !0
-  %call87 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %26) #9
-  tail call fastcc void @do_jump_if_equal(%struct.rtx_def* %index, %struct.rtx_def* %call84, %struct.rtx_def* %call87, i32 %bf.clear530) #9
+  %23 = load %struct.case_node** %right, align 8, !dbg !4705, !tbaa !2438
+  %low82 = getelementptr inbounds %struct.case_node* %23, i64 0, i32 3, !dbg !4705
+  %24 = load %union.tree_node** %low82, align 8, !dbg !4705, !tbaa !2438
+  %call83 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %24, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4705
+  %call84 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call83, i32 %bf.clear530) #8, !dbg !4705
+  %25 = load %struct.case_node** %right, align 8, !dbg !4706, !tbaa !2438
+  %code_label86 = getelementptr inbounds %struct.case_node* %25, i64 0, i32 5, !dbg !4706
+  %26 = load %union.tree_node** %code_label86, align 8, !dbg !4706, !tbaa !2438
+  %call87 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %26) #10, !dbg !4706
+  tail call fastcc void @do_jump_if_equal(%struct.rtx_def* %index, %struct.rtx_def* %call84, %struct.rtx_def* %call87, i32 %bf.clear530) #10, !dbg !4706
   br label %if.end251
 
 land.lhs.true92:                                  ; preds = %if.then11
-  %left93 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 0
-  %cmp94 = icmp eq %struct.case_node* %.pre558, null
-  br i1 %cmp94, label %if.end251, label %if.then95
+  %left93 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 0, !dbg !4679
+  %cmp94 = icmp eq %struct.case_node* %.pre558, null, !dbg !4679
+  br i1 %cmp94, label %if.end251, label %if.then95, !dbg !4679
 
 if.then95:                                        ; preds = %land.lhs.true92
-  %left97 = getelementptr inbounds %struct.case_node* %.pre558, i64 0, i32 0
-  %27 = load %struct.case_node** %left97, align 8, !tbaa !0
-  %tobool98 = icmp eq %struct.case_node* %27, null
-  br i1 %tobool98, label %lor.lhs.false99, label %if.then110
+  %left97 = getelementptr inbounds %struct.case_node* %.pre558, i64 0, i32 0, !dbg !4707
+  %27 = load %struct.case_node** %left97, align 8, !dbg !4707, !tbaa !2438
+  %tobool98 = icmp eq %struct.case_node* %27, null, !dbg !4707
+  br i1 %tobool98, label %lor.lhs.false99, label %if.then110, !dbg !4707
 
 lor.lhs.false99:                                  ; preds = %if.then95
-  %right101 = getelementptr inbounds %struct.case_node* %.pre558, i64 0, i32 1
-  %28 = load %struct.case_node** %right101, align 8, !tbaa !0
-  %tobool102 = icmp eq %struct.case_node* %28, null
-  br i1 %tobool102, label %lor.lhs.false103, label %if.then110
+  %right101 = getelementptr inbounds %struct.case_node* %.pre558, i64 0, i32 1, !dbg !4707
+  %28 = load %struct.case_node** %right101, align 8, !dbg !4707, !tbaa !2438
+  %tobool102 = icmp eq %struct.case_node* %28, null, !dbg !4707
+  br i1 %tobool102, label %lor.lhs.false103, label %if.then110, !dbg !4707
 
 lor.lhs.false103:                                 ; preds = %lor.lhs.false99
-  %low105 = getelementptr inbounds %struct.case_node* %.pre558, i64 0, i32 3
-  %29 = load %union.tree_node** %low105, align 8, !tbaa !0
-  %high107 = getelementptr inbounds %struct.case_node* %.pre558, i64 0, i32 4
-  %30 = load %union.tree_node** %high107, align 8, !tbaa !0
-  %call108 = tail call i32 @tree_int_cst_equal(%union.tree_node* %29, %union.tree_node* %30) #7
-  %tobool109 = icmp eq i32 %call108, 0
-  br i1 %tobool109, label %if.then110, label %if.else119
+  %low105 = getelementptr inbounds %struct.case_node* %.pre558, i64 0, i32 3, !dbg !4709
+  %29 = load %union.tree_node** %low105, align 8, !dbg !4709, !tbaa !2438
+  %high107 = getelementptr inbounds %struct.case_node* %.pre558, i64 0, i32 4, !dbg !4709
+  %30 = load %union.tree_node** %high107, align 8, !dbg !4709, !tbaa !2438
+  %call108 = tail call i32 @tree_int_cst_equal(%union.tree_node* %29, %union.tree_node* %30) #8, !dbg !4709
+  %tobool109 = icmp eq i32 %call108, 0, !dbg !4709
+  br i1 %tobool109, label %if.then110, label %if.else119, !dbg !4709
 
 if.then110:                                       ; preds = %lor.lhs.false103, %lor.lhs.false99, %if.then95
-  %call111 = tail call fastcc i32 @node_has_high_bound(%struct.case_node* %node.tr529, %union.tree_node* %index_type) #9
-  %tobool112 = icmp eq i32 %call111, 0
-  br i1 %tobool112, label %if.then113, label %tailrecurse.backedge
+  %call111 = tail call fastcc i32 @node_has_high_bound(%struct.case_node* %node.tr529, %union.tree_node* %index_type) #10, !dbg !4710
+  %tobool112 = icmp eq i32 %call111, 0, !dbg !4710
+  br i1 %tobool112, label %if.then113, label %tailrecurse.backedge, !dbg !4710
 
 if.then113:                                       ; preds = %if.then110
-  %31 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call115 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %31, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call116 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call115, i32 %bf.clear530) #7
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call116, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #7
-  br label %tailrecurse.backedge
+  %31 = load %union.tree_node** %high, align 8, !dbg !4712, !tbaa !2438
+  %call115 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %31, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4712
+  %call116 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call115, i32 %bf.clear530) #8, !dbg !4712
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call116, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #8, !dbg !4712
+  br label %tailrecurse.backedge, !dbg !4714
 
 if.else119:                                       ; preds = %lor.lhs.false103
-  %32 = load %struct.case_node** %left93, align 8, !tbaa !0
-  %low121 = getelementptr inbounds %struct.case_node* %32, i64 0, i32 3
-  %33 = load %union.tree_node** %low121, align 8, !tbaa !0
-  %call122 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %33, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call123 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call122, i32 %bf.clear530) #7
-  %34 = load %struct.case_node** %left93, align 8, !tbaa !0
-  %code_label125 = getelementptr inbounds %struct.case_node* %34, i64 0, i32 5
-  %35 = load %union.tree_node** %code_label125, align 8, !tbaa !0
-  %call126 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %35) #9
-  tail call fastcc void @do_jump_if_equal(%struct.rtx_def* %index, %struct.rtx_def* %call123, %struct.rtx_def* %call126, i32 %bf.clear530) #9
+  %32 = load %struct.case_node** %left93, align 8, !dbg !4715, !tbaa !2438
+  %low121 = getelementptr inbounds %struct.case_node* %32, i64 0, i32 3, !dbg !4715
+  %33 = load %union.tree_node** %low121, align 8, !dbg !4715, !tbaa !2438
+  %call122 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %33, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4715
+  %call123 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call122, i32 %bf.clear530) #8, !dbg !4715
+  %34 = load %struct.case_node** %left93, align 8, !dbg !4716, !tbaa !2438
+  %code_label125 = getelementptr inbounds %struct.case_node* %34, i64 0, i32 5, !dbg !4716
+  %35 = load %union.tree_node** %code_label125, align 8, !dbg !4716, !tbaa !2438
+  %call126 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %35) #10, !dbg !4716
+  tail call fastcc void @do_jump_if_equal(%struct.rtx_def* %index, %struct.rtx_def* %call123, %struct.rtx_def* %call126, i32 %bf.clear530) #10, !dbg !4716
   br label %if.end251
 
 if.else131:                                       ; preds = %if.else
-  %right132 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 1
-  %36 = load %struct.case_node** %right132, align 8, !tbaa !0
-  %cmp133 = icmp eq %struct.case_node* %36, null
+  %right132 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 1, !dbg !4717
+  %36 = load %struct.case_node** %right132, align 8, !dbg !4717, !tbaa !2438
+  %cmp133 = icmp eq %struct.case_node* %36, null, !dbg !4717
   %left190.phi.trans.insert = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 0
-  %.pre = load %struct.case_node** %left190.phi.trans.insert, align 8, !tbaa !0
-  %phitmp = icmp eq %struct.case_node* %.pre, null
-  br i1 %cmp133, label %land.lhs.true189, label %land.lhs.true134
+  %.pre = load %struct.case_node** %left190.phi.trans.insert, align 8, !dbg !4718, !tbaa !2438
+  %phitmp = icmp eq %struct.case_node* %.pre, null, !dbg !4717
+  br i1 %cmp133, label %land.lhs.true189, label %land.lhs.true134, !dbg !4717
 
 land.lhs.true134:                                 ; preds = %if.else131
-  br i1 %phitmp, label %if.then172, label %if.then137
+  br i1 %phitmp, label %if.then172, label %if.then137, !dbg !4717
 
 if.then137:                                       ; preds = %land.lhs.true134
-  %call140 = tail call fastcc i32 @node_is_bounded(%struct.case_node* %36, %union.tree_node* %index_type) #9
-  %tobool141 = icmp eq i32 %call140, 0
-  br i1 %tobool141, label %if.else149, label %if.then142
+  tail call void @llvm.dbg.value(metadata !3816, i64 0, metadata !2029), !dbg !4719
+  %call140 = tail call fastcc i32 @node_is_bounded(%struct.case_node* %36, %union.tree_node* %index_type) #10, !dbg !4720
+  %tobool141 = icmp eq i32 %call140, 0, !dbg !4720
+  br i1 %tobool141, label %if.else149, label %if.then142, !dbg !4720
 
 if.then142:                                       ; preds = %if.then137
-  %37 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call144 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %37, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call145 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call144, i32 %bf.clear530) #7
-  %38 = load %struct.case_node** %right132, align 8, !tbaa !0
-  %code_label147 = getelementptr inbounds %struct.case_node* %38, i64 0, i32 5
-  %39 = load %union.tree_node** %code_label147, align 8, !tbaa !0
-  %call148 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %39) #9
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call145, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call148) #7
-  br label %if.end155
+  %37 = load %union.tree_node** %high, align 8, !dbg !4721, !tbaa !2438
+  %call144 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %37, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4721
+  %call145 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call144, i32 %bf.clear530) #8, !dbg !4721
+  %38 = load %struct.case_node** %right132, align 8, !dbg !4722, !tbaa !2438
+  %code_label147 = getelementptr inbounds %struct.case_node* %38, i64 0, i32 5, !dbg !4722
+  %39 = load %union.tree_node** %code_label147, align 8, !dbg !4722, !tbaa !2438
+  %call148 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %39) #10, !dbg !4722
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call145, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call148) #8, !dbg !4722
+  br label %if.end155, !dbg !4722
 
 if.else149:                                       ; preds = %if.then137
-  %call150 = tail call %union.tree_node* @build_decl(i32 31, %union.tree_node* null, %union.tree_node* null) #7
-  %40 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call152 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %40, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call153 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call152, i32 %bf.clear530) #7
-  %call154 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %call150) #9
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call153, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call154) #7
+  %call150 = tail call %union.tree_node* @build_decl(i32 31, %union.tree_node* null, %union.tree_node* null) #8, !dbg !4723
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call150}, i64 0, metadata !2029), !dbg !4723
+  %40 = load %union.tree_node** %high, align 8, !dbg !4725, !tbaa !2438
+  %call152 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %40, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4725
+  %call153 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call152, i32 %bf.clear530) #8, !dbg !4725
+  %call154 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %call150) #10, !dbg !4726
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call153, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call154) #8, !dbg !4726
   br label %if.end155
 
 if.end155:                                        ; preds = %if.else149, %if.then142
   %test_label138.0 = phi %union.tree_node* [ null, %if.then142 ], [ %call150, %if.else149 ]
-  %41 = load %union.tree_node** %low, align 8, !tbaa !0
-  %call157 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %41, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call158 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call157, i32 %bf.clear530) #7
-  %code_label159 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 5
-  %42 = load %union.tree_node** %code_label159, align 8, !tbaa !0
-  %call160 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %42) #9
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call158, i32 104, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call160) #7
-  %43 = load %struct.case_node** %left190.phi.trans.insert, align 8, !tbaa !0
-  tail call fastcc void @emit_case_nodes(%struct.rtx_def* %index, %struct.case_node* %43, %struct.rtx_def* %default_label, %union.tree_node* %index_type) #9
-  %tobool162 = icmp eq %union.tree_node* %test_label138.0, null
-  br i1 %tobool162, label %if.end251, label %if.then163
+  %41 = load %union.tree_node** %low, align 8, !dbg !4727, !tbaa !2438
+  %call157 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %41, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4727
+  %call158 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call157, i32 %bf.clear530) #8, !dbg !4727
+  %code_label159 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 5, !dbg !4728
+  %42 = load %union.tree_node** %code_label159, align 8, !dbg !4728, !tbaa !2438
+  %call160 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %42) #10, !dbg !4728
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call158, i32 104, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call160) #8, !dbg !4728
+  %43 = load %struct.case_node** %left190.phi.trans.insert, align 8, !dbg !4729, !tbaa !2438
+  tail call fastcc void @emit_case_nodes(%struct.rtx_def* %index, %struct.case_node* %43, %struct.rtx_def* %default_label, %union.tree_node* %index_type) #10, !dbg !4729
+  %tobool162 = icmp eq %union.tree_node* %test_label138.0, null, !dbg !4730
+  br i1 %tobool162, label %if.end251, label %if.then163, !dbg !4730
 
 if.then163:                                       ; preds = %if.end155
-  tail call fastcc void @emit_jump_if_reachable(%struct.rtx_def* %default_label) #9
-  tail call void @expand_label(%union.tree_node* %test_label138.0) #9
-  br label %tailrecurse.backedge
+  tail call fastcc void @emit_jump_if_reachable(%struct.rtx_def* %default_label) #10, !dbg !4731
+  tail call void @expand_label(%union.tree_node* %test_label138.0) #10, !dbg !4733
+  br label %tailrecurse.backedge, !dbg !4734
 
 tailrecurse.backedge:                             ; preds = %if.then113, %if.then110, %if.then74, %if.then71, %if.then163, %if.end199, %if.end179, %if.then34, %if.else42, %if.then22
   %node.tr.be.in = phi %struct.case_node** [ %right132, %if.then163 ], [ %left190, %if.end199 ], [ %right132, %if.end179 ], [ %right, %if.then34 ], [ %right, %if.else42 ], [ %left93.phi.trans.insert, %if.then22 ], [ %right, %if.then71 ], [ %right, %if.then74 ], [ %left93, %if.then110 ], [ %left93, %if.then113 ]
-  %node.tr.be = load %struct.case_node** %node.tr.be.in, align 8
-  %bf.load = load i32* %0, align 8
-  %bf.load1 = load i32* %1, align 8
-  %bf.load5 = load i32* %2, align 4
-  %call = tail call fastcc i32 @node_is_bounded(%struct.case_node* %node.tr.be, %union.tree_node* %index_type) #9
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.else, label %if.then
+  %node.tr.be = load %struct.case_node** %node.tr.be.in, align 8, !dbg !4734
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %index}, i64 0, metadata !2018), !dbg !4666
+  tail call void @llvm.dbg.value(metadata !{%struct.case_node* %node.tr529}, i64 0, metadata !2019), !dbg !4667
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %default_label}, i64 0, metadata !2020), !dbg !4668
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %index_type}, i64 0, metadata !2021), !dbg !4669
+  %bf.load = load i32* %0, align 8, !dbg !4670
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear530}, i64 0, metadata !2022), !dbg !4670
+  %bf.load1 = load i32* %1, align 8, !dbg !4671
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear3531}, i64 0, metadata !2023), !dbg !4671
+  %bf.load5 = load i32* %2, align 4, !dbg !4672
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear7532}, i64 0, metadata !2024), !dbg !4672
+  %call = tail call fastcc i32 @node_is_bounded(%struct.case_node* %node.tr.be, %union.tree_node* %index_type) #10, !dbg !4673
+  %tobool = icmp eq i32 %call, 0, !dbg !4673
+  br i1 %tobool, label %if.else, label %if.then, !dbg !4673
 
 if.then172:                                       ; preds = %land.lhs.true134
-  %call173 = tail call fastcc i32 @node_has_low_bound(%struct.case_node* %node.tr529, %union.tree_node* %index_type) #9
-  %tobool174 = icmp eq i32 %call173, 0
-  br i1 %tobool174, label %if.then175, label %if.end179
+  %call173 = tail call fastcc i32 @node_has_low_bound(%struct.case_node* %node.tr529, %union.tree_node* %index_type) #10, !dbg !4735
+  %tobool174 = icmp eq i32 %call173, 0, !dbg !4735
+  br i1 %tobool174, label %if.then175, label %if.end179, !dbg !4735
 
 if.then175:                                       ; preds = %if.then172
-  %44 = load %union.tree_node** %low, align 8, !tbaa !0
-  %call177 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %44, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call178 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call177, i32 %bf.clear530) #7
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call178, i32 107, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #7
-  br label %if.end179
+  %44 = load %union.tree_node** %low, align 8, !dbg !4737, !tbaa !2438
+  %call177 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %44, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4737
+  %call178 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call177, i32 %bf.clear530) #8, !dbg !4737
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call178, i32 107, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #8, !dbg !4737
+  br label %if.end179, !dbg !4739
 
 if.end179:                                        ; preds = %if.then172, %if.then175
-  %45 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call181 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %45, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call182 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call181, i32 %bf.clear530) #7
-  %code_label183 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 5
-  %46 = load %union.tree_node** %code_label183, align 8, !tbaa !0
-  %call184 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %46) #9
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call182, i32 106, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call184) #7
-  br label %tailrecurse.backedge
+  %45 = load %union.tree_node** %high, align 8, !dbg !4740, !tbaa !2438
+  %call181 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %45, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4740
+  %call182 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call181, i32 %bf.clear530) #8, !dbg !4740
+  %code_label183 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 5, !dbg !4741
+  %46 = load %union.tree_node** %code_label183, align 8, !dbg !4741, !tbaa !2438
+  %call184 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %46) #10, !dbg !4741
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call182, i32 106, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call184) #8, !dbg !4741
+  br label %tailrecurse.backedge, !dbg !4742
 
 land.lhs.true189:                                 ; preds = %if.else131
-  %left190 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 0
-  %call207 = tail call fastcc i32 @node_has_high_bound(%struct.case_node* %node.tr529, %union.tree_node* %index_type) #9
-  br i1 %phitmp, label %if.else206, label %if.then192
+  %left190 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 0, !dbg !4718
+  %call207 = tail call fastcc i32 @node_has_high_bound(%struct.case_node* %node.tr529, %union.tree_node* %index_type) #10, !dbg !4743
+  br i1 %phitmp, label %if.else206, label %if.then192, !dbg !4718
 
 if.then192:                                       ; preds = %land.lhs.true189
-  %tobool194 = icmp eq i32 %call207, 0
-  br i1 %tobool194, label %if.then195, label %if.end199
+  %tobool194 = icmp eq i32 %call207, 0, !dbg !4744
+  br i1 %tobool194, label %if.then195, label %if.end199, !dbg !4744
 
 if.then195:                                       ; preds = %if.then192
-  %47 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call197 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %47, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call198 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call197, i32 %bf.clear530) #7
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call198, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #7
-  br label %if.end199
+  %47 = load %union.tree_node** %high, align 8, !dbg !4746, !tbaa !2438
+  %call197 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %47, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4746
+  %call198 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call197, i32 %bf.clear530) #8, !dbg !4746
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call198, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #8, !dbg !4746
+  br label %if.end199, !dbg !4748
 
 if.end199:                                        ; preds = %if.then192, %if.then195
-  %48 = load %union.tree_node** %low, align 8, !tbaa !0
-  %call201 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %48, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call202 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call201, i32 %bf.clear530) #7
-  %code_label203 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 5
-  %49 = load %union.tree_node** %code_label203, align 8, !tbaa !0
-  %call204 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %49) #9
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call202, i32 104, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call204) #7
-  br label %tailrecurse.backedge
+  %48 = load %union.tree_node** %low, align 8, !dbg !4749, !tbaa !2438
+  %call201 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %48, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4749
+  %call202 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call201, i32 %bf.clear530) #8, !dbg !4749
+  %code_label203 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 5, !dbg !4750
+  %49 = load %union.tree_node** %code_label203, align 8, !dbg !4750, !tbaa !2438
+  %call204 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %49) #10, !dbg !4750
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call202, i32 104, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %call204) #8, !dbg !4750
+  br label %tailrecurse.backedge, !dbg !4751
 
 if.else206:                                       ; preds = %land.lhs.true189
-  %call208 = tail call fastcc i32 @node_has_low_bound(%struct.case_node* %node.tr529, %union.tree_node* %index_type) #9
-  %tobool209 = icmp ne i32 %call207, 0
-  %tobool211 = icmp eq i32 %call208, 0
-  %or.cond = or i1 %tobool209, %tobool211
-  br i1 %or.cond, label %if.else216, label %if.then212
+  tail call void @llvm.dbg.value(metadata !{i32 %call207}, i64 0, metadata !2032), !dbg !4743
+  %call208 = tail call fastcc i32 @node_has_low_bound(%struct.case_node* %node.tr529, %union.tree_node* %index_type) #10, !dbg !4752
+  tail call void @llvm.dbg.value(metadata !{i32 %call208}, i64 0, metadata !2034), !dbg !4752
+  %tobool209 = icmp ne i32 %call207, 0, !dbg !4753
+  %tobool211 = icmp eq i32 %call208, 0, !dbg !4753
+  %or.cond = or i1 %tobool209, %tobool211, !dbg !4753
+  br i1 %or.cond, label %if.else216, label %if.then212, !dbg !4753
 
 if.then212:                                       ; preds = %if.else206
-  %50 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call214 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %50, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call215 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call214, i32 %bf.clear530) #7
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call215, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #7
-  br label %if.end244
+  %50 = load %union.tree_node** %high, align 8, !dbg !4754, !tbaa !2438
+  %call214 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %50, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4754
+  %call215 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call214, i32 %bf.clear530) #8, !dbg !4754
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call215, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #8, !dbg !4754
+  br label %if.end244, !dbg !4756
 
 if.else216:                                       ; preds = %if.else206
-  %tobool217 = icmp ne i32 %call208, 0
-  %tobool209.not = xor i1 %tobool209, true
-  %brmerge = or i1 %tobool217, %tobool209.not
-  br i1 %brmerge, label %if.else224, label %if.then220
+  %tobool217 = icmp ne i32 %call208, 0, !dbg !4757
+  %tobool209.not = xor i1 %tobool209, true, !dbg !4757
+  %brmerge = or i1 %tobool217, %tobool209.not, !dbg !4757
+  br i1 %brmerge, label %if.else224, label %if.then220, !dbg !4757
 
 if.then220:                                       ; preds = %if.else216
-  %51 = load %union.tree_node** %low, align 8, !tbaa !0
-  %call222 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %51, %struct.rtx_def* null, i32 0, i32 0) #7
-  %call223 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call222, i32 %bf.clear530) #7
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call223, i32 107, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #7
-  br label %if.end244
+  %51 = load %union.tree_node** %low, align 8, !dbg !4758, !tbaa !2438
+  %call222 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %51, %struct.rtx_def* null, i32 0, i32 0) #8, !dbg !4758
+  %call223 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear3531, i32 %bf.clear7532, %struct.rtx_def* %call222, i32 %bf.clear530) #8, !dbg !4758
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %index, %struct.rtx_def* %call223, i32 107, %struct.rtx_def* null, i32 %bf.clear3531, i32 %bf.clear530, %struct.rtx_def* %default_label) #8, !dbg !4758
+  br label %if.end244, !dbg !4760
 
 if.else224:                                       ; preds = %if.else216
-  %52 = or i32 %call208, %call207
-  %53 = icmp eq i32 %52, 0
-  br i1 %53, label %if.then228, label %if.end244
+  %52 = or i32 %call208, %call207, !dbg !4761
+  %53 = icmp eq i32 %52, 0, !dbg !4761
+  br i1 %53, label %if.then228, label %if.end244, !dbg !4761
 
 if.then228:                                       ; preds = %if.else224
-  %call230 = tail call %union.tree_node* @type_for_mode(i32 %bf.clear3531, i32 %bf.clear530) #7
-  %54 = load %union.tree_node** %low, align 8, !tbaa !0
-  %call233 = tail call %union.tree_node* @build1(i32 114, %union.tree_node* %call230, %union.tree_node* %54) #7
-  %55 = load %union.tree_node** %high, align 8, !tbaa !0
-  %call236 = tail call %union.tree_node* @build1(i32 114, %union.tree_node* %call230, %union.tree_node* %55) #7
-  %call237 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %call233, %struct.rtx_def* null, i32 %bf.clear3531, i32 0) #7
-  %call238 = tail call %struct.rtx_def* @expand_simple_binop(i32 %bf.clear3531, i32 76, %struct.rtx_def* %index, %struct.rtx_def* %call237, %struct.rtx_def* null, i32 %bf.clear530, i32 2) #7
-  %call239 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 60, %union.tree_node* %call230, %union.tree_node* %call236, %union.tree_node* %call233) #7
-  %call240 = tail call %union.tree_node* @fold(%union.tree_node* %call239) #7
-  %call241 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %call240, %struct.rtx_def* null, i32 %bf.clear3531, i32 0) #7
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %call238, %struct.rtx_def* %call241, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 1, %struct.rtx_def* %default_label) #7
-  br label %if.end244
+  %call230 = tail call %union.tree_node* @type_for_mode(i32 %bf.clear3531, i32 %bf.clear530) #8, !dbg !4762
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call230}, i64 0, metadata !2035), !dbg !4762
+  %54 = load %union.tree_node** %low, align 8, !dbg !4763, !tbaa !2438
+  %call233 = tail call %union.tree_node* @build1(i32 114, %union.tree_node* %call230, %union.tree_node* %54) #8, !dbg !4763
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call233}, i64 0, metadata !2037), !dbg !4763
+  %55 = load %union.tree_node** %high, align 8, !dbg !4764, !tbaa !2438
+  %call236 = tail call %union.tree_node* @build1(i32 114, %union.tree_node* %call230, %union.tree_node* %55) #8, !dbg !4764
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call236}, i64 0, metadata !2038), !dbg !4764
+  %call237 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %call233, %struct.rtx_def* null, i32 %bf.clear3531, i32 0) #8, !dbg !4765
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call237}, i64 0, metadata !2039), !dbg !4765
+  %call238 = tail call %struct.rtx_def* @expand_simple_binop(i32 %bf.clear3531, i32 76, %struct.rtx_def* %index, %struct.rtx_def* %call237, %struct.rtx_def* null, i32 %bf.clear530, i32 2) #8, !dbg !4766
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call238}, i64 0, metadata !2040), !dbg !4766
+  %call239 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 60, %union.tree_node* %call230, %union.tree_node* %call236, %union.tree_node* %call233) #8, !dbg !4767
+  %call240 = tail call %union.tree_node* @fold(%union.tree_node* %call239) #8, !dbg !4767
+  %call241 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %call240, %struct.rtx_def* null, i32 %bf.clear3531, i32 0) #8, !dbg !4767
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call241}, i64 0, metadata !2041), !dbg !4767
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %call238, %struct.rtx_def* %call241, i32 105, %struct.rtx_def* null, i32 %bf.clear3531, i32 1, %struct.rtx_def* %default_label) #8, !dbg !4768
+  br label %if.end244, !dbg !4769
 
 if.end244:                                        ; preds = %if.else224, %if.then220, %if.then228, %if.then212
-  %code_label245 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 5
-  %56 = load %union.tree_node** %code_label245, align 8, !tbaa !0
-  %call246 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %56) #9
-  tail call void @emit_jump(%struct.rtx_def* %call246) #9
+  %code_label245 = getelementptr inbounds %struct.case_node* %node.tr529, i64 0, i32 5, !dbg !4770
+  %56 = load %union.tree_node** %code_label245, align 8, !dbg !4770, !tbaa !2438
+  %call246 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %56) #10, !dbg !4770
+  tail call void @emit_jump(%struct.rtx_def* %call246) #10, !dbg !4770
   br label %if.end251
 
 if.end251:                                        ; preds = %land.lhs.true92, %if.end155, %if.else80, %if.else119, %if.end244, %if.then
-  ret void
+  ret void, !dbg !4771
 }

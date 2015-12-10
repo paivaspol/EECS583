@@ -1,35 +1,36 @@
 define i32 @FrontMtx_nLowerBlocks(%struct._FrontMtx* %frontmtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !266, metadata !284), !dbg !692
-  %1 = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !693
-  br i1 %1, label %2, label %5, !dbg !695
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !270), !dbg !482
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !483
+  br i1 %cmp, label %if.then, label %if.end, !dbg !483
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !696, !tbaa !291
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([55 x i8]* @.str17, i64 0, i64 0), %struct._FrontMtx* null) #6, !dbg !698
-  tail call void @exit(i32 -1) #7, !dbg !699
-  unreachable, !dbg !699
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !484, !tbaa !288
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str17, i64 0, i64 0), %struct._FrontMtx* null) #6, !dbg !484
+  tail call void @exit(i32 -1) #7, !dbg !486
+  unreachable, !dbg !486
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6, !dbg !700
-  %7 = load i32* %6, align 4, !dbg !700, !tbaa !527
-  %8 = icmp eq i32 %7, 1, !dbg !700
-  br i1 %8, label %9, label %12, !dbg !702
+if.end:                                           ; preds = %entry
+  %dataMode = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6, !dbg !487
+  %1 = load i32* %dataMode, align 4, !dbg !487, !tbaa !293
+  %cmp1 = icmp eq i32 %1, 1, !dbg !487
+  br i1 %cmp1, label %if.then2, label %if.end4, !dbg !487
 
-; <label>:9                                       ; preds = %5
-  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !703, !tbaa !291
-  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([65 x i8]* @.str18, i64 0, i64 0), i64 64, i64 1, %struct.__sFILE* %10), !dbg !705
-  tail call void @exit(i32 -1) #7, !dbg !706
-  unreachable, !dbg !706
+if.then2:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !488, !tbaa !288
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([65 x i8]* @.str18, i64 0, i64 0), i64 64, i64 1, %struct._IO_FILE* %2), !dbg !488
+  tail call void @exit(i32 -1) #7, !dbg !490
+  unreachable, !dbg !490
 
-; <label>:12                                      ; preds = %5
-  %13 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !707
-  %14 = load i32* %13, align 4, !dbg !707, !tbaa !349
-  %15 = icmp eq i32 %14, 2, !dbg !707
-  %16 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 16, !dbg !709
-  %17 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 17, !dbg !711
-  %.pn.in = select i1 %15, %struct._IVL** %16, %struct._IVL** %17, !dbg !713
-  %.pn = load %struct._IVL** %.pn.in, align 8, !dbg !709
-  %nblocks.0.in = getelementptr inbounds %struct._IVL* %.pn, i64 0, i32 3, !dbg !714
-  %nblocks.0 = load i32* %nblocks.0.in, align 4, !dbg !714
-  ret i32 %nblocks.0, !dbg !715
+if.end4:                                          ; preds = %if.end
+  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !491
+  %4 = load i32* %symmetryflag, align 4, !dbg !491, !tbaa !293
+  %cmp5 = icmp eq i32 %4, 2, !dbg !491
+  %lowerblockIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 16, !dbg !492
+  %upperblockIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 17, !dbg !494
+  %.pn.in = select i1 %cmp5, %struct._IVL** %lowerblockIVL, %struct._IVL** %upperblockIVL, !dbg !491
+  %.pn = load %struct._IVL** %.pn.in, align 8, !dbg !492
+  %nblocks.0.in = getelementptr inbounds %struct._IVL* %.pn, i64 0, i32 3, !dbg !492
+  %nblocks.0 = load i32* %nblocks.0.in, align 4, !dbg !492
+  ret i32 %nblocks.0, !dbg !496
 }

@@ -1,0 +1,48 @@
+define i64 @_ZNK10xalanc_1_815StringTokenizer11countTokensEv(%"class.xalanc_1_8::StringTokenizer"* nocapture %this) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::StringTokenizer"* %this}, i64 0, metadata !1543), !dbg !2269
+  tail call void @llvm.dbg.value(metadata !2073, i64 0, metadata !1544), !dbg !2270
+  %m_currentIndex = getelementptr inbounds %"class.xalanc_1_8::StringTokenizer"* %this, i64 0, i32 3, !dbg !2271
+  %0 = load i32* %m_currentIndex, align 4, !dbg !2271, !tbaa !2108
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !1545), !dbg !2271
+  %m_stringLength = getelementptr inbounds %"class.xalanc_1_8::StringTokenizer"* %this, i64 0, i32 4, !dbg !2272
+  %1 = load i32* %m_stringLength, align 4, !dbg !2272, !tbaa !2108
+  %cmp = icmp ult i32 %0, %1, !dbg !2272
+  br i1 %cmp, label %while.body.lr.ph, label %if.end10, !dbg !2272
+
+while.body.lr.ph:                                 ; preds = %entry
+  %m_returnTokens = getelementptr inbounds %"class.xalanc_1_8::StringTokenizer"* %this, i64 0, i32 2, !dbg !2273
+  br label %while.body, !dbg !2275
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %theCount.020 = phi i64 [ 0, %while.body.lr.ph ], [ %theCount.0.be, %while.cond.backedge ]
+  %theCurrentIndex.019 = phi i32 [ %0, %while.body.lr.ph ], [ %theCurrentIndex.0.be, %while.cond.backedge ]
+  %call = tail call i32 @_ZNK10xalanc_1_815StringTokenizer22FindNextDelimiterIndexEj(%"class.xalanc_1_8::StringTokenizer"* %this, i32 %theCurrentIndex.019) #9, !dbg !2276
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1546), !dbg !2276
+  %cmp4 = icmp eq i32 %call, %theCurrentIndex.019, !dbg !2277
+  br i1 %cmp4, label %if.then5, label %if.else, !dbg !2277
+
+if.then5:                                         ; preds = %while.body
+  %add = add i32 %theCurrentIndex.019, 1, !dbg !2278
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !1545), !dbg !2278
+  %2 = load i8* %m_returnTokens, align 1, !dbg !2273, !tbaa !2107, !range !2279
+  %inc = zext i8 %2 to i64, !dbg !2273
+  %theCount.0.inc = add i64 %inc, %theCount.020, !dbg !2273
+  br label %while.cond.backedge, !dbg !2273
+
+if.else:                                          ; preds = %while.body
+  %inc8 = add i64 %theCount.020, 1, !dbg !2280
+  tail call void @llvm.dbg.value(metadata !{i64 %inc8}, i64 0, metadata !1544), !dbg !2280
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1545), !dbg !2282
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.else, %if.then5
+  %theCurrentIndex.0.be = phi i32 [ %call, %if.else ], [ %add, %if.then5 ]
+  %theCount.0.be = phi i64 [ %inc8, %if.else ], [ %theCount.0.inc, %if.then5 ]
+  %cmp3 = icmp ult i32 %theCurrentIndex.0.be, %1, !dbg !2275
+  br i1 %cmp3, label %while.body, label %if.end10, !dbg !2275
+
+if.end10:                                         ; preds = %while.cond.backedge, %entry
+  %theCount.1 = phi i64 [ 0, %entry ], [ %theCount.0.be, %while.cond.backedge ]
+  ret i64 %theCount.1, !dbg !2283
+}

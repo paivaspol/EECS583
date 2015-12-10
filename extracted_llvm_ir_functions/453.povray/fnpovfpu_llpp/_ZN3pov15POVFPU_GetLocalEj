@@ -1,20 +1,21 @@
-define double @_ZN3pov15POVFPU_GetLocalEj(i32 %k) #4 {
-  tail call void @llvm.dbg.value(metadata i32 %k, i64 0, metadata !514, metadata !1171), !dbg !1375
-  %1 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !1376, !tbaa !1183
-  %2 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %1, i64 0, i32 3, !dbg !1378
-  %3 = load i32* %2, align 4, !dbg !1378, !tbaa !1209
-  %4 = icmp ugt i32 %3, %k, !dbg !1379
-  br i1 %4, label %5, label %11, !dbg !1380
+define double @_ZN3pov15POVFPU_GetLocalEj(i32 %k) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !171), !dbg !600
+  %0 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !601, !tbaa !493
+  %maxdblstacksize = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %0, i64 0, i32 3, !dbg !601
+  %1 = load i32* %maxdblstacksize, align 4, !dbg !601, !tbaa !498
+  %cmp = icmp ugt i32 %1, %k, !dbg !601
+  br i1 %cmp, label %if.end, label %return, !dbg !601
 
-; <label>:5                                       ; preds = %0
-  %6 = zext i32 %k to i64, !dbg !1381
-  %7 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %1, i64 0, i32 2, !dbg !1382
-  %8 = load double** %7, align 8, !dbg !1382, !tbaa !1213
-  %9 = getelementptr inbounds double* %8, i64 %6, !dbg !1381
-  %10 = load double* %9, align 8, !dbg !1381, !tbaa !1235
-  br label %11, !dbg !1383
+if.end:                                           ; preds = %entry
+  %idxprom = zext i32 %k to i64, !dbg !602
+  %dblstackbase = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %0, i64 0, i32 2, !dbg !602
+  %2 = load double** %dblstackbase, align 8, !dbg !602, !tbaa !493
+  %arrayidx = getelementptr inbounds double* %2, i64 %idxprom, !dbg !602
+  %3 = load double* %arrayidx, align 8, !dbg !602, !tbaa !521
+  br label %return, !dbg !602
 
-; <label>:11                                      ; preds = %0, %5
-  %.0 = phi double [ %10, %5 ], [ 0.000000e+00, %0 ]
-  ret double %.0, !dbg !1384
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi double [ %3, %if.end ], [ 0.000000e+00, %entry ]
+  ret double %retval.0, !dbg !603
 }

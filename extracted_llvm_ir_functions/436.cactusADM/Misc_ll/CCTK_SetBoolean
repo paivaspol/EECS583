@@ -1,27 +1,28 @@
 define i32 @CCTK_SetBoolean(i32* nocapture %data, i8* %value) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %data, i64 0, metadata !186, metadata !252), !dbg !670
-  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !187, metadata !252), !dbg !671
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !188, metadata !252), !dbg !672
-  %1 = tail call i32 (i8*, i32, ...)* @Util_InList(i8* %value, i32 5, i8* getelementptr inbounds ([5 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str13, i64 0, i64 0)) #8, !dbg !673
-  %2 = icmp eq i32 %1, 0, !dbg !673
-  br i1 %2, label %4, label %3, !dbg !675
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %data}, i64 0, metadata !181), !dbg !476
+  tail call void @llvm.dbg.value(metadata !{i8* %value}, i64 0, metadata !182), !dbg !476
+  tail call void @llvm.dbg.value(metadata !246, i64 0, metadata !183), !dbg !477
+  %call = tail call i32 (i8*, i32, ...)* @Util_InList(i8* %value, i32 5, i8* getelementptr inbounds ([5 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str13, i64 0, i64 0)) #8, !dbg !478
+  %tobool = icmp eq i32 %call, 0, !dbg !478
+  br i1 %tobool, label %if.else, label %if.then, !dbg !478
 
-; <label>:3                                       ; preds = %0
-  store i32 1, i32* %data, align 4, !dbg !676, !tbaa !590
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !188, metadata !252), !dbg !672
-  br label %8, !dbg !678
+if.then:                                          ; preds = %entry
+  store i32 1, i32* %data, align 4, !dbg !479, !tbaa !307
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !183), !dbg !481
+  br label %if.end6, !dbg !482
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 (i8*, i32, ...)* @Util_InList(i8* %value, i32 5, i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str18, i64 0, i64 0)) #8, !dbg !679
-  %6 = icmp eq i32 %5, 0, !dbg !679
-  br i1 %6, label %8, label %7, !dbg !681
+if.else:                                          ; preds = %entry
+  %call2 = tail call i32 (i8*, i32, ...)* @Util_InList(i8* %value, i32 5, i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str18, i64 0, i64 0)) #8, !dbg !483
+  %tobool3 = icmp eq i32 %call2, 0, !dbg !483
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !483
 
-; <label>:7                                       ; preds = %4
-  store i32 0, i32* %data, align 4, !dbg !682, !tbaa !590
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !188, metadata !252), !dbg !672
-  br label %8, !dbg !684
+if.then4:                                         ; preds = %if.else
+  store i32 0, i32* %data, align 4, !dbg !484, !tbaa !307
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !183), !dbg !486
+  br label %if.end6, !dbg !487
 
-; <label>:8                                       ; preds = %4, %7, %3
-  %retval.0 = phi i32 [ 0, %3 ], [ 0, %7 ], [ -1, %4 ]
-  ret i32 %retval.0, !dbg !685
+if.end6:                                          ; preds = %if.else, %if.then4, %if.then
+  %retval1.0 = phi i32 [ 0, %if.then ], [ 0, %if.then4 ], [ -1, %if.else ]
+  ret i32 %retval1.0, !dbg !488
 }

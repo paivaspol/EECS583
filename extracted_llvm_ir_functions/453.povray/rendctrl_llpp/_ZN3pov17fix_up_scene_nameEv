@@ -1,99 +1,97 @@
 define void @_ZN3pov17fix_up_scene_nameEv() #0 {
+entry:
   %temp = alloca [1024 x i8], align 16
-  %1 = getelementptr inbounds [1024 x i8]* %temp, i64 0, i64 0, !dbg !2610
-  call void @llvm.lifetime.start(i64 1024, i8* %1) #3, !dbg !2610
-  tail call void @llvm.dbg.declare(metadata [1024 x i8]* %temp, metadata !1294, metadata !1892), !dbg !2611
-  %2 = tail call i64 @strlen(i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 6, i64 0)) #6, !dbg !2612
-  %3 = add i64 %2, 4294967295, !dbg !2614
-  %4 = trunc i64 %3 to i32, !dbg !2612
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !1293, metadata !1892), !dbg !2615
-  %5 = icmp slt i32 %4, 1, !dbg !2616
-  br i1 %5, label %6, label %.lr.ph5, !dbg !2617
+  %0 = getelementptr inbounds [1024 x i8]* %temp, i64 0, i64 0, !dbg !1753
+  call void @llvm.lifetime.start(i64 1024, i8* %0) #4, !dbg !1753
+  call void @llvm.dbg.declare(metadata !{[1024 x i8]* %temp}, metadata !98), !dbg !1753
+  %call = call i64 @strlen(i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 6, i64 0)) #10, !dbg !1754
+  %sub = add i64 %call, 4294967295, !dbg !1754
+  %conv = trunc i64 %sub to i32, !dbg !1754
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !97), !dbg !1754
+  %cmp = icmp slt i32 %conv, 1, !dbg !1754
+  br i1 %cmp, label %if.then, label %for.body.lr.ph, !dbg !1754
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i8* @strcpy(i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 10, i64 0), i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 6, i64 0)) #6, !dbg !2618
-  br label %43, !dbg !2620
+if.then:                                          ; preds = %entry
+  %call1 = call i8* @strcpy(i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 10, i64 0), i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 6, i64 0)) #8, !dbg !1755
+  br label %cleanup, !dbg !1757
 
-.lr.ph5:                                          ; preds = %0
-  %8 = call i8* @strcpy(i8* %1, i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 6, i64 0)) #6, !dbg !2621
-  call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !1292, metadata !1892), !dbg !2622
-  %sext13 = shl i64 %3, 32
-  %9 = ashr exact i64 %sext13, 32
-  br label %10, !dbg !2623
+for.body.lr.ph:                                   ; preds = %entry
+  %call2 = call i8* @strcpy(i8* %0, i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 6, i64 0)) #8, !dbg !1758
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !96), !dbg !1759
+  %sext58 = shl i64 %sub, 32
+  %1 = ashr exact i64 %sext58, 32
+  br label %for.body, !dbg !1759
 
-; <label>:10                                      ; preds = %.lr.ph5, %14
-  %indvars.iv11 = phi i64 [ %9, %.lr.ph5 ], [ %indvars.iv.next12, %14 ]
-  %11 = getelementptr inbounds [1024 x i8]* %temp, i64 0, i64 %indvars.iv11, !dbg !2625
-  %12 = load i8* %11, align 1, !dbg !2625, !tbaa !2026
-  switch i8 %12, label %14 [
-    i8 47, label %.loopexit
-    i8 46, label %13
-  ], !dbg !2629
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv56 = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next57, %for.inc ]
+  %arrayidx = getelementptr inbounds [1024 x i8]* %temp, i64 0, i64 %indvars.iv56, !dbg !1761
+  %2 = load i8* %arrayidx, align 1, !dbg !1761, !tbaa !1406
+  switch i8 %2, label %for.inc [
+    i8 47, label %for.end
+    i8 46, label %if.then12
+  ], !dbg !1761
 
-; <label>:13                                      ; preds = %10
-  store i8 0, i8* %11, align 1, !dbg !2630, !tbaa !2026
-  br label %.loopexit, !dbg !2633
+if.then12:                                        ; preds = %for.body
+  store i8 0, i8* %arrayidx, align 1, !dbg !1763, !tbaa !1406
+  br label %for.end, !dbg !1765
 
-; <label>:14                                      ; preds = %10
-  %indvars.iv.next12 = add nsw i64 %indvars.iv11, -1, !dbg !2623
-  %15 = icmp sgt i64 %indvars.iv11, 1, !dbg !2634
-  br i1 %15, label %10, label %.loopexit, !dbg !2623
+for.inc:                                          ; preds = %for.body
+  %indvars.iv.next57 = add i64 %indvars.iv56, -1, !dbg !1759
+  %3 = trunc i64 %indvars.iv.next57 to i32, !dbg !1759
+  %cmp3 = icmp sgt i32 %3, 0, !dbg !1759
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !1759
 
-.loopexit:                                        ; preds = %14, %10, %13
-  %16 = call i64 @strlen(i8* %1) #6, !dbg !2635
-  %17 = add i64 %16, 4294967295, !dbg !2636
-  %18 = trunc i64 %17 to i32, !dbg !2635
-  call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !1292, metadata !1892), !dbg !2622
-  %19 = icmp sgt i32 %18, 0, !dbg !2637
-  br i1 %19, label %.lr.ph, label %.critedge, !dbg !2638
+for.end:                                          ; preds = %for.body, %for.inc, %if.then12
+  %call17 = call i64 @strlen(i8* %0) #10, !dbg !1766
+  %sub18 = add i64 %call17, 4294967295, !dbg !1766
+  %conv19 = trunc i64 %sub18 to i32, !dbg !1766
+  call void @llvm.dbg.value(metadata !{i32 %conv19}, i64 0, metadata !96), !dbg !1766
+  %cmp2048 = icmp sgt i32 %conv19, 0, !dbg !1767
+  br i1 %cmp2048, label %land.rhs.lr.ph, label %while.end, !dbg !1767
 
-.lr.ph:                                           ; preds = %.loopexit
-  %sext = shl i64 %17, 32
-  %20 = ashr exact i64 %sext, 32
-  br label %21, !dbg !2638
+land.rhs.lr.ph:                                   ; preds = %for.end
+  %sext = shl i64 %sub18, 32
+  %4 = ashr exact i64 %sext, 32
+  br label %land.rhs, !dbg !1767
 
-; <label>:21                                      ; preds = %.lr.ph, %25
-  %indvars.iv = phi i64 [ %20, %.lr.ph ], [ %indvars.iv.next, %25 ]
-  %22 = getelementptr inbounds [1024 x i8]* %temp, i64 0, i64 %indvars.iv, !dbg !2639
-  %23 = load i8* %22, align 1, !dbg !2639, !tbaa !2026
-  %24 = icmp eq i8 %23, 47, !dbg !2640
-  br i1 %24, label %..critedge_crit_edge, label %25, !dbg !2641
+while.cond:                                       ; preds = %land.rhs
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !1767
+  %cmp20 = icmp sgt i32 %5, 0, !dbg !1767
+  br i1 %cmp20, label %land.rhs, label %while.end, !dbg !1767
 
-; <label>:25                                      ; preds = %21
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !2638
-  %26 = icmp sgt i64 %indvars.iv, 1, !dbg !2637
-  br i1 %26, label %21, label %..critedge_crit_edge2, !dbg !2638
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %while.cond
+  %indvars.iv = phi i64 [ %4, %land.rhs.lr.ph ], [ %indvars.iv.next, %while.cond ]
+  %i.149 = phi i32 [ %conv19, %land.rhs.lr.ph ], [ %dec25, %while.cond ]
+  %arrayidx22 = getelementptr inbounds [1024 x i8]* %temp, i64 0, i64 %indvars.iv, !dbg !1767
+  %6 = load i8* %arrayidx22, align 1, !dbg !1767, !tbaa !1406
+  %cmp24 = icmp eq i8 %6, 47, !dbg !1767
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !1767
+  %dec25 = add nsw i32 %i.149, -1, !dbg !1768
+  call void @llvm.dbg.value(metadata !{i32 %dec25}, i64 0, metadata !96), !dbg !1768
+  br i1 %cmp24, label %while.end, label %while.cond
 
-..critedge_crit_edge:                             ; preds = %21
-  %27 = trunc i64 %indvars.iv to i32, !dbg !2641
-  br label %.critedge, !dbg !2641
+while.end:                                        ; preds = %while.cond, %land.rhs, %for.end
+  %i.1.lcssa = phi i32 [ %conv19, %for.end ], [ %i.149, %land.rhs ], [ %dec25, %while.cond ]
+  %idxprom26 = sext i32 %i.1.lcssa to i64, !dbg !1769
+  %arrayidx27 = getelementptr inbounds [1024 x i8]* %temp, i64 0, i64 %idxprom26, !dbg !1769
+  %7 = load i8* %arrayidx27, align 1, !dbg !1769, !tbaa !1406
+  %cmp29 = icmp eq i8 %7, 47, !dbg !1769
+  %inc = zext i1 %cmp29 to i32, !dbg !1769
+  %inc.i.1 = add nsw i32 %inc, %i.1.lcssa, !dbg !1769
+  %idxprom32 = sext i32 %inc.i.1 to i64, !dbg !1770
+  %arrayidx33 = getelementptr inbounds [1024 x i8]* %temp, i64 0, i64 %idxprom32, !dbg !1770
+  %call34 = call i8* @strcpy(i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 10, i64 0), i8* %arrayidx33) #8, !dbg !1770
+  %8 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !1771, !tbaa !1405
+  %cmp35 = icmp sgt i32 %8, 361, !dbg !1771
+  br i1 %cmp35, label %if.then36, label %cleanup, !dbg !1771
 
-..critedge_crit_edge2:                            ; preds = %25
-  %28 = trunc i64 %indvars.iv.next to i32, !dbg !2638
-  br label %.critedge, !dbg !2638
+if.then36:                                        ; preds = %while.end
+  %conv37 = sitofp i32 %8 to double, !dbg !1772
+  %div = fdiv double %conv37, 1.000000e+02, !dbg !1772
+  %call38 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([55 x i8]* @.str25, i64 0, i64 0), double %div) #7, !dbg !1772
+  br label %cleanup, !dbg !1774
 
-.critedge:                                        ; preds = %..critedge_crit_edge2, %..critedge_crit_edge, %.loopexit
-  %i.1.lcssa = phi i32 [ %27, %..critedge_crit_edge ], [ %28, %..critedge_crit_edge2 ], [ %18, %.loopexit ]
-  %29 = sext i32 %i.1.lcssa to i64, !dbg !2642
-  %30 = getelementptr inbounds [1024 x i8]* %temp, i64 0, i64 %29, !dbg !2642
-  %31 = load i8* %30, align 1, !dbg !2642, !tbaa !2026
-  %32 = icmp eq i8 %31, 47, !dbg !2644
-  %33 = zext i1 %32 to i32, !dbg !2645
-  %.i.1 = add nsw i32 %33, %i.1.lcssa, !dbg !2645
-  %34 = sext i32 %.i.1 to i64, !dbg !2646
-  %35 = getelementptr inbounds [1024 x i8]* %temp, i64 0, i64 %34, !dbg !2646
-  %36 = call i8* @strcpy(i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 10, i64 0), i8* %35) #6, !dbg !2647
-  %37 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !2648, !tbaa !2650
-  %38 = icmp sgt i32 %37, 361, !dbg !2651
-  br i1 %38, label %39, label %43, !dbg !2652
-
-; <label>:39                                      ; preds = %.critedge
-  %40 = sitofp i32 %37 to double, !dbg !2653
-  %41 = fdiv double %40, 1.000000e+02, !dbg !2655
-  %42 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([55 x i8]* @.str25, i64 0, i64 0), double %41) #6, !dbg !2656
-  br label %43, !dbg !2657
-
-; <label>:43                                      ; preds = %.critedge, %39, %6
-  call void @llvm.lifetime.end(i64 1024, i8* %1) #3, !dbg !2658
-  ret void, !dbg !2658
+cleanup:                                          ; preds = %while.end, %if.then36, %if.then
+  call void @llvm.lifetime.end(i64 1024, i8* %0) #4, !dbg !1775
+  ret void, !dbg !1776
 }

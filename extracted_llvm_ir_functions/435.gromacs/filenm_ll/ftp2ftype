@@ -1,25 +1,34 @@
-define i8* @ftp2ftype(i32 %ftp) #4 {
-  tail call void @llvm.dbg.value(metadata i32 %ftp, i64 0, metadata !147, metadata !382), !dbg !452
-  %1 = icmp ult i32 %ftp, 46, !dbg !453
-  br i1 %1, label %2, label %9, !dbg !453
+define i8* @ftp2ftype(i32 %ftp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %ftp}, i64 0, metadata !75), !dbg !378
+  %0 = icmp ult i32 %ftp, 46, !dbg !379
+  br i1 %0, label %if.then, label %return, !dbg !379
 
-; <label>:2                                       ; preds = %0
-  %3 = sext i32 %ftp to i64, !dbg !455
-  %4 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %3, i32 0, !dbg !457
-  %5 = load i32* %4, align 8, !dbg !457, !tbaa !458
-  %6 = icmp ult i32 %5, 4, !dbg !459
-  br i1 %6, label %switch.lookup, label %7, !dbg !459
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %ftp to i64, !dbg !380
+  %ftype = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %idxprom, i32 0, !dbg !380
+  %1 = load i32* %ftype, align 8, !dbg !380, !tbaa !382
+  switch i32 %1, label %sw.default [
+    i32 0, label %return
+    i32 1, label %sw.bb2
+    i32 2, label %sw.bb3
+    i32 3, label %sw.bb4
+  ], !dbg !380
 
-; <label>:7                                       ; preds = %2
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([49 x i8]* @.str8, i64 0, i64 0), i32 %5) #9, !dbg !460
-  br label %9, !dbg !462
+sw.bb2:                                           ; preds = %if.then
+  br label %return, !dbg !383
 
-switch.lookup:                                    ; preds = %2
-  %8 = sext i32 %5 to i64, !dbg !459
-  %switch.gep = getelementptr inbounds [4 x i8*]* @switch.table, i64 0, i64 %8, !dbg !459
-  %switch.load = load i8** %switch.gep, align 8, !dbg !459
-  ret i8* %switch.load, !dbg !459
+sw.bb3:                                           ; preds = %if.then
+  br label %return, !dbg !385
 
-; <label>:9                                       ; preds = %0, %7
-  ret i8* getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), !dbg !463
+sw.bb4:                                           ; preds = %if.then
+  br label %return, !dbg !386
+
+sw.default:                                       ; preds = %if.then
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([49 x i8]* @.str8, i64 0, i64 0), i32 %1) #7, !dbg !387
+  br label %return, !dbg !388
+
+return:                                           ; preds = %entry, %sw.default, %if.then, %sw.bb4, %sw.bb3, %sw.bb2
+  %retval.0 = phi i8* [ getelementptr inbounds ([1 x i8]* @.str7, i64 0, i64 0), %sw.bb4 ], [ getelementptr inbounds ([13 x i8]* @.str6, i64 0, i64 0), %sw.bb3 ], [ getelementptr inbounds ([7 x i8]* @.str5, i64 0, i64 0), %sw.bb2 ], [ getelementptr inbounds ([6 x i8]* @.str4, i64 0, i64 0), %if.then ], [ getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), %sw.default ], [ getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), %entry ]
+  ret i8* %retval.0, !dbg !389
 }

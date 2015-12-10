@@ -1,37 +1,38 @@
 define noalias %struct._MSMDinfo* @MSMDinfo_new() #0 {
-  %1 = tail call i8* @malloc(i64 64) #6, !dbg !140
-  tail call void @llvm.dbg.value(metadata %struct._MSMDinfo* %7, i64 0, metadata !110, metadata !144), !dbg !145
-  %2 = icmp eq i8* %1, null, !dbg !140
-  br i1 %2, label %3, label %6, !dbg !146
+entry:
+  %call = tail call noalias i8* @malloc(i64 64) #6, !dbg !128
+  tail call void @llvm.dbg.value(metadata !{%struct._MSMDinfo* %1}, i64 0, metadata !102), !dbg !128
+  %cmp = icmp eq i8* %call, null, !dbg !128
+  br i1 %cmp, label %if.then, label %if.end, !dbg !128
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !147, !tbaa !149
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 64, i32 21, i8* getelementptr inbounds ([91 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !147
-  tail call void @exit(i32 -1) #7, !dbg !147
-  unreachable, !dbg !147
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !130, !tbaa !132
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 64, i32 21, i8* getelementptr inbounds ([79 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !130
+  tail call void @exit(i32 -1) #7, !dbg !130
+  unreachable, !dbg !130
 
-; <label>:6                                       ; preds = %0
-  %7 = bitcast i8* %1 to %struct._MSMDinfo*, !dbg !140
-  tail call void @llvm.dbg.value(metadata %struct._MSMDinfo* %7, i64 0, metadata !115, metadata !144) #5, !dbg !153
-  %8 = bitcast i8* %1 to i32*, !dbg !155
-  store i32 1, i32* %8, align 4, !dbg !156, !tbaa !157
-  %9 = getelementptr inbounds i8* %1, i64 4, !dbg !161
-  %10 = bitcast i8* %9 to i32*, !dbg !161
-  store i32 1, i32* %10, align 4, !dbg !162, !tbaa !163
-  %11 = getelementptr inbounds i8* %1, i64 8, !dbg !164
-  %12 = bitcast i8* %11 to double*, !dbg !164
-  store double 1.000000e+00, double* %12, align 8, !dbg !165, !tbaa !166
-  %13 = getelementptr inbounds i8* %1, i64 16, !dbg !167
-  %14 = bitcast i8* %13 to i32*, !dbg !167
-  store i32 0, i32* %14, align 4, !dbg !168, !tbaa !169
-  %15 = getelementptr inbounds i8* %1, i64 20, !dbg !170
-  %16 = bitcast i8* %15 to i32*, !dbg !170
-  store i32 0, i32* %16, align 4, !dbg !171, !tbaa !172
-  %17 = load i64* bitcast (%struct.__sFILE** @__stdoutp to i64*), align 8, !dbg !173, !tbaa !149
-  %18 = getelementptr inbounds i8* %1, i64 24, !dbg !174
-  %19 = bitcast i8* %18 to i64*, !dbg !175
-  store i64 %17, i64* %19, align 8, !dbg !175, !tbaa !176
-  %20 = getelementptr inbounds i8* %1, i64 32, !dbg !177
-  tail call void @llvm.memset.p0i8.i64(i8* %20, i8 0, i64 32, i32 4, i1 false) #5, !dbg !178
-  ret %struct._MSMDinfo* %7, !dbg !179
+if.end:                                           ; preds = %entry
+  %1 = bitcast i8* %call to %struct._MSMDinfo*, !dbg !128
+  tail call void @llvm.dbg.value(metadata !{%struct._MSMDinfo* %1}, i64 0, metadata !135) #5, !dbg !137
+  %compressFlag.i = bitcast i8* %call to i32*, !dbg !138
+  store i32 1, i32* %compressFlag.i, align 4, !dbg !138, !tbaa !139
+  %prioType.i = getelementptr inbounds i8* %call, i64 4, !dbg !140
+  %2 = bitcast i8* %prioType.i to i32*, !dbg !140
+  store i32 1, i32* %2, align 4, !dbg !140, !tbaa !139
+  %stepType.i = getelementptr inbounds i8* %call, i64 8, !dbg !141
+  %3 = bitcast i8* %stepType.i to double*, !dbg !141
+  store double 1.000000e+00, double* %3, align 8, !dbg !141, !tbaa !142
+  %seed.i = getelementptr inbounds i8* %call, i64 16, !dbg !143
+  %4 = bitcast i8* %seed.i to i32*, !dbg !143
+  store i32 0, i32* %4, align 4, !dbg !143, !tbaa !139
+  %msglvl.i = getelementptr inbounds i8* %call, i64 20, !dbg !144
+  %5 = bitcast i8* %msglvl.i to i32*, !dbg !144
+  store i32 0, i32* %5, align 4, !dbg !144, !tbaa !139
+  %6 = load %struct._IO_FILE** @stdout, align 8, !dbg !145, !tbaa !132
+  %msgFile.i = getelementptr inbounds i8* %call, i64 24, !dbg !145
+  %7 = bitcast i8* %msgFile.i to %struct._IO_FILE**, !dbg !145
+  store %struct._IO_FILE* %6, %struct._IO_FILE** %7, align 8, !dbg !145, !tbaa !132
+  %maxnbytes.i = getelementptr inbounds i8* %call, i64 32, !dbg !146
+  tail call void @llvm.memset.p0i8.i64(i8* %maxnbytes.i, i8 0, i64 32, i32 4, i1 false) #5, !dbg !147
+  ret %struct._MSMDinfo* %1, !dbg !148
 }

@@ -1,16 +1,18 @@
 define internal fastcc i32 @node_is_bounded(%struct.case_node* nocapture %node, %union.tree_node* nocapture %index_type) #0 {
 entry:
-  %call = tail call fastcc i32 @node_has_low_bound(%struct.case_node* %node, %union.tree_node* %index_type) #9
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %land.end, label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%struct.case_node* %node}, i64 0, metadata !2066), !dbg !4783
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %index_type}, i64 0, metadata !2067), !dbg !4784
+  %call = tail call fastcc i32 @node_has_low_bound(%struct.case_node* %node, %union.tree_node* %index_type) #10, !dbg !4785
+  %tobool = icmp eq i32 %call, 0, !dbg !4785
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !4785
 
 land.rhs:                                         ; preds = %entry
-  %call1 = tail call fastcc i32 @node_has_high_bound(%struct.case_node* %node, %union.tree_node* %index_type) #9
-  %tobool2 = icmp ne i32 %call1, 0
+  %call1 = tail call fastcc i32 @node_has_high_bound(%struct.case_node* %node, %union.tree_node* %index_type) #10, !dbg !4786
+  %tobool2 = icmp ne i32 %call1, 0, !dbg !4786
   br label %land.end
 
 land.end:                                         ; preds = %entry, %land.rhs
   %0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ]
   %land.ext = zext i1 %0 to i32
-  ret i32 %land.ext
+  ret i32 %land.ext, !dbg !4787
 }

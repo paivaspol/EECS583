@@ -1,46 +1,52 @@
-define internal i32 @discard_useless_values(i8** %x, i8* nocapture %info) #1 {
+define internal i32 @discard_useless_values(i8** %x, i8* nocapture %info) #2 {
 entry:
-  %0 = load i8** %x, align 8, !tbaa !0
-  %locs = getelementptr inbounds i8* %0, i64 16
-  %1 = bitcast i8* %locs to %struct.elt_loc_list**
-  %2 = load %struct.elt_loc_list** %1, align 8, !tbaa !0
-  %cmp = icmp eq %struct.elt_loc_list* %2, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8** %x}, i64 0, metadata !548), !dbg !1402
+  tail call void @llvm.dbg.value(metadata !{i8* %info}, i64 0, metadata !549), !dbg !1403
+  %0 = load i8** %x, align 8, !dbg !1404, !tbaa !897
+  tail call void @llvm.dbg.value(metadata !{%struct.cselib_val_struct* %3}, i64 0, metadata !550), !dbg !1404
+  %locs = getelementptr inbounds i8* %0, i64 16, !dbg !1405
+  %1 = bitcast i8* %locs to %struct.elt_loc_list**, !dbg !1405
+  %2 = load %struct.elt_loc_list** %1, align 8, !dbg !1405, !tbaa !897
+  %cmp = icmp eq %struct.elt_loc_list* %2, null, !dbg !1405
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1405
 
 if.then:                                          ; preds = %entry
-  %3 = bitcast i8* %0 to %struct.cselib_val_struct*
-  %4 = load %struct.htab** @hash_table, align 8, !tbaa !0
-  tail call void @htab_clear_slot(%struct.htab* %4, i8** %x) #10
-  %addr_list.i = getelementptr inbounds i8* %0, i64 24
-  %5 = bitcast i8* %addr_list.i to %struct.elt_list**
-  %6 = load %struct.elt_list** %5, align 8, !tbaa !0
-  %tobool5.i = icmp eq %struct.elt_list* %6, null
-  br i1 %tobool5.i, label %unchain_one_value.exit, label %while.body.i
+  %3 = bitcast i8* %0 to %struct.cselib_val_struct*, !dbg !1404
+  %4 = load %struct.htab** @hash_table, align 8, !dbg !1406, !tbaa !897
+  tail call void @htab_clear_slot(%struct.htab* %4, i8** %x) #11, !dbg !1406
+  tail call void @llvm.dbg.value(metadata !{%struct.cselib_val_struct* %3}, i64 0, metadata !1408), !dbg !1410
+  %addr_list.i = getelementptr inbounds i8* %0, i64 24, !dbg !1411
+  %5 = bitcast i8* %addr_list.i to %struct.elt_list**, !dbg !1411
+  %6 = load %struct.elt_list** %5, align 8, !dbg !1411, !tbaa !897
+  %tobool5.i = icmp eq %struct.elt_list* %6, null, !dbg !1411
+  br i1 %tobool5.i, label %unchain_one_value.exit, label %while.body.i, !dbg !1411
 
 while.body.i:                                     ; preds = %if.then, %while.body.i
   %7 = phi %struct.elt_list* [ %10, %while.body.i ], [ %6, %if.then ]
-  %next.i.i = getelementptr inbounds %struct.elt_list* %7, i64 0, i32 0
-  %8 = load %struct.elt_list** %next.i.i, align 8, !tbaa !0
-  store %struct.elt_list* %8, %struct.elt_list** %5, align 8, !tbaa !0
-  %9 = load %struct.elt_list** @empty_elt_lists, align 8, !tbaa !0
-  store %struct.elt_list* %9, %struct.elt_list** %next.i.i, align 8, !tbaa !0
-  store %struct.elt_list* %7, %struct.elt_list** @empty_elt_lists, align 8, !tbaa !0
-  %10 = load %struct.elt_list** %5, align 8, !tbaa !0
-  %tobool.i = icmp eq %struct.elt_list* %10, null
-  br i1 %tobool.i, label %unchain_one_value.exit, label %while.body.i
+  tail call void @llvm.dbg.value(metadata !{%struct.elt_list** %5}, i64 0, metadata !1412), !dbg !1414
+  tail call void @llvm.dbg.value(metadata !{%struct.elt_list* %7}, i64 0, metadata !1415), !dbg !1416
+  %next.i.i = getelementptr inbounds %struct.elt_list* %7, i64 0, i32 0, !dbg !1417
+  %8 = load %struct.elt_list** %next.i.i, align 8, !dbg !1417, !tbaa !897
+  store %struct.elt_list* %8, %struct.elt_list** %5, align 8, !dbg !1417, !tbaa !897
+  %9 = load %struct.elt_list** @empty_elt_lists, align 8, !dbg !1418, !tbaa !897
+  store %struct.elt_list* %9, %struct.elt_list** %next.i.i, align 8, !dbg !1418, !tbaa !897
+  store %struct.elt_list* %7, %struct.elt_list** @empty_elt_lists, align 8, !dbg !1419, !tbaa !897
+  %10 = load %struct.elt_list** %5, align 8, !dbg !1411, !tbaa !897
+  %tobool.i = icmp eq %struct.elt_list* %10, null, !dbg !1411
+  br i1 %tobool.i, label %unchain_one_value.exit, label %while.body.i, !dbg !1411
 
 unchain_one_value.exit:                           ; preds = %while.body.i, %if.then
-  %11 = load %struct.cselib_val_struct** @empty_vals, align 8, !tbaa !0
-  %12 = getelementptr inbounds i8* %0, i64 8
-  %13 = bitcast i8* %12 to %struct.rtx_def**
-  %.c.i = bitcast %struct.cselib_val_struct* %11 to %struct.rtx_def*
-  store %struct.rtx_def* %.c.i, %struct.rtx_def** %13, align 8, !tbaa !0
-  store %struct.cselib_val_struct* %3, %struct.cselib_val_struct** @empty_vals, align 8, !tbaa !0
-  %14 = load i32* @n_useless_values, align 4, !tbaa !3
-  %dec = add nsw i32 %14, -1
-  store i32 %dec, i32* @n_useless_values, align 4, !tbaa !3
-  br label %if.end
+  %11 = load %struct.cselib_val_struct** @empty_vals, align 8, !dbg !1420, !tbaa !897
+  %12 = getelementptr inbounds i8* %0, i64 8, !dbg !1420
+  %13 = bitcast i8* %12 to %struct.rtx_def**, !dbg !1420
+  %.c.i = bitcast %struct.cselib_val_struct* %11 to %struct.rtx_def*, !dbg !1420
+  store %struct.rtx_def* %.c.i, %struct.rtx_def** %13, align 8, !dbg !1420, !tbaa !897
+  store %struct.cselib_val_struct* %3, %struct.cselib_val_struct** @empty_vals, align 8, !dbg !1421, !tbaa !897
+  %14 = load i32* @n_useless_values, align 4, !dbg !1422, !tbaa !907
+  %dec = add nsw i32 %14, -1, !dbg !1422
+  store i32 %dec, i32* @n_useless_values, align 4, !dbg !1422, !tbaa !907
+  br label %if.end, !dbg !1423
 
 if.end:                                           ; preds = %unchain_one_value.exit, %entry
-  ret i32 1
+  ret i32 1, !dbg !1424
 }

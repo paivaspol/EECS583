@@ -1,64 +1,74 @@
 define internal fastcc %struct.rtx_def* @mask_rtx(i32 %mode, i32 %bitpos, i32 %bitsize, i32 %complement) #0 {
 entry:
-  %cmp = icmp slt i32 %bitpos, 64
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2158), !dbg !4050
+  tail call void @llvm.dbg.value(metadata !{i32 %bitpos}, i64 0, metadata !2159), !dbg !4051
+  tail call void @llvm.dbg.value(metadata !{i32 %bitsize}, i64 0, metadata !2160), !dbg !4051
+  tail call void @llvm.dbg.value(metadata !{i32 %complement}, i64 0, metadata !2161), !dbg !4051
+  %cmp = icmp slt i32 %bitpos, 64, !dbg !4052
+  br i1 %cmp, label %if.then, label %if.end, !dbg !4052
 
 if.then:                                          ; preds = %entry
-  %sh_prom = zext i32 %bitpos to i64
-  %shl = shl i64 -1, %sh_prom
-  br label %if.end
+  %sh_prom = zext i32 %bitpos to i64, !dbg !4053
+  %shl = shl i64 -1, %sh_prom, !dbg !4053
+  tail call void @llvm.dbg.value(metadata !{i64 %shl}, i64 0, metadata !2162), !dbg !4053
+  br label %if.end, !dbg !4053
 
 if.end:                                           ; preds = %entry, %if.then
   %masklow.0 = phi i64 [ %shl, %if.then ], [ 0, %entry ]
-  %add = add nsw i32 %bitsize, %bitpos
-  %cmp1 = icmp slt i32 %add, 64
-  br i1 %cmp1, label %if.then2, label %if.end5
+  %add = add nsw i32 %bitsize, %bitpos, !dbg !4054
+  %cmp1 = icmp slt i32 %add, 64, !dbg !4054
+  br i1 %cmp1, label %if.then2, label %if.end5, !dbg !4054
 
 if.then2:                                         ; preds = %if.end
-  %sub = sub i32 64, %bitpos
-  %sub3 = sub i32 %sub, %bitsize
-  %sh_prom4 = zext i32 %sub3 to i64
-  %shr = lshr i64 -1, %sh_prom4
-  %and = and i64 %masklow.0, %shr
-  br label %if.end5
+  %sub = sub i32 64, %bitpos, !dbg !4055
+  %sub3 = sub i32 %sub, %bitsize, !dbg !4055
+  %sh_prom4 = zext i32 %sub3 to i64, !dbg !4055
+  %shr = lshr i64 -1, %sh_prom4, !dbg !4055
+  %and = and i64 %masklow.0, %shr, !dbg !4055
+  tail call void @llvm.dbg.value(metadata !{i64 %and}, i64 0, metadata !2162), !dbg !4055
+  br label %if.end5, !dbg !4055
 
 if.end5:                                          ; preds = %if.then2, %if.end
   %masklow.1 = phi i64 [ %and, %if.then2 ], [ %masklow.0, %if.end ]
-  %cmp6 = icmp slt i32 %bitpos, 65
-  br i1 %cmp6, label %if.end12, label %if.else8
+  %cmp6 = icmp slt i32 %bitpos, 65, !dbg !4056
+  br i1 %cmp6, label %if.end12, label %if.else8, !dbg !4056
 
 if.else8:                                         ; preds = %if.end5
-  %sub9 = add nsw i32 %bitpos, -64
-  %sh_prom10 = zext i32 %sub9 to i64
-  %shl11 = shl i64 -1, %sh_prom10
+  %sub9 = add nsw i32 %bitpos, -64, !dbg !4057
+  %sh_prom10 = zext i32 %sub9 to i64, !dbg !4057
+  %shl11 = shl i64 -1, %sh_prom10, !dbg !4057
+  tail call void @llvm.dbg.value(metadata !{i64 %shl11}, i64 0, metadata !2163), !dbg !4057
   br label %if.end12
 
 if.end12:                                         ; preds = %if.end5, %if.else8
   %maskhigh.0 = phi i64 [ %shl11, %if.else8 ], [ -1, %if.end5 ]
-  %cmp14 = icmp sgt i32 %add, 64
-  br i1 %cmp14, label %if.then15, label %if.end22
+  %cmp14 = icmp sgt i32 %add, 64, !dbg !4058
+  br i1 %cmp14, label %if.then15, label %if.end22, !dbg !4058
 
 if.then15:                                        ; preds = %if.end12
-  %sub16 = sub i32 128, %bitpos
-  %sub17 = sub i32 %sub16, %bitsize
-  %sh_prom18 = zext i32 %sub17 to i64
-  %shr19 = lshr i64 -1, %sh_prom18
-  %and20 = and i64 %maskhigh.0, %shr19
-  br label %if.end22
+  %sub16 = sub i32 128, %bitpos, !dbg !4059
+  %sub17 = sub i32 %sub16, %bitsize, !dbg !4059
+  %sh_prom18 = zext i32 %sub17 to i64, !dbg !4059
+  %shr19 = lshr i64 -1, %sh_prom18, !dbg !4059
+  %and20 = and i64 %maskhigh.0, %shr19, !dbg !4059
+  tail call void @llvm.dbg.value(metadata !{i64 %and20}, i64 0, metadata !2163), !dbg !4059
+  br label %if.end22, !dbg !4059
 
 if.end22:                                         ; preds = %if.end12, %if.then15
   %maskhigh.1 = phi i64 [ %and20, %if.then15 ], [ 0, %if.end12 ]
-  %tobool = icmp eq i32 %complement, 0
-  br i1 %tobool, label %if.end25, label %if.then23
+  %tobool = icmp eq i32 %complement, 0, !dbg !4060
+  br i1 %tobool, label %if.end25, label %if.then23, !dbg !4060
 
 if.then23:                                        ; preds = %if.end22
-  %neg = xor i64 %maskhigh.1, -1
-  %neg24 = xor i64 %masklow.1, -1
-  br label %if.end25
+  %neg = xor i64 %maskhigh.1, -1, !dbg !4061
+  tail call void @llvm.dbg.value(metadata !{i64 %neg}, i64 0, metadata !2163), !dbg !4061
+  %neg24 = xor i64 %masklow.1, -1, !dbg !4063
+  tail call void @llvm.dbg.value(metadata !{i64 %neg24}, i64 0, metadata !2162), !dbg !4063
+  br label %if.end25, !dbg !4064
 
 if.end25:                                         ; preds = %if.end22, %if.then23
   %masklow.2 = phi i64 [ %neg24, %if.then23 ], [ %masklow.1, %if.end22 ]
   %maskhigh.2 = phi i64 [ %neg, %if.then23 ], [ %maskhigh.1, %if.end22 ]
-  %call = tail call %struct.rtx_def* @immed_double_const(i64 %masklow.2, i64 %maskhigh.2, i32 %mode) #4
-  ret %struct.rtx_def* %call
+  %call = tail call %struct.rtx_def* @immed_double_const(i64 %masklow.2, i64 %maskhigh.2, i32 %mode) #5, !dbg !4065
+  ret %struct.rtx_def* %call, !dbg !4065
 }

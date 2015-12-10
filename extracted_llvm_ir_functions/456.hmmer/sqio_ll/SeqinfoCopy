@@ -1,154 +1,161 @@
-define void @SeqinfoCopy(%struct.seqinfo_s* %sq1, %struct.seqinfo_s* %sq2) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.seqinfo_s* %sq1, i64 0, metadata !312, metadata !624), !dbg !1117
-  tail call void @llvm.dbg.value(metadata %struct.seqinfo_s* %sq2, i64 0, metadata !313, metadata !624), !dbg !1118
-  %1 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 0, !dbg !1119
-  %2 = load i32* %1, align 4, !dbg !1119, !tbaa !957
-  %3 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 0, !dbg !1120
-  store i32 %2, i32* %3, align 4, !dbg !1121, !tbaa !957
-  %4 = load i32* %1, align 4, !dbg !1122, !tbaa !957
-  %5 = and i32 %4, 1, !dbg !1124
-  %6 = icmp eq i32 %5, 0, !dbg !1124
-  br i1 %6, label %12, label %7, !dbg !1125
+define void @SeqinfoCopy(%struct.seqinfo_s* %sq1, %struct.seqinfo_s* nocapture %sq2) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.seqinfo_s* %sq1}, i64 0, metadata !317), !dbg !776
+  tail call void @llvm.dbg.value(metadata !{%struct.seqinfo_s* %sq2}, i64 0, metadata !318), !dbg !776
+  %flags = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 0, !dbg !777
+  %0 = load i32* %flags, align 4, !dbg !777, !tbaa !600
+  %flags1 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 0, !dbg !777
+  store i32 %0, i32* %flags1, align 4, !dbg !777, !tbaa !600
+  %1 = load i32* %flags, align 4, !dbg !778, !tbaa !600
+  %and = and i32 %1, 1, !dbg !778
+  %tobool = icmp eq i32 %and, 0, !dbg !778
+  br i1 %tobool, label %if.end, label %if.then, !dbg !778
 
-; <label>:7                                       ; preds = %0
-  %8 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 1, i64 0, !dbg !1126
-  %9 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 1, i64 0, !dbg !1126
-  %10 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %8, i1 false), !dbg !1126
-  %11 = tail call i8* @__strcpy_chk(i8* %8, i8* %9, i64 %10) #8, !dbg !1126
-  %.pre = load i32* %1, align 4, !dbg !1127, !tbaa !957
-  br label %12, !dbg !1126
+if.then:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 1, i64 0, !dbg !778
+  %arraydecay4 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 1, i64 0, !dbg !778
+  %call = tail call i8* @strcpy(i8* %arraydecay, i8* %arraydecay4) #9, !dbg !778
+  %.pre = load i32* %flags, align 4, !dbg !779, !tbaa !600
+  br label %if.end, !dbg !778
 
-; <label>:12                                      ; preds = %0, %7
-  %13 = phi i32 [ %4, %0 ], [ %.pre, %7 ]
-  %14 = and i32 %13, 2, !dbg !1129
-  %15 = icmp eq i32 %14, 0, !dbg !1129
-  br i1 %15, label %21, label %16, !dbg !1130
+if.end:                                           ; preds = %entry, %if.then
+  %2 = phi i32 [ %1, %entry ], [ %.pre, %if.then ]
+  %and6 = and i32 %2, 2, !dbg !779
+  %tobool7 = icmp eq i32 %and6, 0, !dbg !779
+  br i1 %tobool7, label %if.end13, label %if.then8, !dbg !779
 
-; <label>:16                                      ; preds = %12
-  %17 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 2, i64 0, !dbg !1131
-  %18 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 2, i64 0, !dbg !1131
-  %19 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %17, i1 false), !dbg !1131
-  %20 = tail call i8* @__strcpy_chk(i8* %17, i8* %18, i64 %19) #8, !dbg !1131
-  %.pre1 = load i32* %1, align 4, !dbg !1132, !tbaa !957
-  br label %21, !dbg !1131
+if.then8:                                         ; preds = %if.end
+  %arraydecay9 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 2, i64 0, !dbg !779
+  %arraydecay11 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 2, i64 0, !dbg !779
+  %call12 = tail call i8* @strcpy(i8* %arraydecay9, i8* %arraydecay11) #9, !dbg !779
+  %.pre109 = load i32* %flags, align 4, !dbg !780, !tbaa !600
+  br label %if.end13, !dbg !779
 
-; <label>:21                                      ; preds = %12, %16
-  %22 = phi i32 [ %13, %12 ], [ %.pre1, %16 ]
-  %23 = and i32 %22, 4, !dbg !1134
-  %24 = icmp eq i32 %23, 0, !dbg !1134
-  br i1 %24, label %30, label %25, !dbg !1135
+if.end13:                                         ; preds = %if.end, %if.then8
+  %3 = phi i32 [ %2, %if.end ], [ %.pre109, %if.then8 ]
+  %and15 = and i32 %3, 4, !dbg !780
+  %tobool16 = icmp eq i32 %and15, 0, !dbg !780
+  br i1 %tobool16, label %if.end22, label %if.then17, !dbg !780
 
-; <label>:25                                      ; preds = %21
-  %26 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 3, i64 0, !dbg !1136
-  %27 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 3, i64 0, !dbg !1136
-  %28 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %26, i1 false), !dbg !1136
-  %29 = tail call i8* @__strcpy_chk(i8* %26, i8* %27, i64 %28) #8, !dbg !1136
-  %.pre2 = load i32* %1, align 4, !dbg !1137, !tbaa !957
-  br label %30, !dbg !1136
+if.then17:                                        ; preds = %if.end13
+  %arraydecay18 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 3, i64 0, !dbg !780
+  %arraydecay20 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 3, i64 0, !dbg !780
+  %call21 = tail call i8* @strcpy(i8* %arraydecay18, i8* %arraydecay20) #9, !dbg !780
+  %.pre110 = load i32* %flags, align 4, !dbg !781, !tbaa !600
+  br label %if.end22, !dbg !780
 
-; <label>:30                                      ; preds = %21, %25
-  %31 = phi i32 [ %22, %21 ], [ %.pre2, %25 ]
-  %32 = and i32 %31, 8, !dbg !1139
-  %33 = icmp eq i32 %32, 0, !dbg !1139
-  br i1 %33, label %39, label %34, !dbg !1140
+if.end22:                                         ; preds = %if.end13, %if.then17
+  %4 = phi i32 [ %3, %if.end13 ], [ %.pre110, %if.then17 ]
+  %and24 = and i32 %4, 8, !dbg !781
+  %tobool25 = icmp eq i32 %and24, 0, !dbg !781
+  br i1 %tobool25, label %if.end31, label %if.then26, !dbg !781
 
-; <label>:34                                      ; preds = %30
-  %35 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 4, i64 0, !dbg !1141
-  %36 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 4, i64 0, !dbg !1141
-  %37 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %35, i1 false), !dbg !1141
-  %38 = tail call i8* @__strcpy_chk(i8* %35, i8* %36, i64 %37) #8, !dbg !1141
-  %.pre3 = load i32* %1, align 4, !dbg !1142, !tbaa !957
-  br label %39, !dbg !1141
+if.then26:                                        ; preds = %if.end22
+  %arraydecay27 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 4, i64 0, !dbg !781
+  %arraydecay29 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 4, i64 0, !dbg !781
+  %call30 = tail call i8* @strcpy(i8* %arraydecay27, i8* %arraydecay29) #9, !dbg !781
+  %.pre111 = load i32* %flags, align 4, !dbg !782, !tbaa !600
+  br label %if.end31, !dbg !781
 
-; <label>:39                                      ; preds = %30, %34
-  %40 = phi i32 [ %31, %30 ], [ %.pre3, %34 ]
-  %41 = and i32 %40, 64, !dbg !1144
-  %42 = icmp eq i32 %41, 0, !dbg !1144
-  br i1 %42, label %47, label %43, !dbg !1145
+if.end31:                                         ; preds = %if.end22, %if.then26
+  %5 = phi i32 [ %4, %if.end22 ], [ %.pre111, %if.then26 ]
+  %and33 = and i32 %5, 64, !dbg !782
+  %tobool34 = icmp eq i32 %and33, 0, !dbg !782
+  br i1 %tobool34, label %if.end37, label %if.then35, !dbg !782
 
-; <label>:43                                      ; preds = %39
-  %44 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 5, !dbg !1146
-  %45 = load i32* %44, align 4, !dbg !1146, !tbaa !1147
-  %46 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 5, !dbg !1148
-  store i32 %45, i32* %46, align 4, !dbg !1149, !tbaa !1147
-  br label %47, !dbg !1150
+if.then35:                                        ; preds = %if.end31
+  %len = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 5, !dbg !782
+  %6 = load i32* %len, align 4, !dbg !782, !tbaa !600
+  %len36 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 5, !dbg !782
+  store i32 %6, i32* %len36, align 4, !dbg !782, !tbaa !600
+  %.pre112 = load i32* %flags, align 4, !dbg !783, !tbaa !600
+  br label %if.end37, !dbg !782
 
-; <label>:47                                      ; preds = %39, %43
-  %48 = and i32 %40, 16, !dbg !1151
-  %49 = icmp eq i32 %48, 0, !dbg !1151
-  br i1 %49, label %54, label %50, !dbg !1153
+if.end37:                                         ; preds = %if.end31, %if.then35
+  %7 = phi i32 [ %5, %if.end31 ], [ %.pre112, %if.then35 ]
+  %and39 = and i32 %7, 16, !dbg !783
+  %tobool40 = icmp eq i32 %and39, 0, !dbg !783
+  br i1 %tobool40, label %if.end43, label %if.then41, !dbg !783
 
-; <label>:50                                      ; preds = %47
-  %51 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 6, !dbg !1154
-  %52 = load i32* %51, align 4, !dbg !1154, !tbaa !1075
-  %53 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 6, !dbg !1155
-  store i32 %52, i32* %53, align 4, !dbg !1156, !tbaa !1075
-  br label %54, !dbg !1157
+if.then41:                                        ; preds = %if.end37
+  %start = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 6, !dbg !783
+  %8 = load i32* %start, align 4, !dbg !783, !tbaa !600
+  %start42 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 6, !dbg !783
+  store i32 %8, i32* %start42, align 4, !dbg !783, !tbaa !600
+  %.pre113 = load i32* %flags, align 4, !dbg !784, !tbaa !600
+  br label %if.end43, !dbg !783
 
-; <label>:54                                      ; preds = %47, %50
-  %55 = and i32 %40, 32, !dbg !1158
-  %56 = icmp eq i32 %55, 0, !dbg !1158
-  br i1 %56, label %61, label %57, !dbg !1160
+if.end43:                                         ; preds = %if.end37, %if.then41
+  %9 = phi i32 [ %7, %if.end37 ], [ %.pre113, %if.then41 ]
+  %and45 = and i32 %9, 32, !dbg !784
+  %tobool46 = icmp eq i32 %and45, 0, !dbg !784
+  br i1 %tobool46, label %if.end49, label %if.then47, !dbg !784
 
-; <label>:57                                      ; preds = %54
-  %58 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 7, !dbg !1161
-  %59 = load i32* %58, align 4, !dbg !1161, !tbaa !1091
-  %60 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 7, !dbg !1162
-  store i32 %59, i32* %60, align 4, !dbg !1163, !tbaa !1091
-  br label %61, !dbg !1164
+if.then47:                                        ; preds = %if.end43
+  %stop = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 7, !dbg !784
+  %10 = load i32* %stop, align 4, !dbg !784, !tbaa !600
+  %stop48 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 7, !dbg !784
+  store i32 %10, i32* %stop48, align 4, !dbg !784, !tbaa !600
+  %.pre114 = load i32* %flags, align 4, !dbg !785, !tbaa !600
+  br label %if.end49, !dbg !784
 
-; <label>:61                                      ; preds = %54, %57
-  %62 = and i32 %40, 256, !dbg !1165
-  %63 = icmp eq i32 %62, 0, !dbg !1165
-  br i1 %63, label %68, label %64, !dbg !1167
+if.end49:                                         ; preds = %if.end43, %if.then47
+  %11 = phi i32 [ %9, %if.end43 ], [ %.pre114, %if.then47 ]
+  %and51 = and i32 %11, 256, !dbg !785
+  %tobool52 = icmp eq i32 %and51, 0, !dbg !785
+  br i1 %tobool52, label %if.end55, label %if.then53, !dbg !785
 
-; <label>:64                                      ; preds = %61
-  %65 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 8, !dbg !1168
-  %66 = load i32* %65, align 4, !dbg !1168, !tbaa !1107
-  %67 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 8, !dbg !1169
-  store i32 %66, i32* %67, align 4, !dbg !1170, !tbaa !1107
-  br label %68, !dbg !1171
+if.then53:                                        ; preds = %if.end49
+  %olen = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 8, !dbg !785
+  %12 = load i32* %olen, align 4, !dbg !785, !tbaa !600
+  %olen54 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 8, !dbg !785
+  store i32 %12, i32* %olen54, align 4, !dbg !785, !tbaa !600
+  %.pre115 = load i32* %flags, align 4, !dbg !786, !tbaa !600
+  br label %if.end55, !dbg !785
 
-; <label>:68                                      ; preds = %61, %64
-  %69 = and i32 %40, 128, !dbg !1172
-  %70 = icmp eq i32 %69, 0, !dbg !1172
-  br i1 %70, label %75, label %71, !dbg !1174
+if.end55:                                         ; preds = %if.end49, %if.then53
+  %13 = phi i32 [ %11, %if.end49 ], [ %.pre115, %if.then53 ]
+  %and57 = and i32 %13, 128, !dbg !786
+  %tobool58 = icmp eq i32 %and57, 0, !dbg !786
+  br i1 %tobool58, label %if.end61, label %if.then59, !dbg !786
 
-; <label>:71                                      ; preds = %68
-  %72 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 9, !dbg !1175
-  %73 = load i32* %72, align 4, !dbg !1175, !tbaa !1176
-  %74 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 9, !dbg !1177
-  store i32 %73, i32* %74, align 4, !dbg !1178, !tbaa !1176
-  br label %75, !dbg !1179
+if.then59:                                        ; preds = %if.end55
+  %type = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 9, !dbg !786
+  %14 = load i32* %type, align 4, !dbg !786, !tbaa !600
+  %type60 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 9, !dbg !786
+  store i32 %14, i32* %type60, align 4, !dbg !786, !tbaa !600
+  %.pre116 = load i32* %flags, align 4, !dbg !787, !tbaa !600
+  br label %if.end61, !dbg !786
 
-; <label>:75                                      ; preds = %68, %71
-  %76 = and i32 %40, 512, !dbg !1180
-  %77 = icmp eq i32 %76, 0, !dbg !1180
-  br i1 %77, label %83, label %78, !dbg !1182
+if.end61:                                         ; preds = %if.end55, %if.then59
+  %15 = phi i32 [ %13, %if.end55 ], [ %.pre116, %if.then59 ]
+  %and63 = and i32 %15, 512, !dbg !787
+  %tobool64 = icmp eq i32 %and63, 0, !dbg !787
+  br i1 %tobool64, label %if.end68, label %if.then65, !dbg !787
 
-; <label>:78                                      ; preds = %75
-  %79 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 10, !dbg !1183
-  %80 = load i8** %79, align 8, !dbg !1183, !tbaa !962
-  %81 = tail call i8* @Strdup(i8* %80) #8, !dbg !1184
-  %82 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 10, !dbg !1185
-  store i8* %81, i8** %82, align 8, !dbg !1186, !tbaa !962
-  %.pre4 = load i32* %1, align 4, !dbg !1187, !tbaa !957
-  br label %83, !dbg !1189
+if.then65:                                        ; preds = %if.end61
+  %ss = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 10, !dbg !787
+  %16 = load i8** %ss, align 8, !dbg !787, !tbaa !612
+  %call66 = tail call i8* @Strdup(i8* %16) #9, !dbg !787
+  %ss67 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 10, !dbg !787
+  store i8* %call66, i8** %ss67, align 8, !dbg !787, !tbaa !612
+  %.pre117 = load i32* %flags, align 4, !dbg !788, !tbaa !600
+  br label %if.end68, !dbg !787
 
-; <label>:83                                      ; preds = %75, %78
-  %84 = phi i32 [ %40, %75 ], [ %.pre4, %78 ]
-  %85 = and i32 %84, 1024, !dbg !1190
-  %86 = icmp eq i32 %85, 0, !dbg !1190
-  br i1 %86, label %92, label %87, !dbg !1191
+if.end68:                                         ; preds = %if.end61, %if.then65
+  %17 = phi i32 [ %15, %if.end61 ], [ %.pre117, %if.then65 ]
+  %and70 = and i32 %17, 1024, !dbg !788
+  %tobool71 = icmp eq i32 %and70, 0, !dbg !788
+  br i1 %tobool71, label %if.end75, label %if.then72, !dbg !788
 
-; <label>:87                                      ; preds = %83
-  %88 = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 11, !dbg !1192
-  %89 = load i8** %88, align 8, !dbg !1192, !tbaa !969
-  %90 = tail call i8* @Strdup(i8* %89) #8, !dbg !1193
-  %91 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 11, !dbg !1194
-  store i8* %90, i8** %91, align 8, !dbg !1195, !tbaa !969
-  br label %92, !dbg !1196
+if.then72:                                        ; preds = %if.end68
+  %sa = getelementptr inbounds %struct.seqinfo_s* %sq2, i64 0, i32 11, !dbg !788
+  %18 = load i8** %sa, align 8, !dbg !788, !tbaa !612
+  %call73 = tail call i8* @Strdup(i8* %18) #9, !dbg !788
+  %sa74 = getelementptr inbounds %struct.seqinfo_s* %sq1, i64 0, i32 11, !dbg !788
+  store i8* %call73, i8** %sa74, align 8, !dbg !788, !tbaa !612
+  br label %if.end75, !dbg !788
 
-; <label>:92                                      ; preds = %83, %87
-  ret void, !dbg !1197
+if.end75:                                         ; preds = %if.end68, %if.then72
+  ret void, !dbg !789
 }

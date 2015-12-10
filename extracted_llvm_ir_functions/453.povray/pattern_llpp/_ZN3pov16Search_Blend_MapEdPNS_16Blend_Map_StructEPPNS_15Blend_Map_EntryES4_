@@ -1,42 +1,43 @@
-define void @_ZN3pov16Search_Blend_MapEdPNS_16Blend_Map_StructEPPNS_15Blend_Map_EntryES4_(double %value, %"struct.pov::Blend_Map_Struct"* nocapture readonly %Blend_Map, %"struct.pov::Blend_Map_Entry"** nocapture %Prev, %"struct.pov::Blend_Map_Entry"** nocapture %Cur) #4 {
-  tail call void @llvm.dbg.value(metadata double %value, i64 0, metadata !1167, metadata !2444), !dbg !6091
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Struct"* %Blend_Map, i64 0, metadata !1168, metadata !2444), !dbg !6092
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Prev, i64 0, metadata !1169, metadata !2444), !dbg !6093
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Cur, i64 0, metadata !1170, metadata !2444), !dbg !6094
-  %1 = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %Blend_Map, i64 0, i32 1, !dbg !6095
-  %2 = load i16* %1, align 2, !dbg !6095, !tbaa !6096
-  %3 = sext i16 %2 to i64, !dbg !6098
-  %4 = add nsw i64 %3, -1, !dbg !6099
-  %5 = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %Blend_Map, i64 0, i32 4, !dbg !6100
-  %6 = load %"struct.pov::Blend_Map_Entry"** %5, align 8, !dbg !6100, !tbaa !6102
-  %7 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %6, i64 %4, !dbg !6103
-  %8 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %7, i64 0, i32 0, !dbg !6104
-  %9 = load float* %8, align 4, !dbg !6104, !tbaa !6105
-  %10 = fpext float %9 to double, !dbg !6103
-  %11 = fcmp ugt double %10, %value, !dbg !6107
-  br i1 %11, label %.preheader, label %.loopexit, !dbg !6108
+define void @_ZN3pov16Search_Blend_MapEdPNS_16Blend_Map_StructEPPNS_15Blend_Map_EntryES4_(double %value, %"struct.pov::Blend_Map_Struct"* nocapture %Blend_Map, %"struct.pov::Blend_Map_Entry"** nocapture %Prev, %"struct.pov::Blend_Map_Entry"** nocapture %Cur) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %value}, i64 0, metadata !1145), !dbg !4179
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blend_Map_Struct"* %Blend_Map}, i64 0, metadata !1146), !dbg !4179
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blend_Map_Entry"** %Prev}, i64 0, metadata !1147), !dbg !4179
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blend_Map_Entry"** %Cur}, i64 0, metadata !1148), !dbg !4179
+  %Number_Of_Entries = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %Blend_Map, i64 0, i32 1, !dbg !4180
+  %0 = load i16* %Number_Of_Entries, align 2, !dbg !4180, !tbaa !2127
+  %conv = sext i16 %0 to i64, !dbg !4180
+  %sub = add i64 %conv, -1, !dbg !4180
+  %Blend_Map_Entries = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %Blend_Map, i64 0, i32 4, !dbg !4181
+  %1 = load %"struct.pov::Blend_Map_Entry"** %Blend_Map_Entries, align 8, !dbg !4181, !tbaa !2136
+  %arrayidx = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %1, i64 %sub, !dbg !4181
+  %value1 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %arrayidx, i64 0, i32 0, !dbg !4181
+  %2 = load float* %value1, align 4, !dbg !4181, !tbaa !2150
+  %conv2 = fpext float %2 to double, !dbg !4181
+  %cmp = fcmp ugt double %conv2, %value, !dbg !4181
+  br i1 %cmp, label %while.cond, label %if.end, !dbg !4181
 
-.preheader:                                       ; preds = %0, %.preheader
-  %C.0 = phi %"struct.pov::Blend_Map_Entry"* [ %16, %.preheader ], [ %6, %0 ]
-  %P.0 = phi %"struct.pov::Blend_Map_Entry"* [ %C.0, %.preheader ], [ %6, %0 ]
-  %12 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %C.0, i64 0, i32 0, !dbg !6109
-  %13 = load float* %12, align 4, !dbg !6109, !tbaa !6105
-  %14 = fpext float %13 to double, !dbg !6111
-  %15 = fcmp olt double %14, %value, !dbg !6112
-  %16 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %C.0, i64 1, !dbg !6113
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"* %16, i64 0, metadata !1172, metadata !2444), !dbg !6115
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"* %C.0, i64 0, metadata !1171, metadata !2444), !dbg !6116
-  br i1 %15, label %.preheader, label %.loopexit, !dbg !6117
+while.cond:                                       ; preds = %entry, %while.cond
+  %C.0 = phi %"struct.pov::Blend_Map_Entry"* [ %incdec.ptr, %while.cond ], [ %1, %entry ]
+  %P.0 = phi %"struct.pov::Blend_Map_Entry"* [ %C.0, %while.cond ], [ %1, %entry ]
+  %value8 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %C.0, i64 0, i32 0, !dbg !4182
+  %3 = load float* %value8, align 4, !dbg !4182, !tbaa !2150
+  %conv9 = fpext float %3 to double, !dbg !4182
+  %cmp10 = fcmp olt double %conv9, %value, !dbg !4182
+  %incdec.ptr = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %C.0, i64 1, !dbg !4184
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blend_Map_Entry"* %incdec.ptr}, i64 0, metadata !1150), !dbg !4184
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blend_Map_Entry"* %C.0}, i64 0, metadata !1149), !dbg !4184
+  br i1 %cmp10, label %while.cond, label %if.end, !dbg !4182
 
-.loopexit:                                        ; preds = %.preheader, %0
-  %17 = phi float [ %9, %0 ], [ %13, %.preheader ]
-  %C.1 = phi %"struct.pov::Blend_Map_Entry"* [ %7, %0 ], [ %C.0, %.preheader ]
-  %P.1 = phi %"struct.pov::Blend_Map_Entry"* [ %7, %0 ], [ %P.0, %.preheader ]
-  %18 = fpext float %17 to double, !dbg !6118
-  %19 = fcmp oeq double %18, %value, !dbg !6120
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"* %C.1, i64 0, metadata !1171, metadata !2444), !dbg !6116
-  %P.2 = select i1 %19, %"struct.pov::Blend_Map_Entry"* %C.1, %"struct.pov::Blend_Map_Entry"* %P.1, !dbg !6121
-  store %"struct.pov::Blend_Map_Entry"* %P.2, %"struct.pov::Blend_Map_Entry"** %Prev, align 8, !dbg !6122, !tbaa !4555
-  store %"struct.pov::Blend_Map_Entry"* %C.1, %"struct.pov::Blend_Map_Entry"** %Cur, align 8, !dbg !6123, !tbaa !4555
-  ret void, !dbg !6124
+if.end:                                           ; preds = %while.cond, %entry
+  %4 = phi float [ %2, %entry ], [ %3, %while.cond ]
+  %C.1 = phi %"struct.pov::Blend_Map_Entry"* [ %arrayidx, %entry ], [ %C.0, %while.cond ]
+  %P.1 = phi %"struct.pov::Blend_Map_Entry"* [ %arrayidx, %entry ], [ %P.0, %while.cond ]
+  %conv12 = fpext float %4 to double, !dbg !4186
+  %cmp13 = fcmp oeq double %conv12, %value, !dbg !4186
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blend_Map_Entry"* %C.1}, i64 0, metadata !1149), !dbg !4187
+  %P.2 = select i1 %cmp13, %"struct.pov::Blend_Map_Entry"* %C.1, %"struct.pov::Blend_Map_Entry"* %P.1, !dbg !4186
+  store %"struct.pov::Blend_Map_Entry"* %P.2, %"struct.pov::Blend_Map_Entry"** %Prev, align 8, !dbg !4189, !tbaa !2136
+  store %"struct.pov::Blend_Map_Entry"* %C.1, %"struct.pov::Blend_Map_Entry"** %Cur, align 8, !dbg !4190, !tbaa !2136
+  ret void, !dbg !4191
 }

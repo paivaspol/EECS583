@@ -1,22 +1,23 @@
-define void @_unset_fatal_tmp_file(i8* %fn, i8* %file, i32 %line) #5 {
-  tail call void @llvm.dbg.value(metadata i8* %fn, i64 0, metadata !205, metadata !336), !dbg !557
-  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !206, metadata !336), !dbg !558
-  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !207, metadata !336), !dbg !559
-  %1 = load i8** @fatal_tmp_file, align 8, !dbg !560, !tbaa !503
-  %2 = tail call i32 @strcmp(i8* %fn, i8* %1) #12, !dbg !562
-  %3 = icmp eq i32 %2, 0, !dbg !563
-  br i1 %3, label %4, label %5, !dbg !564
+define void @_unset_fatal_tmp_file(i8* %fn, i8* %file, i32 %line) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !115), !dbg !281
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !116), !dbg !281
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !117), !dbg !281
+  %0 = load i8** @fatal_tmp_file, align 8, !dbg !282, !tbaa !251
+  %call = tail call i32 @strcmp(i8* %fn, i8* %0) #14, !dbg !282
+  %cmp = icmp eq i32 %call, 0, !dbg !282
+  br i1 %cmp, label %if.then, label %if.else, !dbg !282
 
-; <label>:4                                       ; preds = %0
-  tail call void @save_free(i8* getelementptr inbounds ([15 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str6, i64 0, i64 0), i32 193, i8* %1) #12, !dbg !565
-  store i8* null, i8** @fatal_tmp_file, align 8, !dbg !567, !tbaa !503
-  br label %8, !dbg !568
+if.then:                                          ; preds = %entry
+  tail call void @save_free(i8* getelementptr inbounds ([15 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str6, i64 0, i64 0), i32 193, i8* %0) #11, !dbg !283
+  store i8* null, i8** @fatal_tmp_file, align 8, !dbg !285, !tbaa !251
+  br label %if.end, !dbg !286
 
-; <label>:5                                       ; preds = %0
-  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !569, !tbaa !503
-  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([55 x i8]* @.str7, i64 0, i64 0), i8* %fn, i8* %file, i32 %line) #12, !dbg !570
-  br label %8
+if.else:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !287, !tbaa !251
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([55 x i8]* @.str7, i64 0, i64 0), i8* %fn, i8* %file, i32 %line) #11, !dbg !287
+  br label %if.end
 
-; <label>:8                                       ; preds = %5, %4
-  ret void, !dbg !571
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !288
 }

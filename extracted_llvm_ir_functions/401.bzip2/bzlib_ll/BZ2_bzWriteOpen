@@ -1,110 +1,113 @@
-define i8* @BZ2_bzWriteOpen(i32* %bzerror, %struct.__sFILE* %f, i32 %blockSize100k, i32 %verbosity, i32 %workFactor) #5 {
-  tail call void @llvm.dbg.value(metadata i32* %bzerror, i64 0, metadata !326, metadata !626), !dbg !1967
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %f, i64 0, metadata !327, metadata !626), !dbg !1968
-  tail call void @llvm.dbg.value(metadata i32 %blockSize100k, i64 0, metadata !328, metadata !626), !dbg !1969
-  tail call void @llvm.dbg.value(metadata i32 %verbosity, i64 0, metadata !329, metadata !626), !dbg !1970
-  tail call void @llvm.dbg.value(metadata i32 %workFactor, i64 0, metadata !330, metadata !626), !dbg !1971
-  tail call void @llvm.dbg.value(metadata %struct.bzFile* null, i64 0, metadata !332, metadata !626), !dbg !1972
-  %1 = icmp ne i32* %bzerror, null, !dbg !1973
-  br i1 %1, label %2, label %3, !dbg !1976
+define i8* @BZ2_bzWriteOpen(i32* %bzerror, %struct._IO_FILE* %f, i32 %blockSize100k, i32 %verbosity, i32 %workFactor) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %bzerror}, i64 0, metadata !318), !dbg !1248
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %f}, i64 0, metadata !319), !dbg !1249
+  tail call void @llvm.dbg.value(metadata !{i32 %blockSize100k}, i64 0, metadata !320), !dbg !1250
+  tail call void @llvm.dbg.value(metadata !{i32 %verbosity}, i64 0, metadata !321), !dbg !1251
+  tail call void @llvm.dbg.value(metadata !{i32 %workFactor}, i64 0, metadata !322), !dbg !1252
+  tail call void @llvm.dbg.value(metadata !1253, i64 0, metadata !324), !dbg !1254
+  %cmp = icmp ne i32* %bzerror, null, !dbg !1255
+  br i1 %cmp, label %if.then, label %if.end3, !dbg !1255
 
-; <label>:2                                       ; preds = %0
-  store i32 0, i32* %bzerror, align 4, !dbg !1973, !tbaa !1029
-  br label %3, !dbg !1973
+if.then:                                          ; preds = %entry
+  store i32 0, i32* %bzerror, align 4, !dbg !1255, !tbaa !651
+  br label %if.end3, !dbg !1255
 
-; <label>:3                                       ; preds = %0, %2
-  %4 = icmp eq %struct.__sFILE* %f, null, !dbg !1977
-  %blockSize100k.off = add i32 %blockSize100k, -1, !dbg !1979
-  %5 = icmp ugt i32 %blockSize100k.off, 8, !dbg !1979
-  %6 = or i1 %4, %5, !dbg !1979
-  %7 = icmp ugt i32 %workFactor, 250, !dbg !1979
-  %8 = or i1 %7, %6, !dbg !1979
-  %9 = icmp ugt i32 %verbosity, 4, !dbg !1979
-  %10 = or i1 %9, %8, !dbg !1979
-  br i1 %10, label %11, label %13, !dbg !1979
+if.end3:                                          ; preds = %entry, %if.then
+  %cmp4 = icmp eq %struct._IO_FILE* %f, null, !dbg !1257
+  br i1 %cmp4, label %if.then16, label %lor.lhs.false, !dbg !1257
 
-; <label>:11                                      ; preds = %3
-  br i1 %1, label %12, label %45, !dbg !1980
+lor.lhs.false:                                    ; preds = %if.end3
+  %blockSize100k.off = add i32 %blockSize100k, -1, !dbg !1257
+  %0 = icmp ugt i32 %blockSize100k.off, 8, !dbg !1257
+  %1 = icmp ugt i32 %workFactor, 250, !dbg !1257
+  %or.cond = or i1 %0, %1, !dbg !1257
+  %2 = icmp ugt i32 %verbosity, 4, !dbg !1257
+  %or.cond118 = or i1 %or.cond, %2, !dbg !1257
+  br i1 %or.cond118, label %if.then16, label %if.end24, !dbg !1257
 
-; <label>:12                                      ; preds = %11
-  store i32 -2, i32* %bzerror, align 4, !dbg !1983, !tbaa !1029
-  br label %45, !dbg !1983
+if.then16:                                        ; preds = %lor.lhs.false, %if.end3
+  br i1 %cmp, label %if.then18, label %return, !dbg !1258
 
-; <label>:13                                      ; preds = %3
-  %14 = tail call i32 @ferror(%struct.__sFILE* %f) #10, !dbg !1985
-  %15 = icmp eq i32 %14, 0, !dbg !1985
-  br i1 %15, label %18, label %16, !dbg !1987
+if.then18:                                        ; preds = %if.then16
+  store i32 -2, i32* %bzerror, align 4, !dbg !1258, !tbaa !651
+  br label %return, !dbg !1258
 
-; <label>:16                                      ; preds = %13
-  br i1 %1, label %17, label %45, !dbg !1988
+if.end24:                                         ; preds = %lor.lhs.false
+  %call = tail call i32 @ferror(%struct._IO_FILE* %f) #12, !dbg !1261
+  %tobool = icmp eq i32 %call, 0, !dbg !1261
+  br i1 %tobool, label %if.end33, label %if.then25, !dbg !1261
 
-; <label>:17                                      ; preds = %16
-  store i32 -6, i32* %bzerror, align 4, !dbg !1991, !tbaa !1029
-  br label %45, !dbg !1991
+if.then25:                                        ; preds = %if.end24
+  br i1 %cmp, label %if.then27, label %return, !dbg !1262
 
-; <label>:18                                      ; preds = %13
-  %19 = tail call i8* @malloc(i64 5104) #10, !dbg !1993
-  %20 = icmp eq i8* %19, null, !dbg !1994
-  br i1 %20, label %21, label %23, !dbg !1996
+if.then27:                                        ; preds = %if.then25
+  store i32 -6, i32* %bzerror, align 4, !dbg !1262, !tbaa !651
+  br label %return, !dbg !1262
 
-; <label>:21                                      ; preds = %18
-  br i1 %1, label %22, label %45, !dbg !1997
+if.end33:                                         ; preds = %if.end24
+  %call34 = tail call noalias i8* @malloc(i64 5104) #12, !dbg !1265
+  %cmp35 = icmp eq i8* %call34, null, !dbg !1266
+  br i1 %cmp35, label %if.then36, label %if.end44, !dbg !1266
 
-; <label>:22                                      ; preds = %21
-  store i32 -3, i32* %bzerror, align 4, !dbg !2000, !tbaa !1029
-  br label %45, !dbg !2000
+if.then36:                                        ; preds = %if.end33
+  br i1 %cmp, label %if.end39, label %return, !dbg !1267
 
-; <label>:23                                      ; preds = %18
-  br i1 %1, label %24, label %25, !dbg !2002
+if.end39:                                         ; preds = %if.then36
+  store i32 -3, i32* %bzerror, align 4, !dbg !1267, !tbaa !651
+  br label %return
 
-; <label>:24                                      ; preds = %23
-  store i32 0, i32* %bzerror, align 4, !dbg !2004, !tbaa !1029
-  br label %25, !dbg !2004
+if.end44:                                         ; preds = %if.end33
+  br i1 %cmp, label %if.end47, label %if.end51, !dbg !1270
 
-; <label>:25                                      ; preds = %24, %23
-  %26 = getelementptr inbounds i8* %19, i64 5096, !dbg !2006
-  %27 = bitcast i8* %26 to i32*, !dbg !2006
-  store i32 0, i32* %27, align 4, !dbg !2006, !tbaa !2008
-  %28 = getelementptr inbounds i8* %19, i64 5100, !dbg !2010
-  store i8 0, i8* %28, align 1, !dbg !2011, !tbaa !2012
-  %29 = getelementptr inbounds i8* %19, i64 5008, !dbg !2013
-  %30 = bitcast i8* %29 to i32*, !dbg !2013
-  store i32 0, i32* %30, align 4, !dbg !2014, !tbaa !2015
-  %31 = bitcast i8* %19 to %struct.__sFILE**, !dbg !2016
-  store %struct.__sFILE* %f, %struct.__sFILE** %31, align 8, !dbg !2017, !tbaa !2018
-  %32 = getelementptr inbounds i8* %19, i64 5012, !dbg !2019
-  store i8 1, i8* %32, align 1, !dbg !2020, !tbaa !2021
-  %33 = getelementptr inbounds i8* %19, i64 5016, !dbg !2022
-  %34 = bitcast i8* %33 to %struct.bz_stream*, !dbg !2022
-  %35 = getelementptr inbounds i8* %19, i64 5072, !dbg !2023
-  %36 = icmp eq i32 %workFactor, 0, !dbg !2024
-  tail call void @llvm.dbg.value(metadata i32 30, i64 0, metadata !330, metadata !626), !dbg !1971
-  %.workFactor = select i1 %36, i32 30, i32 %workFactor, !dbg !2026
-  call void @llvm.memset.p0i8.i64(i8* %35, i8 0, i64 24, i32 8, i1 false), !dbg !2027
-  %37 = tail call i32 @BZ2_bzCompressInit(%struct.bz_stream* %34, i32 %blockSize100k, i32 %verbosity, i32 %.workFactor) #12, !dbg !2028
-  tail call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !331, metadata !626), !dbg !2029
-  %38 = icmp eq i32 %37, 0, !dbg !2030
-  br i1 %38, label %42, label %39, !dbg !2032
+if.end47:                                         ; preds = %if.end44
+  store i32 0, i32* %bzerror, align 4, !dbg !1270, !tbaa !651
+  br label %if.end51
 
-; <label>:39                                      ; preds = %25
-  br i1 %1, label %40, label %41, !dbg !2033
+if.end51:                                         ; preds = %if.end44, %if.end47
+  %lastErr50 = getelementptr inbounds i8* %call34, i64 5096, !dbg !1270
+  %3 = bitcast i8* %lastErr50 to i32*, !dbg !1270
+  store i32 0, i32* %3, align 4, !dbg !1270, !tbaa !651
+  %4 = getelementptr inbounds i8* %call34, i64 5100, !dbg !1272
+  store i8 0, i8* %4, align 1, !dbg !1272, !tbaa !616
+  %bufN = getelementptr inbounds i8* %call34, i64 5008, !dbg !1273
+  %5 = bitcast i8* %bufN to i32*, !dbg !1273
+  store i32 0, i32* %5, align 4, !dbg !1273, !tbaa !651
+  %handle = bitcast i8* %call34 to %struct._IO_FILE**, !dbg !1274
+  store %struct._IO_FILE* %f, %struct._IO_FILE** %handle, align 8, !dbg !1274, !tbaa !615
+  %6 = getelementptr inbounds i8* %call34, i64 5012, !dbg !1275
+  store i8 1, i8* %6, align 1, !dbg !1275, !tbaa !616
+  %strm = getelementptr inbounds i8* %call34, i64 5016, !dbg !1276
+  %7 = bitcast i8* %strm to %struct.bz_stream*, !dbg !1276
+  %bzalloc = getelementptr inbounds i8* %call34, i64 5072, !dbg !1276
+  %cmp54 = icmp eq i32 %workFactor, 0, !dbg !1277
+  tail call void @llvm.dbg.value(metadata !631, i64 0, metadata !322), !dbg !1277
+  %.workFactor = select i1 %cmp54, i32 30, i32 %workFactor, !dbg !1277
+  call void @llvm.memset.p0i8.i64(i8* %bzalloc, i8 0, i64 24, i32 8, i1 false), !dbg !1278
+  %call58 = tail call i32 @BZ2_bzCompressInit(%struct.bz_stream* %7, i32 %blockSize100k, i32 %verbosity, i32 %.workFactor) #14, !dbg !1279
+  tail call void @llvm.dbg.value(metadata !{i32 %call58}, i64 0, metadata !323), !dbg !1279
+  %cmp59 = icmp eq i32 %call58, 0, !dbg !1280
+  br i1 %cmp59, label %if.end68, label %if.then60, !dbg !1280
 
-; <label>:40                                      ; preds = %39
-  store i32 %37, i32* %bzerror, align 4, !dbg !2036, !tbaa !1029
-  br label %41, !dbg !2036
+if.then60:                                        ; preds = %if.end51
+  br i1 %cmp, label %if.then62, label %if.then65, !dbg !1281
 
-; <label>:41                                      ; preds = %40, %39
-  tail call void @free(i8* %19) #12, !dbg !2038
-  br label %45, !dbg !2039
+if.then62:                                        ; preds = %if.then60
+  store i32 %call58, i32* %bzerror, align 4, !dbg !1281, !tbaa !651
+  br label %if.then65, !dbg !1281
 
-; <label>:42                                      ; preds = %25
-  %43 = getelementptr inbounds i8* %19, i64 5024, !dbg !2040
-  %44 = bitcast i8* %43 to i32*, !dbg !2040
-  store i32 0, i32* %44, align 4, !dbg !2041, !tbaa !2042
-  store i8 1, i8* %28, align 1, !dbg !2043, !tbaa !2012
-  br label %45, !dbg !2044
+if.then65:                                        ; preds = %if.then60, %if.then62
+  tail call void @free(i8* %call34) #12, !dbg !1284
+  br label %return, !dbg !1284
 
-; <label>:45                                      ; preds = %21, %22, %17, %16, %12, %11, %42, %41
-  %.0 = phi i8* [ null, %41 ], [ %19, %42 ], [ null, %11 ], [ null, %12 ], [ null, %16 ], [ null, %17 ], [ null, %22 ], [ null, %21 ]
-  ret i8* %.0, !dbg !2045
+if.end68:                                         ; preds = %if.end51
+  %avail_in = getelementptr inbounds i8* %call34, i64 5024, !dbg !1285
+  %8 = bitcast i8* %avail_in to i32*, !dbg !1285
+  store i32 0, i32* %8, align 4, !dbg !1285, !tbaa !651
+  store i8 1, i8* %4, align 1, !dbg !1286, !tbaa !616
+  br label %return, !dbg !1287
+
+return:                                           ; preds = %if.then36, %if.end39, %if.then27, %if.then25, %if.then18, %if.then16, %if.end68, %if.then65
+  %retval.0 = phi i8* [ null, %if.then65 ], [ %call34, %if.end68 ], [ null, %if.then16 ], [ null, %if.then18 ], [ null, %if.then25 ], [ null, %if.then27 ], [ null, %if.end39 ], [ null, %if.then36 ]
+  ret i8* %retval.0, !dbg !1288
 }

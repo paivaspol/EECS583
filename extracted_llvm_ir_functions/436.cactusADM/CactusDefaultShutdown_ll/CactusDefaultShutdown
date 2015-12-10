@@ -1,56 +1,57 @@
-define i32 @CactusDefaultShutdown(%struct.tFleshConfig* nocapture readonly %config) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.tFleshConfig* %config, i64 0, metadata !63, metadata !73), !dbg !74
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !75, !tbaa !76
-  %2 = getelementptr inbounds %struct.tFleshConfig* %config, i64 0, i32 1, !dbg !80
-  %3 = load %struct.cGH*** %2, align 8, !dbg !80, !tbaa !81
-  %4 = load %struct.cGH** %3, align 8, !dbg !84, !tbaa !76
-  %5 = tail call i32 %1(%struct.cGH* %4) #5, !dbg !75
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !64, metadata !73), !dbg !85
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !65, metadata !73), !dbg !86
-  %6 = getelementptr inbounds %struct.tFleshConfig* %config, i64 0, i32 2, !dbg !87
-  %7 = load i32* %6, align 4, !dbg !87, !tbaa !90
-  %8 = icmp eq i32 %7, 0, !dbg !91
-  br i1 %8, label %._crit_edge, label %.lr.ph5, !dbg !92
+define i32 @CactusDefaultShutdown(%struct.tFleshConfig* nocapture %config) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.tFleshConfig* %config}, i64 0, metadata !64), !dbg !70
+  %0 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !71, !tbaa !72
+  %GH = getelementptr inbounds %struct.tFleshConfig* %config, i64 0, i32 1, !dbg !71
+  %1 = load %struct.cGH*** %GH, align 8, !dbg !71, !tbaa !72
+  %2 = load %struct.cGH** %1, align 8, !dbg !71, !tbaa !72
+  %call = tail call i32 %0(%struct.cGH* %2) #5, !dbg !71
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !65), !dbg !71
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !66), !dbg !75
+  %nGHs = getelementptr inbounds %struct.tFleshConfig* %config, i64 0, i32 2, !dbg !75
+  %3 = load i32* %nGHs, align 4, !dbg !75, !tbaa !77
+  %cmp30 = icmp eq i32 %3, 0, !dbg !75
+  br i1 %cmp30, label %for.end14, label %for.body, !dbg !75
 
-.preheader:                                       ; preds = %.lr.ph5
-  %phitmp = icmp eq i32 %15, 0, !dbg !92
-  br i1 %phitmp, label %._crit_edge, label %.lr.ph, !dbg !93
+for.cond4.preheader:                              ; preds = %for.body
+  %phitmp = icmp eq i32 %6, 0, !dbg !75
+  br i1 %phitmp, label %for.end14, label %for.body7, !dbg !78
 
-.lr.ph5:                                          ; preds = %0, %.lr.ph5
-  %conv_level.03 = phi i32 [ %14, %.lr.ph5 ], [ 0, %0 ]
-  %9 = zext i32 %conv_level.03 to i64, !dbg !95
-  %10 = load %struct.cGH*** %2, align 8, !dbg !97, !tbaa !81
-  %11 = getelementptr inbounds %struct.cGH** %10, i64 %9, !dbg !95
-  %12 = load %struct.cGH** %11, align 8, !dbg !95, !tbaa !76
-  %13 = tail call i32 @CCTK_Traverse(%struct.cGH* %12, i8* getelementptr inbounds ([15 x i8]* @.str, i64 0, i64 0)) #5, !dbg !98
-  %14 = add nuw i32 %conv_level.03, 1, !dbg !99
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !65, metadata !73), !dbg !86
-  %15 = load i32* %6, align 4, !dbg !87, !tbaa !90
-  %16 = icmp ult i32 %14, %15, !dbg !91
-  br i1 %16, label %.lr.ph5, label %.preheader, !dbg !92
+for.body:                                         ; preds = %entry, %for.body
+  %conv_level.031 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %idxprom = zext i32 %conv_level.031 to i64, !dbg !80
+  %4 = load %struct.cGH*** %GH, align 8, !dbg !80, !tbaa !72
+  %arrayidx2 = getelementptr inbounds %struct.cGH** %4, i64 %idxprom, !dbg !80
+  %5 = load %struct.cGH** %arrayidx2, align 8, !dbg !80, !tbaa !72
+  %call3 = tail call i32 @CCTK_Traverse(%struct.cGH* %5, i8* getelementptr inbounds ([15 x i8]* @.str, i64 0, i64 0)) #5, !dbg !80
+  %inc = add i32 %conv_level.031, 1, !dbg !75
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !66), !dbg !75
+  %6 = load i32* %nGHs, align 4, !dbg !75, !tbaa !77
+  %cmp = icmp ult i32 %inc, %6, !dbg !75
+  br i1 %cmp, label %for.body, label %for.cond4.preheader, !dbg !75
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %conv_level.12 = phi i32 [ %22, %.lr.ph ], [ 0, %.preheader ]
-  %17 = zext i32 %conv_level.12 to i64, !dbg !100
-  %18 = load %struct.cGH*** %2, align 8, !dbg !103, !tbaa !81
-  %19 = getelementptr inbounds %struct.cGH** %18, i64 %17, !dbg !100
-  %20 = load %struct.cGH** %19, align 8, !dbg !100, !tbaa !76
-  %21 = tail call i32 @CCTK_Traverse(%struct.cGH* %20, i8* getelementptr inbounds ([14 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !104
-  %22 = add nuw i32 %conv_level.12, 1, !dbg !105
-  tail call void @llvm.dbg.value(metadata i32 %22, i64 0, metadata !65, metadata !73), !dbg !86
-  %23 = load i32* %6, align 4, !dbg !106, !tbaa !90
-  %24 = icmp ult i32 %22, %23, !dbg !107
-  br i1 %24, label %.lr.ph, label %._crit_edge, !dbg !93
+for.body7:                                        ; preds = %for.cond4.preheader, %for.body7
+  %conv_level.129 = phi i32 [ %inc13, %for.body7 ], [ 0, %for.cond4.preheader ]
+  %idxprom8 = zext i32 %conv_level.129 to i64, !dbg !82
+  %7 = load %struct.cGH*** %GH, align 8, !dbg !82, !tbaa !72
+  %arrayidx10 = getelementptr inbounds %struct.cGH** %7, i64 %idxprom8, !dbg !82
+  %8 = load %struct.cGH** %arrayidx10, align 8, !dbg !82, !tbaa !72
+  %call11 = tail call i32 @CCTK_Traverse(%struct.cGH* %8, i8* getelementptr inbounds ([14 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !82
+  %inc13 = add i32 %conv_level.129, 1, !dbg !78
+  tail call void @llvm.dbg.value(metadata !{i32 %inc13}, i64 0, metadata !66), !dbg !78
+  %9 = load i32* %nGHs, align 4, !dbg !78, !tbaa !77
+  %cmp6 = icmp ult i32 %inc13, %9, !dbg !78
+  br i1 %cmp6, label %for.body7, label %for.end14, !dbg !78
 
-._crit_edge:                                      ; preds = %.lr.ph, %0, %.preheader
-  %25 = icmp eq i32 %5, 0, !dbg !108
-  br i1 %25, label %26, label %27, !dbg !110
+for.end14:                                        ; preds = %entry, %for.body7, %for.cond4.preheader
+  %cmp15 = icmp eq i32 %call, 0, !dbg !84
+  br i1 %cmp15, label %if.then, label %if.end, !dbg !84
 
-; <label>:26                                      ; preds = %._crit_edge
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([81 x i8]* @str, i64 0, i64 0)), !dbg !111
-  %puts1 = tail call i32 @puts(i8* getelementptr inbounds ([6 x i8]* @str5, i64 0, i64 0)), !dbg !113
-  br label %27, !dbg !114
+if.then:                                          ; preds = %for.end14
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([81 x i8]* @str, i64 0, i64 0)), !dbg !85
+  %puts27 = tail call i32 @puts(i8* getelementptr inbounds ([6 x i8]* @str5, i64 0, i64 0)), !dbg !87
+  br label %if.end, !dbg !88
 
-; <label>:27                                      ; preds = %26, %._crit_edge
-  ret i32 0, !dbg !115
+if.end:                                           ; preds = %if.then, %for.end14
+  ret i32 0, !dbg !89
 }

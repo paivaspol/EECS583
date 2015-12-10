@@ -1,107 +1,97 @@
-define i32 @_ZN3pov7WarningEjPKcz(i32 %level, i8* nocapture readonly %format, ...) #0 {
+define i32 @_ZN3pov7WarningEjPKcz(i32 %level, i8* nocapture %format, ...) #1 {
+entry:
   %marker = alloca [1 x %struct.__va_list_tag], align 16
   %msg = alloca %struct.POVMSData, align 8
   %localvsbuffer = alloca [1024 x i8], align 16
-  tail call void @llvm.dbg.value(metadata i32 %level, i64 0, metadata !518, metadata !1132), !dbg !1210
-  tail call void @llvm.dbg.value(metadata i8* %format, i64 0, metadata !519, metadata !1132), !dbg !1211
-  tail call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %marker, metadata !520, metadata !1132), !dbg !1212
-  %1 = getelementptr inbounds [1024 x i8]* %localvsbuffer, i64 0, i64 0, !dbg !1213
-  call void @llvm.lifetime.start(i64 1024, i8* %1) #1, !dbg !1213
-  tail call void @llvm.dbg.declare(metadata [1024 x i8]* %localvsbuffer, metadata !522, metadata !1132), !dbg !1214
-  %2 = load i32* @_ZN3pov5StageE, align 4, !dbg !1215, !tbaa !1216
-  %3 = sext i32 %2 to i64, !dbg !1218
-  %4 = getelementptr inbounds [14 x %"struct.pov::StageName_Struct"]* @_ZN3povL11Stage_NamesE, i64 0, i64 %3, i32 1, !dbg !1219
-  %5 = load i8** %4, align 8, !dbg !1219, !tbaa !1220
-  %6 = call i32 (i8*, i8*, ...)* @sprintf(i8* %1, i8* getelementptr inbounds ([13 x i8]* @.str1, i64 0, i64 0), i8* %5) #10, !dbg !1222
-  %7 = getelementptr inbounds [1 x %struct.__va_list_tag]* %marker, i64 0, i64 0, !dbg !1223
-  %8 = bitcast [1 x %struct.__va_list_tag]* %marker to i8*, !dbg !1223
-  call void @llvm.va_start(i8* %8), !dbg !1223
-  %9 = call i64 @strlen(i8* %1) #10, !dbg !1224
-  %10 = getelementptr inbounds [1024 x i8]* %localvsbuffer, i64 0, i64 %9, !dbg !1225
-  %11 = sub i64 1023, %9, !dbg !1226
-  %12 = call i32 @vsnprintf(i8* %10, i64 %11, i8* %format, %struct.__va_list_tag* %7) #10, !dbg !1227
-  call void @llvm.va_end(i8* %8), !dbg !1228
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !562, metadata !1132), !dbg !1229
-  br label %13, !dbg !1231
+  call void @llvm.dbg.value(metadata !{i32 %level}, i64 0, metadata !495), !dbg !720
+  call void @llvm.dbg.value(metadata !{i8* %format}, i64 0, metadata !496), !dbg !720
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %marker}, metadata !497), !dbg !721
+  call void @llvm.dbg.declare(metadata !{%struct.POVMSData* %msg}, metadata !498), !dbg !722
+  %0 = getelementptr inbounds [1024 x i8]* %localvsbuffer, i64 0, i64 0, !dbg !723
+  call void @llvm.lifetime.start(i64 1024, i8* %0) #0, !dbg !723
+  call void @llvm.dbg.declare(metadata !{[1024 x i8]* %localvsbuffer}, metadata !499), !dbg !723
+  %1 = load i32* @_ZN3pov5StageE, align 4, !dbg !724, !tbaa !725
+  %idxprom = sext i32 %1 to i64, !dbg !724
+  %stage_name = getelementptr inbounds [14 x %"struct.pov::StageName_Struct"]* @_ZN3povL11Stage_NamesE, i64 0, i64 %idxprom, i32 1, !dbg !724
+  %2 = load i8** %stage_name, align 8, !dbg !724, !tbaa !704
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([13 x i8]* @.str1, i64 0, i64 0), i8* %2) #9, !dbg !724
+  %arraydecay1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %marker, i64 0, i64 0, !dbg !726
+  %arraydecay12 = bitcast [1 x %struct.__va_list_tag]* %marker to i8*, !dbg !726
+  call void @llvm.va_start(i8* %arraydecay12), !dbg !726
+  %call5 = call i64 @strlen(i8* %0) #10, !dbg !727
+  %add.ptr = getelementptr inbounds [1024 x i8]* %localvsbuffer, i64 0, i64 %call5, !dbg !727
+  %sub = sub i64 1023, %call5, !dbg !727
+  %call9 = call i32 @vsnprintf(i8* %add.ptr, i64 %sub, i8* %format, %struct.__va_list_tag* %arraydecay1) #9, !dbg !727
+  call void @llvm.va_end(i8* %arraydecay12), !dbg !728
+  tail call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !729), !dbg !731
+  br label %while.cond.i, !dbg !732
 
-; <label>:13                                      ; preds = %16, %0
-  %.0.i = phi i8* [ %1, %0 ], [ %17, %16 ], !dbg !1232
-  %14 = load i8* %.0.i, align 1, !dbg !1233, !tbaa !1175
-  switch i8 %14, label %16 [
+while.cond.i:                                     ; preds = %if.end.i, %entry
+  %str.addr.0.i = phi i8* [ %0, %entry ], [ %incdec.ptr.i, %if.end.i ]
+  %3 = load i8* %str.addr.0.i, align 1, !dbg !732, !tbaa !693
+  switch i8 %3, label %if.end.i [
     i8 0, label %_ZN3pov13CleanupStringEPc.exit
-    i8 10, label %15
-  ], !dbg !1231
+    i8 10, label %if.then.i
+  ], !dbg !732
 
-; <label>:15                                      ; preds = %13
-  store i8 32, i8* %.0.i, align 1, !dbg !1234, !tbaa !1175
-  br label %16, !dbg !1237
+if.then.i:                                        ; preds = %while.cond.i
+  store i8 32, i8* %str.addr.0.i, align 1, !dbg !733, !tbaa !693
+  br label %if.end.i, !dbg !733
 
-; <label>:16                                      ; preds = %15, %13
-  %17 = getelementptr inbounds i8* %.0.i, i64 1, !dbg !1238
-  tail call void @llvm.dbg.value(metadata i8* %17, i64 0, metadata !562, metadata !1132), !dbg !1229
-  br label %13, !dbg !1231
+if.end.i:                                         ; preds = %if.then.i, %while.cond.i
+  %incdec.ptr.i = getelementptr inbounds i8* %str.addr.0.i, i64 1, !dbg !735
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i}, i64 0, metadata !729), !dbg !735
+  br label %while.cond.i, !dbg !736
 
-_ZN3pov13CleanupStringEPc.exit:                   ; preds = %13
-  %18 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 74), align 8, !dbg !1239, !tbaa !1241
-  %19 = icmp slt i32 %18, 5, !dbg !1251
-  br i1 %19, label %43, label %20, !dbg !1252
+_ZN3pov13CleanupStringEPc.exit:                   ; preds = %while.cond.i
+  %4 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 74), align 8, !dbg !737, !tbaa !725
+  %cmp = icmp slt i32 %4, 5, !dbg !737
+  br i1 %cmp, label %cleanup, label %lor.lhs.false, !dbg !737
 
-; <label>:20                                      ; preds = %_ZN3pov13CleanupStringEPc.exit
-  %notlhs = icmp sgt i32 %18, 9, !dbg !1253
-  %notrhs = icmp ne i32 %level, 0, !dbg !1253
-  %or.cond.not = or i1 %notrhs, %notlhs, !dbg !1253
-  %21 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8
-  %22 = icmp ugt i32 %21, %level, !dbg !1254
-  %or.cond7 = and i1 %or.cond.not, %22, !dbg !1253
-  br i1 %or.cond7, label %23, label %43, !dbg !1253
+lor.lhs.false:                                    ; preds = %_ZN3pov13CleanupStringEPc.exit
+  %notlhs = icmp sgt i32 %4, 9, !dbg !737
+  %notrhs = icmp ne i32 %level, 0, !dbg !737
+  %or.cond44.not = or i1 %notrhs, %notlhs, !dbg !737
+  %5 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !738, !tbaa !725
+  %cmp16 = icmp ugt i32 %5, %level, !dbg !738
+  %or.cond = and i1 %or.cond44.not, %cmp16, !dbg !737
+  br i1 %or.cond, label %if.end18, label %cleanup, !dbg !737
 
-; <label>:23                                      ; preds = %20
-  %24 = load i32* @_ZN3pov5StageE, align 4, !dbg !1256, !tbaa !1216
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %25 = call i32 @_Z15POVMSObject_NewP9POVMSDataj(%struct.POVMSData* %msg, i32 1179676531) #10, !dbg !1259
-  switch i32 %24, label %34 [
-    i32 13, label %26
-    i32 12, label %26
-    i32 5, label %26
-  ], !dbg !1261
+if.end18:                                         ; preds = %lor.lhs.false
+  %6 = load i32* @_ZN3pov5StageE, align 4, !dbg !739, !tbaa !725
+  %call25 = call i32 @_Z15POVMSObject_NewP9POVMSDataj(%struct.POVMSData* %msg, i32 1179676531) #8, !dbg !740
+  switch i32 %6, label %if.else [
+    i32 13, label %if.then24
+    i32 12, label %if.then24
+    i32 5, label %if.then24
+  ], !dbg !739
 
-; <label>:26                                      ; preds = %23, %23, %23
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  call void @_ZN3pov13Where_WarningEP9POVMSData(%struct.POVMSData* %msg) #10, !dbg !1262
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %27 = call i32 @_Z19POVMSUtil_SetStringP9POVMSDatajPKc(%struct.POVMSData* %msg, i32 1163163764, i8* %1) #10, !dbg !1263
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %28 = call i32 @_Z16POVMSUtil_SetIntP9POVMSDataji(%struct.POVMSData* %msg, i32 1466004078, i32 0) #10, !dbg !1264
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %29 = call i32 @_Z21POVMSMsg_SetupMessageP9POVMSDatajj(%struct.POVMSData* %msg, i32 1333097584, i32 1466004078) #10, !dbg !1265
-  %30 = call i8* @_Z23povray_getoutputcontextv() #10, !dbg !1266
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %31 = call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %msg, i8* %30) #10, !dbg !1267
-  %32 = load i8** @POVMS_Render_Context, align 8, !dbg !1268, !tbaa !1190
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %33 = call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %32, %struct.POVMSData* %msg, %struct.POVMSData* null, i32 1) #10, !dbg !1269
-  br label %42, !dbg !1270
+if.then24:                                        ; preds = %if.end18, %if.end18, %if.end18
+  call void @_ZN3pov13Where_WarningEP9POVMSData(%struct.POVMSData* %msg) #8, !dbg !742
+  %call27 = call i32 @_Z19POVMSUtil_SetStringP9POVMSDatajPKc(%struct.POVMSData* %msg, i32 1163163764, i8* %0) #8, !dbg !743
+  %call28 = call i32 @_Z16POVMSUtil_SetIntP9POVMSDataji(%struct.POVMSData* %msg, i32 1466004078, i32 0) #8, !dbg !744
+  %call29 = call i32 @_Z21POVMSMsg_SetupMessageP9POVMSDatajj(%struct.POVMSData* %msg, i32 1333097584, i32 1466004078) #8, !dbg !745
+  %call30 = call i8* @_Z23povray_getoutputcontextv() #8, !dbg !746
+  %call31 = call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %msg, i8* %call30) #8, !dbg !746
+  %7 = load i8** @POVMS_Render_Context, align 8, !dbg !747, !tbaa !704
+  %call32 = call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %7, %struct.POVMSData* %msg, %struct.POVMSData* null, i32 1) #8, !dbg !747
+  br label %if.end41, !dbg !748
 
-; <label>:34                                      ; preds = %23
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %35 = call i32 @_Z19POVMSUtil_SetStringP9POVMSDatajPKc(%struct.POVMSData* %msg, i32 1163163764, i8* %1) #10, !dbg !1271
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %36 = call i32 @_Z16POVMSUtil_SetIntP9POVMSDataji(%struct.POVMSData* %msg, i32 1466004078, i32 0) #10, !dbg !1273
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %37 = call i32 @_Z21POVMSMsg_SetupMessageP9POVMSDatajj(%struct.POVMSData* %msg, i32 1333097584, i32 1466004078) #10, !dbg !1274
-  %38 = call i8* @_Z23povray_getoutputcontextv() #10, !dbg !1275
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %39 = call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %msg, i8* %38) #10, !dbg !1276
-  %40 = load i8** @POVMS_Render_Context, align 8, !dbg !1277, !tbaa !1190
-  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !521, metadata !1132), !dbg !1258
-  %41 = call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %40, %struct.POVMSData* %msg, %struct.POVMSData* null, i32 1) #10, !dbg !1278
-  br label %42
+if.else:                                          ; preds = %if.end18
+  %call35 = call i32 @_Z19POVMSUtil_SetStringP9POVMSDatajPKc(%struct.POVMSData* %msg, i32 1163163764, i8* %0) #8, !dbg !749
+  %call36 = call i32 @_Z16POVMSUtil_SetIntP9POVMSDataji(%struct.POVMSData* %msg, i32 1466004078, i32 0) #8, !dbg !751
+  %call37 = call i32 @_Z21POVMSMsg_SetupMessageP9POVMSDatajj(%struct.POVMSData* %msg, i32 1333097584, i32 1466004078) #8, !dbg !752
+  %call38 = call i8* @_Z23povray_getoutputcontextv() #8, !dbg !753
+  %call39 = call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %msg, i8* %call38) #8, !dbg !753
+  %8 = load i8** @POVMS_Render_Context, align 8, !dbg !754, !tbaa !704
+  %call40 = call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %8, %struct.POVMSData* %msg, %struct.POVMSData* null, i32 1) #8, !dbg !754
+  br label %if.end41
 
-; <label>:42                                      ; preds = %34, %26
-  call void @_ZN3pov12Do_CooperateEi(i32 0) #10, !dbg !1279
-  br label %43, !dbg !1280
+if.end41:                                         ; preds = %if.else, %if.then24
+  call void @_ZN3pov12Do_CooperateEi(i32 0) #8, !dbg !755
+  br label %cleanup, !dbg !756
 
-; <label>:43                                      ; preds = %20, %_ZN3pov13CleanupStringEPc.exit, %42
-  call void @llvm.lifetime.end(i64 1024, i8* %1) #1, !dbg !1281
-  ret i32 0, !dbg !1281
+cleanup:                                          ; preds = %lor.lhs.false, %_ZN3pov13CleanupStringEPc.exit, %if.end41
+  call void @llvm.lifetime.end(i64 1024, i8* %0) #0, !dbg !756
+  ret i32 0, !dbg !757
 }

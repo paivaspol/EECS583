@@ -1,29 +1,30 @@
 define i32 @BndCopyDirGI(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, i32 %gi_to, i32 %gi_from) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !102, metadata !358), !dbg !620
-  tail call void @llvm.dbg.value(metadata i32 %stencil_size, i64 0, metadata !103, metadata !358), !dbg !621
-  tail call void @llvm.dbg.value(metadata i32 %dir, i64 0, metadata !104, metadata !358), !dbg !622
-  tail call void @llvm.dbg.value(metadata i32 %gi_to, i64 0, metadata !105, metadata !358), !dbg !623
-  tail call void @llvm.dbg.value(metadata i32 %gi_from, i64 0, metadata !106, metadata !358), !dbg !624
-  %1 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi_to) #6, !dbg !625
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !107, metadata !358), !dbg !626
-  %2 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi_from) #6, !dbg !627
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !108, metadata !358), !dbg !628
-  %3 = or i32 %2, %1, !dbg !629
-  %4 = icmp sgt i32 %3, -1, !dbg !629
-  br i1 %4, label %5, label %8, !dbg !629
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !94), !dbg !465
+  tail call void @llvm.dbg.value(metadata !{i32 %stencil_size}, i64 0, metadata !95), !dbg !466
+  tail call void @llvm.dbg.value(metadata !{i32 %dir}, i64 0, metadata !96), !dbg !467
+  tail call void @llvm.dbg.value(metadata !{i32 %gi_to}, i64 0, metadata !97), !dbg !468
+  tail call void @llvm.dbg.value(metadata !{i32 %gi_from}, i64 0, metadata !98), !dbg !469
+  %call = tail call i32 @CCTK_FirstVarIndexI(i32 %gi_to) #6, !dbg !470
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !99), !dbg !470
+  %call2 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi_from) #6, !dbg !471
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !100), !dbg !471
+  %0 = or i32 %call2, %call, !dbg !472
+  %1 = icmp sgt i32 %0, -1, !dbg !472
+  br i1 %1, label %if.then, label %if.else, !dbg !472
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi_to) #6, !dbg !631
-  %7 = tail call fastcc i32 @ApplyBndCopy(%struct.cGH* %GH, i32 %stencil_size, i32* null, i32 %dir, i32 %1, i32 %2, i32 %6) #7, !dbg !633
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !109, metadata !358), !dbg !634
-  br label %10, !dbg !635
+if.then:                                          ; preds = %entry
+  %call4 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi_to) #6, !dbg !473
+  %call5 = tail call fastcc i32 @ApplyBndCopy(%struct.cGH* %GH, i32 %stencil_size, i32* null, i32 %dir, i32 %call, i32 %call2, i32 %call4) #7, !dbg !473
+  tail call void @llvm.dbg.value(metadata !{i32 %call5}, i64 0, metadata !101), !dbg !473
+  br label %if.end, !dbg !475
 
-; <label>:8                                       ; preds = %0
-  %9 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 310, i8* getelementptr inbounds ([83 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 %gi_to, i32 %gi_from) #6, !dbg !636
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !109, metadata !358), !dbg !634
-  br label %10
+if.else:                                          ; preds = %entry
+  %call6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 310, i8* getelementptr inbounds ([71 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 %gi_to, i32 %gi_from) #6, !dbg !476
+  tail call void @llvm.dbg.value(metadata !338, i64 0, metadata !101), !dbg !478
+  br label %if.end
 
-; <label>:10                                      ; preds = %8, %5
-  %retval.0 = phi i32 [ %7, %5 ], [ -1, %8 ]
-  ret i32 %retval.0, !dbg !638
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call5, %if.then ], [ -1, %if.else ]
+  ret i32 %retval1.0, !dbg !479
 }

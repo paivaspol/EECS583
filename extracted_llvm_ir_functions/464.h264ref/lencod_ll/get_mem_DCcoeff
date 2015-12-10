@@ -1,55 +1,58 @@
 define i32 @get_mem_DCcoeff(i32**** nocapture %cofDC) #0 {
-  tail call void @llvm.dbg.value(metadata i32**** %cofDC, i64 0, metadata !516, metadata !1429), !dbg !2558
-  %1 = tail call i8* @calloc(i64 3, i64 8) #7, !dbg !2559
-  %2 = bitcast i32**** %cofDC to i8**, !dbg !2561
-  store i8* %1, i8** %2, align 8, !dbg !2561, !tbaa !1439
-  %3 = icmp eq i8* %1, null, !dbg !2562
-  br i1 %3, label %4, label %.preheader1, !dbg !2563
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32**** %cofDC}, i64 0, metadata !441), !dbg !1837
+  %call = tail call noalias i8* @calloc(i64 3, i64 8) #7, !dbg !1838
+  %0 = bitcast i8* %call to i32***, !dbg !1838
+  store i32*** %0, i32**** %cofDC, align 8, !dbg !1838, !tbaa !1428
+  %cmp = icmp eq i8* %call, null, !dbg !1838
+  br i1 %cmp, label %if.then, label %for.body, !dbg !1838
 
-; <label>:4                                       ; preds = %0
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str201, i64 0, i64 0)) #7, !dbg !2564
-  br label %.preheader1, !dbg !2564
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str201, i64 0, i64 0)) #7, !dbg !1838
+  br label %for.body, !dbg !1838
 
-.preheader1:                                      ; preds = %0, %4, %20
-  %indvars.iv4 = phi i64 [ %indvars.iv.next5, %20 ], [ 0, %4 ], [ 0, %0 ]
-  %5 = tail call i8* @calloc(i64 2, i64 8) #7, !dbg !2565
-  %6 = load i32**** %cofDC, align 8, !dbg !2570, !tbaa !1439
-  %7 = getelementptr inbounds i32*** %6, i64 %indvars.iv4, !dbg !2571
-  %8 = bitcast i32*** %7 to i8**, !dbg !2572
-  store i8* %5, i8** %8, align 8, !dbg !2572, !tbaa !1439
-  %9 = icmp eq i8* %5, null, !dbg !2573
-  br i1 %9, label %10, label %.preheader, !dbg !2574
+for.body:                                         ; preds = %for.inc17, %entry, %if.then
+  %indvars.iv29 = phi i64 [ 0, %if.then ], [ 0, %entry ], [ %indvars.iv.next30, %for.inc17 ]
+  %call2 = tail call noalias i8* @calloc(i64 2, i64 8) #7, !dbg !1839
+  %1 = bitcast i8* %call2 to i32**, !dbg !1839
+  %2 = load i32**** %cofDC, align 8, !dbg !1839, !tbaa !1428
+  %arrayidx = getelementptr inbounds i32*** %2, i64 %indvars.iv29, !dbg !1839
+  store i32** %1, i32*** %arrayidx, align 8, !dbg !1839, !tbaa !1428
+  %cmp3 = icmp eq i8* %call2, null, !dbg !1839
+  br i1 %cmp3, label %if.then4, label %for.body8, !dbg !1839
 
-; <label>:10                                      ; preds = %.preheader1
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str201, i64 0, i64 0)) #7, !dbg !2575
-  br label %.preheader, !dbg !2575
+if.then4:                                         ; preds = %for.body
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str201, i64 0, i64 0)) #7, !dbg !1839
+  br label %for.body8, !dbg !1839
 
-.preheader:                                       ; preds = %.preheader1, %10, %19
-  %indvars.iv = phi i64 [ %indvars.iv.next, %19 ], [ 0, %10 ], [ 0, %.preheader1 ]
-  %11 = tail call i8* @calloc(i64 65, i64 4) #7, !dbg !2576
-  %12 = load i32**** %cofDC, align 8, !dbg !2581, !tbaa !1439
-  %13 = getelementptr inbounds i32*** %12, i64 %indvars.iv4, !dbg !2582
-  %14 = load i32*** %13, align 8, !dbg !2582, !tbaa !1439
-  %15 = getelementptr inbounds i32** %14, i64 %indvars.iv, !dbg !2582
-  %16 = bitcast i32** %15 to i8**, !dbg !2583
-  store i8* %11, i8** %16, align 8, !dbg !2583, !tbaa !1439
-  %17 = icmp eq i8* %11, null, !dbg !2584
-  br i1 %17, label %18, label %19, !dbg !2585
+for.body8:                                        ; preds = %for.body, %if.then4, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.then4 ], [ 0, %for.body ]
+  %call9 = tail call noalias i8* @calloc(i64 65, i64 4) #7, !dbg !1842
+  %3 = bitcast i8* %call9 to i32*, !dbg !1842
+  %4 = load i32**** %cofDC, align 8, !dbg !1842, !tbaa !1428
+  %arrayidx12 = getelementptr inbounds i32*** %4, i64 %indvars.iv29, !dbg !1842
+  %5 = load i32*** %arrayidx12, align 8, !dbg !1842, !tbaa !1428
+  %arrayidx13 = getelementptr inbounds i32** %5, i64 %indvars.iv, !dbg !1842
+  store i32* %3, i32** %arrayidx13, align 8, !dbg !1842, !tbaa !1428
+  %cmp14 = icmp eq i8* %call9, null, !dbg !1842
+  br i1 %cmp14, label %if.then15, label %for.inc, !dbg !1842
 
-; <label>:18                                      ; preds = %.preheader
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str201, i64 0, i64 0)) #7, !dbg !2586
-  br label %19, !dbg !2586
+if.then15:                                        ; preds = %for.body8
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str201, i64 0, i64 0)) #7, !dbg !1842
+  br label %for.inc, !dbg !1842
 
-; <label>:19                                      ; preds = %.preheader, %18
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2587
-  %exitcond = icmp eq i64 %indvars.iv.next, 2, !dbg !2587
-  br i1 %exitcond, label %20, label %.preheader, !dbg !2587
+for.inc:                                          ; preds = %for.body8, %if.then15
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1845
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1845
+  %exitcond = icmp eq i32 %lftr.wideiv, 2, !dbg !1845
+  br i1 %exitcond, label %for.inc17, label %for.body8, !dbg !1845
 
-; <label>:20                                      ; preds = %19
-  %indvars.iv.next5 = add nuw nsw i64 %indvars.iv4, 1, !dbg !2588
-  %exitcond6 = icmp eq i64 %indvars.iv.next5, 3, !dbg !2588
-  br i1 %exitcond6, label %21, label %.preheader1, !dbg !2588
+for.inc17:                                        ; preds = %for.inc
+  %indvars.iv.next30 = add i64 %indvars.iv29, 1, !dbg !1846
+  %lftr.wideiv31 = trunc i64 %indvars.iv.next30 to i32, !dbg !1846
+  %exitcond32 = icmp eq i32 %lftr.wideiv31, 3, !dbg !1846
+  br i1 %exitcond32, label %for.end19, label %for.body, !dbg !1846
 
-; <label>:21                                      ; preds = %20
-  ret i32 1560, !dbg !2589
+for.end19:                                        ; preds = %for.inc17
+  ret i32 1560, !dbg !1847
 }

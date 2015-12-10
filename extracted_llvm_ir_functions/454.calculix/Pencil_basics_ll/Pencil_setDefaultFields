@@ -1,19 +1,20 @@
 define void @Pencil_setDefaultFields(%struct._Pencil* %pencil) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Pencil* %pencil, i64 0, metadata !71, metadata !88), !dbg !99
-  %1 = icmp eq %struct._Pencil* %pencil, null, !dbg !100
-  br i1 %1, label %2, label %5, !dbg !102
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Pencil* %pencil}, i64 0, metadata !66), !dbg !84
+  %cmp = icmp eq %struct._Pencil* %pencil, null, !dbg !85
+  br i1 %cmp, label %if.then, label %if.end, !dbg !85
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !103, !tbaa !93
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), %struct._Pencil* null) #6, !dbg !105
-  tail call void @exit(i32 -1) #7, !dbg !106
-  unreachable, !dbg !106
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !86, !tbaa !79
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), %struct._Pencil* null) #6, !dbg !86
+  tail call void @exit(i32 -1) #7, !dbg !88
+  unreachable, !dbg !88
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 0, !dbg !107
-  store i32 1, i32* %6, align 4, !dbg !108, !tbaa !109
-  %7 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 1, !dbg !112
-  %8 = bitcast i32* %7 to i8*, !dbg !113
-  call void @llvm.memset.p0i8.i64(i8* %8, i8 0, i64 36, i32 4, i1 false), !dbg !114
-  ret void, !dbg !113
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 0, !dbg !89
+  store i32 1, i32* %type, align 4, !dbg !89, !tbaa !90
+  %symflag = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 1, !dbg !91
+  %1 = bitcast i32* %symflag to i8*, !dbg !92
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 36, i32 4, i1 false), !dbg !93
+  ret void, !dbg !92
 }

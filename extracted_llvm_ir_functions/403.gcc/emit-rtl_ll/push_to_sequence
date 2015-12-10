@@ -1,31 +1,33 @@
 define void @push_to_sequence(%struct.rtx_def* %first) #0 {
 entry:
-  tail call void @start_sequence() #9
-  br label %for.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %first}, i64 0, metadata !1988), !dbg !3934
+  tail call void @start_sequence() #10, !dbg !3935
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %first}, i64 0, metadata !1989), !dbg !3936
+  br label %for.cond, !dbg !3936
 
 for.cond:                                         ; preds = %land.rhs, %entry
   %last.0 = phi %struct.rtx_def* [ %first, %entry ], [ %0, %land.rhs ]
-  %tobool = icmp eq %struct.rtx_def* %last.0, null
-  br i1 %tobool, label %for.end, label %land.rhs
+  %tobool = icmp eq %struct.rtx_def* %last.0, null, !dbg !3936
+  br i1 %tobool, label %for.end, label %land.rhs, !dbg !3936
 
 land.rhs:                                         ; preds = %for.cond
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %last.0, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %tobool1 = icmp eq %struct.rtx_def* %0, null
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %last.0, i64 0, i32 1, i64 2, !dbg !3936
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3936
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !3936, !tbaa !2272
+  %tobool1 = icmp eq %struct.rtx_def* %0, null, !dbg !3936
   br i1 %tobool1, label %for.end, label %for.cond
 
 for.end:                                          ; preds = %land.rhs, %for.cond
   %last.0.lcssa = phi %struct.rtx_def* [ %last.0, %land.rhs ], [ null, %for.cond ]
-  %1 = load %struct.function** @cfun, align 8, !tbaa !4
-  %emit = getelementptr inbounds %struct.function* %1, i64 0, i32 3
-  %2 = load %struct.emit_status** %emit, align 8, !tbaa !4
-  %x_first_insn = getelementptr inbounds %struct.emit_status* %2, i64 0, i32 2
-  store %struct.rtx_def* %first, %struct.rtx_def** %x_first_insn, align 8, !tbaa !4
-  %3 = load %struct.function** @cfun, align 8, !tbaa !4
-  %emit5 = getelementptr inbounds %struct.function* %3, i64 0, i32 3
-  %4 = load %struct.emit_status** %emit5, align 8, !tbaa !4
-  %x_last_insn = getelementptr inbounds %struct.emit_status* %4, i64 0, i32 3
-  store %struct.rtx_def* %last.0.lcssa, %struct.rtx_def** %x_last_insn, align 8, !tbaa !4
-  ret void
+  %1 = load %struct.function** @cfun, align 8, !dbg !3938, !tbaa !2272
+  %emit = getelementptr inbounds %struct.function* %1, i64 0, i32 3, !dbg !3938
+  %2 = load %struct.emit_status** %emit, align 8, !dbg !3938, !tbaa !2272
+  %x_first_insn = getelementptr inbounds %struct.emit_status* %2, i64 0, i32 2, !dbg !3938
+  store %struct.rtx_def* %first, %struct.rtx_def** %x_first_insn, align 8, !dbg !3938, !tbaa !2272
+  %3 = load %struct.function** @cfun, align 8, !dbg !3939, !tbaa !2272
+  %emit5 = getelementptr inbounds %struct.function* %3, i64 0, i32 3, !dbg !3939
+  %4 = load %struct.emit_status** %emit5, align 8, !dbg !3939, !tbaa !2272
+  %x_last_insn = getelementptr inbounds %struct.emit_status* %4, i64 0, i32 3, !dbg !3939
+  store %struct.rtx_def* %last.0.lcssa, %struct.rtx_def** %x_last_insn, align 8, !dbg !3939, !tbaa !2272
+  ret void, !dbg !3940
 }

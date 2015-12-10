@@ -1,59 +1,60 @@
-define void @A2_writeToFormattedFile(%struct._A2* readonly %mtx, %struct.__sFILE* %fp) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._A2* %mtx, i64 0, metadata !125, metadata !177), !dbg !520
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !126, metadata !177), !dbg !521
-  %1 = icmp eq %struct._A2* %mtx, null, !dbg !522
-  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !524
-  %or.cond = or i1 %1, %2, !dbg !525
-  br i1 %or.cond, label %35, label %3, !dbg !525
+define void @A2_writeToFormattedFile(%struct._A2* %mtx, %struct._IO_FILE* %fp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._A2* %mtx}, i64 0, metadata !119), !dbg !325
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !120), !dbg !326
+  %cmp = icmp eq %struct._A2* %mtx, null, !dbg !327
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null, !dbg !327
+  %or.cond = or i1 %cmp, %cmp1, !dbg !327
+  br i1 %or.cond, label %return, label %if.end, !dbg !327
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0, !dbg !526
-  %5 = load i32* %4, align 4, !dbg !526, !tbaa !295
-  %6 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1, !dbg !527
-  %7 = load i32* %6, align 4, !dbg !527, !tbaa !275
-  %8 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2, !dbg !528
-  %9 = load i32* %8, align 4, !dbg !528, !tbaa !283
-  %10 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3, !dbg !529
-  %11 = load i32* %10, align 4, !dbg !529, !tbaa !279
-  %12 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4, !dbg !530
-  %13 = load i32* %12, align 4, !dbg !530, !tbaa !286
-  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([17 x i8]* @.str17, i64 0, i64 0), i32 %5, i32 %7, i32 %9, i32 %11, i32 %13) #7, !dbg !531
-  %15 = load i32* %6, align 4, !dbg !532, !tbaa !275
-  %16 = add nsw i32 %15, -1, !dbg !534
-  %17 = load i32* %10, align 4, !dbg !535, !tbaa !279
-  %18 = mul nsw i32 %16, %17, !dbg !536
-  %19 = add nsw i32 %18, 1, !dbg !537
-  %20 = load i32* %8, align 4, !dbg !538, !tbaa !283
-  %21 = add nsw i32 %20, -1, !dbg !539
-  %22 = load i32* %12, align 4, !dbg !540, !tbaa !286
-  %23 = mul nsw i32 %21, %22, !dbg !541
-  %24 = add nsw i32 %19, %23, !dbg !542
-  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !127, metadata !177), !dbg !543
-  %25 = icmp sgt i32 %24, 0, !dbg !544
-  br i1 %25, label %26, label %35, !dbg !545
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0, !dbg !328
+  %0 = load i32* %type, align 4, !dbg !328, !tbaa !218
+  %n1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1, !dbg !328
+  %1 = load i32* %n1, align 4, !dbg !328, !tbaa !218
+  %n2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2, !dbg !328
+  %2 = load i32* %n2, align 4, !dbg !328, !tbaa !218
+  %inc1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3, !dbg !328
+  %3 = load i32* %inc1, align 4, !dbg !328, !tbaa !218
+  %inc2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4, !dbg !328
+  %4 = load i32* %inc2, align 4, !dbg !328, !tbaa !218
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([17 x i8]* @.str17, i64 0, i64 0), i32 %0, i32 %1, i32 %2, i32 %3, i32 %4) #6, !dbg !328
+  %5 = load i32* %n1, align 4, !dbg !329, !tbaa !218
+  %sub = add nsw i32 %5, -1, !dbg !329
+  %6 = load i32* %inc1, align 4, !dbg !329, !tbaa !218
+  %mul = mul nsw i32 %sub, %6, !dbg !329
+  %add = add nsw i32 %mul, 1, !dbg !329
+  %7 = load i32* %n2, align 4, !dbg !329, !tbaa !218
+  %sub5 = add nsw i32 %7, -1, !dbg !329
+  %8 = load i32* %inc2, align 4, !dbg !329, !tbaa !218
+  %mul7 = mul nsw i32 %sub5, %8, !dbg !329
+  %add8 = add nsw i32 %add, %mul7, !dbg !329
+  tail call void @llvm.dbg.value(metadata !{i32 %add8}, i64 0, metadata !121), !dbg !329
+  %cmp9 = icmp sgt i32 %add8, 0, !dbg !329
+  br i1 %cmp9, label %land.lhs.true, label %return, !dbg !329
 
-; <label>:26                                      ; preds = %3
-  %27 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6, !dbg !546
-  %28 = load double** %27, align 8, !dbg !546, !tbaa !300
-  %29 = icmp eq double* %28, null, !dbg !547
-  br i1 %29, label %35, label %30, !dbg !548
+land.lhs.true:                                    ; preds = %if.end
+  %entries = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6, !dbg !329
+  %9 = load double** %entries, align 8, !dbg !329, !tbaa !171
+  %cmp10 = icmp eq double* %9, null, !dbg !329
+  br i1 %cmp10, label %return, label %if.then11, !dbg !329
 
-; <label>:30                                      ; preds = %26
-  %31 = load i32* %4, align 4, !dbg !549, !tbaa !295
-  switch i32 %31, label %35 [
-    i32 1, label %32
-    i32 2, label %33
-  ], !dbg !552
+if.then11:                                        ; preds = %land.lhs.true
+  %10 = load i32* %type, align 4, !dbg !330, !tbaa !218
+  switch i32 %10, label %return [
+    i32 1, label %if.then14
+    i32 2, label %if.then18
+  ], !dbg !330
 
-; <label>:32                                      ; preds = %30
-  tail call void @DVfprintf(%struct.__sFILE* %fp, i32 %24, double* %28) #7, !dbg !553
-  br label %35, !dbg !555
+if.then14:                                        ; preds = %if.then11
+  tail call void @DVfprintf(%struct._IO_FILE* %fp, i32 %add8, double* %9) #6, !dbg !332
+  br label %return, !dbg !334
 
-; <label>:33                                      ; preds = %30
-  %34 = shl nsw i32 %24, 1, !dbg !556
-  tail call void @DVfprintf(%struct.__sFILE* %fp, i32 %34, double* %28) #7, !dbg !559
-  br label %35, !dbg !560
+if.then18:                                        ; preds = %if.then11
+  %mul19 = shl nsw i32 %add8, 1, !dbg !335
+  tail call void @DVfprintf(%struct._IO_FILE* %fp, i32 %mul19, double* %9) #6, !dbg !335
+  br label %return, !dbg !337
 
-; <label>:35                                      ; preds = %30, %26, %3, %33, %32, %0
-  ret void, !dbg !561
+return:                                           ; preds = %if.then11, %land.lhs.true, %if.end, %if.then18, %if.then14, %entry
+  ret void, !dbg !338
 }

@@ -1,10 +1,14 @@
-define internal i32 @ssa_rename_from_equal(i8* nocapture %srfp1, i8* nocapture %srfp2) #5 {
+define internal i32 @ssa_rename_from_equal(i8* nocapture %srfp1, i8* nocapture %srfp2) #6 {
 entry:
-  %reg.i = bitcast i8* %srfp1 to i32*
-  %0 = load i32* %reg.i, align 4, !tbaa !3
-  %reg.i2 = bitcast i8* %srfp2 to i32*
-  %1 = load i32* %reg.i2, align 4, !tbaa !3
-  %cmp = icmp eq i32 %0, %1
-  %conv = zext i1 %cmp to i32
-  ret i32 %conv
+  tail call void @llvm.dbg.value(metadata !{i8* %srfp1}, i64 0, metadata !981), !dbg !2147
+  tail call void @llvm.dbg.value(metadata !{i8* %srfp2}, i64 0, metadata !982), !dbg !2148
+  tail call void @llvm.dbg.value(metadata !{i8* %srfp1}, i64 0, metadata !2149), !dbg !2151
+  %reg.i = bitcast i8* %srfp1 to i32*, !dbg !2152
+  %0 = load i32* %reg.i, align 4, !dbg !2152, !tbaa !1224
+  tail call void @llvm.dbg.value(metadata !{i8* %srfp2}, i64 0, metadata !2153), !dbg !2155
+  %reg.i2 = bitcast i8* %srfp2 to i32*, !dbg !2156
+  %1 = load i32* %reg.i2, align 4, !dbg !2156, !tbaa !1224
+  %cmp = icmp eq i32 %0, %1, !dbg !2154
+  %conv = zext i1 %cmp to i32, !dbg !2154
+  ret i32 %conv, !dbg !2154
 }

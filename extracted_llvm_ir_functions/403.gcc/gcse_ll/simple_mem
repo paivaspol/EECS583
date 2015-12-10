@@ -1,24 +1,25 @@
 define internal fastcc i32 @simple_mem(%struct.rtx_def* nocapture %x) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %1 = and i32 %bf.load, 134283263
-  %or.cond.not = icmp ne i32 %1, 66
-  %bf.clear7 = and i32 %bf.load, 16711680
-  %cmp8 = icmp eq i32 %bf.clear7, 3342336
-  %or.cond17 = or i1 %or.cond.not, %cmp8
-  br i1 %or.cond17, label %return, label %if.end10
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1324), !dbg !3852
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !3853
+  %bf.load = load i32* %0, align 8, !dbg !3853
+  %1 = and i32 %bf.load, 134283263, !dbg !3853
+  %or.cond.not = icmp ne i32 %1, 66, !dbg !3853
+  %bf.clear7 = and i32 %bf.load, 16711680, !dbg !3854
+  %cmp8 = icmp eq i32 %bf.clear7, 3342336, !dbg !3854
+  %or.cond17 = or i1 %or.cond.not, %cmp8, !dbg !3853
+  br i1 %or.cond17, label %return, label %if.end10, !dbg !3853
 
 if.end10:                                         ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %call = tail call i32 @rtx_varies_p(%struct.rtx_def* %2, i32 0) #6
-  %tobool11 = icmp eq i32 %call, 0
-  %. = zext i1 %tobool11 to i32
-  br label %return
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !3855
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3855
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !3855, !tbaa !1729
+  %call = tail call i32 @rtx_varies_p(%struct.rtx_def* %2, i32 0) #7, !dbg !3855
+  %tobool11 = icmp eq i32 %call, 0, !dbg !3855
+  %. = zext i1 %tobool11 to i32, !dbg !3856
+  br label %return, !dbg !3856
 
 return:                                           ; preds = %entry, %if.end10
   %retval.0 = phi i32 [ 0, %entry ], [ %., %if.end10 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3857
 }

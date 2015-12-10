@@ -1,31 +1,32 @@
-define %struct.rtx_def* @stabilize(%struct.rtx_def* %x) #1 {
+define %struct.rtx_def* @stabilize(%struct.rtx_def* %x) #2 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 66
-  br i1 %cmp, label %lor.lhs.false, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1759), !dbg !2136
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !2137
+  %bf.load = load i32* %0, align 8, !dbg !2137
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2137
+  %cmp = icmp eq i32 %bf.clear, 66, !dbg !2137
+  br i1 %cmp, label %lor.lhs.false, label %return, !dbg !2137
 
 lor.lhs.false:                                    ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %call = tail call i32 @rtx_unstable_p(%struct.rtx_def* %1) #4
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !2138
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !2138
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !2138, !tbaa !1942
+  %call = tail call i32 @rtx_unstable_p(%struct.rtx_def* %1) #5, !dbg !2138
+  %tobool = icmp eq i32 %call, 0, !dbg !2138
+  br i1 %tobool, label %return, label %if.end, !dbg !2138
 
 if.end:                                           ; preds = %lor.lhs.false
-  %2 = load i32* @target_flags, align 4, !tbaa !5
-  %and = lshr i32 %2, 25
-  %3 = and i32 %and, 1
-  %4 = or i32 %3, 4
-  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %call5 = tail call %struct.rtx_def* @copy_all_regs(%struct.rtx_def* %5) #5
-  %call6 = tail call %struct.rtx_def* @force_reg(i32 %4, %struct.rtx_def* %call5) #5
-  %call7 = tail call %struct.rtx_def* @replace_equiv_address(%struct.rtx_def* %x, %struct.rtx_def* %call6) #4
-  br label %return
+  %2 = load i32* @target_flags, align 4, !dbg !2139, !tbaa !2023
+  %and = lshr i32 %2, 25, !dbg !2139
+  %3 = and i32 %and, 1, !dbg !2139
+  %4 = or i32 %3, 4, !dbg !2139
+  %5 = load %struct.rtx_def** %rtx, align 8, !dbg !2139, !tbaa !1942
+  %call5 = tail call %struct.rtx_def* @copy_all_regs(%struct.rtx_def* %5) #6, !dbg !2139
+  %call6 = tail call %struct.rtx_def* @force_reg(i32 %4, %struct.rtx_def* %call5) #6, !dbg !2139
+  %call7 = tail call %struct.rtx_def* @replace_equiv_address(%struct.rtx_def* %x, %struct.rtx_def* %call6) #5, !dbg !2139
+  br label %return, !dbg !2139
 
 return:                                           ; preds = %entry, %lor.lhs.false, %if.end
   %retval.0 = phi %struct.rtx_def* [ %call7, %if.end ], [ %x, %lor.lhs.false ], [ %x, %entry ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !2140
 }

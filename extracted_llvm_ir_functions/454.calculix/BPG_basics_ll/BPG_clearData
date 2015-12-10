@@ -1,25 +1,26 @@
 define void @BPG_clearData(%struct._BPG* %bpg) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._BPG* %bpg, i64 0, metadata !68, metadata !80), !dbg !101
-  %1 = icmp eq %struct._BPG* %bpg, null, !dbg !102
-  br i1 %1, label %2, label %5, !dbg !104
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._BPG* %bpg}, i64 0, metadata !63), !dbg !83
+  %cmp = icmp eq %struct._BPG* %bpg, null, !dbg !84
+  br i1 %cmp, label %if.then, label %if.end, !dbg !84
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !105, !tbaa !85
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([61 x i8]* @.str3, i64 0, i64 0), %struct._BPG* null) #6, !dbg !107
-  tail call void @exit(i32 -1) #7, !dbg !108
-  unreachable, !dbg !108
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !85, !tbaa !71
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([61 x i8]* @.str3, i64 0, i64 0), %struct._BPG* null) #6, !dbg !85
+  tail call void @exit(i32 -1) #7, !dbg !87
+  unreachable, !dbg !87
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 2, !dbg !109
-  %7 = load %struct._Graph** %6, align 8, !dbg !109, !tbaa !111
-  %8 = icmp eq %struct._Graph* %7, null, !dbg !114
-  br i1 %8, label %10, label %9, !dbg !115
+if.end:                                           ; preds = %entry
+  %graph = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 2, !dbg !88
+  %1 = load %struct._Graph** %graph, align 8, !dbg !88, !tbaa !71
+  %cmp1 = icmp eq %struct._Graph* %1, null, !dbg !88
+  br i1 %cmp1, label %if.end4, label %if.then2, !dbg !88
 
-; <label>:9                                       ; preds = %5
-  tail call void @Graph_free(%struct._Graph* %7) #6, !dbg !116
-  br label %10, !dbg !118
+if.then2:                                         ; preds = %if.end
+  tail call void @Graph_free(%struct._Graph* %1) #6, !dbg !89
+  br label %if.end4, !dbg !91
 
-; <label>:10                                      ; preds = %5, %9
-  tail call void @BPG_setDefaultFields(%struct._BPG* %bpg) #8, !dbg !119
-  ret void, !dbg !120
+if.end4:                                          ; preds = %if.end, %if.then2
+  tail call void @BPG_setDefaultFields(%struct._BPG* %bpg) #8, !dbg !92
+  ret void, !dbg !93
 }

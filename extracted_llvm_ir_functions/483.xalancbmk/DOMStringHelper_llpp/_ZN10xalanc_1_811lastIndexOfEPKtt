@@ -1,0 +1,43 @@
+define i32 @_ZN10xalanc_1_811lastIndexOfEPKtt(i16* %theString, i16 zeroext %theChar) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !3030), !dbg !6734
+  tail call void @llvm.dbg.value(metadata !{i16 %theChar}, i64 0, metadata !3031), !dbg !6735
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !6736), !dbg !6738
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !6739), !dbg !6740
+  br label %while.cond.i, !dbg !6741
+
+while.cond.i:                                     ; preds = %while.cond.i, %entry
+  %theBufferPointer.0.i = phi i16* [ %theString, %entry ], [ %incdec.ptr.i, %while.cond.i ]
+  %0 = load i16* %theBufferPointer.0.i, align 2, !dbg !6741, !tbaa !6609
+  %cmp.i = icmp eq i16 %0, 0, !dbg !6741
+  %incdec.ptr.i = getelementptr inbounds i16* %theBufferPointer.0.i, i64 1, !dbg !6742
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr.i}, i64 0, metadata !6739), !dbg !6742
+  br i1 %cmp.i, label %_ZN10xalanc_1_86lengthEPKt.exit, label %while.cond.i, !dbg !6741
+
+_ZN10xalanc_1_86lengthEPKt.exit:                  ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %theBufferPointer.0.i to i64, !dbg !6743
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %theString to i64, !dbg !6743
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !6743
+  %sub.ptr.div4.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !6743
+  %conv1.i = trunc i64 %sub.ptr.div4.i to i32, !dbg !6743
+  tail call void @llvm.dbg.value(metadata !{i32 %conv1.i}, i64 0, metadata !3032), !dbg !6737
+  %cmp = icmp eq i32 %conv1.i, 0, !dbg !6744
+  br i1 %cmp, label %while.end, label %while.cond, !dbg !6744
+
+while.cond:                                       ; preds = %_ZN10xalanc_1_86lengthEPKt.exit, %land.rhs
+  %theIndex.0 = phi i32 [ %sub, %land.rhs ], [ %conv1.i, %_ZN10xalanc_1_86lengthEPKt.exit ]
+  %cond = icmp eq i32 %theIndex.0, 0, !dbg !6745
+  br i1 %cond, label %while.end, label %land.rhs, !dbg !6745
+
+land.rhs:                                         ; preds = %while.cond
+  %sub = add i32 %theIndex.0, -1, !dbg !6745
+  %idxprom = zext i32 %sub to i64, !dbg !6745
+  %arrayidx = getelementptr inbounds i16* %theString, i64 %idxprom, !dbg !6745
+  %1 = load i16* %arrayidx, align 2, !dbg !6745, !tbaa !6609
+  %cmp3 = icmp eq i16 %1, %theChar, !dbg !6745
+  br i1 %cmp3, label %while.end, label %while.cond
+
+while.end:                                        ; preds = %_ZN10xalanc_1_86lengthEPKt.exit, %while.cond, %land.rhs
+  %merge = phi i32 [ %sub, %land.rhs ], [ %conv1.i, %while.cond ], [ %conv1.i, %_ZN10xalanc_1_86lengthEPKt.exit ]
+  ret i32 %merge, !dbg !6746
+}

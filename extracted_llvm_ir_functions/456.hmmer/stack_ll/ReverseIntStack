@@ -1,26 +1,25 @@
 define void @ReverseIntStack(%struct.intstack_s* nocapture %stack) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %stack, i64 0, metadata !37, metadata !54), !dbg !98
-  %1 = getelementptr inbounds %struct.intstack_s* %stack, i64 0, i32 1, !dbg !99
-  %2 = load %struct.intstack_s** %1, align 8, !dbg !99, !tbaa !61
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %2, i64 0, metadata !38, metadata !54), !dbg !100
-  store %struct.intstack_s* null, %struct.intstack_s** %1, align 8, !dbg !101, !tbaa !61
-  %3 = icmp eq %struct.intstack_s* %2, null, !dbg !103
-  br i1 %3, label %._crit_edge, label %.lr.ph, !dbg !104
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %stack}, i64 0, metadata !36), !dbg !68
+  %nxt = getelementptr inbounds %struct.intstack_s* %stack, i64 0, i32 1, !dbg !69
+  %0 = load %struct.intstack_s** %nxt, align 8, !dbg !69, !tbaa !49
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %0}, i64 0, metadata !37), !dbg !69
+  store %struct.intstack_s* null, %struct.intstack_s** %nxt, align 8, !dbg !70, !tbaa !49
+  %cmp12 = icmp eq %struct.intstack_s* %0, null, !dbg !72
+  br i1 %cmp12, label %while.end, label %while.body, !dbg !72
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %4 = phi i64 [ %9, %.lr.ph ], [ 0, %0 ], !dbg !105
-  %old.01 = phi %struct.intstack_s* [ %6, %.lr.ph ], [ %2, %0 ]
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %6, i64 0, metadata !39, metadata !54), !dbg !105
-  %5 = getelementptr inbounds %struct.intstack_s* %old.01, i64 0, i32 1, !dbg !106
-  %6 = load %struct.intstack_s** %5, align 8, !dbg !106, !tbaa !61
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %6, i64 0, metadata !38, metadata !54), !dbg !100
-  %7 = bitcast %struct.intstack_s** %5 to i64*, !dbg !107
-  store i64 %4, i64* %7, align 8, !dbg !107, !tbaa !61
-  store %struct.intstack_s* %old.01, %struct.intstack_s** %1, align 8, !dbg !101, !tbaa !61
-  %8 = icmp eq %struct.intstack_s* %6, null, !dbg !103
-  %9 = ptrtoint %struct.intstack_s* %old.01 to i64
-  br i1 %8, label %._crit_edge, label %.lr.ph, !dbg !104
+while.body:                                       ; preds = %entry, %while.body
+  %old.014 = phi %struct.intstack_s* [ %1, %while.body ], [ %0, %entry ]
+  %storemerge13 = phi %struct.intstack_s* [ %old.014, %while.body ], [ null, %entry ]
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %old.014}, i64 0, metadata !38), !dbg !73
+  %nxt2 = getelementptr inbounds %struct.intstack_s* %old.014, i64 0, i32 1, !dbg !74
+  %1 = load %struct.intstack_s** %nxt2, align 8, !dbg !74, !tbaa !49
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %1}, i64 0, metadata !37), !dbg !74
+  store %struct.intstack_s* %storemerge13, %struct.intstack_s** %nxt2, align 8, !dbg !75, !tbaa !49
+  store %struct.intstack_s* %old.014, %struct.intstack_s** %nxt, align 8, !dbg !70, !tbaa !49
+  %cmp = icmp eq %struct.intstack_s* %1, null, !dbg !72
+  br i1 %cmp, label %while.end, label %while.body, !dbg !72
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  ret void, !dbg !108
+while.end:                                        ; preds = %while.body, %entry
+  ret void, !dbg !76
 }

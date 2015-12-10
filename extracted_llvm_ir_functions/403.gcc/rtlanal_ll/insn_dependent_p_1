@@ -1,19 +1,23 @@
-define internal void @insn_dependent_p_1(%struct.rtx_def* %x, %struct.rtx_def* nocapture %pat, i8* nocapture %data) #1 {
+define internal void @insn_dependent_p_1(%struct.rtx_def* %x, %struct.rtx_def* nocapture %pat, i8* nocapture %data) #2 {
 entry:
-  %0 = bitcast i8* %data to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %0, align 8, !tbaa !0
-  %tobool = icmp eq %struct.rtx_def* %1, null
-  br i1 %tobool, label %if.end, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !968), !dbg !1408
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pat}, i64 0, metadata !969), !dbg !1409
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !970), !dbg !1410
+  %0 = bitcast i8* %data to %struct.rtx_def**, !dbg !1411
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %0}, i64 0, metadata !971), !dbg !1411
+  %1 = load %struct.rtx_def** %0, align 8, !dbg !1412, !tbaa !979
+  %tobool = icmp eq %struct.rtx_def* %1, null, !dbg !1412
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !1412
 
 land.lhs.true:                                    ; preds = %entry
-  %call = tail call i32 @reg_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %1) #4
-  %tobool1 = icmp eq i32 %call, 0
-  br i1 %tobool1, label %if.end, label %if.then
+  %call = tail call i32 @reg_mentioned_p(%struct.rtx_def* %x, %struct.rtx_def* %1) #5, !dbg !1412
+  %tobool1 = icmp eq i32 %call, 0, !dbg !1412
+  br i1 %tobool1, label %if.end, label %if.then, !dbg !1412
 
 if.then:                                          ; preds = %land.lhs.true
-  store %struct.rtx_def* null, %struct.rtx_def** %0, align 8, !tbaa !0
-  br label %if.end
+  store %struct.rtx_def* null, %struct.rtx_def** %0, align 8, !dbg !1413, !tbaa !979
+  br label %if.end, !dbg !1413
 
 if.end:                                           ; preds = %land.lhs.true, %entry, %if.then
-  ret void
+  ret void, !dbg !1414
 }

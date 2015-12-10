@@ -1,23 +1,25 @@
 define internal fastcc %struct.rtx_def* @ssa_rename_from_lookup(i32 %reg) #0 {
 entry:
   %srfp = alloca %struct.ssa_rename_from_pair, align 8
-  %reg1 = getelementptr inbounds %struct.ssa_rename_from_pair* %srfp, i64 0, i32 0
-  store i32 %reg, i32* %reg1, align 8, !tbaa !3
-  %original = getelementptr inbounds %struct.ssa_rename_from_pair* %srfp, i64 0, i32 1
-  store %struct.rtx_def* null, %struct.rtx_def** %original, align 8, !tbaa !0
-  %0 = load %struct.htab** @ssa_rename_from_ht, align 8, !tbaa !0
-  %1 = bitcast %struct.ssa_rename_from_pair* %srfp to i8*
-  %call = call i8* @htab_find_with_hash(%struct.htab* %0, i8* %1, i32 %reg) #6
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %cond.end, label %cond.false
+  call void @llvm.dbg.value(metadata !{i32 %reg}, i64 0, metadata !662), !dbg !1900
+  call void @llvm.dbg.declare(metadata !{%struct.ssa_rename_from_pair* %srfp}, metadata !663), !dbg !1901
+  %reg1 = getelementptr inbounds %struct.ssa_rename_from_pair* %srfp, i64 0, i32 0, !dbg !1902
+  store i32 %reg, i32* %reg1, align 8, !dbg !1902, !tbaa !1224
+  %original = getelementptr inbounds %struct.ssa_rename_from_pair* %srfp, i64 0, i32 1, !dbg !1903
+  store %struct.rtx_def* null, %struct.rtx_def** %original, align 8, !dbg !1903, !tbaa !1216
+  %0 = load %struct.htab** @ssa_rename_from_ht, align 8, !dbg !1904, !tbaa !1216
+  %1 = bitcast %struct.ssa_rename_from_pair* %srfp to i8*, !dbg !1904
+  %call = call i8* @htab_find_with_hash(%struct.htab* %0, i8* %1, i32 %reg) #7, !dbg !1904
+  %cmp = icmp eq i8* %call, null, !dbg !1905
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !1905
 
 cond.false:                                       ; preds = %entry
-  %original2 = getelementptr inbounds i8* %call, i64 8
-  %2 = bitcast i8* %original2 to %struct.rtx_def**
-  %3 = load %struct.rtx_def** %2, align 8, !tbaa !0
-  br label %cond.end
+  %original2 = getelementptr inbounds i8* %call, i64 8, !dbg !1905
+  %2 = bitcast i8* %original2 to %struct.rtx_def**, !dbg !1905
+  %3 = load %struct.rtx_def** %2, align 8, !dbg !1905, !tbaa !1216
+  br label %cond.end, !dbg !1905
 
 cond.end:                                         ; preds = %entry, %cond.false
-  %cond = phi %struct.rtx_def* [ %3, %cond.false ], [ null, %entry ]
-  ret %struct.rtx_def* %cond
+  %cond = phi %struct.rtx_def* [ %3, %cond.false ], [ null, %entry ], !dbg !1905
+  ret %struct.rtx_def* %cond, !dbg !1905
 }

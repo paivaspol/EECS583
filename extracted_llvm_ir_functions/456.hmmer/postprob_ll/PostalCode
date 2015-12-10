@@ -1,174 +1,175 @@
-define i8* @PostalCode(i32 %L, %struct.dpmatrix_s* nocapture readonly %mx, %struct.p7trace_s* nocapture readonly %tr) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %L, i64 0, metadata !178, metadata !195), !dbg !1175
-  tail call void @llvm.dbg.value(metadata %struct.dpmatrix_s* %mx, i64 0, metadata !179, metadata !195), !dbg !1176
-  tail call void @llvm.dbg.value(metadata %struct.p7trace_s* %tr, i64 0, metadata !180, metadata !195), !dbg !1177
-  %1 = add nsw i32 %L, 1, !dbg !1178
-  %2 = sext i32 %1 to i64, !dbg !1178
-  %3 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([66 x i8]* @.str2, i64 0, i64 0), i32 692, i64 %2) #3, !dbg !1178
-  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !184, metadata !195), !dbg !1179
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !181, metadata !195), !dbg !1180
-  %4 = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 0, !dbg !1181
-  %5 = load i32* %4, align 4, !dbg !1181, !tbaa !1170
-  %6 = icmp sgt i32 %5, 0, !dbg !1184
-  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !1185
+define i8* @PostalCode(i32 %L, %struct.dpmatrix_s* nocapture %mx, %struct.p7trace_s* nocapture %tr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %L}, i64 0, metadata !178), !dbg !505
+  tail call void @llvm.dbg.value(metadata !{%struct.dpmatrix_s* %mx}, i64 0, metadata !179), !dbg !505
+  tail call void @llvm.dbg.value(metadata !{%struct.p7trace_s* %tr}, i64 0, metadata !180), !dbg !505
+  %add = add nsw i32 %L, 1, !dbg !506
+  %conv = sext i32 %add to i64, !dbg !506
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i32 692, i64 %conv) #3, !dbg !506
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !184), !dbg !506
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !181), !dbg !507
+  %tlen = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 0, !dbg !507
+  %0 = load i32* %tlen, align 4, !dbg !507, !tbaa !201
+  %cmp110 = icmp sgt i32 %0, 0, !dbg !507
+  br i1 %cmp110, label %for.body.lr.ph, label %for.end, !dbg !507
 
-.lr.ph:                                           ; preds = %0
-  %7 = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 3, !dbg !1186
-  %8 = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 2, !dbg !1188
-  %9 = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 1, !dbg !1189
-  %10 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 1, !dbg !1190
-  %11 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 2, !dbg !1192
-  %12 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 0, !dbg !1193
-  br label %13, !dbg !1185
+for.body.lr.ph:                                   ; preds = %entry
+  %pos = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 3, !dbg !509
+  %nodeidx = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 2, !dbg !511
+  %statetype = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 1, !dbg !512
+  %mmx = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 1, !dbg !513
+  %imx = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 2, !dbg !515
+  %xmx = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 0, !dbg !516
+  br label %for.body, !dbg !507
 
-; <label>:13                                      ; preds = %.lr.ph, %108
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %108 ]
-  %14 = load i32** %7, align 8, !dbg !1186, !tbaa !793
-  %15 = getelementptr inbounds i32* %14, i64 %indvars.iv, !dbg !1194
-  %16 = load i32* %15, align 4, !dbg !1194, !tbaa !237
-  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !182, metadata !195), !dbg !1195
-  %17 = load i32** %8, align 8, !dbg !1188, !tbaa !790
-  %18 = getelementptr inbounds i32* %17, i64 %indvars.iv, !dbg !1196
-  %19 = load i32* %18, align 4, !dbg !1196, !tbaa !237
-  tail call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !183, metadata !195), !dbg !1197
-  %20 = icmp eq i32 %16, 0, !dbg !1198
-  br i1 %20, label %108, label %21, !dbg !1200
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %1 = load i32** %pos, align 8, !dbg !509, !tbaa !197
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv, !dbg !509
+  %2 = load i32* %arrayidx, align 4, !dbg !509, !tbaa !201
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !182), !dbg !509
+  %3 = load i32** %nodeidx, align 8, !dbg !511, !tbaa !197
+  %arrayidx3 = getelementptr inbounds i32* %3, i64 %indvars.iv, !dbg !511
+  %4 = load i32* %arrayidx3, align 4, !dbg !511, !tbaa !201
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !183), !dbg !511
+  %cmp4 = icmp eq i32 %2, 0, !dbg !517
+  br i1 %cmp4, label %for.inc, label %if.end, !dbg !517
 
-; <label>:21                                      ; preds = %13
-  %22 = load i8** %9, align 8, !dbg !1189, !tbaa !785
-  %23 = getelementptr inbounds i8* %22, i64 %indvars.iv, !dbg !1201
-  %24 = load i8* %23, align 1, !dbg !1201, !tbaa !267
-  %25 = sext i8 %24 to i32, !dbg !1201
-  switch i32 %25, label %108 [
-    i32 1, label %26
-    i32 3, label %43
-    i32 5, label %60
-    i32 8, label %76
-    i32 10, label %92
-  ], !dbg !1202
+if.end:                                           ; preds = %for.body
+  %5 = load i8** %statetype, align 8, !dbg !512, !tbaa !197
+  %arrayidx7 = getelementptr inbounds i8* %5, i64 %indvars.iv, !dbg !512
+  %6 = load i8* %arrayidx7, align 1, !dbg !512, !tbaa !198
+  %conv8 = sext i8 %6 to i32, !dbg !512
+  switch i32 %conv8, label %for.inc [
+    i32 1, label %sw.bb
+    i32 3, label %sw.bb16
+    i32 5, label %sw.bb25
+    i32 8, label %sw.bb33
+    i32 10, label %sw.bb42
+  ], !dbg !512
 
-; <label>:26                                      ; preds = %21
-  %27 = sext i32 %19 to i64, !dbg !1203
-  %28 = sext i32 %16 to i64, !dbg !1203
-  %29 = load i32*** %10, align 8, !dbg !1190, !tbaa !487
-  %30 = getelementptr inbounds i32** %29, i64 %28, !dbg !1203
-  %31 = load i32** %30, align 8, !dbg !1203, !tbaa !205
-  %32 = getelementptr inbounds i32* %31, i64 %27, !dbg !1203
-  %33 = load i32* %32, align 4, !dbg !1203, !tbaa !237
-  tail call void @llvm.dbg.value(metadata i32 %33, i64 0, metadata !189, metadata !195) #5, !dbg !1204
-  %34 = tail call float @Score2Prob(i32 %33, float 1.000000e+00) #3, !dbg !1206
-  %35 = fpext float %34 to double, !dbg !1206
-  %36 = fmul double %35, 1.000000e+01, !dbg !1207
-  %37 = fptosi double %36 to i8, !dbg !1208
-  tail call void @llvm.dbg.value(metadata i8 %37, i64 0, metadata !190, metadata !195) #5, !dbg !1209
-  %38 = icmp sgt i8 %37, 9, !dbg !1210
-  %39 = add i8 %37, 48, !dbg !1211
-  %..i = select i1 %38, i8 42, i8 %39, !dbg !1212
-  %40 = add nsw i32 %16, -1, !dbg !1213
-  %41 = sext i32 %40 to i64, !dbg !1214
-  %42 = getelementptr inbounds i8* %3, i64 %41, !dbg !1214
-  store i8 %..i, i8* %42, align 1, !dbg !1215, !tbaa !267
-  br label %108, !dbg !1216
+sw.bb:                                            ; preds = %if.end
+  %idxprom9 = sext i32 %4 to i64, !dbg !513
+  %idxprom10 = sext i32 %2 to i64, !dbg !513
+  %7 = load i32*** %mmx, align 8, !dbg !513, !tbaa !197
+  %arrayidx11 = getelementptr inbounds i32** %7, i64 %idxprom10, !dbg !513
+  %8 = load i32** %arrayidx11, align 8, !dbg !513, !tbaa !197
+  %arrayidx12 = getelementptr inbounds i32* %8, i64 %idxprom9, !dbg !513
+  %9 = load i32* %arrayidx12, align 4, !dbg !513, !tbaa !201
+  tail call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !518) #5, !dbg !519
+  %call.i = tail call float @Score2Prob(i32 %9, float 1.000000e+00) #3, !dbg !520
+  %conv.i = fpext float %call.i to double, !dbg !520
+  %mul.i = fmul double %conv.i, 1.000000e+01, !dbg !520
+  %conv1.i = fptosi double %mul.i to i8, !dbg !520
+  tail call void @llvm.dbg.value(metadata !{i8 %conv1.i}, i64 0, metadata !521) #5, !dbg !520
+  %cmp.i = icmp sgt i8 %conv1.i, 9, !dbg !522
+  %add.i = add i8 %conv1.i, 48, !dbg !522
+  %.add.i = select i1 %cmp.i, i8 42, i8 %add.i, !dbg !522
+  %sub = add nsw i32 %2, -1, !dbg !513
+  %idxprom14 = sext i32 %sub to i64, !dbg !513
+  %arrayidx15 = getelementptr inbounds i8* %call, i64 %idxprom14, !dbg !513
+  store i8 %.add.i, i8* %arrayidx15, align 1, !dbg !513, !tbaa !198
+  br label %for.inc, !dbg !513
 
-; <label>:43                                      ; preds = %21
-  %44 = sext i32 %19 to i64, !dbg !1217
-  %45 = sext i32 %16 to i64, !dbg !1217
-  %46 = load i32*** %11, align 8, !dbg !1192, !tbaa !499
-  %47 = getelementptr inbounds i32** %46, i64 %45, !dbg !1217
-  %48 = load i32** %47, align 8, !dbg !1217, !tbaa !205
-  %49 = getelementptr inbounds i32* %48, i64 %44, !dbg !1217
-  %50 = load i32* %49, align 4, !dbg !1217, !tbaa !237
-  tail call void @llvm.dbg.value(metadata i32 %50, i64 0, metadata !189, metadata !195) #5, !dbg !1218
-  %51 = tail call float @Score2Prob(i32 %50, float 1.000000e+00) #3, !dbg !1220
-  %52 = fpext float %51 to double, !dbg !1220
-  %53 = fmul double %52, 1.000000e+01, !dbg !1221
-  %54 = fptosi double %53 to i8, !dbg !1222
-  tail call void @llvm.dbg.value(metadata i8 %54, i64 0, metadata !190, metadata !195) #5, !dbg !1223
-  %55 = icmp sgt i8 %54, 9, !dbg !1224
-  %56 = add i8 %54, 48, !dbg !1225
-  %..i1 = select i1 %55, i8 42, i8 %56, !dbg !1226
-  %57 = add nsw i32 %16, -1, !dbg !1227
-  %58 = sext i32 %57 to i64, !dbg !1228
-  %59 = getelementptr inbounds i8* %3, i64 %58, !dbg !1228
-  store i8 %..i1, i8* %59, align 1, !dbg !1229, !tbaa !267
-  br label %108, !dbg !1230
+sw.bb16:                                          ; preds = %if.end
+  %idxprom17 = sext i32 %4 to i64, !dbg !515
+  %idxprom18 = sext i32 %2 to i64, !dbg !515
+  %10 = load i32*** %imx, align 8, !dbg !515, !tbaa !197
+  %arrayidx19 = getelementptr inbounds i32** %10, i64 %idxprom18, !dbg !515
+  %11 = load i32** %arrayidx19, align 8, !dbg !515, !tbaa !197
+  %arrayidx20 = getelementptr inbounds i32* %11, i64 %idxprom17, !dbg !515
+  %12 = load i32* %arrayidx20, align 4, !dbg !515, !tbaa !201
+  tail call void @llvm.dbg.value(metadata !{i32 %12}, i64 0, metadata !523) #5, !dbg !524
+  %call.i82 = tail call float @Score2Prob(i32 %12, float 1.000000e+00) #3, !dbg !525
+  %conv.i83 = fpext float %call.i82 to double, !dbg !525
+  %mul.i84 = fmul double %conv.i83, 1.000000e+01, !dbg !525
+  %conv1.i85 = fptosi double %mul.i84 to i8, !dbg !525
+  tail call void @llvm.dbg.value(metadata !{i8 %conv1.i85}, i64 0, metadata !526) #5, !dbg !525
+  %cmp.i86 = icmp sgt i8 %conv1.i85, 9, !dbg !527
+  %add.i87 = add i8 %conv1.i85, 48, !dbg !527
+  %.add.i88 = select i1 %cmp.i86, i8 42, i8 %add.i87, !dbg !527
+  %sub22 = add nsw i32 %2, -1, !dbg !515
+  %idxprom23 = sext i32 %sub22 to i64, !dbg !515
+  %arrayidx24 = getelementptr inbounds i8* %call, i64 %idxprom23, !dbg !515
+  store i8 %.add.i88, i8* %arrayidx24, align 1, !dbg !515, !tbaa !198
+  br label %for.inc, !dbg !515
 
-; <label>:60                                      ; preds = %21
-  %61 = sext i32 %16 to i64, !dbg !1231
-  %62 = load i32*** %12, align 8, !dbg !1193, !tbaa !430
-  %63 = getelementptr inbounds i32** %62, i64 %61, !dbg !1231
-  %64 = load i32** %63, align 8, !dbg !1231, !tbaa !205
-  %65 = getelementptr inbounds i32* %64, i64 4, !dbg !1231
-  %66 = load i32* %65, align 4, !dbg !1231, !tbaa !237
-  tail call void @llvm.dbg.value(metadata i32 %66, i64 0, metadata !189, metadata !195) #5, !dbg !1232
-  %67 = tail call float @Score2Prob(i32 %66, float 1.000000e+00) #3, !dbg !1234
-  %68 = fpext float %67 to double, !dbg !1234
-  %69 = fmul double %68, 1.000000e+01, !dbg !1235
-  %70 = fptosi double %69 to i8, !dbg !1236
-  tail call void @llvm.dbg.value(metadata i8 %70, i64 0, metadata !190, metadata !195) #5, !dbg !1237
-  %71 = icmp sgt i8 %70, 9, !dbg !1238
-  %72 = add i8 %70, 48, !dbg !1239
-  %..i2 = select i1 %71, i8 42, i8 %72, !dbg !1240
-  %73 = add nsw i32 %16, -1, !dbg !1241
-  %74 = sext i32 %73 to i64, !dbg !1242
-  %75 = getelementptr inbounds i8* %3, i64 %74, !dbg !1242
-  store i8 %..i2, i8* %75, align 1, !dbg !1243, !tbaa !267
-  br label %108, !dbg !1244
+sw.bb25:                                          ; preds = %if.end
+  %idxprom26 = sext i32 %2 to i64, !dbg !516
+  %13 = load i32*** %xmx, align 8, !dbg !516, !tbaa !197
+  %arrayidx27 = getelementptr inbounds i32** %13, i64 %idxprom26, !dbg !516
+  %14 = load i32** %arrayidx27, align 8, !dbg !516, !tbaa !197
+  %arrayidx28 = getelementptr inbounds i32* %14, i64 4, !dbg !516
+  %15 = load i32* %arrayidx28, align 4, !dbg !516, !tbaa !201
+  tail call void @llvm.dbg.value(metadata !{i32 %15}, i64 0, metadata !528) #5, !dbg !529
+  %call.i89 = tail call float @Score2Prob(i32 %15, float 1.000000e+00) #3, !dbg !530
+  %conv.i90 = fpext float %call.i89 to double, !dbg !530
+  %mul.i91 = fmul double %conv.i90, 1.000000e+01, !dbg !530
+  %conv1.i92 = fptosi double %mul.i91 to i8, !dbg !530
+  tail call void @llvm.dbg.value(metadata !{i8 %conv1.i92}, i64 0, metadata !531) #5, !dbg !530
+  %cmp.i93 = icmp sgt i8 %conv1.i92, 9, !dbg !532
+  %add.i94 = add i8 %conv1.i92, 48, !dbg !532
+  %.add.i95 = select i1 %cmp.i93, i8 42, i8 %add.i94, !dbg !532
+  %sub30 = add nsw i32 %2, -1, !dbg !516
+  %idxprom31 = sext i32 %sub30 to i64, !dbg !516
+  %arrayidx32 = getelementptr inbounds i8* %call, i64 %idxprom31, !dbg !516
+  store i8 %.add.i95, i8* %arrayidx32, align 1, !dbg !516, !tbaa !198
+  br label %for.inc, !dbg !516
 
-; <label>:76                                      ; preds = %21
-  %77 = sext i32 %16 to i64, !dbg !1245
-  %78 = load i32*** %12, align 8, !dbg !1246, !tbaa !430
-  %79 = getelementptr inbounds i32** %78, i64 %77, !dbg !1245
-  %80 = load i32** %79, align 8, !dbg !1245, !tbaa !205
-  %81 = getelementptr inbounds i32* %80, i64 2, !dbg !1245
-  %82 = load i32* %81, align 4, !dbg !1245, !tbaa !237
-  tail call void @llvm.dbg.value(metadata i32 %82, i64 0, metadata !189, metadata !195) #5, !dbg !1247
-  %83 = tail call float @Score2Prob(i32 %82, float 1.000000e+00) #3, !dbg !1249
-  %84 = fpext float %83 to double, !dbg !1249
-  %85 = fmul double %84, 1.000000e+01, !dbg !1250
-  %86 = fptosi double %85 to i8, !dbg !1251
-  tail call void @llvm.dbg.value(metadata i8 %86, i64 0, metadata !190, metadata !195) #5, !dbg !1252
-  %87 = icmp sgt i8 %86, 9, !dbg !1253
-  %88 = add i8 %86, 48, !dbg !1254
-  %..i3 = select i1 %87, i8 42, i8 %88, !dbg !1255
-  %89 = add nsw i32 %16, -1, !dbg !1256
-  %90 = sext i32 %89 to i64, !dbg !1257
-  %91 = getelementptr inbounds i8* %3, i64 %90, !dbg !1257
-  store i8 %..i3, i8* %91, align 1, !dbg !1258, !tbaa !267
-  br label %108, !dbg !1259
+sw.bb33:                                          ; preds = %if.end
+  %idxprom34 = sext i32 %2 to i64, !dbg !533
+  %16 = load i32*** %xmx, align 8, !dbg !533, !tbaa !197
+  %arrayidx36 = getelementptr inbounds i32** %16, i64 %idxprom34, !dbg !533
+  %17 = load i32** %arrayidx36, align 8, !dbg !533, !tbaa !197
+  %arrayidx37 = getelementptr inbounds i32* %17, i64 2, !dbg !533
+  %18 = load i32* %arrayidx37, align 4, !dbg !533, !tbaa !201
+  tail call void @llvm.dbg.value(metadata !{i32 %18}, i64 0, metadata !534) #5, !dbg !535
+  %call.i96 = tail call float @Score2Prob(i32 %18, float 1.000000e+00) #3, !dbg !536
+  %conv.i97 = fpext float %call.i96 to double, !dbg !536
+  %mul.i98 = fmul double %conv.i97, 1.000000e+01, !dbg !536
+  %conv1.i99 = fptosi double %mul.i98 to i8, !dbg !536
+  tail call void @llvm.dbg.value(metadata !{i8 %conv1.i99}, i64 0, metadata !537) #5, !dbg !536
+  %cmp.i100 = icmp sgt i8 %conv1.i99, 9, !dbg !538
+  %add.i101 = add i8 %conv1.i99, 48, !dbg !538
+  %.add.i102 = select i1 %cmp.i100, i8 42, i8 %add.i101, !dbg !538
+  %sub39 = add nsw i32 %2, -1, !dbg !533
+  %idxprom40 = sext i32 %sub39 to i64, !dbg !533
+  %arrayidx41 = getelementptr inbounds i8* %call, i64 %idxprom40, !dbg !533
+  store i8 %.add.i102, i8* %arrayidx41, align 1, !dbg !533, !tbaa !198
+  br label %for.inc, !dbg !533
 
-; <label>:92                                      ; preds = %21
-  %93 = sext i32 %16 to i64, !dbg !1260
-  %94 = load i32*** %12, align 8, !dbg !1261, !tbaa !430
-  %95 = getelementptr inbounds i32** %94, i64 %93, !dbg !1260
-  %96 = load i32** %95, align 8, !dbg !1260, !tbaa !205
-  %97 = getelementptr inbounds i32* %96, i64 3, !dbg !1260
-  %98 = load i32* %97, align 4, !dbg !1260, !tbaa !237
-  tail call void @llvm.dbg.value(metadata i32 %98, i64 0, metadata !189, metadata !195) #5, !dbg !1262
-  %99 = tail call float @Score2Prob(i32 %98, float 1.000000e+00) #3, !dbg !1264
-  %100 = fpext float %99 to double, !dbg !1264
-  %101 = fmul double %100, 1.000000e+01, !dbg !1265
-  %102 = fptosi double %101 to i8, !dbg !1266
-  tail call void @llvm.dbg.value(metadata i8 %102, i64 0, metadata !190, metadata !195) #5, !dbg !1267
-  %103 = icmp sgt i8 %102, 9, !dbg !1268
-  %104 = add i8 %102, 48, !dbg !1269
-  %..i4 = select i1 %103, i8 42, i8 %104, !dbg !1270
-  %105 = add nsw i32 %16, -1, !dbg !1271
-  %106 = sext i32 %105 to i64, !dbg !1272
-  %107 = getelementptr inbounds i8* %3, i64 %106, !dbg !1272
-  store i8 %..i4, i8* %107, align 1, !dbg !1273, !tbaa !267
-  br label %108, !dbg !1274
+sw.bb42:                                          ; preds = %if.end
+  %idxprom43 = sext i32 %2 to i64, !dbg !539
+  %19 = load i32*** %xmx, align 8, !dbg !539, !tbaa !197
+  %arrayidx45 = getelementptr inbounds i32** %19, i64 %idxprom43, !dbg !539
+  %20 = load i32** %arrayidx45, align 8, !dbg !539, !tbaa !197
+  %arrayidx46 = getelementptr inbounds i32* %20, i64 3, !dbg !539
+  %21 = load i32* %arrayidx46, align 4, !dbg !539, !tbaa !201
+  tail call void @llvm.dbg.value(metadata !{i32 %21}, i64 0, metadata !540) #5, !dbg !541
+  %call.i103 = tail call float @Score2Prob(i32 %21, float 1.000000e+00) #3, !dbg !542
+  %conv.i104 = fpext float %call.i103 to double, !dbg !542
+  %mul.i105 = fmul double %conv.i104, 1.000000e+01, !dbg !542
+  %conv1.i106 = fptosi double %mul.i105 to i8, !dbg !542
+  tail call void @llvm.dbg.value(metadata !{i8 %conv1.i106}, i64 0, metadata !543) #5, !dbg !542
+  %cmp.i107 = icmp sgt i8 %conv1.i106, 9, !dbg !544
+  %add.i108 = add i8 %conv1.i106, 48, !dbg !544
+  %.add.i109 = select i1 %cmp.i107, i8 42, i8 %add.i108, !dbg !544
+  %sub48 = add nsw i32 %2, -1, !dbg !539
+  %idxprom49 = sext i32 %sub48 to i64, !dbg !539
+  %arrayidx50 = getelementptr inbounds i8* %call, i64 %idxprom49, !dbg !539
+  store i8 %.add.i109, i8* %arrayidx50, align 1, !dbg !539, !tbaa !198
+  br label %for.inc, !dbg !539
 
-; <label>:108                                     ; preds = %26, %43, %60, %76, %92, %21, %13
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1185
-  %109 = load i32* %4, align 4, !dbg !1181, !tbaa !1170
-  %110 = sext i32 %109 to i64, !dbg !1184
-  %111 = icmp slt i64 %indvars.iv.next, %110, !dbg !1184
-  br i1 %111, label %13, label %._crit_edge, !dbg !1185
+for.inc:                                          ; preds = %sw.bb, %sw.bb16, %sw.bb25, %sw.bb33, %sw.bb42, %if.end, %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !507
+  %22 = load i32* %tlen, align 4, !dbg !507, !tbaa !201
+  %23 = trunc i64 %indvars.iv.next to i32, !dbg !507
+  %cmp = icmp slt i32 %23, %22, !dbg !507
+  br i1 %cmp, label %for.body, label %for.end, !dbg !507
 
-._crit_edge:                                      ; preds = %108, %0
-  %112 = sext i32 %L to i64, !dbg !1275
-  %113 = getelementptr inbounds i8* %3, i64 %112, !dbg !1275
-  store i8 0, i8* %113, align 1, !dbg !1276, !tbaa !267
-  ret i8* %3, !dbg !1277
+for.end:                                          ; preds = %for.inc, %entry
+  %idxprom51 = sext i32 %L to i64, !dbg !545
+  %arrayidx52 = getelementptr inbounds i8* %call, i64 %idxprom51, !dbg !545
+  store i8 0, i8* %arrayidx52, align 1, !dbg !545, !tbaa !198
+  ret i8* %call, !dbg !546
 }

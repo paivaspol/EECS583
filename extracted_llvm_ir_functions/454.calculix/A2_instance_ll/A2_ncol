@@ -1,16 +1,17 @@
 define i32 @A2_ncol(%struct._A2* %mtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._A2* %mtx, i64 0, metadata !28, metadata !114), !dbg !132
-  %1 = icmp eq %struct._A2* %mtx, null, !dbg !133
-  br i1 %1, label %2, label %5, !dbg !135
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._A2* %mtx}, i64 0, metadata !27), !dbg !119
+  %cmp = icmp eq %struct._A2* %mtx, null, !dbg !120
+  br i1 %cmp, label %if.then, label %if.end, !dbg !120
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !136, !tbaa !121
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([41 x i8]* @.str1, i64 0, i64 0), %struct._A2* null) #4, !dbg !138
-  tail call void @exit(i32 -1) #5, !dbg !139
-  unreachable, !dbg !139
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !121, !tbaa !113
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([41 x i8]* @.str1, i64 0, i64 0), %struct._A2* null) #4, !dbg !121
+  tail call void @exit(i32 -1) #5, !dbg !123
+  unreachable, !dbg !123
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2, !dbg !140
-  %7 = load i32* %6, align 4, !dbg !140, !tbaa !141
-  ret i32 %7, !dbg !142
+if.end:                                           ; preds = %entry
+  %n2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2, !dbg !124
+  %1 = load i32* %n2, align 4, !dbg !124, !tbaa !118
+  ret i32 %1, !dbg !124
 }

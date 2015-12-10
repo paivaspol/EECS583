@@ -1,0 +1,40 @@
+define linkonce_odr void @_ZN10xalanc_1_818ReusableArenaBlockINS_13XStringCachedEEC2Em(%"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 %theBlockSize) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !4689), !dbg !5806
+  tail call void @llvm.dbg.value(metadata !{i64 %theBlockSize}, i64 0, metadata !4690), !dbg !5806
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ArenaBlock"* %2}, i64 0, metadata !5807), !dbg !5809
+  tail call void @llvm.dbg.value(metadata !{i64 %theBlockSize}, i64 0, metadata !5810), !dbg !5809
+  %0 = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 0, !dbg !5811
+  %m_objectCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 2, !dbg !5811
+  store i64 0, i64* %m_objectCount.i, align 8, !dbg !5811, !tbaa !5080
+  %m_blockSize.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 3, !dbg !5811
+  store i64 %theBlockSize, i64* %m_blockSize.i, align 8, !dbg !5811, !tbaa !5080
+  %m_objectBlock.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 4, !dbg !5811
+  store %"class.xalanc_1_8::XStringCached"* null, %"class.xalanc_1_8::XStringCached"** %m_objectBlock.i, align 8, !dbg !5811, !tbaa !5094
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([10 x i8*]* @_ZTVN10xalanc_1_818ReusableArenaBlockINS_13XStringCachedEEE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !5808, !tbaa !5093
+  %m_freeList = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 1, !dbg !5808
+  invoke void @_ZN10xalanc_1_811XalanBitmapC1Em(%"class.xalanc_1_8::XalanBitmap"* %m_freeList, i64 %theBlockSize) #10
+          to label %invoke.cont unwind label %lpad, !dbg !5808
+
+invoke.cont:                                      ; preds = %entry
+  %m_freeBlockCount = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 2, !dbg !5808
+  store i64 0, i64* %m_freeBlockCount, align 8, !dbg !5808, !tbaa !5080
+  ret void, !dbg !5813
+
+lpad:                                             ; preds = %entry
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !5808
+  %2 = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, !dbg !5808
+  invoke void @_ZN10xalanc_1_810ArenaBlockINS_13XStringCachedEED2Ev(%"class.xalanc_1_8::ArenaBlock"* %2) #10
+          to label %eh.resume unwind label %terminate.lpad, !dbg !5813
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %1, !dbg !5813
+
+terminate.lpad:                                   ; preds = %lpad
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !5813
+  %4 = extractvalue { i8*, i32 } %3, 0, !dbg !5813
+  tail call void @__clang_call_terminate(i8* %4) #13, !dbg !5813
+  unreachable, !dbg !5813
+}

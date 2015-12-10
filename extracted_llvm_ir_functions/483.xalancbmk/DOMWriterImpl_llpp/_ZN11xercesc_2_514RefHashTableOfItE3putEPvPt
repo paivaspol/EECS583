@@ -1,0 +1,91 @@
+define linkonce_odr void @_ZN11xercesc_2_514RefHashTableOfItE3putEPvPt(%"class.xercesc_2_5::RefHashTableOf"* nocapture %this, i8* %key, i16* %valueToAdopt) #5 align 2 {
+entry:
+  %hashVal = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf"* %this}, i64 0, metadata !3463), !dbg !5777
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !3464), !dbg !5777
+  call void @llvm.dbg.value(metadata !{i16* %valueToAdopt}, i64 0, metadata !3465), !dbg !5777
+  %fHashModulus = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf"* %this, i64 0, i32 3, !dbg !5778
+  %0 = load i32* %fHashModulus, align 4, !dbg !5778, !tbaa !4534
+  %mul = mul i32 %0, 3, !dbg !5778
+  %div = lshr i32 %mul, 2, !dbg !5778
+  call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !3466), !dbg !5778
+  %fCount = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf"* %this, i64 0, i32 5, !dbg !5779
+  %1 = load i32* %fCount, align 4, !dbg !5779, !tbaa !4534
+  %cmp = icmp ult i32 %1, %div, !dbg !5779
+  br i1 %cmp, label %if.end, label %if.then, !dbg !5779
+
+if.then:                                          ; preds = %entry
+  call void @_ZN11xercesc_2_514RefHashTableOfItE6rehashEv(%"class.xercesc_2_5::RefHashTableOf"* %this) #10, !dbg !5780
+  br label %if.end, !dbg !5780
+
+if.end:                                           ; preds = %entry, %if.then
+  call void @llvm.dbg.declare(metadata !{i32* %hashVal}, metadata !3468), !dbg !5781
+  %call = call %"struct.xercesc_2_5::RefHashTableBucketElem"* @_ZN11xercesc_2_514RefHashTableOfItE14findBucketElemEPKvRj(%"class.xercesc_2_5::RefHashTableOf"* %this, i8* %key, i32* %hashVal) #10, !dbg !5782
+  call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::RefHashTableBucketElem"* %call}, i64 0, metadata !3469), !dbg !5782
+  %tobool = icmp eq %"struct.xercesc_2_5::RefHashTableBucketElem"* %call, null, !dbg !5783
+  br i1 %tobool, label %invoke.cont, label %if.then2, !dbg !5783
+
+if.then2:                                         ; preds = %if.end
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf"* %this, i64 0, i32 1, !dbg !5784
+  %2 = load i8* %fAdoptedElems, align 1, !dbg !5784, !tbaa !4558, !range !5786
+  %tobool3 = icmp eq i8 %2, 0, !dbg !5784
+  %fData6.pre = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem"* %call, i64 0, i32 0, !dbg !5787
+  br i1 %tobool3, label %if.end5, label %if.then4, !dbg !5784
+
+if.then4:                                         ; preds = %if.then2
+  %3 = load i16** %fData6.pre, align 8, !dbg !5788, !tbaa !4527
+  %isnull = icmp eq i16* %3, null, !dbg !5788
+  br i1 %isnull, label %if.end5, label %delete.notnull, !dbg !5788
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast i16* %3 to i8*, !dbg !5788
+  call void @_ZdlPv(i8* %4) #12, !dbg !5788
+  br label %if.end5, !dbg !5788
+
+if.end5:                                          ; preds = %if.then2, %if.then4, %delete.notnull
+  store i16* %valueToAdopt, i16** %fData6.pre, align 8, !dbg !5787, !tbaa !4527
+  %fKey = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem"* %call, i64 0, i32 2, !dbg !5789
+  store i8* %key, i8** %fKey, align 8, !dbg !5789, !tbaa !4527
+  br label %if.end12, !dbg !5790
+
+invoke.cont:                                      ; preds = %if.end
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf"* %this, i64 0, i32 0, !dbg !5791
+  %5 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !5791, !tbaa !4527
+  %call7 = call i8* @_ZN11xercesc_2_57XMemorynwEmPNS_13MemoryManagerE(i64 24, %"class.xercesc_2_5::MemoryManager"* %5) #10, !dbg !5791
+  %6 = bitcast i8* %call7 to %"struct.xercesc_2_5::RefHashTableBucketElem"*, !dbg !5791
+  call void @llvm.dbg.value(metadata !{i32* %hashVal}, i64 0, metadata !3468), !dbg !5791
+  %7 = load i32* %hashVal, align 4, !dbg !5791, !tbaa !4534
+  %idxprom = zext i32 %7 to i64, !dbg !5791
+  %fBucketList = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf"* %this, i64 0, i32 2, !dbg !5791
+  %8 = load %"struct.xercesc_2_5::RefHashTableBucketElem"*** %fBucketList, align 8, !dbg !5791, !tbaa !4527
+  %arrayidx = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem"** %8, i64 %idxprom, !dbg !5791
+  %9 = load %"struct.xercesc_2_5::RefHashTableBucketElem"** %arrayidx, align 8, !dbg !5791, !tbaa !4527
+  tail call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::RefHashTableBucketElem"* %6}, i64 0, metadata !5793), !dbg !5794
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !5795), !dbg !5794
+  tail call void @llvm.dbg.value(metadata !{i16* %valueToAdopt}, i64 0, metadata !5796), !dbg !5794
+  tail call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::RefHashTableBucketElem"* %9}, i64 0, metadata !5797), !dbg !5794
+  tail call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::RefHashTableBucketElem"* %6}, i64 0, metadata !5798), !dbg !5801
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !5802), !dbg !5801
+  tail call void @llvm.dbg.value(metadata !{i16* %valueToAdopt}, i64 0, metadata !5803), !dbg !5801
+  tail call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::RefHashTableBucketElem"* %9}, i64 0, metadata !5804), !dbg !5801
+  %fData.i.i = bitcast i8* %call7 to i16**, !dbg !5805
+  store i16* %valueToAdopt, i16** %fData.i.i, align 8, !dbg !5805, !tbaa !4527
+  %fNext.i.i = getelementptr inbounds i8* %call7, i64 8, !dbg !5805
+  %10 = bitcast i8* %fNext.i.i to %"struct.xercesc_2_5::RefHashTableBucketElem"**, !dbg !5805
+  store %"struct.xercesc_2_5::RefHashTableBucketElem"* %9, %"struct.xercesc_2_5::RefHashTableBucketElem"** %10, align 8, !dbg !5805, !tbaa !4527
+  %fKey.i.i = getelementptr inbounds i8* %call7, i64 16, !dbg !5805
+  %11 = bitcast i8* %fKey.i.i to i8**, !dbg !5805
+  store i8* %key, i8** %11, align 8, !dbg !5805, !tbaa !4527
+  call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::RefHashTableBucketElem"* %6}, i64 0, metadata !3469), !dbg !5791
+  call void @llvm.dbg.value(metadata !{i32* %hashVal}, i64 0, metadata !3468), !dbg !5806
+  %12 = load %"struct.xercesc_2_5::RefHashTableBucketElem"*** %fBucketList, align 8, !dbg !5806, !tbaa !4527
+  %arrayidx11 = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem"** %12, i64 %idxprom, !dbg !5806
+  store %"struct.xercesc_2_5::RefHashTableBucketElem"* %6, %"struct.xercesc_2_5::RefHashTableBucketElem"** %arrayidx11, align 8, !dbg !5806, !tbaa !4527
+  br label %if.end12
+
+if.end12:                                         ; preds = %invoke.cont, %if.end5
+  %13 = load i32* %fCount, align 4, !dbg !5807, !tbaa !4534
+  %inc = add i32 %13, 1, !dbg !5807
+  store i32 %inc, i32* %fCount, align 4, !dbg !5807, !tbaa !4534
+  ret void, !dbg !5808
+}

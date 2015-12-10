@@ -1,33 +1,34 @@
 define %struct._IVL* @FrontMtx_lowerBlockIVL(%struct._FrontMtx* %frontmtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !278, metadata !284), !dbg !753
-  %1 = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !754
-  br i1 %1, label %2, label %5, !dbg !756
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !282), !dbg !517
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !518
+  br i1 %cmp, label %if.then, label %if.end, !dbg !518
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !757, !tbaa !291
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([56 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* null) #6, !dbg !759
-  tail call void @exit(i32 -1) #7, !dbg !760
-  unreachable, !dbg !760
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !519, !tbaa !288
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* null) #6, !dbg !519
+  tail call void @exit(i32 -1) #7, !dbg !521
+  unreachable, !dbg !521
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6, !dbg !761
-  %7 = load i32* %6, align 4, !dbg !761, !tbaa !527
-  %8 = icmp eq i32 %7, 1, !dbg !761
-  br i1 %8, label %9, label %12, !dbg !763
+if.end:                                           ; preds = %entry
+  %dataMode = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6, !dbg !522
+  %1 = load i32* %dataMode, align 4, !dbg !522, !tbaa !293
+  %cmp1 = icmp eq i32 %1, 1, !dbg !522
+  br i1 %cmp1, label %if.then2, label %if.end4, !dbg !522
 
-; <label>:9                                       ; preds = %5
-  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !764, !tbaa !291
-  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([66 x i8]* @.str24, i64 0, i64 0), i64 65, i64 1, %struct.__sFILE* %10), !dbg !766
-  tail call void @exit(i32 -1) #7, !dbg !767
-  unreachable, !dbg !767
+if.then2:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !523, !tbaa !288
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([66 x i8]* @.str24, i64 0, i64 0), i64 65, i64 1, %struct._IO_FILE* %2), !dbg !523
+  tail call void @exit(i32 -1) #7, !dbg !525
+  unreachable, !dbg !525
 
-; <label>:12                                      ; preds = %5
-  %13 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !768
-  %14 = load i32* %13, align 4, !dbg !768, !tbaa !349
-  %15 = icmp eq i32 %14, 2, !dbg !768
-  %16 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 16, !dbg !770
-  %17 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 17, !dbg !772
-  %ivl.0.in = select i1 %15, %struct._IVL** %16, %struct._IVL** %17, !dbg !774
-  %ivl.0 = load %struct._IVL** %ivl.0.in, align 8, !dbg !770
-  ret %struct._IVL* %ivl.0, !dbg !775
+if.end4:                                          ; preds = %if.end
+  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !526
+  %4 = load i32* %symmetryflag, align 4, !dbg !526, !tbaa !293
+  %cmp5 = icmp eq i32 %4, 2, !dbg !526
+  %lowerblockIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 16, !dbg !527
+  %upperblockIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 17, !dbg !529
+  %ivl.0.in = select i1 %cmp5, %struct._IVL** %lowerblockIVL, %struct._IVL** %upperblockIVL, !dbg !526
+  %ivl.0 = load %struct._IVL** %ivl.0.in, align 8, !dbg !527
+  ret %struct._IVL* %ivl.0, !dbg !531
 }

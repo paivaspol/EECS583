@@ -1,17 +1,18 @@
-define i32 @prec2ndec(float %prec) #5 {
-  tail call void @llvm.dbg.value(metadata float %prec, i64 0, metadata !266, metadata !651), !dbg !817
-  %1 = fcmp ugt float %prec, 0.000000e+00, !dbg !818
-  %.pre = fpext float %prec to double, !dbg !820
-  br i1 %1, label %._crit_edge, label %2, !dbg !821
+define i32 @prec2ndec(float %prec) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %prec}, i64 0, metadata !73), !dbg !522
+  %cmp = fcmp ugt float %prec, 0.000000e+00, !dbg !523
+  %conv1.pre = fpext float %prec to double, !dbg !524
+  br i1 %cmp, label %if.end, label %if.then, !dbg !523
 
-; <label>:2                                       ; preds = %0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([41 x i8]* @.str, i64 0, i64 0), double %.pre) #10, !dbg !822
-  br label %._crit_edge, !dbg !822
+if.then:                                          ; preds = %entry
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([41 x i8]* @.str, i64 0, i64 0), double %conv1.pre) #7, !dbg !525
+  br label %if.end, !dbg !525
 
-._crit_edge:                                      ; preds = %0, %2
-  %3 = tail call double @log(double %.pre) #12, !dbg !823
-  %4 = fdiv double %3, 0x40026BB1BBB55516, !dbg !824
-  %5 = fadd double %4, 5.000000e-01, !dbg !825
-  %6 = fptosi double %5 to i32, !dbg !826
-  ret i32 %6, !dbg !827
+if.end:                                           ; preds = %entry, %if.then
+  %call = tail call double @log(double %conv1.pre) #7, !dbg !524
+  %div = fdiv double %call, 0x40026BB1BBB55516, !dbg !524
+  %add = fadd double %div, 5.000000e-01, !dbg !524
+  %conv3 = fptosi double %add to i32, !dbg !524
+  ret i32 %conv3, !dbg !524
 }

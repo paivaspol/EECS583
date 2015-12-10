@@ -1,24 +1,25 @@
 define void @_ZN3pov14variable_storeEi(i32 %Flag) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %Flag, i64 0, metadata !1301, metadata !1892), !dbg !2250
-  switch i32 %Flag, label %5 [
-    i32 1, label %1
-    i32 2, label %3
-  ], !dbg !2251
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %Flag}, i64 0, metadata !107), !dbg !1600
+  switch i32 %Flag, label %sw.default [
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb1
+  ], !dbg !1601
 
-; <label>:1                                       ; preds = %0
-  %2 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !2252, !tbaa !2085
-  store i32 %2, i32* @_ZN3pov16STORE_First_LineE, align 4, !dbg !2253, !tbaa !2010
-  br label %7, !dbg !2254
+sw.bb:                                            ; preds = %entry
+  %0 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !1602, !tbaa !1405
+  store i32 %0, i32* @_ZN3pov16STORE_First_LineE, align 4, !dbg !1602, !tbaa !1405
+  br label %sw.epilog, !dbg !1603
 
-; <label>:3                                       ; preds = %0
-  %4 = load i32* @_ZN3pov16STORE_First_LineE, align 4, !dbg !2255, !tbaa !2010
-  store i32 %4, i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !2256, !tbaa !2085
-  br label %7, !dbg !2257
+sw.bb1:                                           ; preds = %entry
+  %1 = load i32* @_ZN3pov16STORE_First_LineE, align 4, !dbg !1604, !tbaa !1405
+  store i32 %1, i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !1604, !tbaa !1405
+  br label %sw.epilog, !dbg !1605
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([34 x i8]* @.str27, i64 0, i64 0)) #6, !dbg !2258
-  br label %7, !dbg !2259
+sw.default:                                       ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([34 x i8]* @.str27, i64 0, i64 0)) #7, !dbg !1606
+  br label %sw.epilog, !dbg !1607
 
-; <label>:7                                       ; preds = %5, %3, %1
-  ret void, !dbg !2260
+sw.epilog:                                        ; preds = %sw.default, %sw.bb1, %sw.bb
+  ret void, !dbg !1608
 }

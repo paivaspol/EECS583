@@ -1,26 +1,34 @@
-define void @CCTK_Cmplx32Mul(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %a, %struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %b) #4 {
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX32* %a, metadata !205, metadata !243), !dbg !345
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX32* %b, metadata !206, metadata !243), !dbg !345
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX32* undef, metadata !207, metadata !243), !dbg !345
-  %1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 0, !dbg !345
-  %2 = load x86_fp80* %1, align 16, !dbg !345, !tbaa !334
-  %3 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 0, !dbg !345
-  %4 = load x86_fp80* %3, align 16, !dbg !345, !tbaa !334
-  %5 = fmul x86_fp80 %2, %4, !dbg !345
-  %6 = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 1, !dbg !345
-  %7 = load x86_fp80* %6, align 16, !dbg !345, !tbaa !340
-  %8 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 1, !dbg !345
-  %9 = load x86_fp80* %8, align 16, !dbg !345, !tbaa !340
-  %10 = fmul x86_fp80 %7, %9, !dbg !345
-  %11 = fsub x86_fp80 %5, %10, !dbg !345
-  tail call void @llvm.dbg.value(metadata x86_fp80 %11, i64 0, metadata !207, metadata !331), !dbg !345
-  %12 = fmul x86_fp80 %4, %7, !dbg !345
-  %13 = fmul x86_fp80 %2, %9, !dbg !345
-  %14 = fadd x86_fp80 %12, %13, !dbg !345
-  tail call void @llvm.dbg.value(metadata x86_fp80 %14, i64 0, metadata !207, metadata !332), !dbg !345
-  %15 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0, !dbg !345
-  store x86_fp80 %11, x86_fp80* %15, align 16, !dbg !345
-  %16 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1, !dbg !345
-  store x86_fp80 %14, x86_fp80* %16, align 16, !dbg !345
-  ret void, !dbg !345
+define void @CCTK_Cmplx32Mul(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture align 16 %a, %struct.CCTK_COMPLEX32* byval nocapture align 16 %b) #3 {
+entry:
+  %result.sroa.1 = alloca [6 x i8], align 2
+  %result.sroa.3 = alloca [6 x i8], align 2
+  call void @llvm.dbg.declare(metadata !{%struct.CCTK_COMPLEX32* %a}, metadata !206), !dbg !315
+  call void @llvm.dbg.declare(metadata !{%struct.CCTK_COMPLEX32* %b}, metadata !207), !dbg !315
+  call void @llvm.dbg.declare(metadata !305, metadata !208), !dbg !315
+  %Re = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 0, !dbg !315
+  %0 = load x86_fp80* %Re, align 16, !dbg !315, !tbaa !307
+  %Re1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 0, !dbg !315
+  %1 = load x86_fp80* %Re1, align 16, !dbg !315, !tbaa !307
+  %mul = fmul x86_fp80 %0, %1, !dbg !315
+  %Im = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 1, !dbg !315
+  %2 = load x86_fp80* %Im, align 16, !dbg !315, !tbaa !307
+  %Im2 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 1, !dbg !315
+  %3 = load x86_fp80* %Im2, align 16, !dbg !315, !tbaa !307
+  %mul3 = fmul x86_fp80 %2, %3, !dbg !315
+  %sub = fsub x86_fp80 %mul, %mul3, !dbg !315
+  %mul7 = fmul x86_fp80 %1, %2, !dbg !315
+  %mul10 = fmul x86_fp80 %0, %3, !dbg !315
+  %add = fadd x86_fp80 %mul7, %mul10, !dbg !315
+  %result.sroa.0.0.idx = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0, !dbg !315
+  store x86_fp80 %sub, x86_fp80* %result.sroa.0.0.idx, align 16, !dbg !315
+  %result.sroa.1.10.raw_cast = bitcast %struct.CCTK_COMPLEX32* %agg.result to i8*, !dbg !315
+  %result.sroa.1.10.raw_idx = getelementptr inbounds i8* %result.sroa.1.10.raw_cast, i64 10, !dbg !315
+  %result.sroa.1.10.idx = getelementptr inbounds [6 x i8]* %result.sroa.1, i64 0, i64 0, !dbg !315
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %result.sroa.1.10.raw_idx, i8* %result.sroa.1.10.idx, i64 6, i32 2, i1 false), !dbg !315
+  %result.sroa.2.16.idx12 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1, !dbg !315
+  store x86_fp80 %add, x86_fp80* %result.sroa.2.16.idx12, align 16, !dbg !315
+  %result.sroa.3.26.raw_idx = getelementptr inbounds i8* %result.sroa.1.10.raw_cast, i64 26, !dbg !315
+  %result.sroa.3.26.idx = getelementptr inbounds [6 x i8]* %result.sroa.3, i64 0, i64 0, !dbg !315
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %result.sroa.3.26.raw_idx, i8* %result.sroa.3.26.idx, i64 6, i32 2, i1 false), !dbg !315
+  ret void, !dbg !315
 }

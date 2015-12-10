@@ -1,28 +1,29 @@
 define %struct._SubMtx* @FrontMtx_diagMtx(%struct._FrontMtx* %frontmtx, i32 %J) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !234, metadata !284), !dbg !492
-  tail call void @llvm.dbg.value(metadata i32 %J, i64 0, metadata !235, metadata !284), !dbg !493
-  %1 = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !494
-  %2 = icmp slt i32 %J, 0, !dbg !496
-  %or.cond = or i1 %1, %2, !dbg !497
-  br i1 %or.cond, label %7, label %3, !dbg !497
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !238), !dbg !383
+  tail call void @llvm.dbg.value(metadata !{i32 %J}, i64 0, metadata !239), !dbg !384
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !385
+  %cmp1 = icmp slt i32 %J, 0, !dbg !385
+  %or.cond = or i1 %cmp, %cmp1, !dbg !385
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !385
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !498
-  %5 = load i32* %4, align 4, !dbg !498, !tbaa !298
-  %6 = icmp sgt i32 %5, %J, !dbg !499
-  br i1 %6, label %10, label %7, !dbg !500
+lor.lhs.false2:                                   ; preds = %entry
+  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !385
+  %0 = load i32* %nfront, align 4, !dbg !385, !tbaa !293
+  %cmp3 = icmp sgt i32 %0, %J, !dbg !385
+  br i1 %cmp3, label %if.end, label %if.then, !dbg !385
 
-; <label>:7                                       ; preds = %3, %0
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !501, !tbaa !291
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([53 x i8]* @.str10, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J) #6, !dbg !503
-  tail call void @exit(i32 -1) #7, !dbg !504
-  unreachable, !dbg !504
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !386, !tbaa !288
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([53 x i8]* @.str10, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J) #6, !dbg !386
+  tail call void @exit(i32 -1) #7, !dbg !388
+  unreachable, !dbg !388
 
-; <label>:10                                      ; preds = %3
-  %11 = sext i32 %J to i64, !dbg !505
-  %12 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 18, !dbg !506
-  %13 = load %struct._SubMtx*** %12, align 8, !dbg !506, !tbaa !507
-  %14 = getelementptr inbounds %struct._SubMtx** %13, i64 %11, !dbg !505
-  %15 = load %struct._SubMtx** %14, align 8, !dbg !505, !tbaa !291
-  ret %struct._SubMtx* %15, !dbg !508
+if.end:                                           ; preds = %lor.lhs.false2
+  %idxprom = sext i32 %J to i64, !dbg !389
+  %p_mtxDJJ = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 18, !dbg !389
+  %2 = load %struct._SubMtx*** %p_mtxDJJ, align 8, !dbg !389, !tbaa !288
+  %arrayidx = getelementptr inbounds %struct._SubMtx** %2, i64 %idxprom, !dbg !389
+  %3 = load %struct._SubMtx** %arrayidx, align 8, !dbg !389, !tbaa !288
+  ret %struct._SubMtx* %3, !dbg !389
 }

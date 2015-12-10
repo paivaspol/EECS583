@@ -1,0 +1,94 @@
+define void @_ZN11xercesc_2_56BitSet14ensureCapacityEj(%"class.xercesc_2_5::BitSet"* nocapture %this, i32 %size) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BitSet"* %this}, i64 0, metadata !283), !dbg !308
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !284), !dbg !308
+  %div = lshr i32 %size, 5, !dbg !309
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !285), !dbg !309
+  %rem = and i32 %size, 31, !dbg !310
+  %not.tobool = icmp ne i32 %rem, 0, !dbg !310
+  %inc = zext i1 %not.tobool to i32, !dbg !310
+  %div.inc = add i32 %inc, %div, !dbg !310
+  %fUnitLen = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %this, i64 0, i32 2, !dbg !311
+  %0 = load i32* %fUnitLen, align 4, !dbg !311, !tbaa !304
+  %cmp = icmp ugt i32 %div.inc, %0, !dbg !311
+  br i1 %cmp, label %if.then2, label %if.end28, !dbg !311
+
+if.then2:                                         ; preds = %entry
+  %add = add i32 %0, 1, !dbg !312
+  %cmp4 = icmp ult i32 %div.inc, %add, !dbg !312
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !285), !dbg !313
+  %add.div.inc = select i1 %cmp4, i32 %add, i32 %div.inc, !dbg !312
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %this, i64 0, i32 0, !dbg !314
+  %1 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !314, !tbaa !301
+  %2 = bitcast %"class.xercesc_2_5::MemoryManager"* %1 to i8* (%"class.xercesc_2_5::MemoryManager"*, i64)***, !dbg !314
+  %vtable = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)*** %2, align 8, !dbg !314, !tbaa !315
+  %vfn = getelementptr inbounds i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vtable, i64 2, !dbg !314
+  %3 = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vfn, align 8, !dbg !314
+  %conv = zext i32 %add.div.inc to i64, !dbg !314
+  %mul = shl nuw nsw i64 %conv, 3, !dbg !314
+  %call = tail call i8* %3(%"class.xercesc_2_5::MemoryManager"* %1, i64 %mul) #5, !dbg !314
+  %4 = bitcast i8* %call to i64*, !dbg !314
+  tail call void @llvm.dbg.value(metadata !{i64* %4}, i64 0, metadata !286), !dbg !314
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !288), !dbg !316
+  %5 = load i32* %fUnitLen, align 4, !dbg !316, !tbaa !304
+  %cmp1045 = icmp eq i32 %5, 0, !dbg !316
+  br i1 %cmp1045, label %for.cond14.preheader, label %for.body.lr.ph, !dbg !316
+
+for.body.lr.ph:                                   ; preds = %if.then2
+  %fBits = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %this, i64 0, i32 1, !dbg !318
+  %6 = load i64** %fBits, align 8, !dbg !318, !tbaa !301
+  %7 = icmp ugt i32 %5, 1, !dbg !316
+  br label %for.body, !dbg !316
+
+for.cond.for.cond14.preheader_crit_edge:          ; preds = %for.body
+  %umax48 = select i1 %7, i32 %5, i32 1, !dbg !316
+  br label %for.cond14.preheader, !dbg !316
+
+for.cond14.preheader:                             ; preds = %if.then2, %for.cond.for.cond14.preheader_crit_edge
+  %index.0.lcssa = phi i32 [ %umax48, %for.cond.for.cond14.preheader_crit_edge ], [ 0, %if.then2 ]
+  %cmp1543 = icmp ult i32 %index.0.lcssa, %add.div.inc, !dbg !319
+  br i1 %cmp1543, label %for.body16.lr.ph, label %for.end21, !dbg !319
+
+for.body16.lr.ph:                                 ; preds = %for.cond14.preheader
+  %8 = zext i32 %index.0.lcssa to i64
+  %9 = shl nuw nsw i64 %8, 3, !dbg !319
+  %scevgep = getelementptr i8* %call, i64 %9
+  %10 = icmp ugt i32 %div.inc, %add
+  %umax = select i1 %10, i32 %div.inc, i32 %add
+  %11 = add i32 %umax, -1, !dbg !319
+  %12 = sub i32 %11, %index.0.lcssa, !dbg !319
+  %13 = zext i32 %12 to i64
+  %14 = shl nuw nsw i64 %13, 3, !dbg !319
+  %15 = add i64 %14, 8, !dbg !319
+  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 0, i64 %15, i32 8, i1 false), !dbg !321
+  br label %for.end21, !dbg !319
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds i64* %6, i64 %indvars.iv, !dbg !318
+  %16 = load i64* %arrayidx, align 8, !dbg !318, !tbaa !322
+  %arrayidx12 = getelementptr inbounds i64* %4, i64 %indvars.iv, !dbg !318
+  store i64 %16, i64* %arrayidx12, align 8, !dbg !318, !tbaa !322
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !316
+  tail call void @llvm.dbg.value(metadata !{i32 %umax48}, i64 0, metadata !288), !dbg !316
+  %17 = trunc i64 %indvars.iv.next to i32, !dbg !316
+  %cmp10 = icmp ult i32 %17, %5, !dbg !316
+  br i1 %cmp10, label %for.body, label %for.cond.for.cond14.preheader_crit_edge, !dbg !316
+
+for.end21:                                        ; preds = %for.cond14.preheader, %for.body16.lr.ph
+  %18 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !323, !tbaa !301
+  %19 = bitcast %"class.xercesc_2_5::MemoryManager"* %18 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !323
+  %vtable23 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %19, align 8, !dbg !323, !tbaa !315
+  %vfn24 = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable23, i64 3, !dbg !323
+  %20 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn24, align 8, !dbg !323
+  %fBits25 = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %this, i64 0, i32 1, !dbg !323
+  %21 = load i64** %fBits25, align 8, !dbg !323, !tbaa !301
+  %22 = bitcast i64* %21 to i8*, !dbg !323
+  tail call void %20(%"class.xercesc_2_5::MemoryManager"* %18, i8* %22) #5, !dbg !323
+  store i64* %4, i64** %fBits25, align 8, !dbg !324, !tbaa !301
+  store i32 %add.div.inc, i32* %fUnitLen, align 4, !dbg !325, !tbaa !304
+  br label %if.end28, !dbg !326
+
+if.end28:                                         ; preds = %for.end21, %entry
+  ret void, !dbg !327
+}

@@ -1,34 +1,34 @@
-define zeroext i1 @_ZN8pov_base14ProcessOptions7MatchesEPKcS2_(%"class.pov_base::ProcessOptions"* nocapture readnone %this, i8* nocapture readonly %v1, i8* nocapture readonly %v2) #3 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::ProcessOptions"* %this, i64 0, metadata !831, metadata !1305), !dbg !2427
-  tail call void @llvm.dbg.value(metadata i8* %v1, i64 0, metadata !832, metadata !1305), !dbg !2428
-  tail call void @llvm.dbg.value(metadata i8* %v2, i64 0, metadata !833, metadata !1305), !dbg !2429
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !834, metadata !1305), !dbg !2430
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !835, metadata !1305), !dbg !2431
-  br label %1, !dbg !2432
+define zeroext i1 @_ZN8pov_base14ProcessOptions7MatchesEPKcS2_(%"class.pov_base::ProcessOptions"* nocapture %this, i8* nocapture %v1, i8* nocapture %v2) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::ProcessOptions"* %this}, i64 0, metadata !654), !dbg !1294
+  tail call void @llvm.dbg.value(metadata !{i8* %v1}, i64 0, metadata !655), !dbg !1294
+  tail call void @llvm.dbg.value(metadata !{i8* %v2}, i64 0, metadata !656), !dbg !1294
+  tail call void @llvm.dbg.value(metadata !56, i64 0, metadata !657), !dbg !1295
+  tail call void @llvm.dbg.value(metadata !708, i64 0, metadata !658), !dbg !1296
+  br label %land.lhs.true, !dbg !1297
 
-; <label>:1                                       ; preds = %0, %9
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %9 ]
-  %2 = getelementptr inbounds i8* %v1, i64 %indvars.iv, !dbg !2433
-  %3 = load i8* %2, align 1, !dbg !2433, !tbaa !1491
-  %4 = icmp eq i8 %3, 0, !dbg !2434
-  br i1 %4, label %.critedge, label %5, !dbg !2435
+land.lhs.true:                                    ; preds = %entry, %land.end16
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %land.end16 ]
+  %arrayidx = getelementptr inbounds i8* %v1, i64 %indvars.iv, !dbg !1297
+  %0 = load i8* %arrayidx, align 1, !dbg !1297, !tbaa !693
+  %cmp = icmp eq i8 %0, 0, !dbg !1297
+  br i1 %cmp, label %while.end, label %land.rhs, !dbg !1297
 
-; <label>:5                                       ; preds = %1
-  %6 = getelementptr inbounds i8* %v2, i64 %indvars.iv, !dbg !2436
-  %7 = load i8* %6, align 1, !dbg !2436, !tbaa !1491
-  %8 = icmp eq i8 %7, 0, !dbg !2437
-  br i1 %8, label %.critedge, label %9, !dbg !2438
+land.rhs:                                         ; preds = %land.lhs.true
+  %arrayidx3 = getelementptr inbounds i8* %v2, i64 %indvars.iv, !dbg !1297
+  %1 = load i8* %arrayidx3, align 1, !dbg !1297, !tbaa !693
+  %cmp5 = icmp eq i8 %1, 0, !dbg !1297
+  br i1 %cmp5, label %while.end, label %land.end16
 
-; <label>:9                                       ; preds = %5
-  %10 = sext i8 %3 to i32, !dbg !2439
-  %11 = sext i8 %7 to i32, !dbg !2441
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !877, metadata !1305), !dbg !2442
-  %12 = tail call i32 @__tolower(i32 %11) #10, !dbg !2444
-  %13 = icmp eq i32 %10, %12, !dbg !2445
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !2432
-  br i1 %13, label %1, label %.critedge, !dbg !2432
+land.end16:                                       ; preds = %land.rhs
+  %conv10 = sext i8 %0 to i32, !dbg !1298
+  %conv13 = sext i8 %1 to i32, !dbg !1298
+  %call = tail call i32 @tolower(i32 %conv13) #9, !dbg !1298
+  %cmp14 = icmp eq i32 %conv10, %call, !dbg !1298
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1297
+  br i1 %cmp14, label %land.lhs.true, label %while.end, !dbg !1297
 
-.critedge:                                        ; preds = %5, %9, %1
-  %.lcssa = phi i1 [ true, %5 ], [ false, %9 ], [ true, %1 ]
-  ret i1 %.lcssa, !dbg !2446
+while.end:                                        ; preds = %land.rhs, %land.end16, %land.lhs.true
+  %ans.0.lcssa = phi i1 [ true, %land.rhs ], [ false, %land.end16 ], [ true, %land.lhs.true ]
+  ret i1 %ans.0.lcssa, !dbg !1300
 }

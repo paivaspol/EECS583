@@ -1,34 +1,39 @@
 define %struct.rtx_def* @alloc_EXPR_LIST(i32 %kind, %struct.rtx_def* %val, %struct.rtx_def* %next) #0 {
 entry:
-  %0 = load %struct.rtx_def** @unused_expr_list, align 8, !tbaa !0
-  %tobool = icmp eq %struct.rtx_def* %0, null
-  br i1 %tobool, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i32 %kind}, i64 0, metadata !315), !dbg !370
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %val}, i64 0, metadata !316), !dbg !371
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %next}, i64 0, metadata !317), !dbg !371
+  %0 = load %struct.rtx_def** @unused_expr_list, align 8, !dbg !372, !tbaa !358
+  %tobool = icmp eq %struct.rtx_def* %0, null, !dbg !372
+  br i1 %tobool, label %if.else, label %if.then, !dbg !372
 
 if.then:                                          ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  store %struct.rtx_def* %1, %struct.rtx_def** @unused_expr_list, align 8, !tbaa !0
-  %2 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0, i32 0
-  %val.c = ptrtoint %struct.rtx_def* %val to i64
-  store i64 %val.c, i64* %2, align 8, !tbaa !0
-  %3 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
-  %next.c = ptrtoint %struct.rtx_def* %next to i64
-  store i64 %next.c, i64* %3, align 8, !tbaa !0
-  %4 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %4, align 8
-  %bf.value = shl i32 %kind, 16
-  %bf.shl = and i32 %bf.value, 16711680
-  %bf.clear = and i32 %bf.load, -16711681
-  %bf.set = or i32 %bf.clear, %bf.shl
-  store i32 %bf.set, i32* %4, align 8
-  br label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !318), !dbg !373
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1, !dbg !375
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !375
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !375, !tbaa !358
+  store %struct.rtx_def* %1, %struct.rtx_def** @unused_expr_list, align 8, !dbg !375, !tbaa !358
+  %2 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0, i32 0, !dbg !376
+  %val.c = ptrtoint %struct.rtx_def* %val to i64, !dbg !376
+  store i64 %val.c, i64* %2, align 8, !dbg !376, !tbaa !358
+  %3 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0, !dbg !377
+  %next.c = ptrtoint %struct.rtx_def* %next to i64, !dbg !377
+  store i64 %next.c, i64* %3, align 8, !dbg !377, !tbaa !358
+  %4 = bitcast %struct.rtx_def* %0 to i32*, !dbg !378
+  %bf.load = load i32* %4, align 8, !dbg !378
+  %bf.value = shl i32 %kind, 16, !dbg !378
+  %bf.shl = and i32 %bf.value, 16711680, !dbg !378
+  %bf.clear = and i32 %bf.load, -16711681, !dbg !378
+  %bf.set = or i32 %bf.clear, %bf.shl, !dbg !378
+  store i32 %bf.set, i32* %4, align 8, !dbg !378
+  br label %if.end, !dbg !379
 
 if.else:                                          ; preds = %entry
-  %call = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 %kind, %struct.rtx_def* %val, %struct.rtx_def* %next) #2
+  %call = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 %kind, %struct.rtx_def* %val, %struct.rtx_def* %next) #3, !dbg !380
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !318), !dbg !380
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
   %r.0 = phi %struct.rtx_def* [ %0, %if.then ], [ %call, %if.else ]
-  ret %struct.rtx_def* %r.0
+  ret %struct.rtx_def* %r.0, !dbg !381
 }

@@ -1,105 +1,106 @@
-define float @SampleGamma(float %alpha) #2 {
-  tail call void @llvm.dbg.value(metadata float %alpha, i64 0, metadata !146, metadata !184), !dbg !411
-  %1 = fpext float %alpha to double, !dbg !412
-  %2 = fcmp ult float %alpha, 1.000000e+00, !dbg !414
-  br i1 %2, label %34, label %.preheader1, !dbg !415
+define float @SampleGamma(float %alpha) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %alpha}, i64 0, metadata !145), !dbg !258
+  %conv = fpext float %alpha to double, !dbg !259
+  %cmp = fcmp ult float %alpha, 1.000000e+00, !dbg !259
+  br i1 %cmp, label %if.else, label %while.body.preheader, !dbg !259
 
-.preheader1:                                      ; preds = %0
-  %3 = fmul double %1, 2.000000e+00, !dbg !416
-  %4 = fadd double %3, -1.000000e+00, !dbg !419
-  %5 = tail call double @sqrt(double %4) #5, !dbg !420
-  %6 = fptrunc double %5 to float, !dbg !420
-  %7 = fdiv float 1.000000e+00, %6, !dbg !421
-  %8 = fpext float %7 to double, !dbg !422
-  %9 = fdiv float %alpha, %6, !dbg !423
-  %10 = fpext float %9 to double, !dbg !424
-  %11 = fadd double %10, 1.000000e+00, !dbg !425
-  br label %12, !dbg !416
+while.body.preheader:                             ; preds = %entry
+  %mul = fmul double %conv, 2.000000e+00, !dbg !260
+  %sub = fadd double %mul, -1.000000e+00, !dbg !260
+  br label %while.body, !dbg !260
 
-; <label>:12                                      ; preds = %.preheader1, %12
-  tail call void @llvm.dbg.value(metadata float %6, i64 0, metadata !151, metadata !184), !dbg !426
-  %13 = tail call double @sre_random() #6, !dbg !427
-  %14 = fptrunc double %13 to float, !dbg !427
-  tail call void @llvm.dbg.value(metadata float %14, i64 0, metadata !147, metadata !184), !dbg !428
-  %15 = fsub float 1.000000e+00, %14, !dbg !429
-  %16 = fdiv float %14, %15, !dbg !430
-  tail call void @llvm.dbg.value(metadata float %16, i64 0, metadata !148, metadata !184), !dbg !431
-  %17 = fpext float %16 to double, !dbg !432
-  %18 = tail call double @llvm.pow.f64(double %17, double %8), !dbg !433
-  %19 = fmul double %1, %18, !dbg !434
-  %20 = fptrunc double %19 to float, !dbg !435
-  tail call void @llvm.dbg.value(metadata float %20, i64 0, metadata !149, metadata !184), !dbg !436
-  %21 = fsub float %alpha, %20, !dbg !437
-  %22 = fpext float %21 to double, !dbg !438
-  %23 = tail call double @exp(double %22) #5, !dbg !439
-  %24 = fmul double %23, 2.500000e-01, !dbg !440
-  %25 = tail call double @llvm.pow.f64(double %17, double %11), !dbg !441
-  %26 = fmul double %24, %25, !dbg !442
-  %27 = fdiv double 1.000000e+00, %17, !dbg !443
-  %28 = fadd double %27, 1.000000e+00, !dbg !444
-  %pow2 = fmul double %28, %28, !dbg !445
-  %29 = fmul double %26, %pow2, !dbg !446
-  %30 = fptrunc double %29 to float, !dbg !447
-  tail call void @llvm.dbg.value(metadata float %30, i64 0, metadata !150, metadata !184), !dbg !448
-  %31 = tail call double @sre_random() #6, !dbg !449
-  %32 = fpext float %30 to double, !dbg !451
-  %33 = fcmp ugt double %31, %32, !dbg !452
-  br i1 %33, label %12, label %.loopexit, !dbg !453
+while.body:                                       ; preds = %while.body.preheader, %while.body
+  %call = tail call double @sqrt(double %sub) #6, !dbg !260
+  %conv3 = fptrunc double %call to float, !dbg !260
+  tail call void @llvm.dbg.value(metadata !{float %conv3}, i64 0, metadata !150), !dbg !260
+  %call4 = tail call double @sre_random() #6, !dbg !263
+  %conv5 = fptrunc double %call4 to float, !dbg !263
+  tail call void @llvm.dbg.value(metadata !{float %conv5}, i64 0, metadata !146), !dbg !263
+  %sub6 = fsub float 1.000000e+00, %conv5, !dbg !264
+  %div = fdiv float %conv5, %sub6, !dbg !264
+  tail call void @llvm.dbg.value(metadata !{float %div}, i64 0, metadata !147), !dbg !264
+  %conv8 = fpext float %div to double, !dbg !265
+  %div9 = fdiv float 1.000000e+00, %conv3, !dbg !265
+  %conv10 = fpext float %div9 to double, !dbg !265
+  %call11 = tail call double @pow(double %conv8, double %conv10) #6, !dbg !265
+  %mul12 = fmul double %conv, %call11, !dbg !265
+  %conv13 = fptrunc double %mul12 to float, !dbg !265
+  tail call void @llvm.dbg.value(metadata !{float %conv13}, i64 0, metadata !148), !dbg !265
+  %add = fsub float %alpha, %conv13, !dbg !266
+  %conv15 = fpext float %add to double, !dbg !266
+  %call16 = tail call double @exp(double %conv15) #6, !dbg !266
+  %mul17 = fmul double %call16, 2.500000e-01, !dbg !266
+  %div19 = fdiv float %alpha, %conv3, !dbg !266
+  %conv20 = fpext float %div19 to double, !dbg !266
+  %add21 = fadd double %conv20, 1.000000e+00, !dbg !266
+  %call22 = tail call double @pow(double %conv8, double %add21) #6, !dbg !266
+  %mul23 = fmul double %mul17, %call22, !dbg !266
+  %div25 = fdiv double 1.000000e+00, %conv8, !dbg !266
+  %add26 = fadd double %div25, 1.000000e+00, !dbg !266
+  %pow2 = fmul double %add26, %add26, !dbg !266
+  %mul28 = fmul double %mul23, %pow2, !dbg !266
+  %conv29 = fptrunc double %mul28 to float, !dbg !266
+  tail call void @llvm.dbg.value(metadata !{float %conv29}, i64 0, metadata !149), !dbg !266
+  %call30 = tail call double @sre_random() #6, !dbg !267
+  %conv31 = fpext float %conv29 to double, !dbg !267
+  %cmp32 = fcmp ugt double %call30, %conv31, !dbg !267
+  br i1 %cmp32, label %while.body, label %return, !dbg !267
 
-; <label>:34                                      ; preds = %0
-  %35 = fcmp ogt float %alpha, 0.000000e+00, !dbg !454
-  br i1 %35, label %.preheader, label %67, !dbg !456
+if.else:                                          ; preds = %entry
+  %cmp36 = fcmp ogt float %alpha, 0.000000e+00, !dbg !268
+  br i1 %cmp36, label %while.body39.preheader, label %if.end89, !dbg !268
 
-.preheader:                                       ; preds = %34
-  %36 = fdiv double %1, 0x4005BF0A8B145769, !dbg !457
-  %37 = fadd double %36, 1.000000e+00, !dbg !460
-  %38 = fadd double %1, -1.000000e+00, !dbg !461
-  %39 = fdiv double 1.000000e+00, %1, !dbg !465
-  br label %.backedge, !dbg !467
+while.body39.preheader:                           ; preds = %if.else
+  %div45 = fdiv double %conv, 0x4005BF0A8B145769, !dbg !269
+  %add46 = fadd double %div45, 1.000000e+00, !dbg !269
+  %sub67 = fadd double %conv, -1.000000e+00, !dbg !272
+  %div76 = fdiv double 1.000000e+00, %conv, !dbg !274
+  br label %while.body39, !dbg !276
 
-.backedge:                                        ; preds = %46, %58, %.preheader
-  %40 = tail call double @sre_random() #6, !dbg !467
-  %41 = fptrunc double %40 to float, !dbg !467
-  tail call void @llvm.dbg.value(metadata float %41, i64 0, metadata !147, metadata !184), !dbg !428
-  %42 = fpext float %41 to double, !dbg !468
-  %43 = fmul double %42, %37, !dbg !469
-  %44 = fptrunc double %43 to float, !dbg !468
-  tail call void @llvm.dbg.value(metadata float %44, i64 0, metadata !148, metadata !184), !dbg !431
-  %45 = fcmp ogt float %44, 1.000000e+00, !dbg !470
-  br i1 %45, label %46, label %58, !dbg !471
+while.body39:                                     ; preds = %if.then52, %if.else73, %while.body39.preheader
+  %call40 = tail call double @sre_random() #6, !dbg !276
+  %conv41 = fptrunc double %call40 to float, !dbg !276
+  tail call void @llvm.dbg.value(metadata !{float %conv41}, i64 0, metadata !146), !dbg !276
+  %conv42 = fpext float %conv41 to double, !dbg !269
+  %mul47 = fmul double %conv42, %add46, !dbg !269
+  %conv48 = fptrunc double %mul47 to float, !dbg !269
+  tail call void @llvm.dbg.value(metadata !{float %conv48}, i64 0, metadata !147), !dbg !269
+  %cmp50 = fcmp ogt float %conv48, 1.000000e+00, !dbg !277
+  br i1 %cmp50, label %if.then52, label %if.else73, !dbg !277
 
-; <label>:46                                      ; preds = %.backedge
-  %47 = fsub float 1.000000e+00, %44, !dbg !472
-  %48 = fpext float %47 to double, !dbg !473
-  %49 = fadd double %36, %48, !dbg !474
-  %50 = fdiv double %49, %1, !dbg !475
-  %51 = tail call double @log(double %50) #5, !dbg !476
-  %52 = fptrunc double %51 to float, !dbg !477
-  %53 = fsub float -0.000000e+00, %52, !dbg !477
-  tail call void @llvm.dbg.value(metadata float %53, i64 0, metadata !149, metadata !184), !dbg !436
-  %54 = tail call double @sre_random() #6, !dbg !478
-  %55 = fpext float %53 to double, !dbg !479
-  %56 = tail call double @llvm.pow.f64(double %55, double %38), !dbg !480
-  %57 = fcmp ugt double %54, %56, !dbg !481
-  br i1 %57, label %.backedge, label %.loopexit, !dbg !482
+if.then52:                                        ; preds = %while.body39
+  %sub53 = fsub float 1.000000e+00, %conv48, !dbg !278
+  %conv54 = fpext float %sub53 to double, !dbg !278
+  %add58 = fadd double %div45, %conv54, !dbg !278
+  %div60 = fdiv double %add58, %conv, !dbg !278
+  %call61 = tail call double @log(double %div60) #6, !dbg !278
+  %0 = fptrunc double %call61 to float, !dbg !278
+  %conv63 = fsub float -0.000000e+00, %0, !dbg !278
+  tail call void @llvm.dbg.value(metadata !{float %conv63}, i64 0, metadata !148), !dbg !278
+  %call64 = tail call double @sre_random() #6, !dbg !272
+  %conv65 = fpext float %conv63 to double, !dbg !272
+  %call68 = tail call double @pow(double %conv65, double %sub67) #6, !dbg !272
+  %cmp69 = fcmp ugt double %call64, %call68, !dbg !272
+  br i1 %cmp69, label %while.body39, label %return, !dbg !272
 
-; <label>:58                                      ; preds = %.backedge
-  %59 = fpext float %44 to double, !dbg !483
-  %60 = tail call double @llvm.pow.f64(double %59, double %39), !dbg !484
-  %61 = fptrunc double %60 to float, !dbg !484
-  tail call void @llvm.dbg.value(metadata float %61, i64 0, metadata !149, metadata !184), !dbg !436
-  %62 = tail call double @sre_random() #6, !dbg !485
-  %63 = fsub float -0.000000e+00, %61, !dbg !487
-  %64 = fpext float %63 to double, !dbg !487
-  %65 = tail call double @exp(double %64) #5, !dbg !488
-  %66 = fcmp ugt double %62, %65, !dbg !489
-  br i1 %66, label %.backedge, label %.loopexit, !dbg !490
+if.else73:                                        ; preds = %while.body39
+  %conv49 = fpext float %conv48 to double, !dbg !277
+  %call77 = tail call double @pow(double %conv49, double %div76) #6, !dbg !274
+  %conv78 = fptrunc double %call77 to float, !dbg !274
+  tail call void @llvm.dbg.value(metadata !{float %conv78}, i64 0, metadata !148), !dbg !274
+  %call79 = tail call double @sre_random() #6, !dbg !279
+  %sub80 = fsub float -0.000000e+00, %conv78, !dbg !279
+  %conv81 = fpext float %sub80 to double, !dbg !279
+  %call82 = tail call double @exp(double %conv81) #6, !dbg !279
+  %cmp83 = fcmp ugt double %call79, %call82, !dbg !279
+  br i1 %cmp83, label %while.body39, label %return, !dbg !279
 
-; <label>:67                                      ; preds = %34
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0)) #6, !dbg !491
-  br label %.loopexit, !dbg !492
+if.end89:                                         ; preds = %if.else
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0)) #6, !dbg !280
+  br label %return, !dbg !281
 
-.loopexit:                                        ; preds = %12, %58, %46, %67
-  %.0 = phi float [ 0.000000e+00, %67 ], [ %53, %46 ], [ %61, %58 ], [ %20, %12 ]
-  ret float %.0, !dbg !493
+return:                                           ; preds = %while.body, %if.else73, %if.then52, %if.end89
+  %retval.0 = phi float [ 0.000000e+00, %if.end89 ], [ %conv78, %if.else73 ], [ %conv63, %if.then52 ], [ %conv13, %while.body ]
+  ret float %retval.0, !dbg !282
 }

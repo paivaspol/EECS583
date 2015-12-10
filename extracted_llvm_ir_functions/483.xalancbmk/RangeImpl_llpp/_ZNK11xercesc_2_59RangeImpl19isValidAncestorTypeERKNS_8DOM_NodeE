@@ -1,0 +1,79 @@
+define zeroext i1 @_ZNK11xercesc_2_59RangeImpl19isValidAncestorTypeERKNS_8DOM_NodeE(%"class.xercesc_2_5::RangeImpl"* nocapture %this, %"class.xercesc_2_5::DOM_Node"* %node) #1 align 2 {
+entry:
+  %aNode = alloca %"class.xercesc_2_5::DOM_Node", align 8
+  %ref.tmp = alloca %"class.xercesc_2_5::DOM_Node", align 8
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RangeImpl"* %this}, i64 0, metadata !3355), !dbg !4724
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOM_Node"* %node}, i64 0, metadata !3356), !dbg !4724
+  call void @llvm.dbg.declare(metadata !{%"class.xercesc_2_5::DOM_Node"* %aNode}, metadata !3357), !dbg !4725
+  call void @_ZN11xercesc_2_58DOM_NodeC1ERKS0_(%"class.xercesc_2_5::DOM_Node"* %aNode, %"class.xercesc_2_5::DOM_Node"* %node) #7, !dbg !4725
+  br label %for.cond, !dbg !4725
+
+for.cond:                                         ; preds = %invoke.cont11, %entry
+  %call = invoke zeroext i1 @_ZNK11xercesc_2_58DOM_NodeneEPKNS_11DOM_NullPtrE(%"class.xercesc_2_5::DOM_Node"* %aNode, %"class.xercesc_2_5::DOM_NullPtr"* null) #7
+          to label %invoke.cont unwind label %lpad, !dbg !4725
+
+invoke.cont:                                      ; preds = %for.cond
+  br i1 %call, label %for.body, label %cleanup, !dbg !4725
+
+lpad:                                             ; preds = %invoke.cont11, %for.inc, %for.body, %for.cond
+  %0 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4725
+  %1 = extractvalue { i8*, i32 } %0, 0, !dbg !4725
+  %2 = extractvalue { i8*, i32 } %0, 1, !dbg !4725
+  br label %ehcleanup, !dbg !4725
+
+for.body:                                         ; preds = %invoke.cont
+  %call3 = invoke signext i16 @_ZNK11xercesc_2_58DOM_Node11getNodeTypeEv(%"class.xercesc_2_5::DOM_Node"* %aNode) #7
+          to label %invoke.cont2 unwind label %lpad, !dbg !4726
+
+invoke.cont2:                                     ; preds = %for.body
+  call void @llvm.dbg.value(metadata !{i16 %call3}, i64 0, metadata !3359), !dbg !4726
+  switch i16 %call3, label %for.inc [
+    i16 6, label %cleanup
+    i16 12, label %cleanup
+    i16 10, label %cleanup
+  ], !dbg !4727
+
+for.inc:                                          ; preds = %invoke.cont2
+  invoke void @_ZNK11xercesc_2_58DOM_Node13getParentNodeEv(%"class.xercesc_2_5::DOM_Node"* sret %ref.tmp, %"class.xercesc_2_5::DOM_Node"* %aNode) #7
+          to label %invoke.cont9 unwind label %lpad, !dbg !4725
+
+invoke.cont9:                                     ; preds = %for.inc
+  %call12 = invoke %"class.xercesc_2_5::DOM_Node"* @_ZN11xercesc_2_58DOM_NodeaSERKS0_(%"class.xercesc_2_5::DOM_Node"* %aNode, %"class.xercesc_2_5::DOM_Node"* %ref.tmp) #7
+          to label %invoke.cont11 unwind label %lpad10, !dbg !4725
+
+invoke.cont11:                                    ; preds = %invoke.cont9
+  invoke void @_ZN11xercesc_2_58DOM_NodeD1Ev(%"class.xercesc_2_5::DOM_Node"* %ref.tmp) #7
+          to label %for.cond unwind label %lpad, !dbg !4725
+
+lpad10:                                           ; preds = %invoke.cont9
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4725
+  %4 = extractvalue { i8*, i32 } %3, 0, !dbg !4725
+  %5 = extractvalue { i8*, i32 } %3, 1, !dbg !4725
+  invoke void @_ZN11xercesc_2_58DOM_NodeD1Ev(%"class.xercesc_2_5::DOM_Node"* %ref.tmp) #7
+          to label %ehcleanup unwind label %terminate.lpad, !dbg !4725
+
+cleanup:                                          ; preds = %invoke.cont2, %invoke.cont2, %invoke.cont2, %invoke.cont
+  %cleanup.dest.slot.0 = phi i1 [ true, %invoke.cont ], [ false, %invoke.cont2 ], [ false, %invoke.cont2 ], [ false, %invoke.cont2 ]
+  call void @_ZN11xercesc_2_58DOM_NodeD1Ev(%"class.xercesc_2_5::DOM_Node"* %aNode) #7, !dbg !4725
+  ret i1 %cleanup.dest.slot.0, !dbg !4728
+
+ehcleanup:                                        ; preds = %lpad10, %lpad
+  %exn.slot.0 = phi i8* [ %1, %lpad ], [ %4, %lpad10 ]
+  %ehselector.slot.0 = phi i32 [ %2, %lpad ], [ %5, %lpad10 ]
+  invoke void @_ZN11xercesc_2_58DOM_NodeD1Ev(%"class.xercesc_2_5::DOM_Node"* %aNode) #7
+          to label %eh.resume unwind label %terminate.lpad, !dbg !4725
+
+eh.resume:                                        ; preds = %ehcleanup
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !4725
+  %lpad.val16 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !4725
+  resume { i8*, i32 } %lpad.val16, !dbg !4725
+
+terminate.lpad:                                   ; preds = %ehcleanup, %lpad10
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !4725
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !4725
+  call void @__clang_call_terminate(i8* %7) #8, !dbg !4725
+  unreachable, !dbg !4725
+}

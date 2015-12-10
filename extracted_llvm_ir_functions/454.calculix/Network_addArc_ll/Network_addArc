@@ -1,177 +1,169 @@
 define void @Network_addArc(%struct._Network* %network, i32 %firstNode, i32 %secondNode, i32 %capacity, i32 %flow) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Network* %network, i64 0, metadata !108, metadata !122), !dbg !123
-  tail call void @llvm.dbg.value(metadata i32 %firstNode, i64 0, metadata !109, metadata !122), !dbg !124
-  tail call void @llvm.dbg.value(metadata i32 %secondNode, i64 0, metadata !110, metadata !122), !dbg !125
-  tail call void @llvm.dbg.value(metadata i32 %capacity, i64 0, metadata !111, metadata !122), !dbg !126
-  tail call void @llvm.dbg.value(metadata i32 %flow, i64 0, metadata !112, metadata !122), !dbg !127
-  %1 = icmp eq %struct._Network* %network, null, !dbg !128
-  br i1 %1, label %15, label %2, !dbg !130
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Network* %network}, i64 0, metadata !99), !dbg !109
+  tail call void @llvm.dbg.value(metadata !{i32 %firstNode}, i64 0, metadata !100), !dbg !110
+  tail call void @llvm.dbg.value(metadata !{i32 %secondNode}, i64 0, metadata !101), !dbg !111
+  tail call void @llvm.dbg.value(metadata !{i32 %capacity}, i64 0, metadata !102), !dbg !112
+  tail call void @llvm.dbg.value(metadata !{i32 %flow}, i64 0, metadata !103), !dbg !113
+  %cmp = icmp eq %struct._Network* %network, null, !dbg !114
+  br i1 %cmp, label %if.then.thread, label %lor.lhs.false, !dbg !114
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct._Network* %network, i64 0, i32 0, !dbg !131
-  %4 = load i32* %3, align 4, !dbg !131, !tbaa !132
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !117, metadata !122), !dbg !138
-  %5 = icmp slt i32 %4, 1, !dbg !139
-  %6 = icmp slt i32 %firstNode, 0, !dbg !140
-  %or.cond = or i1 %6, %5, !dbg !141
-  br i1 %or.cond, label %18, label %7, !dbg !141
+if.then.thread:                                   ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !115, !tbaa !117
+  %call127 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str, i64 0, i64 0), %struct._Network* null, i32 %firstNode, i32 %secondNode, i32 %capacity, i32 %flow) #4, !dbg !115
+  br label %if.end, !dbg !120
 
-; <label>:7                                       ; preds = %2
-  %8 = icmp sle i32 %4, %firstNode, !dbg !142
-  %9 = icmp slt i32 %secondNode, 0, !dbg !143
-  %or.cond3 = or i1 %9, %8, !dbg !144
-  br i1 %or.cond3, label %18, label %10, !dbg !144
+lor.lhs.false:                                    ; preds = %entry
+  %nnode1 = getelementptr inbounds %struct._Network* %network, i64 0, i32 0, !dbg !114
+  %1 = load i32* %nnode1, align 4, !dbg !114, !tbaa !121
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !108), !dbg !114
+  %notlhs = icmp sgt i32 %1, 0, !dbg !114
+  %notrhs = icmp sgt i32 %firstNode, -1, !dbg !114
+  %or.cond.not = and i1 %notrhs, %notlhs, !dbg !114
+  %cmp6 = icmp sgt i32 %1, %firstNode, !dbg !114
+  %or.cond121 = and i1 %or.cond.not, %cmp6, !dbg !114
+  %cmp8.not = icmp sgt i32 %secondNode, -1, !dbg !114
+  %or.cond122.not = and i1 %or.cond121, %cmp8.not, !dbg !114
+  %cmp10 = icmp sgt i32 %1, %secondNode, !dbg !114
+  %or.cond123 = and i1 %or.cond122.not, %cmp10, !dbg !114
+  %or.cond123.not = xor i1 %or.cond123, true, !dbg !114
+  %cmp12 = icmp slt i32 %capacity, 1, !dbg !114
+  %or.cond124 = or i1 %cmp12, %or.cond123.not, !dbg !114
+  %cmp14 = icmp slt i32 %flow, 0, !dbg !114
+  %or.cond125 = or i1 %or.cond124, %cmp14, !dbg !114
+  %cmp16 = icmp sgt i32 %flow, %capacity, !dbg !114
+  %or.cond126 = or i1 %or.cond125, %cmp16, !dbg !114
+  br i1 %or.cond126, label %if.then18, label %if.end20, !dbg !114
 
-; <label>:10                                      ; preds = %7
-  %11 = icmp sle i32 %4, %secondNode, !dbg !145
-  %12 = icmp slt i32 %capacity, 1, !dbg !146
-  %or.cond5 = or i1 %12, %11, !dbg !147
-  %13 = icmp slt i32 %flow, 0, !dbg !148
-  %or.cond7 = or i1 %13, %or.cond5, !dbg !147
-  %14 = icmp sgt i32 %flow, %capacity, !dbg !149
-  %or.cond8 = or i1 %14, %or.cond7, !dbg !147
-  br i1 %or.cond8, label %18, label %24, !dbg !147
+if.then18:                                        ; preds = %lor.lhs.false
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !115, !tbaa !117
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([60 x i8]* @.str, i64 0, i64 0), %struct._Network* %network, i32 %firstNode, i32 %secondNode, i32 %capacity, i32 %flow) #4, !dbg !115
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !122, !tbaa !117
+  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([13 x i8]* @.str1, i64 0, i64 0), i32 %1) #4, !dbg !122
+  br label %if.end, !dbg !124
 
-; <label>:15                                      ; preds = %0
-  %16 = load %struct.__sFILE** @__stderrp, align 8, !dbg !150, !tbaa !152
-  %17 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %16, i8* getelementptr inbounds ([60 x i8]* @.str, i64 0, i64 0), %struct._Network* null, i32 %firstNode, i32 %secondNode, i32 %capacity, i32 %flow) #4, !dbg !153
-  br label %23
+if.end:                                           ; preds = %if.then.thread, %if.then18
+  tail call void @exit(i32 -1) #5, !dbg !125
+  unreachable, !dbg !125
 
-; <label>:18                                      ; preds = %10, %7, %2
-  %19 = load %struct.__sFILE** @__stderrp, align 8, !dbg !150, !tbaa !152
-  %20 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %19, i8* getelementptr inbounds ([60 x i8]* @.str, i64 0, i64 0), %struct._Network* %network, i32 %firstNode, i32 %secondNode, i32 %capacity, i32 %flow) #4, !dbg !153
-  %21 = load %struct.__sFILE** @__stderrp, align 8, !dbg !154, !tbaa !152
-  %22 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %21, i8* getelementptr inbounds ([13 x i8]* @.str1, i64 0, i64 0), i32 %4) #4, !dbg !157
-  br label %23, !dbg !158
+if.end20:                                         ; preds = %lor.lhs.false
+  %inheads21 = getelementptr inbounds %struct._Network* %network, i64 0, i32 3, !dbg !126
+  %4 = load %struct._Arc*** %inheads21, align 8, !dbg !126, !tbaa !117
+  tail call void @llvm.dbg.value(metadata !{%struct._Arc** %4}, i64 0, metadata !105), !dbg !126
+  %outheads22 = getelementptr inbounds %struct._Network* %network, i64 0, i32 4, !dbg !127
+  %5 = load %struct._Arc*** %outheads22, align 8, !dbg !127, !tbaa !117
+  tail call void @llvm.dbg.value(metadata !{%struct._Arc** %5}, i64 0, metadata !106), !dbg !127
+  %chunk23 = getelementptr inbounds %struct._Network* %network, i64 0, i32 5, !dbg !128
+  %6 = load %struct._ArcChunk** %chunk23, align 8, !dbg !128, !tbaa !117
+  tail call void @llvm.dbg.value(metadata !{%struct._ArcChunk* %6}, i64 0, metadata !107), !dbg !128
+  %cmp24 = icmp eq %struct._ArcChunk* %6, null, !dbg !128
+  br i1 %cmp24, label %if.then27, label %lor.lhs.false25, !dbg !128
 
-; <label>:23                                      ; preds = %15, %18
-  tail call void @exit(i32 -1) #5, !dbg !159
-  unreachable, !dbg !159
+lor.lhs.false25:                                  ; preds = %if.end20
+  %inuse = getelementptr inbounds %struct._ArcChunk* %6, i64 0, i32 1, !dbg !128
+  %7 = load i32* %inuse, align 4, !dbg !128, !tbaa !121
+  %size = getelementptr inbounds %struct._ArcChunk* %6, i64 0, i32 0, !dbg !128
+  %8 = load i32* %size, align 4, !dbg !128, !tbaa !121
+  %cmp26 = icmp eq i32 %7, %8, !dbg !128
+  br i1 %cmp26, label %if.then27, label %if.end59, !dbg !128
 
-; <label>:24                                      ; preds = %10
-  %25 = getelementptr inbounds %struct._Network* %network, i64 0, i32 3, !dbg !160
-  %26 = load %struct._Arc*** %25, align 8, !dbg !160, !tbaa !161
-  tail call void @llvm.dbg.value(metadata %struct._Arc** %26, i64 0, metadata !114, metadata !122), !dbg !162
-  %27 = getelementptr inbounds %struct._Network* %network, i64 0, i32 4, !dbg !163
-  %28 = load %struct._Arc*** %27, align 8, !dbg !163, !tbaa !164
-  tail call void @llvm.dbg.value(metadata %struct._Arc** %28, i64 0, metadata !115, metadata !122), !dbg !165
-  %29 = getelementptr inbounds %struct._Network* %network, i64 0, i32 5, !dbg !166
-  %30 = load %struct._ArcChunk** %29, align 8, !dbg !166, !tbaa !168
-  tail call void @llvm.dbg.value(metadata %struct._ArcChunk* %30, i64 0, metadata !116, metadata !122), !dbg !169
-  %31 = icmp eq %struct._ArcChunk* %30, null, !dbg !170
-  %32 = ptrtoint %struct._ArcChunk* %30 to i64
-  br i1 %31, label %39, label %33, !dbg !171
+if.then27:                                        ; preds = %lor.lhs.false25, %if.end20
+  %call28 = tail call noalias i8* @malloc(i64 24) #4, !dbg !129
+  %9 = bitcast i8* %call28 to %struct._ArcChunk*, !dbg !129
+  tail call void @llvm.dbg.value(metadata !{%struct._ArcChunk* %9}, i64 0, metadata !107), !dbg !129
+  %cmp29 = icmp eq i8* %call28, null, !dbg !129
+  br i1 %cmp29, label %if.then30, label %if.end32, !dbg !129
 
-; <label>:33                                      ; preds = %24
-  %34 = getelementptr inbounds %struct._ArcChunk* %30, i64 0, i32 1, !dbg !172
-  %35 = load i32* %34, align 4, !dbg !172, !tbaa !173
-  %36 = getelementptr inbounds %struct._ArcChunk* %30, i64 0, i32 0, !dbg !175
-  %37 = load i32* %36, align 4, !dbg !175, !tbaa !176
-  %38 = icmp eq i32 %35, %37, !dbg !177
-  br i1 %38, label %39, label %75, !dbg !178
+if.then30:                                        ; preds = %if.then27
+  %10 = load %struct._IO_FILE** @stderr, align 8, !dbg !132, !tbaa !117
+  %call31 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %10, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), i64 24, i32 47, i8* getelementptr inbounds ([83 x i8]* @.str3, i64 0, i64 0)) #4, !dbg !132
+  tail call void @exit(i32 -1) #5, !dbg !132
+  unreachable, !dbg !132
 
-; <label>:39                                      ; preds = %33, %24
-  %40 = tail call i8* @malloc(i64 24) #4, !dbg !179
-  %41 = bitcast i8* %40 to %struct._ArcChunk*, !dbg !179
-  tail call void @llvm.dbg.value(metadata %struct._ArcChunk* %41, i64 0, metadata !116, metadata !122), !dbg !169
-  %42 = icmp eq i8* %40, null, !dbg !179
-  br i1 %42, label %43, label %46, !dbg !184
+if.end32:                                         ; preds = %if.then27
+  br i1 %notlhs, label %if.then34, label %if.else44, !dbg !134
 
-; <label>:43                                      ; preds = %39
-  %44 = load %struct.__sFILE** @__stderrp, align 8, !dbg !185, !tbaa !152
-  %45 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %44, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), i64 24, i32 47, i8* getelementptr inbounds ([95 x i8]* @.str3, i64 0, i64 0)) #4, !dbg !185
-  tail call void @exit(i32 -1) #5, !dbg !185
-  unreachable, !dbg !185
+if.then34:                                        ; preds = %if.end32
+  %conv = sext i32 %1 to i64, !dbg !135
+  %mul = shl nsw i64 %conv, 5, !dbg !135
+  %call35 = tail call noalias i8* @malloc(i64 %mul) #4, !dbg !135
+  %11 = bitcast i8* %call35 to %struct._Arc*, !dbg !135
+  %base = getelementptr inbounds i8* %call28, i64 8, !dbg !135
+  %12 = bitcast i8* %base to %struct._Arc**, !dbg !135
+  store %struct._Arc* %11, %struct._Arc** %12, align 8, !dbg !135, !tbaa !117
+  %cmp36 = icmp eq i8* %call35, null, !dbg !135
+  br i1 %cmp36, label %if.then38, label %if.end54, !dbg !135
 
-; <label>:46                                      ; preds = %39
-  %47 = icmp sgt i32 %4, 0, !dbg !187
-  br i1 %47, label %48, label %58, !dbg !189
+if.then38:                                        ; preds = %if.then34
+  %13 = load %struct._IO_FILE** @stderr, align 8, !dbg !137, !tbaa !117
+  %call41 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %13, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), i64 %mul, i32 48, i8* getelementptr inbounds ([83 x i8]* @.str3, i64 0, i64 0)) #4, !dbg !137
+  tail call void @exit(i32 -1) #5, !dbg !137
+  unreachable, !dbg !137
 
-; <label>:48                                      ; preds = %46
-  %49 = sext i32 %4 to i64, !dbg !190
-  %50 = shl nsw i64 %49, 5, !dbg !190
-  %51 = tail call i8* @malloc(i64 %50) #4, !dbg !190
-  %52 = getelementptr inbounds i8* %40, i64 8, !dbg !190
-  %53 = bitcast i8* %52 to i8**, !dbg !190
-  store i8* %51, i8** %53, align 8, !dbg !190, !tbaa !193
-  %54 = icmp eq i8* %51, null, !dbg !190
-  br i1 %54, label %55, label %68, !dbg !194
+if.else44:                                        ; preds = %if.end32
+  %cmp45 = icmp eq i32 %1, 0, !dbg !134
+  br i1 %cmp45, label %if.then47, label %if.else49, !dbg !134
 
-; <label>:55                                      ; preds = %48
-  %56 = load %struct.__sFILE** @__stderrp, align 8, !dbg !195, !tbaa !152
-  %57 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %56, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), i64 %50, i32 48, i8* getelementptr inbounds ([95 x i8]* @.str3, i64 0, i64 0)) #4, !dbg !195
-  tail call void @exit(i32 -1) #5, !dbg !195
-  unreachable, !dbg !195
+if.then47:                                        ; preds = %if.else44
+  %base48 = getelementptr inbounds i8* %call28, i64 8, !dbg !139
+  %14 = bitcast i8* %base48 to %struct._Arc**, !dbg !139
+  store %struct._Arc* null, %struct._Arc** %14, align 8, !dbg !139, !tbaa !117
+  br label %if.end54
 
-; <label>:58                                      ; preds = %46
-  %59 = icmp eq i32 %4, 0, !dbg !197
-  br i1 %59, label %60, label %63, !dbg !187
+if.else49:                                        ; preds = %if.else44
+  %15 = load %struct._IO_FILE** @stderr, align 8, !dbg !141, !tbaa !117
+  %conv50 = sext i32 %1 to i64, !dbg !141
+  %mul51 = shl nsw i64 %conv50, 5, !dbg !141
+  %call52 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %15, i8* getelementptr inbounds ([47 x i8]* @.str4, i64 0, i64 0), i64 %mul51, i32 48, i8* getelementptr inbounds ([83 x i8]* @.str3, i64 0, i64 0)) #4, !dbg !141
+  tail call void @exit(i32 -1) #5, !dbg !141
+  unreachable, !dbg !141
 
-; <label>:60                                      ; preds = %58
-  %61 = getelementptr inbounds i8* %40, i64 8, !dbg !199
-  %62 = bitcast i8* %61 to %struct._Arc**, !dbg !199
-  store %struct._Arc* null, %struct._Arc** %62, align 8, !dbg !199, !tbaa !193
-  br label %68
+if.end54:                                         ; preds = %if.then34, %if.then47
+  %size55 = bitcast i8* %call28 to i32*, !dbg !143
+  store i32 %1, i32* %size55, align 4, !dbg !143, !tbaa !121
+  %inuse56 = getelementptr inbounds i8* %call28, i64 4, !dbg !144
+  %16 = bitcast i8* %inuse56 to i32*, !dbg !144
+  store i32 0, i32* %16, align 4, !dbg !144, !tbaa !121
+  %next = getelementptr inbounds i8* %call28, i64 16, !dbg !145
+  %17 = bitcast i8* %next to %struct._ArcChunk**, !dbg !145
+  store %struct._ArcChunk* %6, %struct._ArcChunk** %17, align 8, !dbg !145, !tbaa !117
+  store %struct._ArcChunk* %9, %struct._ArcChunk** %chunk23, align 8, !dbg !146, !tbaa !117
+  br label %if.end59, !dbg !147
 
-; <label>:63                                      ; preds = %58
-  %64 = load %struct.__sFILE** @__stderrp, align 8, !dbg !201, !tbaa !152
-  %65 = sext i32 %4 to i64, !dbg !201
-  %66 = shl nsw i64 %65, 5, !dbg !201
-  %67 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %64, i8* getelementptr inbounds ([47 x i8]* @.str4, i64 0, i64 0), i64 %66, i32 48, i8* getelementptr inbounds ([95 x i8]* @.str3, i64 0, i64 0)) #4, !dbg !201
-  tail call void @exit(i32 -1) #5, !dbg !201
-  unreachable, !dbg !201
-
-; <label>:68                                      ; preds = %48, %60
-  %69 = bitcast i8* %40 to i32*, !dbg !203
-  store i32 %4, i32* %69, align 4, !dbg !204, !tbaa !176
-  %70 = getelementptr inbounds i8* %40, i64 4, !dbg !205
-  %71 = bitcast i8* %70 to i32*, !dbg !205
-  store i32 0, i32* %71, align 4, !dbg !206, !tbaa !173
-  %72 = getelementptr inbounds i8* %40, i64 16, !dbg !207
-  %73 = bitcast i8* %72 to i64*, !dbg !207
-  store i64 %32, i64* %73, align 8, !dbg !207, !tbaa !208
-  %74 = bitcast %struct._ArcChunk** %29 to i8**, !dbg !209
-  store i8* %40, i8** %74, align 8, !dbg !209, !tbaa !168
-  br label %75, !dbg !210
-
-; <label>:75                                      ; preds = %68, %33
-  %76 = phi i32 [ 0, %68 ], [ %35, %33 ]
-  %chunk.0 = phi %struct._ArcChunk* [ %41, %68 ], [ %30, %33 ]
-  %77 = getelementptr inbounds %struct._ArcChunk* %chunk.0, i64 0, i32 2, !dbg !211
-  %78 = load %struct._Arc** %77, align 8, !dbg !211, !tbaa !193
-  %79 = getelementptr inbounds %struct._ArcChunk* %chunk.0, i64 0, i32 1, !dbg !212
-  %80 = add nsw i32 %76, 1, !dbg !213
-  store i32 %80, i32* %79, align 4, !dbg !213, !tbaa !173
-  %81 = sext i32 %76 to i64, !dbg !214
-  %82 = getelementptr inbounds %struct._Arc* %78, i64 %81, !dbg !214
-  tail call void @llvm.dbg.value(metadata %struct._Arc* %82, i64 0, metadata !113, metadata !122), !dbg !215
-  %83 = getelementptr inbounds %struct._Arc* %82, i64 0, i32 0, !dbg !216
-  store i32 %firstNode, i32* %83, align 4, !dbg !217, !tbaa !218
-  %84 = getelementptr inbounds %struct._Arc* %78, i64 %81, i32 1, !dbg !220
-  store i32 %secondNode, i32* %84, align 4, !dbg !221, !tbaa !222
-  %85 = getelementptr inbounds %struct._Arc* %78, i64 %81, i32 2, !dbg !223
-  store i32 %capacity, i32* %85, align 4, !dbg !224, !tbaa !225
-  %86 = getelementptr inbounds %struct._Arc* %78, i64 %81, i32 3, !dbg !226
-  store i32 %flow, i32* %86, align 4, !dbg !227, !tbaa !228
-  %87 = sext i32 %firstNode to i64, !dbg !229
-  %88 = getelementptr inbounds %struct._Arc** %28, i64 %87, !dbg !229
-  %89 = bitcast %struct._Arc** %88 to i64*, !dbg !229
-  %90 = load i64* %89, align 8, !dbg !229, !tbaa !152
-  %91 = getelementptr inbounds %struct._Arc* %78, i64 %81, i32 4, !dbg !230
-  %92 = bitcast %struct._Arc** %91 to i64*, !dbg !231
-  store i64 %90, i64* %92, align 8, !dbg !231, !tbaa !232
-  store %struct._Arc* %82, %struct._Arc** %88, align 8, !dbg !233, !tbaa !152
-  %93 = sext i32 %secondNode to i64, !dbg !234
-  %94 = getelementptr inbounds %struct._Arc** %26, i64 %93, !dbg !234
-  %95 = bitcast %struct._Arc** %94 to i64*, !dbg !234
-  %96 = load i64* %95, align 8, !dbg !234, !tbaa !152
-  %97 = getelementptr inbounds %struct._Arc* %78, i64 %81, i32 5, !dbg !235
-  %98 = bitcast %struct._Arc** %97 to i64*, !dbg !236
-  store i64 %96, i64* %98, align 8, !dbg !236, !tbaa !237
-  store %struct._Arc* %82, %struct._Arc** %94, align 8, !dbg !238, !tbaa !152
-  %99 = getelementptr inbounds %struct._Network* %network, i64 0, i32 1, !dbg !239
-  %100 = load i32* %99, align 4, !dbg !240, !tbaa !241
-  %101 = add nsw i32 %100, 1, !dbg !240
-  store i32 %101, i32* %99, align 4, !dbg !240, !tbaa !241
-  ret void, !dbg !242
+if.end59:                                         ; preds = %if.end54, %lor.lhs.false25
+  %18 = phi i32 [ 0, %if.end54 ], [ %7, %lor.lhs.false25 ]
+  %chunk.0 = phi %struct._ArcChunk* [ %9, %if.end54 ], [ %6, %lor.lhs.false25 ]
+  %base60 = getelementptr inbounds %struct._ArcChunk* %chunk.0, i64 0, i32 2, !dbg !148
+  %19 = load %struct._Arc** %base60, align 8, !dbg !148, !tbaa !117
+  %inuse61 = getelementptr inbounds %struct._ArcChunk* %chunk.0, i64 0, i32 1, !dbg !148
+  %inc = add nsw i32 %18, 1, !dbg !148
+  store i32 %inc, i32* %inuse61, align 4, !dbg !148, !tbaa !121
+  %idx.ext = sext i32 %18 to i64, !dbg !148
+  %add.ptr = getelementptr inbounds %struct._Arc* %19, i64 %idx.ext, !dbg !148
+  tail call void @llvm.dbg.value(metadata !{%struct._Arc* %add.ptr}, i64 0, metadata !104), !dbg !148
+  %first = getelementptr inbounds %struct._Arc* %add.ptr, i64 0, i32 0, !dbg !149
+  store i32 %firstNode, i32* %first, align 4, !dbg !149, !tbaa !121
+  %second = getelementptr inbounds %struct._Arc* %19, i64 %idx.ext, i32 1, !dbg !150
+  store i32 %secondNode, i32* %second, align 4, !dbg !150, !tbaa !121
+  %capacity62 = getelementptr inbounds %struct._Arc* %19, i64 %idx.ext, i32 2, !dbg !151
+  store i32 %capacity, i32* %capacity62, align 4, !dbg !151, !tbaa !121
+  %flow63 = getelementptr inbounds %struct._Arc* %19, i64 %idx.ext, i32 3, !dbg !152
+  store i32 %flow, i32* %flow63, align 4, !dbg !152, !tbaa !121
+  %idxprom = sext i32 %firstNode to i64, !dbg !153
+  %arrayidx = getelementptr inbounds %struct._Arc** %5, i64 %idxprom, !dbg !153
+  %20 = load %struct._Arc** %arrayidx, align 8, !dbg !153, !tbaa !117
+  %nextOut = getelementptr inbounds %struct._Arc* %19, i64 %idx.ext, i32 4, !dbg !153
+  store %struct._Arc* %20, %struct._Arc** %nextOut, align 8, !dbg !153, !tbaa !117
+  store %struct._Arc* %add.ptr, %struct._Arc** %arrayidx, align 8, !dbg !154, !tbaa !117
+  %idxprom66 = sext i32 %secondNode to i64, !dbg !155
+  %arrayidx67 = getelementptr inbounds %struct._Arc** %4, i64 %idxprom66, !dbg !155
+  %21 = load %struct._Arc** %arrayidx67, align 8, !dbg !155, !tbaa !117
+  %nextIn = getelementptr inbounds %struct._Arc* %19, i64 %idx.ext, i32 5, !dbg !155
+  store %struct._Arc* %21, %struct._Arc** %nextIn, align 8, !dbg !155, !tbaa !117
+  store %struct._Arc* %add.ptr, %struct._Arc** %arrayidx67, align 8, !dbg !156, !tbaa !117
+  %narc = getelementptr inbounds %struct._Network* %network, i64 0, i32 1, !dbg !157
+  %22 = load i32* %narc, align 4, !dbg !157, !tbaa !121
+  %inc70 = add nsw i32 %22, 1, !dbg !157
+  store i32 %inc70, i32* %narc, align 4, !dbg !157, !tbaa !121
+  ret void, !dbg !158
 }

@@ -1,26 +1,27 @@
-define i32 @Util_HashStore(%struct.T_HASH* nocapture %hash, i32 %klen, i8* nocapture readonly %key, i32 %hashval, i8* %data) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.T_HASH* %hash, i64 0, metadata !60, metadata !143), !dbg !219
-  tail call void @llvm.dbg.value(metadata i32 %klen, i64 0, metadata !61, metadata !143), !dbg !220
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !62, metadata !143), !dbg !221
-  tail call void @llvm.dbg.value(metadata i32 %hashval, i64 0, metadata !63, metadata !143), !dbg !222
-  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !64, metadata !143), !dbg !223
-  %1 = tail call fastcc %struct.T_HASH_ENTRY* @HashFind(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval) #7, !dbg !224
-  tail call void @llvm.dbg.value(metadata %struct.T_HASH_ENTRY* %1, i64 0, metadata !66, metadata !143), !dbg !225
-  %2 = icmp eq %struct.T_HASH_ENTRY* %1, null, !dbg !226
-  br i1 %2, label %5, label %3, !dbg !228
+define i32 @Util_HashStore(%struct.T_HASH* nocapture %hash, i32 %klen, i8* nocapture %key, i32 %hashval, i8* %data) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_HASH* %hash}, i64 0, metadata !60), !dbg !177
+  tail call void @llvm.dbg.value(metadata !{i32 %klen}, i64 0, metadata !61), !dbg !178
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !62), !dbg !179
+  tail call void @llvm.dbg.value(metadata !{i32 %hashval}, i64 0, metadata !63), !dbg !180
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !64), !dbg !181
+  %call = tail call fastcc %struct.T_HASH_ENTRY* @HashFind(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval) #7, !dbg !182
+  tail call void @llvm.dbg.value(metadata !{%struct.T_HASH_ENTRY* %call}, i64 0, metadata !66), !dbg !182
+  %tobool = icmp eq %struct.T_HASH_ENTRY* %call, null, !dbg !183
+  br i1 %tobool, label %if.else, label %if.then, !dbg !183
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct.T_HASH_ENTRY* %1, i64 0, i32 5, !dbg !229
-  store i8* %data, i8** %4, align 8, !dbg !231, !tbaa !211
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !65, metadata !143), !dbg !232
-  br label %7, !dbg !233
+if.then:                                          ; preds = %entry
+  %data3 = getelementptr inbounds %struct.T_HASH_ENTRY* %call, i64 0, i32 5, !dbg !184
+  store i8* %data, i8** %data3, align 8, !dbg !184, !tbaa !151
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !65), !dbg !186
+  br label %if.end, !dbg !187
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 @Util_HashAdd(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval, i8* %data) #7, !dbg !234
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !65, metadata !143), !dbg !232
-  br label %7
+if.else:                                          ; preds = %entry
+  %call4 = tail call i32 @Util_HashAdd(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval, i8* %data) #7, !dbg !188
+  tail call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !65), !dbg !188
+  br label %if.end
 
-; <label>:7                                       ; preds = %5, %3
-  %retval.0 = phi i32 [ 0, %3 ], [ %6, %5 ]
-  ret i32 %retval.0, !dbg !236
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ 0, %if.then ], [ %call4, %if.else ]
+  ret i32 %retval1.0, !dbg !190
 }

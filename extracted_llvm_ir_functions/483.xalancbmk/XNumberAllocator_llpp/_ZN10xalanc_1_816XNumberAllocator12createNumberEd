@@ -1,0 +1,28 @@
+define %"class.xalanc_1_8::XNumber"* @_ZN10xalanc_1_816XNumberAllocator12createNumberEd(%"class.xalanc_1_8::XNumberAllocator"* nocapture %this, double %theNumber) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNumberAllocator"* %this}, i64 0, metadata !3364), !dbg !4300
+  tail call void @llvm.dbg.value(metadata !{double %theNumber}, i64 0, metadata !3365), !dbg !4300
+  %m_allocator = getelementptr inbounds %"class.xalanc_1_8::XNumberAllocator"* %this, i64 0, i32 0, !dbg !4301
+  %call = tail call %"class.xalanc_1_8::XNumber"* @_ZN10xalanc_1_822ReusableArenaAllocatorINS_7XNumberEE13allocateBlockEv(%"class.xalanc_1_8::ReusableArenaAllocator"* %m_allocator) #10, !dbg !4301
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNumber"* %call}, i64 0, metadata !3366), !dbg !4301
+  %new.isnull = icmp eq %"class.xalanc_1_8::XNumber"* %call, null, !dbg !4302
+  br i1 %new.isnull, label %new.cont, label %new.notnull, !dbg !4302
+
+new.notnull:                                      ; preds = %entry
+  tail call void @_ZN10xalanc_1_87XNumberC1Ed(%"class.xalanc_1_8::XNumber"* %call, double %theNumber) #10, !dbg !4302
+  br label %new.cont, !dbg !4302
+
+new.cont:                                         ; preds = %new.notnull, %entry
+  %0 = phi %"class.xalanc_1_8::XNumber"* [ %call, %new.notnull ], [ null, %entry ], !dbg !4302
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNumber"* %0}, i64 0, metadata !3368), !dbg !4302
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaAllocator"* %m_allocator}, i64 0, metadata !4303), !dbg !4305
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNumber"* %call}, i64 0, metadata !4306), !dbg !4305
+  %m_lastBlockReferenced.i = getelementptr inbounds %"class.xalanc_1_8::XNumberAllocator"* %this, i64 0, i32 0, i32 1, !dbg !4307
+  %1 = load %"class.xalanc_1_8::ReusableArenaBlock"** %m_lastBlockReferenced.i, align 8, !dbg !4307, !tbaa !4284
+  %2 = bitcast %"class.xalanc_1_8::ReusableArenaBlock"* %1 to void (%"class.xalanc_1_8::ReusableArenaBlock"*, %"class.xalanc_1_8::XNumber"*)***, !dbg !4307
+  %vtable.i = load void (%"class.xalanc_1_8::ReusableArenaBlock"*, %"class.xalanc_1_8::XNumber"*)*** %2, align 8, !dbg !4307, !tbaa !4283
+  %vfn.i = getelementptr inbounds void (%"class.xalanc_1_8::ReusableArenaBlock"*, %"class.xalanc_1_8::XNumber"*)** %vtable.i, i64 3, !dbg !4307
+  %3 = load void (%"class.xalanc_1_8::ReusableArenaBlock"*, %"class.xalanc_1_8::XNumber"*)** %vfn.i, align 8, !dbg !4307
+  tail call void %3(%"class.xalanc_1_8::ReusableArenaBlock"* %1, %"class.xalanc_1_8::XNumber"* %call) #10, !dbg !4307
+  ret %"class.xalanc_1_8::XNumber"* %0, !dbg !4309
+}

@@ -1,0 +1,32 @@
+define linkonce_odr void @_ZN11xercesc_2_512ArrayJanitorIcE5resetEPc(%"class.xercesc_2_5::ArrayJanitor.0"* nocapture %this, i8* %p) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ArrayJanitor.0"* %this}, i64 0, metadata !2281), !dbg !4464
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !2282), !dbg !4464
+  %fData = getelementptr inbounds %"class.xercesc_2_5::ArrayJanitor.0"* %this, i64 0, i32 0, !dbg !4465
+  %0 = load i8** %fData, align 8, !dbg !4465, !tbaa !3064
+  %tobool = icmp eq i8* %0, null, !dbg !4465
+  %fMemoryManager9.pre = getelementptr inbounds %"class.xercesc_2_5::ArrayJanitor.0"* %this, i64 0, i32 1, !dbg !4466
+  br i1 %tobool, label %if.end7, label %if.then, !dbg !4465
+
+if.then:                                          ; preds = %entry
+  %1 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager9.pre, align 8, !dbg !4467, !tbaa !3064
+  %tobool2 = icmp eq %"class.xercesc_2_5::MemoryManager"* %1, null, !dbg !4467
+  br i1 %tobool2, label %delete.notnull, label %if.then3, !dbg !4467
+
+if.then3:                                         ; preds = %if.then
+  %2 = bitcast %"class.xercesc_2_5::MemoryManager"* %1 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !4469
+  %vtable = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %2, align 8, !dbg !4469, !tbaa !3050
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable, i64 3, !dbg !4469
+  %3 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn, align 8, !dbg !4469
+  tail call void %3(%"class.xercesc_2_5::MemoryManager"* %1, i8* %0) #11, !dbg !4469
+  br label %if.end7, !dbg !4469
+
+delete.notnull:                                   ; preds = %if.then
+  tail call void @_ZdaPv(i8* %0) #13, !dbg !4470
+  br label %if.end7, !dbg !4470
+
+if.end7:                                          ; preds = %entry, %if.then3, %delete.notnull
+  store i8* %p, i8** %fData, align 8, !dbg !4471, !tbaa !3064
+  store %"class.xercesc_2_5::MemoryManager"* null, %"class.xercesc_2_5::MemoryManager"** %fMemoryManager9.pre, align 8, !dbg !4466, !tbaa !3064
+  ret void, !dbg !4472
+}

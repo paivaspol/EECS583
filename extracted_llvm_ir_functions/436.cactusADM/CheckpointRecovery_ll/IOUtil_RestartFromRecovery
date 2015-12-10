@@ -1,16 +1,17 @@
 define i32 @IOUtil_RestartFromRecovery(%struct.cGH* %GH) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !524, metadata !598), !dbg !1129
-  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0)) #7, !dbg !1130
-  %2 = icmp eq i8* %1, null, !dbg !1131
-  br i1 %2, label %7, label %3, !dbg !1131
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !506), !dbg !839
+  %call = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0)) #9, !dbg !840
+  %tobool = icmp eq i8* %call, null, !dbg !841
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !841
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds i8* %1, i64 28, !dbg !1132
-  %5 = bitcast i8* %4 to i32*, !dbg !1132
-  %6 = load i32* %5, align 4, !dbg !1132, !tbaa !688
-  br label %7, !dbg !1131
+cond.true:                                        ; preds = %entry
+  %recovered = getelementptr inbounds i8* %call, i64 28, !dbg !841
+  %0 = bitcast i8* %recovered to i32*, !dbg !841
+  %1 = load i32* %0, align 4, !dbg !841, !tbaa !562
+  br label %cond.end, !dbg !841
 
-; <label>:7                                       ; preds = %0, %3
-  %8 = phi i32 [ %6, %3 ], [ 0, %0 ], !dbg !1131
-  ret i32 %8, !dbg !1133
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i32 [ %1, %cond.true ], [ 0, %entry ], !dbg !841
+  ret i32 %cond, !dbg !841
 }

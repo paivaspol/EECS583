@@ -1,71 +1,75 @@
 define internal fastcc void @do_include_common(%struct.cpp_reader* %pfile, i32 %type) #0 {
 entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !941), !dbg !1901
+  tail call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !942), !dbg !1902
   switch i32 %type, label %if.end7 [
     i32 1, label %land.lhs.true
     i32 2, label %land.lhs.true2
-  ]
+  ], !dbg !1903
 
 land.lhs.true:                                    ; preds = %entry
-  %buffer = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
-  %0 = load %struct.cpp_buffer** %buffer, align 8, !tbaa !3
-  %prev = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 4
-  %1 = load %struct.cpp_buffer** %prev, align 8, !tbaa !3
-  %tobool = icmp eq %struct.cpp_buffer* %1, null
-  br i1 %tobool, label %if.then, label %if.end7
+  %buffer = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0, !dbg !1903
+  %0 = load %struct.cpp_buffer** %buffer, align 8, !dbg !1903, !tbaa !1070
+  %prev = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 4, !dbg !1903
+  %1 = load %struct.cpp_buffer** %prev, align 8, !dbg !1903, !tbaa !1070
+  %tobool = icmp eq %struct.cpp_buffer* %1, null, !dbg !1903
+  br i1 %tobool, label %if.then, label %if.end7, !dbg !1903
 
 if.then:                                          ; preds = %land.lhs.true
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([37 x i8]* @.str58, i64 0, i64 0)) #8
-  br label %if.end7
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([37 x i8]* @.str58, i64 0, i64 0)) #9, !dbg !1904
+  tail call void @llvm.dbg.value(metadata !166, i64 0, metadata !942), !dbg !1906
+  br label %if.end7, !dbg !1907
 
 land.lhs.true2:                                   ; preds = %entry
-  %warn_import = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 32
-  %2 = load i8* %warn_import, align 1, !tbaa !0
-  %tobool3 = icmp eq i8 %2, 0
-  br i1 %tobool3, label %if.end7, label %if.then4
+  %warn_import = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 32, !dbg !1908
+  %2 = load i8* %warn_import, align 1, !dbg !1908, !tbaa !1061
+  %tobool3 = icmp eq i8 %2, 0, !dbg !1908
+  br i1 %tobool3, label %if.end7, label %if.then4, !dbg !1908
 
 if.then4:                                         ; preds = %land.lhs.true2
-  store i8 0, i8* %warn_import, align 1, !tbaa !0
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([63 x i8]* @.str59, i64 0, i64 0)) #8
-  br label %if.end7
+  store i8 0, i8* %warn_import, align 1, !dbg !1909, !tbaa !1061
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([63 x i8]* @.str59, i64 0, i64 0)) #9, !dbg !1911
+  br label %if.end7, !dbg !1912
 
 if.end7:                                          ; preds = %land.lhs.true, %entry, %land.lhs.true2, %if.then4, %if.then
   %type.addr.0 = phi i32 [ 2, %if.then4 ], [ 2, %land.lhs.true2 ], [ 0, %if.then ], [ %type, %entry ], [ 1, %land.lhs.true ]
-  %call = tail call fastcc %struct.cpp_token* @parse_include(%struct.cpp_reader* %pfile) #9
-  %tobool8 = icmp eq %struct.cpp_token* %call, null
-  br i1 %tobool8, label %if.end21, label %if.then9
+  %call = tail call fastcc %struct.cpp_token* @parse_include(%struct.cpp_reader* %pfile) #10, !dbg !1913
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_token* %call}, i64 0, metadata !943), !dbg !1913
+  %tobool8 = icmp eq %struct.cpp_token* %call, null, !dbg !1914
+  br i1 %tobool8, label %if.end21, label %if.then9, !dbg !1914
 
 if.then9:                                         ; preds = %if.end7
-  %depth = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 2, i32 4
-  %3 = load i32* %depth, align 4, !tbaa !2
-  %cmp10 = icmp ugt i32 %3, 199
-  br i1 %cmp10, label %if.then12, label %if.else13
+  %depth = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 2, i32 4, !dbg !1915
+  %3 = load i32* %depth, align 4, !dbg !1915, !tbaa !1065
+  %cmp10 = icmp ugt i32 %3, 199, !dbg !1915
+  br i1 %cmp10, label %if.then12, label %if.else13, !dbg !1915
 
 if.then12:                                        ; preds = %if.then9
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_fatal(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([27 x i8]* @.str60, i64 0, i64 0)) #8
-  br label %if.end21
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_fatal(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([27 x i8]* @.str60, i64 0, i64 0)) #9, !dbg !1917
+  br label %if.end21, !dbg !1917
 
 if.else13:                                        ; preds = %if.then9
-  tail call fastcc void @check_eol(%struct.cpp_reader* %pfile) #9
-  tail call fastcc void @skip_rest_of_line(%struct.cpp_reader* %pfile) #9
-  %include = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 35, i32 2
-  %4 = load void (%struct.cpp_reader*, i32, i8*, %struct.cpp_token*)** %include, align 8, !tbaa !3
-  %tobool14 = icmp eq void (%struct.cpp_reader*, i32, i8*, %struct.cpp_token*)* %4, null
-  br i1 %tobool14, label %if.end18, label %if.then15
+  tail call fastcc void @check_eol(%struct.cpp_reader* %pfile) #10, !dbg !1918
+  tail call fastcc void @skip_rest_of_line(%struct.cpp_reader* %pfile) #10, !dbg !1920
+  %include = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 35, i32 2, !dbg !1921
+  %4 = load void (%struct.cpp_reader*, i32, i8*, %struct.cpp_token*)** %include, align 8, !dbg !1921, !tbaa !1070
+  %tobool14 = icmp eq void (%struct.cpp_reader*, i32, i8*, %struct.cpp_token*)* %4, null, !dbg !1921
+  br i1 %tobool14, label %if.end18, label %if.then15, !dbg !1921
 
 if.then15:                                        ; preds = %if.else13
-  %directive_line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 5
-  %5 = load i32* %directive_line, align 4, !tbaa !2
-  %directive = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 11
-  %6 = load %struct.directive** %directive, align 8, !tbaa !3
-  %name = getelementptr inbounds %struct.directive* %6, i64 0, i32 1
-  %7 = load i8** %name, align 8, !tbaa !3
-  tail call void %4(%struct.cpp_reader* %pfile, i32 %5, i8* %7, %struct.cpp_token* %call) #8
-  br label %if.end18
+  %directive_line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 5, !dbg !1922
+  %5 = load i32* %directive_line, align 4, !dbg !1922, !tbaa !1065
+  %directive = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 11, !dbg !1922
+  %6 = load %struct.directive** %directive, align 8, !dbg !1922, !tbaa !1070
+  %name = getelementptr inbounds %struct.directive* %6, i64 0, i32 1, !dbg !1922
+  %7 = load i8** %name, align 8, !dbg !1922, !tbaa !1070
+  tail call void %4(%struct.cpp_reader* %pfile, i32 %5, i8* %7, %struct.cpp_token* %call) #9, !dbg !1922
+  br label %if.end18, !dbg !1922
 
 if.end18:                                         ; preds = %if.else13, %if.then15
-  %call19 = tail call zeroext i1 @_cpp_execute_include(%struct.cpp_reader* %pfile, %struct.cpp_token* %call, i32 %type.addr.0) #8
+  %call19 = tail call zeroext i1 @_cpp_execute_include(%struct.cpp_reader* %pfile, %struct.cpp_token* %call, i32 %type.addr.0) #9, !dbg !1923
   br label %if.end21
 
 if.end21:                                         ; preds = %if.end7, %if.then12, %if.end18
-  ret void
+  ret void, !dbg !1924
 }

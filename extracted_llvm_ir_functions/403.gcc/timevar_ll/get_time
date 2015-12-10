@@ -1,23 +1,24 @@
 define internal fastcc void @get_time(%struct.timevar_time_def* nocapture %now) #0 {
 entry:
-  %user = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 0
-  store float 0.000000e+00, float* %user, align 4, !tbaa !4
-  %sys = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 1
-  store float 0.000000e+00, float* %sys, align 4, !tbaa !4
-  %wall = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 2
-  store float 0.000000e+00, float* %wall, align 4, !tbaa !4
-  %0 = load i32* @time_report, align 4, !tbaa !0
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.timevar_time_def* %now}, i64 0, metadata !206), !dbg !302
+  %user = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 0, !dbg !303
+  store float 0.000000e+00, float* %user, align 4, !dbg !303, !tbaa !272
+  %sys = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 1, !dbg !304
+  store float 0.000000e+00, float* %sys, align 4, !dbg !304, !tbaa !272
+  %wall = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 2, !dbg !305
+  store float 0.000000e+00, float* %wall, align 4, !dbg !305, !tbaa !272
+  %0 = load i32* @time_report, align 4, !dbg !306, !tbaa !218
+  %tobool = icmp eq i32 %0, 0, !dbg !306
+  br i1 %tobool, label %return, label %if.end, !dbg !306
 
 if.end:                                           ; preds = %entry
-  %call = tail call i64 @clock() #7
-  %conv = sitofp i64 %call to float
-  %1 = load float* @clocks_to_msec, align 4, !tbaa !4
-  %mul = fmul float %conv, %1
-  store float %mul, float* %user, align 4, !tbaa !4
-  br label %return
+  %call = tail call i64 @clock() #8, !dbg !307
+  %conv = sitofp i64 %call to float, !dbg !307
+  %1 = load float* @clocks_to_msec, align 4, !dbg !307, !tbaa !272
+  %mul = fmul float %conv, %1, !dbg !307
+  store float %mul, float* %user, align 4, !dbg !307, !tbaa !272
+  br label %return, !dbg !309
 
 return:                                           ; preds = %entry, %if.end
-  ret void
+  ret void, !dbg !309
 }

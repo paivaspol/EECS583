@@ -1,46 +1,47 @@
 define i32 @Pencil_readFromFiles(%struct._Pencil* %pencil, i8* %inpmtxAfileName, i8* %inpmtxBfileName) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Pencil* %pencil, i64 0, metadata !64, metadata !142), !dbg !143
-  tail call void @llvm.dbg.value(metadata i8* %inpmtxAfileName, i64 0, metadata !65, metadata !142), !dbg !144
-  tail call void @llvm.dbg.value(metadata i8* %inpmtxBfileName, i64 0, metadata !66, metadata !142), !dbg !145
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !67, metadata !142), !dbg !146
-  %1 = icmp eq %struct._Pencil* %pencil, null, !dbg !147
-  %2 = icmp eq i8* %inpmtxAfileName, null, !dbg !149
-  %or.cond = or i1 %1, %2, !dbg !150
-  %3 = icmp eq i8* %inpmtxBfileName, null, !dbg !151
-  %or.cond3 = or i1 %or.cond, %3, !dbg !150
-  br i1 %or.cond3, label %4, label %7, !dbg !150
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Pencil* %pencil}, i64 0, metadata !63), !dbg !132
+  tail call void @llvm.dbg.value(metadata !{i8* %inpmtxAfileName}, i64 0, metadata !64), !dbg !133
+  tail call void @llvm.dbg.value(metadata !{i8* %inpmtxBfileName}, i64 0, metadata !65), !dbg !134
+  tail call void @llvm.dbg.value(metadata !135, i64 0, metadata !66), !dbg !136
+  %cmp = icmp eq %struct._Pencil* %pencil, null, !dbg !137
+  %cmp1 = icmp eq i8* %inpmtxAfileName, null, !dbg !137
+  %or.cond = or i1 %cmp, %cmp1, !dbg !137
+  %cmp3 = icmp eq i8* %inpmtxBfileName, null, !dbg !137
+  %or.cond33 = or i1 %or.cond, %cmp3, !dbg !137
+  br i1 %or.cond33, label %if.then, label %if.end, !dbg !137
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !152, !tbaa !154
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), %struct._Pencil* %pencil, i8* %inpmtxAfileName, i8* %inpmtxBfileName) #7, !dbg !158
-  br label %22, !dbg !159
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !138, !tbaa !140
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), %struct._Pencil* %pencil, i8* %inpmtxAfileName, i8* %inpmtxBfileName) #7, !dbg !138
+  br label %return, !dbg !143
 
-; <label>:7                                       ; preds = %0
-  %8 = tail call i32 @strcmp(i8* %inpmtxAfileName, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !160
-  %9 = icmp eq i32 %8, 0, !dbg !162
-  br i1 %9, label %15, label %10, !dbg !163
+if.end:                                           ; preds = %entry
+  %call4 = tail call i32 @strcmp(i8* %inpmtxAfileName, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !144
+  %cmp5 = icmp eq i32 %call4, 0, !dbg !144
+  br i1 %cmp5, label %if.end11, label %if.then6, !dbg !144
 
-; <label>:10                                      ; preds = %7
-  %11 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2, !dbg !164
-  %12 = load %struct._InpMtx** %11, align 8, !dbg !164, !tbaa !166
-  %13 = tail call i32 @InpMtx_readFromFile(%struct._InpMtx* %12, i8* %inpmtxAfileName) #7, !dbg !169
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !67, metadata !142), !dbg !146
-  %14 = icmp eq i32 %13, 1, !dbg !170
-  br i1 %14, label %15, label %22, !dbg !172
+if.then6:                                         ; preds = %if.end
+  %inpmtxA = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2, !dbg !145
+  %1 = load %struct._InpMtx** %inpmtxA, align 8, !dbg !145, !tbaa !140
+  %call7 = tail call i32 @InpMtx_readFromFile(%struct._InpMtx* %1, i8* %inpmtxAfileName) #7, !dbg !145
+  tail call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !66), !dbg !145
+  %cmp8 = icmp eq i32 %call7, 1, !dbg !147
+  br i1 %cmp8, label %if.end11, label %return, !dbg !147
 
-; <label>:15                                      ; preds = %10, %7
-  %16 = tail call i32 @strcmp(i8* %inpmtxBfileName, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !173
-  %17 = icmp eq i32 %16, 0, !dbg !175
-  br i1 %17, label %22, label %18, !dbg !176
+if.end11:                                         ; preds = %if.then6, %if.end
+  %call12 = tail call i32 @strcmp(i8* %inpmtxBfileName, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !148
+  %cmp13 = icmp eq i32 %call12, 0, !dbg !148
+  br i1 %cmp13, label %return, label %if.then14, !dbg !148
 
-; <label>:18                                      ; preds = %15
-  %19 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3, !dbg !177
-  %20 = load %struct._InpMtx** %19, align 8, !dbg !177, !tbaa !179
-  %21 = tail call i32 @InpMtx_readFromFile(%struct._InpMtx* %20, i8* %inpmtxBfileName) #7, !dbg !180
-  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !67, metadata !142), !dbg !146
-  ret i32 %21, !dbg !181
+if.then14:                                        ; preds = %if.end11
+  %inpmtxB = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3, !dbg !149
+  %2 = load %struct._InpMtx** %inpmtxB, align 8, !dbg !149, !tbaa !140
+  %call15 = tail call i32 @InpMtx_readFromFile(%struct._InpMtx* %2, i8* %inpmtxBfileName) #7, !dbg !149
+  tail call void @llvm.dbg.value(metadata !{i32 %call15}, i64 0, metadata !66), !dbg !149
+  ret i32 %call15, !dbg !151
 
-; <label>:22                                      ; preds = %15, %10, %4
-  %.0 = phi i32 [ 0, %4 ], [ %13, %10 ], [ 1, %15 ]
-  ret i32 %.0, !dbg !182
+return:                                           ; preds = %if.end11, %if.then6, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ %call7, %if.then6 ], [ 1, %if.end11 ]
+  ret i32 %retval.0, !dbg !152
 }

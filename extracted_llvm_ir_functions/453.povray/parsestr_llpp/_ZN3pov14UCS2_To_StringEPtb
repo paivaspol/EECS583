@@ -1,58 +1,59 @@
-define i8* @_ZN3pov14UCS2_To_StringEPtb(i16* nocapture readonly %str, i1 zeroext) #0 {
-  tail call void @llvm.dbg.value(metadata i16* %str, i64 0, metadata !744, metadata !1286), !dbg !1351
-  tail call void @llvm.dbg.value(metadata i1 %0, i64 0, metadata !745, metadata !1286), !dbg !1352
-  tail call void @llvm.dbg.value(metadata i16* %str, i64 0, metadata !787, metadata !1286), !dbg !1353
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !788, metadata !1286), !dbg !1355
-  %2 = load i16* %str, align 2, !dbg !1356, !tbaa !1338
-  %3 = icmp eq i16 %2, 0, !dbg !1357
-  br i1 %3, label %_ZN3pov11UCS2_strlenEPt.exit, label %.lr.ph.i, !dbg !1358
+define i8* @_ZN3pov14UCS2_To_StringEPtb(i16* nocapture %str, i1 zeroext) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %str}, i64 0, metadata !667), !dbg !875
+  tail call void @llvm.dbg.value(metadata !{i1 %0}, i64 0, metadata !668), !dbg !875
+  tail call void @llvm.dbg.value(metadata !{i16* %str}, i64 0, metadata !876), !dbg !878
+  tail call void @llvm.dbg.value(metadata !551, i64 0, metadata !879), !dbg !880
+  %1 = load i16* %str, align 2, !dbg !880, !tbaa !868
+  %cmp3.i = icmp eq i16 %1, 0, !dbg !880
+  br i1 %cmp3.i, label %_ZN3pov11UCS2_strlenEPt.exit, label %for.inc.i, !dbg !880
 
-.lr.ph.i:                                         ; preds = %1, %.lr.ph.i
-  %i.02.i = phi i32 [ %5, %.lr.ph.i ], [ 0, %1 ], !dbg !1359
-  %.01.i = phi i16* [ %4, %.lr.ph.i ], [ %str, %1 ], !dbg !1359
-  %4 = getelementptr inbounds i16* %.01.i, i64 1, !dbg !1360
-  tail call void @llvm.dbg.value(metadata i16* %4, i64 0, metadata !787, metadata !1286), !dbg !1353
-  %5 = add nuw nsw i32 %i.02.i, 1, !dbg !1361
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !788, metadata !1286), !dbg !1355
-  %6 = load i16* %4, align 2, !dbg !1356, !tbaa !1338
-  %7 = icmp eq i16 %6, 0, !dbg !1357
-  br i1 %7, label %_ZN3pov11UCS2_strlenEPt.exit.loopexit, label %.lr.ph.i, !dbg !1358
+for.inc.i:                                        ; preds = %entry, %for.inc.i
+  %i.05.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %entry ]
+  %str.addr.04.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %str, %entry ]
+  %incdec.ptr.i = getelementptr inbounds i16* %str.addr.04.i, i64 1, !dbg !880
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr.i}, i64 0, metadata !876), !dbg !880
+  %inc.i = add nsw i32 %i.05.i, 1, !dbg !880
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !879), !dbg !880
+  %2 = load i16* %incdec.ptr.i, align 2, !dbg !880, !tbaa !868
+  %cmp.i = icmp eq i16 %2, 0, !dbg !880
+  br i1 %cmp.i, label %_ZN3pov11UCS2_strlenEPt.exit.loopexit, label %for.inc.i, !dbg !880
 
-_ZN3pov11UCS2_strlenEPt.exit.loopexit:            ; preds = %.lr.ph.i
-  %phitmp = add i32 %i.02.i, 2
-  %phitmp4 = sext i32 %phitmp to i64
+_ZN3pov11UCS2_strlenEPt.exit.loopexit:            ; preds = %for.inc.i
+  %phitmp = add i32 %i.05.i, 2
+  %phitmp19 = sext i32 %phitmp to i64
   br label %_ZN3pov11UCS2_strlenEPt.exit
 
-_ZN3pov11UCS2_strlenEPt.exit:                     ; preds = %_ZN3pov11UCS2_strlenEPt.exit.loopexit, %1
-  %i.0.lcssa.i = phi i64 [ 1, %1 ], [ %phitmp4, %_ZN3pov11UCS2_strlenEPt.exit.loopexit ]
-  %8 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %i.0.lcssa.i, i8* getelementptr inbounds ([69 x i8]* @.str, i64 0, i64 0), i32 741, i8* getelementptr inbounds ([9 x i8]* @.str15, i64 0, i64 0)) #8, !dbg !1359
-  tail call void @llvm.dbg.value(metadata i8* %8, i64 0, metadata !746, metadata !1286), !dbg !1362
-  tail call void @llvm.dbg.value(metadata i8* %8, i64 0, metadata !747, metadata !1286), !dbg !1363
-  %9 = load i16* %str, align 2, !dbg !1364, !tbaa !1338
-  %10 = icmp eq i16 %9, 0, !dbg !1367
-  br i1 %10, label %._crit_edge, label %.lr.ph, !dbg !1368
+_ZN3pov11UCS2_strlenEPt.exit:                     ; preds = %_ZN3pov11UCS2_strlenEPt.exit.loopexit, %entry
+  %i.0.lcssa.i = phi i64 [ 1, %entry ], [ %phitmp19, %_ZN3pov11UCS2_strlenEPt.exit.loopexit ]
+  %call1 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %i.0.lcssa.i, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), i32 741, i8* getelementptr inbounds ([9 x i8]* @.str15, i64 0, i64 0)) #8, !dbg !877
+  tail call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !669), !dbg !877
+  tail call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !670), !dbg !881
+  %3 = load i16* %str, align 2, !dbg !881, !tbaa !868
+  %cmp16 = icmp eq i16 %3, 0, !dbg !881
+  br i1 %cmp16, label %for.end, label %for.body, !dbg !881
 
-.lr.ph:                                           ; preds = %_ZN3pov11UCS2_strlenEPt.exit, %.lr.ph
-  %11 = phi i16 [ %18, %.lr.ph ], [ %9, %_ZN3pov11UCS2_strlenEPt.exit ]
-  %strp.03 = phi i8* [ %17, %.lr.ph ], [ %8, %_ZN3pov11UCS2_strlenEPt.exit ]
-  %.02 = phi i16* [ %16, %.lr.ph ], [ %str, %_ZN3pov11UCS2_strlenEPt.exit ]
-  %12 = icmp ugt i16 %11, 127, !dbg !1369
-  %13 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8
-  %14 = icmp sgt i32 %13, 349, !dbg !1372
-  %or.cond = and i1 %12, %14, !dbg !1373
-  %15 = trunc i16 %11 to i8, !dbg !1374
-  %storemerge = select i1 %or.cond, i8 32, i8 %15, !dbg !1373
-  store i8 %storemerge, i8* %strp.03, align 1, !dbg !1375, !tbaa !1376
-  %16 = getelementptr inbounds i16* %.02, i64 1, !dbg !1377
-  tail call void @llvm.dbg.value(metadata i16* %16, i64 0, metadata !744, metadata !1286), !dbg !1351
-  %17 = getelementptr inbounds i8* %strp.03, i64 1, !dbg !1378
-  tail call void @llvm.dbg.value(metadata i8* %17, i64 0, metadata !747, metadata !1286), !dbg !1363
-  %18 = load i16* %16, align 2, !dbg !1364, !tbaa !1338
-  %19 = icmp eq i16 %18, 0, !dbg !1367
-  br i1 %19, label %._crit_edge, label %.lr.ph, !dbg !1368
+for.body:                                         ; preds = %_ZN3pov11UCS2_strlenEPt.exit, %for.body
+  %4 = phi i16 [ %6, %for.body ], [ %3, %_ZN3pov11UCS2_strlenEPt.exit ]
+  %strp.018 = phi i8* [ %incdec.ptr7, %for.body ], [ %call1, %_ZN3pov11UCS2_strlenEPt.exit ]
+  %str.addr.017 = phi i16* [ %incdec.ptr, %for.body ], [ %str, %_ZN3pov11UCS2_strlenEPt.exit ]
+  %cmp4 = icmp ugt i16 %4, 127, !dbg !883
+  %5 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !883, !tbaa !832
+  %cmp5 = icmp sgt i32 %5, 349, !dbg !883
+  %or.cond = and i1 %cmp4, %cmp5, !dbg !883
+  %conv6 = trunc i16 %4 to i8, !dbg !885
+  %storemerge = select i1 %or.cond, i8 32, i8 %conv6, !dbg !883
+  store i8 %storemerge, i8* %strp.018, align 1, !dbg !886, !tbaa !833
+  %incdec.ptr = getelementptr inbounds i16* %str.addr.017, i64 1, !dbg !881
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !667), !dbg !881
+  %incdec.ptr7 = getelementptr inbounds i8* %strp.018, i64 1, !dbg !881
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr7}, i64 0, metadata !670), !dbg !881
+  %6 = load i16* %incdec.ptr, align 2, !dbg !881, !tbaa !868
+  %cmp = icmp eq i16 %6, 0, !dbg !881
+  br i1 %cmp, label %for.end, label %for.body, !dbg !881
 
-._crit_edge:                                      ; preds = %.lr.ph, %_ZN3pov11UCS2_strlenEPt.exit
-  %strp.0.lcssa = phi i8* [ %8, %_ZN3pov11UCS2_strlenEPt.exit ], [ %17, %.lr.ph ]
-  store i8 0, i8* %strp.0.lcssa, align 1, !dbg !1379, !tbaa !1376
-  ret i8* %8, !dbg !1380
+for.end:                                          ; preds = %for.body, %_ZN3pov11UCS2_strlenEPt.exit
+  %strp.0.lcssa = phi i8* [ %call1, %_ZN3pov11UCS2_strlenEPt.exit ], [ %incdec.ptr7, %for.body ]
+  store i8 0, i8* %strp.0.lcssa, align 1, !dbg !887, !tbaa !833
+  ret i8* %call1, !dbg !888
 }

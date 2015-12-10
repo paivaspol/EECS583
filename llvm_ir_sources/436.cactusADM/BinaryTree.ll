@@ -1,540 +1,470 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.T_TREE = type { %struct.T_TREE*, %struct.T_TREE*, %struct.T_TREE*, i8* }
 
 @.str = private unnamed_addr constant [87 x i8] c"$Header: /cactus/Cactus/src/util/BinaryTree.c,v 1.10 2001/05/10 12:35:19 goodale Exp $\00", align 1
 
-; Function Attrs: nounwind optsize readnone ssp uwtable
+; Function Attrs: nounwind optsize readnone uwtable
 define i8* @CCTKi_version_util_BinaryTree_c() #0 {
-  ret i8* getelementptr inbounds ([87 x i8]* @.str, i64 0, i64 0), !dbg !85
+entry:
+  ret i8* getelementptr inbounds ([87 x i8]* @.str, i64 0, i64 0), !dbg !81
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define %struct.T_TREE* @Util_BinTreeStoreData(%struct.T_TREE* %root, %struct.T_TREE* %subtree, i8* %data, i32 (i8*, i8*)* %compare) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %root, i64 0, metadata !32, metadata !86), !dbg !87
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %subtree, i64 0, metadata !33, metadata !86), !dbg !88
-  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !34, metadata !86), !dbg !89
-  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %compare, i64 0, metadata !35, metadata !86), !dbg !90
-  %1 = icmp eq %struct.T_TREE* %subtree, null, !dbg !91
-  br i1 %1, label %tailrecurse._crit_edge, label %.lr.ph, !dbg !93
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root.tr.lcssa}, i64 0, metadata !32), !dbg !82
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %subtree}, i64 0, metadata !33), !dbg !83
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !34), !dbg !84
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %compare}, i64 0, metadata !35), !dbg !85
+  %tobool54 = icmp eq %struct.T_TREE* %subtree, null, !dbg !86
+  br i1 %tobool54, label %if.then, label %if.else13, !dbg !86
 
-tailrecurse._crit_edge:                           ; preds = %tailrecurse.backedge, %0
-  %root.tr.lcssa = phi %struct.T_TREE* [ %root, %0 ], [ %subtree.tr3, %tailrecurse.backedge ]
-  %2 = tail call i8* @malloc(i64 32) #5, !dbg !94
-  %3 = bitcast i8* %2 to %struct.T_TREE*, !dbg !96
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %3, i64 0, metadata !33, metadata !86), !dbg !88
-  %4 = icmp eq i8* %2, null, !dbg !97
-  br i1 %4, label %.loopexit, label %5, !dbg !99
+if.then:                                          ; preds = %tailrecurse.backedge, %entry
+  %root.tr.lcssa = phi %struct.T_TREE* [ %root, %entry ], [ %subtree.tr56, %tailrecurse.backedge ]
+  %call = tail call noalias i8* @malloc(i64 32) #5, !dbg !87
+  %0 = bitcast i8* %call to %struct.T_TREE*, !dbg !87
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %0}, i64 0, metadata !33), !dbg !87
+  %tobool1 = icmp eq i8* %call, null, !dbg !89
+  br i1 %tobool1, label %if.else25, label %if.then2, !dbg !89
 
-; <label>:5                                       ; preds = %tailrecurse._crit_edge
-  %6 = getelementptr inbounds i8* %2, i64 24, !dbg !100
-  %7 = bitcast i8* %6 to i8**, !dbg !100
-  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 16, i32 8, i1 false), !dbg !102
-  store i8* %data, i8** %7, align 8, !dbg !103, !tbaa !104
-  %8 = icmp eq %struct.T_TREE* %root.tr.lcssa, null, !dbg !109
-  br i1 %8, label %.loopexit, label %9, !dbg !111
+if.then2:                                         ; preds = %if.then
+  %data3 = getelementptr inbounds i8* %call, i64 24, !dbg !90
+  %1 = bitcast i8* %data3 to i8**, !dbg !90
+  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 16, i32 8, i1 false), !dbg !92
+  store i8* %data, i8** %1, align 8, !dbg !90, !tbaa !93
+  %tobool4 = icmp eq %struct.T_TREE* %root.tr.lcssa, null, !dbg !96
+  br i1 %tobool4, label %if.else25, label %if.then5, !dbg !96
 
-; <label>:9                                       ; preds = %5
-  %10 = getelementptr inbounds %struct.T_TREE* %root.tr.lcssa, i64 0, i32 3, !dbg !112
-  %11 = load i8** %10, align 8, !dbg !112, !tbaa !104
-  %12 = tail call i32 %compare(i8* %data, i8* %11) #5, !dbg !115
-  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !36, metadata !86), !dbg !116
-  %13 = icmp slt i32 %12, 0, !dbg !117
-  br i1 %13, label %14, label %16, !dbg !118
+if.then5:                                         ; preds = %if.then2
+  %data6 = getelementptr inbounds %struct.T_TREE* %root.tr.lcssa, i64 0, i32 3, !dbg !97
+  %2 = load i8** %data6, align 8, !dbg !97, !tbaa !93
+  %call7 = tail call i32 %compare(i8* %data, i8* %2) #5, !dbg !97
+  tail call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !36), !dbg !97
+  %cmp = icmp slt i32 %call7, 0, !dbg !97
+  br i1 %cmp, label %if.then8, label %if.else, !dbg !97
 
-; <label>:14                                      ; preds = %9
-  %15 = bitcast %struct.T_TREE* %root.tr.lcssa to i8**, !dbg !119
-  store i8* %2, i8** %15, align 8, !dbg !119, !tbaa !121
-  br label %.loopexit, !dbg !122
+if.then8:                                         ; preds = %if.then5
+  %left9 = getelementptr inbounds %struct.T_TREE* %root.tr.lcssa, i64 0, i32 0, !dbg !99
+  store %struct.T_TREE* %0, %struct.T_TREE** %left9, align 8, !dbg !99, !tbaa !93
+  br label %if.else25, !dbg !101
 
-; <label>:16                                      ; preds = %9
-  %17 = getelementptr inbounds %struct.T_TREE* %root.tr.lcssa, i64 0, i32 1, !dbg !123
-  %18 = bitcast %struct.T_TREE** %17 to i8**, !dbg !125
-  store i8* %2, i8** %18, align 8, !dbg !125, !tbaa !126
-  br label %.loopexit
+if.else:                                          ; preds = %if.then5
+  %right10 = getelementptr inbounds %struct.T_TREE* %root.tr.lcssa, i64 0, i32 1, !dbg !102
+  store %struct.T_TREE* %0, %struct.T_TREE** %right10, align 8, !dbg !102, !tbaa !93
+  br label %if.else25
 
-.lr.ph:                                           ; preds = %0, %tailrecurse.backedge
-  %subtree.tr3 = phi %struct.T_TREE* [ %subtree.tr.be, %tailrecurse.backedge ], [ %subtree, %0 ]
-  %root.tr2 = phi %struct.T_TREE* [ %subtree.tr3, %tailrecurse.backedge ], [ %root, %0 ]
-  %19 = getelementptr inbounds %struct.T_TREE* %root.tr2, i64 0, i32 3, !dbg !127
-  %20 = load i8** %19, align 8, !dbg !127, !tbaa !104
-  %21 = tail call i32 %compare(i8* %data, i8* %20) #5, !dbg !130
-  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !36, metadata !86), !dbg !116
-  %22 = icmp slt i32 %21, 0, !dbg !131
-  br i1 %22, label %23, label %25, !dbg !132
+if.else13:                                        ; preds = %entry, %tailrecurse.backedge
+  %subtree.tr56 = phi %struct.T_TREE* [ %subtree.tr.be, %tailrecurse.backedge ], [ %subtree, %entry ]
+  %root.tr55 = phi %struct.T_TREE* [ %subtree.tr56, %tailrecurse.backedge ], [ %root, %entry ]
+  %data14 = getelementptr inbounds %struct.T_TREE* %root.tr55, i64 0, i32 3, !dbg !104
+  %3 = load i8** %data14, align 8, !dbg !104, !tbaa !93
+  %call15 = tail call i32 %compare(i8* %data, i8* %3) #5, !dbg !104
+  tail call void @llvm.dbg.value(metadata !{i32 %call15}, i64 0, metadata !36), !dbg !104
+  %cmp16 = icmp slt i32 %call15, 0, !dbg !104
+  br i1 %cmp16, label %if.then17, label %if.else20, !dbg !104
 
-; <label>:23                                      ; preds = %.lr.ph
-  %24 = getelementptr inbounds %struct.T_TREE* %subtree.tr3, i64 0, i32 0, !dbg !133
-  br label %tailrecurse.backedge, !dbg !135
+if.then17:                                        ; preds = %if.else13
+  %left18 = getelementptr inbounds %struct.T_TREE* %subtree.tr56, i64 0, i32 0, !dbg !106
+  br label %tailrecurse.backedge, !dbg !106
 
-; <label>:25                                      ; preds = %.lr.ph
-  %26 = icmp sgt i32 %21, 0, !dbg !136
-  br i1 %26, label %27, label %.loopexit, !dbg !138
+if.else20:                                        ; preds = %if.else13
+  %cmp21 = icmp sgt i32 %call15, 0, !dbg !108
+  br i1 %cmp21, label %if.then22, label %if.else25, !dbg !108
 
-; <label>:27                                      ; preds = %25
-  %28 = getelementptr inbounds %struct.T_TREE* %subtree.tr3, i64 0, i32 1, !dbg !139
-  br label %tailrecurse.backedge, !dbg !141
+if.then22:                                        ; preds = %if.else20
+  %right23 = getelementptr inbounds %struct.T_TREE* %subtree.tr56, i64 0, i32 1, !dbg !109
+  br label %tailrecurse.backedge, !dbg !109
 
-tailrecurse.backedge:                             ; preds = %27, %23
-  %subtree.tr.be.in = phi %struct.T_TREE** [ %28, %27 ], [ %24, %23 ]
-  %subtree.tr.be = load %struct.T_TREE** %subtree.tr.be.in, align 8, !dbg !139
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %subtree.tr3, i64 0, metadata !32, metadata !86), !dbg !87
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %subtree.tr.be, i64 0, metadata !33, metadata !86), !dbg !88
-  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !34, metadata !86), !dbg !89
-  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %compare, i64 0, metadata !35, metadata !86), !dbg !90
-  %29 = icmp eq %struct.T_TREE* %subtree.tr.be, null, !dbg !91
-  br i1 %29, label %tailrecurse._crit_edge, label %.lr.ph, !dbg !93
+tailrecurse.backedge:                             ; preds = %if.then22, %if.then17
+  %subtree.tr.be.in = phi %struct.T_TREE** [ %right23, %if.then22 ], [ %left18, %if.then17 ]
+  %subtree.tr.be = load %struct.T_TREE** %subtree.tr.be.in, align 8, !dbg !109
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root.tr.lcssa}, i64 0, metadata !32), !dbg !82
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %subtree.tr56}, i64 0, metadata !33), !dbg !83
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !34), !dbg !84
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %compare}, i64 0, metadata !35), !dbg !85
+  %tobool = icmp eq %struct.T_TREE* %subtree.tr.be, null, !dbg !86
+  br i1 %tobool, label %if.then, label %if.else13, !dbg !86
 
-.loopexit:                                        ; preds = %25, %16, %14, %tailrecurse._crit_edge, %5
-  %merge = phi %struct.T_TREE* [ %3, %5 ], [ %3, %tailrecurse._crit_edge ], [ %3, %14 ], [ %3, %16 ], [ null, %25 ]
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* null, i64 0, metadata !33, metadata !86), !dbg !88
-  ret %struct.T_TREE* %merge, !dbg !142
+if.else25:                                        ; preds = %if.else20, %if.else, %if.then8, %if.then, %if.then2
+  %merge = phi %struct.T_TREE* [ %0, %if.then2 ], [ %0, %if.then ], [ %0, %if.then8 ], [ %0, %if.else ], [ null, %if.else20 ]
+  tail call void @llvm.dbg.value(metadata !111, i64 0, metadata !33), !dbg !112
+  ret %struct.T_TREE* %merge, !dbg !114
 }
 
 ; Function Attrs: nounwind optsize
 declare noalias i8* @malloc(i64) #2
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @Util_BinTreeTraverseInorder(%struct.T_TREE* readonly %root, i32 (i8*, i8*)* %process, i8* %info) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %root, i64 0, metadata !44, metadata !86), !dbg !143
-  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %process, i64 0, metadata !45, metadata !86), !dbg !144
-  tail call void @llvm.dbg.value(metadata i8* %info, i64 0, metadata !46, metadata !86), !dbg !145
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !47, metadata !86), !dbg !146
-  %1 = icmp eq %struct.T_TREE* %root, null, !dbg !147
-  br i1 %1, label %.thread, label %.lr.ph, !dbg !149
+; Function Attrs: nounwind optsize uwtable
+define i32 @Util_BinTreeTraverseInorder(%struct.T_TREE* %root, i32 (i8*, i8*)* %process, i8* %info) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root}, i64 0, metadata !44), !dbg !115
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %process}, i64 0, metadata !45), !dbg !116
+  tail call void @llvm.dbg.value(metadata !{i8* %info}, i64 0, metadata !46), !dbg !117
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !47), !dbg !118
+  %tobool19 = icmp eq %struct.T_TREE* %root, null, !dbg !119
+  br i1 %tobool19, label %if.end8, label %if.then, !dbg !119
 
-.lr.ph:                                           ; preds = %0, %tailrecurse
-  %root.tr1 = phi %struct.T_TREE* [ %12, %tailrecurse ], [ %root, %0 ]
-  %2 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 0, !dbg !150
-  %3 = load %struct.T_TREE** %2, align 8, !dbg !150, !tbaa !121
-  %4 = tail call i32 @Util_BinTreeTraverseInorder(%struct.T_TREE* %3, i32 (i8*, i8*)* %process, i8* %info) #6, !dbg !152
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !47, metadata !86), !dbg !146
-  %5 = icmp eq i32 %4, 0, !dbg !153
-  br i1 %5, label %6, label %.thread, !dbg !155
+if.then:                                          ; preds = %entry, %if.then5
+  %root.tr20 = phi %struct.T_TREE* [ %2, %if.then5 ], [ %root, %entry ]
+  %left = getelementptr inbounds %struct.T_TREE* %root.tr20, i64 0, i32 0, !dbg !120
+  %0 = load %struct.T_TREE** %left, align 8, !dbg !120, !tbaa !93
+  %call = tail call i32 @Util_BinTreeTraverseInorder(%struct.T_TREE* %0, i32 (i8*, i8*)* %process, i8* %info) #6, !dbg !120
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !47), !dbg !120
+  %tobool1 = icmp eq i32 %call, 0, !dbg !122
+  br i1 %tobool1, label %if.end, label %if.end8, !dbg !122
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 3, !dbg !156
-  %8 = load i8** %7, align 8, !dbg !156, !tbaa !104
-  %9 = tail call i32 %process(i8* %8, i8* %info) #5, !dbg !157
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !47, metadata !86), !dbg !146
-  %10 = icmp eq i32 %9, 0, !dbg !158
-  br i1 %10, label %tailrecurse, label %.thread, !dbg !160
+if.end:                                           ; preds = %if.then
+  %data = getelementptr inbounds %struct.T_TREE* %root.tr20, i64 0, i32 3, !dbg !122
+  %1 = load i8** %data, align 8, !dbg !122, !tbaa !93
+  %call3 = tail call i32 %process(i8* %1, i8* %info) #5, !dbg !122
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !47), !dbg !122
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !123
+  br i1 %tobool4, label %if.then5, label %if.end8, !dbg !123
 
-tailrecurse:                                      ; preds = %6
-  %11 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 1, !dbg !161
-  %12 = load %struct.T_TREE** %11, align 8, !dbg !161, !tbaa !126
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %12, i64 0, metadata !44, metadata !86), !dbg !143
-  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %process, i64 0, metadata !45, metadata !86), !dbg !144
-  tail call void @llvm.dbg.value(metadata i8* %info, i64 0, metadata !46, metadata !86), !dbg !145
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !47, metadata !86), !dbg !146
-  %13 = icmp eq %struct.T_TREE* %12, null, !dbg !147
-  br i1 %13, label %.thread, label %.lr.ph, !dbg !149
+if.then5:                                         ; preds = %if.end
+  %right = getelementptr inbounds %struct.T_TREE* %root.tr20, i64 0, i32 1, !dbg !123
+  %2 = load %struct.T_TREE** %right, align 8, !dbg !123, !tbaa !93
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root.tr20}, i64 0, metadata !44), !dbg !115
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %process}, i64 0, metadata !45), !dbg !116
+  tail call void @llvm.dbg.value(metadata !{i8* %info}, i64 0, metadata !46), !dbg !117
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !47), !dbg !118
+  %tobool = icmp eq %struct.T_TREE* %2, null, !dbg !119
+  br i1 %tobool, label %if.end8, label %if.then, !dbg !119
 
-.thread:                                          ; preds = %tailrecurse, %6, %.lr.ph, %0
-  %terminate.1 = phi i32 [ 0, %0 ], [ 0, %tailrecurse ], [ %9, %6 ], [ %4, %.lr.ph ]
-  ret i32 %terminate.1, !dbg !162
+if.end8:                                          ; preds = %if.then5, %if.then, %if.end, %entry
+  %terminate.1 = phi i32 [ 0, %entry ], [ %call, %if.then ], [ %call3, %if.end ], [ 0, %if.then5 ]
+  ret i32 %terminate.1, !dbg !124
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @Util_BinTreeTraversePreorder(%struct.T_TREE* readonly %root, i32 (i8*, i8*)* %process, i8* %info) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %root, i64 0, metadata !50, metadata !86), !dbg !163
-  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %process, i64 0, metadata !51, metadata !86), !dbg !164
-  tail call void @llvm.dbg.value(metadata i8* %info, i64 0, metadata !52, metadata !86), !dbg !165
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !53, metadata !86), !dbg !166
-  %1 = icmp eq %struct.T_TREE* %root, null, !dbg !167
-  br i1 %1, label %.thread, label %.lr.ph, !dbg !169
+; Function Attrs: nounwind optsize uwtable
+define i32 @Util_BinTreeTraversePreorder(%struct.T_TREE* %root, i32 (i8*, i8*)* %process, i8* %info) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root}, i64 0, metadata !50), !dbg !125
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %process}, i64 0, metadata !51), !dbg !126
+  tail call void @llvm.dbg.value(metadata !{i8* %info}, i64 0, metadata !52), !dbg !127
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !53), !dbg !128
+  %tobool19 = icmp eq %struct.T_TREE* %root, null, !dbg !129
+  br i1 %tobool19, label %if.end8, label %if.then, !dbg !129
 
-.lr.ph:                                           ; preds = %0, %tailrecurse
-  %root.tr1 = phi %struct.T_TREE* [ %12, %tailrecurse ], [ %root, %0 ]
-  %2 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 3, !dbg !170
-  %3 = load i8** %2, align 8, !dbg !170, !tbaa !104
-  %4 = tail call i32 %process(i8* %3, i8* %info) #5, !dbg !172
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !53, metadata !86), !dbg !166
-  %5 = icmp eq i32 %4, 0, !dbg !173
-  br i1 %5, label %6, label %.thread, !dbg !175
+if.then:                                          ; preds = %entry, %if.then5
+  %root.tr20 = phi %struct.T_TREE* [ %2, %if.then5 ], [ %root, %entry ]
+  %data = getelementptr inbounds %struct.T_TREE* %root.tr20, i64 0, i32 3, !dbg !130
+  %0 = load i8** %data, align 8, !dbg !130, !tbaa !93
+  %call = tail call i32 %process(i8* %0, i8* %info) #5, !dbg !130
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !53), !dbg !130
+  %tobool1 = icmp eq i32 %call, 0, !dbg !132
+  br i1 %tobool1, label %if.end, label %if.end8, !dbg !132
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 0, !dbg !176
-  %8 = load %struct.T_TREE** %7, align 8, !dbg !176, !tbaa !121
-  %9 = tail call i32 @Util_BinTreeTraversePreorder(%struct.T_TREE* %8, i32 (i8*, i8*)* %process, i8* %info) #6, !dbg !177
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !53, metadata !86), !dbg !166
-  %10 = icmp eq i32 %9, 0, !dbg !178
-  br i1 %10, label %tailrecurse, label %.thread, !dbg !180
+if.end:                                           ; preds = %if.then
+  %left = getelementptr inbounds %struct.T_TREE* %root.tr20, i64 0, i32 0, !dbg !132
+  %1 = load %struct.T_TREE** %left, align 8, !dbg !132, !tbaa !93
+  %call3 = tail call i32 @Util_BinTreeTraversePreorder(%struct.T_TREE* %1, i32 (i8*, i8*)* %process, i8* %info) #6, !dbg !132
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !53), !dbg !132
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !133
+  br i1 %tobool4, label %if.then5, label %if.end8, !dbg !133
 
-tailrecurse:                                      ; preds = %6
-  %11 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 1, !dbg !181
-  %12 = load %struct.T_TREE** %11, align 8, !dbg !181, !tbaa !126
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %12, i64 0, metadata !50, metadata !86), !dbg !163
-  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %process, i64 0, metadata !51, metadata !86), !dbg !164
-  tail call void @llvm.dbg.value(metadata i8* %info, i64 0, metadata !52, metadata !86), !dbg !165
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !53, metadata !86), !dbg !166
-  %13 = icmp eq %struct.T_TREE* %12, null, !dbg !167
-  br i1 %13, label %.thread, label %.lr.ph, !dbg !169
+if.then5:                                         ; preds = %if.end
+  %right = getelementptr inbounds %struct.T_TREE* %root.tr20, i64 0, i32 1, !dbg !133
+  %2 = load %struct.T_TREE** %right, align 8, !dbg !133, !tbaa !93
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root.tr20}, i64 0, metadata !50), !dbg !125
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %process}, i64 0, metadata !51), !dbg !126
+  tail call void @llvm.dbg.value(metadata !{i8* %info}, i64 0, metadata !52), !dbg !127
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !53), !dbg !128
+  %tobool = icmp eq %struct.T_TREE* %2, null, !dbg !129
+  br i1 %tobool, label %if.end8, label %if.then, !dbg !129
 
-.thread:                                          ; preds = %tailrecurse, %6, %.lr.ph, %0
-  %terminate.1 = phi i32 [ 0, %0 ], [ 0, %tailrecurse ], [ %9, %6 ], [ %4, %.lr.ph ]
-  ret i32 %terminate.1, !dbg !182
+if.end8:                                          ; preds = %if.then5, %if.then, %if.end, %entry
+  %terminate.1 = phi i32 [ 0, %entry ], [ %call, %if.then ], [ %call3, %if.end ], [ 0, %if.then5 ]
+  ret i32 %terminate.1, !dbg !134
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @Util_BinTreeTraversePostorder(%struct.T_TREE* readonly %root, i32 (i8*, i8*)* %process, i8* %info) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %root, i64 0, metadata !56, metadata !86), !dbg !183
-  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %process, i64 0, metadata !57, metadata !86), !dbg !184
-  tail call void @llvm.dbg.value(metadata i8* %info, i64 0, metadata !58, metadata !86), !dbg !185
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !59, metadata !86), !dbg !186
-  %1 = icmp eq %struct.T_TREE* %root, null, !dbg !187
-  br i1 %1, label %.thread, label %2, !dbg !189
+; Function Attrs: nounwind optsize uwtable
+define i32 @Util_BinTreeTraversePostorder(%struct.T_TREE* %root, i32 (i8*, i8*)* %process, i8* %info) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root}, i64 0, metadata !56), !dbg !135
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %process}, i64 0, metadata !57), !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i8* %info}, i64 0, metadata !58), !dbg !137
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !59), !dbg !138
+  %tobool = icmp eq %struct.T_TREE* %root, null, !dbg !139
+  br i1 %tobool, label %if.end8, label %if.then, !dbg !139
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.T_TREE* %root, i64 0, i32 0, !dbg !190
-  %4 = load %struct.T_TREE** %3, align 8, !dbg !190, !tbaa !121
-  %5 = tail call i32 @Util_BinTreeTraversePostorder(%struct.T_TREE* %4, i32 (i8*, i8*)* %process, i8* %info) #6, !dbg !192
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !59, metadata !86), !dbg !186
-  %6 = icmp eq i32 %5, 0, !dbg !193
-  br i1 %6, label %7, label %.thread, !dbg !195
+if.then:                                          ; preds = %entry
+  %left = getelementptr inbounds %struct.T_TREE* %root, i64 0, i32 0, !dbg !140
+  %0 = load %struct.T_TREE** %left, align 8, !dbg !140, !tbaa !93
+  %call = tail call i32 @Util_BinTreeTraversePostorder(%struct.T_TREE* %0, i32 (i8*, i8*)* %process, i8* %info) #6, !dbg !140
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !59), !dbg !140
+  %tobool1 = icmp eq i32 %call, 0, !dbg !142
+  br i1 %tobool1, label %if.end, label %if.end8, !dbg !142
 
-; <label>:7                                       ; preds = %2
-  %8 = getelementptr inbounds %struct.T_TREE* %root, i64 0, i32 1, !dbg !196
-  %9 = load %struct.T_TREE** %8, align 8, !dbg !196, !tbaa !126
-  %10 = tail call i32 @Util_BinTreeTraversePostorder(%struct.T_TREE* %9, i32 (i8*, i8*)* %process, i8* %info) #6, !dbg !197
-  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !59, metadata !86), !dbg !186
-  %11 = icmp eq i32 %10, 0, !dbg !198
-  br i1 %11, label %12, label %.thread, !dbg !200
+if.end:                                           ; preds = %if.then
+  %right = getelementptr inbounds %struct.T_TREE* %root, i64 0, i32 1, !dbg !142
+  %1 = load %struct.T_TREE** %right, align 8, !dbg !142, !tbaa !93
+  %call3 = tail call i32 @Util_BinTreeTraversePostorder(%struct.T_TREE* %1, i32 (i8*, i8*)* %process, i8* %info) #6, !dbg !142
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !59), !dbg !142
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !143
+  br i1 %tobool4, label %if.then5, label %if.end8, !dbg !143
 
-; <label>:12                                      ; preds = %7
-  %13 = getelementptr inbounds %struct.T_TREE* %root, i64 0, i32 3, !dbg !201
-  %14 = load i8** %13, align 8, !dbg !201, !tbaa !104
-  %15 = tail call i32 %process(i8* %14, i8* %info) #5, !dbg !202
-  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !59, metadata !86), !dbg !186
-  br label %.thread, !dbg !203
+if.then5:                                         ; preds = %if.end
+  %data = getelementptr inbounds %struct.T_TREE* %root, i64 0, i32 3, !dbg !143
+  %2 = load i8** %data, align 8, !dbg !143, !tbaa !93
+  %call6 = tail call i32 %process(i8* %2, i8* %info) #5, !dbg !143
+  tail call void @llvm.dbg.value(metadata !{i32 %call6}, i64 0, metadata !59), !dbg !143
+  br label %if.end8, !dbg !143
 
-.thread:                                          ; preds = %2, %7, %0, %12
-  %terminate.1 = phi i32 [ %10, %7 ], [ %15, %12 ], [ 0, %0 ], [ %5, %2 ]
-  ret i32 %terminate.1, !dbg !204
+if.end8:                                          ; preds = %if.then, %if.end, %entry, %if.then5
+  %terminate.1 = phi i32 [ %call3, %if.end ], [ %call6, %if.then5 ], [ 0, %entry ], [ %call, %if.then ]
+  ret i32 %terminate.1, !dbg !144
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @Util_BinTreePrintNodes(%struct.T_TREE* readonly %root, i32 %depth, void (i8*, i32)* %print_node) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %root, i64 0, metadata !67, metadata !86), !dbg !205
-  tail call void @llvm.dbg.value(metadata i32 %depth, i64 0, metadata !68, metadata !86), !dbg !206
-  tail call void @llvm.dbg.value(metadata void (i8*, i32)* %print_node, i64 0, metadata !69, metadata !86), !dbg !207
-  %1 = icmp eq %struct.T_TREE* %root, null, !dbg !208
-  br i1 %1, label %tailrecurse._crit_edge, label %tailrecurse, !dbg !210
+; Function Attrs: nounwind optsize uwtable
+define i32 @Util_BinTreePrintNodes(%struct.T_TREE* %root, i32 %depth, void (i8*, i32)* %print_node) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root}, i64 0, metadata !67), !dbg !145
+  tail call void @llvm.dbg.value(metadata !{i32 %depth}, i64 0, metadata !68), !dbg !146
+  tail call void @llvm.dbg.value(metadata !{void (i8*, i32)* %print_node}, i64 0, metadata !69), !dbg !147
+  %tobool10 = icmp eq %struct.T_TREE* %root, null, !dbg !148
+  br i1 %tobool10, label %if.end, label %if.then, !dbg !148
 
-tailrecurse:                                      ; preds = %0, %tailrecurse
-  %depth.tr2 = phi i32 [ %4, %tailrecurse ], [ %depth, %0 ]
-  %root.tr1 = phi %struct.T_TREE* [ %9, %tailrecurse ], [ %root, %0 ]
-  %2 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 0, !dbg !211
-  %3 = load %struct.T_TREE** %2, align 8, !dbg !211, !tbaa !121
-  %4 = add nsw i32 %depth.tr2, 1, !dbg !213
-  %5 = tail call i32 @Util_BinTreePrintNodes(%struct.T_TREE* %3, i32 %4, void (i8*, i32)* %print_node) #6, !dbg !214
-  %6 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 3, !dbg !215
-  %7 = load i8** %6, align 8, !dbg !215, !tbaa !104
-  tail call void %print_node(i8* %7, i32 %depth.tr2) #5, !dbg !216
-  %8 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 1, !dbg !217
-  %9 = load %struct.T_TREE** %8, align 8, !dbg !217, !tbaa !126
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %9, i64 0, metadata !67, metadata !86), !dbg !205
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !68, metadata !86), !dbg !206
-  tail call void @llvm.dbg.value(metadata void (i8*, i32)* %print_node, i64 0, metadata !69, metadata !86), !dbg !207
-  %10 = icmp eq %struct.T_TREE* %9, null, !dbg !208
-  br i1 %10, label %tailrecurse._crit_edge, label %tailrecurse, !dbg !210
+if.then:                                          ; preds = %entry, %if.then
+  %depth.tr12 = phi i32 [ %add, %if.then ], [ %depth, %entry ]
+  %root.tr11 = phi %struct.T_TREE* [ %2, %if.then ], [ %root, %entry ]
+  %left = getelementptr inbounds %struct.T_TREE* %root.tr11, i64 0, i32 0, !dbg !149
+  %0 = load %struct.T_TREE** %left, align 8, !dbg !149, !tbaa !93
+  %add = add nsw i32 %depth.tr12, 1, !dbg !149
+  %call = tail call i32 @Util_BinTreePrintNodes(%struct.T_TREE* %0, i32 %add, void (i8*, i32)* %print_node) #6, !dbg !149
+  %data = getelementptr inbounds %struct.T_TREE* %root.tr11, i64 0, i32 3, !dbg !151
+  %1 = load i8** %data, align 8, !dbg !151, !tbaa !93
+  tail call void %print_node(i8* %1, i32 %depth.tr12) #5, !dbg !151
+  %right = getelementptr inbounds %struct.T_TREE* %root.tr11, i64 0, i32 1, !dbg !152
+  %2 = load %struct.T_TREE** %right, align 8, !dbg !152, !tbaa !93
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root.tr11}, i64 0, metadata !67), !dbg !145
+  tail call void @llvm.dbg.value(metadata !{i32 %depth.tr12}, i64 0, metadata !68), !dbg !146
+  tail call void @llvm.dbg.value(metadata !{void (i8*, i32)* %print_node}, i64 0, metadata !69), !dbg !147
+  %tobool = icmp eq %struct.T_TREE* %2, null, !dbg !148
+  br i1 %tobool, label %if.end, label %if.then, !dbg !148
 
-tailrecurse._crit_edge:                           ; preds = %tailrecurse, %0
-  ret i32 0, !dbg !218
+if.end:                                           ; preds = %if.then, %entry
+  ret i32 0, !dbg !153
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define %struct.T_TREE* @Util_BinTreeFindNode(%struct.T_TREE* readonly %root, i8* %data, i32 (i8*, i8*)* %compare) #1 {
+; Function Attrs: nounwind optsize uwtable
+define %struct.T_TREE* @Util_BinTreeFindNode(%struct.T_TREE* %root, i8* %data, i32 (i8*, i8*)* %compare) #1 {
+entry:
   br label %tailrecurse
 
-tailrecurse:                                      ; preds = %tailrecurse.backedge, %0
-  %root.tr = phi %struct.T_TREE* [ %root, %0 ], [ %root.tr.be, %tailrecurse.backedge ]
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %root.tr, i64 0, metadata !74, metadata !86), !dbg !219
-  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !75, metadata !86), !dbg !220
-  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %compare, i64 0, metadata !76, metadata !86), !dbg !221
-  %1 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 3, !dbg !222
-  %2 = load i8** %1, align 8, !dbg !222, !tbaa !104
-  %3 = tail call i32 %compare(i8* %data, i8* %2) #5, !dbg !224
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !77, metadata !86), !dbg !225
-  %4 = icmp slt i32 %3, 0, !dbg !226
-  br i1 %4, label %5, label %7, !dbg !227
+tailrecurse:                                      ; preds = %tailrecurse.backedge, %entry
+  %root.tr = phi %struct.T_TREE* [ %root, %entry ], [ %root.tr.be, %tailrecurse.backedge ]
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root.tr}, i64 0, metadata !74), !dbg !154
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !75), !dbg !155
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %compare}, i64 0, metadata !76), !dbg !156
+  %data1 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 3, !dbg !157
+  %0 = load i8** %data1, align 8, !dbg !157, !tbaa !93
+  %call = tail call i32 %compare(i8* %data, i8* %0) #5, !dbg !157
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !77), !dbg !157
+  %cmp = icmp slt i32 %call, 0, !dbg !157
+  br i1 %cmp, label %if.then, label %if.else, !dbg !157
 
-; <label>:5                                       ; preds = %tailrecurse
-  %6 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 0, !dbg !228
-  br label %tailrecurse.backedge, !dbg !230
+if.then:                                          ; preds = %tailrecurse
+  %left = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 0, !dbg !158
+  br label %tailrecurse.backedge, !dbg !158
 
-tailrecurse.backedge:                             ; preds = %5, %9
-  %root.tr.be.in = phi %struct.T_TREE** [ %6, %5 ], [ %10, %9 ]
-  %root.tr.be = load %struct.T_TREE** %root.tr.be.in, align 8, !dbg !228
+tailrecurse.backedge:                             ; preds = %if.then, %if.then4
+  %root.tr.be.in = phi %struct.T_TREE** [ %left, %if.then ], [ %right, %if.then4 ]
+  %root.tr.be = load %struct.T_TREE** %root.tr.be.in, align 8, !dbg !158
   br label %tailrecurse
 
-; <label>:7                                       ; preds = %tailrecurse
-  %8 = icmp sgt i32 %3, 0, !dbg !231
-  br i1 %8, label %9, label %11, !dbg !233
+if.else:                                          ; preds = %tailrecurse
+  %cmp3 = icmp sgt i32 %call, 0, !dbg !160
+  br i1 %cmp3, label %if.then4, label %if.end11, !dbg !160
 
-; <label>:9                                       ; preds = %7
-  %10 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 1, !dbg !234
-  br label %tailrecurse.backedge, !dbg !236
+if.then4:                                         ; preds = %if.else
+  %right = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 1, !dbg !161
+  br label %tailrecurse.backedge, !dbg !161
 
-; <label>:11                                      ; preds = %7
-  ret %struct.T_TREE* %root.tr, !dbg !237
+if.end11:                                         ; preds = %if.else
+  ret %struct.T_TREE* %root.tr, !dbg !163
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #3
+declare void @llvm.dbg.value(metadata, i64, metadata) #3
 
 ; Function Attrs: nounwind
 declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #4
 
-attributes #0 = { nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #3 = { nounwind readnone }
 attributes #4 = { nounwind }
 attributes #5 = { nounwind optsize }
 attributes #6 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!81, !82, !83}
-!llvm.ident = !{!84}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !15, globals: !79, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DIDerivedType(tag: DW_TAG_typedef, name: "uBinTree", file: !6, line: 26, baseType: !7)
-!6 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/util_BinaryTree.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!7 = !DICompositeType(tag: DW_TAG_structure_type, name: "T_TREE", file: !6, line: 19, size: 256, align: 64, elements: !8)
-!8 = !{!9, !11, !12, !13}
-!9 = !DIDerivedType(tag: DW_TAG_member, name: "left", scope: !7, file: !6, line: 21, baseType: !10, size: 64, align: 64)
-!10 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !7, size: 64, align: 64)
-!11 = !DIDerivedType(tag: DW_TAG_member, name: "right", scope: !7, file: !6, line: 22, baseType: !10, size: 64, align: 64, offset: 64)
-!12 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !7, file: !6, line: 23, baseType: !10, size: 64, align: 64, offset: 128)
-!13 = !DIDerivedType(tag: DW_TAG_member, name: "data", scope: !7, file: !6, line: 25, baseType: !14, size: 64, align: 64, offset: 192)
-!14 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!15 = !{!16, !22, !37, !48, !54, !60, !70}
-!16 = !DISubprogram(name: "CCTKi_version_util_BinaryTree_c", scope: !1, file: !1, line: 23, type: !17, isLocal: false, isDefinition: true, scopeLine: 23, flags: DIFlagPrototyped, isOptimized: true, function: i8* ()* @CCTKi_version_util_BinaryTree_c, variables: !2)
-!17 = !DISubroutineType(types: !18)
-!18 = !{!19}
-!19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64, align: 64)
-!20 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !21)
-!21 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!22 = !DISubprogram(name: "Util_BinTreeStoreData", scope: !1, file: !1, line: 82, type: !23, isLocal: false, isDefinition: true, scopeLine: 86, flags: DIFlagPrototyped, isOptimized: true, function: %struct.T_TREE* (%struct.T_TREE*, %struct.T_TREE*, i8*, i32 (i8*, i8*)*)* @Util_BinTreeStoreData, variables: !31)
-!23 = !DISubroutineType(types: !24)
-!24 = !{!4, !4, !4, !14, !25}
-!25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64, align: 64)
-!26 = !DISubroutineType(types: !27)
-!27 = !{!28, !29, !29}
-!28 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!29 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !30, size: 64, align: 64)
-!30 = !DIDerivedType(tag: DW_TAG_const_type, baseType: null)
-!31 = !{!32, !33, !34, !35, !36}
-!32 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "root", arg: 1, scope: !22, file: !1, line: 82, type: !4)
-!33 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "subtree", arg: 2, scope: !22, file: !1, line: 83, type: !4)
-!34 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "data", arg: 3, scope: !22, file: !1, line: 84, type: !14)
-!35 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "compare", arg: 4, scope: !22, file: !1, line: 85, type: !25)
-!36 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "order", scope: !22, file: !1, line: 87, type: !28)
-!37 = !DISubprogram(name: "Util_BinTreeTraverseInorder", scope: !1, file: !1, line: 181, type: !38, isLocal: false, isDefinition: true, scopeLine: 184, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.T_TREE*, i32 (i8*, i8*)*, i8*)* @Util_BinTreeTraverseInorder, variables: !43)
-!38 = !DISubroutineType(types: !39)
-!39 = !{!28, !4, !40, !14}
-!40 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !41, size: 64, align: 64)
-!41 = !DISubroutineType(types: !42)
-!42 = !{!28, !14, !14}
-!43 = !{!44, !45, !46, !47}
-!44 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "root", arg: 1, scope: !37, file: !1, line: 181, type: !4)
-!45 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "process", arg: 2, scope: !37, file: !1, line: 182, type: !40)
-!46 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "info", arg: 3, scope: !37, file: !1, line: 183, type: !14)
-!47 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "terminate", scope: !37, file: !1, line: 185, type: !28)
-!48 = !DISubprogram(name: "Util_BinTreeTraversePreorder", scope: !1, file: !1, line: 241, type: !38, isLocal: false, isDefinition: true, scopeLine: 244, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.T_TREE*, i32 (i8*, i8*)*, i8*)* @Util_BinTreeTraversePreorder, variables: !49)
-!49 = !{!50, !51, !52, !53}
-!50 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "root", arg: 1, scope: !48, file: !1, line: 241, type: !4)
-!51 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "process", arg: 2, scope: !48, file: !1, line: 242, type: !40)
-!52 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "info", arg: 3, scope: !48, file: !1, line: 243, type: !14)
-!53 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "terminate", scope: !48, file: !1, line: 245, type: !28)
-!54 = !DISubprogram(name: "Util_BinTreeTraversePostorder", scope: !1, file: !1, line: 301, type: !38, isLocal: false, isDefinition: true, scopeLine: 304, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.T_TREE*, i32 (i8*, i8*)*, i8*)* @Util_BinTreeTraversePostorder, variables: !55)
-!55 = !{!56, !57, !58, !59}
-!56 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "root", arg: 1, scope: !54, file: !1, line: 301, type: !4)
-!57 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "process", arg: 2, scope: !54, file: !1, line: 302, type: !40)
-!58 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "info", arg: 3, scope: !54, file: !1, line: 303, type: !14)
-!59 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "terminate", scope: !54, file: !1, line: 305, type: !28)
-!60 = !DISubprogram(name: "Util_BinTreePrintNodes", scope: !1, file: !1, line: 358, type: !61, isLocal: false, isDefinition: true, scopeLine: 361, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.T_TREE*, i32, void (i8*, i32)*)* @Util_BinTreePrintNodes, variables: !66)
-!61 = !DISubroutineType(types: !62)
-!62 = !{!28, !4, !28, !63}
-!63 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !64, size: 64, align: 64)
-!64 = !DISubroutineType(types: !65)
-!65 = !{null, !14, !28}
-!66 = !{!67, !68, !69}
-!67 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "root", arg: 1, scope: !60, file: !1, line: 358, type: !4)
-!68 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "depth", arg: 2, scope: !60, file: !1, line: 359, type: !28)
-!69 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "print_node", arg: 3, scope: !60, file: !1, line: 360, type: !63)
-!70 = !DISubprogram(name: "Util_BinTreeFindNode", scope: !1, file: !1, line: 417, type: !71, isLocal: false, isDefinition: true, scopeLine: 420, flags: DIFlagPrototyped, isOptimized: true, function: %struct.T_TREE* (%struct.T_TREE*, i8*, i32 (i8*, i8*)*)* @Util_BinTreeFindNode, variables: !73)
-!71 = !DISubroutineType(types: !72)
-!72 = !{!4, !4, !14, !25}
-!73 = !{!74, !75, !76, !77, !78}
-!74 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "root", arg: 1, scope: !70, file: !1, line: 417, type: !4)
-!75 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "data", arg: 2, scope: !70, file: !1, line: 418, type: !14)
-!76 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "compare", arg: 3, scope: !70, file: !1, line: 419, type: !25)
-!77 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "order", scope: !70, file: !1, line: 421, type: !28)
-!78 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "node", scope: !70, file: !1, line: 423, type: !4)
-!79 = !{!80}
-!80 = !DIGlobalVariable(name: "rcsid", scope: !0, file: !1, line: 21, type: !19, isLocal: true, isDefinition: true)
-!81 = !{i32 2, !"Dwarf Version", i32 2}
-!82 = !{i32 2, !"Debug Info Version", i32 700000003}
-!83 = !{i32 1, !"PIC Level", i32 2}
-!84 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!85 = !DILocation(line: 23, column: 1, scope: !16)
-!86 = !DIExpression()
-!87 = !DILocation(line: 82, column: 43, scope: !22)
-!88 = !DILocation(line: 83, column: 43, scope: !22)
-!89 = !DILocation(line: 84, column: 39, scope: !22)
-!90 = !DILocation(line: 85, column: 39, scope: !22)
-!91 = !DILocation(line: 89, column: 7, scope: !92)
-!92 = distinct !DILexicalBlock(scope: !22, file: !1, line: 89, column: 6)
-!93 = !DILocation(line: 89, column: 6, scope: !22)
-!94 = !DILocation(line: 92, column: 27, scope: !95)
-!95 = distinct !DILexicalBlock(scope: !92, file: !1, line: 90, column: 3)
-!96 = !DILocation(line: 92, column: 15, scope: !95)
-!97 = !DILocation(line: 93, column: 8, scope: !98)
-!98 = distinct !DILexicalBlock(scope: !95, file: !1, line: 93, column: 8)
-!99 = !DILocation(line: 93, column: 8, scope: !95)
-!100 = !DILocation(line: 98, column: 16, scope: !101)
-!101 = distinct !DILexicalBlock(scope: !98, file: !1, line: 94, column: 5)
-!102 = !DILocation(line: 96, column: 21, scope: !101)
-!103 = !DILocation(line: 98, column: 21, scope: !101)
-!104 = !{!105, !106, i64 24}
-!105 = !{!"T_TREE", !106, i64 0, !106, i64 8, !106, i64 16, !106, i64 24}
-!106 = !{!"any pointer", !107, i64 0}
-!107 = !{!"omnipotent char", !108, i64 0}
-!108 = !{!"Simple C/C++ TBAA"}
-!109 = !DILocation(line: 100, column: 10, scope: !110)
-!110 = distinct !DILexicalBlock(scope: !101, file: !1, line: 100, column: 10)
-!111 = !DILocation(line: 100, column: 10, scope: !101)
-!112 = !DILocation(line: 102, column: 41, scope: !113)
-!113 = distinct !DILexicalBlock(scope: !114, file: !1, line: 102, column: 12)
-!114 = distinct !DILexicalBlock(scope: !110, file: !1, line: 101, column: 7)
-!115 = !DILocation(line: 102, column: 21, scope: !113)
-!116 = !DILocation(line: 87, column: 7, scope: !22)
-!117 = !DILocation(line: 102, column: 48, scope: !113)
-!118 = !DILocation(line: 102, column: 12, scope: !114)
-!119 = !DILocation(line: 104, column: 22, scope: !120)
-!120 = distinct !DILexicalBlock(scope: !113, file: !1, line: 103, column: 9)
-!121 = !{!105, !106, i64 0}
-!122 = !DILocation(line: 105, column: 9, scope: !120)
-!123 = !DILocation(line: 108, column: 17, scope: !124)
-!124 = distinct !DILexicalBlock(scope: !113, file: !1, line: 107, column: 9)
-!125 = !DILocation(line: 108, column: 23, scope: !124)
-!126 = !{!105, !106, i64 8}
-!127 = !DILocation(line: 116, column: 37, scope: !128)
-!128 = distinct !DILexicalBlock(scope: !129, file: !1, line: 116, column: 8)
-!129 = distinct !DILexicalBlock(scope: !92, file: !1, line: 114, column: 3)
-!130 = !DILocation(line: 116, column: 17, scope: !128)
-!131 = !DILocation(line: 116, column: 44, scope: !128)
-!132 = !DILocation(line: 116, column: 8, scope: !129)
-!133 = !DILocation(line: 118, column: 57, scope: !134)
-!134 = distinct !DILexicalBlock(scope: !128, file: !1, line: 117, column: 5)
-!135 = !DILocation(line: 118, column: 17, scope: !134)
-!136 = !DILocation(line: 120, column: 19, scope: !137)
-!137 = distinct !DILexicalBlock(scope: !128, file: !1, line: 120, column: 13)
-!138 = !DILocation(line: 120, column: 13, scope: !128)
-!139 = !DILocation(line: 122, column: 57, scope: !140)
-!140 = distinct !DILexicalBlock(scope: !137, file: !1, line: 121, column: 5)
-!141 = !DILocation(line: 122, column: 17, scope: !140)
-!142 = !DILocation(line: 124, column: 13, scope: !137)
-!143 = !DILocation(line: 181, column: 43, scope: !37)
-!144 = !DILocation(line: 182, column: 39, scope: !37)
-!145 = !DILocation(line: 183, column: 39, scope: !37)
-!146 = !DILocation(line: 185, column: 7, scope: !37)
-!147 = !DILocation(line: 189, column: 6, scope: !148)
-!148 = distinct !DILexicalBlock(scope: !37, file: !1, line: 189, column: 6)
-!149 = !DILocation(line: 189, column: 6, scope: !37)
-!150 = !DILocation(line: 191, column: 51, scope: !151)
-!151 = distinct !DILexicalBlock(scope: !148, file: !1, line: 190, column: 3)
-!152 = !DILocation(line: 191, column: 17, scope: !151)
-!153 = !DILocation(line: 192, column: 9, scope: !154)
-!154 = distinct !DILexicalBlock(scope: !151, file: !1, line: 192, column: 8)
-!155 = !DILocation(line: 192, column: 8, scope: !151)
-!156 = !DILocation(line: 192, column: 46, scope: !154)
-!157 = !DILocation(line: 192, column: 32, scope: !154)
-!158 = !DILocation(line: 193, column: 9, scope: !159)
-!159 = distinct !DILexicalBlock(scope: !151, file: !1, line: 193, column: 8)
-!160 = !DILocation(line: 193, column: 8, scope: !151)
-!161 = !DILocation(line: 193, column: 66, scope: !159)
-!162 = !DILocation(line: 196, column: 3, scope: !37)
-!163 = !DILocation(line: 241, column: 44, scope: !48)
-!164 = !DILocation(line: 242, column: 40, scope: !48)
-!165 = !DILocation(line: 243, column: 40, scope: !48)
-!166 = !DILocation(line: 245, column: 7, scope: !48)
-!167 = !DILocation(line: 249, column: 6, scope: !168)
-!168 = distinct !DILexicalBlock(scope: !48, file: !1, line: 249, column: 6)
-!169 = !DILocation(line: 249, column: 6, scope: !48)
-!170 = !DILocation(line: 251, column: 31, scope: !171)
-!171 = distinct !DILexicalBlock(scope: !168, file: !1, line: 250, column: 3)
-!172 = !DILocation(line: 251, column: 17, scope: !171)
-!173 = !DILocation(line: 252, column: 9, scope: !174)
-!174 = distinct !DILexicalBlock(scope: !171, file: !1, line: 252, column: 8)
-!175 = !DILocation(line: 252, column: 8, scope: !171)
-!176 = !DILocation(line: 252, column: 67, scope: !174)
-!177 = !DILocation(line: 252, column: 32, scope: !174)
-!178 = !DILocation(line: 253, column: 9, scope: !179)
-!179 = distinct !DILexicalBlock(scope: !171, file: !1, line: 253, column: 8)
-!180 = !DILocation(line: 253, column: 8, scope: !171)
-!181 = !DILocation(line: 253, column: 67, scope: !179)
-!182 = !DILocation(line: 256, column: 3, scope: !48)
-!183 = !DILocation(line: 301, column: 45, scope: !54)
-!184 = !DILocation(line: 302, column: 41, scope: !54)
-!185 = !DILocation(line: 303, column: 41, scope: !54)
-!186 = !DILocation(line: 305, column: 7, scope: !54)
-!187 = !DILocation(line: 309, column: 6, scope: !188)
-!188 = distinct !DILexicalBlock(scope: !54, file: !1, line: 309, column: 6)
-!189 = !DILocation(line: 309, column: 6, scope: !54)
-!190 = !DILocation(line: 311, column: 53, scope: !191)
-!191 = distinct !DILexicalBlock(scope: !188, file: !1, line: 310, column: 3)
-!192 = !DILocation(line: 311, column: 17, scope: !191)
-!193 = !DILocation(line: 312, column: 9, scope: !194)
-!194 = distinct !DILexicalBlock(scope: !191, file: !1, line: 312, column: 8)
-!195 = !DILocation(line: 312, column: 8, scope: !191)
-!196 = !DILocation(line: 312, column: 68, scope: !194)
-!197 = !DILocation(line: 312, column: 32, scope: !194)
-!198 = !DILocation(line: 313, column: 9, scope: !199)
-!199 = distinct !DILexicalBlock(scope: !191, file: !1, line: 313, column: 8)
-!200 = !DILocation(line: 313, column: 8, scope: !191)
-!201 = !DILocation(line: 313, column: 46, scope: !199)
-!202 = !DILocation(line: 313, column: 32, scope: !199)
-!203 = !DILocation(line: 313, column: 20, scope: !199)
-!204 = !DILocation(line: 316, column: 3, scope: !54)
-!205 = !DILocation(line: 358, column: 38, scope: !60)
-!206 = !DILocation(line: 359, column: 32, scope: !60)
-!207 = !DILocation(line: 360, column: 35, scope: !60)
-!208 = !DILocation(line: 362, column: 6, scope: !209)
-!209 = distinct !DILexicalBlock(scope: !60, file: !1, line: 362, column: 6)
-!210 = !DILocation(line: 362, column: 6, scope: !60)
-!211 = !DILocation(line: 364, column: 34, scope: !212)
-!212 = distinct !DILexicalBlock(scope: !209, file: !1, line: 363, column: 3)
-!213 = !DILocation(line: 364, column: 45, scope: !212)
-!214 = !DILocation(line: 364, column: 5, scope: !212)
-!215 = !DILocation(line: 365, column: 22, scope: !212)
-!216 = !DILocation(line: 365, column: 5, scope: !212)
-!217 = !DILocation(line: 366, column: 34, scope: !212)
-!218 = !DILocation(line: 368, column: 3, scope: !60)
-!219 = !DILocation(line: 417, column: 42, scope: !70)
-!220 = !DILocation(line: 418, column: 38, scope: !70)
-!221 = !DILocation(line: 419, column: 38, scope: !70)
-!222 = !DILocation(line: 426, column: 35, scope: !223)
-!223 = distinct !DILexicalBlock(scope: !70, file: !1, line: 426, column: 6)
-!224 = !DILocation(line: 426, column: 15, scope: !223)
-!225 = !DILocation(line: 421, column: 7, scope: !70)
-!226 = !DILocation(line: 426, column: 42, scope: !223)
-!227 = !DILocation(line: 426, column: 6, scope: !70)
-!228 = !DILocation(line: 428, column: 39, scope: !229)
-!229 = distinct !DILexicalBlock(scope: !223, file: !1, line: 427, column: 3)
-!230 = !DILocation(line: 428, column: 12, scope: !229)
-!231 = !DILocation(line: 430, column: 17, scope: !232)
-!232 = distinct !DILexicalBlock(scope: !223, file: !1, line: 430, column: 11)
-!233 = !DILocation(line: 430, column: 11, scope: !223)
-!234 = !DILocation(line: 432, column: 39, scope: !235)
-!235 = distinct !DILexicalBlock(scope: !232, file: !1, line: 431, column: 3)
-!236 = !DILocation(line: 432, column: 12, scope: !235)
-!237 = !DILocation(line: 444, column: 3, scope: !70)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !79, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !11, metadata !37, metadata !48, metadata !54, metadata !60, metadata !70}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_version_util_BinaryTree_c", metadata !"CCTKi_version_util_BinaryTree_c", metadata !"", i32 23, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* ()* @CCTKi_version_util_BinaryTree_c, null, null, metadata !2, i32 23} ; [ DW_TAG_subprogram ] [line 23] [def] [CCTKi_version_util_BinaryTree_c]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!9 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!10 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!11 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Util_BinTreeStoreData", metadata !"Util_BinTreeStoreData", metadata !"", i32 82, metadata !12, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct.T_TREE* (%struct.T_TREE*, %struct.T_TREE*, i8*, i32 (i8*, i8*)*)* @Util_BinTreeStoreData, null, null, metadata !31, i32 86} ; [ DW_TAG_subprogram ] [line 82] [def] [scope 86] [Util_BinTreeStoreData]
+!12 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !13, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!13 = metadata !{metadata !14, metadata !14, metadata !14, metadata !24, metadata !25}
+!14 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !15} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from uBinTree]
+!15 = metadata !{i32 786454, metadata !1, null, metadata !"uBinTree", i32 26, i64 0, i64 0, i64 0, i32 0, metadata !16} ; [ DW_TAG_typedef ] [uBinTree] [line 26, size 0, align 0, offset 0] [from T_TREE]
+!16 = metadata !{i32 786451, metadata !17, null, metadata !"T_TREE", i32 19, i64 256, i64 64, i32 0, i32 0, null, metadata !18, i32 0, null, null} ; [ DW_TAG_structure_type ] [T_TREE] [line 19, size 256, align 64, offset 0] [from ]
+!17 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/util_BinaryTree.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!18 = metadata !{metadata !19, metadata !21, metadata !22, metadata !23}
+!19 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"left", i32 21, i64 64, i64 64, i64 0, i32 0, metadata !20} ; [ DW_TAG_member ] [left] [line 21, size 64, align 64, offset 0] [from ]
+!20 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !16} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from T_TREE]
+!21 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"right", i32 22, i64 64, i64 64, i64 64, i32 0, metadata !20} ; [ DW_TAG_member ] [right] [line 22, size 64, align 64, offset 64] [from ]
+!22 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"next", i32 23, i64 64, i64 64, i64 128, i32 0, metadata !20} ; [ DW_TAG_member ] [next] [line 23, size 64, align 64, offset 128] [from ]
+!23 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"data", i32 25, i64 64, i64 64, i64 192, i32 0, metadata !24} ; [ DW_TAG_member ] [data] [line 25, size 64, align 64, offset 192] [from ]
+!24 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!25 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !26} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!26 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !27, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!27 = metadata !{metadata !28, metadata !29, metadata !29}
+!28 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!29 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !30} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!30 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from ]
+!31 = metadata !{metadata !32, metadata !33, metadata !34, metadata !35, metadata !36}
+!32 = metadata !{i32 786689, metadata !11, metadata !"root", metadata !5, i32 16777298, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [root] [line 82]
+!33 = metadata !{i32 786689, metadata !11, metadata !"subtree", metadata !5, i32 33554515, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [subtree] [line 83]
+!34 = metadata !{i32 786689, metadata !11, metadata !"data", metadata !5, i32 50331732, metadata !24, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [data] [line 84]
+!35 = metadata !{i32 786689, metadata !11, metadata !"compare", metadata !5, i32 67108949, metadata !25, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [compare] [line 85]
+!36 = metadata !{i32 786688, metadata !11, metadata !"order", metadata !5, i32 87, metadata !28, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [order] [line 87]
+!37 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Util_BinTreeTraverseInorder", metadata !"Util_BinTreeTraverseInorder", metadata !"", i32 181, metadata !38, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.T_TREE*, i32 (i8*, i8*)*, i8*)* @Util_BinTreeTraverseInorder, null, null, metadata !43, i32 184} ; [ DW_TAG_subprogram ] [line 181] [def] [scope 184] [Util_BinTreeTraverseInorder]
+!38 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !39, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!39 = metadata !{metadata !28, metadata !14, metadata !40, metadata !24}
+!40 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !41} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!41 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !42, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!42 = metadata !{metadata !28, metadata !24, metadata !24}
+!43 = metadata !{metadata !44, metadata !45, metadata !46, metadata !47}
+!44 = metadata !{i32 786689, metadata !37, metadata !"root", metadata !5, i32 16777397, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [root] [line 181]
+!45 = metadata !{i32 786689, metadata !37, metadata !"process", metadata !5, i32 33554614, metadata !40, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [process] [line 182]
+!46 = metadata !{i32 786689, metadata !37, metadata !"info", metadata !5, i32 50331831, metadata !24, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [info] [line 183]
+!47 = metadata !{i32 786688, metadata !37, metadata !"terminate", metadata !5, i32 185, metadata !28, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [terminate] [line 185]
+!48 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Util_BinTreeTraversePreorder", metadata !"Util_BinTreeTraversePreorder", metadata !"", i32 241, metadata !38, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.T_TREE*, i32 (i8*, i8*)*, i8*)* @Util_BinTreeTraversePreorder, null, null, metadata !49, i32 244} ; [ DW_TAG_subprogram ] [line 241] [def] [scope 244] [Util_BinTreeTraversePreorder]
+!49 = metadata !{metadata !50, metadata !51, metadata !52, metadata !53}
+!50 = metadata !{i32 786689, metadata !48, metadata !"root", metadata !5, i32 16777457, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [root] [line 241]
+!51 = metadata !{i32 786689, metadata !48, metadata !"process", metadata !5, i32 33554674, metadata !40, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [process] [line 242]
+!52 = metadata !{i32 786689, metadata !48, metadata !"info", metadata !5, i32 50331891, metadata !24, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [info] [line 243]
+!53 = metadata !{i32 786688, metadata !48, metadata !"terminate", metadata !5, i32 245, metadata !28, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [terminate] [line 245]
+!54 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Util_BinTreeTraversePostorder", metadata !"Util_BinTreeTraversePostorder", metadata !"", i32 301, metadata !38, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.T_TREE*, i32 (i8*, i8*)*, i8*)* @Util_BinTreeTraversePostorder, null, null, metadata !55, i32 304} ; [ DW_TAG_subprogram ] [line 301] [def] [scope 304] [Util_BinTreeTraversePostorder]
+!55 = metadata !{metadata !56, metadata !57, metadata !58, metadata !59}
+!56 = metadata !{i32 786689, metadata !54, metadata !"root", metadata !5, i32 16777517, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [root] [line 301]
+!57 = metadata !{i32 786689, metadata !54, metadata !"process", metadata !5, i32 33554734, metadata !40, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [process] [line 302]
+!58 = metadata !{i32 786689, metadata !54, metadata !"info", metadata !5, i32 50331951, metadata !24, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [info] [line 303]
+!59 = metadata !{i32 786688, metadata !54, metadata !"terminate", metadata !5, i32 305, metadata !28, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [terminate] [line 305]
+!60 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Util_BinTreePrintNodes", metadata !"Util_BinTreePrintNodes", metadata !"", i32 358, metadata !61, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.T_TREE*, i32, void (i8*, i32)*)* @Util_BinTreePrintNodes, null, null, metadata !66, i32 361} ; [ DW_TAG_subprogram ] [line 358] [def] [scope 361] [Util_BinTreePrintNodes]
+!61 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !62, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!62 = metadata !{metadata !28, metadata !14, metadata !28, metadata !63}
+!63 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !64} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!64 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !65, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!65 = metadata !{null, metadata !24, metadata !28}
+!66 = metadata !{metadata !67, metadata !68, metadata !69}
+!67 = metadata !{i32 786689, metadata !60, metadata !"root", metadata !5, i32 16777574, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [root] [line 358]
+!68 = metadata !{i32 786689, metadata !60, metadata !"depth", metadata !5, i32 33554791, metadata !28, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [depth] [line 359]
+!69 = metadata !{i32 786689, metadata !60, metadata !"print_node", metadata !5, i32 50332008, metadata !63, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [print_node] [line 360]
+!70 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Util_BinTreeFindNode", metadata !"Util_BinTreeFindNode", metadata !"", i32 417, metadata !71, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct.T_TREE* (%struct.T_TREE*, i8*, i32 (i8*, i8*)*)* @Util_BinTreeFindNode, null, null, metadata !73, i32 420} ; [ DW_TAG_subprogram ] [line 417] [def] [scope 420] [Util_BinTreeFindNode]
+!71 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !72, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!72 = metadata !{metadata !14, metadata !14, metadata !24, metadata !25}
+!73 = metadata !{metadata !74, metadata !75, metadata !76, metadata !77, metadata !78}
+!74 = metadata !{i32 786689, metadata !70, metadata !"root", metadata !5, i32 16777633, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [root] [line 417]
+!75 = metadata !{i32 786689, metadata !70, metadata !"data", metadata !5, i32 33554850, metadata !24, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [data] [line 418]
+!76 = metadata !{i32 786689, metadata !70, metadata !"compare", metadata !5, i32 50332067, metadata !25, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [compare] [line 419]
+!77 = metadata !{i32 786688, metadata !70, metadata !"order", metadata !5, i32 421, metadata !28, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [order] [line 421]
+!78 = metadata !{i32 786688, metadata !70, metadata !"node", metadata !5, i32 423, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [node] [line 423]
+!79 = metadata !{metadata !80}
+!80 = metadata !{i32 786484, i32 0, null, metadata !"rcsid", metadata !"rcsid", metadata !"", metadata !5, i32 21, metadata !8, i32 1, i32 1, null, null}
+!81 = metadata !{i32 23, i32 0, metadata !4, null}
+!82 = metadata !{i32 82, i32 0, metadata !11, null}
+!83 = metadata !{i32 83, i32 0, metadata !11, null}
+!84 = metadata !{i32 84, i32 0, metadata !11, null}
+!85 = metadata !{i32 85, i32 0, metadata !11, null}
+!86 = metadata !{i32 89, i32 0, metadata !11, null}
+!87 = metadata !{i32 92, i32 0, metadata !88, null}
+!88 = metadata !{i32 786443, metadata !1, metadata !11, i32 90, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!89 = metadata !{i32 93, i32 0, metadata !88, null}
+!90 = metadata !{i32 98, i32 0, metadata !91, null}
+!91 = metadata !{i32 786443, metadata !1, metadata !88, i32 94, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!92 = metadata !{i32 96, i32 0, metadata !91, null}
+!93 = metadata !{metadata !"any pointer", metadata !94}
+!94 = metadata !{metadata !"omnipotent char", metadata !95}
+!95 = metadata !{metadata !"Simple C/C++ TBAA"}
+!96 = metadata !{i32 100, i32 0, metadata !91, null}
+!97 = metadata !{i32 102, i32 0, metadata !98, null}
+!98 = metadata !{i32 786443, metadata !1, metadata !91, i32 101, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!99 = metadata !{i32 104, i32 0, metadata !100, null}
+!100 = metadata !{i32 786443, metadata !1, metadata !98, i32 103, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!101 = metadata !{i32 105, i32 0, metadata !100, null}
+!102 = metadata !{i32 108, i32 0, metadata !103, null}
+!103 = metadata !{i32 786443, metadata !1, metadata !98, i32 107, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!104 = metadata !{i32 116, i32 0, metadata !105, null}
+!105 = metadata !{i32 786443, metadata !1, metadata !11, i32 114, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!106 = metadata !{i32 118, i32 0, metadata !107, null}
+!107 = metadata !{i32 786443, metadata !1, metadata !105, i32 117, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!108 = metadata !{i32 120, i32 0, metadata !105, null}
+!109 = metadata !{i32 122, i32 0, metadata !110, null}
+!110 = metadata !{i32 786443, metadata !1, metadata !105, i32 121, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!111 = metadata !{%struct.T_TREE* null}
+!112 = metadata !{i32 127, i32 0, metadata !113, null}
+!113 = metadata !{i32 786443, metadata !1, metadata !105, i32 125, i32 0, i32 8} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!114 = metadata !{i32 124, i32 0, metadata !105, null}
+!115 = metadata !{i32 181, i32 0, metadata !37, null}
+!116 = metadata !{i32 182, i32 0, metadata !37, null}
+!117 = metadata !{i32 183, i32 0, metadata !37, null}
+!118 = metadata !{i32 187, i32 0, metadata !37, null}
+!119 = metadata !{i32 189, i32 0, metadata !37, null}
+!120 = metadata !{i32 191, i32 0, metadata !121, null}
+!121 = metadata !{i32 786443, metadata !1, metadata !37, i32 190, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!122 = metadata !{i32 192, i32 0, metadata !121, null}
+!123 = metadata !{i32 193, i32 0, metadata !121, null}
+!124 = metadata !{i32 196, i32 0, metadata !37, null}
+!125 = metadata !{i32 241, i32 0, metadata !48, null}
+!126 = metadata !{i32 242, i32 0, metadata !48, null}
+!127 = metadata !{i32 243, i32 0, metadata !48, null}
+!128 = metadata !{i32 247, i32 0, metadata !48, null}
+!129 = metadata !{i32 249, i32 0, metadata !48, null}
+!130 = metadata !{i32 251, i32 0, metadata !131, null}
+!131 = metadata !{i32 786443, metadata !1, metadata !48, i32 250, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!132 = metadata !{i32 252, i32 0, metadata !131, null}
+!133 = metadata !{i32 253, i32 0, metadata !131, null}
+!134 = metadata !{i32 256, i32 0, metadata !48, null}
+!135 = metadata !{i32 301, i32 0, metadata !54, null}
+!136 = metadata !{i32 302, i32 0, metadata !54, null}
+!137 = metadata !{i32 303, i32 0, metadata !54, null}
+!138 = metadata !{i32 307, i32 0, metadata !54, null}
+!139 = metadata !{i32 309, i32 0, metadata !54, null}
+!140 = metadata !{i32 311, i32 0, metadata !141, null}
+!141 = metadata !{i32 786443, metadata !1, metadata !54, i32 310, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!142 = metadata !{i32 312, i32 0, metadata !141, null}
+!143 = metadata !{i32 313, i32 0, metadata !141, null}
+!144 = metadata !{i32 316, i32 0, metadata !54, null}
+!145 = metadata !{i32 358, i32 0, metadata !60, null}
+!146 = metadata !{i32 359, i32 0, metadata !60, null}
+!147 = metadata !{i32 360, i32 0, metadata !60, null}
+!148 = metadata !{i32 362, i32 0, metadata !60, null}
+!149 = metadata !{i32 364, i32 0, metadata !150, null}
+!150 = metadata !{i32 786443, metadata !1, metadata !60, i32 363, i32 0, i32 12} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!151 = metadata !{i32 365, i32 0, metadata !150, null}
+!152 = metadata !{i32 366, i32 0, metadata !150, null}
+!153 = metadata !{i32 368, i32 0, metadata !60, null}
+!154 = metadata !{i32 417, i32 0, metadata !70, null}
+!155 = metadata !{i32 418, i32 0, metadata !70, null}
+!156 = metadata !{i32 419, i32 0, metadata !70, null}
+!157 = metadata !{i32 426, i32 0, metadata !70, null}
+!158 = metadata !{i32 428, i32 0, metadata !159, null}
+!159 = metadata !{i32 786443, metadata !1, metadata !70, i32 427, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!160 = metadata !{i32 430, i32 0, metadata !70, null}
+!161 = metadata !{i32 432, i32 0, metadata !162, null}
+!162 = metadata !{i32 786443, metadata !1, metadata !70, i32 431, i32 0, i32 14} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/BinaryTree.c]
+!163 = metadata !{i32 444, i32 0, metadata !70, null}

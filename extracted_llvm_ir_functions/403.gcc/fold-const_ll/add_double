@@ -1,18 +1,26 @@
 define i32 @add_double(i64 %l1, i64 %h1, i64 %l2, i64 %h2, i64* nocapture %lv, i64* nocapture %hv) #0 {
 entry:
-  %uadd = tail call { i64, i1 } @llvm.uadd.with.overflow.i64(i64 %l1, i64 %l2)
-  %0 = extractvalue { i64, i1 } %uadd, 0
-  %add1 = add nsw i64 %h2, %h1
-  %cmp = extractvalue { i64, i1 } %uadd, 1
-  %conv2 = zext i1 %cmp to i64
-  %add3 = add nsw i64 %add1, %conv2
-  store i64 %0, i64* %lv, align 8, !tbaa !0
-  store i64 %add3, i64* %hv, align 8, !tbaa !0
-  %xor = xor i64 %h1, -9223372036854775808
-  %neg = xor i64 %xor, %h2
-  %xor4 = xor i64 %add3, %h1
-  %and = and i64 %xor4, %neg
-  %and.lobit = lshr i64 %and, 63
-  %1 = trunc i64 %and.lobit to i32
-  ret i32 %1
+  tail call void @llvm.dbg.value(metadata !{i64 %l1}, i64 0, metadata !749), !dbg !1726
+  tail call void @llvm.dbg.value(metadata !{i64 %h1}, i64 0, metadata !750), !dbg !1727
+  tail call void @llvm.dbg.value(metadata !{i64 %l2}, i64 0, metadata !751), !dbg !1726
+  tail call void @llvm.dbg.value(metadata !{i64 %h2}, i64 0, metadata !752), !dbg !1727
+  tail call void @llvm.dbg.value(metadata !{i64* %lv}, i64 0, metadata !753), !dbg !1728
+  tail call void @llvm.dbg.value(metadata !{i64* %hv}, i64 0, metadata !754), !dbg !1729
+  %uadd = tail call { i64, i1 } @llvm.uadd.with.overflow.i64(i64 %l1, i64 %l2), !dbg !1730
+  %0 = extractvalue { i64, i1 } %uadd, 0, !dbg !1730
+  tail call void @llvm.dbg.value(metadata !{i64 %0}, i64 0, metadata !755), !dbg !1730
+  %add1 = add nsw i64 %h2, %h1, !dbg !1731
+  %cmp = extractvalue { i64, i1 } %uadd, 1, !dbg !1731
+  %conv2 = zext i1 %cmp to i64, !dbg !1731
+  %add3 = add nsw i64 %add1, %conv2, !dbg !1731
+  tail call void @llvm.dbg.value(metadata !{i64 %add3}, i64 0, metadata !756), !dbg !1731
+  store i64 %0, i64* %lv, align 8, !dbg !1732, !tbaa !1700
+  store i64 %add3, i64* %hv, align 8, !dbg !1733, !tbaa !1700
+  %xor = xor i64 %h1, -9223372036854775808, !dbg !1734
+  %neg = xor i64 %xor, %h2, !dbg !1734
+  %xor4 = xor i64 %add3, %h1, !dbg !1734
+  %and = and i64 %xor4, %neg, !dbg !1734
+  %and.lobit = lshr i64 %and, 63, !dbg !1734
+  %1 = trunc i64 %and.lobit to i32, !dbg !1734
+  ret i32 %1, !dbg !1734
 }

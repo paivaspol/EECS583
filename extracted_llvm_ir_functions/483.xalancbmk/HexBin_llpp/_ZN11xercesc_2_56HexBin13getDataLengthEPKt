@@ -1,0 +1,36 @@
+define i32 @_ZN11xercesc_2_56HexBin13getDataLengthEPKt(i16* %hexData) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %hexData}, i64 0, metadata !140), !dbg !694
+  %call = tail call zeroext i1 @_ZN11xercesc_2_56HexBin14isArrayByteHexEPKt(i16* %hexData) #4, !dbg !695
+  br i1 %call, label %if.end, label %return, !dbg !695
+
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i16* %hexData}, i64 0, metadata !697), !dbg !699
+  %cmp.i = icmp eq i16* %hexData, null, !dbg !700
+  br i1 %cmp.i, label %return, label %lor.lhs.false.i, !dbg !700
+
+lor.lhs.false.i:                                  ; preds = %if.end
+  %0 = load i16* %hexData, align 2, !dbg !700, !tbaa !701
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !700
+  br i1 %cmp1.i, label %return, label %while.cond.i, !dbg !700
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %hexData, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !704
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !705, !tbaa !701
+  %tobool.i = icmp eq i16 %1, 0, !dbg !705
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !705
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !706
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %hexData to i64, !dbg !706
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !706
+  %sub.ptr.div7.i = lshr i64 %sub.ptr.sub.i, 2, !dbg !706
+  %phitmp3.tr = trunc i64 %sub.ptr.div7.i to i32, !dbg !706
+  %phitmp = and i32 %phitmp3.tr, 2147483647, !dbg !706
+  br label %return, !dbg !706
+
+return:                                           ; preds = %while.end.i, %lor.lhs.false.i, %if.end, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %phitmp, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %if.end ]
+  ret i32 %retval.0, !dbg !707
+}

@@ -1,12 +1,14 @@
 define %struct.rtx_def* @make_safe_from(%struct.rtx_def* %x, %struct.rtx_def* %other) #0 {
 entry:
-  br label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1613), !dbg !3138
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %other}, i64 0, metadata !1614), !dbg !3138
+  br label %while.body, !dbg !3139
 
 while.body:                                       ; preds = %while.body.backedge, %entry
   %other.addr.0 = phi %struct.rtx_def* [ %other, %entry ], [ %other.addr.0.be, %while.body.backedge ]
-  %0 = bitcast %struct.rtx_def* %other.addr.0 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  %0 = bitcast %struct.rtx_def* %other.addr.0 to i32*, !dbg !3140
+  %bf.load = load i32* %0, align 8, !dbg !3140
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3140
   switch i32 %bf.clear, label %return [
     i32 63, label %while.body.backedge
     i32 64, label %while.body.backedge
@@ -14,18 +16,18 @@ while.body:                                       ; preds = %while.body.backedge
     i32 121, label %while.body.backedge
     i32 66, label %land.lhs.true
     i32 61, label %land.lhs.true49
-  ]
+  ], !dbg !3140
 
 while.body.backedge:                              ; preds = %while.body, %while.body, %while.body, %while.body
-  %other.addr.0.be.in.in = getelementptr inbounds %struct.rtx_def* %other.addr.0, i64 0, i32 1, i64 0
-  %other.addr.0.be.in = bitcast %union.rtunion_def* %other.addr.0.be.in.in to %struct.rtx_def**
-  %other.addr.0.be = load %struct.rtx_def** %other.addr.0.be.in, align 8
+  %other.addr.0.be.in.in = getelementptr inbounds %struct.rtx_def* %other.addr.0, i64 0, i32 1, i64 0, !dbg !3141
+  %other.addr.0.be.in = bitcast %union.rtunion_def* %other.addr.0.be.in.in to %struct.rtx_def**, !dbg !3141
+  %other.addr.0.be = load %struct.rtx_def** %other.addr.0.be.in, align 8, !dbg !3141
   br label %while.body
 
 land.lhs.true:                                    ; preds = %while.body
-  %1 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load7 = load i32* %1, align 8
-  %bf.clear8 = and i32 %bf.load7, 65535
+  %1 = bitcast %struct.rtx_def* %x to i32*, !dbg !3143
+  %bf.load7 = load i32* %1, align 8, !dbg !3143
+  %bf.clear8 = and i32 %bf.load7, 65535, !dbg !3143
   switch i32 %bf.clear8, label %if.then [
     i32 67, label %return
     i32 68, label %return
@@ -37,30 +39,31 @@ land.lhs.true:                                    ; preds = %while.body
     i32 140, label %return
     i32 61, label %return
     i32 63, label %return
-  ]
+  ], !dbg !3143
 
 land.lhs.true49:                                  ; preds = %while.body
-  %arrayidx51 = getelementptr inbounds %struct.rtx_def* %other.addr.0, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx51 to i32*
-  %2 = load i32* %rtuint, align 4, !tbaa !0
-  %cmp52 = icmp ult i32 %2, 53
-  br i1 %cmp52, label %if.then, label %lor.lhs.false53
+  %arrayidx51 = getelementptr inbounds %struct.rtx_def* %other.addr.0, i64 0, i32 1, i64 0, !dbg !3143
+  %rtuint = bitcast %union.rtunion_def* %arrayidx51 to i32*, !dbg !3143
+  %2 = load i32* %rtuint, align 4, !dbg !3143, !tbaa !2263
+  %cmp52 = icmp ult i32 %2, 53, !dbg !3143
+  br i1 %cmp52, label %if.then, label %lor.lhs.false53, !dbg !3143
 
 lor.lhs.false53:                                  ; preds = %land.lhs.true49
-  %call = tail call i32 @reg_mentioned_p(%struct.rtx_def* %other.addr.0, %struct.rtx_def* %x) #8
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.then
+  %call = tail call i32 @reg_mentioned_p(%struct.rtx_def* %other.addr.0, %struct.rtx_def* %x) #9, !dbg !3144
+  %tobool = icmp eq i32 %call, 0, !dbg !3144
+  br i1 %tobool, label %return, label %if.then, !dbg !3144
 
 if.then:                                          ; preds = %lor.lhs.false53, %land.lhs.true49, %land.lhs.true
-  %3 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load54 = load i32* %3, align 8
-  %bf.lshr = lshr i32 %bf.load54, 16
-  %bf.clear55 = and i32 %bf.lshr, 255
-  %call56 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %bf.clear55) #9
-  %call57 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call56, %struct.rtx_def* %x) #8
-  br label %return
+  %3 = bitcast %struct.rtx_def* %x to i32*, !dbg !3145
+  %bf.load54 = load i32* %3, align 8, !dbg !3145
+  %bf.lshr = lshr i32 %bf.load54, 16, !dbg !3145
+  %bf.clear55 = and i32 %bf.lshr, 255, !dbg !3145
+  %call56 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %bf.clear55) #10, !dbg !3145
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call56}, i64 0, metadata !1615), !dbg !3145
+  %call57 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call56, %struct.rtx_def* %x) #9, !dbg !3146
+  br label %return, !dbg !3147
 
 return:                                           ; preds = %while.body, %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true, %lor.lhs.false53, %if.then
   %retval.0 = phi %struct.rtx_def* [ %call56, %if.then ], [ %x, %lor.lhs.false53 ], [ %x, %land.lhs.true ], [ %x, %land.lhs.true ], [ %x, %land.lhs.true ], [ %x, %land.lhs.true ], [ %x, %land.lhs.true ], [ %x, %land.lhs.true ], [ %x, %land.lhs.true ], [ %x, %land.lhs.true ], [ %x, %land.lhs.true ], [ %x, %land.lhs.true ], [ %x, %while.body ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !3148
 }

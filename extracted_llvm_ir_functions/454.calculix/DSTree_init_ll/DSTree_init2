@@ -1,36 +1,37 @@
 define void @DSTree_init2(%struct._DSTree* %dstree, %struct._Tree* %tree, %struct._IV* %mapIV) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DSTree* %dstree, i64 0, metadata !45, metadata !52), !dbg !83
-  tail call void @llvm.dbg.value(metadata %struct._Tree* %tree, i64 0, metadata !46, metadata !52), !dbg !84
-  tail call void @llvm.dbg.value(metadata %struct._IV* %mapIV, i64 0, metadata !47, metadata !52), !dbg !85
-  %1 = icmp eq %struct._DSTree* %dstree, null, !dbg !86
-  %2 = icmp eq %struct._Tree* %tree, null, !dbg !88
-  %or.cond = or i1 %1, %2, !dbg !89
-  br i1 %or.cond, label %11, label %3, !dbg !89
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DSTree* %dstree}, i64 0, metadata !44), !dbg !64
+  tail call void @llvm.dbg.value(metadata !{%struct._Tree* %tree}, i64 0, metadata !45), !dbg !65
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %mapIV}, i64 0, metadata !46), !dbg !66
+  %cmp = icmp eq %struct._DSTree* %dstree, null, !dbg !67
+  %cmp1 = icmp eq %struct._Tree* %tree, null, !dbg !67
+  %or.cond = or i1 %cmp, %cmp1, !dbg !67
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !67
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !90
-  %5 = load i32* %4, align 4, !dbg !90, !tbaa !91
-  %6 = icmp slt i32 %5, 1, !dbg !94
-  %7 = icmp eq %struct._IV* %mapIV, null, !dbg !95
-  %or.cond3 = or i1 %7, %6, !dbg !96
-  br i1 %or.cond3, label %11, label %8, !dbg !96
+lor.lhs.false2:                                   ; preds = %entry
+  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !67
+  %0 = load i32* %n, align 4, !dbg !67, !tbaa !68
+  %cmp3 = icmp slt i32 %0, 1, !dbg !67
+  %cmp5 = icmp eq %struct._IV* %mapIV, null, !dbg !67
+  %or.cond21 = or i1 %cmp3, %cmp5, !dbg !67
+  br i1 %or.cond21, label %if.then, label %lor.lhs.false6, !dbg !67
 
-; <label>:8                                       ; preds = %3
-  %9 = tail call i32 @IV_size(%struct._IV* %mapIV) #5, !dbg !97
-  %10 = icmp slt i32 %9, 1, !dbg !98
-  br i1 %10, label %11, label %14, !dbg !99
+lor.lhs.false6:                                   ; preds = %lor.lhs.false2
+  %call = tail call i32 @IV_size(%struct._IV* %mapIV) #5, !dbg !69
+  %cmp7 = icmp slt i32 %call, 1, !dbg !69
+  br i1 %cmp7, label %if.then, label %if.end, !dbg !69
 
-; <label>:11                                      ; preds = %8, %3, %0
-  %12 = load %struct.__sFILE** @__stderrp, align 8, !dbg !100, !tbaa !62
-  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %12, i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), %struct._DSTree* %dstree, %struct._Tree* %tree, %struct._IV* %mapIV) #5, !dbg !102
-  tail call void @exit(i32 -1) #6, !dbg !103
-  unreachable, !dbg !103
+if.then:                                          ; preds = %lor.lhs.false6, %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !70, !tbaa !53
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), %struct._DSTree* %dstree, %struct._Tree* %tree, %struct._IV* %mapIV) #5, !dbg !70
+  tail call void @exit(i32 -1) #6, !dbg !72
+  unreachable, !dbg !72
 
-; <label>:14                                      ; preds = %8
-  tail call void @DSTree_clearData(%struct._DSTree* %dstree) #5, !dbg !104
-  %15 = getelementptr inbounds %struct._DSTree* %dstree, i64 0, i32 0, !dbg !105
-  store %struct._Tree* %tree, %struct._Tree** %15, align 8, !dbg !106, !tbaa !72
-  %16 = getelementptr inbounds %struct._DSTree* %dstree, i64 0, i32 1, !dbg !107
-  store %struct._IV* %mapIV, %struct._IV** %16, align 8, !dbg !108, !tbaa !78
-  ret void, !dbg !109
+if.end:                                           ; preds = %lor.lhs.false6
+  tail call void @DSTree_clearData(%struct._DSTree* %dstree) #5, !dbg !73
+  %tree9 = getelementptr inbounds %struct._DSTree* %dstree, i64 0, i32 0, !dbg !74
+  store %struct._Tree* %tree, %struct._Tree** %tree9, align 8, !dbg !74, !tbaa !53
+  %mapIV10 = getelementptr inbounds %struct._DSTree* %dstree, i64 0, i32 1, !dbg !75
+  store %struct._IV* %mapIV, %struct._IV** %mapIV10, align 8, !dbg !75, !tbaa !53
+  ret void, !dbg !76
 }

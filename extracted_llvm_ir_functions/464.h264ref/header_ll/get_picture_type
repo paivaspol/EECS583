@@ -1,16 +1,30 @@
 define i32 @get_picture_type() #0 {
-  tail call void @llvm.dbg.value(metadata i32 5, i64 0, metadata !255, metadata !698), !dbg !1429
-  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1430, !tbaa !687
-  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 6, !dbg !1431
-  %3 = load i32* %2, align 4, !dbg !1431, !tbaa !729
-  %4 = icmp ult i32 %3, 4, !dbg !1432
-  br i1 %4, label %switch.lookup, label %5, !dbg !1432
+entry:
+  tail call void @llvm.dbg.value(metadata !919, i64 0, metadata !253), !dbg !920
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !921, !tbaa !676
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6, !dbg !921
+  %1 = load i32* %type, align 4, !dbg !921, !tbaa !679
+  switch i32 %1, label %sw.default [
+    i32 2, label %return
+    i32 0, label %sw.bb1
+    i32 1, label %sw.bb3
+    i32 3, label %sw.bb5
+  ], !dbg !921
 
-; <label>:5                                       ; preds = %0
-  tail call void @error(i8* getelementptr inbounds ([28 x i8]* @.str27, i64 0, i64 0), i32 1) #6, !dbg !1433
-  ret i32 0, !dbg !1434
+sw.bb1:                                           ; preds = %entry
+  br label %return, !dbg !922
 
-switch.lookup:                                    ; preds = %0
-  %switch.offset = add i32 %3, 5, !dbg !1432
-  ret i32 %switch.offset, !dbg !1432
+sw.bb3:                                           ; preds = %entry
+  br label %return, !dbg !924
+
+sw.bb5:                                           ; preds = %entry
+  br label %return, !dbg !925
+
+sw.default:                                       ; preds = %entry
+  tail call void @error(i8* getelementptr inbounds ([28 x i8]* @.str27, i64 0, i64 0), i32 1) #7, !dbg !926
+  br label %return, !dbg !927
+
+return:                                           ; preds = %entry, %sw.default, %sw.bb5, %sw.bb3, %sw.bb1
+  %retval.0 = phi i32 [ 0, %sw.default ], [ 8, %sw.bb5 ], [ 6, %sw.bb3 ], [ 5, %sw.bb1 ], [ 7, %entry ]
+  ret i32 %retval.0, !dbg !928
 }

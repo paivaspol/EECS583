@@ -1,70 +1,78 @@
 define internal fastcc %struct.mem_attrs* @get_mem_attrs(i64 %alias, %union.tree_node* %expr, %struct.rtx_def* %offset, %struct.rtx_def* %size, i32 %align, i32 %mode) #0 {
 entry:
   %attrs = alloca %struct.mem_attrs, align 8
-  %0 = bitcast %struct.mem_attrs* %attrs to i8*
-  call void @llvm.lifetime.start(i64 40, i8* %0) #4
-  %cmp = icmp eq i64 %alias, 0
-  %cmp1 = icmp eq %union.tree_node* %expr, null
-  %or.cond = and i1 %cmp, %cmp1
-  %cmp3 = icmp eq %struct.rtx_def* %offset, null
-  %or.cond34 = and i1 %or.cond, %cmp3
-  br i1 %or.cond34, label %land.lhs.true4, label %if.end
+  call void @llvm.dbg.value(metadata !{i64 %alias}, i64 0, metadata !2171), !dbg !2826
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %expr}, i64 0, metadata !2172), !dbg !2827
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %offset}, i64 0, metadata !2173), !dbg !2828
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %size}, i64 0, metadata !2174), !dbg !2829
+  call void @llvm.dbg.value(metadata !{i32 %align}, i64 0, metadata !2175), !dbg !2830
+  call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2176), !dbg !2831
+  %0 = bitcast %struct.mem_attrs* %attrs to i8*, !dbg !2832
+  call void @llvm.lifetime.start(i64 40, i8* %0) #5, !dbg !2832
+  call void @llvm.dbg.declare(metadata !{%struct.mem_attrs* %attrs}, metadata !2177), !dbg !2832
+  %cmp = icmp eq i64 %alias, 0, !dbg !2833
+  %cmp1 = icmp eq %union.tree_node* %expr, null, !dbg !2833
+  %or.cond = and i1 %cmp, %cmp1, !dbg !2833
+  %cmp3 = icmp eq %struct.rtx_def* %offset, null, !dbg !2833
+  %or.cond34 = and i1 %or.cond, %cmp3, !dbg !2833
+  br i1 %or.cond34, label %land.lhs.true4, label %if.end, !dbg !2833
 
 land.lhs.true4:                                   ; preds = %entry
-  %cmp5 = icmp eq %struct.rtx_def* %size, null
-  br i1 %cmp5, label %land.lhs.true11, label %lor.lhs.false
+  %cmp5 = icmp eq %struct.rtx_def* %size, null, !dbg !2833
+  br i1 %cmp5, label %land.lhs.true11, label %lor.lhs.false, !dbg !2833
 
 lor.lhs.false:                                    ; preds = %land.lhs.true4
-  %cmp6 = icmp eq i32 %mode, 51
-  br i1 %cmp6, label %if.end, label %land.lhs.true7
+  %cmp6 = icmp eq i32 %mode, 51, !dbg !2833
+  br i1 %cmp6, label %if.end, label %land.lhs.true7, !dbg !2833
 
 land.lhs.true7:                                   ; preds = %lor.lhs.false
-  %idxprom = sext i32 %mode to i64
-  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = zext i8 %1 to i64
-  %rtwint = getelementptr inbounds %struct.rtx_def* %size, i64 0, i32 1, i64 0, i32 0
-  %2 = load i64* %rtwint, align 8, !tbaa !3
-  %cmp9 = icmp eq i64 %conv, %2
-  %cmp12 = icmp eq i32 %align, 8
-  %or.cond35 = and i1 %cmp9, %cmp12
-  br i1 %or.cond35, label %cleanup, label %if.end
+  %idxprom = sext i32 %mode to i64, !dbg !2833
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom, !dbg !2833
+  %1 = load i8* %arrayidx, align 1, !dbg !2833, !tbaa !2264
+  %conv = zext i8 %1 to i64, !dbg !2833
+  %rtwint = getelementptr inbounds %struct.rtx_def* %size, i64 0, i32 1, i64 0, i32 0, !dbg !2833
+  %2 = load i64* %rtwint, align 8, !dbg !2833, !tbaa !2269
+  %cmp9 = icmp eq i64 %conv, %2, !dbg !2833
+  %cmp12 = icmp eq i32 %align, 8, !dbg !2833
+  %or.cond35 = and i1 %cmp9, %cmp12, !dbg !2833
+  br i1 %or.cond35, label %cleanup, label %if.end, !dbg !2833
 
 land.lhs.true11:                                  ; preds = %land.lhs.true4
-  %cmp12.old = icmp eq i32 %align, 8
-  br i1 %cmp12.old, label %cleanup, label %if.end
+  %cmp12.old = icmp eq i32 %align, 8, !dbg !2833
+  br i1 %cmp12.old, label %cleanup, label %if.end, !dbg !2833
 
 if.end:                                           ; preds = %lor.lhs.false, %land.lhs.true11, %land.lhs.true7, %entry
-  %alias14 = getelementptr inbounds %struct.mem_attrs* %attrs, i64 0, i32 0
-  store i64 %alias, i64* %alias14, align 8, !tbaa !3
-  %expr15 = getelementptr inbounds %struct.mem_attrs* %attrs, i64 0, i32 1
-  store %union.tree_node* %expr, %union.tree_node** %expr15, align 8, !tbaa !4
-  %offset16 = getelementptr inbounds %struct.mem_attrs* %attrs, i64 0, i32 2
-  store %struct.rtx_def* %offset, %struct.rtx_def** %offset16, align 8, !tbaa !4
-  %size17 = getelementptr inbounds %struct.mem_attrs* %attrs, i64 0, i32 3
-  store %struct.rtx_def* %size, %struct.rtx_def** %size17, align 8, !tbaa !4
-  %align18 = getelementptr inbounds %struct.mem_attrs* %attrs, i64 0, i32 4
-  store i32 %align, i32* %align18, align 8, !tbaa !0
-  %3 = load %struct.htab** @mem_attrs_htab, align 8, !tbaa !4
-  %call = call i8** @htab_find_slot(%struct.htab* %3, i8* %0, i32 1) #8
-  %4 = load i8** %call, align 8, !tbaa !4
-  %cmp19 = icmp eq i8* %4, null
-  br i1 %cmp19, label %if.then21, label %if.end23
+  %alias14 = getelementptr inbounds %struct.mem_attrs* %attrs, i64 0, i32 0, !dbg !2834
+  store i64 %alias, i64* %alias14, align 8, !dbg !2834, !tbaa !2269
+  %expr15 = getelementptr inbounds %struct.mem_attrs* %attrs, i64 0, i32 1, !dbg !2835
+  store %union.tree_node* %expr, %union.tree_node** %expr15, align 8, !dbg !2835, !tbaa !2272
+  %offset16 = getelementptr inbounds %struct.mem_attrs* %attrs, i64 0, i32 2, !dbg !2836
+  store %struct.rtx_def* %offset, %struct.rtx_def** %offset16, align 8, !dbg !2836, !tbaa !2272
+  %size17 = getelementptr inbounds %struct.mem_attrs* %attrs, i64 0, i32 3, !dbg !2837
+  store %struct.rtx_def* %size, %struct.rtx_def** %size17, align 8, !dbg !2837, !tbaa !2272
+  %align18 = getelementptr inbounds %struct.mem_attrs* %attrs, i64 0, i32 4, !dbg !2838
+  store i32 %align, i32* %align18, align 8, !dbg !2838, !tbaa !2263
+  %3 = load %struct.htab** @mem_attrs_htab, align 8, !dbg !2839, !tbaa !2272
+  %call = call i8** @htab_find_slot(%struct.htab* %3, i8* %0, i32 1) #9, !dbg !2839
+  call void @llvm.dbg.value(metadata !{i8** %call}, i64 0, metadata !2178), !dbg !2839
+  %4 = load i8** %call, align 8, !dbg !2840, !tbaa !2272
+  %cmp19 = icmp eq i8* %4, null, !dbg !2840
+  br i1 %cmp19, label %if.then21, label %if.end23, !dbg !2840
 
 if.then21:                                        ; preds = %if.end
-  %call22 = call i8* @ggc_alloc(i64 40) #8
-  store i8* %call22, i8** %call, align 8, !tbaa !4
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call22, i8* %0, i64 40, i32 1, i1 false)
-  %.pre = load i8** %call, align 8, !tbaa !4
-  br label %if.end23
+  %call22 = call i8* @ggc_alloc(i64 40) #9, !dbg !2841
+  store i8* %call22, i8** %call, align 8, !dbg !2841, !tbaa !2272
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call22, i8* %0, i64 40, i32 1, i1 false), !dbg !2843
+  %.pre = load i8** %call, align 8, !dbg !2844, !tbaa !2272
+  br label %if.end23, !dbg !2845
 
 if.end23:                                         ; preds = %if.then21, %if.end
   %5 = phi i8* [ %.pre, %if.then21 ], [ %4, %if.end ]
-  %6 = bitcast i8* %5 to %struct.mem_attrs*
-  br label %cleanup
+  %6 = bitcast i8* %5 to %struct.mem_attrs*, !dbg !2844
+  br label %cleanup, !dbg !2844
 
 cleanup:                                          ; preds = %land.lhs.true11, %land.lhs.true7, %if.end23
   %retval.0 = phi %struct.mem_attrs* [ %6, %if.end23 ], [ null, %land.lhs.true7 ], [ null, %land.lhs.true11 ]
-  call void @llvm.lifetime.end(i64 40, i8* %0) #4
-  ret %struct.mem_attrs* %retval.0
+  call void @llvm.lifetime.end(i64 40, i8* %0) #5, !dbg !2846
+  ret %struct.mem_attrs* %retval.0, !dbg !2846
 }

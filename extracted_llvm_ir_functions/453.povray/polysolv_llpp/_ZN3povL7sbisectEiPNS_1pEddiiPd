@@ -1,332 +1,335 @@
 define internal fastcc i32 @_ZN3povL7sbisectEiPNS_1pEddiiPd(i32 %np, %"struct.pov::p"* %sseq, double %min_value, double %max_value, i32 %atmin, i32 %atmax, double* %roots) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %np, i64 0, metadata !269, metadata !653), !dbg !1337
-  tail call void @llvm.dbg.value(metadata %"struct.pov::p"* %sseq, i64 0, metadata !270, metadata !653), !dbg !1338
-  tail call void @llvm.dbg.value(metadata double %min_value, i64 0, metadata !271, metadata !653), !dbg !1339
-  tail call void @llvm.dbg.value(metadata double %max_value, i64 0, metadata !272, metadata !653), !dbg !1340
-  tail call void @llvm.dbg.value(metadata i32 %atmin, i64 0, metadata !273, metadata !653), !dbg !1341
-  tail call void @llvm.dbg.value(metadata i32 %atmax, i64 0, metadata !274, metadata !653), !dbg !1342
-  tail call void @llvm.dbg.value(metadata double* %roots, i64 0, metadata !275, metadata !653), !dbg !1343
-  %1 = sub nsw i32 %atmin, %atmax, !dbg !1344
-  %2 = icmp eq i32 %1, 1, !dbg !1346
-  br i1 %2, label %3, label %.preheader, !dbg !1347
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %np}, i64 0, metadata !248), !dbg !781
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %sseq}, i64 0, metadata !249), !dbg !781
+  tail call void @llvm.dbg.value(metadata !{double %min_value}, i64 0, metadata !250), !dbg !781
+  tail call void @llvm.dbg.value(metadata !{double %max_value}, i64 0, metadata !251), !dbg !781
+  tail call void @llvm.dbg.value(metadata !{i32 %atmin}, i64 0, metadata !252), !dbg !781
+  tail call void @llvm.dbg.value(metadata !{i32 %atmax}, i64 0, metadata !253), !dbg !781
+  tail call void @llvm.dbg.value(metadata !{double* %roots}, i64 0, metadata !254), !dbg !781
+  %sub = sub nsw i32 %atmin, %atmax, !dbg !782
+  %cmp = icmp eq i32 %sub, 1, !dbg !782
+  br i1 %cmp, label %if.then, label %for.body33, !dbg !782
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %"struct.pov::p"* %sseq, i64 0, i32 0, !dbg !1348
-  %5 = load i32* %4, align 4, !dbg !1348, !tbaa !1018
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !285, metadata !653) #3, !dbg !1351
-  tail call void @llvm.dbg.value(metadata double %min_value, i64 0, metadata !287, metadata !653) #3, !dbg !1353
-  tail call void @llvm.dbg.value(metadata double %max_value, i64 0, metadata !288, metadata !653) #3, !dbg !1354
-  tail call void @llvm.dbg.value(metadata double* %roots, i64 0, metadata !289, metadata !653) #3, !dbg !1355
-  tail call void @llvm.dbg.value(metadata double %min_value, i64 0, metadata !260, metadata !653) #3, !dbg !1356
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !261, metadata !653) #3, !dbg !1358
-  %6 = sext i32 %5 to i64, !dbg !1359
-  %7 = getelementptr inbounds %"struct.pov::p"* %sseq, i64 0, i32 1, i64 %6, !dbg !1359
-  %8 = load double* %7, align 8, !dbg !1359, !tbaa !676
-  tail call void @llvm.dbg.value(metadata double %8, i64 0, metadata !264, metadata !653) #3, !dbg !1360
-  %9 = icmp sgt i32 %5, 0, !dbg !1361
-  br i1 %9, label %.lr.ph.i.i, label %_ZN3povL8polyevalEdiPd.exit15.i, !dbg !1362
+if.then:                                          ; preds = %entry
+  %ord = getelementptr inbounds %"struct.pov::p"* %sseq, i64 0, i32 0, !dbg !783
+  %0 = load i32* %ord, align 4, !dbg !783, !tbaa !621
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !785) #4, !dbg !786
+  tail call void @llvm.dbg.value(metadata !{double %min_value}, i64 0, metadata !787) #4, !dbg !786
+  tail call void @llvm.dbg.value(metadata !{double %max_value}, i64 0, metadata !788) #4, !dbg !786
+  tail call void @llvm.dbg.value(metadata !{double* %roots}, i64 0, metadata !789) #4, !dbg !786
+  tail call void @llvm.dbg.value(metadata !{double %min_value}, i64 0, metadata !790) #4, !dbg !792
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !793) #4, !dbg !792
+  %idxprom.i.i = sext i32 %0 to i64, !dbg !794
+  %arrayidx.i.i = getelementptr inbounds %"struct.pov::p"* %sseq, i64 0, i32 1, i64 %idxprom.i.i, !dbg !794
+  %1 = load double* %arrayidx.i.i, align 8, !dbg !794, !tbaa !422
+  tail call void @llvm.dbg.value(metadata !{double %1}, i64 0, metadata !795) #4, !dbg !794
+  %cmp8.i.i = icmp sgt i32 %0, 0, !dbg !796
+  br i1 %cmp8.i.i, label %for.body.i.i, label %_ZN3povL8polyevalEdiPd.exit136.i, !dbg !796
 
-.lr.ph.i.i:                                       ; preds = %3, %.lr.ph.i.i
-  %indvars.iv.i.i = phi i64 [ %indvars.iv.next.i.i, %.lr.ph.i.i ], [ %6, %3 ], !dbg !1363
-  %val.02.i.i = phi double [ %13, %.lr.ph.i.i ], [ %8, %3 ], !dbg !1363
-  %indvars.iv.next.i.i = add nsw i64 %indvars.iv.i.i, -1, !dbg !1362
-  %10 = fmul double %val.02.i.i, %min_value, !dbg !1364
-  %11 = getelementptr inbounds %"struct.pov::p"* %sseq, i64 0, i32 1, i64 %indvars.iv.next.i.i, !dbg !1365
-  %12 = load double* %11, align 8, !dbg !1365, !tbaa !676
-  %13 = fadd double %10, %12, !dbg !1366
-  tail call void @llvm.dbg.value(metadata double %13, i64 0, metadata !264, metadata !653) #3, !dbg !1360
-  %14 = icmp sgt i64 %indvars.iv.i.i, 1, !dbg !1361
-  br i1 %14, label %.lr.ph.i.i, label %.lr.ph.i13.i, !dbg !1362
+for.body.i.i:                                     ; preds = %if.then, %for.body.i.i
+  %indvars.iv.i.i = phi i64 [ %indvars.iv.next.i.i, %for.body.i.i ], [ %idxprom.i.i, %if.then ]
+  %val.09.i.i = phi double [ %add.i.i, %for.body.i.i ], [ %1, %if.then ]
+  %indvars.iv.next.i.i = add i64 %indvars.iv.i.i, -1, !dbg !796
+  %mul.i.i = fmul double %val.09.i.i, %min_value, !dbg !797
+  %arrayidx2.i.i = getelementptr inbounds %"struct.pov::p"* %sseq, i64 0, i32 1, i64 %indvars.iv.next.i.i, !dbg !797
+  %2 = load double* %arrayidx2.i.i, align 8, !dbg !797, !tbaa !422
+  %add.i.i = fadd double %mul.i.i, %2, !dbg !797
+  tail call void @llvm.dbg.value(metadata !{double %add.i.i}, i64 0, metadata !795) #4, !dbg !797
+  %3 = trunc i64 %indvars.iv.next.i.i to i32, !dbg !796
+  %cmp.i.i = icmp sgt i32 %3, 0, !dbg !796
+  br i1 %cmp.i.i, label %for.body.i.i, label %for.body.i134.i, !dbg !796
 
-.lr.ph.i13.i:                                     ; preds = %.lr.ph.i.i, %.lr.ph.i13.i
-  %indvars.iv.i10.i = phi i64 [ %indvars.iv.next.i12.i, %.lr.ph.i13.i ], [ %6, %.lr.ph.i.i ], !dbg !1367
-  %val.02.i11.i = phi double [ %18, %.lr.ph.i13.i ], [ %8, %.lr.ph.i.i ], !dbg !1367
-  %indvars.iv.next.i12.i = add nsw i64 %indvars.iv.i10.i, -1, !dbg !1368
-  %15 = fmul double %val.02.i11.i, %max_value, !dbg !1370
-  %16 = getelementptr inbounds %"struct.pov::p"* %sseq, i64 0, i32 1, i64 %indvars.iv.next.i12.i, !dbg !1371
-  %17 = load double* %16, align 8, !dbg !1371, !tbaa !676
-  %18 = fadd double %15, %17, !dbg !1372
-  tail call void @llvm.dbg.value(metadata double %18, i64 0, metadata !264, metadata !653) #3, !dbg !1373
-  %19 = icmp sgt i64 %indvars.iv.i10.i, 1, !dbg !1374
-  br i1 %19, label %.lr.ph.i13.i, label %_ZN3povL8polyevalEdiPd.exit15.i, !dbg !1368
+for.body.i134.i:                                  ; preds = %for.body.i.i, %for.body.i134.i
+  %indvars.iv.i127.i = phi i64 [ %indvars.iv.next.i129.i, %for.body.i134.i ], [ %idxprom.i.i, %for.body.i.i ]
+  %val.09.i128.i = phi double [ %add.i132.i, %for.body.i134.i ], [ %1, %for.body.i.i ]
+  %indvars.iv.next.i129.i = add i64 %indvars.iv.i127.i, -1, !dbg !798
+  %mul.i130.i = fmul double %val.09.i128.i, %max_value, !dbg !800
+  %arrayidx2.i131.i = getelementptr inbounds %"struct.pov::p"* %sseq, i64 0, i32 1, i64 %indvars.iv.next.i129.i, !dbg !800
+  %4 = load double* %arrayidx2.i131.i, align 8, !dbg !800, !tbaa !422
+  %add.i132.i = fadd double %mul.i130.i, %4, !dbg !800
+  tail call void @llvm.dbg.value(metadata !{double %add.i132.i}, i64 0, metadata !801) #4, !dbg !800
+  %5 = trunc i64 %indvars.iv.next.i129.i to i32, !dbg !798
+  %cmp.i133.i = icmp sgt i32 %5, 0, !dbg !798
+  br i1 %cmp.i133.i, label %for.body.i134.i, label %_ZN3povL8polyevalEdiPd.exit136.i, !dbg !798
 
-_ZN3povL8polyevalEdiPd.exit15.i:                  ; preds = %.lr.ph.i13.i, %3
-  %val.0.lcssa.i16.i = phi double [ %8, %3 ], [ %13, %.lr.ph.i13.i ], !dbg !1375
-  %val.0.lcssa.i14.i = phi double [ %8, %3 ], [ %18, %.lr.ph.i13.i ], !dbg !1367
-  tail call void @llvm.dbg.value(metadata double %val.0.lcssa.i14.i, i64 0, metadata !292, metadata !653) #3, !dbg !1376
-  %20 = fmul double %val.0.lcssa.i16.i, %val.0.lcssa.i14.i, !dbg !1377
-  %21 = fcmp ogt double %20, 0.000000e+00, !dbg !1379
-  br i1 %21, label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10.preheader, label %22, !dbg !1380
+_ZN3povL8polyevalEdiPd.exit136.i:                 ; preds = %for.body.i134.i, %if.then
+  %val.0.lcssa.i137.i = phi double [ %1, %if.then ], [ %add.i.i, %for.body.i134.i ]
+  %val.0.lcssa.i135.i = phi double [ %1, %if.then ], [ %add.i132.i, %for.body.i134.i ]
+  tail call void @llvm.dbg.value(metadata !{double %val.0.lcssa.i135.i}, i64 0, metadata !802) #4, !dbg !799
+  %mul.i = fmul double %val.0.lcssa.i137.i, %val.0.lcssa.i135.i, !dbg !803
+  %cmp.i = fcmp ogt double %mul.i, 0.000000e+00, !dbg !803
+  br i1 %cmp.i, label %for.body, label %if.end.i, !dbg !803
 
-; <label>:22                                      ; preds = %_ZN3povL8polyevalEdiPd.exit15.i
-  %23 = tail call double @fabs(double %val.0.lcssa.i16.i) #5, !dbg !1381
-  %24 = fcmp olt double %23, 1.000000e-10, !dbg !1383
-  br i1 %24, label %25, label %26, !dbg !1384
+if.end.i:                                         ; preds = %_ZN3povL8polyevalEdiPd.exit136.i
+  %call2.i = tail call double @fabs(double %val.0.lcssa.i137.i) #6, !dbg !804
+  %cmp3.i = fcmp olt double %call2.i, 1.000000e-10, !dbg !804
+  br i1 %cmp3.i, label %if.then4.i, label %if.end5.i, !dbg !804
 
-; <label>:25                                      ; preds = %22
-  store double %min_value, double* %roots, align 8, !dbg !1385, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1387
+if.then4.i:                                       ; preds = %if.end.i
+  store double %min_value, double* %roots, align 8, !dbg !805, !tbaa !422
+  br label %return, !dbg !807
 
-; <label>:26                                      ; preds = %22
-  %27 = tail call double @fabs(double %val.0.lcssa.i14.i) #5, !dbg !1388
-  %28 = fcmp olt double %27, 1.000000e-10, !dbg !1390
-  br i1 %28, label %29, label %.preheader.i, !dbg !1391
+if.end5.i:                                        ; preds = %if.end.i
+  %call6.i = tail call double @fabs(double %val.0.lcssa.i135.i) #6, !dbg !808
+  %cmp7.i = fcmp olt double %call6.i, 1.000000e-10, !dbg !808
+  br i1 %cmp7.i, label %if.then8.i, label %for.body.i, !dbg !808
 
-; <label>:29                                      ; preds = %26
-  store double %max_value, double* %roots, align 8, !dbg !1392, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1394
+if.then8.i:                                       ; preds = %if.end5.i
+  store double %max_value, double* %roots, align 8, !dbg !809, !tbaa !422
+  br label %return, !dbg !811
 
-; <label>:30                                      ; preds = %72
-  %31 = icmp slt i32 %76, 50, !dbg !1395
-  br i1 %31, label %.preheader.i, label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10.preheader, !dbg !1398
+for.cond.i:                                       ; preds = %if.end59.i
+  %cmp10.i = icmp slt i32 %inc.i, 50, !dbg !812
+  br i1 %cmp10.i, label %for.body.i, label %for.body, !dbg !812
 
-.preheader.i:                                     ; preds = %26, %30
-  %lfx.027.i = phi double [ %val.0.lcssa.i8.i, %30 ], [ %val.0.lcssa.i16.i, %26 ], !dbg !1375
-  %.0126.i = phi double [ %.1.i, %30 ], [ %min_value, %26 ], !dbg !1375
-  %fb.025.i = phi double [ %fb.1.i, %30 ], [ %val.0.lcssa.i14.i, %26 ], !dbg !1375
-  %fa.024.i = phi double [ %fa.1.i, %30 ], [ %val.0.lcssa.i16.i, %26 ], !dbg !1375
-  %its.023.i = phi i32 [ %76, %30 ], [ 0, %26 ], !dbg !1375
-  %.0222.i = phi double [ %.13.i, %30 ], [ %max_value, %26 ], !dbg !1375
-  %32 = fmul double %.0126.i, %fb.025.i, !dbg !1399
-  %33 = fmul double %fa.024.i, %.0222.i, !dbg !1401
-  %34 = fsub double %32, %33, !dbg !1402
-  %35 = fsub double %fb.025.i, %fa.024.i, !dbg !1403
-  %36 = fdiv double %34, %35, !dbg !1404
-  tail call void @llvm.dbg.value(metadata double %36, i64 0, metadata !293, metadata !653) #3, !dbg !1405
-  tail call void @llvm.dbg.value(metadata double %36, i64 0, metadata !260, metadata !653) #3, !dbg !1406
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !261, metadata !653) #3, !dbg !1408
-  tail call void @llvm.dbg.value(metadata double %8, i64 0, metadata !264, metadata !653) #3, !dbg !1409
-  br i1 %9, label %.lr.ph.i7.i, label %_ZN3povL8polyevalEdiPd.exit9.i, !dbg !1410
+for.body.i:                                       ; preds = %if.end5.i, %for.cond.i
+  %lfx.0145.i = phi double [ %val.0.lcssa.i122.i, %for.cond.i ], [ %val.0.lcssa.i137.i, %if.end5.i ]
+  %a.addr.0144.i = phi double [ %a.addr.1.i, %for.cond.i ], [ %min_value, %if.end5.i ]
+  %fb.0143.i = phi double [ %fb.1.i, %for.cond.i ], [ %val.0.lcssa.i135.i, %if.end5.i ]
+  %fa.0142.i = phi double [ %fa.1.i, %for.cond.i ], [ %val.0.lcssa.i137.i, %if.end5.i ]
+  %its.0141.i = phi i32 [ %inc.i, %for.cond.i ], [ 0, %if.end5.i ]
+  %b.addr.0140.i = phi double [ %b.addr.1.i, %for.cond.i ], [ %max_value, %if.end5.i ]
+  %mul11.i = fmul double %a.addr.0144.i, %fb.0143.i, !dbg !814
+  %mul12.i = fmul double %fa.0142.i, %b.addr.0140.i, !dbg !814
+  %sub.i = fsub double %mul11.i, %mul12.i, !dbg !814
+  %sub13.i = fsub double %fb.0143.i, %fa.0142.i, !dbg !814
+  %div.i = fdiv double %sub.i, %sub13.i, !dbg !814
+  tail call void @llvm.dbg.value(metadata !{double %div.i}, i64 0, metadata !816) #4, !dbg !814
+  tail call void @llvm.dbg.value(metadata !{double %div.i}, i64 0, metadata !817) #4, !dbg !819
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !820) #4, !dbg !819
+  tail call void @llvm.dbg.value(metadata !{double %1}, i64 0, metadata !821) #4, !dbg !822
+  br i1 %cmp8.i.i, label %for.body.i121.i, label %_ZN3povL8polyevalEdiPd.exit123.i, !dbg !823
 
-.lr.ph.i7.i:                                      ; preds = %.preheader.i, %.lr.ph.i7.i
-  %indvars.iv.i4.i = phi i64 [ %indvars.iv.next.i6.i, %.lr.ph.i7.i ], [ %6, %.preheader.i ], !dbg !1411
-  %val.02.i5.i = phi double [ %40, %.lr.ph.i7.i ], [ %8, %.preheader.i ], !dbg !1411
-  %indvars.iv.next.i6.i = add nsw i64 %indvars.iv.i4.i, -1, !dbg !1410
-  %37 = fmul double %36, %val.02.i5.i, !dbg !1412
-  %38 = getelementptr inbounds %"struct.pov::p"* %sseq, i64 0, i32 1, i64 %indvars.iv.next.i6.i, !dbg !1413
-  %39 = load double* %38, align 8, !dbg !1413, !tbaa !676
-  %40 = fadd double %37, %39, !dbg !1414
-  tail call void @llvm.dbg.value(metadata double %40, i64 0, metadata !264, metadata !653) #3, !dbg !1409
-  %41 = icmp sgt i64 %indvars.iv.i4.i, 1, !dbg !1415
-  br i1 %41, label %.lr.ph.i7.i, label %_ZN3povL8polyevalEdiPd.exit9.i, !dbg !1410
+for.body.i121.i:                                  ; preds = %for.body.i, %for.body.i121.i
+  %indvars.iv.i114.i = phi i64 [ %indvars.iv.next.i116.i, %for.body.i121.i ], [ %idxprom.i.i, %for.body.i ]
+  %val.09.i115.i = phi double [ %add.i119.i, %for.body.i121.i ], [ %1, %for.body.i ]
+  %indvars.iv.next.i116.i = add i64 %indvars.iv.i114.i, -1, !dbg !823
+  %mul.i117.i = fmul double %div.i, %val.09.i115.i, !dbg !824
+  %arrayidx2.i118.i = getelementptr inbounds %"struct.pov::p"* %sseq, i64 0, i32 1, i64 %indvars.iv.next.i116.i, !dbg !824
+  %6 = load double* %arrayidx2.i118.i, align 8, !dbg !824, !tbaa !422
+  %add.i119.i = fadd double %mul.i117.i, %6, !dbg !824
+  tail call void @llvm.dbg.value(metadata !{double %add.i119.i}, i64 0, metadata !821) #4, !dbg !824
+  %7 = trunc i64 %indvars.iv.next.i116.i to i32, !dbg !823
+  %cmp.i120.i = icmp sgt i32 %7, 0, !dbg !823
+  br i1 %cmp.i120.i, label %for.body.i121.i, label %_ZN3povL8polyevalEdiPd.exit123.i, !dbg !823
 
-_ZN3povL8polyevalEdiPd.exit9.i:                   ; preds = %.lr.ph.i7.i, %.preheader.i
-  %val.0.lcssa.i8.i = phi double [ %8, %.preheader.i ], [ %40, %.lr.ph.i7.i ], !dbg !1411
-  tail call void @llvm.dbg.value(metadata double %val.0.lcssa.i8.i, i64 0, metadata !294, metadata !653) #3, !dbg !1416
-  %42 = tail call double @fabs(double %36) #5, !dbg !1417
-  %43 = fcmp ogt double %42, 1.000000e-12, !dbg !1419
-  br i1 %43, label %44, label %49, !dbg !1420
+_ZN3povL8polyevalEdiPd.exit123.i:                 ; preds = %for.body.i121.i, %for.body.i
+  %val.0.lcssa.i122.i = phi double [ %1, %for.body.i ], [ %add.i119.i, %for.body.i121.i ]
+  tail call void @llvm.dbg.value(metadata !{double %val.0.lcssa.i122.i}, i64 0, metadata !825) #4, !dbg !818
+  %call15.i = tail call double @fabs(double %div.i) #6, !dbg !826
+  %cmp16.i = fcmp ogt double %call15.i, 1.000000e-12, !dbg !826
+  br i1 %cmp16.i, label %if.then17.i, label %if.else.i, !dbg !826
 
-; <label>:44                                      ; preds = %_ZN3povL8polyevalEdiPd.exit9.i
-  %45 = fdiv double %val.0.lcssa.i8.i, %36, !dbg !1421
-  %46 = tail call double @fabs(double %45) #5, !dbg !1424
-  %47 = fcmp olt double %46, 1.000000e-12, !dbg !1425
-  br i1 %47, label %48, label %53, !dbg !1426
+if.then17.i:                                      ; preds = %_ZN3povL8polyevalEdiPd.exit123.i
+  %div18.i = fdiv double %val.0.lcssa.i122.i, %div.i, !dbg !827
+  %call19.i = tail call double @fabs(double %div18.i) #6, !dbg !827
+  %cmp20.i = fcmp olt double %call19.i, 1.000000e-12, !dbg !827
+  br i1 %cmp20.i, label %if.then21.i, label %if.end27.i, !dbg !827
 
-; <label>:48                                      ; preds = %44
-  store double %36, double* %roots, align 8, !dbg !1427, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1429
+if.then21.i:                                      ; preds = %if.then17.i
+  store double %div.i, double* %roots, align 8, !dbg !829, !tbaa !422
+  br label %return, !dbg !831
 
-; <label>:49                                      ; preds = %_ZN3povL8polyevalEdiPd.exit9.i
-  %50 = tail call double @fabs(double %val.0.lcssa.i8.i) #5, !dbg !1430
-  %51 = fcmp olt double %50, 1.000000e-12, !dbg !1433
-  br i1 %51, label %52, label %53, !dbg !1434
+if.else.i:                                        ; preds = %_ZN3povL8polyevalEdiPd.exit123.i
+  %call23.i = tail call double @fabs(double %val.0.lcssa.i122.i) #6, !dbg !832
+  %cmp24.i = fcmp olt double %call23.i, 1.000000e-12, !dbg !832
+  br i1 %cmp24.i, label %if.then25.i, label %if.end27.i, !dbg !832
 
-; <label>:52                                      ; preds = %49
-  store double %36, double* %roots, align 8, !dbg !1435, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1437
+if.then25.i:                                      ; preds = %if.else.i
+  store double %div.i, double* %roots, align 8, !dbg !834, !tbaa !422
+  br label %return, !dbg !836
 
-; <label>:53                                      ; preds = %49, %44
-  %54 = fcmp olt double %fa.024.i, 0.000000e+00, !dbg !1438
-  %55 = fcmp olt double %val.0.lcssa.i8.i, 0.000000e+00, !dbg !1440
-  %56 = fmul double %lfx.027.i, %val.0.lcssa.i8.i, !dbg !1443
-  %57 = fcmp ogt double %56, 0.000000e+00, !dbg !1446
-  br i1 %54, label %58, label %65, !dbg !1447
+if.end27.i:                                       ; preds = %if.else.i, %if.then17.i
+  %cmp28.i = fcmp olt double %fa.0142.i, 0.000000e+00, !dbg !837
+  %cmp30.i = fcmp olt double %val.0.lcssa.i122.i, 0.000000e+00, !dbg !838
+  %mul32.i = fmul double %lfx.0145.i, %val.0.lcssa.i122.i, !dbg !840
+  %cmp33.i = fcmp ogt double %mul32.i, 0.000000e+00, !dbg !840
+  br i1 %cmp28.i, label %if.then29.i, label %if.else44.i, !dbg !837
 
-; <label>:58                                      ; preds = %53
-  br i1 %55, label %59, label %62, !dbg !1448
+if.then29.i:                                      ; preds = %if.end27.i
+  br i1 %cmp30.i, label %if.then31.i, label %if.else37.i, !dbg !838
 
-; <label>:59                                      ; preds = %58
-  tail call void @llvm.dbg.value(metadata double %36, i64 0, metadata !287, metadata !653) #3, !dbg !1353
-  tail call void @llvm.dbg.value(metadata double %val.0.lcssa.i8.i, i64 0, metadata !291, metadata !653) #3, !dbg !1449
-  br i1 %57, label %60, label %72, !dbg !1450
+if.then31.i:                                      ; preds = %if.then29.i
+  tail call void @llvm.dbg.value(metadata !{double %div.i}, i64 0, metadata !787) #4, !dbg !842
+  tail call void @llvm.dbg.value(metadata !{double %val.0.lcssa.i122.i}, i64 0, metadata !843) #4, !dbg !844
+  br i1 %cmp33.i, label %if.then34.i, label %if.end59.i, !dbg !840
 
-; <label>:60                                      ; preds = %59
-  %61 = fmul double %fb.025.i, 5.000000e-01, !dbg !1451
-  tail call void @llvm.dbg.value(metadata double %61, i64 0, metadata !292, metadata !653) #3, !dbg !1376
-  br label %72, !dbg !1453
+if.then34.i:                                      ; preds = %if.then31.i
+  %div35.i = fmul double %fb.0143.i, 5.000000e-01, !dbg !845
+  tail call void @llvm.dbg.value(metadata !{double %div35.i}, i64 0, metadata !802) #4, !dbg !845
+  br label %if.end59.i, !dbg !847
 
-; <label>:62                                      ; preds = %58
-  tail call void @llvm.dbg.value(metadata double %36, i64 0, metadata !288, metadata !653) #3, !dbg !1354
-  tail call void @llvm.dbg.value(metadata double %val.0.lcssa.i8.i, i64 0, metadata !292, metadata !653) #3, !dbg !1376
-  br i1 %57, label %63, label %72, !dbg !1454
+if.else37.i:                                      ; preds = %if.then29.i
+  tail call void @llvm.dbg.value(metadata !{double %div.i}, i64 0, metadata !788) #4, !dbg !848
+  tail call void @llvm.dbg.value(metadata !{double %val.0.lcssa.i122.i}, i64 0, metadata !802) #4, !dbg !850
+  br i1 %cmp33.i, label %if.then40.i, label %if.end59.i, !dbg !851
 
-; <label>:63                                      ; preds = %62
-  %64 = fmul double %fa.024.i, 5.000000e-01, !dbg !1456
-  tail call void @llvm.dbg.value(metadata double %64, i64 0, metadata !291, metadata !653) #3, !dbg !1449
-  br label %72, !dbg !1459
+if.then40.i:                                      ; preds = %if.else37.i
+  %div41.i = fmul double %fa.0142.i, 5.000000e-01, !dbg !852
+  tail call void @llvm.dbg.value(metadata !{double %div41.i}, i64 0, metadata !843) #4, !dbg !852
+  br label %if.end59.i, !dbg !854
 
-; <label>:65                                      ; preds = %53
-  br i1 %55, label %66, label %69, !dbg !1460
+if.else44.i:                                      ; preds = %if.end27.i
+  br i1 %cmp30.i, label %if.then46.i, label %if.else52.i, !dbg !855
 
-; <label>:66                                      ; preds = %65
-  tail call void @llvm.dbg.value(metadata double %36, i64 0, metadata !288, metadata !653) #3, !dbg !1354
-  tail call void @llvm.dbg.value(metadata double %val.0.lcssa.i8.i, i64 0, metadata !292, metadata !653) #3, !dbg !1376
-  br i1 %57, label %67, label %72, !dbg !1462
+if.then46.i:                                      ; preds = %if.else44.i
+  tail call void @llvm.dbg.value(metadata !{double %div.i}, i64 0, metadata !788) #4, !dbg !857
+  tail call void @llvm.dbg.value(metadata !{double %val.0.lcssa.i122.i}, i64 0, metadata !802) #4, !dbg !859
+  br i1 %cmp33.i, label %if.then49.i, label %if.end59.i, !dbg !860
 
-; <label>:67                                      ; preds = %66
-  %68 = fmul double %fa.024.i, 5.000000e-01, !dbg !1465
-  tail call void @llvm.dbg.value(metadata double %68, i64 0, metadata !291, metadata !653) #3, !dbg !1449
-  br label %72, !dbg !1468
+if.then49.i:                                      ; preds = %if.then46.i
+  %div50.i = fmul double %fa.0142.i, 5.000000e-01, !dbg !861
+  tail call void @llvm.dbg.value(metadata !{double %div50.i}, i64 0, metadata !843) #4, !dbg !861
+  br label %if.end59.i, !dbg !863
 
-; <label>:69                                      ; preds = %65
-  tail call void @llvm.dbg.value(metadata double %36, i64 0, metadata !287, metadata !653) #3, !dbg !1353
-  tail call void @llvm.dbg.value(metadata double %val.0.lcssa.i8.i, i64 0, metadata !291, metadata !653) #3, !dbg !1449
-  br i1 %57, label %70, label %72, !dbg !1469
+if.else52.i:                                      ; preds = %if.else44.i
+  tail call void @llvm.dbg.value(metadata !{double %div.i}, i64 0, metadata !787) #4, !dbg !864
+  tail call void @llvm.dbg.value(metadata !{double %val.0.lcssa.i122.i}, i64 0, metadata !843) #4, !dbg !866
+  br i1 %cmp33.i, label %if.then55.i, label %if.end59.i, !dbg !867
 
-; <label>:70                                      ; preds = %69
-  %71 = fmul double %fb.025.i, 5.000000e-01, !dbg !1471
-  tail call void @llvm.dbg.value(metadata double %71, i64 0, metadata !292, metadata !653) #3, !dbg !1376
-  br label %72, !dbg !1474
+if.then55.i:                                      ; preds = %if.else52.i
+  %div56.i = fmul double %fb.0143.i, 5.000000e-01, !dbg !868
+  tail call void @llvm.dbg.value(metadata !{double %div56.i}, i64 0, metadata !802) #4, !dbg !868
+  br label %if.end59.i, !dbg !870
 
-; <label>:72                                      ; preds = %70, %69, %67, %66, %63, %62, %60, %59
-  %.13.i = phi double [ %.0222.i, %60 ], [ %.0222.i, %59 ], [ %36, %63 ], [ %36, %62 ], [ %36, %67 ], [ %36, %66 ], [ %.0222.i, %70 ], [ %.0222.i, %69 ], !dbg !1375
-  %fa.1.i = phi double [ %val.0.lcssa.i8.i, %60 ], [ %val.0.lcssa.i8.i, %59 ], [ %64, %63 ], [ %fa.024.i, %62 ], [ %68, %67 ], [ %fa.024.i, %66 ], [ %val.0.lcssa.i8.i, %70 ], [ %val.0.lcssa.i8.i, %69 ], !dbg !1375
-  %fb.1.i = phi double [ %61, %60 ], [ %fb.025.i, %59 ], [ %val.0.lcssa.i8.i, %63 ], [ %val.0.lcssa.i8.i, %62 ], [ %val.0.lcssa.i8.i, %67 ], [ %val.0.lcssa.i8.i, %66 ], [ %71, %70 ], [ %fb.025.i, %69 ], !dbg !1375
-  %.1.i = phi double [ %36, %60 ], [ %36, %59 ], [ %.0126.i, %63 ], [ %.0126.i, %62 ], [ %.0126.i, %67 ], [ %.0126.i, %66 ], [ %36, %70 ], [ %36, %69 ], !dbg !1375
-  %73 = fsub double %.13.i, %.1.i, !dbg !1475
-  %74 = tail call double @fabs(double %73) #5, !dbg !1477
-  %75 = fcmp olt double %74, 1.000000e-12, !dbg !1478
-  tail call void @llvm.dbg.value(metadata double %val.0.lcssa.i8.i, i64 0, metadata !295, metadata !653) #3, !dbg !1479
-  %76 = add nuw nsw i32 %its.023.i, 1, !dbg !1480
-  tail call void @llvm.dbg.value(metadata i32 %76, i64 0, metadata !290, metadata !653) #3, !dbg !1481
-  br i1 %75, label %77, label %30, !dbg !1482
+if.end59.i:                                       ; preds = %if.then55.i, %if.else52.i, %if.then49.i, %if.then46.i, %if.then40.i, %if.else37.i, %if.then34.i, %if.then31.i
+  %b.addr.1.i = phi double [ %b.addr.0140.i, %if.then34.i ], [ %b.addr.0140.i, %if.then31.i ], [ %div.i, %if.then40.i ], [ %div.i, %if.else37.i ], [ %div.i, %if.then49.i ], [ %div.i, %if.then46.i ], [ %b.addr.0140.i, %if.then55.i ], [ %b.addr.0140.i, %if.else52.i ]
+  %fa.1.i = phi double [ %val.0.lcssa.i122.i, %if.then34.i ], [ %val.0.lcssa.i122.i, %if.then31.i ], [ %div41.i, %if.then40.i ], [ %fa.0142.i, %if.else37.i ], [ %div50.i, %if.then49.i ], [ %fa.0142.i, %if.then46.i ], [ %val.0.lcssa.i122.i, %if.then55.i ], [ %val.0.lcssa.i122.i, %if.else52.i ]
+  %fb.1.i = phi double [ %div35.i, %if.then34.i ], [ %fb.0143.i, %if.then31.i ], [ %val.0.lcssa.i122.i, %if.then40.i ], [ %val.0.lcssa.i122.i, %if.else37.i ], [ %val.0.lcssa.i122.i, %if.then49.i ], [ %val.0.lcssa.i122.i, %if.then46.i ], [ %div56.i, %if.then55.i ], [ %fb.0143.i, %if.else52.i ]
+  %a.addr.1.i = phi double [ %div.i, %if.then34.i ], [ %div.i, %if.then31.i ], [ %a.addr.0144.i, %if.then40.i ], [ %a.addr.0144.i, %if.else37.i ], [ %a.addr.0144.i, %if.then49.i ], [ %a.addr.0144.i, %if.then46.i ], [ %div.i, %if.then55.i ], [ %div.i, %if.else52.i ]
+  %sub60.i = fsub double %b.addr.1.i, %a.addr.1.i, !dbg !871
+  %call61.i = tail call double @fabs(double %sub60.i) #6, !dbg !871
+  %cmp62.i = fcmp olt double %call61.i, 1.000000e-12, !dbg !871
+  tail call void @llvm.dbg.value(metadata !{double %val.0.lcssa.i122.i}, i64 0, metadata !872) #4, !dbg !873
+  %inc.i = add nsw i32 %its.0141.i, 1, !dbg !812
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !874) #4, !dbg !812
+  br i1 %cmp62.i, label %if.then63.i, label %for.cond.i, !dbg !871
 
-; <label>:77                                      ; preds = %72
-  store double %36, double* %roots, align 8, !dbg !1483, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1485
+if.then63.i:                                      ; preds = %if.end59.i
+  store double %div.i, double* %roots, align 8, !dbg !875, !tbaa !422
+  br label %return, !dbg !877
 
-_ZN3povL12regula_falsaEiPdddS0_.exit.thread10.preheader: ; preds = %_ZN3povL8polyevalEdiPd.exit15.i, %30, %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10
-  %its.045 = phi i32 [ %97, %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10 ], [ 0, %30 ], [ 0, %_ZN3povL8polyevalEdiPd.exit15.i ]
-  %.0244 = phi double [ %..02, %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10 ], [ %min_value, %30 ], [ %min_value, %_ZN3povL8polyevalEdiPd.exit15.i ]
-  %.0343 = phi double [ %.03., %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10 ], [ %max_value, %30 ], [ %max_value, %_ZN3povL8polyevalEdiPd.exit15.i ]
-  %78 = fadd double %.0343, %.0244, !dbg !1486
-  %79 = fmul double %78, 5.000000e-01, !dbg !1491
-  tail call void @llvm.dbg.value(metadata double %79, i64 0, metadata !276, metadata !653), !dbg !1492
-  %80 = tail call fastcc i32 @_ZN3povL10numchangesEiPNS_1pEd(i32 %np, %"struct.pov::p"* %sseq, double %79) #6, !dbg !1493
-  tail call void @llvm.dbg.value(metadata i32 %80, i64 0, metadata !280, metadata !653), !dbg !1494
-  %81 = icmp slt i32 %80, %atmax, !dbg !1495
-  %82 = icmp sgt i32 %80, %atmin, !dbg !1497
-  %or.cond7 = or i1 %81, %82, !dbg !1498
-  br i1 %or.cond7, label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, label %83, !dbg !1498
+for.body:                                         ; preds = %_ZN3povL8polyevalEdiPd.exit136.i, %for.cond.i, %if.end23
+  %its.0156 = phi i32 [ %inc, %if.end23 ], [ 0, %for.cond.i ], [ 0, %_ZN3povL8polyevalEdiPd.exit136.i ]
+  %min_value.addr.0155 = phi double [ %div.min_value.addr.0, %if.end23 ], [ %min_value, %for.cond.i ], [ %min_value, %_ZN3povL8polyevalEdiPd.exit136.i ]
+  %max_value.addr.0154 = phi double [ %max_value.addr.0.div, %if.end23 ], [ %max_value, %for.cond.i ], [ %max_value, %_ZN3povL8polyevalEdiPd.exit136.i ]
+  %add = fadd double %max_value.addr.0154, %min_value.addr.0155, !dbg !878
+  %div = fmul double %add, 5.000000e-01, !dbg !878
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !255), !dbg !878
+  %call3 = tail call fastcc i32 @_ZN3povL10numchangesEiPNS_1pEd(i32 %np, %"struct.pov::p"* %sseq, double %div) #7, !dbg !882
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !259), !dbg !882
+  %cmp4 = icmp slt i32 %call3, %atmax, !dbg !883
+  %cmp5 = icmp sgt i32 %call3, %atmin, !dbg !883
+  %or.cond = or i1 %cmp4, %cmp5, !dbg !883
+  br i1 %or.cond, label %return, label %if.end, !dbg !883
 
-; <label>:83                                      ; preds = %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10.preheader
-  %84 = tail call double @fabs(double %79) #5, !dbg !1499
-  %85 = fcmp ogt double %84, 1.000000e-12, !dbg !1501
-  %86 = fsub double %.0343, %.0244, !dbg !1502
-  br i1 %85, label %87, label %92, !dbg !1505
+if.end:                                           ; preds = %for.body
+  %call7 = tail call double @fabs(double %div) #6, !dbg !884
+  %cmp8 = fcmp ogt double %call7, 1.000000e-12, !dbg !884
+  %sub10 = fsub double %max_value.addr.0154, %min_value.addr.0155, !dbg !885
+  br i1 %cmp8, label %if.then9, label %if.else16, !dbg !884
 
-; <label>:87                                      ; preds = %83
-  %88 = fdiv double %86, %79, !dbg !1506
-  %89 = tail call double @fabs(double %88) #5, !dbg !1507
-  %90 = fcmp olt double %89, 1.000000e-12, !dbg !1508
-  br i1 %90, label %91, label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10, !dbg !1509
+if.then9:                                         ; preds = %if.end
+  %div11 = fdiv double %sub10, %div, !dbg !885
+  %call12 = tail call double @fabs(double %div11) #6, !dbg !885
+  %cmp13 = fcmp olt double %call12, 1.000000e-12, !dbg !885
+  br i1 %cmp13, label %if.then14, label %if.end23, !dbg !885
 
-; <label>:91                                      ; preds = %87
-  store double %79, double* %roots, align 8, !dbg !1510, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1512
+if.then14:                                        ; preds = %if.then9
+  store double %div, double* %roots, align 8, !dbg !887, !tbaa !422
+  br label %return, !dbg !889
 
-; <label>:92                                      ; preds = %83
-  %93 = tail call double @fabs(double %86) #5, !dbg !1513
-  %94 = fcmp olt double %93, 1.000000e-12, !dbg !1516
-  br i1 %94, label %95, label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10, !dbg !1517
+if.else16:                                        ; preds = %if.end
+  %call18 = tail call double @fabs(double %sub10) #6, !dbg !890
+  %cmp19 = fcmp olt double %call18, 1.000000e-12, !dbg !890
+  br i1 %cmp19, label %if.then20, label %if.end23, !dbg !890
 
-; <label>:95                                      ; preds = %92
-  store double %79, double* %roots, align 8, !dbg !1518, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1520
+if.then20:                                        ; preds = %if.else16
+  store double %div, double* %roots, align 8, !dbg !892, !tbaa !422
+  br label %return, !dbg !894
 
-_ZN3povL12regula_falsaEiPdddS0_.exit.thread10:    ; preds = %92, %87
-  %96 = icmp eq i32 %80, %atmin, !dbg !1521
-  %.03. = select i1 %96, double %.0343, double %79, !dbg !1523
-  %..02 = select i1 %96, double %79, double %.0244, !dbg !1523
-  %97 = add nuw nsw i32 %its.045, 1, !dbg !1525
-  tail call void @llvm.dbg.value(metadata i32 %97, i64 0, metadata !279, metadata !653), !dbg !1526
-  %98 = icmp slt i32 %97, 50, !dbg !1527
-  br i1 %98, label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10.preheader, label %99, !dbg !1528
+if.end23:                                         ; preds = %if.else16, %if.then9
+  %cmp25 = icmp eq i32 %call3, %atmin, !dbg !895
+  %max_value.addr.0.div = select i1 %cmp25, double %max_value.addr.0154, double %div, !dbg !896
+  %div.min_value.addr.0 = select i1 %cmp25, double %div, double %min_value.addr.0155, !dbg !896
+  %inc = add nsw i32 %its.0156, 1, !dbg !898
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !258), !dbg !898
+  %cmp2 = icmp slt i32 %inc, 50, !dbg !898
+  br i1 %cmp2, label %for.body, label %for.end, !dbg !898
 
-; <label>:99                                      ; preds = %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10
-  store double %79, double* %roots, align 8, !dbg !1529, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1530
+for.end:                                          ; preds = %if.end23
+  store double %div, double* %roots, align 8, !dbg !899, !tbaa !422
+  br label %return, !dbg !900
 
-.preheader:                                       ; preds = %0, %127
-  %its.148 = phi i32 [ %129, %127 ], [ 0, %0 ]
-  %.247 = phi double [ %..2, %127 ], [ %min_value, %0 ]
-  %.2546 = phi double [ %.25., %127 ], [ %max_value, %0 ]
-  %100 = fadd double %.2546, %.247, !dbg !1531
-  %101 = fmul double %100, 5.000000e-01, !dbg !1535
-  tail call void @llvm.dbg.value(metadata double %101, i64 0, metadata !276, metadata !653), !dbg !1492
-  %102 = tail call fastcc i32 @_ZN3povL10numchangesEiPNS_1pEd(i32 %np, %"struct.pov::p"* %sseq, double %101) #6, !dbg !1536
-  tail call void @llvm.dbg.value(metadata i32 %102, i64 0, metadata !280, metadata !653), !dbg !1494
-  %103 = icmp slt i32 %102, %atmax, !dbg !1537
-  %104 = icmp sgt i32 %102, %atmin, !dbg !1539
-  %or.cond8 = or i1 %103, %104, !dbg !1540
-  br i1 %or.cond8, label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, label %105, !dbg !1540
+for.body33:                                       ; preds = %entry, %if.end69
+  %its.1181 = phi i32 [ %inc75, %if.end69 ], [ 0, %entry ]
+  %min_value.addr.2180 = phi double [ %div35.min_value.addr.2, %if.end69 ], [ %min_value, %entry ]
+  %max_value.addr.2179 = phi double [ %max_value.addr.2.div35, %if.end69 ], [ %max_value, %entry ]
+  %add34 = fadd double %max_value.addr.2179, %min_value.addr.2180, !dbg !901
+  %div35 = fmul double %add34, 5.000000e-01, !dbg !901
+  tail call void @llvm.dbg.value(metadata !{double %div35}, i64 0, metadata !255), !dbg !901
+  %call36 = tail call fastcc i32 @_ZN3povL10numchangesEiPNS_1pEd(i32 %np, %"struct.pov::p"* %sseq, double %div35) #7, !dbg !904
+  tail call void @llvm.dbg.value(metadata !{i32 %call36}, i64 0, metadata !259), !dbg !904
+  %cmp37 = icmp slt i32 %call36, %atmax, !dbg !905
+  %cmp39 = icmp sgt i32 %call36, %atmin, !dbg !905
+  %or.cond143 = or i1 %cmp37, %cmp39, !dbg !905
+  br i1 %or.cond143, label %return, label %if.end41, !dbg !905
 
-; <label>:105                                     ; preds = %.preheader
-  %106 = tail call double @fabs(double %101) #5, !dbg !1541
-  %107 = fcmp ogt double %106, 1.000000e-12, !dbg !1543
-  %108 = fsub double %.2546, %.247, !dbg !1544
-  br i1 %107, label %109, label %114, !dbg !1547
+if.end41:                                         ; preds = %for.body33
+  %call42 = tail call double @fabs(double %div35) #6, !dbg !906
+  %cmp43 = fcmp ogt double %call42, 1.000000e-12, !dbg !906
+  %sub45 = fsub double %max_value.addr.2179, %min_value.addr.2180, !dbg !907
+  br i1 %cmp43, label %if.then44, label %if.else52, !dbg !906
 
-; <label>:109                                     ; preds = %105
-  %110 = fdiv double %108, %101, !dbg !1548
-  %111 = tail call double @fabs(double %110) #5, !dbg !1549
-  %112 = fcmp olt double %111, 1.000000e-12, !dbg !1550
-  br i1 %112, label %113, label %118, !dbg !1551
+if.then44:                                        ; preds = %if.end41
+  %div46 = fdiv double %sub45, %div35, !dbg !907
+  %call47 = tail call double @fabs(double %div46) #6, !dbg !907
+  %cmp48 = fcmp olt double %call47, 1.000000e-12, !dbg !907
+  br i1 %cmp48, label %if.then49, label %if.end59, !dbg !907
 
-; <label>:113                                     ; preds = %109
-  store double %101, double* %roots, align 8, !dbg !1552, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1554
+if.then49:                                        ; preds = %if.then44
+  store double %div35, double* %roots, align 8, !dbg !909, !tbaa !422
+  br label %return, !dbg !911
 
-; <label>:114                                     ; preds = %105
-  %115 = tail call double @fabs(double %108) #5, !dbg !1555
-  %116 = fcmp olt double %115, 1.000000e-12, !dbg !1558
-  br i1 %116, label %117, label %118, !dbg !1559
+if.else52:                                        ; preds = %if.end41
+  %call54 = tail call double @fabs(double %sub45) #6, !dbg !912
+  %cmp55 = fcmp olt double %call54, 1.000000e-12, !dbg !912
+  br i1 %cmp55, label %if.then56, label %if.end59, !dbg !912
 
-; <label>:117                                     ; preds = %114
-  store double %101, double* %roots, align 8, !dbg !1560, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1562
+if.then56:                                        ; preds = %if.else52
+  store double %div35, double* %roots, align 8, !dbg !914, !tbaa !422
+  br label %return, !dbg !916
 
-; <label>:118                                     ; preds = %114, %109
-  %119 = icmp ne i32 %102, %atmin, !dbg !1563
-  %120 = icmp ne i32 %102, %atmax, !dbg !1565
-  %or.cond = and i1 %119, %120, !dbg !1566
-  br i1 %or.cond, label %121, label %127, !dbg !1566
+if.end59:                                         ; preds = %if.else52, %if.then44
+  %cmp62 = icmp eq i32 %call36, %atmin, !dbg !917
+  %cmp63 = icmp eq i32 %call36, %atmax, !dbg !917
+  %or.cond144 = or i1 %cmp62, %cmp63, !dbg !917
+  br i1 %or.cond144, label %if.end69, label %if.then64, !dbg !917
 
-; <label>:121                                     ; preds = %118
-  %122 = tail call fastcc i32 @_ZN3povL7sbisectEiPNS_1pEddiiPd(i32 %np, %"struct.pov::p"* %sseq, double %.247, double %101, i32 %atmin, i32 %102, double* %roots) #6, !dbg !1567
-  tail call void @llvm.dbg.value(metadata i32 %122, i64 0, metadata !277, metadata !653), !dbg !1569
-  %123 = sext i32 %122 to i64, !dbg !1570
-  %124 = getelementptr inbounds double* %roots, i64 %123, !dbg !1570
-  %125 = tail call fastcc i32 @_ZN3povL7sbisectEiPNS_1pEddiiPd(i32 %np, %"struct.pov::p"* %sseq, double %101, double %.2546, i32 %102, i32 %atmax, double* %124) #6, !dbg !1571
-  tail call void @llvm.dbg.value(metadata i32 %125, i64 0, metadata !278, metadata !653), !dbg !1572
-  %126 = add nsw i32 %125, %122, !dbg !1573
-  ret i32 %126, !dbg !1574
+if.then64:                                        ; preds = %if.end59
+  %call65 = tail call fastcc i32 @_ZN3povL7sbisectEiPNS_1pEddiiPd(i32 %np, %"struct.pov::p"* %sseq, double %min_value.addr.2180, double %div35, i32 %atmin, i32 %call36, double* %roots) #7, !dbg !918
+  tail call void @llvm.dbg.value(metadata !{i32 %call65}, i64 0, metadata !256), !dbg !918
+  %idxprom = sext i32 %call65 to i64, !dbg !920
+  %arrayidx66 = getelementptr inbounds double* %roots, i64 %idxprom, !dbg !920
+  %call67 = tail call fastcc i32 @_ZN3povL7sbisectEiPNS_1pEddiiPd(i32 %np, %"struct.pov::p"* %sseq, double %div35, double %max_value.addr.2179, i32 %call36, i32 %atmax, double* %arrayidx66) #7, !dbg !920
+  tail call void @llvm.dbg.value(metadata !{i32 %call67}, i64 0, metadata !257), !dbg !920
+  %add68 = add nsw i32 %call67, %call65, !dbg !921
+  ret i32 %add68, !dbg !922
 
-; <label>:127                                     ; preds = %118
-  %128 = icmp eq i32 %102, %atmin, !dbg !1575
-  %.25. = select i1 %128, double %.2546, double %101, !dbg !1577
-  %..2 = select i1 %128, double %101, double %.247, !dbg !1577
-  %129 = add nuw nsw i32 %its.148, 1, !dbg !1579
-  tail call void @llvm.dbg.value(metadata i32 %129, i64 0, metadata !279, metadata !653), !dbg !1526
-  %130 = icmp slt i32 %129, 50, !dbg !1580
-  br i1 %130, label %.preheader, label %131, !dbg !1581
+if.end69:                                         ; preds = %if.end59
+  %max_value.addr.2.div35 = select i1 %cmp62, double %max_value.addr.2179, double %div35, !dbg !923
+  %div35.min_value.addr.2 = select i1 %cmp62, double %div35, double %min_value.addr.2180, !dbg !923
+  %inc75 = add nsw i32 %its.1181, 1, !dbg !925
+  tail call void @llvm.dbg.value(metadata !{i32 %inc75}, i64 0, metadata !258), !dbg !925
+  %cmp32 = icmp slt i32 %inc75, 50, !dbg !925
+  br i1 %cmp32, label %for.body33, label %for.end76, !dbg !925
 
-; <label>:131                                     ; preds = %127
-  store double %101, double* %roots, align 8, !dbg !1582, !tbaa !676
-  br label %_ZN3povL12regula_falsaEiPdddS0_.exit.thread, !dbg !1583
+for.end76:                                        ; preds = %if.end69
+  store double %div35, double* %roots, align 8, !dbg !926, !tbaa !422
+  br label %return, !dbg !927
 
-_ZN3povL12regula_falsaEiPdddS0_.exit.thread:      ; preds = %.preheader, %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10.preheader, %52, %77, %48, %29, %25, %131, %117, %113, %99, %95, %91
-  %.0 = phi i32 [ 1, %91 ], [ 1, %95 ], [ 1, %99 ], [ 1, %113 ], [ 1, %117 ], [ 1, %131 ], [ 1, %25 ], [ 1, %29 ], [ 1, %48 ], [ 1, %77 ], [ 1, %52 ], [ 0, %_ZN3povL12regula_falsaEiPdddS0_.exit.thread10.preheader ], [ 0, %.preheader ]
-  ret i32 %.0, !dbg !1574
+return:                                           ; preds = %for.body33, %for.body, %if.then25.i, %if.then63.i, %if.then21.i, %if.then8.i, %if.then4.i, %for.end76, %if.then56, %if.then49, %for.end, %if.then20, %if.then14
+  %retval.0 = phi i32 [ 1, %if.then14 ], [ 1, %if.then20 ], [ 1, %for.end ], [ 1, %if.then49 ], [ 1, %if.then56 ], [ 1, %for.end76 ], [ 1, %if.then4.i ], [ 1, %if.then8.i ], [ 1, %if.then21.i ], [ 1, %if.then63.i ], [ 1, %if.then25.i ], [ 0, %for.body ], [ 0, %for.body33 ]
+  ret i32 %retval.0, !dbg !922
 }

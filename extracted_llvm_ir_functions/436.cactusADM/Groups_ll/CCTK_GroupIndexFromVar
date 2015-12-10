@@ -1,21 +1,22 @@
 define i32 @CCTK_GroupIndexFromVar(i8* %var) #2 {
-  tail call void @llvm.dbg.value(metadata i8* %var, i64 0, metadata !129, metadata !483), !dbg !703
-  %1 = tail call i32 @CCTK_VarIndex(i8* %var) #9, !dbg !704
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !120, metadata !483), !dbg !705
-  %2 = icmp sgt i32 %1, -1, !dbg !707
-  %3 = load i32* @total_variables, align 4, !dbg !708
-  %4 = icmp sgt i32 %3, %1, !dbg !709
-  %or.cond.i = and i1 %2, %4, !dbg !710
-  br i1 %or.cond.i, label %5, label %CCTK_GroupIndexFromVarI.exit, !dbg !710
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %var}, i64 0, metadata !115), !dbg !605
+  %call = tail call i32 @CCTK_VarIndex(i8* %var) #10, !dbg !606
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !607), !dbg !608
+  %cmp.i = icmp sgt i32 %call, -1, !dbg !609
+  %0 = load i32* @total_variables, align 4, !dbg !609, !tbaa !488
+  %cmp1.i = icmp sgt i32 %0, %call, !dbg !609
+  %or.cond.i = and i1 %cmp.i, %cmp1.i, !dbg !609
+  br i1 %or.cond.i, label %cond.true.i, label %CCTK_GroupIndexFromVarI.exit, !dbg !609
 
-; <label>:5                                       ; preds = %0
-  %6 = sext i32 %1 to i64, !dbg !711
-  %7 = load i32** @group_of_variable, align 8, !dbg !711, !tbaa !487
-  %8 = getelementptr inbounds i32* %7, i64 %6, !dbg !711
-  %9 = load i32* %8, align 4, !dbg !711, !tbaa !502
-  br label %CCTK_GroupIndexFromVarI.exit, !dbg !712
+cond.true.i:                                      ; preds = %entry
+  %idxprom.i = sext i32 %call to i64, !dbg !609
+  %1 = load i32** @group_of_variable, align 8, !dbg !609, !tbaa !480
+  %arrayidx.i = getelementptr inbounds i32* %1, i64 %idxprom.i, !dbg !609
+  %2 = load i32* %arrayidx.i, align 4, !dbg !609, !tbaa !488
+  br label %CCTK_GroupIndexFromVarI.exit, !dbg !609
 
-CCTK_GroupIndexFromVarI.exit:                     ; preds = %0, %5
-  %10 = phi i32 [ %9, %5 ], [ -1, %0 ], !dbg !712
-  ret i32 %10, !dbg !713
+CCTK_GroupIndexFromVarI.exit:                     ; preds = %entry, %cond.true.i
+  %cond.i = phi i32 [ %2, %cond.true.i ], [ -1, %entry ], !dbg !609
+  ret i32 %cond.i, !dbg !606
 }

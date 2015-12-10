@@ -1,73 +1,74 @@
 define internal fastcc i32 @next_rand() #0 {
+entry:
   %.b = load i1* @rand_initialized, align 1
-  br i1 %.b, label %2, label %1, !dbg !85
+  br i1 %.b, label %if.end, label %cond.false, !dbg !75
 
-; <label>:1                                       ; preds = %0
-  tail call void @__assert_rtn(i8* getelementptr inbounds ([10 x i8]* @__func__.next_rand, i64 0, i64 0), i8* getelementptr inbounds ([70 x i8]* @.str, i64 0, i64 0), i32 90, i8* getelementptr inbounds ([17 x i8]* @.str1, i64 0, i64 0)) #4, !dbg !86
-  unreachable, !dbg !86
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([17 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([58 x i8]* @.str1, i64 0, i64 0), i32 90, i8* getelementptr inbounds ([25 x i8]* @__PRETTY_FUNCTION__.next_rand, i64 0, i64 0)) #4, !dbg !76
+  unreachable, !dbg !76
 
-; <label>:2                                       ; preds = %0
-  %3 = load i32* @k, align 4, !dbg !89, !tbaa !74
-  %4 = add nsw i32 %3, 1, !dbg !89
-  store i32 %4, i32* @k, align 4, !dbg !89, !tbaa !74
-  %5 = icmp eq i32 %4, 25, !dbg !91
-  br i1 %5, label %vector.body, label %30, !dbg !92
+if.end:                                           ; preds = %entry
+  %0 = load i32* @k, align 4, !dbg !78, !tbaa !67
+  %inc = add nsw i32 %0, 1, !dbg !78
+  store i32 %inc, i32* @k, align 4, !dbg !78, !tbaa !67
+  %cmp = icmp eq i32 %inc, 25, !dbg !78
+  br i1 %cmp, label %for.body.i, label %if.end3, !dbg !78
 
-vector.body:                                      ; preds = %2, %vector.body
-  %index = phi i64 [ %index.next, %vector.body ], [ 0, %2 ], !dbg !93
-  %6 = add i64 %index, 7, !dbg !95
-  %7 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %6, !dbg !95
-  %8 = bitcast i32* %7 to <2 x i32>*, !dbg !95
-  %wide.load = load <2 x i32>* %8, align 4, !dbg !95, !tbaa !74
-  %9 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %index, !dbg !99
-  %10 = bitcast i32* %9 to <2 x i32>*, !dbg !99
-  %wide.load1 = load <2 x i32>* %10, align 8, !dbg !99, !tbaa !74
-  %11 = lshr <2 x i32> %wide.load1, <i32 1, i32 1>, !dbg !100
-  %12 = xor <2 x i32> %11, %wide.load, !dbg !101
-  %13 = and <2 x i32> %wide.load1, <i32 1, i32 1>, !dbg !102
-  %14 = icmp ne <2 x i32> %13, zeroinitializer, !dbg !103
-  %15 = select <2 x i1> %14, <2 x i32> <i32 -1900031960, i32 -1900031960>, <2 x i32> zeroinitializer, !dbg !103
-  %16 = xor <2 x i32> %12, %15, !dbg !104
-  %17 = bitcast i32* %9 to <2 x i32>*, !dbg !105
-  store <2 x i32> %16, <2 x i32>* %17, align 8, !dbg !105, !tbaa !74
-  %index.next = add i64 %index, 2, !dbg !93
-  %18 = icmp eq i64 %index.next, 18, !dbg !93
-  br i1 %18, label %.lr.ph.i, label %vector.body, !dbg !93, !llvm.loop !106
+for.body.i:                                       ; preds = %if.end, %for.body.i
+  %indvars.iv48.i = phi i64 [ %indvars.iv.next49.i, %for.body.i ], [ 0, %if.end ]
+  %1 = add nsw i64 %indvars.iv48.i, 7, !dbg !79
+  %arrayidx.i = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %1, !dbg !79
+  %2 = load i32* %arrayidx.i, align 4, !dbg !79, !tbaa !67
+  %arrayidx2.i = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv48.i, !dbg !79
+  %3 = load i32* %arrayidx2.i, align 4, !dbg !79, !tbaa !67
+  %shr.i = lshr i32 %3, 1, !dbg !79
+  %xor.i = xor i32 %shr.i, %2, !dbg !79
+  %and.i = and i32 %3, 1, !dbg !79
+  %tobool.i = icmp ne i32 %and.i, 0, !dbg !79
+  %cond.i = select i1 %tobool.i, i32 -1900031960, i32 0, !dbg !79
+  %xor5.i = xor i32 %xor.i, %cond.i, !dbg !79
+  store i32 %xor5.i, i32* %arrayidx2.i, align 4, !dbg !79, !tbaa !67
+  %indvars.iv.next49.i = add i64 %indvars.iv48.i, 1, !dbg !83
+  tail call void @llvm.dbg.value(metadata !84, i64 0, metadata !85), !dbg !83
+  %lftr.wideiv11 = trunc i64 %indvars.iv.next49.i to i32, !dbg !83
+  %exitcond12 = icmp eq i32 %lftr.wideiv11, 18, !dbg !83
+  br i1 %exitcond12, label %for.body10.i, label %for.body.i, !dbg !83
 
-.lr.ph.i:                                         ; preds = %vector.body, %.lr.ph.i
-  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %.lr.ph.i ], [ 18, %vector.body ], !dbg !93
-  %19 = add nsw i64 %indvars.iv.i, -18, !dbg !109
-  %20 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %19, !dbg !112
-  %21 = load i32* %20, align 4, !dbg !112, !tbaa !74
-  %22 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv.i, !dbg !113
-  %23 = load i32* %22, align 4, !dbg !113, !tbaa !74
-  %24 = lshr i32 %23, 1, !dbg !114
-  %25 = xor i32 %24, %21, !dbg !115
-  %26 = and i32 %23, 1, !dbg !116
-  %27 = icmp ne i32 %26, 0, !dbg !117
-  %28 = select i1 %27, i32 -1900031960, i32 0, !dbg !117
-  %29 = xor i32 %25, %28, !dbg !118
-  store i32 %29, i32* %22, align 4, !dbg !119, !tbaa !74
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !120
-  %exitcond = icmp eq i64 %indvars.iv.next.i, 25, !dbg !120
-  br i1 %exitcond, label %iterate_tgfsr.exit, label %.lr.ph.i, !dbg !120
+for.body10.i:                                     ; preds = %for.body.i, %for.body10.i
+  %indvars.iv43.i = phi i64 [ %indvars.iv.next44.i, %for.body10.i ], [ 18, %for.body.i ], !dbg !83
+  %4 = add nsw i64 %indvars.iv43.i, -18, !dbg !86
+  %arrayidx13.i = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %4, !dbg !86
+  %5 = load i32* %arrayidx13.i, align 4, !dbg !86, !tbaa !67
+  %arrayidx15.i = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv43.i, !dbg !86
+  %6 = load i32* %arrayidx15.i, align 4, !dbg !86, !tbaa !67
+  %shr16.i = lshr i32 %6, 1, !dbg !86
+  %xor17.i = xor i32 %shr16.i, %5, !dbg !86
+  %and20.i = and i32 %6, 1, !dbg !86
+  %tobool21.i = icmp ne i32 %and20.i, 0, !dbg !86
+  %cond22.i = select i1 %tobool21.i, i32 -1900031960, i32 0, !dbg !86
+  %xor23.i = xor i32 %xor17.i, %cond22.i, !dbg !86
+  store i32 %xor23.i, i32* %arrayidx15.i, align 4, !dbg !86, !tbaa !67
+  %indvars.iv.next44.i = add i64 %indvars.iv43.i, 1, !dbg !88
+  %lftr.wideiv = trunc i64 %indvars.iv.next44.i to i32, !dbg !88
+  %exitcond = icmp eq i32 %lftr.wideiv, 25, !dbg !88
+  br i1 %exitcond, label %iterate_tgfsr.exit, label %for.body10.i, !dbg !88
 
-iterate_tgfsr.exit:                               ; preds = %.lr.ph.i
-  store i32 0, i32* @k, align 4, !dbg !121, !tbaa !74
-  br label %30, !dbg !122
+iterate_tgfsr.exit:                               ; preds = %for.body10.i
+  store i32 0, i32* @k, align 4, !dbg !89, !tbaa !67
+  br label %if.end3, !dbg !90
 
-; <label>:30                                      ; preds = %iterate_tgfsr.exit, %2
-  %31 = phi i32 [ 0, %iterate_tgfsr.exit ], [ %4, %2 ]
-  %32 = sext i32 %31 to i64, !dbg !123
-  %33 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %32, !dbg !123
-  %34 = load i32* %33, align 4, !dbg !123, !tbaa !74
-  %35 = shl i32 %34, 7, !dbg !124
-  %36 = and i32 %35, 727393536, !dbg !125
-  %37 = xor i32 %36, %34, !dbg !126
-  tail call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !43, metadata !65), !dbg !127
-  %38 = shl i32 %37, 15, !dbg !128
-  %39 = and i32 %38, -611647488, !dbg !129
-  %40 = xor i32 %39, %37, !dbg !130
-  tail call void @llvm.dbg.value(metadata i32 %40, i64 0, metadata !43, metadata !65), !dbg !127
-  ret i32 %40, !dbg !131
+if.end3:                                          ; preds = %iterate_tgfsr.exit, %if.end
+  %7 = phi i32 [ 0, %iterate_tgfsr.exit ], [ %inc, %if.end ]
+  %idxprom = sext i32 %7 to i64, !dbg !91
+  %arrayidx = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %idxprom, !dbg !91
+  %8 = load i32* %arrayidx, align 4, !dbg !91, !tbaa !67
+  %shl = shl i32 %8, 7, !dbg !91
+  %and = and i32 %shl, 727393536, !dbg !91
+  %xor = xor i32 %and, %8, !dbg !91
+  tail call void @llvm.dbg.value(metadata !{i32 %xor}, i64 0, metadata !44), !dbg !91
+  %shl6 = shl i32 %xor, 15, !dbg !92
+  %and7 = and i32 %shl6, -611647488, !dbg !92
+  %xor8 = xor i32 %and7, %xor, !dbg !92
+  tail call void @llvm.dbg.value(metadata !{i32 %xor8}, i64 0, metadata !44), !dbg !92
+  ret i32 %xor8, !dbg !93
 }

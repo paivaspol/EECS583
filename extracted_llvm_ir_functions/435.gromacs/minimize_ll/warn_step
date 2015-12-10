@@ -1,18 +1,19 @@
-define internal fastcc void @warn_step(%struct.__sFILE* nocapture %fp, float %ustep, float %ftol, i32 %bConstrain) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !1244, metadata !1256), !dbg !2466
-  tail call void @llvm.dbg.value(metadata float %ustep, i64 0, metadata !1245, metadata !1256), !dbg !2467
-  tail call void @llvm.dbg.value(metadata float %ftol, i64 0, metadata !1246, metadata !1256), !dbg !2468
-  tail call void @llvm.dbg.value(metadata i32 %bConstrain, i64 0, metadata !1247, metadata !1256), !dbg !2469
-  %1 = fpext float %ustep to double, !dbg !2470
-  %2 = fpext float %ftol to double, !dbg !2471
-  %3 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([100 x i8]* @.str42, i64 0, i64 0), double %1, double %2) #8, !dbg !2472
-  %4 = icmp eq i32 %bConstrain, 0, !dbg !2473
-  br i1 %4, label %7, label %5, !dbg !2475
+define internal fastcc void @warn_step(%struct._IO_FILE* nocapture %fp, float %ustep, float %ftol, i32 %bConstrain) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !1125), !dbg !1773
+  tail call void @llvm.dbg.value(metadata !{float %ustep}, i64 0, metadata !1126), !dbg !1773
+  tail call void @llvm.dbg.value(metadata !{float %ftol}, i64 0, metadata !1127), !dbg !1773
+  tail call void @llvm.dbg.value(metadata !{i32 %bConstrain}, i64 0, metadata !1128), !dbg !1773
+  %conv = fpext float %ustep to double, !dbg !1774
+  %conv1 = fpext float %ftol to double, !dbg !1774
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([100 x i8]* @.str34, i64 0, i64 0), double %conv, double %conv1) #6, !dbg !1774
+  %tobool = icmp eq i32 %bConstrain, 0, !dbg !1775
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1775
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([127 x i8]* @.str43, i64 0, i64 0), i64 126, i64 1, %struct.__sFILE* %fp), !dbg !2476
-  br label %7, !dbg !2476
+if.then:                                          ; preds = %entry
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([127 x i8]* @.str35, i64 0, i64 0), i64 126, i64 1, %struct._IO_FILE* %fp), !dbg !1776
+  br label %if.end, !dbg !1776
 
-; <label>:7                                       ; preds = %0, %5
-  ret void, !dbg !2477
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !1777
 }

@@ -1,25 +1,29 @@
 define i32 @neg_double(i64 %l1, i64 %h1, i64* nocapture %lv, i64* nocapture %hv) #0 {
 entry:
-  %cmp = icmp eq i64 %l1, 0
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i64 %l1}, i64 0, metadata !761), !dbg !1735
+  tail call void @llvm.dbg.value(metadata !{i64 %h1}, i64 0, metadata !762), !dbg !1736
+  tail call void @llvm.dbg.value(metadata !{i64* %lv}, i64 0, metadata !763), !dbg !1737
+  tail call void @llvm.dbg.value(metadata !{i64* %hv}, i64 0, metadata !764), !dbg !1738
+  %cmp = icmp eq i64 %l1, 0, !dbg !1739
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1739
 
 if.then:                                          ; preds = %entry
-  store i64 0, i64* %lv, align 8, !tbaa !0
-  %sub = sub nsw i64 0, %h1
-  store i64 %sub, i64* %hv, align 8, !tbaa !0
-  %and = and i64 %sub, %h1
-  %and.lobit = lshr i64 %and, 63
-  %0 = trunc i64 %and.lobit to i32
-  br label %return
+  store i64 0, i64* %lv, align 8, !dbg !1740, !tbaa !1700
+  %sub = sub nsw i64 0, %h1, !dbg !1742
+  store i64 %sub, i64* %hv, align 8, !dbg !1742, !tbaa !1700
+  %and = and i64 %sub, %h1, !dbg !1743
+  %and.lobit = lshr i64 %and, 63, !dbg !1743
+  %0 = trunc i64 %and.lobit to i32, !dbg !1743
+  br label %return, !dbg !1743
 
 if.else:                                          ; preds = %entry
-  %sub2 = sub i64 0, %l1
-  store i64 %sub2, i64* %lv, align 8, !tbaa !0
-  %neg = xor i64 %h1, -1
-  store i64 %neg, i64* %hv, align 8, !tbaa !0
-  br label %return
+  %sub2 = sub i64 0, %l1, !dbg !1744
+  store i64 %sub2, i64* %lv, align 8, !dbg !1744, !tbaa !1700
+  %neg = xor i64 %h1, -1, !dbg !1746
+  store i64 %neg, i64* %hv, align 8, !dbg !1746, !tbaa !1700
+  br label %return, !dbg !1747
 
 return:                                           ; preds = %if.else, %if.then
   %retval.0 = phi i32 [ %0, %if.then ], [ 0, %if.else ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1748
 }

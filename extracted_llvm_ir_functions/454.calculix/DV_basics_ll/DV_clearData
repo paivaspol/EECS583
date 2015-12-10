@@ -1,31 +1,32 @@
 define void @DV_clearData(%struct._DV* %dv) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !34, metadata !46), !dbg !80
-  %1 = icmp eq %struct._DV* %dv, null, !dbg !81
-  br i1 %1, label %2, label %5, !dbg !83
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !29), !dbg !53
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !54
+  br i1 %cmp, label %if.then, label %if.end, !dbg !54
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !84, !tbaa !51
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([46 x i8]* @.str3, i64 0, i64 0), %struct._DV* null) #5, !dbg !86
-  tail call void @exit(i32 -1) #6, !dbg !87
-  unreachable, !dbg !87
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !55, !tbaa !37
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str3, i64 0, i64 0), %struct._DV* null) #5, !dbg !55
+  tail call void @exit(i32 -1) #6, !dbg !57
+  unreachable, !dbg !57
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !88
-  %7 = load double** %6, align 8, !dbg !88, !tbaa !78
-  %8 = icmp eq double* %7, null, !dbg !90
-  br i1 %8, label %14, label %9, !dbg !91
+if.end:                                           ; preds = %entry
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !58
+  %1 = load double** %vec, align 8, !dbg !58, !tbaa !37
+  %cmp1 = icmp eq double* %1, null, !dbg !58
+  br i1 %cmp1, label %if.end5, label %land.lhs.true, !dbg !58
 
-; <label>:9                                       ; preds = %5
-  %10 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2, !dbg !92
-  %11 = load i32* %10, align 4, !dbg !92, !tbaa !75
-  %12 = icmp eq i32 %11, 1, !dbg !93
-  br i1 %12, label %13, label %14, !dbg !94
+land.lhs.true:                                    ; preds = %if.end
+  %owned = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2, !dbg !58
+  %2 = load i32* %owned, align 4, !dbg !58, !tbaa !48
+  %cmp2 = icmp eq i32 %2, 1, !dbg !58
+  br i1 %cmp2, label %if.then3, label %if.end5, !dbg !58
 
-; <label>:13                                      ; preds = %9
-  tail call void @DVfree(double* %7) #5, !dbg !95
-  br label %14, !dbg !97
+if.then3:                                         ; preds = %land.lhs.true
+  tail call void @DVfree(double* %1) #5, !dbg !59
+  br label %if.end5, !dbg !61
 
-; <label>:14                                      ; preds = %5, %13, %9
-  tail call void @DV_setDefaultFields(%struct._DV* %dv) #7, !dbg !98
-  ret void, !dbg !99
+if.end5:                                          ; preds = %if.end, %if.then3, %land.lhs.true
+  tail call void @DV_setDefaultFields(%struct._DV* %dv) #7, !dbg !62
+  ret void, !dbg !63
 }

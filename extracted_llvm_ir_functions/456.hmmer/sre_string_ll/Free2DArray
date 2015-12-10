@@ -1,39 +1,36 @@
 define void @Free2DArray(i8** %p, i32 %dim1) #0 {
-  tail call void @llvm.dbg.value(metadata i8** %p, i64 0, metadata !70, metadata !225), !dbg !336
-  tail call void @llvm.dbg.value(metadata i32 %dim1, i64 0, metadata !71, metadata !225), !dbg !337
-  %1 = icmp eq i8** %p, null, !dbg !338
-  br i1 %1, label %11, label %.preheader, !dbg !340
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8** %p}, i64 0, metadata !83), !dbg !261
+  tail call void @llvm.dbg.value(metadata !{i32 %dim1}, i64 0, metadata !84), !dbg !261
+  %cmp = icmp eq i8** %p, null, !dbg !262
+  br i1 %cmp, label %if.end6, label %for.cond.preheader, !dbg !262
 
-.preheader:                                       ; preds = %0
-  %2 = icmp sgt i32 %dim1, 0, !dbg !341
-  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !345
+for.cond.preheader:                               ; preds = %entry
+  %cmp113 = icmp sgt i32 %dim1, 0, !dbg !263
+  br i1 %cmp113, label %for.body, label %for.end, !dbg !263
 
-.lr.ph:                                           ; preds = %.preheader
-  %3 = add i32 %dim1, -1, !dbg !345
-  br label %4, !dbg !345
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds i8** %p, i64 %indvars.iv, !dbg !266
+  %0 = load i8** %arrayidx, align 8, !dbg !266, !tbaa !220
+  %cmp2 = icmp eq i8* %0, null, !dbg !266
+  br i1 %cmp2, label %for.inc, label %if.then3, !dbg !266
 
-; <label>:4                                       ; preds = %9, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %5 = getelementptr inbounds i8** %p, i64 %indvars.iv, !dbg !346
-  %6 = load i8** %5, align 8, !dbg !346, !tbaa !348
-  %7 = icmp eq i8* %6, null, !dbg !350
-  br i1 %7, label %9, label %8, !dbg !351
+if.then3:                                         ; preds = %for.body
+  tail call void @free(i8* %0) #9, !dbg !266
+  br label %for.inc, !dbg !266
 
-; <label>:8                                       ; preds = %4
-  tail call void @free(i8* %6) #7, !dbg !352
-  br label %9, !dbg !352
+for.inc:                                          ; preds = %for.body, %if.then3
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !263
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !263
+  %exitcond = icmp eq i32 %lftr.wideiv, %dim1, !dbg !263
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !263
 
-; <label>:9                                       ; preds = %4, %8
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !345
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !345
-  %exitcond = icmp eq i32 %lftr.wideiv, %3, !dbg !345
-  br i1 %exitcond, label %._crit_edge, label %4, !dbg !345
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %1 = bitcast i8** %p to i8*, !dbg !267
+  tail call void @free(i8* %1) #9, !dbg !267
+  br label %if.end6, !dbg !268
 
-._crit_edge:                                      ; preds = %9, %.preheader
-  %10 = bitcast i8** %p to i8*, !dbg !353
-  tail call void @free(i8* %10) #7, !dbg !354
-  br label %11, !dbg !355
-
-; <label>:11                                      ; preds = %0, %._crit_edge
-  ret void, !dbg !356
+if.end6:                                          ; preds = %entry, %for.end
+  ret void, !dbg !269
 }

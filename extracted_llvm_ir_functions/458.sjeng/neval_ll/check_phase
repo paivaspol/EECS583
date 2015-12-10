@@ -1,82 +1,83 @@
 define void @check_phase() #0 {
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !14, metadata !176), !dbg !177
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !16, metadata !176), !dbg !178
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !17, metadata !176), !dbg !179
-  %1 = load i32* @piece_count, align 4, !dbg !180, !tbaa !183
-  %2 = icmp slt i32 %1, 1, !dbg !187
-  br i1 %2, label %.thread8, label %.lr.ph, !dbg !188
+entry:
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !15), !dbg !173
+  tail call void @llvm.dbg.value(metadata !174, i64 0, metadata !17), !dbg !175
+  tail call void @llvm.dbg.value(metadata !174, i64 0, metadata !18), !dbg !175
+  %0 = load i32* @piece_count, align 4, !dbg !175, !tbaa !177
+  %cmp43 = icmp slt i32 %0, 1, !dbg !175
+  br i1 %cmp43, label %if.then30, label %for.body, !dbg !175
 
-.lr.ph:                                           ; preds = %0, %13
-  %indvars.iv = phi i64 [ %indvars.iv.next, %13 ], [ 1, %0 ]
-  %xnum_pieces.06 = phi i32 [ %xnum_pieces.1, %13 ], [ 0, %0 ]
-  %a.05 = phi i32 [ %a.1, %13 ], [ 1, %0 ]
-  %3 = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %indvars.iv, !dbg !189
-  %4 = load i32* %3, align 4, !dbg !189, !tbaa !183
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !18, metadata !176), !dbg !191
-  %5 = icmp eq i32 %4, 0, !dbg !192
-  br i1 %5, label %13, label %6, !dbg !194
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 1, %entry ]
+  %xnum_pieces.046 = phi i32 [ %xnum_pieces.1, %for.inc ], [ 0, %entry ]
+  %a.045 = phi i32 [ %a.1, %for.inc ], [ 1, %entry ]
+  %arrayidx = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %indvars.iv, !dbg !180
+  %1 = load i32* %arrayidx, align 4, !dbg !180, !tbaa !177
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !19), !dbg !180
+  %tobool = icmp eq i32 %1, 0, !dbg !182
+  br i1 %tobool, label %for.inc, label %if.else, !dbg !182
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = add nsw i32 %a.05, 1, !dbg !195
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !17, metadata !176), !dbg !179
-  %8 = sext i32 %4 to i64, !dbg !196
-  %9 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %8, !dbg !196
-  %10 = load i32* %9, align 4, !dbg !196, !tbaa !183
-  switch i32 %10, label %11 [
-    i32 1, label %13
-    i32 2, label %13
-    i32 13, label %13
-    i32 0, label %13
-  ], !dbg !198
+if.else:                                          ; preds = %for.body
+  %inc = add nsw i32 %a.045, 1, !dbg !183
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !18), !dbg !183
+  %idxprom1 = sext i32 %1 to i64, !dbg !184
+  %arrayidx2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom1, !dbg !184
+  %2 = load i32* %arrayidx2, align 4, !dbg !184, !tbaa !177
+  switch i32 %2, label %if.then15 [
+    i32 1, label %for.inc
+    i32 2, label %for.inc
+    i32 13, label %for.inc
+    i32 0, label %for.inc
+  ], !dbg !184
 
-; <label>:11                                      ; preds = %6
-  %12 = add nsw i32 %xnum_pieces.06, 1, !dbg !199
-  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !14, metadata !176), !dbg !177
-  br label %13, !dbg !201
+if.then15:                                        ; preds = %if.else
+  %inc16 = add nsw i32 %xnum_pieces.046, 1, !dbg !185
+  tail call void @llvm.dbg.value(metadata !{i32 %inc16}, i64 0, metadata !15), !dbg !185
+  br label %for.inc, !dbg !187
 
-; <label>:13                                      ; preds = %6, %6, %6, %6, %.lr.ph, %11
-  %a.1 = phi i32 [ %7, %11 ], [ %7, %6 ], [ %a.05, %.lr.ph ], [ %7, %6 ], [ %7, %6 ], [ %7, %6 ]
-  %xnum_pieces.1 = phi i32 [ %12, %11 ], [ %xnum_pieces.06, %6 ], [ %xnum_pieces.06, %.lr.ph ], [ %xnum_pieces.06, %6 ], [ %xnum_pieces.06, %6 ], [ %xnum_pieces.06, %6 ]
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !188
-  %14 = icmp sgt i32 %a.1, %1, !dbg !187
-  br i1 %14, label %._crit_edge, label %.lr.ph, !dbg !188
+for.inc:                                          ; preds = %if.else, %if.else, %if.else, %if.else, %for.body, %if.then15
+  %a.1 = phi i32 [ %inc, %if.then15 ], [ %inc, %if.else ], [ %a.045, %for.body ], [ %inc, %if.else ], [ %inc, %if.else ], [ %inc, %if.else ]
+  %xnum_pieces.1 = phi i32 [ %inc16, %if.then15 ], [ %xnum_pieces.046, %if.else ], [ %xnum_pieces.046, %for.body ], [ %xnum_pieces.046, %if.else ], [ %xnum_pieces.046, %if.else ], [ %xnum_pieces.046, %if.else ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !175
+  %cmp = icmp sgt i32 %a.1, %0, !dbg !175
+  br i1 %cmp, label %for.end, label %for.body, !dbg !175
 
-._crit_edge:                                      ; preds = %13
-  %15 = icmp sgt i32 %xnum_pieces.1, 11, !dbg !202
-  br i1 %15, label %16, label %27, !dbg !204
+for.end:                                          ; preds = %for.inc
+  %cmp19 = icmp sgt i32 %xnum_pieces.1, 11, !dbg !188
+  br i1 %cmp19, label %land.lhs.true20, label %if.else28, !dbg !188
 
-; <label>:16                                      ; preds = %._crit_edge
-  %17 = load i32* @white_castled, align 4, !dbg !205, !tbaa !183
-  %18 = icmp ne i32 %17, 0, !dbg !205
-  %19 = load i32* @black_castled, align 4
-  %20 = icmp ne i32 %19, 0, !dbg !206
-  %or.cond = and i1 %18, %20, !dbg !207
-  br i1 %or.cond, label %.thread, label %21, !dbg !207
+land.lhs.true20:                                  ; preds = %for.end
+  %3 = load i32* @white_castled, align 4, !dbg !188, !tbaa !177
+  %tobool21 = icmp ne i32 %3, 0, !dbg !188
+  %4 = load i32* @black_castled, align 4, !dbg !188, !tbaa !177
+  %tobool22 = icmp ne i32 %4, 0, !dbg !188
+  %or.cond = and i1 %tobool21, %tobool22, !dbg !188
+  br i1 %or.cond, label %if.else28, label %land.lhs.true23, !dbg !188
 
-; <label>:21                                      ; preds = %16
-  %22 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 30), align 4, !dbg !208, !tbaa !183
-  %23 = icmp eq i32 %22, 5, !dbg !209
-  %24 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 114), align 4
-  %25 = icmp eq i32 %24, 6, !dbg !210
-  %or.cond3 = or i1 %23, %25, !dbg !211
-  br i1 %or.cond3, label %26, label %.thread, !dbg !211
+land.lhs.true23:                                  ; preds = %land.lhs.true20
+  %5 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 30), align 4, !dbg !188, !tbaa !177
+  %cmp24 = icmp eq i32 %5, 5, !dbg !188
+  %6 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 114), align 4, !dbg !188, !tbaa !177
+  %cmp26 = icmp eq i32 %6, 6, !dbg !188
+  %or.cond34 = or i1 %cmp24, %cmp26, !dbg !188
+  br i1 %or.cond34, label %if.then27, label %if.else28, !dbg !188
 
-; <label>:26                                      ; preds = %21
-  store i32 0, i32* @phase, align 4, !dbg !212, !tbaa !183
-  br label %29, !dbg !214
+if.then27:                                        ; preds = %land.lhs.true23
+  store i32 0, i32* @phase, align 4, !dbg !189, !tbaa !177
+  br label %if.end33, !dbg !191
 
-; <label>:27                                      ; preds = %._crit_edge
-  %28 = icmp slt i32 %xnum_pieces.1, 7, !dbg !215
-  br i1 %28, label %.thread8, label %.thread, !dbg !217
+if.else28:                                        ; preds = %land.lhs.true23, %land.lhs.true20, %for.end
+  %cmp29 = icmp slt i32 %xnum_pieces.1, 7, !dbg !192
+  br i1 %cmp29, label %if.then30, label %if.else31, !dbg !192
 
-.thread8:                                         ; preds = %0, %27
-  store i32 2, i32* @phase, align 4, !dbg !218, !tbaa !183
-  br label %29, !dbg !220
+if.then30:                                        ; preds = %entry, %if.else28
+  store i32 2, i32* @phase, align 4, !dbg !193, !tbaa !177
+  br label %if.end33, !dbg !195
 
-.thread:                                          ; preds = %16, %21, %27
-  store i32 1, i32* @phase, align 4, !dbg !221, !tbaa !183
-  br label %29
+if.else31:                                        ; preds = %if.else28
+  store i32 1, i32* @phase, align 4, !dbg !196, !tbaa !177
+  br label %if.end33
 
-; <label>:29                                      ; preds = %.thread8, %.thread, %26
-  ret void, !dbg !222
+if.end33:                                         ; preds = %if.then30, %if.else31, %if.then27
+  ret void, !dbg !197
 }

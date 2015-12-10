@@ -1,16 +1,17 @@
-define internal fastcc zeroext i8 @fileExists(i8* %name) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !280, metadata !524), !dbg !2580
-  %1 = tail call %struct.__sFILE* @"\01_fopen"(i8* %name, i8* getelementptr inbounds ([3 x i8]* @.str66, i64 0, i64 0)) #9, !dbg !2581
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %1, i64 0, metadata !281, metadata !524), !dbg !2582
-  %2 = icmp ne %struct.__sFILE* %1, null, !dbg !2583
-  %3 = zext i1 %2 to i8, !dbg !2584
-  tail call void @llvm.dbg.value(metadata i8 %3, i64 0, metadata !282, metadata !524), !dbg !2585
-  br i1 %2, label %4, label %6, !dbg !2586
+define internal fastcc zeroext i8 @fileExists(i8* nocapture %name) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !209), !dbg !1436
+  %call = tail call %struct._IO_FILE* @fopen(i8* %name, i8* getelementptr inbounds ([3 x i8]* @.str43, i64 0, i64 0)) #10, !dbg !1437
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call}, i64 0, metadata !210), !dbg !1437
+  %cmp = icmp ne %struct._IO_FILE* %call, null, !dbg !1438
+  %conv2 = zext i1 %cmp to i8, !dbg !1438
+  tail call void @llvm.dbg.value(metadata !{i8 %conv2}, i64 0, metadata !211), !dbg !1438
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1439
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @fclose(%struct.__sFILE* %1) #9, !dbg !2587
-  br label %6, !dbg !2587
+if.then:                                          ; preds = %entry
+  %call5 = tail call i32 @fclose(%struct._IO_FILE* %call) #10, !dbg !1439
+  br label %if.end, !dbg !1439
 
-; <label>:6                                       ; preds = %4, %0
-  ret i8 %3, !dbg !2589
+if.end:                                           ; preds = %if.then, %entry
+  ret i8 %conv2, !dbg !1440
 }

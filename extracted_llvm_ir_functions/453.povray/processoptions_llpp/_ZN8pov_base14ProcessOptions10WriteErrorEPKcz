@@ -1,19 +1,20 @@
-define void @_ZN8pov_base14ProcessOptions10WriteErrorEPKcz(%"class.pov_base::ProcessOptions"* nocapture readnone %this, i8* nocapture readonly %format, ...) unnamed_addr #0 align 2 {
+define void @_ZN8pov_base14ProcessOptions10WriteErrorEPKcz(%"class.pov_base::ProcessOptions"* nocapture %this, i8* nocapture %format, ...) unnamed_addr #0 align 2 {
+entry:
   %marker = alloca [1 x %struct.__va_list_tag], align 16
   %error_buffer = alloca [1024 x i8], align 16
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::ProcessOptions"* %this, i64 0, metadata !662, metadata !1305), !dbg !2245
-  tail call void @llvm.dbg.value(metadata i8* %format, i64 0, metadata !663, metadata !1305), !dbg !2246
-  tail call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %marker, metadata !664, metadata !1305), !dbg !2247
-  %1 = getelementptr inbounds [1024 x i8]* %error_buffer, i64 0, i64 0, !dbg !2248
-  call void @llvm.lifetime.start(i64 1024, i8* %1) #6, !dbg !2248
-  tail call void @llvm.dbg.declare(metadata [1024 x i8]* %error_buffer, metadata !665, metadata !1305), !dbg !2249
-  %2 = getelementptr inbounds [1 x %struct.__va_list_tag]* %marker, i64 0, i64 0, !dbg !2250
-  %3 = bitcast [1 x %struct.__va_list_tag]* %marker to i8*, !dbg !2250
-  call void @llvm.va_start(i8* %3), !dbg !2250
-  %4 = call i32 @vsnprintf(i8* %1, i64 1023, i8* %format, %struct.__va_list_tag* %2) #10, !dbg !2251
-  call void @llvm.va_end(i8* %3), !dbg !2252
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !2253, !tbaa !1334
-  %6 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i8* %1) #10, !dbg !2254
-  call void @llvm.lifetime.end(i64 1024, i8* %1) #6, !dbg !2255
-  ret void, !dbg !2255
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::ProcessOptions"* %this}, i64 0, metadata !492), !dbg !1202
+  call void @llvm.dbg.value(metadata !{i8* %format}, i64 0, metadata !493), !dbg !1202
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %marker}, metadata !494), !dbg !1203
+  %0 = getelementptr inbounds [1024 x i8]* %error_buffer, i64 0, i64 0, !dbg !1204
+  call void @llvm.lifetime.start(i64 1024, i8* %0) #6, !dbg !1204
+  call void @llvm.dbg.declare(metadata !{[1024 x i8]* %error_buffer}, metadata !495), !dbg !1204
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %marker, i64 0, i64 0, !dbg !1205
+  %arraydecay2 = bitcast [1 x %struct.__va_list_tag]* %marker to i8*, !dbg !1205
+  call void @llvm.va_start(i8* %arraydecay2), !dbg !1205
+  %call = call i32 @vsnprintf(i8* %0, i64 1023, i8* %format, %struct.__va_list_tag* %arraydecay) #9, !dbg !1206
+  call void @llvm.va_end(i8* %arraydecay2), !dbg !1207
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !1208, !tbaa !692
+  %call8 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i8* %0) #8, !dbg !1208
+  call void @llvm.lifetime.end(i64 1024, i8* %0) #6, !dbg !1209
+  ret void, !dbg !1209
 }

@@ -1,22 +1,23 @@
 define void @LBM_allocateGrid(double** nocapture %ptr) #0 {
-  tail call void @llvm.dbg.value(metadata double** %ptr, i64 0, metadata !48, metadata !331), !dbg !332
-  tail call void @llvm.dbg.value(metadata i64 400000, i64 0, metadata !49, metadata !331), !dbg !333
-  tail call void @llvm.dbg.value(metadata i64 214400000, i64 0, metadata !56, metadata !331), !dbg !334
-  %1 = tail call i8* @malloc(i64 214400000) #6, !dbg !335
-  %2 = bitcast double** %ptr to i8**, !dbg !336
-  store i8* %1, i8** %2, align 8, !dbg !336, !tbaa !337
-  %3 = icmp eq i8* %1, null, !dbg !341
-  br i1 %3, label %4, label %6, !dbg !343
+entry:
+  tail call void @llvm.dbg.value(metadata !{double** %ptr}, i64 0, metadata !42), !dbg !305
+  tail call void @llvm.dbg.value(metadata !306, i64 0, metadata !43), !dbg !307
+  tail call void @llvm.dbg.value(metadata !308, i64 0, metadata !47), !dbg !307
+  %call = tail call noalias i8* @malloc(i64 214400000) #5, !dbg !309
+  %0 = bitcast i8* %call to double*, !dbg !309
+  store double* %0, double** %ptr, align 8, !dbg !309, !tbaa !310
+  %tobool = icmp eq i8* %call, null, !dbg !313
+  br i1 %tobool, label %if.then, label %if.end, !dbg !313
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), double 0x40698EF800000000) #6, !dbg !344
-  tail call void @exit(i32 1) #7, !dbg !346
-  unreachable, !dbg !346
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), double 0x40698EF800000000) #5, !dbg !314
+  tail call void @exit(i32 1) #6, !dbg !316
+  unreachable, !dbg !316
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([40 x i8]* @.str1, i64 0, i64 0), double 0x40698EF800000000) #6, !dbg !347
-  %8 = load double** %ptr, align 8, !dbg !348, !tbaa !337
-  %9 = getelementptr inbounds double* %8, i64 400000, !dbg !348
-  store double* %9, double** %ptr, align 8, !dbg !348, !tbaa !337
-  ret void, !dbg !349
+if.end:                                           ; preds = %entry
+  %call2 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([40 x i8]* @.str1, i64 0, i64 0), double 0x40698EF800000000) #5, !dbg !317
+  %1 = load double** %ptr, align 8, !dbg !318, !tbaa !310
+  %add.ptr = getelementptr inbounds double* %1, i64 400000, !dbg !318
+  store double* %add.ptr, double** %ptr, align 8, !dbg !318, !tbaa !310
+  ret void, !dbg !319
 }

@@ -1,81 +1,82 @@
 define void @push_pawn(i32 %target, i32 %is_ep) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %target, i64 0, metadata !105, metadata !145), !dbg !1300
-  tail call void @llvm.dbg.value(metadata i32 %is_ep, i64 0, metadata !106, metadata !145), !dbg !1301
-  %1 = icmp eq i32 %is_ep, 0, !dbg !1302
-  br i1 %1, label %10, label %2, !dbg !1304
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %target}, i64 0, metadata !106), !dbg !561
+  tail call void @llvm.dbg.value(metadata !{i32 %is_ep}, i64 0, metadata !107), !dbg !561
+  %tobool = icmp eq i32 %is_ep, 0, !dbg !562
+  br i1 %tobool, label %if.end, label %if.then, !dbg !562
 
-; <label>:2                                       ; preds = %0
-  %3 = load i32* @gfrom, align 4, !dbg !1305, !tbaa !163
-  %4 = sext i32 %3 to i64, !dbg !1308
-  %5 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %4, !dbg !1308
-  %6 = load i32* %5, align 4, !dbg !1308, !tbaa !163
-  %7 = icmp eq i32 %6, 1, !dbg !1309
-  br i1 %7, label %8, label %9, !dbg !1310
+if.then:                                          ; preds = %entry
+  %0 = load i32* @gfrom, align 4, !dbg !563, !tbaa !145
+  %idxprom = sext i32 %0 to i64, !dbg !563
+  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom, !dbg !563
+  %1 = load i32* %arrayidx, align 4, !dbg !563, !tbaa !145
+  %cmp = icmp eq i32 %1, 1, !dbg !563
+  br i1 %cmp, label %if.then1, label %if.else, !dbg !563
 
-; <label>:8                                       ; preds = %2
-  tail call void @add_capture(i32 %target, i32 2, i32 0, i32 1) #5, !dbg !1311
-  br label %34, !dbg !1313
+if.then1:                                         ; preds = %if.then
+  tail call void @add_capture(i32 %target, i32 2, i32 0, i32 1) #5, !dbg !565
+  br label %return, !dbg !567
 
-; <label>:9                                       ; preds = %2
-  tail call void @add_capture(i32 %target, i32 1, i32 0, i32 1) #5, !dbg !1314
-  br label %34, !dbg !1316
+if.else:                                          ; preds = %if.then
+  tail call void @add_capture(i32 %target, i32 1, i32 0, i32 1) #5, !dbg !568
+  br label %return, !dbg !570
 
-; <label>:10                                      ; preds = %0
-  %11 = sext i32 %target to i64, !dbg !1317
-  %12 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %11, !dbg !1317
-  %13 = load i32* %12, align 4, !dbg !1317, !tbaa !163
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !107, metadata !145), !dbg !1318
-  %14 = load i32* @gfrom, align 4, !dbg !1319, !tbaa !163
-  %15 = sext i32 %14 to i64, !dbg !1321
-  %16 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %15, !dbg !1321
-  %17 = load i32* %16, align 4, !dbg !1321, !tbaa !163
-  switch i32 %17, label %.thread [
-    i32 1, label %18
-    i32 2, label %26
-  ], !dbg !1322
+if.end:                                           ; preds = %entry
+  %idxprom2 = sext i32 %target to i64, !dbg !571
+  %arrayidx3 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom2, !dbg !571
+  %2 = load i32* %arrayidx3, align 4, !dbg !571, !tbaa !145
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !108), !dbg !571
+  %3 = load i32* @gfrom, align 4, !dbg !572, !tbaa !145
+  %idxprom4 = sext i32 %3 to i64, !dbg !572
+  %arrayidx5 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom4, !dbg !572
+  %4 = load i32* %arrayidx5, align 4, !dbg !572, !tbaa !145
+  switch i32 %4, label %if.else26 [
+    i32 1, label %land.lhs.true
+    i32 2, label %land.lhs.true18
+  ], !dbg !572
 
-; <label>:18                                      ; preds = %10
-  %19 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %15, !dbg !1323
-  %20 = load i32* %19, align 4, !dbg !1323, !tbaa !163
-  %21 = icmp eq i32 %20, 7, !dbg !1324
-  br i1 %21, label %22, label %.thread, !dbg !1325
+land.lhs.true:                                    ; preds = %if.end
+  %arrayidx8 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %idxprom4, !dbg !572
+  %5 = load i32* %arrayidx8, align 4, !dbg !572, !tbaa !145
+  %cmp9 = icmp eq i32 %5, 7, !dbg !572
+  br i1 %cmp9, label %if.then10, label %if.else26, !dbg !572
 
-; <label>:22                                      ; preds = %18
-  tail call void @add_capture(i32 %target, i32 %13, i32 9, i32 0) #5, !dbg !1326
-  tail call void @add_capture(i32 %target, i32 %13, i32 7, i32 0) #5, !dbg !1328
-  tail call void @add_capture(i32 %target, i32 %13, i32 11, i32 0) #5, !dbg !1329
-  tail call void @add_capture(i32 %target, i32 %13, i32 3, i32 0) #5, !dbg !1330
-  %23 = load i32* @Variant, align 4, !dbg !1331, !tbaa !163
-  %24 = icmp eq i32 %23, 3, !dbg !1333
-  br i1 %24, label %25, label %34, !dbg !1334
+if.then10:                                        ; preds = %land.lhs.true
+  tail call void @add_capture(i32 %target, i32 %2, i32 9, i32 0) #5, !dbg !573
+  tail call void @add_capture(i32 %target, i32 %2, i32 7, i32 0) #5, !dbg !575
+  tail call void @add_capture(i32 %target, i32 %2, i32 11, i32 0) #5, !dbg !576
+  tail call void @add_capture(i32 %target, i32 %2, i32 3, i32 0) #5, !dbg !577
+  %6 = load i32* @Variant, align 4, !dbg !578, !tbaa !145
+  %cmp11 = icmp eq i32 %6, 3, !dbg !578
+  br i1 %cmp11, label %if.then12, label %return, !dbg !578
 
-; <label>:25                                      ; preds = %22
-  tail call void @add_capture(i32 %target, i32 %13, i32 5, i32 0) #5, !dbg !1335
-  br label %34, !dbg !1335
+if.then12:                                        ; preds = %if.then10
+  tail call void @add_capture(i32 %target, i32 %2, i32 5, i32 0) #5, !dbg !579
+  br label %return, !dbg !579
 
-; <label>:26                                      ; preds = %10
-  %27 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %15, !dbg !1336
-  %28 = load i32* %27, align 4, !dbg !1336, !tbaa !163
-  %29 = icmp eq i32 %28, 2, !dbg !1338
-  br i1 %29, label %30, label %.thread, !dbg !1339
+land.lhs.true18:                                  ; preds = %if.end
+  %arrayidx20 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %idxprom4, !dbg !580
+  %7 = load i32* %arrayidx20, align 4, !dbg !580, !tbaa !145
+  %cmp21 = icmp eq i32 %7, 2, !dbg !580
+  br i1 %cmp21, label %if.then22, label %if.else26, !dbg !580
 
-; <label>:30                                      ; preds = %26
-  tail call void @add_capture(i32 %target, i32 %13, i32 10, i32 0) #5, !dbg !1340
-  tail call void @add_capture(i32 %target, i32 %13, i32 8, i32 0) #5, !dbg !1342
-  tail call void @add_capture(i32 %target, i32 %13, i32 12, i32 0) #5, !dbg !1343
-  tail call void @add_capture(i32 %target, i32 %13, i32 4, i32 0) #5, !dbg !1344
-  %31 = load i32* @Variant, align 4, !dbg !1345, !tbaa !163
-  %32 = icmp eq i32 %31, 3, !dbg !1347
-  br i1 %32, label %33, label %34, !dbg !1348
+if.then22:                                        ; preds = %land.lhs.true18
+  tail call void @add_capture(i32 %target, i32 %2, i32 10, i32 0) #5, !dbg !581
+  tail call void @add_capture(i32 %target, i32 %2, i32 8, i32 0) #5, !dbg !583
+  tail call void @add_capture(i32 %target, i32 %2, i32 12, i32 0) #5, !dbg !584
+  tail call void @add_capture(i32 %target, i32 %2, i32 4, i32 0) #5, !dbg !585
+  %8 = load i32* @Variant, align 4, !dbg !586, !tbaa !145
+  %cmp23 = icmp eq i32 %8, 3, !dbg !586
+  br i1 %cmp23, label %if.then24, label %return, !dbg !586
 
-; <label>:33                                      ; preds = %30
-  tail call void @add_capture(i32 %target, i32 %13, i32 6, i32 0) #5, !dbg !1349
-  br label %34, !dbg !1349
+if.then24:                                        ; preds = %if.then22
+  tail call void @add_capture(i32 %target, i32 %2, i32 6, i32 0) #5, !dbg !587
+  br label %return, !dbg !587
 
-.thread:                                          ; preds = %10, %18, %26
-  tail call void @add_capture(i32 %target, i32 %13, i32 0, i32 0) #5, !dbg !1350
-  br label %34, !dbg !1352
+if.else26:                                        ; preds = %if.end, %land.lhs.true, %land.lhs.true18
+  tail call void @add_capture(i32 %target, i32 %2, i32 0, i32 0) #5, !dbg !588
+  br label %return, !dbg !590
 
-; <label>:34                                      ; preds = %30, %33, %22, %25, %.thread, %9, %8
-  ret void, !dbg !1353
+return:                                           ; preds = %if.then22, %if.then24, %if.then10, %if.then12, %if.else26, %if.else, %if.then1
+  ret void, !dbg !591
 }

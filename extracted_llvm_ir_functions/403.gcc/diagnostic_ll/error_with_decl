@@ -1,9 +1,12 @@
 define void @error_with_decl(%union.tree_node* %decl, i8* %msgid, ...) #2 {
 entry:
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  call fastcc void @diagnostic_for_decl(%union.tree_node* %decl, i8* %msgid, [1 x %struct.__va_list_tag]* %ap, i32 0) #11
-  call void @llvm.va_end(i8* %arraydecay1)
-  ret void
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !913), !dbg !1860
+  call void @llvm.dbg.value(metadata !{i8* %msgid}, i64 0, metadata !914), !dbg !1860
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !915), !dbg !1861
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !1861
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !1861
+  call fastcc void @diagnostic_for_decl(%union.tree_node* %decl, i8* %msgid, [1 x %struct.__va_list_tag]* %ap, i32 0) #12, !dbg !1862
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !1864
+  ret void, !dbg !1865
 }

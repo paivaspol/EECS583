@@ -1,14 +1,15 @@
 define void @PIVfree(i32** %p_ivec) #0 {
-  tail call void @llvm.dbg.value(metadata i32** %p_ivec, i64 0, metadata !16, metadata !55), !dbg !56
-  %1 = icmp eq i32** %p_ivec, null, !dbg !57
-  br i1 %1, label %4, label %2, !dbg !59
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32** %p_ivec}, i64 0, metadata !12), !dbg !42
+  %cmp = icmp eq i32** %p_ivec, null, !dbg !43
+  br i1 %cmp, label %if.end3, label %if.then2, !dbg !43
 
-; <label>:2                                       ; preds = %0
-  %3 = bitcast i32** %p_ivec to i8*, !dbg !60
-  tail call void @free(i8* %3) #5, !dbg !60
-  tail call void @llvm.dbg.value(metadata i32** null, i64 0, metadata !16, metadata !55), !dbg !56
-  br label %4, !dbg !60
+if.then2:                                         ; preds = %entry
+  %0 = bitcast i32** %p_ivec to i8*, !dbg !44
+  tail call void @free(i8* %0) #5, !dbg !44
+  tail call void @llvm.dbg.value(metadata !47, i64 0, metadata !12), !dbg !44
+  br label %if.end3, !dbg !44
 
-; <label>:4                                       ; preds = %0, %2
-  ret void, !dbg !64
+if.end3:                                          ; preds = %entry, %if.then2
+  ret void, !dbg !48
 }

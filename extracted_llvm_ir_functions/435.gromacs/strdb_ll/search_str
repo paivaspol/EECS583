@@ -1,33 +1,30 @@
-define i32 @search_str(i32 %nstr, i8** nocapture readonly %str, i8* nocapture readonly %key) #7 {
-  tail call void @llvm.dbg.value(metadata i32 %nstr, i64 0, metadata !114, metadata !151), !dbg !276
-  tail call void @llvm.dbg.value(metadata i8** %str, i64 0, metadata !115, metadata !151), !dbg !277
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !116, metadata !151), !dbg !278
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !117, metadata !151), !dbg !279
-  %1 = icmp sgt i32 %nstr, 0, !dbg !280
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !283
+define i32 @search_str(i32 %nstr, i8** nocapture %str, i8* nocapture %key) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %nstr}, i64 0, metadata !102), !dbg !200
+  tail call void @llvm.dbg.value(metadata !{i8** %str}, i64 0, metadata !103), !dbg !200
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !104), !dbg !200
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !105), !dbg !201
+  %cmp4 = icmp sgt i32 %nstr, 0, !dbg !201
+  br i1 %cmp4, label %for.body, label %return, !dbg !201
 
-.lr.ph:                                           ; preds = %0
-  %2 = sext i32 %nstr to i64, !dbg !283
-  br label %3, !dbg !283
+for.cond:                                         ; preds = %for.body
+  %inc = add nsw i32 %i.05, 1, !dbg !201
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !201
+  %cmp = icmp slt i32 %0, %nstr, !dbg !201
+  br i1 %cmp, label %for.body, label %return, !dbg !201
 
-; <label>:3                                       ; preds = %.lr.ph, %8
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %8 ]
-  %4 = getelementptr inbounds i8** %str, i64 %indvars.iv, !dbg !284
-  %5 = load i8** %4, align 8, !dbg !284, !tbaa !175
-  %6 = tail call i32 @strcasecmp(i8* %5, i8* %key) #8, !dbg !286
-  %7 = icmp eq i32 %6, 0, !dbg !287
-  br i1 %7, label %._crit_edge2, label %8, !dbg !288
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %i.05 = phi i32 [ %inc, %for.cond ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8** %str, i64 %indvars.iv, !dbg !203
+  %1 = load i8** %arrayidx, align 8, !dbg !203, !tbaa !145
+  %call = tail call i32 @strcasecmp(i8* %1, i8* %key) #8, !dbg !203
+  %cmp1 = icmp eq i32 %call, 0, !dbg !203
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !201
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !105), !dbg !201
+  br i1 %cmp1, label %return, label %for.cond, !dbg !203
 
-; <label>:8                                       ; preds = %3
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !283
-  %9 = icmp slt i64 %indvars.iv.next, %2, !dbg !280
-  br i1 %9, label %3, label %._crit_edge, !dbg !283
-
-._crit_edge2:                                     ; preds = %3
-  %10 = trunc i64 %indvars.iv to i32, !dbg !288
-  br label %._crit_edge, !dbg !288
-
-._crit_edge:                                      ; preds = %8, %._crit_edge2, %0
-  %.0 = phi i32 [ %10, %._crit_edge2 ], [ -1, %0 ], [ -1, %8 ]
-  ret i32 %.0, !dbg !289
+return:                                           ; preds = %for.cond, %for.body, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %i.05, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0, !dbg !204
 }

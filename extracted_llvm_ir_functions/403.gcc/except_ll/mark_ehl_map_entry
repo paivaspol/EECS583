@@ -1,21 +1,24 @@
 define internal i32 @mark_ehl_map_entry(i8** nocapture %pentry, i8* nocapture %data) #0 {
 entry:
-  %0 = load i8** %pentry, align 8
-  %label = bitcast i8* %0 to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %label, align 8, !tbaa !3
-  %cmp = icmp eq %struct.rtx_def* %1, null
-  br i1 %cmp, label %do.end, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{i8** %pentry}, i64 0, metadata !2198), !dbg !3662
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !2199), !dbg !3663
+  %0 = load i8** %pentry, align 8, !dbg !3664
+  %label = bitcast i8* %0 to %struct.rtx_def**, !dbg !3665
+  %1 = load %struct.rtx_def** %label, align 8, !dbg !3665, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !2201), !dbg !3665
+  %cmp = icmp eq %struct.rtx_def* %1, null, !dbg !3665
+  br i1 %cmp, label %do.end, label %land.lhs.true, !dbg !3665
 
 land.lhs.true:                                    ; preds = %entry
-  %2 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 0, i64 0
-  %call = tail call i32 @ggc_set_mark(i8* %2) #6
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.then, label %do.end
+  %2 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 0, i64 0, !dbg !3665
+  %call = tail call i32 @ggc_set_mark(i8* %2) #7, !dbg !3665
+  %tobool = icmp eq i32 %call, 0, !dbg !3665
+  br i1 %tobool, label %if.then, label %do.end, !dbg !3665
 
 if.then:                                          ; preds = %land.lhs.true
-  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %1) #6
-  br label %do.end
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %1) #7, !dbg !3665
+  br label %do.end, !dbg !3665
 
 do.end:                                           ; preds = %land.lhs.true, %entry, %if.then
-  ret i32 1
+  ret i32 1, !dbg !3666
 }

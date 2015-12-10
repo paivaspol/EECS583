@@ -1,25 +1,26 @@
 define void @clear_aux_for_blocks() #0 {
 entry:
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %cmp3 = icmp sgt i32 %0, 0
-  br i1 %cmp3, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !194, i64 0, metadata !1004), !dbg !1481
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !1481, !tbaa !1163
+  %cmp3 = icmp sgt i32 %0, 0, !dbg !1481
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !1481
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %1 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
-  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4
-  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv
-  %2 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
-  %aux = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 10
-  store i8* null, i8** %aux, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %3, %0
-  br i1 %cmp, label %for.body, label %for.end
+  %1 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !1483, !tbaa !1158
+  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4, !dbg !1483
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !1483
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv, !dbg !1483
+  %2 = load %struct.basic_block_def** %arrayidx, align 8, !dbg !1483, !tbaa !1158
+  %aux = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 10, !dbg !1483
+  store i8* null, i8** %aux, align 8, !dbg !1483, !tbaa !1158
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1481
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !1481
+  %cmp = icmp slt i32 %3, %0, !dbg !1481
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1481
 
 for.end:                                          ; preds = %for.body, %entry
-  store i8* null, i8** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0, i32 10), align 16, !tbaa !0
-  store i8* null, i8** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1, i32 10), align 16, !tbaa !0
-  ret void
+  store i8* null, i8** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0, i32 10), align 16, !dbg !1484, !tbaa !1158
+  store i8* null, i8** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1, i32 10), align 16, !dbg !1485, !tbaa !1158
+  ret void, !dbg !1486
 }

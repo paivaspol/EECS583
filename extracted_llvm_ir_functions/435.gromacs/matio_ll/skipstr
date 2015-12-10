@@ -1,23 +1,24 @@
-define void @skipstr(i8** nocapture %line) #4 {
-  tail call void @llvm.dbg.value(metadata i8** %line, i64 0, metadata !222, metadata !477), !dbg !769
-  %1 = load i8** %line, align 8, !dbg !770, !tbaa !525
-  tail call void @ltrim(i8* %1) #10, !dbg !771
-  %.pre = load i8** %line, align 8, !dbg !772, !tbaa !525
-  br label %2, !dbg !773
+define void @skipstr(i8** nocapture %line) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8** %line}, i64 0, metadata !219), !dbg !563
+  %0 = load i8** %line, align 8, !dbg !564, !tbaa !463
+  tail call void @ltrim(i8* %0) #9, !dbg !564
+  %.pre = load i8** %line, align 8, !dbg !565, !tbaa !463
+  br label %while.cond, !dbg !565
 
-; <label>:2                                       ; preds = %5, %0
-  %3 = phi i8* [ %6, %5 ], [ %.pre, %0 ]
-  %4 = load i8* %3, align 1, !dbg !774, !tbaa !505
-  switch i8 %4, label %5 [
-    i8 32, label %.critedge
-    i8 0, label %.critedge
-  ], !dbg !775
+while.cond:                                       ; preds = %while.body, %entry
+  %1 = phi i8* [ %incdec.ptr, %while.body ], [ %.pre, %entry ]
+  %2 = load i8* %1, align 1, !dbg !565, !tbaa !464
+  switch i8 %2, label %while.body [
+    i8 32, label %while.end
+    i8 0, label %while.end
+  ], !dbg !565
 
-; <label>:5                                       ; preds = %2
-  %6 = getelementptr inbounds i8* %3, i64 1, !dbg !776
-  store i8* %6, i8** %line, align 8, !dbg !776, !tbaa !525
-  br label %2, !dbg !773
+while.body:                                       ; preds = %while.cond
+  %incdec.ptr = getelementptr inbounds i8* %1, i64 1, !dbg !566
+  store i8* %incdec.ptr, i8** %line, align 8, !dbg !566, !tbaa !463
+  br label %while.cond, !dbg !566
 
-.critedge:                                        ; preds = %2, %2
-  ret void, !dbg !777
+while.end:                                        ; preds = %while.cond, %while.cond
+  ret void, !dbg !567
 }

@@ -1,72 +1,73 @@
 define internal fastcc i32 @CCTKi_TimerCreate(i8* %timername) #1 {
+entry:
   %timer = alloca %struct.t_Timer*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %timername, i64 0, metadata !285, metadata !354), !dbg !471
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !472, !tbaa !376
-  %2 = bitcast %struct.t_Timer** %timer to i8**, !dbg !474
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %timername, i8** %2) #8, !dbg !475
-  %4 = icmp sgt i32 %3, -1, !dbg !476
-  br i1 %4, label %.loopexit, label %5, !dbg !477
+  call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !321), !dbg !409
+  call void @llvm.dbg.declare(metadata !{%struct.t_Timer** %timer}, metadata !323), !dbg !410
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !411, !tbaa !355
+  %1 = bitcast %struct.t_Timer** %timer to i8**, !dbg !411
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %timername, i8** %1) #8, !dbg !411
+  %cmp = icmp sgt i32 %call, -1, !dbg !411
+  br i1 %cmp, label %if.end18, label %if.else, !dbg !411
 
-; <label>:5                                       ; preds = %0
-  %6 = call i8* @malloc(i64 8) #8, !dbg !478
-  store i8* %6, i8** %2, align 8, !dbg !480, !tbaa !376
-  %7 = icmp eq i8* %6, null, !dbg !481
-  br i1 %7, label %.loopexit, label %8, !dbg !483
+if.else:                                          ; preds = %entry
+  %call2 = call noalias i8* @malloc(i64 8) #8, !dbg !412
+  %2 = bitcast i8* %call2 to %struct.t_Timer*, !dbg !412
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer* %2}, i64 0, metadata !323), !dbg !412
+  store %struct.t_Timer* %2, %struct.t_Timer** %timer, align 8, !dbg !412, !tbaa !355
+  %tobool = icmp eq i8* %call2, null, !dbg !414
+  br i1 %tobool, label %if.end18, label %if.then3, !dbg !414
 
-; <label>:8                                       ; preds = %5
-  %9 = bitcast i8* %6 to i8**
-  %10 = load i32* @n_clocks, align 4, !dbg !484, !tbaa !388
-  %11 = sext i32 %10 to i64, !dbg !484
-  %12 = shl nsw i64 %11, 3, !dbg !486
-  %13 = call i8* @malloc(i64 %12) #8, !dbg !487
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !287, metadata !354), !dbg !488
-  store i8* %13, i8** %9, align 8, !dbg !489, !tbaa !398
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !287, metadata !354), !dbg !488
-  %14 = load %struct.t_Timer** %timer, align 8, !dbg !490, !tbaa !376
-  %15 = getelementptr inbounds %struct.t_Timer* %14, i64 0, i32 0, !dbg !492
-  %16 = load i8*** %15, align 8, !dbg !492, !tbaa !398
-  %17 = icmp eq i8** %16, null, !dbg !490
-  %18 = bitcast %struct.t_Timer* %14 to i8*, !dbg !493
-  br i1 %17, label %39, label %19, !dbg !495
+if.then3:                                         ; preds = %if.else
+  %3 = load i32* @n_clocks, align 4, !dbg !415, !tbaa !359
+  %conv = sext i32 %3 to i64, !dbg !415
+  %mul = shl nsw i64 %conv, 3, !dbg !415
+  %call4 = call noalias i8* @malloc(i64 %mul) #8, !dbg !415
+  %4 = bitcast i8* %call4 to i8**, !dbg !415
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !323), !dbg !415
+  %data = bitcast i8* %call2 to i8***, !dbg !415
+  store i8** %4, i8*** %data, align 8, !dbg !415, !tbaa !355
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !323), !dbg !417
+  %tobool6 = icmp eq i8* %call4, null, !dbg !417
+  br i1 %tobool6, label %if.else15, label %if.then7, !dbg !417
 
-; <label>:19                                      ; preds = %8
-  %20 = call i32 @Util_NewHandle(%struct.cHandledData** @timers, i8* %timername, i8* %18) #8, !dbg !496
-  call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !289, metadata !354), !dbg !498
-  %21 = load i32* @n_timers, align 4, !dbg !499, !tbaa !388
-  %22 = add nsw i32 %21, 1, !dbg !499
-  store i32 %22, i32* @n_timers, align 4, !dbg !499, !tbaa !388
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !290, metadata !354), !dbg !500
-  %23 = load i32* @n_clocks, align 4, !dbg !501, !tbaa !388
-  %24 = icmp sgt i32 %23, 0, !dbg !504
-  br i1 %24, label %.lr.ph, label %.loopexit, !dbg !505
+if.then7:                                         ; preds = %if.then3
+  %call8 = call i32 @Util_NewHandle(%struct.cHandledData** @timers, i8* %timername, i8* %call2) #8, !dbg !418
+  call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !325), !dbg !418
+  %5 = load i32* @n_timers, align 4, !dbg !420, !tbaa !359
+  %inc = add nsw i32 %5, 1, !dbg !420
+  store i32 %inc, i32* @n_timers, align 4, !dbg !420, !tbaa !359
+  call void @llvm.dbg.value(metadata !10, i64 0, metadata !326), !dbg !421
+  %6 = load i32* @n_clocks, align 4, !dbg !421, !tbaa !359
+  %cmp924 = icmp sgt i32 %6, 0, !dbg !421
+  br i1 %cmp924, label %for.body, label %if.end18, !dbg !421
 
-.lr.ph:                                           ; preds = %19, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %19 ]
-  %25 = load %struct.cHandledData** @clocks, align 8, !dbg !506, !tbaa !376
-  %26 = trunc i64 %indvars.iv to i32, !dbg !508
-  %27 = call i8* @Util_GetHandledData(%struct.cHandledData* %25, i32 %26) #8, !dbg !508
-  %28 = getelementptr inbounds i8* %27, i64 16, !dbg !509
-  %29 = bitcast i8* %28 to i8* (i32)**, !dbg !509
-  %30 = load i8* (i32)** %29, align 8, !dbg !509, !tbaa !409
-  %31 = call i8* %30(i32 %20) #8, !dbg !510
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !287, metadata !354), !dbg !488
-  %32 = load %struct.t_Timer** %timer, align 8, !dbg !511, !tbaa !376
-  %33 = getelementptr inbounds %struct.t_Timer* %32, i64 0, i32 0, !dbg !512
-  %34 = load i8*** %33, align 8, !dbg !512, !tbaa !398
-  %35 = getelementptr inbounds i8** %34, i64 %indvars.iv, !dbg !511
-  store i8* %31, i8** %35, align 8, !dbg !513, !tbaa !376
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !505
-  %36 = load i32* @n_clocks, align 4, !dbg !501, !tbaa !388
-  %37 = sext i32 %36 to i64, !dbg !504
-  %38 = icmp slt i64 %indvars.iv.next, %37, !dbg !504
-  br i1 %38, label %.lr.ph, label %.loopexit, !dbg !505
+for.body:                                         ; preds = %if.then7, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then7 ]
+  %7 = load %struct.cHandledData** @clocks, align 8, !dbg !423, !tbaa !355
+  %8 = trunc i64 %indvars.iv to i32, !dbg !423
+  %call11 = call i8* @Util_GetHandledData(%struct.cHandledData* %7, i32 %8) #8, !dbg !423
+  %create = getelementptr inbounds i8* %call11, i64 16, !dbg !425
+  %9 = bitcast i8* %create to i8* (i32)**, !dbg !425
+  %10 = load i8* (i32)** %9, align 8, !dbg !425, !tbaa !355
+  %call12 = call i8* %10(i32 %call8) #8, !dbg !425
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !323), !dbg !425
+  %11 = load %struct.t_Timer** %timer, align 8, !dbg !425, !tbaa !355
+  %data13 = getelementptr inbounds %struct.t_Timer* %11, i64 0, i32 0, !dbg !425
+  %12 = load i8*** %data13, align 8, !dbg !425, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %12, i64 %indvars.iv, !dbg !425
+  store i8* %call12, i8** %arrayidx, align 8, !dbg !425, !tbaa !355
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !421
+  %13 = load i32* @n_clocks, align 4, !dbg !421, !tbaa !359
+  %14 = trunc i64 %indvars.iv.next to i32, !dbg !421
+  %cmp9 = icmp slt i32 %14, %13, !dbg !421
+  br i1 %cmp9, label %for.body, label %if.end18, !dbg !421
 
-; <label>:39                                      ; preds = %8
-  call void @free(i8* %18) #9, !dbg !514
-  call void @llvm.dbg.value(metadata i32 -2, i64 0, metadata !286, metadata !354), !dbg !515
-  br label %.loopexit
+if.else15:                                        ; preds = %if.then3
+  call void @free(i8* %call2) #8, !dbg !426
+  call void @llvm.dbg.value(metadata !428, i64 0, metadata !322), !dbg !429
+  br label %if.end18
 
-.loopexit:                                        ; preds = %.lr.ph, %19, %5, %0, %39
-  %retval.0 = phi i32 [ -2, %39 ], [ -1, %0 ], [ -2, %5 ], [ %20, %19 ], [ %20, %.lr.ph ]
-  ret i32 %retval.0, !dbg !516
+if.end18:                                         ; preds = %if.then7, %for.body, %if.else, %entry, %if.else15
+  %retval1.0 = phi i32 [ -2, %if.else15 ], [ -1, %entry ], [ -2, %if.else ], [ %call8, %for.body ], [ %call8, %if.then7 ]
+  ret i32 %retval1.0, !dbg !430
 }

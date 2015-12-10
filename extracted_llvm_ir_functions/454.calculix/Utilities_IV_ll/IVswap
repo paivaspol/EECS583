@@ -1,40 +1,37 @@
 define void @IVswap(i32 %size, i32* %y, i32* %x) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !319, metadata !380), !dbg !960
-  tail call void @llvm.dbg.value(metadata i32* %y, i64 0, metadata !320, metadata !380), !dbg !961
-  tail call void @llvm.dbg.value(metadata i32* %x, i64 0, metadata !321, metadata !380), !dbg !962
-  %1 = icmp sgt i32 %size, 0, !dbg !963
-  br i1 %1, label %2, label %.loopexit, !dbg !964
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !280), !dbg !712
+  tail call void @llvm.dbg.value(metadata !{i32* %y}, i64 0, metadata !281), !dbg !713
+  tail call void @llvm.dbg.value(metadata !{i32* %x}, i64 0, metadata !282), !dbg !714
+  %cmp = icmp sgt i32 %size, 0, !dbg !715
+  br i1 %cmp, label %if.then, label %if.end11, !dbg !715
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp eq i32* %y, null, !dbg !965
-  %4 = icmp eq i32* %x, null, !dbg !966
-  %or.cond = or i1 %3, %4, !dbg !967
-  br i1 %or.cond, label %6, label %.lr.ph, !dbg !967
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq i32* %y, null, !dbg !716
+  %cmp2 = icmp eq i32* %x, null, !dbg !716
+  %or.cond = or i1 %cmp1, %cmp2, !dbg !716
+  br i1 %or.cond, label %if.then3, label %for.body, !dbg !716
 
-.lr.ph:                                           ; preds = %2
-  %5 = add i32 %size, -1, !dbg !968
-  br label %9, !dbg !968
+if.then3:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !717, !tbaa !341
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([66 x i8]* @.str25, i64 0, i64 0), i32 %size, i32* %y, i32* %x) #7, !dbg !717
+  tail call void @exit(i32 -1) #8, !dbg !719
+  unreachable, !dbg !719
 
-; <label>:6                                       ; preds = %2
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !970, !tbaa !399
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([66 x i8]* @.str25, i64 0, i64 0), i32 %size, i32* %y, i32* %x) #8, !dbg !972
-  tail call void @exit(i32 -1) #9, !dbg !973
-  unreachable, !dbg !973
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %arrayidx = getelementptr inbounds i32* %x, i64 %indvars.iv, !dbg !720
+  %1 = load i32* %arrayidx, align 4, !dbg !720, !tbaa !351
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !286), !dbg !720
+  %arrayidx6 = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !723
+  %2 = load i32* %arrayidx6, align 4, !dbg !723, !tbaa !351
+  store i32 %2, i32* %arrayidx, align 4, !dbg !723, !tbaa !351
+  store i32 %1, i32* %arrayidx6, align 4, !dbg !724, !tbaa !351
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !725
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !725
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !725
+  br i1 %exitcond, label %if.end11, label %for.body, !dbg !725
 
-; <label>:9                                       ; preds = %9, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %10 = getelementptr inbounds i32* %x, i64 %indvars.iv, !dbg !974
-  %11 = load i32* %10, align 4, !dbg !974, !tbaa !414
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !327, metadata !380), !dbg !977
-  %12 = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !978
-  %13 = load i32* %12, align 4, !dbg !978, !tbaa !414
-  store i32 %13, i32* %10, align 4, !dbg !979, !tbaa !414
-  store i32 %11, i32* %12, align 4, !dbg !980, !tbaa !414
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !968
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !968
-  %exitcond = icmp eq i32 %lftr.wideiv, %5, !dbg !968
-  br i1 %exitcond, label %.loopexit, label %9, !dbg !968
-
-.loopexit:                                        ; preds = %9, %0
-  ret void, !dbg !981
+if.end11:                                         ; preds = %for.body, %entry
+  ret void, !dbg !726
 }

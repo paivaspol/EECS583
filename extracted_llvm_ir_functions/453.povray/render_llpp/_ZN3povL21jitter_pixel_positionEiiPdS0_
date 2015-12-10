@@ -1,67 +1,68 @@
-define internal fastcc void @_ZN3povL21jitter_pixel_positionEiiPdS0_(i32 %x, i32 %y, double* nocapture %Jitter_X, double* nocapture %Jitter_Y) #6 {
-  tail call void @llvm.dbg.value(metadata i32 %x, i64 0, metadata !1341, metadata !2153), !dbg !6298
-  tail call void @llvm.dbg.value(metadata i32 %y, i64 0, metadata !1342, metadata !2153), !dbg !6299
-  tail call void @llvm.dbg.value(metadata double* %Jitter_X, i64 0, metadata !1343, metadata !2153), !dbg !6300
-  tail call void @llvm.dbg.value(metadata double* %Jitter_Y, i64 0, metadata !1344, metadata !2153), !dbg !6301
-  %1 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !6302, !tbaa !2198
-  %2 = and i32 %1, 256, !dbg !6304
-  %3 = icmp eq i32 %2, 0, !dbg !6304
-  br i1 %3, label %46, label %4, !dbg !6305
+define internal fastcc void @_ZN3povL21jitter_pixel_positionEiiPdS0_(i32 %x, i32 %y, double* nocapture %Jitter_X, double* nocapture %Jitter_Y) #7 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !1312), !dbg !4034
+  tail call void @llvm.dbg.value(metadata !{i32 %y}, i64 0, metadata !1313), !dbg !4034
+  tail call void @llvm.dbg.value(metadata !{double* %Jitter_X}, i64 0, metadata !1314), !dbg !4034
+  tail call void @llvm.dbg.value(metadata !{double* %Jitter_Y}, i64 0, metadata !1315), !dbg !4034
+  %0 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !4035, !tbaa !1664
+  %and = and i32 %0, 256, !dbg !4035
+  %tobool = icmp eq i32 %and, 0, !dbg !4035
+  br i1 %tobool, label %if.else, label %if.then, !dbg !4035
 
-; <label>:4                                       ; preds = %0
-  %5 = load i32* @_ZN3pov11Jitt_OffsetE, align 4, !dbg !6306, !tbaa !2144
-  %6 = add nsw i32 %5, %x, !dbg !6306
-  %7 = and i32 %6, 4095, !dbg !6306
-  %8 = zext i32 %7 to i64, !dbg !6306
-  %9 = getelementptr inbounds [8192 x i16]* @_ZN3pov9hashTableE, i64 0, i64 %8, !dbg !6306
-  %10 = load i16* %9, align 2, !dbg !6306, !tbaa !6222
-  %11 = zext i16 %10 to i32, !dbg !6306
-  %12 = xor i32 %11, %y, !dbg !6306
-  %13 = and i32 %12, 4095, !dbg !6306
-  %14 = zext i32 %13 to i64, !dbg !6306
-  %15 = getelementptr inbounds [8192 x i16]* @_ZN3pov9hashTableE, i64 0, i64 %14, !dbg !6306
-  %16 = load i16* %15, align 2, !dbg !6306, !tbaa !6222
-  %17 = zext i16 %16 to i64, !dbg !6306
-  %18 = and i64 %17, 255, !dbg !6306
-  %19 = getelementptr inbounds [256 x float]* @_ZN3povL7jitttabE, i64 0, i64 %18, !dbg !6306
-  %20 = load float* %19, align 4, !dbg !6306, !tbaa !2801
-  %21 = fpext float %20 to double, !dbg !6306
-  store double %21, double* %Jitter_X, align 8, !dbg !6308, !tbaa !2141
-  %22 = add nsw i32 %5, 1, !dbg !6309
-  %23 = add nsw i32 %22, %x, !dbg !6310
-  %24 = and i32 %23, 4095, !dbg !6310
-  %25 = zext i32 %24 to i64, !dbg !6310
-  %26 = getelementptr inbounds [8192 x i16]* @_ZN3pov9hashTableE, i64 0, i64 %25, !dbg !6310
-  %27 = load i16* %26, align 2, !dbg !6310, !tbaa !6222
-  %28 = zext i16 %27 to i32, !dbg !6310
-  %29 = xor i32 %28, %y, !dbg !6310
-  %30 = and i32 %29, 4095, !dbg !6310
-  %31 = zext i32 %30 to i64, !dbg !6310
-  %32 = getelementptr inbounds [8192 x i16]* @_ZN3pov9hashTableE, i64 0, i64 %31, !dbg !6310
-  %33 = load i16* %32, align 2, !dbg !6310, !tbaa !6222
-  %34 = zext i16 %33 to i64, !dbg !6310
-  %35 = and i64 %34, 255, !dbg !6310
-  %36 = getelementptr inbounds [256 x float]* @_ZN3povL7jitttabE, i64 0, i64 %35, !dbg !6310
-  %37 = load float* %36, align 4, !dbg !6310, !tbaa !2801
-  %38 = fpext float %37 to double, !dbg !6310
-  store double %38, double* %Jitter_Y, align 8, !dbg !6311, !tbaa !2141
-  %39 = add nsw i32 %5, 2, !dbg !6312
-  store i32 %39, i32* @_ZN3pov11Jitt_OffsetE, align 4, !dbg !6312, !tbaa !2144
-  %40 = load double* @_ZN3povL11JitterScaleE, align 8, !dbg !6313, !tbaa !2141
-  %41 = load double* %Jitter_X, align 8, !dbg !6314, !tbaa !2141
-  %42 = fmul double %40, %41, !dbg !6314
-  store double %42, double* %Jitter_X, align 8, !dbg !6314, !tbaa !2141
-  %43 = load double* @_ZN3povL11JitterScaleE, align 8, !dbg !6315, !tbaa !2141
-  %44 = load double* %Jitter_Y, align 8, !dbg !6316, !tbaa !2141
-  %45 = fmul double %43, %44, !dbg !6316
-  store double %45, double* %Jitter_Y, align 8, !dbg !6316, !tbaa !2141
-  br label %47, !dbg !6317
+if.then:                                          ; preds = %entry
+  %1 = load i32* @_ZN3pov11Jitt_OffsetE, align 4, !dbg !4036, !tbaa !1664
+  %add = add nsw i32 %1, %x, !dbg !4036
+  %and1 = and i32 %add, 4095, !dbg !4036
+  %idxprom33 = zext i32 %and1 to i64, !dbg !4036
+  %arrayidx = getelementptr inbounds [8192 x i16]* @_ZN3pov9hashTableE, i64 0, i64 %idxprom33, !dbg !4036
+  %2 = load i16* %arrayidx, align 2, !dbg !4036, !tbaa !3898
+  %conv2 = zext i16 %2 to i32, !dbg !4036
+  %xor = xor i32 %conv2, %y, !dbg !4036
+  %and3 = and i32 %xor, 4095, !dbg !4036
+  %idxprom434 = zext i32 %and3 to i64, !dbg !4036
+  %arrayidx5 = getelementptr inbounds [8192 x i16]* @_ZN3pov9hashTableE, i64 0, i64 %idxprom434, !dbg !4036
+  %3 = load i16* %arrayidx5, align 2, !dbg !4036, !tbaa !3898
+  %conv6 = zext i16 %3 to i64, !dbg !4036
+  %and7 = and i64 %conv6, 255, !dbg !4036
+  %arrayidx9 = getelementptr inbounds [256 x float]* @_ZN3povL7jitttabE, i64 0, i64 %and7, !dbg !4036
+  %4 = load float* %arrayidx9, align 4, !dbg !4036, !tbaa !2062
+  %conv10 = fpext float %4 to double, !dbg !4036
+  store double %conv10, double* %Jitter_X, align 8, !dbg !4036, !tbaa !1662
+  %inc = add nsw i32 %1, 1, !dbg !4038
+  %add11 = add nsw i32 %inc, %x, !dbg !4039
+  %and12 = and i32 %add11, 4095, !dbg !4039
+  %idxprom1336 = zext i32 %and12 to i64, !dbg !4039
+  %arrayidx14 = getelementptr inbounds [8192 x i16]* @_ZN3pov9hashTableE, i64 0, i64 %idxprom1336, !dbg !4039
+  %5 = load i16* %arrayidx14, align 2, !dbg !4039, !tbaa !3898
+  %conv15 = zext i16 %5 to i32, !dbg !4039
+  %xor16 = xor i32 %conv15, %y, !dbg !4039
+  %and17 = and i32 %xor16, 4095, !dbg !4039
+  %idxprom1837 = zext i32 %and17 to i64, !dbg !4039
+  %arrayidx19 = getelementptr inbounds [8192 x i16]* @_ZN3pov9hashTableE, i64 0, i64 %idxprom1837, !dbg !4039
+  %6 = load i16* %arrayidx19, align 2, !dbg !4039, !tbaa !3898
+  %conv20 = zext i16 %6 to i64, !dbg !4039
+  %and21 = and i64 %conv20, 255, !dbg !4039
+  %arrayidx23 = getelementptr inbounds [256 x float]* @_ZN3povL7jitttabE, i64 0, i64 %and21, !dbg !4039
+  %7 = load float* %arrayidx23, align 4, !dbg !4039, !tbaa !2062
+  %conv24 = fpext float %7 to double, !dbg !4039
+  store double %conv24, double* %Jitter_Y, align 8, !dbg !4039, !tbaa !1662
+  %inc25 = add nsw i32 %1, 2, !dbg !4040
+  store i32 %inc25, i32* @_ZN3pov11Jitt_OffsetE, align 4, !dbg !4040, !tbaa !1664
+  %8 = load double* @_ZN3povL11JitterScaleE, align 8, !dbg !4041, !tbaa !1662
+  %9 = load double* %Jitter_X, align 8, !dbg !4041, !tbaa !1662
+  %mul = fmul double %8, %9, !dbg !4041
+  store double %mul, double* %Jitter_X, align 8, !dbg !4041, !tbaa !1662
+  %10 = load double* @_ZN3povL11JitterScaleE, align 8, !dbg !4042, !tbaa !1662
+  %11 = load double* %Jitter_Y, align 8, !dbg !4042, !tbaa !1662
+  %mul26 = fmul double %10, %11, !dbg !4042
+  store double %mul26, double* %Jitter_Y, align 8, !dbg !4042, !tbaa !1662
+  br label %if.end, !dbg !4043
 
-; <label>:46                                      ; preds = %0
-  store double 0.000000e+00, double* %Jitter_Y, align 8, !dbg !6318, !tbaa !2141
-  store double 0.000000e+00, double* %Jitter_X, align 8, !dbg !6320, !tbaa !2141
-  br label %47
+if.else:                                          ; preds = %entry
+  store double 0.000000e+00, double* %Jitter_Y, align 8, !dbg !4044, !tbaa !1662
+  store double 0.000000e+00, double* %Jitter_X, align 8, !dbg !4044, !tbaa !1662
+  br label %if.end
 
-; <label>:47                                      ; preds = %46, %4
-  ret void, !dbg !6321
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !4046
 }

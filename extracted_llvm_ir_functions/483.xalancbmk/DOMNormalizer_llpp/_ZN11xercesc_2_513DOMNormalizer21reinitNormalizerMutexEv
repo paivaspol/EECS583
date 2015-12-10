@@ -1,0 +1,37 @@
+define void @_ZN11xercesc_2_513DOMNormalizer21reinitNormalizerMutexEv() #4 align 2 {
+entry:
+  %0 = load %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_5L16sNormalizerMutexE, align 8, !dbg !5721, !tbaa !5715
+  %isnull = icmp eq %"class.xercesc_2_5::XMLMutex"* %0, null, !dbg !5721
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !5721
+
+delete.notnull:                                   ; preds = %entry
+  invoke void @_ZN11xercesc_2_58XMLMutexD1Ev(%"class.xercesc_2_5::XMLMutex"* %0) #10
+          to label %invoke.cont unwind label %lpad, !dbg !5721
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %1 = bitcast %"class.xercesc_2_5::XMLMutex"* %0 to i8*, !dbg !5721
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %1) #10, !dbg !5721
+  br label %delete.end, !dbg !5721
+
+delete.end:                                       ; preds = %invoke.cont, %entry
+  store %"class.xercesc_2_5::XMLMutex"* null, %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_5L16sNormalizerMutexE, align 8, !dbg !5722, !tbaa !5715
+  store i1 false, i1* @_ZN11xercesc_2_5L11sRegisteredE, align 1
+  ret void, !dbg !5723
+
+lpad:                                             ; preds = %delete.notnull
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !5721
+  %3 = bitcast %"class.xercesc_2_5::XMLMutex"* %0 to i8*, !dbg !5721
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %3) #10
+          to label %eh.resume unwind label %terminate.lpad, !dbg !5721
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %2, !dbg !5721
+
+terminate.lpad:                                   ; preds = %lpad
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !5721
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !5721
+  tail call void @__clang_call_terminate(i8* %5) #9, !dbg !5721
+  unreachable, !dbg !5721
+}

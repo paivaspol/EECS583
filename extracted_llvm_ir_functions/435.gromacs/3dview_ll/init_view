@@ -1,34 +1,35 @@
-define %struct.t_3dview* @init_view([3 x float]* nocapture readonly %box) #4 {
-  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !228, metadata !259), !dbg !823
-  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str7, i64 0, i64 0), i32 305, i32 1, i32 204) #8, !dbg !824
-  tail call void @llvm.dbg.value(metadata %struct.t_3dview* %11, i64 0, metadata !229, metadata !259), !dbg !825
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !230, metadata !259), !dbg !826
-  %2 = bitcast i8* %1 to [3 x [3 x float]]*, !dbg !827
-  br label %.preheader, !dbg !832
+define %struct.t_3dview* @init_view([3 x float]* nocapture %box) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !210), !dbg !497
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str7, i64 0, i64 0), i32 305, i32 1, i32 204) #5, !dbg !498
+  tail call void @llvm.dbg.value(metadata !{%struct.t_3dview* %1}, i64 0, metadata !211), !dbg !498
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !212), !dbg !499
+  %box8 = bitcast i8* %call to [3 x [3 x float]]*, !dbg !501
+  br label %for.cond1.preheader, !dbg !499
 
-.preheader:                                       ; preds = %9, %0
-  %indvars.iv3 = phi i64 [ 0, %0 ], [ %indvars.iv.next4, %9 ]
-  br label %3, !dbg !833
+for.cond1.preheader:                              ; preds = %for.inc11, %entry
+  %indvars.iv24 = phi i64 [ 0, %entry ], [ %indvars.iv.next25, %for.inc11 ]
+  br label %for.body3, !dbg !503
 
-; <label>:3                                       ; preds = %3, %.preheader
-  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv3, i64 %indvars.iv, !dbg !834
-  %5 = bitcast float* %4 to i32*, !dbg !834
-  %6 = load i32* %5, align 4, !dbg !834, !tbaa !308
-  %7 = getelementptr inbounds [3 x [3 x float]]* %2, i64 0, i64 %indvars.iv3, i64 %indvars.iv, !dbg !835
-  %8 = bitcast float* %7 to i32*, !dbg !836
-  store i32 %6, i32* %8, align 4, !dbg !836, !tbaa !308
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !833
-  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !833
-  br i1 %exitcond, label %9, label %3, !dbg !833
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %arrayidx5 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv24, i64 %indvars.iv, !dbg !501
+  %0 = load float* %arrayidx5, align 4, !dbg !501, !tbaa !242
+  %arrayidx10 = getelementptr inbounds [3 x [3 x float]]* %box8, i64 0, i64 %indvars.iv24, i64 %indvars.iv, !dbg !501
+  store float %0, float* %arrayidx10, align 4, !dbg !501, !tbaa !242
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !503
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !503
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !503
+  br i1 %exitcond, label %for.inc11, label %for.body3, !dbg !503
 
-; <label>:9                                       ; preds = %3
-  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1, !dbg !832
-  %exitcond5 = icmp eq i64 %indvars.iv.next4, 3, !dbg !832
-  br i1 %exitcond5, label %10, label %.preheader, !dbg !832
+for.inc11:                                        ; preds = %for.body3
+  %indvars.iv.next25 = add i64 %indvars.iv24, 1, !dbg !499
+  %lftr.wideiv26 = trunc i64 %indvars.iv.next25 to i32, !dbg !499
+  %exitcond27 = icmp eq i32 %lftr.wideiv26, 3, !dbg !499
+  br i1 %exitcond27, label %for.end13, label %for.cond1.preheader, !dbg !499
 
-; <label>:10                                      ; preds = %9
-  %11 = bitcast i8* %1 to %struct.t_3dview*, !dbg !824
-  tail call void @reset_view(%struct.t_3dview* %11) #10, !dbg !837
-  ret %struct.t_3dview* %11, !dbg !838
+for.end13:                                        ; preds = %for.inc11
+  %1 = bitcast i8* %call to %struct.t_3dview*, !dbg !498
+  tail call void @reset_view(%struct.t_3dview* %1) #6, !dbg !504
+  ret %struct.t_3dview* %1, !dbg !505
 }

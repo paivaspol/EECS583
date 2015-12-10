@@ -1,22 +1,23 @@
 define void @ZV_setDefaultFields(%struct._ZV* %zv) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ZV* %zv, i64 0, metadata !31, metadata !46), !dbg !57
-  %1 = icmp eq %struct._ZV* %zv, null, !dbg !58
-  br i1 %1, label %2, label %5, !dbg !60
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ZV* %zv}, i64 0, metadata !26), !dbg !42
+  %cmp = icmp eq %struct._ZV* %zv, null, !dbg !43
+  br i1 %cmp, label %if.then, label %if.end, !dbg !43
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !61, !tbaa !51
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), %struct._ZV* null) #5, !dbg !63
-  tail call void @exit(i32 -1) #6, !dbg !64
-  unreachable, !dbg !64
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !44, !tbaa !37
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), %struct._ZV* null) #5, !dbg !44
+  tail call void @exit(i32 -1) #6, !dbg !46
+  unreachable, !dbg !46
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 0, !dbg !65
-  store i32 0, i32* %6, align 4, !dbg !66, !tbaa !67
-  %7 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 1, !dbg !70
-  store i32 0, i32* %7, align 4, !dbg !71, !tbaa !72
-  %8 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 2, !dbg !73
-  store i32 0, i32* %8, align 4, !dbg !74, !tbaa !75
-  %9 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 3, !dbg !76
-  store double* null, double** %9, align 8, !dbg !77, !tbaa !78
-  ret void, !dbg !79
+if.end:                                           ; preds = %entry
+  %size = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 0, !dbg !47
+  store i32 0, i32* %size, align 4, !dbg !47, !tbaa !48
+  %maxsize = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 1, !dbg !49
+  store i32 0, i32* %maxsize, align 4, !dbg !49, !tbaa !48
+  %owned = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 2, !dbg !50
+  store i32 0, i32* %owned, align 4, !dbg !50, !tbaa !48
+  %vec = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 3, !dbg !51
+  store double* null, double** %vec, align 8, !dbg !51, !tbaa !37
+  ret void, !dbg !52
 }

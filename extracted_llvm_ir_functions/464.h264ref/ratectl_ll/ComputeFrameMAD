@@ -1,33 +1,34 @@
 define double @ComputeFrameMAD() #5 {
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !123, metadata !1021), !dbg !3170
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !124, metadata !1021), !dbg !3171
-  %1 = load %struct.ImageParameters** @img, align 8, !dbg !3172, !tbaa !815
-  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 136, !dbg !3173
-  %3 = load i32* %2, align 4, !dbg !3173, !tbaa !977
-  %4 = icmp sgt i32 %3, 0, !dbg !3174
-  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !3175
+entry:
+  tail call void @llvm.dbg.value(metadata !1597, i64 0, metadata !119), !dbg !1743
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !120), !dbg !1744
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1744, !tbaa !804
+  %Frame_Total_Number_MB6 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 136, !dbg !1744
+  %1 = load i32* %Frame_Total_Number_MB6, align 4, !dbg !1744, !tbaa !807
+  %cmp7 = icmp sgt i32 %1, 0, !dbg !1744
+  br i1 %cmp7, label %for.body.lr.ph, label %for.end, !dbg !1744
 
-.lr.ph:                                           ; preds = %0
-  %5 = sext i32 %3 to i64, !dbg !3175
-  %.phi.trans.insert = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 131
-  %.pre = load double** %.phi.trans.insert, align 8, !dbg !3176, !tbaa !828
-  br label %6, !dbg !3175
+for.body.lr.ph:                                   ; preds = %entry
+  %MADofMB.phi.trans.insert = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 131
+  %.pre = load double** %MADofMB.phi.trans.insert, align 8, !dbg !1745, !tbaa !804
+  br label %for.body, !dbg !1744
 
-; <label>:6                                       ; preds = %.lr.ph, %6
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %6 ]
-  %TotalMAD.01 = phi double [ 0.000000e+00, %.lr.ph ], [ %9, %6 ]
-  %7 = getelementptr inbounds double* %.pre, i64 %indvars.iv, !dbg !3177
-  %8 = load double* %7, align 8, !dbg !3177, !tbaa !952
-  %9 = fadd double %TotalMAD.01, %8, !dbg !3178
-  tail call void @llvm.dbg.value(metadata double %9, i64 0, metadata !123, metadata !1021), !dbg !3170
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !3175
-  %10 = icmp slt i64 %indvars.iv.next, %5, !dbg !3174
-  br i1 %10, label %6, label %._crit_edge, !dbg !3175
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %TotalMAD.08 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %add, %for.body ]
+  %arrayidx = getelementptr inbounds double* %.pre, i64 %indvars.iv, !dbg !1745
+  %2 = load double* %arrayidx, align 8, !dbg !1745, !tbaa !862
+  %add = fadd double %TotalMAD.08, %2, !dbg !1745
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !119), !dbg !1745
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1744
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !1744
+  %cmp = icmp slt i32 %3, %1, !dbg !1744
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1744
 
-._crit_edge:                                      ; preds = %6, %0
-  %TotalMAD.0.lcssa = phi double [ 0.000000e+00, %0 ], [ %9, %6 ]
-  %11 = sitofp i32 %3 to double, !dbg !3179
-  %12 = fdiv double %TotalMAD.0.lcssa, %11, !dbg !3180
-  tail call void @llvm.dbg.value(metadata double %12, i64 0, metadata !123, metadata !1021), !dbg !3170
-  ret double %12, !dbg !3181
+for.end:                                          ; preds = %for.body, %entry
+  %TotalMAD.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add, %for.body ]
+  %conv = sitofp i32 %1 to double, !dbg !1746
+  %div = fdiv double %TotalMAD.0.lcssa, %conv, !dbg !1746
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !119), !dbg !1746
+  ret double %div, !dbg !1747
 }

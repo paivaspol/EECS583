@@ -1,22 +1,25 @@
-define %union.tree_node* @binfo_member(%union.tree_node* %elem, %union.tree_node* %list) #3 {
+define %union.tree_node* @binfo_member(%union.tree_node* %elem, %union.tree_node* %list) #4 {
 entry:
-  %tobool4 = icmp eq %union.tree_node* %list, null
-  br i1 %tobool4, label %return, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %elem}, i64 0, metadata !1078), !dbg !2266
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %list}, i64 0, metadata !1079), !dbg !2266
+  %tobool4 = icmp eq %union.tree_node* %list, null, !dbg !2267
+  br i1 %tobool4, label %return, label %while.body, !dbg !2267
 
 while.body:                                       ; preds = %entry, %if.end
   %list.addr.05 = phi %union.tree_node* [ %1, %if.end ], [ %list, %entry ]
-  %type = getelementptr inbounds %union.tree_node* %list.addr.05, i64 0, i32 0, i32 0, i32 1
-  %0 = load %union.tree_node** %type, align 8, !tbaa !0
-  %cmp = icmp eq %union.tree_node* %0, %elem
-  br i1 %cmp, label %return, label %if.end
+  %type = getelementptr inbounds %union.tree_node* %list.addr.05, i64 0, i32 0, i32 0, i32 1, !dbg !2268
+  %0 = load %union.tree_node** %type, align 8, !dbg !2268, !tbaa !1913
+  %cmp = icmp eq %union.tree_node* %0, %elem, !dbg !2268
+  br i1 %cmp, label %return, label %if.end, !dbg !2268
 
 if.end:                                           ; preds = %while.body
-  %chain = getelementptr inbounds %union.tree_node* %list.addr.05, i64 0, i32 0, i32 0, i32 0
-  %1 = load %union.tree_node** %chain, align 8, !tbaa !0
-  %tobool = icmp eq %union.tree_node* %1, null
-  br i1 %tobool, label %return, label %while.body
+  %chain = getelementptr inbounds %union.tree_node* %list.addr.05, i64 0, i32 0, i32 0, i32 0, !dbg !2270
+  %1 = load %union.tree_node** %chain, align 8, !dbg !2270, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %1}, i64 0, metadata !1079), !dbg !2270
+  %tobool = icmp eq %union.tree_node* %1, null, !dbg !2267
+  br i1 %tobool, label %return, label %while.body, !dbg !2267
 
 return:                                           ; preds = %if.end, %while.body, %entry
   %retval.0 = phi %union.tree_node* [ null, %entry ], [ %list.addr.05, %while.body ], [ null, %if.end ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !2271
 }

@@ -1,33 +1,33 @@
-define void @ltrim(i8* %str) #3 {
-  tail call void @llvm.dbg.value(metadata i8* %str, i64 0, metadata !198, metadata !281), !dbg !505
-  %1 = icmp eq i8* %str, null, !dbg !506
-  br i1 %1, label %10, label %2, !dbg !508
+define void @ltrim(i8* %str) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !92), !dbg !216
+  %tobool = icmp eq i8* %str, null, !dbg !217
+  br i1 %tobool, label %return, label %if.end, !dbg !217
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i8* @strdup(i8* %str) #10, !dbg !509
-  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !199, metadata !281), !dbg !510
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !200, metadata !281), !dbg !511
-  br label %4, !dbg !512
+if.end:                                           ; preds = %entry
+  %call = tail call noalias i8* @strdup(i8* %str) #10, !dbg !218
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !93), !dbg !218
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !94), !dbg !219
+  br label %while.cond, !dbg !220
 
-; <label>:4                                       ; preds = %.critedge, %2
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.critedge ], [ 0, %2 ]
-  %5 = getelementptr inbounds i8* %3, i64 %indvars.iv, !dbg !513
-  %6 = load i8* %5, align 1, !dbg !513, !tbaa !309
-  switch i8 %6, label %7 [
-    i8 32, label %.critedge
-    i8 9, label %.critedge
-  ], !dbg !514
+while.cond:                                       ; preds = %while.body, %if.end
+  %indvars.iv = phi i64 [ %indvars.iv.next, %while.body ], [ 0, %if.end ]
+  %arrayidx = getelementptr inbounds i8* %call, i64 %indvars.iv, !dbg !220
+  %0 = load i8* %arrayidx, align 1, !dbg !220, !tbaa !189
+  switch i8 %0, label %while.end [
+    i8 32, label %while.body
+    i8 9, label %while.body
+  ], !dbg !220
 
-.critedge:                                        ; preds = %4, %4
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !512
-  br label %4, !dbg !512
+while.body:                                       ; preds = %while.cond, %while.cond
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !221
+  br label %while.cond, !dbg !221
 
-; <label>:7                                       ; preds = %4
-  %8 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %str, i1 false), !dbg !515
-  %9 = tail call i8* @__strcpy_chk(i8* %str, i8* %5, i64 %8) #10, !dbg !515
-  tail call void @free(i8* %3) #11, !dbg !516
-  br label %10, !dbg !517
+while.end:                                        ; preds = %while.cond
+  %call7 = tail call i8* @strcpy(i8* %str, i8* %arrayidx) #10, !dbg !222
+  tail call void @free(i8* %call) #10, !dbg !223
+  br label %return, !dbg !223
 
-; <label>:10                                      ; preds = %0, %7
-  ret void, !dbg !517
+return:                                           ; preds = %entry, %while.end
+  ret void, !dbg !223
 }

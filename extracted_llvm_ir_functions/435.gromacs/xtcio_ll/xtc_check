@@ -1,21 +1,22 @@
-define i32 @xtc_check(i8* %str, i32 %bResult, i8* %file, i32 %line) #4 {
-  tail call void @llvm.dbg.value(metadata i8* %str, i64 0, metadata !219, metadata !363), !dbg !533
-  tail call void @llvm.dbg.value(metadata i32 %bResult, i64 0, metadata !220, metadata !363), !dbg !534
-  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !221, metadata !363), !dbg !535
-  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !222, metadata !363), !dbg !536
-  %1 = icmp eq i32 %bResult, 0, !dbg !537
-  br i1 %1, label %2, label %7, !dbg !539
+define i32 @xtc_check(i8* %str, i32 %bResult, i8* %file, i32 %line) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !30), !dbg !179
+  tail call void @llvm.dbg.value(metadata !{i32 %bResult}, i64 0, metadata !31), !dbg !179
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !32), !dbg !179
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !33), !dbg !179
+  %tobool = icmp eq i32 %bResult, 0, !dbg !180
+  br i1 %tobool, label %if.then, label %return, !dbg !180
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @debug, align 8, !dbg !540, !tbaa !543
-  %4 = icmp eq %struct.__sFILE* %3, null, !dbg !540
-  br i1 %4, label %7, label %5, !dbg !544
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @debug, align 8, !dbg !181, !tbaa !183
+  %tobool1 = icmp eq %struct._IO_FILE* %0, null, !dbg !181
+  br i1 %tobool1, label %return, label %if.then2, !dbg !181
 
-; <label>:5                                       ; preds = %2
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* %str, i8* %file, i32 %line) #6, !dbg !545
-  br label %7, !dbg !545
+if.then2:                                         ; preds = %if.then
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* %str, i8* %file, i32 %line) #4, !dbg !186
+  br label %return, !dbg !186
 
-; <label>:7                                       ; preds = %0, %5, %2
-  %.0 = phi i32 [ 0, %2 ], [ 0, %5 ], [ 1, %0 ]
-  ret i32 %.0, !dbg !546
+return:                                           ; preds = %entry, %if.then2, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then2 ], [ 1, %entry ]
+  ret i32 %retval.0, !dbg !187
 }

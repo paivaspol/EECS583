@@ -1,23 +1,24 @@
 define void @FreeNALU(%struct.NALU_t* %n) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.NALU_t* %n, i64 0, metadata !39, metadata !587), !dbg !614
-  %1 = icmp eq %struct.NALU_t* %n, null, !dbg !615
-  br i1 %1, label %9, label %2, !dbg !617
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.NALU_t* %n}, i64 0, metadata !38), !dbg !586
+  %tobool = icmp eq %struct.NALU_t* %n, null, !dbg !587
+  br i1 %tobool, label %if.end5, label %if.then, !dbg !587
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 6, !dbg !618
-  %4 = load i8** %3, align 8, !dbg !618, !tbaa !609
-  %5 = icmp eq i8* %4, null, !dbg !621
-  br i1 %5, label %7, label %6, !dbg !622
+if.then:                                          ; preds = %entry
+  %buf = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 6, !dbg !588
+  %0 = load i8** %buf, align 8, !dbg !588, !tbaa !584
+  %tobool1 = icmp eq i8* %0, null, !dbg !588
+  br i1 %tobool1, label %if.end, label %if.then2, !dbg !588
 
-; <label>:6                                       ; preds = %2
-  tail call void @free(i8* %4) #5, !dbg !623
-  br label %7, !dbg !625
+if.then2:                                         ; preds = %if.then
+  tail call void @free(i8* %0) #4, !dbg !590
+  br label %if.end, !dbg !592
 
-; <label>:7                                       ; preds = %2, %6
-  %8 = bitcast %struct.NALU_t* %n to i8*, !dbg !626
-  tail call void @free(i8* %8) #5, !dbg !627
-  br label %9, !dbg !628
+if.end:                                           ; preds = %if.then, %if.then2
+  %1 = bitcast %struct.NALU_t* %n to i8*, !dbg !593
+  tail call void @free(i8* %1) #4, !dbg !593
+  br label %if.end5, !dbg !594
 
-; <label>:9                                       ; preds = %0, %7
-  ret void, !dbg !629
+if.end5:                                          ; preds = %entry, %if.end
+  ret void, !dbg !595
 }

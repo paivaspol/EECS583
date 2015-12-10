@@ -1,17 +1,18 @@
-define double @_ZN3pov16POVFPU_GetGlobalEj(i32 %k) #4 {
-  tail call void @llvm.dbg.value(metadata i32 %k, i64 0, metadata !521, metadata !1171), !dbg !1410
-  %1 = load i32* @_ZN3pov16POVFPU_GlobalCntE, align 4, !dbg !1411, !tbaa !1189
-  %2 = icmp ugt i32 %1, %k, !dbg !1413
-  br i1 %2, label %3, label %8, !dbg !1414
+define double @_ZN3pov16POVFPU_GetGlobalEj(i32 %k) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !178), !dbg !617
+  %0 = load i32* @_ZN3pov16POVFPU_GlobalCntE, align 4, !dbg !618, !tbaa !498
+  %cmp = icmp ugt i32 %0, %k, !dbg !618
+  br i1 %cmp, label %if.end, label %return, !dbg !618
 
-; <label>:3                                       ; preds = %0
-  %4 = zext i32 %k to i64, !dbg !1415
-  %5 = load double** @_ZN3pov14POVFPU_GlobalsE, align 8, !dbg !1415, !tbaa !1183
-  %6 = getelementptr inbounds double* %5, i64 %4, !dbg !1415
-  %7 = load double* %6, align 8, !dbg !1415, !tbaa !1235
-  br label %8, !dbg !1416
+if.end:                                           ; preds = %entry
+  %idxprom = zext i32 %k to i64, !dbg !619
+  %1 = load double** @_ZN3pov14POVFPU_GlobalsE, align 8, !dbg !619, !tbaa !493
+  %arrayidx = getelementptr inbounds double* %1, i64 %idxprom, !dbg !619
+  %2 = load double* %arrayidx, align 8, !dbg !619, !tbaa !521
+  br label %return, !dbg !619
 
-; <label>:8                                       ; preds = %0, %3
-  %.0 = phi double [ %7, %3 ], [ 0.000000e+00, %0 ]
-  ret double %.0, !dbg !1417
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi double [ %2, %if.end ], [ 0.000000e+00, %entry ]
+  ret double %retval.0, !dbg !620
 }

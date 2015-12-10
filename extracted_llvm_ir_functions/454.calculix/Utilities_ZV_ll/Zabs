@@ -1,50 +1,51 @@
 define double @Zabs(double %real, double %imag) #0 {
-  tail call void @llvm.dbg.value(metadata double %real, i64 0, metadata !13, metadata !841), !dbg !842
-  tail call void @llvm.dbg.value(metadata double %imag, i64 0, metadata !14, metadata !841), !dbg !843
-  %1 = fcmp oeq double %real, 0.000000e+00, !dbg !844
-  br i1 %1, label %2, label %4, !dbg !846
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %real}, i64 0, metadata !10), !dbg !826
+  tail call void @llvm.dbg.value(metadata !{double %imag}, i64 0, metadata !11), !dbg !827
+  %cmp = fcmp oeq double %real, 0.000000e+00, !dbg !828
+  br i1 %cmp, label %if.then, label %if.else, !dbg !828
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call double @fabs(double %imag) #6, !dbg !847
-  tail call void @llvm.dbg.value(metadata double %3, i64 0, metadata !15, metadata !841), !dbg !849
-  br label %24, !dbg !850
+if.then:                                          ; preds = %entry
+  %call = tail call double @fabs(double %imag) #5, !dbg !829
+  tail call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !12), !dbg !829
+  br label %if.end18, !dbg !831
 
-; <label>:4                                       ; preds = %0
-  %5 = fcmp oeq double %imag, 0.000000e+00, !dbg !851
-  br i1 %5, label %6, label %8, !dbg !853
+if.else:                                          ; preds = %entry
+  %cmp1 = fcmp oeq double %imag, 0.000000e+00, !dbg !832
+  br i1 %cmp1, label %if.then2, label %if.else4, !dbg !832
 
-; <label>:6                                       ; preds = %4
-  %7 = tail call double @fabs(double %real) #6, !dbg !854
-  tail call void @llvm.dbg.value(metadata double %7, i64 0, metadata !15, metadata !841), !dbg !849
-  br label %24, !dbg !856
+if.then2:                                         ; preds = %if.else
+  %call3 = tail call double @fabs(double %real) #5, !dbg !833
+  tail call void @llvm.dbg.value(metadata !{double %call3}, i64 0, metadata !12), !dbg !833
+  br label %if.end18, !dbg !835
 
-; <label>:8                                       ; preds = %4
-  %9 = fcmp ult double %real, %imag, !dbg !857
-  br i1 %9, label %17, label %10, !dbg !859
+if.else4:                                         ; preds = %if.else
+  %cmp5 = fcmp ult double %real, %imag, !dbg !836
+  br i1 %cmp5, label %if.else10, label %if.then6, !dbg !836
 
-; <label>:10                                      ; preds = %8
-  %11 = fdiv double %imag, %real, !dbg !860
-  tail call void @llvm.dbg.value(metadata double %11, i64 0, metadata !16, metadata !841), !dbg !862
-  %12 = tail call double @fabs(double %real) #6, !dbg !863
-  %13 = fmul double %11, %11, !dbg !864
-  %14 = fadd double %13, 1.000000e+00, !dbg !865
-  %15 = tail call double @sqrt(double %14) #6, !dbg !866
-  %16 = fmul double %12, %15, !dbg !867
-  tail call void @llvm.dbg.value(metadata double %16, i64 0, metadata !15, metadata !841), !dbg !849
-  br label %24, !dbg !868
+if.then6:                                         ; preds = %if.else4
+  %div = fdiv double %imag, %real, !dbg !837
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !13), !dbg !837
+  %call7 = tail call double @fabs(double %real) #5, !dbg !839
+  %mul = fmul double %div, %div, !dbg !839
+  %add = fadd double %mul, 1.000000e+00, !dbg !839
+  %call8 = tail call double @sqrt(double %add) #6, !dbg !839
+  %mul9 = fmul double %call7, %call8, !dbg !839
+  tail call void @llvm.dbg.value(metadata !{double %mul9}, i64 0, metadata !12), !dbg !839
+  br label %if.end18, !dbg !840
 
-; <label>:17                                      ; preds = %8
-  %18 = fdiv double %real, %imag, !dbg !869
-  tail call void @llvm.dbg.value(metadata double %18, i64 0, metadata !16, metadata !841), !dbg !862
-  %19 = tail call double @fabs(double %imag) #6, !dbg !871
-  %20 = fmul double %18, %18, !dbg !872
-  %21 = fadd double %20, 1.000000e+00, !dbg !873
-  %22 = tail call double @sqrt(double %21) #6, !dbg !874
-  %23 = fmul double %19, %22, !dbg !875
-  tail call void @llvm.dbg.value(metadata double %23, i64 0, metadata !15, metadata !841), !dbg !849
-  br label %24
+if.else10:                                        ; preds = %if.else4
+  %div11 = fdiv double %real, %imag, !dbg !841
+  tail call void @llvm.dbg.value(metadata !{double %div11}, i64 0, metadata !13), !dbg !841
+  %call12 = tail call double @fabs(double %imag) #5, !dbg !843
+  %mul13 = fmul double %div11, %div11, !dbg !843
+  %add14 = fadd double %mul13, 1.000000e+00, !dbg !843
+  %call15 = tail call double @sqrt(double %add14) #6, !dbg !843
+  %mul16 = fmul double %call12, %call15, !dbg !843
+  tail call void @llvm.dbg.value(metadata !{double %mul16}, i64 0, metadata !12), !dbg !843
+  br label %if.end18
 
-; <label>:24                                      ; preds = %6, %17, %10, %2
-  %abs.0 = phi double [ %3, %2 ], [ %7, %6 ], [ %16, %10 ], [ %23, %17 ]
-  ret double %abs.0, !dbg !876
+if.end18:                                         ; preds = %if.then2, %if.else10, %if.then6, %if.then
+  %abs.0 = phi double [ %call, %if.then ], [ %call3, %if.then2 ], [ %mul9, %if.then6 ], [ %mul16, %if.else10 ]
+  ret double %abs.0, !dbg !844
 }

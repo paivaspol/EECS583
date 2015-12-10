@@ -1,38 +1,39 @@
 define i32 @CCTK_OutputVarAs(%struct.cGH* %GH, i8* %var, i8* %alias) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !105, metadata !237), !dbg !346
-  tail call void @llvm.dbg.value(metadata i8* %var, i64 0, metadata !106, metadata !237), !dbg !347
-  tail call void @llvm.dbg.value(metadata i8* %alias, i64 0, metadata !107, metadata !237), !dbg !348
-  %1 = load i32* @num_methods, align 4, !dbg !349, !tbaa !278
-  %2 = icmp sgt i32 %1, 0, !dbg !351
-  br i1 %2, label %.lr.ph, label %.loopexit, !dbg !352
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !105), !dbg !303
+  tail call void @llvm.dbg.value(metadata !{i8* %var}, i64 0, metadata !106), !dbg !303
+  tail call void @llvm.dbg.value(metadata !{i8* %alias}, i64 0, metadata !107), !dbg !303
+  %0 = load i32* @num_methods, align 4, !dbg !304, !tbaa !251
+  %cmp = icmp sgt i32 %0, 0, !dbg !304
+  br i1 %cmp, label %for.body, label %if.end7, !dbg !304
 
-.lr.ph:                                           ; preds = %0, %13
-  %handle.02 = phi i32 [ %14, %13 ], [ 0, %0 ]
-  %retval.01 = phi i32 [ %retval.1, %13 ], [ 0, %0 ]
-  %3 = load %struct.cHandledData** @IOMethods, align 8, !dbg !353, !tbaa !241
-  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.02) #6, !dbg !358
-  %5 = icmp eq i8* %4, null, !dbg !359
-  br i1 %5, label %13, label %6, !dbg !361
+for.body:                                         ; preds = %entry, %for.inc
+  %handle.014 = phi i32 [ %inc6, %for.inc ], [ 0, %entry ]
+  %retval1.013 = phi i32 [ %retval1.1, %for.inc ], [ 0, %entry ]
+  %1 = load %struct.cHandledData** @IOMethods, align 8, !dbg !305, !tbaa !235
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle.014) #6, !dbg !305
+  %tobool = icmp eq i8* %call, null, !dbg !309
+  br i1 %tobool, label %for.inc, label %land.lhs.true, !dbg !309
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds i8* %4, i64 24, !dbg !362
-  %8 = bitcast i8* %7 to i32 (%struct.cGH*, i8*, i8*)**, !dbg !362
-  %9 = load i32 (%struct.cGH*, i8*, i8*)** %8, align 8, !dbg !362, !tbaa !270
-  %10 = tail call i32 %9(%struct.cGH* %GH, i8* %var, i8* %alias) #6, !dbg !363
-  %11 = icmp eq i32 %10, 0, !dbg !364
-  %12 = zext i1 %11 to i32, !dbg !365
-  %.retval.0 = add nsw i32 %12, %retval.01, !dbg !365
-  br label %13, !dbg !365
+land.lhs.true:                                    ; preds = %for.body
+  %OutputVarAs = getelementptr inbounds i8* %call, i64 24, !dbg !309
+  %2 = bitcast i8* %OutputVarAs to i32 (%struct.cGH*, i8*, i8*)**, !dbg !309
+  %3 = load i32 (%struct.cGH*, i8*, i8*)** %2, align 8, !dbg !309, !tbaa !235
+  %call3 = tail call i32 %3(%struct.cGH* %GH, i8* %var, i8* %alias) #6, !dbg !309
+  %cmp4 = icmp eq i32 %call3, 0, !dbg !309
+  %inc = zext i1 %cmp4 to i32, !dbg !309
+  %inc.retval1.0 = add nsw i32 %inc, %retval1.013, !dbg !309
+  br label %for.inc, !dbg !309
 
-; <label>:13                                      ; preds = %6, %.lr.ph
-  %retval.1 = phi i32 [ %retval.01, %.lr.ph ], [ %.retval.0, %6 ]
-  %14 = add nuw nsw i32 %handle.02, 1, !dbg !366
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !108, metadata !237), !dbg !367
-  %15 = load i32* @num_methods, align 4, !dbg !368, !tbaa !278
-  %16 = icmp slt i32 %14, %15, !dbg !369
-  br i1 %16, label %.lr.ph, label %.loopexit, !dbg !370
+for.inc:                                          ; preds = %land.lhs.true, %for.body
+  %retval1.1 = phi i32 [ %retval1.013, %for.body ], [ %inc.retval1.0, %land.lhs.true ]
+  %inc6 = add nsw i32 %handle.014, 1, !dbg !310
+  tail call void @llvm.dbg.value(metadata !{i32 %inc6}, i64 0, metadata !108), !dbg !310
+  %4 = load i32* @num_methods, align 4, !dbg !310, !tbaa !251
+  %cmp2 = icmp slt i32 %inc6, %4, !dbg !310
+  br i1 %cmp2, label %for.body, label %if.end7, !dbg !310
 
-.loopexit:                                        ; preds = %13, %0
-  %retval.2 = phi i32 [ -1, %0 ], [ %retval.1, %13 ]
-  ret i32 %retval.2, !dbg !371
+if.end7:                                          ; preds = %for.inc, %entry
+  %retval1.2 = phi i32 [ -1, %entry ], [ %retval1.1, %for.inc ]
+  ret i32 %retval1.2, !dbg !311
 }

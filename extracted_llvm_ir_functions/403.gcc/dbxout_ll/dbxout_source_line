@@ -2,99 +2,105 @@ define internal void @dbxout_source_line(i32 %lineno, i8* %filename) #0 {
 entry:
   %ltext_label_name.i = alloca [100 x i8], align 16
   %temp = alloca [256 x i8], align 16
-  %0 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  %tobool.i = icmp eq i8* %filename, null
-  br i1 %tobool.i, label %dbxout_source_file.exit, label %land.lhs.true.i
+  call void @llvm.dbg.value(metadata !{i32 %lineno}, i64 0, metadata !1320), !dbg !1538
+  call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !1321), !dbg !1539
+  %0 = load %struct._IO_FILE** @asmfile, align 8, !dbg !1540, !tbaa !1468
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %0}, i64 0, metadata !1541) #6, !dbg !1542
+  call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !1543) #6, !dbg !1544
+  %tobool.i = icmp eq i8* %filename, null, !dbg !1545
+  br i1 %tobool.i, label %dbxout_source_file.exit, label %land.lhs.true.i, !dbg !1545
 
 land.lhs.true.i:                                  ; preds = %entry
-  %1 = load i8** @lastfile, align 8, !tbaa !0
-  %cmp.i = icmp eq i8* %1, null
-  br i1 %cmp.i, label %if.then.i, label %lor.lhs.false.i
+  %1 = load i8** @lastfile, align 8, !dbg !1545, !tbaa !1468
+  %cmp.i = icmp eq i8* %1, null, !dbg !1545
+  br i1 %cmp.i, label %if.then.i, label %lor.lhs.false.i, !dbg !1545
 
 lor.lhs.false.i:                                  ; preds = %land.lhs.true.i
-  %call.i = call i32 @strcmp(i8* %filename, i8* %1) #7
-  %tobool1.i = icmp eq i32 %call.i, 0
-  br i1 %tobool1.i, label %dbxout_source_file.exit, label %if.then.i
+  %call.i = call i32 @strcmp(i8* %filename, i8* %1) #8, !dbg !1545
+  %tobool1.i = icmp eq i32 %call.i, 0, !dbg !1545
+  br i1 %tobool1.i, label %dbxout_source_file.exit, label %if.then.i, !dbg !1545
 
 if.then.i:                                        ; preds = %lor.lhs.false.i, %land.lhs.true.i
-  %2 = getelementptr inbounds [100 x i8]* %ltext_label_name.i, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 100, i8* %2) #5
-  %3 = load i32* @source_label_number, align 4, !tbaa !3
-  %call2.i = call i32 (i8*, i8*, ...)* @sprintf(i8* %2, i8* getelementptr inbounds ([7 x i8]* @.str59, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str71, i64 0, i64 0), i32 %3) #6
-  %4 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %0) #5
-  call void @output_quoted_string(%struct._IO_FILE* %0, i8* %filename) #6
-  %5 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  %call4.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([9 x i8]* @.str72, i64 0, i64 0), i32 132) #6
-  %6 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  call void @assemble_name(%struct._IO_FILE* %6, i8* %2) #6
-  %7 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  %call6.i = call i32 @fputc(i32 10, %struct._IO_FILE* %7) #6
-  %8 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
-  %cmp7.i = icmp eq %union.tree_node* %8, null
-  br i1 %cmp7.i, label %if.else.i, label %land.lhs.true8.i
+  %2 = getelementptr inbounds [100 x i8]* %ltext_label_name.i, i64 0, i64 0, !dbg !1546
+  call void @llvm.lifetime.start(i64 100, i8* %2) #6, !dbg !1546
+  call void @llvm.dbg.declare(metadata !{[100 x i8]* %ltext_label_name.i}, metadata !1380) #6, !dbg !1546
+  %3 = load i32* @source_label_number, align 4, !dbg !1547, !tbaa !1472
+  %call2.i = call i32 (i8*, i8*, ...)* @sprintf(i8* %2, i8* getelementptr inbounds ([7 x i8]* @.str59, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str71, i64 0, i64 0), i32 %3) #7, !dbg !1547
+  %4 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %0) #6, !dbg !1549
+  call void @output_quoted_string(%struct._IO_FILE* %0, i8* %filename) #7, !dbg !1550
+  %5 = load %struct._IO_FILE** @asmfile, align 8, !dbg !1551, !tbaa !1468
+  %call4.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([9 x i8]* @.str72, i64 0, i64 0), i32 132) #7, !dbg !1551
+  %6 = load %struct._IO_FILE** @asmfile, align 8, !dbg !1552, !tbaa !1468
+  call void @assemble_name(%struct._IO_FILE* %6, i8* %2) #7, !dbg !1552
+  %7 = load %struct._IO_FILE** @asmfile, align 8, !dbg !1553, !tbaa !1468
+  %call6.i = call i32 @fputc(i32 10, %struct._IO_FILE* %7) #7, !dbg !1553
+  %8 = load %union.tree_node** @current_function_decl, align 8, !dbg !1554, !tbaa !1468
+  %cmp7.i = icmp eq %union.tree_node* %8, null, !dbg !1554
+  br i1 %cmp7.i, label %if.else.i, label %land.lhs.true8.i, !dbg !1554
 
 land.lhs.true8.i:                                 ; preds = %if.then.i
-  %section_name.i = getelementptr inbounds %union.tree_node* %8, i64 0, i32 0, i32 15
-  %9 = load %union.tree_node** %section_name.i, align 8, !tbaa !0
-  %cmp9.i = icmp eq %union.tree_node* %9, null
-  br i1 %cmp9.i, label %if.else.i, label %do.body11.i
+  %section_name.i = getelementptr inbounds %union.tree_node* %8, i64 0, i32 0, i32 15, !dbg !1554
+  %9 = load %union.tree_node** %section_name.i, align 8, !dbg !1554, !tbaa !1468
+  %cmp9.i = icmp eq %union.tree_node* %9, null, !dbg !1554
+  br i1 %cmp9.i, label %if.else.i, label %do.body11.i, !dbg !1554
 
 if.else.i:                                        ; preds = %land.lhs.true8.i, %if.then.i
-  call void @text_section() #6
+  call void @text_section() #7, !dbg !1555
   br label %do.body11.i
 
 do.body11.i:                                      ; preds = %if.else.i, %land.lhs.true8.i
-  %10 = load i32* @source_label_number, align 4, !tbaa !3
-  %call12.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([8 x i8]* @.str61, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str71, i64 0, i64 0), i32 %10) #6
-  %11 = load i32* @source_label_number, align 4, !tbaa !3
-  %inc.i = add nsw i32 %11, 1
-  store i32 %inc.i, i32* @source_label_number, align 4, !tbaa !3
-  store i8* %filename, i8** @lastfile, align 8, !tbaa !0
-  call void @llvm.lifetime.end(i64 100, i8* %2) #5
-  br label %dbxout_source_file.exit
+  %10 = load i32* @source_label_number, align 4, !dbg !1556, !tbaa !1472
+  %call12.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([8 x i8]* @.str61, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str71, i64 0, i64 0), i32 %10) #7, !dbg !1556
+  %11 = load i32* @source_label_number, align 4, !dbg !1558, !tbaa !1472
+  %inc.i = add nsw i32 %11, 1, !dbg !1558
+  store i32 %inc.i, i32* @source_label_number, align 4, !dbg !1558, !tbaa !1472
+  store i8* %filename, i8** @lastfile, align 8, !dbg !1559, !tbaa !1468
+  call void @llvm.lifetime.end(i64 100, i8* %2) #6, !dbg !1560
+  br label %dbxout_source_file.exit, !dbg !1560
 
 dbxout_source_file.exit:                          ; preds = %entry, %lor.lhs.false.i, %do.body11.i
-  %12 = getelementptr inbounds [256 x i8]* %temp, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %12) #5
-  %13 = load i32* @dbxout_source_line.sym_lineno, align 4, !tbaa !3
-  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %12, i8* getelementptr inbounds ([7 x i8]* @.str59, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str69, i64 0, i64 0), i32 %13) #6
-  %14 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  %call2 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %14, i8* getelementptr inbounds ([17 x i8]* @.str70, i64 0, i64 0), i32 %lineno) #6
-  %15 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  call void @assemble_name(%struct._IO_FILE* %15, i8* %12) #6
-  %16 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  %call4 = call i32 @_IO_putc(i32 45, %struct._IO_FILE* %16) #6
-  %17 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  %18 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
-  %rtl = getelementptr inbounds %union.tree_node* %18, i64 0, i32 0, i32 17
-  %19 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
-  %tobool = icmp eq %struct.rtx_def* %19, null
-  br i1 %tobool, label %cond.false, label %cond.end
+  %12 = getelementptr inbounds [256 x i8]* %temp, i64 0, i64 0, !dbg !1561
+  call void @llvm.lifetime.start(i64 256, i8* %12) #6, !dbg !1561
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %temp}, metadata !1322), !dbg !1561
+  %13 = load i32* @dbxout_source_line.sym_lineno, align 4, !dbg !1562, !tbaa !1472
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %12, i8* getelementptr inbounds ([7 x i8]* @.str59, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str69, i64 0, i64 0), i32 %13) #7, !dbg !1562
+  %14 = load %struct._IO_FILE** @asmfile, align 8, !dbg !1561, !tbaa !1468
+  %call2 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %14, i8* getelementptr inbounds ([17 x i8]* @.str70, i64 0, i64 0), i32 %lineno) #7, !dbg !1561
+  %15 = load %struct._IO_FILE** @asmfile, align 8, !dbg !1561, !tbaa !1468
+  call void @assemble_name(%struct._IO_FILE* %15, i8* %12) #7, !dbg !1561
+  %16 = load %struct._IO_FILE** @asmfile, align 8, !dbg !1561, !tbaa !1468
+  %call4 = call i32 @_IO_putc(i32 45, %struct._IO_FILE* %16) #7, !dbg !1561
+  %17 = load %struct._IO_FILE** @asmfile, align 8, !dbg !1561, !tbaa !1468
+  %18 = load %union.tree_node** @current_function_decl, align 8, !dbg !1561, !tbaa !1468
+  %rtl = getelementptr inbounds %union.tree_node* %18, i64 0, i32 0, i32 17, !dbg !1561
+  %19 = load %struct.rtx_def** %rtl, align 8, !dbg !1561, !tbaa !1468
+  %tobool = icmp eq %struct.rtx_def* %19, null, !dbg !1561
+  br i1 %tobool, label %cond.false, label %cond.end, !dbg !1561
 
 cond.false:                                       ; preds = %dbxout_source_file.exit
-  call void @make_decl_rtl(%union.tree_node* %18, i8* null) #6
-  %20 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
-  %rtl8 = getelementptr inbounds %union.tree_node* %20, i64 0, i32 0, i32 17
-  %21 = load %struct.rtx_def** %rtl8, align 8, !tbaa !0
-  br label %cond.end
+  call void @make_decl_rtl(%union.tree_node* %18, i8* null) #7, !dbg !1561
+  %20 = load %union.tree_node** @current_function_decl, align 8, !dbg !1561, !tbaa !1468
+  %rtl8 = getelementptr inbounds %union.tree_node* %20, i64 0, i32 0, i32 17, !dbg !1561
+  %21 = load %struct.rtx_def** %rtl8, align 8, !dbg !1561, !tbaa !1468
+  br label %cond.end, !dbg !1561
 
 cond.end:                                         ; preds = %dbxout_source_file.exit, %cond.false
-  %cond = phi %struct.rtx_def* [ %21, %cond.false ], [ %19, %dbxout_source_file.exit ]
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %cond, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %22 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %22, i64 0, i32 1, i64 0
-  %rtstr = bitcast %union.rtunion_def* %arrayidx10 to i8**
-  %23 = load i8** %rtstr, align 8, !tbaa !0
-  call void @assemble_name(%struct._IO_FILE* %17, i8* %23) #6
-  %24 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  %call11 = call i32 @_IO_putc(i32 10, %struct._IO_FILE* %24) #6
-  %25 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
-  %26 = load i32* @dbxout_source_line.sym_lineno, align 4, !tbaa !3
-  %call13 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %25, i8* getelementptr inbounds ([8 x i8]* @.str61, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str69, i64 0, i64 0), i32 %26) #6
-  %27 = load i32* @dbxout_source_line.sym_lineno, align 4, !tbaa !3
-  %add = add nsw i32 %27, 1
-  store i32 %add, i32* @dbxout_source_line.sym_lineno, align 4, !tbaa !3
-  call void @llvm.lifetime.end(i64 256, i8* %12) #5
-  ret void
+  %cond = phi %struct.rtx_def* [ %21, %cond.false ], [ %19, %dbxout_source_file.exit ], !dbg !1561
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %cond, i64 0, i32 1, i64 0, !dbg !1561
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1561
+  %22 = load %struct.rtx_def** %rtx, align 8, !dbg !1561, !tbaa !1468
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %22, i64 0, i32 1, i64 0, !dbg !1561
+  %rtstr = bitcast %union.rtunion_def* %arrayidx10 to i8**, !dbg !1561
+  %23 = load i8** %rtstr, align 8, !dbg !1561, !tbaa !1468
+  call void @assemble_name(%struct._IO_FILE* %17, i8* %23) #7, !dbg !1561
+  %24 = load %struct._IO_FILE** @asmfile, align 8, !dbg !1561, !tbaa !1468
+  %call11 = call i32 @_IO_putc(i32 10, %struct._IO_FILE* %24) #7, !dbg !1561
+  %25 = load %struct._IO_FILE** @asmfile, align 8, !dbg !1564, !tbaa !1468
+  %26 = load i32* @dbxout_source_line.sym_lineno, align 4, !dbg !1564, !tbaa !1472
+  %call13 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %25, i8* getelementptr inbounds ([8 x i8]* @.str61, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str69, i64 0, i64 0), i32 %26) #7, !dbg !1564
+  %27 = load i32* @dbxout_source_line.sym_lineno, align 4, !dbg !1561, !tbaa !1472
+  %add = add nsw i32 %27, 1, !dbg !1561
+  store i32 %add, i32* @dbxout_source_line.sym_lineno, align 4, !dbg !1561, !tbaa !1472
+  call void @llvm.lifetime.end(i64 256, i8* %12) #6, !dbg !1561
+  ret void, !dbg !1566
 }

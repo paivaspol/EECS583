@@ -1,22 +1,23 @@
-define i8* @MSAGetSeqAccession(%struct.msa_struct* nocapture readonly %msa, i32 %idx) #6 {
-  tail call void @llvm.dbg.value(metadata %struct.msa_struct* %msa, i64 0, metadata !456, metadata !481), !dbg !2345
-  tail call void @llvm.dbg.value(metadata i32 %idx, i64 0, metadata !457, metadata !481), !dbg !2346
-  %1 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 14, !dbg !2347
-  %2 = load i8*** %1, align 8, !dbg !2347, !tbaa !616
-  %3 = icmp eq i8** %2, null, !dbg !2349
-  br i1 %3, label %9, label %4, !dbg !2350
+define i8* @MSAGetSeqAccession(%struct.msa_struct* nocapture %msa, i32 %idx) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.msa_struct* %msa}, i64 0, metadata !442), !dbg !1089
+  tail call void @llvm.dbg.value(metadata !{i32 %idx}, i64 0, metadata !443), !dbg !1089
+  %sqacc = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 14, !dbg !1090
+  %0 = load i8*** %sqacc, align 8, !dbg !1090, !tbaa !466
+  %cmp = icmp eq i8** %0, null, !dbg !1090
+  br i1 %cmp, label %if.else, label %land.lhs.true, !dbg !1090
 
-; <label>:4                                       ; preds = %0
-  %5 = sext i32 %idx to i64, !dbg !2351
-  %6 = getelementptr inbounds i8** %2, i64 %5, !dbg !2351
-  %7 = load i8** %6, align 8, !dbg !2351, !tbaa !519
-  %8 = icmp eq i8* %7, null, !dbg !2352
-  br i1 %8, label %9, label %10, !dbg !2353
+land.lhs.true:                                    ; preds = %entry
+  %idxprom = sext i32 %idx to i64, !dbg !1090
+  %arrayidx = getelementptr inbounds i8** %0, i64 %idxprom, !dbg !1090
+  %1 = load i8** %arrayidx, align 8, !dbg !1090, !tbaa !466
+  %cmp2 = icmp eq i8* %1, null, !dbg !1090
+  br i1 %cmp2, label %if.else, label %return, !dbg !1090
 
-; <label>:9                                       ; preds = %4, %0
-  br label %10, !dbg !2354
+if.else:                                          ; preds = %land.lhs.true, %entry
+  br label %return, !dbg !1091
 
-; <label>:10                                      ; preds = %4, %9
-  %.0 = phi i8* [ null, %9 ], [ %7, %4 ]
-  ret i8* %.0, !dbg !2355
+return:                                           ; preds = %land.lhs.true, %if.else
+  %retval.0 = phi i8* [ null, %if.else ], [ %1, %land.lhs.true ]
+  ret i8* %retval.0, !dbg !1092
 }

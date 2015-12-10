@@ -1,30 +1,26 @@
-define void @Plan7SetNullModel(%struct.plan7_s* nocapture %hmm, float* nocapture readonly %null, float %p1) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.plan7_s* %hmm, i64 0, metadata !139, metadata !327), !dbg !881
-  tail call void @llvm.dbg.value(metadata float* %null, i64 0, metadata !140, metadata !327), !dbg !882
-  tail call void @llvm.dbg.value(metadata float %p1, i64 0, metadata !141, metadata !327), !dbg !883
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !142, metadata !327), !dbg !884
-  %1 = load i32* @Alphabet_size, align 4, !dbg !885, !tbaa !536
-  %2 = icmp sgt i32 %1, 0, !dbg !888
-  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !889
+define void @Plan7SetNullModel(%struct.plan7_s* nocapture %hmm, float* nocapture %null, float %p1) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.plan7_s* %hmm}, i64 0, metadata !136), !dbg !495
+  tail call void @llvm.dbg.value(metadata !{float* %null}, i64 0, metadata !137), !dbg !495
+  tail call void @llvm.dbg.value(metadata !{float %p1}, i64 0, metadata !138), !dbg !495
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !139), !dbg !496
+  %0 = load i32* @Alphabet_size, align 4, !dbg !496, !tbaa !327
+  %cmp9 = icmp sgt i32 %0, 0, !dbg !496
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !496
 
-.lr.ph:                                           ; preds = %0
-  %3 = sext i32 %1 to i64, !dbg !889
-  br label %4, !dbg !889
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %null, i64 %indvars.iv, !dbg !498
+  %1 = load float* %arrayidx, align 4, !dbg !498, !tbaa !332
+  %arrayidx3 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 28, i64 %indvars.iv, !dbg !498
+  store float %1, float* %arrayidx3, align 4, !dbg !498, !tbaa !332
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !496
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !496
+  %cmp = icmp slt i32 %2, %0, !dbg !496
+  br i1 %cmp, label %for.body, label %for.end, !dbg !496
 
-; <label>:4                                       ; preds = %.lr.ph, %4
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %4 ]
-  %5 = getelementptr inbounds float* %null, i64 %indvars.iv, !dbg !890
-  %6 = bitcast float* %5 to i32*, !dbg !890
-  %7 = load i32* %6, align 4, !dbg !890, !tbaa !891
-  %8 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 28, i64 %indvars.iv, !dbg !892
-  %9 = bitcast float* %8 to i32*, !dbg !893
-  store i32 %7, i32* %9, align 4, !dbg !893, !tbaa !891
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !889
-  %10 = icmp slt i64 %indvars.iv.next, %3, !dbg !888
-  br i1 %10, label %4, label %._crit_edge, !dbg !889
-
-._crit_edge:                                      ; preds = %4, %0
-  %11 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 29, !dbg !894
-  store float %p1, float* %11, align 4, !dbg !895, !tbaa !896
-  ret void, !dbg !897
+for.end:                                          ; preds = %for.body, %entry
+  %p14 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 29, !dbg !499
+  store float %p1, float* %p14, align 4, !dbg !499, !tbaa !332
+  ret void, !dbg !500
 }

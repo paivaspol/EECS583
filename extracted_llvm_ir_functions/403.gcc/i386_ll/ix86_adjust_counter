@@ -1,23 +1,25 @@
 define internal fastcc void @ix86_adjust_counter(%struct.rtx_def* %countreg, i64 %value) #1 {
 entry:
-  %0 = bitcast %struct.rtx_def* %countreg to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 16711680
-  %cmp = icmp eq i32 %bf.clear, 327680
-  %sub = sub nsw i64 0, %value
-  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %sub) #9
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %countreg}, i64 0, metadata !3687), !dbg !8930
+  tail call void @llvm.dbg.value(metadata !{i64 %value}, i64 0, metadata !3688), !dbg !8931
+  %0 = bitcast %struct.rtx_def* %countreg to i32*, !dbg !8932
+  %bf.load = load i32* %0, align 8, !dbg !8932
+  %bf.clear = and i32 %bf.load, 16711680, !dbg !8932
+  %cmp = icmp eq i32 %bf.clear, 327680, !dbg !8932
+  %sub = sub nsw i64 0, %value, !dbg !8933
+  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %sub) #10, !dbg !8933
+  br i1 %cmp, label %if.then, label %if.else, !dbg !8932
 
 if.then:                                          ; preds = %entry
-  %call1 = tail call %struct.rtx_def* @gen_adddi3(%struct.rtx_def* %countreg, %struct.rtx_def* %countreg, %struct.rtx_def* %call) #9
-  %call2 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call1) #9
-  br label %if.end
+  %call1 = tail call %struct.rtx_def* @gen_adddi3(%struct.rtx_def* %countreg, %struct.rtx_def* %countreg, %struct.rtx_def* %call) #10, !dbg !8933
+  %call2 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call1) #10, !dbg !8933
+  br label %if.end, !dbg !8933
 
 if.else:                                          ; preds = %entry
-  %call5 = tail call %struct.rtx_def* @gen_addsi3(%struct.rtx_def* %countreg, %struct.rtx_def* %countreg, %struct.rtx_def* %call) #9
-  %call6 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call5) #9
+  %call5 = tail call %struct.rtx_def* @gen_addsi3(%struct.rtx_def* %countreg, %struct.rtx_def* %countreg, %struct.rtx_def* %call) #10, !dbg !8934
+  %call6 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call5) #10, !dbg !8934
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  ret void
+  ret void, !dbg !8935
 }

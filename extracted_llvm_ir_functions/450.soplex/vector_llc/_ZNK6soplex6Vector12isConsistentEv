@@ -1,22 +1,23 @@
-define zeroext i1 @_ZNK6soplex6Vector12isConsistentEv(%"class.soplex::Vector"* nocapture readonly %this) #5 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::Vector"* %this, i64 0, metadata !2104, metadata !3147), !dbg !3419
-  tail call void @llvm.dbg.value(metadata %"class.soplex::Vector"* %this, i64 0, metadata !2122, metadata !3147), !dbg !3420
-  %1 = getelementptr inbounds %"class.soplex::Vector"* %this, i64 0, i32 0, !dbg !3423
-  %2 = load i32* %1, align 4, !dbg !3423, !tbaa !3163
-  %3 = icmp sgt i32 %2, 0, !dbg !3424
-  br i1 %3, label %4, label %10, !dbg !3425
+define zeroext i1 @_ZNK6soplex6Vector12isConsistentEv(%"class.soplex::Vector"* nocapture %this) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %this}, i64 0, metadata !2832), !dbg !3117
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %this}, i64 0, metadata !3118), !dbg !3120
+  %dimen.i = getelementptr inbounds %"class.soplex::Vector"* %this, i64 0, i32 0, !dbg !3121
+  %0 = load i32* %dimen.i, align 4, !dbg !3121, !tbaa !2936
+  %cmp = icmp sgt i32 %0, 0, !dbg !3119
+  br i1 %cmp, label %land.lhs.true, label %return, !dbg !3119
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %"class.soplex::Vector"* %this, i64 0, i32 1, !dbg !3426
-  %6 = load double** %5, align 8, !dbg !3426, !tbaa !3155
-  %7 = icmp eq double* %6, null, !dbg !3427
-  br i1 %7, label %8, label %10, !dbg !3428
+land.lhs.true:                                    ; preds = %entry
+  %val = getelementptr inbounds %"class.soplex::Vector"* %this, i64 0, i32 1, !dbg !3119
+  %1 = load double** %val, align 8, !dbg !3119, !tbaa !2933
+  %cmp2 = icmp eq double* %1, null, !dbg !3119
+  br i1 %cmp2, label %if.then, label %return, !dbg !3119
 
-; <label>:8                                       ; preds = %4
-  %9 = tail call zeroext i1 @_ZN6soplex15msginconsistentEPKcS1_i(i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str2, i64 0, i64 0), i32 147) #8, !dbg !3429
-  br label %10, !dbg !3430
+if.then:                                          ; preds = %land.lhs.true
+  %call3 = tail call zeroext i1 @_ZN6soplex15msginconsistentEPKcS1_i(i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i32 147) #7, !dbg !3122
+  br label %return, !dbg !3122
 
-; <label>:10                                      ; preds = %0, %4, %8
-  %.0 = phi i1 [ %9, %8 ], [ true, %4 ], [ true, %0 ]
-  ret i1 %.0, !dbg !3431
+return:                                           ; preds = %entry, %land.lhs.true, %if.then
+  %retval.0 = phi i1 [ %call3, %if.then ], [ true, %land.lhs.true ], [ true, %entry ]
+  ret i1 %retval.0, !dbg !3123
 }

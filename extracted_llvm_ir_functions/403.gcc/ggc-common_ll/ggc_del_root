@@ -1,28 +1,30 @@
 define void @ggc_del_root(i8* %base) #0 {
 entry:
-  br label %while.cond
+  tail call void @llvm.dbg.value(metadata !{i8* %base}, i64 0, metadata !982), !dbg !1483
+  tail call void @llvm.dbg.value(metadata !1484, i64 0, metadata !984), !dbg !1485
+  br label %while.cond, !dbg !1486
 
 while.cond:                                       ; preds = %while.body, %entry
   %x.0.in = phi %struct.ggc_root** [ @roots, %entry ], [ %next, %while.body ]
-  %x.0 = load %struct.ggc_root** %x.0.in, align 8
-  %tobool = icmp eq %struct.ggc_root* %x.0, null
-  br i1 %tobool, label %while.end, label %while.body
+  %x.0 = load %struct.ggc_root** %x.0.in, align 8, !dbg !1485
+  %tobool = icmp eq %struct.ggc_root* %x.0, null, !dbg !1486
+  br i1 %tobool, label %while.end, label %while.body, !dbg !1486
 
 while.body:                                       ; preds = %while.cond
-  %base1 = getelementptr inbounds %struct.ggc_root* %x.0, i64 0, i32 1
-  %0 = load i8** %base1, align 8, !tbaa !0
-  %cmp = icmp eq i8* %0, %base
-  %next = getelementptr inbounds %struct.ggc_root* %x.0, i64 0, i32 0
-  br i1 %cmp, label %if.then, label %while.cond
+  %base1 = getelementptr inbounds %struct.ggc_root* %x.0, i64 0, i32 1, !dbg !1487
+  %0 = load i8** %base1, align 8, !dbg !1487, !tbaa !1351
+  %cmp = icmp eq i8* %0, %base, !dbg !1487
+  %next = getelementptr inbounds %struct.ggc_root* %x.0, i64 0, i32 0, !dbg !1489
+  br i1 %cmp, label %if.then, label %while.cond, !dbg !1487
 
 if.then:                                          ; preds = %while.body
-  %1 = load %struct.ggc_root** %next, align 8, !tbaa !0
-  store %struct.ggc_root* %1, %struct.ggc_root** %x.0.in, align 8, !tbaa !0
-  %2 = bitcast %struct.ggc_root* %x.0 to i8*
-  tail call void @free(i8* %2) #5
-  ret void
+  %1 = load %struct.ggc_root** %next, align 8, !dbg !1489, !tbaa !1351
+  store %struct.ggc_root* %1, %struct.ggc_root** %x.0.in, align 8, !dbg !1489, !tbaa !1351
+  %2 = bitcast %struct.ggc_root* %x.0 to i8*, !dbg !1491
+  tail call void @free(i8* %2) #6, !dbg !1491
+  ret void, !dbg !1492
 
 while.end:                                        ; preds = %while.cond
-  tail call void @fancy_abort(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 169, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.ggc_del_root, i64 0, i64 0)) #7
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 169, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.ggc_del_root, i64 0, i64 0)) #8, !dbg !1492
+  unreachable, !dbg !1492
 }

@@ -1,24 +1,25 @@
-define void @f(i8* nocapture %a) #4 {
-  tail call void @llvm.dbg.value(metadata i8* %a, i64 0, metadata !109, metadata !221), !dbg !321
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !110, metadata !221), !dbg !322
-  %1 = tail call i64 @strlen(i8* %a) #9, !dbg !323
-  %2 = trunc i64 %1 to i32, !dbg !326
-  %3 = icmp sgt i32 %2, 0, !dbg !327
-  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !328
+define void @f(i8* nocapture %a) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %a}, i64 0, metadata !91), !dbg !236
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !92), !dbg !237
+  %call12 = tail call i64 @strlen(i8* %a) #9, !dbg !237
+  %conv13 = trunc i64 %call12 to i32, !dbg !237
+  %cmp14 = icmp sgt i32 %conv13, 0, !dbg !237
+  br i1 %cmp14, label %for.body, label %for.end, !dbg !237
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %0 ]
-  %4 = getelementptr inbounds i8* %a, i64 %indvars.iv, !dbg !329
-  %5 = load i8* %4, align 1, !dbg !329, !tbaa !249
-  %6 = xor i8 %5, -1, !dbg !330
-  store i8 %6, i8* %4, align 1, !dbg !331, !tbaa !249
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !328
-  %7 = tail call i64 @strlen(i8* %a) #9, !dbg !323
-  %sext = shl i64 %7, 32, !dbg !327
-  %8 = ashr exact i64 %sext, 32, !dbg !327
-  %9 = icmp slt i64 %indvars.iv.next, %8, !dbg !327
-  br i1 %9, label %.lr.ph, label %._crit_edge, !dbg !328
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8* %a, i64 %indvars.iv, !dbg !237
+  %0 = load i8* %arrayidx, align 1, !dbg !237, !tbaa !239
+  %neg = xor i8 %0, -1, !dbg !237
+  store i8 %neg, i8* %arrayidx, align 1, !dbg !237, !tbaa !239
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !237
+  %call = tail call i64 @strlen(i8* %a) #9, !dbg !237
+  %conv = trunc i64 %call to i32, !dbg !237
+  %1 = trunc i64 %indvars.iv.next to i32, !dbg !237
+  %cmp = icmp slt i32 %1, %conv, !dbg !237
+  br i1 %cmp, label %for.body, label %for.end, !dbg !237
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  ret void, !dbg !332
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !236
 }

@@ -1,29 +1,31 @@
 define noalias %struct.cTimerData* @CCTK_TimerCreateData() #1 {
-  %1 = tail call i8* @malloc(i64 16) #8, !dbg !882
-  %2 = bitcast i8* %1 to %struct.cTimerData*, !dbg !883
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* %2, i64 0, metadata !236, metadata !354), !dbg !884
-  %3 = icmp eq i8* %1, null, !dbg !885
-  br i1 %3, label %14, label %4, !dbg !887
+entry:
+  %call = tail call noalias i8* @malloc(i64 16) #8, !dbg !628
+  %0 = bitcast i8* %call to %struct.cTimerData*, !dbg !628
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %0}, i64 0, metadata !236), !dbg !628
+  %tobool = icmp eq i8* %call, null, !dbg !629
+  br i1 %tobool, label %if.end6, label %if.then, !dbg !629
 
-; <label>:4                                       ; preds = %0
-  %5 = load i32* @n_clock_vals, align 4, !dbg !888, !tbaa !388
-  %6 = bitcast i8* %1 to i32*, !dbg !890
-  store i32 %5, i32* %6, align 4, !dbg !891, !tbaa !867
-  %7 = sext i32 %5 to i64, !dbg !892
-  %8 = shl nsw i64 %7, 5, !dbg !893
-  %9 = tail call i8* @malloc(i64 %8) #8, !dbg !894
-  %10 = getelementptr inbounds i8* %1, i64 8, !dbg !895
-  %11 = bitcast i8* %10 to i8**, !dbg !896
-  store i8* %9, i8** %11, align 8, !dbg !896, !tbaa !859
-  %12 = icmp eq i8* %9, null, !dbg !897
-  br i1 %12, label %13, label %14, !dbg !899
+if.then:                                          ; preds = %entry
+  %1 = load i32* @n_clock_vals, align 4, !dbg !630, !tbaa !359
+  %n_vals = bitcast i8* %call to i32*, !dbg !630
+  store i32 %1, i32* %n_vals, align 4, !dbg !630, !tbaa !359
+  %conv = sext i32 %1 to i64, !dbg !632
+  %mul = shl nsw i64 %conv, 5, !dbg !632
+  %call2 = tail call noalias i8* @malloc(i64 %mul) #8, !dbg !632
+  %2 = bitcast i8* %call2 to %struct.cTimerVal*, !dbg !632
+  %vals = getelementptr inbounds i8* %call, i64 8, !dbg !632
+  %3 = bitcast i8* %vals to %struct.cTimerVal**, !dbg !632
+  store %struct.cTimerVal* %2, %struct.cTimerVal** %3, align 8, !dbg !632, !tbaa !355
+  %tobool4 = icmp eq i8* %call2, null, !dbg !633
+  br i1 %tobool4, label %if.then5, label %if.end6, !dbg !633
 
-; <label>:13                                      ; preds = %4
-  tail call void @free(i8* %1) #9, !dbg !900
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* null, i64 0, metadata !236, metadata !354), !dbg !884
-  br label %14, !dbg !902
+if.then5:                                         ; preds = %if.then
+  tail call void @free(i8* %call) #8, !dbg !634
+  tail call void @llvm.dbg.value(metadata !636, i64 0, metadata !236), !dbg !637
+  br label %if.end6, !dbg !638
 
-; <label>:14                                      ; preds = %4, %0, %13
-  %retval.0 = phi %struct.cTimerData* [ %2, %4 ], [ null, %13 ], [ %2, %0 ]
-  ret %struct.cTimerData* %retval.0, !dbg !903
+if.end6:                                          ; preds = %if.then, %entry, %if.then5
+  %retval1.0 = phi %struct.cTimerData* [ %0, %if.then ], [ null, %if.then5 ], [ %0, %entry ]
+  ret %struct.cTimerData* %retval1.0, !dbg !639
 }

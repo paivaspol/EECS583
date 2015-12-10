@@ -1,46 +1,50 @@
 define internal fastcc void @kill_value_regno(i32 %regno, %struct.value_data* nocapture %vd) #0 {
 entry:
-  %idxprom = zext i32 %regno to i64
-  %oldest_regno = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom, i32 1
-  %0 = load i32* %oldest_regno, align 4, !tbaa !3
-  %cmp = icmp eq i32 %0, %regno
-  br i1 %cmp, label %if.else, label %for.cond
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !646), !dbg !1555
+  tail call void @llvm.dbg.value(metadata !{%struct.value_data* %vd}, i64 0, metadata !647), !dbg !1556
+  %idxprom = zext i32 %regno to i64, !dbg !1557
+  %oldest_regno = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom, i32 1, !dbg !1557
+  %0 = load i32* %oldest_regno, align 4, !dbg !1557, !tbaa !953
+  %cmp = icmp eq i32 %0, %regno, !dbg !1557
+  br i1 %cmp, label %if.else, label %for.cond, !dbg !1557
 
 for.cond:                                         ; preds = %entry, %for.cond
   %i.0 = phi i32 [ %1, %for.cond ], [ %0, %entry ]
-  %idxprom5 = zext i32 %i.0 to i64
-  %next_regno = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom5, i32 2
-  %1 = load i32* %next_regno, align 4, !tbaa !3
-  %cmp8 = icmp eq i32 %1, %regno
-  br i1 %cmp8, label %for.end, label %for.cond
+  %idxprom5 = zext i32 %i.0 to i64, !dbg !1558
+  %next_regno = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom5, i32 2, !dbg !1558
+  %1 = load i32* %next_regno, align 4, !dbg !1558, !tbaa !953
+  %cmp8 = icmp eq i32 %1, %regno, !dbg !1558
+  br i1 %cmp8, label %for.end, label %for.cond, !dbg !1558
 
 for.end:                                          ; preds = %for.cond
-  %next_regno16 = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom, i32 2
-  %2 = load i32* %next_regno16, align 4, !tbaa !3
-  store i32 %2, i32* %next_regno, align 4, !tbaa !3
-  br label %if.end40
+  %next_regno16 = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom, i32 2, !dbg !1561
+  %2 = load i32* %next_regno16, align 4, !dbg !1561, !tbaa !953
+  store i32 %2, i32* %next_regno, align 4, !dbg !1561, !tbaa !953
+  br label %if.end40, !dbg !1562
 
 if.else:                                          ; preds = %entry
-  %next_regno24 = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom, i32 2
-  %3 = load i32* %next_regno24, align 4, !tbaa !3
-  %cmp25 = icmp eq i32 %3, -1
-  br i1 %cmp25, label %if.end40, label %for.body29
+  %next_regno24 = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom, i32 2, !dbg !1563
+  %3 = load i32* %next_regno24, align 4, !dbg !1563, !tbaa !953
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !649), !dbg !1563
+  %cmp25 = icmp eq i32 %3, -1, !dbg !1563
+  br i1 %cmp25, label %if.end40, label %for.body29, !dbg !1563
 
 for.body29:                                       ; preds = %if.else, %for.body29
   %i.177 = phi i32 [ %4, %for.body29 ], [ %3, %if.else ]
-  %idxprom30 = zext i32 %i.177 to i64
-  %oldest_regno33 = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom30, i32 1
-  store i32 %3, i32* %oldest_regno33, align 4, !tbaa !3
-  %next_regno38 = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom30, i32 2
-  %4 = load i32* %next_regno38, align 4, !tbaa !3
-  %cmp28 = icmp eq i32 %4, -1
-  br i1 %cmp28, label %if.end40, label %for.body29
+  %idxprom30 = zext i32 %i.177 to i64, !dbg !1564
+  %oldest_regno33 = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom30, i32 1, !dbg !1564
+  store i32 %3, i32* %oldest_regno33, align 4, !dbg !1564, !tbaa !953
+  %next_regno38 = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom30, i32 2, !dbg !1567
+  %4 = load i32* %next_regno38, align 4, !dbg !1567, !tbaa !953
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !648), !dbg !1567
+  %cmp28 = icmp eq i32 %4, -1, !dbg !1567
+  br i1 %cmp28, label %if.end40, label %for.body29, !dbg !1567
 
 if.end40:                                         ; preds = %for.body29, %if.else, %for.end
-  %mode = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom, i32 0
-  store i32 0, i32* %mode, align 4, !tbaa !9
-  store i32 %regno, i32* %oldest_regno, align 4, !tbaa !3
-  %next_regno51 = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom, i32 2
-  store i32 -1, i32* %next_regno51, align 4, !tbaa !3
-  ret void
+  %mode = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom, i32 0, !dbg !1568
+  store i32 0, i32* %mode, align 4, !dbg !1568, !tbaa !1221
+  store i32 %regno, i32* %oldest_regno, align 4, !dbg !1569, !tbaa !953
+  %next_regno51 = getelementptr inbounds %struct.value_data* %vd, i64 0, i32 0, i64 %idxprom, i32 2, !dbg !1570
+  store i32 -1, i32* %next_regno51, align 4, !dbg !1570, !tbaa !953
+  ret void, !dbg !1571
 }

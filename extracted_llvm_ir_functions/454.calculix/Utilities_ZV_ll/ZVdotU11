@@ -1,59 +1,57 @@
-define void @ZVdotU11(i32 %n, double* nocapture readonly %y0, double* nocapture readonly %x0, double* nocapture %sums) #2 {
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !573, metadata !841), !dbg !2184
-  tail call void @llvm.dbg.value(metadata double* %y0, i64 0, metadata !574, metadata !841), !dbg !2185
-  tail call void @llvm.dbg.value(metadata double* %x0, i64 0, metadata !575, metadata !841), !dbg !2186
-  tail call void @llvm.dbg.value(metadata double* %sums, i64 0, metadata !576, metadata !841), !dbg !2187
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !578, metadata !841), !dbg !2188
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !577, metadata !841), !dbg !2189
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !585, metadata !841), !dbg !2190
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !583, metadata !841), !dbg !2191
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !584, metadata !841), !dbg !2192
-  %1 = icmp sgt i32 %n, 0, !dbg !2193
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !2196
+define void @ZVdotU11(i32 %n, double* nocapture %y0, double* nocapture %x0, double* nocapture %sums) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !562), !dbg !1423
+  tail call void @llvm.dbg.value(metadata !{double* %y0}, i64 0, metadata !563), !dbg !1424
+  tail call void @llvm.dbg.value(metadata !{double* %x0}, i64 0, metadata !564), !dbg !1425
+  tail call void @llvm.dbg.value(metadata !{double* %sums}, i64 0, metadata !565), !dbg !1426
+  tail call void @llvm.dbg.value(metadata !1235, i64 0, metadata !567), !dbg !1427
+  tail call void @llvm.dbg.value(metadata !1235, i64 0, metadata !566), !dbg !1427
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !574), !dbg !1428
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !572), !dbg !1428
+  tail call void @llvm.dbg.value(metadata !1239, i64 0, metadata !573), !dbg !1428
+  %cmp30 = icmp sgt i32 %n, 0, !dbg !1428
+  br i1 %cmp30, label %for.body, label %for.end, !dbg !1428
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %n, -1, !dbg !2196
-  br label %3, !dbg !2196
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv37 = phi i64 [ %indvars.iv.next38, %for.body ], [ 1, %entry ], !dbg !1428
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %ii.033 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %i00.032 = phi double [ %add11, %for.body ], [ 0.000000e+00, %entry ]
+  %r00.031 = phi double [ %add, %for.body ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds double* %y0, i64 %indvars.iv, !dbg !1430
+  %0 = load double* %arrayidx, align 8, !dbg !1430, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{double %0}, i64 0, metadata !571), !dbg !1430
+  %arrayidx2 = getelementptr inbounds double* %y0, i64 %indvars.iv37, !dbg !1430
+  %1 = load double* %arrayidx2, align 8, !dbg !1430, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{double %1}, i64 0, metadata !570), !dbg !1430
+  %arrayidx4 = getelementptr inbounds double* %x0, i64 %indvars.iv, !dbg !1432
+  %2 = load double* %arrayidx4, align 8, !dbg !1432, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{double %2}, i64 0, metadata !569), !dbg !1432
+  %arrayidx6 = getelementptr inbounds double* %x0, i64 %indvars.iv37, !dbg !1432
+  %3 = load double* %arrayidx6, align 8, !dbg !1432, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{double %3}, i64 0, metadata !568), !dbg !1432
+  %mul = fmul double %0, %2, !dbg !1433
+  %mul7 = fmul double %1, %3, !dbg !1433
+  %sub = fsub double %mul, %mul7, !dbg !1433
+  %add = fadd double %r00.031, %sub, !dbg !1433
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !567), !dbg !1433
+  %mul8 = fmul double %0, %3, !dbg !1433
+  %mul9 = fmul double %1, %2, !dbg !1433
+  %add10 = fadd double %mul9, %mul8, !dbg !1433
+  %add11 = fadd double %i00.032, %add10, !dbg !1433
+  tail call void @llvm.dbg.value(metadata !{double %add11}, i64 0, metadata !566), !dbg !1433
+  %inc = add nsw i32 %ii.033, 1, !dbg !1428
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !572), !dbg !1428
+  %indvars.iv.next = add i64 %indvars.iv, 2, !dbg !1428
+  %indvars.iv.next38 = add i64 %indvars.iv37, 2, !dbg !1428
+  %exitcond = icmp eq i32 %inc, %n, !dbg !1428
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1428
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv8 = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next9, %3 ]
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %ii.03 = phi i32 [ 0, %.lr.ph ], [ %23, %3 ]
-  %4 = phi <2 x double> [ zeroinitializer, %.lr.ph ], [ %22, %3 ]
-  %5 = getelementptr inbounds double* %y0, i64 %indvars.iv, !dbg !2197
-  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !582, metadata !841), !dbg !2199
-  %6 = bitcast double* %5 to <2 x double>*, !dbg !2197
-  %7 = load <2 x double>* %6, align 8, !dbg !2197, !tbaa !907
-  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !581, metadata !841), !dbg !2200
-  %8 = getelementptr inbounds double* %x0, i64 %indvars.iv, !dbg !2201
-  %9 = load double* %8, align 8, !dbg !2201, !tbaa !907
-  tail call void @llvm.dbg.value(metadata double %9, i64 0, metadata !580, metadata !841), !dbg !2202
-  %10 = getelementptr inbounds double* %x0, i64 %indvars.iv8, !dbg !2203
-  %11 = load double* %10, align 8, !dbg !2203, !tbaa !907
-  tail call void @llvm.dbg.value(metadata double %11, i64 0, metadata !579, metadata !841), !dbg !2204
-  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !578, metadata !841), !dbg !2188
-  %12 = shufflevector <2 x double> %7, <2 x double> undef, <2 x i32> <i32 1, i32 0>, !dbg !2205
-  %13 = insertelement <2 x double> undef, double %11, i32 0, !dbg !2205
-  %14 = insertelement <2 x double> %13, double %11, i32 1, !dbg !2205
-  %15 = fmul <2 x double> %12, %14, !dbg !2205
-  %16 = insertelement <2 x double> undef, double %9, i32 0, !dbg !2206
-  %17 = insertelement <2 x double> %16, double %9, i32 1, !dbg !2206
-  %18 = fmul <2 x double> %7, %17, !dbg !2206
-  %19 = fsub <2 x double> %18, %15, !dbg !2207
-  %20 = fadd <2 x double> %18, %15, !dbg !2207
-  %21 = shufflevector <2 x double> %19, <2 x double> %20, <2 x i32> <i32 0, i32 3>, !dbg !2207
-  %22 = fadd <2 x double> %4, %21, !dbg !2208
-  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !577, metadata !841), !dbg !2189
-  %23 = add nuw nsw i32 %ii.03, 1, !dbg !2209
-  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !583, metadata !841), !dbg !2191
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 2, !dbg !2196
-  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv8, 2, !dbg !2196
-  %exitcond = icmp eq i32 %ii.03, %2, !dbg !2196
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !2196
-
-._crit_edge:                                      ; preds = %3, %0
-  %24 = phi <2 x double> [ zeroinitializer, %0 ], [ %22, %3 ]
-  %25 = bitcast double* %sums to <2 x double>*, !dbg !2210
-  store <2 x double> %24, <2 x double>* %25, align 8, !dbg !2210, !tbaa !907
-  ret void, !dbg !2211
+for.end:                                          ; preds = %for.body, %entry
+  %i00.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add11, %for.body ]
+  %r00.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add, %for.body ]
+  store double %r00.0.lcssa, double* %sums, align 8, !dbg !1434, !tbaa !861
+  %arrayidx15 = getelementptr inbounds double* %sums, i64 1, !dbg !1434
+  store double %i00.0.lcssa, double* %arrayidx15, align 8, !dbg !1434, !tbaa !861
+  ret void, !dbg !1435
 }

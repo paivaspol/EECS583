@@ -1,0 +1,49 @@
+define internal fastcc zeroext i1 @_ZN10xalanc_1_8L13stackContainsERKSt6vectorINS_14XalanDOMStringESaIS1_EERKS1_(%"class.std::vector.42"* nocapture %stack, %"class.xalanc_1_8::XalanDOMString"* %urlString) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.42"* %stack}, i64 0, metadata !27299), !dbg !32542
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMString"* %urlString}, i64 0, metadata !27300), !dbg !32543
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.42"* %stack}, i64 0, metadata !32544), !dbg !32546
+  %_M_finish.i = getelementptr inbounds %"class.std::vector.42"* %stack, i64 0, i32 0, i32 0, i32 1, !dbg !32547
+  %0 = load %"class.xalanc_1_8::XalanDOMString"** %_M_finish.i, align 8, !dbg !32547, !tbaa !28525
+  %_M_start.i = getelementptr inbounds %"class.std::vector.42"* %stack, i64 0, i32 0, i32 0, i32 0, !dbg !32547
+  %1 = load %"class.xalanc_1_8::XalanDOMString"** %_M_start.i, align 8, !dbg !32547, !tbaa !28525
+  %sub.ptr.lhs.cast.i = ptrtoint %"class.xalanc_1_8::XalanDOMString"* %0 to i64, !dbg !32547
+  %sub.ptr.rhs.cast.i = ptrtoint %"class.xalanc_1_8::XalanDOMString"* %1 to i64, !dbg !32547
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !32547
+  %sub.ptr.div.i = ashr exact i64 %sub.ptr.sub.i, 5, !dbg !32547
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.div.i}, i64 0, metadata !27301), !dbg !32545
+  tail call void @llvm.dbg.value(metadata !29058, i64 0, metadata !27305), !dbg !32548
+  tail call void @llvm.dbg.value(metadata !28901, i64 0, metadata !27306), !dbg !32549
+  %cmp10 = icmp eq i64 %sub.ptr.div.i, 0, !dbg !32549
+  br i1 %cmp10, label %for.end, label %land.rhs, !dbg !32549
+
+land.rhs:                                         ; preds = %entry, %for.body
+  %i.012 = phi i64 [ %inc, %for.body ], [ 0, %entry ]
+  %contains.011 = phi i8 [ %.contains.0, %for.body ], [ 0, %entry ]
+  %2 = and i8 %contains.011, 1, !dbg !32549
+  %cmp1 = icmp eq i8 %2, 0, !dbg !32549
+  br i1 %cmp1, label %for.body, label %for.end
+
+for.body:                                         ; preds = %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.42"* %stack}, i64 0, metadata !32550), !dbg !32553
+  tail call void @llvm.dbg.value(metadata !{i64 %i.012}, i64 0, metadata !32554), !dbg !32553
+  %3 = load %"class.xalanc_1_8::XalanDOMString"** %_M_start.i, align 8, !dbg !32555, !tbaa !28525
+  %add.ptr.i = getelementptr inbounds %"class.xalanc_1_8::XalanDOMString"* %3, i64 %i.012, !dbg !32555
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMString"* %add.ptr.i}, i64 0, metadata !32557), !dbg !32558
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMString"* %urlString}, i64 0, metadata !32559), !dbg !32560
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMString"* %add.ptr.i}, i64 0, metadata !32561), !dbg !32563
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMString"* %urlString}, i64 0, metadata !32564), !dbg !32565
+  %call.i.i = tail call zeroext i1 @_ZN10xalanc_1_814XalanDOMString6equalsERKS0_S2_(%"class.xalanc_1_8::XalanDOMString"* %add.ptr.i, %"class.xalanc_1_8::XalanDOMString"* %urlString) #12, !dbg !32566
+  tail call void @llvm.dbg.value(metadata !29621, i64 0, metadata !27305), !dbg !32568
+  %.contains.0 = select i1 %call.i.i, i8 1, i8 %contains.011, !dbg !32551
+  %inc = add i64 %i.012, 1, !dbg !32549
+  tail call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !27306), !dbg !32549
+  %cmp = icmp ult i64 %inc, %sub.ptr.div.i, !dbg !32549
+  br i1 %cmp, label %land.rhs, label %for.end, !dbg !32549
+
+for.end:                                          ; preds = %for.body, %land.rhs, %entry
+  %contains.0.lcssa = phi i8 [ 0, %entry ], [ %contains.011, %land.rhs ], [ %.contains.0, %for.body ]
+  %4 = and i8 %contains.0.lcssa, 1, !dbg !32570
+  %tobool4 = icmp ne i8 %4, 0, !dbg !32570
+  ret i1 %tobool4, !dbg !32570
+}

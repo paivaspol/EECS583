@@ -1,71 +1,72 @@
-define void @GSIAddKeyToIndex(%struct.gsiindex_s* nocapture %g, i8* %key, i32 %filenum, i64 %offset) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.gsiindex_s* %g, i64 0, metadata !168, metadata !226), !dbg !490
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !169, metadata !226), !dbg !491
-  tail call void @llvm.dbg.value(metadata i32 %filenum, i64 0, metadata !170, metadata !226), !dbg !492
-  tail call void @llvm.dbg.value(metadata i64 %offset, i64 0, metadata !171, metadata !226), !dbg !493
-  %1 = tail call i64 @strlen(i8* %key) #7, !dbg !494
-  %2 = icmp ugt i64 %1, 31, !dbg !496
-  br i1 %2, label %3, label %4, !dbg !497
+define void @GSIAddKeyToIndex(%struct.gsiindex_s* nocapture %g, i8* nocapture %key, i32 %filenum, i64 %offset) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.gsiindex_s* %g}, i64 0, metadata !159), !dbg !314
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !160), !dbg !314
+  tail call void @llvm.dbg.value(metadata !{i32 %filenum}, i64 0, metadata !161), !dbg !314
+  tail call void @llvm.dbg.value(metadata !{i64 %offset}, i64 0, metadata !162), !dbg !314
+  %call = tail call i64 @strlen(i8* %key) #8, !dbg !315
+  %cmp = icmp ugt i64 %call, 31, !dbg !315
+  br i1 %cmp, label %if.then, label %if.end, !dbg !315
 
-; <label>:3                                       ; preds = %0
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([26 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !498
-  br label %4, !dbg !498
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([26 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !315
+  br label %if.end, !dbg !315
 
-; <label>:4                                       ; preds = %3, %0
-  %5 = icmp sgt i32 %filenum, 65535, !dbg !499
-  br i1 %5, label %6, label %7, !dbg !501
+if.end:                                           ; preds = %if.then, %entry
+  %cmp1 = icmp sgt i32 %filenum, 65535, !dbg !316
+  br i1 %cmp1, label %if.then2, label %if.end3, !dbg !316
 
-; <label>:6                                       ; preds = %4
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str5, i64 0, i64 0)) #7, !dbg !502
-  br label %7, !dbg !502
+if.then2:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str5, i64 0, i64 0)) #7, !dbg !316
+  br label %if.end3, !dbg !316
 
-; <label>:7                                       ; preds = %6, %4
-  %8 = icmp sgt i64 %offset, 4294967295, !dbg !503
-  br i1 %8, label %9, label %10, !dbg !505
+if.end3:                                          ; preds = %if.then2, %if.end
+  %cmp4 = icmp sgt i64 %offset, 4294967295, !dbg !317
+  br i1 %cmp4, label %if.then5, label %if.end6, !dbg !317
 
-; <label>:9                                       ; preds = %7
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str6, i64 0, i64 0)) #7, !dbg !506
-  br label %10, !dbg !506
+if.then5:                                         ; preds = %if.end3
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str6, i64 0, i64 0)) #7, !dbg !317
+  br label %if.end6, !dbg !317
 
-; <label>:10                                      ; preds = %9, %7
-  %11 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 4, !dbg !507
-  %12 = load i32* %11, align 4, !dbg !507, !tbaa !438
-  %13 = sext i32 %12 to i64, !dbg !507
-  %14 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 3, !dbg !507
-  %15 = load %struct.gsikey_s** %14, align 8, !dbg !507, !tbaa !432
-  %16 = getelementptr inbounds %struct.gsikey_s* %15, i64 %13, i32 0, i64 0, !dbg !507
-  %17 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %16, i1 false), !dbg !507
-  %18 = tail call i8* @__strncpy_chk(i8* %16, i8* %key, i64 31, i64 %17) #7, !dbg !507
-  %19 = load i32* %11, align 4, !dbg !508, !tbaa !438
-  %20 = sext i32 %19 to i64, !dbg !509
-  %21 = load %struct.gsikey_s** %14, align 8, !dbg !510, !tbaa !432
-  %22 = getelementptr inbounds %struct.gsikey_s* %21, i64 %20, i32 0, i64 31, !dbg !509
-  store i8 0, i8* %22, align 1, !dbg !511, !tbaa !358
-  %23 = trunc i32 %filenum to i16, !dbg !512
-  %24 = load i32* %11, align 4, !dbg !513, !tbaa !438
-  %25 = sext i32 %24 to i64, !dbg !514
-  %26 = load %struct.gsikey_s** %14, align 8, !dbg !515, !tbaa !432
-  %27 = getelementptr inbounds %struct.gsikey_s* %26, i64 %25, i32 1, !dbg !516
-  store i16 %23, i16* %27, align 2, !dbg !517, !tbaa !518
-  %28 = trunc i64 %offset to i32, !dbg !520
-  %29 = getelementptr inbounds %struct.gsikey_s* %26, i64 %25, i32 2, !dbg !521
-  store i32 %28, i32* %29, align 4, !dbg !522, !tbaa !523
-  %30 = add nsw i32 %24, 1, !dbg !524
-  store i32 %30, i32* %11, align 4, !dbg !524, !tbaa !438
-  %31 = srem i32 %30, 100, !dbg !525
-  %32 = icmp eq i32 %31, 0, !dbg !527
-  br i1 %32, label %33, label %40, !dbg !528
+if.end6:                                          ; preds = %if.then5, %if.end3
+  %nkeys = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 4, !dbg !318
+  %0 = load i32* %nkeys, align 4, !dbg !318, !tbaa !222
+  %idxprom = sext i32 %0 to i64, !dbg !318
+  %elems = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 3, !dbg !318
+  %1 = load %struct.gsikey_s** %elems, align 8, !dbg !318, !tbaa !217
+  %arraydecay = getelementptr inbounds %struct.gsikey_s* %1, i64 %idxprom, i32 0, i64 0, !dbg !318
+  %call8 = tail call i8* @strncpy(i8* %arraydecay, i8* %key, i64 31) #7, !dbg !318
+  %2 = load i32* %nkeys, align 4, !dbg !319, !tbaa !222
+  %idxprom10 = sext i32 %2 to i64, !dbg !319
+  %3 = load %struct.gsikey_s** %elems, align 8, !dbg !319, !tbaa !217
+  %arrayidx14 = getelementptr inbounds %struct.gsikey_s* %3, i64 %idxprom10, i32 0, i64 31, !dbg !319
+  store i8 0, i8* %arrayidx14, align 1, !dbg !319, !tbaa !218
+  %conv = trunc i32 %filenum to i16, !dbg !320
+  %4 = load i32* %nkeys, align 4, !dbg !320, !tbaa !222
+  %idxprom16 = sext i32 %4 to i64, !dbg !320
+  %5 = load %struct.gsikey_s** %elems, align 8, !dbg !320, !tbaa !217
+  %filenum19 = getelementptr inbounds %struct.gsikey_s* %5, i64 %idxprom16, i32 1, !dbg !320
+  store i16 %conv, i16* %filenum19, align 2, !dbg !320, !tbaa !236
+  %conv20 = trunc i64 %offset to i32, !dbg !321
+  %offset25 = getelementptr inbounds %struct.gsikey_s* %5, i64 %idxprom16, i32 2, !dbg !321
+  store i32 %conv20, i32* %offset25, align 4, !dbg !321, !tbaa !222
+  %6 = load i32* %nkeys, align 4, !dbg !322, !tbaa !222
+  %inc = add nsw i32 %6, 1, !dbg !322
+  store i32 %inc, i32* %nkeys, align 4, !dbg !322, !tbaa !222
+  %rem = srem i32 %inc, 100, !dbg !323
+  %cmp28 = icmp eq i32 %rem, 0, !dbg !323
+  br i1 %cmp28, label %if.then30, label %if.end36, !dbg !323
 
-; <label>:33                                      ; preds = %10
-  %34 = getelementptr inbounds %struct.gsikey_s* %26, i64 0, i32 0, i64 0
-  %35 = bitcast %struct.gsikey_s** %14 to i8**, !dbg !529
-  %36 = add nsw i32 %24, 101, !dbg !529
-  %37 = sext i32 %36 to i64, !dbg !529
-  %38 = mul nsw i64 %37, 40, !dbg !529
-  %39 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 247, i8* %34, i64 %38) #7, !dbg !529
-  store i8* %39, i8** %35, align 8, !dbg !530, !tbaa !432
-  br label %40, !dbg !531
+if.then30:                                        ; preds = %if.end6
+  %7 = getelementptr inbounds %struct.gsikey_s* %5, i64 0, i32 0, i64 0, !dbg !324
+  %add = add nsw i32 %6, 101, !dbg !324
+  %conv33 = sext i32 %add to i64, !dbg !324
+  %mul = mul i64 %conv33, 40, !dbg !324
+  %call34 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 247, i8* %7, i64 %mul) #7, !dbg !324
+  %8 = bitcast i8* %call34 to %struct.gsikey_s*, !dbg !324
+  store %struct.gsikey_s* %8, %struct.gsikey_s** %elems, align 8, !dbg !324, !tbaa !217
+  br label %if.end36, !dbg !324
 
-; <label>:40                                      ; preds = %33, %10
-  ret void, !dbg !532
+if.end36:                                         ; preds = %if.then30, %if.end6
+  ret void, !dbg !325
 }

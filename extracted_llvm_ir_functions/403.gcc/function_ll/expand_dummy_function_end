@@ -1,29 +1,30 @@
 define void @expand_dummy_function_end() #0 {
 entry:
-  %call1 = tail call i32 @in_sequence_p() #10
-  %tobool2 = icmp eq i32 %call1, 0
-  br i1 %tobool2, label %while.end, label %while.body
+  %call1 = tail call i32 @in_sequence_p() #11, !dbg !4572
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !4572
+  br i1 %tobool2, label %while.end, label %while.body, !dbg !4572
 
 while.body:                                       ; preds = %entry, %while.body
-  tail call void @end_sequence() #10
-  %call = tail call i32 @in_sequence_p() #10
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %while.end, label %while.body
+  tail call void @end_sequence() #11, !dbg !4573
+  %call = tail call i32 @in_sequence_p() #11, !dbg !4572
+  %tobool = icmp eq i32 %call, 0, !dbg !4572
+  br i1 %tobool, label %while.end, label %while.body, !dbg !4572
 
 while.end:                                        ; preds = %while.body, %entry
-  %0 = load %struct.function** @cfun, align 8, !tbaa !0
-  %1 = load void (%struct.function*)** @free_lang_status, align 8, !tbaa !0
-  %tobool.i = icmp eq void (%struct.function*)* %1, null
-  br i1 %tobool.i, label %free_after_parsing.exit, label %if.then.i
+  %0 = load %struct.function** @cfun, align 8, !dbg !4574, !tbaa !2729
+  tail call void @llvm.dbg.value(metadata !{%struct.function* %0}, i64 0, metadata !4575) #6, !dbg !4576
+  %1 = load void (%struct.function*)** @free_lang_status, align 8, !dbg !4577, !tbaa !2729
+  %tobool.i = icmp eq void (%struct.function*)* %1, null, !dbg !4577
+  br i1 %tobool.i, label %free_after_parsing.exit, label %if.then.i, !dbg !4577
 
 if.then.i:                                        ; preds = %while.end
-  tail call void %1(%struct.function* %0) #10
-  br label %free_after_parsing.exit
+  tail call void %1(%struct.function* %0) #11, !dbg !4578
+  br label %free_after_parsing.exit, !dbg !4578
 
 free_after_parsing.exit:                          ; preds = %while.end, %if.then.i
-  tail call void @free_stmt_status(%struct.function* %0) #10
-  %2 = load %struct.function** @cfun, align 8, !tbaa !0
-  tail call void @free_after_compilation(%struct.function* %2) #9
-  store %struct.function* null, %struct.function** @cfun, align 8, !tbaa !0
-  ret void
+  tail call void @free_stmt_status(%struct.function* %0) #11, !dbg !4579
+  %2 = load %struct.function** @cfun, align 8, !dbg !4580, !tbaa !2729
+  tail call void @free_after_compilation(%struct.function* %2) #10, !dbg !4580
+  store %struct.function* null, %struct.function** @cfun, align 8, !dbg !4581, !tbaa !2729
+  ret void, !dbg !4582
 }

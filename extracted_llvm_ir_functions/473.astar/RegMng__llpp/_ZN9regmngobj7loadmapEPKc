@@ -1,52 +1,54 @@
-define zeroext i1 @_ZN9regmngobj7loadmapEPKc(%class.regmngobj* %this, i8* %fn) #1 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.regmngobj* %this, i64 0, metadata !414, metadata !675), !dbg !821
-  tail call void @llvm.dbg.value(metadata i8* %fn, i64 0, metadata !415, metadata !675), !dbg !822
-  %1 = tail call i32 (i8*, i32, ...)* @"\01_open"(i8* %fn, i32 0) #9, !dbg !823
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !416, metadata !675), !dbg !824
-  %2 = icmp eq i32 %1, -1, !dbg !825
-  br i1 %2, label %30, label %3, !dbg !827
+define zeroext i1 @_ZN9regmngobj7loadmapEPKc(%class.regmngobj* nocapture %this, i8* nocapture %fn) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.regmngobj* %this}, i64 0, metadata !412), !dbg !857
+  tail call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !413), !dbg !857
+  %call = tail call i32 (i8*, i32, ...)* @open(i8* %fn, i32 0) #7, !dbg !858
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !414), !dbg !858
+  %cmp = icmp eq i32 %call, -1, !dbg !859
+  br i1 %cmp, label %return, label %if.end, !dbg !859
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 14, !dbg !828
-  %5 = bitcast i32* %4 to i8*, !dbg !829
-  %6 = tail call i64 @"\01_read"(i32 %1, i8* %5, i64 4) #9, !dbg !830
-  %7 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 15, !dbg !831
-  %8 = bitcast i32* %7 to i8*, !dbg !832
-  %9 = tail call i64 @"\01_read"(i32 %1, i8* %8, i64 4) #9, !dbg !833
-  %10 = load i32* %4, align 4, !dbg !834, !tbaa !835
-  %11 = add nsw i32 %10, -1, !dbg !836
-  %12 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 12, !dbg !837
-  store i32 %11, i32* %12, align 4, !dbg !838, !tbaa !839
-  %13 = load i32* %7, align 4, !dbg !840, !tbaa !841
-  %14 = add nsw i32 %13, -1, !dbg !842
-  %15 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 13, !dbg !843
-  store i32 %14, i32* %15, align 4, !dbg !844, !tbaa !845
-  %16 = mul nsw i32 %13, %10, !dbg !846
-  %17 = sext i32 %16 to i64, !dbg !847
-  %18 = shl nsw i64 %17, 3, !dbg !848
-  %19 = tail call i8* @malloc(i64 %18) #9, !dbg !849
-  %20 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 6, !dbg !850
-  %21 = bitcast %class.regobj*** %20 to i8**, !dbg !851
-  store i8* %19, i8** %21, align 8, !dbg !851, !tbaa !787
-  %22 = tail call i8* @malloc(i64 %17) #9, !dbg !852
-  %23 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 7, !dbg !853
-  store i8* %22, i8** %23, align 8, !dbg !854, !tbaa !791
-  %24 = shl nsw i64 %17, 1, !dbg !855
-  %25 = tail call i8* @malloc(i64 %24) #9, !dbg !856
-  %26 = bitcast %class.regmngobj* %this to i8**, !dbg !857
-  store i8* %25, i8** %26, align 8, !dbg !857, !tbaa !681
-  tail call void @llvm.memset.p0i8.i64(i8* %25, i8 0, i64 %24, i32 2, i1 false), !dbg !858
-  %27 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 1, !dbg !859
-  store i16 0, i16* %27, align 2, !dbg !860, !tbaa !861
-  %28 = tail call i64 @"\01_read"(i32 %1, i8* %22, i64 %17) #9, !dbg !862
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !417, metadata !675), !dbg !863
+if.end:                                           ; preds = %entry
+  %mapsizex = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 14, !dbg !860
+  %0 = bitcast i32* %mapsizex to i8*, !dbg !860
+  %call2 = tail call i64 @read(i32 %call, i8* %0, i64 4) #7, !dbg !860
+  %mapsizey = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 15, !dbg !861
+  %1 = bitcast i32* %mapsizey to i8*, !dbg !861
+  %call3 = tail call i64 @read(i32 %call, i8* %1, i64 4) #7, !dbg !861
+  %2 = load i32* %mapsizex, align 4, !dbg !862, !tbaa !781
+  %sub = add nsw i32 %2, -1, !dbg !862
+  %mapmaxx = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 12, !dbg !862
+  store i32 %sub, i32* %mapmaxx, align 4, !dbg !862, !tbaa !781
+  %3 = load i32* %mapsizey, align 4, !dbg !863, !tbaa !781
+  %sub6 = add nsw i32 %3, -1, !dbg !863
+  %mapmaxy = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 13, !dbg !863
+  store i32 %sub6, i32* %mapmaxy, align 4, !dbg !863, !tbaa !781
+  %mul = mul nsw i32 %3, %2, !dbg !864
+  %conv = sext i32 %mul to i64, !dbg !864
+  %mul9 = shl nsw i64 %conv, 3, !dbg !864
+  %call10 = tail call noalias i8* @malloc(i64 %mul9) #8, !dbg !864
+  %4 = bitcast i8* %call10 to %class.regobj**, !dbg !864
+  %regionmapp = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 6, !dbg !864
+  store %class.regobj** %4, %class.regobj*** %regionmapp, align 8, !dbg !864, !tbaa !777
+  %call16 = tail call noalias i8* @malloc(i64 %conv) #8, !dbg !865
+  %landscapemapp = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 7, !dbg !865
+  store i8* %call16, i8** %landscapemapp, align 8, !dbg !865, !tbaa !777
+  %mul21 = shl nsw i64 %conv, 1, !dbg !866
+  %call22 = tail call noalias i8* @malloc(i64 %mul21) #8, !dbg !866
+  %5 = bitcast i8* %call22 to i16*, !dbg !866
+  %mmapp = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 0, !dbg !866
+  store i16* %5, i16** %mmapp, align 8, !dbg !866, !tbaa !777
+  tail call void @llvm.memset.p0i8.i64(i8* %call22, i8 0, i64 %mul21, i32 2, i1 false), !dbg !867
+  %fillnum = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 1, !dbg !868
+  store i16 0, i16* %fillnum, align 2, !dbg !868, !tbaa !869
+  %call35 = tail call i64 @read(i32 %call, i8* %call16, i64 %conv) #7, !dbg !870
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !415), !dbg !871
   %scevgep = getelementptr %class.regmngobj* %this, i64 0, i32 8, i64 0
-  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 0, i64 256, i32 1, i1 false), !dbg !864
-  store i8 1, i8* %scevgep, align 1, !dbg !867, !tbaa !868
-  %29 = tail call i32 @"\01_close"(i32 %1) #9, !dbg !869
-  br label %30, !dbg !870
+  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 0, i64 256, i32 1, i1 false), !dbg !873
+  store i8 1, i8* %scevgep, align 1, !dbg !874, !tbaa !875
+  %call39 = tail call i32 @close(i32 %call) #7, !dbg !876
+  br label %return, !dbg !877
 
-; <label>:30                                      ; preds = %0, %3
-  %.0 = phi i1 [ true, %3 ], [ false, %0 ]
-  ret i1 %.0, !dbg !871
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i1 [ true, %if.end ], [ false, %entry ]
+  ret i1 %retval.0, !dbg !877
 }

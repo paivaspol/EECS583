@@ -1,30 +1,33 @@
 define i32 @memory_displacement_operand(%struct.rtx_def* %op, i32 %mode) #1 {
 entry:
   %parts = alloca %struct.ix86_address, align 8
-  %call = call i32 @memory_operand(%struct.rtx_def* %op, i32 %mode) #9
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.end
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2433), !dbg !6366
+  call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2434), !dbg !6367
+  call void @llvm.dbg.declare(metadata !{%struct.ix86_address* %parts}, metadata !2435), !dbg !6368
+  %call = call i32 @memory_operand(%struct.rtx_def* %op, i32 %mode) #10, !dbg !6369
+  %tobool = icmp eq i32 %call, 0, !dbg !6369
+  br i1 %tobool, label %return, label %if.end, !dbg !6369
 
 if.end:                                           ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %call1 = call fastcc i32 @ix86_decompose_address(%struct.rtx_def* %0, %struct.ix86_address* %parts) #10
-  %tobool2 = icmp eq i32 %call1, 0
-  br i1 %tobool2, label %if.then3, label %if.end4
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, !dbg !6370
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !6370
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !6370, !tbaa !4365
+  %call1 = call fastcc i32 @ix86_decompose_address(%struct.rtx_def* %0, %struct.ix86_address* %parts) #11, !dbg !6370
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !6370
+  br i1 %tobool2, label %if.then3, label %if.end4, !dbg !6370
 
 if.then3:                                         ; preds = %if.end
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 3460, i8* getelementptr inbounds ([28 x i8]* @__FUNCTION__.memory_displacement_operand, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 3460, i8* getelementptr inbounds ([28 x i8]* @__FUNCTION__.memory_displacement_operand, i64 0, i64 0)) #12, !dbg !6371
+  unreachable, !dbg !6371
 
 if.end4:                                          ; preds = %if.end
-  %disp = getelementptr inbounds %struct.ix86_address* %parts, i64 0, i32 2
-  %1 = load %struct.rtx_def** %disp, align 8, !tbaa !4
-  %cmp = icmp ne %struct.rtx_def* %1, null
-  %conv = zext i1 %cmp to i32
-  br label %return
+  %disp = getelementptr inbounds %struct.ix86_address* %parts, i64 0, i32 2, !dbg !6372
+  %1 = load %struct.rtx_def** %disp, align 8, !dbg !6372, !tbaa !4365
+  %cmp = icmp ne %struct.rtx_def* %1, null, !dbg !6372
+  %conv = zext i1 %cmp to i32, !dbg !6372
+  br label %return, !dbg !6372
 
 return:                                           ; preds = %entry, %if.end4
   %retval.0 = phi i32 [ %conv, %if.end4 ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6373
 }

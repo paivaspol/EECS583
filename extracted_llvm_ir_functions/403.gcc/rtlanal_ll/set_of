@@ -1,29 +1,32 @@
-define %struct.rtx_def* @set_of(%struct.rtx_def* %pat, %struct.rtx_def* %insn) #1 {
+define %struct.rtx_def* @set_of(%struct.rtx_def* %pat, %struct.rtx_def* %insn) #2 {
 entry:
   %data = alloca %struct.set_of_data, align 8
-  %found = getelementptr inbounds %struct.set_of_data* %data, i64 0, i32 0
-  store %struct.rtx_def* null, %struct.rtx_def** %found, align 8, !tbaa !0
-  %pat1 = getelementptr inbounds %struct.set_of_data* %data, i64 0, i32 1
-  store %struct.rtx_def* %pat, %struct.rtx_def** %pat1, align 8, !tbaa !0
-  %0 = bitcast %struct.rtx_def* %insn to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %idxprom6 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom6
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp = icmp eq i8 %1, 105
-  br i1 %cmp, label %cond.true, label %cond.end
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pat}, i64 0, metadata !525), !dbg !1320
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !526), !dbg !1320
+  call void @llvm.dbg.declare(metadata !{%struct.set_of_data* %data}, metadata !527), !dbg !1321
+  %found = getelementptr inbounds %struct.set_of_data* %data, i64 0, i32 0, !dbg !1322
+  store %struct.rtx_def* null, %struct.rtx_def** %found, align 8, !dbg !1322, !tbaa !979
+  %pat1 = getelementptr inbounds %struct.set_of_data* %data, i64 0, i32 1, !dbg !1323
+  store %struct.rtx_def* %pat, %struct.rtx_def** %pat1, align 8, !dbg !1323, !tbaa !979
+  %0 = bitcast %struct.rtx_def* %insn to i32*, !dbg !1324
+  %bf.load = load i32* %0, align 8, !dbg !1324
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1324
+  %idxprom6 = zext i32 %bf.clear to i64, !dbg !1324
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom6, !dbg !1324
+  %1 = load i8* %arrayidx, align 1, !dbg !1324, !tbaa !980
+  %cmp = icmp eq i8 %1, 105, !dbg !1324
+  br i1 %cmp, label %cond.true, label %cond.end, !dbg !1324
 
 cond.true:                                        ; preds = %entry
-  %arrayidx3 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
-  %rtx = bitcast %union.rtunion_def* %arrayidx3 to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  br label %cond.end
+  %arrayidx3 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3, !dbg !1324
+  %rtx = bitcast %union.rtunion_def* %arrayidx3 to %struct.rtx_def**, !dbg !1324
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !1324, !tbaa !979
+  br label %cond.end, !dbg !1324
 
 cond.end:                                         ; preds = %entry, %cond.true
-  %cond = phi %struct.rtx_def* [ %2, %cond.true ], [ %insn, %entry ]
-  %3 = bitcast %struct.set_of_data* %data to i8*
-  call void @note_stores(%struct.rtx_def* %cond, void (%struct.rtx_def*, %struct.rtx_def*, i8*)* @set_of_1, i8* %3) #4
-  %4 = load %struct.rtx_def** %found, align 8, !tbaa !0
-  ret %struct.rtx_def* %4
+  %cond = phi %struct.rtx_def* [ %2, %cond.true ], [ %insn, %entry ], !dbg !1324
+  %3 = bitcast %struct.set_of_data* %data to i8*, !dbg !1324
+  call void @note_stores(%struct.rtx_def* %cond, void (%struct.rtx_def*, %struct.rtx_def*, i8*)* @set_of_1, i8* %3) #5, !dbg !1324
+  %4 = load %struct.rtx_def** %found, align 8, !dbg !1325, !tbaa !979
+  ret %struct.rtx_def* %4, !dbg !1325
 }

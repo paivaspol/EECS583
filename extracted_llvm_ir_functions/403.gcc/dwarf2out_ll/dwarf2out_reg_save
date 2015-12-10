@@ -1,12 +1,15 @@
 define void @dwarf2out_reg_save(i8* %label, i32 %reg, i64 %offset) #1 {
 entry:
-  %0 = load i32* @target_flags, align 4, !tbaa !0
-  %and = and i32 %0, 33554432
-  %tobool = icmp eq i32 %and, 0
-  %idxprom = zext i32 %reg to i64
-  %svr4_dbx_register_map.dbx64_register_map = select i1 %tobool, [53 x i32]* @svr4_dbx_register_map, [53 x i32]* @dbx64_register_map
-  %cond.in = getelementptr inbounds [53 x i32]* %svr4_dbx_register_map.dbx64_register_map, i64 0, i64 %idxprom
-  %cond = load i32* %cond.in, align 4
-  tail call fastcc void @reg_save(i8* %label, i32 %cond, i32 -1, i64 %offset) #10
-  ret void
+  tail call void @llvm.dbg.value(metadata !{i8* %label}, i64 0, metadata !1837), !dbg !4006
+  tail call void @llvm.dbg.value(metadata !{i32 %reg}, i64 0, metadata !1838), !dbg !4007
+  tail call void @llvm.dbg.value(metadata !{i64 %offset}, i64 0, metadata !1839), !dbg !4008
+  %0 = load i32* @target_flags, align 4, !dbg !4009, !tbaa !3758
+  %and = and i32 %0, 33554432, !dbg !4009
+  %tobool = icmp eq i32 %and, 0, !dbg !4009
+  %idxprom = zext i32 %reg to i64, !dbg !4009
+  %svr4_dbx_register_map.dbx64_register_map = select i1 %tobool, [53 x i32]* @svr4_dbx_register_map, [53 x i32]* @dbx64_register_map, !dbg !4009
+  %cond.in = getelementptr inbounds [53 x i32]* %svr4_dbx_register_map.dbx64_register_map, i64 0, i64 %idxprom, !dbg !4009
+  %cond = load i32* %cond.in, align 4, !dbg !4009
+  tail call fastcc void @reg_save(i8* %label, i32 %cond, i32 -1, i64 %offset) #11, !dbg !4009
+  ret void, !dbg !4010
 }

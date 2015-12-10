@@ -1,21 +1,22 @@
 define internal void @_ZN3povL20Transform_IsoSurfaceEPNS_13Object_StructEPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Transform_Struct"* %Trans) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !1476, metadata !2090), !dbg !3183
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1477, metadata !2090), !dbg !3184
-  %1 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::IsoSurface_Struct"*, !dbg !3185
-  tail call void @llvm.dbg.value(metadata %"struct.pov::IsoSurface_Struct"* %1, i64 0, metadata !1478, metadata !2090), !dbg !3186
-  %2 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !3187
-  %3 = load %"struct.pov::Transform_Struct"** %2, align 8, !dbg !3187, !tbaa !2148
-  %4 = icmp eq %"struct.pov::Transform_Struct"* %3, null, !dbg !3189
-  br i1 %4, label %5, label %7, !dbg !3190
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1229), !dbg !2135
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1230), !dbg !2135
+  %0 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::IsoSurface_Struct"*, !dbg !2136
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::IsoSurface_Struct"* %0}, i64 0, metadata !1231), !dbg !2136
+  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !2137
+  %2 = load %"struct.pov::Transform_Struct"** %1, align 8, !dbg !2137, !tbaa !1486
+  %cmp = icmp eq %"struct.pov::Transform_Struct"* %2, null, !dbg !2137
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2137
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #6, !dbg !3191
-  store %"struct.pov::Transform_Struct"* %6, %"struct.pov::Transform_Struct"** %2, align 8, !dbg !3193, !tbaa !2148
-  br label %7, !dbg !3194
+if.then:                                          ; preds = %entry
+  %call = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #7, !dbg !2138
+  store %"struct.pov::Transform_Struct"* %call, %"struct.pov::Transform_Struct"** %1, align 8, !dbg !2138, !tbaa !1486
+  br label %if.end, !dbg !2140
 
-; <label>:7                                       ; preds = %5, %0
-  %8 = phi %"struct.pov::Transform_Struct"* [ %6, %5 ], [ %3, %0 ]
-  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %8, %"struct.pov::Transform_Struct"* %Trans) #6, !dbg !3195
-  tail call void @_ZN3pov23Compute_IsoSurface_BBoxEPNS_17IsoSurface_StructE(%"struct.pov::IsoSurface_Struct"* %1) #6, !dbg !3196
-  ret void, !dbg !3197
+if.end:                                           ; preds = %if.then, %entry
+  %3 = phi %"struct.pov::Transform_Struct"* [ %call, %if.then ], [ %2, %entry ]
+  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %3, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !2141
+  tail call void @_ZN3pov23Compute_IsoSurface_BBoxEPNS_17IsoSurface_StructE(%"struct.pov::IsoSurface_Struct"* %0) #7, !dbg !2142
+  ret void, !dbg !2143
 }

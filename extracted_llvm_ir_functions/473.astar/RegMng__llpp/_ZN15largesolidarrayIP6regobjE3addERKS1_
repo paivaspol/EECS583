@@ -1,51 +1,50 @@
-define linkonce_odr i32 @_ZN15largesolidarrayIP6regobjE3addERKS1_(%class.largesolidarray* nocapture %this, %class.regobj** nocapture readonly dereferenceable(8) %e) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.largesolidarray* %this, i64 0, metadata !602, metadata !675), !dbg !949
-  tail call void @llvm.dbg.value(metadata %class.regobj** %e, i64 0, metadata !603, metadata !675), !dbg !950
-  %1 = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 4, !dbg !951
-  %2 = load i32* %1, align 4, !dbg !951, !tbaa !705
-  %3 = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 5, !dbg !953
-  %4 = load i32* %3, align 4, !dbg !953, !tbaa !702
-  %5 = icmp eq i32 %2, %4, !dbg !954
-  br i1 %5, label %6, label %7, !dbg !955
+define linkonce_odr i32 @_ZN15largesolidarrayIP6regobjE3addERKS1_(%class.largesolidarray* nocapture %this, %class.regobj** nocapture %e) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.largesolidarray* %this}, i64 0, metadata !702), !dbg !918
+  tail call void @llvm.dbg.value(metadata !{%class.regobj** %e}, i64 0, metadata !703), !dbg !918
+  %elemqu = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 4, !dbg !919
+  %0 = load i32* %elemqu, align 4, !dbg !919, !tbaa !781
+  %maxelemqu = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 5, !dbg !919
+  %1 = load i32* %maxelemqu, align 4, !dbg !919, !tbaa !781
+  %cmp = icmp eq i32 %0, %1, !dbg !919
+  br i1 %cmp, label %if.then, label %if.end, !dbg !919
 
-; <label>:6                                       ; preds = %0
-  tail call void @_ZN15largesolidarrayIP6regobjE8doublingEv(%class.largesolidarray* %this) #9, !dbg !956
-  %.pre = load i32* %1, align 4, !dbg !957, !tbaa !705
-  br label %7, !dbg !956
+if.then:                                          ; preds = %entry
+  tail call void @_ZN15largesolidarrayIP6regobjE8doublingEv(%class.largesolidarray* %this) #7, !dbg !919
+  %.pre = load i32* %elemqu, align 4, !dbg !920, !tbaa !781
+  br label %if.end, !dbg !919
 
-; <label>:7                                       ; preds = %6, %0
-  %8 = phi i32 [ %.pre, %6 ], [ %2, %0 ]
-  %9 = bitcast %class.regobj** %e to i64*, !dbg !958
-  %10 = load i64* %9, align 8, !dbg !958, !tbaa !779
-  %11 = sext i32 %8 to i64, !dbg !959
-  %12 = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 0, !dbg !959
-  %13 = load %class.regobj*** %12, align 8, !dbg !959, !tbaa !710
-  %14 = getelementptr inbounds %class.regobj** %13, i64 %11, !dbg !959
-  %15 = bitcast %class.regobj** %14 to i64*, !dbg !960
-  store i64 %10, i64* %15, align 8, !dbg !960, !tbaa !779
-  %16 = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 1, i32 1, !dbg !961
-  %17 = load i32* %16, align 4, !dbg !963, !tbaa !751
-  %18 = add nsw i32 %17, -1, !dbg !963
-  store i32 %18, i32* %16, align 4, !dbg !963, !tbaa !751
-  %19 = sext i32 %18 to i64, !dbg !964
-  %20 = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 1, i32 0, !dbg !964
-  %21 = load i32** %20, align 8, !dbg !964, !tbaa !755
-  %22 = getelementptr inbounds i32* %21, i64 %19, !dbg !964
-  %23 = load i32* %22, align 4, !dbg !964, !tbaa !965
-  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !604, metadata !675), !dbg !966
-  %24 = sext i32 %23 to i64, !dbg !967
-  %25 = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 2, i32 0, !dbg !968
-  %26 = load i32** %25, align 8, !dbg !968, !tbaa !969
-  %27 = getelementptr inbounds i32* %26, i64 %24, !dbg !967
-  store i32 %8, i32* %27, align 4, !dbg !970, !tbaa !965
-  %28 = load i32* %1, align 4, !dbg !971, !tbaa !705
-  %29 = sext i32 %28 to i64, !dbg !972
-  %30 = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 3, i32 0, !dbg !973
-  %31 = load i32** %30, align 8, !dbg !973, !tbaa !974
-  %32 = getelementptr inbounds i32* %31, i64 %29, !dbg !972
-  store i32 %23, i32* %32, align 4, !dbg !975, !tbaa !965
-  %33 = load i32* %1, align 4, !dbg !976, !tbaa !705
-  %34 = add nsw i32 %33, 1, !dbg !976
-  store i32 %34, i32* %1, align 4, !dbg !976, !tbaa !705
-  ret i32 %23, !dbg !977
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %3 = load %class.regobj** %e, align 8, !dbg !920, !tbaa !777
+  %idxprom = sext i32 %2 to i64, !dbg !920
+  %ep = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 0, !dbg !920
+  %4 = load %class.regobj*** %ep, align 8, !dbg !920, !tbaa !777
+  %arrayidx = getelementptr inbounds %class.regobj** %4, i64 %idxprom, !dbg !920
+  store %class.regobj* %3, %class.regobj** %arrayidx, align 8, !dbg !920, !tbaa !777
+  %elemqu.i = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 1, i32 1, !dbg !921
+  %5 = load i32* %elemqu.i, align 4, !dbg !921, !tbaa !781
+  %dec.i = add nsw i32 %5, -1, !dbg !921
+  store i32 %dec.i, i32* %elemqu.i, align 4, !dbg !921, !tbaa !781
+  %idxprom.i = sext i32 %dec.i to i64, !dbg !923
+  %ep.i = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 1, i32 0, !dbg !923
+  %6 = load i32** %ep.i, align 8, !dbg !923, !tbaa !777
+  %arrayidx.i = getelementptr inbounds i32* %6, i64 %idxprom.i, !dbg !923
+  %7 = load i32* %arrayidx.i, align 4, !dbg !923, !tbaa !781
+  tail call void @llvm.dbg.value(metadata !{i32 %7}, i64 0, metadata !704), !dbg !922
+  %idxprom4 = sext i32 %7 to i64, !dbg !924
+  %ep5 = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 2, i32 0, !dbg !924
+  %8 = load i32** %ep5, align 8, !dbg !924, !tbaa !777
+  %arrayidx6 = getelementptr inbounds i32* %8, i64 %idxprom4, !dbg !924
+  store i32 %2, i32* %arrayidx6, align 4, !dbg !924, !tbaa !781
+  %9 = load i32* %elemqu, align 4, !dbg !925, !tbaa !781
+  %idxprom8 = sext i32 %9 to i64, !dbg !925
+  %ep9 = getelementptr inbounds %class.largesolidarray* %this, i64 0, i32 3, i32 0, !dbg !925
+  %10 = load i32** %ep9, align 8, !dbg !925, !tbaa !777
+  %arrayidx10 = getelementptr inbounds i32* %10, i64 %idxprom8, !dbg !925
+  store i32 %7, i32* %arrayidx10, align 4, !dbg !925, !tbaa !781
+  %11 = load i32* %elemqu, align 4, !dbg !926, !tbaa !781
+  %inc = add nsw i32 %11, 1, !dbg !926
+  store i32 %inc, i32* %elemqu, align 4, !dbg !926, !tbaa !781
+  ret i32 %7, !dbg !927
 }

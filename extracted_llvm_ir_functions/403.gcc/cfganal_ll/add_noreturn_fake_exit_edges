@@ -1,34 +1,35 @@
 define void @add_noreturn_fake_exit_edges() #0 {
 entry:
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %cmp9 = icmp sgt i32 %0, 0
-  br i1 %cmp9, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !255, i64 0, metadata !638), !dbg !1126
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !1126, !tbaa !755
+  %cmp9 = icmp sgt i32 %0, 0, !dbg !1126
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !1126
 
 for.body:                                         ; preds = %for.inc, %entry
   %1 = phi i32 [ %0, %entry ], [ %5, %for.inc ]
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
-  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
-  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4
-  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv
-  %3 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
-  %succ = getelementptr inbounds %struct.basic_block_def* %3, i64 0, i32 5
-  %4 = load %struct.edge_def** %succ, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct.edge_def* %4, null
-  br i1 %cmp1, label %if.then, label %for.inc
+  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !1128, !tbaa !741
+  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4, !dbg !1128
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !1128
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv, !dbg !1128
+  %3 = load %struct.basic_block_def** %arrayidx, align 8, !dbg !1128, !tbaa !741
+  %succ = getelementptr inbounds %struct.basic_block_def* %3, i64 0, i32 5, !dbg !1128
+  %4 = load %struct.edge_def** %succ, align 8, !dbg !1128, !tbaa !741
+  %cmp1 = icmp eq %struct.edge_def* %4, null, !dbg !1128
+  br i1 %cmp1, label %if.then, label %for.inc, !dbg !1128
 
 if.then:                                          ; preds = %for.body
-  %call = tail call %struct.edge_def* @make_single_succ_edge(%struct.basic_block_def* %3, %struct.basic_block_def* getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1), i32 16) #6
-  %.pre = load i32* @n_basic_blocks, align 4, !tbaa !3
-  br label %for.inc
+  %call = tail call %struct.edge_def* @make_single_succ_edge(%struct.basic_block_def* %3, %struct.basic_block_def* getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1), i32 16) #7, !dbg !1129
+  %.pre = load i32* @n_basic_blocks, align 4, !dbg !1126, !tbaa !755
+  br label %for.inc, !dbg !1129
 
 for.inc:                                          ; preds = %for.body, %if.then
-  %5 = phi i32 [ %1, %for.body ], [ %.pre, %if.then ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %6 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %6, %5
-  br i1 %cmp, label %for.body, label %for.end
+  %5 = phi i32 [ %1, %for.body ], [ %.pre, %if.then ], !dbg !1126
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1126
+  %6 = trunc i64 %indvars.iv.next to i32, !dbg !1126
+  %cmp = icmp slt i32 %6, %5, !dbg !1126
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1126
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !1130
 }

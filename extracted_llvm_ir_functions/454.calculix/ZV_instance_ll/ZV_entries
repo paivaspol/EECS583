@@ -1,16 +1,17 @@
 define double* @ZV_entries(%struct._ZV* %dv) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ZV* %dv, i64 0, metadata !50, metadata !74), !dbg !184
-  %1 = icmp eq %struct._ZV* %dv, null, !dbg !185
-  br i1 %1, label %2, label %5, !dbg !187
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ZV* %dv}, i64 0, metadata !49), !dbg !121
+  %cmp = icmp eq %struct._ZV* %dv, null, !dbg !122
+  br i1 %cmp, label %if.then, label %if.end, !dbg !122
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !188, !tbaa !81
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str7, i64 0, i64 0), %struct._ZV* null) #5, !dbg !190
-  tail call void @exit(i32 -1) #6, !dbg !191
-  unreachable, !dbg !191
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !123, !tbaa !72
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str7, i64 0, i64 0), %struct._ZV* null) #5, !dbg !123
+  tail call void @exit(i32 -1) #6, !dbg !125
+  unreachable, !dbg !125
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 3, !dbg !192
-  %7 = load double** %6, align 8, !dbg !192, !tbaa !134
-  ret double* %7, !dbg !193
+if.end:                                           ; preds = %entry
+  %vec = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 3, !dbg !126
+  %1 = load double** %vec, align 8, !dbg !126, !tbaa !72
+  ret double* %1, !dbg !126
 }

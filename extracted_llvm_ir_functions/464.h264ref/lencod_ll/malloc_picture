@@ -1,14 +1,15 @@
 define noalias %struct.Picture* @malloc_picture() #0 {
-  %1 = tail call i8* @calloc(i64 1, i64 824) #7, !dbg !2799
-  %2 = bitcast i8* %1 to %struct.Picture*, !dbg !2799
-  tail call void @llvm.dbg.value(metadata %struct.Picture* %2, i64 0, metadata !348, metadata !1429), !dbg !2801
-  %3 = icmp eq i8* %1, null, !dbg !2802
-  br i1 %3, label %4, label %5, !dbg !2803
+entry:
+  %call = tail call noalias i8* @calloc(i64 1, i64 824) #7, !dbg !1947
+  %0 = bitcast i8* %call to %struct.Picture*, !dbg !1947
+  tail call void @llvm.dbg.value(metadata !{%struct.Picture* %0}, i64 0, metadata !265), !dbg !1947
+  %cmp = icmp eq i8* %call, null, !dbg !1947
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1947
 
-; <label>:4                                       ; preds = %0
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([34 x i8]* @.str3, i64 0, i64 0)) #7, !dbg !2804
-  br label %5, !dbg !2804
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([34 x i8]* @.str3, i64 0, i64 0)) #7, !dbg !1947
+  br label %if.end, !dbg !1947
 
-; <label>:5                                       ; preds = %4, %0
-  ret %struct.Picture* %2, !dbg !2805
+if.end:                                           ; preds = %if.then, %entry
+  ret %struct.Picture* %0, !dbg !1948
 }

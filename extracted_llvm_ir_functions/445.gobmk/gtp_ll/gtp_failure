@@ -1,14 +1,15 @@
-define i32 @gtp_failure(i8* nocapture readonly %format, ...) #0 {
+define i32 @gtp_failure(i8* nocapture %format, ...) #0 {
+entry:
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  tail call void @llvm.dbg.value(metadata i8* %format, i64 0, metadata !171, metadata !262), !dbg !339
-  tail call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metadata !172, metadata !262), !dbg !340
-  tail call void @gtp_start_response(i32 1) #8, !dbg !341
-  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, !dbg !342
-  %2 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !342
-  call void @llvm.va_start(i8* %2), !dbg !342
-  %3 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !343, !tbaa !344
-  %4 = call i32 @vfprintf(%struct.__sFILE* %3, i8* %format, %struct.__va_list_tag* %1) #7, !dbg !345
-  call void @llvm.va_end(i8* %2), !dbg !346
-  call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([3 x i8]* @.str13, i64 0, i64 0)) #7, !dbg !347
-  ret i32 0, !dbg !349
+  call void @llvm.dbg.value(metadata !{i8* %format}, i64 0, metadata !164), !dbg !287
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !165), !dbg !288
+  call void @gtp_start_response(i32 1) #8, !dbg !289
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, !dbg !290
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !290
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !290
+  %0 = load %struct._IO_FILE** @stdout, align 8, !dbg !291, !tbaa !276
+  %call = call i32 @vfprintf(%struct._IO_FILE* %0, i8* %format, %struct.__va_list_tag* %arraydecay) #6, !dbg !291
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !292
+  call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([3 x i8]* @.str13, i64 0, i64 0)) #6, !dbg !293
+  ret i32 0, !dbg !294
 }

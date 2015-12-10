@@ -1,28 +1,29 @@
 define void @CCTKi_CommandLineWarningLevel(i8* %argument) #1 {
+entry:
   %endptr = alloca i8*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !69, metadata !130), !dbg !322
-  tail call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !70, metadata !130), !dbg !323
-  %1 = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #6, !dbg !324
-  tail call void @llvm.dbg.value(metadata i64 %1, i64 0, metadata !71, metadata !130), !dbg !325
-  tail call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !70, metadata !130), !dbg !323
-  %2 = load i8** %endptr, align 8, !dbg !326, !tbaa !136
-  %3 = icmp eq i8* %2, null, !dbg !326
-  br i1 %3, label %10, label %4, !dbg !328
+  call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !68), !dbg !230
+  call void @llvm.dbg.declare(metadata !{i8** %endptr}, metadata !69), !dbg !231
+  %call = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #6, !dbg !232
+  call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !70), !dbg !232
+  call void @llvm.dbg.value(metadata !{i8** %endptr}, i64 0, metadata !69), !dbg !233
+  %0 = load i8** %endptr, align 8, !dbg !233, !tbaa !129
+  %tobool = icmp eq i8* %0, null, !dbg !233
+  br i1 %tobool, label %if.else, label %land.lhs.true, !dbg !233
 
-; <label>:4                                       ; preds = %0
-  %5 = load i8* %2, align 1, !dbg !329, !tbaa !178
-  %6 = icmp eq i8 %5, 0, !dbg !330
-  br i1 %6, label %7, label %10, !dbg !331
+land.lhs.true:                                    ; preds = %entry
+  %1 = load i8* %0, align 1, !dbg !233, !tbaa !130
+  %cmp = icmp eq i8 %1, 0, !dbg !233
+  br i1 %cmp, label %if.then, label %if.else, !dbg !233
 
-; <label>:7                                       ; preds = %4
-  %8 = trunc i64 %1 to i32, !dbg !332
-  %9 = tail call i32 @CCTKi_SetWarnLevel(i32 %8) #6, !dbg !334
-  br label %11, !dbg !335
+if.then:                                          ; preds = %land.lhs.true
+  %conv2 = trunc i64 %call to i32, !dbg !234
+  %call3 = call i32 @CCTKi_SetWarnLevel(i32 %conv2) #6, !dbg !234
+  br label %if.end, !dbg !236
 
-; <label>:10                                      ; preds = %0, %4
-  tail call void @CCTKi_CommandLineUsage() #7, !dbg !336
-  br label %11
+if.else:                                          ; preds = %entry, %land.lhs.true
+  call void @CCTKi_CommandLineUsage() #7, !dbg !237
+  br label %if.end
 
-; <label>:11                                      ; preds = %10, %7
-  ret void, !dbg !338
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !239
 }

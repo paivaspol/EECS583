@@ -1,17 +1,19 @@
 define %struct.rtx_def* @rtx_alloc(i32 %code) #0 {
 entry:
-  %idxprom = sext i32 %code to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom
-  %0 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = zext i8 %0 to i64
-  %sub = shl nuw nsw i64 %conv, 3
-  %add = add i64 %sub, 8
-  %call = tail call i8* @ggc_alloc(i64 %add) #6
-  %1 = bitcast i8* %call to %struct.rtx_def*
-  %2 = bitcast i8* %call to i64*
-  store i64 0, i64* %2, align 8
-  %3 = bitcast i8* %call to i32*
-  %bf.value = and i32 %code, 65535
-  store i32 %bf.value, i32* %3, align 8
-  ret %struct.rtx_def* %1
+  tail call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !326), !dbg !418
+  %idxprom = sext i32 %code to i64, !dbg !419
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom, !dbg !419
+  %0 = load i8* %arrayidx, align 1, !dbg !419, !tbaa !415
+  %conv = zext i8 %0 to i64, !dbg !419
+  %sub = shl nuw nsw i64 %conv, 3, !dbg !420
+  %add = add i64 %sub, 8, !dbg !420
+  %call = tail call i8* @ggc_alloc(i64 %add) #7, !dbg !420
+  %1 = bitcast i8* %call to %struct.rtx_def*, !dbg !420
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !327), !dbg !420
+  %2 = bitcast i8* %call to i64*, !dbg !421
+  store i64 0, i64* %2, align 8, !dbg !421
+  %3 = bitcast i8* %call to i32*, !dbg !422
+  %bf.value = and i32 %code, 65535, !dbg !422
+  store i32 %bf.value, i32* %3, align 8, !dbg !422
+  ret %struct.rtx_def* %1, !dbg !423
 }

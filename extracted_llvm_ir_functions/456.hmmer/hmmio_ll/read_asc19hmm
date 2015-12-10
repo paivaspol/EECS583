@@ -1,653 +1,640 @@
-define internal i32 @read_asc19hmm(%struct.hmmfile_s* nocapture readonly %hmmfp, %struct.plan7_s** nocapture %ret_hmm) #0 {
+define internal i32 @read_asc19hmm(%struct.hmmfile_s* nocapture %hmmfp, %struct.plan7_s** nocapture %ret_hmm) #0 {
+entry:
   %buffer = alloca [512 x i8], align 16
-  tail call void @llvm.dbg.value(metadata %struct.hmmfile_s* %hmmfp, i64 0, metadata !306, metadata !464), !dbg !2015
-  tail call void @llvm.dbg.value(metadata %struct.plan7_s** %ret_hmm, i64 0, metadata !307, metadata !464), !dbg !2016
-  %1 = getelementptr inbounds [512 x i8]* %buffer, i64 0, i64 0, !dbg !2017
-  call void @llvm.lifetime.start(i64 512, i8* %1) #2, !dbg !2017
-  tail call void @llvm.dbg.declare(metadata [512 x i8]* %buffer, metadata !310, metadata !464), !dbg !2018
-  tail call void @llvm.dbg.value(metadata %struct.plan7_s* null, i64 0, metadata !308, metadata !464), !dbg !2019
-  %2 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0, !dbg !2020
-  %3 = load %struct.__sFILE** %2, align 8, !dbg !2020, !tbaa !490
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %3, i64 0, metadata !309, metadata !464), !dbg !2021
-  %4 = tail call i32 @feof(%struct.__sFILE* %3) #6, !dbg !2022
-  %5 = icmp eq i32 %4, 0, !dbg !2022
-  br i1 %5, label %6, label %345, !dbg !2024
-
-; <label>:6                                       ; preds = %0
-  %7 = call i8* @fgets(i8* %1, i32 512, %struct.__sFILE* %3) #6, !dbg !2025
-  %8 = icmp eq i8* %7, null, !dbg !2026
-  br i1 %8, label %345, label %9, !dbg !2027
-
-; <label>:9                                       ; preds = %6
-  %10 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([11 x i8]* @.str7, i64 0, i64 0), i64 10) #6, !dbg !2028
-  %11 = icmp eq i32 %10, 0, !dbg !2030
-  br i1 %11, label %12, label %.thread5, !dbg !2031
-
-; <label>:12                                      ; preds = %9
-  %13 = call %struct.plan7_s* @AllocPlan7Shell() #6, !dbg !2032
-  call void @llvm.dbg.value(metadata %struct.plan7_s* %13, i64 0, metadata !308, metadata !464), !dbg !2019
-  %14 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2033
-  call void @llvm.dbg.value(metadata i8* %14, i64 0, metadata !311, metadata !464), !dbg !2035
-  %15 = icmp eq i8* %14, null, !dbg !2036
-  br i1 %15, label %.loopexit, label %16, !dbg !2037
-
-; <label>:16                                      ; preds = %12
-  %17 = call i32 @atoi(i8* %14) #6, !dbg !2038
-  call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !312, metadata !464), !dbg !2039
-  %18 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2040
-  call void @llvm.dbg.value(metadata i8* %18, i64 0, metadata !311, metadata !464), !dbg !2035
-  %19 = icmp eq i8* %18, null, !dbg !2042
-  br i1 %19, label %.loopexit, label %20, !dbg !2043
-
-; <label>:20                                      ; preds = %16
-  %21 = call i8* @Getword(%struct.__sFILE* %3, i32 4) #6, !dbg !2044
-  call void @llvm.dbg.value(metadata i8* %21, i64 0, metadata !311, metadata !464), !dbg !2035
-  %22 = icmp eq i8* %21, null, !dbg !2046
-  br i1 %22, label %.loopexit, label %23, !dbg !2047
-
-; <label>:23                                      ; preds = %20
-  call void @Plan7SetName(%struct.plan7_s* %13, i8* %21) #6, !dbg !2048
-  %24 = call i8* @Getword(%struct.__sFILE* %3, i32 4) #6, !dbg !2049
-  call void @llvm.dbg.value(metadata i8* %24, i64 0, metadata !311, metadata !464), !dbg !2035
-  %25 = icmp eq i8* %24, null, !dbg !2051
-  br i1 %25, label %.loopexit, label %26, !dbg !2052
-
-; <label>:26                                      ; preds = %23
-  call void @s2upper(i8* %24) #6, !dbg !2053
-  %27 = call i32 @strcmp(i8* %24, i8* getelementptr inbounds ([6 x i8]* @.str63, i64 0, i64 0)) #6, !dbg !2054
-  %28 = icmp eq i32 %27, 0, !dbg !2056
-  br i1 %28, label %32, label %29, !dbg !2057
-
-; <label>:29                                      ; preds = %26
-  %30 = call i32 @strcmp(i8* %24, i8* getelementptr inbounds ([8 x i8]* @.str64, i64 0, i64 0)) #6, !dbg !2058
-  %31 = icmp eq i32 %30, 0, !dbg !2060
-  br i1 %31, label %32, label %.loopexit, !dbg !2061
-
-; <label>:32                                      ; preds = %29, %26
-  %atype.0 = phi i32 [ 3, %26 ], [ 2, %29 ]
-  %33 = load i32* @Alphabet_type, align 4, !dbg !2062, !tbaa !550
-  %34 = icmp eq i32 %33, 0, !dbg !2064
-  br i1 %34, label %35, label %36, !dbg !2065
-
-; <label>:35                                      ; preds = %32
-  call void @SetAlphabet(i32 %atype.0) #6, !dbg !2066
-  br label %41, !dbg !2066
-
-; <label>:36                                      ; preds = %32
-  %37 = icmp eq i32 %atype.0, %33, !dbg !2067
-  br i1 %37, label %41, label %38, !dbg !2069
-
-; <label>:38                                      ; preds = %36
-  %39 = call i8* @AlphabetType2String(i32 %33) #6, !dbg !2070
-  %40 = call i8* @AlphabetType2String(i32 %atype.0) #6, !dbg !2071
-  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([89 x i8]* @.str65, i64 0, i64 0), i8* %39, i8* %40) #6, !dbg !2072
-  br label %41, !dbg !2072
-
-; <label>:41                                      ; preds = %36, %38, %35
-  %42 = call i8* @Getword(%struct.__sFILE* %3, i32 4) #6, !dbg !2073
-  call void @llvm.dbg.value(metadata i8* %42, i64 0, metadata !311, metadata !464), !dbg !2035
-  %43 = icmp eq i8* %42, null, !dbg !2075
-  br i1 %43, label %.loopexit, label %44, !dbg !2076
-
-; <label>:44                                      ; preds = %41
-  %45 = load i32* @Alphabet_size, align 4, !dbg !2077, !tbaa !550
-  %46 = sext i32 %45 to i64, !dbg !2077
-  %47 = call i32 @strncmp(i8* %42, i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i64 %46) #6, !dbg !2079
-  %48 = icmp eq i32 %47, 0, !dbg !2080
-  br i1 %48, label %49, label %.loopexit, !dbg !2081
-
-; <label>:49                                      ; preds = %44
-  %50 = call i8* @Getword(%struct.__sFILE* %3, i32 4) #6, !dbg !2082
-  call void @llvm.dbg.value(metadata i8* %50, i64 0, metadata !311, metadata !464), !dbg !2035
-  %51 = icmp eq i8* %50, null, !dbg !2084
-  br i1 %51, label %.loopexit, label %52, !dbg !2085
-
-; <label>:52                                      ; preds = %49
-  %53 = call i32 @strcmp(i8* %50, i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0)) #6, !dbg !2086
-  %54 = icmp eq i32 %53, 0, !dbg !2088
-  br i1 %54, label %55, label %59, !dbg !2089
-
-; <label>:55                                      ; preds = %52
-  %56 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 47, !dbg !2090
-  %57 = load i32* %56, align 4, !dbg !2091, !tbaa !745
-  %58 = or i32 %57, 4, !dbg !2091
-  store i32 %58, i32* %56, align 4, !dbg !2091, !tbaa !745
-  br label %59, !dbg !2092
-
-; <label>:59                                      ; preds = %55, %52
-  %60 = call i8* @Getword(%struct.__sFILE* %3, i32 4) #6, !dbg !2093
-  call void @llvm.dbg.value(metadata i8* %60, i64 0, metadata !311, metadata !464), !dbg !2035
-  %61 = icmp eq i8* %60, null, !dbg !2095
-  br i1 %61, label %.loopexit, label %62, !dbg !2096
-
-; <label>:62                                      ; preds = %59
-  %63 = call i32 @strcmp(i8* %60, i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0)) #6, !dbg !2097
-  %64 = icmp eq i32 %63, 0, !dbg !2099
-  br i1 %64, label %65, label %69, !dbg !2100
-
-; <label>:65                                      ; preds = %62
-  %66 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 47, !dbg !2101
-  %67 = load i32* %66, align 4, !dbg !2102, !tbaa !745
-  %68 = or i32 %67, 8, !dbg !2102
-  store i32 %68, i32* %66, align 4, !dbg !2102, !tbaa !745
-  br label %69, !dbg !2103
-
-; <label>:69                                      ; preds = %65, %62
-  %70 = call i8* @Getword(%struct.__sFILE* %3, i32 4) #6, !dbg !2104
-  call void @llvm.dbg.value(metadata i8* %70, i64 0, metadata !311, metadata !464), !dbg !2035
-  %71 = icmp eq i8* %70, null, !dbg !2106
-  br i1 %71, label %.loopexit, label %72, !dbg !2107
-
-; <label>:72                                      ; preds = %69
-  %73 = call i32 @strcmp(i8* %70, i8* getelementptr inbounds ([5 x i8]* @.str83, i64 0, i64 0)) #6, !dbg !2108
-  %74 = icmp eq i32 %73, 0, !dbg !2110
-  br i1 %74, label %.preheader14, label %.loopexit, !dbg !2111
-
-.preheader14:                                     ; preds = %72
-  %75 = load i32* @Alphabet_size, align 4, !dbg !2112, !tbaa !550
-  %76 = icmp sgt i32 %75, 0, !dbg !2115
-  br i1 %76, label %.lr.ph44, label %._crit_edge45, !dbg !2116
-
-.lr.ph44:                                         ; preds = %.preheader14, %79
-  %indvars.iv56 = phi i64 [ %indvars.iv.next57, %79 ], [ 0, %.preheader14 ]
-  %77 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2117
-  call void @llvm.dbg.value(metadata i8* %77, i64 0, metadata !311, metadata !464), !dbg !2035
-  %78 = icmp eq i8* %77, null, !dbg !2120
-  br i1 %78, label %.loopexit, label %79, !dbg !2121
-
-; <label>:79                                      ; preds = %.lr.ph44
-  %80 = call fastcc float @ascii2prob(i8* %77, float 1.000000e+00) #7, !dbg !2122
-  %81 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 28, i64 %indvars.iv56, !dbg !2123
-  store float %80, float* %81, align 4, !dbg !2124, !tbaa !1736
-  %indvars.iv.next57 = add nuw nsw i64 %indvars.iv56, 1, !dbg !2116
-  %82 = load i32* @Alphabet_size, align 4, !dbg !2112, !tbaa !550
-  %83 = sext i32 %82 to i64, !dbg !2115
-  %84 = icmp slt i64 %indvars.iv.next57, %83, !dbg !2115
-  br i1 %84, label %.lr.ph44, label %._crit_edge45, !dbg !2116
-
-._crit_edge45:                                    ; preds = %79, %.preheader14
-  %85 = load i32* @Alphabet_type, align 4, !dbg !2125, !tbaa !550
-  %86 = icmp eq i32 %85, 3, !dbg !2126
-  %87 = select i1 %86, float 0x3FEFE8A940000000, float 0x3FEFF7D100000000, !dbg !2127
-  %88 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 29, !dbg !2128
-  store float %87, float* %88, align 4, !dbg !2129, !tbaa !1750
-  %89 = load %struct.__sFILE** %2, align 8, !dbg !2130, !tbaa !490
-  %90 = call i32 @feof(%struct.__sFILE* %89) #6, !dbg !2132
-  %91 = icmp ne i32 %90, 0, !dbg !2132
-  %92 = icmp slt i32 %17, 1, !dbg !2133
-  %or.cond = or i1 %92, %91, !dbg !2135
-  br i1 %or.cond, label %.thread, label %93, !dbg !2135
-
-; <label>:93                                      ; preds = %._crit_edge45
-  %94 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 0, !dbg !2136
-  %95 = load i8** %94, align 8, !dbg !2136, !tbaa !1825
-  %96 = icmp eq i8* %95, null, !dbg !2138
-  %97 = load i32* @Alphabet_type, align 4
-  %98 = icmp eq i32 %97, 0, !dbg !2139
-  %or.cond3 = or i1 %96, %98, !dbg !2141
-  br i1 %or.cond3, label %.thread, label %99, !dbg !2141
-
-; <label>:99                                      ; preds = %93
-  call void @AllocPlan7Body(%struct.plan7_s* %13, i32 %17) #6, !dbg !2142
-  call void @ZeroPlan7(%struct.plan7_s* %13) #6, !dbg !2143
-  call void @Plan7LSConfig(%struct.plan7_s* %13) #6, !dbg !2144
-  %100 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2145
-  call void @llvm.dbg.value(metadata i8* %100, i64 0, metadata !311, metadata !464), !dbg !2035
-  %101 = icmp eq i8* %100, null, !dbg !2147
-  br i1 %101, label %.thread, label %.preheader12, !dbg !2148
-
-.preheader12:                                     ; preds = %99
-  %102 = load i32* @Alphabet_size, align 4, !dbg !2149, !tbaa !550
-  %103 = icmp sgt i32 %102, 0, !dbg !2152
-  %104 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2153
-  call void @llvm.dbg.value(metadata i8* %104, i64 0, metadata !311, metadata !464), !dbg !2035
-  %105 = icmp eq i8* %104, null, !dbg !2155
-  br i1 %103, label %.lr.ph39, label %._crit_edge40, !dbg !2156
-
-; <label>:106                                     ; preds = %.lr.ph39
-  %107 = load i32* @Alphabet_size, align 4, !dbg !2149, !tbaa !550
-  %108 = icmp slt i32 %112, %107, !dbg !2152
-  %109 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2153
-  call void @llvm.dbg.value(metadata i8* %109, i64 0, metadata !311, metadata !464), !dbg !2035
-  %110 = icmp eq i8* %109, null, !dbg !2155
-  br i1 %108, label %.lr.ph39, label %._crit_edge40, !dbg !2156
-
-.lr.ph39:                                         ; preds = %.preheader12, %106
-  %111 = phi i1 [ %110, %106 ], [ %105, %.preheader12 ]
-  %x.138 = phi i32 [ %112, %106 ], [ 0, %.preheader12 ]
-  %112 = add nuw nsw i32 %x.138, 1, !dbg !2157
-  call void @llvm.dbg.value(metadata i32 %112, i64 0, metadata !314, metadata !464), !dbg !2158
-  br i1 %111, label %.loopexit, label %106, !dbg !2159
-
-._crit_edge40:                                    ; preds = %106, %.preheader12
-  %.lcssa24 = phi i1 [ %105, %.preheader12 ], [ %110, %106 ]
-  %.lcssa22 = phi i8* [ %104, %.preheader12 ], [ %109, %106 ]
-  br i1 %.lcssa24, label %.loopexit, label %113, !dbg !2160
-
-; <label>:113                                     ; preds = %._crit_edge40
-  %114 = call fastcc float @ascii2prob(i8* %.lcssa22, float 1.000000e+00) #7, !dbg !2161
-  %115 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 26, !dbg !2162
-  %116 = load float** %115, align 8, !dbg !2162, !tbaa !1149
-  %117 = getelementptr inbounds float* %116, i64 1, !dbg !2163
-  store float %114, float* %117, align 4, !dbg !2164, !tbaa !1736
-  %118 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2165
-  call void @llvm.dbg.value(metadata i8* %118, i64 0, metadata !311, metadata !464), !dbg !2035
-  %119 = icmp eq i8* %118, null, !dbg !2167
-  br i1 %119, label %.thread, label %120, !dbg !2168
-
-; <label>:120                                     ; preds = %113
-  %121 = call fastcc float @ascii2prob(i8* %118, float 1.000000e+00) #7, !dbg !2169
-  %122 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 24, !dbg !2170
-  store float %121, float* %122, align 4, !dbg !2171, !tbaa !1860
-  %123 = load float** %115, align 8, !dbg !2172, !tbaa !1149
-  %124 = getelementptr inbounds float* %123, i64 1, !dbg !2173
-  %125 = load float* %124, align 4, !dbg !2173, !tbaa !1736
-  %126 = fadd float %121, %125, !dbg !2174
-  %127 = fdiv float %125, %126, !dbg !2175
-  store float %127, float* %124, align 4, !dbg !2176, !tbaa !1736
-  %128 = load float* %122, align 4, !dbg !2177, !tbaa !1860
-  %129 = fadd float %128, %127, !dbg !2178
-  %130 = fdiv float %128, %129, !dbg !2179
-  store float %130, float* %122, align 4, !dbg !2180, !tbaa !1860
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !314, metadata !464), !dbg !2158
-  br label %133, !dbg !2181
-
-; <label>:131                                     ; preds = %133
-  %132 = icmp slt i32 %136, 7, !dbg !2183
-  br i1 %132, label %133, label %137, !dbg !2181
-
-; <label>:133                                     ; preds = %120, %131
-  %x.237 = phi i32 [ 0, %120 ], [ %136, %131 ]
-  %134 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2185
-  call void @llvm.dbg.value(metadata i8* %134, i64 0, metadata !311, metadata !464), !dbg !2035
-  %135 = icmp eq i8* %134, null, !dbg !2187
-  %136 = add nuw nsw i32 %x.237, 1, !dbg !2188
-  call void @llvm.dbg.value(metadata i32 %136, i64 0, metadata !314, metadata !464), !dbg !2158
-  br i1 %135, label %.loopexit, label %131, !dbg !2189
-
-; <label>:137                                     ; preds = %131
-  %138 = call i8* @Getword(%struct.__sFILE* %3, i32 4) #6, !dbg !2190
-  call void @llvm.dbg.value(metadata i8* %138, i64 0, metadata !311, metadata !464), !dbg !2035
-  %139 = icmp eq i8* %138, null, !dbg !2192
-  br i1 %139, label %.loopexit, label %140, !dbg !2193
-
-; <label>:140                                     ; preds = %137
-  %141 = call i8* @Getword(%struct.__sFILE* %3, i32 4) #6, !dbg !2194
-  call void @llvm.dbg.value(metadata i8* %141, i64 0, metadata !311, metadata !464), !dbg !2035
-  %142 = icmp eq i8* %141, null, !dbg !2196
-  br i1 %142, label %.loopexit, label %.preheader9, !dbg !2197
-
-.preheader9:                                      ; preds = %140
-  %143 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 20, !dbg !2198
-  %144 = load i32* %143, align 4, !dbg !2198, !tbaa !815
-  %145 = icmp slt i32 %144, 1, !dbg !2201
-  br i1 %145, label %.preheader6, label %.lr.ph35, !dbg !2202
-
-.lr.ph35:                                         ; preds = %.preheader9
-  %146 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 21, !dbg !2203
-  %147 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 47, !dbg !2206
-  %148 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 4, !dbg !2208
-  %149 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 3, !dbg !2210
-  %150 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 22, !dbg !2211
-  br label %154, !dbg !2202
-
-.preheader6:                                      ; preds = %305, %.preheader9
-  %151 = phi i32 [ %144, %.preheader9 ], [ %306, %305 ]
-  %152 = icmp slt i32 %151, 0, !dbg !2215
-  br i1 %152, label %._crit_edge29, label %.lr.ph28, !dbg !2218
-
-.lr.ph28:                                         ; preds = %.preheader6
-  %153 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 23, !dbg !2219
-  br label %309, !dbg !2218
-
-; <label>:154                                     ; preds = %305, %.lr.ph35
-  %indvars.iv54 = phi i64 [ %indvars.iv.next55, %305 ], [ 1, %.lr.ph35 ]
-  %155 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2225
-  call void @llvm.dbg.value(metadata i8* %155, i64 0, metadata !311, metadata !464), !dbg !2035
-  %156 = icmp eq i8* %155, null, !dbg !2227
-  br i1 %156, label %.thread, label %.preheader7, !dbg !2228
-
-.preheader7:                                      ; preds = %154
-  %157 = load i32* @Alphabet_size, align 4, !dbg !2229, !tbaa !550
-  %158 = icmp sgt i32 %157, 0, !dbg !2230
-  %159 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2231
-  call void @llvm.dbg.value(metadata i8* %159, i64 0, metadata !311, metadata !464), !dbg !2035
-  %160 = icmp eq i8* %159, null, !dbg !2233
-  br i1 %158, label %.lr.ph31, label %._crit_edge32, !dbg !2234
-
-.lr.ph31:                                         ; preds = %.preheader7, %163
-  %indvars.iv52 = phi i64 [ %indvars.iv.next53, %163 ], [ 0, %.preheader7 ]
-  %161 = phi i1 [ %175, %163 ], [ %160, %.preheader7 ]
-  %162 = phi i8* [ %174, %163 ], [ %159, %.preheader7 ]
-  br i1 %161, label %.thread, label %163, !dbg !2235
-
-; <label>:163                                     ; preds = %.lr.ph31
-  %164 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 28, i64 %indvars.iv52, !dbg !2236
-  %165 = load float* %164, align 4, !dbg !2236, !tbaa !1736
-  %166 = call fastcc float @ascii2prob(i8* %162, float %165) #7, !dbg !2237
-  %167 = load float*** %150, align 8, !dbg !2211, !tbaa !1178
-  %168 = getelementptr inbounds float** %167, i64 %indvars.iv54, !dbg !2238
-  %169 = load float** %168, align 8, !dbg !2238, !tbaa !511
-  %170 = getelementptr inbounds float* %169, i64 %indvars.iv52, !dbg !2238
-  store float %166, float* %170, align 4, !dbg !2239, !tbaa !1736
-  %indvars.iv.next53 = add nuw nsw i64 %indvars.iv52, 1, !dbg !2234
-  %171 = load i32* @Alphabet_size, align 4, !dbg !2229, !tbaa !550
-  %172 = sext i32 %171 to i64, !dbg !2230
-  %173 = icmp slt i64 %indvars.iv.next53, %172, !dbg !2230
-  %174 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2231
-  call void @llvm.dbg.value(metadata i8* %174, i64 0, metadata !311, metadata !464), !dbg !2035
-  %175 = icmp eq i8* %174, null, !dbg !2233
-  br i1 %173, label %.lr.ph31, label %._crit_edge32, !dbg !2234
-
-._crit_edge32:                                    ; preds = %163, %.preheader7
-  %.lcssa17 = phi i1 [ %160, %.preheader7 ], [ %175, %163 ]
-  %.lcssa = phi i8* [ %159, %.preheader7 ], [ %174, %163 ]
-  br i1 %.lcssa17, label %.thread, label %176, !dbg !2240
-
-; <label>:176                                     ; preds = %._crit_edge32
-  %177 = load i32* %143, align 4, !dbg !2241, !tbaa !815
-  %178 = sext i32 %177 to i64, !dbg !2242
-  %179 = icmp slt i64 %indvars.iv54, %178, !dbg !2242
-  br i1 %179, label %180, label %185, !dbg !2243
-
-; <label>:180                                     ; preds = %176
-  %181 = call fastcc float @ascii2prob(i8* %.lcssa, float 1.000000e+00) #7, !dbg !2244
-  %182 = load float*** %146, align 8, !dbg !2203, !tbaa !1198
-  %183 = getelementptr inbounds float** %182, i64 %indvars.iv54, !dbg !2245
-  %184 = load float** %183, align 8, !dbg !2245, !tbaa !511
-  store float %181, float* %184, align 4, !dbg !2246, !tbaa !1736
-  br label %185, !dbg !2245
-
-; <label>:185                                     ; preds = %180, %176
-  %186 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2247
-  call void @llvm.dbg.value(metadata i8* %186, i64 0, metadata !311, metadata !464), !dbg !2035
-  %187 = icmp eq i8* %186, null, !dbg !2249
-  br i1 %187, label %.thread, label %188, !dbg !2250
-
-; <label>:188                                     ; preds = %185
-  %189 = load i32* %143, align 4, !dbg !2251, !tbaa !815
-  %190 = sext i32 %189 to i64, !dbg !2253
-  %191 = icmp slt i64 %indvars.iv54, %190, !dbg !2253
-  br i1 %191, label %192, label %205, !dbg !2254
-
-; <label>:192                                     ; preds = %188
-  %193 = trunc i64 %indvars.iv54 to i32, !dbg !2255
-  %194 = icmp eq i32 %193, %189, !dbg !2255
-  br i1 %194, label %198, label %195, !dbg !2256
-
-; <label>:195                                     ; preds = %192
-  %196 = call fastcc float @ascii2prob(i8* %186, float 1.000000e+00) #7, !dbg !2257
-  %197 = fpext float %196 to double, !dbg !2257
-  br label %198, !dbg !2256
-
-; <label>:198                                     ; preds = %192, %195
-  %199 = phi double [ %197, %195 ], [ 0.000000e+00, %192 ], !dbg !2256
-  %200 = fptrunc double %199 to float, !dbg !2256
-  %201 = load float*** %146, align 8, !dbg !2258, !tbaa !1198
-  %202 = getelementptr inbounds float** %201, i64 %indvars.iv54, !dbg !2259
-  %203 = load float** %202, align 8, !dbg !2259, !tbaa !511
-  %204 = getelementptr inbounds float* %203, i64 2, !dbg !2259
-  store float %200, float* %204, align 4, !dbg !2260, !tbaa !1736
-  br label %205, !dbg !2259
-
-; <label>:205                                     ; preds = %198, %188
-  %206 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2261
-  call void @llvm.dbg.value(metadata i8* %206, i64 0, metadata !311, metadata !464), !dbg !2035
-  %207 = icmp eq i8* %206, null, !dbg !2263
-  br i1 %207, label %.thread, label %208, !dbg !2264
-
-; <label>:208                                     ; preds = %205
-  %209 = load i32* %143, align 4, !dbg !2265, !tbaa !815
-  %210 = sext i32 %209 to i64, !dbg !2267
-  %211 = icmp slt i64 %indvars.iv54, %210, !dbg !2267
-  br i1 %211, label %212, label %218, !dbg !2268
-
-; <label>:212                                     ; preds = %208
-  %213 = call fastcc float @ascii2prob(i8* %206, float 1.000000e+00) #7, !dbg !2269
-  %214 = load float*** %146, align 8, !dbg !2270, !tbaa !1198
-  %215 = getelementptr inbounds float** %214, i64 %indvars.iv54, !dbg !2271
-  %216 = load float** %215, align 8, !dbg !2271, !tbaa !511
-  %217 = getelementptr inbounds float* %216, i64 1, !dbg !2271
-  store float %213, float* %217, align 4, !dbg !2272, !tbaa !1736
-  br label %218, !dbg !2271
-
-; <label>:218                                     ; preds = %212, %208
-  %219 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2273
-  call void @llvm.dbg.value(metadata i8* %219, i64 0, metadata !311, metadata !464), !dbg !2035
-  %220 = icmp eq i8* %219, null, !dbg !2275
-  br i1 %220, label %.thread, label %221, !dbg !2276
-
-; <label>:221                                     ; preds = %218
-  %222 = load i32* %143, align 4, !dbg !2277, !tbaa !815
-  %223 = sext i32 %222 to i64, !dbg !2279
-  %224 = icmp slt i64 %indvars.iv54, %223, !dbg !2279
-  br i1 %224, label %225, label %231, !dbg !2280
-
-; <label>:225                                     ; preds = %221
-  %226 = call fastcc float @ascii2prob(i8* %219, float 1.000000e+00) #7, !dbg !2281
-  %227 = load float*** %146, align 8, !dbg !2282, !tbaa !1198
-  %228 = getelementptr inbounds float** %227, i64 %indvars.iv54, !dbg !2283
-  %229 = load float** %228, align 8, !dbg !2283, !tbaa !511
-  %230 = getelementptr inbounds float* %229, i64 5, !dbg !2283
-  store float %226, float* %230, align 4, !dbg !2284, !tbaa !1736
-  br label %231, !dbg !2283
-
-; <label>:231                                     ; preds = %225, %221
-  %232 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2285
-  call void @llvm.dbg.value(metadata i8* %232, i64 0, metadata !311, metadata !464), !dbg !2035
-  %233 = icmp eq i8* %232, null, !dbg !2287
-  br i1 %233, label %.thread, label %234, !dbg !2288
-
-; <label>:234                                     ; preds = %231
-  %235 = load i32* %143, align 4, !dbg !2289, !tbaa !815
-  %236 = sext i32 %235 to i64, !dbg !2291
-  %237 = icmp slt i64 %indvars.iv54, %236, !dbg !2291
-  br i1 %237, label %238, label %251, !dbg !2292
-
-; <label>:238                                     ; preds = %234
-  %239 = trunc i64 %indvars.iv54 to i32, !dbg !2293
-  %240 = icmp eq i32 %239, %235, !dbg !2293
-  br i1 %240, label %244, label %241, !dbg !2294
-
-; <label>:241                                     ; preds = %238
-  %242 = call fastcc float @ascii2prob(i8* %232, float 1.000000e+00) #7, !dbg !2295
-  %243 = fpext float %242 to double, !dbg !2295
-  br label %244, !dbg !2294
-
-; <label>:244                                     ; preds = %238, %241
-  %245 = phi double [ %243, %241 ], [ 0.000000e+00, %238 ], !dbg !2294
-  %246 = fptrunc double %245 to float, !dbg !2294
-  %247 = load float*** %146, align 8, !dbg !2296, !tbaa !1198
-  %248 = getelementptr inbounds float** %247, i64 %indvars.iv54, !dbg !2297
-  %249 = load float** %248, align 8, !dbg !2297, !tbaa !511
-  %250 = getelementptr inbounds float* %249, i64 6, !dbg !2297
-  store float %246, float* %250, align 4, !dbg !2298, !tbaa !1736
-  br label %251, !dbg !2297
-
-; <label>:251                                     ; preds = %244, %234
-  %252 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2299
-  call void @llvm.dbg.value(metadata i8* %252, i64 0, metadata !311, metadata !464), !dbg !2035
-  %253 = icmp eq i8* %252, null, !dbg !2301
-  br i1 %253, label %.thread, label %254, !dbg !2302
-
-; <label>:254                                     ; preds = %251
-  %255 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2303
-  call void @llvm.dbg.value(metadata i8* %255, i64 0, metadata !311, metadata !464), !dbg !2035
-  %256 = icmp eq i8* %255, null, !dbg !2305
-  br i1 %256, label %.thread, label %257, !dbg !2306
-
-; <label>:257                                     ; preds = %254
-  %258 = load i32* %143, align 4, !dbg !2307, !tbaa !815
-  %259 = sext i32 %258 to i64, !dbg !2309
-  %260 = icmp slt i64 %indvars.iv54, %259, !dbg !2309
-  br i1 %260, label %261, label %267, !dbg !2310
-
-; <label>:261                                     ; preds = %257
-  %262 = call fastcc float @ascii2prob(i8* %255, float 1.000000e+00) #7, !dbg !2311
-  %263 = load float*** %146, align 8, !dbg !2312, !tbaa !1198
-  %264 = getelementptr inbounds float** %263, i64 %indvars.iv54, !dbg !2313
-  %265 = load float** %264, align 8, !dbg !2313, !tbaa !511
-  %266 = getelementptr inbounds float* %265, i64 3, !dbg !2313
-  store float %262, float* %266, align 4, !dbg !2314, !tbaa !1736
-  br label %267, !dbg !2313
-
-; <label>:267                                     ; preds = %261, %257
-  %268 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2315
-  call void @llvm.dbg.value(metadata i8* %268, i64 0, metadata !311, metadata !464), !dbg !2035
-  %269 = icmp eq i8* %268, null, !dbg !2317
-  br i1 %269, label %.thread, label %270, !dbg !2318
-
-; <label>:270                                     ; preds = %267
-  %271 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2319
-  call void @llvm.dbg.value(metadata i8* %271, i64 0, metadata !311, metadata !464), !dbg !2035
-  %272 = icmp eq i8* %271, null, !dbg !2321
-  br i1 %272, label %.thread, label %273, !dbg !2322
-
-; <label>:273                                     ; preds = %270
-  %274 = load i32* %143, align 4, !dbg !2323, !tbaa !815
-  %275 = sext i32 %274 to i64, !dbg !2325
-  %276 = icmp slt i64 %indvars.iv54, %275, !dbg !2325
-  br i1 %276, label %277, label %283, !dbg !2326
-
-; <label>:277                                     ; preds = %273
-  %278 = call fastcc float @ascii2prob(i8* %271, float 1.000000e+00) #7, !dbg !2327
-  %279 = load float*** %146, align 8, !dbg !2328, !tbaa !1198
-  %280 = getelementptr inbounds float** %279, i64 %indvars.iv54, !dbg !2329
-  %281 = load float** %280, align 8, !dbg !2329, !tbaa !511
-  %282 = getelementptr inbounds float* %281, i64 4, !dbg !2329
-  store float %278, float* %282, align 4, !dbg !2330, !tbaa !1736
-  br label %283, !dbg !2329
-
-; <label>:283                                     ; preds = %277, %273
-  %284 = call i8* @Getword(%struct.__sFILE* %3, i32 4) #6, !dbg !2331
-  call void @llvm.dbg.value(metadata i8* %284, i64 0, metadata !311, metadata !464), !dbg !2035
-  %285 = icmp eq i8* %284, null, !dbg !2333
-  br i1 %285, label %.thread, label %286, !dbg !2334
-
-; <label>:286                                     ; preds = %283
-  %287 = load i32* %147, align 4, !dbg !2206, !tbaa !745
-  %288 = and i32 %287, 4, !dbg !2335
-  %289 = icmp eq i32 %288, 0, !dbg !2335
-  br i1 %289, label %294, label %290, !dbg !2336
-
-; <label>:290                                     ; preds = %286
-  %291 = load i8* %284, align 1, !dbg !2337, !tbaa !705
-  %292 = load i8** %149, align 8, !dbg !2210, !tbaa !823
-  %293 = getelementptr inbounds i8* %292, i64 %indvars.iv54, !dbg !2338
-  store i8 %291, i8* %293, align 1, !dbg !2339, !tbaa !705
-  br label %294, !dbg !2338
-
-; <label>:294                                     ; preds = %286, %290
-  %295 = call i8* @Getword(%struct.__sFILE* %3, i32 4) #6, !dbg !2340
-  call void @llvm.dbg.value(metadata i8* %295, i64 0, metadata !311, metadata !464), !dbg !2035
-  %296 = icmp eq i8* %295, null, !dbg !2342
-  br i1 %296, label %.thread, label %297, !dbg !2343
-
-; <label>:297                                     ; preds = %294
-  %298 = load i32* %147, align 4, !dbg !2344, !tbaa !745
-  %299 = and i32 %298, 8, !dbg !2345
-  %300 = icmp eq i32 %299, 0, !dbg !2345
-  br i1 %300, label %305, label %301, !dbg !2346
-
-; <label>:301                                     ; preds = %297
-  %302 = load i8* %295, align 1, !dbg !2347, !tbaa !705
-  %303 = load i8** %148, align 8, !dbg !2208, !tbaa !840
-  %304 = getelementptr inbounds i8* %303, i64 %indvars.iv54, !dbg !2348
-  store i8 %302, i8* %304, align 1, !dbg !2349, !tbaa !705
-  br label %305, !dbg !2348
-
-; <label>:305                                     ; preds = %297, %301
-  %indvars.iv.next55 = add nuw i64 %indvars.iv54, 1, !dbg !2202
-  %306 = load i32* %143, align 4, !dbg !2198, !tbaa !815
-  %307 = sext i32 %306 to i64, !dbg !2201
-  %308 = icmp slt i64 %indvars.iv54, %307, !dbg !2201
-  br i1 %308, label %154, label %.preheader6, !dbg !2202
-
-; <label>:309                                     ; preds = %._crit_edge, %.lr.ph28
-  %indvars.iv50 = phi i64 [ %indvars.iv.next51, %._crit_edge ], [ 0, %.lr.ph28 ]
-  %310 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2350
-  call void @llvm.dbg.value(metadata i8* %310, i64 0, metadata !311, metadata !464), !dbg !2035
-  %311 = icmp eq i8* %310, null, !dbg !2352
-  br i1 %311, label %.thread, label %.preheader, !dbg !2353
-
-.preheader:                                       ; preds = %309
-  %312 = load i32* @Alphabet_size, align 4, !dbg !2354, !tbaa !550
-  %313 = icmp sgt i32 %312, 0, !dbg !2355
-  br i1 %313, label %.lr.ph, label %._crit_edge, !dbg !2356
-
-.lr.ph:                                           ; preds = %.preheader
-  %314 = icmp sgt i64 %indvars.iv50, 0, !dbg !2357
-  br label %315, !dbg !2356
-
-; <label>:315                                     ; preds = %.lr.ph, %331
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %331 ]
-  %316 = call i8* @Getword(%struct.__sFILE* %3, i32 1) #6, !dbg !2358
-  call void @llvm.dbg.value(metadata i8* %316, i64 0, metadata !311, metadata !464), !dbg !2035
-  %317 = icmp eq i8* %316, null, !dbg !2360
-  br i1 %317, label %.loopexit, label %318, !dbg !2361
-
-; <label>:318                                     ; preds = %315
-  br i1 %314, label %319, label %331, !dbg !2362
-
-; <label>:319                                     ; preds = %318
-  %320 = load i32* %143, align 4, !dbg !2363, !tbaa !815
-  %321 = sext i32 %320 to i64, !dbg !2364
-  %322 = icmp slt i64 %indvars.iv50, %321, !dbg !2364
-  br i1 %322, label %323, label %331, !dbg !2365
-
-; <label>:323                                     ; preds = %319
-  %324 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 28, i64 %indvars.iv, !dbg !2366
-  %325 = load float* %324, align 4, !dbg !2366, !tbaa !1736
-  %326 = call fastcc float @ascii2prob(i8* %316, float %325) #7, !dbg !2367
-  %327 = load float*** %153, align 8, !dbg !2219, !tbaa !1191
-  %328 = getelementptr inbounds float** %327, i64 %indvars.iv50, !dbg !2368
-  %329 = load float** %328, align 8, !dbg !2368, !tbaa !511
-  %330 = getelementptr inbounds float* %329, i64 %indvars.iv, !dbg !2368
-  store float %326, float* %330, align 4, !dbg !2369, !tbaa !1736
-  br label %331, !dbg !2368
-
-; <label>:331                                     ; preds = %318, %319, %323
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2356
-  %332 = load i32* @Alphabet_size, align 4, !dbg !2354, !tbaa !550
-  %333 = sext i32 %332 to i64, !dbg !2355
-  %334 = icmp slt i64 %indvars.iv.next, %333, !dbg !2355
-  br i1 %334, label %315, label %._crit_edge, !dbg !2356
-
-._crit_edge:                                      ; preds = %331, %.preheader
-  %indvars.iv.next51 = add nuw i64 %indvars.iv50, 1, !dbg !2218
-  %335 = load i32* %143, align 4, !dbg !2370, !tbaa !815
-  %336 = sext i32 %335 to i64, !dbg !2215
-  %337 = icmp slt i64 %indvars.iv50, %336, !dbg !2215
-  br i1 %337, label %309, label %._crit_edge29, !dbg !2218
-
-._crit_edge29:                                    ; preds = %._crit_edge, %.preheader6
-  %338 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 47, !dbg !2371
-  %339 = load i32* %338, align 4, !dbg !2372, !tbaa !745
-  %340 = and i32 %339, -34, !dbg !2373
-  %341 = or i32 %340, 32, !dbg !2373
-  store i32 %341, i32* %338, align 4, !dbg !2373, !tbaa !745
-  call void @Plan7Renormalize(%struct.plan7_s* %13) #6, !dbg !2374
-  %342 = call i8* @Strdup(i8* getelementptr inbounds ([34 x i8]* @.str84, i64 0, i64 0)) #6, !dbg !2375
-  %343 = getelementptr inbounds %struct.plan7_s* %13, i64 0, i32 6, !dbg !2376
-  store i8* %342, i8** %343, align 8, !dbg !2377, !tbaa !1379
-  call void @Plan7SetCtime(%struct.plan7_s* %13) #6, !dbg !2378
-  store %struct.plan7_s* %13, %struct.plan7_s** %ret_hmm, align 8, !dbg !2379, !tbaa !511
-  br label %345, !dbg !2380
-
-.loopexit:                                        ; preds = %.lr.ph44, %.lr.ph39, %133, %315, %72, %44, %140, %137, %._crit_edge40, %69, %59, %49, %41, %29, %23, %20, %16, %12
-  %344 = icmp eq %struct.plan7_s* %13, null, !dbg !2381
-  br i1 %344, label %.thread5, label %.thread, !dbg !2383
-
-.thread:                                          ; preds = %294, %283, %270, %267, %254, %251, %231, %218, %205, %185, %._crit_edge32, %154, %.lr.ph31, %309, %113, %99, %93, %._crit_edge45, %.loopexit
-  call void @FreePlan7(%struct.plan7_s* %13) #6, !dbg !2384
-  br label %.thread5, !dbg !2384
-
-.thread5:                                         ; preds = %9, %.loopexit, %.thread
-  store %struct.plan7_s* null, %struct.plan7_s** %ret_hmm, align 8, !dbg !2385, !tbaa !511
-  br label %345, !dbg !2386
-
-; <label>:345                                     ; preds = %6, %0, %.thread5, %._crit_edge29
-  %.0 = phi i32 [ 1, %.thread5 ], [ 1, %._crit_edge29 ], [ 0, %0 ], [ 0, %6 ]
-  call void @llvm.lifetime.end(i64 512, i8* %1) #2, !dbg !2387
-  ret i32 %.0, !dbg !2387
+  call void @llvm.dbg.value(metadata !{%struct.hmmfile_s* %hmmfp}, i64 0, metadata !389), !dbg !1081
+  call void @llvm.dbg.value(metadata !{%struct.plan7_s** %ret_hmm}, i64 0, metadata !390), !dbg !1081
+  %0 = getelementptr inbounds [512 x i8]* %buffer, i64 0, i64 0, !dbg !1082
+  call void @llvm.lifetime.start(i64 512, i8* %0) #2, !dbg !1082
+  call void @llvm.dbg.declare(metadata !{[512 x i8]* %buffer}, metadata !393), !dbg !1082
+  call void @llvm.dbg.value(metadata !576, i64 0, metadata !391), !dbg !1083
+  %f = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0, !dbg !1084
+  %1 = load %struct._IO_FILE** %f, align 8, !dbg !1084, !tbaa !465
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %1}, i64 0, metadata !392), !dbg !1084
+  %call = call i32 @feof(%struct._IO_FILE* %1) #7, !dbg !1085
+  %tobool = icmp eq i32 %call, 0, !dbg !1085
+  br i1 %tobool, label %lor.lhs.false, label %cleanup, !dbg !1085
+
+lor.lhs.false:                                    ; preds = %entry
+  %call1 = call i8* @fgets(i8* %0, i32 512, %struct._IO_FILE* %1) #7, !dbg !1085
+  %cmp = icmp eq i8* %call1, null, !dbg !1085
+  br i1 %cmp, label %cleanup, label %if.end, !dbg !1085
+
+if.end:                                           ; preds = %lor.lhs.false
+  %call3 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([11 x i8]* @.str7, i64 0, i64 0), i64 10) #8, !dbg !1086
+  %cmp4 = icmp eq i32 %call3, 0, !dbg !1086
+  br i1 %cmp4, label %if.end6, label %if.end411, !dbg !1086
+
+if.end6:                                          ; preds = %if.end
+  %call7 = call %struct.plan7_s* @AllocPlan7Shell() #7, !dbg !1087
+  call void @llvm.dbg.value(metadata !{%struct.plan7_s* %call7}, i64 0, metadata !391), !dbg !1087
+  %call8 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1088
+  call void @llvm.dbg.value(metadata !{i8* %call8}, i64 0, metadata !394), !dbg !1088
+  %cmp9 = icmp eq i8* %call8, null, !dbg !1088
+  br i1 %cmp9, label %FAILURE, label %if.end11, !dbg !1088
+
+if.end11:                                         ; preds = %if.end6
+  %call12 = call i32 @atoi(i8* %call8) #8, !dbg !1088
+  call void @llvm.dbg.value(metadata !{i32 %call12}, i64 0, metadata !395), !dbg !1088
+  %call13 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1089
+  call void @llvm.dbg.value(metadata !{i8* %call13}, i64 0, metadata !394), !dbg !1089
+  %cmp14 = icmp eq i8* %call13, null, !dbg !1089
+  br i1 %cmp14, label %FAILURE, label %if.end16, !dbg !1089
+
+if.end16:                                         ; preds = %if.end11
+  %call17 = call i8* @Getword(%struct._IO_FILE* %1, i32 4) #7, !dbg !1090
+  call void @llvm.dbg.value(metadata !{i8* %call17}, i64 0, metadata !394), !dbg !1090
+  %cmp18 = icmp eq i8* %call17, null, !dbg !1090
+  br i1 %cmp18, label %FAILURE, label %if.end20, !dbg !1090
+
+if.end20:                                         ; preds = %if.end16
+  call void @Plan7SetName(%struct.plan7_s* %call7, i8* %call17) #7, !dbg !1090
+  %call21 = call i8* @Getword(%struct._IO_FILE* %1, i32 4) #7, !dbg !1091
+  call void @llvm.dbg.value(metadata !{i8* %call21}, i64 0, metadata !394), !dbg !1091
+  %cmp22 = icmp eq i8* %call21, null, !dbg !1091
+  br i1 %cmp22, label %FAILURE, label %if.end24, !dbg !1091
+
+if.end24:                                         ; preds = %if.end20
+  call void @s2upper(i8* %call21) #7, !dbg !1092
+  %call25 = call i32 @strcmp(i8* %call21, i8* getelementptr inbounds ([6 x i8]* @.str69, i64 0, i64 0)) #8, !dbg !1093
+  %cmp26 = icmp eq i32 %call25, 0, !dbg !1093
+  br i1 %cmp26, label %if.end33, label %if.else, !dbg !1093
+
+if.else:                                          ; preds = %if.end24
+  %call28 = call i32 @strcmp(i8* %call21, i8* getelementptr inbounds ([8 x i8]* @.str70, i64 0, i64 0)) #8, !dbg !1094
+  %cmp29 = icmp eq i32 %call28, 0, !dbg !1094
+  br i1 %cmp29, label %if.end33, label %FAILURE, !dbg !1094
+
+if.end33:                                         ; preds = %if.else, %if.end24
+  %atype.0 = phi i32 [ 3, %if.end24 ], [ 2, %if.else ]
+  %2 = load i32* @Alphabet_type, align 4, !dbg !1095, !tbaa !460
+  %cmp34 = icmp eq i32 %2, 0, !dbg !1095
+  br i1 %cmp34, label %if.then35, label %if.else36, !dbg !1095
+
+if.then35:                                        ; preds = %if.end33
+  call void @SetAlphabet(i32 %atype.0) #7, !dbg !1095
+  br label %if.end42, !dbg !1095
+
+if.else36:                                        ; preds = %if.end33
+  %cmp37 = icmp eq i32 %atype.0, %2, !dbg !1096
+  br i1 %cmp37, label %if.end42, label %if.then38, !dbg !1096
+
+if.then38:                                        ; preds = %if.else36
+  %call39 = call i8* @AlphabetType2String(i32 %2) #7, !dbg !1097
+  %call40 = call i8* @AlphabetType2String(i32 %atype.0) #7, !dbg !1097
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([89 x i8]* @.str61, i64 0, i64 0), i8* %call39, i8* %call40) #7, !dbg !1097
+  br label %if.end42, !dbg !1097
+
+if.end42:                                         ; preds = %if.else36, %if.then38, %if.then35
+  %call43 = call i8* @Getword(%struct._IO_FILE* %1, i32 4) #7, !dbg !1098
+  call void @llvm.dbg.value(metadata !{i8* %call43}, i64 0, metadata !394), !dbg !1098
+  %cmp44 = icmp eq i8* %call43, null, !dbg !1098
+  br i1 %cmp44, label %FAILURE, label %if.end46, !dbg !1098
+
+if.end46:                                         ; preds = %if.end42
+  %3 = load i32* @Alphabet_size, align 4, !dbg !1099, !tbaa !460
+  %conv = sext i32 %3 to i64, !dbg !1099
+  %call47 = call i32 @strncmp(i8* %call43, i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i64 %conv) #8, !dbg !1099
+  %cmp48 = icmp eq i32 %call47, 0, !dbg !1099
+  br i1 %cmp48, label %if.end51, label %FAILURE, !dbg !1099
+
+if.end51:                                         ; preds = %if.end46
+  %call52 = call i8* @Getword(%struct._IO_FILE* %1, i32 4) #7, !dbg !1100
+  call void @llvm.dbg.value(metadata !{i8* %call52}, i64 0, metadata !394), !dbg !1100
+  %cmp53 = icmp eq i8* %call52, null, !dbg !1100
+  br i1 %cmp53, label %FAILURE, label %if.end56, !dbg !1100
+
+if.end56:                                         ; preds = %if.end51
+  %call57 = call i32 @strcmp(i8* %call52, i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0)) #8, !dbg !1101
+  %cmp58 = icmp eq i32 %call57, 0, !dbg !1101
+  br i1 %cmp58, label %if.then60, label %if.end61, !dbg !1101
+
+if.then60:                                        ; preds = %if.end56
+  %flags = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 47, !dbg !1101
+  %4 = load i32* %flags, align 4, !dbg !1101, !tbaa !460
+  %or = or i32 %4, 4, !dbg !1101
+  store i32 %or, i32* %flags, align 4, !dbg !1101, !tbaa !460
+  br label %if.end61, !dbg !1101
+
+if.end61:                                         ; preds = %if.then60, %if.end56
+  %call62 = call i8* @Getword(%struct._IO_FILE* %1, i32 4) #7, !dbg !1102
+  call void @llvm.dbg.value(metadata !{i8* %call62}, i64 0, metadata !394), !dbg !1102
+  %cmp63 = icmp eq i8* %call62, null, !dbg !1102
+  br i1 %cmp63, label %FAILURE, label %if.end66, !dbg !1102
+
+if.end66:                                         ; preds = %if.end61
+  %call67 = call i32 @strcmp(i8* %call62, i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0)) #8, !dbg !1103
+  %cmp68 = icmp eq i32 %call67, 0, !dbg !1103
+  br i1 %cmp68, label %if.then70, label %if.end73, !dbg !1103
+
+if.then70:                                        ; preds = %if.end66
+  %flags71 = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 47, !dbg !1103
+  %5 = load i32* %flags71, align 4, !dbg !1103, !tbaa !460
+  %or72 = or i32 %5, 8, !dbg !1103
+  store i32 %or72, i32* %flags71, align 4, !dbg !1103, !tbaa !460
+  br label %if.end73, !dbg !1103
+
+if.end73:                                         ; preds = %if.then70, %if.end66
+  %call74 = call i8* @Getword(%struct._IO_FILE* %1, i32 4) #7, !dbg !1104
+  call void @llvm.dbg.value(metadata !{i8* %call74}, i64 0, metadata !394), !dbg !1104
+  %cmp75 = icmp eq i8* %call74, null, !dbg !1104
+  br i1 %cmp75, label %FAILURE, label %if.end78, !dbg !1104
+
+if.end78:                                         ; preds = %if.end73
+  %call79 = call i32 @strcmp(i8* %call74, i8* getelementptr inbounds ([5 x i8]* @.str71, i64 0, i64 0)) #8, !dbg !1105
+  %cmp80 = icmp eq i32 %call79, 0, !dbg !1105
+  br i1 %cmp80, label %for.cond.preheader, label %FAILURE, !dbg !1105
+
+for.cond.preheader:                               ; preds = %if.end78
+  %6 = load i32* @Alphabet_size, align 4, !dbg !1106, !tbaa !460
+  %cmp84598 = icmp sgt i32 %6, 0, !dbg !1106
+  br i1 %cmp84598, label %for.body, label %for.end, !dbg !1106
+
+for.body:                                         ; preds = %for.cond.preheader, %if.end90
+  %indvars.iv610 = phi i64 [ %indvars.iv.next611, %if.end90 ], [ 0, %for.cond.preheader ]
+  %call86 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1108
+  call void @llvm.dbg.value(metadata !{i8* %call86}, i64 0, metadata !394), !dbg !1108
+  %cmp87 = icmp eq i8* %call86, null, !dbg !1108
+  br i1 %cmp87, label %FAILURE, label %if.end90, !dbg !1108
+
+if.end90:                                         ; preds = %for.body
+  %call91 = call fastcc float @ascii2prob(i8* %call86, float 1.000000e+00) #9, !dbg !1110
+  %arrayidx = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 28, i64 %indvars.iv610, !dbg !1110
+  store float %call91, float* %arrayidx, align 4, !dbg !1110, !tbaa !971
+  %indvars.iv.next611 = add i64 %indvars.iv610, 1, !dbg !1106
+  %7 = load i32* @Alphabet_size, align 4, !dbg !1106, !tbaa !460
+  %8 = trunc i64 %indvars.iv.next611 to i32, !dbg !1106
+  %cmp84 = icmp slt i32 %8, %7, !dbg !1106
+  br i1 %cmp84, label %for.body, label %for.end, !dbg !1106
+
+for.end:                                          ; preds = %if.end90, %for.cond.preheader
+  %9 = load i32* @Alphabet_type, align 4, !dbg !1111, !tbaa !460
+  %cmp92 = icmp eq i32 %9, 3, !dbg !1111
+  %conv94 = select i1 %cmp92, float 0x3FEFE8A940000000, float 0x3FEFF7D100000000, !dbg !1111
+  %p1 = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 29, !dbg !1111
+  store float %conv94, float* %p1, align 4, !dbg !1111, !tbaa !971
+  %10 = load %struct._IO_FILE** %f, align 8, !dbg !1112, !tbaa !465
+  %call96 = call i32 @feof(%struct._IO_FILE* %10) #7, !dbg !1112
+  %tobool97 = icmp ne i32 %call96, 0, !dbg !1112
+  %cmp100 = icmp slt i32 %call12, 1, !dbg !1113
+  %or.cond559 = or i1 %tobool97, %cmp100, !dbg !1112
+  br i1 %or.cond559, label %if.then410, label %if.end103, !dbg !1112
+
+if.end103:                                        ; preds = %for.end
+  %name = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 0, !dbg !1114
+  %11 = load i8** %name, align 8, !dbg !1114, !tbaa !465
+  %cmp104 = icmp eq i8* %11, null, !dbg !1114
+  %12 = load i32* @Alphabet_type, align 4, !dbg !1115, !tbaa !460
+  %cmp108 = icmp eq i32 %12, 0, !dbg !1115
+  %or.cond = or i1 %cmp104, %cmp108, !dbg !1114
+  br i1 %or.cond, label %if.then410, label %if.end111, !dbg !1114
+
+if.end111:                                        ; preds = %if.end103
+  call void @AllocPlan7Body(%struct.plan7_s* %call7, i32 %call12) #7, !dbg !1116
+  call void @ZeroPlan7(%struct.plan7_s* %call7) #7, !dbg !1117
+  call void @Plan7LSConfig(%struct.plan7_s* %call7) #7, !dbg !1118
+  %call112 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1119
+  call void @llvm.dbg.value(metadata !{i8* %call112}, i64 0, metadata !394), !dbg !1119
+  %cmp113 = icmp eq i8* %call112, null, !dbg !1119
+  br i1 %cmp113, label %if.then410, label %for.cond117.preheader, !dbg !1119
+
+for.cond117.preheader:                            ; preds = %if.end111
+  %13 = load i32* @Alphabet_size, align 4, !dbg !1120, !tbaa !460
+  %cmp118590 = icmp sgt i32 %13, 0, !dbg !1120
+  %call121591 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1122
+  call void @llvm.dbg.value(metadata !{i8* %call121.lcssa}, i64 0, metadata !394), !dbg !1122
+  %cmp122592 = icmp eq i8* %call121591, null, !dbg !1122
+  br i1 %cmp118590, label %for.body120, label %for.end128, !dbg !1120
+
+for.cond117:                                      ; preds = %for.body120
+  %14 = load i32* @Alphabet_size, align 4, !dbg !1120, !tbaa !460
+  %cmp118 = icmp slt i32 %inc127, %14, !dbg !1120
+  %call121 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1122
+  call void @llvm.dbg.value(metadata !{i8* %call121.lcssa}, i64 0, metadata !394), !dbg !1122
+  %cmp122 = icmp eq i8* %call121, null, !dbg !1122
+  br i1 %cmp118, label %for.body120, label %for.end128, !dbg !1120
+
+for.body120:                                      ; preds = %for.cond117.preheader, %for.cond117
+  %cmp122594 = phi i1 [ %cmp122, %for.cond117 ], [ %cmp122592, %for.cond117.preheader ]
+  %x.1593 = phi i32 [ %inc127, %for.cond117 ], [ 0, %for.cond117.preheader ]
+  %inc127 = add nsw i32 %x.1593, 1, !dbg !1120
+  call void @llvm.dbg.value(metadata !{i32 %inc127}, i64 0, metadata !397), !dbg !1120
+  br i1 %cmp122594, label %FAILURE, label %for.cond117, !dbg !1122
+
+for.end128:                                       ; preds = %for.cond117, %for.cond117.preheader
+  %cmp122.lcssa = phi i1 [ %cmp122592, %for.cond117.preheader ], [ %cmp122, %for.cond117 ]
+  %call121.lcssa = phi i8* [ %call121591, %for.cond117.preheader ], [ %call121, %for.cond117 ]
+  br i1 %cmp122.lcssa, label %FAILURE, label %if.end133, !dbg !1123
+
+if.end133:                                        ; preds = %for.end128
+  %call134 = call fastcc float @ascii2prob(i8* %call121.lcssa, float 1.000000e+00) #9, !dbg !1124
+  %begin = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 26, !dbg !1124
+  %15 = load float** %begin, align 8, !dbg !1124, !tbaa !465
+  %arrayidx135 = getelementptr inbounds float* %15, i64 1, !dbg !1124
+  store float %call134, float* %arrayidx135, align 4, !dbg !1124, !tbaa !971
+  %call136 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1125
+  call void @llvm.dbg.value(metadata !{i8* %call136}, i64 0, metadata !394), !dbg !1125
+  %cmp137 = icmp eq i8* %call136, null, !dbg !1125
+  br i1 %cmp137, label %if.then410, label %if.end140, !dbg !1125
+
+if.end140:                                        ; preds = %if.end133
+  %call141 = call fastcc float @ascii2prob(i8* %call136, float 1.000000e+00) #9, !dbg !1126
+  %tbd1 = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 24, !dbg !1126
+  store float %call141, float* %tbd1, align 4, !dbg !1126, !tbaa !971
+  %16 = load float** %begin, align 8, !dbg !1127, !tbaa !465
+  %arrayidx143 = getelementptr inbounds float* %16, i64 1, !dbg !1127
+  %17 = load float* %arrayidx143, align 4, !dbg !1127, !tbaa !971
+  %add = fadd float %call141, %17, !dbg !1127
+  %div = fdiv float %17, %add, !dbg !1127
+  store float %div, float* %arrayidx143, align 4, !dbg !1127, !tbaa !971
+  %18 = load float* %tbd1, align 4, !dbg !1128, !tbaa !971
+  %add153 = fadd float %18, %div, !dbg !1128
+  %div154 = fdiv float %18, %add153, !dbg !1128
+  store float %div154, float* %tbd1, align 4, !dbg !1128, !tbaa !971
+  call void @llvm.dbg.value(metadata !18, i64 0, metadata !397), !dbg !1129
+  br label %for.body159, !dbg !1129
+
+for.cond156:                                      ; preds = %for.body159
+  %cmp157 = icmp slt i32 %inc166, 7, !dbg !1129
+  br i1 %cmp157, label %for.body159, label %for.end167, !dbg !1129
+
+for.body159:                                      ; preds = %if.end140, %for.cond156
+  %x.2586 = phi i32 [ 0, %if.end140 ], [ %inc166, %for.cond156 ]
+  %call160 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1131
+  call void @llvm.dbg.value(metadata !{i8* %call160}, i64 0, metadata !394), !dbg !1131
+  %cmp161 = icmp eq i8* %call160, null, !dbg !1131
+  %inc166 = add nsw i32 %x.2586, 1, !dbg !1129
+  call void @llvm.dbg.value(metadata !{i32 %inc166}, i64 0, metadata !397), !dbg !1129
+  br i1 %cmp161, label %FAILURE, label %for.cond156, !dbg !1131
+
+for.end167:                                       ; preds = %for.cond156
+  %call168 = call i8* @Getword(%struct._IO_FILE* %1, i32 4) #7, !dbg !1132
+  call void @llvm.dbg.value(metadata !{i8* %call168}, i64 0, metadata !394), !dbg !1132
+  %cmp169 = icmp eq i8* %call168, null, !dbg !1132
+  br i1 %cmp169, label %FAILURE, label %if.end172, !dbg !1132
+
+if.end172:                                        ; preds = %for.end167
+  %call173 = call i8* @Getword(%struct._IO_FILE* %1, i32 4) #7, !dbg !1133
+  call void @llvm.dbg.value(metadata !{i8* %call173}, i64 0, metadata !394), !dbg !1133
+  %cmp174 = icmp eq i8* %call173, null, !dbg !1133
+  br i1 %cmp174, label %FAILURE, label %for.cond178.preheader, !dbg !1133
+
+for.cond178.preheader:                            ; preds = %if.end172
+  %M179 = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 20, !dbg !1134
+  %19 = load i32* %M179, align 4, !dbg !1134, !tbaa !460
+  %cmp180582 = icmp slt i32 %19, 1, !dbg !1134
+  br i1 %cmp180582, label %for.cond363.preheader, label %for.body182.lr.ph, !dbg !1134
+
+for.body182.lr.ph:                                ; preds = %for.cond178.preheader
+  %t = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 21, !dbg !1136
+  %flags342 = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 47, !dbg !1138
+  %cs = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 4, !dbg !1139
+  %rf = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 3, !dbg !1138
+  %mat = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 22, !dbg !1140
+  br label %for.body182, !dbg !1134
+
+for.cond363.preheader:                            ; preds = %for.inc360, %for.cond178.preheader
+  %20 = phi i32 [ %19, %for.cond178.preheader ], [ %55, %for.inc360 ]
+  %cmp365567 = icmp slt i32 %20, 0, !dbg !1143
+  br i1 %cmp365567, label %for.end402, label %for.body367.lr.ph, !dbg !1143
+
+for.body367.lr.ph:                                ; preds = %for.cond363.preheader
+  %ins = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 23, !dbg !1145
+  br label %for.body367, !dbg !1143
+
+for.body182:                                      ; preds = %for.inc360, %for.body182.lr.ph
+  %indvars.iv606 = phi i64 [ %indvars.iv.next607, %for.inc360 ], [ 1, %for.body182.lr.ph ]
+  %call183 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1149
+  call void @llvm.dbg.value(metadata !{i8* %call183}, i64 0, metadata !394), !dbg !1149
+  %cmp184 = icmp eq i8* %call183, null, !dbg !1149
+  br i1 %cmp184, label %FAILURE, label %for.cond188.preheader, !dbg !1149
+
+for.cond188.preheader:                            ; preds = %for.body182
+  %21 = load i32* @Alphabet_size, align 4, !dbg !1150, !tbaa !460
+  %cmp189572 = icmp sgt i32 %21, 0, !dbg !1150
+  %call192573 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1151
+  call void @llvm.dbg.value(metadata !{i8* %call192.lcssa}, i64 0, metadata !394), !dbg !1151
+  %cmp193574 = icmp eq i8* %call192573, null, !dbg !1151
+  br i1 %cmp189572, label %for.body191, label %for.end207, !dbg !1150
+
+for.body191:                                      ; preds = %for.cond188.preheader, %if.end196
+  %indvars.iv604 = phi i64 [ %indvars.iv.next605, %if.end196 ], [ 0, %for.cond188.preheader ]
+  %cmp193577 = phi i1 [ %cmp193, %if.end196 ], [ %cmp193574, %for.cond188.preheader ]
+  %call192576 = phi i8* [ %call192, %if.end196 ], [ %call192573, %for.cond188.preheader ]
+  br i1 %cmp193577, label %FAILURE, label %if.end196, !dbg !1151
+
+if.end196:                                        ; preds = %for.body191
+  %arrayidx199 = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 28, i64 %indvars.iv604, !dbg !1140
+  %22 = load float* %arrayidx199, align 4, !dbg !1140, !tbaa !971
+  %call200 = call fastcc float @ascii2prob(i8* %call192576, float %22) #9, !dbg !1140
+  %23 = load float*** %mat, align 8, !dbg !1140, !tbaa !465
+  %arrayidx203 = getelementptr inbounds float** %23, i64 %indvars.iv606, !dbg !1140
+  %24 = load float** %arrayidx203, align 8, !dbg !1140, !tbaa !465
+  %arrayidx204 = getelementptr inbounds float* %24, i64 %indvars.iv604, !dbg !1140
+  store float %call200, float* %arrayidx204, align 4, !dbg !1140, !tbaa !971
+  %indvars.iv.next605 = add i64 %indvars.iv604, 1, !dbg !1150
+  %25 = load i32* @Alphabet_size, align 4, !dbg !1150, !tbaa !460
+  %26 = trunc i64 %indvars.iv.next605 to i32, !dbg !1150
+  %cmp189 = icmp slt i32 %26, %25, !dbg !1150
+  %call192 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1151
+  call void @llvm.dbg.value(metadata !{i8* %call192.lcssa}, i64 0, metadata !394), !dbg !1151
+  %cmp193 = icmp eq i8* %call192, null, !dbg !1151
+  br i1 %cmp189, label %for.body191, label %for.end207, !dbg !1150
+
+for.end207:                                       ; preds = %if.end196, %for.cond188.preheader
+  %cmp193.lcssa = phi i1 [ %cmp193574, %for.cond188.preheader ], [ %cmp193, %if.end196 ]
+  %call192.lcssa = phi i8* [ %call192573, %for.cond188.preheader ], [ %call192, %if.end196 ]
+  br i1 %cmp193.lcssa, label %FAILURE, label %if.end212, !dbg !1152
+
+if.end212:                                        ; preds = %for.end207
+  %27 = load i32* %M179, align 4, !dbg !1136, !tbaa !460
+  %28 = trunc i64 %indvars.iv606 to i32, !dbg !1136
+  %cmp214 = icmp slt i32 %28, %27, !dbg !1136
+  br i1 %cmp214, label %if.then216, label %if.end221, !dbg !1136
+
+if.then216:                                       ; preds = %if.end212
+  %call217 = call fastcc float @ascii2prob(i8* %call192.lcssa, float 1.000000e+00) #9, !dbg !1136
+  %29 = load float*** %t, align 8, !dbg !1136, !tbaa !465
+  %arrayidx219 = getelementptr inbounds float** %29, i64 %indvars.iv606, !dbg !1136
+  %30 = load float** %arrayidx219, align 8, !dbg !1136, !tbaa !465
+  store float %call217, float* %30, align 4, !dbg !1136, !tbaa !971
+  br label %if.end221, !dbg !1136
+
+if.end221:                                        ; preds = %if.then216, %if.end212
+  %call222 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1153
+  call void @llvm.dbg.value(metadata !{i8* %call222}, i64 0, metadata !394), !dbg !1153
+  %cmp223 = icmp eq i8* %call222, null, !dbg !1153
+  br i1 %cmp223, label %FAILURE, label %if.end226, !dbg !1153
+
+if.end226:                                        ; preds = %if.end221
+  %31 = load i32* %M179, align 4, !dbg !1154, !tbaa !460
+  %cmp228 = icmp slt i32 %28, %31, !dbg !1154
+  br i1 %cmp228, label %if.then230, label %if.end242, !dbg !1154
+
+if.then230:                                       ; preds = %if.end226
+  %cmp232 = icmp eq i32 %28, %31, !dbg !1154
+  br i1 %cmp232, label %cond.end, label %cond.false, !dbg !1154
+
+cond.false:                                       ; preds = %if.then230
+  %call234 = call fastcc float @ascii2prob(i8* %call222, float 1.000000e+00) #9, !dbg !1154
+  br label %cond.end, !dbg !1154
+
+cond.end:                                         ; preds = %if.then230, %cond.false
+  %cond236 = phi float [ %call234, %cond.false ], [ 0.000000e+00, %if.then230 ]
+  %32 = load float*** %t, align 8, !dbg !1154, !tbaa !465
+  %arrayidx240 = getelementptr inbounds float** %32, i64 %indvars.iv606, !dbg !1154
+  %33 = load float** %arrayidx240, align 8, !dbg !1154, !tbaa !465
+  %arrayidx241 = getelementptr inbounds float* %33, i64 2, !dbg !1154
+  store float %cond236, float* %arrayidx241, align 4, !dbg !1154, !tbaa !971
+  br label %if.end242, !dbg !1154
+
+if.end242:                                        ; preds = %cond.end, %if.end226
+  %call243 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1155
+  call void @llvm.dbg.value(metadata !{i8* %call243}, i64 0, metadata !394), !dbg !1155
+  %cmp244 = icmp eq i8* %call243, null, !dbg !1155
+  br i1 %cmp244, label %FAILURE, label %if.end247, !dbg !1155
+
+if.end247:                                        ; preds = %if.end242
+  %34 = load i32* %M179, align 4, !dbg !1156, !tbaa !460
+  %cmp249 = icmp slt i32 %28, %34, !dbg !1156
+  br i1 %cmp249, label %if.then251, label %if.end257, !dbg !1156
+
+if.then251:                                       ; preds = %if.end247
+  %call252 = call fastcc float @ascii2prob(i8* %call243, float 1.000000e+00) #9, !dbg !1156
+  %35 = load float*** %t, align 8, !dbg !1156, !tbaa !465
+  %arrayidx255 = getelementptr inbounds float** %35, i64 %indvars.iv606, !dbg !1156
+  %36 = load float** %arrayidx255, align 8, !dbg !1156, !tbaa !465
+  %arrayidx256 = getelementptr inbounds float* %36, i64 1, !dbg !1156
+  store float %call252, float* %arrayidx256, align 4, !dbg !1156, !tbaa !971
+  br label %if.end257, !dbg !1156
+
+if.end257:                                        ; preds = %if.then251, %if.end247
+  %call258 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1157
+  call void @llvm.dbg.value(metadata !{i8* %call258}, i64 0, metadata !394), !dbg !1157
+  %cmp259 = icmp eq i8* %call258, null, !dbg !1157
+  br i1 %cmp259, label %FAILURE, label %if.end262, !dbg !1157
+
+if.end262:                                        ; preds = %if.end257
+  %37 = load i32* %M179, align 4, !dbg !1158, !tbaa !460
+  %cmp264 = icmp slt i32 %28, %37, !dbg !1158
+  br i1 %cmp264, label %if.then266, label %if.end272, !dbg !1158
+
+if.then266:                                       ; preds = %if.end262
+  %call267 = call fastcc float @ascii2prob(i8* %call258, float 1.000000e+00) #9, !dbg !1158
+  %38 = load float*** %t, align 8, !dbg !1158, !tbaa !465
+  %arrayidx270 = getelementptr inbounds float** %38, i64 %indvars.iv606, !dbg !1158
+  %39 = load float** %arrayidx270, align 8, !dbg !1158, !tbaa !465
+  %arrayidx271 = getelementptr inbounds float* %39, i64 5, !dbg !1158
+  store float %call267, float* %arrayidx271, align 4, !dbg !1158, !tbaa !971
+  br label %if.end272, !dbg !1158
+
+if.end272:                                        ; preds = %if.then266, %if.end262
+  %call273 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1159
+  call void @llvm.dbg.value(metadata !{i8* %call273}, i64 0, metadata !394), !dbg !1159
+  %cmp274 = icmp eq i8* %call273, null, !dbg !1159
+  br i1 %cmp274, label %FAILURE, label %if.end277, !dbg !1159
+
+if.end277:                                        ; preds = %if.end272
+  %40 = load i32* %M179, align 4, !dbg !1160, !tbaa !460
+  %cmp279 = icmp slt i32 %28, %40, !dbg !1160
+  br i1 %cmp279, label %if.then281, label %if.end296, !dbg !1160
+
+if.then281:                                       ; preds = %if.end277
+  %cmp283 = icmp eq i32 %28, %40, !dbg !1160
+  br i1 %cmp283, label %cond.end289, label %cond.false286, !dbg !1160
+
+cond.false286:                                    ; preds = %if.then281
+  %call287 = call fastcc float @ascii2prob(i8* %call273, float 1.000000e+00) #9, !dbg !1160
+  br label %cond.end289, !dbg !1160
+
+cond.end289:                                      ; preds = %if.then281, %cond.false286
+  %cond290 = phi float [ %call287, %cond.false286 ], [ 0.000000e+00, %if.then281 ]
+  %41 = load float*** %t, align 8, !dbg !1160, !tbaa !465
+  %arrayidx294 = getelementptr inbounds float** %41, i64 %indvars.iv606, !dbg !1160
+  %42 = load float** %arrayidx294, align 8, !dbg !1160, !tbaa !465
+  %arrayidx295 = getelementptr inbounds float* %42, i64 6, !dbg !1160
+  store float %cond290, float* %arrayidx295, align 4, !dbg !1160, !tbaa !971
+  br label %if.end296, !dbg !1160
+
+if.end296:                                        ; preds = %cond.end289, %if.end277
+  %call297 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1161
+  call void @llvm.dbg.value(metadata !{i8* %call297}, i64 0, metadata !394), !dbg !1161
+  %cmp298 = icmp eq i8* %call297, null, !dbg !1161
+  br i1 %cmp298, label %FAILURE, label %if.end301, !dbg !1161
+
+if.end301:                                        ; preds = %if.end296
+  %call302 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1162
+  call void @llvm.dbg.value(metadata !{i8* %call302}, i64 0, metadata !394), !dbg !1162
+  %cmp303 = icmp eq i8* %call302, null, !dbg !1162
+  br i1 %cmp303, label %FAILURE, label %if.end306, !dbg !1162
+
+if.end306:                                        ; preds = %if.end301
+  %43 = load i32* %M179, align 4, !dbg !1163, !tbaa !460
+  %cmp308 = icmp slt i32 %28, %43, !dbg !1163
+  br i1 %cmp308, label %if.then310, label %if.end316, !dbg !1163
+
+if.then310:                                       ; preds = %if.end306
+  %call311 = call fastcc float @ascii2prob(i8* %call302, float 1.000000e+00) #9, !dbg !1163
+  %44 = load float*** %t, align 8, !dbg !1163, !tbaa !465
+  %arrayidx314 = getelementptr inbounds float** %44, i64 %indvars.iv606, !dbg !1163
+  %45 = load float** %arrayidx314, align 8, !dbg !1163, !tbaa !465
+  %arrayidx315 = getelementptr inbounds float* %45, i64 3, !dbg !1163
+  store float %call311, float* %arrayidx315, align 4, !dbg !1163, !tbaa !971
+  br label %if.end316, !dbg !1163
+
+if.end316:                                        ; preds = %if.then310, %if.end306
+  %call317 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1164
+  call void @llvm.dbg.value(metadata !{i8* %call317}, i64 0, metadata !394), !dbg !1164
+  %cmp318 = icmp eq i8* %call317, null, !dbg !1164
+  br i1 %cmp318, label %FAILURE, label %if.end321, !dbg !1164
+
+if.end321:                                        ; preds = %if.end316
+  %call322 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1165
+  call void @llvm.dbg.value(metadata !{i8* %call322}, i64 0, metadata !394), !dbg !1165
+  %cmp323 = icmp eq i8* %call322, null, !dbg !1165
+  br i1 %cmp323, label %FAILURE, label %if.end326, !dbg !1165
+
+if.end326:                                        ; preds = %if.end321
+  %46 = load i32* %M179, align 4, !dbg !1166, !tbaa !460
+  %cmp328 = icmp slt i32 %28, %46, !dbg !1166
+  br i1 %cmp328, label %if.then330, label %if.end336, !dbg !1166
+
+if.then330:                                       ; preds = %if.end326
+  %call331 = call fastcc float @ascii2prob(i8* %call322, float 1.000000e+00) #9, !dbg !1166
+  %47 = load float*** %t, align 8, !dbg !1166, !tbaa !465
+  %arrayidx334 = getelementptr inbounds float** %47, i64 %indvars.iv606, !dbg !1166
+  %48 = load float** %arrayidx334, align 8, !dbg !1166, !tbaa !465
+  %arrayidx335 = getelementptr inbounds float* %48, i64 4, !dbg !1166
+  store float %call331, float* %arrayidx335, align 4, !dbg !1166, !tbaa !971
+  br label %if.end336, !dbg !1166
+
+if.end336:                                        ; preds = %if.then330, %if.end326
+  %call337 = call i8* @Getword(%struct._IO_FILE* %1, i32 4) #7, !dbg !1167
+  call void @llvm.dbg.value(metadata !{i8* %call337}, i64 0, metadata !394), !dbg !1167
+  %cmp338 = icmp eq i8* %call337, null, !dbg !1167
+  br i1 %cmp338, label %FAILURE, label %if.end341, !dbg !1167
+
+if.end341:                                        ; preds = %if.end336
+  %49 = load i32* %flags342, align 4, !dbg !1138, !tbaa !460
+  %and = and i32 %49, 4, !dbg !1138
+  %tobool343 = icmp eq i32 %and, 0, !dbg !1138
+  br i1 %tobool343, label %if.end347, label %if.then344, !dbg !1138
+
+if.then344:                                       ; preds = %if.end341
+  %50 = load i8* %call337, align 1, !dbg !1138, !tbaa !461
+  %51 = load i8** %rf, align 8, !dbg !1138, !tbaa !465
+  %arrayidx346 = getelementptr inbounds i8* %51, i64 %indvars.iv606, !dbg !1138
+  store i8 %50, i8* %arrayidx346, align 1, !dbg !1138, !tbaa !461
+  br label %if.end347, !dbg !1138
+
+if.end347:                                        ; preds = %if.end341, %if.then344
+  %call348 = call i8* @Getword(%struct._IO_FILE* %1, i32 4) #7, !dbg !1168
+  call void @llvm.dbg.value(metadata !{i8* %call348}, i64 0, metadata !394), !dbg !1168
+  %cmp349 = icmp eq i8* %call348, null, !dbg !1168
+  br i1 %cmp349, label %FAILURE, label %if.end352, !dbg !1168
+
+if.end352:                                        ; preds = %if.end347
+  %52 = load i32* %flags342, align 4, !dbg !1139, !tbaa !460
+  %and354 = and i32 %52, 8, !dbg !1139
+  %tobool355 = icmp eq i32 %and354, 0, !dbg !1139
+  br i1 %tobool355, label %for.inc360, label %if.then356, !dbg !1139
+
+if.then356:                                       ; preds = %if.end352
+  %53 = load i8* %call348, align 1, !dbg !1139, !tbaa !461
+  %54 = load i8** %cs, align 8, !dbg !1139, !tbaa !465
+  %arrayidx358 = getelementptr inbounds i8* %54, i64 %indvars.iv606, !dbg !1139
+  store i8 %53, i8* %arrayidx358, align 1, !dbg !1139, !tbaa !461
+  br label %for.inc360, !dbg !1139
+
+for.inc360:                                       ; preds = %if.end352, %if.then356
+  %indvars.iv.next607 = add i64 %indvars.iv606, 1, !dbg !1134
+  %55 = load i32* %M179, align 4, !dbg !1134, !tbaa !460
+  %cmp180 = icmp slt i32 %28, %55, !dbg !1134
+  br i1 %cmp180, label %for.body182, label %for.cond363.preheader, !dbg !1134
+
+for.body367:                                      ; preds = %for.inc400, %for.body367.lr.ph
+  %indvars.iv600 = phi i64 [ %indvars.iv.next601, %for.inc400 ], [ 0, %for.body367.lr.ph ]
+  %call368 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1169
+  call void @llvm.dbg.value(metadata !{i8* %call368}, i64 0, metadata !394), !dbg !1169
+  %cmp369 = icmp eq i8* %call368, null, !dbg !1169
+  br i1 %cmp369, label %FAILURE, label %for.cond373.preheader, !dbg !1169
+
+for.cond373.preheader:                            ; preds = %for.body367
+  %56 = load i32* @Alphabet_size, align 4, !dbg !1170, !tbaa !460
+  %cmp374564 = icmp sgt i32 %56, 0, !dbg !1170
+  %57 = trunc i64 %indvars.iv600 to i32, !dbg !1171
+  br i1 %cmp374564, label %for.body376.lr.ph, label %for.inc400, !dbg !1170
+
+for.body376.lr.ph:                                ; preds = %for.cond373.preheader
+  %cmp382 = icmp sgt i32 %57, 0, !dbg !1171
+  br label %for.body376, !dbg !1170
+
+for.body376:                                      ; preds = %for.body376.lr.ph, %for.inc397
+  %indvars.iv = phi i64 [ 0, %for.body376.lr.ph ], [ %indvars.iv.next, %for.inc397 ]
+  %call377 = call i8* @Getword(%struct._IO_FILE* %1, i32 1) #7, !dbg !1172
+  call void @llvm.dbg.value(metadata !{i8* %call377}, i64 0, metadata !394), !dbg !1172
+  %cmp378 = icmp eq i8* %call377, null, !dbg !1172
+  br i1 %cmp378, label %FAILURE, label %if.end381, !dbg !1172
+
+if.end381:                                        ; preds = %for.body376
+  br i1 %cmp382, label %land.lhs.true, label %for.inc397, !dbg !1171
+
+land.lhs.true:                                    ; preds = %if.end381
+  %58 = load i32* %M179, align 4, !dbg !1171, !tbaa !460
+  %cmp385 = icmp slt i32 %57, %58, !dbg !1171
+  br i1 %cmp385, label %if.then387, label %for.inc397, !dbg !1171
+
+if.then387:                                       ; preds = %land.lhs.true
+  %arrayidx390 = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 28, i64 %indvars.iv, !dbg !1145
+  %59 = load float* %arrayidx390, align 4, !dbg !1145, !tbaa !971
+  %call391 = call fastcc float @ascii2prob(i8* %call377, float %59) #9, !dbg !1145
+  %60 = load float*** %ins, align 8, !dbg !1145, !tbaa !465
+  %arrayidx394 = getelementptr inbounds float** %60, i64 %indvars.iv600, !dbg !1145
+  %61 = load float** %arrayidx394, align 8, !dbg !1145, !tbaa !465
+  %arrayidx395 = getelementptr inbounds float* %61, i64 %indvars.iv, !dbg !1145
+  store float %call391, float* %arrayidx395, align 4, !dbg !1145, !tbaa !971
+  br label %for.inc397, !dbg !1145
+
+for.inc397:                                       ; preds = %if.end381, %land.lhs.true, %if.then387
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1170
+  %62 = load i32* @Alphabet_size, align 4, !dbg !1170, !tbaa !460
+  %63 = trunc i64 %indvars.iv.next to i32, !dbg !1170
+  %cmp374 = icmp slt i32 %63, %62, !dbg !1170
+  br i1 %cmp374, label %for.body376, label %for.inc400, !dbg !1170
+
+for.inc400:                                       ; preds = %for.cond373.preheader, %for.inc397
+  %indvars.iv.next601 = add i64 %indvars.iv600, 1, !dbg !1143
+  %64 = load i32* %M179, align 4, !dbg !1143, !tbaa !460
+  %cmp365 = icmp slt i32 %57, %64, !dbg !1143
+  br i1 %cmp365, label %for.body367, label %for.end402, !dbg !1143
+
+for.end402:                                       ; preds = %for.inc400, %for.cond363.preheader
+  %flags403 = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 47, !dbg !1173
+  %65 = load i32* %flags403, align 4, !dbg !1173, !tbaa !460
+  %or404 = and i32 %65, -34, !dbg !1174
+  %and406 = or i32 %or404, 32, !dbg !1174
+  store i32 %and406, i32* %flags403, align 4, !dbg !1174, !tbaa !460
+  call void @Plan7Renormalize(%struct.plan7_s* %call7) #7, !dbg !1175
+  %call407 = call i8* @Strdup(i8* getelementptr inbounds ([34 x i8]* @.str59, i64 0, i64 0)) #7, !dbg !1176
+  %comlog = getelementptr inbounds %struct.plan7_s* %call7, i64 0, i32 6, !dbg !1176
+  store i8* %call407, i8** %comlog, align 8, !dbg !1176, !tbaa !465
+  call void @Plan7SetCtime(%struct.plan7_s* %call7) #7, !dbg !1177
+  store %struct.plan7_s* %call7, %struct.plan7_s** %ret_hmm, align 8, !dbg !1178, !tbaa !465
+  br label %cleanup, !dbg !1179
+
+FAILURE:                                          ; preds = %for.body, %for.body120, %for.body159, %if.end347, %if.end336, %if.end321, %if.end316, %if.end301, %if.end296, %if.end272, %if.end257, %if.end242, %if.end221, %for.end207, %for.body182, %for.body191, %for.body367, %for.body376, %if.end78, %if.end46, %if.end172, %for.end167, %for.end128, %if.end73, %if.end61, %if.end51, %if.end42, %if.else, %if.end20, %if.end16, %if.end11, %if.end6
+  %cmp408 = icmp eq %struct.plan7_s* %call7, null, !dbg !1180
+  br i1 %cmp408, label %if.end411, label %if.then410, !dbg !1180
+
+if.then410:                                       ; preds = %if.end133, %if.end111, %if.end103, %for.end, %FAILURE
+  call void @FreePlan7(%struct.plan7_s* %call7) #7, !dbg !1180
+  br label %if.end411, !dbg !1180
+
+if.end411:                                        ; preds = %if.end, %FAILURE, %if.then410
+  store %struct.plan7_s* null, %struct.plan7_s** %ret_hmm, align 8, !dbg !1181, !tbaa !465
+  br label %cleanup, !dbg !1182
+
+cleanup:                                          ; preds = %lor.lhs.false, %entry, %if.end411, %for.end402
+  %retval.0 = phi i32 [ 1, %if.end411 ], [ 1, %for.end402 ], [ 0, %entry ], [ 0, %lor.lhs.false ]
+  call void @llvm.lifetime.end(i64 512, i8* %0) #2, !dbg !1182
+  ret i32 %retval.0, !dbg !1183
 }

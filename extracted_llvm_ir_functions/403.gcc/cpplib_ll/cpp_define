@@ -1,34 +1,41 @@
 define void @cpp_define(%struct.cpp_reader* %pfile, i8* %str) #0 {
 entry:
-  %call = call i64 @strlen(i8* %str) #11
-  %add = add i64 %call, 3
-  %0 = alloca i8, i64 %add, align 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %str, i64 %call, i32 1, i1 false)
-  %call1 = call i8* @strchr(i8* %str, i32 61) #11
-  %tobool = icmp eq i8* %call1, null
-  br i1 %tobool, label %if.else, label %if.then
+  call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !633), !dbg !1398
+  call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !634), !dbg !1399
+  %call = call i64 @strlen(i8* %str) #12, !dbg !1400
+  call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !637), !dbg !1400
+  %add = add i64 %call, 3, !dbg !1401
+  %0 = alloca i8, i64 %add, align 1, !dbg !1401
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !635), !dbg !1401
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %str, i64 %call, i32 1, i1 false), !dbg !1402
+  %call1 = call i8* @strchr(i8* %str, i32 61) #12, !dbg !1403
+  call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !636), !dbg !1403
+  %tobool = icmp eq i8* %call1, null, !dbg !1404
+  br i1 %tobool, label %if.else, label %if.then, !dbg !1404
 
 if.then:                                          ; preds = %entry
-  %sub.ptr.lhs.cast = ptrtoint i8* %call1 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %str to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %arrayidx = getelementptr inbounds i8* %0, i64 %sub.ptr.sub
-  store i8 32, i8* %arrayidx, align 1, !tbaa !0
-  br label %if.end
+  %sub.ptr.lhs.cast = ptrtoint i8* %call1 to i64, !dbg !1405
+  %sub.ptr.rhs.cast = ptrtoint i8* %str to i64, !dbg !1405
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !1405
+  %arrayidx = getelementptr inbounds i8* %0, i64 %sub.ptr.sub, !dbg !1405
+  store i8 32, i8* %arrayidx, align 1, !dbg !1405, !tbaa !1061
+  br label %if.end, !dbg !1405
 
 if.else:                                          ; preds = %entry
-  %inc = add i64 %call, 1
-  %arrayidx2 = getelementptr inbounds i8* %0, i64 %call
-  store i8 32, i8* %arrayidx2, align 1, !tbaa !0
-  %inc3 = add i64 %call, 2
-  %arrayidx4 = getelementptr inbounds i8* %0, i64 %inc
-  store i8 49, i8* %arrayidx4, align 1, !tbaa !0
+  %inc = add i64 %call, 1, !dbg !1406
+  call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !637), !dbg !1406
+  %arrayidx2 = getelementptr inbounds i8* %0, i64 %call, !dbg !1406
+  store i8 32, i8* %arrayidx2, align 1, !dbg !1406, !tbaa !1061
+  %inc3 = add i64 %call, 2, !dbg !1408
+  call void @llvm.dbg.value(metadata !{i64 %inc3}, i64 0, metadata !637), !dbg !1408
+  %arrayidx4 = getelementptr inbounds i8* %0, i64 %inc, !dbg !1408
+  store i8 49, i8* %arrayidx4, align 1, !dbg !1408, !tbaa !1061
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
   %count.0 = phi i64 [ %call, %if.then ], [ %inc3, %if.else ]
-  %arrayidx5 = getelementptr inbounds i8* %0, i64 %count.0
-  store i8 0, i8* %arrayidx5, align 1, !tbaa !0
-  call fastcc void @run_directive(%struct.cpp_reader* %pfile, i32 0, i8* %0, i64 %count.0) #9
-  ret void
+  %arrayidx5 = getelementptr inbounds i8* %0, i64 %count.0, !dbg !1409
+  store i8 0, i8* %arrayidx5, align 1, !dbg !1409, !tbaa !1061
+  call fastcc void @run_directive(%struct.cpp_reader* %pfile, i32 0, i8* %0, i64 %count.0) #10, !dbg !1410
+  ret void, !dbg !1411
 }

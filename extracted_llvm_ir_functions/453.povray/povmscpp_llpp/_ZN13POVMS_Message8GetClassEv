@@ -1,22 +1,23 @@
 define i32 @_ZN13POVMS_Message8GetClassEv(%class.POVMS_Message* %this) #5 align 2 {
+entry:
   %type = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %class.POVMS_Message* %this, i64 0, metadata !987, metadata !1380), !dbg !2841
-  %1 = getelementptr inbounds %class.POVMS_Message* %this, i64 0, i32 0, i32 0, i32 1, !dbg !2842
-  tail call void @llvm.dbg.value(metadata i32* %type, i64 0, metadata !988, metadata !1380), !dbg !2843
-  %2 = call i32 @_Z24POVMSMsg_GetMessageClassP9POVMSDataPj(%struct.POVMSData* %1, i32* %type) #13, !dbg !2844
-  call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !989, metadata !1380), !dbg !2845
-  %3 = icmp eq i32 %2, 0, !dbg !2846
-  br i1 %3, label %7, label %4, !dbg !2848
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %this}, i64 0, metadata !997), !dbg !1722
+  call void @llvm.dbg.declare(metadata !{i32* %type}, metadata !998), !dbg !1723
+  %data = getelementptr inbounds %class.POVMS_Message* %this, i64 0, i32 0, i32 0, i32 1, !dbg !1724
+  %call = call i32 @_Z24POVMSMsg_GetMessageClassP9POVMSDataPj(%struct.POVMSData* %data, i32* %type) #12, !dbg !1724
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !999), !dbg !1724
+  %cmp = icmp eq i32 %call, 0, !dbg !1725
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1725
 
-; <label>:4                                       ; preds = %0
-  %5 = call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !2849
-  %6 = bitcast i8* %5 to i32*, !dbg !2849
-  store i32 %2, i32* %6, align 4, !dbg !2849, !tbaa !1456
-  call void @__cxa_throw(i8* %5, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #14, !dbg !2849
-  unreachable, !dbg !2849
+if.then:                                          ; preds = %entry
+  %exception = call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !1726
+  %0 = bitcast i8* %exception to i32*, !dbg !1726
+  store i32 %call, i32* %0, align 4, !dbg !1726, !tbaa !1112
+  call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #13, !dbg !1726
+  unreachable, !dbg !1726
 
-; <label>:7                                       ; preds = %0
-  call void @llvm.dbg.value(metadata i32* %type, i64 0, metadata !988, metadata !1380), !dbg !2843
-  %8 = load i32* %type, align 4, !dbg !2850, !tbaa !1456
-  ret i32 %8, !dbg !2851
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.value(metadata !{i32* %type}, i64 0, metadata !998), !dbg !1727
+  %1 = load i32* %type, align 4, !dbg !1727, !tbaa !1112
+  ret i32 %1, !dbg !1727
 }

@@ -1,70 +1,87 @@
 define internal fastcc void @SchedulePrintTimes(i8* %where, %struct.t_sched_data* %data) #1 {
-  %1 = icmp eq i8* %where, null, !dbg !1440
-  br i1 %1, label %44, label %2, !dbg !1442
+entry:
+  %tobool = icmp eq i8* %where, null, !dbg !1090
+  br i1 %tobool, label %if.end36, label %if.then, !dbg !1090
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 3, !dbg !1443
-  %4 = load %struct.cTimerData** %3, align 8, !dbg !1443, !tbaa !1387
-  %5 = getelementptr inbounds %struct.cTimerData* %4, i64 0, i32 1, !dbg !1443
-  %6 = bitcast %struct.cTimerVal** %5 to i8**, !dbg !1443
-  %7 = load i8** %6, align 8, !dbg !1443, !tbaa !1445
-  %8 = getelementptr inbounds %struct.cTimerData* %4, i64 0, i32 0, !dbg !1443
-  %9 = load i32* %8, align 4, !dbg !1443, !tbaa !1447
-  %10 = sext i32 %9 to i64, !dbg !1443
-  %11 = shl nsw i64 %10, 5, !dbg !1443
-  %12 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %7, i1 false), !dbg !1443
-  %13 = tail call i8* @__memset_chk(i8* %7, i32 0, i64 %11, i64 %12) #8, !dbg !1443
-  %14 = bitcast %struct.t_sched_data* %data to i8*, !dbg !1448
-  %15 = tail call i32 @CCTKi_DoScheduleTraverse(i8* %where, i32 (i8*, i8*)* null, i32 (i8*, i8*)* null, i32 (i32, i8**, i8*, i8*, i32)* null, i32 (i8*, i8*, i8*)* bitcast (i32 (i8*, %struct.t_attribute*, %struct.t_sched_data*)* @CCTKi_SchedulePrintTimesFunction to i32 (i8*, i8*, i8*)*), i8* %14) #8, !dbg !1449
-  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !449, metadata !498), !dbg !1450
-  %16 = icmp sgt i32 %15, -1, !dbg !1451
-  br i1 %16, label %.preheader, label %44, !dbg !1453
+if.then:                                          ; preds = %entry
+  %total_time = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 3, !dbg !1091
+  %0 = load %struct.cTimerData** %total_time, align 8, !dbg !1091, !tbaa !504
+  %vals = getelementptr inbounds %struct.cTimerData* %0, i64 0, i32 1, !dbg !1091
+  %1 = load %struct.cTimerVal** %vals, align 8, !dbg !1091, !tbaa !504
+  %2 = bitcast %struct.cTimerVal* %1 to i8*, !dbg !1091
+  %n_vals = getelementptr inbounds %struct.cTimerData* %0, i64 0, i32 0, !dbg !1091
+  %3 = load i32* %n_vals, align 4, !dbg !1091, !tbaa !592
+  %conv = sext i32 %3 to i64, !dbg !1091
+  %mul = shl nsw i64 %conv, 5, !dbg !1091
+  tail call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 %mul, i32 8, i1 false), !dbg !1091
+  %4 = bitcast %struct.t_sched_data* %data to i8*, !dbg !1093
+  %call = tail call i32 @CCTKi_DoScheduleTraverse(i8* %where, i32 (i8*, i8*)* null, i32 (i8*, i8*)* null, i32 (i32, i8**, i8*, i8*, i32)* null, i32 (i8*, i8*, i8*)* bitcast (i32 (i8*, %struct.t_attribute*, %struct.t_sched_data*)* @CCTKi_SchedulePrintTimesFunction to i32 (i8*, i8*, i8*)*), i8* %4) #8, !dbg !1093
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !315), !dbg !1093
+  %cmp = icmp sgt i32 %call, -1, !dbg !1094
+  br i1 %cmp, label %for.cond.preheader, label %if.end36, !dbg !1094
 
-.preheader:                                       ; preds = %2
-  %17 = load %struct.cTimerData** %3, align 8, !dbg !1454, !tbaa !1387
-  %18 = getelementptr inbounds %struct.cTimerData* %17, i64 0, i32 0, !dbg !1458
-  %19 = load i32* %18, align 4, !dbg !1458, !tbaa !1447
-  %20 = icmp sgt i32 %19, 0, !dbg !1459
-  br i1 %20, label %.lr.ph, label %._crit_edge, !dbg !1460
+for.cond.preheader:                               ; preds = %if.then
+  %5 = load %struct.cTimerData** %total_time, align 8, !dbg !1095, !tbaa !504
+  %n_vals51 = getelementptr inbounds %struct.cTimerData* %5, i64 0, i32 0, !dbg !1095
+  %6 = load i32* %n_vals51, align 4, !dbg !1095, !tbaa !592
+  %cmp62 = icmp sgt i32 %6, 0, !dbg !1095
+  br i1 %cmp62, label %for.body.lr.ph, label %for.end, !dbg !1095
 
-.lr.ph:                                           ; preds = %.preheader
-  %21 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 2, !dbg !1461
-  %22 = load %struct.cTimerData** %21, align 8, !dbg !1461, !tbaa !1383
-  %23 = getelementptr inbounds %struct.cTimerData* %22, i64 0, i32 1, !dbg !1463
-  %24 = load %struct.cTimerVal** %23, align 8, !dbg !1463, !tbaa !1445
-  %25 = getelementptr inbounds %struct.cTimerData* %17, i64 0, i32 1, !dbg !1464
-  %26 = load %struct.cTimerVal** %25, align 8, !dbg !1464, !tbaa !1445
-  %27 = sext i32 %19 to i64, !dbg !1460
-  br label %28, !dbg !1460
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %info = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 2, !dbg !1098
+  br label %for.body, !dbg !1095
 
-; <label>:28                                      ; preds = %.lr.ph, %28
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %28 ]
-  %29 = getelementptr inbounds %struct.cTimerVal* %24, i64 %indvars.iv, i32 0, !dbg !1465
-  %30 = load i32* %29, align 4, !dbg !1465, !tbaa !1466
-  %31 = getelementptr inbounds %struct.cTimerVal* %26, i64 %indvars.iv, i32 0, !dbg !1468
-  store i32 %30, i32* %31, align 4, !dbg !1469, !tbaa !1466
-  %32 = getelementptr inbounds %struct.cTimerVal* %24, i64 %indvars.iv, i32 1, !dbg !1470
-  %33 = bitcast i8** %32 to <2 x i64>*, !dbg !1470
-  %34 = load <2 x i64>* %33, align 8, !dbg !1470, !tbaa !593
-  %35 = getelementptr inbounds %struct.cTimerVal* %26, i64 %indvars.iv, i32 1, !dbg !1471
-  %36 = bitcast i8** %35 to <2 x i64>*, !dbg !1472
-  store <2 x i64> %34, <2 x i64>* %36, align 8, !dbg !1472, !tbaa !593
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1460
-  %37 = icmp slt i64 %indvars.iv.next, %27, !dbg !1459
-  br i1 %37, label %28, label %._crit_edge, !dbg !1460
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %7 = phi %struct.cTimerData* [ %5, %for.body.lr.ph ], [ %22, %for.body ]
+  %8 = load %struct.cTimerData** %info, align 8, !dbg !1098, !tbaa !504
+  %vals8 = getelementptr inbounds %struct.cTimerData* %8, i64 0, i32 1, !dbg !1098
+  %9 = load %struct.cTimerVal** %vals8, align 8, !dbg !1098, !tbaa !504
+  %type = getelementptr inbounds %struct.cTimerVal* %9, i64 %indvars.iv, i32 0, !dbg !1098
+  %10 = load i32* %type, align 4, !dbg !1098, !tbaa !489
+  %vals11 = getelementptr inbounds %struct.cTimerData* %7, i64 0, i32 1, !dbg !1098
+  %11 = load %struct.cTimerVal** %vals11, align 8, !dbg !1098, !tbaa !504
+  %type13 = getelementptr inbounds %struct.cTimerVal* %11, i64 %indvars.iv, i32 0, !dbg !1098
+  store i32 %10, i32* %type13, align 4, !dbg !1098, !tbaa !489
+  %12 = load %struct.cTimerData** %info, align 8, !dbg !1100, !tbaa !504
+  %vals16 = getelementptr inbounds %struct.cTimerData* %12, i64 0, i32 1, !dbg !1100
+  %13 = load %struct.cTimerVal** %vals16, align 8, !dbg !1100, !tbaa !504
+  %units = getelementptr inbounds %struct.cTimerVal* %13, i64 %indvars.iv, i32 2, !dbg !1100
+  %14 = load i8** %units, align 8, !dbg !1100, !tbaa !504
+  %15 = load %struct.cTimerData** %total_time, align 8, !dbg !1100, !tbaa !504
+  %vals20 = getelementptr inbounds %struct.cTimerData* %15, i64 0, i32 1, !dbg !1100
+  %16 = load %struct.cTimerVal** %vals20, align 8, !dbg !1100, !tbaa !504
+  %units22 = getelementptr inbounds %struct.cTimerVal* %16, i64 %indvars.iv, i32 2, !dbg !1100
+  store i8* %14, i8** %units22, align 8, !dbg !1100, !tbaa !504
+  %17 = load %struct.cTimerData** %info, align 8, !dbg !1101, !tbaa !504
+  %vals25 = getelementptr inbounds %struct.cTimerData* %17, i64 0, i32 1, !dbg !1101
+  %18 = load %struct.cTimerVal** %vals25, align 8, !dbg !1101, !tbaa !504
+  %heading = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 1, !dbg !1101
+  %19 = load i8** %heading, align 8, !dbg !1101, !tbaa !504
+  %20 = load %struct.cTimerData** %total_time, align 8, !dbg !1101, !tbaa !504
+  %vals29 = getelementptr inbounds %struct.cTimerData* %20, i64 0, i32 1, !dbg !1101
+  %21 = load %struct.cTimerVal** %vals29, align 8, !dbg !1101, !tbaa !504
+  %heading31 = getelementptr inbounds %struct.cTimerVal* %21, i64 %indvars.iv, i32 1, !dbg !1101
+  store i8* %19, i8** %heading31, align 8, !dbg !1101, !tbaa !504
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1095
+  %22 = load %struct.cTimerData** %total_time, align 8, !dbg !1095, !tbaa !504
+  %n_vals5 = getelementptr inbounds %struct.cTimerData* %22, i64 0, i32 0, !dbg !1095
+  %23 = load i32* %n_vals5, align 4, !dbg !1095, !tbaa !592
+  %24 = trunc i64 %indvars.iv.next to i32, !dbg !1095
+  %cmp6 = icmp slt i32 %24, %23, !dbg !1095
+  br i1 %cmp6, label %for.body, label %for.end, !dbg !1095
 
-._crit_edge:                                      ; preds = %28, %.preheader
-  %38 = tail call i64 @strlen(i8* %where) #8, !dbg !1473
-  %39 = add i64 %38, 16, !dbg !1474
-  %40 = tail call i8* @malloc(i64 %39) #8, !dbg !1475
-  tail call void @llvm.dbg.value(metadata i8* %40, i64 0, metadata !450, metadata !498), !dbg !1476
-  %41 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %40, i1 false), !dbg !1477
-  %42 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %40, i32 0, i64 %41, i8* getelementptr inbounds ([18 x i8]* @.str79, i64 0, i64 0), i8* %where) #8, !dbg !1477
-  %43 = load %struct.cTimerData** %3, align 8, !dbg !1478, !tbaa !1387
-  tail call fastcc void @CCTKi_SchedulePrintTimerInfo(%struct.cTimerData* %43, %struct.cTimerData* null, i8* getelementptr inbounds ([1 x i8]* @.str57, i64 0, i64 0), i8* %40) #9, !dbg !1479
-  tail call void @free(i8* %40) #9, !dbg !1480
-  br label %44, !dbg !1481
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %call32 = tail call i64 @strlen(i8* %where) #11, !dbg !1102
+  %add = add i64 %call32, 16, !dbg !1102
+  %call33 = tail call noalias i8* @malloc(i64 %add) #8, !dbg !1102
+  tail call void @llvm.dbg.value(metadata !{i8* %call33}, i64 0, metadata !316), !dbg !1102
+  %call34 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %call33, i8* getelementptr inbounds ([18 x i8]* @.str70, i64 0, i64 0), i8* %where) #8, !dbg !1103
+  %25 = load %struct.cTimerData** %total_time, align 8, !dbg !1104, !tbaa !504
+  tail call fastcc void @CCTKi_SchedulePrintTimerInfo(%struct.cTimerData* %25, %struct.cTimerData* null, i8* getelementptr inbounds ([1 x i8]* @.str57, i64 0, i64 0), i8* %call33) #9, !dbg !1104
+  tail call void @free(i8* %call33) #8, !dbg !1105
+  br label %if.end36, !dbg !1106
 
-; <label>:44                                      ; preds = %0, %2, %._crit_edge
+if.end36:                                         ; preds = %entry, %if.then, %for.end
   ret void
 }

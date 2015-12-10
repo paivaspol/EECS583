@@ -1,18 +1,19 @@
 define void @SubMtxManager_free(%struct._SubMtxManager* %manager) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._SubMtxManager* %manager, i64 0, metadata !76, metadata !85), !dbg !138
-  %1 = icmp eq %struct._SubMtxManager* %manager, null, !dbg !139
-  br i1 %1, label %2, label %5, !dbg !141
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtxManager* %manager}, i64 0, metadata !74), !dbg !106
+  %cmp = icmp eq %struct._SubMtxManager* %manager, null, !dbg !107
+  br i1 %cmp, label %if.then, label %if.end, !dbg !107
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !142, !tbaa !90
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([52 x i8]* @.str4, i64 0, i64 0), %struct._SubMtxManager* null) #6, !dbg !144
-  tail call void @exit(i32 -1) #7, !dbg !145
-  unreachable, !dbg !145
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !108, !tbaa !79
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str4, i64 0, i64 0), %struct._SubMtxManager* null) #6, !dbg !108
+  tail call void @exit(i32 -1) #7, !dbg !110
+  unreachable, !dbg !110
 
-; <label>:5                                       ; preds = %0
-  tail call void @SubMtxManager_clearData(%struct._SubMtxManager* %manager) #8, !dbg !146
-  %6 = bitcast %struct._SubMtxManager* %manager to i8*, !dbg !147
-  tail call void @free(i8* %6) #8, !dbg !147
-  tail call void @llvm.dbg.value(metadata %struct._SubMtxManager* null, i64 0, metadata !76, metadata !85), !dbg !138
-  ret void, !dbg !150
+if.end:                                           ; preds = %entry
+  tail call void @SubMtxManager_clearData(%struct._SubMtxManager* %manager) #8, !dbg !111
+  %1 = bitcast %struct._SubMtxManager* %manager to i8*, !dbg !112
+  tail call void @free(i8* %1) #6, !dbg !112
+  tail call void @llvm.dbg.value(metadata !114, i64 0, metadata !74), !dbg !112
+  ret void, !dbg !115
 }

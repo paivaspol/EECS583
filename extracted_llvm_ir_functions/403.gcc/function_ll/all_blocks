@@ -1,48 +1,55 @@
 define internal fastcc i32 @all_blocks(%union.tree_node* %block, %union.tree_node** %vector) #0 {
 entry:
-  %tobool19 = icmp eq %union.tree_node* %block, null
-  br i1 %tobool19, label %while.end, label %while.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %block}, i64 0, metadata !2188), !dbg !5207
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node** %vector}, i64 0, metadata !2189), !dbg !5208
+  tail call void @llvm.dbg.value(metadata !748, i64 0, metadata !2190), !dbg !5209
+  %tobool19 = icmp eq %union.tree_node* %block, null, !dbg !5210
+  br i1 %tobool19, label %while.end, label %while.body.lr.ph, !dbg !5210
 
 while.body.lr.ph:                                 ; preds = %entry
-  %tobool1 = icmp eq %union.tree_node** %vector, null
-  br label %while.body
+  %tobool1 = icmp eq %union.tree_node** %vector, null, !dbg !5211
+  br label %while.body, !dbg !5210
 
 while.body:                                       ; preds = %while.body.lr.ph, %cond.end
   %n_blocks.021 = phi i32 [ 0, %while.body.lr.ph ], [ %add, %cond.end ]
   %block.addr.020 = phi %union.tree_node* [ %block, %while.body.lr.ph ], [ %2, %cond.end ]
-  %asm_written_flag = getelementptr inbounds %union.tree_node* %block.addr.020, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %asm_written_flag to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, -16385
-  store i32 %bf.clear, i32* %0, align 8
-  br i1 %tobool1, label %if.end, label %cond.true
+  %asm_written_flag = getelementptr inbounds %union.tree_node* %block.addr.020, i64 0, i32 0, i32 0, i32 2, !dbg !5213
+  %0 = bitcast [4 x i8]* %asm_written_flag to i32*, !dbg !5213
+  %bf.load = load i32* %0, align 8, !dbg !5213
+  %bf.clear = and i32 %bf.load, -16385, !dbg !5213
+  store i32 %bf.clear, i32* %0, align 8, !dbg !5213
+  br i1 %tobool1, label %if.end, label %cond.true, !dbg !5211
 
 if.end:                                           ; preds = %while.body
-  %inc = add nsw i32 %n_blocks.021, 1
+  %inc = add nsw i32 %n_blocks.021, 1, !dbg !5214
+  tail call void @llvm.dbg.value(metadata !{i32 %inc16}, i64 0, metadata !2190), !dbg !5214
   br label %cond.end
 
 cond.true:                                        ; preds = %while.body
-  %idxprom = sext i32 %n_blocks.021 to i64
-  %arrayidx = getelementptr inbounds %union.tree_node** %vector, i64 %idxprom
-  store %union.tree_node* %block.addr.020, %union.tree_node** %arrayidx, align 8, !tbaa !0
-  %inc16 = add nsw i32 %n_blocks.021, 1
-  %idx.ext = sext i32 %inc16 to i64
-  %add.ptr = getelementptr inbounds %union.tree_node** %vector, i64 %idx.ext
-  br label %cond.end
+  %idxprom = sext i32 %n_blocks.021 to i64, !dbg !5215
+  %arrayidx = getelementptr inbounds %union.tree_node** %vector, i64 %idxprom, !dbg !5215
+  store %union.tree_node* %block.addr.020, %union.tree_node** %arrayidx, align 8, !dbg !5215, !tbaa !2729
+  %inc16 = add nsw i32 %n_blocks.021, 1, !dbg !5214
+  tail call void @llvm.dbg.value(metadata !{i32 %inc16}, i64 0, metadata !2190), !dbg !5214
+  %idx.ext = sext i32 %inc16 to i64, !dbg !5216
+  %add.ptr = getelementptr inbounds %union.tree_node** %vector, i64 %idx.ext, !dbg !5216
+  br label %cond.end, !dbg !5216
 
 cond.end:                                         ; preds = %if.end, %cond.true
   %inc18 = phi i32 [ %inc16, %cond.true ], [ %inc, %if.end ]
-  %cond = phi %union.tree_node** [ %add.ptr, %cond.true ], [ null, %if.end ]
-  %.in = getelementptr inbounds %union.tree_node* %block.addr.020, i64 0, i32 0, i32 4
-  %1 = load %union.tree_node** %.in, align 8
-  %call = tail call fastcc i32 @all_blocks(%union.tree_node* %1, %union.tree_node** %cond) #9
-  %add = add nsw i32 %call, %inc18
-  %chain = getelementptr inbounds %union.tree_node* %block.addr.020, i64 0, i32 0, i32 0, i32 0
-  %2 = load %union.tree_node** %chain, align 8, !tbaa !0
-  %tobool = icmp eq %union.tree_node* %2, null
-  br i1 %tobool, label %while.end, label %while.body
+  %cond = phi %union.tree_node** [ %add.ptr, %cond.true ], [ null, %if.end ], !dbg !5216
+  %.in = getelementptr inbounds %union.tree_node* %block.addr.020, i64 0, i32 0, i32 4, !dbg !5216
+  %1 = load %union.tree_node** %.in, align 8, !dbg !5216
+  %call = tail call fastcc i32 @all_blocks(%union.tree_node* %1, %union.tree_node** %cond) #10, !dbg !5216
+  %add = add nsw i32 %call, %inc18, !dbg !5216
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !2190), !dbg !5216
+  %chain = getelementptr inbounds %union.tree_node* %block.addr.020, i64 0, i32 0, i32 0, i32 0, !dbg !5217
+  %2 = load %union.tree_node** %chain, align 8, !dbg !5217, !tbaa !2729
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %2}, i64 0, metadata !2188), !dbg !5217
+  %tobool = icmp eq %union.tree_node* %2, null, !dbg !5210
+  br i1 %tobool, label %while.end, label %while.body, !dbg !5210
 
 while.end:                                        ; preds = %cond.end, %entry
   %n_blocks.0.lcssa = phi i32 [ 0, %entry ], [ %add, %cond.end ]
-  ret i32 %n_blocks.0.lcssa
+  ret i32 %n_blocks.0.lcssa, !dbg !5218
 }

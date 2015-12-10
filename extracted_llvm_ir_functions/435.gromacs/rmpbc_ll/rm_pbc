@@ -1,138 +1,131 @@
-define void @rm_pbc(%struct.t_idef* %idef, i32 %natoms, [3 x float]* %box, [3 x float]* %x, [3 x float]* %x_s) #4 {
+define void @rm_pbc(%struct.t_idef* %idef, i32 %natoms, [3 x float]* %box, [3 x float]* %x, [3 x float]* %x_s) #0 {
+entry:
   %sv = alloca [27 x [3 x float]], align 16
   %box_size = alloca [3 x float], align 4
-  tail call void @llvm.dbg.value(metadata %struct.t_idef* %idef, i64 0, metadata !347, metadata !403), !dbg !566
-  tail call void @llvm.dbg.value(metadata i32 %natoms, i64 0, metadata !348, metadata !403), !dbg !567
-  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !349, metadata !403), !dbg !568
-  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !350, metadata !403), !dbg !569
-  tail call void @llvm.dbg.value(metadata [3 x float]* %x_s, i64 0, metadata !351, metadata !403), !dbg !570
-  %1 = bitcast [27 x [3 x float]]* %sv to i8*, !dbg !571
-  call void @llvm.lifetime.start(i64 324, i8* %1) #5, !dbg !571
-  tail call void @llvm.dbg.declare(metadata [27 x [3 x float]]* %sv, metadata !352, metadata !403), !dbg !572
-  tail call void @llvm.dbg.declare(metadata [3 x float]* %box_size, metadata !356, metadata !403), !dbg !573
-  %2 = icmp ne [3 x float]* %x, %x_s, !dbg !574
-  %3 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0, !dbg !575
-  %4 = load float* %3, align 4, !dbg !575, !tbaa !531
-  %fabsf = tail call float @fabsf(float %4) #8, !dbg !577
-  %5 = fpext float %fabsf to double, !dbg !577
-  %6 = fcmp ogt double %5, 1.200000e-38, !dbg !578
-  br i1 %6, label %7, label %46, !dbg !579
+  call void @llvm.dbg.value(metadata !{%struct.t_idef* %idef}, i64 0, metadata !157), !dbg !210
+  call void @llvm.dbg.value(metadata !{i32 %natoms}, i64 0, metadata !158), !dbg !210
+  call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !159), !dbg !210
+  call void @llvm.dbg.value(metadata !{[3 x float]* %x}, i64 0, metadata !160), !dbg !210
+  call void @llvm.dbg.value(metadata !{[3 x float]* %x_s}, i64 0, metadata !161), !dbg !210
+  %0 = bitcast [27 x [3 x float]]* %sv to i8*, !dbg !211
+  call void @llvm.lifetime.start(i64 324, i8* %0) #2, !dbg !211
+  call void @llvm.dbg.declare(metadata !{[27 x [3 x float]]* %sv}, metadata !162), !dbg !211
+  call void @llvm.dbg.declare(metadata !{[3 x float]* %box_size}, metadata !166), !dbg !211
+  %cmp = icmp ne [3 x float]* %x, %x_s, !dbg !212
+  %arrayidx1 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0, !dbg !213
+  %1 = load float* %arrayidx1, align 4, !dbg !213, !tbaa !214
+  %fabsf = call float @fabsf(float %1) #4, !dbg !213
+  %2 = fpext float %fabsf to double, !dbg !213
+  %cmp3 = fcmp ogt double %2, 1.200000e-38, !dbg !213
+  br i1 %cmp3, label %if.then, label %if.end40, !dbg !213
 
-; <label>:7                                       ; preds = %0
-  %8 = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 0, !dbg !580
-  %9 = load i32* %8, align 4, !dbg !580, !tbaa !583
-  %10 = icmp eq i32 %9, -1, !dbg !585
-  br i1 %10, label %42, label %.preheader1, !dbg !586
+if.then:                                          ; preds = %entry
+  %ntypes = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 0, !dbg !217
+  %3 = load i32* %ntypes, align 4, !dbg !217, !tbaa !219
+  %cmp5 = icmp eq i32 %3, -1, !dbg !217
+  br i1 %cmp5, label %if.else, label %for.cond.preheader, !dbg !217
 
-.preheader1:                                      ; preds = %7
-  %11 = load i32* @rm_pbc.ngraph, align 4, !dbg !587, !tbaa !591
-  %12 = icmp sgt i32 %11, 0, !dbg !592
-  br i1 %12, label %.lr.ph5, label %._crit_edge.thread, !dbg !593
+for.cond.preheader:                               ; preds = %if.then
+  %4 = load i32* @rm_pbc.ngraph, align 4, !dbg !220, !tbaa !219
+  %cmp883 = icmp sgt i32 %4, 0, !dbg !220
+  br i1 %cmp883, label %for.body.lr.ph, label %if.then17, !dbg !220
 
-.lr.ph5:                                          ; preds = %.preheader1
-  %13 = load %struct.multi_graph** @rm_pbc.mgraph, align 8, !dbg !594, !tbaa !596
-  %14 = sext i32 %11 to i64, !dbg !593
-  br label %15, !dbg !593
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %5 = load %struct.multi_graph** @rm_pbc.mgraph, align 8, !dbg !223, !tbaa !224
+  br label %for.body, !dbg !220
 
-; <label>:15                                      ; preds = %.lr.ph5, %15
-  %indvars.iv7 = phi i64 [ 0, %.lr.ph5 ], [ %indvars.iv.next8, %15 ]
-  %n.03 = phi i32 [ -1, %.lr.ph5 ], [ %i.0.n.0, %15 ]
-  %16 = getelementptr inbounds %struct.multi_graph* %13, i64 %indvars.iv7, i32 0, !dbg !597
-  %17 = load i32* %16, align 4, !dbg !597, !tbaa !598
-  %18 = icmp eq i32 %17, %natoms, !dbg !600
-  %19 = trunc i64 %indvars.iv7 to i32, !dbg !601
-  %i.0.n.0 = select i1 %18, i32 %19, i32 %n.03, !dbg !601
-  %indvars.iv.next8 = add nuw nsw i64 %indvars.iv7, 1, !dbg !593
-  %20 = icmp slt i64 %indvars.iv.next8, %14, !dbg !592
-  br i1 %20, label %15, label %._crit_edge, !dbg !593
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv87 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next88, %for.body ]
+  %n.084 = phi i32 [ -1, %for.body.lr.ph ], [ %i.0.n.0, %for.body ]
+  %natoms11 = getelementptr inbounds %struct.multi_graph* %5, i64 %indvars.iv87, i32 0, !dbg !223
+  %6 = load i32* %natoms11, align 4, !dbg !223, !tbaa !219
+  %cmp12 = icmp eq i32 %6, %natoms, !dbg !223
+  call void @llvm.dbg.value(metadata !225, i64 0, metadata !167), !dbg !226
+  %7 = trunc i64 %indvars.iv87 to i32, !dbg !223
+  %i.0.n.0 = select i1 %cmp12, i32 %7, i32 %n.084, !dbg !223
+  %indvars.iv.next88 = add i64 %indvars.iv87, 1, !dbg !220
+  %8 = trunc i64 %indvars.iv.next88 to i32, !dbg !220
+  %cmp8 = icmp slt i32 %8, %4, !dbg !220
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !220
 
-._crit_edge:                                      ; preds = %15
-  %21 = icmp eq i32 %i.0.n.0, -1, !dbg !602
-  br i1 %21, label %._crit_edge.thread, label %.thread, !dbg !604
+for.end:                                          ; preds = %for.body
+  %cmp15 = icmp eq i32 %i.0.n.0, -1, !dbg !227
+  br i1 %cmp15, label %if.then17, label %if.end40.thread, !dbg !227
 
-._crit_edge.thread:                               ; preds = %.preheader1, %._crit_edge
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !357, metadata !403), !dbg !605
-  %22 = add nsw i32 %11, 1, !dbg !606
-  store i32 %22, i32* @rm_pbc.ngraph, align 4, !dbg !606, !tbaa !591
-  %23 = load i8** bitcast (%struct.multi_graph** @rm_pbc.mgraph to i8**), align 8, !dbg !608, !tbaa !596
-  %24 = shl i32 %22, 4, !dbg !608
-  %25 = tail call i8* @save_realloc(i8* getelementptr inbounds ([7 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 68, i8* %23, i32 %24) #6, !dbg !608
-  %26 = bitcast i8* %25 to %struct.multi_graph*, !dbg !608
-  store i8* %25, i8** bitcast (%struct.multi_graph** @rm_pbc.mgraph to i8**), align 8, !dbg !608, !tbaa !596
-  %27 = sext i32 %11 to i64, !dbg !609
-  %28 = getelementptr inbounds %struct.multi_graph* %26, i64 %27, i32 0, !dbg !610
-  store i32 %natoms, i32* %28, align 4, !dbg !611, !tbaa !598
-  %29 = tail call %struct.t_graph* @mk_graph(%struct.t_idef* %idef, i32 %natoms, i32 0, i32 0) #6, !dbg !612
-  %30 = load %struct.multi_graph** @rm_pbc.mgraph, align 8, !dbg !613, !tbaa !596
-  %31 = getelementptr inbounds %struct.multi_graph* %30, i64 %27, i32 1, !dbg !614
-  store %struct.t_graph* %29, %struct.t_graph** %31, align 8, !dbg !615, !tbaa !616
-  br label %.thread, !dbg !617
+if.then17:                                        ; preds = %for.cond.preheader, %for.end
+  call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !167), !dbg !228
+  %inc18 = add nsw i32 %4, 1, !dbg !230
+  store i32 %inc18, i32* @rm_pbc.ngraph, align 4, !dbg !230, !tbaa !219
+  %9 = load %struct.multi_graph** @rm_pbc.mgraph, align 8, !dbg !231, !tbaa !224
+  %10 = bitcast %struct.multi_graph* %9 to i8*, !dbg !231
+  %mul = shl i32 %inc18, 4, !dbg !231
+  %call21 = call i8* @save_realloc(i8* getelementptr inbounds ([7 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 68, i8* %10, i32 %mul) #5, !dbg !231
+  %11 = bitcast i8* %call21 to %struct.multi_graph*, !dbg !231
+  store %struct.multi_graph* %11, %struct.multi_graph** @rm_pbc.mgraph, align 8, !dbg !231, !tbaa !224
+  %idxprom22 = sext i32 %4 to i64, !dbg !232
+  %natoms24 = getelementptr inbounds %struct.multi_graph* %11, i64 %idxprom22, i32 0, !dbg !232
+  store i32 %natoms, i32* %natoms24, align 4, !dbg !232, !tbaa !219
+  %call25 = call %struct.t_graph* @mk_graph(%struct.t_idef* %idef, i32 %natoms, i32 0, i32 0) #5, !dbg !233
+  %12 = load %struct.multi_graph** @rm_pbc.mgraph, align 8, !dbg !233, !tbaa !224
+  %gr = getelementptr inbounds %struct.multi_graph* %12, i64 %idxprom22, i32 1, !dbg !233
+  store %struct.t_graph* %call25, %struct.t_graph** %gr, align 8, !dbg !233, !tbaa !224
+  br label %if.end40.thread, !dbg !234
 
-.thread:                                          ; preds = %._crit_edge, %._crit_edge.thread
-  %n.2 = phi i32 [ %11, %._crit_edge.thread ], [ %i.0.n.0, %._crit_edge ]
-  %32 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !618, !tbaa !596
-  %33 = sext i32 %n.2 to i64, !dbg !619
-  %34 = load %struct.multi_graph** @rm_pbc.mgraph, align 8, !dbg !619, !tbaa !596
-  %35 = getelementptr inbounds %struct.multi_graph* %34, i64 %33, i32 1, !dbg !620
-  %36 = load %struct.t_graph** %35, align 8, !dbg !620, !tbaa !616
-  tail call void @mk_mshift(%struct.__sFILE* %32, %struct.t_graph* %36, [3 x float]* %box, [3 x float]* %x) #6, !dbg !621
-  %37 = getelementptr inbounds [3 x float]* %box_size, i64 0, i64 0, !dbg !622
-  %38 = getelementptr inbounds [27 x [3 x float]]* %sv, i64 0, i64 0, !dbg !623
-  call void @calc_shifts([3 x float]* %box, float* %37, [3 x float]* %38) #6, !dbg !624
-  %39 = load %struct.multi_graph** @rm_pbc.mgraph, align 8, !dbg !625, !tbaa !596
-  %40 = getelementptr inbounds %struct.multi_graph* %39, i64 %33, i32 1, !dbg !626
-  %41 = load %struct.t_graph** %40, align 8, !dbg !626, !tbaa !616
-  call void @shift_x(%struct.t_graph* %41, [3 x float]* %box, [3 x float]* %x, [3 x float]* %x_s) #6, !dbg !627
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !359, metadata !403), !dbg !628
-  br label %.loopexit, !dbg !629
+if.end40.thread:                                  ; preds = %for.end, %if.then17
+  %n.2 = phi i32 [ %4, %if.then17 ], [ %i.0.n.0, %for.end ]
+  %13 = load %struct._IO_FILE** @stdout, align 8, !dbg !235, !tbaa !224
+  %idxprom29 = sext i32 %n.2 to i64, !dbg !235
+  %14 = load %struct.multi_graph** @rm_pbc.mgraph, align 8, !dbg !235, !tbaa !224
+  %gr31 = getelementptr inbounds %struct.multi_graph* %14, i64 %idxprom29, i32 1, !dbg !235
+  %15 = load %struct.t_graph** %gr31, align 8, !dbg !235, !tbaa !224
+  call void @mk_mshift(%struct._IO_FILE* %13, %struct.t_graph* %15, [3 x float]* %box, [3 x float]* %x) #5, !dbg !235
+  %arraydecay = getelementptr inbounds [3 x float]* %box_size, i64 0, i64 0, !dbg !236
+  %arraydecay32 = getelementptr inbounds [27 x [3 x float]]* %sv, i64 0, i64 0, !dbg !236
+  call void @calc_shifts([3 x float]* %box, float* %arraydecay, [3 x float]* %arraydecay32) #5, !dbg !236
+  %16 = load %struct.multi_graph** @rm_pbc.mgraph, align 8, !dbg !237, !tbaa !224
+  %gr35 = getelementptr inbounds %struct.multi_graph* %16, i64 %idxprom29, i32 1, !dbg !237
+  %17 = load %struct.t_graph** %gr35, align 8, !dbg !237, !tbaa !224
+  call void @shift_x(%struct.t_graph* %17, [3 x float]* %box, [3 x float]* %x, [3 x float]* %x_s) #5, !dbg !237
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !169), !dbg !238
+  br label %if.end56, !dbg !239
 
-; <label>:42                                      ; preds = %7
+if.else:                                          ; preds = %if.then
   %.b = load i1* @rm_pbc.bFirst, align 1
-  br i1 %.b, label %46, label %43, !dbg !630
+  br i1 %.b, label %if.end40, label %if.then36, !dbg !240
 
-; <label>:43                                      ; preds = %42
-  %44 = load %struct.__sFILE** @__stderrp, align 8, !dbg !631, !tbaa !596
-  %45 = tail call i64 @fwrite(i8* getelementptr inbounds ([133 x i8]* @.str2, i64 0, i64 0), i64 132, i64 1, %struct.__sFILE* %44), !dbg !634
+if.then36:                                        ; preds = %if.else
+  %18 = load %struct._IO_FILE** @stderr, align 8, !dbg !241, !tbaa !224
+  %19 = call i64 @fwrite(i8* getelementptr inbounds ([133 x i8]* @.str2, i64 0, i64 0), i64 132, i64 1, %struct._IO_FILE* %18), !dbg !241
   store i1 true, i1* @rm_pbc.bFirst, align 1
-  br label %46, !dbg !635
+  br label %if.end40, !dbg !243
 
-; <label>:46                                      ; preds = %42, %43, %0
-  %47 = icmp sgt i32 %natoms, 0, !dbg !636
-  %or.cond = and i1 %2, %47, !dbg !629
-  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !629
+if.end40:                                         ; preds = %if.else, %if.then36, %entry
+  %cmp4481 = icmp sgt i32 %natoms, 0, !dbg !244
+  %or.cond = and i1 %cmp, %cmp4481, !dbg !239
+  br i1 %or.cond, label %for.body46, label %if.end56, !dbg !239
 
-.lr.ph:                                           ; preds = %46
-  %48 = add i32 %natoms, -1, !dbg !640
-  br label %49, !dbg !640
+for.body46:                                       ; preds = %if.end40, %for.body46
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body46 ], [ 0, %if.end40 ]
+  %arraydecay49 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 0, !dbg !246
+  %arraydecay52 = getelementptr inbounds [3 x float]* %x_s, i64 %indvars.iv, i64 0, !dbg !246
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay49}, i64 0, metadata !247), !dbg !248
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay52}, i64 0, metadata !249), !dbg !248
+  %20 = load float* %arraydecay49, align 4, !dbg !250, !tbaa !214
+  store float %20, float* %arraydecay52, align 4, !dbg !250, !tbaa !214
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 1, !dbg !252
+  %21 = load float* %arrayidx2.i, align 4, !dbg !252, !tbaa !214
+  %arrayidx3.i = getelementptr inbounds [3 x float]* %x_s, i64 %indvars.iv, i64 1, !dbg !252
+  store float %21, float* %arrayidx3.i, align 4, !dbg !252, !tbaa !214
+  %arrayidx4.i = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 2, !dbg !253
+  %22 = load float* %arrayidx4.i, align 4, !dbg !253, !tbaa !214
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %x_s, i64 %indvars.iv, i64 2, !dbg !253
+  store float %22, float* %arrayidx5.i, align 4, !dbg !253, !tbaa !214
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !244
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !244
+  %exitcond = icmp eq i32 %lftr.wideiv, %natoms, !dbg !244
+  br i1 %exitcond, label %if.end56, label %for.body46, !dbg !244
 
-; <label>:49                                      ; preds = %49, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %49 ]
-  %50 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 0, !dbg !641
-  %51 = getelementptr inbounds [3 x float]* %x_s, i64 %indvars.iv, i64 0, !dbg !642
-  tail call void @llvm.dbg.value(metadata float* %50, i64 0, metadata !368, metadata !403), !dbg !643
-  tail call void @llvm.dbg.value(metadata float* %51, i64 0, metadata !369, metadata !403), !dbg !645
-  %52 = bitcast float* %50 to i32*, !dbg !646
-  %53 = load i32* %52, align 4, !dbg !646, !tbaa !531
-  %54 = bitcast float* %51 to i32*, !dbg !647
-  store i32 %53, i32* %54, align 4, !dbg !647, !tbaa !531
-  %55 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 1, !dbg !648
-  %56 = bitcast float* %55 to i32*, !dbg !648
-  %57 = load i32* %56, align 4, !dbg !648, !tbaa !531
-  %58 = getelementptr inbounds [3 x float]* %x_s, i64 %indvars.iv, i64 1, !dbg !649
-  %59 = bitcast float* %58 to i32*, !dbg !650
-  store i32 %57, i32* %59, align 4, !dbg !650, !tbaa !531
-  %60 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 2, !dbg !651
-  %61 = bitcast float* %60 to i32*, !dbg !651
-  %62 = load i32* %61, align 4, !dbg !651, !tbaa !531
-  %63 = getelementptr inbounds [3 x float]* %x_s, i64 %indvars.iv, i64 2, !dbg !652
-  %64 = bitcast float* %63 to i32*, !dbg !653
-  store i32 %62, i32* %64, align 4, !dbg !653, !tbaa !531
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !640
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !640
-  %exitcond = icmp eq i32 %lftr.wideiv, %48, !dbg !640
-  br i1 %exitcond, label %.loopexit, label %49, !dbg !640
-
-.loopexit:                                        ; preds = %49, %46, %.thread
-  call void @llvm.lifetime.end(i64 324, i8* %1) #5, !dbg !654
-  ret void, !dbg !654
+if.end56:                                         ; preds = %if.end40, %for.body46, %if.end40.thread
+  call void @llvm.lifetime.end(i64 324, i8* %0) #2, !dbg !254
+  ret void, !dbg !254
 }

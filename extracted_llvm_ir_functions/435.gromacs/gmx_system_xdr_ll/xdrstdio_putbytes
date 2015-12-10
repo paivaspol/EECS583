@@ -1,23 +1,24 @@
-define internal i32 @xdrstdio_putbytes(%struct.XDR* nocapture readonly %xdrs, i8* %addr, i32 %len) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.XDR* %xdrs, i64 0, metadata !320, metadata !360), !dbg !809
-  tail call void @llvm.dbg.value(metadata i8* %addr, i64 0, metadata !321, metadata !360), !dbg !810
-  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !322, metadata !360), !dbg !811
-  %1 = icmp eq i32 %len, 0, !dbg !812
-  br i1 %1, label %9, label %2, !dbg !814
+define internal i32 @xdrstdio_putbytes(%struct.XDR* nocapture %xdrs, i8* nocapture %addr, i32 %len) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.XDR* %xdrs}, i64 0, metadata !316), !dbg !586
+  tail call void @llvm.dbg.value(metadata !{i8* %addr}, i64 0, metadata !317), !dbg !586
+  tail call void @llvm.dbg.value(metadata !{i32 %len}, i64 0, metadata !318), !dbg !586
+  %cmp = icmp eq i32 %len, 0, !dbg !587
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !587
 
-; <label>:2                                       ; preds = %0
-  %3 = sext i32 %len to i64, !dbg !815
-  %4 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 3, !dbg !816
-  %5 = bitcast i8** %4 to %struct.__sFILE**, !dbg !816
-  %6 = load %struct.__sFILE** %5, align 8, !dbg !816, !tbaa !720
-  %7 = tail call i64 @"\01_fwrite"(i8* %addr, i64 %3, i64 1, %struct.__sFILE* %6) #7, !dbg !817
-  %8 = icmp eq i64 %7, 1, !dbg !818
-  br i1 %8, label %9, label %10, !dbg !819
+land.lhs.true:                                    ; preds = %entry
+  %conv = sext i32 %len to i64, !dbg !587
+  %x_private = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 3, !dbg !587
+  %0 = load i8** %x_private, align 8, !dbg !587, !tbaa !360
+  %1 = bitcast i8* %0 to %struct._IO_FILE*, !dbg !587
+  %call = tail call i64 @fwrite(i8* %addr, i64 %conv, i64 1, %struct._IO_FILE* %1) #6, !dbg !587
+  %cmp1 = icmp eq i64 %call, 1, !dbg !587
+  br i1 %cmp1, label %if.end, label %return, !dbg !587
 
-; <label>:9                                       ; preds = %2, %0
-  br label %10, !dbg !820
+if.end:                                           ; preds = %land.lhs.true, %entry
+  br label %return, !dbg !588
 
-; <label>:10                                      ; preds = %2, %9
-  %.0 = phi i32 [ 1, %9 ], [ 0, %2 ]
-  ret i32 %.0, !dbg !821
+return:                                           ; preds = %land.lhs.true, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %land.lhs.true ]
+  ret i32 %retval.0, !dbg !588
 }

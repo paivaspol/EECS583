@@ -1,0 +1,33 @@
+define i32 @_ZN11xercesc_2_511XMLDateTime13compareResultEiib(i32 %resultA, i32 %resultB, i1 zeroext %strict) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %resultA}, i64 0, metadata !1309), !dbg !2669
+  tail call void @llvm.dbg.value(metadata !{i32 %resultB}, i64 0, metadata !1310), !dbg !2670
+  tail call void @llvm.dbg.value(metadata !{i1 %strict}, i64 0, metadata !1311), !dbg !2671
+  %cmp = icmp eq i32 %resultB, 2, !dbg !2672
+  br i1 %cmp, label %return, label %if.else, !dbg !2672
+
+if.else:                                          ; preds = %entry
+  %cmp1.not = icmp eq i32 %resultA, %resultB, !dbg !2673
+  %strict.not = xor i1 %strict, true, !dbg !2673
+  %brmerge = or i1 %cmp1.not, %strict.not, !dbg !2673
+  br i1 %brmerge, label %if.else3, label %return, !dbg !2673
+
+if.else3:                                         ; preds = %if.else
+  %brmerge27 = or i1 %cmp1.not, %strict, !dbg !2674
+  br i1 %brmerge27, label %return, label %if.then7, !dbg !2674
+
+if.then7:                                         ; preds = %if.else3
+  %cmp8 = icmp ne i32 %resultA, 0, !dbg !2675
+  %cmp8.not = xor i1 %cmp8, true, !dbg !2675
+  %cmp10 = icmp eq i32 %resultB, 0, !dbg !2675
+  %or.cond = or i1 %cmp10, %cmp8.not, !dbg !2675
+  br i1 %or.cond, label %if.else12, label %return, !dbg !2675
+
+if.else12:                                        ; preds = %if.then7
+  %cond = select i1 %cmp8, i32 %resultA, i32 %resultB, !dbg !2676
+  br label %return, !dbg !2676
+
+return:                                           ; preds = %if.else3, %if.then7, %if.else, %entry, %if.else12
+  %retval.0 = phi i32 [ %cond, %if.else12 ], [ 2, %entry ], [ 2, %if.else ], [ 2, %if.then7 ], [ %resultA, %if.else3 ]
+  ret i32 %retval.0, !dbg !2677
+}

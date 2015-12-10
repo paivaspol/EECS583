@@ -1,34 +1,37 @@
 define %struct.c_fileinfo* @get_fileinfo(i8* %name) #0 {
 entry:
-  %0 = load %struct.splay_tree_s** @file_info_tree, align 8, !tbaa !0
-  %1 = ptrtoint i8* %name to i64
-  %call = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %0, i64 %1) #7
-  %tobool = icmp eq %struct.splay_tree_node_s* %call, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !1108), !dbg !1301
+  %0 = load %struct.splay_tree_s** @file_info_tree, align 8, !dbg !1302, !tbaa !1273
+  %1 = ptrtoint i8* %name to i64, !dbg !1302
+  %call = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %0, i64 %1) #8, !dbg !1302
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %call}, i64 0, metadata !1109), !dbg !1302
+  %tobool = icmp eq %struct.splay_tree_node_s* %call, null, !dbg !1303
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1303
 
 if.then:                                          ; preds = %entry
-  %value = getelementptr inbounds %struct.splay_tree_node_s* %call, i64 0, i32 1
-  %2 = load i64* %value, align 8, !tbaa !6
-  %3 = inttoptr i64 %2 to %struct.c_fileinfo*
-  br label %return
+  %value = getelementptr inbounds %struct.splay_tree_node_s* %call, i64 0, i32 1, !dbg !1304
+  %2 = load i64* %value, align 8, !dbg !1304, !tbaa !1305
+  %3 = inttoptr i64 %2 to %struct.c_fileinfo*, !dbg !1304
+  br label %return, !dbg !1304
 
 if.end:                                           ; preds = %entry
-  %call1 = tail call noalias i8* @xmalloc(i64 8) #7
-  %4 = bitcast i8* %call1 to %struct.c_fileinfo*
-  %time = bitcast i8* %call1 to i32*
-  store i32 0, i32* %time, align 4, !tbaa !3
-  %interface_only = getelementptr inbounds i8* %call1, i64 4
-  %5 = bitcast i8* %interface_only to i16*
-  store i16 0, i16* %5, align 2, !tbaa !7
-  %interface_unknown = getelementptr inbounds i8* %call1, i64 6
-  %6 = bitcast i8* %interface_unknown to i16*
-  store i16 1, i16* %6, align 2, !tbaa !7
-  %7 = load %struct.splay_tree_s** @file_info_tree, align 8, !tbaa !0
-  %8 = ptrtoint i8* %call1 to i64
-  %call2 = tail call %struct.splay_tree_node_s* @splay_tree_insert(%struct.splay_tree_s* %7, i64 %1, i64 %8) #7
-  br label %return
+  %call1 = tail call noalias i8* @xmalloc(i64 8) #8, !dbg !1306
+  %4 = bitcast i8* %call1 to %struct.c_fileinfo*, !dbg !1306
+  tail call void @llvm.dbg.value(metadata !{%struct.c_fileinfo* %4}, i64 0, metadata !1122), !dbg !1306
+  %time = bitcast i8* %call1 to i32*, !dbg !1307
+  store i32 0, i32* %time, align 4, !dbg !1307, !tbaa !1278
+  %interface_only = getelementptr inbounds i8* %call1, i64 4, !dbg !1308
+  %5 = bitcast i8* %interface_only to i16*, !dbg !1308
+  store i16 0, i16* %5, align 2, !dbg !1308, !tbaa !1309
+  %interface_unknown = getelementptr inbounds i8* %call1, i64 6, !dbg !1310
+  %6 = bitcast i8* %interface_unknown to i16*, !dbg !1310
+  store i16 1, i16* %6, align 2, !dbg !1310, !tbaa !1309
+  %7 = load %struct.splay_tree_s** @file_info_tree, align 8, !dbg !1311, !tbaa !1273
+  %8 = ptrtoint i8* %call1 to i64, !dbg !1311
+  %call2 = tail call %struct.splay_tree_node_s* @splay_tree_insert(%struct.splay_tree_s* %7, i64 %1, i64 %8) #8, !dbg !1311
+  br label %return, !dbg !1312
 
 return:                                           ; preds = %if.end, %if.then
   %retval.0 = phi %struct.c_fileinfo* [ %3, %if.then ], [ %4, %if.end ]
-  ret %struct.c_fileinfo* %retval.0
+  ret %struct.c_fileinfo* %retval.0, !dbg !1313
 }

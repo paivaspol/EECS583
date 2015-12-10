@@ -1,0 +1,25 @@
+define void @_ZN11xercesc_2_514RefCountedImpl9removeRefEPS0_(%"class.xercesc_2_5::RefCountedImpl"* %thisNode) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefCountedImpl"* %thisNode}, i64 0, metadata !94), !dbg !127
+  %tobool = icmp eq %"class.xercesc_2_5::RefCountedImpl"* %thisNode, null, !dbg !128
+  br i1 %tobool, label %if.end2, label %if.then, !dbg !128
+
+if.then:                                          ; preds = %entry
+  %nodeRefCount = getelementptr inbounds %"class.xercesc_2_5::RefCountedImpl"* %thisNode, i64 0, i32 1, !dbg !129
+  %0 = load i32* %nodeRefCount, align 4, !dbg !129, !tbaa !109
+  %dec = add nsw i32 %0, -1, !dbg !129
+  store i32 %dec, i32* %nodeRefCount, align 4, !dbg !129, !tbaa !109
+  %cmp = icmp eq i32 %dec, 0, !dbg !129
+  br i1 %cmp, label %if.then1, label %if.end2, !dbg !129
+
+if.then1:                                         ; preds = %if.then
+  %1 = bitcast %"class.xercesc_2_5::RefCountedImpl"* %thisNode to void (%"class.xercesc_2_5::RefCountedImpl"*)***, !dbg !131
+  %vtable = load void (%"class.xercesc_2_5::RefCountedImpl"*)*** %1, align 8, !dbg !131, !tbaa !105
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::RefCountedImpl"*)** %vtable, i64 3, !dbg !131
+  %2 = load void (%"class.xercesc_2_5::RefCountedImpl"*)** %vfn, align 8, !dbg !131
+  tail call void %2(%"class.xercesc_2_5::RefCountedImpl"* %thisNode) #5, !dbg !131
+  br label %if.end2, !dbg !133
+
+if.end2:                                          ; preds = %entry, %if.then, %if.then1
+  ret void, !dbg !134
+}

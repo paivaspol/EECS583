@@ -1,16 +1,21 @@
 define %struct.rtx_def* @df_pattern_emit_after(%struct.df* nocapture %df, %struct.rtx_def* %pattern, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* %insn) #0 {
 entry:
-  %call = tail call %struct.rtx_def* @emit_insn_after(%struct.rtx_def* %pattern, %struct.rtx_def* %insn) #8
-  %cmp = icmp eq %struct.rtx_def* %call, %insn
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.df* %df}, i64 0, metadata !602), !dbg !3045
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pattern}, i64 0, metadata !603), !dbg !3046
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %bb}, i64 0, metadata !604), !dbg !3047
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !605), !dbg !3048
+  %call = tail call %struct.rtx_def* @emit_insn_after(%struct.rtx_def* %pattern, %struct.rtx_def* %insn) #9, !dbg !3049
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !606), !dbg !3049
+  %cmp = icmp eq %struct.rtx_def* %call, %insn, !dbg !3050
+  br i1 %cmp, label %return, label %if.end, !dbg !3050
 
 if.end:                                           ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  tail call fastcc void @df_insns_modify(%struct.df* %df, %struct.basic_block_def* %bb, %struct.rtx_def* %0, %struct.rtx_def* %call) #6
-  br label %return
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 2, !dbg !3051
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3051
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !3051, !tbaa !1898
+  tail call fastcc void @df_insns_modify(%struct.df* %df, %struct.basic_block_def* %bb, %struct.rtx_def* %0, %struct.rtx_def* %call) #7, !dbg !3051
+  br label %return, !dbg !3052
 
 return:                                           ; preds = %entry, %if.end
-  ret %struct.rtx_def* %call
+  ret %struct.rtx_def* %call, !dbg !3053
 }

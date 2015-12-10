@@ -1,18 +1,21 @@
 define void @_cpp_destroy_hashtable(%struct.cpp_reader* %pfile) #0 {
 entry:
-  %our_hashtable = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 40
-  %0 = load i8* %our_hashtable, align 1, !tbaa !0
-  %tobool = icmp eq i8 %0, 0
-  br i1 %tobool, label %if.end3, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !499), !dbg !625
+  %our_hashtable = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 40, !dbg !626
+  %0 = load i8* %our_hashtable, align 1, !dbg !626, !tbaa !550
+  %tobool = icmp eq i8 %0, 0, !dbg !626
+  br i1 %tobool, label %if.end3, label %if.then, !dbg !626
 
 if.then:                                          ; preds = %entry
-  %hash_table = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 36
-  %1 = load %struct.ht** %hash_table, align 8, !tbaa !2
-  tail call void @ht_destroy(%struct.ht* %1) #3
-  %hash_ob = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 32
-  tail call void @obstack_free(%struct.obstack* %hash_ob, i8* null) #3
+  %hash_table = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 36, !dbg !627
+  %1 = load %struct.ht** %hash_table, align 8, !dbg !627, !tbaa !554
+  tail call void @ht_destroy(%struct.ht* %1) #4, !dbg !627
+  tail call void @llvm.dbg.value(metadata !{%struct.obstack* %hash_ob}, i64 0, metadata !500), !dbg !628
+  tail call void @llvm.dbg.value(metadata !629, i64 0, metadata !504), !dbg !628
+  %hash_ob = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 32, !dbg !628
+  tail call void @obstack_free(%struct.obstack* %hash_ob, i8* null) #4, !dbg !628
   br label %if.end3
 
 if.end3:                                          ; preds = %entry, %if.then
-  ret void
+  ret void, !dbg !630
 }

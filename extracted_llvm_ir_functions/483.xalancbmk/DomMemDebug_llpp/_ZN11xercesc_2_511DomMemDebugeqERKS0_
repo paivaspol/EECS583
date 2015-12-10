@@ -1,0 +1,39 @@
+define zeroext i1 @_ZN11xercesc_2_511DomMemDebugeqERKS0_(%"class.xercesc_2_5::DomMemDebug"* nocapture %this, %"class.xercesc_2_5::DomMemDebug"* nocapture %other) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DomMemDebug"* %this}, i64 0, metadata !51), !dbg !86
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DomMemDebug"* %other}, i64 0, metadata !52), !dbg !86
+  %liveStringHandles = getelementptr inbounds %"class.xercesc_2_5::DomMemDebug"* %this, i64 0, i32 0, !dbg !87
+  %0 = load i32* %liveStringHandles, align 4, !dbg !87, !tbaa !73
+  %liveStringHandles2 = getelementptr inbounds %"class.xercesc_2_5::DomMemDebug"* %other, i64 0, i32 0, !dbg !87
+  %1 = load i32* %liveStringHandles2, align 4, !dbg !87, !tbaa !73
+  %cmp = icmp eq i32 %0, %1, !dbg !87
+  br i1 %cmp, label %land.lhs.true, label %land.end, !dbg !87
+
+land.lhs.true:                                    ; preds = %entry
+  %liveStringBuffers = getelementptr inbounds %"class.xercesc_2_5::DomMemDebug"* %this, i64 0, i32 2, !dbg !87
+  %2 = load i32* %liveStringBuffers, align 4, !dbg !87, !tbaa !73
+  %liveStringBuffers3 = getelementptr inbounds %"class.xercesc_2_5::DomMemDebug"* %other, i64 0, i32 2, !dbg !87
+  %3 = load i32* %liveStringBuffers3, align 4, !dbg !87, !tbaa !73
+  %cmp4 = icmp eq i32 %2, %3, !dbg !87
+  br i1 %cmp4, label %land.lhs.true5, label %land.end, !dbg !87
+
+land.lhs.true5:                                   ; preds = %land.lhs.true
+  %liveNodeImpls = getelementptr inbounds %"class.xercesc_2_5::DomMemDebug"* %this, i64 0, i32 4, !dbg !87
+  %4 = load i32* %liveNodeImpls, align 4, !dbg !87, !tbaa !73
+  %liveNodeImpls6 = getelementptr inbounds %"class.xercesc_2_5::DomMemDebug"* %other, i64 0, i32 4, !dbg !87
+  %5 = load i32* %liveNodeImpls6, align 4, !dbg !87, !tbaa !73
+  %cmp7 = icmp eq i32 %4, %5, !dbg !87
+  br i1 %cmp7, label %land.rhs, label %land.end, !dbg !87
+
+land.rhs:                                         ; preds = %land.lhs.true5
+  %liveNamedNodeMaps = getelementptr inbounds %"class.xercesc_2_5::DomMemDebug"* %this, i64 0, i32 6, !dbg !87
+  %6 = load i32* %liveNamedNodeMaps, align 4, !dbg !87, !tbaa !73
+  %liveNamedNodeMaps8 = getelementptr inbounds %"class.xercesc_2_5::DomMemDebug"* %other, i64 0, i32 6, !dbg !87
+  %7 = load i32* %liveNamedNodeMaps8, align 4, !dbg !87, !tbaa !73
+  %cmp9 = icmp eq i32 %6, %7, !dbg !87
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %land.lhs.true5, %land.lhs.true, %entry
+  %8 = phi i1 [ false, %land.lhs.true5 ], [ false, %land.lhs.true ], [ false, %entry ], [ %cmp9, %land.rhs ]
+  ret i1 %8, !dbg !88
+}

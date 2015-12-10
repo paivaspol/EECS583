@@ -1,22 +1,19 @@
 define <2 x float> @CCTK_Cmplx8Mul(<2 x float> %a.coerce, <2 x float> %b.coerce) #0 {
-  tail call void @llvm.dbg.value(metadata <2 x float> %a.coerce, i64 0, metadata !55, metadata !243), !dbg !253
-  tail call void @llvm.dbg.value(metadata <2 x float> %b.coerce, i64 0, metadata !56, metadata !243), !dbg !253
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX8* undef, metadata !55, metadata !243), !dbg !253
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX8* undef, metadata !56, metadata !243), !dbg !253
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX8* undef, metadata !57, metadata !243), !dbg !253
-  %1 = extractelement <2 x float> %a.coerce, i32 0, !dbg !253
-  %2 = extractelement <2 x float> %b.coerce, i32 0, !dbg !253
-  %3 = fmul float %1, %2, !dbg !253
-  %4 = extractelement <2 x float> %a.coerce, i32 1, !dbg !253
-  %5 = extractelement <2 x float> %b.coerce, i32 1, !dbg !253
-  %6 = fmul float %4, %5, !dbg !253
-  %7 = fsub float %3, %6, !dbg !253
-  tail call void @llvm.dbg.value(metadata float %7, i64 0, metadata !57, metadata !245), !dbg !253
-  %8 = fmul float %4, %2, !dbg !253
-  %9 = fmul float %1, %5, !dbg !253
-  %10 = fadd float %8, %9, !dbg !253
-  tail call void @llvm.dbg.value(metadata float %10, i64 0, metadata !57, metadata !246), !dbg !253
-  %11 = insertelement <2 x float> undef, float %7, i32 0, !dbg !253
-  %12 = insertelement <2 x float> %11, float %10, i32 1, !dbg !253
-  ret <2 x float> %12, !dbg !253
+entry:
+  tail call void @llvm.dbg.declare(metadata !241, metadata !56), !dbg !248
+  tail call void @llvm.dbg.declare(metadata !241, metadata !57), !dbg !248
+  tail call void @llvm.dbg.declare(metadata !241, metadata !58), !dbg !248
+  %a.sroa.0.0.vec.extract = extractelement <2 x float> %a.coerce, i32 0, !dbg !248
+  %b.sroa.0.0.vec.extract = extractelement <2 x float> %b.coerce, i32 0, !dbg !248
+  %mul = fmul float %a.sroa.0.0.vec.extract, %b.sroa.0.0.vec.extract, !dbg !248
+  %a.sroa.0.4.vec.extract = extractelement <2 x float> %a.coerce, i32 1, !dbg !248
+  %b.sroa.0.4.vec.extract = extractelement <2 x float> %b.coerce, i32 1, !dbg !248
+  %mul3 = fmul float %a.sroa.0.4.vec.extract, %b.sroa.0.4.vec.extract, !dbg !248
+  %sub = fsub float %mul, %mul3, !dbg !248
+  %mul7 = fmul float %a.sroa.0.4.vec.extract, %b.sroa.0.0.vec.extract, !dbg !248
+  %mul10 = fmul float %a.sroa.0.0.vec.extract, %b.sroa.0.4.vec.extract, !dbg !248
+  %add = fadd float %mul7, %mul10, !dbg !248
+  %retval.sroa.0.0.vec.insert = insertelement <2 x float> undef, float %sub, i32 0, !dbg !248
+  %retval.sroa.0.4.vec.insert = insertelement <2 x float> %retval.sroa.0.0.vec.insert, float %add, i32 1, !dbg !248
+  ret <2 x float> %retval.sroa.0.4.vec.insert, !dbg !248
 }

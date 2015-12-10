@@ -1,17 +1,18 @@
 define void @cbp_linfo_intra(i32 %cbp, i32 %dummy, i32* nocapture %len, i32* nocapture %info) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %cbp, i64 0, metadata !170, metadata !814), !dbg !1009
-  tail call void @llvm.dbg.value(metadata i32 %dummy, i64 0, metadata !171, metadata !814), !dbg !1010
-  tail call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !172, metadata !814), !dbg !1011
-  tail call void @llvm.dbg.value(metadata i32* %info, i64 0, metadata !173, metadata !814), !dbg !1012
-  %1 = sext i32 %cbp to i64, !dbg !1013
-  %2 = load %struct.ImageParameters** @img, align 8, !dbg !1014, !tbaa !1015
-  %3 = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 159, !dbg !1016
-  %4 = load i32* %3, align 4, !dbg !1016, !tbaa !1017
-  %5 = icmp ne i32 %4, 0, !dbg !1014
-  %6 = zext i1 %5 to i64, !dbg !1013
-  %7 = getelementptr inbounds [2 x [48 x [2 x i8]]]* @NCBP, i64 0, i64 %6, i64 %1, i64 0, !dbg !1013
-  %8 = load i8* %7, align 1, !dbg !1013, !tbaa !1021
-  %9 = zext i8 %8 to i32, !dbg !1013
-  tail call void @ue_linfo(i32 %9, i32 undef, i32* %len, i32* %info) #6, !dbg !1022
-  ret void, !dbg !1023
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %cbp}, i64 0, metadata !169), !dbg !895
+  tail call void @llvm.dbg.value(metadata !{i32 %dummy}, i64 0, metadata !170), !dbg !895
+  tail call void @llvm.dbg.value(metadata !{i32* %len}, i64 0, metadata !171), !dbg !895
+  tail call void @llvm.dbg.value(metadata !{i32* %info}, i64 0, metadata !172), !dbg !895
+  %idxprom = sext i32 %cbp to i64, !dbg !896
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !896, !tbaa !810
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 159, !dbg !896
+  %1 = load i32* %yuv_format, align 4, !dbg !896, !tbaa !806
+  %tobool = icmp ne i32 %1, 0, !dbg !896
+  %idxprom1 = zext i1 %tobool to i64, !dbg !896
+  %arrayidx3 = getelementptr inbounds [2 x [48 x [2 x i8]]]* @NCBP, i64 0, i64 %idxprom1, i64 %idxprom, i64 0, !dbg !896
+  %2 = load i8* %arrayidx3, align 1, !dbg !896, !tbaa !807
+  %conv = zext i8 %2 to i32, !dbg !896
+  tail call void @ue_linfo(i32 %conv, i32 undef, i32* %len, i32* %info) #6, !dbg !896
+  ret void, !dbg !897
 }

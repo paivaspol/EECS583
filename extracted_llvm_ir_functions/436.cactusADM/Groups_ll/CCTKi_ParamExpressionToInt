@@ -1,42 +1,43 @@
 define internal fastcc i32 @CCTKi_ParamExpressionToInt(i8* %expression, i8* %thorn) #2 {
+entry:
   %value = alloca %struct.uExpressionValue, align 8
-  tail call void @llvm.dbg.value(metadata i8* %expression, i64 0, metadata !439, metadata !483), !dbg !1528
-  tail call void @llvm.dbg.value(metadata i8* %thorn, i64 0, metadata !440, metadata !483), !dbg !1529
-  %1 = tail call i8* @Util_Strdup(i8* %thorn) #10, !dbg !1530
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !446, metadata !483), !dbg !1531
-  %2 = tail call i8* @Util_ExpressionParse(i8* %expression) #10, !dbg !1532
-  tail call void @llvm.dbg.value(metadata i8* %2, i64 0, metadata !442, metadata !483), !dbg !1533
-  %3 = icmp eq i8* %2, null, !dbg !1534
-  br i1 %3, label %.thread, label %5, !dbg !1536
+  call void @llvm.dbg.value(metadata !{i8* %expression}, i64 0, metadata !410), !dbg !1043
+  call void @llvm.dbg.value(metadata !{i8* %thorn}, i64 0, metadata !411), !dbg !1043
+  call void @llvm.dbg.declare(metadata !{%struct.uExpressionValue* %value}, metadata !415), !dbg !1044
+  %call = call i8* @Util_Strdup(i8* %thorn) #11, !dbg !1045
+  call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !417), !dbg !1045
+  %call2 = call i8* @Util_ExpressionParse(i8* %expression) #11, !dbg !1046
+  call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !413), !dbg !1046
+  %tobool = icmp eq i8* %call2, null, !dbg !1047
+  br i1 %tobool, label %if.end.thread, label %if.end, !dbg !1047
 
-.thread:                                          ; preds = %0
-  %4 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 2443, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([42 x i8]* @.str59, i64 0, i64 0), i8* %expression) #10, !dbg !1537
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !441, metadata !483), !dbg !1539
-  tail call void @free(i8* %1) #9, !dbg !1540
-  br label %12, !dbg !1541
+if.end.thread:                                    ; preds = %entry
+  %call4 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 2443, i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([42 x i8]* @.str57, i64 0, i64 0), i8* %expression) #11, !dbg !1048
+  call void @llvm.dbg.value(metadata !833, i64 0, metadata !412), !dbg !1050
+  call void @free(i8* %call) #11, !dbg !1051
+  br label %if.else7, !dbg !1052
 
-; <label>:5                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata %struct.uExpressionValue* %value, i64 0, metadata !444, metadata !483), !dbg !1542
-  %6 = call i32 @Util_ExpressionEvaluate(i8* %2, %struct.uExpressionValue* %value, i32 (i32, i8**, %struct.uExpressionValue*, i8*)* @IntParameterEvaluator, i8* %1) #10, !dbg !1543
-  call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !441, metadata !483), !dbg !1539
-  call void @Util_ExpressionFree(i8* %2) #10, !dbg !1545
-  call void @free(i8* %1) #9, !dbg !1540
-  %7 = icmp eq i32 %6, 0, !dbg !1546
-  br i1 %7, label %8, label %12, !dbg !1541
+if.end:                                           ; preds = %entry
+  %call3 = call i32 @Util_ExpressionEvaluate(i8* %call2, %struct.uExpressionValue* %value, i32 (i32, i8**, %struct.uExpressionValue*, i8*)* @IntParameterEvaluator, i8* %call) #11, !dbg !1053
+  call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !412), !dbg !1053
+  call void @Util_ExpressionFree(i8* %call2) #11, !dbg !1055
+  call void @free(i8* %call) #11, !dbg !1051
+  %cmp = icmp eq i32 %call3, 0, !dbg !1052
+  br i1 %cmp, label %if.then5, label %if.else7, !dbg !1052
 
-; <label>:8                                       ; preds = %5
-  %9 = getelementptr inbounds %struct.uExpressionValue* %value, i64 0, i32 1, !dbg !1548
-  %10 = bitcast %union.anon* %9 to i32*, !dbg !1550
-  %11 = load i32* %10, align 8, !dbg !1550, !tbaa !502
-  call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !441, metadata !483), !dbg !1539
-  br label %14, !dbg !1551
+if.then5:                                         ; preds = %if.end
+  %value6 = getelementptr inbounds %struct.uExpressionValue* %value, i64 0, i32 1, !dbg !1056
+  %ival = bitcast %union.anon* %value6 to i32*, !dbg !1056
+  %0 = load i32* %ival, align 8, !dbg !1056, !tbaa !488
+  call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !412), !dbg !1056
+  br label %if.end9, !dbg !1058
 
-; <label>:12                                      ; preds = %.thread, %5
-  %retval.01 = phi i32 [ -1, %.thread ], [ %6, %5 ]
-  %13 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 2457, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str60, i64 0, i64 0), i8* %expression) #10, !dbg !1552
-  br label %14
+if.else7:                                         ; preds = %if.end.thread, %if.end
+  %retval1.017 = phi i32 [ -1, %if.end.thread ], [ %call3, %if.end ]
+  %call8 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 2457, i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str58, i64 0, i64 0), i8* %expression) #11, !dbg !1059
+  br label %if.end9
 
-; <label>:14                                      ; preds = %12, %8
-  %retval.1 = phi i32 [ %11, %8 ], [ %retval.01, %12 ]
-  ret i32 %retval.1, !dbg !1554
+if.end9:                                          ; preds = %if.else7, %if.then5
+  %retval1.1 = phi i32 [ %0, %if.then5 ], [ %retval1.017, %if.else7 ]
+  ret i32 %retval1.1, !dbg !1061
 }

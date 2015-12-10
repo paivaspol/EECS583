@@ -1,38 +1,39 @@
 define i32 @Mode_Decision_for_Intra4x4Macroblock(double %lambda, i32* nocapture %cost) #0 {
+entry:
   %cost8x8 = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata double %lambda, i64 0, metadata !480, metadata !1629), !dbg !2898
-  tail call void @llvm.dbg.value(metadata i32* %cost, i64 0, metadata !481, metadata !1629), !dbg !2899
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !482, metadata !1629), !dbg !2900
-  store i32 0, i32* %cost, align 4, !dbg !2901, !tbaa !1942
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !483, metadata !1629), !dbg !2903
-  br label %1, !dbg !2904
+  call void @llvm.dbg.value(metadata !{double %lambda}, i64 0, metadata !476), !dbg !2013
+  call void @llvm.dbg.value(metadata !{i32* %cost}, i64 0, metadata !477), !dbg !2013
+  call void @llvm.dbg.value(metadata !60, i64 0, metadata !478), !dbg !2014
+  call void @llvm.dbg.declare(metadata !{i32* %cost8x8}, metadata !480), !dbg !2014
+  store i32 0, i32* %cost, align 4, !dbg !2015, !tbaa !1458
+  call void @llvm.dbg.value(metadata !60, i64 0, metadata !479), !dbg !2015
+  br label %for.body, !dbg !2015
 
-; <label>:1                                       ; preds = %7, %0
-  %b8.02 = phi i32 [ 0, %0 ], [ %11, %7 ]
-  %cbp.01 = phi i32 [ 0, %0 ], [ %cbp.1, %7 ]
-  tail call void @llvm.dbg.value(metadata i32* %cost8x8, i64 0, metadata !484, metadata !1629), !dbg !2905
-  %2 = call i32 @Mode_Decision_for_8x8IntraBlocks(i32 %b8.02, double %lambda, i32* %cost8x8) #10, !dbg !2906
-  %3 = icmp eq i32 %2, 0, !dbg !2906
-  br i1 %3, label %7, label %4, !dbg !2910
+for.body:                                         ; preds = %if.end, %entry
+  %b8.07 = phi i32 [ 0, %entry ], [ %inc, %if.end ]
+  %cbp.06 = phi i32 [ 0, %entry ], [ %cbp.1, %if.end ]
+  %call = call i32 @Mode_Decision_for_8x8IntraBlocks(i32 %b8.07, double %lambda, i32* %cost8x8) #11, !dbg !2017
+  %tobool = icmp eq i32 %call, 0, !dbg !2017
+  br i1 %tobool, label %if.end, label %if.then, !dbg !2017
 
-; <label>:4                                       ; preds = %1
-  %5 = shl i32 1, %b8.02, !dbg !2911
-  %6 = or i32 %5, %cbp.01, !dbg !2913
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !482, metadata !1629), !dbg !2900
-  br label %7, !dbg !2914
+if.then:                                          ; preds = %for.body
+  %shl = shl i32 1, %b8.07, !dbg !2019
+  %or = or i32 %shl, %cbp.06, !dbg !2019
+  call void @llvm.dbg.value(metadata !{i32 %or}, i64 0, metadata !478), !dbg !2019
+  br label %if.end, !dbg !2021
 
-; <label>:7                                       ; preds = %1, %4
-  %cbp.1 = phi i32 [ %6, %4 ], [ %cbp.01, %1 ]
-  tail call void @llvm.dbg.value(metadata i32* %cost8x8, i64 0, metadata !484, metadata !1629), !dbg !2905
-  %8 = load i32* %cost8x8, align 4, !dbg !2915, !tbaa !1942
-  %9 = load i32* %cost, align 4, !dbg !2916, !tbaa !1942
-  %10 = add nsw i32 %9, %8, !dbg !2916
-  store i32 %10, i32* %cost, align 4, !dbg !2916, !tbaa !1942
-  %11 = add nuw nsw i32 %b8.02, 1, !dbg !2917
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !483, metadata !1629), !dbg !2903
-  %exitcond = icmp eq i32 %11, 4, !dbg !2904
-  br i1 %exitcond, label %12, label %1, !dbg !2904
+if.end:                                           ; preds = %for.body, %if.then
+  %cbp.1 = phi i32 [ %or, %if.then ], [ %cbp.06, %for.body ]
+  call void @llvm.dbg.value(metadata !{i32* %cost8x8}, i64 0, metadata !480), !dbg !2022
+  %0 = load i32* %cost8x8, align 4, !dbg !2022, !tbaa !1458
+  %1 = load i32* %cost, align 4, !dbg !2022, !tbaa !1458
+  %add = add nsw i32 %1, %0, !dbg !2022
+  store i32 %add, i32* %cost, align 4, !dbg !2022, !tbaa !1458
+  %inc = add nsw i32 %b8.07, 1, !dbg !2015
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !479), !dbg !2015
+  %exitcond = icmp eq i32 %inc, 4, !dbg !2015
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !2015
 
-; <label>:12                                      ; preds = %7
-  ret i32 %cbp.1, !dbg !2918
+for.end:                                          ; preds = %if.end
+  ret i32 %cbp.1, !dbg !2023
 }

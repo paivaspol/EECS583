@@ -1,32 +1,36 @@
 define void @mark_optab(i8* nocapture %arg) #0 {
 entry:
-  %0 = bitcast i8* %arg to %struct.optab**
-  %1 = load %struct.optab** %0, align 8, !tbaa !0
-  br label %do.body
+  tail call void @llvm.dbg.value(metadata !{i8* %arg}, i64 0, metadata !2382), !dbg !4543
+  %0 = bitcast i8* %arg to %struct.optab**, !dbg !4544
+  %1 = load %struct.optab** %0, align 8, !dbg !4544, !tbaa !2642
+  tail call void @llvm.dbg.value(metadata !{%struct.optab* %1}, i64 0, metadata !2383), !dbg !4544
+  tail call void @llvm.dbg.value(metadata !1319, i64 0, metadata !2384), !dbg !4545
+  br label %do.body, !dbg !4545
 
 do.body:                                          ; preds = %for.inc, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
-  %libfunc = getelementptr inbounds %struct.optab* %1, i64 0, i32 1, i64 %indvars.iv, i32 1
-  %2 = load %struct.rtx_def** %libfunc, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct.rtx_def* %2, null
-  br i1 %cmp1, label %for.inc, label %land.lhs.true
+  %libfunc = getelementptr inbounds %struct.optab* %1, i64 0, i32 1, i64 %indvars.iv, i32 1, !dbg !4546
+  %2 = load %struct.rtx_def** %libfunc, align 8, !dbg !4546, !tbaa !2642
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !2385), !dbg !4546
+  %cmp1 = icmp eq %struct.rtx_def* %2, null, !dbg !4546
+  br i1 %cmp1, label %for.inc, label %land.lhs.true, !dbg !4546
 
 land.lhs.true:                                    ; preds = %do.body
-  %3 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 0, i64 0
-  %call = tail call i32 @ggc_set_mark(i8* %3) #8
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.then, label %for.inc
+  %3 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 0, i64 0, !dbg !4546
+  %call = tail call i32 @ggc_set_mark(i8* %3) #9, !dbg !4546
+  %tobool = icmp eq i32 %call, 0, !dbg !4546
+  br i1 %tobool, label %if.then, label %for.inc, !dbg !4546
 
 if.then:                                          ; preds = %land.lhs.true
-  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %2) #8
-  br label %for.inc
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %2) #9, !dbg !4546
+  br label %for.inc, !dbg !4546
 
 for.inc:                                          ; preds = %land.lhs.true, %do.body, %if.then
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 59
-  br i1 %exitcond, label %for.end, label %do.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !4545
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !4545
+  %exitcond = icmp eq i32 %lftr.wideiv, 59, !dbg !4545
+  br i1 %exitcond, label %for.end, label %do.body, !dbg !4545
 
 for.end:                                          ; preds = %for.inc
-  ret void
+  ret void, !dbg !4547
 }

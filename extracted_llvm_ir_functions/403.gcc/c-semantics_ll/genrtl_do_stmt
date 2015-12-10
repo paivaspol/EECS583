@@ -1,40 +1,43 @@
 define void @genrtl_do_stmt(%union.tree_node* nocapture %t) #0 {
 entry:
-  %operands = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
-  %arrayidx = bitcast i32* %operands to %union.tree_node**
-  %0 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
-  %call = tail call i32 @integer_zerop(%union.tree_node* %0) #5
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %t}, i64 0, metadata !1168), !dbg !1464
+  %operands = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2, !dbg !1465
+  %arrayidx = bitcast i32* %operands to %union.tree_node**, !dbg !1465
+  %0 = load %union.tree_node** %arrayidx, align 8, !dbg !1465, !tbaa !1245
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %0}, i64 0, metadata !1169), !dbg !1465
+  %call = tail call i32 @integer_zerop(%union.tree_node* %0) #6, !dbg !1466
+  %tobool = icmp eq i32 %call, 0, !dbg !1466
+  br i1 %tobool, label %if.else, label %if.then, !dbg !1466
 
 if.then:                                          ; preds = %entry
-  %call1 = tail call %struct.nesting* @expand_start_null_loop() #5
-  %arrayidx4 = getelementptr inbounds i32* %operands, i64 2
-  %1 = bitcast i32* %arrayidx4 to %union.tree_node**
-  %2 = load %union.tree_node** %1, align 8, !tbaa !0
-  tail call void @expand_stmt(%union.tree_node* %2) #7
-  tail call void @expand_end_null_loop() #5
-  br label %if.end
+  %call1 = tail call %struct.nesting* @expand_start_null_loop() #6, !dbg !1467
+  %arrayidx4 = getelementptr inbounds i32* %operands, i64 2, !dbg !1469
+  %1 = bitcast i32* %arrayidx4 to %union.tree_node**, !dbg !1469
+  %2 = load %union.tree_node** %1, align 8, !dbg !1469, !tbaa !1245
+  tail call void @expand_stmt(%union.tree_node* %2) #8, !dbg !1469
+  tail call void @expand_end_null_loop() #6, !dbg !1470
+  br label %if.end, !dbg !1471
 
 if.else:                                          ; preds = %entry
-  tail call void @emit_nop() #5
-  %3 = load i8** @input_filename, align 8, !tbaa !0
-  %4 = load i32* @lineno, align 4, !tbaa !4
-  %call5 = tail call %struct.rtx_def* @emit_line_note(i8* %3, i32 %4) #5
-  %call6 = tail call %struct.nesting* @expand_start_loop_continue_elsewhere(i32 1) #5
-  %arrayidx9 = getelementptr inbounds i32* %operands, i64 2
-  %5 = bitcast i32* %arrayidx9 to %union.tree_node**
-  %6 = load %union.tree_node** %5, align 8, !tbaa !0
-  tail call void @expand_stmt(%union.tree_node* %6) #7
-  tail call void @expand_loop_continue_here() #5
-  %call10 = tail call %union.tree_node* @expand_cond(%union.tree_node* %0) #7
-  %7 = load i8** @input_filename, align 8, !tbaa !0
-  %8 = load i32* @lineno, align 4, !tbaa !4
-  %call11 = tail call %struct.rtx_def* @emit_line_note(i8* %7, i32 %8) #5
-  %call12 = tail call i32 @expand_exit_loop_if_false(%struct.nesting* null, %union.tree_node* %call10) #5
-  tail call void @expand_end_loop() #5
+  tail call void @emit_nop() #6, !dbg !1472
+  %3 = load i8** @input_filename, align 8, !dbg !1474, !tbaa !1245
+  %4 = load i32* @lineno, align 4, !dbg !1474, !tbaa !1276
+  %call5 = tail call %struct.rtx_def* @emit_line_note(i8* %3, i32 %4) #6, !dbg !1474
+  %call6 = tail call %struct.nesting* @expand_start_loop_continue_elsewhere(i32 1) #6, !dbg !1475
+  %arrayidx9 = getelementptr inbounds i32* %operands, i64 2, !dbg !1476
+  %5 = bitcast i32* %arrayidx9 to %union.tree_node**, !dbg !1476
+  %6 = load %union.tree_node** %5, align 8, !dbg !1476, !tbaa !1245
+  tail call void @expand_stmt(%union.tree_node* %6) #8, !dbg !1476
+  tail call void @expand_loop_continue_here() #6, !dbg !1477
+  %call10 = tail call %union.tree_node* @expand_cond(%union.tree_node* %0) #8, !dbg !1478
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call10}, i64 0, metadata !1169), !dbg !1478
+  %7 = load i8** @input_filename, align 8, !dbg !1479, !tbaa !1245
+  %8 = load i32* @lineno, align 4, !dbg !1479, !tbaa !1276
+  %call11 = tail call %struct.rtx_def* @emit_line_note(i8* %7, i32 %8) #6, !dbg !1479
+  %call12 = tail call i32 @expand_exit_loop_if_false(%struct.nesting* null, %union.tree_node* %call10) #6, !dbg !1480
+  tail call void @expand_end_loop() #6, !dbg !1481
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  ret void
+  ret void, !dbg !1482
 }

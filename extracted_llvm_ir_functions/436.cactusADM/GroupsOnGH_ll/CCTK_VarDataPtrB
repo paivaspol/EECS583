@@ -1,20 +1,21 @@
-define i8* @CCTK_VarDataPtrB(%struct.cGH* nocapture readonly %GH, i32 %timelevel, i32 %vari, i8* %varn) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !73, metadata !553), !dbg !588
-  tail call void @llvm.dbg.value(metadata i32 %timelevel, i64 0, metadata !74, metadata !553), !dbg !589
-  tail call void @llvm.dbg.value(metadata i32 %vari, i64 0, metadata !75, metadata !553), !dbg !590
-  tail call void @llvm.dbg.value(metadata i8* %varn, i64 0, metadata !76, metadata !553), !dbg !591
-  %1 = icmp eq i8* %varn, null, !dbg !592
-  br i1 %1, label %4, label %2, !dbg !594
+define i8* @CCTK_VarDataPtrB(%struct.cGH* nocapture %GH, i32 %timelevel, i32 %vari, i8* %varn) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !71), !dbg !567
+  tail call void @llvm.dbg.value(metadata !{i32 %timelevel}, i64 0, metadata !72), !dbg !567
+  tail call void @llvm.dbg.value(metadata !{i32 %vari}, i64 0, metadata !73), !dbg !567
+  tail call void @llvm.dbg.value(metadata !{i8* %varn}, i64 0, metadata !74), !dbg !567
+  %tobool = icmp eq i8* %varn, null, !dbg !568
+  br i1 %tobool, label %if.else, label %if.then, !dbg !568
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i8* @CCTK_VarDataPtr(%struct.cGH* %GH, i32 %timelevel, i8* %varn) #7, !dbg !595
-  br label %6, !dbg !597
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @CCTK_VarDataPtr(%struct.cGH* %GH, i32 %timelevel, i8* %varn) #7, !dbg !569
+  br label %return, !dbg !569
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @CCTK_VarDataPtrI(%struct.cGH* %GH, i32 %timelevel, i32 %vari) #7, !dbg !598
-  br label %6, !dbg !600
+if.else:                                          ; preds = %entry
+  %call1 = tail call i8* @CCTK_VarDataPtrI(%struct.cGH* %GH, i32 %timelevel, i32 %vari) #7, !dbg !571
+  br label %return, !dbg !571
 
-; <label>:6                                       ; preds = %4, %2
-  %.0 = phi i8* [ %3, %2 ], [ %5, %4 ]
-  ret i8* %.0, !dbg !601
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i8* [ %call, %if.then ], [ %call1, %if.else ]
+  ret i8* %retval.0, !dbg !573
 }

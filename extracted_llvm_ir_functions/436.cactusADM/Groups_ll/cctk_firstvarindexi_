@@ -1,25 +1,26 @@
-define void @cctk_firstvarindexi_(i32* nocapture %first, i32* nocapture readonly %group) #2 {
-  tail call void @llvm.dbg.value(metadata i32* %first, i64 0, metadata !232, metadata !483), !dbg !953
-  tail call void @llvm.dbg.value(metadata i32* %group, i64 0, metadata !233, metadata !483), !dbg !954
-  %1 = load i32* %group, align 4, !dbg !955, !tbaa !502
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !229, metadata !483), !dbg !956
-  %2 = icmp sgt i32 %1, -1, !dbg !958
-  %3 = load i32* @n_groups, align 4, !dbg !959
-  %4 = icmp sgt i32 %3, %1, !dbg !960
-  %or.cond.i = and i1 %2, %4, !dbg !961
-  br i1 %or.cond.i, label %5, label %CCTK_FirstVarIndexI.exit, !dbg !961
+define void @cctk_firstvarindexi_(i32* nocapture %first, i32* nocapture %group) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %first}, i64 0, metadata !218), !dbg !732
+  tail call void @llvm.dbg.value(metadata !{i32* %group}, i64 0, metadata !219), !dbg !733
+  %0 = load i32* %group, align 4, !dbg !734, !tbaa !488
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !735), !dbg !736
+  %cmp.i = icmp sgt i32 %0, -1, !dbg !737
+  %1 = load i32* @n_groups, align 4, !dbg !737, !tbaa !488
+  %cmp1.i = icmp sgt i32 %1, %0, !dbg !737
+  %or.cond.i = and i1 %cmp.i, %cmp1.i, !dbg !737
+  br i1 %or.cond.i, label %cond.true.i, label %CCTK_FirstVarIndexI.exit, !dbg !737
 
-; <label>:5                                       ; preds = %0
-  %6 = sext i32 %1 to i64, !dbg !962
-  %7 = load %struct.cGroupDefinition** @groups, align 8, !dbg !962, !tbaa !487
-  %8 = getelementptr inbounds %struct.cGroupDefinition* %7, i64 %6, i32 14, !dbg !963
-  %9 = load %struct.cVariableDefinition** %8, align 8, !dbg !963, !tbaa !601
-  %10 = getelementptr inbounds %struct.cVariableDefinition* %9, i64 0, i32 1, !dbg !964
-  %11 = load i32* %10, align 4, !dbg !964, !tbaa !610
-  br label %CCTK_FirstVarIndexI.exit, !dbg !965
+cond.true.i:                                      ; preds = %entry
+  %idxprom.i = sext i32 %0 to i64, !dbg !737
+  %2 = load %struct.cGroupDefinition** @groups, align 8, !dbg !737, !tbaa !480
+  %variables.i = getelementptr inbounds %struct.cGroupDefinition* %2, i64 %idxprom.i, i32 14, !dbg !737
+  %3 = load %struct.cVariableDefinition** %variables.i, align 8, !dbg !737, !tbaa !480
+  %number.i = getelementptr inbounds %struct.cVariableDefinition* %3, i64 0, i32 1, !dbg !737
+  %4 = load i32* %number.i, align 4, !dbg !737, !tbaa !488
+  br label %CCTK_FirstVarIndexI.exit, !dbg !737
 
-CCTK_FirstVarIndexI.exit:                         ; preds = %0, %5
-  %12 = phi i32 [ %11, %5 ], [ -1, %0 ], !dbg !965
-  store i32 %12, i32* %first, align 4, !dbg !966, !tbaa !502
-  ret void, !dbg !967
+CCTK_FirstVarIndexI.exit:                         ; preds = %entry, %cond.true.i
+  %cond.i = phi i32 [ %4, %cond.true.i ], [ -1, %entry ], !dbg !737
+  store i32 %cond.i, i32* %first, align 4, !dbg !734, !tbaa !488
+  ret void, !dbg !738
 }

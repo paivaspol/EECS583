@@ -1,43 +1,46 @@
-define void @_ZN3pov12Complex_SqrtEPNS_5cmplxES1_(%"struct.pov::cmplx"* nocapture %target, %"struct.pov::cmplx"* nocapture readonly %source) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::cmplx"* %target, i64 0, metadata !1115, metadata !1534), !dbg !2880
-  tail call void @llvm.dbg.value(metadata %"struct.pov::cmplx"* %source, i64 0, metadata !1116, metadata !1534), !dbg !2881
-  %1 = getelementptr inbounds %"struct.pov::cmplx"* %source, i64 0, i32 0, !dbg !2882
-  %2 = load double* %1, align 8, !dbg !2882, !tbaa !2504
-  %3 = fcmp oeq double %2, 0.000000e+00, !dbg !2884
-  %4 = getelementptr inbounds %"struct.pov::cmplx"* %source, i64 0, i32 1, !dbg !2885
-  %5 = load double* %4, align 8, !dbg !2885, !tbaa !2508
-  %6 = fcmp oeq double %5, 0.000000e+00, !dbg !2886
-  %or.cond = and i1 %3, %6, !dbg !2887
-  br i1 %or.cond, label %7, label %._crit_edge, !dbg !2887
+define void @_ZN3pov12Complex_SqrtEPNS_5cmplxES1_(%"struct.pov::cmplx"* nocapture %target, %"struct.pov::cmplx"* nocapture %source) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::cmplx"* %target}, i64 0, metadata !1128), !dbg !1738
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::cmplx"* %source}, i64 0, metadata !1129), !dbg !1738
+  %x = getelementptr inbounds %"struct.pov::cmplx"* %source, i64 0, i32 0, !dbg !1739
+  %0 = load double* %x, align 8, !dbg !1739, !tbaa !1314
+  %cmp = fcmp oeq double %0, 0.000000e+00, !dbg !1739
+  %y = getelementptr inbounds %"struct.pov::cmplx"* %source, i64 0, i32 1, !dbg !1739
+  %1 = load double* %y, align 8, !dbg !1739, !tbaa !1314
+  %cmp1 = fcmp oeq double %1, 0.000000e+00, !dbg !1739
+  %or.cond = and i1 %cmp, %cmp1, !dbg !1739
+  br i1 %or.cond, label %if.then, label %if.else, !dbg !1739
 
-; <label>:7                                       ; preds = %0
-  %8 = bitcast %"struct.pov::cmplx"* %target to i8*, !dbg !2888
-  call void @llvm.memset.p0i8.i64(i8* %8, i8 0, i64 16, i32 8, i1 false), !dbg !2890
-  br label %24, !dbg !2888
+if.then:                                          ; preds = %entry
+  %2 = bitcast %"struct.pov::cmplx"* %target to i8*, !dbg !1740
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 16, i32 8, i1 false), !dbg !1742
+  br label %if.end, !dbg !1740
 
-._crit_edge:                                      ; preds = %0
-  tail call void @llvm.dbg.value(metadata double %2, i64 0, metadata !1236, metadata !1534), !dbg !2891
-  %9 = fmul double %2, %2, !dbg !2894
-  tail call void @llvm.dbg.value(metadata double %5, i64 0, metadata !1236, metadata !1534), !dbg !2895
-  %10 = fmul double %5, %5, !dbg !2897
-  %11 = fadd double %9, %10, !dbg !2898
-  %12 = tail call double @sqrt(double %11) #7, !dbg !2899
-  %13 = tail call double @sqrt(double %12) #7, !dbg !2900
-  tail call void @llvm.dbg.value(metadata double %13, i64 0, metadata !1117, metadata !1534), !dbg !2901
-  %14 = tail call double @atan2(double %5, double %2) #7, !dbg !2902
-  %15 = fmul double %14, 5.000000e-01, !dbg !2903
-  tail call void @llvm.dbg.value(metadata double %15, i64 0, metadata !1118, metadata !1534), !dbg !2904
-  %16 = tail call double @sin(double %15) #7, !dbg !2905
-  %17 = tail call double @cos(double %15) #7, !dbg !2906
-  %18 = insertelement <2 x double> undef, double %13, i32 0, !dbg !2907
-  %19 = insertelement <2 x double> %18, double %13, i32 1, !dbg !2907
-  %20 = insertelement <2 x double> undef, double %17, i32 0, !dbg !2907
-  %21 = insertelement <2 x double> %20, double %16, i32 1, !dbg !2907
-  %22 = fmul <2 x double> %19, %21, !dbg !2907
-  %23 = bitcast %"struct.pov::cmplx"* %target to <2 x double>*, !dbg !2908
-  store <2 x double> %22, <2 x double>* %23, align 8, !dbg !2908, !tbaa !1538
-  br label %24
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{double %0}, i64 0, metadata !1743), !dbg !1746
+  %mul.i = fmul double %0, %0, !dbg !1747
+  %y5 = getelementptr inbounds %"struct.pov::cmplx"* %source, i64 0, i32 1, !dbg !1748
+  tail call void @llvm.dbg.value(metadata !{double %1}, i64 0, metadata !1749), !dbg !1750
+  %mul.i27 = fmul double %1, %1, !dbg !1751
+  %add = fadd double %mul.i, %mul.i27, !dbg !1748
+  %call7 = tail call double @sqrt(double %add) #8, !dbg !1748
+  %call8 = tail call double @sqrt(double %call7) #8, !dbg !1748
+  tail call void @llvm.dbg.value(metadata !{double %call8}, i64 0, metadata !1130), !dbg !1748
+  %3 = load double* %y5, align 8, !dbg !1752, !tbaa !1314
+  %4 = load double* %x, align 8, !dbg !1752, !tbaa !1314
+  %call11 = tail call double @atan2(double %3, double %4) #8, !dbg !1752
+  %div = fmul double %call11, 5.000000e-01, !dbg !1752
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !1131), !dbg !1752
+  %call12 = tail call double @sin(double %div) #8, !dbg !1753
+  %mul = fmul double %call8, %call12, !dbg !1753
+  %y13 = getelementptr inbounds %"struct.pov::cmplx"* %target, i64 0, i32 1, !dbg !1753
+  store double %mul, double* %y13, align 8, !dbg !1753, !tbaa !1314
+  %call14 = tail call double @cos(double %div) #8, !dbg !1754
+  %mul15 = fmul double %call8, %call14, !dbg !1754
+  %x16 = getelementptr inbounds %"struct.pov::cmplx"* %target, i64 0, i32 0, !dbg !1754
+  store double %mul15, double* %x16, align 8, !dbg !1754, !tbaa !1314
+  br label %if.end
 
-; <label>:24                                      ; preds = %._crit_edge, %7
-  ret void, !dbg !2909
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !1755
 }

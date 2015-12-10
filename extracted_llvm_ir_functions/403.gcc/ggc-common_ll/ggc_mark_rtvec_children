@@ -1,37 +1,40 @@
 define void @ggc_mark_rtvec_children(%struct.rtvec_def* nocapture %v) #0 {
 entry:
-  %num_elem = getelementptr inbounds %struct.rtvec_def* %v, i64 0, i32 0
-  %0 = load i32* %num_elem, align 4, !tbaa !3
-  %cmp7 = icmp sgt i32 %0, 0
-  br i1 %cmp7, label %do.body.lr.ph, label %while.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtvec_def* %v}, i64 0, metadata !1061), !dbg !1735
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %v, i64 0, i32 0, !dbg !1736
+  %0 = load i32* %num_elem, align 4, !dbg !1736, !tbaa !1356
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !1062), !dbg !1736
+  %cmp7 = icmp sgt i32 %0, 0, !dbg !1737
+  br i1 %cmp7, label %do.body.lr.ph, label %while.end, !dbg !1737
 
 do.body.lr.ph:                                    ; preds = %entry
   %1 = sext i32 %0 to i64
-  br label %do.body
+  br label %do.body, !dbg !1737
 
 do.body:                                          ; preds = %do.body.lr.ph, %while.cond.backedge
   %indvars.iv = phi i64 [ %1, %do.body.lr.ph ], [ %indvars.iv.next, %while.cond.backedge ]
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %arrayidx = getelementptr inbounds %struct.rtvec_def* %v, i64 0, i32 1, i64 %indvars.iv.next
-  %2 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct.rtx_def* %2, null
-  br i1 %cmp1, label %while.cond.backedge, label %land.lhs.true
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !1737
+  %arrayidx = getelementptr inbounds %struct.rtvec_def* %v, i64 0, i32 1, i64 %indvars.iv.next, !dbg !1738
+  %2 = load %struct.rtx_def** %arrayidx, align 8, !dbg !1738, !tbaa !1351
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !1063), !dbg !1738
+  %cmp1 = icmp eq %struct.rtx_def* %2, null, !dbg !1738
+  br i1 %cmp1, label %while.cond.backedge, label %land.lhs.true, !dbg !1738
 
 land.lhs.true:                                    ; preds = %do.body
-  %3 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 0, i64 0
-  %call = tail call i32 @ggc_set_mark(i8* %3) #5
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.then, label %while.cond.backedge
+  %3 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 0, i64 0, !dbg !1738
+  %call = tail call i32 @ggc_set_mark(i8* %3) #6, !dbg !1738
+  %tobool = icmp eq i32 %call, 0, !dbg !1738
+  br i1 %tobool, label %if.then, label %while.cond.backedge, !dbg !1738
 
 if.then:                                          ; preds = %land.lhs.true
-  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %2) #6
-  br label %while.cond.backedge
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %2) #7, !dbg !1738
+  br label %while.cond.backedge, !dbg !1738
 
 while.cond.backedge:                              ; preds = %if.then, %do.body, %land.lhs.true
-  %4 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp sgt i32 %4, 0
-  br i1 %cmp, label %do.body, label %while.end
+  %4 = trunc i64 %indvars.iv.next to i32, !dbg !1737
+  %cmp = icmp sgt i32 %4, 0, !dbg !1737
+  br i1 %cmp, label %do.body, label %while.end, !dbg !1737
 
 while.end:                                        ; preds = %while.cond.backedge, %entry
-  ret void
+  ret void, !dbg !1739
 }

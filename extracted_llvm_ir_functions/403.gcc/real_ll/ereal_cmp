@@ -2,14 +2,18 @@ define i32 @ereal_cmp(%struct.realvaluetype* byval nocapture align 8 %x, %struct
 entry:
   %ex = alloca [6 x i16], align 2
   %ey = alloca [6 x i16], align 2
-  %0 = bitcast [6 x i16]* %ex to i8*
-  %1 = bitcast %struct.realvaluetype* %x to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
-  %2 = bitcast [6 x i16]* %ey to i8*
-  %3 = bitcast %struct.realvaluetype* %y to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 12, i32 2, i1 false)
-  %arraydecay = getelementptr inbounds [6 x i16]* %ex, i64 0, i64 0
-  %arraydecay1 = getelementptr inbounds [6 x i16]* %ey, i64 0, i64 0
-  %call = call fastcc i32 @ecmp(i16* %arraydecay, i16* %arraydecay1) #6
-  ret i32 %call
+  call void @llvm.dbg.declare(metadata !{%struct.realvaluetype* %x}, metadata !452), !dbg !3039
+  call void @llvm.dbg.declare(metadata !{%struct.realvaluetype* %y}, metadata !453), !dbg !3039
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %ex}, metadata !454), !dbg !3040
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %ey}, metadata !455), !dbg !3040
+  %0 = bitcast [6 x i16]* %ex to i8*, !dbg !3041
+  %1 = bitcast %struct.realvaluetype* %x to i8*, !dbg !3041
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false), !dbg !3041
+  %2 = bitcast [6 x i16]* %ey to i8*, !dbg !3042
+  %3 = bitcast %struct.realvaluetype* %y to i8*, !dbg !3042
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 12, i32 2, i1 false), !dbg !3042
+  %arraydecay = getelementptr inbounds [6 x i16]* %ex, i64 0, i64 0, !dbg !3043
+  %arraydecay1 = getelementptr inbounds [6 x i16]* %ey, i64 0, i64 0, !dbg !3043
+  %call = call fastcc i32 @ecmp(i16* %arraydecay, i16* %arraydecay1) #7, !dbg !3043
+  ret i32 %call, !dbg !3043
 }

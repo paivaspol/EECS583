@@ -1,18 +1,19 @@
 define i32 @returnjump_p(%struct.rtx_def* %insn) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %insn to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 33
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !553), !dbg !1264
+  %0 = bitcast %struct.rtx_def* %insn to i32*, !dbg !1265
+  %bf.load = load i32* %0, align 8, !dbg !1265
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1265
+  %cmp = icmp eq i32 %bf.clear, 33, !dbg !1265
+  br i1 %cmp, label %if.end, label %return, !dbg !1265
 
 if.end:                                           ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %call = tail call i32 @for_each_rtx(%struct.rtx_def** %rtx, i32 (%struct.rtx_def**, i8*)* @returnjump_p_1, i8* null) #7
-  br label %return
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3, !dbg !1266
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1266
+  %call = tail call i32 @for_each_rtx(%struct.rtx_def** %rtx, i32 (%struct.rtx_def**, i8*)* @returnjump_p_1, i8* null) #9, !dbg !1266
+  br label %return, !dbg !1266
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i32 [ %call, %if.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1267
 }

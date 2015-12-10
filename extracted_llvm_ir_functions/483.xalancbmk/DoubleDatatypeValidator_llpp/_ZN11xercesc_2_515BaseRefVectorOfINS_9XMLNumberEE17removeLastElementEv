@@ -1,0 +1,36 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_9XMLNumberEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf.2"* nocapture %this) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.2"* %this}, i64 0, metadata !3512), !dbg !4306
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.2"* %this, i64 0, i32 2, !dbg !4307
+  %0 = load i32* %fCurCount, align 4, !dbg !4307, !tbaa !3937
+  %tobool = icmp eq i32 %0, 0, !dbg !4307
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !4307
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !4308
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !4308, !tbaa !3937
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.2"* %this, i64 0, i32 1, !dbg !4309
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !4309, !tbaa !3852, !range !4273
+  %tobool3 = icmp eq i8 %1, 0, !dbg !4309
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !4309
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !4310
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.2"* %this, i64 0, i32 4, !dbg !4310
+  %2 = load %"class.xercesc_2_5::XMLNumber"*** %fElemList, align 8, !dbg !4310, !tbaa !3919
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XMLNumber"** %2, i64 %idxprom, !dbg !4310
+  %3 = load %"class.xercesc_2_5::XMLNumber"** %arrayidx, align 8, !dbg !4310, !tbaa !3919
+  %isnull = icmp eq %"class.xercesc_2_5::XMLNumber"* %3, null, !dbg !4310
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !4310
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast %"class.xercesc_2_5::XMLNumber"* %3 to void (%"class.xercesc_2_5::XMLNumber"*)***, !dbg !4310
+  %vtable = load void (%"class.xercesc_2_5::XMLNumber"*)*** %4, align 8, !dbg !4310, !tbaa !3837
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::XMLNumber"*)** %vtable, i64 1, !dbg !4310
+  %5 = load void (%"class.xercesc_2_5::XMLNumber"*)** %vfn, align 8, !dbg !4310
+  tail call void %5(%"class.xercesc_2_5::XMLNumber"* %3) #8, !dbg !4310
+  br label %if.end6, !dbg !4310
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !4310
+}

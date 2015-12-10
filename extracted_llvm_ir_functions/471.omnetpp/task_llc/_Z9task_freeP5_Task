@@ -1,64 +1,61 @@
-define void @_Z9task_freeP5_Task(%struct._Task* %t) #5 {
-  tail call void @llvm.dbg.value(metadata %struct._Task* %t, i64 0, metadata !74, metadata !99), !dbg !205
-  %1 = getelementptr inbounds %struct._Task* %t, i64 0, i32 3, !dbg !206
-  store i32 0, i32* %1, align 4, !dbg !207, !tbaa !150
-  %2 = getelementptr inbounds %struct._Task* %t, i64 0, i32 5, !dbg !208
-  %3 = load %struct._Task** %2, align 8, !dbg !208, !tbaa !152
-  %4 = icmp eq %struct._Task* %3, null, !dbg !210
-  %5 = ptrtoint %struct._Task* %3 to i64
-  br i1 %4, label %20, label %6, !dbg !211
+define void @_Z9task_freeP5_Task(%struct._Task* %t) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Task* %t}, i64 0, metadata !107), !dbg !174
+  %used = getelementptr inbounds %struct._Task* %t, i64 0, i32 3, !dbg !175
+  store i32 0, i32* %used, align 4, !dbg !175, !tbaa !148
+  %next = getelementptr inbounds %struct._Task* %t, i64 0, i32 5, !dbg !176
+  %0 = load %struct._Task** %next, align 8, !dbg !176, !tbaa !138
+  %cmp = icmp eq %struct._Task* %0, null, !dbg !176
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !176
 
-; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct._Task* %3, i64 0, i32 3, !dbg !212
-  %8 = load i32* %7, align 4, !dbg !212, !tbaa !150
-  %9 = icmp eq i32 %8, 0, !dbg !213
-  br i1 %9, label %10, label %20, !dbg !214
+land.lhs.true:                                    ; preds = %entry
+  %used2 = getelementptr inbounds %struct._Task* %0, i64 0, i32 3, !dbg !176
+  %1 = load i32* %used2, align 4, !dbg !176, !tbaa !148
+  %tobool = icmp eq i32 %1, 0, !dbg !176
+  br i1 %tobool, label %if.then, label %if.end, !dbg !176
 
-; <label>:10                                      ; preds = %6
-  %11 = getelementptr inbounds %struct._Task* %3, i64 0, i32 4, !dbg !215
-  %12 = load i32* %11, align 4, !dbg !215, !tbaa !143
-  %13 = getelementptr inbounds %struct._Task* %t, i64 0, i32 4, !dbg !217
-  %14 = load i32* %13, align 4, !dbg !218, !tbaa !143
-  %15 = add i32 %14, %12, !dbg !218
-  store i32 %15, i32* %13, align 4, !dbg !218, !tbaa !143
-  %16 = getelementptr inbounds %struct._Task* %3, i64 0, i32 5, !dbg !219
-  %17 = bitcast %struct._Task** %16 to i64*, !dbg !219
-  %18 = load i64* %17, align 8, !dbg !219, !tbaa !152
-  %19 = bitcast %struct._Task** %2 to i64*, !dbg !220
-  store i64 %18, i64* %19, align 8, !dbg !220, !tbaa !152
-  br label %20, !dbg !221
+if.then:                                          ; preds = %land.lhs.true
+  %size = getelementptr inbounds %struct._Task* %0, i64 0, i32 4, !dbg !177
+  %2 = load i32* %size, align 4, !dbg !177, !tbaa !148
+  %size4 = getelementptr inbounds %struct._Task* %t, i64 0, i32 4, !dbg !177
+  %3 = load i32* %size4, align 4, !dbg !177, !tbaa !148
+  %add = add i32 %3, %2, !dbg !177
+  store i32 %add, i32* %size4, align 4, !dbg !177, !tbaa !148
+  %next6 = getelementptr inbounds %struct._Task* %0, i64 0, i32 5, !dbg !179
+  %4 = load %struct._Task** %next6, align 8, !dbg !179, !tbaa !138
+  store %struct._Task* %4, %struct._Task** %next, align 8, !dbg !179, !tbaa !138
+  br label %if.end, !dbg !180
 
-; <label>:20                                      ; preds = %6, %0, %10
-  %21 = phi i64 [ %5, %6 ], [ %5, %0 ], [ %18, %10 ]
-  %22 = load %struct._Task** getelementptr inbounds (%struct._Task* @main_task, i64 0, i32 5), align 8, !dbg !222, !tbaa !152
-  tail call void @llvm.dbg.value(metadata %struct._Task* %22, i64 0, metadata !75, metadata !99), !dbg !223
-  %23 = icmp eq %struct._Task* %22, %t, !dbg !224
-  br i1 %23, label %38, label %.preheader, !dbg !226
+if.end:                                           ; preds = %land.lhs.true, %entry, %if.then
+  %5 = phi %struct._Task* [ %0, %land.lhs.true ], [ null, %entry ], [ %4, %if.then ]
+  %6 = load %struct._Task** getelementptr inbounds (%struct._Task* @main_task, i64 0, i32 5), align 8, !dbg !181, !tbaa !138
+  tail call void @llvm.dbg.value(metadata !{%struct._Task* %6}, i64 0, metadata !108), !dbg !181
+  %cmp8 = icmp eq %struct._Task* %6, %t, !dbg !182
+  br i1 %cmp8, label %if.end22, label %while.cond, !dbg !182
 
-.preheader:                                       ; preds = %20, %.preheader
-  %p.0 = phi %struct._Task* [ %25, %.preheader ], [ %22, %20 ]
-  %24 = getelementptr inbounds %struct._Task* %p.0, i64 0, i32 5, !dbg !227
-  %25 = load %struct._Task** %24, align 8, !dbg !227, !tbaa !152
-  %26 = icmp eq %struct._Task* %25, %t, !dbg !229
-  br i1 %26, label %27, label %.preheader, !dbg !230
+while.cond:                                       ; preds = %if.end, %while.cond
+  %p.0 = phi %struct._Task* [ %7, %while.cond ], [ %6, %if.end ]
+  %next10 = getelementptr inbounds %struct._Task* %p.0, i64 0, i32 5, !dbg !183
+  %7 = load %struct._Task** %next10, align 8, !dbg !183, !tbaa !138
+  %cmp11 = icmp eq %struct._Task* %7, %t, !dbg !183
+  br i1 %cmp11, label %while.end, label %while.cond, !dbg !183
 
-; <label>:27                                      ; preds = %.preheader
-  %28 = getelementptr inbounds %struct._Task* %p.0, i64 0, i32 3, !dbg !231
-  %29 = load i32* %28, align 4, !dbg !231, !tbaa !150
-  %30 = icmp eq i32 %29, 0, !dbg !233
-  br i1 %30, label %31, label %38, !dbg !234
+while.end:                                        ; preds = %while.cond
+  %used13 = getelementptr inbounds %struct._Task* %p.0, i64 0, i32 3, !dbg !185
+  %8 = load i32* %used13, align 4, !dbg !185, !tbaa !148
+  %tobool14 = icmp eq i32 %8, 0, !dbg !185
+  br i1 %tobool14, label %if.then15, label %if.end22, !dbg !185
 
-; <label>:31                                      ; preds = %27
-  %32 = getelementptr inbounds %struct._Task* %t, i64 0, i32 4, !dbg !235
-  %33 = load i32* %32, align 4, !dbg !235, !tbaa !143
-  %34 = getelementptr inbounds %struct._Task* %p.0, i64 0, i32 4, !dbg !237
-  %35 = load i32* %34, align 4, !dbg !238, !tbaa !143
-  %36 = add i32 %35, %33, !dbg !238
-  store i32 %36, i32* %34, align 4, !dbg !238, !tbaa !143
-  %37 = bitcast %struct._Task** %24 to i64*, !dbg !239
-  store i64 %21, i64* %37, align 8, !dbg !239, !tbaa !152
-  br label %38, !dbg !240
+if.then15:                                        ; preds = %while.end
+  %size16 = getelementptr inbounds %struct._Task* %t, i64 0, i32 4, !dbg !186
+  %9 = load i32* %size16, align 4, !dbg !186, !tbaa !148
+  %size17 = getelementptr inbounds %struct._Task* %p.0, i64 0, i32 4, !dbg !186
+  %10 = load i32* %size17, align 4, !dbg !186, !tbaa !148
+  %add18 = add i32 %10, %9, !dbg !186
+  store i32 %add18, i32* %size17, align 4, !dbg !186, !tbaa !148
+  store %struct._Task* %5, %struct._Task** %next10, align 8, !dbg !188, !tbaa !138
+  br label %if.end22, !dbg !189
 
-; <label>:38                                      ; preds = %27, %20, %31
-  ret void, !dbg !241
+if.end22:                                         ; preds = %while.end, %if.end, %if.then15
+  ret void, !dbg !190
 }

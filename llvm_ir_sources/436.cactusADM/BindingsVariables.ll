@@ -1,6 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 @.str = private unnamed_addr constant [8 x i8] c"IOASCII\00", align 1
 @.str1 = private unnamed_addr constant [9 x i8] c"BenchADM\00", align 1
@@ -16,126 +16,127 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str11 = private unnamed_addr constant [5 x i8] c"Time\00", align 1
 @.str12 = private unnamed_addr constant [9 x i8] c"Einstein\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTKi_BindingsVariablesInitialise() #0 {
-  %1 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #2, !dbg !12
-  %2 = icmp eq i32 %1, 0, !dbg !12
-  br i1 %2, label %5, label %3, !dbg !14
+entry:
+  %call = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #2, !dbg !9
+  %tobool = icmp eq i32 %call, 0, !dbg !9
+  br i1 %tobool, label %if.end, label %if.then, !dbg !9
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CactusBindingsVariables_IOASCII_Initialise() #2, !dbg !15
-  br label %5, !dbg !17
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @CactusBindingsVariables_IOASCII_Initialise() #2, !dbg !10
+  br label %if.end, !dbg !12
 
-; <label>:5                                       ; preds = %0, %3
-  %6 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0)) #2, !dbg !18
-  %7 = icmp eq i32 %6, 0, !dbg !18
-  br i1 %7, label %10, label %8, !dbg !20
+if.end:                                           ; preds = %entry, %if.then
+  %call2 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0)) #2, !dbg !13
+  %tobool3 = icmp eq i32 %call2, 0, !dbg !13
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !13
 
-; <label>:8                                       ; preds = %5
-  %9 = tail call i32 @CactusBindingsVariables_BenchADM_Initialise() #2, !dbg !21
-  br label %10, !dbg !23
+if.then4:                                         ; preds = %if.end
+  %call5 = tail call i32 @CactusBindingsVariables_BenchADM_Initialise() #2, !dbg !14
+  br label %if.end6, !dbg !16
 
-; <label>:10                                      ; preds = %5, %8
-  %11 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #2, !dbg !24
-  %12 = icmp eq i32 %11, 0, !dbg !24
-  br i1 %12, label %15, label %13, !dbg !26
+if.end6:                                          ; preds = %if.end, %if.then4
+  %call7 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #2, !dbg !17
+  %tobool8 = icmp eq i32 %call7, 0, !dbg !17
+  br i1 %tobool8, label %if.end11, label %if.then9, !dbg !17
 
-; <label>:13                                      ; preds = %10
-  %14 = tail call i32 @CactusBindingsVariables_Cactus_Initialise() #2, !dbg !27
-  br label %15, !dbg !29
+if.then9:                                         ; preds = %if.end6
+  %call10 = tail call i32 @CactusBindingsVariables_Cactus_Initialise() #2, !dbg !18
+  br label %if.end11, !dbg !20
 
-; <label>:15                                      ; preds = %10, %13
-  %16 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([9 x i8]* @.str3, i64 0, i64 0)) #2, !dbg !30
-  %17 = icmp eq i32 %16, 0, !dbg !30
-  br i1 %17, label %20, label %18, !dbg !32
+if.end11:                                         ; preds = %if.end6, %if.then9
+  %call12 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([9 x i8]* @.str3, i64 0, i64 0)) #2, !dbg !21
+  %tobool13 = icmp eq i32 %call12, 0, !dbg !21
+  br i1 %tobool13, label %if.end16, label %if.then14, !dbg !21
 
-; <label>:18                                      ; preds = %15
-  %19 = tail call i32 @CactusBindingsVariables_Boundary_Initialise() #2, !dbg !33
-  br label %20, !dbg !35
+if.then14:                                        ; preds = %if.end11
+  %call15 = tail call i32 @CactusBindingsVariables_Boundary_Initialise() #2, !dbg !22
+  br label %if.end16, !dbg !24
 
-; <label>:20                                      ; preds = %15, %18
-  %21 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0)) #2, !dbg !36
-  %22 = icmp eq i32 %21, 0, !dbg !36
-  br i1 %22, label %25, label %23, !dbg !38
+if.end16:                                         ; preds = %if.end11, %if.then14
+  %call17 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0)) #2, !dbg !25
+  %tobool18 = icmp eq i32 %call17, 0, !dbg !25
+  br i1 %tobool18, label %if.end21, label %if.then19, !dbg !25
 
-; <label>:23                                      ; preds = %20
-  %24 = tail call i32 @CactusBindingsVariables_PUGH_Initialise() #2, !dbg !39
-  br label %25, !dbg !41
+if.then19:                                        ; preds = %if.end16
+  %call20 = tail call i32 @CactusBindingsVariables_PUGH_Initialise() #2, !dbg !26
+  br label %if.end21, !dbg !28
 
-; <label>:25                                      ; preds = %20, %23
-  %26 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([7 x i8]* @.str5, i64 0, i64 0)) #2, !dbg !42
-  %27 = icmp eq i32 %26, 0, !dbg !42
-  br i1 %27, label %30, label %28, !dbg !44
+if.end21:                                         ; preds = %if.end16, %if.then19
+  %call22 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([7 x i8]* @.str5, i64 0, i64 0)) #2, !dbg !29
+  %tobool23 = icmp eq i32 %call22, 0, !dbg !29
+  br i1 %tobool23, label %if.end26, label %if.then24, !dbg !29
 
-; <label>:28                                      ; preds = %25
-  %29 = tail call i32 @CactusBindingsVariables_IOUtil_Initialise() #2, !dbg !45
-  br label %30, !dbg !47
+if.then24:                                        ; preds = %if.end21
+  %call25 = tail call i32 @CactusBindingsVariables_IOUtil_Initialise() #2, !dbg !30
+  br label %if.end26, !dbg !32
 
-; <label>:30                                      ; preds = %25, %28
-  %31 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([9 x i8]* @.str6, i64 0, i64 0)) #2, !dbg !48
-  %32 = icmp eq i32 %31, 0, !dbg !48
-  br i1 %32, label %35, label %33, !dbg !50
+if.end26:                                         ; preds = %if.end21, %if.then24
+  %call27 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([9 x i8]* @.str6, i64 0, i64 0)) #2, !dbg !33
+  %tobool28 = icmp eq i32 %call27, 0, !dbg !33
+  br i1 %tobool28, label %if.end31, label %if.then29, !dbg !33
 
-; <label>:33                                      ; preds = %30
-  %34 = tail call i32 @CactusBindingsVariables_PUGHSlab_Initialise() #2, !dbg !51
-  br label %35, !dbg !53
+if.then29:                                        ; preds = %if.end26
+  %call30 = tail call i32 @CactusBindingsVariables_PUGHSlab_Initialise() #2, !dbg !34
+  br label %if.end31, !dbg !36
 
-; <label>:35                                      ; preds = %30, %33
-  %36 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([11 x i8]* @.str7, i64 0, i64 0)) #2, !dbg !54
-  %37 = icmp eq i32 %36, 0, !dbg !54
-  br i1 %37, label %40, label %38, !dbg !56
+if.end31:                                         ; preds = %if.end26, %if.then29
+  %call32 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([11 x i8]* @.str7, i64 0, i64 0)) #2, !dbg !37
+  %tobool33 = icmp eq i32 %call32, 0, !dbg !37
+  br i1 %tobool33, label %if.end36, label %if.then34, !dbg !37
 
-; <label>:38                                      ; preds = %35
-  %39 = tail call i32 @CactusBindingsVariables_CartGrid3D_Initialise() #2, !dbg !57
-  br label %40, !dbg !59
+if.then34:                                        ; preds = %if.end31
+  %call35 = tail call i32 @CactusBindingsVariables_CartGrid3D_Initialise() #2, !dbg !38
+  br label %if.end36, !dbg !40
 
-; <label>:40                                      ; preds = %35, %38
-  %41 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([8 x i8]* @.str8, i64 0, i64 0)) #2, !dbg !60
-  %42 = icmp eq i32 %41, 0, !dbg !60
-  br i1 %42, label %45, label %43, !dbg !62
+if.end36:                                         ; preds = %if.end31, %if.then34
+  %call37 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([8 x i8]* @.str8, i64 0, i64 0)) #2, !dbg !41
+  %tobool38 = icmp eq i32 %call37, 0, !dbg !41
+  br i1 %tobool38, label %if.end41, label %if.then39, !dbg !41
 
-; <label>:43                                      ; preds = %40
-  %44 = tail call i32 @CactusBindingsVariables_IOBasic_Initialise() #2, !dbg !63
-  br label %45, !dbg !65
+if.then39:                                        ; preds = %if.end36
+  %call40 = tail call i32 @CactusBindingsVariables_IOBasic_Initialise() #2, !dbg !42
+  br label %if.end41, !dbg !44
 
-; <label>:45                                      ; preds = %40, %43
-  %46 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([11 x i8]* @.str9, i64 0, i64 0)) #2, !dbg !66
-  %47 = icmp eq i32 %46, 0, !dbg !66
-  br i1 %47, label %50, label %48, !dbg !68
+if.end41:                                         ; preds = %if.end36, %if.then39
+  %call42 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([11 x i8]* @.str9, i64 0, i64 0)) #2, !dbg !45
+  %tobool43 = icmp eq i32 %call42, 0, !dbg !45
+  br i1 %tobool43, label %if.end46, label %if.then44, !dbg !45
 
-; <label>:48                                      ; preds = %45
-  %49 = tail call i32 @CactusBindingsVariables_PUGHReduce_Initialise() #2, !dbg !69
-  br label %50, !dbg !71
+if.then44:                                        ; preds = %if.end41
+  %call45 = tail call i32 @CactusBindingsVariables_PUGHReduce_Initialise() #2, !dbg !46
+  br label %if.end46, !dbg !48
 
-; <label>:50                                      ; preds = %45, %48
-  %51 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([14 x i8]* @.str10, i64 0, i64 0)) #2, !dbg !72
-  %52 = icmp eq i32 %51, 0, !dbg !72
-  br i1 %52, label %55, label %53, !dbg !74
+if.end46:                                         ; preds = %if.end41, %if.then44
+  %call47 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([14 x i8]* @.str10, i64 0, i64 0)) #2, !dbg !49
+  %tobool48 = icmp eq i32 %call47, 0, !dbg !49
+  br i1 %tobool48, label %if.end51, label %if.then49, !dbg !49
 
-; <label>:53                                      ; preds = %50
-  %54 = tail call i32 @CactusBindingsVariables_IDLinearWaves_Initialise() #2, !dbg !75
-  br label %55, !dbg !77
+if.then49:                                        ; preds = %if.end46
+  %call50 = tail call i32 @CactusBindingsVariables_IDLinearWaves_Initialise() #2, !dbg !50
+  br label %if.end51, !dbg !52
 
-; <label>:55                                      ; preds = %50, %53
-  %56 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([5 x i8]* @.str11, i64 0, i64 0)) #2, !dbg !78
-  %57 = icmp eq i32 %56, 0, !dbg !78
-  br i1 %57, label %60, label %58, !dbg !80
+if.end51:                                         ; preds = %if.end46, %if.then49
+  %call52 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([5 x i8]* @.str11, i64 0, i64 0)) #2, !dbg !53
+  %tobool53 = icmp eq i32 %call52, 0, !dbg !53
+  br i1 %tobool53, label %if.end56, label %if.then54, !dbg !53
 
-; <label>:58                                      ; preds = %55
-  %59 = tail call i32 @CactusBindingsVariables_Time_Initialise() #2, !dbg !81
-  br label %60, !dbg !83
+if.then54:                                        ; preds = %if.end51
+  %call55 = tail call i32 @CactusBindingsVariables_Time_Initialise() #2, !dbg !54
+  br label %if.end56, !dbg !56
 
-; <label>:60                                      ; preds = %55, %58
-  %61 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0)) #2, !dbg !84
-  %62 = icmp eq i32 %61, 0, !dbg !84
-  br i1 %62, label %65, label %63, !dbg !86
+if.end56:                                         ; preds = %if.end51, %if.then54
+  %call57 = tail call i32 @CCTK_IsThornActive(i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0)) #2, !dbg !57
+  %tobool58 = icmp eq i32 %call57, 0, !dbg !57
+  br i1 %tobool58, label %if.end61, label %if.then59, !dbg !57
 
-; <label>:63                                      ; preds = %60
-  %64 = tail call i32 @CactusBindingsVariables_Einstein_Initialise() #2, !dbg !87
-  br label %65, !dbg !89
+if.then59:                                        ; preds = %if.end56
+  %call60 = tail call i32 @CactusBindingsVariables_Einstein_Initialise() #2, !dbg !58
+  br label %if.end61, !dbg !60
 
-; <label>:65                                      ; preds = %60, %63
-  ret i32 0, !dbg !90
+if.end61:                                         ; preds = %if.end56, %if.then59
+  ret i32 0, !dbg !61
 }
 
 ; Function Attrs: optsize
@@ -180,102 +181,71 @@ declare i32 @CactusBindingsVariables_Time_Initialise() #1
 ; Function Attrs: optsize
 declare i32 @CactusBindingsVariables_Einstein_Initialise() #1
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!8, !9, !10}
-!llvm.ident = !{!11}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !2, subprograms: !3, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DISubprogram(name: "CCTKi_BindingsVariablesInitialise", scope: !1, file: !1, line: 21, type: !5, isLocal: false, isDefinition: true, scopeLine: 22, flags: DIFlagPrototyped, isOptimized: true, function: i32 ()* @CCTKi_BindingsVariablesInitialise, variables: !2)
-!5 = !DISubroutineType(types: !6)
-!6 = !{!7}
-!7 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!8 = !{i32 2, !"Dwarf Version", i32 2}
-!9 = !{i32 2, !"Debug Info Version", i32 700000003}
-!10 = !{i32 1, !"PIC Level", i32 2}
-!11 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!12 = !DILocation(line: 23, column: 6, scope: !13)
-!13 = distinct !DILexicalBlock(scope: !4, file: !1, line: 23, column: 6)
-!14 = !DILocation(line: 23, column: 6, scope: !4)
-!15 = !DILocation(line: 25, column: 5, scope: !16)
-!16 = distinct !DILexicalBlock(scope: !13, file: !1, line: 24, column: 3)
-!17 = !DILocation(line: 26, column: 3, scope: !16)
-!18 = !DILocation(line: 27, column: 6, scope: !19)
-!19 = distinct !DILexicalBlock(scope: !4, file: !1, line: 27, column: 6)
-!20 = !DILocation(line: 27, column: 6, scope: !4)
-!21 = !DILocation(line: 29, column: 5, scope: !22)
-!22 = distinct !DILexicalBlock(scope: !19, file: !1, line: 28, column: 3)
-!23 = !DILocation(line: 30, column: 3, scope: !22)
-!24 = !DILocation(line: 31, column: 6, scope: !25)
-!25 = distinct !DILexicalBlock(scope: !4, file: !1, line: 31, column: 6)
-!26 = !DILocation(line: 31, column: 6, scope: !4)
-!27 = !DILocation(line: 33, column: 5, scope: !28)
-!28 = distinct !DILexicalBlock(scope: !25, file: !1, line: 32, column: 3)
-!29 = !DILocation(line: 34, column: 3, scope: !28)
-!30 = !DILocation(line: 35, column: 6, scope: !31)
-!31 = distinct !DILexicalBlock(scope: !4, file: !1, line: 35, column: 6)
-!32 = !DILocation(line: 35, column: 6, scope: !4)
-!33 = !DILocation(line: 37, column: 5, scope: !34)
-!34 = distinct !DILexicalBlock(scope: !31, file: !1, line: 36, column: 3)
-!35 = !DILocation(line: 38, column: 3, scope: !34)
-!36 = !DILocation(line: 39, column: 6, scope: !37)
-!37 = distinct !DILexicalBlock(scope: !4, file: !1, line: 39, column: 6)
-!38 = !DILocation(line: 39, column: 6, scope: !4)
-!39 = !DILocation(line: 41, column: 5, scope: !40)
-!40 = distinct !DILexicalBlock(scope: !37, file: !1, line: 40, column: 3)
-!41 = !DILocation(line: 42, column: 3, scope: !40)
-!42 = !DILocation(line: 43, column: 6, scope: !43)
-!43 = distinct !DILexicalBlock(scope: !4, file: !1, line: 43, column: 6)
-!44 = !DILocation(line: 43, column: 6, scope: !4)
-!45 = !DILocation(line: 45, column: 5, scope: !46)
-!46 = distinct !DILexicalBlock(scope: !43, file: !1, line: 44, column: 3)
-!47 = !DILocation(line: 46, column: 3, scope: !46)
-!48 = !DILocation(line: 47, column: 6, scope: !49)
-!49 = distinct !DILexicalBlock(scope: !4, file: !1, line: 47, column: 6)
-!50 = !DILocation(line: 47, column: 6, scope: !4)
-!51 = !DILocation(line: 49, column: 5, scope: !52)
-!52 = distinct !DILexicalBlock(scope: !49, file: !1, line: 48, column: 3)
-!53 = !DILocation(line: 50, column: 3, scope: !52)
-!54 = !DILocation(line: 51, column: 6, scope: !55)
-!55 = distinct !DILexicalBlock(scope: !4, file: !1, line: 51, column: 6)
-!56 = !DILocation(line: 51, column: 6, scope: !4)
-!57 = !DILocation(line: 53, column: 5, scope: !58)
-!58 = distinct !DILexicalBlock(scope: !55, file: !1, line: 52, column: 3)
-!59 = !DILocation(line: 54, column: 3, scope: !58)
-!60 = !DILocation(line: 55, column: 6, scope: !61)
-!61 = distinct !DILexicalBlock(scope: !4, file: !1, line: 55, column: 6)
-!62 = !DILocation(line: 55, column: 6, scope: !4)
-!63 = !DILocation(line: 57, column: 5, scope: !64)
-!64 = distinct !DILexicalBlock(scope: !61, file: !1, line: 56, column: 3)
-!65 = !DILocation(line: 58, column: 3, scope: !64)
-!66 = !DILocation(line: 59, column: 6, scope: !67)
-!67 = distinct !DILexicalBlock(scope: !4, file: !1, line: 59, column: 6)
-!68 = !DILocation(line: 59, column: 6, scope: !4)
-!69 = !DILocation(line: 61, column: 5, scope: !70)
-!70 = distinct !DILexicalBlock(scope: !67, file: !1, line: 60, column: 3)
-!71 = !DILocation(line: 62, column: 3, scope: !70)
-!72 = !DILocation(line: 63, column: 6, scope: !73)
-!73 = distinct !DILexicalBlock(scope: !4, file: !1, line: 63, column: 6)
-!74 = !DILocation(line: 63, column: 6, scope: !4)
-!75 = !DILocation(line: 65, column: 5, scope: !76)
-!76 = distinct !DILexicalBlock(scope: !73, file: !1, line: 64, column: 3)
-!77 = !DILocation(line: 66, column: 3, scope: !76)
-!78 = !DILocation(line: 67, column: 6, scope: !79)
-!79 = distinct !DILexicalBlock(scope: !4, file: !1, line: 67, column: 6)
-!80 = !DILocation(line: 67, column: 6, scope: !4)
-!81 = !DILocation(line: 69, column: 5, scope: !82)
-!82 = distinct !DILexicalBlock(scope: !79, file: !1, line: 68, column: 3)
-!83 = !DILocation(line: 70, column: 3, scope: !82)
-!84 = !DILocation(line: 71, column: 6, scope: !85)
-!85 = distinct !DILexicalBlock(scope: !4, file: !1, line: 71, column: 6)
-!86 = !DILocation(line: 71, column: 6, scope: !4)
-!87 = !DILocation(line: 73, column: 5, scope: !88)
-!88 = distinct !DILexicalBlock(scope: !85, file: !1, line: 72, column: 3)
-!89 = !DILocation(line: 74, column: 3, scope: !88)
-!90 = !DILocation(line: 75, column: 3, scope: !4)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_BindingsVariablesInitialise", metadata !"CCTKi_BindingsVariablesInitialise", metadata !"", i32 21, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 ()* @CCTKi_BindingsVariablesInitialise, null, null, metadata !2, i32 22} ; [ DW_TAG_subprogram ] [line 21] [def] [scope 22] [CCTKi_BindingsVariablesInitialise]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{i32 23, i32 0, metadata !4, null}
+!10 = metadata !{i32 25, i32 0, metadata !11, null}
+!11 = metadata !{i32 786443, metadata !1, metadata !4, i32 24, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!12 = metadata !{i32 26, i32 0, metadata !11, null}
+!13 = metadata !{i32 27, i32 0, metadata !4, null}
+!14 = metadata !{i32 29, i32 0, metadata !15, null}
+!15 = metadata !{i32 786443, metadata !1, metadata !4, i32 28, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!16 = metadata !{i32 30, i32 0, metadata !15, null}
+!17 = metadata !{i32 31, i32 0, metadata !4, null}
+!18 = metadata !{i32 33, i32 0, metadata !19, null}
+!19 = metadata !{i32 786443, metadata !1, metadata !4, i32 32, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!20 = metadata !{i32 34, i32 0, metadata !19, null}
+!21 = metadata !{i32 35, i32 0, metadata !4, null}
+!22 = metadata !{i32 37, i32 0, metadata !23, null}
+!23 = metadata !{i32 786443, metadata !1, metadata !4, i32 36, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!24 = metadata !{i32 38, i32 0, metadata !23, null}
+!25 = metadata !{i32 39, i32 0, metadata !4, null}
+!26 = metadata !{i32 41, i32 0, metadata !27, null}
+!27 = metadata !{i32 786443, metadata !1, metadata !4, i32 40, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!28 = metadata !{i32 42, i32 0, metadata !27, null}
+!29 = metadata !{i32 43, i32 0, metadata !4, null}
+!30 = metadata !{i32 45, i32 0, metadata !31, null}
+!31 = metadata !{i32 786443, metadata !1, metadata !4, i32 44, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!32 = metadata !{i32 46, i32 0, metadata !31, null}
+!33 = metadata !{i32 47, i32 0, metadata !4, null}
+!34 = metadata !{i32 49, i32 0, metadata !35, null}
+!35 = metadata !{i32 786443, metadata !1, metadata !4, i32 48, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!36 = metadata !{i32 50, i32 0, metadata !35, null}
+!37 = metadata !{i32 51, i32 0, metadata !4, null}
+!38 = metadata !{i32 53, i32 0, metadata !39, null}
+!39 = metadata !{i32 786443, metadata !1, metadata !4, i32 52, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!40 = metadata !{i32 54, i32 0, metadata !39, null}
+!41 = metadata !{i32 55, i32 0, metadata !4, null}
+!42 = metadata !{i32 57, i32 0, metadata !43, null}
+!43 = metadata !{i32 786443, metadata !1, metadata !4, i32 56, i32 0, i32 8} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!44 = metadata !{i32 58, i32 0, metadata !43, null} ; [ DW_TAG_imported_module ]
+!45 = metadata !{i32 59, i32 0, metadata !4, null}
+!46 = metadata !{i32 61, i32 0, metadata !47, null}
+!47 = metadata !{i32 786443, metadata !1, metadata !4, i32 60, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!48 = metadata !{i32 62, i32 0, metadata !47, null}
+!49 = metadata !{i32 63, i32 0, metadata !4, null}
+!50 = metadata !{i32 65, i32 0, metadata !51, null}
+!51 = metadata !{i32 786443, metadata !1, metadata !4, i32 64, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!52 = metadata !{i32 66, i32 0, metadata !51, null}
+!53 = metadata !{i32 67, i32 0, metadata !4, null}
+!54 = metadata !{i32 69, i32 0, metadata !55, null}
+!55 = metadata !{i32 786443, metadata !1, metadata !4, i32 68, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!56 = metadata !{i32 70, i32 0, metadata !55, null}
+!57 = metadata !{i32 71, i32 0, metadata !4, null}
+!58 = metadata !{i32 73, i32 0, metadata !59, null}
+!59 = metadata !{i32 786443, metadata !1, metadata !4, i32 72, i32 0, i32 12} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BindingsVariables.c]
+!60 = metadata !{i32 74, i32 0, metadata !59, null}
+!61 = metadata !{i32 75, i32 0, metadata !4, null}

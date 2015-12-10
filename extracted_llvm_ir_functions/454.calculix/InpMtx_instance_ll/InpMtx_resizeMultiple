@@ -1,16 +1,17 @@
 define double @InpMtx_resizeMultiple(%struct._InpMtx* %inpmtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !72, metadata !159), !dbg !246
-  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !247
-  br i1 %1, label %2, label %5, !dbg !249
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !71), !dbg !200
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !201
+  br i1 %cmp, label %if.then, label %if.end, !dbg !201
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !250, !tbaa !166
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([55 x i8]* @.str7, i64 0, i64 0), %struct._InpMtx* null) #5, !dbg !252
-  tail call void @exit(i32 -1) #6, !dbg !253
-  unreachable, !dbg !253
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !202, !tbaa !158
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str7, i64 0, i64 0), %struct._InpMtx* null) #5, !dbg !202
+  tail call void @exit(i32 -1) #6, !dbg !204
+  unreachable, !dbg !204
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 5, !dbg !254
-  %7 = load double* %6, align 8, !dbg !254, !tbaa !255
-  ret double %7, !dbg !256
+if.end:                                           ; preds = %entry
+  %resizeMultiple = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 5, !dbg !205
+  %1 = load double* %resizeMultiple, align 8, !dbg !205, !tbaa !206
+  ret double %1, !dbg !205
 }

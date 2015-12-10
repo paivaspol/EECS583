@@ -1,33 +1,34 @@
 define void @InpMtx_setMaxnvector(%struct._InpMtx* %inpmtx, i32 %newmaxnvector) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !139, metadata !159), !dbg !550
-  tail call void @llvm.dbg.value(metadata i32 %newmaxnvector, i64 0, metadata !140, metadata !159), !dbg !551
-  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !552
-  %2 = icmp slt i32 %newmaxnvector, 0, !dbg !554
-  %or.cond = or i1 %1, %2, !dbg !555
-  br i1 %or.cond, label %3, label %6, !dbg !555
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !138), !dbg !370
+  tail call void @llvm.dbg.value(metadata !{i32 %newmaxnvector}, i64 0, metadata !139), !dbg !371
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !372
+  %cmp1 = icmp slt i32 %newmaxnvector, 0, !dbg !372
+  %or.cond = or i1 %cmp, %cmp1, !dbg !372
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !372
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !556, !tbaa !166
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([55 x i8]* @.str24, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %newmaxnvector) #5, !dbg !558
-  tail call void @exit(i32 -1) #6, !dbg !559
-  unreachable, !dbg !559
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !373, !tbaa !158
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str24, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %newmaxnvector) #5, !dbg !373
+  tail call void @exit(i32 -1) #6, !dbg !375
+  unreachable, !dbg !375
 
-; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 9, !dbg !560
-  %8 = load i32* %7, align 4, !dbg !560, !tbaa !233
-  %9 = icmp eq i32 %8, %newmaxnvector, !dbg !562
-  br i1 %9, label %14, label %10, !dbg !563
+if.end:                                           ; preds = %entry
+  %maxnvector = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 9, !dbg !376
+  %1 = load i32* %maxnvector, align 4, !dbg !376, !tbaa !163
+  %cmp2 = icmp eq i32 %1, %newmaxnvector, !dbg !376
+  br i1 %cmp2, label %if.end4, label %if.then3, !dbg !376
 
-; <label>:10                                      ; preds = %6
-  %11 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 11, !dbg !564
-  tail call void @IV_setMaxsize(%struct._IV* %11, i32 %newmaxnvector) #5, !dbg !566
-  %12 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 12, !dbg !567
-  tail call void @IV_setMaxsize(%struct._IV* %12, i32 %newmaxnvector) #5, !dbg !568
-  %13 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 13, !dbg !569
-  tail call void @IV_setMaxsize(%struct._IV* %13, i32 %newmaxnvector) #5, !dbg !570
-  br label %14, !dbg !571
+if.then3:                                         ; preds = %if.end
+  %vecidsIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 11, !dbg !377
+  tail call void @IV_setMaxsize(%struct._IV* %vecidsIV, i32 %newmaxnvector) #5, !dbg !377
+  %sizesIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 12, !dbg !379
+  tail call void @IV_setMaxsize(%struct._IV* %sizesIV, i32 %newmaxnvector) #5, !dbg !379
+  %offsetsIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 13, !dbg !380
+  tail call void @IV_setMaxsize(%struct._IV* %offsetsIV, i32 %newmaxnvector) #5, !dbg !380
+  br label %if.end4, !dbg !381
 
-; <label>:14                                      ; preds = %6, %10
-  store i32 %newmaxnvector, i32* %7, align 4, !dbg !572, !tbaa !233
-  ret void, !dbg !573
+if.end4:                                          ; preds = %if.end, %if.then3
+  store i32 %newmaxnvector, i32* %maxnvector, align 4, !dbg !382, !tbaa !163
+  ret void, !dbg !383
 }

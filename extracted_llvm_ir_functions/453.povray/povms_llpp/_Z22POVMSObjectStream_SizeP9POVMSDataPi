@@ -1,25 +1,26 @@
 define i32 @_Z22POVMSObjectStream_SizeP9POVMSDataPi(%struct.POVMSData* %object, i32* %streamsize) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.POVMSData* %object, i64 0, metadata !583, metadata !1201), !dbg !3633
-  tail call void @llvm.dbg.value(metadata i32* %streamsize, i64 0, metadata !584, metadata !1201), !dbg !3634
-  %1 = icmp eq %struct.POVMSData* %object, null, !dbg !3635
-  br i1 %1, label %10, label %2, !dbg !3637
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSData* %object}, i64 0, metadata !552), !dbg !2175
+  tail call void @llvm.dbg.value(metadata !{i32* %streamsize}, i64 0, metadata !553), !dbg !2175
+  %cmp = icmp eq %struct.POVMSData* %object, null, !dbg !2176
+  br i1 %cmp, label %return, label %if.end, !dbg !2176
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.POVMSData* %object, i64 0, i32 0, !dbg !3638
-  %4 = load i32* %3, align 4, !dbg !3638, !tbaa !1539
-  %5 = icmp eq i32 %4, 1280262987, !dbg !3640
-  br i1 %5, label %10, label %6, !dbg !3641
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct.POVMSData* %object, i64 0, i32 0, !dbg !2177
+  %0 = load i32* %type, align 4, !dbg !2177, !tbaa !937
+  %cmp1 = icmp eq i32 %0, 1280262987, !dbg !2177
+  br i1 %cmp1, label %return, label %if.end3, !dbg !2177
 
-; <label>:6                                       ; preds = %2
-  %7 = icmp eq i32* %streamsize, null, !dbg !3642
-  br i1 %7, label %10, label %8, !dbg !3644
+if.end3:                                          ; preds = %if.end
+  %cmp4 = icmp eq i32* %streamsize, null, !dbg !2178
+  br i1 %cmp4, label %return, label %if.end6, !dbg !2178
 
-; <label>:8                                       ; preds = %6
-  %9 = tail call i32 @_Z16POVMSStream_SizeP9POVMSData(%struct.POVMSData* %object) #8, !dbg !3645
-  store i32 %9, i32* %streamsize, align 4, !dbg !3646, !tbaa !1260
-  br label %10, !dbg !3647
+if.end6:                                          ; preds = %if.end3
+  %call = tail call i32 @_Z16POVMSStream_SizeP9POVMSData(%struct.POVMSData* %object) #8, !dbg !2179
+  store i32 %call, i32* %streamsize, align 4, !dbg !2179, !tbaa !937
+  br label %return, !dbg !2180
 
-; <label>:10                                      ; preds = %6, %2, %0, %8
-  %.0 = phi i32 [ 0, %8 ], [ -1, %0 ], [ 2, %2 ], [ -1, %6 ]
-  ret i32 %.0, !dbg !3648
+return:                                           ; preds = %if.end3, %if.end, %entry, %if.end6
+  %retval.0 = phi i32 [ 0, %if.end6 ], [ -1, %entry ], [ 2, %if.end ], [ -1, %if.end3 ]
+  ret i32 %retval.0, !dbg !2180
 }

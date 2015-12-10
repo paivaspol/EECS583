@@ -1,41 +1,42 @@
 define void @A2_transpose(%struct._A2* %mtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._A2* %mtx, i64 0, metadata !44, metadata !355), !dbg !485
-  %1 = icmp eq %struct._A2* %mtx, null, !dbg !486
-  br i1 %1, label %2, label %5, !dbg !488
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._A2* %mtx}, i64 0, metadata !43), !dbg !412
+  %cmp = icmp eq %struct._A2* %mtx, null, !dbg !413
+  br i1 %cmp, label %if.then, label %if.end, !dbg !413
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !489, !tbaa !362
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([46 x i8]* @.str8, i64 0, i64 0), %struct._A2* null) #6, !dbg !491
-  tail call void @exit(i32 -1) #7, !dbg !492
-  unreachable, !dbg !492
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !414, !tbaa !348
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str8, i64 0, i64 0), %struct._A2* null) #6, !dbg !414
+  tail call void @exit(i32 -1) #7, !dbg !416
+  unreachable, !dbg !416
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0, !dbg !493
-  %7 = load i32* %6, align 4, !dbg !493, !tbaa !370
-  %.off = add i32 %7, -1, !dbg !495
-  %switch = icmp ult i32 %.off, 2, !dbg !495
-  br i1 %switch, label %11, label %8, !dbg !495
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0, !dbg !417
+  %1 = load i32* %type, align 4, !dbg !417, !tbaa !353
+  %.off = add i32 %1, -1, !dbg !417
+  %switch = icmp ult i32 %.off, 2, !dbg !417
+  br i1 %switch, label %if.end7, label %if.then4, !dbg !417
 
-; <label>:8                                       ; preds = %5
-  %9 = load %struct.__sFILE** @__stderrp, align 8, !dbg !496, !tbaa !362
-  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* getelementptr inbounds ([89 x i8]* @.str9, i64 0, i64 0), %struct._A2* %mtx, i32 %7) #6, !dbg !498
-  tail call void @exit(i32 -1) #7, !dbg !499
-  unreachable, !dbg !499
+if.then4:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !418, !tbaa !348
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([89 x i8]* @.str9, i64 0, i64 0), %struct._A2* %mtx, i32 %1) #6, !dbg !418
+  tail call void @exit(i32 -1) #7, !dbg !420
+  unreachable, !dbg !420
 
-; <label>:11                                      ; preds = %5
-  %12 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1, !dbg !500
-  %13 = load i32* %12, align 4, !dbg !500, !tbaa !413
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !46, metadata !355), !dbg !501
-  %14 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2, !dbg !502
-  %15 = load i32* %14, align 4, !dbg !502, !tbaa !416
-  store i32 %15, i32* %12, align 4, !dbg !503, !tbaa !413
-  store i32 %13, i32* %14, align 4, !dbg !504, !tbaa !416
-  %16 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3, !dbg !505
-  %17 = load i32* %16, align 4, !dbg !505, !tbaa !421
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !45, metadata !355), !dbg !506
-  %18 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4, !dbg !507
-  %19 = load i32* %18, align 4, !dbg !507, !tbaa !424
-  store i32 %19, i32* %16, align 4, !dbg !508, !tbaa !421
-  store i32 %17, i32* %18, align 4, !dbg !509, !tbaa !424
-  ret void, !dbg !510
+if.end7:                                          ; preds = %if.end
+  %n18 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1, !dbg !421
+  %3 = load i32* %n18, align 4, !dbg !421, !tbaa !353
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !45), !dbg !421
+  %n2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2, !dbg !422
+  %4 = load i32* %n2, align 4, !dbg !422, !tbaa !353
+  store i32 %4, i32* %n18, align 4, !dbg !422, !tbaa !353
+  store i32 %3, i32* %n2, align 4, !dbg !423, !tbaa !353
+  %inc111 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3, !dbg !424
+  %5 = load i32* %inc111, align 4, !dbg !424, !tbaa !353
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !44), !dbg !424
+  %inc2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4, !dbg !425
+  %6 = load i32* %inc2, align 4, !dbg !425, !tbaa !353
+  store i32 %6, i32* %inc111, align 4, !dbg !425, !tbaa !353
+  store i32 %5, i32* %inc2, align 4, !dbg !426, !tbaa !353
+  ret void, !dbg !427
 }

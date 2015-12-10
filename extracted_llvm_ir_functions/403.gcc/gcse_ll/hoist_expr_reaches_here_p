@@ -1,87 +1,92 @@
 define internal fastcc i32 @hoist_expr_reaches_here_p(i32 %expr_index, %struct.basic_block_def* nocapture %bb, i8* %visited) #0 {
 entry:
-  %cmp = icmp eq i8* %visited, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !3053, i64 0, metadata !720), !dbg !3054
+  tail call void @llvm.dbg.value(metadata !321, i64 0, metadata !725), !dbg !3055
+  %cmp = icmp eq i8* %visited, null, !dbg !3056
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3056
 
 if.then:                                          ; preds = %entry
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %conv = sext i32 %0 to i64
-  %call = tail call noalias i8* @xcalloc(i64 %conv, i64 1) #6
-  br label %if.end
+  tail call void @llvm.dbg.value(metadata !1788, i64 0, metadata !725), !dbg !3057
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !3059, !tbaa !1735
+  %conv = sext i32 %0 to i64, !dbg !3059
+  %call = tail call noalias i8* @xcalloc(i64 %conv, i64 1) #7, !dbg !3059
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !723), !dbg !3059
+  br label %if.end, !dbg !3060
 
 if.end:                                           ; preds = %if.then, %entry
   %visited_allocated_locally.0 = phi i32 [ 1, %if.then ], [ 0, %entry ]
   %visited.addr.0 = phi i8* [ %call, %if.then ], [ %visited, %entry ]
-  %pred1 = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 4
-  %div = lshr i32 %expr_index, 6
-  %idxprom10 = zext i32 %div to i64
-  %pred.03 = load %struct.edge_def** %pred1, align 8
-  %cmp24 = icmp eq %struct.edge_def* %pred.03, null
-  br i1 %cmp24, label %for.end, label %for.body.lr.ph
+  %pred1 = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 4, !dbg !3061
+  %div = lshr i32 %expr_index, 6, !dbg !3062
+  %idxprom10 = zext i32 %div to i64, !dbg !3062
+  %pred.03 = load %struct.edge_def** %pred1, align 8, !dbg !3061
+  %cmp24 = icmp eq %struct.edge_def* %pred.03, null, !dbg !3061
+  br i1 %cmp24, label %for.end, label %for.body.lr.ph, !dbg !3061
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %rem = and i32 %expr_index, 63
-  %sh_prom = zext i32 %rem to i64
-  %1 = shl i64 1, %sh_prom
-  br label %for.body
+  %rem = and i32 %expr_index, 63, !dbg !3062
+  %sh_prom = zext i32 %rem to i64, !dbg !3062
+  %1 = shl i64 1, %sh_prom, !dbg !3062
+  br label %for.body, !dbg !3061
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc
   %pred.05 = phi %struct.edge_def* [ %pred.03, %for.body.lr.ph ], [ %pred.0, %for.inc ]
-  %src = getelementptr inbounds %struct.edge_def* %pred.05, i64 0, i32 2
-  %2 = load %struct.basic_block_def** %src, align 8, !tbaa !0
-  %cmp5 = icmp eq %struct.basic_block_def* %2, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0)
-  br i1 %cmp5, label %for.end, label %if.else
+  %src = getelementptr inbounds %struct.edge_def* %pred.05, i64 0, i32 2, !dbg !3063
+  %2 = load %struct.basic_block_def** %src, align 8, !dbg !3063, !tbaa !1729
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %2}, i64 0, metadata !726), !dbg !3063
+  %cmp5 = icmp eq %struct.basic_block_def* %2, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0), !dbg !3064
+  br i1 %cmp5, label %for.end, label %if.else, !dbg !3064
 
 if.else:                                          ; preds = %for.body
-  %index = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 11
-  %3 = load i32* %index, align 4, !tbaa !3
-  %idxprom = sext i32 %3 to i64
-  %arrayidx = getelementptr inbounds i8* %visited.addr.0, i64 %idxprom
-  %4 = load i8* %arrayidx, align 1, !tbaa !1
-  %tobool = icmp eq i8 %4, 0
-  br i1 %tobool, label %if.else9, label %for.inc
+  %index = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 11, !dbg !3065
+  %3 = load i32* %index, align 4, !dbg !3065, !tbaa !1735
+  %idxprom = sext i32 %3 to i64, !dbg !3065
+  %arrayidx = getelementptr inbounds i8* %visited.addr.0, i64 %idxprom, !dbg !3065
+  %4 = load i8* %arrayidx, align 1, !dbg !3065, !tbaa !1730
+  %tobool = icmp eq i8 %4, 0, !dbg !3065
+  br i1 %tobool, label %if.else9, label %for.inc, !dbg !3065
 
 if.else9:                                         ; preds = %if.else
-  %5 = load %struct.simple_bitmap_def*** @comp, align 8, !tbaa !0
-  %arrayidx13 = getelementptr inbounds %struct.simple_bitmap_def** %5, i64 %idxprom
-  %6 = load %struct.simple_bitmap_def** %arrayidx13, align 8, !tbaa !0
-  %arrayidx14 = getelementptr inbounds %struct.simple_bitmap_def* %6, i64 0, i32 3, i64 %idxprom10
-  %7 = load i64* %arrayidx14, align 8, !tbaa !5
-  %and1 = and i64 %7, %1
-  %tobool15 = icmp eq i64 %and1, 0
-  br i1 %tobool15, label %if.else17, label %for.end
+  %5 = load %struct.simple_bitmap_def*** @comp, align 8, !dbg !3062, !tbaa !1729
+  %arrayidx13 = getelementptr inbounds %struct.simple_bitmap_def** %5, i64 %idxprom, !dbg !3062
+  %6 = load %struct.simple_bitmap_def** %arrayidx13, align 8, !dbg !3062, !tbaa !1729
+  %arrayidx14 = getelementptr inbounds %struct.simple_bitmap_def* %6, i64 0, i32 3, i64 %idxprom10, !dbg !3062
+  %7 = load i64* %arrayidx14, align 8, !dbg !3062, !tbaa !1854
+  %and1 = and i64 %7, %1, !dbg !3062
+  %tobool15 = icmp eq i64 %and1, 0, !dbg !3062
+  br i1 %tobool15, label %if.else17, label %for.end, !dbg !3062
 
 if.else17:                                        ; preds = %if.else9
-  %8 = load %struct.simple_bitmap_def*** @transp, align 8, !tbaa !0
-  %arrayidx22 = getelementptr inbounds %struct.simple_bitmap_def** %8, i64 %idxprom
-  %9 = load %struct.simple_bitmap_def** %arrayidx22, align 8, !tbaa !0
-  %arrayidx24 = getelementptr inbounds %struct.simple_bitmap_def* %9, i64 0, i32 3, i64 %idxprom10
-  %10 = load i64* %arrayidx24, align 8, !tbaa !5
-  %and282 = and i64 %10, %1
-  %tobool29 = icmp eq i64 %and282, 0
-  br i1 %tobool29, label %for.end, label %if.else31
+  %8 = load %struct.simple_bitmap_def*** @transp, align 8, !dbg !3066, !tbaa !1729
+  %arrayidx22 = getelementptr inbounds %struct.simple_bitmap_def** %8, i64 %idxprom, !dbg !3066
+  %9 = load %struct.simple_bitmap_def** %arrayidx22, align 8, !dbg !3066, !tbaa !1729
+  %arrayidx24 = getelementptr inbounds %struct.simple_bitmap_def* %9, i64 0, i32 3, i64 %idxprom10, !dbg !3066
+  %10 = load i64* %arrayidx24, align 8, !dbg !3066, !tbaa !1854
+  %and282 = and i64 %10, %1, !dbg !3066
+  %tobool29 = icmp eq i64 %and282, 0, !dbg !3066
+  br i1 %tobool29, label %for.end, label %if.else31, !dbg !3066
 
 if.else31:                                        ; preds = %if.else17
-  store i8 1, i8* %arrayidx, align 1, !tbaa !1
-  %call35 = tail call fastcc i32 @hoist_expr_reaches_here_p(i32 %expr_index, %struct.basic_block_def* %2, i8* %visited.addr.0) #7
-  %tobool36 = icmp eq i32 %call35, 0
-  br i1 %tobool36, label %for.end, label %for.inc
+  store i8 1, i8* %arrayidx, align 1, !dbg !3067, !tbaa !1730
+  %call35 = tail call fastcc i32 @hoist_expr_reaches_here_p(i32 %expr_index, %struct.basic_block_def* %2, i8* %visited.addr.0) #8, !dbg !3069
+  %tobool36 = icmp eq i32 %call35, 0, !dbg !3069
+  br i1 %tobool36, label %for.end, label %for.inc, !dbg !3069
 
 for.inc:                                          ; preds = %if.else31, %if.else
-  %pred_next = getelementptr inbounds %struct.edge_def* %pred.05, i64 0, i32 0
-  %pred.0 = load %struct.edge_def** %pred_next, align 8
-  %cmp2 = icmp eq %struct.edge_def* %pred.0, null
-  br i1 %cmp2, label %for.end, label %for.body
+  %pred_next = getelementptr inbounds %struct.edge_def* %pred.05, i64 0, i32 0, !dbg !3061
+  %pred.0 = load %struct.edge_def** %pred_next, align 8, !dbg !3061
+  %cmp2 = icmp eq %struct.edge_def* %pred.0, null, !dbg !3061
+  br i1 %cmp2, label %for.end, label %for.body, !dbg !3061
 
 for.end:                                          ; preds = %for.inc, %if.else31, %if.else17, %if.else9, %for.body, %if.end
   %cmp2.lcssa = phi i32 [ 1, %if.end ], [ 0, %for.body ], [ 0, %if.else9 ], [ 0, %if.else17 ], [ 0, %if.else31 ], [ 1, %for.inc ]
-  %tobool43 = icmp eq i32 %visited_allocated_locally.0, 0
-  br i1 %tobool43, label %if.end45, label %if.then44
+  %tobool43 = icmp eq i32 %visited_allocated_locally.0, 0, !dbg !3070
+  br i1 %tobool43, label %if.end45, label %if.then44, !dbg !3070
 
 if.then44:                                        ; preds = %for.end
-  tail call void @free(i8* %visited.addr.0) #6
-  br label %if.end45
+  tail call void @free(i8* %visited.addr.0) #7, !dbg !3071
+  br label %if.end45, !dbg !3071
 
 if.end45:                                         ; preds = %for.end, %if.then44
-  ret i32 %cmp2.lcssa
+  ret i32 %cmp2.lcssa, !dbg !3072
 }

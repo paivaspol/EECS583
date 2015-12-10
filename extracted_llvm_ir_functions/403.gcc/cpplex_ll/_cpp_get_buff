@@ -1,71 +1,81 @@
-define %struct._cpp_buff* @_cpp_get_buff(%struct.cpp_reader* nocapture %pfile, i64 %min_size) #1 {
+define %struct._cpp_buff* @_cpp_get_buff(%struct.cpp_reader* nocapture %pfile, i64 %min_size) #2 {
 entry:
-  %free_buffs = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 8
-  %0 = load %struct._cpp_buff** %free_buffs, align 8, !tbaa !0
-  %cmp22 = icmp eq %struct._cpp_buff* %0, null
-  br i1 %cmp22, label %if.then, label %if.end.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !735), !dbg !2270
+  tail call void @llvm.dbg.value(metadata !{i64 %min_size}, i64 0, metadata !736), !dbg !2271
+  %free_buffs = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 8, !dbg !2272
+  tail call void @llvm.dbg.value(metadata !{%struct._cpp_buff** %free_buffs}, i64 0, metadata !738), !dbg !2272
+  %0 = load %struct._cpp_buff** %free_buffs, align 8, !dbg !2273, !tbaa !995
+  %cmp22 = icmp eq %struct._cpp_buff* %0, null, !dbg !2273
+  br i1 %cmp22, label %if.then, label %if.end.lr.ph, !dbg !2273
 
 if.end.lr.ph:                                     ; preds = %entry
-  %mul = mul i64 %min_size, 3
-  %div = lshr i64 %mul, 1
-  %add = add i64 %div, 8000
-  br label %if.end
+  %mul = mul i64 %min_size, 3, !dbg !2274
+  %div = lshr i64 %mul, 1, !dbg !2274
+  %add = add i64 %div, 8000, !dbg !2274
+  br label %if.end, !dbg !2273
 
 if.then:                                          ; preds = %for.inc, %entry
-  %cmp.i = icmp ult i64 %min_size, 8000
-  %len.op.i = add i64 %min_size, 7
-  %len.op.op.i = and i64 %len.op.i, -8
-  %and.i = select i1 %cmp.i, i64 8000, i64 %len.op.op.i
-  %add1.i = add i64 %and.i, 32
-  %call.i = tail call noalias i8* @xmalloc(i64 %add1.i) #9
-  %add.ptr.i = getelementptr inbounds i8* %call.i, i64 %and.i
-  %1 = bitcast i8* %add.ptr.i to %struct._cpp_buff*
-  %add.ptr.sum.i = add i64 %and.i, 8
-  %base2.i = getelementptr inbounds i8* %call.i, i64 %add.ptr.sum.i
-  %2 = bitcast i8* %base2.i to i8**
-  store i8* %call.i, i8** %2, align 8, !tbaa !0
-  %add.ptr.sum15.i = add i64 %and.i, 16
-  %cur.i = getelementptr inbounds i8* %call.i, i64 %add.ptr.sum15.i
-  %3 = bitcast i8* %cur.i to i8**
-  store i8* %call.i, i8** %3, align 8, !tbaa !0
-  %add.ptr.sum16.i = add i64 %and.i, 24
-  %limit.i = getelementptr inbounds i8* %call.i, i64 %add.ptr.sum16.i
-  %4 = bitcast i8* %limit.i to i8**
-  store i8* %add.ptr.i, i8** %4, align 8, !tbaa !0
-  %next.i = bitcast i8* %add.ptr.i to %struct._cpp_buff**
-  store %struct._cpp_buff* null, %struct._cpp_buff** %next.i, align 8, !tbaa !0
-  br label %return
+  tail call void @llvm.dbg.value(metadata !{i64 %min_size}, i64 0, metadata !2275) #4, !dbg !2277
+  %cmp.i = icmp ult i64 %min_size, 8000, !dbg !2278
+  %len.op.i = add i64 %min_size, 7, !dbg !2279
+  %len.op.op.i = and i64 %len.op.i, -8, !dbg !2279
+  %and.i = select i1 %cmp.i, i64 8000, i64 %len.op.op.i, !dbg !2279
+  tail call void @llvm.dbg.value(metadata !{i64 %and.i}, i64 0, metadata !2275) #4, !dbg !2279
+  %add1.i = add i64 %and.i, 32, !dbg !2280
+  %call.i = tail call noalias i8* @xmalloc(i64 %add1.i) #10, !dbg !2280
+  tail call void @llvm.dbg.value(metadata !{i8* %call.i}, i64 0, metadata !2281) #4, !dbg !2280
+  %add.ptr.i = getelementptr inbounds i8* %call.i, i64 %and.i, !dbg !2282
+  %1 = bitcast i8* %add.ptr.i to %struct._cpp_buff*, !dbg !2282
+  tail call void @llvm.dbg.value(metadata !{%struct._cpp_buff* %1}, i64 0, metadata !2283) #4, !dbg !2282
+  %add.ptr.sum.i = add i64 %and.i, 8, !dbg !2284
+  %base2.i = getelementptr inbounds i8* %call.i, i64 %add.ptr.sum.i, !dbg !2284
+  %2 = bitcast i8* %base2.i to i8**, !dbg !2284
+  store i8* %call.i, i8** %2, align 8, !dbg !2284, !tbaa !995
+  %add.ptr.sum15.i = add i64 %and.i, 16, !dbg !2285
+  %cur.i = getelementptr inbounds i8* %call.i, i64 %add.ptr.sum15.i, !dbg !2285
+  %3 = bitcast i8* %cur.i to i8**, !dbg !2285
+  store i8* %call.i, i8** %3, align 8, !dbg !2285, !tbaa !995
+  %add.ptr.sum16.i = add i64 %and.i, 24, !dbg !2286
+  %limit.i = getelementptr inbounds i8* %call.i, i64 %add.ptr.sum16.i, !dbg !2286
+  %4 = bitcast i8* %limit.i to i8**, !dbg !2286
+  store i8* %add.ptr.i, i8** %4, align 8, !dbg !2286, !tbaa !995
+  %next.i = bitcast i8* %add.ptr.i to %struct._cpp_buff**, !dbg !2287
+  store %struct._cpp_buff* null, %struct._cpp_buff** %next.i, align 8, !dbg !2287, !tbaa !995
+  br label %return, !dbg !2276
 
 if.end:                                           ; preds = %if.end.lr.ph, %for.inc
   %5 = phi %struct._cpp_buff* [ %0, %if.end.lr.ph ], [ %8, %for.inc ]
   %p.023 = phi %struct._cpp_buff** [ %free_buffs, %if.end.lr.ph ], [ %next, %for.inc ]
-  %limit = getelementptr inbounds %struct._cpp_buff* %5, i64 0, i32 3
-  %6 = load i8** %limit, align 8, !tbaa !0
-  %base = getelementptr inbounds %struct._cpp_buff* %5, i64 0, i32 1
-  %7 = load i8** %base, align 8, !tbaa !0
-  %sub.ptr.lhs.cast = ptrtoint i8* %6 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %7 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %cmp1 = icmp ult i64 %sub.ptr.sub, %min_size
-  %cmp2 = icmp ugt i64 %sub.ptr.sub, %add
-  %or.cond = or i1 %cmp1, %cmp2
-  %next = getelementptr inbounds %struct._cpp_buff* %5, i64 0, i32 0
-  %8 = load %struct._cpp_buff** %next, align 8, !tbaa !0
-  br i1 %or.cond, label %for.inc, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct._cpp_buff* %5}, i64 0, metadata !737), !dbg !2288
+  %limit = getelementptr inbounds %struct._cpp_buff* %5, i64 0, i32 3, !dbg !2289
+  %6 = load i8** %limit, align 8, !dbg !2289, !tbaa !995
+  %base = getelementptr inbounds %struct._cpp_buff* %5, i64 0, i32 1, !dbg !2289
+  %7 = load i8** %base, align 8, !dbg !2289, !tbaa !995
+  %sub.ptr.lhs.cast = ptrtoint i8* %6 to i64, !dbg !2289
+  %sub.ptr.rhs.cast = ptrtoint i8* %7 to i64, !dbg !2289
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !2289
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.sub}, i64 0, metadata !740), !dbg !2289
+  %cmp1 = icmp ult i64 %sub.ptr.sub, %min_size, !dbg !2274
+  %cmp2 = icmp ugt i64 %sub.ptr.sub, %add, !dbg !2274
+  %or.cond = or i1 %cmp1, %cmp2, !dbg !2274
+  %next = getelementptr inbounds %struct._cpp_buff* %5, i64 0, i32 0, !dbg !2272
+  %8 = load %struct._cpp_buff** %next, align 8, !dbg !2273, !tbaa !995
+  br i1 %or.cond, label %for.inc, label %for.end, !dbg !2274
 
 for.inc:                                          ; preds = %if.end
-  %cmp = icmp eq %struct._cpp_buff* %8, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._cpp_buff** %next}, i64 0, metadata !738), !dbg !2272
+  %cmp = icmp eq %struct._cpp_buff* %8, null, !dbg !2273
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2273
 
 for.end:                                          ; preds = %if.end
-  store %struct._cpp_buff* %8, %struct._cpp_buff** %p.023, align 8, !tbaa !0
-  store %struct._cpp_buff* null, %struct._cpp_buff** %next, align 8, !tbaa !0
-  %9 = load i8** %base, align 8, !tbaa !0
-  %cur = getelementptr inbounds %struct._cpp_buff* %5, i64 0, i32 2
-  store i8* %9, i8** %cur, align 8, !tbaa !0
-  br label %return
+  store %struct._cpp_buff* %8, %struct._cpp_buff** %p.023, align 8, !dbg !2290, !tbaa !995
+  store %struct._cpp_buff* null, %struct._cpp_buff** %next, align 8, !dbg !2291, !tbaa !995
+  %9 = load i8** %base, align 8, !dbg !2292, !tbaa !995
+  %cur = getelementptr inbounds %struct._cpp_buff* %5, i64 0, i32 2, !dbg !2292
+  store i8* %9, i8** %cur, align 8, !dbg !2292, !tbaa !995
+  br label %return, !dbg !2293
 
 return:                                           ; preds = %for.end, %if.then
   %retval.0 = phi %struct._cpp_buff* [ %1, %if.then ], [ %5, %for.end ]
-  ret %struct._cpp_buff* %retval.0
+  ret %struct._cpp_buff* %retval.0, !dbg !2294
 }

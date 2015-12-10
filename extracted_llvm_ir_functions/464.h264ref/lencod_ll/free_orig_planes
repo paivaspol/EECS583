@@ -1,53 +1,56 @@
 define void @free_orig_planes() #0 {
-  %1 = load i16*** @imgY_org_frm, align 8, !dbg !4721, !tbaa !1439
-  tail call void @free_mem2Dpel(i16** %1) #7, !dbg !4722
-  %2 = load %struct.ImageParameters** @img, align 8, !dbg !4723, !tbaa !1439
-  %3 = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 159, !dbg !4725
-  %4 = load i32* %3, align 4, !dbg !4725, !tbaa !2006
-  %5 = icmp eq i32 %4, 0, !dbg !4726
-  br i1 %5, label %8, label %6, !dbg !4727
+entry:
+  %0 = load i16*** @imgY_org_frm, align 8, !dbg !2524, !tbaa !1428
+  tail call void @free_mem2Dpel(i16** %0) #7, !dbg !2524
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !2525, !tbaa !1428
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 159, !dbg !2525
+  %2 = load i32* %yuv_format, align 4, !dbg !2525, !tbaa !1424
+  %cmp = icmp eq i32 %2, 0, !dbg !2525
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2525
 
-; <label>:6                                       ; preds = %0
-  %7 = load i16**** @imgUV_org_frm, align 8, !dbg !4728, !tbaa !1439
-  tail call void @free_mem3Dpel(i16*** %7, i32 2) #7, !dbg !4729
-  br label %8, !dbg !4729
+if.then:                                          ; preds = %entry
+  %3 = load i16**** @imgUV_org_frm, align 8, !dbg !2526, !tbaa !1428
+  tail call void @free_mem3Dpel(i16*** %3, i32 2) #7, !dbg !2526
+  br label %if.end, !dbg !2526
 
-; <label>:8                                       ; preds = %0, %6
-  %9 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !dbg !4730, !tbaa !1439
-  %10 = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %9, i64 0, i32 25, !dbg !4732
-  %11 = load i32* %10, align 4, !dbg !4732, !tbaa !2120
-  %12 = icmp eq i32 %11, 0, !dbg !4730
-  br i1 %12, label %13, label %33, !dbg !4733
+if.end:                                           ; preds = %entry, %if.then
+  %4 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !dbg !2527, !tbaa !1428
+  %frame_mbs_only_flag = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %4, i64 0, i32 25, !dbg !2527
+  %5 = load i32* %frame_mbs_only_flag, align 4, !dbg !2527, !tbaa !1425
+  %tobool = icmp eq i32 %5, 0, !dbg !2527
+  br i1 %tobool, label %if.then1, label %if.end9, !dbg !2527
 
-; <label>:13                                      ; preds = %8
-  %14 = load i16*** @imgY_org_top, align 8, !dbg !4734, !tbaa !1439
-  %15 = load i16*** @imgY_org_bot, align 8, !dbg !4736, !tbaa !1439
-  tail call void @free_top_bot_planes(i16** %14, i16** %15) #7, !dbg !4737
-  %16 = load %struct.ImageParameters** @img, align 8, !dbg !4738, !tbaa !1439
-  %17 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 159, !dbg !4740
-  %18 = load i32* %17, align 4, !dbg !4740, !tbaa !2006
-  %19 = icmp eq i32 %18, 0, !dbg !4741
-  br i1 %19, label %33, label %20, !dbg !4742
+if.then1:                                         ; preds = %if.end
+  %6 = load i16*** @imgY_org_top, align 8, !dbg !2528, !tbaa !1428
+  %7 = load i16*** @imgY_org_bot, align 8, !dbg !2528, !tbaa !1428
+  tail call void @free_top_bot_planes(i16** %6, i16** %7) #7, !dbg !2528
+  %8 = load %struct.ImageParameters** @img, align 8, !dbg !2530, !tbaa !1428
+  %yuv_format2 = getelementptr inbounds %struct.ImageParameters* %8, i64 0, i32 159, !dbg !2530
+  %9 = load i32* %yuv_format2, align 4, !dbg !2530, !tbaa !1424
+  %cmp3 = icmp eq i32 %9, 0, !dbg !2530
+  br i1 %cmp3, label %if.end9, label %if.then4, !dbg !2530
 
-; <label>:20                                      ; preds = %13
-  %21 = load i16**** @imgUV_org_top, align 8, !dbg !4743, !tbaa !1439
-  %22 = load i16*** %21, align 8, !dbg !4743, !tbaa !1439
-  %23 = load i16**** @imgUV_org_bot, align 8, !dbg !4745, !tbaa !1439
-  %24 = load i16*** %23, align 8, !dbg !4745, !tbaa !1439
-  tail call void @free_top_bot_planes(i16** %22, i16** %24) #7, !dbg !4746
-  %25 = load i16**** @imgUV_org_top, align 8, !dbg !4747, !tbaa !1439
-  %26 = getelementptr inbounds i16*** %25, i64 1, !dbg !4747
-  %27 = load i16*** %26, align 8, !dbg !4747, !tbaa !1439
-  %28 = load i16**** @imgUV_org_bot, align 8, !dbg !4748, !tbaa !1439
-  %29 = getelementptr inbounds i16*** %28, i64 1, !dbg !4748
-  %30 = load i16*** %29, align 8, !dbg !4748, !tbaa !1439
-  tail call void @free_top_bot_planes(i16** %27, i16** %30) #7, !dbg !4749
-  %31 = load i8** bitcast (i16**** @imgUV_org_top to i8**), align 8, !dbg !4750, !tbaa !1439
-  tail call void @free(i8* %31) #8, !dbg !4751
-  %32 = load i8** bitcast (i16**** @imgUV_org_bot to i8**), align 8, !dbg !4752, !tbaa !1439
-  tail call void @free(i8* %32) #8, !dbg !4753
-  br label %33, !dbg !4754
+if.then4:                                         ; preds = %if.then1
+  %10 = load i16**** @imgUV_org_top, align 8, !dbg !2531, !tbaa !1428
+  %11 = load i16*** %10, align 8, !dbg !2531, !tbaa !1428
+  %12 = load i16**** @imgUV_org_bot, align 8, !dbg !2531, !tbaa !1428
+  %13 = load i16*** %12, align 8, !dbg !2531, !tbaa !1428
+  tail call void @free_top_bot_planes(i16** %11, i16** %13) #7, !dbg !2531
+  %14 = load i16**** @imgUV_org_top, align 8, !dbg !2533, !tbaa !1428
+  %arrayidx6 = getelementptr inbounds i16*** %14, i64 1, !dbg !2533
+  %15 = load i16*** %arrayidx6, align 8, !dbg !2533, !tbaa !1428
+  %16 = load i16**** @imgUV_org_bot, align 8, !dbg !2533, !tbaa !1428
+  %arrayidx7 = getelementptr inbounds i16*** %16, i64 1, !dbg !2533
+  %17 = load i16*** %arrayidx7, align 8, !dbg !2533, !tbaa !1428
+  tail call void @free_top_bot_planes(i16** %15, i16** %17) #7, !dbg !2533
+  %18 = load i16**** @imgUV_org_top, align 8, !dbg !2534, !tbaa !1428
+  %19 = bitcast i16*** %18 to i8*, !dbg !2534
+  tail call void @free(i8* %19) #7, !dbg !2534
+  %20 = load i16**** @imgUV_org_bot, align 8, !dbg !2535, !tbaa !1428
+  %21 = bitcast i16*** %20 to i8*, !dbg !2535
+  tail call void @free(i8* %21) #7, !dbg !2535
+  br label %if.end9, !dbg !2536
 
-; <label>:33                                      ; preds = %13, %8, %20
-  ret void, !dbg !4755
+if.end9:                                          ; preds = %if.then1, %if.end, %if.then4
+  ret void, !dbg !2537
 }

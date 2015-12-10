@@ -1,22 +1,23 @@
-define void @read_trnheader(i8* %fn, %struct.t_trnheader* %trn) #4 {
+define void @read_trnheader(i8* %fn, %struct.t_trnheader* %trn) #0 {
+entry:
   %bOK = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata i8* %fn, i64 0, metadata !128, metadata !278), !dbg !364
-  tail call void @llvm.dbg.value(metadata %struct.t_trnheader* %trn, i64 0, metadata !129, metadata !278), !dbg !365
-  tail call void @llvm.dbg.value(metadata i8* %fn, i64 0, metadata !212, metadata !278) #6, !dbg !366
-  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0), i64 0, metadata !213, metadata !278) #6, !dbg !368
-  %1 = tail call i32 @gmx_fio_open(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0)) #7, !dbg !369
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !130, metadata !278), !dbg !370
-  tail call void @llvm.dbg.value(metadata i32* %bOK, i64 0, metadata !131, metadata !278), !dbg !371
-  %2 = call fastcc i32 @do_trnheader(i32 %1, i32 1, %struct.t_trnheader* %trn, i32* %bOK) #8, !dbg !372
-  %3 = icmp eq i32 %2, 0, !dbg !372
-  br i1 %3, label %4, label %5, !dbg !374
+  call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !110), !dbg !283
+  call void @llvm.dbg.value(metadata !{%struct.t_trnheader* %trn}, i64 0, metadata !111), !dbg !283
+  call void @llvm.dbg.declare(metadata !{i32* %bOK}, metadata !113), !dbg !284
+  call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !285) #4, !dbg !287
+  call void @llvm.dbg.value(metadata !288, i64 0, metadata !289) #4, !dbg !287
+  %call.i = call i32 @gmx_fio_open(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0)) #5, !dbg !290
+  call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !112), !dbg !286
+  %call1 = call fastcc i32 @do_trnheader(i32 %call.i, i32 1, %struct.t_trnheader* %trn, i32* %bOK) #6, !dbg !291
+  %tobool = icmp eq i32 %call1, 0, !dbg !291
+  br i1 %tobool, label %if.then, label %if.end, !dbg !291
 
-; <label>:4                                       ; preds = %0
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([14 x i8]* @.str9, i64 0, i64 0), i8* %fn) #7, !dbg !375
-  br label %5, !dbg !375
+if.then:                                          ; preds = %entry
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([14 x i8]* @.str9, i64 0, i64 0), i8* %fn) #5, !dbg !292
+  br label %if.end, !dbg !292
 
-; <label>:5                                       ; preds = %0, %4
-  call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !218, metadata !278) #6, !dbg !376
-  call void @gmx_fio_close(i32 %1) #7, !dbg !378
-  ret void, !dbg !379
+if.end:                                           ; preds = %entry, %if.then
+  call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !293) #4, !dbg !295
+  call void @gmx_fio_close(i32 %call.i) #5, !dbg !296
+  ret void, !dbg !297
 }

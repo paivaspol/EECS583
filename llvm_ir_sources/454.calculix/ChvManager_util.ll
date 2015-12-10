@@ -1,144 +1,141 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 %struct._Chv = type { i32, i32, i32, i32, i32, i32, i32*, i32*, double*, %struct._DV, %struct._Chv* }
 %struct._DV = type { i32, i32, i32, double* }
 %struct._ChvManager = type { %struct._Chv*, %struct._Lock*, i32, i32, i32, i32, i32, i32, i32, i32, i32 }
 %struct._Lock = type { i8*, i32, i32 }
 
-@__stderrp = external global %struct.__sFILE*
+@stderr = external global %struct._IO_FILE*
 @.str = private unnamed_addr constant [70 x i8] c"\0A fatal error in ChvMananger_newObjectOfSizeNbytes(%p,%d)\0A bad input\0A\00", align 1
 @.str1 = private unnamed_addr constant [62 x i8] c"\0A fatal error in ChvMananger_releaseObject(%p,%p)\0A bad input\0A\00", align 1
 @.str2 = private unnamed_addr constant [68 x i8] c"\0A fatal error in ChvManager_releaseListOfObjects(%p,%p)\0A bad input\0A\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define %struct._Chv* @ChvManager_newObjectOfSizeNbytes(%struct._ChvManager* %manager, i32 %nbytesNeeded) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ChvManager* %manager, i64 0, metadata !62, metadata !91), !dbg !92
-  tail call void @llvm.dbg.value(metadata i32 %nbytesNeeded, i64 0, metadata !63, metadata !91), !dbg !93
-  %1 = icmp eq %struct._ChvManager* %manager, null, !dbg !94
-  %2 = icmp slt i32 %nbytesNeeded, 1, !dbg !96
-  %or.cond = or i1 %1, %2, !dbg !97
-  br i1 %or.cond, label %3, label %6, !dbg !97
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvManager* %manager}, i64 0, metadata !64), !dbg !89
+  tail call void @llvm.dbg.value(metadata !{i32 %nbytesNeeded}, i64 0, metadata !65), !dbg !90
+  %cmp = icmp eq %struct._ChvManager* %manager, null, !dbg !91
+  %cmp1 = icmp slt i32 %nbytesNeeded, 1, !dbg !91
+  %or.cond = or i1 %cmp, %cmp1, !dbg !91
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !91
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !98, !tbaa !100
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([70 x i8]* @.str, i64 0, i64 0), %struct._ChvManager* %manager, i32 %nbytesNeeded) #5, !dbg !104
-  tail call void @exit(i32 -1) #6, !dbg !105
-  unreachable, !dbg !105
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !92, !tbaa !94
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([70 x i8]* @.str, i64 0, i64 0), %struct._ChvManager* %manager, i32 %nbytesNeeded) #5, !dbg !92
+  tail call void @exit(i32 -1) #6, !dbg !97
+  unreachable, !dbg !97
 
-; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1, !dbg !106
-  %8 = load %struct._Lock** %7, align 8, !dbg !106, !tbaa !108
-  %9 = icmp eq %struct._Lock* %8, null, !dbg !111
-  br i1 %9, label %14, label %10, !dbg !112
+if.end:                                           ; preds = %entry
+  %lock = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1, !dbg !98
+  %1 = load %struct._Lock** %lock, align 8, !dbg !98, !tbaa !94
+  %cmp2 = icmp eq %struct._Lock* %1, null, !dbg !98
+  br i1 %cmp2, label %if.end5, label %if.then3, !dbg !98
 
-; <label>:10                                      ; preds = %6
-  tail call void @Lock_lock(%struct._Lock* %8) #5, !dbg !113
-  %11 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 9, !dbg !115
-  %12 = load i32* %11, align 4, !dbg !116, !tbaa !117
-  %13 = add nsw i32 %12, 1, !dbg !116
-  store i32 %13, i32* %11, align 4, !dbg !116, !tbaa !117
-  br label %14, !dbg !118
+if.then3:                                         ; preds = %if.end
+  tail call void @Lock_lock(%struct._Lock* %1) #5, !dbg !99
+  %nlocks = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 9, !dbg !101
+  %2 = load i32* %nlocks, align 4, !dbg !101, !tbaa !102
+  %inc = add nsw i32 %2, 1, !dbg !101
+  store i32 %inc, i32* %nlocks, align 4, !dbg !101, !tbaa !102
+  br label %if.end5, !dbg !103
 
-; <label>:14                                      ; preds = %6, %10
-  %15 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0, !dbg !119
-  tail call void @llvm.dbg.value(metadata %struct._Chv* null, i64 0, metadata !65, metadata !91), !dbg !121
-  %chv.05 = load %struct._Chv** %15, align 8, !dbg !119
-  %16 = icmp eq %struct._Chv* %chv.05, null, !dbg !122
-  br i1 %16, label %._crit_edge, label %.lr.ph, !dbg !124
+if.end5:                                          ; preds = %if.end, %if.then3
+  %head = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0, !dbg !104
+  tail call void @llvm.dbg.value(metadata !106, i64 0, metadata !67), !dbg !104
+  %chv.072 = load %struct._Chv** %head, align 8, !dbg !104
+  %cmp673 = icmp eq %struct._Chv* %chv.072, null, !dbg !104
+  br i1 %cmp673, label %if.then26, label %for.body, !dbg !104
 
-.lr.ph:                                           ; preds = %14, %19
-  %chv.07 = phi %struct._Chv* [ %chv.0, %19 ], [ %chv.05, %14 ]
-  %prev.06 = phi %struct._Chv* [ %chv.07, %19 ], [ null, %14 ]
-  %17 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv.07) #5, !dbg !125
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !66, metadata !91), !dbg !127
-  %18 = icmp slt i32 %17, %nbytesNeeded, !dbg !128
-  br i1 %18, label %19, label %22, !dbg !130
+for.cond:                                         ; preds = %for.body
+  %next = getelementptr inbounds %struct._Chv* %chv.075, i64 0, i32 10, !dbg !107
+  %chv.0 = load %struct._Chv** %next, align 8, !dbg !104
+  %cmp6 = icmp eq %struct._Chv* %chv.0, null, !dbg !104
+  br i1 %cmp6, label %if.then26, label %for.body, !dbg !104
 
-; <label>:19                                      ; preds = %.lr.ph
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv.0, i64 0, metadata !65, metadata !91), !dbg !121
-  %20 = getelementptr inbounds %struct._Chv* %chv.07, i64 0, i32 10, !dbg !131
-  %chv.0 = load %struct._Chv** %20, align 8, !dbg !119
-  %21 = icmp eq %struct._Chv* %chv.0, null, !dbg !122
-  br i1 %21, label %._crit_edge, label %.lr.ph, !dbg !124
+for.body:                                         ; preds = %if.end5, %for.cond
+  %chv.075 = phi %struct._Chv* [ %chv.0, %for.cond ], [ %chv.072, %if.end5 ]
+  %prev.074 = phi %struct._Chv* [ %chv.075, %for.cond ], [ null, %if.end5 ]
+  %call7 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv.075) #5, !dbg !108
+  tail call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !68), !dbg !108
+  %cmp8 = icmp slt i32 %call7, %nbytesNeeded, !dbg !110
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %chv.075}, i64 0, metadata !67), !dbg !111
+  br i1 %cmp8, label %for.cond, label %if.then12, !dbg !110
 
-; <label>:22                                      ; preds = %.lr.ph
-  %23 = icmp eq %struct._Chv* %prev.06, null, !dbg !132
-  %24 = getelementptr inbounds %struct._Chv* %chv.07, i64 0, i32 10, !dbg !136
-  %25 = bitcast %struct._Chv** %24 to i64*, !dbg !136
-  %26 = load i64* %25, align 8, !dbg !136, !tbaa !138
-  br i1 %23, label %27, label %29, !dbg !141
+if.then12:                                        ; preds = %for.body
+  %cmp13 = icmp eq %struct._Chv* %prev.074, null, !dbg !112
+  %next15 = getelementptr inbounds %struct._Chv* %chv.075, i64 0, i32 10, !dbg !114
+  %3 = load %struct._Chv** %next15, align 8, !dbg !114, !tbaa !94
+  br i1 %cmp13, label %if.then14, label %if.else, !dbg !112
 
-; <label>:27                                      ; preds = %22
-  %28 = bitcast %struct._ChvManager* %manager to i64*, !dbg !142
-  store i64 %26, i64* %28, align 8, !dbg !142, !tbaa !143
-  br label %.thread, !dbg !144
+if.then14:                                        ; preds = %if.then12
+  store %struct._Chv* %3, %struct._Chv** %head, align 8, !dbg !114, !tbaa !94
+  br label %if.end28, !dbg !116
 
-; <label>:29                                      ; preds = %22
-  %30 = getelementptr inbounds %struct._Chv* %prev.06, i64 0, i32 10, !dbg !145
-  %31 = bitcast %struct._Chv** %30 to i64*, !dbg !147
-  store i64 %26, i64* %31, align 8, !dbg !147, !tbaa !138
-  br label %.thread
+if.else:                                          ; preds = %if.then12
+  %next18 = getelementptr inbounds %struct._Chv* %prev.074, i64 0, i32 10, !dbg !117
+  store %struct._Chv* %3, %struct._Chv** %next18, align 8, !dbg !117, !tbaa !94
+  br label %if.end28
 
-._crit_edge:                                      ; preds = %19, %14
-  %32 = tail call %struct._Chv* @Chv_new() #5, !dbg !148
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %32, i64 0, metadata !64, metadata !91), !dbg !150
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !67, metadata !91), !dbg !151
-  %33 = getelementptr inbounds %struct._Chv* %32, i64 0, i32 9, !dbg !152
-  %34 = sext i32 %nbytesNeeded to i64, !dbg !153
-  %35 = lshr i64 %34, 3, !dbg !154
-  %36 = trunc i64 %35 to i32, !dbg !153
-  tail call void @DV_setSize(%struct._DV* %33, i32 %36) #5, !dbg !155
-  %37 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %32) #5, !dbg !156
-  %38 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 6, !dbg !159
-  %39 = load i32* %38, align 4, !dbg !160, !tbaa !161
-  %40 = add nsw i32 %39, %37, !dbg !160
-  store i32 %40, i32* %38, align 4, !dbg !160, !tbaa !161
-  br label %.thread, !dbg !162
+if.then26:                                        ; preds = %for.cond, %if.end5
+  %call21 = tail call %struct._Chv* @Chv_new() #5, !dbg !119
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %call21}, i64 0, metadata !66), !dbg !119
+  tail call void @llvm.dbg.value(metadata !121, i64 0, metadata !69), !dbg !122
+  %wrkDV = getelementptr inbounds %struct._Chv* %call21, i64 0, i32 9, !dbg !123
+  %conv = sext i32 %nbytesNeeded to i64, !dbg !123
+  %div = lshr i64 %conv, 3, !dbg !123
+  %conv22 = trunc i64 %div to i32, !dbg !123
+  tail call void @DV_setSize(%struct._DV* %wrkDV, i32 %conv22) #5, !dbg !123
+  %call27 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %call21) #5, !dbg !124
+  %nbytesalloc = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 6, !dbg !124
+  %4 = load i32* %nbytesalloc, align 4, !dbg !124, !tbaa !102
+  %add = add nsw i32 %4, %call27, !dbg !124
+  store i32 %add, i32* %nbytesalloc, align 4, !dbg !124, !tbaa !102
+  br label %if.end28, !dbg !126
 
-.thread:                                          ; preds = %27, %29, %._crit_edge
-  %chv.12 = phi %struct._Chv* [ %32, %._crit_edge ], [ %chv.07, %29 ], [ %chv.07, %27 ]
-  %41 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 3, !dbg !163
-  %42 = load i32* %41, align 4, !dbg !164, !tbaa !165
-  %43 = add nsw i32 %42, 1, !dbg !164
-  store i32 %43, i32* %41, align 4, !dbg !164, !tbaa !165
-  %44 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv.12) #5, !dbg !166
-  %45 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 4, !dbg !167
-  %46 = load i32* %45, align 4, !dbg !168, !tbaa !169
-  %47 = add nsw i32 %46, %44, !dbg !168
-  store i32 %47, i32* %45, align 4, !dbg !168, !tbaa !169
-  %48 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 5, !dbg !170
-  %49 = load i32* %48, align 4, !dbg !171, !tbaa !172
-  %50 = add nsw i32 %49, %nbytesNeeded, !dbg !171
-  store i32 %50, i32* %48, align 4, !dbg !171, !tbaa !172
-  %51 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 7, !dbg !173
-  %52 = load i32* %51, align 4, !dbg !174, !tbaa !175
-  %53 = add nsw i32 %52, 1, !dbg !174
-  store i32 %53, i32* %51, align 4, !dbg !174, !tbaa !175
-  %54 = load %struct._Lock** %7, align 8, !dbg !176, !tbaa !108
-  %55 = icmp eq %struct._Lock* %54, null, !dbg !178
-  br i1 %55, label %60, label %56, !dbg !179
+if.end28:                                         ; preds = %if.then14, %if.else, %if.then26
+  %chv.169 = phi %struct._Chv* [ %call21, %if.then26 ], [ %chv.075, %if.else ], [ %chv.075, %if.then14 ]
+  %nactive = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 3, !dbg !127
+  %5 = load i32* %nactive, align 4, !dbg !127, !tbaa !102
+  %inc29 = add nsw i32 %5, 1, !dbg !127
+  store i32 %inc29, i32* %nactive, align 4, !dbg !127, !tbaa !102
+  %call30 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv.169) #5, !dbg !128
+  %nbytesactive = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 4, !dbg !128
+  %6 = load i32* %nbytesactive, align 4, !dbg !128, !tbaa !102
+  %add31 = add nsw i32 %6, %call30, !dbg !128
+  store i32 %add31, i32* %nbytesactive, align 4, !dbg !128, !tbaa !102
+  %nbytesrequested = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 5, !dbg !129
+  %7 = load i32* %nbytesrequested, align 4, !dbg !129, !tbaa !102
+  %add32 = add nsw i32 %7, %nbytesNeeded, !dbg !129
+  store i32 %add32, i32* %nbytesrequested, align 4, !dbg !129, !tbaa !102
+  %nrequests = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 7, !dbg !130
+  %8 = load i32* %nrequests, align 4, !dbg !130, !tbaa !102
+  %inc33 = add nsw i32 %8, 1, !dbg !130
+  store i32 %inc33, i32* %nrequests, align 4, !dbg !130, !tbaa !102
+  %9 = load %struct._Lock** %lock, align 8, !dbg !131, !tbaa !94
+  %cmp35 = icmp eq %struct._Lock* %9, null, !dbg !131
+  br i1 %cmp35, label %if.end40, label %if.then37, !dbg !131
 
-; <label>:56                                      ; preds = %.thread
-  %57 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 10, !dbg !180
-  %58 = load i32* %57, align 4, !dbg !182, !tbaa !183
-  %59 = add nsw i32 %58, 1, !dbg !182
-  store i32 %59, i32* %57, align 4, !dbg !182, !tbaa !183
-  tail call void @Lock_unlock(%struct._Lock* %54) #5, !dbg !184
-  br label %60, !dbg !185
+if.then37:                                        ; preds = %if.end28
+  %nunlocks = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 10, !dbg !132
+  %10 = load i32* %nunlocks, align 4, !dbg !132, !tbaa !102
+  %inc38 = add nsw i32 %10, 1, !dbg !132
+  store i32 %inc38, i32* %nunlocks, align 4, !dbg !132, !tbaa !102
+  tail call void @Lock_unlock(%struct._Lock* %9) #5, !dbg !134
+  br label %if.end40, !dbg !135
 
-; <label>:60                                      ; preds = %.thread, %56
-  ret %struct._Chv* %chv.12, !dbg !186
+if.end40:                                         ; preds = %if.end28, %if.then37
+  ret %struct._Chv* %chv.169, !dbg !136
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #1
+declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #1
 
-; Function Attrs: noreturn optsize
+; Function Attrs: noreturn nounwind optsize
 declare void @exit(i32) #2
 
 ; Function Attrs: optsize
@@ -156,625 +153,508 @@ declare void @DV_setSize(%struct._DV*, i32) #3
 ; Function Attrs: optsize
 declare void @Lock_unlock(%struct._Lock*) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @ChvManager_releaseObject(%struct._ChvManager* %manager, %struct._Chv* %chv1) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ChvManager* %manager, i64 0, metadata !72, metadata !91), !dbg !187
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv1, i64 0, metadata !73, metadata !91), !dbg !188
-  %1 = icmp eq %struct._ChvManager* %manager, null, !dbg !189
-  %2 = icmp eq %struct._Chv* %chv1, null, !dbg !191
-  %or.cond = or i1 %1, %2, !dbg !192
-  br i1 %or.cond, label %3, label %6, !dbg !192
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvManager* %manager}, i64 0, metadata !74), !dbg !137
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %chv1}, i64 0, metadata !75), !dbg !138
+  %cmp = icmp eq %struct._ChvManager* %manager, null, !dbg !139
+  %cmp1 = icmp eq %struct._Chv* %chv1, null, !dbg !139
+  %or.cond = or i1 %cmp, %cmp1, !dbg !139
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !139
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !193, !tbaa !100
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([62 x i8]* @.str1, i64 0, i64 0), %struct._ChvManager* %manager, %struct._Chv* %chv1) #5, !dbg !195
-  tail call void @exit(i32 -1) #6, !dbg !196
-  unreachable, !dbg !196
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !140, !tbaa !94
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([62 x i8]* @.str1, i64 0, i64 0), %struct._ChvManager* %manager, %struct._Chv* %chv1) #5, !dbg !140
+  tail call void @exit(i32 -1) #6, !dbg !142
+  unreachable, !dbg !142
 
-; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1, !dbg !197
-  %8 = load %struct._Lock** %7, align 8, !dbg !197, !tbaa !108
-  %9 = icmp eq %struct._Lock* %8, null, !dbg !199
-  br i1 %9, label %14, label %10, !dbg !200
+if.end:                                           ; preds = %entry
+  %lock = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1, !dbg !143
+  %1 = load %struct._Lock** %lock, align 8, !dbg !143, !tbaa !94
+  %cmp2 = icmp eq %struct._Lock* %1, null, !dbg !143
+  br i1 %cmp2, label %if.end5, label %if.then3, !dbg !143
 
-; <label>:10                                      ; preds = %6
-  tail call void @Lock_lock(%struct._Lock* %8) #5, !dbg !201
-  %11 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 9, !dbg !203
-  %12 = load i32* %11, align 4, !dbg !204, !tbaa !117
-  %13 = add nsw i32 %12, 1, !dbg !204
-  store i32 %13, i32* %11, align 4, !dbg !204, !tbaa !117
-  br label %14, !dbg !205
+if.then3:                                         ; preds = %if.end
+  tail call void @Lock_lock(%struct._Lock* %1) #5, !dbg !144
+  %nlocks = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 9, !dbg !146
+  %2 = load i32* %nlocks, align 4, !dbg !146, !tbaa !102
+  %inc = add nsw i32 %2, 1, !dbg !146
+  store i32 %inc, i32* %nlocks, align 4, !dbg !146, !tbaa !102
+  br label %if.end5, !dbg !147
 
-; <label>:14                                      ; preds = %6, %10
-  %15 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 8, !dbg !206
-  %16 = load i32* %15, align 4, !dbg !207, !tbaa !208
-  %17 = add nsw i32 %16, 1, !dbg !207
-  store i32 %17, i32* %15, align 4, !dbg !207, !tbaa !208
-  %18 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv1) #5, !dbg !209
-  %19 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 4, !dbg !210
-  %20 = load i32* %19, align 4, !dbg !211, !tbaa !169
-  %21 = sub nsw i32 %20, %18, !dbg !211
-  store i32 %21, i32* %19, align 4, !dbg !211, !tbaa !169
-  %22 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 3, !dbg !212
-  %23 = load i32* %22, align 4, !dbg !213, !tbaa !165
-  %24 = add nsw i32 %23, -1, !dbg !213
-  store i32 %24, i32* %22, align 4, !dbg !213, !tbaa !165
-  %25 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 2, !dbg !214
-  %26 = load i32* %25, align 4, !dbg !214, !tbaa !216
-  %27 = icmp eq i32 %26, 0, !dbg !217
-  br i1 %27, label %28, label %29, !dbg !218
+if.end5:                                          ; preds = %if.end, %if.then3
+  %nreleases = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 8, !dbg !148
+  %3 = load i32* %nreleases, align 4, !dbg !148, !tbaa !102
+  %inc6 = add nsw i32 %3, 1, !dbg !148
+  store i32 %inc6, i32* %nreleases, align 4, !dbg !148, !tbaa !102
+  %call7 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv1) #5, !dbg !149
+  %nbytesactive = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 4, !dbg !149
+  %4 = load i32* %nbytesactive, align 4, !dbg !149, !tbaa !102
+  %sub = sub nsw i32 %4, %call7, !dbg !149
+  store i32 %sub, i32* %nbytesactive, align 4, !dbg !149, !tbaa !102
+  %nactive = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 3, !dbg !150
+  %5 = load i32* %nactive, align 4, !dbg !150, !tbaa !102
+  %dec = add nsw i32 %5, -1, !dbg !150
+  store i32 %dec, i32* %nactive, align 4, !dbg !150, !tbaa !102
+  %mode = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 2, !dbg !151
+  %6 = load i32* %mode, align 4, !dbg !151, !tbaa !102
+  %cmp8 = icmp eq i32 %6, 0, !dbg !151
+  br i1 %cmp8, label %if.then9, label %if.else, !dbg !151
 
-; <label>:28                                      ; preds = %14
-  tail call void @Chv_free(%struct._Chv* %chv1) #5, !dbg !219
-  br label %42, !dbg !221
+if.then9:                                         ; preds = %if.end5
+  tail call void @Chv_free(%struct._Chv* %chv1) #5, !dbg !152
+  br label %if.end23, !dbg !154
 
-; <label>:29                                      ; preds = %14
-  %30 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv1) #5, !dbg !222
-  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !76, metadata !91), !dbg !224
-  %31 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0, !dbg !225
-  tail call void @llvm.dbg.value(metadata %struct._Chv* null, i64 0, metadata !75, metadata !91), !dbg !227
-  %chv2.02 = load %struct._Chv** %31, align 8, !dbg !225
-  %32 = icmp eq %struct._Chv* %chv2.02, null, !dbg !228
-  br i1 %32, label %._crit_edge.thread, label %.lr.ph, !dbg !230
+if.else:                                          ; preds = %if.end5
+  %call10 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv1) #5, !dbg !155
+  tail call void @llvm.dbg.value(metadata !{i32 %call10}, i64 0, metadata !78), !dbg !155
+  %head = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0, !dbg !157
+  tail call void @llvm.dbg.value(metadata !106, i64 0, metadata !77), !dbg !157
+  %chv2.053 = load %struct._Chv** %head, align 8, !dbg !157
+  %cmp1154 = icmp eq %struct._Chv* %chv2.053, null, !dbg !157
+  br i1 %cmp1154, label %if.then17, label %for.body, !dbg !157
 
-.lr.ph:                                           ; preds = %29, %35
-  %chv2.04 = phi %struct._Chv* [ %chv2.0, %35 ], [ %chv2.02, %29 ]
-  %prev.03 = phi %struct._Chv* [ %chv2.04, %35 ], [ null, %29 ]
-  %33 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv2.04) #5, !dbg !231
-  tail call void @llvm.dbg.value(metadata i32 %33, i64 0, metadata !77, metadata !91), !dbg !233
-  %34 = icmp sgt i32 %33, %30, !dbg !234
-  br i1 %34, label %._crit_edge, label %35, !dbg !236
+for.cond:                                         ; preds = %for.body
+  %next = getelementptr inbounds %struct._Chv* %chv2.056, i64 0, i32 10, !dbg !159
+  %chv2.0 = load %struct._Chv** %next, align 8, !dbg !157
+  %cmp11 = icmp eq %struct._Chv* %chv2.0, null, !dbg !157
+  br i1 %cmp11, label %for.end, label %for.body, !dbg !157
 
-; <label>:35                                      ; preds = %.lr.ph
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv2.0, i64 0, metadata !75, metadata !91), !dbg !227
-  %36 = getelementptr inbounds %struct._Chv* %chv2.04, i64 0, i32 10, !dbg !237
-  %chv2.0 = load %struct._Chv** %36, align 8, !dbg !225
-  %37 = icmp eq %struct._Chv* %chv2.0, null, !dbg !228
-  br i1 %37, label %._crit_edge.thread14, label %.lr.ph, !dbg !230
+for.body:                                         ; preds = %if.else, %for.cond
+  %chv2.056 = phi %struct._Chv* [ %chv2.0, %for.cond ], [ %chv2.053, %if.else ]
+  %prev.055 = phi %struct._Chv* [ %chv2.056, %for.cond ], [ null, %if.else ]
+  %call12 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv2.056) #5, !dbg !160
+  tail call void @llvm.dbg.value(metadata !{i32 %call12}, i64 0, metadata !79), !dbg !160
+  %cmp13 = icmp sgt i32 %call12, %call10, !dbg !162
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %chv2.0.lcssa62}, i64 0, metadata !77), !dbg !163
+  br i1 %cmp13, label %for.end, label %for.cond, !dbg !162
 
-._crit_edge:                                      ; preds = %.lr.ph
-  %38 = icmp eq %struct._Chv* %prev.03, null, !dbg !238
-  br i1 %38, label %._crit_edge.thread, label %._crit_edge.thread14, !dbg !240
+for.end:                                          ; preds = %for.cond, %for.body
+  %chv2.0.lcssa = phi %struct._Chv* [ %chv2.056, %for.body ], [ null, %for.cond ]
+  %prev.0.lcssa = phi %struct._Chv* [ %prev.055, %for.body ], [ %chv2.056, %for.cond ]
+  %cmp16 = icmp eq %struct._Chv* %prev.0.lcssa, null, !dbg !164
+  br i1 %cmp16, label %if.then17, label %if.else19, !dbg !164
 
-._crit_edge.thread:                               ; preds = %29, %._crit_edge
-  %chv2.0.lcssa13 = phi %struct._Chv* [ %chv2.04, %._crit_edge ], [ null, %29 ]
-  store %struct._Chv* %chv1, %struct._Chv** %31, align 8, !dbg !241, !tbaa !143
-  br label %40, !dbg !243
+if.then17:                                        ; preds = %if.else, %for.end
+  %chv2.0.lcssa63 = phi %struct._Chv* [ %chv2.0.lcssa, %for.end ], [ null, %if.else ]
+  store %struct._Chv* %chv1, %struct._Chv** %head, align 8, !dbg !165, !tbaa !94
+  br label %if.end21, !dbg !167
 
-._crit_edge.thread14:                             ; preds = %35, %._crit_edge
-  %prev.0.lcssa16 = phi %struct._Chv* [ %prev.03, %._crit_edge ], [ %chv2.04, %35 ]
-  %chv2.0.lcssa15 = phi %struct._Chv* [ %chv2.04, %._crit_edge ], [ null, %35 ]
-  %39 = getelementptr inbounds %struct._Chv* %prev.0.lcssa16, i64 0, i32 10, !dbg !244
-  store %struct._Chv* %chv1, %struct._Chv** %39, align 8, !dbg !246, !tbaa !138
-  br label %40
+if.else19:                                        ; preds = %for.end
+  %next20 = getelementptr inbounds %struct._Chv* %prev.0.lcssa, i64 0, i32 10, !dbg !168
+  store %struct._Chv* %chv1, %struct._Chv** %next20, align 8, !dbg !168, !tbaa !94
+  br label %if.end21
 
-; <label>:40                                      ; preds = %._crit_edge.thread14, %._crit_edge.thread
-  %chv2.0.lcssa12 = phi %struct._Chv* [ %chv2.0.lcssa15, %._crit_edge.thread14 ], [ %chv2.0.lcssa13, %._crit_edge.thread ]
-  %41 = getelementptr inbounds %struct._Chv* %chv1, i64 0, i32 10, !dbg !247
-  store %struct._Chv* %chv2.0.lcssa12, %struct._Chv** %41, align 8, !dbg !248, !tbaa !138
-  br label %42
+if.end21:                                         ; preds = %if.else19, %if.then17
+  %chv2.0.lcssa62 = phi %struct._Chv* [ %chv2.0.lcssa, %if.else19 ], [ %chv2.0.lcssa63, %if.then17 ]
+  %next22 = getelementptr inbounds %struct._Chv* %chv1, i64 0, i32 10, !dbg !170
+  store %struct._Chv* %chv2.0.lcssa62, %struct._Chv** %next22, align 8, !dbg !170, !tbaa !94
+  br label %if.end23
 
-; <label>:42                                      ; preds = %40, %28
-  %43 = load %struct._Lock** %7, align 8, !dbg !249, !tbaa !108
-  %44 = icmp eq %struct._Lock* %43, null, !dbg !251
-  br i1 %44, label %49, label %45, !dbg !252
+if.end23:                                         ; preds = %if.end21, %if.then9
+  %7 = load %struct._Lock** %lock, align 8, !dbg !171, !tbaa !94
+  %cmp25 = icmp eq %struct._Lock* %7, null, !dbg !171
+  br i1 %cmp25, label %if.end29, label %if.then26, !dbg !171
 
-; <label>:45                                      ; preds = %42
-  %46 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 10, !dbg !253
-  %47 = load i32* %46, align 4, !dbg !255, !tbaa !183
-  %48 = add nsw i32 %47, 1, !dbg !255
-  store i32 %48, i32* %46, align 4, !dbg !255, !tbaa !183
-  tail call void @Lock_unlock(%struct._Lock* %43) #5, !dbg !256
-  br label %49, !dbg !257
+if.then26:                                        ; preds = %if.end23
+  %nunlocks = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 10, !dbg !172
+  %8 = load i32* %nunlocks, align 4, !dbg !172, !tbaa !102
+  %inc27 = add nsw i32 %8, 1, !dbg !172
+  store i32 %inc27, i32* %nunlocks, align 4, !dbg !172, !tbaa !102
+  tail call void @Lock_unlock(%struct._Lock* %7) #5, !dbg !174
+  br label %if.end29, !dbg !175
 
-; <label>:49                                      ; preds = %42, %45
-  ret void, !dbg !258
+if.end29:                                         ; preds = %if.end23, %if.then26
+  ret void, !dbg !176
 }
 
 ; Function Attrs: optsize
 declare void @Chv_free(%struct._Chv*) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @ChvManager_releaseListOfObjects(%struct._ChvManager* %manager, %struct._Chv* %head) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ChvManager* %manager, i64 0, metadata !80, metadata !91), !dbg !259
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %head, i64 0, metadata !81, metadata !91), !dbg !260
-  %1 = icmp eq %struct._ChvManager* %manager, null, !dbg !261
-  %2 = icmp eq %struct._Chv* %head, null, !dbg !263
-  %or.cond = or i1 %1, %2, !dbg !264
-  br i1 %or.cond, label %3, label %6, !dbg !264
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvManager* %manager}, i64 0, metadata !82), !dbg !177
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %head}, i64 0, metadata !83), !dbg !178
+  %cmp = icmp eq %struct._ChvManager* %manager, null, !dbg !179
+  %cmp1 = icmp eq %struct._Chv* %head, null, !dbg !179
+  %or.cond = or i1 %cmp, %cmp1, !dbg !179
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !179
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !265, !tbaa !100
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([68 x i8]* @.str2, i64 0, i64 0), %struct._ChvManager* %manager, %struct._Chv* %head) #5, !dbg !267
-  tail call void @exit(i32 -1) #6, !dbg !268
-  unreachable, !dbg !268
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !180, !tbaa !94
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([68 x i8]* @.str2, i64 0, i64 0), %struct._ChvManager* %manager, %struct._Chv* %head) #5, !dbg !180
+  tail call void @exit(i32 -1) #6, !dbg !182
+  unreachable, !dbg !182
 
-; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1, !dbg !269
-  %8 = load %struct._Lock** %7, align 8, !dbg !269, !tbaa !108
-  %9 = icmp eq %struct._Lock* %8, null, !dbg !271
-  br i1 %9, label %14, label %10, !dbg !272
+if.end:                                           ; preds = %entry
+  %lock = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1, !dbg !183
+  %1 = load %struct._Lock** %lock, align 8, !dbg !183, !tbaa !94
+  %cmp2 = icmp eq %struct._Lock* %1, null, !dbg !183
+  br i1 %cmp2, label %if.end5, label %if.then3, !dbg !183
 
-; <label>:10                                      ; preds = %6
-  tail call void @Lock_lock(%struct._Lock* %8) #5, !dbg !273
-  %11 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 9, !dbg !275
-  %12 = load i32* %11, align 4, !dbg !276, !tbaa !117
-  %13 = add nsw i32 %12, 1, !dbg !276
-  store i32 %13, i32* %11, align 4, !dbg !276, !tbaa !117
-  br label %14, !dbg !277
+if.then3:                                         ; preds = %if.end
+  tail call void @Lock_lock(%struct._Lock* %1) #5, !dbg !184
+  %nlocks = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 9, !dbg !186
+  %2 = load i32* %nlocks, align 4, !dbg !186, !tbaa !102
+  %inc = add nsw i32 %2, 1, !dbg !186
+  store i32 %inc, i32* %nlocks, align 4, !dbg !186, !tbaa !102
+  br label %if.end5, !dbg !187
 
-; <label>:14                                      ; preds = %6, %10
-  %15 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 2, !dbg !278
-  %16 = load i32* %15, align 4, !dbg !278, !tbaa !216
-  %17 = icmp eq i32 %16, 0, !dbg !280
-  br i1 %17, label %.lr.ph, label %.lr.ph14, !dbg !281
+if.end5:                                          ; preds = %if.end, %if.then3
+  %mode = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 2, !dbg !188
+  %3 = load i32* %mode, align 4, !dbg !188, !tbaa !102
+  %cmp6 = icmp eq i32 %3, 0, !dbg !188
+  br i1 %cmp6, label %while.body.lr.ph, label %while.body13.lr.ph, !dbg !188
 
-.lr.ph14:                                         ; preds = %14
-  %18 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0, !dbg !282
-  %19 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 4, !dbg !286
-  %20 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 3, !dbg !287
-  %21 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 8, !dbg !288
-  br label %36, !dbg !289
+while.body13.lr.ph:                               ; preds = %if.end5
+  %head16 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0, !dbg !189
+  %nbytesactive31 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 4, !dbg !193
+  %nactive33 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 3, !dbg !194
+  %nreleases35 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 8, !dbg !195
+  br label %while.body13, !dbg !196
 
-.lr.ph:                                           ; preds = %14
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %head, i64 0, metadata !82, metadata !91), !dbg !290
-  %22 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 4, !dbg !291
-  %23 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 3, !dbg !294
-  %24 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 8, !dbg !295
-  br label %25, !dbg !296
+while.body.lr.ph:                                 ; preds = %if.end5
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %head}, i64 0, metadata !84), !dbg !197
+  %nbytesactive = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 4, !dbg !199
+  %nactive = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 3, !dbg !201
+  %nreleases = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 8, !dbg !202
+  br label %while.body, !dbg !197
 
-; <label>:25                                      ; preds = %.lr.ph, %25
-  %.04 = phi %struct._Chv* [ %head, %.lr.ph ], [ %27, %25 ]
-  %26 = getelementptr inbounds %struct._Chv* %.04, i64 0, i32 10, !dbg !297
-  %27 = load %struct._Chv** %26, align 8, !dbg !297, !tbaa !138
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %27, i64 0, metadata !81, metadata !91), !dbg !260
-  %28 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %.04) #5, !dbg !298
-  %29 = load i32* %22, align 4, !dbg !299, !tbaa !169
-  %30 = sub nsw i32 %29, %28, !dbg !299
-  store i32 %30, i32* %22, align 4, !dbg !299, !tbaa !169
-  %31 = load i32* %23, align 4, !dbg !300, !tbaa !165
-  %32 = add nsw i32 %31, -1, !dbg !300
-  store i32 %32, i32* %23, align 4, !dbg !300, !tbaa !165
-  %33 = load i32* %24, align 4, !dbg !301, !tbaa !208
-  %34 = add nsw i32 %33, 1, !dbg !301
-  store i32 %34, i32* %24, align 4, !dbg !301, !tbaa !208
-  tail call void @Chv_free(%struct._Chv* %.04) #5, !dbg !302
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %27, i64 0, metadata !82, metadata !91), !dbg !290
-  %35 = icmp eq %struct._Chv* %27, null, !dbg !303
-  br i1 %35, label %.loopexit, label %25, !dbg !296
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %head.addr.078 = phi %struct._Chv* [ %head, %while.body.lr.ph ], [ %4, %while.body ]
+  %next = getelementptr inbounds %struct._Chv* %head.addr.078, i64 0, i32 10, !dbg !203
+  %4 = load %struct._Chv** %next, align 8, !dbg !203, !tbaa !94
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %4}, i64 0, metadata !83), !dbg !203
+  %call9 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %head.addr.078) #5, !dbg !199
+  %5 = load i32* %nbytesactive, align 4, !dbg !199, !tbaa !102
+  %sub = sub nsw i32 %5, %call9, !dbg !199
+  store i32 %sub, i32* %nbytesactive, align 4, !dbg !199, !tbaa !102
+  %6 = load i32* %nactive, align 4, !dbg !201, !tbaa !102
+  %dec = add nsw i32 %6, -1, !dbg !201
+  store i32 %dec, i32* %nactive, align 4, !dbg !201, !tbaa !102
+  %7 = load i32* %nreleases, align 4, !dbg !202, !tbaa !102
+  %inc10 = add nsw i32 %7, 1, !dbg !202
+  store i32 %inc10, i32* %nreleases, align 4, !dbg !202, !tbaa !102
+  tail call void @Chv_free(%struct._Chv* %head.addr.078) #5, !dbg !204
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %head.addr.078}, i64 0, metadata !84), !dbg !197
+  %cmp8 = icmp eq %struct._Chv* %4, null, !dbg !197
+  br i1 %cmp8, label %if.end38, label %while.body, !dbg !197
 
-; <label>:36                                      ; preds = %.lr.ph14, %48
-  %.113 = phi %struct._Chv* [ %head, %.lr.ph14 ], [ %38, %48 ]
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %38, i64 0, metadata !82, metadata !91), !dbg !290
-  %37 = getelementptr inbounds %struct._Chv* %.113, i64 0, i32 10, !dbg !304
-  %38 = load %struct._Chv** %37, align 8, !dbg !304, !tbaa !138
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %38, i64 0, metadata !81, metadata !91), !dbg !260
-  %39 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %.113) #5, !dbg !305
-  tail call void @llvm.dbg.value(metadata i32 %39, i64 0, metadata !85, metadata !91), !dbg !306
-  tail call void @llvm.dbg.value(metadata %struct._Chv* null, i64 0, metadata !84, metadata !91), !dbg !307
-  %chv2.05 = load %struct._Chv** %18, align 8, !dbg !282
-  %40 = icmp eq %struct._Chv* %chv2.05, null, !dbg !308
-  br i1 %40, label %._crit_edge.thread, label %.lr.ph8, !dbg !310
+while.body13:                                     ; preds = %while.body13.lr.ph, %if.end28
+  %head.addr.186 = phi %struct._Chv* [ %head, %while.body13.lr.ph ], [ %8, %if.end28 ]
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %head.addr.186}, i64 0, metadata !84), !dbg !205
+  %next14 = getelementptr inbounds %struct._Chv* %head.addr.186, i64 0, i32 10, !dbg !206
+  %8 = load %struct._Chv** %next14, align 8, !dbg !206, !tbaa !94
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %8}, i64 0, metadata !83), !dbg !206
+  %call15 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %head.addr.186) #5, !dbg !207
+  tail call void @llvm.dbg.value(metadata !{i32 %call15}, i64 0, metadata !87), !dbg !207
+  tail call void @llvm.dbg.value(metadata !106, i64 0, metadata !86), !dbg !189
+  %chv2.079 = load %struct._Chv** %head16, align 8, !dbg !189
+  %cmp1780 = icmp eq %struct._Chv* %chv2.079, null, !dbg !189
+  br i1 %cmp1780, label %if.then24, label %for.body, !dbg !189
 
-.lr.ph8:                                          ; preds = %36, %43
-  %chv2.07 = phi %struct._Chv* [ %chv2.0, %43 ], [ %chv2.05, %36 ]
-  %prev.06 = phi %struct._Chv* [ %chv2.07, %43 ], [ null, %36 ]
-  %41 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv2.07) #5, !dbg !311
-  tail call void @llvm.dbg.value(metadata i32 %41, i64 0, metadata !86, metadata !91), !dbg !313
-  %42 = icmp sgt i32 %41, %39, !dbg !314
-  br i1 %42, label %._crit_edge, label %43, !dbg !316
+for.cond:                                         ; preds = %for.body
+  %next22 = getelementptr inbounds %struct._Chv* %chv2.082, i64 0, i32 10, !dbg !208
+  %chv2.0 = load %struct._Chv** %next22, align 8, !dbg !189
+  %cmp17 = icmp eq %struct._Chv* %chv2.0, null, !dbg !189
+  br i1 %cmp17, label %for.end, label %for.body, !dbg !189
 
-; <label>:43                                      ; preds = %.lr.ph8
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv2.0, i64 0, metadata !84, metadata !91), !dbg !307
-  %44 = getelementptr inbounds %struct._Chv* %chv2.07, i64 0, i32 10, !dbg !317
-  %chv2.0 = load %struct._Chv** %44, align 8, !dbg !282
-  %45 = icmp eq %struct._Chv* %chv2.0, null, !dbg !308
-  br i1 %45, label %._crit_edge.thread20, label %.lr.ph8, !dbg !310
+for.body:                                         ; preds = %while.body13, %for.cond
+  %chv2.082 = phi %struct._Chv* [ %chv2.0, %for.cond ], [ %chv2.079, %while.body13 ]
+  %prev.081 = phi %struct._Chv* [ %chv2.082, %for.cond ], [ null, %while.body13 ]
+  %call18 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv2.082) #5, !dbg !209
+  tail call void @llvm.dbg.value(metadata !{i32 %call18}, i64 0, metadata !88), !dbg !209
+  %cmp19 = icmp sgt i32 %call18, %call15, !dbg !211
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %chv2.0.lcssa91}, i64 0, metadata !86), !dbg !212
+  br i1 %cmp19, label %for.end, label %for.cond, !dbg !211
 
-._crit_edge:                                      ; preds = %.lr.ph8
-  %46 = icmp eq %struct._Chv* %prev.06, null, !dbg !318
-  br i1 %46, label %._crit_edge.thread, label %._crit_edge.thread20, !dbg !320
+for.end:                                          ; preds = %for.cond, %for.body
+  %chv2.0.lcssa = phi %struct._Chv* [ %chv2.082, %for.body ], [ null, %for.cond ]
+  %prev.0.lcssa = phi %struct._Chv* [ %prev.081, %for.body ], [ %chv2.082, %for.cond ]
+  %cmp23 = icmp eq %struct._Chv* %prev.0.lcssa, null, !dbg !213
+  br i1 %cmp23, label %if.then24, label %if.else26, !dbg !213
 
-._crit_edge.thread:                               ; preds = %36, %._crit_edge
-  %chv2.0.lcssa19 = phi %struct._Chv* [ %chv2.07, %._crit_edge ], [ null, %36 ]
-  store %struct._Chv* %.113, %struct._Chv** %18, align 8, !dbg !321, !tbaa !143
-  br label %48, !dbg !323
+if.then24:                                        ; preds = %while.body13, %for.end
+  %chv2.0.lcssa92 = phi %struct._Chv* [ %chv2.0.lcssa, %for.end ], [ null, %while.body13 ]
+  store %struct._Chv* %head.addr.186, %struct._Chv** %head16, align 8, !dbg !214, !tbaa !94
+  br label %if.end28, !dbg !216
 
-._crit_edge.thread20:                             ; preds = %43, %._crit_edge
-  %prev.0.lcssa22 = phi %struct._Chv* [ %prev.06, %._crit_edge ], [ %chv2.07, %43 ]
-  %chv2.0.lcssa21 = phi %struct._Chv* [ %chv2.07, %._crit_edge ], [ null, %43 ]
-  %47 = getelementptr inbounds %struct._Chv* %prev.0.lcssa22, i64 0, i32 10, !dbg !324
-  store %struct._Chv* %.113, %struct._Chv** %47, align 8, !dbg !326, !tbaa !138
-  br label %48
+if.else26:                                        ; preds = %for.end
+  %next27 = getelementptr inbounds %struct._Chv* %prev.0.lcssa, i64 0, i32 10, !dbg !217
+  store %struct._Chv* %head.addr.186, %struct._Chv** %next27, align 8, !dbg !217, !tbaa !94
+  br label %if.end28
 
-; <label>:48                                      ; preds = %._crit_edge.thread20, %._crit_edge.thread
-  %chv2.0.lcssa18 = phi %struct._Chv* [ %chv2.0.lcssa21, %._crit_edge.thread20 ], [ %chv2.0.lcssa19, %._crit_edge.thread ]
-  store %struct._Chv* %chv2.0.lcssa18, %struct._Chv** %37, align 8, !dbg !327, !tbaa !138
-  %49 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %.113) #5, !dbg !328
-  %50 = load i32* %19, align 4, !dbg !329, !tbaa !169
-  %51 = sub nsw i32 %50, %49, !dbg !329
-  store i32 %51, i32* %19, align 4, !dbg !329, !tbaa !169
-  %52 = load i32* %20, align 4, !dbg !330, !tbaa !165
-  %53 = add nsw i32 %52, -1, !dbg !330
-  store i32 %53, i32* %20, align 4, !dbg !330, !tbaa !165
-  %54 = load i32* %21, align 4, !dbg !331, !tbaa !208
-  %55 = add nsw i32 %54, 1, !dbg !331
-  store i32 %55, i32* %21, align 4, !dbg !331, !tbaa !208
-  %56 = icmp eq %struct._Chv* %38, null, !dbg !332
-  br i1 %56, label %.loopexit, label %36, !dbg !289
+if.end28:                                         ; preds = %if.else26, %if.then24
+  %chv2.0.lcssa91 = phi %struct._Chv* [ %chv2.0.lcssa, %if.else26 ], [ %chv2.0.lcssa92, %if.then24 ]
+  store %struct._Chv* %chv2.0.lcssa91, %struct._Chv** %next14, align 8, !dbg !219, !tbaa !94
+  %call30 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %head.addr.186) #5, !dbg !193
+  %9 = load i32* %nbytesactive31, align 4, !dbg !193, !tbaa !102
+  %sub32 = sub nsw i32 %9, %call30, !dbg !193
+  store i32 %sub32, i32* %nbytesactive31, align 4, !dbg !193, !tbaa !102
+  %10 = load i32* %nactive33, align 4, !dbg !194, !tbaa !102
+  %dec34 = add nsw i32 %10, -1, !dbg !194
+  store i32 %dec34, i32* %nactive33, align 4, !dbg !194, !tbaa !102
+  %11 = load i32* %nreleases35, align 4, !dbg !195, !tbaa !102
+  %inc36 = add nsw i32 %11, 1, !dbg !195
+  store i32 %inc36, i32* %nreleases35, align 4, !dbg !195, !tbaa !102
+  %cmp12 = icmp eq %struct._Chv* %8, null, !dbg !196
+  br i1 %cmp12, label %if.end38, label %while.body13, !dbg !196
 
-.loopexit:                                        ; preds = %48, %25
-  %57 = load %struct._Lock** %7, align 8, !dbg !333, !tbaa !108
-  %58 = icmp eq %struct._Lock* %57, null, !dbg !335
-  br i1 %58, label %63, label %59, !dbg !336
+if.end38:                                         ; preds = %if.end28, %while.body
+  %12 = load %struct._Lock** %lock, align 8, !dbg !220, !tbaa !94
+  %cmp40 = icmp eq %struct._Lock* %12, null, !dbg !220
+  br i1 %cmp40, label %if.end44, label %if.then41, !dbg !220
 
-; <label>:59                                      ; preds = %.loopexit
-  %60 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 10, !dbg !337
-  %61 = load i32* %60, align 4, !dbg !339, !tbaa !183
-  %62 = add nsw i32 %61, 1, !dbg !339
-  store i32 %62, i32* %60, align 4, !dbg !339, !tbaa !183
-  tail call void @Lock_unlock(%struct._Lock* %57) #5, !dbg !340
-  br label %63, !dbg !341
+if.then41:                                        ; preds = %if.end38
+  %nunlocks = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 10, !dbg !221
+  %13 = load i32* %nunlocks, align 4, !dbg !221, !tbaa !102
+  %inc42 = add nsw i32 %13, 1, !dbg !221
+  store i32 %inc42, i32* %nunlocks, align 4, !dbg !221, !tbaa !102
+  tail call void @Lock_unlock(%struct._Lock* %12) #5, !dbg !223
+  br label %if.end44, !dbg !224
 
-; <label>:63                                      ; preds = %.loopexit, %59
-  ret void, !dbg !342
+if.end44:                                         ; preds = %if.end38, %if.then41
+  ret void, !dbg !225
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #4
+declare void @llvm.dbg.value(metadata, i64, metadata) #4
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #4 = { nounwind readnone }
 attributes #5 = { nounwind optsize }
 attributes #6 = { noreturn nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!87, !88, !89}
-!llvm.ident = !{!90}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !5, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!5 = !{!6, !68, !78}
-!6 = !DISubprogram(name: "ChvManager_newObjectOfSizeNbytes", scope: !1, file: !1, line: 17, type: !7, isLocal: false, isDefinition: true, scopeLine: 20, flags: DIFlagPrototyped, isOptimized: true, function: %struct._Chv* (%struct._ChvManager*, i32)* @ChvManager_newObjectOfSizeNbytes, variables: !61)
-!7 = !DISubroutineType(types: !8)
-!8 = !{!9, !37, !15}
-!9 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !10, size: 64, align: 64)
-!10 = !DIDerivedType(tag: DW_TAG_typedef, name: "Chv", file: !11, line: 30, baseType: !12)
-!11 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/../../Chv/Chv.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!12 = !DICompositeType(tag: DW_TAG_structure_type, name: "_Chv", file: !11, line: 31, size: 640, align: 64, elements: !13)
-!13 = !{!14, !16, !17, !18, !19, !20, !21, !23, !24, !27, !36}
-!14 = !DIDerivedType(tag: DW_TAG_member, name: "id", scope: !12, file: !11, line: 32, baseType: !15, size: 32, align: 32)
-!15 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!16 = !DIDerivedType(tag: DW_TAG_member, name: "nD", scope: !12, file: !11, line: 33, baseType: !15, size: 32, align: 32, offset: 32)
-!17 = !DIDerivedType(tag: DW_TAG_member, name: "nL", scope: !12, file: !11, line: 34, baseType: !15, size: 32, align: 32, offset: 64)
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "nU", scope: !12, file: !11, line: 35, baseType: !15, size: 32, align: 32, offset: 96)
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "type", scope: !12, file: !11, line: 36, baseType: !15, size: 32, align: 32, offset: 128)
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "symflag", scope: !12, file: !11, line: 37, baseType: !15, size: 32, align: 32, offset: 160)
-!21 = !DIDerivedType(tag: DW_TAG_member, name: "rowind", scope: !12, file: !11, line: 38, baseType: !22, size: 64, align: 64, offset: 192)
-!22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !15, size: 64, align: 64)
-!23 = !DIDerivedType(tag: DW_TAG_member, name: "colind", scope: !12, file: !11, line: 39, baseType: !22, size: 64, align: 64, offset: 256)
-!24 = !DIDerivedType(tag: DW_TAG_member, name: "entries", scope: !12, file: !11, line: 40, baseType: !25, size: 64, align: 64, offset: 320)
-!25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64, align: 64)
-!26 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!27 = !DIDerivedType(tag: DW_TAG_member, name: "wrkDV", scope: !12, file: !11, line: 41, baseType: !28, size: 192, align: 64, offset: 384)
-!28 = !DIDerivedType(tag: DW_TAG_typedef, name: "DV", file: !29, line: 20, baseType: !30)
-!29 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/../../DV/DV.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!30 = !DICompositeType(tag: DW_TAG_structure_type, name: "_DV", file: !29, line: 21, size: 192, align: 64, elements: !31)
-!31 = !{!32, !33, !34, !35}
-!32 = !DIDerivedType(tag: DW_TAG_member, name: "size", scope: !30, file: !29, line: 22, baseType: !15, size: 32, align: 32)
-!33 = !DIDerivedType(tag: DW_TAG_member, name: "maxsize", scope: !30, file: !29, line: 23, baseType: !15, size: 32, align: 32, offset: 32)
-!34 = !DIDerivedType(tag: DW_TAG_member, name: "owned", scope: !30, file: !29, line: 24, baseType: !15, size: 32, align: 32, offset: 64)
-!35 = !DIDerivedType(tag: DW_TAG_member, name: "vec", scope: !30, file: !29, line: 25, baseType: !25, size: 64, align: 64, offset: 128)
-!36 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !12, file: !11, line: 42, baseType: !9, size: 64, align: 64, offset: 576)
-!37 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !38, size: 64, align: 64)
-!38 = !DIDerivedType(tag: DW_TAG_typedef, name: "ChvManager", file: !39, line: 9, baseType: !40)
-!39 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/../ChvManager.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!40 = !DICompositeType(tag: DW_TAG_structure_type, name: "_ChvManager", file: !39, line: 10, size: 448, align: 64, elements: !41)
-!41 = !{!42, !43, !52, !53, !54, !55, !56, !57, !58, !59, !60}
-!42 = !DIDerivedType(tag: DW_TAG_member, name: "head", scope: !40, file: !39, line: 11, baseType: !9, size: 64, align: 64)
-!43 = !DIDerivedType(tag: DW_TAG_member, name: "lock", scope: !40, file: !39, line: 12, baseType: !44, size: 64, align: 64, offset: 64)
-!44 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !45, size: 64, align: 64)
-!45 = !DIDerivedType(tag: DW_TAG_typedef, name: "Lock", file: !46, line: 36, baseType: !47)
-!46 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/../../Lock/Lock.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!47 = !DICompositeType(tag: DW_TAG_structure_type, name: "_Lock", file: !46, line: 37, size: 128, align: 64, elements: !48)
-!48 = !{!49, !50, !51}
-!49 = !DIDerivedType(tag: DW_TAG_member, name: "mutex", scope: !47, file: !46, line: 45, baseType: !4, size: 64, align: 64)
-!50 = !DIDerivedType(tag: DW_TAG_member, name: "nlocks", scope: !47, file: !46, line: 47, baseType: !15, size: 32, align: 32, offset: 64)
-!51 = !DIDerivedType(tag: DW_TAG_member, name: "nunlocks", scope: !47, file: !46, line: 48, baseType: !15, size: 32, align: 32, offset: 96)
-!52 = !DIDerivedType(tag: DW_TAG_member, name: "mode", scope: !40, file: !39, line: 13, baseType: !15, size: 32, align: 32, offset: 128)
-!53 = !DIDerivedType(tag: DW_TAG_member, name: "nactive", scope: !40, file: !39, line: 14, baseType: !15, size: 32, align: 32, offset: 160)
-!54 = !DIDerivedType(tag: DW_TAG_member, name: "nbytesactive", scope: !40, file: !39, line: 15, baseType: !15, size: 32, align: 32, offset: 192)
-!55 = !DIDerivedType(tag: DW_TAG_member, name: "nbytesrequested", scope: !40, file: !39, line: 16, baseType: !15, size: 32, align: 32, offset: 224)
-!56 = !DIDerivedType(tag: DW_TAG_member, name: "nbytesalloc", scope: !40, file: !39, line: 17, baseType: !15, size: 32, align: 32, offset: 256)
-!57 = !DIDerivedType(tag: DW_TAG_member, name: "nrequests", scope: !40, file: !39, line: 18, baseType: !15, size: 32, align: 32, offset: 288)
-!58 = !DIDerivedType(tag: DW_TAG_member, name: "nreleases", scope: !40, file: !39, line: 19, baseType: !15, size: 32, align: 32, offset: 320)
-!59 = !DIDerivedType(tag: DW_TAG_member, name: "nlocks", scope: !40, file: !39, line: 20, baseType: !15, size: 32, align: 32, offset: 352)
-!60 = !DIDerivedType(tag: DW_TAG_member, name: "nunlocks", scope: !40, file: !39, line: 21, baseType: !15, size: 32, align: 32, offset: 384)
-!61 = !{!62, !63, !64, !65, !66, !67}
-!62 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "manager", arg: 1, scope: !6, file: !1, line: 18, type: !37)
-!63 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "nbytesNeeded", arg: 2, scope: !6, file: !1, line: 19, type: !15)
-!64 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "chv", scope: !6, file: !1, line: 21, type: !9)
-!65 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "prev", scope: !6, file: !1, line: 21, type: !9)
-!66 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nbytesAvailable", scope: !6, file: !1, line: 22, type: !15)
-!67 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "newinstance", scope: !6, file: !1, line: 22, type: !15)
-!68 = !DISubprogram(name: "ChvManager_releaseObject", scope: !1, file: !1, line: 146, type: !69, isLocal: false, isDefinition: true, scopeLine: 149, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._ChvManager*, %struct._Chv*)* @ChvManager_releaseObject, variables: !71)
-!69 = !DISubroutineType(types: !70)
-!70 = !{null, !37, !9}
-!71 = !{!72, !73, !74, !75, !76, !77}
-!72 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "manager", arg: 1, scope: !68, file: !1, line: 147, type: !37)
-!73 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "chv1", arg: 2, scope: !68, file: !1, line: 148, type: !9)
-!74 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "chv2", scope: !68, file: !1, line: 150, type: !9)
-!75 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "prev", scope: !68, file: !1, line: 150, type: !9)
-!76 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nbytes1", scope: !68, file: !1, line: 151, type: !15)
-!77 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nbytes2", scope: !68, file: !1, line: 151, type: !15)
-!78 = !DISubprogram(name: "ChvManager_releaseListOfObjects", scope: !1, file: !1, line: 242, type: !69, isLocal: false, isDefinition: true, scopeLine: 245, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._ChvManager*, %struct._Chv*)* @ChvManager_releaseListOfObjects, variables: !79)
-!79 = !{!80, !81, !82, !83, !84, !85, !86}
-!80 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "manager", arg: 1, scope: !78, file: !1, line: 243, type: !37)
-!81 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "head", arg: 2, scope: !78, file: !1, line: 244, type: !9)
-!82 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "chv1", scope: !78, file: !1, line: 246, type: !9)
-!83 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "chv2", scope: !78, file: !1, line: 246, type: !9)
-!84 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "prev", scope: !78, file: !1, line: 246, type: !9)
-!85 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nbytes1", scope: !78, file: !1, line: 247, type: !15)
-!86 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nbytes2", scope: !78, file: !1, line: 247, type: !15)
-!87 = !{i32 2, !"Dwarf Version", i32 2}
-!88 = !{i32 2, !"Debug Info Version", i32 700000003}
-!89 = !{i32 1, !"PIC Level", i32 2}
-!90 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!91 = !DIExpression()
-!92 = !DILocation(line: 18, column: 18, scope: !6)
-!93 = !DILocation(line: 19, column: 17, scope: !6)
-!94 = !DILocation(line: 28, column: 14, scope: !95)
-!95 = distinct !DILexicalBlock(scope: !6, file: !1, line: 28, column: 6)
-!96 = !DILocation(line: 28, column: 38, scope: !95)
-!97 = !DILocation(line: 28, column: 22, scope: !95)
-!98 = !DILocation(line: 29, column: 12, scope: !99)
-!99 = distinct !DILexicalBlock(scope: !95, file: !1, line: 28, column: 45)
-!100 = !{!101, !101, i64 0}
-!101 = !{!"any pointer", !102, i64 0}
-!102 = !{!"omnipotent char", !103, i64 0}
-!103 = !{!"Simple C/C++ TBAA"}
-!104 = !DILocation(line: 29, column: 4, scope: !99)
-!105 = !DILocation(line: 32, column: 4, scope: !99)
-!106 = !DILocation(line: 38, column: 15, scope: !107)
-!107 = distinct !DILexicalBlock(scope: !6, file: !1, line: 38, column: 6)
-!108 = !{!109, !101, i64 8}
-!109 = !{!"_ChvManager", !101, i64 0, !101, i64 8, !110, i64 16, !110, i64 20, !110, i64 24, !110, i64 28, !110, i64 32, !110, i64 36, !110, i64 40, !110, i64 44, !110, i64 48}
-!110 = !{!"int", !102, i64 0}
-!111 = !DILocation(line: 38, column: 20, scope: !107)
-!112 = !DILocation(line: 38, column: 6, scope: !6)
-!113 = !DILocation(line: 48, column: 4, scope: !114)
-!114 = distinct !DILexicalBlock(scope: !107, file: !1, line: 38, column: 30)
-!115 = !DILocation(line: 49, column: 13, scope: !114)
-!116 = !DILocation(line: 49, column: 19, scope: !114)
-!117 = !{!109, !110, i64 44}
-!118 = !DILocation(line: 54, column: 1, scope: !114)
-!119 = !DILocation(line: 60, column: 22, scope: !120)
-!120 = distinct !DILexicalBlock(scope: !6, file: !1, line: 60, column: 1)
-!121 = !DILocation(line: 21, column: 14, scope: !6)
-!122 = !DILocation(line: 61, column: 11, scope: !123)
-!123 = distinct !DILexicalBlock(scope: !120, file: !1, line: 60, column: 1)
-!124 = !DILocation(line: 60, column: 1, scope: !120)
-!125 = !DILocation(line: 63, column: 22, scope: !126)
-!126 = distinct !DILexicalBlock(scope: !123, file: !1, line: 62, column: 25)
-!127 = !DILocation(line: 22, column: 8, scope: !6)
-!128 = !DILocation(line: 69, column: 22, scope: !129)
-!129 = distinct !DILexicalBlock(scope: !126, file: !1, line: 69, column: 9)
-!130 = !DILocation(line: 69, column: 9, scope: !126)
-!131 = !DILocation(line: 62, column: 18, scope: !123)
-!132 = !DILocation(line: 85, column: 14, scope: !133)
-!133 = distinct !DILexicalBlock(scope: !134, file: !1, line: 85, column: 9)
-!134 = distinct !DILexicalBlock(scope: !135, file: !1, line: 74, column: 20)
-!135 = distinct !DILexicalBlock(scope: !6, file: !1, line: 74, column: 6)
-!136 = !DILocation(line: 86, column: 28, scope: !137)
-!137 = distinct !DILexicalBlock(scope: !133, file: !1, line: 85, column: 24)
-!138 = !{!139, !101, i64 72}
-!139 = !{!"_Chv", !110, i64 0, !110, i64 4, !110, i64 8, !110, i64 12, !110, i64 16, !110, i64 20, !101, i64 24, !101, i64 32, !101, i64 40, !140, i64 48, !101, i64 72}
-!140 = !{!"_DV", !110, i64 0, !110, i64 4, !110, i64 8, !101, i64 16}
-!141 = !DILocation(line: 85, column: 9, scope: !134)
-!142 = !DILocation(line: 86, column: 21, scope: !137)
-!143 = !{!109, !101, i64 0}
-!144 = !DILocation(line: 87, column: 4, scope: !137)
-!145 = !DILocation(line: 88, column: 13, scope: !146)
-!146 = distinct !DILexicalBlock(scope: !133, file: !1, line: 87, column: 11)
-!147 = !DILocation(line: 88, column: 18, scope: !146)
-!148 = !DILocation(line: 97, column: 10, scope: !149)
-!149 = distinct !DILexicalBlock(scope: !135, file: !1, line: 91, column: 8)
-!150 = !DILocation(line: 21, column: 8, scope: !6)
-!151 = !DILocation(line: 22, column: 25, scope: !6)
-!152 = !DILocation(line: 103, column: 21, scope: !149)
-!153 = !DILocation(line: 103, column: 28, scope: !149)
-!154 = !DILocation(line: 103, column: 40, scope: !149)
-!155 = !DILocation(line: 103, column: 4, scope: !149)
-!156 = !DILocation(line: 111, column: 28, scope: !157)
-!157 = distinct !DILexicalBlock(scope: !158, file: !1, line: 110, column: 25)
-!158 = distinct !DILexicalBlock(scope: !6, file: !1, line: 110, column: 6)
-!159 = !DILocation(line: 111, column: 13, scope: !157)
-!160 = !DILocation(line: 111, column: 25, scope: !157)
-!161 = !{!109, !110, i64 32}
-!162 = !DILocation(line: 112, column: 1, scope: !157)
-!163 = !DILocation(line: 113, column: 10, scope: !6)
-!164 = !DILocation(line: 113, column: 17, scope: !6)
-!165 = !{!109, !110, i64 20}
-!166 = !DILocation(line: 114, column: 26, scope: !6)
-!167 = !DILocation(line: 114, column: 10, scope: !6)
-!168 = !DILocation(line: 114, column: 23, scope: !6)
-!169 = !{!109, !110, i64 24}
-!170 = !DILocation(line: 115, column: 10, scope: !6)
-!171 = !DILocation(line: 115, column: 26, scope: !6)
-!172 = !{!109, !110, i64 28}
-!173 = !DILocation(line: 120, column: 10, scope: !6)
-!174 = !DILocation(line: 120, column: 19, scope: !6)
-!175 = !{!109, !110, i64 36}
-!176 = !DILocation(line: 121, column: 15, scope: !177)
-!177 = distinct !DILexicalBlock(scope: !6, file: !1, line: 121, column: 6)
-!178 = !DILocation(line: 121, column: 20, scope: !177)
-!179 = !DILocation(line: 121, column: 6, scope: !6)
-!180 = !DILocation(line: 127, column: 13, scope: !181)
-!181 = distinct !DILexicalBlock(scope: !177, file: !1, line: 121, column: 30)
-!182 = !DILocation(line: 127, column: 21, scope: !181)
-!183 = !{!109, !110, i64 48}
-!184 = !DILocation(line: 128, column: 4, scope: !181)
-!185 = !DILocation(line: 134, column: 1, scope: !181)
-!186 = !DILocation(line: 135, column: 1, scope: !6)
-!187 = !DILocation(line: 147, column: 18, scope: !68)
-!188 = !DILocation(line: 148, column: 18, scope: !68)
-!189 = !DILocation(line: 157, column: 14, scope: !190)
-!190 = distinct !DILexicalBlock(scope: !68, file: !1, line: 157, column: 6)
-!191 = !DILocation(line: 157, column: 30, scope: !190)
-!192 = !DILocation(line: 157, column: 22, scope: !190)
-!193 = !DILocation(line: 158, column: 12, scope: !194)
-!194 = distinct !DILexicalBlock(scope: !190, file: !1, line: 157, column: 40)
-!195 = !DILocation(line: 158, column: 4, scope: !194)
-!196 = !DILocation(line: 161, column: 4, scope: !194)
-!197 = !DILocation(line: 163, column: 15, scope: !198)
-!198 = distinct !DILexicalBlock(scope: !68, file: !1, line: 163, column: 6)
-!199 = !DILocation(line: 163, column: 20, scope: !198)
-!200 = !DILocation(line: 163, column: 6, scope: !68)
-!201 = !DILocation(line: 169, column: 4, scope: !202)
-!202 = distinct !DILexicalBlock(scope: !198, file: !1, line: 163, column: 30)
-!203 = !DILocation(line: 170, column: 13, scope: !202)
-!204 = !DILocation(line: 170, column: 19, scope: !202)
-!205 = !DILocation(line: 171, column: 1, scope: !202)
-!206 = !DILocation(line: 172, column: 10, scope: !68)
-!207 = !DILocation(line: 172, column: 19, scope: !68)
-!208 = !{!109, !110, i64 40}
-!209 = !DILocation(line: 173, column: 26, scope: !68)
-!210 = !DILocation(line: 173, column: 10, scope: !68)
-!211 = !DILocation(line: 173, column: 23, scope: !68)
-!212 = !DILocation(line: 174, column: 10, scope: !68)
-!213 = !DILocation(line: 174, column: 17, scope: !68)
-!214 = !DILocation(line: 175, column: 15, scope: !215)
-!215 = distinct !DILexicalBlock(scope: !68, file: !1, line: 175, column: 6)
-!216 = !{!109, !110, i64 16}
-!217 = !DILocation(line: 175, column: 20, scope: !215)
-!218 = !DILocation(line: 175, column: 6, scope: !68)
-!219 = !DILocation(line: 181, column: 4, scope: !220)
-!220 = distinct !DILexicalBlock(scope: !215, file: !1, line: 175, column: 27)
-!221 = !DILocation(line: 182, column: 1, scope: !220)
-!222 = !DILocation(line: 189, column: 14, scope: !223)
-!223 = distinct !DILexicalBlock(scope: !215, file: !1, line: 182, column: 8)
-!224 = !DILocation(line: 151, column: 8, scope: !68)
-!225 = !DILocation(line: 194, column: 26, scope: !226)
-!226 = distinct !DILexicalBlock(scope: !223, file: !1, line: 194, column: 4)
-!227 = !DILocation(line: 150, column: 15, scope: !68)
-!228 = !DILocation(line: 195, column: 15, scope: !229)
-!229 = distinct !DILexicalBlock(scope: !226, file: !1, line: 194, column: 4)
-!230 = !DILocation(line: 194, column: 4, scope: !226)
-!231 = !DILocation(line: 197, column: 17, scope: !232)
-!232 = distinct !DILexicalBlock(scope: !229, file: !1, line: 196, column: 30)
-!233 = !DILocation(line: 151, column: 17, scope: !68)
-!234 = !DILocation(line: 201, column: 20, scope: !235)
-!235 = distinct !DILexicalBlock(scope: !232, file: !1, line: 201, column: 12)
-!236 = !DILocation(line: 201, column: 12, scope: !232)
-!237 = !DILocation(line: 196, column: 23, scope: !229)
-!238 = !DILocation(line: 206, column: 14, scope: !239)
-!239 = distinct !DILexicalBlock(scope: !223, file: !1, line: 206, column: 9)
-!240 = !DILocation(line: 206, column: 9, scope: !223)
-!241 = !DILocation(line: 207, column: 21, scope: !242)
-!242 = distinct !DILexicalBlock(scope: !239, file: !1, line: 206, column: 24)
-!243 = !DILocation(line: 211, column: 4, scope: !242)
-!244 = !DILocation(line: 212, column: 13, scope: !245)
-!245 = distinct !DILexicalBlock(scope: !239, file: !1, line: 211, column: 11)
-!246 = !DILocation(line: 212, column: 18, scope: !245)
-!247 = !DILocation(line: 217, column: 10, scope: !223)
-!248 = !DILocation(line: 217, column: 15, scope: !223)
-!249 = !DILocation(line: 222, column: 15, scope: !250)
-!250 = distinct !DILexicalBlock(scope: !68, file: !1, line: 222, column: 6)
-!251 = !DILocation(line: 222, column: 20, scope: !250)
-!252 = !DILocation(line: 222, column: 6, scope: !68)
-!253 = !DILocation(line: 228, column: 13, scope: !254)
-!254 = distinct !DILexicalBlock(scope: !250, file: !1, line: 222, column: 30)
-!255 = !DILocation(line: 228, column: 21, scope: !254)
-!256 = !DILocation(line: 229, column: 4, scope: !254)
-!257 = !DILocation(line: 230, column: 1, scope: !254)
-!258 = !DILocation(line: 231, column: 1, scope: !68)
-!259 = !DILocation(line: 243, column: 18, scope: !78)
-!260 = !DILocation(line: 244, column: 18, scope: !78)
-!261 = !DILocation(line: 253, column: 14, scope: !262)
-!262 = distinct !DILexicalBlock(scope: !78, file: !1, line: 253, column: 6)
-!263 = !DILocation(line: 253, column: 30, scope: !262)
-!264 = !DILocation(line: 253, column: 22, scope: !262)
-!265 = !DILocation(line: 254, column: 12, scope: !266)
-!266 = distinct !DILexicalBlock(scope: !262, file: !1, line: 253, column: 40)
-!267 = !DILocation(line: 254, column: 4, scope: !266)
-!268 = !DILocation(line: 257, column: 4, scope: !266)
-!269 = !DILocation(line: 259, column: 15, scope: !270)
-!270 = distinct !DILexicalBlock(scope: !78, file: !1, line: 259, column: 6)
-!271 = !DILocation(line: 259, column: 20, scope: !270)
-!272 = !DILocation(line: 259, column: 6, scope: !78)
-!273 = !DILocation(line: 265, column: 4, scope: !274)
-!274 = distinct !DILexicalBlock(scope: !270, file: !1, line: 259, column: 30)
-!275 = !DILocation(line: 266, column: 13, scope: !274)
-!276 = !DILocation(line: 266, column: 19, scope: !274)
-!277 = !DILocation(line: 267, column: 1, scope: !274)
-!278 = !DILocation(line: 268, column: 15, scope: !279)
-!279 = distinct !DILexicalBlock(scope: !78, file: !1, line: 268, column: 6)
-!280 = !DILocation(line: 268, column: 20, scope: !279)
-!281 = !DILocation(line: 268, column: 6, scope: !78)
-!282 = !DILocation(line: 301, column: 29, scope: !283)
-!283 = distinct !DILexicalBlock(scope: !284, file: !1, line: 301, column: 7)
-!284 = distinct !DILexicalBlock(scope: !285, file: !1, line: 287, column: 27)
-!285 = distinct !DILexicalBlock(scope: !279, file: !1, line: 281, column: 8)
-!286 = !DILocation(line: 329, column: 16, scope: !284)
-!287 = !DILocation(line: 330, column: 16, scope: !284)
-!288 = !DILocation(line: 331, column: 16, scope: !284)
-!289 = !DILocation(line: 287, column: 4, scope: !285)
-!290 = !DILocation(line: 246, column: 8, scope: !78)
-!291 = !DILocation(line: 276, column: 16, scope: !292)
-!292 = distinct !DILexicalBlock(scope: !293, file: !1, line: 274, column: 36)
-!293 = distinct !DILexicalBlock(scope: !279, file: !1, line: 268, column: 27)
-!294 = !DILocation(line: 277, column: 16, scope: !292)
-!295 = !DILocation(line: 278, column: 16, scope: !292)
-!296 = !DILocation(line: 274, column: 4, scope: !293)
-!297 = !DILocation(line: 275, column: 20, scope: !292)
-!298 = !DILocation(line: 276, column: 32, scope: !292)
-!299 = !DILocation(line: 276, column: 29, scope: !292)
-!300 = !DILocation(line: 277, column: 23, scope: !292)
-!301 = !DILocation(line: 278, column: 25, scope: !292)
-!302 = !DILocation(line: 279, column: 7, scope: !292)
-!303 = !DILocation(line: 274, column: 26, scope: !293)
-!304 = !DILocation(line: 289, column: 20, scope: !284)
-!305 = !DILocation(line: 296, column: 17, scope: !284)
-!306 = !DILocation(line: 247, column: 8, scope: !78)
-!307 = !DILocation(line: 246, column: 22, scope: !78)
-!308 = !DILocation(line: 302, column: 18, scope: !309)
-!309 = distinct !DILexicalBlock(scope: !283, file: !1, line: 301, column: 7)
-!310 = !DILocation(line: 301, column: 7, scope: !283)
-!311 = !DILocation(line: 304, column: 20, scope: !312)
-!312 = distinct !DILexicalBlock(scope: !309, file: !1, line: 303, column: 33)
-!313 = !DILocation(line: 247, column: 17, scope: !78)
-!314 = !DILocation(line: 309, column: 23, scope: !315)
-!315 = distinct !DILexicalBlock(scope: !312, file: !1, line: 309, column: 15)
-!316 = !DILocation(line: 309, column: 15, scope: !312)
-!317 = !DILocation(line: 303, column: 26, scope: !309)
-!318 = !DILocation(line: 314, column: 17, scope: !319)
-!319 = distinct !DILexicalBlock(scope: !284, file: !1, line: 314, column: 12)
-!320 = !DILocation(line: 314, column: 12, scope: !284)
-!321 = !DILocation(line: 315, column: 24, scope: !322)
-!322 = distinct !DILexicalBlock(scope: !319, file: !1, line: 314, column: 27)
-!323 = !DILocation(line: 319, column: 7, scope: !322)
-!324 = !DILocation(line: 320, column: 16, scope: !325)
-!325 = distinct !DILexicalBlock(scope: !319, file: !1, line: 319, column: 14)
-!326 = !DILocation(line: 320, column: 21, scope: !325)
-!327 = !DILocation(line: 325, column: 18, scope: !284)
-!328 = !DILocation(line: 329, column: 32, scope: !284)
-!329 = !DILocation(line: 329, column: 29, scope: !284)
-!330 = !DILocation(line: 330, column: 23, scope: !284)
-!331 = !DILocation(line: 331, column: 25, scope: !284)
-!332 = !DILocation(line: 287, column: 17, scope: !285)
-!333 = !DILocation(line: 334, column: 15, scope: !334)
-!334 = distinct !DILexicalBlock(scope: !78, file: !1, line: 334, column: 6)
-!335 = !DILocation(line: 334, column: 20, scope: !334)
-!336 = !DILocation(line: 334, column: 6, scope: !78)
-!337 = !DILocation(line: 340, column: 13, scope: !338)
-!338 = distinct !DILexicalBlock(scope: !334, file: !1, line: 334, column: 30)
-!339 = !DILocation(line: 340, column: 21, scope: !338)
-!340 = !DILocation(line: 341, column: 4, scope: !338)
-!341 = !DILocation(line: 342, column: 1, scope: !338)
-!342 = !DILocation(line: 343, column: 1, scope: !78)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !70, metadata !80}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"ChvManager_newObjectOfSizeNbytes", metadata !"ChvManager_newObjectOfSizeNbytes", metadata !"", i32 17, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct._Chv* (%struct._ChvManager*, i32)* @ChvManager_newObjectOfSizeNbytes, null, null, metadata !63, i32 20} ; [ DW_TAG_subprogram ] [line 17] [def] [scope 20] [ChvManager_newObjectOfSizeNbytes]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8, metadata !38, metadata !14}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from Chv]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"Chv", i32 30, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [Chv] [line 30, size 0, align 0, offset 0] [from _Chv]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"_Chv", i32 31, i64 640, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [_Chv] [line 31, size 640, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/../../Chv/Chv.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13, metadata !15, metadata !16, metadata !17, metadata !18, metadata !19, metadata !20, metadata !22, metadata !23, metadata !26, metadata !35}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"id", i32 32, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [id] [line 32, size 32, align 32, offset 0] [from int]
+!14 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!15 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"nD", i32 33, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [nD] [line 33, size 32, align 32, offset 32] [from int]
+!16 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"nL", i32 34, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [nL] [line 34, size 32, align 32, offset 64] [from int]
+!17 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"nU", i32 35, i64 32, i64 32, i64 96, i32 0, metadata !14} ; [ DW_TAG_member ] [nU] [line 35, size 32, align 32, offset 96] [from int]
+!18 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"type", i32 36, i64 32, i64 32, i64 128, i32 0, metadata !14} ; [ DW_TAG_member ] [type] [line 36, size 32, align 32, offset 128] [from int]
+!19 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"symflag", i32 37, i64 32, i64 32, i64 160, i32 0, metadata !14} ; [ DW_TAG_member ] [symflag] [line 37, size 32, align 32, offset 160] [from int]
+!20 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"rowind", i32 38, i64 64, i64 64, i64 192, i32 0, metadata !21} ; [ DW_TAG_member ] [rowind] [line 38, size 64, align 64, offset 192] [from ]
+!21 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !14} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!22 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"colind", i32 39, i64 64, i64 64, i64 256, i32 0, metadata !21} ; [ DW_TAG_member ] [colind] [line 39, size 64, align 64, offset 256] [from ]
+!23 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"entries", i32 40, i64 64, i64 64, i64 320, i32 0, metadata !24} ; [ DW_TAG_member ] [entries] [line 40, size 64, align 64, offset 320] [from ]
+!24 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !25} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from double]
+!25 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!26 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"wrkDV", i32 41, i64 192, i64 64, i64 384, i32 0, metadata !27} ; [ DW_TAG_member ] [wrkDV] [line 41, size 192, align 64, offset 384] [from DV]
+!27 = metadata !{i32 786454, metadata !11, null, metadata !"DV", i32 20, i64 0, i64 0, i64 0, i32 0, metadata !28} ; [ DW_TAG_typedef ] [DV] [line 20, size 0, align 0, offset 0] [from _DV]
+!28 = metadata !{i32 786451, metadata !29, null, metadata !"_DV", i32 21, i64 192, i64 64, i32 0, i32 0, null, metadata !30, i32 0, null, null} ; [ DW_TAG_structure_type ] [_DV] [line 21, size 192, align 64, offset 0] [from ]
+!29 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/../../DV/DV.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!30 = metadata !{metadata !31, metadata !32, metadata !33, metadata !34}
+!31 = metadata !{i32 786445, metadata !29, metadata !28, metadata !"size", i32 22, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [size] [line 22, size 32, align 32, offset 0] [from int]
+!32 = metadata !{i32 786445, metadata !29, metadata !28, metadata !"maxsize", i32 23, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [maxsize] [line 23, size 32, align 32, offset 32] [from int]
+!33 = metadata !{i32 786445, metadata !29, metadata !28, metadata !"owned", i32 24, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [owned] [line 24, size 32, align 32, offset 64] [from int]
+!34 = metadata !{i32 786445, metadata !29, metadata !28, metadata !"vec", i32 25, i64 64, i64 64, i64 128, i32 0, metadata !24} ; [ DW_TAG_member ] [vec] [line 25, size 64, align 64, offset 128] [from ]
+!35 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"next", i32 42, i64 64, i64 64, i64 576, i32 0, metadata !36} ; [ DW_TAG_member ] [next] [line 42, size 64, align 64, offset 576] [from ]
+!36 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !37} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from Chv]
+!37 = metadata !{i32 786454, metadata !11, null, metadata !"Chv", i32 30, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [Chv] [line 30, size 0, align 0, offset 0] [from _Chv]
+!38 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !39} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ChvManager]
+!39 = metadata !{i32 786454, metadata !1, null, metadata !"ChvManager", i32 9, i64 0, i64 0, i64 0, i32 0, metadata !40} ; [ DW_TAG_typedef ] [ChvManager] [line 9, size 0, align 0, offset 0] [from _ChvManager]
+!40 = metadata !{i32 786451, metadata !41, null, metadata !"_ChvManager", i32 10, i64 448, i64 64, i32 0, i32 0, null, metadata !42, i32 0, null, null} ; [ DW_TAG_structure_type ] [_ChvManager] [line 10, size 448, align 64, offset 0] [from ]
+!41 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/../ChvManager.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!42 = metadata !{metadata !43, metadata !44, metadata !54, metadata !55, metadata !56, metadata !57, metadata !58, metadata !59, metadata !60, metadata !61, metadata !62}
+!43 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"head", i32 11, i64 64, i64 64, i64 0, i32 0, metadata !8} ; [ DW_TAG_member ] [head] [line 11, size 64, align 64, offset 0] [from ]
+!44 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"lock", i32 12, i64 64, i64 64, i64 64, i32 0, metadata !45} ; [ DW_TAG_member ] [lock] [line 12, size 64, align 64, offset 64] [from ]
+!45 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !46} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from Lock]
+!46 = metadata !{i32 786454, metadata !41, null, metadata !"Lock", i32 36, i64 0, i64 0, i64 0, i32 0, metadata !47} ; [ DW_TAG_typedef ] [Lock] [line 36, size 0, align 0, offset 0] [from _Lock]
+!47 = metadata !{i32 786451, metadata !48, null, metadata !"_Lock", i32 37, i64 128, i64 64, i32 0, i32 0, null, metadata !49, i32 0, null, null} ; [ DW_TAG_structure_type ] [_Lock] [line 37, size 128, align 64, offset 0] [from ]
+!48 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/../../Lock/Lock.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!49 = metadata !{metadata !50, metadata !52, metadata !53}
+!50 = metadata !{i32 786445, metadata !48, metadata !47, metadata !"mutex", i32 45, i64 64, i64 64, i64 0, i32 0, metadata !51} ; [ DW_TAG_member ] [mutex] [line 45, size 64, align 64, offset 0] [from ]
+!51 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!52 = metadata !{i32 786445, metadata !48, metadata !47, metadata !"nlocks", i32 47, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [nlocks] [line 47, size 32, align 32, offset 64] [from int]
+!53 = metadata !{i32 786445, metadata !48, metadata !47, metadata !"nunlocks", i32 48, i64 32, i64 32, i64 96, i32 0, metadata !14} ; [ DW_TAG_member ] [nunlocks] [line 48, size 32, align 32, offset 96] [from int]
+!54 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"mode", i32 13, i64 32, i64 32, i64 128, i32 0, metadata !14} ; [ DW_TAG_member ] [mode] [line 13, size 32, align 32, offset 128] [from int]
+!55 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"nactive", i32 14, i64 32, i64 32, i64 160, i32 0, metadata !14} ; [ DW_TAG_member ] [nactive] [line 14, size 32, align 32, offset 160] [from int]
+!56 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"nbytesactive", i32 15, i64 32, i64 32, i64 192, i32 0, metadata !14} ; [ DW_TAG_member ] [nbytesactive] [line 15, size 32, align 32, offset 192] [from int]
+!57 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"nbytesrequested", i32 16, i64 32, i64 32, i64 224, i32 0, metadata !14} ; [ DW_TAG_member ] [nbytesrequested] [line 16, size 32, align 32, offset 224] [from int]
+!58 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"nbytesalloc", i32 17, i64 32, i64 32, i64 256, i32 0, metadata !14} ; [ DW_TAG_member ] [nbytesalloc] [line 17, size 32, align 32, offset 256] [from int]
+!59 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"nrequests", i32 18, i64 32, i64 32, i64 288, i32 0, metadata !14} ; [ DW_TAG_member ] [nrequests] [line 18, size 32, align 32, offset 288] [from int]
+!60 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"nreleases", i32 19, i64 32, i64 32, i64 320, i32 0, metadata !14} ; [ DW_TAG_member ] [nreleases] [line 19, size 32, align 32, offset 320] [from int]
+!61 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"nlocks", i32 20, i64 32, i64 32, i64 352, i32 0, metadata !14} ; [ DW_TAG_member ] [nlocks] [line 20, size 32, align 32, offset 352] [from int]
+!62 = metadata !{i32 786445, metadata !41, metadata !40, metadata !"nunlocks", i32 21, i64 32, i64 32, i64 384, i32 0, metadata !14} ; [ DW_TAG_member ] [nunlocks] [line 21, size 32, align 32, offset 384] [from int]
+!63 = metadata !{metadata !64, metadata !65, metadata !66, metadata !67, metadata !68, metadata !69}
+!64 = metadata !{i32 786689, metadata !4, metadata !"manager", metadata !5, i32 16777234, metadata !38, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [manager] [line 18]
+!65 = metadata !{i32 786689, metadata !4, metadata !"nbytesNeeded", metadata !5, i32 33554451, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [nbytesNeeded] [line 19]
+!66 = metadata !{i32 786688, metadata !4, metadata !"chv", metadata !5, i32 21, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [chv] [line 21]
+!67 = metadata !{i32 786688, metadata !4, metadata !"prev", metadata !5, i32 21, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [prev] [line 21]
+!68 = metadata !{i32 786688, metadata !4, metadata !"nbytesAvailable", metadata !5, i32 22, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nbytesAvailable] [line 22]
+!69 = metadata !{i32 786688, metadata !4, metadata !"newinstance", metadata !5, i32 22, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [newinstance] [line 22]
+!70 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"ChvManager_releaseObject", metadata !"ChvManager_releaseObject", metadata !"", i32 146, metadata !71, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._ChvManager*, %struct._Chv*)* @ChvManager_releaseObject, null, null, metadata !73, i32 149} ; [ DW_TAG_subprogram ] [line 146] [def] [scope 149] [ChvManager_releaseObject]
+!71 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !72, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!72 = metadata !{null, metadata !38, metadata !8}
+!73 = metadata !{metadata !74, metadata !75, metadata !76, metadata !77, metadata !78, metadata !79}
+!74 = metadata !{i32 786689, metadata !70, metadata !"manager", metadata !5, i32 16777363, metadata !38, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [manager] [line 147]
+!75 = metadata !{i32 786689, metadata !70, metadata !"chv1", metadata !5, i32 33554580, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [chv1] [line 148]
+!76 = metadata !{i32 786688, metadata !70, metadata !"chv2", metadata !5, i32 150, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [chv2] [line 150]
+!77 = metadata !{i32 786688, metadata !70, metadata !"prev", metadata !5, i32 150, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [prev] [line 150]
+!78 = metadata !{i32 786688, metadata !70, metadata !"nbytes1", metadata !5, i32 151, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nbytes1] [line 151]
+!79 = metadata !{i32 786688, metadata !70, metadata !"nbytes2", metadata !5, i32 151, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nbytes2] [line 151]
+!80 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"ChvManager_releaseListOfObjects", metadata !"ChvManager_releaseListOfObjects", metadata !"", i32 242, metadata !71, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._ChvManager*, %struct._Chv*)* @ChvManager_releaseListOfObjects, null, null, metadata !81, i32 245} ; [ DW_TAG_subprogram ] [line 242] [def] [scope 245] [ChvManager_releaseListOfObjects]
+!81 = metadata !{metadata !82, metadata !83, metadata !84, metadata !85, metadata !86, metadata !87, metadata !88}
+!82 = metadata !{i32 786689, metadata !80, metadata !"manager", metadata !5, i32 16777459, metadata !38, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [manager] [line 243]
+!83 = metadata !{i32 786689, metadata !80, metadata !"head", metadata !5, i32 33554676, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [head] [line 244]
+!84 = metadata !{i32 786688, metadata !80, metadata !"chv1", metadata !5, i32 246, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [chv1] [line 246]
+!85 = metadata !{i32 786688, metadata !80, metadata !"chv2", metadata !5, i32 246, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [chv2] [line 246]
+!86 = metadata !{i32 786688, metadata !80, metadata !"prev", metadata !5, i32 246, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [prev] [line 246]
+!87 = metadata !{i32 786688, metadata !80, metadata !"nbytes1", metadata !5, i32 247, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nbytes1] [line 247]
+!88 = metadata !{i32 786688, metadata !80, metadata !"nbytes2", metadata !5, i32 247, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nbytes2] [line 247]
+!89 = metadata !{i32 18, i32 0, metadata !4, null}
+!90 = metadata !{i32 19, i32 0, metadata !4, null}
+!91 = metadata !{i32 28, i32 0, metadata !4, null}
+!92 = metadata !{i32 29, i32 0, metadata !93, null}
+!93 = metadata !{i32 786443, metadata !1, metadata !4, i32 28, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!94 = metadata !{metadata !"any pointer", metadata !95}
+!95 = metadata !{metadata !"omnipotent char", metadata !96}
+!96 = metadata !{metadata !"Simple C/C++ TBAA"}
+!97 = metadata !{i32 32, i32 0, metadata !93, null}
+!98 = metadata !{i32 38, i32 0, metadata !4, null}
+!99 = metadata !{i32 48, i32 0, metadata !100, null}
+!100 = metadata !{i32 786443, metadata !1, metadata !4, i32 38, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!101 = metadata !{i32 49, i32 0, metadata !100, null}
+!102 = metadata !{metadata !"int", metadata !95}
+!103 = metadata !{i32 54, i32 0, metadata !100, null}
+!104 = metadata !{i32 60, i32 0, metadata !105, null}
+!105 = metadata !{i32 786443, metadata !1, metadata !4, i32 60, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!106 = metadata !{%struct._Chv* null}
+!107 = metadata !{i32 62, i32 0, metadata !105, null}
+!108 = metadata !{i32 63, i32 0, metadata !109, null}
+!109 = metadata !{i32 786443, metadata !1, metadata !105, i32 62, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!110 = metadata !{i32 69, i32 0, metadata !109, null}
+!111 = metadata !{i32 72, i32 0, metadata !109, null}
+!112 = metadata !{i32 85, i32 0, metadata !113, null}
+!113 = metadata !{i32 786443, metadata !1, metadata !4, i32 74, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!114 = metadata !{i32 86, i32 0, metadata !115, null}
+!115 = metadata !{i32 786443, metadata !1, metadata !113, i32 85, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!116 = metadata !{i32 87, i32 0, metadata !115, null}
+!117 = metadata !{i32 88, i32 0, metadata !118, null}
+!118 = metadata !{i32 786443, metadata !1, metadata !113, i32 87, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!119 = metadata !{i32 97, i32 0, metadata !120, null}
+!120 = metadata !{i32 786443, metadata !1, metadata !4, i32 91, i32 0, i32 8} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!121 = metadata !{i32 1}
+!122 = metadata !{i32 102, i32 0, metadata !120, null}
+!123 = metadata !{i32 103, i32 0, metadata !120, null}
+!124 = metadata !{i32 111, i32 0, metadata !125, null}
+!125 = metadata !{i32 786443, metadata !1, metadata !4, i32 110, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!126 = metadata !{i32 112, i32 0, metadata !125, null}
+!127 = metadata !{i32 113, i32 0, metadata !4, null}
+!128 = metadata !{i32 114, i32 0, metadata !4, null}
+!129 = metadata !{i32 115, i32 0, metadata !4, null}
+!130 = metadata !{i32 120, i32 0, metadata !4, null}
+!131 = metadata !{i32 121, i32 0, metadata !4, null}
+!132 = metadata !{i32 127, i32 0, metadata !133, null}
+!133 = metadata !{i32 786443, metadata !1, metadata !4, i32 121, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!134 = metadata !{i32 128, i32 0, metadata !133, null}
+!135 = metadata !{i32 134, i32 0, metadata !133, null}
+!136 = metadata !{i32 135, i32 0, metadata !4, null}
+!137 = metadata !{i32 147, i32 0, metadata !70, null}
+!138 = metadata !{i32 148, i32 0, metadata !70, null}
+!139 = metadata !{i32 157, i32 0, metadata !70, null}
+!140 = metadata !{i32 158, i32 0, metadata !141, null}
+!141 = metadata !{i32 786443, metadata !1, metadata !70, i32 157, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!142 = metadata !{i32 161, i32 0, metadata !141, null}
+!143 = metadata !{i32 163, i32 0, metadata !70, null}
+!144 = metadata !{i32 169, i32 0, metadata !145, null}
+!145 = metadata !{i32 786443, metadata !1, metadata !70, i32 163, i32 0, i32 12} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!146 = metadata !{i32 170, i32 0, metadata !145, null}
+!147 = metadata !{i32 171, i32 0, metadata !145, null}
+!148 = metadata !{i32 172, i32 0, metadata !70, null}
+!149 = metadata !{i32 173, i32 0, metadata !70, null}
+!150 = metadata !{i32 174, i32 0, metadata !70, null}
+!151 = metadata !{i32 175, i32 0, metadata !70, null}
+!152 = metadata !{i32 181, i32 0, metadata !153, null}
+!153 = metadata !{i32 786443, metadata !1, metadata !70, i32 175, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!154 = metadata !{i32 182, i32 0, metadata !153, null}
+!155 = metadata !{i32 189, i32 0, metadata !156, null}
+!156 = metadata !{i32 786443, metadata !1, metadata !70, i32 182, i32 0, i32 14} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!157 = metadata !{i32 194, i32 0, metadata !158, null}
+!158 = metadata !{i32 786443, metadata !1, metadata !156, i32 194, i32 0, i32 15} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!159 = metadata !{i32 196, i32 0, metadata !158, null}
+!160 = metadata !{i32 197, i32 0, metadata !161, null}
+!161 = metadata !{i32 786443, metadata !1, metadata !158, i32 196, i32 0, i32 16} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!162 = metadata !{i32 201, i32 0, metadata !161, null}
+!163 = metadata !{i32 204, i32 0, metadata !161, null}
+!164 = metadata !{i32 206, i32 0, metadata !156, null}
+!165 = metadata !{i32 207, i32 0, metadata !166, null}
+!166 = metadata !{i32 786443, metadata !1, metadata !156, i32 206, i32 0, i32 18} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!167 = metadata !{i32 211, i32 0, metadata !166, null}
+!168 = metadata !{i32 212, i32 0, metadata !169, null}
+!169 = metadata !{i32 786443, metadata !1, metadata !156, i32 211, i32 0, i32 19} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!170 = metadata !{i32 217, i32 0, metadata !156, null}
+!171 = metadata !{i32 222, i32 0, metadata !70, null}
+!172 = metadata !{i32 228, i32 0, metadata !173, null}
+!173 = metadata !{i32 786443, metadata !1, metadata !70, i32 222, i32 0, i32 20} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!174 = metadata !{i32 229, i32 0, metadata !173, null}
+!175 = metadata !{i32 230, i32 0, metadata !173, null}
+!176 = metadata !{i32 231, i32 0, metadata !70, null}
+!177 = metadata !{i32 243, i32 0, metadata !80, null}
+!178 = metadata !{i32 244, i32 0, metadata !80, null}
+!179 = metadata !{i32 253, i32 0, metadata !80, null}
+!180 = metadata !{i32 254, i32 0, metadata !181, null}
+!181 = metadata !{i32 786443, metadata !1, metadata !80, i32 253, i32 0, i32 21} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!182 = metadata !{i32 257, i32 0, metadata !181, null}
+!183 = metadata !{i32 259, i32 0, metadata !80, null}
+!184 = metadata !{i32 265, i32 0, metadata !185, null}
+!185 = metadata !{i32 786443, metadata !1, metadata !80, i32 259, i32 0, i32 22} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!186 = metadata !{i32 266, i32 0, metadata !185, null}
+!187 = metadata !{i32 267, i32 0, metadata !185, null}
+!188 = metadata !{i32 268, i32 0, metadata !80, null}
+!189 = metadata !{i32 301, i32 0, metadata !190, null}
+!190 = metadata !{i32 786443, metadata !1, metadata !191, i32 301, i32 0, i32 27} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!191 = metadata !{i32 786443, metadata !1, metadata !192, i32 287, i32 0, i32 26} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!192 = metadata !{i32 786443, metadata !1, metadata !80, i32 281, i32 0, i32 25} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!193 = metadata !{i32 329, i32 0, metadata !191, null}
+!194 = metadata !{i32 330, i32 0, metadata !191, null}
+!195 = metadata !{i32 331, i32 0, metadata !191, null}
+!196 = metadata !{i32 287, i32 0, metadata !192, null}
+!197 = metadata !{i32 274, i32 0, metadata !198, null}
+!198 = metadata !{i32 786443, metadata !1, metadata !80, i32 268, i32 0, i32 23} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!199 = metadata !{i32 276, i32 0, metadata !200, null}
+!200 = metadata !{i32 786443, metadata !1, metadata !198, i32 274, i32 0, i32 24} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!201 = metadata !{i32 277, i32 0, metadata !200, null}
+!202 = metadata !{i32 278, i32 0, metadata !200, null}
+!203 = metadata !{i32 275, i32 0, metadata !200, null}
+!204 = metadata !{i32 279, i32 0, metadata !200, null}
+!205 = metadata !{i32 288, i32 0, metadata !191, null}
+!206 = metadata !{i32 289, i32 0, metadata !191, null}
+!207 = metadata !{i32 296, i32 0, metadata !191, null}
+!208 = metadata !{i32 303, i32 0, metadata !190, null}
+!209 = metadata !{i32 304, i32 0, metadata !210, null}
+!210 = metadata !{i32 786443, metadata !1, metadata !190, i32 303, i32 0, i32 28} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!211 = metadata !{i32 309, i32 0, metadata !210, null}
+!212 = metadata !{i32 312, i32 0, metadata !210, null}
+!213 = metadata !{i32 314, i32 0, metadata !191, null}
+!214 = metadata !{i32 315, i32 0, metadata !215, null}
+!215 = metadata !{i32 786443, metadata !1, metadata !191, i32 314, i32 0, i32 30} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!216 = metadata !{i32 319, i32 0, metadata !215, null}
+!217 = metadata !{i32 320, i32 0, metadata !218, null}
+!218 = metadata !{i32 786443, metadata !1, metadata !191, i32 319, i32 0, i32 31} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!219 = metadata !{i32 325, i32 0, metadata !191, null}
+!220 = metadata !{i32 334, i32 0, metadata !80, null}
+!221 = metadata !{i32 340, i32 0, metadata !222, null}
+!222 = metadata !{i32 786443, metadata !1, metadata !80, i32 334, i32 0, i32 32} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/ChvManager/src/ChvManager_util.c]
+!223 = metadata !{i32 341, i32 0, metadata !222, null}
+!224 = metadata !{i32 342, i32 0, metadata !222, null}
+!225 = metadata !{i32 343, i32 0, metadata !80, null}

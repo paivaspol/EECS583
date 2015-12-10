@@ -1,105 +1,107 @@
 define double @sre_random() #0 {
-  tail call void @llvm.dbg.value(metadata i64 40014, i64 0, metadata !15, metadata !93), !dbg !94
-  tail call void @llvm.dbg.value(metadata i64 2147483563, i64 0, metadata !16, metadata !93), !dbg !95
-  tail call void @llvm.dbg.value(metadata i64 53668, i64 0, metadata !17, metadata !93), !dbg !96
-  tail call void @llvm.dbg.value(metadata i64 12211, i64 0, metadata !18, metadata !93), !dbg !97
-  tail call void @llvm.dbg.value(metadata i64 40692, i64 0, metadata !19, metadata !93), !dbg !98
-  tail call void @llvm.dbg.value(metadata i64 2147483399, i64 0, metadata !20, metadata !93), !dbg !99
-  tail call void @llvm.dbg.value(metadata i64 52774, i64 0, metadata !21, metadata !93), !dbg !100
-  tail call void @llvm.dbg.value(metadata i64 3791, i64 0, metadata !22, metadata !93), !dbg !101
-  %1 = load i32* @sre_randseed, align 4, !dbg !102, !tbaa !104
-  %2 = icmp sgt i32 %1, 0, !dbg !108
-  br i1 %2, label %3, label %._crit_edge, !dbg !109
+entry:
+  tail call void @llvm.dbg.value(metadata !89, i64 0, metadata !15), !dbg !90
+  tail call void @llvm.dbg.value(metadata !91, i64 0, metadata !16), !dbg !92
+  tail call void @llvm.dbg.value(metadata !93, i64 0, metadata !17), !dbg !94
+  tail call void @llvm.dbg.value(metadata !95, i64 0, metadata !18), !dbg !96
+  tail call void @llvm.dbg.value(metadata !97, i64 0, metadata !19), !dbg !98
+  tail call void @llvm.dbg.value(metadata !99, i64 0, metadata !20), !dbg !100
+  tail call void @llvm.dbg.value(metadata !101, i64 0, metadata !21), !dbg !102
+  tail call void @llvm.dbg.value(metadata !103, i64 0, metadata !22), !dbg !104
+  %0 = load i32* @sre_randseed, align 4, !dbg !105, !tbaa !106
+  %cmp = icmp sgt i32 %0, 0, !dbg !105
+  br i1 %cmp, label %if.then, label %entry.if.end28_crit_edge, !dbg !105
 
-._crit_edge:                                      ; preds = %0
-  %.pre = load i64* @sre_random.rnd1, align 8, !dbg !110, !tbaa !111
-  %.pre12 = load i64* @sre_random.rnd2, align 8, !dbg !113, !tbaa !111
-  br label %25, !dbg !109
+entry.if.end28_crit_edge:                         ; preds = %entry
+  %.pre = load i64* @sre_random.rnd1, align 8, !dbg !109, !tbaa !110
+  %.pre109 = load i64* @sre_random.rnd2, align 8, !dbg !111, !tbaa !110
+  br label %if.end28, !dbg !105
 
-; <label>:3                                       ; preds = %0
-  %4 = sext i32 %1 to i64, !dbg !114
-  store i64 %4, i64* @sre_random.rnd1, align 8, !dbg !116, !tbaa !111
-  store i64 %4, i64* @sre_random.rnd2, align 8, !dbg !117, !tbaa !111
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !14, metadata !93), !dbg !118
-  br label %5, !dbg !119
+if.then:                                          ; preds = %entry
+  %conv = sext i32 %0 to i64, !dbg !112
+  store i64 %conv, i64* @sre_random.rnd1, align 8, !dbg !112, !tbaa !110
+  store i64 %conv, i64* @sre_random.rnd2, align 8, !dbg !114, !tbaa !110
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !13), !dbg !115
+  br label %for.body, !dbg !115
 
-; <label>:5                                       ; preds = %5, %3
-  %indvars.iv = phi i64 [ 0, %3 ], [ %indvars.iv.next, %5 ]
-  %storemerge411 = phi i64 [ %4, %3 ], [ %storemerge4, %5 ], !dbg !121
-  %.10 = phi i64 [ %4, %3 ], [ %., %5 ], !dbg !124
-  %6 = srem i64 %.10, 53668, !dbg !121
-  %7 = mul nsw i64 %6, 40014, !dbg !125
-  tail call void @llvm.dbg.value(metadata i64 %7, i64 0, metadata !12, metadata !93), !dbg !126
-  %8 = sdiv i64 %.10, 53668, !dbg !127
-  %9 = mul nsw i64 %8, -12211, !dbg !128
-  %10 = add i64 %7, %9, !dbg !128
-  %11 = icmp slt i64 %10, 0, !dbg !129
-  %12 = add nsw i64 %10, 2147483563, !dbg !131
-  %. = select i1 %11, i64 %12, i64 %10, !dbg !132
-  %13 = srem i64 %storemerge411, 52774, !dbg !133
-  %14 = mul nsw i64 %13, 40692, !dbg !134
-  tail call void @llvm.dbg.value(metadata i64 %14, i64 0, metadata !12, metadata !93), !dbg !126
-  %15 = sdiv i64 %storemerge411, 52774, !dbg !135
-  %16 = mul nsw i64 %15, -3791, !dbg !136
-  %17 = add i64 %14, %16, !dbg !136
-  %18 = icmp slt i64 %17, 0, !dbg !137
-  %19 = add nsw i64 %17, 2147483399, !dbg !139
-  %storemerge4 = select i1 %18, i64 %19, i64 %17, !dbg !140
-  %20 = sub nsw i64 %., %storemerge4, !dbg !141
-  %21 = getelementptr inbounds [64 x i64]* @sre_random.tbl, i64 0, i64 %indvars.iv, !dbg !142
-  %22 = icmp slt i64 %20, 0, !dbg !143
-  %23 = add nsw i64 %20, 2147483563, !dbg !145
-  %.6 = select i1 %22, i64 %23, i64 %20, !dbg !146
-  store i64 %.6, i64* %21, align 8, !dbg !147, !tbaa !111
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !119
-  %exitcond = icmp eq i64 %indvars.iv.next, 64, !dbg !119
-  br i1 %exitcond, label %24, label %5, !dbg !119
+for.body:                                         ; preds = %for.body, %if.then
+  %indvars.iv = phi i64 [ 0, %if.then ], [ %indvars.iv.next, %for.body ]
+  %storemerge104108 = phi i64 [ %conv, %if.then ], [ %storemerge104, %for.body ], !dbg !117
+  %add.sub107 = phi i64 [ %conv, %if.then ], [ %add.sub, %for.body ], !dbg !117
+  %rem = srem i64 %add.sub107, 53668, !dbg !117
+  %mul = mul nsw i64 %rem, 40014, !dbg !117
+  tail call void @llvm.dbg.value(metadata !{i64 %mul}, i64 0, metadata !10), !dbg !117
+  %div = sdiv i64 %add.sub107, 53668, !dbg !119
+  %1 = mul i64 %div, -12211, !dbg !120
+  %sub = add i64 %1, %mul, !dbg !120
+  %cmp5 = icmp slt i64 %sub, 0, !dbg !121
+  %add = add nsw i64 %sub, 2147483563, !dbg !121
+  %add.sub = select i1 %cmp5, i64 %add, i64 %sub, !dbg !121
+  %rem8 = srem i64 %storemerge104108, 52774, !dbg !122
+  %mul9 = mul nsw i64 %rem8, 40692, !dbg !122
+  tail call void @llvm.dbg.value(metadata !{i64 %mul9}, i64 0, metadata !10), !dbg !122
+  %div10 = sdiv i64 %storemerge104108, 52774, !dbg !123
+  %2 = mul i64 %div10, -3791, !dbg !124
+  %sub12 = add i64 %2, %mul9, !dbg !124
+  %cmp13 = icmp slt i64 %sub12, 0, !dbg !125
+  %add16 = add nsw i64 %sub12, 2147483399, !dbg !125
+  %storemerge104 = select i1 %cmp13, i64 %add16, i64 %sub12, !dbg !125
+  %sub18 = sub nsw i64 %add.sub, %storemerge104, !dbg !126
+  %arrayidx = getelementptr inbounds [64 x i64]* @sre_random.tbl, i64 0, i64 %indvars.iv, !dbg !126
+  %cmp21 = icmp slt i64 %sub18, 0, !dbg !127
+  %add26 = add nsw i64 %sub18, 2147483563, !dbg !127
+  %add26.sub18 = select i1 %cmp21, i64 %add26, i64 %sub18, !dbg !127
+  store i64 %add26.sub18, i64* %arrayidx, align 8, !dbg !126, !tbaa !110
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !115
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !115
+  %exitcond = icmp eq i32 %lftr.wideiv, 64, !dbg !115
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !115
 
-; <label>:24                                      ; preds = %5
-  store i64 %., i64* @sre_random.rnd1, align 8, !dbg !148, !tbaa !111
-  store i64 %storemerge4, i64* @sre_random.rnd2, align 8, !dbg !149, !tbaa !111
-  store i32 0, i32* @sre_randseed, align 4, !dbg !150, !tbaa !104
-  br label %25, !dbg !151
+for.end:                                          ; preds = %for.body
+  store i64 %add.sub, i64* @sre_random.rnd1, align 8, !dbg !120, !tbaa !110
+  store i64 %storemerge104, i64* @sre_random.rnd2, align 8, !dbg !124, !tbaa !110
+  store i32 0, i32* @sre_randseed, align 4, !dbg !128, !tbaa !106
+  br label %if.end28, !dbg !129
 
-; <label>:25                                      ; preds = %._crit_edge, %24
-  %26 = phi i64 [ %.pre12, %._crit_edge ], [ %storemerge4, %24 ]
-  %27 = phi i64 [ %.pre, %._crit_edge ], [ %., %24 ]
-  %28 = srem i64 %27, 53668, !dbg !152
-  %29 = mul nsw i64 %28, 40014, !dbg !153
-  tail call void @llvm.dbg.value(metadata i64 %29, i64 0, metadata !12, metadata !93), !dbg !126
-  %30 = sdiv i64 %27, 53668, !dbg !154
-  %31 = mul nsw i64 %30, -12211, !dbg !155
-  %32 = add i64 %29, %31, !dbg !155
-  %33 = icmp slt i64 %32, 0, !dbg !156
-  %34 = add nsw i64 %32, 2147483563, !dbg !158
-  %.7 = select i1 %33, i64 %34, i64 %32, !dbg !159
-  store i64 %.7, i64* @sre_random.rnd1, align 8, !dbg !160, !tbaa !111
-  %35 = srem i64 %26, 52774, !dbg !161
-  %36 = mul nsw i64 %35, 40692, !dbg !162
-  tail call void @llvm.dbg.value(metadata i64 %36, i64 0, metadata !12, metadata !93), !dbg !126
-  %37 = sdiv i64 %26, 52774, !dbg !163
-  %38 = mul nsw i64 %37, -3791, !dbg !164
-  %39 = add i64 %36, %38, !dbg !164
-  %40 = icmp slt i64 %39, 0, !dbg !165
-  %41 = add nsw i64 %39, 2147483399, !dbg !167
-  %storemerge1 = select i1 %40, i64 %41, i64 %39, !dbg !168
-  store i64 %storemerge1, i64* @sre_random.rnd2, align 8, !dbg !169, !tbaa !111
-  %42 = load i64* @sre_random.rnd, align 8, !dbg !170, !tbaa !111
-  %43 = sitofp i64 %42 to double, !dbg !171
-  %44 = fdiv double %43, 0x41DFFFFFEAC00000, !dbg !172
-  %45 = fmul double %44, 6.400000e+01, !dbg !173
-  %46 = fptosi double %45 to i32, !dbg !174
-  tail call void @llvm.dbg.value(metadata i32 %46, i64 0, metadata !14, metadata !93), !dbg !118
-  %47 = sext i32 %46 to i64, !dbg !175
-  %48 = getelementptr inbounds [64 x i64]* @sre_random.tbl, i64 0, i64 %47, !dbg !175
-  %49 = load i64* %48, align 8, !dbg !175, !tbaa !111
-  store i64 %49, i64* @sre_random.rnd, align 8, !dbg !176, !tbaa !111
-  %50 = sub nsw i64 %.7, %storemerge1, !dbg !177
-  %51 = icmp slt i64 %50, 0, !dbg !178
-  %52 = add nsw i64 %50, 2147483563, !dbg !180
-  %.8 = select i1 %51, i64 %52, i64 %50, !dbg !181
-  store i64 %.8, i64* %48, align 8, !dbg !182, !tbaa !111
-  %53 = sitofp i64 %49 to double, !dbg !183
-  %54 = fdiv double %53, 0x41DFFFFFEAC00000, !dbg !184
-  ret double %54, !dbg !185
+if.end28:                                         ; preds = %entry.if.end28_crit_edge, %for.end
+  %3 = phi i64 [ %.pre109, %entry.if.end28_crit_edge ], [ %storemerge104, %for.end ]
+  %4 = phi i64 [ %.pre, %entry.if.end28_crit_edge ], [ %add.sub, %for.end ]
+  %rem29 = srem i64 %4, 53668, !dbg !109
+  %mul30 = mul nsw i64 %rem29, 40014, !dbg !109
+  tail call void @llvm.dbg.value(metadata !{i64 %mul30}, i64 0, metadata !10), !dbg !109
+  %div31 = sdiv i64 %4, 53668, !dbg !130
+  %5 = mul i64 %div31, -12211, !dbg !131
+  %sub33 = add i64 %5, %mul30, !dbg !131
+  %cmp34 = icmp slt i64 %sub33, 0, !dbg !132
+  %add37 = add nsw i64 %sub33, 2147483563, !dbg !132
+  %add37.sub33 = select i1 %cmp34, i64 %add37, i64 %sub33, !dbg !132
+  store i64 %add37.sub33, i64* @sre_random.rnd1, align 8, !dbg !131, !tbaa !110
+  %rem39 = srem i64 %3, 52774, !dbg !111
+  %mul40 = mul nsw i64 %rem39, 40692, !dbg !111
+  tail call void @llvm.dbg.value(metadata !{i64 %mul40}, i64 0, metadata !10), !dbg !111
+  %div41 = sdiv i64 %3, 52774, !dbg !133
+  %6 = mul i64 %div41, -3791, !dbg !134
+  %sub43 = add i64 %6, %mul40, !dbg !134
+  %cmp44 = icmp slt i64 %sub43, 0, !dbg !135
+  %add47 = add nsw i64 %sub43, 2147483399, !dbg !135
+  %storemerge101 = select i1 %cmp44, i64 %add47, i64 %sub43, !dbg !135
+  store i64 %storemerge101, i64* @sre_random.rnd2, align 8, !dbg !134, !tbaa !110
+  %7 = load i64* @sre_random.rnd, align 8, !dbg !136, !tbaa !110
+  %conv49 = sitofp i64 %7 to double, !dbg !136
+  %div51 = fdiv double %conv49, 0x41DFFFFFEAC00000, !dbg !136
+  %mul52 = fmul double %div51, 6.400000e+01, !dbg !136
+  %conv53 = fptosi double %mul52 to i32, !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i32 %conv53}, i64 0, metadata !13), !dbg !136
+  %idxprom54 = sext i32 %conv53 to i64, !dbg !137
+  %arrayidx55 = getelementptr inbounds [64 x i64]* @sre_random.tbl, i64 0, i64 %idxprom54, !dbg !137
+  %8 = load i64* %arrayidx55, align 8, !dbg !137, !tbaa !110
+  store i64 %8, i64* @sre_random.rnd, align 8, !dbg !137, !tbaa !110
+  %sub56 = sub nsw i64 %add37.sub33, %storemerge101, !dbg !138
+  %cmp61 = icmp slt i64 %sub56, 0, !dbg !139
+  %add66 = add nsw i64 %sub56, 2147483563, !dbg !139
+  %add66.sub56 = select i1 %cmp61, i64 %add66, i64 %sub56, !dbg !139
+  store i64 %add66.sub56, i64* %arrayidx55, align 8, !dbg !138, !tbaa !110
+  %conv68 = sitofp i64 %8 to double, !dbg !140
+  %div70 = fdiv double %conv68, 0x41DFFFFFEAC00000, !dbg !140
+  ret double %div70, !dbg !140
 }

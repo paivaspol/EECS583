@@ -1,0 +1,119 @@
+define void @_ZN11xercesc_2_56XMLURL6setURLEPKtS2_(%"class.xercesc_2_5::XMLURL"* %this, i16* %baseURL, i16* %relativeURL) #1 align 2 {
+entry:
+  %basePart = alloca %"class.xercesc_2_5::XMLURL", align 8
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLURL"* %this}, i64 0, metadata !1401), !dbg !2196
+  call void @llvm.dbg.value(metadata !{i16* %baseURL}, i64 0, metadata !1402), !dbg !2196
+  call void @llvm.dbg.value(metadata !{i16* %relativeURL}, i64 0, metadata !1403), !dbg !2197
+  call void @_ZN11xercesc_2_56XMLURL7cleanupEv(%"class.xercesc_2_5::XMLURL"* %this) #9, !dbg !2198
+  call void @_ZN11xercesc_2_56XMLURL5parseEPKt(%"class.xercesc_2_5::XMLURL"* %this, i16* %relativeURL) #9, !dbg !2199
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLURL"* %this}, i64 0, metadata !2200), !dbg !2202
+  %fProtocol.i = getelementptr inbounds %"class.xercesc_2_5::XMLURL"* %this, i64 0, i32 7, !dbg !2203
+  %0 = load i32* %fProtocol.i, align 4, !dbg !2203, !tbaa !2175
+  %cmp.i = icmp eq i32 %0, 4, !dbg !2203
+  br i1 %cmp.i, label %_ZNK11xercesc_2_56XMLURL10isRelativeEv.exit, label %if.end.i, !dbg !2203
+
+if.end.i:                                         ; preds = %entry
+  %fPath.i = getelementptr inbounds %"class.xercesc_2_5::XMLURL"* %this, i64 0, i32 5, !dbg !2204
+  %1 = load i16** %fPath.i, align 8, !dbg !2204, !tbaa !2171
+  %tobool.i = icmp eq i16* %1, null, !dbg !2204
+  br i1 %tobool.i, label %_ZNK11xercesc_2_56XMLURL10isRelativeEv.exit, label %if.end3.i, !dbg !2204
+
+if.end3.i:                                        ; preds = %if.end.i
+  %2 = load i16* %1, align 2, !dbg !2205, !tbaa !2206
+  %phitmp = icmp eq i16 %2, 47, !dbg !2207
+  br label %_ZNK11xercesc_2_56XMLURL10isRelativeEv.exit, !dbg !2207
+
+_ZNK11xercesc_2_56XMLURL10isRelativeEv.exit:      ; preds = %entry, %if.end.i, %if.end3.i
+  %retval.0.i = phi i1 [ false, %entry ], [ false, %if.end.i ], [ %phitmp, %if.end3.i ]
+  %tobool = icmp eq i16* %baseURL, null, !dbg !2201
+  %or.cond = or i1 %retval.0.i, %tobool, !dbg !2201
+  br i1 %or.cond, label %if.end12, label %if.then, !dbg !2201
+
+if.then:                                          ; preds = %_ZNK11xercesc_2_56XMLURL10isRelativeEv.exit
+  %3 = load i16* %baseURL, align 2, !dbg !2208, !tbaa !2206
+  %tobool2 = icmp eq i16 %3, 0, !dbg !2208
+  br i1 %tobool2, label %if.end12, label %if.then3, !dbg !2208
+
+if.then3:                                         ; preds = %if.then
+  %4 = bitcast %"class.xercesc_2_5::XMLURL"* %basePart to i8*, !dbg !2209
+  call void @llvm.lifetime.start(i64 88, i8* %4) #6, !dbg !2209
+  call void @llvm.dbg.declare(metadata !{%"class.xercesc_2_5::XMLURL"* %basePart}, metadata !1404), !dbg !2209
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::XMLURL"* %this, i64 0, i32 1, !dbg !2209
+  %5 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !2209, !tbaa !2171
+  call void @_ZN11xercesc_2_56XMLURLC2EPKtPNS_13MemoryManagerE(%"class.xercesc_2_5::XMLURL"* %basePart, i16* %baseURL, %"class.xercesc_2_5::MemoryManager"* %5) #9, !dbg !2209
+  %call4 = invoke zeroext i1 @_ZN11xercesc_2_56XMLURL20conglomerateWithBaseERKS0_b(%"class.xercesc_2_5::XMLURL"* %this, %"class.xercesc_2_5::XMLURL"* %basePart, i1 zeroext false) #9
+          to label %invoke.cont unwind label %lpad, !dbg !2210
+
+invoke.cont:                                      ; preds = %if.then3
+  br i1 %call4, label %if.end, label %if.then5, !dbg !2210
+
+if.then5:                                         ; preds = %invoke.cont
+  invoke void @_ZN11xercesc_2_56XMLURL7cleanupEv(%"class.xercesc_2_5::XMLURL"* %this) #9
+          to label %invoke.cont6 unwind label %lpad, !dbg !2211
+
+invoke.cont6:                                     ; preds = %if.then5
+  %exception = call i8* @__cxa_allocate_exception(i64 48) #6, !dbg !2213
+  %6 = bitcast i8* %exception to %"class.xercesc_2_5::MalformedURLException"*, !dbg !2213
+  %7 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !2213, !tbaa !2171
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MalformedURLException"* %6}, i64 0, metadata !2214), !dbg !2215
+  call void @llvm.dbg.value(metadata !2216, i64 0, metadata !2217), !dbg !2215
+  call void @llvm.dbg.value(metadata !2218, i64 0, metadata !2219), !dbg !2215
+  call void @llvm.dbg.value(metadata !2220, i64 0, metadata !2221), !dbg !2215
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %7}, i64 0, metadata !2222), !dbg !2215
+  invoke void @_ZN11xercesc_2_521MalformedURLExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::MalformedURLException"* %6, i8* getelementptr inbounds ([58 x i8]* @.str, i64 0, i64 0), i32 540, i32 105, %"class.xercesc_2_5::MemoryManager"* %7) #9
+          to label %invoke.cont9 unwind label %lpad8
+
+invoke.cont9:                                     ; preds = %invoke.cont6
+  invoke void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_521MalformedURLExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::MalformedURLException"*)* @_ZN11xercesc_2_521MalformedURLExceptionD1Ev to i8*)) #10
+          to label %unreachable unwind label %lpad, !dbg !2213
+
+lpad:                                             ; preds = %invoke.cont9, %if.then5, %if.then3
+  %8 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2210
+  %9 = extractvalue { i8*, i32 } %8, 0, !dbg !2210
+  %10 = extractvalue { i8*, i32 } %8, 1, !dbg !2210
+  br label %ehcleanup, !dbg !2210
+
+lpad8:                                            ; preds = %invoke.cont6
+  %11 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2213
+  %12 = extractvalue { i8*, i32 } %11, 0, !dbg !2213
+  %13 = extractvalue { i8*, i32 } %11, 1, !dbg !2213
+  call void @__cxa_free_exception(i8* %exception) #6, !dbg !2213
+  br label %ehcleanup, !dbg !2213
+
+if.end:                                           ; preds = %invoke.cont
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLURL"* %basePart}, i64 0, metadata !2223), !dbg !2225
+  %14 = getelementptr inbounds %"class.xercesc_2_5::XMLURL"* %basePart, i64 0, i32 0, !dbg !2226
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([4 x i8*]* @_ZTVN11xercesc_2_56XMLURLE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %14, align 8, !dbg !2226, !tbaa !2179
+  call void @_ZN11xercesc_2_56XMLURL7cleanupEv(%"class.xercesc_2_5::XMLURL"* %basePart) #9, !dbg !2227
+  call void @llvm.lifetime.end(i64 88, i8* %4) #6, !dbg !2229
+  br label %if.end12, !dbg !2229
+
+ehcleanup:                                        ; preds = %lpad8, %lpad
+  %exn.slot.0 = phi i8* [ %9, %lpad ], [ %12, %lpad8 ]
+  %ehselector.slot.0 = phi i32 [ %10, %lpad ], [ %13, %lpad8 ]
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLURL"* %basePart}, i64 0, metadata !2230), !dbg !2231
+  %15 = getelementptr inbounds %"class.xercesc_2_5::XMLURL"* %basePart, i64 0, i32 0, !dbg !2232
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([4 x i8*]* @_ZTVN11xercesc_2_56XMLURLE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %15, align 8, !dbg !2232, !tbaa !2179
+  invoke void @_ZN11xercesc_2_56XMLURL7cleanupEv(%"class.xercesc_2_5::XMLURL"* %basePart) #9
+          to label %eh.resume unwind label %terminate.lpad
+
+if.end12:                                         ; preds = %_ZNK11xercesc_2_56XMLURL10isRelativeEv.exit, %if.then, %if.end
+  ret void, !dbg !2233
+
+eh.resume:                                        ; preds = %ehcleanup
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !2229
+  %lpad.val13 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !2229
+  resume { i8*, i32 } %lpad.val13, !dbg !2229
+
+terminate.lpad:                                   ; preds = %ehcleanup
+  %16 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !2229
+  %17 = extractvalue { i8*, i32 } %16, 0, !dbg !2229
+  call void @__clang_call_terminate(i8* %17) #11, !dbg !2229
+  unreachable, !dbg !2229
+
+unreachable:                                      ; preds = %invoke.cont9
+  unreachable
+}

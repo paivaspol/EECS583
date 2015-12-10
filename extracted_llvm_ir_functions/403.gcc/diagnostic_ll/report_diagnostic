@@ -1,60 +1,62 @@
 define void @report_diagnostic(%struct.diagnostic_context* %dc) #2 {
 entry:
   %os = alloca %struct.output_state, align 8
-  %os.0.cast = bitcast %struct.output_state* %os to i8*
-  call void @llvm.lifetime.start(i64 80, i8* %os.0.cast)
-  %0 = load i32* @diagnostic_lock, align 4, !tbaa !0
-  %inc = add nsw i32 %0, 1
-  store i32 %inc, i32* @diagnostic_lock, align 4, !tbaa !0
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.end, label %if.then
+  call void @llvm.dbg.value(metadata !{%struct.diagnostic_context* %dc}, i64 0, metadata !968), !dbg !1674
+  %os.0.cast = bitcast %struct.output_state* %os to i8*, !dbg !1675
+  call void @llvm.lifetime.start(i64 80, i8* %os.0.cast), !dbg !1675
+  call void @llvm.dbg.declare(metadata !{%struct.output_state* %os}, metadata !969), !dbg !1675
+  %0 = load i32* @diagnostic_lock, align 4, !dbg !1676, !tbaa !1172
+  %inc = add nsw i32 %0, 1, !dbg !1676
+  store i32 %inc, i32* @diagnostic_lock, align 4, !dbg !1676, !tbaa !1172
+  %tobool = icmp eq i32 %0, 0, !dbg !1676
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1676
 
 if.then:                                          ; preds = %entry
-  call fastcc void @error_recursion() #15
-  unreachable
+  call fastcc void @error_recursion() #16, !dbg !1677
+  unreachable, !dbg !1677
 
 if.end:                                           ; preds = %entry
-  %warn = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 5
-  %1 = load i32* %warn, align 4, !tbaa !0
-  %call = call i32 @count_error(i32 %1) #11
-  %tobool1 = icmp eq i32 %call, 0
-  br i1 %tobool1, label %if.end6, label %if.then2
+  %warn = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 5, !dbg !1678
+  %1 = load i32* %warn, align 4, !dbg !1678, !tbaa !1172
+  %call = call i32 @count_error(i32 %1) #12, !dbg !1678
+  %tobool1 = icmp eq i32 %call, 0, !dbg !1678
+  br i1 %tobool1, label %if.end6, label %if.then2, !dbg !1678
 
 if.then2:                                         ; preds = %if.end
-  %2 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  %3 = bitcast %struct.output_buffer* %2 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %os.0.cast, i8* %3, i64 80, i32 8, i1 false), !tbaa.struct !6
-  %message = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 1
-  %4 = load i8** %message, align 8, !tbaa !3
-  %cursor = getelementptr inbounds %struct.output_buffer* %2, i64 0, i32 0, i32 7
-  store i8* %4, i8** %cursor, align 8, !tbaa !3
-  %args_ptr = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 2
-  %5 = load [1 x %struct.__va_list_tag]** %args_ptr, align 8, !tbaa !3
-  %6 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  %format_args = getelementptr inbounds %struct.output_buffer* %6, i64 0, i32 0, i32 8
-  store [1 x %struct.__va_list_tag]* %5, [1 x %struct.__va_list_tag]** %format_args, align 8, !tbaa !3
-  %begin_diagnostic = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 6
-  %7 = load void (%struct.output_buffer*, %struct.diagnostic_context*)** %begin_diagnostic, align 8, !tbaa !3
-  %8 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  call void %7(%struct.output_buffer* %8, %struct.diagnostic_context* %dc) #10
-  %9 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  call fastcc void @output_format(%struct.output_buffer* %9) #11
-  %end_diagnostic = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 7
-  %10 = load void (%struct.output_buffer*, %struct.diagnostic_context*)** %end_diagnostic, align 8, !tbaa !3
-  %11 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  call void %10(%struct.output_buffer* %11, %struct.diagnostic_context* %dc) #10
-  %12 = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !3
-  %13 = getelementptr inbounds %struct.diagnostic_context* %12, i64 0, i32 0
-  call fastcc void @diagnostic_finish(%struct.output_buffer* %13) #11
-  %14 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  %15 = bitcast %struct.output_buffer* %14 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %15, i8* %os.0.cast, i64 80, i32 8, i1 false), !tbaa.struct !6
-  br label %if.end6
+  %2 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1679, !tbaa !1178
+  %3 = bitcast %struct.output_buffer* %2 to i8*, !dbg !1679
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %os.0.cast, i8* %3, i64 80, i32 8, i1 false), !dbg !1679, !tbaa.struct !1477
+  %message = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 1, !dbg !1681
+  %4 = load i8** %message, align 8, !dbg !1681, !tbaa !1178
+  %cursor = getelementptr inbounds %struct.output_buffer* %2, i64 0, i32 0, i32 7, !dbg !1681
+  store i8* %4, i8** %cursor, align 8, !dbg !1681, !tbaa !1178
+  %args_ptr = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 2, !dbg !1682
+  %5 = load [1 x %struct.__va_list_tag]** %args_ptr, align 8, !dbg !1682, !tbaa !1178
+  %6 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1682, !tbaa !1178
+  %format_args = getelementptr inbounds %struct.output_buffer* %6, i64 0, i32 0, i32 8, !dbg !1682
+  store [1 x %struct.__va_list_tag]* %5, [1 x %struct.__va_list_tag]** %format_args, align 8, !dbg !1682, !tbaa !1178
+  %begin_diagnostic = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 6, !dbg !1683
+  %7 = load void (%struct.output_buffer*, %struct.diagnostic_context*)** %begin_diagnostic, align 8, !dbg !1683, !tbaa !1178
+  %8 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1683, !tbaa !1178
+  call void %7(%struct.output_buffer* %8, %struct.diagnostic_context* %dc) #11, !dbg !1683
+  %9 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1684, !tbaa !1178
+  call fastcc void @output_format(%struct.output_buffer* %9) #12, !dbg !1684
+  %end_diagnostic = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 7, !dbg !1685
+  %10 = load void (%struct.output_buffer*, %struct.diagnostic_context*)** %end_diagnostic, align 8, !dbg !1685, !tbaa !1178
+  %11 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1685, !tbaa !1178
+  call void %10(%struct.output_buffer* %11, %struct.diagnostic_context* %dc) #11, !dbg !1685
+  %12 = load %struct.diagnostic_context** @global_dc, align 8, !dbg !1686, !tbaa !1178
+  %13 = getelementptr inbounds %struct.diagnostic_context* %12, i64 0, i32 0, !dbg !1686
+  call fastcc void @diagnostic_finish(%struct.output_buffer* %13) #12, !dbg !1686
+  %14 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1687, !tbaa !1178
+  %15 = bitcast %struct.output_buffer* %14 to i8*, !dbg !1687
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %15, i8* %os.0.cast, i64 80, i32 8, i1 false), !dbg !1687, !tbaa.struct !1477
+  br label %if.end6, !dbg !1688
 
 if.end6:                                          ; preds = %if.end, %if.then2
-  %16 = load i32* @diagnostic_lock, align 4, !tbaa !0
-  %dec = add nsw i32 %16, -1
-  store i32 %dec, i32* @diagnostic_lock, align 4, !tbaa !0
-  call void @llvm.lifetime.end(i64 80, i8* %os.0.cast)
-  ret void
+  %16 = load i32* @diagnostic_lock, align 4, !dbg !1689, !tbaa !1172
+  %dec = add nsw i32 %16, -1, !dbg !1689
+  store i32 %dec, i32* @diagnostic_lock, align 4, !dbg !1689, !tbaa !1172
+  call void @llvm.lifetime.end(i64 80, i8* %os.0.cast), !dbg !1690
+  ret void, !dbg !1690
 }

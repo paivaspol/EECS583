@@ -1,0 +1,488 @@
+define void @_ZN11xercesc_2_512DGXMLScanner12scanCharDataERNS_9XMLBufferE(%"class.xercesc_2_5::DGXMLScanner"* %this, %"class.xercesc_2_5::XMLBuffer"* %toUse) unnamed_addr #5 align 2 {
+entry:
+  %nextCh = alloca i16, align 2
+  %secondCh = alloca i16, align 2
+  %escaped = alloca i8, align 1
+  %tmpBuf = alloca [9 x i16], align 16
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DGXMLScanner"* %this}, i64 0, metadata !6571), !dbg !12380
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %toUse}, i64 0, metadata !6572), !dbg !12380
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %toUse}, i64 0, metadata !12381), !dbg !12383
+  %fIndex.i = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %toUse, i64 0, i32 1, !dbg !12384
+  store i32 0, i32* %fIndex.i, align 4, !dbg !12384, !tbaa !9350
+  %fBuffer.i = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %toUse, i64 0, i32 4, !dbg !12385
+  %0 = load i16** %fBuffer.i, align 8, !dbg !12385, !tbaa !9304
+  store i16 0, i16* %0, align 2, !dbg !12385, !tbaa !9802
+  call void @llvm.dbg.declare(metadata !12386, metadata !6573), !dbg !12387
+  %1 = getelementptr inbounds %"class.xercesc_2_5::DGXMLScanner"* %this, i64 0, i32 0, !dbg !12387
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12388), !dbg !12389
+  tail call void @llvm.dbg.value(metadata !10221, i64 0, metadata !12390), !dbg !12389
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12391), !dbg !12394
+  tail call void @llvm.dbg.value(metadata !10221, i64 0, metadata !12395), !dbg !12394
+  %fThrowEOE.i.i.i = getelementptr inbounds %"class.xercesc_2_5::DGXMLScanner"* %this, i64 0, i32 0, i32 40, i32 7, !dbg !12396
+  %2 = load i8* %fThrowEOE.i.i.i, align 1, !dbg !12396, !tbaa !9349, !range !9551
+  tail call void @llvm.dbg.value(metadata !10221, i64 0, metadata !12398), !dbg !12401
+  store i8 1, i8* %fThrowEOE.i.i.i, align 1, !dbg !12402, !tbaa !9349
+  call void @llvm.dbg.declare(metadata !{i16* %nextCh}, metadata !6598), !dbg !12403
+  call void @llvm.dbg.declare(metadata !{i16* %secondCh}, metadata !6599), !dbg !12404
+  call void @llvm.dbg.value(metadata !11206, i64 0, metadata !6599), !dbg !12404
+  store i16 0, i16* %secondCh, align 2, !dbg !12404, !tbaa !9802
+  call void @llvm.dbg.value(metadata !6669, i64 0, metadata !6600), !dbg !12405
+  call void @llvm.dbg.declare(metadata !{i8* %escaped}, metadata !6601), !dbg !12406
+  call void @llvm.dbg.value(metadata !9587, i64 0, metadata !6601), !dbg !12406
+  store i8 0, i8* %escaped, align 1, !dbg !12406, !tbaa !9349
+  call void @llvm.dbg.value(metadata !9587, i64 0, metadata !6602), !dbg !12407
+  call void @llvm.dbg.value(metadata !9586, i64 0, metadata !6603), !dbg !12408
+  %fCurReader.i = getelementptr inbounds %"class.xercesc_2_5::DGXMLScanner"* %this, i64 0, i32 0, i32 40, i32 2, !dbg !12409
+  %3 = bitcast %"class.xercesc_2_5::DGXMLScanner"* %this to void (%"class.xercesc_2_5::DGXMLScanner"*, %"class.xercesc_2_5::XMLBuffer"*)***, !dbg !12413
+  %4 = bitcast %"class.xercesc_2_5::DGXMLScanner"* %this to i32 (%"class.xercesc_2_5::DGXMLScanner"*, i1, i16*, i16*, i8*)***, !dbg !12414
+  %arraydecay = getelementptr inbounds [9 x i16]* %tmpBuf, i64 0, i64 0, !dbg !12415
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::DGXMLScanner"* %this, i64 0, i32 0, i32 53, !dbg !12415
+  %fDocHandler = getelementptr inbounds %"class.xercesc_2_5::DGXMLScanner"* %this, i64 0, i32 0, i32 32, !dbg !12416
+  br label %while.cond.outer, !dbg !12418
+
+while.cond.outer:                                 ; preds = %if.then10, %if.then8, %entry
+  %notDone.0.ph = phi i1 [ false, %entry ], [ true, %if.then8 ], [ true, %if.then10 ]
+  %gotLeadingSurrogate.0.ph = phi i8 [ 0, %entry ], [ %gotLeadingSurrogate.1, %if.then8 ], [ %gotLeadingSurrogate.1, %if.then10 ]
+  %curState.0.ph = phi i32 [ 0, %entry ], [ %curState.1.ph, %if.then8 ], [ %curState.1.ph, %if.then10 ]
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.outer, %if.end113
+  %gotLeadingSurrogate.0 = phi i8 [ 0, %if.end113 ], [ %gotLeadingSurrogate.0.ph, %while.cond.outer ]
+  %curState.0 = phi i32 [ %curState.3, %if.end113 ], [ %curState.0.ph, %while.cond.outer ]
+  br i1 %notDone.0.ph, label %while.end117, label %while.body3.outer, !dbg !12418
+
+while.body3.outer:                                ; preds = %invoke.cont96, %if.then98, %while.cond
+  %gotLeadingSurrogate.1.ph = phi i8 [ %gotLeadingSurrogate.0, %while.cond ], [ %gotLeadingSurrogate.3, %if.then98 ], [ %gotLeadingSurrogate.3, %invoke.cont96 ]
+  %curState.1.ph = phi i32 [ %curState.0, %while.cond ], [ %curState.4, %if.then98 ], [ %curState.4, %invoke.cont96 ]
+  %cmp = icmp eq i32 %curState.1.ph, 0, !dbg !12419
+  br label %while.body3
+
+while.body3:                                      ; preds = %while.body3.outer, %invoke.cont28
+  %gotLeadingSurrogate.1 = phi i8 [ %gotLeadingSurrogate.1., %invoke.cont28 ], [ %gotLeadingSurrogate.1.ph, %while.body3.outer ]
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !12419
+
+land.lhs.true:                                    ; preds = %while.body3
+  %5 = and i8 %gotLeadingSurrogate.1, 1, !dbg !12419
+  %tobool4 = icmp eq i8 %5, 0, !dbg !12419
+  br i1 %tobool4, label %if.then, label %if.end, !dbg !12419
+
+if.then:                                          ; preds = %land.lhs.true
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %toUse}, i64 0, metadata !12420), !dbg !12421
+  %6 = load %"class.xercesc_2_5::XMLReader"** %fCurReader.i, align 8, !dbg !12409, !tbaa !9304
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %6}, i64 0, metadata !12422), !dbg !12423
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %toUse}, i64 0, metadata !12424), !dbg !12423
+  %fCharIndex.i.i = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %6, i64 0, i32 0, !dbg !12425
+  %7 = load i32* %fCharIndex.i.i, align 4, !dbg !12425, !tbaa !9350
+  call void @llvm.dbg.value(metadata !{i32 %7}, i64 0, metadata !12426), !dbg !12425
+  %fCharsAvail.i.i = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %6, i64 0, i32 2, !dbg !12427
+  %8 = load i32* %fCharsAvail.i.i, align 4, !dbg !12427, !tbaa !9350
+  %cmp18.i.i = icmp ult i32 %7, %8, !dbg !12427
+  br i1 %cmp18.i.i, label %while.body.lr.ph.i.i, label %while.end.i.i, !dbg !12427
+
+while.body.lr.ph.i.i:                             ; preds = %if.then
+  %fgCharCharsTable.i.i.i = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %6, i64 0, i32 27, !dbg !12428
+  %.pre.i.i = load i8** %fgCharCharsTable.i.i.i, align 8, !dbg !12428, !tbaa !9304
+  br label %while.body.i.i, !dbg !12427
+
+while.body.i.i:                                   ; preds = %if.end.i.i, %while.body.lr.ph.i.i
+  %9 = phi i32 [ %7, %while.body.lr.ph.i.i ], [ %inc.i.i, %if.end.i.i ]
+  %idxprom.i.i = zext i32 %9 to i64, !dbg !12429
+  %arrayidx.i.i = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %6, i64 0, i32 1, i64 %idxprom.i.i, !dbg !12429
+  %10 = load i16* %arrayidx.i.i, align 2, !dbg !12429, !tbaa !9802
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %6}, i64 0, metadata !12431), !dbg !12432
+  call void @llvm.dbg.value(metadata !{i16 %10}, i64 0, metadata !12433), !dbg !12432
+  %idxprom.i.i.i = zext i16 %10 to i64, !dbg !12428
+  %arrayidx.i.i.i = getelementptr inbounds i8* %.pre.i.i, i64 %idxprom.i.i.i, !dbg !12428
+  %11 = load i8* %arrayidx.i.i.i, align 1, !dbg !12428, !tbaa !9305
+  %and.i.i.i = and i8 %11, 8, !dbg !12428
+  %cmp.i.i.i = icmp eq i8 %and.i.i.i, 0, !dbg !12428
+  br i1 %cmp.i.i.i, label %while.end.i.i, label %if.end.i.i, !dbg !12429
+
+if.end.i.i:                                       ; preds = %while.body.i.i
+  %inc.i.i = add i32 %9, 1, !dbg !12434
+  store i32 %inc.i.i, i32* %fCharIndex.i.i, align 4, !dbg !12434, !tbaa !9350
+  %cmp.i.i = icmp ult i32 %inc.i.i, %8, !dbg !12427
+  br i1 %cmp.i.i, label %while.body.i.i, label %while.end.i.i, !dbg !12427
+
+while.end.i.i:                                    ; preds = %if.end.i.i, %while.body.i.i, %if.then
+  %12 = phi i32 [ %7, %if.then ], [ %inc.i.i, %if.end.i.i ], [ %9, %while.body.i.i ]
+  %cmp6.i.i = icmp eq i32 %7, %12, !dbg !12435
+  br i1 %cmp6.i.i, label %if.end, label %if.then7.i.i, !dbg !12435
+
+if.then7.i.i:                                     ; preds = %while.end.i.i
+  %sub.i.i = sub i32 %12, %7, !dbg !12436
+  %conv.i.i = zext i32 %sub.i.i to i64, !dbg !12436
+  %fCurCol.i.i = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %6, i64 0, i32 4, !dbg !12436
+  %13 = load i64* %fCurCol.i.i, align 8, !dbg !12436, !tbaa !12438
+  %add.i.i = add nsw i64 %13, %conv.i.i, !dbg !12436
+  store i64 %add.i.i, i64* %fCurCol.i.i, align 8, !dbg !12436, !tbaa !12438
+  %idxprom9.i.i = zext i32 %7 to i64, !dbg !12439
+  %arrayidx11.i.i = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %6, i64 0, i32 1, i64 %idxprom9.i.i, !dbg !12439
+  invoke void @_ZN11xercesc_2_59XMLBuffer6appendEPKtj(%"class.xercesc_2_5::XMLBuffer"* %toUse, i16* %arrayidx11.i.i, i32 %sub.i.i) #12
+          to label %if.end unwind label %lpad.loopexit.loopexit
+
+lpad.loopexit.loopexit:                           ; preds = %if.end, %if.then7.i.i, %if.then15
+  %curState.1.ph.lcssa = phi i32 [ %curState.1.ph, %if.end ], [ 0, %if.then7.i.i ], [ %curState.1.ph, %if.then15 ]
+  %lpad.loopexit211 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+          catch i8* bitcast ({ i8*, i8* }* @_ZTIN11xercesc_2_520EndOfEntityExceptionE to i8*), !dbg !12411
+  br label %lpad
+
+lpad.loopexit.nonloopexit:                        ; preds = %if.then98, %if.end95, %if.then88, %invoke.cont64, %if.then62, %if.then54, %if.then49, %if.then37
+  %curState.2.ph.ph = phi i32 [ %curState.1.ph, %if.then37 ], [ %curState.1.ph, %if.then49 ], [ %curState.1.ph, %if.then54 ], [ %curState.1.ph, %if.then62 ], [ %curState.1.ph, %invoke.cont64 ], [ 2, %if.then88 ], [ %curState.4, %if.end95 ], [ %curState.4, %if.then98 ]
+  %lpad.nonloopexit212 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+          catch i8* bitcast ({ i8*, i8* }* @_ZTIN11xercesc_2_520EndOfEntityExceptionE to i8*), !dbg !12411
+  br label %lpad
+
+lpad.nonloopexit:                                 ; preds = %if.then10
+  %lpad.nonloopexit210 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+          catch i8* bitcast ({ i8*, i8* }* @_ZTIN11xercesc_2_520EndOfEntityExceptionE to i8*), !dbg !12411
+  br label %lpad
+
+lpad:                                             ; preds = %lpad.loopexit.loopexit, %lpad.loopexit.nonloopexit, %lpad.nonloopexit
+  %curState.2 = phi i32 [ %curState.1.ph, %lpad.nonloopexit ], [ %curState.1.ph.lcssa, %lpad.loopexit.loopexit ], [ %curState.2.ph.ph, %lpad.loopexit.nonloopexit ]
+  %lpad.phi = phi { i8*, i32 } [ %lpad.nonloopexit210, %lpad.nonloopexit ], [ %lpad.loopexit211, %lpad.loopexit.loopexit ], [ %lpad.nonloopexit212, %lpad.loopexit.nonloopexit ]
+  %14 = extractvalue { i8*, i32 } %lpad.phi, 0, !dbg !12411
+  %15 = extractvalue { i8*, i32 } %lpad.phi, 1, !dbg !12411
+  br label %catch.dispatch, !dbg !12411
+
+if.end:                                           ; preds = %if.then7.i.i, %land.lhs.true, %while.body3, %while.end.i.i
+  call void @llvm.dbg.value(metadata !9716, i64 0, metadata !12440), !dbg !12442
+  call void @llvm.dbg.value(metadata !{i16* %nextCh}, i64 0, metadata !12443), !dbg !12442
+  %16 = load %"class.xercesc_2_5::XMLReader"** %fCurReader.i, align 8, !dbg !12444, !tbaa !9304
+  %call.i183 = invoke zeroext i1 @_ZN11xercesc_2_59XMLReader16getNextCharIfNotEtRt(%"class.xercesc_2_5::XMLReader"* %16, i16 zeroext 60, i16* %nextCh) #12
+          to label %invoke.cont7 unwind label %lpad.loopexit.loopexit
+
+invoke.cont7:                                     ; preds = %if.end
+  br i1 %call.i183, label %if.end13, label %if.then8, !dbg !12441
+
+if.then8:                                         ; preds = %invoke.cont7
+  %17 = and i8 %gotLeadingSurrogate.1, 1, !dbg !12445
+  %tobool9 = icmp eq i8 %17, 0, !dbg !12445
+  br i1 %tobool9, label %while.cond.outer, label %if.then10, !dbg !12445
+
+if.then10:                                        ; preds = %if.then8
+  invoke void @_ZN11xercesc_2_510XMLScanner9emitErrorENS_7XMLErrs5CodesE(%"class.xercesc_2_5::XMLScanner"* %1, i32 249) #12
+          to label %while.cond.outer unwind label %lpad.nonloopexit, !dbg !12447
+
+if.end13:                                         ; preds = %invoke.cont7
+  call void @llvm.dbg.value(metadata !9587, i64 0, metadata !6601), !dbg !12448
+  store i8 0, i8* %escaped, align 1, !dbg !12448, !tbaa !9349
+  call void @llvm.dbg.value(metadata !{i16* %nextCh}, i64 0, metadata !6598), !dbg !12449
+  %18 = load i16* %nextCh, align 2, !dbg !12449, !tbaa !9802
+  %cmp14 = icmp eq i16 %18, 38, !dbg !12449
+  br i1 %cmp14, label %if.then15, label %if.else, !dbg !12449
+
+if.then15:                                        ; preds = %if.end13
+  %vtable = load void (%"class.xercesc_2_5::DGXMLScanner"*, %"class.xercesc_2_5::XMLBuffer"*)*** %3, align 8, !dbg !12413, !tbaa !9296
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::DGXMLScanner"*, %"class.xercesc_2_5::XMLBuffer"*)** %vtable, i64 14, !dbg !12413
+  %19 = load void (%"class.xercesc_2_5::DGXMLScanner"*, %"class.xercesc_2_5::XMLBuffer"*)** %vfn, align 8, !dbg !12413
+  invoke void %19(%"class.xercesc_2_5::DGXMLScanner"* %this, %"class.xercesc_2_5::XMLBuffer"* %toUse) #12
+          to label %invoke.cont19 unwind label %lpad.loopexit.loopexit, !dbg !12413
+
+invoke.cont19:                                    ; preds = %if.then15
+  call void @llvm.dbg.declare(metadata !12386, metadata !6604), !dbg !12450
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12451), !dbg !12452
+  tail call void @llvm.dbg.value(metadata !9335, i64 0, metadata !12453), !dbg !12452
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12454), !dbg !12456
+  tail call void @llvm.dbg.value(metadata !9335, i64 0, metadata !12457), !dbg !12456
+  %20 = load i8* %fThrowEOE.i.i.i, align 1, !dbg !12458, !tbaa !9349, !range !9551
+  tail call void @llvm.dbg.value(metadata !9335, i64 0, metadata !12460), !dbg !12462
+  store i8 0, i8* %fThrowEOE.i.i.i, align 1, !dbg !12463, !tbaa !9349
+  %vtable20 = load i32 (%"class.xercesc_2_5::DGXMLScanner"*, i1, i16*, i16*, i8*)*** %4, align 8, !dbg !12414, !tbaa !9296
+  %vfn21 = getelementptr inbounds i32 (%"class.xercesc_2_5::DGXMLScanner"*, i1, i16*, i16*, i8*)** %vtable20, i64 11, !dbg !12414
+  %21 = load i32 (%"class.xercesc_2_5::DGXMLScanner"*, i1, i16*, i16*, i8*)** %vfn21, align 8, !dbg !12414
+  %call24 = invoke i32 %21(%"class.xercesc_2_5::DGXMLScanner"* %this, i1 zeroext false, i16* %nextCh, i16* %secondCh, i8* %escaped) #12
+          to label %invoke.cont28 unwind label %lpad22, !dbg !12414
+
+lpad22:                                           ; preds = %invoke.cont19
+  %22 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+          catch i8* bitcast ({ i8*, i8* }* @_ZTIN11xercesc_2_520EndOfEntityExceptionE to i8*), !dbg !12414
+  %23 = extractvalue { i8*, i32 } %22, 0, !dbg !12414
+  %24 = extractvalue { i8*, i32 } %22, 1, !dbg !12414
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12464), !dbg !12466
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12467), !dbg !12470
+  store i8 %20, i8* %fThrowEOE.i.i.i, align 1, !dbg !12471, !tbaa !9349
+  br label %catch.dispatch
+
+invoke.cont28:                                    ; preds = %invoke.cont19
+  %cmp25 = icmp eq i32 %call24, 1, !dbg !12414
+  %gotLeadingSurrogate.1. = select i1 %cmp25, i8 %gotLeadingSurrogate.1, i8 0, !dbg !12474
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12475), !dbg !12476
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12477), !dbg !12479
+  store i8 %20, i8* %fThrowEOE.i.i.i, align 1, !dbg !12480, !tbaa !9349
+  br i1 %cmp25, label %if.end70, label %while.body3
+
+catch.dispatch:                                   ; preds = %lpad22, %lpad
+  %ehselector.slot.0 = phi i32 [ %15, %lpad ], [ %24, %lpad22 ]
+  %exn.slot.0 = phi i8* [ %14, %lpad ], [ %23, %lpad22 ]
+  %curState.3 = phi i32 [ %curState.2, %lpad ], [ %curState.1.ph, %lpad22 ]
+  %25 = call i32 @llvm.eh.typeid.for(i8* bitcast ({ i8*, i8* }* @_ZTIN11xercesc_2_520EndOfEntityExceptionE to i8*)) #7, !dbg !12482
+  %matches = icmp eq i32 %ehselector.slot.0, %25, !dbg !12482
+  br i1 %matches, label %catch, label %eh.resume, !dbg !12482
+
+catch:                                            ; preds = %catch.dispatch
+  %26 = call i8* @__cxa_begin_catch(i8* %exn.slot.0) #7, !dbg !12482
+  %vtable101 = load void (%"class.xercesc_2_5::DGXMLScanner"*, %"class.xercesc_2_5::XMLBuffer"*)*** %3, align 8, !dbg !12483, !tbaa !9296
+  %vfn102 = getelementptr inbounds void (%"class.xercesc_2_5::DGXMLScanner"*, %"class.xercesc_2_5::XMLBuffer"*)** %vtable101, i64 14, !dbg !12483
+  %27 = load void (%"class.xercesc_2_5::DGXMLScanner"*, %"class.xercesc_2_5::XMLBuffer"*)** %vfn102, align 8, !dbg !12483
+  invoke void %27(%"class.xercesc_2_5::DGXMLScanner"* %this, %"class.xercesc_2_5::XMLBuffer"* %toUse) #12
+          to label %invoke.cont104 unwind label %lpad103, !dbg !12483
+
+invoke.cont104:                                   ; preds = %catch
+  call void @llvm.dbg.value(metadata !9587, i64 0, metadata !6602), !dbg !12484
+  %28 = load %"class.xercesc_2_5::XMLDocumentHandler"** %fDocHandler, align 8, !dbg !12416, !tbaa !9304
+  %tobool105 = icmp eq %"class.xercesc_2_5::XMLDocumentHandler"* %28, null, !dbg !12416
+  br i1 %tobool105, label %if.end113, label %if.then106, !dbg !12416
+
+if.then106:                                       ; preds = %invoke.cont104
+  %29 = bitcast %"class.xercesc_2_5::XMLDocumentHandler"* %28 to void (%"class.xercesc_2_5::XMLDocumentHandler"*, %"class.xercesc_2_5::XMLEntityDecl"*)***, !dbg !12485
+  %vtable108 = load void (%"class.xercesc_2_5::XMLDocumentHandler"*, %"class.xercesc_2_5::XMLEntityDecl"*)*** %29, align 8, !dbg !12485, !tbaa !9296
+  %vfn109 = getelementptr inbounds void (%"class.xercesc_2_5::XMLDocumentHandler"*, %"class.xercesc_2_5::XMLEntityDecl"*)** %vtable108, i64 7, !dbg !12485
+  %30 = load void (%"class.xercesc_2_5::XMLDocumentHandler"*, %"class.xercesc_2_5::XMLEntityDecl"*)** %vfn109, align 8, !dbg !12485
+  %fEntity.i = bitcast i8* %26 to %"class.xercesc_2_5::XMLEntityDecl"**, !dbg !12486
+  %31 = load %"class.xercesc_2_5::XMLEntityDecl"** %fEntity.i, align 8, !dbg !12486, !tbaa !9304
+  invoke void %30(%"class.xercesc_2_5::XMLDocumentHandler"* %28, %"class.xercesc_2_5::XMLEntityDecl"* %31) #12
+          to label %if.end113 unwind label %lpad103, !dbg !12487
+
+if.else:                                          ; preds = %if.end13
+  %.off = add i16 %18, 10240, !dbg !12488
+  %32 = icmp ult i16 %.off, 1024, !dbg !12488
+  br i1 %32, label %if.then35, label %if.else41, !dbg !12488
+
+if.then35:                                        ; preds = %if.else
+  %33 = and i8 %gotLeadingSurrogate.1, 1, !dbg !12489
+  %tobool36 = icmp eq i8 %33, 0, !dbg !12489
+  br i1 %tobool36, label %if.end70, label %if.then37, !dbg !12489
+
+if.then37:                                        ; preds = %if.then35
+  invoke void @_ZN11xercesc_2_510XMLScanner9emitErrorENS_7XMLErrs5CodesE(%"class.xercesc_2_5::XMLScanner"* %1, i32 249) #12
+          to label %if.end70 unwind label %lpad.loopexit.nonloopexit, !dbg !12491
+
+if.else41:                                        ; preds = %if.else
+  call void @llvm.dbg.value(metadata !{i16* %nextCh}, i64 0, metadata !6598), !dbg !12492
+  %.off208 = add i16 %18, 9216, !dbg !12492
+  %34 = icmp ult i16 %.off208, 1024, !dbg !12492
+  %35 = and i8 %gotLeadingSurrogate.1, 1, !dbg !12493
+  %tobool48 = icmp eq i8 %35, 0, !dbg !12493
+  br i1 %34, label %if.then47, label %if.else52, !dbg !12492
+
+if.then47:                                        ; preds = %if.else41
+  br i1 %tobool48, label %if.then49, label %if.end70, !dbg !12493
+
+if.then49:                                        ; preds = %if.then47
+  invoke void @_ZN11xercesc_2_510XMLScanner9emitErrorENS_7XMLErrs5CodesE(%"class.xercesc_2_5::XMLScanner"* %1, i32 282) #12
+          to label %if.end70 unwind label %lpad.loopexit.nonloopexit, !dbg !12495
+
+if.else52:                                        ; preds = %if.else41
+  br i1 %tobool48, label %if.end56, label %if.then54, !dbg !12496
+
+if.then54:                                        ; preds = %if.else52
+  invoke void @_ZN11xercesc_2_510XMLScanner9emitErrorENS_7XMLErrs5CodesE(%"class.xercesc_2_5::XMLScanner"* %1, i32 249) #12
+          to label %if.then54.if.end56_crit_edge unwind label %lpad.loopexit.nonloopexit, !dbg !12497
+
+if.then54.if.end56_crit_edge:                     ; preds = %if.then54
+  call void @llvm.dbg.value(metadata !{i16* %nextCh}, i64 0, metadata !6598), !dbg !12498
+  %.pre = load i16* %nextCh, align 2, !dbg !12498, !tbaa !9802
+  br label %if.end56, !dbg !12497
+
+if.end56:                                         ; preds = %if.then54.if.end56_crit_edge, %if.else52
+  %36 = phi i16 [ %.pre, %if.then54.if.end56_crit_edge ], [ %18, %if.else52 ]
+  %37 = load %"class.xercesc_2_5::XMLReader"** %fCurReader.i, align 8, !dbg !12499, !tbaa !9304
+  call void @llvm.dbg.value(metadata !{i16* %nextCh}, i64 0, metadata !6598), !dbg !12498
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %37}, i64 0, metadata !12500), !dbg !12501
+  tail call void @llvm.dbg.value(metadata !{i16 %36}, i64 0, metadata !12502), !dbg !12501
+  %idxprom.i197 = zext i16 %36 to i64, !dbg !12503
+  %fgCharCharsTable.i = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %37, i64 0, i32 27, !dbg !12503
+  %38 = load i8** %fgCharCharsTable.i, align 8, !dbg !12503, !tbaa !9304
+  %arrayidx.i198 = getelementptr inbounds i8* %38, i64 %idxprom.i197, !dbg !12503
+  %39 = load i8* %arrayidx.i198, align 1, !dbg !12503, !tbaa !9305
+  %and.i = and i8 %39, 64, !dbg !12503
+  %cmp.i = icmp eq i8 %and.i, 0, !dbg !12503
+  br i1 %cmp.i, label %if.then62, label %if.end70, !dbg !12498
+
+if.then62:                                        ; preds = %if.end56
+  call void @llvm.dbg.declare(metadata !{[9 x i16]* %tmpBuf}, metadata !6609), !dbg !12504
+  call void @llvm.dbg.value(metadata !{i16* %nextCh}, i64 0, metadata !6598), !dbg !12415
+  %conv63 = zext i16 %36 to i32, !dbg !12415
+  %40 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !12415, !tbaa !9304
+  invoke void @_ZN11xercesc_2_59XMLString9binToTextEiPtjjPNS_13MemoryManagerE(i32 %conv63, i16* %arraydecay, i32 8, i32 16, %"class.xercesc_2_5::MemoryManager"* %40) #12
+          to label %invoke.cont64 unwind label %lpad.loopexit.nonloopexit, !dbg !12415
+
+invoke.cont64:                                    ; preds = %if.then62
+  invoke void @_ZN11xercesc_2_510XMLScanner9emitErrorENS_7XMLErrs5CodesEPKtS4_S4_S4_(%"class.xercesc_2_5::XMLScanner"* %1, i32 196, i16* %arraydecay, i16* null, i16* null, i16* null) #12
+          to label %if.end70 unwind label %lpad.loopexit.nonloopexit, !dbg !12505
+
+if.end70:                                         ; preds = %invoke.cont28, %invoke.cont64, %if.end56, %if.then49, %if.then37, %if.then47, %if.then35
+  %gotLeadingSurrogate.3 = phi i8 [ 1, %if.then35 ], [ 0, %if.then47 ], [ %gotLeadingSurrogate.1, %if.then37 ], [ 0, %if.then49 ], [ 0, %if.end56 ], [ 0, %invoke.cont64 ], [ %gotLeadingSurrogate.1., %invoke.cont28 ]
+  call void @llvm.dbg.value(metadata !{i8* %escaped}, i64 0, metadata !6601), !dbg !12506
+  %41 = load i8* %escaped, align 1, !dbg !12506, !tbaa !9349, !range !9551
+  %tobool71 = icmp eq i8 %41, 0, !dbg !12506
+  br i1 %tobool71, label %if.then72, label %if.end95, !dbg !12506
+
+if.then72:                                        ; preds = %if.end70
+  call void @llvm.dbg.value(metadata !{i16* %nextCh}, i64 0, metadata !6598), !dbg !12507
+  %42 = load i16* %nextCh, align 2, !dbg !12507, !tbaa !9802
+  switch i16 %42, label %if.end95 [
+    i16 93, label %if.then75
+    i16 62, label %if.then86
+  ], !dbg !12507
+
+if.then75:                                        ; preds = %if.then72
+  br i1 %cmp, label %if.end95, label %if.else78, !dbg !12509
+
+if.else78:                                        ; preds = %if.then75
+  %cmp79 = icmp eq i32 %curState.1.ph, 1, !dbg !12511
+  call void @llvm.dbg.value(metadata !11870, i64 0, metadata !6600), !dbg !12512
+  %.curState.1 = select i1 %cmp79, i32 2, i32 %curState.1.ph, !dbg !12511
+  br label %if.end95, !dbg !12511
+
+if.then86:                                        ; preds = %if.then72
+  %cmp87 = icmp eq i32 %curState.1.ph, 2, !dbg !12513
+  br i1 %cmp87, label %if.then88, label %if.end95, !dbg !12513
+
+if.then88:                                        ; preds = %if.then86
+  invoke void @_ZN11xercesc_2_510XMLScanner9emitErrorENS_7XMLErrs5CodesE(%"class.xercesc_2_5::XMLScanner"* %1, i32 262) #12
+          to label %if.end95 unwind label %lpad.loopexit.nonloopexit, !dbg !12515
+
+if.end95:                                         ; preds = %if.then88, %if.end70, %if.else78, %if.then72, %if.then86, %if.then75
+  %curState.4 = phi i32 [ 1, %if.then75 ], [ %.curState.1, %if.else78 ], [ 0, %if.then86 ], [ 0, %if.then72 ], [ 0, %if.end70 ], [ 0, %if.then88 ]
+  call void @llvm.dbg.value(metadata !{i16* %nextCh}, i64 0, metadata !6598), !dbg !12516
+  %43 = load i16* %nextCh, align 2, !dbg !12516, !tbaa !9802
+  invoke void @_ZN11xercesc_2_59XMLBuffer6appendEt(%"class.xercesc_2_5::XMLBuffer"* %toUse, i16 zeroext %43) #12
+          to label %invoke.cont96 unwind label %lpad.loopexit.nonloopexit, !dbg !12516
+
+invoke.cont96:                                    ; preds = %if.end95
+  call void @llvm.dbg.value(metadata !{i16* %secondCh}, i64 0, metadata !6599), !dbg !12517
+  %44 = load i16* %secondCh, align 2, !dbg !12517, !tbaa !9802
+  %tobool97 = icmp eq i16 %44, 0, !dbg !12517
+  br i1 %tobool97, label %while.body3.outer, label %if.then98, !dbg !12517
+
+if.then98:                                        ; preds = %invoke.cont96
+  invoke void @_ZN11xercesc_2_59XMLBuffer6appendEt(%"class.xercesc_2_5::XMLBuffer"* %toUse, i16 zeroext %44) #12
+          to label %while.body3.outer unwind label %lpad.loopexit.nonloopexit, !dbg !12518
+
+lpad103:                                          ; preds = %if.then106, %catch
+  %45 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !12483
+  %46 = extractvalue { i8*, i32 } %45, 0, !dbg !12483
+  %47 = extractvalue { i8*, i32 } %45, 1, !dbg !12483
+  invoke void @__cxa_end_catch()
+          to label %eh.resume unwind label %terminate.lpad, !dbg !12519
+
+if.end113:                                        ; preds = %invoke.cont104, %if.then106
+  invoke void @__cxa_end_catch()
+          to label %while.cond unwind label %lpad114.loopexit, !dbg !12520
+
+lpad114.loopexit:                                 ; preds = %if.end113
+  %lpad.loopexit233 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !12520
+  br label %lpad114
+
+lpad114.nonloopexit:                              ; preds = %if.then121, %if.then132, %if.then137, %if.then144, %if.end149
+  %lpad.nonloopexit234 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !12520
+  br label %lpad114
+
+lpad114:                                          ; preds = %lpad114.nonloopexit, %lpad114.loopexit
+  %lpad.phi235 = phi { i8*, i32 } [ %lpad.loopexit233, %lpad114.loopexit ], [ %lpad.nonloopexit234, %lpad114.nonloopexit ]
+  %48 = extractvalue { i8*, i32 } %lpad.phi235, 0, !dbg !12520
+  %49 = extractvalue { i8*, i32 } %lpad.phi235, 1, !dbg !12520
+  br label %eh.resume, !dbg !12520
+
+while.end117:                                     ; preds = %while.cond
+  %fValidate = getelementptr inbounds %"class.xercesc_2_5::DGXMLScanner"* %this, i64 0, i32 0, i32 9, !dbg !12521
+  %50 = load i8* %fValidate, align 1, !dbg !12521, !tbaa !9349, !range !9551
+  %tobool118 = icmp eq i8 %50, 0, !dbg !12521
+  br i1 %tobool118, label %if.end149, label %land.lhs.true119, !dbg !12521
+
+land.lhs.true119:                                 ; preds = %while.end117
+  %fStandalone = getelementptr inbounds %"class.xercesc_2_5::DGXMLScanner"* %this, i64 0, i32 0, i32 7, !dbg !12521
+  %51 = load i8* %fStandalone, align 1, !dbg !12521, !tbaa !9349, !range !9551
+  %tobool120 = icmp eq i8 %51, 0, !dbg !12521
+  br i1 %tobool120, label %if.end149, label %if.then121, !dbg !12521
+
+if.then121:                                       ; preds = %land.lhs.true119
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %toUse}, i64 0, metadata !12522), !dbg !12524
+  %52 = load i32* %fIndex.i, align 4, !dbg !12525, !tbaa !9350
+  %idxprom.i = zext i32 %52 to i64, !dbg !12525
+  %53 = load i16** %fBuffer.i, align 8, !dbg !12525, !tbaa !9304
+  %arrayidx.i = getelementptr inbounds i16* %53, i64 %idxprom.i, !dbg !12525
+  store i16 0, i16* %arrayidx.i, align 2, !dbg !12525, !tbaa !9802
+  call void @llvm.dbg.value(metadata !{i16* %53}, i64 0, metadata !6614), !dbg !12523
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %toUse}, i64 0, metadata !12526), !dbg !12528
+  call void @llvm.dbg.value(metadata !{i32 %52}, i64 0, metadata !6616), !dbg !12527
+  %54 = load %"class.xercesc_2_5::XMLReader"** %fCurReader.i, align 8, !dbg !12529, !tbaa !9304
+  %call130 = invoke zeroext i1 @_ZN11xercesc_2_59XMLReader18containsWhiteSpaceEPKtj(%"class.xercesc_2_5::XMLReader"* %54, i16* %53, i32 %52) #12
+          to label %invoke.cont129 unwind label %lpad114.nonloopexit, !dbg !12530
+
+invoke.cont129:                                   ; preds = %if.then121
+  br i1 %call130, label %if.then132, label %if.end149, !dbg !12531
+
+if.then132:                                       ; preds = %invoke.cont129
+  %fElemStack = getelementptr inbounds %"class.xercesc_2_5::DGXMLScanner"* %this, i64 0, i32 0, i32 61, !dbg !12532
+  %call134 = invoke %"struct.xercesc_2_5::ElemStack::StackElem"* @_ZNK11xercesc_2_59ElemStack10topElementEv(%"class.xercesc_2_5::ElemStack"* %fElemStack) #12
+          to label %invoke.cont133 unwind label %lpad114.nonloopexit, !dbg !12532
+
+invoke.cont133:                                   ; preds = %if.then132
+  call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::ElemStack::StackElem"* %call134}, i64 0, metadata !6618), !dbg !12532
+  %fThisElement = getelementptr inbounds %"struct.xercesc_2_5::ElemStack::StackElem"* %call134, i64 0, i32 0, !dbg !12533
+  %55 = load %"class.xercesc_2_5::XMLElementDecl"** %fThisElement, align 8, !dbg !12533, !tbaa !9304
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLElementDecl"* %55}, i64 0, metadata !12534), !dbg !12535
+  %fExternalElement.i = getelementptr inbounds %"class.xercesc_2_5::XMLElementDecl"* %55, i64 0, i32 5, !dbg !12536
+  %56 = load i8* %fExternalElement.i, align 1, !dbg !12536, !tbaa !9349, !range !9551
+  %tobool.i = icmp eq i8 %56, 0, !dbg !12536
+  br i1 %tobool.i, label %if.end149, label %if.then137, !dbg !12533
+
+if.then137:                                       ; preds = %invoke.cont133
+  %57 = bitcast %"class.xercesc_2_5::XMLElementDecl"* %55 to i32 (%"class.xercesc_2_5::XMLElementDecl"*)***, !dbg !12537
+  %vtable139 = load i32 (%"class.xercesc_2_5::XMLElementDecl"*)*** %57, align 8, !dbg !12537, !tbaa !9296
+  %vfn140 = getelementptr inbounds i32 (%"class.xercesc_2_5::XMLElementDecl"*)** %vtable139, i64 7, !dbg !12537
+  %58 = load i32 (%"class.xercesc_2_5::XMLElementDecl"*)** %vfn140, align 8, !dbg !12537
+  %call142 = invoke i32 %58(%"class.xercesc_2_5::XMLElementDecl"* %55) #12
+          to label %invoke.cont141 unwind label %lpad114.nonloopexit, !dbg !12537
+
+invoke.cont141:                                   ; preds = %if.then137
+  call void @llvm.dbg.value(metadata !{i32 %call142}, i64 0, metadata !6620), !dbg !12537
+  %cmp143 = icmp eq i32 %call142, 1, !dbg !12538
+  br i1 %cmp143, label %if.then144, label %if.end149, !dbg !12538
+
+if.then144:                                       ; preds = %invoke.cont141
+  %fValidator = getelementptr inbounds %"class.xercesc_2_5::DGXMLScanner"* %this, i64 0, i32 0, i32 41, !dbg !12539
+  %59 = load %"class.xercesc_2_5::XMLValidator"** %fValidator, align 8, !dbg !12539, !tbaa !9304
+  invoke void @_ZN11xercesc_2_512XMLValidator9emitErrorENS_8XMLValid5CodesE(%"class.xercesc_2_5::XMLValidator"* %59, i32 84) #12
+          to label %if.end149 unwind label %lpad114.nonloopexit, !dbg !12539
+
+if.end149:                                        ; preds = %invoke.cont133, %land.lhs.true119, %while.end117, %invoke.cont129, %invoke.cont141, %if.then144
+  %vtable150 = load void (%"class.xercesc_2_5::DGXMLScanner"*, %"class.xercesc_2_5::XMLBuffer"*)*** %3, align 8, !dbg !12541, !tbaa !9296
+  %vfn151 = getelementptr inbounds void (%"class.xercesc_2_5::DGXMLScanner"*, %"class.xercesc_2_5::XMLBuffer"*)** %vtable150, i64 14, !dbg !12541
+  %60 = load void (%"class.xercesc_2_5::DGXMLScanner"*, %"class.xercesc_2_5::XMLBuffer"*)** %vfn151, align 8, !dbg !12541
+  invoke void %60(%"class.xercesc_2_5::DGXMLScanner"* %this, %"class.xercesc_2_5::XMLBuffer"* %toUse) #12
+          to label %invoke.cont152 unwind label %lpad114.nonloopexit, !dbg !12541
+
+invoke.cont152:                                   ; preds = %if.end149
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12542), !dbg !12544
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12545), !dbg !12547
+  store i8 %2, i8* %fThrowEOE.i.i.i, align 1, !dbg !12548, !tbaa !9349
+  ret void, !dbg !12543
+
+eh.resume:                                        ; preds = %catch.dispatch, %lpad114, %lpad103
+  %ehselector.slot.1 = phi i32 [ %49, %lpad114 ], [ %47, %lpad103 ], [ %ehselector.slot.0, %catch.dispatch ]
+  %exn.slot.1 = phi i8* [ %48, %lpad114 ], [ %46, %lpad103 ], [ %exn.slot.0, %catch.dispatch ]
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12542), !dbg !12544
+  tail call void @llvm.dbg.value(metadata !12386, i64 0, metadata !12545), !dbg !12547
+  store i8 %2, i8* %fThrowEOE.i.i.i, align 1, !dbg !12548, !tbaa !9349
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.1, 0, !dbg !12543
+  %lpad.val156 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.1, 1, !dbg !12543
+  resume { i8*, i32 } %lpad.val156, !dbg !12543
+
+terminate.lpad:                                   ; preds = %lpad103
+  %61 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !12465
+  %62 = extractvalue { i8*, i32 } %61, 0, !dbg !12465
+  call void @__clang_call_terminate(i8* %62) #11, !dbg !12465
+  unreachable, !dbg !12465
+}

@@ -1,73 +1,77 @@
 define internal fastcc %struct.cse_reg_info* @get_cse_reg_info(i32 %regno) #0 {
 entry:
-  %shr = lshr i32 %regno, 7
-  %xor = xor i32 %shr, %regno
-  %and = and i32 %xor, 127
-  %idxprom = zext i32 %and to i64
-  %arrayidx = getelementptr inbounds [128 x %struct.cse_reg_info*]* @reg_hash, i64 0, i64 %idxprom
-  %p.037 = load %struct.cse_reg_info** %arrayidx, align 8
-  %cond38 = icmp eq %struct.cse_reg_info* %p.037, null
-  br i1 %cond38, label %if.then4, label %for.body
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !825), !dbg !3117
+  %shr = lshr i32 %regno, 7, !dbg !3118
+  %xor = xor i32 %shr, %regno, !dbg !3118
+  %and = and i32 %xor, 127, !dbg !3118
+  %idxprom = zext i32 %and to i64, !dbg !3118
+  %arrayidx = getelementptr inbounds [128 x %struct.cse_reg_info*]* @reg_hash, i64 0, i64 %idxprom, !dbg !3118
+  tail call void @llvm.dbg.value(metadata !{%struct.cse_reg_info** %arrayidx}, i64 0, metadata !826), !dbg !3118
+  %p.037 = load %struct.cse_reg_info** %arrayidx, align 8, !dbg !3119
+  %cond38 = icmp eq %struct.cse_reg_info* %p.037, null, !dbg !3119
+  br i1 %cond38, label %if.then4, label %for.body, !dbg !3119
 
 for.cond:                                         ; preds = %for.body
-  %hash_next = getelementptr inbounds %struct.cse_reg_info* %p.039, i64 0, i32 0
-  %p.0 = load %struct.cse_reg_info** %hash_next, align 8
-  %cond = icmp eq %struct.cse_reg_info* %p.0, null
-  br i1 %cond, label %if.then4, label %for.body
+  %hash_next = getelementptr inbounds %struct.cse_reg_info* %p.039, i64 0, i32 0, !dbg !3119
+  %p.0 = load %struct.cse_reg_info** %hash_next, align 8, !dbg !3119
+  %cond = icmp eq %struct.cse_reg_info* %p.0, null, !dbg !3119
+  br i1 %cond, label %if.then4, label %for.body, !dbg !3119
 
 for.body:                                         ; preds = %entry, %for.cond
   %p.039 = phi %struct.cse_reg_info* [ %p.0, %for.cond ], [ %p.037, %entry ]
-  %regno1 = getelementptr inbounds %struct.cse_reg_info* %p.039, i64 0, i32 2
-  %0 = load i32* %regno1, align 4, !tbaa !4
-  %cmp2 = icmp eq i32 %0, %regno
-  br i1 %cmp2, label %if.end13, label %for.cond
+  %regno1 = getelementptr inbounds %struct.cse_reg_info* %p.039, i64 0, i32 2, !dbg !3121
+  %0 = load i32* %regno1, align 4, !dbg !3121, !tbaa !1704
+  %cmp2 = icmp eq i32 %0, %regno, !dbg !3121
+  br i1 %cmp2, label %if.end13, label %for.cond, !dbg !3121
 
 if.then4:                                         ; preds = %entry, %for.cond
-  %1 = load %struct.cse_reg_info** @cse_reg_info_free_list, align 8, !tbaa !0
-  %tobool = icmp eq %struct.cse_reg_info* %1, null
-  br i1 %tobool, label %if.else, label %if.then5
+  %1 = load %struct.cse_reg_info** @cse_reg_info_free_list, align 8, !dbg !3122, !tbaa !1677
+  %tobool = icmp eq %struct.cse_reg_info* %1, null, !dbg !3122
+  br i1 %tobool, label %if.else, label %if.then5, !dbg !3122
 
 if.then5:                                         ; preds = %if.then4
-  %next = getelementptr inbounds %struct.cse_reg_info* %1, i64 0, i32 1
-  %2 = load %struct.cse_reg_info** %next, align 8, !tbaa !0
-  store %struct.cse_reg_info* %2, %struct.cse_reg_info** @cse_reg_info_free_list, align 8, !tbaa !0
-  br label %if.end6
+  tail call void @llvm.dbg.value(metadata !{%struct.cse_reg_info* %1}, i64 0, metadata !828), !dbg !3124
+  %next = getelementptr inbounds %struct.cse_reg_info* %1, i64 0, i32 1, !dbg !3126
+  %2 = load %struct.cse_reg_info** %next, align 8, !dbg !3126, !tbaa !1677
+  store %struct.cse_reg_info* %2, %struct.cse_reg_info** @cse_reg_info_free_list, align 8, !dbg !3126, !tbaa !1677
+  br label %if.end6, !dbg !3127
 
 if.else:                                          ; preds = %if.then4
-  %call = tail call noalias i8* @xmalloc(i64 32) #6
-  %3 = bitcast i8* %call to %struct.cse_reg_info*
-  %.pre = load %struct.cse_reg_info** %arrayidx, align 8, !tbaa !0
+  %call = tail call noalias i8* @xmalloc(i64 32) #7, !dbg !3128
+  %3 = bitcast i8* %call to %struct.cse_reg_info*, !dbg !3128
+  tail call void @llvm.dbg.value(metadata !{%struct.cse_reg_info* %3}, i64 0, metadata !828), !dbg !3128
+  %.pre = load %struct.cse_reg_info** %arrayidx, align 8, !dbg !3129, !tbaa !1677
   br label %if.end6
 
 if.end6:                                          ; preds = %if.else, %if.then5
   %4 = phi %struct.cse_reg_info* [ %p.037, %if.then5 ], [ %.pre, %if.else ]
   %p.1 = phi %struct.cse_reg_info* [ %1, %if.then5 ], [ %3, %if.else ]
-  %hash_next7 = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 0
-  store %struct.cse_reg_info* %4, %struct.cse_reg_info** %hash_next7, align 8, !tbaa !0
-  store %struct.cse_reg_info* %p.1, %struct.cse_reg_info** %arrayidx, align 8, !tbaa !0
-  %reg_tick = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 4
-  store i32 1, i32* %reg_tick, align 4, !tbaa !4
-  %reg_in_table = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 5
-  store i32 -1, i32* %reg_in_table, align 4, !tbaa !4
-  %reg_qty = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 3
-  store i32 %regno, i32* %reg_qty, align 4, !tbaa !4
-  %regno8 = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 2
-  store i32 %regno, i32* %regno8, align 4, !tbaa !4
-  %5 = load %struct.cse_reg_info** @cse_reg_info_used_list, align 8, !tbaa !0
-  %next9 = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 1
-  store %struct.cse_reg_info* %5, %struct.cse_reg_info** %next9, align 8, !tbaa !0
-  store %struct.cse_reg_info* %p.1, %struct.cse_reg_info** @cse_reg_info_used_list, align 8, !tbaa !0
-  %6 = load %struct.cse_reg_info** @cse_reg_info_used_list_end, align 8, !tbaa !0
-  %tobool10 = icmp eq %struct.cse_reg_info* %6, null
-  br i1 %tobool10, label %if.then11, label %if.end13
+  %hash_next7 = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 0, !dbg !3129
+  store %struct.cse_reg_info* %4, %struct.cse_reg_info** %hash_next7, align 8, !dbg !3129, !tbaa !1677
+  store %struct.cse_reg_info* %p.1, %struct.cse_reg_info** %arrayidx, align 8, !dbg !3130, !tbaa !1677
+  %reg_tick = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 4, !dbg !3131
+  store i32 1, i32* %reg_tick, align 4, !dbg !3131, !tbaa !1704
+  %reg_in_table = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 5, !dbg !3132
+  store i32 -1, i32* %reg_in_table, align 4, !dbg !3132, !tbaa !1704
+  %reg_qty = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 3, !dbg !3133
+  store i32 %regno, i32* %reg_qty, align 4, !dbg !3133, !tbaa !1704
+  %regno8 = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 2, !dbg !3134
+  store i32 %regno, i32* %regno8, align 4, !dbg !3134, !tbaa !1704
+  %5 = load %struct.cse_reg_info** @cse_reg_info_used_list, align 8, !dbg !3135, !tbaa !1677
+  %next9 = getelementptr inbounds %struct.cse_reg_info* %p.1, i64 0, i32 1, !dbg !3135
+  store %struct.cse_reg_info* %5, %struct.cse_reg_info** %next9, align 8, !dbg !3135, !tbaa !1677
+  store %struct.cse_reg_info* %p.1, %struct.cse_reg_info** @cse_reg_info_used_list, align 8, !dbg !3136, !tbaa !1677
+  %6 = load %struct.cse_reg_info** @cse_reg_info_used_list_end, align 8, !dbg !3137, !tbaa !1677
+  %tobool10 = icmp eq %struct.cse_reg_info* %6, null, !dbg !3137
+  br i1 %tobool10, label %if.then11, label %if.end13, !dbg !3137
 
 if.then11:                                        ; preds = %if.end6
-  store %struct.cse_reg_info* %p.1, %struct.cse_reg_info** @cse_reg_info_used_list_end, align 8, !tbaa !0
-  br label %if.end13
+  store %struct.cse_reg_info* %p.1, %struct.cse_reg_info** @cse_reg_info_used_list_end, align 8, !dbg !3138, !tbaa !1677
+  br label %if.end13, !dbg !3138
 
 if.end13:                                         ; preds = %for.body, %if.end6, %if.then11
   %p.2 = phi %struct.cse_reg_info* [ %p.1, %if.end6 ], [ %p.1, %if.then11 ], [ %p.039, %for.body ]
-  store i32 %regno, i32* @cached_regno, align 4, !tbaa !4
-  store %struct.cse_reg_info* %p.2, %struct.cse_reg_info** @cached_cse_reg_info, align 8, !tbaa !0
-  ret %struct.cse_reg_info* %p.2
+  store i32 %regno, i32* @cached_regno, align 4, !dbg !3139, !tbaa !1704
+  store %struct.cse_reg_info* %p.2, %struct.cse_reg_info** @cached_cse_reg_info, align 8, !dbg !3140, !tbaa !1677
+  ret %struct.cse_reg_info* %p.2, !dbg !3141
 }

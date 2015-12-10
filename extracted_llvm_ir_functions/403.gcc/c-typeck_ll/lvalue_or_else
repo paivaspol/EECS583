@@ -1,13 +1,16 @@
 define i32 @lvalue_or_else(%union.tree_node* nocapture %ref, i8* %msgid) #0 {
 entry:
-  %call = tail call i32 @lvalue_p(%union.tree_node* %ref) #7
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %ref}, i64 0, metadata !1283), !dbg !3326
+  tail call void @llvm.dbg.value(metadata !{i8* %msgid}, i64 0, metadata !1284), !dbg !3327
+  %call = tail call i32 @lvalue_p(%union.tree_node* %ref) #8, !dbg !3328
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1285), !dbg !3328
+  %tobool = icmp eq i32 %call, 0, !dbg !3329
+  br i1 %tobool, label %if.then, label %if.end, !dbg !3329
 
 if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([3 x i8]* @.str81, i64 0, i64 0), i8* %msgid) #8
-  br label %if.end
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([3 x i8]* @.str81, i64 0, i64 0), i8* %msgid) #9, !dbg !3330
+  br label %if.end, !dbg !3330
 
 if.end:                                           ; preds = %entry, %if.then
-  ret i32 %call
+  ret i32 %call, !dbg !3331
 }

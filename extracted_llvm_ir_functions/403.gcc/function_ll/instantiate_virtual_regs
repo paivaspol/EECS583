@@ -1,91 +1,96 @@
 define void @instantiate_virtual_regs(%union.tree_node* nocapture %fndecl, %struct.rtx_def* %insns) #0 {
 entry:
-  %0 = load i32* @target_flags, align 4, !tbaa !4
-  %and = and i32 %0, 4096
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %cond.end, label %cond.true
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %fndecl}, i64 0, metadata !1549), !dbg !3522
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insns}, i64 0, metadata !1550), !dbg !3523
+  %0 = load i32* @target_flags, align 4, !dbg !3524, !tbaa !2768
+  %and = and i32 %0, 4096, !dbg !3524
+  %tobool = icmp eq i32 %and, 0, !dbg !3524
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !3524
 
 cond.true:                                        ; preds = %entry
-  %1 = load %struct.function** @cfun, align 8, !tbaa !0
-  %outgoing_args_size = getelementptr inbounds %struct.function* %1, i64 0, i32 11
-  %2 = load i32* %outgoing_args_size, align 4, !tbaa !4
-  br label %cond.end
+  %1 = load %struct.function** @cfun, align 8, !dbg !3524, !tbaa !2729
+  %outgoing_args_size = getelementptr inbounds %struct.function* %1, i64 0, i32 11, !dbg !3524
+  %2 = load i32* %outgoing_args_size, align 4, !dbg !3524, !tbaa !2768
+  br label %cond.end, !dbg !3524
 
 cond.end:                                         ; preds = %entry, %cond.true
-  %cond = phi i32 [ %2, %cond.true ], [ 0, %entry ]
-  store i32 %cond, i32* @dynamic_offset, align 4, !tbaa !4
-  tail call fastcc void @instantiate_decls(%union.tree_node* %fndecl, i32 1) #9
-  tail call void @init_recog() #10
-  %tobool255 = icmp eq %struct.rtx_def* %insns, null
-  br i1 %tobool255, label %for.cond26.preheader, label %for.body
+  %cond = phi i32 [ %2, %cond.true ], [ 0, %entry ], !dbg !3524
+  store i32 %cond, i32* @dynamic_offset, align 4, !dbg !3524, !tbaa !2768
+  tail call fastcc void @instantiate_decls(%union.tree_node* %fndecl, i32 1) #10, !dbg !3525
+  tail call void @init_recog() #11, !dbg !3526
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insns}, i64 0, metadata !1551), !dbg !3527
+  %tobool255 = icmp eq %struct.rtx_def* %insns, null, !dbg !3527
+  br i1 %tobool255, label %for.cond26.preheader, label %for.body, !dbg !3527
 
 for.cond26.preheader:                             ; preds = %for.inc, %cond.end
-  %3 = load %struct.function** @cfun, align 8, !tbaa !0
-  %x_max_parm_reg52 = getelementptr inbounds %struct.function* %3, i64 0, i32 37
-  %4 = load i32* %x_max_parm_reg52, align 4, !tbaa !4
-  %cmp2753 = icmp eq i32 %4, 0
-  br i1 %cmp2753, label %for.end38, label %for.body28
+  %3 = load %struct.function** @cfun, align 8, !dbg !3529, !tbaa !2729
+  %x_max_parm_reg52 = getelementptr inbounds %struct.function* %3, i64 0, i32 37, !dbg !3529
+  %4 = load i32* %x_max_parm_reg52, align 4, !dbg !3529, !tbaa !2768
+  %cmp2753 = icmp eq i32 %4, 0, !dbg !3529
+  br i1 %cmp2753, label %for.end38, label %for.body28, !dbg !3529
 
 for.body:                                         ; preds = %cond.end, %for.inc
   %insn.056 = phi %struct.rtx_def* [ %6, %for.inc ], [ %insns, %cond.end ]
-  %5 = bitcast %struct.rtx_def* %insn.056 to i32*
-  %bf.load = load i32* %5, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %bf.clear.off = add i32 %bf.clear, -32
-  %switch = icmp ult i32 %bf.clear.off, 3
-  br i1 %switch, label %if.then, label %for.inc
+  %5 = bitcast %struct.rtx_def* %insn.056 to i32*, !dbg !3531
+  %bf.load = load i32* %5, align 8, !dbg !3531
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3531
+  %bf.clear.off = add i32 %bf.clear, -32, !dbg !3531
+  %switch = icmp ult i32 %bf.clear.off, 3, !dbg !3531
+  br i1 %switch, label %if.then, label %for.inc, !dbg !3531
 
 if.then:                                          ; preds = %for.body
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.056, i64 0, i32 1, i64 3
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %call = tail call fastcc i32 @instantiate_virtual_regs_1(%struct.rtx_def** %rtx, %struct.rtx_def* %insn.056, i32 1) #9
-  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %insn.056, i64 0, i32 1, i64 6
-  %rtx12 = bitcast %union.rtunion_def* %arrayidx11 to %struct.rtx_def**
-  %call13 = tail call fastcc i32 @instantiate_virtual_regs_1(%struct.rtx_def** %rtx12, %struct.rtx_def* null, i32 0) #9
-  %bf.load14 = load i32* %5, align 8
-  %bf.clear15 = and i32 %bf.load14, 65535
-  %cmp16 = icmp eq i32 %bf.clear15, 34
-  br i1 %cmp16, label %if.then17, label %for.inc
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.056, i64 0, i32 1, i64 3, !dbg !3532
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3532
+  %call = tail call fastcc i32 @instantiate_virtual_regs_1(%struct.rtx_def** %rtx, %struct.rtx_def* %insn.056, i32 1) #10, !dbg !3532
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %insn.056, i64 0, i32 1, i64 6, !dbg !3534
+  %rtx12 = bitcast %union.rtunion_def* %arrayidx11 to %struct.rtx_def**, !dbg !3534
+  %call13 = tail call fastcc i32 @instantiate_virtual_regs_1(%struct.rtx_def** %rtx12, %struct.rtx_def* null, i32 0) #10, !dbg !3534
+  %bf.load14 = load i32* %5, align 8, !dbg !3535
+  %bf.clear15 = and i32 %bf.load14, 65535, !dbg !3535
+  %cmp16 = icmp eq i32 %bf.clear15, 34, !dbg !3535
+  br i1 %cmp16, label %if.then17, label %for.inc, !dbg !3535
 
 if.then17:                                        ; preds = %if.then
-  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %insn.056, i64 0, i32 1, i64 7
-  %rtx20 = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**
-  %call21 = tail call fastcc i32 @instantiate_virtual_regs_1(%struct.rtx_def** %rtx20, %struct.rtx_def* null, i32 0) #9
-  br label %for.inc
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %insn.056, i64 0, i32 1, i64 7, !dbg !3536
+  %rtx20 = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**, !dbg !3536
+  %call21 = tail call fastcc i32 @instantiate_virtual_regs_1(%struct.rtx_def** %rtx20, %struct.rtx_def* null, i32 0) #10, !dbg !3536
+  br label %for.inc, !dbg !3536
 
 for.inc:                                          ; preds = %for.body, %if.then17, %if.then
-  %arrayidx24 = getelementptr inbounds %struct.rtx_def* %insn.056, i64 0, i32 1, i64 2
-  %rtx25 = bitcast %union.rtunion_def* %arrayidx24 to %struct.rtx_def**
-  %6 = load %struct.rtx_def** %rtx25, align 8, !tbaa !0
-  %tobool2 = icmp eq %struct.rtx_def* %6, null
-  br i1 %tobool2, label %for.cond26.preheader, label %for.body
+  %arrayidx24 = getelementptr inbounds %struct.rtx_def* %insn.056, i64 0, i32 1, i64 2, !dbg !3527
+  %rtx25 = bitcast %union.rtunion_def* %arrayidx24 to %struct.rtx_def**, !dbg !3527
+  %6 = load %struct.rtx_def** %rtx25, align 8, !dbg !3527, !tbaa !2729
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %6}, i64 0, metadata !1551), !dbg !3527
+  %tobool2 = icmp eq %struct.rtx_def* %6, null, !dbg !3527
+  br i1 %tobool2, label %for.cond26.preheader, label %for.body, !dbg !3527
 
 for.body28:                                       ; preds = %for.cond26.preheader, %for.inc37
   %7 = phi %struct.function* [ %10, %for.inc37 ], [ %3, %for.cond26.preheader ]
   %i.054 = phi i32 [ %inc, %for.inc37 ], [ 0, %for.cond26.preheader ]
-  %idxprom = zext i32 %i.054 to i64
-  %x_parm_reg_stack_loc = getelementptr inbounds %struct.function* %7, i64 0, i32 38
-  %8 = load %struct.rtx_def*** %x_parm_reg_stack_loc, align 8, !tbaa !0
-  %arrayidx29 = getelementptr inbounds %struct.rtx_def** %8, i64 %idxprom
-  %9 = load %struct.rtx_def** %arrayidx29, align 8, !tbaa !0
-  %tobool30 = icmp eq %struct.rtx_def* %9, null
-  br i1 %tobool30, label %for.inc37, label %if.then31
+  %idxprom = zext i32 %i.054 to i64, !dbg !3537
+  %x_parm_reg_stack_loc = getelementptr inbounds %struct.function* %7, i64 0, i32 38, !dbg !3537
+  %8 = load %struct.rtx_def*** %x_parm_reg_stack_loc, align 8, !dbg !3537, !tbaa !2729
+  %arrayidx29 = getelementptr inbounds %struct.rtx_def** %8, i64 %idxprom, !dbg !3537
+  %9 = load %struct.rtx_def** %arrayidx29, align 8, !dbg !3537, !tbaa !2729
+  %tobool30 = icmp eq %struct.rtx_def* %9, null, !dbg !3537
+  br i1 %tobool30, label %for.inc37, label %if.then31, !dbg !3537
 
 if.then31:                                        ; preds = %for.body28
-  %call35 = tail call fastcc i32 @instantiate_virtual_regs_1(%struct.rtx_def** %arrayidx29, %struct.rtx_def* null, i32 0) #9
-  %.pre = load %struct.function** @cfun, align 8, !tbaa !0
-  br label %for.inc37
+  %call35 = tail call fastcc i32 @instantiate_virtual_regs_1(%struct.rtx_def** %arrayidx29, %struct.rtx_def* null, i32 0) #10, !dbg !3538
+  %.pre = load %struct.function** @cfun, align 8, !dbg !3529, !tbaa !2729
+  br label %for.inc37, !dbg !3538
 
 for.inc37:                                        ; preds = %for.body28, %if.then31
-  %10 = phi %struct.function* [ %7, %for.body28 ], [ %.pre, %if.then31 ]
-  %inc = add i32 %i.054, 1
-  %x_max_parm_reg = getelementptr inbounds %struct.function* %10, i64 0, i32 37
-  %11 = load i32* %x_max_parm_reg, align 4, !tbaa !4
-  %cmp27 = icmp ult i32 %inc, %11
-  br i1 %cmp27, label %for.body28, label %for.end38
+  %10 = phi %struct.function* [ %7, %for.body28 ], [ %.pre, %if.then31 ], !dbg !3529
+  %inc = add i32 %i.054, 1, !dbg !3529
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1552), !dbg !3529
+  %x_max_parm_reg = getelementptr inbounds %struct.function* %10, i64 0, i32 37, !dbg !3529
+  %11 = load i32* %x_max_parm_reg, align 4, !dbg !3529, !tbaa !2768
+  %cmp27 = icmp ult i32 %inc, %11, !dbg !3529
+  br i1 %cmp27, label %for.body28, label %for.end38, !dbg !3529
 
 for.end38:                                        ; preds = %for.inc37, %for.cond26.preheader
-  tail call fastcc void @instantiate_decls(%union.tree_node* %fndecl, i32 0) #9
-  store i32 1, i32* @virtuals_instantiated, align 4, !tbaa !4
-  ret void
+  tail call fastcc void @instantiate_decls(%union.tree_node* %fndecl, i32 0) #10, !dbg !3539
+  store i32 1, i32* @virtuals_instantiated, align 4, !dbg !3540, !tbaa !2768
+  ret void, !dbg !3541
 }

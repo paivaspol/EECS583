@@ -1,26 +1,27 @@
 define void @SubMtx_ids(%struct._SubMtx* %mtx, i32* %prowid, i32* %pcolid) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %mtx, i64 0, metadata !37, metadata !480), !dbg !481
-  tail call void @llvm.dbg.value(metadata i32* %prowid, i64 0, metadata !38, metadata !480), !dbg !482
-  tail call void @llvm.dbg.value(metadata i32* %pcolid, i64 0, metadata !39, metadata !480), !dbg !483
-  %1 = icmp eq %struct._SubMtx* %mtx, null, !dbg !484
-  %2 = icmp eq i32* %prowid, null, !dbg !486
-  %or.cond = or i1 %1, %2, !dbg !487
-  %3 = icmp eq i32* %pcolid, null, !dbg !488
-  %or.cond3 = or i1 %or.cond, %3, !dbg !487
-  br i1 %or.cond3, label %4, label %7, !dbg !487
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %mtx}, i64 0, metadata !38), !dbg !477
+  tail call void @llvm.dbg.value(metadata !{i32* %prowid}, i64 0, metadata !39), !dbg !478
+  tail call void @llvm.dbg.value(metadata !{i32* %pcolid}, i64 0, metadata !40), !dbg !479
+  %cmp = icmp eq %struct._SubMtx* %mtx, null, !dbg !480
+  %cmp1 = icmp eq i32* %prowid, null, !dbg !480
+  %or.cond = or i1 %cmp, %cmp1, !dbg !480
+  %cmp3 = icmp eq i32* %pcolid, null, !dbg !480
+  %or.cond11 = or i1 %or.cond, %cmp3, !dbg !480
+  br i1 %or.cond11, label %if.then, label %if.end, !dbg !480
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !489, !tbaa !491
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), %struct._SubMtx* %mtx, i32* %prowid, i32* %pcolid) #5, !dbg !495
-  tail call void @exit(i32 -1) #6, !dbg !496
-  unreachable, !dbg !496
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !481, !tbaa !483
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), %struct._SubMtx* %mtx, i32* %prowid, i32* %pcolid) #5, !dbg !481
+  tail call void @exit(i32 -1) #6, !dbg !486
+  unreachable, !dbg !486
 
-; <label>:7                                       ; preds = %0
-  %8 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 2, !dbg !497
-  %9 = load i32* %8, align 4, !dbg !497, !tbaa !498
-  store i32 %9, i32* %prowid, align 4, !dbg !502, !tbaa !503
-  %10 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 3, !dbg !504
-  %11 = load i32* %10, align 4, !dbg !504, !tbaa !505
-  store i32 %11, i32* %pcolid, align 4, !dbg !506, !tbaa !503
-  ret void, !dbg !507
+if.end:                                           ; preds = %entry
+  %rowid = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 2, !dbg !487
+  %1 = load i32* %rowid, align 4, !dbg !487, !tbaa !488
+  store i32 %1, i32* %prowid, align 4, !dbg !487, !tbaa !488
+  %colid = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 3, !dbg !489
+  %2 = load i32* %colid, align 4, !dbg !489, !tbaa !488
+  store i32 %2, i32* %pcolid, align 4, !dbg !489, !tbaa !488
+  ret void, !dbg !490
 }

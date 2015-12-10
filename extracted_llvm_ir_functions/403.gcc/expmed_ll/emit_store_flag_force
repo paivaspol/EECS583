@@ -1,45 +1,55 @@
 define %struct.rtx_def* @emit_store_flag_force(%struct.rtx_def* %target, i32 %code, %struct.rtx_def* %op0, %struct.rtx_def* %op1, i32 %mode, i32 %unsignedp, i32 %normalizep) #0 {
 entry:
-  %call = tail call %struct.rtx_def* @emit_store_flag(%struct.rtx_def* %target, i32 %code, %struct.rtx_def* %op0, %struct.rtx_def* %op1, i32 %mode, i32 %unsignedp, i32 %normalizep) #6
-  %cmp = icmp eq %struct.rtx_def* %call, null
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %target}, i64 0, metadata !2034), !dbg !3995
+  tail call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !2035), !dbg !3996
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op0}, i64 0, metadata !2036), !dbg !3997
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op1}, i64 0, metadata !2037), !dbg !3997
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2038), !dbg !3998
+  tail call void @llvm.dbg.value(metadata !{i32 %unsignedp}, i64 0, metadata !2039), !dbg !3999
+  tail call void @llvm.dbg.value(metadata !{i32 %normalizep}, i64 0, metadata !2040), !dbg !4000
+  %call = tail call %struct.rtx_def* @emit_store_flag(%struct.rtx_def* %target, i32 %code, %struct.rtx_def* %op0, %struct.rtx_def* %op1, i32 %mode, i32 %unsignedp, i32 %normalizep) #7, !dbg !4001
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !2041), !dbg !4001
+  %cmp = icmp eq %struct.rtx_def* %call, null, !dbg !4002
+  br i1 %cmp, label %if.end, label %return, !dbg !4002
 
 if.end:                                           ; preds = %entry
-  %0 = bitcast %struct.rtx_def* %target to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp4 = icmp eq i32 %bf.clear, 61
-  br i1 %cmp4, label %lor.lhs.false, label %if.then9
+  %0 = bitcast %struct.rtx_def* %target to i32*, !dbg !4003
+  %bf.load = load i32* %0, align 8, !dbg !4003
+  %bf.clear = and i32 %bf.load, 65535, !dbg !4003
+  %cmp4 = icmp eq i32 %bf.clear, 61, !dbg !4003
+  br i1 %cmp4, label %lor.lhs.false, label %if.then9, !dbg !4003
 
 lor.lhs.false:                                    ; preds = %if.end
-  %call5 = tail call i32 @reg_mentioned_p(%struct.rtx_def* %target, %struct.rtx_def* %op0) #4
-  %tobool = icmp eq i32 %call5, 0
-  br i1 %tobool, label %lor.lhs.false6, label %if.then9
+  %call5 = tail call i32 @reg_mentioned_p(%struct.rtx_def* %target, %struct.rtx_def* %op0) #5, !dbg !4004
+  %tobool = icmp eq i32 %call5, 0, !dbg !4004
+  br i1 %tobool, label %lor.lhs.false6, label %if.then9, !dbg !4004
 
 lor.lhs.false6:                                   ; preds = %lor.lhs.false
-  %call7 = tail call i32 @reg_mentioned_p(%struct.rtx_def* %target, %struct.rtx_def* %op1) #4
-  %tobool8 = icmp eq i32 %call7, 0
-  br i1 %tobool8, label %if.end13, label %if.then9
+  %call7 = tail call i32 @reg_mentioned_p(%struct.rtx_def* %target, %struct.rtx_def* %op1) #5, !dbg !4004
+  %tobool8 = icmp eq i32 %call7, 0, !dbg !4004
+  br i1 %tobool8, label %if.end13, label %if.then9, !dbg !4004
 
 if.then9:                                         ; preds = %lor.lhs.false6, %lor.lhs.false, %if.end
-  %bf.load10 = load i32* %0, align 8
-  %bf.lshr = lshr i32 %bf.load10, 16
-  %bf.clear11 = and i32 %bf.lshr, 255
-  %call12 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %bf.clear11) #4
-  br label %if.end13
+  %bf.load10 = load i32* %0, align 8, !dbg !4005
+  %bf.lshr = lshr i32 %bf.load10, 16, !dbg !4005
+  %bf.clear11 = and i32 %bf.lshr, 255, !dbg !4005
+  %call12 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %bf.clear11) #5, !dbg !4005
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call12}, i64 0, metadata !2034), !dbg !4005
+  br label %if.end13, !dbg !4005
 
 if.end13:                                         ; preds = %lor.lhs.false6, %if.then9
   %target.addr.0 = phi %struct.rtx_def* [ %call12, %if.then9 ], [ %target, %lor.lhs.false6 ]
-  %1 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 65), align 8, !tbaa !3
-  %call14 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %target.addr.0, %struct.rtx_def* %1) #4
-  %call15 = tail call %struct.rtx_def* @gen_label_rtx() #4
-  tail call void @do_compare_rtx_and_jump(%struct.rtx_def* %op0, %struct.rtx_def* %op1, i32 %code, i32 %unsignedp, i32 %mode, %struct.rtx_def* null, %struct.rtx_def* null, %struct.rtx_def* %call15) #4
-  %2 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
-  %call16 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %target.addr.0, %struct.rtx_def* %2) #4
-  %call17 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %call15) #4
-  br label %return
+  %1 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 65), align 8, !dbg !4006, !tbaa !2258
+  %call14 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %target.addr.0, %struct.rtx_def* %1) #5, !dbg !4006
+  %call15 = tail call %struct.rtx_def* @gen_label_rtx() #5, !dbg !4007
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call15}, i64 0, metadata !2042), !dbg !4007
+  tail call void @do_compare_rtx_and_jump(%struct.rtx_def* %op0, %struct.rtx_def* %op1, i32 %code, i32 %unsignedp, i32 %mode, %struct.rtx_def* null, %struct.rtx_def* null, %struct.rtx_def* %call15) #5, !dbg !4008
+  %2 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !dbg !4009, !tbaa !2258
+  %call16 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %target.addr.0, %struct.rtx_def* %2) #5, !dbg !4009
+  %call17 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %call15) #5, !dbg !4010
+  br label %return, !dbg !4011
 
 return:                                           ; preds = %entry, %if.end13
   %retval.0 = phi %struct.rtx_def* [ %target.addr.0, %if.end13 ], [ %call, %entry ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !4012
 }

@@ -1,93 +1,69 @@
-define i8* @_ZN3pov15Extract_VersionEPKc(i8* nocapture readonly %str) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %str, i64 0, metadata !189, metadata !612), !dbg !613
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !190, metadata !612), !dbg !614
-  %1 = load i8* %str, align 1, !dbg !615, !tbaa !618
-  %2 = icmp eq i8 %1, 0, !dbg !621
-  br i1 %2, label %.critedge, label %.lr.ph, !dbg !622
+define i8* @_ZN3pov15Extract_VersionEPKc(i8* nocapture %str) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !144), !dbg !384
+  tail call void @llvm.dbg.value(metadata !134, i64 0, metadata !146), !dbg !385
+  %0 = load i8* %str, align 1, !dbg !386, !tbaa !388
+  %cmp22 = icmp eq i8 %0, 0, !dbg !386
+  br i1 %cmp22, label %for.end, label %for.body, !dbg !386
 
-.lr.ph:                                           ; preds = %0, %_Z7isdigiti.exit.thread
-  %3 = phi i8 [ %29, %_Z7isdigiti.exit.thread ], [ %1, %0 ]
-  %.04 = phi i8* [ %28, %_Z7isdigiti.exit.thread ], [ %str, %0 ]
-  tail call void @llvm.dbg.value(metadata i64 1024, i64 0, metadata !213, metadata !612), !dbg !623
-  %4 = icmp slt i8 %3, 0, !dbg !628
-  br i1 %4, label %_Z7isdigiti.exit.thread, label %_Z7isdigiti.exit, !dbg !628
+for.cond:                                         ; preds = %for.body
+  %1 = load i8* %incdec.ptr8, align 1, !dbg !386, !tbaa !388
+  %cmp = icmp eq i8 %1, 0, !dbg !386
+  br i1 %cmp, label %for.end, label %for.body, !dbg !386
 
-_Z7isdigiti.exit:                                 ; preds = %.lr.ph
-  %5 = sext i8 %3 to i64, !dbg !629
-  %6 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %5, !dbg !629
-  %7 = load i32* %6, align 4, !dbg !629, !tbaa !630
-  %.lobit.i = and i32 %7, 1024, !dbg !632
-  %8 = icmp eq i32 %.lobit.i, 0, !dbg !633
-  br i1 %8, label %_Z7isdigiti.exit.thread, label %.preheader, !dbg !634
+for.body:                                         ; preds = %entry, %for.cond
+  %2 = phi i8 [ %1, %for.cond ], [ %0, %entry ]
+  %str.addr.023 = phi i8* [ %incdec.ptr8, %for.cond ], [ %str, %entry ]
+  %conv = sext i8 %2 to i32, !dbg !386
+  %isdigittmp = add i32 %conv, -48, !dbg !390
+  %isdigit = icmp ult i32 %isdigittmp, 10, !dbg !390
+  %incdec.ptr8 = getelementptr inbounds i8* %str.addr.023, i64 1, !dbg !386
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr8}, i64 0, metadata !144), !dbg !386
+  br i1 %isdigit, label %while.cond, label %for.cond, !dbg !390
 
-.preheader:                                       ; preds = %_Z7isdigiti.exit, %24
-  %9 = phi i8 [ %.pre, %24 ], [ %3, %_Z7isdigiti.exit ]
-  %indvars.iv = phi i64 [ %indvars.iv.next, %24 ], [ 0, %_Z7isdigiti.exit ]
-  %.1 = phi i8* [ %27, %24 ], [ %.04, %_Z7isdigiti.exit ]
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !216, metadata !612), !dbg !635
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !221, metadata !612), !dbg !638
-  tail call void @llvm.dbg.value(metadata i64 1280, i64 0, metadata !222, metadata !612), !dbg !640
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !225, metadata !612), !dbg !641
-  %10 = icmp sgt i8 %9, -1, !dbg !643
-  br i1 %10, label %11, label %16, !dbg !644
+while.cond:                                       ; preds = %for.body, %while.body
+  %3 = phi i8 [ %.pre, %while.body ], [ %2, %for.body ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %while.body ], [ 0, %for.body ]
+  %str.addr.1 = phi i8* [ %incdec.ptr, %while.body ], [ %str.addr.023, %for.body ]
+  %pos.0 = phi i32 [ %inc, %while.body ], [ 0, %for.body ]
+  %conv2 = sext i8 %3 to i32, !dbg !392
+  %call3 = tail call i32 @isalnum(i32 %conv2) #5, !dbg !392
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !392
+  br i1 %tobool4, label %lor.lhs.false, label %land.rhs, !dbg !392
 
-; <label>:11                                      ; preds = %.preheader
-  %12 = sext i8 %9 to i64, !dbg !645
-  %13 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %12, !dbg !645
-  %14 = load i32* %13, align 4, !dbg !645, !tbaa !630
-  %15 = and i32 %14, 1280, !dbg !646
-  br label %_Z7isalnumi.exit, !dbg !644
+lor.lhs.false:                                    ; preds = %while.cond
+  %4 = load i8* %str.addr.1, align 1, !dbg !392, !tbaa !388
+  %cmp6 = icmp eq i8 %4, 46, !dbg !392
+  %5 = trunc i64 %indvars.iv to i32, !dbg !392
+  %cmp7 = icmp slt i32 %5, 10, !dbg !392
+  %or.cond = and i1 %cmp6, %cmp7, !dbg !392
+  br i1 %or.cond, label %while.body, label %for.end, !dbg !392
 
-; <label>:16                                      ; preds = %.preheader
-  %17 = sext i8 %9 to i32, !dbg !647
-  %18 = tail call i32 @__maskrune(i32 %17, i64 1280) #3, !dbg !648
-  br label %_Z7isalnumi.exit, !dbg !644
+land.rhs:                                         ; preds = %while.cond
+  %6 = trunc i64 %indvars.iv to i32, !dbg !392
+  %cmp7.old = icmp slt i32 %6, 10, !dbg !392
+  br i1 %cmp7.old, label %land.rhs.while.body_crit_edge, label %for.end
 
-_Z7isalnumi.exit:                                 ; preds = %11, %16
-  %.sink1.i.in.i = phi i32 [ %15, %11 ], [ %18, %16 ], !dbg !649
-  %.sink1.i.i = icmp eq i32 %.sink1.i.in.i, 0, !dbg !650
-  br i1 %.sink1.i.i, label %19, label %23, !dbg !651
+land.rhs.while.body_crit_edge:                    ; preds = %land.rhs
+  %.pre25 = load i8* %str.addr.1, align 1, !dbg !394, !tbaa !388
+  br label %while.body
 
-; <label>:19                                      ; preds = %_Z7isalnumi.exit
-  %20 = load i8* %.1, align 1, !dbg !652, !tbaa !618
-  %21 = icmp eq i8 %20, 46, !dbg !653
-  %22 = icmp slt i64 %indvars.iv, 10, !dbg !654
-  %or.cond = and i1 %22, %21, !dbg !655
-  br i1 %or.cond, label %24, label %.critedge.loopexit, !dbg !655
+while.body:                                       ; preds = %land.rhs.while.body_crit_edge, %lor.lhs.false
+  %7 = phi i8 [ %.pre25, %land.rhs.while.body_crit_edge ], [ 46, %lor.lhs.false ]
+  %arrayidx = getelementptr inbounds [20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 %indvars.iv, !dbg !394
+  store i8 %7, i8* %arrayidx, align 1, !dbg !394, !tbaa !388
+  %incdec.ptr = getelementptr inbounds i8* %str.addr.1, i64 1, !dbg !396
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !144), !dbg !396
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !397
+  %inc = add nsw i32 %pos.0, 1, !dbg !398
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !146), !dbg !398
+  %.pre = load i8* %incdec.ptr, align 1, !dbg !392, !tbaa !388
+  br label %while.cond, !dbg !397
 
-; <label>:23                                      ; preds = %_Z7isalnumi.exit
-  %.old1 = icmp slt i64 %indvars.iv, 10, !dbg !654
-  br i1 %.old1, label %._crit_edge, label %.critedge.loopexit, !dbg !656
-
-._crit_edge:                                      ; preds = %23
-  %.pre6 = load i8* %.1, align 1, !dbg !657, !tbaa !618
-  br label %24, !dbg !656
-
-; <label>:24                                      ; preds = %._crit_edge, %19
-  %25 = phi i8 [ %.pre6, %._crit_edge ], [ 46, %19 ], !dbg !657
-  %26 = getelementptr inbounds [20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 %indvars.iv, !dbg !659
-  store i8 %25, i8* %26, align 1, !dbg !660, !tbaa !618
-  %27 = getelementptr inbounds i8* %.1, i64 1, !dbg !661
-  tail call void @llvm.dbg.value(metadata i8* %27, i64 0, metadata !189, metadata !612), !dbg !613
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !656
-  %.pre = load i8* %27, align 1, !dbg !647, !tbaa !618
-  br label %.preheader, !dbg !656
-
-_Z7isdigiti.exit.thread:                          ; preds = %.lr.ph, %_Z7isdigiti.exit
-  %28 = getelementptr inbounds i8* %.04, i64 1, !dbg !662
-  tail call void @llvm.dbg.value(metadata i8* %28, i64 0, metadata !189, metadata !612), !dbg !613
-  %29 = load i8* %28, align 1, !dbg !615, !tbaa !618
-  %30 = icmp eq i8 %29, 0, !dbg !621
-  br i1 %30, label %.critedge, label %.lr.ph, !dbg !622
-
-.critedge.loopexit:                               ; preds = %19, %23
-  %sext = shl i64 %indvars.iv, 32
-  %phitmp = ashr exact i64 %sext, 32
-  br label %.critedge
-
-.critedge:                                        ; preds = %_Z7isdigiti.exit.thread, %0, %.critedge.loopexit
-  %pos.1 = phi i64 [ %phitmp, %.critedge.loopexit ], [ 0, %0 ], [ 0, %_Z7isdigiti.exit.thread ]
-  %31 = getelementptr inbounds [20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 %pos.1, !dbg !663
-  store i8 0, i8* %31, align 1, !dbg !664, !tbaa !618
-  ret i8* getelementptr inbounds ([20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 0), !dbg !665
+for.end:                                          ; preds = %entry, %for.cond, %land.rhs, %lor.lhs.false
+  %pos.1 = phi i32 [ %pos.0, %lor.lhs.false ], [ %pos.0, %land.rhs ], [ 0, %for.cond ], [ 0, %entry ]
+  %idxprom9 = sext i32 %pos.1 to i64, !dbg !399
+  %arrayidx10 = getelementptr inbounds [20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 %idxprom9, !dbg !399
+  store i8 0, i8* %arrayidx10, align 1, !dbg !399, !tbaa !388
+  ret i8* getelementptr inbounds ([20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 0), !dbg !400
 }

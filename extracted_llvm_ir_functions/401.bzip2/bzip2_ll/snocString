@@ -1,54 +1,34 @@
-define internal fastcc %struct.zzzz* @snocString(%struct.zzzz* %root, i8* %name) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.zzzz* %root, i64 0, metadata !226, metadata !524), !dbg !1152
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !227, metadata !524), !dbg !1153
-  %1 = icmp eq %struct.zzzz* %root, null, !dbg !1154
-  br i1 %1, label %2, label %.preheader, !dbg !1155
+define internal fastcc %struct.zzzz* @snocString(%struct.zzzz* %root, i8* nocapture %name) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.zzzz* %root}, i64 0, metadata !405), !dbg !760
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !406), !dbg !760
+  %cmp = icmp eq %struct.zzzz* %root, null, !dbg !761
+  br i1 %cmp, label %if.then, label %while.cond, !dbg !761
 
-; <label>:2                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 16, i64 0, metadata !242, metadata !524) #7, !dbg !1156
-  %3 = tail call i8* @malloc(i64 16) #9, !dbg !1159
-  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !243, metadata !524) #7, !dbg !1160
-  %4 = icmp eq i8* %3, null, !dbg !1161
-  br i1 %4, label %5, label %mkCell.exit, !dbg !1163
+if.then:                                          ; preds = %entry
+  %call.i = tail call fastcc i8* @myMalloc(i32 16) #10, !dbg !762
+  %0 = bitcast i8* %call.i to %struct.zzzz*, !dbg !762
+  tail call void @llvm.dbg.value(metadata !{%struct.zzzz* %0}, i64 0, metadata !764) #7, !dbg !762
+  tail call void @llvm.memset.p0i8.i64(i8* %call.i, i8 0, i64 16, i32 8, i1 false) #7, !dbg !765
+  tail call void @llvm.dbg.value(metadata !{%struct.zzzz* %0}, i64 0, metadata !407), !dbg !763
+  %call1 = tail call i64 @strlen(i8* %name) #12, !dbg !766
+  %add = add i64 %call1, 5, !dbg !766
+  %conv = trunc i64 %add to i32, !dbg !766
+  %call2 = tail call fastcc i8* @myMalloc(i32 %conv) #11, !dbg !766
+  %name3 = bitcast i8* %call.i to i8**, !dbg !766
+  store i8* %call2, i8** %name3, align 8, !dbg !766, !tbaa !484
+  %call5 = tail call i8* @strcpy(i8* %call2, i8* %name) #10, !dbg !767
+  ret %struct.zzzz* %0, !dbg !768
 
-; <label>:5                                       ; preds = %2
-  tail call fastcc void @outOfMemory() #11, !dbg !1164
-  unreachable, !dbg !1164
+while.cond:                                       ; preds = %entry, %while.cond
+  %tmp7.0 = phi %struct.zzzz* [ %1, %while.cond ], [ %root, %entry ]
+  %link = getelementptr inbounds %struct.zzzz* %tmp7.0, i64 0, i32 1, !dbg !769
+  %1 = load %struct.zzzz** %link, align 8, !dbg !769, !tbaa !484
+  %cmp8 = icmp eq %struct.zzzz* %1, null, !dbg !769
+  br i1 %cmp8, label %while.end, label %while.cond, !dbg !769
 
-mkCell.exit:                                      ; preds = %2
-  tail call void @llvm.dbg.value(metadata %struct.zzzz* %12, i64 0, metadata !237, metadata !524) #7, !dbg !1165
-  tail call void @llvm.memset.p0i8.i64(i8* %3, i8 0, i64 16, i32 8, i1 false) #7, !dbg !1166
-  tail call void @llvm.dbg.value(metadata %struct.zzzz* %12, i64 0, metadata !228, metadata !524), !dbg !1167
-  %6 = tail call i64 @strlen(i8* %name) #9, !dbg !1168
-  %7 = shl i64 %6, 32, !dbg !1169
-  %sext = add i64 %7, 21474836480, !dbg !1169
-  %8 = ashr exact i64 %sext, 32, !dbg !1169
-  %9 = tail call i8* @malloc(i64 %8) #9, !dbg !1171
-  tail call void @llvm.dbg.value(metadata i8* %9, i64 0, metadata !243, metadata !524) #7, !dbg !1172
-  %10 = icmp eq i8* %9, null, !dbg !1173
-  br i1 %10, label %11, label %myMalloc.exit, !dbg !1174
-
-; <label>:11                                      ; preds = %mkCell.exit
-  tail call fastcc void @outOfMemory() #11, !dbg !1175
-  unreachable, !dbg !1175
-
-myMalloc.exit:                                    ; preds = %mkCell.exit
-  %12 = bitcast i8* %3 to %struct.zzzz*, !dbg !1176
-  %13 = bitcast i8* %3 to i8**, !dbg !1177
-  store i8* %9, i8** %13, align 8, !dbg !1178, !tbaa !603
-  %14 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %9, i1 false), !dbg !1179
-  %15 = tail call i8* @__strcpy_chk(i8* %9, i8* %name, i64 %14) #9, !dbg !1179
-  ret %struct.zzzz* %12, !dbg !1180
-
-.preheader:                                       ; preds = %0, %.preheader
-  %tmp1.0 = phi %struct.zzzz* [ %17, %.preheader ], [ %root, %0 ]
-  %16 = getelementptr inbounds %struct.zzzz* %tmp1.0, i64 0, i32 1, !dbg !1181
-  %17 = load %struct.zzzz** %16, align 8, !dbg !1181, !tbaa !1026
-  %18 = icmp eq %struct.zzzz* %17, null, !dbg !1182
-  br i1 %18, label %19, label %.preheader, !dbg !1183
-
-; <label>:19                                      ; preds = %.preheader
-  %20 = tail call fastcc %struct.zzzz* @snocString(%struct.zzzz* null, i8* %name) #10, !dbg !1184
-  store %struct.zzzz* %20, %struct.zzzz** %16, align 8, !dbg !1185, !tbaa !1026
-  ret %struct.zzzz* %root, !dbg !1180
+while.end:                                        ; preds = %while.cond
+  %call12 = tail call fastcc %struct.zzzz* @snocString(%struct.zzzz* null, i8* %name) #11, !dbg !770
+  store %struct.zzzz* %call12, %struct.zzzz** %link, align 8, !dbg !770, !tbaa !484
+  ret %struct.zzzz* %root, !dbg !768
 }

@@ -1,149 +1,150 @@
 define zeroext i1 @_ZN3pov27Deinitialize_Radiosity_CodeEv() #0 {
+entry:
   %rad_cache_filename = alloca [256 x i8], align 16
-  %1 = getelementptr inbounds [256 x i8]* %rad_cache_filename, i64 0, i64 0, !dbg !2792
-  call void @llvm.lifetime.start(i64 256, i8* %1) #2, !dbg !2792
-  tail call void @llvm.dbg.declare(metadata [256 x i8]* %rad_cache_filename, metadata !1158, metadata !1800), !dbg !2793
-  tail call void @llvm.dbg.value(metadata i8 1, i64 0, metadata !1157, metadata !1800), !dbg !2794
-  %2 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 59), align 4, !dbg !2795, !tbaa !2687, !range !2688
-  %3 = icmp eq i8 %2, 0, !dbg !2795
-  br i1 %3, label %70, label %4, !dbg !2797
+  %0 = getelementptr inbounds [256 x i8]* %rad_cache_filename, i64 0, i64 0, !dbg !1893
+  call void @llvm.lifetime.start(i64 256, i8* %0) #2, !dbg !1893
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %rad_cache_filename}, metadata !85), !dbg !1893
+  call void @llvm.dbg.value(metadata !1792, i64 0, metadata !84), !dbg !1894
+  %1 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 59), align 4, !dbg !1895, !tbaa !1828, !range !1829
+  %tobool = icmp eq i8 %1, 0, !dbg !1895
+  br i1 %tobool, label %if.end62, label %if.then, !dbg !1895
 
-; <label>:4                                       ; preds = %0
-  %5 = load %"class.pov_base::OStream"** @_ZN3pov5ot_fdE, align 8, !dbg !2798, !tbaa !2089
-  %6 = icmp eq %"class.pov_base::OStream"* %5, null, !dbg !2801
-  br i1 %6, label %12, label %7, !dbg !2802
+if.then:                                          ; preds = %entry
+  %2 = load %"class.pov_base::OStream"** @_ZN3pov5ot_fdE, align 8, !dbg !1896, !tbaa !1322
+  %cmp = icmp eq %"class.pov_base::OStream"* %2, null, !dbg !1896
+  br i1 %cmp, label %if.end, label %delete.notnull, !dbg !1896
 
-; <label>:7                                       ; preds = %4
-  %8 = bitcast %"class.pov_base::OStream"* %5 to void (%"class.pov_base::OStream"*)***, !dbg !2803
-  %9 = load void (%"class.pov_base::OStream"*)*** %8, align 8, !dbg !2803, !tbaa !2734
-  %10 = getelementptr inbounds void (%"class.pov_base::OStream"*)** %9, i64 1, !dbg !2803
-  %11 = load void (%"class.pov_base::OStream"*)** %10, align 8, !dbg !2803
-  tail call void %11(%"class.pov_base::OStream"* %5) #8, !dbg !2803
-  store %"class.pov_base::OStream"* null, %"class.pov_base::OStream"** @_ZN3pov5ot_fdE, align 8, !dbg !2805, !tbaa !2089
-  br label %12, !dbg !2806
+delete.notnull:                                   ; preds = %if.then
+  %3 = bitcast %"class.pov_base::OStream"* %2 to void (%"class.pov_base::OStream"*)***, !dbg !1898
+  %vtable = load void (%"class.pov_base::OStream"*)*** %3, align 8, !dbg !1898, !tbaa !1857
+  %vfn = getelementptr inbounds void (%"class.pov_base::OStream"*)** %vtable, i64 1, !dbg !1898
+  %4 = load void (%"class.pov_base::OStream"*)** %vfn, align 8, !dbg !1898
+  call void %4(%"class.pov_base::OStream"* %2) #8, !dbg !1898
+  store %"class.pov_base::OStream"* null, %"class.pov_base::OStream"** @_ZN3pov5ot_fdE, align 8, !dbg !1900, !tbaa !1322
+  br label %if.end, !dbg !1901
 
-; <label>:12                                      ; preds = %4, %7
-  %13 = call i8* @strcpy(i8* %1, i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 10, i64 0)) #8, !dbg !2807
-  %strlen = call i64 @strlen(i8* %1), !dbg !2808
-  %endptr = getelementptr [256 x i8]* %rad_cache_filename, i64 0, i64 %strlen, !dbg !2808
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %endptr, i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i64 5, i32 1, i1 false), !dbg !2808
-  %14 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 46), align 4, !dbg !2809, !tbaa !2494
-  %15 = icmp eq i32 %14, 0, !dbg !2811
-  %16 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 49), align 8
-  %17 = icmp ne i32 %16, 0, !dbg !2812
-  %or.cond = or i1 %15, %17, !dbg !2813
-  br i1 %or.cond, label %25, label %18, !dbg !2813
+if.end:                                           ; preds = %if.then, %delete.notnull
+  %call = call i8* @strcpy(i8* %0, i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 10, i64 0)) #9, !dbg !1902
+  %strlen = call i64 @strlen(i8* %0), !dbg !1903
+  %endptr = getelementptr [256 x i8]* %rad_cache_filename, i64 0, i64 %strlen, !dbg !1903
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %endptr, i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i64 5, i32 1, i1 false), !dbg !1903
+  %5 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 46), align 4, !dbg !1904, !tbaa !1279
+  %tobool5 = icmp eq i32 %5, 0, !dbg !1904
+  %6 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 49), align 8, !dbg !1904, !tbaa !1279
+  %tobool6 = icmp ne i32 %6, 0, !dbg !1904
+  %or.cond = or i1 %tobool5, %tobool6, !dbg !1904
+  br i1 %or.cond, label %if.end13, label %lor.lhs.false, !dbg !1904
 
-; <label>:18                                      ; preds = %12
-  %19 = load volatile i32* @_ZN3pov9Stop_FlagE, align 4, !dbg !2814, !tbaa !1842
-  %20 = icmp ne i32 %19, 0, !dbg !2814
-  %21 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 48), align 4
-  %22 = icmp ne i32 %21, 0, !dbg !2815
-  %or.cond3 = and i1 %20, %22, !dbg !2816
-  br i1 %or.cond3, label %25, label %23, !dbg !2816
+lor.lhs.false:                                    ; preds = %if.end
+  %7 = load volatile i32* @_ZN3pov9Stop_FlagE, align 4, !dbg !1904, !tbaa !1279
+  %tobool7 = icmp ne i32 %7, 0, !dbg !1904
+  %8 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 48), align 4, !dbg !1904, !tbaa !1279
+  %tobool9 = icmp ne i32 %8, 0, !dbg !1904
+  %or.cond67 = and i1 %tobool7, %tobool9, !dbg !1904
+  br i1 %or.cond67, label %if.end13, label %if.then10, !dbg !1904
 
-; <label>:23                                      ; preds = %18
-  %24 = call i32 @unlink(i8* %1) #8, !dbg !2817
-  br label %25, !dbg !2819
+if.then10:                                        ; preds = %lor.lhs.false
+  %call12 = call i32 @unlink(i8* %0) #9, !dbg !1905
+  br label %if.end13, !dbg !1907
 
-; <label>:25                                      ; preds = %18, %12, %23
-  %26 = load i8** getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 57), align 8, !dbg !2820, !tbaa !2822
-  %27 = icmp eq i8* %26, null, !dbg !2823
-  br i1 %27, label %40, label %28, !dbg !2824
+if.end13:                                         ; preds = %lor.lhs.false, %if.end, %if.then10
+  %9 = load i8** getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 57), align 8, !dbg !1908, !tbaa !1322
+  %tobool14 = icmp eq i8* %9, null, !dbg !1908
+  br i1 %tobool14, label %if.end26, label %if.then15, !dbg !1908
 
-; <label>:28                                      ; preds = %25
-  %29 = call %"class.pov_base::OStream"* @_ZN3pov19New_Checked_OStreamEPcjb(i8* %26, i32 17, i1 zeroext false) #8, !dbg !2825
-  call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %29, i64 0, metadata !1159, metadata !1800), !dbg !2827
-  %30 = icmp eq %"class.pov_base::OStream"* %29, null, !dbg !2828
-  br i1 %30, label %38, label %31, !dbg !2830
+if.then15:                                        ; preds = %if.end13
+  %call16 = call %"class.pov_base::OStream"* @_ZN3pov19New_Checked_OStreamEPcjb(i8* %9, i32 17, i1 zeroext false) #8, !dbg !1909
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %call16}, i64 0, metadata !86), !dbg !1909
+  %cmp17 = icmp eq %"class.pov_base::OStream"* %call16, null, !dbg !1911
+  br i1 %cmp17, label %if.end25, label %if.then18, !dbg !1911
 
-; <label>:31                                      ; preds = %28
-  %32 = load %"struct.pov::ot_node_struct"** @_ZN3pov7ot_rootE, align 8, !dbg !2831, !tbaa !2089
-  %33 = call zeroext i1 @_ZN3pov12ot_save_treeEPNS_14ot_node_structEPN8pov_base7OStreamE(%"struct.pov::ot_node_struct"* %32, %"class.pov_base::OStream"* %29) #8, !dbg !2833
-  %34 = bitcast %"class.pov_base::OStream"* %29 to void (%"class.pov_base::OStream"*)***, !dbg !2834
-  %35 = load void (%"class.pov_base::OStream"*)*** %34, align 8, !dbg !2834, !tbaa !2734
-  %36 = getelementptr inbounds void (%"class.pov_base::OStream"*)** %35, i64 1, !dbg !2834
-  %37 = load void (%"class.pov_base::OStream"*)** %36, align 8, !dbg !2834
-  call void %37(%"class.pov_base::OStream"* %29) #8, !dbg !2834
-  br label %38, !dbg !2834
+if.then18:                                        ; preds = %if.then15
+  %10 = load %"struct.pov::ot_node_struct"** @_ZN3pov7ot_rootE, align 8, !dbg !1912, !tbaa !1322
+  %call19 = call zeroext i1 @_ZN3pov12ot_save_treeEPNS_14ot_node_structEPN8pov_base7OStreamE(%"struct.pov::ot_node_struct"* %10, %"class.pov_base::OStream"* %call16) #8, !dbg !1912
+  %11 = bitcast %"class.pov_base::OStream"* %call16 to void (%"class.pov_base::OStream"*)***, !dbg !1914
+  %vtable22 = load void (%"class.pov_base::OStream"*)*** %11, align 8, !dbg !1914, !tbaa !1857
+  %vfn23 = getelementptr inbounds void (%"class.pov_base::OStream"*)** %vtable22, i64 1, !dbg !1914
+  %12 = load void (%"class.pov_base::OStream"*)** %vfn23, align 8, !dbg !1914
+  call void %12(%"class.pov_base::OStream"* %call16) #8, !dbg !1914
+  br label %if.end25, !dbg !1914
 
-; <label>:38                                      ; preds = %28, %31
-  %39 = load i8** getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 57), align 8, !dbg !2835, !tbaa !2822
-  call void @_ZN3pov8pov_freeEPvPKci(i8* %39, i8* getelementptr inbounds ([69 x i8]* @.str, i64 0, i64 0), i32 1144) #8, !dbg !2835
-  store i8* null, i8** getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 57), align 8, !dbg !2837, !tbaa !2822
-  br label %40, !dbg !2838
+if.end25:                                         ; preds = %if.then15, %if.then18
+  %13 = load i8** getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 57), align 8, !dbg !1915, !tbaa !1322
+  call void @_ZN3pov8pov_freeEPvPKci(i8* %13, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), i32 1144) #8, !dbg !1915
+  store i8* null, i8** getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 57), align 8, !dbg !1917, !tbaa !1322
+  br label %if.end26, !dbg !1918
 
-; <label>:40                                      ; preds = %25, %38
-  %41 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 49), align 8, !dbg !2839, !tbaa !2841
-  %42 = icmp eq i32 %41, 0, !dbg !2842
-  br i1 %42, label %43, label %thread-pre-split, !dbg !2843
+if.end26:                                         ; preds = %if.end13, %if.end25
+  %14 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 49), align 8, !dbg !1919, !tbaa !1279
+  %tobool27 = icmp eq i32 %14, 0, !dbg !1919
+  br i1 %tobool27, label %lor.lhs.false28, label %if.end51thread-pre-split, !dbg !1919
 
-; <label>:43                                      ; preds = %40
-  %44 = load volatile i32* @_ZN3pov9Stop_FlagE, align 4, !dbg !2844, !tbaa !1842
-  %45 = icmp ne i32 %44, 0, !dbg !2844
-  %46 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 48), align 4
-  %47 = icmp ne i32 %46, 0, !dbg !2845
-  %or.cond5 = and i1 %45, %47, !dbg !2846
-  %48 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 46), align 4
-  %49 = icmp ne i32 %48, 0, !dbg !2847
-  %or.cond7 = or i1 %or.cond5, %49, !dbg !2846
-  %or.cond7.not = xor i1 %or.cond7, true, !dbg !2846
-  %50 = load %"struct.pov::ot_node_struct"** @_ZN3pov7ot_rootE, align 8
-  %51 = icmp ne %"struct.pov::ot_node_struct"* %50, null, !dbg !2848
-  %or.cond9 = and i1 %51, %or.cond7.not, !dbg !2846
-  br i1 %or.cond9, label %52, label %63, !dbg !2846
+lor.lhs.false28:                                  ; preds = %if.end26
+  %15 = load volatile i32* @_ZN3pov9Stop_FlagE, align 4, !dbg !1919, !tbaa !1279
+  %tobool29 = icmp ne i32 %15, 0, !dbg !1919
+  %16 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 48), align 4, !dbg !1919, !tbaa !1279
+  %tobool31 = icmp ne i32 %16, 0, !dbg !1919
+  %or.cond68 = and i1 %tobool29, %tobool31, !dbg !1919
+  %17 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 46), align 4, !dbg !1919, !tbaa !1279
+  %tobool33 = icmp ne i32 %17, 0, !dbg !1919
+  %or.cond69 = or i1 %or.cond68, %tobool33, !dbg !1919
+  %or.cond69.not = xor i1 %or.cond69, true, !dbg !1919
+  %18 = load %"struct.pov::ot_node_struct"** @_ZN3pov7ot_rootE, align 8, !dbg !1919, !tbaa !1322
+  %cmp35 = icmp ne %"struct.pov::ot_node_struct"* %18, null, !dbg !1919
+  %or.cond70 = and i1 %cmp35, %or.cond69.not, !dbg !1919
+  br i1 %or.cond70, label %if.then36, label %if.end51, !dbg !1919
 
-; <label>:52                                      ; preds = %43
-  %53 = call %"class.pov_base::OStream"* @_ZN3pov19New_Checked_OStreamEPcjb(i8* %1, i32 17, i1 zeroext false) #8, !dbg !2849
-  call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %53, i64 0, metadata !1159, metadata !1800), !dbg !2827
-  %54 = icmp eq %"class.pov_base::OStream"* %53, null, !dbg !2851
-  br i1 %54, label %thread-pre-split, label %55, !dbg !2853
+if.then36:                                        ; preds = %lor.lhs.false28
+  %call38 = call %"class.pov_base::OStream"* @_ZN3pov19New_Checked_OStreamEPcjb(i8* %0, i32 17, i1 zeroext false) #8, !dbg !1920
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %call38}, i64 0, metadata !86), !dbg !1920
+  %cmp39 = icmp eq %"class.pov_base::OStream"* %call38, null, !dbg !1922
+  br i1 %cmp39, label %if.end51thread-pre-split, label %if.then40, !dbg !1922
 
-; <label>:55                                      ; preds = %52
-  %56 = load %"struct.pov::ot_node_struct"** @_ZN3pov7ot_rootE, align 8, !dbg !2854, !tbaa !2089
-  %57 = call zeroext i1 @_ZN3pov12ot_save_treeEPNS_14ot_node_structEPN8pov_base7OStreamE(%"struct.pov::ot_node_struct"* %56, %"class.pov_base::OStream"* %53) #8, !dbg !2856
-  %58 = zext i1 %57 to i8, !dbg !2857
-  call void @llvm.dbg.value(metadata i8 %58, i64 0, metadata !1157, metadata !1800), !dbg !2794
-  %59 = bitcast %"class.pov_base::OStream"* %53 to void (%"class.pov_base::OStream"*)***, !dbg !2858
-  %60 = load void (%"class.pov_base::OStream"*)*** %59, align 8, !dbg !2858, !tbaa !2734
-  %61 = getelementptr inbounds void (%"class.pov_base::OStream"*)** %60, i64 1, !dbg !2858
-  %62 = load void (%"class.pov_base::OStream"*)** %61, align 8, !dbg !2858
-  call void %62(%"class.pov_base::OStream"* %53) #8, !dbg !2858
-  br label %thread-pre-split, !dbg !2858
+if.then40:                                        ; preds = %if.then36
+  %19 = load %"struct.pov::ot_node_struct"** @_ZN3pov7ot_rootE, align 8, !dbg !1923, !tbaa !1322
+  %call41 = call zeroext i1 @_ZN3pov12ot_save_treeEPNS_14ot_node_structEPN8pov_base7OStreamE(%"struct.pov::ot_node_struct"* %19, %"class.pov_base::OStream"* %call38) #8, !dbg !1923
+  %frombool = zext i1 %call41 to i8, !dbg !1923
+  call void @llvm.dbg.value(metadata !{i8 %frombool}, i64 0, metadata !84), !dbg !1923
+  %20 = bitcast %"class.pov_base::OStream"* %call38 to void (%"class.pov_base::OStream"*)***, !dbg !1925
+  %vtable47 = load void (%"class.pov_base::OStream"*)*** %20, align 8, !dbg !1925, !tbaa !1857
+  %vfn48 = getelementptr inbounds void (%"class.pov_base::OStream"*)** %vtable47, i64 1, !dbg !1925
+  %21 = load void (%"class.pov_base::OStream"*)** %vfn48, align 8, !dbg !1925
+  call void %21(%"class.pov_base::OStream"* %call38) #8, !dbg !1925
+  br label %if.end51thread-pre-split, !dbg !1925
 
-thread-pre-split:                                 ; preds = %55, %40, %52
-  %retval.0.ph = phi i8 [ 0, %52 ], [ %58, %55 ], [ 1, %40 ]
-  %.pr = load %"struct.pov::ot_node_struct"** @_ZN3pov7ot_rootE, align 8, !dbg !2859
-  br label %63
+if.end51thread-pre-split:                         ; preds = %if.then40, %if.end26, %if.then36
+  %retval1.0.ph = phi i8 [ 0, %if.then36 ], [ 1, %if.end26 ], [ %frombool, %if.then40 ]
+  %.pr = load %"struct.pov::ot_node_struct"** @_ZN3pov7ot_rootE, align 8, !dbg !1926, !tbaa !1322
+  br label %if.end51
 
-; <label>:63                                      ; preds = %thread-pre-split, %43
-  %64 = phi %"struct.pov::ot_node_struct"* [ %.pr, %thread-pre-split ], [ %50, %43 ], !dbg !2859
-  %retval.0 = phi i8 [ %retval.0.ph, %thread-pre-split ], [ 1, %43 ]
-  %65 = icmp eq %"struct.pov::ot_node_struct"* %64, null, !dbg !2861
-  br i1 %65, label %70, label %66, !dbg !2862
+if.end51:                                         ; preds = %if.end51thread-pre-split, %lor.lhs.false28
+  %22 = phi %"struct.pov::ot_node_struct"* [ %.pr, %if.end51thread-pre-split ], [ %18, %lor.lhs.false28 ], !dbg !1926
+  %retval1.0 = phi i8 [ %retval1.0.ph, %if.end51thread-pre-split ], [ 1, %lor.lhs.false28 ]
+  %cmp52 = icmp eq %"struct.pov::ot_node_struct"* %22, null, !dbg !1926
+  br i1 %cmp52, label %if.end62, label %if.then53, !dbg !1926
 
-; <label>:66                                      ; preds = %63
-  %67 = call zeroext i1 @_ZN3pov12ot_free_treeEPPNS_14ot_node_structE(%"struct.pov::ot_node_struct"** @_ZN3pov7ot_rootE) #8, !dbg !2863
-  %68 = zext i1 %67 to i8, !dbg !2863
-  %69 = and i8 %68, %retval.0, !dbg !2865
-  call void @llvm.dbg.value(metadata i8 %69, i64 0, metadata !1157, metadata !1800), !dbg !2794
-  br label %70, !dbg !2866
+if.then53:                                        ; preds = %if.end51
+  %call54 = call zeroext i1 @_ZN3pov12ot_free_treeEPPNS_14ot_node_structE(%"struct.pov::ot_node_struct"** @_ZN3pov7ot_rootE) #8, !dbg !1927
+  %conv55 = zext i1 %call54 to i8, !dbg !1927
+  %and58 = and i8 %conv55, %retval1.0, !dbg !1927
+  call void @llvm.dbg.value(metadata !{i8 %and58}, i64 0, metadata !84), !dbg !1927
+  br label %if.end62, !dbg !1929
 
-; <label>:70                                      ; preds = %63, %0, %66
-  %retval.1 = phi i8 [ %69, %66 ], [ %retval.0, %63 ], [ 1, %0 ]
-  %71 = load [3 x double]** @_ZN3pov16fast_rad_samplesE, align 8, !dbg !2867, !tbaa !2089
-  %72 = icmp eq [3 x double]* %71, null, !dbg !2869
-  br i1 %72, label %75, label %73, !dbg !2870
+if.end62:                                         ; preds = %if.end51, %entry, %if.then53
+  %retval1.1 = phi i8 [ %and58, %if.then53 ], [ %retval1.0, %if.end51 ], [ 1, %entry ]
+  %23 = load [3 x double]** @_ZN3pov16fast_rad_samplesE, align 8, !dbg !1930, !tbaa !1322
+  %cmp63 = icmp eq [3 x double]* %23, null, !dbg !1930
+  br i1 %cmp63, label %if.end65, label %if.then64, !dbg !1930
 
-; <label>:73                                      ; preds = %70
-  %74 = bitcast [3 x double]* %71 to i8*, !dbg !2871
-  call void @_ZN3pov8pov_freeEPvPKci(i8* %74, i8* getelementptr inbounds ([69 x i8]* @.str, i64 0, i64 0), i32 1179) #8, !dbg !2871
-  store [3 x double]* null, [3 x double]** @_ZN3pov16fast_rad_samplesE, align 8, !dbg !2871, !tbaa !2089
-  br label %75, !dbg !2874
+if.then64:                                        ; preds = %if.end62
+  %24 = bitcast [3 x double]* %23 to i8*, !dbg !1931
+  call void @_ZN3pov8pov_freeEPvPKci(i8* %24, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), i32 1179) #8, !dbg !1931
+  store [3 x double]* null, [3 x double]** @_ZN3pov16fast_rad_samplesE, align 8, !dbg !1931, !tbaa !1322
+  br label %if.end65, !dbg !1934
 
-; <label>:75                                      ; preds = %70, %73
-  %76 = and i8 %retval.1, 1, !dbg !2875
-  %77 = icmp ne i8 %76, 0, !dbg !2875
-  call void @llvm.lifetime.end(i64 256, i8* %1) #2, !dbg !2876
-  ret i1 %77, !dbg !2876
+if.end65:                                         ; preds = %if.end62, %if.then64
+  %25 = and i8 %retval1.1, 1, !dbg !1935
+  %tobool66 = icmp ne i8 %25, 0, !dbg !1935
+  call void @llvm.lifetime.end(i64 256, i8* %0) #2, !dbg !1936
+  ret i1 %tobool66, !dbg !1936
 }

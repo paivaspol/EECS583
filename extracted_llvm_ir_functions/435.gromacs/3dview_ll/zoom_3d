@@ -1,100 +1,194 @@
-define i32 @zoom_3d(%struct.t_3dview* nocapture %view, float %fac) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.t_3dview* %view, i64 0, metadata !193, metadata !259), !dbg !666
-  tail call void @llvm.dbg.value(metadata float %fac, i64 0, metadata !194, metadata !259), !dbg !667
-  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !198, metadata !259), !dbg !668
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !199, metadata !259), !dbg !669
-  br label %1, !dbg !670
+define i32 @zoom_3d(%struct.t_3dview* nocapture %view, float %fac) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_3dview* %view}, i64 0, metadata !175), !dbg !423
+  tail call void @llvm.dbg.value(metadata !{float %fac}, i64 0, metadata !176), !dbg !423
+  tail call void @llvm.dbg.value(metadata !424, i64 0, metadata !180), !dbg !425
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !181), !dbg !426
+  br label %for.body, !dbg !426
 
-; <label>:1                                       ; preds = %1, %0
-  %indvars.iv13 = phi i64 [ 0, %0 ], [ %indvars.iv.next14, %1 ]
-  %dr2.011 = phi float [ 0.000000e+00, %0 ], [ %5, %1 ]
-  %2 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 1, i64 %indvars.iv13, !dbg !672
-  %3 = load float* %2, align 4, !dbg !672, !tbaa !308
-  tail call void @llvm.dbg.value(metadata float %3, i64 0, metadata !195, metadata !259), !dbg !675
-  %4 = fmul float %3, %3, !dbg !676
-  %5 = fadd float %dr2.011, %4, !dbg !677
-  tail call void @llvm.dbg.value(metadata float %5, i64 0, metadata !198, metadata !259), !dbg !668
-  %indvars.iv.next14 = add nuw nsw i64 %indvars.iv13, 1, !dbg !670
-  %exitcond15 = icmp eq i64 %indvars.iv.next14, 3, !dbg !670
-  br i1 %exitcond15, label %6, label %1, !dbg !670
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv168 = phi i64 [ 0, %entry ], [ %indvars.iv.next169, %for.body ]
+  %dr2.0166 = phi float [ 0.000000e+00, %entry ], [ %add, %for.body ]
+  %arrayidx = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 1, i64 %indvars.iv168, !dbg !428
+  %0 = load float* %arrayidx, align 4, !dbg !428, !tbaa !242
+  tail call void @llvm.dbg.value(metadata !{float %0}, i64 0, metadata !177), !dbg !428
+  %mul = fmul float %0, %0, !dbg !430
+  %add = fadd float %dr2.0166, %mul, !dbg !430
+  tail call void @llvm.dbg.value(metadata !{float %add}, i64 0, metadata !180), !dbg !430
+  %indvars.iv.next169 = add i64 %indvars.iv168, 1, !dbg !426
+  %lftr.wideiv170 = trunc i64 %indvars.iv.next169 to i32, !dbg !426
+  %exitcond171 = icmp eq i32 %lftr.wideiv170, 3, !dbg !426
+  br i1 %exitcond171, label %for.end, label %for.body, !dbg !426
 
-; <label>:6                                       ; preds = %1
-  tail call void @llvm.dbg.value(metadata float %sqrtf, i64 0, metadata !197, metadata !259), !dbg !678
-  %7 = fcmp olt float %fac, 1.000000e+00, !dbg !679
-  br i1 %7, label %8, label %.preheader, !dbg !681
+for.end:                                          ; preds = %for.body
+  %conv1 = tail call float @sqrtf(float %add) #2, !dbg !431
+  tail call void @llvm.dbg.value(metadata !{float %conv1}, i64 0, metadata !179), !dbg !431
+  %cmp2 = fcmp olt float %fac, 1.000000e+00, !dbg !432
+  br i1 %cmp2, label %if.then, label %for.body67, !dbg !432
 
-; <label>:8                                       ; preds = %6
-  %sqrtf = tail call float @sqrtf(float %5) #6, !dbg !682
-  %9 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 0, i64 0, !dbg !683
-  tail call void @llvm.dbg.value(metadata float* %9, i64 0, metadata !237, metadata !259) #7, !dbg !685
-  %10 = load float* %9, align 4, !dbg !687, !tbaa !308
-  %11 = fmul float %10, %10, !dbg !688
-  %12 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 0, i64 1, !dbg !689
-  %13 = load float* %12, align 4, !dbg !689, !tbaa !308
-  %14 = fmul float %13, %13, !dbg !690
-  %15 = fadd float %11, %14, !dbg !691
-  %16 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 0, i64 2, !dbg !692
-  %17 = load float* %16, align 4, !dbg !692, !tbaa !308
-  %18 = fmul float %17, %17, !dbg !693
-  %19 = fadd float %15, %18, !dbg !694
-  %sqrtf.i = tail call float @sqrtf(float %19) #6, !dbg !695
-  %20 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 1, i64 0, !dbg !683
-  tail call void @llvm.dbg.value(metadata float* %20, i64 0, metadata !237, metadata !259) #7, !dbg !696
-  %21 = load float* %20, align 4, !dbg !698, !tbaa !308
-  %22 = fmul float %21, %21, !dbg !699
-  %23 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 1, i64 1, !dbg !700
-  %24 = load float* %23, align 4, !dbg !700, !tbaa !308
-  %25 = fmul float %24, %24, !dbg !701
-  %26 = fadd float %22, %25, !dbg !702
-  %27 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 1, i64 2, !dbg !703
-  %28 = load float* %27, align 4, !dbg !703, !tbaa !308
-  %29 = fmul float %28, %28, !dbg !704
-  %30 = fadd float %26, %29, !dbg !705
-  %sqrtf.i1 = tail call float @sqrtf(float %30) #6, !dbg !706
-  %31 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 2, i64 0, !dbg !683
-  tail call void @llvm.dbg.value(metadata float* %31, i64 0, metadata !237, metadata !259) #7, !dbg !707
-  %32 = load float* %31, align 4, !dbg !709, !tbaa !308
-  %33 = fmul float %32, %32, !dbg !710
-  %34 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 2, i64 1, !dbg !711
-  %35 = load float* %34, align 4, !dbg !711, !tbaa !308
-  %36 = fmul float %35, %35, !dbg !712
-  %37 = fadd float %33, %36, !dbg !713
-  %38 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 2, i64 2, !dbg !714
-  %39 = load float* %38, align 4, !dbg !714, !tbaa !308
-  %40 = fmul float %39, %39, !dbg !715
-  %41 = fadd float %37, %40, !dbg !716
-  %sqrtf.i2 = tail call float @sqrtf(float %41) #6, !dbg !717
-  %42 = fcmp ogt float %sqrtf.i1, %sqrtf.i2, !dbg !683
-  tail call void @llvm.dbg.value(metadata float* %31, i64 0, metadata !237, metadata !259) #7, !dbg !718
-  %43 = select i1 %42, float %sqrtf.i1, float %sqrtf.i2, !dbg !683
-  %44 = fcmp ogt float %sqrtf.i, %43, !dbg !683
-  %brmerge = or i1 %44, %42, !dbg !683
-  %sqrtf.i.mux = select i1 %44, float %sqrtf.i, float %sqrtf.i1, !dbg !683
-  tail call void @llvm.dbg.value(metadata float* %31, i64 0, metadata !237, metadata !259) #7, !dbg !720
-  %45 = select i1 %brmerge, float %sqrtf.i.mux, float %sqrtf.i2, !dbg !683
-  tail call void @llvm.dbg.value(metadata float %45, i64 0, metadata !196, metadata !259), !dbg !722
-  %46 = fmul float %sqrtf, %fac, !dbg !723
-  %47 = fpext float %46 to double, !dbg !725
-  %48 = fpext float %45 to double, !dbg !726
-  %49 = fmul double %48, 1.100000e+00, !dbg !727
-  %50 = fcmp olt double %47, %49, !dbg !728
-  br i1 %50, label %55, label %.preheader, !dbg !729
+if.then:                                          ; preds = %for.end
+  %arraydecay = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 0, i64 0, !dbg !433
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay}, i64 0, metadata !435) #4, !dbg !436
+  %1 = load float* %arraydecay, align 4, !dbg !437, !tbaa !242
+  %mul.i = fmul float %1, %1, !dbg !437
+  %arrayidx2.i = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 0, i64 1, !dbg !437
+  %2 = load float* %arrayidx2.i, align 4, !dbg !437, !tbaa !242
+  %mul4.i = fmul float %2, %2, !dbg !437
+  %add.i = fadd float %mul.i, %mul4.i, !dbg !437
+  %arrayidx5.i = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 0, i64 2, !dbg !437
+  %3 = load float* %arrayidx5.i, align 4, !dbg !437, !tbaa !242
+  %mul7.i = fmul float %3, %3, !dbg !437
+  %add8.i = fadd float %add.i, %mul7.i, !dbg !437
+  %conv9.i = tail call float @sqrtf(float %add8.i) #2, !dbg !437
+  %arraydecay8 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 1, i64 0, !dbg !433
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay8}, i64 0, metadata !435) #4, !dbg !436
+  %4 = load float* %arraydecay8, align 4, !dbg !437, !tbaa !242
+  %mul.i93 = fmul float %4, %4, !dbg !437
+  %arrayidx2.i94 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 1, i64 1, !dbg !437
+  %5 = load float* %arrayidx2.i94, align 4, !dbg !437, !tbaa !242
+  %mul4.i95 = fmul float %5, %5, !dbg !437
+  %add.i96 = fadd float %mul.i93, %mul4.i95, !dbg !437
+  %arrayidx5.i97 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 1, i64 2, !dbg !437
+  %6 = load float* %arrayidx5.i97, align 4, !dbg !437, !tbaa !242
+  %mul7.i98 = fmul float %6, %6, !dbg !437
+  %add8.i99 = fadd float %add.i96, %mul7.i98, !dbg !437
+  %conv9.i100 = tail call float @sqrtf(float %add8.i99) #2, !dbg !437
+  %arraydecay12 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 2, i64 0, !dbg !433
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay12}, i64 0, metadata !435) #4, !dbg !436
+  %7 = load float* %arraydecay12, align 4, !dbg !437, !tbaa !242
+  %mul.i101 = fmul float %7, %7, !dbg !437
+  %arrayidx2.i102 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 2, i64 1, !dbg !437
+  %8 = load float* %arrayidx2.i102, align 4, !dbg !437, !tbaa !242
+  %mul4.i103 = fmul float %8, %8, !dbg !437
+  %add.i104 = fadd float %mul.i101, %mul4.i103, !dbg !437
+  %arrayidx5.i105 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 2, i64 2, !dbg !437
+  %9 = load float* %arrayidx5.i105, align 4, !dbg !437, !tbaa !242
+  %mul7.i106 = fmul float %9, %9, !dbg !437
+  %add8.i107 = fadd float %add.i104, %mul7.i106, !dbg !437
+  %conv9.i108 = tail call float @sqrtf(float %add8.i107) #2, !dbg !437
+  %cmp14 = fcmp ogt float %conv9.i100, %conv9.i108, !dbg !433
+  br i1 %cmp14, label %cond.true, label %cond.false, !dbg !433
 
-.preheader:                                       ; preds = %6, %8, %.preheader
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.preheader ], [ 0, %8 ], [ 0, %6 ]
-  %51 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 1, i64 %indvars.iv, !dbg !730
-  %52 = load float* %51, align 4, !dbg !733, !tbaa !308
-  %53 = fmul float %52, %fac, !dbg !733
-  store float %53, float* %51, align 4, !dbg !733, !tbaa !308
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !734
-  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !734
-  br i1 %exitcond, label %54, label %.preheader, !dbg !734
+cond.true:                                        ; preds = %if.then
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay8}, i64 0, metadata !435) #4, !dbg !436
+  %10 = load float* %arraydecay8, align 4, !dbg !437, !tbaa !242
+  %mul.i109 = fmul float %10, %10, !dbg !437
+  %11 = load float* %arrayidx2.i94, align 4, !dbg !437, !tbaa !242
+  %mul4.i111 = fmul float %11, %11, !dbg !437
+  %add.i112 = fadd float %mul.i109, %mul4.i111, !dbg !437
+  %12 = load float* %arrayidx5.i97, align 4, !dbg !437, !tbaa !242
+  %mul7.i114 = fmul float %12, %12, !dbg !437
+  %add8.i115 = fadd float %add.i112, %mul7.i114, !dbg !437
+  %conv9.i116 = tail call float @sqrtf(float %add8.i115) #2, !dbg !437
+  br label %cond.end, !dbg !433
 
-; <label>:54                                      ; preds = %.preheader
-  tail call void @calculate_view(%struct.t_3dview* %view) #10, !dbg !735
-  br label %55, !dbg !736
+cond.false:                                       ; preds = %if.then
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay12}, i64 0, metadata !435) #4, !dbg !436
+  %13 = load float* %arraydecay12, align 4, !dbg !437, !tbaa !242
+  %mul.i117 = fmul float %13, %13, !dbg !437
+  %14 = load float* %arrayidx2.i102, align 4, !dbg !437, !tbaa !242
+  %mul4.i119 = fmul float %14, %14, !dbg !437
+  %add.i120 = fadd float %mul.i117, %mul4.i119, !dbg !437
+  %15 = load float* %arrayidx5.i105, align 4, !dbg !437, !tbaa !242
+  %mul7.i122 = fmul float %15, %15, !dbg !437
+  %add8.i123 = fadd float %add.i120, %mul7.i122, !dbg !437
+  %conv9.i124 = tail call float @sqrtf(float %add8.i123) #2, !dbg !437
+  br label %cond.end, !dbg !433
 
-; <label>:55                                      ; preds = %8, %54
-  %.0 = phi i32 [ 1, %54 ], [ 0, %8 ]
-  ret i32 %.0, !dbg !737
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi float [ %conv9.i116, %cond.true ], [ %conv9.i124, %cond.false ], !dbg !433
+  %cmp24 = fcmp ogt float %conv9.i, %cond, !dbg !433
+  br i1 %cmp24, label %cond.true26, label %cond.false31, !dbg !433
+
+cond.true26:                                      ; preds = %cond.end
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay}, i64 0, metadata !435) #4, !dbg !436
+  %16 = load float* %arraydecay, align 4, !dbg !437, !tbaa !242
+  %mul.i125 = fmul float %16, %16, !dbg !437
+  %17 = load float* %arrayidx2.i, align 4, !dbg !437, !tbaa !242
+  %mul4.i127 = fmul float %17, %17, !dbg !437
+  %add.i128 = fadd float %mul.i125, %mul4.i127, !dbg !437
+  %18 = load float* %arrayidx5.i, align 4, !dbg !437, !tbaa !242
+  %mul7.i130 = fmul float %18, %18, !dbg !437
+  %add8.i131 = fadd float %add.i128, %mul7.i130, !dbg !437
+  %conv9.i132 = tail call float @sqrtf(float %add8.i131) #2, !dbg !437
+  br label %cond.end54, !dbg !433
+
+cond.false31:                                     ; preds = %cond.end
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay8}, i64 0, metadata !435) #4, !dbg !436
+  %19 = load float* %arraydecay8, align 4, !dbg !437, !tbaa !242
+  %mul.i133 = fmul float %19, %19, !dbg !437
+  %20 = load float* %arrayidx2.i94, align 4, !dbg !437, !tbaa !242
+  %mul4.i135 = fmul float %20, %20, !dbg !437
+  %add.i136 = fadd float %mul.i133, %mul4.i135, !dbg !437
+  %21 = load float* %arrayidx5.i97, align 4, !dbg !437, !tbaa !242
+  %mul7.i138 = fmul float %21, %21, !dbg !437
+  %add8.i139 = fadd float %add.i136, %mul7.i138, !dbg !437
+  %conv9.i140 = tail call float @sqrtf(float %add8.i139) #2, !dbg !437
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay12}, i64 0, metadata !435) #4, !dbg !436
+  %22 = load float* %arraydecay12, align 4, !dbg !437, !tbaa !242
+  %mul.i141 = fmul float %22, %22, !dbg !437
+  %23 = load float* %arrayidx2.i102, align 4, !dbg !437, !tbaa !242
+  %mul4.i143 = fmul float %23, %23, !dbg !437
+  %add.i144 = fadd float %mul.i141, %mul4.i143, !dbg !437
+  %24 = load float* %arrayidx5.i105, align 4, !dbg !437, !tbaa !242
+  %mul7.i146 = fmul float %24, %24, !dbg !437
+  %add8.i147 = fadd float %add.i144, %mul7.i146, !dbg !437
+  %conv9.i148 = tail call float @sqrtf(float %add8.i147) #2, !dbg !437
+  %cmp40 = fcmp ogt float %conv9.i140, %conv9.i148, !dbg !433
+  br i1 %cmp40, label %cond.true42, label %cond.false47, !dbg !433
+
+cond.true42:                                      ; preds = %cond.false31
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay8}, i64 0, metadata !435) #4, !dbg !436
+  %25 = load float* %arraydecay8, align 4, !dbg !437, !tbaa !242
+  %mul.i149 = fmul float %25, %25, !dbg !437
+  %26 = load float* %arrayidx2.i94, align 4, !dbg !437, !tbaa !242
+  %mul4.i151 = fmul float %26, %26, !dbg !437
+  %add.i152 = fadd float %mul.i149, %mul4.i151, !dbg !437
+  %27 = load float* %arrayidx5.i97, align 4, !dbg !437, !tbaa !242
+  %mul7.i154 = fmul float %27, %27, !dbg !437
+  %add8.i155 = fadd float %add.i152, %mul7.i154, !dbg !437
+  %conv9.i156 = tail call float @sqrtf(float %add8.i155) #2, !dbg !437
+  br label %cond.end54, !dbg !433
+
+cond.false47:                                     ; preds = %cond.false31
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay12}, i64 0, metadata !435) #4, !dbg !436
+  %28 = load float* %arraydecay12, align 4, !dbg !437, !tbaa !242
+  %mul.i157 = fmul float %28, %28, !dbg !437
+  %29 = load float* %arrayidx2.i102, align 4, !dbg !437, !tbaa !242
+  %mul4.i159 = fmul float %29, %29, !dbg !437
+  %add.i160 = fadd float %mul.i157, %mul4.i159, !dbg !437
+  %30 = load float* %arrayidx5.i105, align 4, !dbg !437, !tbaa !242
+  %mul7.i162 = fmul float %30, %30, !dbg !437
+  %add8.i163 = fadd float %add.i160, %mul7.i162, !dbg !437
+  %conv9.i164 = tail call float @sqrtf(float %add8.i163) #2, !dbg !437
+  br label %cond.end54, !dbg !433
+
+cond.end54:                                       ; preds = %cond.true42, %cond.false47, %cond.true26
+  %cond55 = phi float [ %conv9.i132, %cond.true26 ], [ %conv9.i156, %cond.true42 ], [ %conv9.i164, %cond.false47 ], !dbg !433
+  tail call void @llvm.dbg.value(metadata !{float %cond55}, i64 0, metadata !178), !dbg !433
+  %mul56 = fmul float %conv1, %fac, !dbg !439
+  %conv57 = fpext float %mul56 to double, !dbg !439
+  %conv58 = fpext float %cond55 to double, !dbg !439
+  %mul59 = fmul double %conv58, 1.100000e+00, !dbg !439
+  %cmp60 = fcmp olt double %conv57, %mul59, !dbg !439
+  br i1 %cmp60, label %return, label %for.body67, !dbg !439
+
+for.body67:                                       ; preds = %for.end, %cond.end54, %for.body67
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body67 ], [ 0, %cond.end54 ], [ 0, %for.end ]
+  %arrayidx70 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 1, i64 %indvars.iv, !dbg !440
+  %31 = load float* %arrayidx70, align 4, !dbg !440, !tbaa !242
+  %mul71 = fmul float %31, %fac, !dbg !440
+  store float %mul71, float* %arrayidx70, align 4, !dbg !440, !tbaa !242
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !442
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !442
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !442
+  br i1 %exitcond, label %for.end74, label %for.body67, !dbg !442
+
+for.end74:                                        ; preds = %for.body67
+  tail call void @calculate_view(%struct.t_3dview* %view) #6, !dbg !443
+  br label %return, !dbg !444
+
+return:                                           ; preds = %cond.end54, %for.end74
+  %retval.0 = phi i32 [ 1, %for.end74 ], [ 0, %cond.end54 ]
+  ret i32 %retval.0, !dbg !444
 }

@@ -1,24 +1,21 @@
 define void @FSet(float* nocapture %vec, i32 %n, float %value) #0 {
-  tail call void @llvm.dbg.value(metadata float* %vec, i64 0, metadata !22, metadata !206), !dbg !222
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !23, metadata !206), !dbg !223
-  tail call void @llvm.dbg.value(metadata float %value, i64 0, metadata !24, metadata !206), !dbg !224
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !25, metadata !206), !dbg !225
-  %1 = icmp sgt i32 %n, 0, !dbg !226
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !229
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %vec}, i64 0, metadata !22), !dbg !209
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !23), !dbg !209
+  tail call void @llvm.dbg.value(metadata !{float %value}, i64 0, metadata !24), !dbg !209
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !25), !dbg !210
+  %cmp3 = icmp sgt i32 %n, 0, !dbg !210
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !210
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %n, -1, !dbg !229
-  br label %3, !dbg !229
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !210
+  store float %value, float* %arrayidx, align 4, !dbg !210, !tbaa !212
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !210
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !210
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !210
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !210
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !230
-  store float %value, float* %4, align 4, !dbg !231, !tbaa !232
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !229
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !229
-  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !229
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !229
-
-._crit_edge:                                      ; preds = %3, %0
-  ret void, !dbg !234
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !213
 }

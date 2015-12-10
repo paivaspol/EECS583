@@ -1,0 +1,27 @@
+define linkonce_odr void @_ZN11xercesc_2_59XMLBuffer6appendEt(%"class.xercesc_2_5::XMLBuffer"* %this, i16 zeroext %toAppend) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %this}, i64 0, metadata !8108), !dbg !12259
+  tail call void @llvm.dbg.value(metadata !{i16 %toAppend}, i64 0, metadata !8110), !dbg !12259
+  %fIndex = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %this, i64 0, i32 1, !dbg !12260
+  %0 = load i32* %fIndex, align 4, !dbg !12260, !tbaa !9350
+  %fCapacity = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %this, i64 0, i32 2, !dbg !12260
+  %1 = load i32* %fCapacity, align 4, !dbg !12260, !tbaa !9350
+  %cmp = icmp eq i32 %0, %1, !dbg !12260
+  br i1 %cmp, label %if.then, label %if.end, !dbg !12260
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN11xercesc_2_59XMLBuffer6expandEv(%"class.xercesc_2_5::XMLBuffer"* %this) #12, !dbg !12262
+  %.pre = load i32* %fIndex, align 4, !dbg !12263, !tbaa !9350
+  br label %if.end, !dbg !12262
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %inc = add i32 %2, 1, !dbg !12263
+  store i32 %inc, i32* %fIndex, align 4, !dbg !12263, !tbaa !9350
+  %idxprom = zext i32 %2 to i64, !dbg !12263
+  %fBuffer = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %this, i64 0, i32 4, !dbg !12263
+  %3 = load i16** %fBuffer, align 8, !dbg !12263, !tbaa !9304
+  %arrayidx = getelementptr inbounds i16* %3, i64 %idxprom, !dbg !12263
+  store i16 %toAppend, i16* %arrayidx, align 2, !dbg !12263, !tbaa !9802
+  ret void, !dbg !12264
+}

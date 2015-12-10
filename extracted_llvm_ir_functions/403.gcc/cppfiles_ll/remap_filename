@@ -1,101 +1,111 @@
 define internal fastcc i8* @remap_filename(%struct.cpp_reader* %pfile, i8* %name, %struct.search_path* nocapture %loc) #0 {
 entry:
-  %name_map = getelementptr inbounds %struct.search_path* %loc, i64 0, i32 6
-  %0 = load %struct.file_name_map** %name_map, align 8, !tbaa !0
-  %tobool = icmp eq %struct.file_name_map* %0, null
-  %len = getelementptr inbounds %struct.search_path* %loc, i64 0, i32 2
-  br i1 %tobool, label %if.then, label %for.body.lr.ph
+  call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !704), !dbg !943
+  call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !705), !dbg !944
+  call void @llvm.dbg.value(metadata !{%struct.search_path* %loc}, i64 0, metadata !706), !dbg !945
+  %name_map = getelementptr inbounds %struct.search_path* %loc, i64 0, i32 6, !dbg !946
+  %0 = load %struct.file_name_map** %name_map, align 8, !dbg !946, !tbaa !881
+  %tobool = icmp eq %struct.file_name_map* %0, null, !dbg !946
+  %len = getelementptr inbounds %struct.search_path* %loc, i64 0, i32 2, !dbg !947
+  br i1 %tobool, label %if.then, label %for.body.lr.ph, !dbg !946
 
 if.then:                                          ; preds = %entry
-  %1 = load i32* %len, align 4, !tbaa !3
-  %add = add i32 %1, 1
-  %conv = zext i32 %add to i64
-  %2 = alloca i8, i64 %conv, align 1
-  %name1 = getelementptr inbounds %struct.search_path* %loc, i64 0, i32 1
-  %3 = load i8** %name1, align 8, !tbaa !0
-  %conv3 = zext i32 %1 to i64
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 %conv3, i32 1, i1 false)
-  %arrayidx = getelementptr inbounds i8* %2, i64 %conv3
-  store i8 0, i8* %arrayidx, align 1, !tbaa !1
-  %call = call fastcc %struct.file_name_map* @read_name_map(%struct.cpp_reader* %pfile, i8* %2) #7
-  store %struct.file_name_map* %call, %struct.file_name_map** %name_map, align 8, !tbaa !0
-  %tobool7 = icmp eq %struct.file_name_map* %call, null
-  br i1 %tobool7, label %return, label %for.body.lr.ph
+  %1 = load i32* %len, align 4, !dbg !947, !tbaa !921
+  %add = add i32 %1, 1, !dbg !947
+  %conv = zext i32 %add to i64, !dbg !947
+  %2 = alloca i8, i64 %conv, align 1, !dbg !947
+  call void @llvm.dbg.value(metadata !{i8* %2}, i64 0, metadata !711), !dbg !947
+  %name1 = getelementptr inbounds %struct.search_path* %loc, i64 0, i32 1, !dbg !948
+  %3 = load i8** %name1, align 8, !dbg !948, !tbaa !881
+  %conv3 = zext i32 %1 to i64, !dbg !948
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 %conv3, i32 1, i1 false), !dbg !948
+  %arrayidx = getelementptr inbounds i8* %2, i64 %conv3, !dbg !949
+  store i8 0, i8* %arrayidx, align 1, !dbg !949, !tbaa !882
+  %call = call fastcc %struct.file_name_map* @read_name_map(%struct.cpp_reader* %pfile, i8* %2) #8, !dbg !950
+  store %struct.file_name_map* %call, %struct.file_name_map** %name_map, align 8, !dbg !950, !tbaa !881
+  %tobool7 = icmp eq %struct.file_name_map* %call, null, !dbg !951
+  br i1 %tobool7, label %return, label %for.body.lr.ph, !dbg !951
 
 for.body.lr.ph:                                   ; preds = %entry, %if.then
   %map.085.ph = phi %struct.file_name_map* [ %call, %if.then ], [ %0, %entry ]
-  %4 = load i32* %len, align 4, !tbaa !3
-  %idx.ext91 = zext i32 %4 to i64
-  %add.ptr.sum92 = add i64 %idx.ext91, 1
-  %add.ptr1193 = getelementptr inbounds i8* %name, i64 %add.ptr.sum92
-  br label %for.body
+  %4 = load i32* %len, align 4, !dbg !952, !tbaa !921
+  %idx.ext91 = zext i32 %4 to i64, !dbg !952
+  %add.ptr.sum92 = add i64 %idx.ext91, 1, !dbg !952
+  %add.ptr1193 = getelementptr inbounds i8* %name, i64 %add.ptr.sum92, !dbg !952
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr1193}, i64 0, metadata !708), !dbg !952
+  br label %for.body, !dbg !953
 
 for.cond:                                         ; preds = %for.body
-  %map_next = getelementptr inbounds %struct.file_name_map* %map.087, i64 0, i32 0
-  %map.0 = load %struct.file_name_map** %map_next, align 8
-  %tobool13 = icmp eq %struct.file_name_map* %map.0, null
-  br i1 %tobool13, label %for.end, label %for.body
+  %map_next = getelementptr inbounds %struct.file_name_map* %map.087, i64 0, i32 0, !dbg !953
+  %map.0 = load %struct.file_name_map** %map_next, align 8, !dbg !953
+  %tobool13 = icmp eq %struct.file_name_map* %map.0, null, !dbg !953
+  br i1 %tobool13, label %for.end, label %for.body, !dbg !953
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.cond
   %map.087 = phi %struct.file_name_map* [ %map.085.ph, %for.body.lr.ph ], [ %map.0, %for.cond ]
-  %map_from = getelementptr inbounds %struct.file_name_map* %map.087, i64 0, i32 1
-  %5 = load i8** %map_from, align 8, !tbaa !0
-  %call14 = call i32 @strcmp(i8* %5, i8* %add.ptr1193) #9
-  %tobool15 = icmp eq i32 %call14, 0
-  br i1 %tobool15, label %if.then16, label %for.cond
+  %map_from = getelementptr inbounds %struct.file_name_map* %map.087, i64 0, i32 1, !dbg !955
+  %5 = load i8** %map_from, align 8, !dbg !955, !tbaa !881
+  %call14 = call i32 @strcmp(i8* %5, i8* %add.ptr1193) #10, !dbg !955
+  %tobool15 = icmp eq i32 %call14, 0, !dbg !955
+  br i1 %tobool15, label %if.then16, label %for.cond, !dbg !955
 
 if.then16:                                        ; preds = %for.body
-  %map_to = getelementptr inbounds %struct.file_name_map* %map.087, i64 0, i32 2
-  %6 = load i8** %map_to, align 8, !tbaa !0
-  br label %return
+  %map_to = getelementptr inbounds %struct.file_name_map* %map.087, i64 0, i32 2, !dbg !956
+  %6 = load i8** %map_to, align 8, !dbg !956, !tbaa !881
+  br label %return, !dbg !956
 
 for.end:                                          ; preds = %for.cond
-  %call18 = call i8* @strrchr(i8* %name, i32 47) #9
-  %tobool19 = icmp eq i8* %call18, null
-  br i1 %tobool19, label %return, label %if.end21
+  %call18 = call i8* @strrchr(i8* %name, i32 47) #10, !dbg !957
+  call void @llvm.dbg.value(metadata !{i8* %call18}, i64 0, metadata !709), !dbg !957
+  %tobool19 = icmp eq i8* %call18, null, !dbg !958
+  br i1 %tobool19, label %return, label %if.end21, !dbg !958
 
 if.end21:                                         ; preds = %for.end
-  %cmp = icmp eq i8* %call18, %name
-  br i1 %cmp, label %if.then23, label %if.end24
+  %cmp = icmp eq i8* %call18, %name, !dbg !959
+  br i1 %cmp, label %if.then23, label %if.end24, !dbg !959
 
 if.then23:                                        ; preds = %if.end21
-  call void (%struct.cpp_reader*, i8*, ...)* @cpp_ice(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([37 x i8]* @.str, i64 0, i64 0)) #6
-  br label %if.end24
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_ice(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([37 x i8]* @.str, i64 0, i64 0)) #7, !dbg !960
+  br label %if.end24, !dbg !960
 
 if.end24:                                         ; preds = %if.then23, %if.end21
-  %sub.ptr.lhs.cast = ptrtoint i8* %call18 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %name to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %add25 = add nsw i64 %sub.ptr.sub, 1
-  %7 = alloca i8, i64 %add25, align 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %7, i8* %name, i64 %sub.ptr.sub, i32 1, i1 false)
-  %arrayidx32 = getelementptr inbounds i8* %7, i64 %sub.ptr.sub
-  store i8 0, i8* %arrayidx32, align 1, !tbaa !1
-  %add.ptr33 = getelementptr inbounds i8* %call18, i64 1
-  %call34 = call fastcc %struct.file_name_map* @read_name_map(%struct.cpp_reader* %pfile, i8* %7) #7
-  %tobool3682 = icmp eq %struct.file_name_map* %call34, null
-  br i1 %tobool3682, label %return, label %for.body37
+  %sub.ptr.lhs.cast = ptrtoint i8* %call18 to i64, !dbg !961
+  %sub.ptr.rhs.cast = ptrtoint i8* %name to i64, !dbg !961
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !961
+  %add25 = add nsw i64 %sub.ptr.sub, 1, !dbg !961
+  %7 = alloca i8, i64 %add25, align 1, !dbg !961
+  call void @llvm.dbg.value(metadata !{i8* %7}, i64 0, metadata !710), !dbg !961
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %7, i8* %name, i64 %sub.ptr.sub, i32 1, i1 false), !dbg !962
+  %arrayidx32 = getelementptr inbounds i8* %7, i64 %sub.ptr.sub, !dbg !963
+  store i8 0, i8* %arrayidx32, align 1, !dbg !963, !tbaa !882
+  %add.ptr33 = getelementptr inbounds i8* %call18, i64 1, !dbg !964
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr33}, i64 0, metadata !708), !dbg !964
+  %call34 = call fastcc %struct.file_name_map* @read_name_map(%struct.cpp_reader* %pfile, i8* %7) #8, !dbg !965
+  call void @llvm.dbg.value(metadata !{%struct.file_name_map* %call34}, i64 0, metadata !707), !dbg !965
+  %tobool3682 = icmp eq %struct.file_name_map* %call34, null, !dbg !965
+  br i1 %tobool3682, label %return, label %for.body37, !dbg !965
 
 for.body37:                                       ; preds = %if.end24, %for.inc44
   %map.183 = phi %struct.file_name_map* [ %10, %for.inc44 ], [ %call34, %if.end24 ]
-  %map_from38 = getelementptr inbounds %struct.file_name_map* %map.183, i64 0, i32 1
-  %8 = load i8** %map_from38, align 8, !tbaa !0
-  %call39 = call i32 @strcmp(i8* %8, i8* %add.ptr33) #9
-  %tobool40 = icmp eq i32 %call39, 0
-  br i1 %tobool40, label %if.then41, label %for.inc44
+  %map_from38 = getelementptr inbounds %struct.file_name_map* %map.183, i64 0, i32 1, !dbg !967
+  %8 = load i8** %map_from38, align 8, !dbg !967, !tbaa !881
+  %call39 = call i32 @strcmp(i8* %8, i8* %add.ptr33) #10, !dbg !967
+  %tobool40 = icmp eq i32 %call39, 0, !dbg !967
+  br i1 %tobool40, label %if.then41, label %for.inc44, !dbg !967
 
 if.then41:                                        ; preds = %for.body37
-  %map_to42 = getelementptr inbounds %struct.file_name_map* %map.183, i64 0, i32 2
-  %9 = load i8** %map_to42, align 8, !tbaa !0
-  br label %return
+  %map_to42 = getelementptr inbounds %struct.file_name_map* %map.183, i64 0, i32 2, !dbg !968
+  %9 = load i8** %map_to42, align 8, !dbg !968, !tbaa !881
+  br label %return, !dbg !968
 
 for.inc44:                                        ; preds = %for.body37
-  %map_next45 = getelementptr inbounds %struct.file_name_map* %map.183, i64 0, i32 0
-  %10 = load %struct.file_name_map** %map_next45, align 8, !tbaa !0
-  %tobool36 = icmp eq %struct.file_name_map* %10, null
-  br i1 %tobool36, label %return, label %for.body37
+  %map_next45 = getelementptr inbounds %struct.file_name_map* %map.183, i64 0, i32 0, !dbg !965
+  %10 = load %struct.file_name_map** %map_next45, align 8, !dbg !965, !tbaa !881
+  call void @llvm.dbg.value(metadata !{%struct.file_name_map* %10}, i64 0, metadata !707), !dbg !965
+  %tobool36 = icmp eq %struct.file_name_map* %10, null, !dbg !965
+  br i1 %tobool36, label %return, label %for.body37, !dbg !965
 
 return:                                           ; preds = %if.end24, %for.inc44, %for.end, %if.then, %if.then41, %if.then16
   %retval.0 = phi i8* [ %6, %if.then16 ], [ %9, %if.then41 ], [ %name, %if.then ], [ %name, %for.end ], [ %name, %for.inc44 ], [ %name, %if.end24 ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !969
 }

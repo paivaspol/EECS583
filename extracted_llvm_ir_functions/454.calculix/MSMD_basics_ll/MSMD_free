@@ -1,15 +1,16 @@
 define void @MSMD_free(%struct._MSMD* %msmd) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._MSMD* %msmd, i64 0, metadata !83, metadata !92), !dbg !213
-  tail call void @MSMD_clearData(%struct._MSMD* %msmd) #8, !dbg !214
-  %1 = icmp eq %struct._MSMD* %msmd, null, !dbg !215
-  br i1 %1, label %4, label %2, !dbg !217
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._MSMD* %msmd}, i64 0, metadata !81), !dbg !147
+  tail call void @MSMD_clearData(%struct._MSMD* %msmd) #8, !dbg !148
+  %cmp = icmp eq %struct._MSMD* %msmd, null, !dbg !149
+  br i1 %cmp, label %if.end, label %if.then, !dbg !149
 
-; <label>:2                                       ; preds = %0
-  %3 = bitcast %struct._MSMD* %msmd to i8*, !dbg !218
-  tail call void @free(i8* %3) #8, !dbg !218
-  tail call void @llvm.dbg.value(metadata %struct._MSMD* null, i64 0, metadata !83, metadata !92), !dbg !213
-  br label %4, !dbg !218
+if.then:                                          ; preds = %entry
+  %0 = bitcast %struct._MSMD* %msmd to i8*, !dbg !150
+  tail call void @free(i8* %0) #6, !dbg !150
+  tail call void @llvm.dbg.value(metadata !152, i64 0, metadata !81), !dbg !150
+  br label %if.end, !dbg !150
 
-; <label>:4                                       ; preds = %0, %2
-  ret void, !dbg !220
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !153
 }

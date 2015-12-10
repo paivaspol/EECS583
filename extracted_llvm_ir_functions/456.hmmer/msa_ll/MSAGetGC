@@ -1,26 +1,27 @@
-define i8* @MSAGetGC(%struct.msa_struct* nocapture readonly %msa, i8* %tag) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.msa_struct* %msa, i64 0, metadata !155, metadata !481), !dbg !1172
-  tail call void @llvm.dbg.value(metadata i8* %tag, i64 0, metadata !156, metadata !481), !dbg !1173
-  %1 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 33, !dbg !1174
-  %2 = load %struct.GKI** %1, align 8, !dbg !1174, !tbaa !903
-  %3 = icmp eq %struct.GKI* %2, null, !dbg !1176
-  br i1 %3, label %13, label %4, !dbg !1177
+define i8* @MSAGetGC(%struct.msa_struct* nocapture %msa, i8* %tag) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.msa_struct* %msa}, i64 0, metadata !151), !dbg !709
+  tail call void @llvm.dbg.value(metadata !{i8* %tag}, i64 0, metadata !152), !dbg !709
+  %gc_idx = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 33, !dbg !710
+  %0 = load %struct.GKI** %gc_idx, align 8, !dbg !710, !tbaa !466
+  %cmp = icmp eq %struct.GKI* %0, null, !dbg !710
+  br i1 %cmp, label %return, label %if.end, !dbg !710
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @GKIKeyIndex(%struct.GKI* %2, i8* %tag) #7, !dbg !1178
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !157, metadata !481), !dbg !1180
-  %6 = icmp slt i32 %5, 0, !dbg !1181
-  br i1 %6, label %13, label %7, !dbg !1182
+if.end:                                           ; preds = %entry
+  %call = tail call i32 @GKIKeyIndex(%struct.GKI* %0, i8* %tag) #7, !dbg !711
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !153), !dbg !711
+  %cmp2 = icmp slt i32 %call, 0, !dbg !711
+  br i1 %cmp2, label %return, label %if.end4, !dbg !711
 
-; <label>:7                                       ; preds = %4
-  %8 = sext i32 %5 to i64, !dbg !1183
-  %9 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 32, !dbg !1184
-  %10 = load i8*** %9, align 8, !dbg !1184, !tbaa !886
-  %11 = getelementptr inbounds i8** %10, i64 %8, !dbg !1183
-  %12 = load i8** %11, align 8, !dbg !1183, !tbaa !519
-  br label %13, !dbg !1185
+if.end4:                                          ; preds = %if.end
+  %idxprom = sext i32 %call to i64, !dbg !712
+  %gc = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 32, !dbg !712
+  %1 = load i8*** %gc, align 8, !dbg !712, !tbaa !466
+  %arrayidx = getelementptr inbounds i8** %1, i64 %idxprom, !dbg !712
+  %2 = load i8** %arrayidx, align 8, !dbg !712, !tbaa !466
+  br label %return, !dbg !712
 
-; <label>:13                                      ; preds = %4, %0, %7
-  %.0 = phi i8* [ %12, %7 ], [ null, %0 ], [ null, %4 ]
-  ret i8* %.0, !dbg !1186
+return:                                           ; preds = %if.end, %entry, %if.end4
+  %retval.0 = phi i8* [ %2, %if.end4 ], [ null, %entry ], [ null, %if.end ]
+  ret i8* %retval.0, !dbg !713
 }

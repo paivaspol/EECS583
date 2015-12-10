@@ -1,39 +1,40 @@
 define void @push_king(i32 %target) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %target, i64 0, metadata !97, metadata !145), !dbg !1406
-  %1 = sext i32 %target to i64, !dbg !1407
-  %2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %1, !dbg !1407
-  %3 = load i32* %2, align 4, !dbg !1407, !tbaa !163
-  %4 = icmp eq i32 %3, 0, !dbg !1409
-  br i1 %4, label %20, label %5, !dbg !1410
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %target}, i64 0, metadata !98), !dbg !624
+  %idxprom = sext i32 %target to i64, !dbg !625
+  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom, !dbg !625
+  %0 = load i32* %arrayidx, align 4, !dbg !625, !tbaa !145
+  %cmp = icmp eq i32 %0, 0, !dbg !625
+  br i1 %cmp, label %return, label %if.end, !dbg !625
 
-; <label>:5                                       ; preds = %0
-  %6 = icmp eq i32 %3, 13, !dbg !1411
-  %7 = load i32* @captures, align 4
-  %8 = icmp ne i32 %7, 0, !dbg !1413
-  %or.cond = and i1 %6, %8, !dbg !1414
-  br i1 %or.cond, label %20, label %9, !dbg !1414
+if.end:                                           ; preds = %entry
+  %cmp3 = icmp eq i32 %0, 13, !dbg !626
+  %1 = load i32* @captures, align 4, !dbg !626, !tbaa !146
+  %tobool = icmp ne i32 %1, 0, !dbg !626
+  %or.cond = and i1 %cmp3, %tobool, !dbg !626
+  br i1 %or.cond, label %return, label %if.end5, !dbg !626
 
-; <label>:9                                       ; preds = %5
-  br i1 %6, label %10, label %11, !dbg !1415
+if.end5:                                          ; preds = %if.end
+  br i1 %cmp3, label %if.then9, label %if.else, !dbg !627
 
-; <label>:10                                      ; preds = %9
-  tail call void @add_move(i32 %target, i32 0) #5, !dbg !1416
-  br label %20, !dbg !1419
+if.then9:                                         ; preds = %if.end5
+  tail call void @add_move(i32 %target, i32 0) #5, !dbg !628
+  br label %return, !dbg !630
 
-; <label>:11                                      ; preds = %9
-  %12 = load i32* @gfrom, align 4, !dbg !1420, !tbaa !163
-  %13 = sext i32 %12 to i64, !dbg !1422
-  %14 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %13, !dbg !1422
-  %15 = load i32* %14, align 4, !dbg !1422, !tbaa !163
-  %16 = xor i32 %15, %3, !dbg !1423
-  %17 = and i32 %16, 1, !dbg !1423
-  %18 = icmp eq i32 %17, 0, !dbg !1423
-  br i1 %18, label %20, label %19, !dbg !1424
+if.else:                                          ; preds = %if.end5
+  %2 = load i32* @gfrom, align 4, !dbg !631, !tbaa !145
+  %idxprom12 = sext i32 %2 to i64, !dbg !631
+  %arrayidx13 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom12, !dbg !631
+  %3 = load i32* %arrayidx13, align 4, !dbg !631, !tbaa !145
+  %4 = xor i32 %3, %0, !dbg !631
+  %5 = and i32 %4, 1, !dbg !631
+  %cmp15 = icmp eq i32 %5, 0, !dbg !631
+  br i1 %cmp15, label %return, label %if.then16, !dbg !631
 
-; <label>:19                                      ; preds = %11
-  tail call void @add_capture(i32 %target, i32 %3, i32 0, i32 0) #5, !dbg !1425
-  br label %20, !dbg !1427
+if.then16:                                        ; preds = %if.else
+  tail call void @add_capture(i32 %target, i32 %0, i32 0, i32 0) #5, !dbg !632
+  br label %return, !dbg !634
 
-; <label>:20                                      ; preds = %11, %5, %0, %19, %10
-  ret void, !dbg !1428
+return:                                           ; preds = %if.else, %if.end, %entry, %if.then16, %if.then9
+  ret void, !dbg !635
 }

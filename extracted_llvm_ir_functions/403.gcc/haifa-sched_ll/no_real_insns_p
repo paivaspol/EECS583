@@ -1,28 +1,31 @@
-define i32 @no_real_insns_p(%struct.rtx_def* %head, %struct.rtx_def* nocapture %tail) #4 {
+define i32 @no_real_insns_p(%struct.rtx_def* %head, %struct.rtx_def* nocapture %tail) #5 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %tail, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %cmp11 = icmp eq %struct.rtx_def* %0, %head
-  br i1 %cmp11, label %return, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %head}, i64 0, metadata !495), !dbg !1031
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %tail}, i64 0, metadata !496), !dbg !1031
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %tail, i64 0, i32 1, i64 2, !dbg !1032
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1032
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !1032, !tbaa !906
+  %cmp11 = icmp eq %struct.rtx_def* %0, %head, !dbg !1032
+  br i1 %cmp11, label %return, label %while.body, !dbg !1032
 
 while.body:                                       ; preds = %entry, %if.end
   %head.addr.012 = phi %struct.rtx_def* [ %2, %if.end ], [ %head, %entry ]
-  %1 = bitcast %struct.rtx_def* %head.addr.012 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %bf.clear.off = add i32 %bf.clear, -36
-  %switch = icmp ult i32 %bf.clear.off, 2
-  br i1 %switch, label %if.end, label %return
+  %1 = bitcast %struct.rtx_def* %head.addr.012 to i32*, !dbg !1033
+  %bf.load = load i32* %1, align 8, !dbg !1033
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1033
+  %bf.clear.off = add i32 %bf.clear, -36, !dbg !1033
+  %switch = icmp ult i32 %bf.clear.off, 2, !dbg !1033
+  br i1 %switch, label %if.end, label %return, !dbg !1033
 
 if.end:                                           ; preds = %while.body
-  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %head.addr.012, i64 0, i32 1, i64 2
-  %rtx7 = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx7, align 8, !tbaa !3
-  %cmp = icmp eq %struct.rtx_def* %2, %0
-  br i1 %cmp, label %return, label %while.body
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %head.addr.012, i64 0, i32 1, i64 2, !dbg !1035
+  %rtx7 = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**, !dbg !1035
+  %2 = load %struct.rtx_def** %rtx7, align 8, !dbg !1035, !tbaa !906
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !495), !dbg !1035
+  %cmp = icmp eq %struct.rtx_def* %2, %0, !dbg !1032
+  br i1 %cmp, label %return, label %while.body, !dbg !1032
 
 return:                                           ; preds = %if.end, %while.body, %entry
   %retval.0 = phi i32 [ 1, %entry ], [ 0, %while.body ], [ 1, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1036
 }

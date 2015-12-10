@@ -1,0 +1,50 @@
+define zeroext i1 @_ZN11xercesc_2_518XMLGrammarPoolImpl5clearEv(%"class.xercesc_2_5::XMLGrammarPoolImpl"* nocapture %this) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLGrammarPoolImpl"* %this}, i64 0, metadata !8098), !dbg !9175
+  %fLocked = getelementptr inbounds %"class.xercesc_2_5::XMLGrammarPoolImpl"* %this, i64 0, i32 5, !dbg !9176
+  %0 = load i8* %fLocked, align 1, !dbg !9176, !tbaa !8989, !range !9038
+  %tobool = icmp eq i8 %0, 0, !dbg !9176
+  br i1 %tobool, label %if.then, label %return, !dbg !9176
+
+if.then:                                          ; preds = %entry
+  %fGrammarRegistry = getelementptr inbounds %"class.xercesc_2_5::XMLGrammarPoolImpl"* %this, i64 0, i32 1, !dbg !9177
+  %1 = load %"class.xercesc_2_5::RefHashTableOf.0"** %fGrammarRegistry, align 8, !dbg !9177, !tbaa !8939
+  tail call void @_ZN11xercesc_2_514RefHashTableOfINS_7GrammarEE9removeAllEv(%"class.xercesc_2_5::RefHashTableOf.0"* %1) #9, !dbg !9177
+  %fXSModelIsValid = getelementptr inbounds %"class.xercesc_2_5::XMLGrammarPoolImpl"* %this, i64 0, i32 6, !dbg !9179
+  store i8 0, i8* %fXSModelIsValid, align 1, !dbg !9179, !tbaa !8989
+  %fXSModel = getelementptr inbounds %"class.xercesc_2_5::XMLGrammarPoolImpl"* %this, i64 0, i32 4, !dbg !9180
+  %2 = load %"class.xercesc_2_5::XSModel"** %fXSModel, align 8, !dbg !9180, !tbaa !8939
+  %tobool2 = icmp eq %"class.xercesc_2_5::XSModel"* %2, null, !dbg !9180
+  br i1 %tobool2, label %return, label %delete.notnull, !dbg !9180
+
+delete.notnull:                                   ; preds = %if.then
+  invoke void @_ZN11xercesc_2_57XSModelD1Ev(%"class.xercesc_2_5::XSModel"* %2) #9
+          to label %invoke.cont unwind label %lpad, !dbg !9181
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %3 = bitcast %"class.xercesc_2_5::XSModel"* %2 to i8*, !dbg !9181
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %3) #9, !dbg !9181
+  store %"class.xercesc_2_5::XSModel"* null, %"class.xercesc_2_5::XSModel"** %fXSModel, align 8, !dbg !9183, !tbaa !8939
+  br label %return, !dbg !9184
+
+lpad:                                             ; preds = %delete.notnull
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !9181
+  %5 = bitcast %"class.xercesc_2_5::XSModel"* %2 to i8*, !dbg !9181
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %5) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !9181
+
+return:                                           ; preds = %entry, %invoke.cont, %if.then
+  %retval.0 = phi i1 [ true, %if.then ], [ true, %invoke.cont ], [ false, %entry ]
+  ret i1 %retval.0, !dbg !9185
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %4, !dbg !9181
+
+terminate.lpad:                                   ; preds = %lpad
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !9181
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !9181
+  tail call void @__clang_call_terminate(i8* %7) #8, !dbg !9181
+  unreachable, !dbg !9181
+}

@@ -1,58 +1,61 @@
 define void @push_function_context_to(%union.tree_node* %context) #0 {
 entry:
-  %tobool = icmp eq %union.tree_node* %context, null
-  br i1 %tobool, label %if.end6, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %context}, i64 0, metadata !1305), !dbg !2734
+  %tobool = icmp eq %union.tree_node* %context, null, !dbg !2735
+  br i1 %tobool, label %if.end6, label %if.then, !dbg !2735
 
 if.then:                                          ; preds = %entry
-  %0 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
-  %cmp = icmp eq %union.tree_node* %0, %context
-  br i1 %cmp, label %if.then1, label %if.else
+  %0 = load %union.tree_node** @current_function_decl, align 8, !dbg !2736, !tbaa !2729
+  %cmp = icmp eq %union.tree_node* %0, %context, !dbg !2736
+  br i1 %cmp, label %if.then1, label %if.else, !dbg !2736
 
 if.then1:                                         ; preds = %if.then
-  %1 = load %struct.function** @cfun, align 8, !tbaa !0
-  %contains_functions = getelementptr inbounds %struct.function* %1, i64 0, i32 56
-  %2 = bitcast [4 x i8]* %contains_functions to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.set = or i32 %bf.load, 1024
-  store i32 %bf.set, i32* %2, align 8
-  br label %if.end6
+  %1 = load %struct.function** @cfun, align 8, !dbg !2737, !tbaa !2729
+  %contains_functions = getelementptr inbounds %struct.function* %1, i64 0, i32 56, !dbg !2737
+  %2 = bitcast [4 x i8]* %contains_functions to i32*, !dbg !2737
+  %bf.load = load i32* %2, align 8, !dbg !2737
+  %bf.set = or i32 %bf.load, 1024, !dbg !2737
+  store i32 %bf.set, i32* %2, align 8, !dbg !2737
+  br label %if.end6, !dbg !2737
 
 if.else:                                          ; preds = %if.then
-  %call = tail call %struct.function* @find_function_data(%union.tree_node* %context) #9
-  %contains_functions2 = getelementptr inbounds %struct.function* %call, i64 0, i32 56
-  %3 = bitcast [4 x i8]* %contains_functions2 to i32*
-  %bf.load3 = load i32* %3, align 8
-  %bf.set5 = or i32 %bf.load3, 1024
-  store i32 %bf.set5, i32* %3, align 8
+  %call = tail call %struct.function* @find_function_data(%union.tree_node* %context) #10, !dbg !2738
+  tail call void @llvm.dbg.value(metadata !{%struct.function* %call}, i64 0, metadata !1307), !dbg !2738
+  %contains_functions2 = getelementptr inbounds %struct.function* %call, i64 0, i32 56, !dbg !2739
+  %3 = bitcast [4 x i8]* %contains_functions2 to i32*, !dbg !2739
+  %bf.load3 = load i32* %3, align 8, !dbg !2739
+  %bf.set5 = or i32 %bf.load3, 1024, !dbg !2739
+  store i32 %bf.set5, i32* %3, align 8, !dbg !2739
   br label %if.end6
 
 if.end6:                                          ; preds = %entry, %if.then1, %if.else
-  %4 = load %struct.function** @cfun, align 8, !tbaa !0
-  %cmp7 = icmp eq %struct.function* %4, null
-  br i1 %cmp7, label %if.then8, label %if.end9
+  %4 = load %struct.function** @cfun, align 8, !dbg !2740, !tbaa !2729
+  %cmp7 = icmp eq %struct.function* %4, null, !dbg !2740
+  br i1 %cmp7, label %if.then8, label %if.end9, !dbg !2740
 
 if.then8:                                         ; preds = %if.end6
-  tail call fastcc void @prepare_function_start() #10
-  %.pre = load %struct.function** @cfun, align 8, !tbaa !0
-  br label %if.end9
+  tail call fastcc void @prepare_function_start() #11, !dbg !2741
+  %.pre = load %struct.function** @cfun, align 8, !dbg !2743, !tbaa !2729
+  br label %if.end9, !dbg !2742
 
 if.end9:                                          ; preds = %if.then8, %if.end6
   %5 = phi %struct.function* [ %.pre, %if.then8 ], [ %4, %if.end6 ]
-  %6 = load %struct.function** @outer_function_chain, align 8, !tbaa !0
-  %outer = getelementptr inbounds %struct.function* %5, i64 0, i32 7
-  store %struct.function* %6, %struct.function** %outer, align 8, !tbaa !0
-  store %struct.function* %5, %struct.function** @outer_function_chain, align 8, !tbaa !0
-  %fixup_var_refs_queue = getelementptr inbounds %struct.function* %5, i64 0, i32 43
-  store %struct.var_refs_queue* null, %struct.var_refs_queue** %fixup_var_refs_queue, align 8, !tbaa !0
-  %7 = load void (%struct.function*)** @save_lang_status, align 8, !tbaa !0
-  %tobool10 = icmp eq void (%struct.function*)* %7, null
-  br i1 %tobool10, label %if.end12, label %if.then11
+  tail call void @llvm.dbg.value(metadata !{%struct.function* %5}, i64 0, metadata !1306), !dbg !2743
+  %6 = load %struct.function** @outer_function_chain, align 8, !dbg !2744, !tbaa !2729
+  %outer = getelementptr inbounds %struct.function* %5, i64 0, i32 7, !dbg !2744
+  store %struct.function* %6, %struct.function** %outer, align 8, !dbg !2744, !tbaa !2729
+  store %struct.function* %5, %struct.function** @outer_function_chain, align 8, !dbg !2745, !tbaa !2729
+  %fixup_var_refs_queue = getelementptr inbounds %struct.function* %5, i64 0, i32 43, !dbg !2746
+  store %struct.var_refs_queue* null, %struct.var_refs_queue** %fixup_var_refs_queue, align 8, !dbg !2746, !tbaa !2729
+  %7 = load void (%struct.function*)** @save_lang_status, align 8, !dbg !2747, !tbaa !2729
+  %tobool10 = icmp eq void (%struct.function*)* %7, null, !dbg !2747
+  br i1 %tobool10, label %if.end12, label %if.then11, !dbg !2747
 
 if.then11:                                        ; preds = %if.end9
-  tail call void %7(%struct.function* %5) #10
-  br label %if.end12
+  tail call void %7(%struct.function* %5) #11, !dbg !2748
+  br label %if.end12, !dbg !2748
 
 if.end12:                                         ; preds = %if.end9, %if.then11
-  store %struct.function* null, %struct.function** @cfun, align 8, !tbaa !0
-  ret void
+  store %struct.function* null, %struct.function** @cfun, align 8, !dbg !2749, !tbaa !2729
+  ret void, !dbg !2750
 }

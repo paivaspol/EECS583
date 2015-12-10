@@ -1,9 +1,10 @@
 define void @clear_dp_tt() #0 {
-  %1 = load i8** bitcast (%struct.TType** @DP_TTable to i8**), align 8, !dbg !128, !tbaa !119
-  %2 = load i32* @TTSize, align 4, !dbg !128, !tbaa !123
-  %3 = sext i32 %2 to i64, !dbg !128
-  %4 = mul nsw i64 %3, 20, !dbg !128
-  %5 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %1, i1 false), !dbg !128
-  %6 = tail call i8* @__memset_chk(i8* %1, i32 0, i64 %4, i64 %5) #6, !dbg !128
-  ret void, !dbg !129
+entry:
+  %0 = load %struct.TType** @DP_TTable, align 8, !dbg !121, !tbaa !114
+  %1 = getelementptr inbounds %struct.TType* %0, i64 0, i32 0, !dbg !121
+  %2 = load i32* @TTSize, align 4, !dbg !121, !tbaa !117
+  %conv = sext i32 %2 to i64, !dbg !121
+  %mul = mul i64 %conv, 20, !dbg !121
+  tail call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 %mul, i32 4, i1 false), !dbg !121
+  ret void, !dbg !122
 }

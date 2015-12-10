@@ -1,53 +1,56 @@
 define i32 @ext_register_operand(%struct.rtx_def* %op, i32 %mode) #1 {
 entry:
-  %0 = load i32* @target_flags, align 4, !tbaa !0
-  %and = and i32 %0, 33554432
-  %tobool = icmp eq i32 %and, 0
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2412), !dbg !6342
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2413), !dbg !6343
+  %0 = load i32* @target_flags, align 4, !dbg !6344, !tbaa !4347
+  %and = and i32 %0, 33554432, !dbg !6344
+  %tobool = icmp eq i32 %and, 0, !dbg !6344
   %.phi.trans.insert = bitcast %struct.rtx_def* %op to i32*
-  %bf.load1.pre = load i32* %.phi.trans.insert, align 8
-  br i1 %tobool, label %land.lhs.true, label %lor.lhs.false
+  %bf.load1.pre = load i32* %.phi.trans.insert, align 8, !dbg !6344
+  br i1 %tobool, label %land.lhs.true, label %lor.lhs.false, !dbg !6344
 
 lor.lhs.false:                                    ; preds = %entry
-  %bf.clear = and i32 %bf.load1.pre, 16711680
-  %cmp = icmp eq i32 %bf.clear, 327680
-  br i1 %cmp, label %if.end, label %land.lhs.true
+  %bf.clear = and i32 %bf.load1.pre, 16711680, !dbg !6344
+  %cmp = icmp eq i32 %bf.clear, 327680, !dbg !6344
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !6344
 
 land.lhs.true:                                    ; preds = %entry, %lor.lhs.false
-  %bf.lshr2 = lshr i32 %bf.load1.pre, 16
-  %bf.clear3 = and i32 %bf.lshr2, 255
-  %bf.clear3.off = add i32 %bf.clear3, -3
-  %switch = icmp ult i32 %bf.clear3.off, 2
-  br i1 %switch, label %if.end, label %return
+  %bf.lshr2 = lshr i32 %bf.load1.pre, 16, !dbg !6344
+  %bf.clear3 = and i32 %bf.lshr2, 255, !dbg !6344
+  %bf.clear3.off = add i32 %bf.clear3, -3, !dbg !6344
+  %switch = icmp ult i32 %bf.clear3.off, 2, !dbg !6344
+  br i1 %switch, label %if.end, label %return, !dbg !6344
 
 if.end:                                           ; preds = %land.lhs.true, %lor.lhs.false
-  %call = tail call i32 @register_operand(%struct.rtx_def* %op, i32 0) #9
-  %tobool10 = icmp eq i32 %call, 0
-  br i1 %tobool10, label %return, label %if.end12
+  %call = tail call i32 @register_operand(%struct.rtx_def* %op, i32 0) #10, !dbg !6345
+  %tobool10 = icmp eq i32 %call, 0, !dbg !6345
+  br i1 %tobool10, label %return, label %if.end12, !dbg !6345
 
 if.end12:                                         ; preds = %if.end
-  %1 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load13 = load i32* %1, align 8
-  %bf.clear14 = and i32 %bf.load13, 65535
-  %cmp15 = icmp eq i32 %bf.clear14, 61
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
-  br i1 %cmp15, label %cond.end, label %cond.false
+  %1 = bitcast %struct.rtx_def* %op to i32*, !dbg !6346
+  %bf.load13 = load i32* %1, align 8, !dbg !6346
+  %bf.clear14 = and i32 %bf.load13, 65535, !dbg !6346
+  %cmp15 = icmp eq i32 %bf.clear14, 61, !dbg !6346
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, !dbg !6346
+  br i1 %cmp15, label %cond.end, label %cond.false, !dbg !6346
 
 cond.false:                                       ; preds = %if.end12
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
-  br label %cond.end
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !6346
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !6346, !tbaa !4365
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0, !dbg !6346
+  br label %cond.end, !dbg !6346
 
 cond.end:                                         ; preds = %if.end12, %cond.false
   %cond.in.in = phi %union.rtunion_def* [ %arrayidx19, %cond.false ], [ %arrayidx, %if.end12 ]
-  %cond.in = bitcast %union.rtunion_def* %cond.in.in to i32*
-  %cond = load i32* %cond.in, align 4
-  %cond.off = add i32 %cond, -4
-  %3 = icmp ugt i32 %cond.off, 53
-  %lor.ext = zext i1 %3 to i32
-  br label %return
+  %cond.in = bitcast %union.rtunion_def* %cond.in.in to i32*, !dbg !6346
+  %cond = load i32* %cond.in, align 4, !dbg !6346
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !2414), !dbg !6346
+  %cond.off = add i32 %cond, -4, !dbg !6347
+  %3 = icmp ugt i32 %cond.off, 53, !dbg !6347
+  %lor.ext = zext i1 %3 to i32, !dbg !6347
+  br label %return, !dbg !6347
 
 return:                                           ; preds = %land.lhs.true, %if.end, %cond.end
   %retval.0 = phi i32 [ %lor.ext, %cond.end ], [ 0, %land.lhs.true ], [ 0, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6348
 }

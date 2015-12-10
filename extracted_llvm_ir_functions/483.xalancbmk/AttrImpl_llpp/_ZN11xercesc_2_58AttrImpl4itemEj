@@ -1,0 +1,57 @@
+define %"class.xercesc_2_5::NodeImpl"* @_ZN11xercesc_2_58AttrImpl4itemEj(%"class.xercesc_2_5::AttrImpl"* %this, i32 %index) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::AttrImpl"* %this}, i64 0, metadata !3438), !dbg !4119
+  tail call void @llvm.dbg.value(metadata !{i32 %index}, i64 0, metadata !3439), !dbg !4119
+  %flags.i = getelementptr inbounds %"class.xercesc_2_5::AttrImpl"* %this, i64 0, i32 0, i32 2, !dbg !4120
+  %0 = load i16* %flags.i, align 2, !dbg !4120, !tbaa !3718
+  %1 = load i16* @_ZN11xercesc_2_58NodeImpl9HASSTRINGE, align 2, !dbg !4120, !tbaa !3718
+  %and3.i = and i16 %1, %0, !dbg !4120
+  %cmp.i = icmp eq i16 %and3.i, 0, !dbg !4120
+  br i1 %cmp.i, label %if.end, label %if.then, !dbg !4121
+
+if.then:                                          ; preds = %entry
+  %cmp = icmp eq i32 %index, 0, !dbg !4122
+  br i1 %cmp, label %lor.lhs.false, label %return, !dbg !4122
+
+lor.lhs.false:                                    ; preds = %if.then
+  %child = getelementptr inbounds %"class.xercesc_2_5::AttrImpl"* %this, i64 0, i32 2, i32 0, !dbg !4122
+  %2 = load %"class.xercesc_2_5::ChildNode"** %child, align 8, !dbg !4122, !tbaa !3726
+  %cmp2 = icmp eq %"class.xercesc_2_5::ChildNode"* %2, null, !dbg !4122
+  br i1 %cmp2, label %return, label %if.else, !dbg !4122
+
+if.else:                                          ; preds = %lor.lhs.false
+  tail call void @_ZN11xercesc_2_58AttrImpl13makeChildNodeEv(%"class.xercesc_2_5::AttrImpl"* %this) #8, !dbg !4124
+  %3 = load %"class.xercesc_2_5::ChildNode"** %child, align 8, !dbg !4126, !tbaa !3726
+  %4 = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %3, i64 0, i32 0, !dbg !4126
+  br label %return, !dbg !4126
+
+if.end:                                           ; preds = %entry
+  %child7 = getelementptr inbounds %"class.xercesc_2_5::AttrImpl"* %this, i64 0, i32 2, i32 0, !dbg !4127
+  tail call void @llvm.dbg.value(metadata !3251, i64 0, metadata !3441), !dbg !4128
+  %nodeListNode.013 = load %"class.xercesc_2_5::ChildNode"** %child7, align 8, !dbg !4127
+  %cmp814 = icmp ne i32 %index, 0, !dbg !4128
+  %cmp915 = icmp ne %"class.xercesc_2_5::ChildNode"* %nodeListNode.013, null, !dbg !4128
+  %cmp9.16 = and i1 %cmp814, %cmp915, !dbg !4128
+  br i1 %cmp9.16, label %for.body, label %for.end
+
+for.body:                                         ; preds = %if.end, %for.body
+  %nodeListNode.018 = phi %"class.xercesc_2_5::ChildNode"* [ %nodeListNode.0, %for.body ], [ %nodeListNode.013, %if.end ]
+  %nodeListIndex.017 = phi i32 [ %inc, %for.body ], [ 0, %if.end ]
+  %nextSibling = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %nodeListNode.018, i64 0, i32 2, !dbg !4129
+  %inc = add i32 %nodeListIndex.017, 1, !dbg !4131
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !3441), !dbg !4131
+  %nodeListNode.0 = load %"class.xercesc_2_5::ChildNode"** %nextSibling, align 8, !dbg !4127
+  %cmp8 = icmp ult i32 %inc, %index, !dbg !4128
+  %cmp9 = icmp ne %"class.xercesc_2_5::ChildNode"* %nodeListNode.0, null, !dbg !4128
+  %cmp9. = and i1 %cmp8, %cmp9, !dbg !4128
+  br i1 %cmp9., label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %if.end
+  %nodeListNode.0.lcssa = phi %"class.xercesc_2_5::ChildNode"* [ %nodeListNode.013, %if.end ], [ %nodeListNode.0, %for.body ]
+  %5 = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %nodeListNode.0.lcssa, i64 0, i32 0, !dbg !4132
+  br label %return, !dbg !4132
+
+return:                                           ; preds = %lor.lhs.false, %if.then, %for.end, %if.else
+  %retval.0 = phi %"class.xercesc_2_5::NodeImpl"* [ %4, %if.else ], [ %5, %for.end ], [ null, %if.then ], [ null, %lor.lhs.false ]
+  ret %"class.xercesc_2_5::NodeImpl"* %retval.0, !dbg !4133
+}

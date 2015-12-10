@@ -1,149 +1,148 @@
 define void @Chv_maxabsInChevron(%struct._Chv* %chv, i32 %ichv, double* %pdiagmaxabs, double* %prowmaxabs, double* %pcolmaxabs) #0 {
+entry:
   %loc = alloca i32, align 4
   %nD = alloca i32, align 4
   %nL = alloca i32, align 4
   %nU = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv, i64 0, metadata !123, metadata !232), !dbg !724
-  tail call void @llvm.dbg.value(metadata i32 %ichv, i64 0, metadata !124, metadata !232), !dbg !725
-  tail call void @llvm.dbg.value(metadata double* %pdiagmaxabs, i64 0, metadata !125, metadata !232), !dbg !726
-  tail call void @llvm.dbg.value(metadata double* %prowmaxabs, i64 0, metadata !126, metadata !232), !dbg !727
-  tail call void @llvm.dbg.value(metadata double* %pcolmaxabs, i64 0, metadata !127, metadata !232), !dbg !728
-  %1 = icmp eq %struct._Chv* %chv, null, !dbg !729
-  %2 = icmp slt i32 %ichv, 0, !dbg !731
-  %or.cond = or i1 %1, %2, !dbg !732
-  br i1 %or.cond, label %10, label %3, !dbg !732
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %chv}, i64 0, metadata !119), !dbg !484
+  call void @llvm.dbg.value(metadata !{i32 %ichv}, i64 0, metadata !120), !dbg !485
+  call void @llvm.dbg.value(metadata !{double* %pdiagmaxabs}, i64 0, metadata !121), !dbg !486
+  call void @llvm.dbg.value(metadata !{double* %prowmaxabs}, i64 0, metadata !122), !dbg !487
+  call void @llvm.dbg.value(metadata !{double* %pcolmaxabs}, i64 0, metadata !123), !dbg !488
+  call void @llvm.dbg.declare(metadata !{i32* %loc}, metadata !126), !dbg !489
+  call void @llvm.dbg.declare(metadata !{i32* %nD}, metadata !127), !dbg !489
+  call void @llvm.dbg.declare(metadata !{i32* %nL}, metadata !128), !dbg !489
+  call void @llvm.dbg.declare(metadata !{i32* %nU}, metadata !129), !dbg !489
+  %cmp = icmp eq %struct._Chv* %chv, null, !dbg !490
+  %cmp1 = icmp slt i32 %ichv, 0, !dbg !490
+  %or.cond = or i1 %cmp, %cmp1, !dbg !490
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !490
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 1, !dbg !733
-  %5 = load i32* %4, align 4, !dbg !733, !tbaa !248
-  %6 = icmp sle i32 %5, %ichv, !dbg !734
-  %7 = icmp eq double* %pdiagmaxabs, null, !dbg !735
-  %or.cond3 = or i1 %7, %6, !dbg !736
-  %8 = icmp eq double* %prowmaxabs, null, !dbg !737
-  %or.cond5 = or i1 %8, %or.cond3, !dbg !736
-  %9 = icmp eq double* %pcolmaxabs, null, !dbg !738
-  %or.cond7 = or i1 %9, %or.cond5, !dbg !736
-  br i1 %or.cond7, label %10, label %13, !dbg !736
+lor.lhs.false2:                                   ; preds = %entry
+  %nD3 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 1, !dbg !490
+  %0 = load i32* %nD3, align 4, !dbg !490, !tbaa !236
+  %cmp4 = icmp sle i32 %0, %ichv, !dbg !490
+  %cmp6 = icmp eq double* %pdiagmaxabs, null, !dbg !490
+  %or.cond115 = or i1 %cmp4, %cmp6, !dbg !490
+  %cmp8 = icmp eq double* %prowmaxabs, null, !dbg !490
+  %or.cond116 = or i1 %or.cond115, %cmp8, !dbg !490
+  %cmp10 = icmp eq double* %pcolmaxabs, null, !dbg !490
+  %or.cond117 = or i1 %or.cond116, %cmp10, !dbg !490
+  br i1 %or.cond117, label %if.then, label %if.end, !dbg !490
 
-; <label>:10                                      ; preds = %3, %0
-  %11 = load %struct.__sFILE** @__stderrp, align 8, !dbg !739, !tbaa !241
-  %12 = tail call i64 @fwrite(i8* getelementptr inbounds ([51 x i8]* @.str11, i64 0, i64 0), i64 50, i64 1, %struct.__sFILE* %11), !dbg !741
-  tail call void @exit(i32 -1) #7, !dbg !742
-  unreachable, !dbg !742
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !491, !tbaa !231
+  %2 = call i64 @fwrite(i8* getelementptr inbounds ([51 x i8]* @.str11, i64 0, i64 0), i64 50, i64 1, %struct._IO_FILE* %1), !dbg !491
+  call void @exit(i32 -1) #7, !dbg !493
+  unreachable, !dbg !493
 
-; <label>:13                                      ; preds = %3
-  tail call void @llvm.dbg.value(metadata i32* %nD, i64 0, metadata !131, metadata !232), !dbg !743
-  tail call void @llvm.dbg.value(metadata i32* %nL, i64 0, metadata !132, metadata !232), !dbg !744
-  tail call void @llvm.dbg.value(metadata i32* %nU, i64 0, metadata !133, metadata !232), !dbg !745
-  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #8, !dbg !746
-  %14 = call double* @Chv_diagLocation(%struct._Chv* %chv, i32 %ichv) #8, !dbg !747
-  call void @llvm.dbg.value(metadata double* %14, i64 0, metadata !128, metadata !232), !dbg !748
-  call void @llvm.dbg.value(metadata i32* %nD, i64 0, metadata !131, metadata !232), !dbg !743
-  %15 = load i32* %nD, align 4, !dbg !749, !tbaa !353
-  call void @llvm.dbg.value(metadata i32* %nU, i64 0, metadata !133, metadata !232), !dbg !745
-  %16 = load i32* %nU, align 4, !dbg !750, !tbaa !353
-  %17 = xor i32 %ichv, -1, !dbg !751
-  %18 = add i32 %15, %17, !dbg !752
-  %19 = add i32 %18, %16, !dbg !753
-  call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !129, metadata !232), !dbg !754
-  %20 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4, !dbg !755
-  %21 = load i32* %20, align 4, !dbg !755, !tbaa !268
-  switch i32 %21, label %67 [
-    i32 1, label %22
-    i32 2, label %42
-  ], !dbg !757
+if.end:                                           ; preds = %lor.lhs.false2
+  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #8, !dbg !494
+  %call11 = call double* @Chv_diagLocation(%struct._Chv* %chv, i32 %ichv) #8, !dbg !495
+  call void @llvm.dbg.value(metadata !{double* %call11}, i64 0, metadata !124), !dbg !495
+  call void @llvm.dbg.value(metadata !{i32* %nD}, i64 0, metadata !127), !dbg !496
+  %3 = load i32* %nD, align 4, !dbg !496, !tbaa !236
+  call void @llvm.dbg.value(metadata !{i32* %nU}, i64 0, metadata !129), !dbg !496
+  %4 = load i32* %nU, align 4, !dbg !496, !tbaa !236
+  %sub = xor i32 %ichv, -1, !dbg !496
+  %sub12 = add i32 %3, %sub, !dbg !496
+  %add = add i32 %sub12, %4, !dbg !496
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !125), !dbg !496
+  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4, !dbg !497
+  %5 = load i32* %type, align 4, !dbg !497, !tbaa !236
+  switch i32 %5, label %if.else63 [
+    i32 1, label %if.then14
+    i32 2, label %if.then35
+  ], !dbg !497
 
-; <label>:22                                      ; preds = %13
-  %23 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5, !dbg !758
-  %24 = load i32* %23, align 4, !dbg !758, !tbaa !270
-  switch i32 %24, label %39 [
-    i32 0, label %25
-    i32 2, label %30
-  ], !dbg !761
+if.then14:                                        ; preds = %if.end
+  %symflag = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5, !dbg !498
+  %6 = load i32* %symflag, align 4, !dbg !498, !tbaa !236
+  switch i32 %6, label %if.else27 [
+    i32 0, label %if.then16
+    i32 2, label %if.then21
+  ], !dbg !498
 
-; <label>:25                                      ; preds = %22
-  %26 = load double* %14, align 8, !dbg !762, !tbaa !330
-  %27 = call double @fabs(double %26) #10, !dbg !764
-  store double %27, double* %pdiagmaxabs, align 8, !dbg !765, !tbaa !330
-  %28 = getelementptr inbounds double* %14, i64 1, !dbg !766
-  call void @llvm.dbg.value(metadata i32* %loc, i64 0, metadata !130, metadata !232), !dbg !767
-  %29 = call double @DVmaxabs(i32 %19, double* %28, i32* %loc) #8, !dbg !768
-  store double %29, double* %prowmaxabs, align 8, !dbg !769, !tbaa !330
-  store double %29, double* %pcolmaxabs, align 8, !dbg !770, !tbaa !330
-  br label %70, !dbg !771
+if.then16:                                        ; preds = %if.then14
+  %7 = load double* %call11, align 8, !dbg !500, !tbaa !273
+  %call17 = call double @fabs(double %7) #10, !dbg !500
+  store double %call17, double* %pdiagmaxabs, align 8, !dbg !500, !tbaa !273
+  %add.ptr = getelementptr inbounds double* %call11, i64 1, !dbg !502
+  %call18 = call double @DVmaxabs(i32 %add, double* %add.ptr, i32* %loc) #8, !dbg !502
+  store double %call18, double* %prowmaxabs, align 8, !dbg !502, !tbaa !273
+  store double %call18, double* %pcolmaxabs, align 8, !dbg !503, !tbaa !273
+  br label %if.end67, !dbg !504
 
-; <label>:30                                      ; preds = %22
-  %31 = load double* %14, align 8, !dbg !772, !tbaa !330
-  %32 = call double @fabs(double %31) #10, !dbg !775
-  store double %32, double* %pdiagmaxabs, align 8, !dbg !776, !tbaa !330
-  %33 = getelementptr inbounds double* %14, i64 1, !dbg !777
-  call void @llvm.dbg.value(metadata i32* %loc, i64 0, metadata !130, metadata !232), !dbg !767
-  %34 = call double @DVmaxabs(i32 %19, double* %33, i32* %loc) #8, !dbg !778
-  store double %34, double* %prowmaxabs, align 8, !dbg !779, !tbaa !330
-  %35 = sext i32 %19 to i64, !dbg !780
-  %36 = sub nsw i64 0, %35, !dbg !780
-  %37 = getelementptr inbounds double* %14, i64 %36, !dbg !780
-  call void @llvm.dbg.value(metadata i32* %loc, i64 0, metadata !130, metadata !232), !dbg !767
-  %38 = call double @DVmaxabs(i32 %19, double* %37, i32* %loc) #8, !dbg !781
-  store double %38, double* %pcolmaxabs, align 8, !dbg !782, !tbaa !330
-  br label %70
+if.then21:                                        ; preds = %if.then14
+  %8 = load double* %call11, align 8, !dbg !505, !tbaa !273
+  %call22 = call double @fabs(double %8) #10, !dbg !505
+  store double %call22, double* %pdiagmaxabs, align 8, !dbg !505, !tbaa !273
+  %add.ptr23 = getelementptr inbounds double* %call11, i64 1, !dbg !507
+  %call24 = call double @DVmaxabs(i32 %add, double* %add.ptr23, i32* %loc) #8, !dbg !507
+  store double %call24, double* %prowmaxabs, align 8, !dbg !507, !tbaa !273
+  %idx.ext = sext i32 %add to i64, !dbg !508
+  %idx.neg = sub i64 0, %idx.ext, !dbg !508
+  %add.ptr25 = getelementptr inbounds double* %call11, i64 %idx.neg, !dbg !508
+  %call26 = call double @DVmaxabs(i32 %add, double* %add.ptr25, i32* %loc) #8, !dbg !508
+  store double %call26, double* %pcolmaxabs, align 8, !dbg !508, !tbaa !273
+  br label %if.end67
 
-; <label>:39                                      ; preds = %22
-  %40 = load %struct.__sFILE** @__stderrp, align 8, !dbg !783, !tbaa !241
-  %41 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %40, i8* getelementptr inbounds ([107 x i8]* @.str12, i64 0, i64 0), i32 %24) #8, !dbg !785
-  call void @exit(i32 -1) #7, !dbg !786
-  unreachable, !dbg !786
+if.else27:                                        ; preds = %if.then14
+  %9 = load %struct._IO_FILE** @stderr, align 8, !dbg !509, !tbaa !231
+  %call29 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %9, i8* getelementptr inbounds ([107 x i8]* @.str12, i64 0, i64 0), i32 %6) #8, !dbg !509
+  call void @exit(i32 -1) #7, !dbg !511
+  unreachable, !dbg !511
 
-; <label>:42                                      ; preds = %13
-  %43 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5, !dbg !787
-  %44 = load i32* %43, align 4, !dbg !787, !tbaa !270
-  switch i32 %44, label %64 [
-    i32 0, label %45
-    i32 1, label %45
-    i32 2, label %52
-  ], !dbg !791
+if.then35:                                        ; preds = %if.end
+  %symflag36 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5, !dbg !512
+  %10 = load i32* %symflag36, align 4, !dbg !512, !tbaa !236
+  switch i32 %10, label %if.else58 [
+    i32 0, label %if.then41
+    i32 1, label %if.then41
+    i32 2, label %if.then49
+  ], !dbg !512
 
-; <label>:45                                      ; preds = %42, %42
-  %46 = load double* %14, align 8, !dbg !792, !tbaa !330
-  %47 = getelementptr inbounds double* %14, i64 1, !dbg !794
-  %48 = load double* %47, align 8, !dbg !795, !tbaa !330
-  %49 = call double @Zabs(double %46, double %48) #8, !dbg !796
-  store double %49, double* %pdiagmaxabs, align 8, !dbg !797, !tbaa !330
-  %50 = getelementptr inbounds double* %14, i64 2, !dbg !798
-  %51 = call double @ZVmaxabs(i32 %19, double* %50) #8, !dbg !799
-  store double %51, double* %prowmaxabs, align 8, !dbg !800, !tbaa !330
-  store double %51, double* %pcolmaxabs, align 8, !dbg !801, !tbaa !330
-  br label %70, !dbg !802
+if.then41:                                        ; preds = %if.then35, %if.then35
+  %11 = load double* %call11, align 8, !dbg !514, !tbaa !273
+  %add.ptr42 = getelementptr inbounds double* %call11, i64 1, !dbg !514
+  %12 = load double* %add.ptr42, align 8, !dbg !514, !tbaa !273
+  %call43 = call double @Zabs(double %11, double %12) #8, !dbg !514
+  store double %call43, double* %pdiagmaxabs, align 8, !dbg !514, !tbaa !273
+  %add.ptr44 = getelementptr inbounds double* %call11, i64 2, !dbg !516
+  %call45 = call double @ZVmaxabs(i32 %add, double* %add.ptr44) #8, !dbg !516
+  store double %call45, double* %prowmaxabs, align 8, !dbg !516, !tbaa !273
+  store double %call45, double* %pcolmaxabs, align 8, !dbg !517, !tbaa !273
+  br label %if.end67, !dbg !518
 
-; <label>:52                                      ; preds = %42
-  %53 = load double* %14, align 8, !dbg !803, !tbaa !330
-  %54 = getelementptr inbounds double* %14, i64 1, !dbg !806
-  %55 = load double* %54, align 8, !dbg !807, !tbaa !330
-  %56 = call double @Zabs(double %53, double %55) #8, !dbg !808
-  store double %56, double* %pdiagmaxabs, align 8, !dbg !809, !tbaa !330
-  %57 = getelementptr inbounds double* %14, i64 2, !dbg !810
-  %58 = call double @ZVmaxabs(i32 %19, double* %57) #8, !dbg !811
-  store double %58, double* %prowmaxabs, align 8, !dbg !812, !tbaa !330
-  %59 = shl nsw i32 %19, 1, !dbg !813
-  %60 = sext i32 %59 to i64, !dbg !814
-  %61 = sub nsw i64 0, %60, !dbg !814
-  %62 = getelementptr inbounds double* %14, i64 %61, !dbg !814
-  %63 = call double @ZVmaxabs(i32 %19, double* %62) #8, !dbg !815
-  store double %63, double* %pcolmaxabs, align 8, !dbg !816, !tbaa !330
-  br label %70
+if.then49:                                        ; preds = %if.then35
+  %13 = load double* %call11, align 8, !dbg !519, !tbaa !273
+  %add.ptr50 = getelementptr inbounds double* %call11, i64 1, !dbg !519
+  %14 = load double* %add.ptr50, align 8, !dbg !519, !tbaa !273
+  %call51 = call double @Zabs(double %13, double %14) #8, !dbg !519
+  store double %call51, double* %pdiagmaxabs, align 8, !dbg !519, !tbaa !273
+  %add.ptr52 = getelementptr inbounds double* %call11, i64 2, !dbg !521
+  %call53 = call double @ZVmaxabs(i32 %add, double* %add.ptr52) #8, !dbg !521
+  store double %call53, double* %prowmaxabs, align 8, !dbg !521, !tbaa !273
+  %mul = shl nsw i32 %add, 1, !dbg !522
+  %idx.ext54 = sext i32 %mul to i64, !dbg !522
+  %idx.neg55 = sub i64 0, %idx.ext54, !dbg !522
+  %add.ptr56 = getelementptr inbounds double* %call11, i64 %idx.neg55, !dbg !522
+  %call57 = call double @ZVmaxabs(i32 %add, double* %add.ptr56) #8, !dbg !522
+  store double %call57, double* %pcolmaxabs, align 8, !dbg !522, !tbaa !273
+  br label %if.end67
 
-; <label>:64                                      ; preds = %42
-  %65 = load %struct.__sFILE** @__stderrp, align 8, !dbg !817, !tbaa !241
-  %66 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %65, i8* getelementptr inbounds ([110 x i8]* @.str13, i64 0, i64 0), i32 %44) #8, !dbg !819
-  call void @exit(i32 -1) #7, !dbg !820
-  unreachable, !dbg !820
+if.else58:                                        ; preds = %if.then35
+  %15 = load %struct._IO_FILE** @stderr, align 8, !dbg !523, !tbaa !231
+  %call60 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %15, i8* getelementptr inbounds ([110 x i8]* @.str13, i64 0, i64 0), i32 %10) #8, !dbg !523
+  call void @exit(i32 -1) #7, !dbg !525
+  unreachable, !dbg !525
 
-; <label>:67                                      ; preds = %13
-  %68 = load %struct.__sFILE** @__stderrp, align 8, !dbg !821, !tbaa !241
-  %69 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %68, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0), i32 %21) #8, !dbg !823
-  call void @exit(i32 -1) #7, !dbg !824
-  unreachable, !dbg !824
+if.else63:                                        ; preds = %if.end
+  %16 = load %struct._IO_FILE** @stderr, align 8, !dbg !526, !tbaa !231
+  %call65 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %16, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0), i32 %5) #8, !dbg !526
+  call void @exit(i32 -1) #7, !dbg !528
+  unreachable, !dbg !528
 
-; <label>:70                                      ; preds = %52, %45, %25, %30
-  ret void, !dbg !825
+if.end67:                                         ; preds = %if.then49, %if.then41, %if.then16, %if.then21
+  ret void, !dbg !529
 }

@@ -1,49 +1,52 @@
 define internal fastcc i32 @libcall_benefit(%struct.rtx_def* %last) #0 {
 entry:
-  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %last, i32 6, %struct.rtx_def* null) #8
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0
-  %insn.0.in31 = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %insn.032 = load %struct.rtx_def** %insn.0.in31, align 8
-  %cmp33 = icmp eq %struct.rtx_def* %insn.032, %last
-  br i1 %cmp33, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %last}, i64 0, metadata !2826), !dbg !5138
+  tail call void @llvm.dbg.value(metadata !907, i64 0, metadata !2828), !dbg !5139
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %last, i32 6, %struct.rtx_def* null) #8, !dbg !5140
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0, !dbg !5140
+  %insn.0.in31 = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !5140
+  %insn.032 = load %struct.rtx_def** %insn.0.in31, align 8, !dbg !5140
+  %cmp33 = icmp eq %struct.rtx_def* %insn.032, %last, !dbg !5140
+  br i1 %cmp33, label %for.end, label %for.body, !dbg !5140
 
 for.body:                                         ; preds = %entry, %for.inc
   %insn.035 = phi %struct.rtx_def* [ %insn.0, %for.inc ], [ %insn.032, %entry ]
   %benefit.034 = phi i32 [ %benefit.1, %for.inc ], [ 0, %entry ]
-  %0 = bitcast %struct.rtx_def* %insn.035 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  %0 = bitcast %struct.rtx_def* %insn.035 to i32*, !dbg !5142
+  %bf.load = load i32* %0, align 8, !dbg !5142
+  %bf.clear = and i32 %bf.load, 65535, !dbg !5142
   switch i32 %bf.clear, label %for.inc [
     i32 34, label %if.then
     i32 32, label %land.lhs.true
-  ]
+  ], !dbg !5142
 
 if.then:                                          ; preds = %for.body
-  %add = add nsw i32 %benefit.034, 10
-  br label %for.inc
+  %add = add nsw i32 %benefit.034, 10, !dbg !5144
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !2828), !dbg !5144
+  br label %for.inc, !dbg !5144
 
 land.lhs.true:                                    ; preds = %for.body
-  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %insn.035, i64 0, i32 1, i64 3
-  %rtx7 = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx7, align 8, !tbaa !4
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load8 = load i32* %2, align 8
-  %bf.clear9 = and i32 %bf.load8, 65535
-  %bf.clear9.off = add i32 %bf.clear9, -48
-  %not.switch = icmp ugt i32 %bf.clear9.off, 1
-  %inc = zext i1 %not.switch to i32
-  %benefit.0.inc = add nsw i32 %inc, %benefit.034
-  br label %for.inc
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %insn.035, i64 0, i32 1, i64 3, !dbg !5145
+  %rtx7 = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**, !dbg !5145
+  %1 = load %struct.rtx_def** %rtx7, align 8, !dbg !5145, !tbaa !2982
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !5145
+  %bf.load8 = load i32* %2, align 8, !dbg !5145
+  %bf.clear9 = and i32 %bf.load8, 65535, !dbg !5145
+  %bf.clear9.off = add i32 %bf.clear9, -48, !dbg !5145
+  %not.switch = icmp ugt i32 %bf.clear9.off, 1, !dbg !5145
+  %inc = zext i1 %not.switch to i32, !dbg !5145
+  %benefit.0.inc = add nsw i32 %inc, %benefit.034, !dbg !5145
+  br label %for.inc, !dbg !5145
 
 for.inc:                                          ; preds = %land.lhs.true, %for.body, %if.then
   %benefit.1 = phi i32 [ %add, %if.then ], [ %benefit.034, %for.body ], [ %benefit.0.inc, %land.lhs.true ]
-  %arrayidx21 = getelementptr inbounds %struct.rtx_def* %insn.035, i64 0, i32 1, i64 2
-  %insn.0.in = bitcast %union.rtunion_def* %arrayidx21 to %struct.rtx_def**
-  %insn.0 = load %struct.rtx_def** %insn.0.in, align 8
-  %cmp = icmp eq %struct.rtx_def* %insn.0, %last
-  br i1 %cmp, label %for.end, label %for.body
+  %arrayidx21 = getelementptr inbounds %struct.rtx_def* %insn.035, i64 0, i32 1, i64 2, !dbg !5146
+  %insn.0.in = bitcast %union.rtunion_def* %arrayidx21 to %struct.rtx_def**, !dbg !5140
+  %insn.0 = load %struct.rtx_def** %insn.0.in, align 8, !dbg !5140
+  %cmp = icmp eq %struct.rtx_def* %insn.0, %last, !dbg !5140
+  br i1 %cmp, label %for.end, label %for.body, !dbg !5140
 
 for.end:                                          ; preds = %for.inc, %entry
   %benefit.0.lcssa = phi i32 [ 0, %entry ], [ %benefit.1, %for.inc ]
-  ret i32 %benefit.0.lcssa
+  ret i32 %benefit.0.lcssa, !dbg !5147
 }

@@ -1,6 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.SGFProperty_t = type { %struct.SGFProperty_t*, i16, i8* }
 %struct.SGFNode_t = type { %struct.SGFProperty_t*, %struct.SGFNode_t*, %struct.SGFNode_t*, %struct.SGFNode_t* }
@@ -10,617 +10,535 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str3 = private unnamed_addr constant [6 x i8] c"(%d) \00", align 1
 @str = private unnamed_addr constant [5 x i8] c"None\00"
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @get_moveX(%struct.SGFProperty_t* nocapture readonly %property, i32 %boardsize) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %property, i64 0, metadata !22, metadata !90), !dbg !91
-  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !23, metadata !90), !dbg !92
-  %1 = getelementptr inbounds %struct.SGFProperty_t* %property, i64 0, i32 2, !dbg !93
-  %2 = load i8** %1, align 8, !dbg !93, !tbaa !95
-  %3 = tail call i64 @strlen(i8* %2) #7, !dbg !101
-  %4 = icmp ult i64 %3, 2, !dbg !102
-  br i1 %4, label %12, label %5, !dbg !103
+; Function Attrs: nounwind optsize uwtable
+define i32 @get_moveX(%struct.SGFProperty_t* nocapture %property, i32 %boardsize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %property}, i64 0, metadata !22), !dbg !84
+  tail call void @llvm.dbg.value(metadata !{i32 %boardsize}, i64 0, metadata !23), !dbg !84
+  %value = getelementptr inbounds %struct.SGFProperty_t* %property, i64 0, i32 2, !dbg !85
+  %0 = load i8** %value, align 8, !dbg !85, !tbaa !86
+  %call = tail call i64 @strlen(i8* %0) #6, !dbg !85
+  %cmp = icmp ult i64 %call, 2, !dbg !85
+  br i1 %cmp, label %return, label %if.end, !dbg !85
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds i8* %2, i64 1, !dbg !104
-  %7 = load i8* %6, align 1, !dbg !104, !tbaa !105
-  %8 = sext i8 %7 to i32, !dbg !106
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !85, metadata !90) #6, !dbg !107
-  %9 = tail call i32 @__toupper(i32 %8) #7, !dbg !109
-  %10 = add nsw i32 %9, -65, !dbg !110
-  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !24, metadata !90), !dbg !111
-  %11 = icmp slt i32 %10, %boardsize, !dbg !112
-  %. = select i1 %11, i32 %10, i32 -1, !dbg !114
-  br label %12, !dbg !114
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds i8* %0, i64 1, !dbg !89
+  %1 = load i8* %arrayidx, align 1, !dbg !89, !tbaa !87
+  %conv = sext i8 %1 to i32, !dbg !89
+  %call2 = tail call i32 @toupper(i32 %conv) #7, !dbg !89
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !25), !dbg !89
+  %sub = add nsw i32 %call2, -65, !dbg !91
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !24), !dbg !91
+  %cmp3 = icmp slt i32 %sub, %boardsize, !dbg !92
+  %sub. = select i1 %cmp3, i32 %sub, i32 -1, !dbg !93
+  br label %return, !dbg !93
 
-; <label>:12                                      ; preds = %5, %0
-  %.0 = phi i32 [ -1, %0 ], [ %., %5 ]
-  ret i32 %.0, !dbg !115
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %sub., %if.end ]
+  ret i32 %retval.0, !dbg !94
 }
 
 ; Function Attrs: nounwind optsize readonly
 declare i64 @strlen(i8* nocapture) #1
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @get_moveY(%struct.SGFProperty_t* nocapture readonly %property, i32 %boardsize) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %property, i64 0, metadata !27, metadata !90), !dbg !116
-  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !28, metadata !90), !dbg !117
-  %1 = getelementptr inbounds %struct.SGFProperty_t* %property, i64 0, i32 2, !dbg !118
-  %2 = load i8** %1, align 8, !dbg !118, !tbaa !95
-  %3 = tail call i64 @strlen(i8* %2) #7, !dbg !120
-  %4 = icmp ult i64 %3, 2, !dbg !121
-  br i1 %4, label %11, label %5, !dbg !122
+; Function Attrs: nounwind optsize
+declare i32 @toupper(i32) #2
 
-; <label>:5                                       ; preds = %0
-  %6 = load i8* %2, align 1, !dbg !123, !tbaa !105
-  %7 = sext i8 %6 to i32, !dbg !124
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !85, metadata !90) #6, !dbg !125
-  %8 = tail call i32 @__toupper(i32 %7) #7, !dbg !127
-  %9 = add nsw i32 %8, -65, !dbg !128
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !29, metadata !90), !dbg !129
-  %10 = icmp slt i32 %9, %boardsize, !dbg !130
-  %. = select i1 %10, i32 %9, i32 -1, !dbg !132
-  br label %11, !dbg !132
+; Function Attrs: nounwind optsize uwtable
+define i32 @get_moveY(%struct.SGFProperty_t* nocapture %property, i32 %boardsize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %property}, i64 0, metadata !29), !dbg !95
+  tail call void @llvm.dbg.value(metadata !{i32 %boardsize}, i64 0, metadata !30), !dbg !95
+  %value = getelementptr inbounds %struct.SGFProperty_t* %property, i64 0, i32 2, !dbg !96
+  %0 = load i8** %value, align 8, !dbg !96, !tbaa !86
+  %call = tail call i64 @strlen(i8* %0) #6, !dbg !96
+  %cmp = icmp ult i64 %call, 2, !dbg !96
+  br i1 %cmp, label %return, label %if.end, !dbg !96
 
-; <label>:11                                      ; preds = %5, %0
-  %.0 = phi i32 [ -1, %0 ], [ %., %5 ]
-  ret i32 %.0, !dbg !133
+if.end:                                           ; preds = %entry
+  %1 = load i8* %0, align 1, !dbg !97, !tbaa !87
+  %conv = sext i8 %1 to i32, !dbg !97
+  %call2 = tail call i32 @toupper(i32 %conv) #7, !dbg !97
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !32), !dbg !97
+  %sub = add nsw i32 %call2, -65, !dbg !99
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !31), !dbg !99
+  %cmp3 = icmp slt i32 %sub, %boardsize, !dbg !100
+  %sub. = select i1 %cmp3, i32 %sub, i32 -1, !dbg !101
+  br label %return, !dbg !101
+
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %sub., %if.end ]
+  ret i32 %retval.0, !dbg !102
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @get_moveXY(%struct.SGFProperty_t* nocapture readonly %property, i32* nocapture %i, i32* nocapture %j, i32 %boardsize) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %property, i64 0, metadata !35, metadata !90), !dbg !134
-  tail call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !36, metadata !90), !dbg !135
-  tail call void @llvm.dbg.value(metadata i32* %j, i64 0, metadata !37, metadata !90), !dbg !136
-  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !38, metadata !90), !dbg !137
-  %1 = tail call i32 @get_moveX(%struct.SGFProperty_t* %property, i32 %boardsize) #8, !dbg !138
-  store i32 %1, i32* %i, align 4, !dbg !139, !tbaa !140
-  %2 = tail call i32 @get_moveY(%struct.SGFProperty_t* %property, i32 %boardsize) #8, !dbg !142
-  store i32 %2, i32* %j, align 4, !dbg !143, !tbaa !140
-  %3 = load i32* %i, align 4, !dbg !144, !tbaa !140
-  %4 = and i32 %3, %2, !dbg !146
-  %not. = icmp ne i32 %4, -1, !dbg !146
-  %.0 = zext i1 %not. to i32, !dbg !146
-  ret i32 %.0, !dbg !147
+; Function Attrs: nounwind optsize uwtable
+define i32 @get_moveXY(%struct.SGFProperty_t* nocapture %property, i32* nocapture %i, i32* nocapture %j, i32 %boardsize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %property}, i64 0, metadata !39), !dbg !103
+  tail call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !40), !dbg !103
+  tail call void @llvm.dbg.value(metadata !{i32* %j}, i64 0, metadata !41), !dbg !103
+  tail call void @llvm.dbg.value(metadata !{i32 %boardsize}, i64 0, metadata !42), !dbg !103
+  %call = tail call i32 @get_moveX(%struct.SGFProperty_t* %property, i32 %boardsize) #8, !dbg !104
+  store i32 %call, i32* %i, align 4, !dbg !104, !tbaa !105
+  %call1 = tail call i32 @get_moveY(%struct.SGFProperty_t* %property, i32 %boardsize) #8, !dbg !106
+  store i32 %call1, i32* %j, align 4, !dbg !106, !tbaa !105
+  %0 = load i32* %i, align 4, !dbg !107, !tbaa !105
+  %cmp = icmp eq i32 %0, -1, !dbg !107
+  %cmp2 = icmp eq i32 %call1, -1, !dbg !107
+  %or.cond = and i1 %cmp, %cmp2, !dbg !107
+  %1 = zext i1 %or.cond to i32, !dbg !107
+  %retval.0 = xor i32 %1, 1, !dbg !107
+  ret i32 %retval.0, !dbg !108
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @show_sgf_properties(%struct.SGFNode_t* nocapture readonly %node) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFNode_t* %node, i64 0, metadata !52, metadata !90), !dbg !148
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !54, metadata !90), !dbg !149
-  %1 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0)) #7, !dbg !150
-  %2 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !151
-  %3 = load %struct.SGFProperty_t** %2, align 8, !dbg !151, !tbaa !153
-  %4 = icmp eq %struct.SGFProperty_t* %3, null, !dbg !155
-  br i1 %4, label %5, label %.lr.ph, !dbg !156
+; Function Attrs: nounwind optsize uwtable
+define i32 @show_sgf_properties(%struct.SGFNode_t* nocapture %node) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFNode_t* %node}, i64 0, metadata !56), !dbg !109
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !58), !dbg !110
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0)) #7, !dbg !111
+  %props = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !112
+  %0 = load %struct.SGFProperty_t** %props, align 8, !dbg !112, !tbaa !86
+  %tobool = icmp eq %struct.SGFProperty_t* %0, null, !dbg !112
+  br i1 %tobool, label %if.then, label %while.body, !dbg !112
 
-; <label>:5                                       ; preds = %0
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([5 x i8]* @str, i64 0, i64 0)), !dbg !157
-  br label %28, !dbg !159
+if.then:                                          ; preds = %entry
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([5 x i8]* @str, i64 0, i64 0)), !dbg !113
+  br label %return, !dbg !115
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %propcount.04 = phi i32 [ %15, %.lr.ph ], [ 0, %0 ]
-  %sgf_prop.03 = phi %struct.SGFProperty_t* [ %14, %.lr.ph ], [ %3, %0 ]
-  %6 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.03, i64 0, i32 1, !dbg !160
-  %7 = load i16* %6, align 2, !dbg !160, !tbaa !163
-  %8 = sext i16 %7 to i32, !dbg !164
-  %9 = and i32 %8, 255, !dbg !165
-  %10 = lshr i32 %8, 8, !dbg !166
-  %11 = and i32 %10, 255, !dbg !166
-  %12 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i32 %9, i32 %11) #7, !dbg !167
-  %13 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.03, i64 0, i32 0, !dbg !168
-  %14 = load %struct.SGFProperty_t** %13, align 8, !dbg !168, !tbaa !169
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %14, i64 0, metadata !53, metadata !90), !dbg !170
-  %15 = add nuw nsw i32 %propcount.04, 1, !dbg !171
-  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !54, metadata !90), !dbg !149
-  %16 = icmp eq %struct.SGFProperty_t* %14, null, !dbg !172
-  br i1 %16, label %._crit_edge, label %.lr.ph, !dbg !172
+while.body:                                       ; preds = %entry, %while.body
+  %propcount.033 = phi i32 [ %inc, %while.body ], [ 0, %entry ]
+  %sgf_prop.032 = phi %struct.SGFProperty_t* [ %2, %while.body ], [ %0, %entry ]
+  %name = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.032, i64 0, i32 1, !dbg !116
+  %1 = load i16* %name, align 2, !dbg !116, !tbaa !119
+  %conv = sext i16 %1 to i32, !dbg !116
+  %and = and i32 %conv, 255, !dbg !116
+  %and6 = lshr i32 %conv, 8, !dbg !116
+  %shr30 = and i32 %and6, 255, !dbg !116
+  %call7 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i32 %and, i32 %shr30) #7, !dbg !116
+  %next = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.032, i64 0, i32 0, !dbg !120
+  %2 = load %struct.SGFProperty_t** %next, align 8, !dbg !120, !tbaa !86
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %2}, i64 0, metadata !57), !dbg !120
+  %inc = add nsw i32 %propcount.033, 1, !dbg !121
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !58), !dbg !121
+  %tobool3 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !122
+  br i1 %tobool3, label %while.end, label %while.body, !dbg !122
 
-._crit_edge:                                      ; preds = %.lr.ph
-  %17 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i32 %15) #7, !dbg !173
-  %18 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 3, !dbg !174
-  %19 = load %struct.SGFNode_t** %18, align 8, !dbg !174, !tbaa !176
-  %20 = icmp eq %struct.SGFNode_t* %19, null, !dbg !177
-  br i1 %20, label %22, label %21, !dbg !178
+while.end:                                        ; preds = %while.body
+  %call8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i32 %inc) #7, !dbg !123
+  %next9 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 3, !dbg !124
+  %3 = load %struct.SGFNode_t** %next9, align 8, !dbg !124, !tbaa !86
+  %tobool10 = icmp eq %struct.SGFNode_t* %3, null, !dbg !124
+  br i1 %tobool10, label %if.end, label %if.then11, !dbg !124
 
-; <label>:21                                      ; preds = %._crit_edge
-  %putchar2 = tail call i32 @putchar(i32 110) #6, !dbg !179
-  br label %22, !dbg !179
+if.then11:                                        ; preds = %while.end
+  %putchar29 = tail call i32 @putchar(i32 110) #5, !dbg !125
+  br label %if.end, !dbg !125
 
-; <label>:22                                      ; preds = %._crit_edge, %21
-  %23 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 2, !dbg !180
-  %24 = load %struct.SGFNode_t** %23, align 8, !dbg !180, !tbaa !182
-  %25 = icmp eq %struct.SGFNode_t* %24, null, !dbg !183
-  br i1 %25, label %27, label %26, !dbg !184
+if.end:                                           ; preds = %while.end, %if.then11
+  %child = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 2, !dbg !126
+  %4 = load %struct.SGFNode_t** %child, align 8, !dbg !126, !tbaa !86
+  %tobool13 = icmp eq %struct.SGFNode_t* %4, null, !dbg !126
+  br i1 %tobool13, label %if.end16, label %if.then14, !dbg !126
 
-; <label>:26                                      ; preds = %22
-  %putchar1 = tail call i32 @putchar(i32 99) #6, !dbg !185
-  br label %27, !dbg !185
+if.then14:                                        ; preds = %if.end
+  %putchar28 = tail call i32 @putchar(i32 99) #5, !dbg !127
+  br label %if.end16, !dbg !127
 
-; <label>:27                                      ; preds = %22, %26
-  %putchar = tail call i32 @putchar(i32 10) #6, !dbg !186
-  br label %28, !dbg !187
+if.end16:                                         ; preds = %if.end, %if.then14
+  %putchar = tail call i32 @putchar(i32 10) #5, !dbg !128
+  br label %return, !dbg !129
 
-; <label>:28                                      ; preds = %27, %5
-  %.0 = phi i32 [ %15, %27 ], [ 0, %5 ]
-  ret i32 %.0, !dbg !188
+return:                                           ; preds = %if.end16, %if.then
+  %retval.0 = phi i32 [ %inc, %if.end16 ], [ 0, %if.then ]
+  ret i32 %retval.0, !dbg !130
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @printf(i8* nocapture readonly, ...) #2
+declare i32 @printf(i8* nocapture, ...) #2
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @show_sgf_tree(%struct.SGFNode_t* nocapture readonly %node) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFNode_t* %node, i64 0, metadata !57, metadata !90), !dbg !189
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !58, metadata !90), !dbg !190
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !58, metadata !90), !dbg !190
-  %1 = tail call i32 @show_sgf_properties(%struct.SGFNode_t* %node) #8, !dbg !191
-  %2 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 2, !dbg !192
-  %3 = load %struct.SGFNode_t** %2, align 8, !dbg !192, !tbaa !182
-  %4 = icmp eq %struct.SGFNode_t* %3, null, !dbg !194
-  br i1 %4, label %8, label %5, !dbg !195
+; Function Attrs: nounwind optsize uwtable
+define i32 @show_sgf_tree(%struct.SGFNode_t* nocapture %node) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFNode_t* %node}, i64 0, metadata !61), !dbg !131
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !62), !dbg !132
+  tail call void @llvm.dbg.value(metadata !133, i64 0, metadata !62), !dbg !134
+  %call = tail call i32 @show_sgf_properties(%struct.SGFNode_t* %node) #8, !dbg !135
+  %child = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 2, !dbg !136
+  %0 = load %struct.SGFNode_t** %child, align 8, !dbg !136, !tbaa !86
+  %tobool = icmp eq %struct.SGFNode_t* %0, null, !dbg !136
+  br i1 %tobool, label %if.end, label %if.then, !dbg !136
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %3) #8, !dbg !196
-  %7 = add nsw i32 %6, 1, !dbg !197
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !58, metadata !90), !dbg !190
-  br label %8, !dbg !198
+if.then:                                          ; preds = %entry
+  %call2 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %0) #8, !dbg !137
+  %add = add nsw i32 %call2, 1, !dbg !137
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !62), !dbg !137
+  br label %if.end, !dbg !137
 
-; <label>:8                                       ; preds = %0, %5
-  %n.0 = phi i32 [ %7, %5 ], [ 1, %0 ]
-  %9 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 3, !dbg !199
-  %10 = load %struct.SGFNode_t** %9, align 8, !dbg !199, !tbaa !176
-  %11 = icmp eq %struct.SGFNode_t* %10, null, !dbg !201
-  br i1 %11, label %15, label %12, !dbg !202
+if.end:                                           ; preds = %entry, %if.then
+  %n.0 = phi i32 [ %add, %if.then ], [ 1, %entry ]
+  %next = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 3, !dbg !138
+  %1 = load %struct.SGFNode_t** %next, align 8, !dbg !138, !tbaa !86
+  %tobool3 = icmp eq %struct.SGFNode_t* %1, null, !dbg !138
+  br i1 %tobool3, label %if.end8, label %if.then4, !dbg !138
 
-; <label>:12                                      ; preds = %8
-  %13 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %10) #8, !dbg !203
-  %14 = add nsw i32 %13, %n.0, !dbg !204
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !58, metadata !90), !dbg !190
-  ret i32 %14, !dbg !205
+if.then4:                                         ; preds = %if.end
+  %call6 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %1) #8, !dbg !139
+  %add7 = add nsw i32 %call6, %n.0, !dbg !139
+  tail call void @llvm.dbg.value(metadata !{i32 %add7}, i64 0, metadata !62), !dbg !139
+  ret i32 %add7, !dbg !140
 
-; <label>:15                                      ; preds = %8
-  ret i32 %n.0, !dbg !205
+if.end8:                                          ; preds = %if.end
+  ret i32 %n.0, !dbg !140
 }
 
-; Function Attrs: nounwind optsize readonly ssp uwtable
-define i32 @is_markup_node(%struct.SGFNode_t* nocapture readonly %node) #3 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFNode_t* %node, i64 0, metadata !61, metadata !90), !dbg !206
-  %1 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !207
-  %2 = load %struct.SGFProperty_t** %1, align 8, !dbg !207, !tbaa !153
-  %3 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !209
-  br i1 %3, label %.loopexit, label %.lr.ph, !dbg !210
+; Function Attrs: nounwind optsize readonly uwtable
+define i32 @is_markup_node(%struct.SGFNode_t* nocapture %node) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFNode_t* %node}, i64 0, metadata !65), !dbg !141
+  %props = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !142
+  %0 = load %struct.SGFProperty_t** %props, align 8, !dbg !142, !tbaa !86
+  %tobool = icmp eq %struct.SGFProperty_t* %0, null, !dbg !142
+  br i1 %tobool, label %return, label %while.body, !dbg !142
 
-.lr.ph:                                           ; preds = %0, %7
-  %sgf_prop.01 = phi %struct.SGFProperty_t* [ %9, %7 ], [ %2, %0 ]
-  %4 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.01, i64 0, i32 1, !dbg !211
-  %5 = load i16* %4, align 2, !dbg !211, !tbaa !163
-  %6 = sext i16 %5 to i32, !dbg !213
-  switch i32 %6, label %7 [
-    i32 21059, label %.loopexit
-    i32 20819, label %.loopexit
-    i32 21076, label %.loopexit
-    i32 16717, label %.loopexit
-    i32 19778, label %.loopexit
-    i32 20292, label %.loopexit
-    i32 21577, label %.loopexit
-    i32 17748, label %.loopexit
-  ], !dbg !214
+while.body:                                       ; preds = %entry, %sw.epilog
+  %sgf_prop.07 = phi %struct.SGFProperty_t* [ %2, %sw.epilog ], [ %0, %entry ]
+  %name = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.07, i64 0, i32 1, !dbg !143
+  %1 = load i16* %name, align 2, !dbg !143, !tbaa !119
+  %conv = sext i16 %1 to i32, !dbg !143
+  switch i32 %conv, label %sw.epilog [
+    i32 21059, label %return
+    i32 20819, label %return
+    i32 21076, label %return
+    i32 16717, label %return
+    i32 19778, label %return
+    i32 20292, label %return
+    i32 21577, label %return
+    i32 17748, label %return
+  ], !dbg !143
 
-; <label>:7                                       ; preds = %.lr.ph
-  %8 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.01, i64 0, i32 0, !dbg !215
-  %9 = load %struct.SGFProperty_t** %8, align 8, !dbg !215, !tbaa !169
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %9, i64 0, metadata !62, metadata !90), !dbg !216
-  %10 = icmp eq %struct.SGFProperty_t* %9, null, !dbg !217
-  br i1 %10, label %.loopexit, label %.lr.ph, !dbg !217
+sw.epilog:                                        ; preds = %while.body
+  %next = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.07, i64 0, i32 0, !dbg !145
+  %2 = load %struct.SGFProperty_t** %next, align 8, !dbg !145, !tbaa !86
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %2}, i64 0, metadata !66), !dbg !145
+  %tobool2 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !146
+  br i1 %tobool2, label %return, label %while.body, !dbg !146
 
-.loopexit:                                        ; preds = %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %7, %0
-  %.0 = phi i32 [ 0, %0 ], [ 0, %7 ], [ 1, %.lr.ph ], [ 1, %.lr.ph ], [ 1, %.lr.ph ], [ 1, %.lr.ph ], [ 1, %.lr.ph ], [ 1, %.lr.ph ], [ 1, %.lr.ph ], [ 1, %.lr.ph ]
-  ret i32 %.0, !dbg !218
+return:                                           ; preds = %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %sw.epilog, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %while.body ], [ 1, %while.body ], [ 1, %while.body ], [ 1, %while.body ], [ 1, %while.body ], [ 1, %while.body ], [ 1, %while.body ], [ 1, %while.body ], [ 0, %sw.epilog ]
+  ret i32 %retval.0, !dbg !147
 }
 
-; Function Attrs: nounwind optsize readonly ssp uwtable
-define i32 @is_move_node(%struct.SGFNode_t* nocapture readonly %node) #3 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFNode_t* %node, i64 0, metadata !65, metadata !90), !dbg !219
-  %1 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !220
-  %2 = load %struct.SGFProperty_t** %1, align 8, !dbg !220, !tbaa !153
-  %3 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !222
-  br i1 %3, label %.loopexit, label %.lr.ph, !dbg !223
+; Function Attrs: nounwind optsize readonly uwtable
+define i32 @is_move_node(%struct.SGFNode_t* nocapture %node) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFNode_t* %node}, i64 0, metadata !69), !dbg !148
+  %props = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !149
+  %0 = load %struct.SGFProperty_t** %props, align 8, !dbg !149, !tbaa !86
+  %tobool = icmp eq %struct.SGFProperty_t* %0, null, !dbg !149
+  br i1 %tobool, label %return, label %while.body, !dbg !149
 
-.lr.ph:                                           ; preds = %0, %7
-  %sgf_prop.01 = phi %struct.SGFProperty_t* [ %9, %7 ], [ %2, %0 ]
-  %4 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.01, i64 0, i32 1, !dbg !224
-  %5 = load i16* %4, align 2, !dbg !224, !tbaa !163
-  %6 = sext i16 %5 to i32, !dbg !226
-  switch i32 %6, label %7 [
-    i32 8258, label %.loopexit
-    i32 8279, label %.loopexit
-  ], !dbg !227
+while.body:                                       ; preds = %entry, %sw.epilog
+  %sgf_prop.07 = phi %struct.SGFProperty_t* [ %2, %sw.epilog ], [ %0, %entry ]
+  %name = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.07, i64 0, i32 1, !dbg !150
+  %1 = load i16* %name, align 2, !dbg !150, !tbaa !119
+  %conv = sext i16 %1 to i32, !dbg !150
+  switch i32 %conv, label %sw.epilog [
+    i32 8258, label %return
+    i32 8279, label %return
+  ], !dbg !150
 
-; <label>:7                                       ; preds = %.lr.ph
-  %8 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.01, i64 0, i32 0, !dbg !228
-  %9 = load %struct.SGFProperty_t** %8, align 8, !dbg !228, !tbaa !169
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %9, i64 0, metadata !66, metadata !90), !dbg !229
-  %10 = icmp eq %struct.SGFProperty_t* %9, null, !dbg !230
-  br i1 %10, label %.loopexit, label %.lr.ph, !dbg !230
+sw.epilog:                                        ; preds = %while.body
+  %next = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.07, i64 0, i32 0, !dbg !152
+  %2 = load %struct.SGFProperty_t** %next, align 8, !dbg !152, !tbaa !86
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %2}, i64 0, metadata !70), !dbg !152
+  %tobool2 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !153
+  br i1 %tobool2, label %return, label %while.body, !dbg !153
 
-.loopexit:                                        ; preds = %.lr.ph, %.lr.ph, %7, %0
-  %.0 = phi i32 [ 0, %0 ], [ 0, %7 ], [ 1, %.lr.ph ], [ 1, %.lr.ph ]
-  ret i32 %.0, !dbg !231
+return:                                           ; preds = %while.body, %while.body, %sw.epilog, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %while.body ], [ 1, %while.body ], [ 0, %sw.epilog ]
+  ret i32 %retval.0, !dbg !154
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @is_pass_node(%struct.SGFNode_t* nocapture readonly %node, i32 %boardsize) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFNode_t* %node, i64 0, metadata !71, metadata !90), !dbg !232
-  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !72, metadata !90), !dbg !233
-  %1 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !234
-  %2 = load %struct.SGFProperty_t** %1, align 8, !dbg !234, !tbaa !153
-  %3 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !236
-  br i1 %3, label %.loopexit, label %.lr.ph, !dbg !237
+; Function Attrs: nounwind optsize uwtable
+define i32 @is_pass_node(%struct.SGFNode_t* nocapture %node, i32 %boardsize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFNode_t* %node}, i64 0, metadata !75), !dbg !155
+  tail call void @llvm.dbg.value(metadata !{i32 %boardsize}, i64 0, metadata !76), !dbg !155
+  %props = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !156
+  %0 = load %struct.SGFProperty_t** %props, align 8, !dbg !156, !tbaa !86
+  %tobool = icmp eq %struct.SGFProperty_t* %0, null, !dbg !156
+  br i1 %tobool, label %return, label %while.body, !dbg !156
 
-.lr.ph:                                           ; preds = %0, %13
-  %sgf_prop.02 = phi %struct.SGFProperty_t* [ %15, %13 ], [ %2, %0 ]
-  %4 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.02, i64 0, i32 1, !dbg !238
-  %5 = load i16* %4, align 2, !dbg !238, !tbaa !163
-  %6 = sext i16 %5 to i32, !dbg !240
-  switch i32 %6, label %13 [
-    i32 8258, label %7
-    i32 8279, label %7
-  ], !dbg !241
+while.body:                                       ; preds = %entry, %sw.epilog
+  %sgf_prop.010 = phi %struct.SGFProperty_t* [ %2, %sw.epilog ], [ %0, %entry ]
+  %name = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.010, i64 0, i32 1, !dbg !157
+  %1 = load i16* %name, align 2, !dbg !157, !tbaa !119
+  %conv = sext i16 %1 to i32, !dbg !157
+  switch i32 %conv, label %sw.epilog [
+    i32 8258, label %sw.bb
+    i32 8279, label %sw.bb
+  ], !dbg !157
 
-; <label>:7                                       ; preds = %.lr.ph, %.lr.ph
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %15, i64 0, metadata !35, metadata !90) #6, !dbg !242
-  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !38, metadata !90) #6, !dbg !245
-  %8 = tail call i32 @get_moveX(%struct.SGFProperty_t* %sgf_prop.02, i32 %boardsize) #7, !dbg !246
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !36, metadata !90), !dbg !247
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !74, metadata !90), !dbg !248
-  %9 = tail call i32 @get_moveY(%struct.SGFProperty_t* %sgf_prop.02, i32 %boardsize) #7, !dbg !249
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !37, metadata !90), !dbg !250
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !75, metadata !90), !dbg !251
-  %10 = and i32 %9, %8, !dbg !252
-  %11 = icmp eq i32 %10, -1, !dbg !253
-  %12 = zext i1 %11 to i32, !dbg !253
-  br label %.loopexit, !dbg !254
+sw.bb:                                            ; preds = %while.body, %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %sgf_prop.010}, i64 0, metadata !159) #5, !dbg !162
+  tail call void @llvm.dbg.value(metadata !{i32 %boardsize}, i64 0, metadata !163) #5, !dbg !162
+  %call.i = tail call i32 @get_moveX(%struct.SGFProperty_t* %sgf_prop.010, i32 %boardsize) #7, !dbg !164
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !78), !dbg !164
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !165), !dbg !162
+  %call1.i = tail call i32 @get_moveY(%struct.SGFProperty_t* %sgf_prop.010, i32 %boardsize) #7, !dbg !166
+  tail call void @llvm.dbg.value(metadata !{i32 %call1.i}, i64 0, metadata !79), !dbg !166
+  tail call void @llvm.dbg.value(metadata !{i32 %call1.i}, i64 0, metadata !167), !dbg !162
+  %cmp.i = icmp eq i32 %call.i, -1, !dbg !168
+  %cmp2.i = icmp eq i32 %call1.i, -1, !dbg !168
+  %or.cond.i = and i1 %cmp.i, %cmp2.i, !dbg !168
+  %lnot.ext = zext i1 %or.cond.i to i32, !dbg !160
+  br label %return, !dbg !160
 
-; <label>:13                                      ; preds = %.lr.ph
-  %14 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.02, i64 0, i32 0, !dbg !255
-  %15 = load %struct.SGFProperty_t** %14, align 8, !dbg !255, !tbaa !169
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %15, i64 0, metadata !73, metadata !90), !dbg !256
-  %16 = icmp eq %struct.SGFProperty_t* %15, null, !dbg !257
-  br i1 %16, label %.loopexit, label %.lr.ph, !dbg !257
+sw.epilog:                                        ; preds = %while.body
+  %next = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.010, i64 0, i32 0, !dbg !169
+  %2 = load %struct.SGFProperty_t** %next, align 8, !dbg !169, !tbaa !86
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %2}, i64 0, metadata !77), !dbg !169
+  %tobool2 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !170
+  br i1 %tobool2, label %return, label %while.body, !dbg !170
 
-.loopexit:                                        ; preds = %13, %0, %7
-  %.0 = phi i32 [ %12, %7 ], [ 0, %0 ], [ 0, %13 ]
-  ret i32 %.0, !dbg !258
+return:                                           ; preds = %sw.epilog, %entry, %sw.bb
+  %retval.0 = phi i32 [ %lnot.ext, %sw.bb ], [ 0, %entry ], [ 0, %sw.epilog ]
+  ret i32 %retval.0, !dbg !171
 }
 
-; Function Attrs: nounwind optsize readonly ssp uwtable
-define i32 @find_move(%struct.SGFNode_t* nocapture readonly %node) #3 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFNode_t* %node, i64 0, metadata !78, metadata !90), !dbg !259
-  %1 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !260
-  %2 = load %struct.SGFProperty_t** %1, align 8, !dbg !260, !tbaa !153
-  %3 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !262
-  br i1 %3, label %.loopexit, label %.lr.ph, !dbg !263
+; Function Attrs: nounwind optsize readonly uwtable
+define i32 @find_move(%struct.SGFNode_t* nocapture %node) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFNode_t* %node}, i64 0, metadata !82), !dbg !172
+  %props = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !173
+  %0 = load %struct.SGFProperty_t** %props, align 8, !dbg !173, !tbaa !86
+  %tobool = icmp eq %struct.SGFProperty_t* %0, null, !dbg !173
+  br i1 %tobool, label %return, label %while.body, !dbg !173
 
-.lr.ph:                                           ; preds = %0, %7
-  %sgf_prop.01 = phi %struct.SGFProperty_t* [ %9, %7 ], [ %2, %0 ]
-  %4 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.01, i64 0, i32 1, !dbg !264
-  %5 = load i16* %4, align 2, !dbg !264, !tbaa !163
-  %6 = sext i16 %5 to i32, !dbg !266
-  switch i32 %6, label %7 [
-    i32 8258, label %.loopexit
-    i32 8279, label %.loopexit4
-  ], !dbg !267
+while.body:                                       ; preds = %entry, %sw.epilog
+  %sgf_prop.08 = phi %struct.SGFProperty_t* [ %2, %sw.epilog ], [ %0, %entry ]
+  %name = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.08, i64 0, i32 1, !dbg !174
+  %1 = load i16* %name, align 2, !dbg !174, !tbaa !119
+  %conv = sext i16 %1 to i32, !dbg !174
+  switch i32 %conv, label %sw.epilog [
+    i32 8258, label %return.loopexit
+    i32 8279, label %return
+  ], !dbg !174
 
-; <label>:7                                       ; preds = %.lr.ph
-  %8 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.01, i64 0, i32 0, !dbg !268
-  %9 = load %struct.SGFProperty_t** %8, align 8, !dbg !268, !tbaa !169
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %9, i64 0, metadata !79, metadata !90), !dbg !269
-  %10 = icmp eq %struct.SGFProperty_t* %9, null, !dbg !270
-  br i1 %10, label %.loopexit, label %.lr.ph, !dbg !270
+sw.epilog:                                        ; preds = %while.body
+  %next = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.08, i64 0, i32 0, !dbg !176
+  %2 = load %struct.SGFProperty_t** %next, align 8, !dbg !176, !tbaa !86
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %2}, i64 0, metadata !83), !dbg !176
+  %tobool2 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !177
+  br i1 %tobool2, label %return.loopexit, label %while.body, !dbg !177
 
-.loopexit4:                                       ; preds = %.lr.ph
-  br label %.loopexit
+return.loopexit:                                  ; preds = %sw.epilog, %while.body
+  %retval.0.ph = phi i32 [ 2, %while.body ], [ 0, %sw.epilog ]
+  br label %return
 
-.loopexit:                                        ; preds = %.lr.ph, %7, %.loopexit4, %0
-  %.0 = phi i32 [ 0, %0 ], [ 1, %.loopexit4 ], [ 2, %.lr.ph ], [ 0, %7 ]
-  ret i32 %.0, !dbg !271
+return:                                           ; preds = %while.body, %return.loopexit, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ %retval.0.ph, %return.loopexit ], [ 1, %while.body ]
+  ret i32 %retval.0, !dbg !178
 }
-
-; Function Attrs: optsize
-declare i32 @__toupper(i32) #4
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #5
+declare void @llvm.dbg.value(metadata, i64, metadata) #4
 
 ; Function Attrs: nounwind
-declare i32 @puts(i8* nocapture readonly) #6
+declare i32 @puts(i8* nocapture) #5
 
 ; Function Attrs: nounwind
-declare i32 @putchar(i32) #6
+declare i32 @putchar(i32) #5
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize readonly "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind optsize readonly ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #5 = { nounwind readnone }
-attributes #6 = { nounwind }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize readonly "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind optsize readonly uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind readnone }
+attributes #5 = { nounwind }
+attributes #6 = { nounwind optsize readonly }
 attributes #7 = { nounwind optsize }
 attributes #8 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!86, !87, !88}
-!llvm.ident = !{!89}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !5, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!5 = !{!6, !25, !30, !39, !55, !59, !63, !67, !76, !80}
-!6 = !DISubprogram(name: "get_moveX", scope: !1, file: !1, line: 36, type: !7, isLocal: false, isDefinition: true, scopeLine: 37, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.SGFProperty_t*, i32)* @get_moveX, variables: !21)
-!7 = !DISubroutineType(types: !8)
-!8 = !{!4, !9, !4}
-!9 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !10, size: 64, align: 64)
-!10 = !DIDerivedType(tag: DW_TAG_typedef, name: "SGFProperty", file: !11, line: 58, baseType: !12)
-!11 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/445.gobmk/src/sgf/sgftree.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!12 = !DICompositeType(tag: DW_TAG_structure_type, name: "SGFProperty_t", file: !11, line: 54, size: 192, align: 64, elements: !13)
-!13 = !{!14, !16, !18}
-!14 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !12, file: !11, line: 55, baseType: !15, size: 64, align: 64)
-!15 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !12, size: 64, align: 64)
-!16 = !DIDerivedType(tag: DW_TAG_member, name: "name", scope: !12, file: !11, line: 56, baseType: !17, size: 16, align: 16, offset: 64)
-!17 = !DIBasicType(name: "short", size: 16, align: 16, encoding: DW_ATE_signed)
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "value", scope: !12, file: !11, line: 57, baseType: !19, size: 64, align: 64, offset: 128)
-!19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64, align: 64)
-!20 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!21 = !{!22, !23, !24}
-!22 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "property", arg: 1, scope: !6, file: !1, line: 36, type: !9)
-!23 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "boardsize", arg: 2, scope: !6, file: !1, line: 36, type: !4)
-!24 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !6, file: !1, line: 38, type: !4)
-!25 = !DISubprogram(name: "get_moveY", scope: !1, file: !1, line: 54, type: !7, isLocal: false, isDefinition: true, scopeLine: 55, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.SGFProperty_t*, i32)* @get_moveY, variables: !26)
-!26 = !{!27, !28, !29}
-!27 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "property", arg: 1, scope: !25, file: !1, line: 54, type: !9)
-!28 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "boardsize", arg: 2, scope: !25, file: !1, line: 54, type: !4)
-!29 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "j", scope: !25, file: !1, line: 56, type: !4)
-!30 = !DISubprogram(name: "get_moveXY", scope: !1, file: !1, line: 76, type: !31, isLocal: false, isDefinition: true, scopeLine: 77, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.SGFProperty_t*, i32*, i32*, i32)* @get_moveXY, variables: !34)
-!31 = !DISubroutineType(types: !32)
-!32 = !{!4, !9, !33, !33, !4}
-!33 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !4, size: 64, align: 64)
-!34 = !{!35, !36, !37, !38}
-!35 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "property", arg: 1, scope: !30, file: !1, line: 76, type: !9)
-!36 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "i", arg: 2, scope: !30, file: !1, line: 76, type: !33)
-!37 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "j", arg: 3, scope: !30, file: !1, line: 76, type: !33)
-!38 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "boardsize", arg: 4, scope: !30, file: !1, line: 76, type: !4)
-!39 = !DISubprogram(name: "show_sgf_properties", scope: !1, file: !1, line: 93, type: !40, isLocal: false, isDefinition: true, scopeLine: 94, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.SGFNode_t*)* @show_sgf_properties, variables: !51)
-!40 = !DISubroutineType(types: !41)
-!41 = !{!4, !42}
-!42 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !43, size: 64, align: 64)
-!43 = !DIDerivedType(tag: DW_TAG_typedef, name: "SGFNode", file: !11, line: 66, baseType: !44)
-!44 = !DICompositeType(tag: DW_TAG_structure_type, name: "SGFNode_t", file: !11, line: 61, size: 256, align: 64, elements: !45)
-!45 = !{!46, !47, !49, !50}
-!46 = !DIDerivedType(tag: DW_TAG_member, name: "props", scope: !44, file: !11, line: 62, baseType: !9, size: 64, align: 64)
-!47 = !DIDerivedType(tag: DW_TAG_member, name: "parent", scope: !44, file: !11, line: 63, baseType: !48, size: 64, align: 64, offset: 64)
-!48 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !44, size: 64, align: 64)
-!49 = !DIDerivedType(tag: DW_TAG_member, name: "child", scope: !44, file: !11, line: 64, baseType: !48, size: 64, align: 64, offset: 128)
-!50 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !44, file: !11, line: 65, baseType: !48, size: 64, align: 64, offset: 192)
-!51 = !{!52, !53, !54}
-!52 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "node", arg: 1, scope: !39, file: !1, line: 93, type: !42)
-!53 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "sgf_prop", scope: !39, file: !1, line: 95, type: !9)
-!54 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "propcount", scope: !39, file: !1, line: 96, type: !4)
-!55 = !DISubprogram(name: "show_sgf_tree", scope: !1, file: !1, line: 130, type: !40, isLocal: false, isDefinition: true, scopeLine: 131, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.SGFNode_t*)* @show_sgf_tree, variables: !56)
-!56 = !{!57, !58}
-!57 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "node", arg: 1, scope: !55, file: !1, line: 130, type: !42)
-!58 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "n", scope: !55, file: !1, line: 132, type: !4)
-!59 = !DISubprogram(name: "is_markup_node", scope: !1, file: !1, line: 153, type: !40, isLocal: false, isDefinition: true, scopeLine: 154, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.SGFNode_t*)* @is_markup_node, variables: !60)
-!60 = !{!61, !62}
-!61 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "node", arg: 1, scope: !59, file: !1, line: 153, type: !42)
-!62 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "sgf_prop", scope: !59, file: !1, line: 155, type: !9)
-!63 = !DISubprogram(name: "is_move_node", scope: !1, file: !1, line: 191, type: !40, isLocal: false, isDefinition: true, scopeLine: 192, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.SGFNode_t*)* @is_move_node, variables: !64)
-!64 = !{!65, !66}
-!65 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "node", arg: 1, scope: !63, file: !1, line: 191, type: !42)
-!66 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "sgf_prop", scope: !63, file: !1, line: 193, type: !9)
-!67 = !DISubprogram(name: "is_pass_node", scope: !1, file: !1, line: 222, type: !68, isLocal: false, isDefinition: true, scopeLine: 223, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.SGFNode_t*, i32)* @is_pass_node, variables: !70)
-!68 = !DISubroutineType(types: !69)
-!69 = !{!4, !42, !4}
-!70 = !{!71, !72, !73, !74, !75}
-!71 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "node", arg: 1, scope: !67, file: !1, line: 222, type: !42)
-!72 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "boardsize", arg: 2, scope: !67, file: !1, line: 222, type: !4)
-!73 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "sgf_prop", scope: !67, file: !1, line: 224, type: !9)
-!74 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !67, file: !1, line: 225, type: !4)
-!75 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "j", scope: !67, file: !1, line: 225, type: !4)
-!76 = !DISubprogram(name: "find_move", scope: !1, file: !1, line: 254, type: !40, isLocal: false, isDefinition: true, scopeLine: 255, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.SGFNode_t*)* @find_move, variables: !77)
-!77 = !{!78, !79}
-!78 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "node", arg: 1, scope: !76, file: !1, line: 254, type: !42)
-!79 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "sgf_prop", scope: !76, file: !1, line: 256, type: !9)
-!80 = !DISubprogram(name: "toupper", scope: !81, file: !81, line: 298, type: !82, isLocal: false, isDefinition: true, scopeLine: 299, flags: DIFlagPrototyped, isOptimized: true, variables: !84)
-!81 = !DIFile(filename: "/usr/include/ctype.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!82 = !DISubroutineType(types: !83)
-!83 = !{!4, !4}
-!84 = !{!85}
-!85 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "_c", arg: 1, scope: !80, file: !81, line: 298, type: !4)
-!86 = !{i32 2, !"Dwarf Version", i32 2}
-!87 = !{i32 2, !"Debug Info Version", i32 700000003}
-!88 = !{i32 1, !"PIC Level", i32 2}
-!89 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!90 = !DIExpression()
-!91 = !DILocation(line: 36, column: 24, scope: !6)
-!92 = !DILocation(line: 36, column: 38, scope: !6)
-!93 = !DILocation(line: 39, column: 24, scope: !94)
-!94 = distinct !DILexicalBlock(scope: !6, file: !1, line: 39, column: 7)
-!95 = !{!96, !97, i64 16}
-!96 = !{!"SGFProperty_t", !97, i64 0, !100, i64 8, !97, i64 16}
-!97 = !{!"any pointer", !98, i64 0}
-!98 = !{!"omnipotent char", !99, i64 0}
-!99 = !{!"Simple C/C++ TBAA"}
-!100 = !{!"short", !98, i64 0}
-!101 = !DILocation(line: 39, column: 7, scope: !94)
-!102 = !DILocation(line: 39, column: 31, scope: !94)
-!103 = !DILocation(line: 39, column: 7, scope: !6)
-!104 = !DILocation(line: 42, column: 21, scope: !6)
-!105 = !{!98, !98, i64 0}
-!106 = !DILocation(line: 42, column: 15, scope: !6)
-!107 = !DILocation(line: 298, column: 13, scope: !80, inlinedAt: !108)
-!108 = distinct !DILocation(line: 42, column: 7, scope: !6)
-!109 = !DILocation(line: 300, column: 17, scope: !80, inlinedAt: !108)
-!110 = !DILocation(line: 42, column: 41, scope: !6)
-!111 = !DILocation(line: 38, column: 7, scope: !6)
-!112 = !DILocation(line: 43, column: 9, scope: !113)
-!113 = distinct !DILexicalBlock(scope: !6, file: !1, line: 43, column: 7)
-!114 = !DILocation(line: 46, column: 3, scope: !6)
-!115 = !DILocation(line: 47, column: 1, scope: !6)
-!116 = !DILocation(line: 54, column: 24, scope: !25)
-!117 = !DILocation(line: 54, column: 38, scope: !25)
-!118 = !DILocation(line: 57, column: 24, scope: !119)
-!119 = distinct !DILexicalBlock(scope: !25, file: !1, line: 57, column: 7)
-!120 = !DILocation(line: 57, column: 7, scope: !119)
-!121 = !DILocation(line: 57, column: 31, scope: !119)
-!122 = !DILocation(line: 57, column: 7, scope: !25)
-!123 = !DILocation(line: 60, column: 21, scope: !25)
-!124 = !DILocation(line: 60, column: 15, scope: !25)
-!125 = !DILocation(line: 298, column: 13, scope: !80, inlinedAt: !126)
-!126 = distinct !DILocation(line: 60, column: 7, scope: !25)
-!127 = !DILocation(line: 300, column: 17, scope: !80, inlinedAt: !126)
-!128 = !DILocation(line: 60, column: 41, scope: !25)
-!129 = !DILocation(line: 56, column: 7, scope: !25)
-!130 = !DILocation(line: 61, column: 9, scope: !131)
-!131 = distinct !DILexicalBlock(scope: !25, file: !1, line: 61, column: 7)
-!132 = !DILocation(line: 64, column: 3, scope: !25)
-!133 = !DILocation(line: 65, column: 1, scope: !25)
-!134 = !DILocation(line: 76, column: 25, scope: !30)
-!135 = !DILocation(line: 76, column: 40, scope: !30)
-!136 = !DILocation(line: 76, column: 48, scope: !30)
-!137 = !DILocation(line: 76, column: 55, scope: !30)
-!138 = !DILocation(line: 78, column: 8, scope: !30)
-!139 = !DILocation(line: 78, column: 6, scope: !30)
-!140 = !{!141, !141, i64 0}
-!141 = !{!"int", !98, i64 0}
-!142 = !DILocation(line: 79, column: 8, scope: !30)
-!143 = !DILocation(line: 79, column: 6, scope: !30)
-!144 = !DILocation(line: 81, column: 7, scope: !145)
-!145 = distinct !DILexicalBlock(scope: !30, file: !1, line: 81, column: 7)
-!146 = !DILocation(line: 81, column: 16, scope: !145)
-!147 = !DILocation(line: 85, column: 1, scope: !30)
-!148 = !DILocation(line: 93, column: 30, scope: !39)
-!149 = !DILocation(line: 96, column: 7, scope: !39)
-!150 = !DILocation(line: 100, column: 3, scope: !39)
-!151 = !DILocation(line: 101, column: 14, scope: !152)
-!152 = distinct !DILexicalBlock(scope: !39, file: !1, line: 101, column: 7)
-!153 = !{!154, !97, i64 0}
-!154 = !{!"SGFNode_t", !97, i64 0, !97, i64 8, !97, i64 16, !97, i64 24}
-!155 = !DILocation(line: 101, column: 8, scope: !152)
-!156 = !DILocation(line: 101, column: 7, scope: !39)
-!157 = !DILocation(line: 102, column: 5, scope: !158)
-!158 = distinct !DILexicalBlock(scope: !152, file: !1, line: 101, column: 21)
-!159 = !DILocation(line: 103, column: 5, scope: !158)
-!160 = !DILocation(line: 108, column: 33, scope: !161)
-!161 = distinct !DILexicalBlock(scope: !162, file: !1, line: 107, column: 22)
-!162 = distinct !DILexicalBlock(scope: !152, file: !1, line: 105, column: 8)
-!163 = !{!96, !100, i64 8}
-!164 = !DILocation(line: 108, column: 23, scope: !161)
-!165 = !DILocation(line: 108, column: 38, scope: !161)
-!166 = !DILocation(line: 108, column: 73, scope: !161)
-!167 = !DILocation(line: 108, column: 7, scope: !161)
-!168 = !DILocation(line: 109, column: 28, scope: !161)
-!169 = !{!96, !97, i64 0}
-!170 = !DILocation(line: 95, column: 16, scope: !39)
-!171 = !DILocation(line: 110, column: 16, scope: !161)
-!172 = !DILocation(line: 107, column: 5, scope: !162)
-!173 = !DILocation(line: 113, column: 5, scope: !162)
-!174 = !DILocation(line: 114, column: 15, scope: !175)
-!175 = distinct !DILexicalBlock(scope: !162, file: !1, line: 114, column: 9)
-!176 = !{!154, !97, i64 24}
-!177 = !DILocation(line: 114, column: 9, scope: !175)
-!178 = !DILocation(line: 114, column: 9, scope: !162)
-!179 = !DILocation(line: 115, column: 7, scope: !175)
-!180 = !DILocation(line: 116, column: 15, scope: !181)
-!181 = distinct !DILexicalBlock(scope: !162, file: !1, line: 116, column: 9)
-!182 = !{!154, !97, i64 16}
-!183 = !DILocation(line: 116, column: 9, scope: !181)
-!184 = !DILocation(line: 116, column: 9, scope: !162)
-!185 = !DILocation(line: 117, column: 7, scope: !181)
-!186 = !DILocation(line: 118, column: 5, scope: !162)
-!187 = !DILocation(line: 121, column: 3, scope: !39)
-!188 = !DILocation(line: 122, column: 1, scope: !39)
-!189 = !DILocation(line: 130, column: 24, scope: !55)
-!190 = !DILocation(line: 132, column: 7, scope: !55)
-!191 = !DILocation(line: 135, column: 3, scope: !55)
-!192 = !DILocation(line: 138, column: 13, scope: !193)
-!193 = distinct !DILexicalBlock(scope: !55, file: !1, line: 138, column: 7)
-!194 = !DILocation(line: 138, column: 7, scope: !193)
-!195 = !DILocation(line: 138, column: 7, scope: !55)
-!196 = !DILocation(line: 139, column: 10, scope: !193)
-!197 = !DILocation(line: 139, column: 7, scope: !193)
-!198 = !DILocation(line: 139, column: 5, scope: !193)
-!199 = !DILocation(line: 141, column: 13, scope: !200)
-!200 = distinct !DILexicalBlock(scope: !55, file: !1, line: 141, column: 7)
-!201 = !DILocation(line: 141, column: 7, scope: !200)
-!202 = !DILocation(line: 141, column: 7, scope: !55)
-!203 = !DILocation(line: 142, column: 10, scope: !200)
-!204 = !DILocation(line: 142, column: 7, scope: !200)
-!205 = !DILocation(line: 144, column: 3, scope: !55)
-!206 = !DILocation(line: 153, column: 25, scope: !59)
-!207 = !DILocation(line: 159, column: 14, scope: !208)
-!208 = distinct !DILexicalBlock(scope: !59, file: !1, line: 159, column: 7)
-!209 = !DILocation(line: 159, column: 8, scope: !208)
-!210 = !DILocation(line: 159, column: 7, scope: !59)
-!211 = !DILocation(line: 164, column: 23, scope: !212)
-!212 = distinct !DILexicalBlock(scope: !59, file: !1, line: 163, column: 20)
-!213 = !DILocation(line: 164, column: 13, scope: !212)
-!214 = !DILocation(line: 164, column: 5, scope: !212)
-!215 = !DILocation(line: 178, column: 26, scope: !212)
-!216 = !DILocation(line: 155, column: 16, scope: !59)
-!217 = !DILocation(line: 163, column: 3, scope: !59)
-!218 = !DILocation(line: 183, column: 1, scope: !59)
-!219 = !DILocation(line: 191, column: 23, scope: !63)
-!220 = !DILocation(line: 197, column: 14, scope: !221)
-!221 = distinct !DILexicalBlock(scope: !63, file: !1, line: 197, column: 7)
-!222 = !DILocation(line: 197, column: 8, scope: !221)
-!223 = !DILocation(line: 197, column: 7, scope: !63)
-!224 = !DILocation(line: 202, column: 23, scope: !225)
-!225 = distinct !DILexicalBlock(scope: !63, file: !1, line: 201, column: 20)
-!226 = !DILocation(line: 202, column: 13, scope: !225)
-!227 = !DILocation(line: 202, column: 5, scope: !225)
-!228 = !DILocation(line: 210, column: 26, scope: !225)
-!229 = !DILocation(line: 193, column: 16, scope: !63)
-!230 = !DILocation(line: 201, column: 3, scope: !63)
-!231 = !DILocation(line: 214, column: 1, scope: !63)
-!232 = !DILocation(line: 222, column: 23, scope: !67)
-!233 = !DILocation(line: 222, column: 33, scope: !67)
-!234 = !DILocation(line: 229, column: 14, scope: !235)
-!235 = distinct !DILexicalBlock(scope: !67, file: !1, line: 229, column: 7)
-!236 = !DILocation(line: 229, column: 8, scope: !235)
-!237 = !DILocation(line: 229, column: 7, scope: !67)
-!238 = !DILocation(line: 234, column: 23, scope: !239)
-!239 = distinct !DILexicalBlock(scope: !67, file: !1, line: 233, column: 20)
-!240 = !DILocation(line: 234, column: 13, scope: !239)
-!241 = !DILocation(line: 234, column: 5, scope: !239)
-!242 = !DILocation(line: 76, column: 25, scope: !30, inlinedAt: !243)
-!243 = distinct !DILocation(line: 237, column: 15, scope: !244)
-!244 = distinct !DILexicalBlock(scope: !239, file: !1, line: 234, column: 29)
-!245 = !DILocation(line: 76, column: 55, scope: !30, inlinedAt: !243)
-!246 = !DILocation(line: 78, column: 8, scope: !30, inlinedAt: !243)
-!247 = !DILocation(line: 76, column: 40, scope: !30, inlinedAt: !243)
-!248 = !DILocation(line: 225, column: 7, scope: !67)
-!249 = !DILocation(line: 79, column: 8, scope: !30, inlinedAt: !243)
-!250 = !DILocation(line: 76, column: 48, scope: !30, inlinedAt: !243)
-!251 = !DILocation(line: 225, column: 10, scope: !67)
-!252 = !DILocation(line: 81, column: 16, scope: !145, inlinedAt: !243)
-!253 = !DILocation(line: 237, column: 14, scope: !244)
-!254 = !DILocation(line: 237, column: 7, scope: !244)
-!255 = !DILocation(line: 242, column: 26, scope: !239)
-!256 = !DILocation(line: 224, column: 16, scope: !67)
-!257 = !DILocation(line: 233, column: 3, scope: !67)
-!258 = !DILocation(line: 246, column: 1, scope: !67)
-!259 = !DILocation(line: 254, column: 20, scope: !76)
-!260 = !DILocation(line: 260, column: 14, scope: !261)
-!261 = distinct !DILexicalBlock(scope: !76, file: !1, line: 260, column: 7)
-!262 = !DILocation(line: 260, column: 8, scope: !261)
-!263 = !DILocation(line: 260, column: 7, scope: !76)
-!264 = !DILocation(line: 265, column: 23, scope: !265)
-!265 = distinct !DILexicalBlock(scope: !76, file: !1, line: 264, column: 20)
-!266 = !DILocation(line: 265, column: 13, scope: !265)
-!267 = !DILocation(line: 265, column: 5, scope: !265)
-!268 = !DILocation(line: 275, column: 26, scope: !265)
-!269 = !DILocation(line: 256, column: 16, scope: !76)
-!270 = !DILocation(line: 264, column: 3, scope: !76)
-!271 = !DILocation(line: 279, column: 1, scope: !76)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !27, metadata !34, metadata !43, metadata !59, metadata !63, metadata !67, metadata !71, metadata !80}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"get_moveX", metadata !"get_moveX", metadata !"", i32 36, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.SGFProperty_t*, i32)* @get_moveX, null, null, metadata !21, i32 37} ; [ DW_TAG_subprogram ] [line 36] [def] [scope 37] [get_moveX]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8, metadata !9, metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !10} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from SGFProperty]
+!10 = metadata !{i32 786454, metadata !1, null, metadata !"SGFProperty", i32 58, i64 0, i64 0, i64 0, i32 0, metadata !11} ; [ DW_TAG_typedef ] [SGFProperty] [line 58, size 0, align 0, offset 0] [from SGFProperty_t]
+!11 = metadata !{i32 786451, metadata !12, null, metadata !"SGFProperty_t", i32 54, i64 192, i64 64, i32 0, i32 0, null, metadata !13, i32 0, null, null} ; [ DW_TAG_structure_type ] [SGFProperty_t] [line 54, size 192, align 64, offset 0] [from ]
+!12 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgftree.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!13 = metadata !{metadata !14, metadata !16, metadata !18}
+!14 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"next", i32 55, i64 64, i64 64, i64 0, i32 0, metadata !15} ; [ DW_TAG_member ] [next] [line 55, size 64, align 64, offset 0] [from ]
+!15 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !11} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from SGFProperty_t]
+!16 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"name", i32 56, i64 16, i64 16, i64 64, i32 0, metadata !17} ; [ DW_TAG_member ] [name] [line 56, size 16, align 16, offset 64] [from short]
+!17 = metadata !{i32 786468, null, null, metadata !"short", i32 0, i64 16, i64 16, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [short] [line 0, size 16, align 16, offset 0, enc DW_ATE_signed]
+!18 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"value", i32 57, i64 64, i64 64, i64 128, i32 0, metadata !19} ; [ DW_TAG_member ] [value] [line 57, size 64, align 64, offset 128] [from ]
+!19 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !20} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!20 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!21 = metadata !{metadata !22, metadata !23, metadata !24, metadata !25}
+!22 = metadata !{i32 786689, metadata !4, metadata !"property", metadata !5, i32 16777252, metadata !9, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [property] [line 36]
+!23 = metadata !{i32 786689, metadata !4, metadata !"boardsize", metadata !5, i32 33554468, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [boardsize] [line 36]
+!24 = metadata !{i32 786688, metadata !4, metadata !"i", metadata !5, i32 38, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 38]
+!25 = metadata !{i32 786688, metadata !26, metadata !"__res", metadata !5, i32 42, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [__res] [line 42]
+!26 = metadata !{i32 786443, metadata !1, metadata !4, i32 42, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!27 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"get_moveY", metadata !"get_moveY", metadata !"", i32 54, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.SGFProperty_t*, i32)* @get_moveY, null, null, metadata !28, i32 55} ; [ DW_TAG_subprogram ] [line 54] [def] [scope 55] [get_moveY]
+!28 = metadata !{metadata !29, metadata !30, metadata !31, metadata !32}
+!29 = metadata !{i32 786689, metadata !27, metadata !"property", metadata !5, i32 16777270, metadata !9, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [property] [line 54]
+!30 = metadata !{i32 786689, metadata !27, metadata !"boardsize", metadata !5, i32 33554486, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [boardsize] [line 54]
+!31 = metadata !{i32 786688, metadata !27, metadata !"j", metadata !5, i32 56, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [j] [line 56]
+!32 = metadata !{i32 786688, metadata !33, metadata !"__res", metadata !5, i32 60, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [__res] [line 60]
+!33 = metadata !{i32 786443, metadata !1, metadata !27, i32 60, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!34 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"get_moveXY", metadata !"get_moveXY", metadata !"", i32 76, metadata !35, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.SGFProperty_t*, i32*, i32*, i32)* @get_moveXY, null, null, metadata !38, i32 77} ; [ DW_TAG_subprogram ] [line 76] [def] [scope 77] [get_moveXY]
+!35 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !36, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!36 = metadata !{metadata !8, metadata !9, metadata !37, metadata !37, metadata !8}
+!37 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !8} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!38 = metadata !{metadata !39, metadata !40, metadata !41, metadata !42}
+!39 = metadata !{i32 786689, metadata !34, metadata !"property", metadata !5, i32 16777292, metadata !9, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [property] [line 76]
+!40 = metadata !{i32 786689, metadata !34, metadata !"i", metadata !5, i32 33554508, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [i] [line 76]
+!41 = metadata !{i32 786689, metadata !34, metadata !"j", metadata !5, i32 50331724, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [j] [line 76]
+!42 = metadata !{i32 786689, metadata !34, metadata !"boardsize", metadata !5, i32 67108940, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [boardsize] [line 76]
+!43 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"show_sgf_properties", metadata !"show_sgf_properties", metadata !"", i32 93, metadata !44, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.SGFNode_t*)* @show_sgf_properties, null, null, metadata !55, i32 94} ; [ DW_TAG_subprogram ] [line 93] [def] [scope 94] [show_sgf_properties]
+!44 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !45, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!45 = metadata !{metadata !8, metadata !46}
+!46 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !47} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from SGFNode]
+!47 = metadata !{i32 786454, metadata !1, null, metadata !"SGFNode", i32 66, i64 0, i64 0, i64 0, i32 0, metadata !48} ; [ DW_TAG_typedef ] [SGFNode] [line 66, size 0, align 0, offset 0] [from SGFNode_t]
+!48 = metadata !{i32 786451, metadata !12, null, metadata !"SGFNode_t", i32 61, i64 256, i64 64, i32 0, i32 0, null, metadata !49, i32 0, null, null} ; [ DW_TAG_structure_type ] [SGFNode_t] [line 61, size 256, align 64, offset 0] [from ]
+!49 = metadata !{metadata !50, metadata !51, metadata !53, metadata !54}
+!50 = metadata !{i32 786445, metadata !12, metadata !48, metadata !"props", i32 62, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_member ] [props] [line 62, size 64, align 64, offset 0] [from ]
+!51 = metadata !{i32 786445, metadata !12, metadata !48, metadata !"parent", i32 63, i64 64, i64 64, i64 64, i32 0, metadata !52} ; [ DW_TAG_member ] [parent] [line 63, size 64, align 64, offset 64] [from ]
+!52 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !48} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from SGFNode_t]
+!53 = metadata !{i32 786445, metadata !12, metadata !48, metadata !"child", i32 64, i64 64, i64 64, i64 128, i32 0, metadata !52} ; [ DW_TAG_member ] [child] [line 64, size 64, align 64, offset 128] [from ]
+!54 = metadata !{i32 786445, metadata !12, metadata !48, metadata !"next", i32 65, i64 64, i64 64, i64 192, i32 0, metadata !52} ; [ DW_TAG_member ] [next] [line 65, size 64, align 64, offset 192] [from ]
+!55 = metadata !{metadata !56, metadata !57, metadata !58}
+!56 = metadata !{i32 786689, metadata !43, metadata !"node", metadata !5, i32 16777309, metadata !46, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [node] [line 93]
+!57 = metadata !{i32 786688, metadata !43, metadata !"sgf_prop", metadata !5, i32 95, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sgf_prop] [line 95]
+!58 = metadata !{i32 786688, metadata !43, metadata !"propcount", metadata !5, i32 96, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [propcount] [line 96]
+!59 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"show_sgf_tree", metadata !"show_sgf_tree", metadata !"", i32 130, metadata !44, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.SGFNode_t*)* @show_sgf_tree, null, null, metadata !60, i32 131} ; [ DW_TAG_subprogram ] [line 130] [def] [scope 131] [show_sgf_tree]
+!60 = metadata !{metadata !61, metadata !62}
+!61 = metadata !{i32 786689, metadata !59, metadata !"node", metadata !5, i32 16777346, metadata !46, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [node] [line 130]
+!62 = metadata !{i32 786688, metadata !59, metadata !"n", metadata !5, i32 132, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [n] [line 132]
+!63 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"is_markup_node", metadata !"is_markup_node", metadata !"", i32 153, metadata !44, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.SGFNode_t*)* @is_markup_node, null, null, metadata !64, i32 154} ; [ DW_TAG_subprogram ] [line 153] [def] [scope 154] [is_markup_node]
+!64 = metadata !{metadata !65, metadata !66}
+!65 = metadata !{i32 786689, metadata !63, metadata !"node", metadata !5, i32 16777369, metadata !46, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [node] [line 153]
+!66 = metadata !{i32 786688, metadata !63, metadata !"sgf_prop", metadata !5, i32 155, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sgf_prop] [line 155]
+!67 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"is_move_node", metadata !"is_move_node", metadata !"", i32 191, metadata !44, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.SGFNode_t*)* @is_move_node, null, null, metadata !68, i32 192} ; [ DW_TAG_subprogram ] [line 191] [def] [scope 192] [is_move_node]
+!68 = metadata !{metadata !69, metadata !70}
+!69 = metadata !{i32 786689, metadata !67, metadata !"node", metadata !5, i32 16777407, metadata !46, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [node] [line 191]
+!70 = metadata !{i32 786688, metadata !67, metadata !"sgf_prop", metadata !5, i32 193, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sgf_prop] [line 193]
+!71 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"is_pass_node", metadata !"is_pass_node", metadata !"", i32 222, metadata !72, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.SGFNode_t*, i32)* @is_pass_node, null, null, metadata !74, i32 223} ; [ DW_TAG_subprogram ] [line 222] [def] [scope 223] [is_pass_node]
+!72 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !73, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!73 = metadata !{metadata !8, metadata !46, metadata !8}
+!74 = metadata !{metadata !75, metadata !76, metadata !77, metadata !78, metadata !79}
+!75 = metadata !{i32 786689, metadata !71, metadata !"node", metadata !5, i32 16777438, metadata !46, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [node] [line 222]
+!76 = metadata !{i32 786689, metadata !71, metadata !"boardsize", metadata !5, i32 33554654, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [boardsize] [line 222]
+!77 = metadata !{i32 786688, metadata !71, metadata !"sgf_prop", metadata !5, i32 224, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sgf_prop] [line 224]
+!78 = metadata !{i32 786688, metadata !71, metadata !"i", metadata !5, i32 225, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 225]
+!79 = metadata !{i32 786688, metadata !71, metadata !"j", metadata !5, i32 225, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [j] [line 225]
+!80 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"find_move", metadata !"find_move", metadata !"", i32 254, metadata !44, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.SGFNode_t*)* @find_move, null, null, metadata !81, i32 255} ; [ DW_TAG_subprogram ] [line 254] [def] [scope 255] [find_move]
+!81 = metadata !{metadata !82, metadata !83}
+!82 = metadata !{i32 786689, metadata !80, metadata !"node", metadata !5, i32 16777470, metadata !46, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [node] [line 254]
+!83 = metadata !{i32 786688, metadata !80, metadata !"sgf_prop", metadata !5, i32 256, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sgf_prop] [line 256]
+!84 = metadata !{i32 36, i32 0, metadata !4, null}
+!85 = metadata !{i32 39, i32 0, metadata !4, null}
+!86 = metadata !{metadata !"any pointer", metadata !87}
+!87 = metadata !{metadata !"omnipotent char", metadata !88}
+!88 = metadata !{metadata !"Simple C/C++ TBAA"}
+!89 = metadata !{i32 42, i32 0, metadata !90, null}
+!90 = metadata !{i32 786443, metadata !1, metadata !26, i32 42, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!91 = metadata !{i32 42, i32 0, metadata !26, null}
+!92 = metadata !{i32 43, i32 0, metadata !4, null}
+!93 = metadata !{i32 46, i32 0, metadata !4, null}
+!94 = metadata !{i32 47, i32 0, metadata !4, null}
+!95 = metadata !{i32 54, i32 0, metadata !27, null}
+!96 = metadata !{i32 57, i32 0, metadata !27, null}
+!97 = metadata !{i32 60, i32 0, metadata !98, null}
+!98 = metadata !{i32 786443, metadata !1, metadata !33, i32 60, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!99 = metadata !{i32 60, i32 0, metadata !33, null}
+!100 = metadata !{i32 61, i32 0, metadata !27, null}
+!101 = metadata !{i32 64, i32 0, metadata !27, null}
+!102 = metadata !{i32 65, i32 0, metadata !27, null}
+!103 = metadata !{i32 76, i32 0, metadata !34, null}
+!104 = metadata !{i32 78, i32 0, metadata !34, null}
+!105 = metadata !{metadata !"int", metadata !87}
+!106 = metadata !{i32 79, i32 0, metadata !34, null}
+!107 = metadata !{i32 81, i32 0, metadata !34, null}
+!108 = metadata !{i32 84, i32 0, metadata !34, null}
+!109 = metadata !{i32 93, i32 0, metadata !43, null}
+!110 = metadata !{i32 98, i32 0, metadata !43, null}
+!111 = metadata !{i32 100, i32 0, metadata !43, null}
+!112 = metadata !{i32 101, i32 0, metadata !43, null}
+!113 = metadata !{i32 102, i32 0, metadata !114, null}
+!114 = metadata !{i32 786443, metadata !1, metadata !43, i32 101, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!115 = metadata !{i32 103, i32 0, metadata !114, null}
+!116 = metadata !{i32 108, i32 0, metadata !117, null}
+!117 = metadata !{i32 786443, metadata !1, metadata !118, i32 107, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!118 = metadata !{i32 786443, metadata !1, metadata !43, i32 105, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!119 = metadata !{metadata !"short", metadata !87}
+!120 = metadata !{i32 109, i32 0, metadata !117, null}
+!121 = metadata !{i32 110, i32 0, metadata !117, null}
+!122 = metadata !{i32 107, i32 0, metadata !118, null}
+!123 = metadata !{i32 113, i32 0, metadata !118, null}
+!124 = metadata !{i32 114, i32 0, metadata !118, null}
+!125 = metadata !{i32 115, i32 0, metadata !118, null}
+!126 = metadata !{i32 116, i32 0, metadata !118, null}
+!127 = metadata !{i32 117, i32 0, metadata !118, null}
+!128 = metadata !{i32 118, i32 0, metadata !118, null}
+!129 = metadata !{i32 121, i32 0, metadata !43, null}
+!130 = metadata !{i32 122, i32 0, metadata !43, null}
+!131 = metadata !{i32 130, i32 0, metadata !59, null}
+!132 = metadata !{i32 132, i32 0, metadata !59, null}
+!133 = metadata !{i32 1}
+!134 = metadata !{i32 134, i32 0, metadata !59, null}
+!135 = metadata !{i32 135, i32 0, metadata !59, null}
+!136 = metadata !{i32 138, i32 0, metadata !59, null}
+!137 = metadata !{i32 139, i32 0, metadata !59, null}
+!138 = metadata !{i32 141, i32 0, metadata !59, null}
+!139 = metadata !{i32 142, i32 0, metadata !59, null}
+!140 = metadata !{i32 144, i32 0, metadata !59, null}
+!141 = metadata !{i32 153, i32 0, metadata !63, null}
+!142 = metadata !{i32 159, i32 0, metadata !63, null}
+!143 = metadata !{i32 164, i32 0, metadata !144, null}
+!144 = metadata !{i32 786443, metadata !1, metadata !63, i32 163, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!145 = metadata !{i32 178, i32 0, metadata !144, null}
+!146 = metadata !{i32 163, i32 0, metadata !63, null}
+!147 = metadata !{i32 182, i32 0, metadata !63, null}
+!148 = metadata !{i32 191, i32 0, metadata !67, null}
+!149 = metadata !{i32 197, i32 0, metadata !67, null}
+!150 = metadata !{i32 202, i32 0, metadata !151, null}
+!151 = metadata !{i32 786443, metadata !1, metadata !67, i32 201, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!152 = metadata !{i32 210, i32 0, metadata !151, null}
+!153 = metadata !{i32 201, i32 0, metadata !67, null}
+!154 = metadata !{i32 213, i32 0, metadata !67, null}
+!155 = metadata !{i32 222, i32 0, metadata !71, null}
+!156 = metadata !{i32 229, i32 0, metadata !71, null}
+!157 = metadata !{i32 234, i32 0, metadata !158, null}
+!158 = metadata !{i32 786443, metadata !1, metadata !71, i32 233, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!159 = metadata !{i32 786689, metadata !34, metadata !"property", metadata !5, i32 16777292, metadata !9, i32 0, metadata !160} ; [ DW_TAG_arg_variable ] [property] [line 76]
+!160 = metadata !{i32 237, i32 0, metadata !161, null}
+!161 = metadata !{i32 786443, metadata !1, metadata !158, i32 234, i32 0, i32 12} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!162 = metadata !{i32 76, i32 0, metadata !34, metadata !160}
+!163 = metadata !{i32 786689, metadata !34, metadata !"boardsize", metadata !5, i32 67108940, metadata !8, i32 0, metadata !160} ; [ DW_TAG_arg_variable ] [boardsize] [line 76]
+!164 = metadata !{i32 78, i32 0, metadata !34, metadata !160}
+!165 = metadata !{i32 786689, metadata !34, metadata !"i", metadata !5, i32 33554508, metadata !37, i32 0, metadata !160} ; [ DW_TAG_arg_variable ] [i] [line 76]
+!166 = metadata !{i32 79, i32 0, metadata !34, metadata !160}
+!167 = metadata !{i32 786689, metadata !34, metadata !"j", metadata !5, i32 50331724, metadata !37, i32 0, metadata !160} ; [ DW_TAG_arg_variable ] [j] [line 76]
+!168 = metadata !{i32 81, i32 0, metadata !34, metadata !160}
+!169 = metadata !{i32 242, i32 0, metadata !158, null}
+!170 = metadata !{i32 233, i32 0, metadata !71, null}
+!171 = metadata !{i32 246, i32 0, metadata !71, null}
+!172 = metadata !{i32 254, i32 0, metadata !80, null}
+!173 = metadata !{i32 260, i32 0, metadata !80, null}
+!174 = metadata !{i32 265, i32 0, metadata !175, null}
+!175 = metadata !{i32 786443, metadata !1, metadata !80, i32 264, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/sgf/sgf_utils.c]
+!176 = metadata !{i32 275, i32 0, metadata !175, null}
+!177 = metadata !{i32 264, i32 0, metadata !80, null}
+!178 = metadata !{i32 278, i32 0, metadata !80, null}

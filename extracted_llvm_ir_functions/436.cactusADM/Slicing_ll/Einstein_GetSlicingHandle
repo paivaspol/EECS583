@@ -1,15 +1,16 @@
 define i32 @Einstein_GetSlicingHandle(i8* %name) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !134, metadata !207), !dbg !532
-  %1 = load %struct.cHandledData** @Eslicings, align 8, !dbg !533, !tbaa !210
-  %2 = tail call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %name, i8** null) #7, !dbg !534
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !135, metadata !207), !dbg !535
-  %3 = icmp slt i32 %2, 0, !dbg !536
-  br i1 %3, label %4, label %6, !dbg !538
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !134), !dbg !401
+  %0 = load %struct.cHandledData** @Eslicings, align 8, !dbg !402, !tbaa !205
+  %call = tail call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %name, i8** null) #7, !dbg !402
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !135), !dbg !402
+  %cmp = icmp slt i32 %call, 0, !dbg !403
+  br i1 %cmp, label %if.then, label %if.end, !dbg !403
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 427, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([60 x i8]* @.str24, i64 0, i64 0), i8* %name) #7, !dbg !539
-  br label %6, !dbg !541
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 427, i8* getelementptr inbounds ([66 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([60 x i8]* @.str24, i64 0, i64 0), i8* %name) #7, !dbg !404
+  br label %if.end, !dbg !406
 
-; <label>:6                                       ; preds = %4, %0
-  ret i32 %2, !dbg !542
+if.end:                                           ; preds = %if.then, %entry
+  ret i32 %call, !dbg !407
 }

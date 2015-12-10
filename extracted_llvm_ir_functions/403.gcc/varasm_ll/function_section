@@ -1,22 +1,23 @@
 define void @function_section(%union.tree_node* %decl) #0 {
 entry:
-  %cmp = icmp eq %union.tree_node* %decl, null
-  br i1 %cmp, label %if.else, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !1208), !dbg !2442
+  %cmp = icmp eq %union.tree_node* %decl, null, !dbg !2443
+  br i1 %cmp, label %if.else, label %land.lhs.true, !dbg !2443
 
 land.lhs.true:                                    ; preds = %entry
-  %section_name = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 15
-  %0 = load %union.tree_node** %section_name, align 8, !tbaa !3
-  %cmp2 = icmp eq %union.tree_node* %0, null
-  br i1 %cmp2, label %if.else, label %if.then
+  %section_name = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 15, !dbg !2443
+  %0 = load %union.tree_node** %section_name, align 8, !dbg !2443, !tbaa !2357
+  %cmp2 = icmp eq %union.tree_node* %0, null, !dbg !2443
+  br i1 %cmp2, label %if.else, label %if.then, !dbg !2443
 
 if.then:                                          ; preds = %land.lhs.true
-  tail call void @named_section(%union.tree_node* %decl, i8* null, i32 0) #10
-  br label %if.end
+  tail call void @named_section(%union.tree_node* %decl, i8* null, i32 0) #11, !dbg !2444
+  br label %if.end, !dbg !2444
 
 if.else:                                          ; preds = %land.lhs.true, %entry
-  tail call void @text_section() #10
+  tail call void @text_section() #11, !dbg !2445
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  ret void
+  ret void, !dbg !2446
 }

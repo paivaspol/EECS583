@@ -1,75 +1,87 @@
 define void @move_by_pieces(%struct.rtx_def* %to, %struct.rtx_def* %from, i64 %len, i32 %align) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %from, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %1 = load i32* @target_flags, align 4, !tbaa !3
-  %and = lshr i32 %1, 23
-  %2 = and i32 %and, 4
-  %add = add i32 %2, 5
-  %tobool2 = icmp eq %struct.rtx_def* %to, null
-  br i1 %tobool2, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %to}, i64 0, metadata !1958), !dbg !3614
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %from}, i64 0, metadata !1959), !dbg !3614
+  tail call void @llvm.dbg.value(metadata !{i64 %len}, i64 0, metadata !1960), !dbg !3615
+  tail call void @llvm.dbg.value(metadata !{i32 %align}, i64 0, metadata !1961), !dbg !3616
+  tail call void @llvm.dbg.declare(metadata !3617, metadata !1962), !dbg !3618
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %from, i64 0, i32 1, i64 0, !dbg !3619
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3619
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !3619, !tbaa !3154
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !1977), !dbg !3619
+  %1 = load i32* @target_flags, align 4, !dbg !3620, !tbaa !3192
+  %and = lshr i32 %1, 23, !dbg !3620
+  %2 = and i32 %and, 4, !dbg !3620
+  %add = add i32 %2, 5, !dbg !3620
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !1978), !dbg !3620
+  tail call void @llvm.dbg.value(metadata !1351, i64 0, metadata !1979), !dbg !3621
+  %tobool2 = icmp eq %struct.rtx_def* %to, null, !dbg !3622
+  br i1 %tobool2, label %if.end, label %if.then, !dbg !3622
 
 if.then:                                          ; preds = %entry
-  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %to, i64 0, i32 1, i64 0
-  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
-  %3 = load %struct.rtx_def** %rtx5, align 8, !tbaa !0
-  %4 = bitcast %struct.rtx_def* %3 to i32*
-  %bf.load = load i32* %4, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %switch.tableidx = add i32 %bf.clear, -96
-  %5 = and i32 %bf.load, 65533
-  %phitmp = icmp ne i32 %5, 96
-  %phitmp300 = icmp ugt i32 %switch.tableidx, 3
-  br label %if.end
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %to, i64 0, i32 1, i64 0, !dbg !3623
+  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**, !dbg !3623
+  %3 = load %struct.rtx_def** %rtx5, align 8, !dbg !3623, !tbaa !3154
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %3}, i64 0, metadata !1976), !dbg !3623
+  %4 = bitcast %struct.rtx_def* %3 to i32*, !dbg !3625
+  %bf.load = load i32* %4, align 8, !dbg !3625
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3625
+  %switch.tableidx = add i32 %bf.clear, -96, !dbg !3625
+  %5 = and i32 %bf.load, 65533, !dbg !3626
+  %phitmp = icmp ne i32 %5, 96, !dbg !3627
+  %phitmp300 = icmp ugt i32 %switch.tableidx, 3, !dbg !3627
+  br label %if.end, !dbg !3627
 
 if.end:                                           ; preds = %entry, %if.then
   %data.sroa.10.64.load280299 = phi i1 [ %phitmp, %if.then ], [ false, %entry ]
   %data.sroa.2.16.load261284 = phi i1 [ %phitmp300, %if.then ], [ false, %entry ]
   %data.sroa.0.0.load257282 = phi %struct.rtx_def* [ %to, %if.then ], [ null, %entry ]
   %to_addr.0 = phi %struct.rtx_def* [ %3, %if.then ], [ null, %entry ]
-  %6 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load31 = load i32* %6, align 8
-  %bf.clear32 = and i32 %bf.load31, 65535
-  %switch.tableidx254 = add i32 %bf.clear32, -96
-  %7 = icmp ult i32 %switch.tableidx254, 4
-  %.len = select i1 %data.sroa.10.64.load280299, i64 0, i64 %len
-  %tobool55 = xor i1 %7, true
-  %or.cond = or i1 %data.sroa.2.16.load261284, %tobool55
-  br i1 %or.cond, label %land.lhs.true58, label %while.cond.preheader
+  %6 = bitcast %struct.rtx_def* %0 to i32*, !dbg !3628
+  %bf.load31 = load i32* %6, align 8, !dbg !3628
+  %bf.clear32 = and i32 %bf.load31, 65535, !dbg !3628
+  %switch.tableidx254 = add i32 %bf.clear32, -96, !dbg !3628
+  %7 = icmp ult i32 %switch.tableidx254, 4, !dbg !3628
+  %.len = select i1 %data.sroa.10.64.load280299, i64 0, i64 %len, !dbg !3629
+  %tobool55 = xor i1 %7, true, !dbg !3630
+  %or.cond = or i1 %data.sroa.2.16.load261284, %tobool55, !dbg !3630
+  br i1 %or.cond, label %land.lhs.true58, label %while.cond.preheader, !dbg !3630
 
 land.lhs.true58:                                  ; preds = %if.end
-  %call = tail call fastcc i64 @move_by_pieces_ninsns(i64 %len) #10
-  %cmp59 = icmp ugt i64 %call, 2
-  br i1 %cmp59, label %if.then60, label %while.cond.preheader
+  %call = tail call fastcc i64 @move_by_pieces_ninsns(i64 %len) #11, !dbg !3631
+  %cmp59 = icmp ugt i64 %call, 2, !dbg !3631
+  br i1 %cmp59, label %if.then60, label %while.cond.preheader, !dbg !3631
 
 if.then60:                                        ; preds = %land.lhs.true58
-  %8 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !tbaa !6
-  %cmp61310 = icmp eq i32 %8, 0
-  br i1 %cmp61310, label %for.end, label %for.body
+  %8 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !dbg !3632, !tbaa !3359
+  tail call void @llvm.dbg.value(metadata !{i32 %8}, i64 0, metadata !1980), !dbg !3632
+  %cmp61310 = icmp eq i32 %8, 0, !dbg !3632
+  br i1 %cmp61310, label %for.end, label %for.body, !dbg !3632
 
 for.body:                                         ; preds = %if.then60, %for.body
   %tmode.0312 = phi i32 [ %conv69, %for.body ], [ %8, %if.then60 ]
   %mode.0311 = phi i32 [ %tmode.0.mode.0, %for.body ], [ 0, %if.then60 ]
-  %idxprom = sext i32 %tmode.0312 to i64
-  %arrayidx62 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom
-  %9 = load i8* %arrayidx62, align 1, !tbaa !1
-  %conv = zext i8 %9 to i32
-  %cmp63 = icmp ult i32 %conv, %add
-  %tmode.0.mode.0 = select i1 %cmp63, i32 %tmode.0312, i32 %mode.0311
-  %arrayidx68 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom
-  %10 = load i8* %arrayidx68, align 1, !tbaa !1
-  %conv69 = zext i8 %10 to i32
-  %cmp61 = icmp eq i8 %10, 0
-  br i1 %cmp61, label %for.end, label %for.body
+  %idxprom = sext i32 %tmode.0312 to i64, !dbg !3635
+  %arrayidx62 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom, !dbg !3635
+  %9 = load i8* %arrayidx62, align 1, !dbg !3635, !tbaa !3155
+  %conv = zext i8 %9 to i32, !dbg !3635
+  %cmp63 = icmp ult i32 %conv, %add, !dbg !3635
+  tail call void @llvm.dbg.value(metadata !{i32 %tmode.0312}, i64 0, metadata !1979), !dbg !3636
+  %tmode.0.mode.0 = select i1 %cmp63, i32 %tmode.0312, i32 %mode.0311, !dbg !3635
+  %arrayidx68 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom, !dbg !3637
+  %10 = load i8* %arrayidx68, align 1, !dbg !3637, !tbaa !3155
+  %conv69 = zext i8 %10 to i32, !dbg !3637
+  tail call void @llvm.dbg.value(metadata !{i32 %conv69}, i64 0, metadata !1980), !dbg !3637
+  %cmp61 = icmp eq i8 %10, 0, !dbg !3632
+  br i1 %cmp61, label %for.end, label %for.body, !dbg !3632
 
 for.end:                                          ; preds = %for.body, %if.then60
   %mode.0.lcssa = phi i32 [ 0, %if.then60 ], [ %tmode.0.mode.0, %for.body ]
-  br i1 %7, label %if.end115, label %land.lhs.true72
+  br i1 %7, label %if.end115, label %land.lhs.true72, !dbg !3638
 
 land.lhs.true72:                                  ; preds = %for.end
-  %bf.load73 = load i32* %6, align 8
-  %bf.clear74 = and i32 %bf.load73, 65535
+  %bf.load73 = load i32* %6, align 8, !dbg !3638
+  %bf.clear74 = and i32 %bf.load73, 65535, !dbg !3638
   switch i32 %bf.clear74, label %if.end115 [
     i32 67, label %if.then112
     i32 68, label %if.then112
@@ -79,20 +91,20 @@ land.lhs.true72:                                  ; preds = %for.end
     i32 134, label %if.then112
     i32 56, label %if.then112
     i32 140, label %if.then112
-  ]
+  ], !dbg !3638
 
 if.then112:                                       ; preds = %land.lhs.true72, %land.lhs.true72, %land.lhs.true72, %land.lhs.true72, %land.lhs.true72, %land.lhs.true72, %land.lhs.true72, %land.lhs.true72
-  %call113 = tail call %struct.rtx_def* @copy_addr_to_reg(%struct.rtx_def* %0) #8
-  br label %if.end115
+  %call113 = tail call %struct.rtx_def* @copy_addr_to_reg(%struct.rtx_def* %0) #9, !dbg !3639
+  br label %if.end115, !dbg !3639
 
 if.end115:                                        ; preds = %for.end, %land.lhs.true72, %if.then112
   %data.sroa.5.32.load286 = phi %struct.rtx_def* [ %0, %land.lhs.true72 ], [ %0, %for.end ], [ %call113, %if.then112 ]
-  br i1 %data.sroa.2.16.load261284, label %land.lhs.true118, label %while.cond.preheader
+  br i1 %data.sroa.2.16.load261284, label %land.lhs.true118, label %while.cond.preheader, !dbg !3640
 
 land.lhs.true118:                                 ; preds = %if.end115
-  %11 = bitcast %struct.rtx_def* %to_addr.0 to i32*
-  %bf.load119 = load i32* %11, align 8
-  %bf.clear120 = and i32 %bf.load119, 65535
+  %11 = bitcast %struct.rtx_def* %to_addr.0 to i32*, !dbg !3640
+  %bf.load119 = load i32* %11, align 8, !dbg !3640
+  %bf.clear120 = and i32 %bf.load119, 65535, !dbg !3640
   switch i32 %bf.clear120, label %while.cond.preheader [
     i32 67, label %if.then158
     i32 68, label %if.then158
@@ -102,147 +114,160 @@ land.lhs.true118:                                 ; preds = %if.end115
     i32 134, label %if.then158
     i32 56, label %if.then158
     i32 140, label %if.then158
-  ]
+  ], !dbg !3640
 
 if.then158:                                       ; preds = %land.lhs.true118, %land.lhs.true118, %land.lhs.true118, %land.lhs.true118, %land.lhs.true118, %land.lhs.true118, %land.lhs.true118, %land.lhs.true118
-  %call159 = tail call %struct.rtx_def* @copy_addr_to_reg(%struct.rtx_def* %to_addr.0) #8
-  br label %while.cond.preheader
+  %call159 = tail call %struct.rtx_def* @copy_addr_to_reg(%struct.rtx_def* %to_addr.0) #9, !dbg !3641
+  br label %while.cond.preheader, !dbg !3641
 
 while.cond.preheader:                             ; preds = %land.lhs.true118, %if.end115, %if.then158, %land.lhs.true58, %if.end
   %data.sroa.5.32.load285.ph = phi %struct.rtx_def* [ %0, %if.end ], [ %0, %land.lhs.true58 ], [ %data.sroa.5.32.load286, %if.then158 ], [ %data.sroa.5.32.load286, %if.end115 ], [ %data.sroa.5.32.load286, %land.lhs.true118 ]
   %data.sroa.1.8.load283.ph = phi %struct.rtx_def* [ %to_addr.0, %if.end ], [ %to_addr.0, %land.lhs.true58 ], [ %call159, %if.then158 ], [ %to_addr.0, %if.end115 ], [ %to_addr.0, %land.lhs.true118 ]
   %mode.3.ph = phi i32 [ 0, %if.end ], [ 0, %land.lhs.true58 ], [ %mode.0.lcssa, %if.then158 ], [ %mode.0.lcssa, %if.end115 ], [ %mode.0.lcssa, %land.lhs.true118 ]
-  %cmp163304 = icmp eq i32 %add, 1
-  br i1 %cmp163304, label %while.end, label %while.body.lr.ph
+  %cmp163304 = icmp eq i32 %add, 1, !dbg !3642
+  br i1 %cmp163304, label %while.end, label %while.body.lr.ph, !dbg !3642
 
 while.body.lr.ph:                                 ; preds = %while.cond.preheader
-  %12 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !tbaa !6
-  %cmp166301 = icmp eq i32 %12, 0
-  %tobool4.i = icmp eq %struct.rtx_def* %data.sroa.0.0.load257282, null
-  br label %while.body
+  %12 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !dbg !3643, !tbaa !3359
+  %cmp166301 = icmp eq i32 %12, 0, !dbg !3643
+  %tobool4.i = icmp eq %struct.rtx_def* %data.sroa.0.0.load257282, null, !dbg !3646
+  br label %while.body, !dbg !3642
 
 while.body:                                       ; preds = %while.body.lr.ph, %if.end196
   %mode.3308 = phi i32 [ %mode.3.ph, %while.body.lr.ph ], [ %mode.4.lcssa, %if.end196 ]
   %max_size.0307 = phi i32 [ %add, %while.body.lr.ph ], [ %conv199, %if.end196 ]
   %sub39.i288306 = phi i64 [ %len, %while.body.lr.ph ], [ %sub39.i289, %if.end196 ]
   %data.sroa.9.56.load277293305 = phi i64 [ %.len, %while.body.lr.ph ], [ %data.sroa.9.56.load277294, %if.end196 ]
-  br i1 %cmp166301, label %for.end180, label %for.body168
+  tail call void @llvm.dbg.value(metadata !{i32 %12}, i64 0, metadata !1980), !dbg !3643
+  br i1 %cmp166301, label %for.end180, label %for.body168, !dbg !3643
 
 for.body168:                                      ; preds = %while.body, %for.body168
   %tmode.1303 = phi i32 [ %conv179, %for.body168 ], [ %12, %while.body ]
   %mode.4302 = phi i32 [ %tmode.1.mode.4, %for.body168 ], [ %mode.3308, %while.body ]
-  %idxprom169 = sext i32 %tmode.1303 to i64
-  %arrayidx170 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom169
-  %13 = load i8* %arrayidx170, align 1, !tbaa !1
-  %conv171 = zext i8 %13 to i32
-  %cmp172 = icmp ult i32 %conv171, %max_size.0307
-  %tmode.1.mode.4 = select i1 %cmp172, i32 %tmode.1303, i32 %mode.4302
-  %arrayidx178 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom169
-  %14 = load i8* %arrayidx178, align 1, !tbaa !1
-  %conv179 = zext i8 %14 to i32
-  %cmp166 = icmp eq i8 %14, 0
-  br i1 %cmp166, label %for.end180, label %for.body168
+  %idxprom169 = sext i32 %tmode.1303 to i64, !dbg !3649
+  %arrayidx170 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom169, !dbg !3649
+  %13 = load i8* %arrayidx170, align 1, !dbg !3649, !tbaa !3155
+  %conv171 = zext i8 %13 to i32, !dbg !3649
+  %cmp172 = icmp ult i32 %conv171, %max_size.0307, !dbg !3649
+  tail call void @llvm.dbg.value(metadata !{i32 %tmode.1303}, i64 0, metadata !1979), !dbg !3650
+  %tmode.1.mode.4 = select i1 %cmp172, i32 %tmode.1303, i32 %mode.4302, !dbg !3649
+  %arrayidx178 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom169, !dbg !3651
+  %14 = load i8* %arrayidx178, align 1, !dbg !3651, !tbaa !3155
+  %conv179 = zext i8 %14 to i32, !dbg !3651
+  tail call void @llvm.dbg.value(metadata !{i32 %conv179}, i64 0, metadata !1980), !dbg !3651
+  %cmp166 = icmp eq i8 %14, 0, !dbg !3643
+  br i1 %cmp166, label %for.end180, label %for.body168, !dbg !3643
 
 for.end180:                                       ; preds = %for.body168, %while.body
   %mode.4.lcssa = phi i32 [ %mode.3308, %while.body ], [ %tmode.1.mode.4, %for.body168 ]
-  %cmp181 = icmp eq i32 %mode.4.lcssa, 0
-  br i1 %cmp181, label %while.end, label %if.end184
+  %cmp181 = icmp eq i32 %mode.4.lcssa, 0, !dbg !3652
+  br i1 %cmp181, label %while.end, label %if.end184, !dbg !3652
 
 if.end184:                                        ; preds = %for.end180
-  %idxprom185 = sext i32 %mode.4.lcssa to i64
-  %15 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 30), align 8, !tbaa !0
-  %insn_code = getelementptr inbounds %struct.optab* %15, i64 0, i32 1, i64 %idxprom185, i32 0
-  %16 = load i32* %insn_code, align 4, !tbaa !8
-  %cmp187 = icmp eq i32 %16, 1317
-  br i1 %cmp187, label %if.end196, label %land.lhs.true189
+  %idxprom185 = sext i32 %mode.4.lcssa to i64, !dbg !3653
+  %15 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 30), align 8, !dbg !3653, !tbaa !3154
+  %insn_code = getelementptr inbounds %struct.optab* %15, i64 0, i32 1, i64 %idxprom185, i32 0, !dbg !3653
+  %16 = load i32* %insn_code, align 4, !dbg !3653, !tbaa !3654
+  tail call void @llvm.dbg.value(metadata !{i32 %16}, i64 0, metadata !1981), !dbg !3653
+  %cmp187 = icmp eq i32 %16, 1317, !dbg !3655
+  br i1 %cmp187, label %if.end196, label %land.lhs.true189, !dbg !3655
 
 land.lhs.true189:                                 ; preds = %if.end184
-  %call190 = tail call i32 @get_mode_alignment(i32 %mode.4.lcssa) #8
-  %cmp191 = icmp ult i32 %call190, 129
-  br i1 %cmp191, label %if.then193, label %if.end196
+  %call190 = tail call i32 @get_mode_alignment(i32 %mode.4.lcssa) #9, !dbg !3655
+  %cmp191 = icmp ult i32 %call190, 129, !dbg !3655
+  br i1 %cmp191, label %if.then193, label %if.end196, !dbg !3655
 
 if.then193:                                       ; preds = %land.lhs.true189
-  %idxprom194 = sext i32 %16 to i64
-  %genfun = getelementptr inbounds [0 x %struct.insn_data]* @insn_data, i64 0, i64 %idxprom194, i32 2
-  %17 = load %struct.rtx_def* (%struct.rtx_def*, ...)** %genfun, align 8, !tbaa !0
-  %arrayidx.i = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom185
-  %18 = load i8* %arrayidx.i, align 1, !tbaa !1
-  %conv1.i = zext i8 %18 to i64
-  %cmp62.i = icmp ult i64 %sub39.i288306, %conv1.i
-  br i1 %cmp62.i, label %if.end196, label %while.body.i.preheader
+  %idxprom194 = sext i32 %16 to i64, !dbg !3648
+  %genfun = getelementptr inbounds [0 x %struct.insn_data]* @insn_data, i64 0, i64 %idxprom194, i32 2, !dbg !3648
+  %17 = load %struct.rtx_def* (%struct.rtx_def*, ...)** %genfun, align 8, !dbg !3648, !tbaa !3154
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* (%struct.rtx_def*, ...)* %17}, i64 0, metadata !3656) #6, !dbg !3657
+  tail call void @llvm.dbg.value(metadata !{i32 %mode.4.lcssa}, i64 0, metadata !3658) #6, !dbg !3659
+  tail call void @llvm.dbg.value(metadata !3617, i64 0, metadata !3660) #6, !dbg !3661
+  %arrayidx.i = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom185, !dbg !3662
+  %18 = load i8* %arrayidx.i, align 1, !dbg !3662, !tbaa !3155
+  tail call void @llvm.dbg.value(metadata !3322, i64 0, metadata !3663) #6, !dbg !3664
+  %conv1.i = zext i8 %18 to i64, !dbg !3665
+  %cmp62.i = icmp ult i64 %sub39.i288306, %conv1.i, !dbg !3665
+  br i1 %cmp62.i, label %if.end196, label %while.body.i.preheader, !dbg !3665
 
 while.body.i.preheader:                           ; preds = %if.then193
-  %sub.i = select i1 %data.sroa.10.64.load280299, i64 0, i64 %conv1.i
-  %add.i = select i1 %data.sroa.10.64.load280299, i64 %conv1.i, i64 0
-  br label %while.body.i
+  %sub.i = select i1 %data.sroa.10.64.load280299, i64 0, i64 %conv1.i, !dbg !3666
+  %add.i = select i1 %data.sroa.10.64.load280299, i64 %conv1.i, i64 0, !dbg !3667
+  br label %while.body.i, !dbg !3666
 
 while.body.i:                                     ; preds = %while.body.i.preheader, %if.end30.i
   %data.sroa.9.56.load277292 = phi i64 [ %add.i.data.sroa.9.56.load277292.sub.i, %if.end30.i ], [ %data.sroa.9.56.load277293305, %while.body.i.preheader ]
   %sub39.i287 = phi i64 [ %sub39.i, %if.end30.i ], [ %sub39.i288306, %while.body.i.preheader ]
   %to1.063.i = phi %struct.rtx_def* [ %to1.1.i, %if.end30.i ], [ null, %while.body.i.preheader ]
-  %data.sroa.9.56.load277292.sub.i = sub nsw i64 %data.sroa.9.56.load277292, %sub.i
-  br i1 %tobool4.i, label %if.end14.i, label %if.then5.i
+  %data.sroa.9.56.load277292.sub.i = sub nsw i64 %data.sroa.9.56.load277292, %sub.i, !dbg !3666
+  br i1 %tobool4.i, label %if.end14.i, label %if.then5.i, !dbg !3646
 
 if.then5.i:                                       ; preds = %while.body.i
-  br i1 %data.sroa.2.16.load261284, label %if.else.i, label %if.then7.i
+  br i1 %data.sroa.2.16.load261284, label %if.else.i, label %if.then7.i, !dbg !3668
 
 if.then7.i:                                       ; preds = %if.then5.i
-  %call.i = tail call %struct.rtx_def* @adjust_automodify_address_1(%struct.rtx_def* %data.sroa.0.0.load257282, i32 %mode.4.lcssa, %struct.rtx_def* %data.sroa.1.8.load283.ph, i64 %data.sroa.9.56.load277292.sub.i, i32 1) #8
-  br label %if.end14.i
+  %call.i = tail call %struct.rtx_def* @adjust_automodify_address_1(%struct.rtx_def* %data.sroa.0.0.load257282, i32 %mode.4.lcssa, %struct.rtx_def* %data.sroa.1.8.load283.ph, i64 %data.sroa.9.56.load277292.sub.i, i32 1) #9, !dbg !3670
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call.i}, i64 0, metadata !3663) #6, !dbg !3670
+  br label %if.end14.i, !dbg !3670
 
 if.else.i:                                        ; preds = %if.then5.i
-  %call12.i = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %data.sroa.0.0.load257282, i32 %mode.4.lcssa, i64 %data.sroa.9.56.load277292.sub.i, i32 1, i32 1) #8
+  %call12.i = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %data.sroa.0.0.load257282, i32 %mode.4.lcssa, i64 %data.sroa.9.56.load277292.sub.i, i32 1, i32 1) #9, !dbg !3671
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call12.i}, i64 0, metadata !3663) #6, !dbg !3671
   br label %if.end14.i
 
 if.end14.i:                                       ; preds = %if.else.i, %if.then7.i, %while.body.i
   %to1.1.i = phi %struct.rtx_def* [ %call.i, %if.then7.i ], [ %call12.i, %if.else.i ], [ %to1.063.i, %while.body.i ]
-  br i1 %7, label %if.then16.i, label %if.else19.i
+  br i1 %7, label %if.then16.i, label %if.else19.i, !dbg !3672
 
 if.then16.i:                                      ; preds = %if.end14.i
-  %call18.i = tail call %struct.rtx_def* @adjust_automodify_address_1(%struct.rtx_def* %from, i32 %mode.4.lcssa, %struct.rtx_def* %data.sroa.5.32.load285.ph, i64 %data.sroa.9.56.load277292.sub.i, i32 1) #8
-  br label %if.end23.i
+  %call18.i = tail call %struct.rtx_def* @adjust_automodify_address_1(%struct.rtx_def* %from, i32 %mode.4.lcssa, %struct.rtx_def* %data.sroa.5.32.load285.ph, i64 %data.sroa.9.56.load277292.sub.i, i32 1) #9, !dbg !3673
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call18.i}, i64 0, metadata !3674) #6, !dbg !3673
+  br label %if.end23.i, !dbg !3673
 
 if.else19.i:                                      ; preds = %if.end14.i
-  %call22.i = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %from, i32 %mode.4.lcssa, i64 %data.sroa.9.56.load277292.sub.i, i32 1, i32 1) #8
+  %call22.i = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %from, i32 %mode.4.lcssa, i64 %data.sroa.9.56.load277292.sub.i, i32 1, i32 1) #9, !dbg !3675
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call22.i}, i64 0, metadata !3674) #6, !dbg !3675
   br label %if.end23.i
 
 if.end23.i:                                       ; preds = %if.else19.i, %if.then16.i
   %from1.0.i = phi %struct.rtx_def* [ %call18.i, %if.then16.i ], [ %call22.i, %if.else19.i ]
-  br i1 %tobool4.i, label %if.else29.i, label %if.then26.i
+  br i1 %tobool4.i, label %if.else29.i, label %if.then26.i, !dbg !3676
 
 if.then26.i:                                      ; preds = %if.end23.i
-  %call27.i = tail call %struct.rtx_def* (%struct.rtx_def*, ...)* %17(%struct.rtx_def* %to1.1.i, %struct.rtx_def* %from1.0.i) #8
-  %call28.i = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call27.i) #8
-  br label %if.end30.i
+  %call27.i = tail call %struct.rtx_def* (%struct.rtx_def*, ...)* %17(%struct.rtx_def* %to1.1.i, %struct.rtx_def* %from1.0.i) #9, !dbg !3677
+  %call28.i = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call27.i) #9, !dbg !3677
+  br label %if.end30.i, !dbg !3677
 
 if.else29.i:                                      ; preds = %if.end23.i
-  tail call fastcc void @emit_single_push_insn(i32 %mode.4.lcssa, %struct.rtx_def* %from1.0.i, %union.tree_node* null) #8
+  tail call fastcc void @emit_single_push_insn(i32 %mode.4.lcssa, %struct.rtx_def* %from1.0.i, %union.tree_node* null) #9, !dbg !3678
   br label %if.end30.i
 
 if.end30.i:                                       ; preds = %if.else29.i, %if.then26.i
-  %add.i.data.sroa.9.56.load277292.sub.i = add nsw i64 %data.sroa.9.56.load277292.sub.i, %add.i
-  %sub39.i = sub i64 %sub39.i287, %conv1.i
-  %cmp.i = icmp ult i64 %sub39.i, %conv1.i
-  br i1 %cmp.i, label %if.end196, label %while.body.i
+  %add.i.data.sroa.9.56.load277292.sub.i = add nsw i64 %data.sroa.9.56.load277292.sub.i, %add.i, !dbg !3667
+  %sub39.i = sub i64 %sub39.i287, %conv1.i, !dbg !3680
+  %cmp.i = icmp ult i64 %sub39.i, %conv1.i, !dbg !3665
+  br i1 %cmp.i, label %if.end196, label %while.body.i, !dbg !3665
 
 if.end196:                                        ; preds = %if.end30.i, %land.lhs.true189, %if.end184, %if.then193
   %data.sroa.9.56.load277294 = phi i64 [ %data.sroa.9.56.load277293305, %if.then193 ], [ %data.sroa.9.56.load277293305, %if.end184 ], [ %data.sroa.9.56.load277293305, %land.lhs.true189 ], [ %add.i.data.sroa.9.56.load277292.sub.i, %if.end30.i ]
   %sub39.i289 = phi i64 [ %sub39.i288306, %if.then193 ], [ %sub39.i288306, %if.end184 ], [ %sub39.i288306, %land.lhs.true189 ], [ %sub39.i, %if.end30.i ]
-  %arrayidx198 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom185
-  %19 = load i8* %arrayidx198, align 1, !tbaa !1
-  %conv199 = zext i8 %19 to i32
-  %cmp163 = icmp ugt i8 %19, 1
-  br i1 %cmp163, label %while.body, label %while.end
+  %arrayidx198 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom185, !dbg !3681
+  %19 = load i8* %arrayidx198, align 1, !dbg !3681, !tbaa !3155
+  %conv199 = zext i8 %19 to i32, !dbg !3681
+  tail call void @llvm.dbg.value(metadata !{i32 %conv199}, i64 0, metadata !1978), !dbg !3681
+  %cmp163 = icmp ugt i8 %19, 1, !dbg !3642
+  br i1 %cmp163, label %while.body, label %while.end, !dbg !3642
 
 while.end:                                        ; preds = %if.end196, %for.end180, %while.cond.preheader
   %sub39.i288.lcssa = phi i64 [ %len, %while.cond.preheader ], [ %sub39.i288306, %for.end180 ], [ %sub39.i289, %if.end196 ]
-  %cmp201 = icmp eq i64 %sub39.i288.lcssa, 0
-  br i1 %cmp201, label %if.end204, label %if.then203
+  %cmp201 = icmp eq i64 %sub39.i288.lcssa, 0, !dbg !3682
+  br i1 %cmp201, label %if.end204, label %if.then203, !dbg !3682
 
 if.then203:                                       ; preds = %while.end
-  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 1503, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.move_by_pieces, i64 0, i64 0)) #9
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 1503, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.move_by_pieces, i64 0, i64 0)) #10, !dbg !3683
+  unreachable, !dbg !3683
 
 if.end204:                                        ; preds = %while.end
-  ret void
+  ret void, !dbg !3684
 }

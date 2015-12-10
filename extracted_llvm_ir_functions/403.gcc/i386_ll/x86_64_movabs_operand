@@ -1,31 +1,33 @@
 define i32 @x86_64_movabs_operand(%struct.rtx_def* %op, i32 %mode) #1 {
 entry:
-  %0 = load i32* @target_flags, align 4, !tbaa !0
-  %and = and i32 %0, 33554432
-  %tobool = icmp ne i32 %and, 0
-  %1 = load i32* @flag_pic, align 4, !tbaa !0
-  %tobool1 = icmp ne i32 %1, 0
-  %or.cond = and i1 %tobool, %tobool1
-  br i1 %or.cond, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2294), !dbg !6102
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2295), !dbg !6103
+  %0 = load i32* @target_flags, align 4, !dbg !6104, !tbaa !4347
+  %and = and i32 %0, 33554432, !dbg !6104
+  %tobool = icmp ne i32 %and, 0, !dbg !6104
+  %1 = load i32* @flag_pic, align 4, !dbg !6104, !tbaa !4347
+  %tobool1 = icmp ne i32 %1, 0, !dbg !6104
+  %or.cond = and i1 %tobool, %tobool1, !dbg !6104
+  br i1 %or.cond, label %if.end, label %if.then, !dbg !6104
 
 if.then:                                          ; preds = %entry
-  %call = tail call i32 @nonmemory_operand(%struct.rtx_def* %op, i32 %mode) #9
-  br label %return
+  %call = tail call i32 @nonmemory_operand(%struct.rtx_def* %op, i32 %mode) #10, !dbg !6105
+  br label %return, !dbg !6105
 
 if.end:                                           ; preds = %entry
-  %call2 = tail call i32 @register_operand(%struct.rtx_def* %op, i32 %mode) #9
-  %tobool3 = icmp eq i32 %call2, 0
-  br i1 %tobool3, label %lor.lhs.false4, label %return
+  %call2 = tail call i32 @register_operand(%struct.rtx_def* %op, i32 %mode) #10, !dbg !6106
+  %tobool3 = icmp eq i32 %call2, 0, !dbg !6106
+  br i1 %tobool3, label %lor.lhs.false4, label %return, !dbg !6106
 
 lor.lhs.false4:                                   ; preds = %if.end
-  %call5 = tail call i32 @x86_64_sign_extended_value(%struct.rtx_def* %op) #10
-  %tobool6 = icmp eq i32 %call5, 0
-  br i1 %tobool6, label %if.end8, label %return
+  %call5 = tail call i32 @x86_64_sign_extended_value(%struct.rtx_def* %op) #11, !dbg !6106
+  %tobool6 = icmp eq i32 %call5, 0, !dbg !6106
+  br i1 %tobool6, label %if.end8, label %return, !dbg !6106
 
 if.end8:                                          ; preds = %lor.lhs.false4
-  %2 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  %2 = bitcast %struct.rtx_def* %op to i32*, !dbg !6107
+  %bf.load = load i32* %2, align 8, !dbg !6107
+  %bf.clear = and i32 %bf.load, 65535, !dbg !6107
   switch i32 %bf.clear, label %if.end40 [
     i32 67, label %land.lhs.true
     i32 68, label %land.lhs.true
@@ -35,17 +37,17 @@ if.end8:                                          ; preds = %lor.lhs.false4
     i32 134, label %land.lhs.true
     i32 56, label %land.lhs.true
     i32 140, label %land.lhs.true
-  ]
+  ], !dbg !6107
 
 land.lhs.true:                                    ; preds = %if.end8, %if.end8, %if.end8, %if.end8, %if.end8, %if.end8, %if.end8, %if.end8
-  %call37 = tail call i32 @symbolic_reference_mentioned_p(%struct.rtx_def* %op) #10
-  %tobool38 = icmp eq i32 %call37, 0
-  br i1 %tobool38, label %return, label %if.end40
+  %call37 = tail call i32 @symbolic_reference_mentioned_p(%struct.rtx_def* %op) #11, !dbg !6107
+  %tobool38 = icmp eq i32 %call37, 0, !dbg !6107
+  br i1 %tobool38, label %return, label %if.end40, !dbg !6107
 
 if.end40:                                         ; preds = %if.end8, %land.lhs.true
-  br label %return
+  br label %return, !dbg !6108
 
 return:                                           ; preds = %land.lhs.true, %if.end, %lor.lhs.false4, %if.end40, %if.then
   %retval.0 = phi i32 [ 0, %if.end40 ], [ %call, %if.then ], [ 1, %lor.lhs.false4 ], [ 1, %if.end ], [ 1, %land.lhs.true ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6109
 }

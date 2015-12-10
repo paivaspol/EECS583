@@ -1,0 +1,44 @@
+define zeroext i1 @_ZN11xercesc_2_59XMLReader11skipIfQuoteERt(%"class.xercesc_2_5::XMLReader"* %this, i16* nocapture %chGotten) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %this}, i64 0, metadata !1511), !dbg !3170
+  tail call void @llvm.dbg.value(metadata !{i16* %chGotten}, i64 0, metadata !1512), !dbg !3170
+  %fCharIndex = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 0, !dbg !3171
+  %0 = load i32* %fCharIndex, align 4, !dbg !3171, !tbaa !2430
+  %fCharsAvail = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 2, !dbg !3171
+  %1 = load i32* %fCharsAvail, align 4, !dbg !3171, !tbaa !2430
+  %cmp = icmp eq i32 %0, %1, !dbg !3171
+  br i1 %cmp, label %if.then, label %if.end3, !dbg !3171
+
+if.then:                                          ; preds = %entry
+  %call = tail call zeroext i1 @_ZN11xercesc_2_59XMLReader17refreshCharBufferEv(%"class.xercesc_2_5::XMLReader"* %this) #10, !dbg !3172
+  br i1 %call, label %if.then.if.end3_crit_edge, label %return, !dbg !3172
+
+if.then.if.end3_crit_edge:                        ; preds = %if.then
+  %.pre = load i32* %fCharIndex, align 4, !dbg !3174, !tbaa !2430
+  br label %if.end3, !dbg !3172
+
+if.end3:                                          ; preds = %if.then.if.end3_crit_edge, %entry
+  %2 = phi i32 [ %.pre, %if.then.if.end3_crit_edge ], [ %0, %entry ]
+  %idxprom = zext i32 %2 to i64, !dbg !3174
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 1, i64 %idxprom, !dbg !3174
+  %3 = load i16* %arrayidx, align 2, !dbg !3174, !tbaa !2400
+  tail call void @llvm.dbg.value(metadata !{i16 %3}, i64 0, metadata !1513), !dbg !3174
+  switch i16 %3, label %return [
+    i16 34, label %if.then8
+    i16 39, label %if.then8
+  ], !dbg !3175
+
+if.then8:                                         ; preds = %if.end3, %if.end3
+  store i16 %3, i16* %chGotten, align 2, !dbg !3176, !tbaa !2400
+  %inc = add i32 %2, 1, !dbg !3178
+  store i32 %inc, i32* %fCharIndex, align 4, !dbg !3178, !tbaa !2430
+  %fCurCol = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 4, !dbg !3179
+  %4 = load i64* %fCurCol, align 8, !dbg !3179, !tbaa !2431
+  %inc10 = add nsw i64 %4, 1, !dbg !3179
+  store i64 %inc10, i64* %fCurCol, align 8, !dbg !3179, !tbaa !2431
+  br label %return, !dbg !3180
+
+return:                                           ; preds = %if.end3, %if.then, %if.then8
+  %retval.0 = phi i1 [ true, %if.then8 ], [ false, %if.then ], [ false, %if.end3 ]
+  ret i1 %retval.0, !dbg !3181
+}

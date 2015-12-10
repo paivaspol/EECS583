@@ -1,115 +1,116 @@
 define i32 @Chv_assemblePostponedData(%struct._Chv* %newchv, %struct._Chv* %oldchv, %struct._Chv* %firstchild) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %newchv, i64 0, metadata !113, metadata !123), !dbg !857
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %oldchv, i64 0, metadata !114, metadata !123), !dbg !858
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %firstchild, i64 0, metadata !115, metadata !123), !dbg !859
-  %1 = icmp eq %struct._Chv* %newchv, null, !dbg !860
-  %2 = icmp eq %struct._Chv* %oldchv, null, !dbg !862
-  %or.cond = or i1 %1, %2, !dbg !863
-  %3 = icmp eq %struct._Chv* %firstchild, null, !dbg !864
-  %or.cond3 = or i1 %or.cond, %3, !dbg !863
-  br i1 %or.cond3, label %4, label %.lr.ph12, !dbg !863
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %newchv}, i64 0, metadata !103), !dbg !422
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %oldchv}, i64 0, metadata !104), !dbg !423
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %firstchild}, i64 0, metadata !105), !dbg !424
+  %cmp = icmp eq %struct._Chv* %newchv, null, !dbg !425
+  %cmp1 = icmp eq %struct._Chv* %oldchv, null, !dbg !425
+  %or.cond = or i1 %cmp, %cmp1, !dbg !425
+  %cmp3 = icmp eq %struct._Chv* %firstchild, null, !dbg !425
+  %or.cond80 = or i1 %or.cond, %cmp3, !dbg !425
+  br i1 %or.cond80, label %if.then, label %for.body.lr.ph, !dbg !425
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !865, !tbaa !137
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([65 x i8]* @.str21, i64 0, i64 0), %struct._Chv* %newchv, %struct._Chv* %oldchv, %struct._Chv* %firstchild) #6, !dbg !867
-  tail call void @exit(i32 -1) #7, !dbg !868
-  unreachable, !dbg !868
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !426, !tbaa !120
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([65 x i8]* @.str21, i64 0, i64 0), %struct._Chv* %newchv, %struct._Chv* %oldchv, %struct._Chv* %firstchild) #6, !dbg !426
+  tail call void @exit(i32 -1) #7, !dbg !428
+  unreachable, !dbg !428
 
-.lr.ph12:                                         ; preds = %0
-  tail call void @Chv_zero(%struct._Chv* %newchv) #6, !dbg !869
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !118, metadata !123), !dbg !870
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %firstchild, i64 0, metadata !116, metadata !123), !dbg !871
-  %7 = getelementptr inbounds %struct._Chv* %newchv, i64 0, i32 7, !dbg !872
-  br label %8, !dbg !876
+for.body.lr.ph:                                   ; preds = %entry
+  tail call void @Chv_zero(%struct._Chv* %newchv) #6, !dbg !429
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !108), !dbg !430
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %firstchild}, i64 0, metadata !106), !dbg !431
+  %colind = getelementptr inbounds %struct._Chv* %newchv, i64 0, i32 7, !dbg !433
+  br label %for.body, !dbg !431
 
-; <label>:8                                       ; preds = %.lr.ph12, %8
-  %ndelay.010 = phi i32 [ 0, %.lr.ph12 ], [ %17, %8 ]
-  %child.09 = phi %struct._Chv* [ %firstchild, %.lr.ph12 ], [ %19, %8 ]
-  %9 = getelementptr inbounds %struct._Chv* %child.09, i64 0, i32 1, !dbg !877
-  %10 = load i32* %9, align 4, !dbg !877, !tbaa !878
-  %11 = load i32** %7, align 8, !dbg !872, !tbaa !879
-  %12 = sext i32 %ndelay.010 to i64, !dbg !880
-  %13 = getelementptr inbounds i32* %11, i64 %12, !dbg !880
-  %14 = getelementptr inbounds %struct._Chv* %child.09, i64 0, i32 7, !dbg !881
-  %15 = load i32** %14, align 8, !dbg !881, !tbaa !879
-  tail call void @IVcopy(i32 %10, i32* %13, i32* %15) #6, !dbg !882
-  %16 = load i32* %9, align 4, !dbg !883, !tbaa !878
-  %17 = add nsw i32 %16, %ndelay.010, !dbg !884
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !118, metadata !123), !dbg !870
-  %18 = getelementptr inbounds %struct._Chv* %child.09, i64 0, i32 10, !dbg !885
-  %19 = load %struct._Chv** %18, align 8, !dbg !885, !tbaa !886
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %19, i64 0, metadata !116, metadata !123), !dbg !871
-  %20 = icmp eq %struct._Chv* %19, null, !dbg !887
-  br i1 %20, label %._crit_edge13, label %8, !dbg !876
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %ndelay.088 = phi i32 [ 0, %for.body.lr.ph ], [ %add, %for.body ]
+  %child.087 = phi %struct._Chv* [ %firstchild, %for.body.lr.ph ], [ %5, %for.body ]
+  %nD = getelementptr inbounds %struct._Chv* %child.087, i64 0, i32 1, !dbg !433
+  %1 = load i32* %nD, align 4, !dbg !433, !tbaa !125
+  %2 = load i32** %colind, align 8, !dbg !433, !tbaa !120
+  %idx.ext = sext i32 %ndelay.088 to i64, !dbg !433
+  %add.ptr = getelementptr inbounds i32* %2, i64 %idx.ext, !dbg !433
+  %colind5 = getelementptr inbounds %struct._Chv* %child.087, i64 0, i32 7, !dbg !433
+  %3 = load i32** %colind5, align 8, !dbg !433, !tbaa !120
+  tail call void @IVcopy(i32 %1, i32* %add.ptr, i32* %3) #6, !dbg !433
+  %4 = load i32* %nD, align 4, !dbg !435, !tbaa !125
+  %add = add nsw i32 %4, %ndelay.088, !dbg !435
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !108), !dbg !435
+  %next = getelementptr inbounds %struct._Chv* %child.087, i64 0, i32 10, !dbg !431
+  %5 = load %struct._Chv** %next, align 8, !dbg !431, !tbaa !120
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %5}, i64 0, metadata !106), !dbg !431
+  %cmp4 = icmp eq %struct._Chv* %5, null, !dbg !431
+  br i1 %cmp4, label %for.end, label %for.body, !dbg !431
 
-._crit_edge13:                                    ; preds = %8
-  %21 = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 1, !dbg !888
-  %22 = load i32* %21, align 4, !dbg !888, !tbaa !878
-  %23 = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 3, !dbg !889
-  %24 = load i32* %23, align 4, !dbg !889, !tbaa !890
-  %25 = add nsw i32 %24, %22, !dbg !891
-  %26 = load i32** %7, align 8, !dbg !892, !tbaa !879
-  %27 = sext i32 %17 to i64, !dbg !893
-  %28 = getelementptr inbounds i32* %26, i64 %27, !dbg !893
-  %29 = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 7, !dbg !894
-  %30 = load i32** %29, align 8, !dbg !894, !tbaa !879
-  tail call void @IVcopy(i32 %25, i32* %28, i32* %30) #6, !dbg !895
-  %31 = getelementptr inbounds %struct._Chv* %newchv, i64 0, i32 5, !dbg !896
-  %32 = load i32* %31, align 4, !dbg !896, !tbaa !151
-  %33 = icmp eq i32 %32, 2, !dbg !896
-  br i1 %33, label %.lr.ph7, label %.lr.ph, !dbg !898
+for.end:                                          ; preds = %for.body
+  %nD7 = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 1, !dbg !436
+  %6 = load i32* %nD7, align 4, !dbg !436, !tbaa !125
+  %nU = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 3, !dbg !436
+  %7 = load i32* %nU, align 4, !dbg !436, !tbaa !125
+  %add8 = add nsw i32 %7, %6, !dbg !436
+  %8 = load i32** %colind, align 8, !dbg !436, !tbaa !120
+  %idx.ext10 = sext i32 %add to i64, !dbg !436
+  %add.ptr11 = getelementptr inbounds i32* %8, i64 %idx.ext10, !dbg !436
+  %colind12 = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 7, !dbg !436
+  %9 = load i32** %colind12, align 8, !dbg !436, !tbaa !120
+  tail call void @IVcopy(i32 %add8, i32* %add.ptr11, i32* %9) #6, !dbg !436
+  %symflag = getelementptr inbounds %struct._Chv* %newchv, i64 0, i32 5, !dbg !437
+  %10 = load i32* %symflag, align 4, !dbg !437, !tbaa !125
+  %cmp13 = icmp eq i32 %10, 2, !dbg !437
+  br i1 %cmp13, label %for.body17.lr.ph, label %for.body37.lr.ph, !dbg !437
 
-.lr.ph7:                                          ; preds = %._crit_edge13
-  %34 = getelementptr inbounds %struct._Chv* %newchv, i64 0, i32 6, !dbg !899
-  br label %35, !dbg !904
+for.body17.lr.ph:                                 ; preds = %for.end
+  %rowind = getelementptr inbounds %struct._Chv* %newchv, i64 0, i32 6, !dbg !438
+  br label %for.body17, !dbg !442
 
-; <label>:35                                      ; preds = %.lr.ph7, %35
-  %ndelay.16 = phi i32 [ 0, %.lr.ph7 ], [ %44, %35 ]
-  %child.15 = phi %struct._Chv* [ %firstchild, %.lr.ph7 ], [ %46, %35 ]
-  %36 = getelementptr inbounds %struct._Chv* %child.15, i64 0, i32 1, !dbg !905
-  %37 = load i32* %36, align 4, !dbg !905, !tbaa !878
-  %38 = load i32** %34, align 8, !dbg !899, !tbaa !906
-  %39 = sext i32 %ndelay.16 to i64, !dbg !907
-  %40 = getelementptr inbounds i32* %38, i64 %39, !dbg !907
-  %41 = getelementptr inbounds %struct._Chv* %child.15, i64 0, i32 6, !dbg !908
-  %42 = load i32** %41, align 8, !dbg !908, !tbaa !906
-  tail call void @IVcopy(i32 %37, i32* %40, i32* %42) #6, !dbg !909
-  %43 = load i32* %36, align 4, !dbg !910, !tbaa !878
-  %44 = add nsw i32 %43, %ndelay.16, !dbg !911
-  tail call void @llvm.dbg.value(metadata i32 %44, i64 0, metadata !118, metadata !123), !dbg !870
-  %45 = getelementptr inbounds %struct._Chv* %child.15, i64 0, i32 10, !dbg !912
-  %46 = load %struct._Chv** %45, align 8, !dbg !912, !tbaa !886
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %46, i64 0, metadata !116, metadata !123), !dbg !871
-  %47 = icmp eq %struct._Chv* %46, null, !dbg !913
-  br i1 %47, label %._crit_edge8, label %35, !dbg !904
+for.body17:                                       ; preds = %for.body17.lr.ph, %for.body17
+  %ndelay.185 = phi i32 [ 0, %for.body17.lr.ph ], [ %add23, %for.body17 ]
+  %child.184 = phi %struct._Chv* [ %firstchild, %for.body17.lr.ph ], [ %15, %for.body17 ]
+  %nD18 = getelementptr inbounds %struct._Chv* %child.184, i64 0, i32 1, !dbg !438
+  %11 = load i32* %nD18, align 4, !dbg !438, !tbaa !125
+  %12 = load i32** %rowind, align 8, !dbg !438, !tbaa !120
+  %idx.ext19 = sext i32 %ndelay.185 to i64, !dbg !438
+  %add.ptr20 = getelementptr inbounds i32* %12, i64 %idx.ext19, !dbg !438
+  %rowind21 = getelementptr inbounds %struct._Chv* %child.184, i64 0, i32 6, !dbg !438
+  %13 = load i32** %rowind21, align 8, !dbg !438, !tbaa !120
+  tail call void @IVcopy(i32 %11, i32* %add.ptr20, i32* %13) #6, !dbg !438
+  %14 = load i32* %nD18, align 4, !dbg !443, !tbaa !125
+  %add23 = add nsw i32 %14, %ndelay.185, !dbg !443
+  tail call void @llvm.dbg.value(metadata !{i32 %add23}, i64 0, metadata !108), !dbg !443
+  %next25 = getelementptr inbounds %struct._Chv* %child.184, i64 0, i32 10, !dbg !442
+  %15 = load %struct._Chv** %next25, align 8, !dbg !442, !tbaa !120
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %15}, i64 0, metadata !106), !dbg !442
+  %cmp16 = icmp eq %struct._Chv* %15, null, !dbg !442
+  br i1 %cmp16, label %for.end26, label %for.body17, !dbg !442
 
-._crit_edge8:                                     ; preds = %35
-  %48 = load i32* %21, align 4, !dbg !914, !tbaa !878
-  %49 = load i32* %23, align 4, !dbg !915, !tbaa !890
-  %50 = add nsw i32 %49, %48, !dbg !916
-  %51 = load i32** %34, align 8, !dbg !917, !tbaa !906
-  %52 = sext i32 %44 to i64, !dbg !918
-  %53 = getelementptr inbounds i32* %51, i64 %52, !dbg !918
-  %54 = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 6, !dbg !919
-  %55 = load i32** %54, align 8, !dbg !919, !tbaa !906
-  tail call void @IVcopy(i32 %50, i32* %53, i32* %55) #6, !dbg !920
-  br label %.lr.ph, !dbg !921
+for.end26:                                        ; preds = %for.body17
+  %16 = load i32* %nD7, align 4, !dbg !444, !tbaa !125
+  %17 = load i32* %nU, align 4, !dbg !444, !tbaa !125
+  %add29 = add nsw i32 %17, %16, !dbg !444
+  %18 = load i32** %rowind, align 8, !dbg !444, !tbaa !120
+  %idx.ext31 = sext i32 %add23 to i64, !dbg !444
+  %add.ptr32 = getelementptr inbounds i32* %18, i64 %idx.ext31, !dbg !444
+  %rowind33 = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 6, !dbg !444
+  %19 = load i32** %rowind33, align 8, !dbg !444, !tbaa !120
+  tail call void @IVcopy(i32 %add29, i32* %add.ptr32, i32* %19) #6, !dbg !444
+  br label %for.body37.lr.ph, !dbg !445
 
-.lr.ph:                                           ; preds = %._crit_edge13, %._crit_edge8
-  %ndelay.2 = phi i32 [ %44, %._crit_edge8 ], [ %17, %._crit_edge13 ]
-  tail call void @Chv_assembleChv(%struct._Chv* %newchv, %struct._Chv* %oldchv) #8, !dbg !922
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %firstchild, i64 0, metadata !116, metadata !123), !dbg !871
-  br label %56, !dbg !923
+for.body37.lr.ph:                                 ; preds = %for.end, %for.end26
+  %ndelay.2 = phi i32 [ %add23, %for.end26 ], [ %add, %for.end ]
+  tail call void @Chv_assembleChv(%struct._Chv* %newchv, %struct._Chv* %oldchv) #8, !dbg !446
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %firstchild}, i64 0, metadata !106), !dbg !447
+  br label %for.body37, !dbg !447
 
-; <label>:56                                      ; preds = %.lr.ph, %56
-  %child.24 = phi %struct._Chv* [ %firstchild, %.lr.ph ], [ %58, %56 ]
-  tail call void @Chv_assembleChv(%struct._Chv* %newchv, %struct._Chv* %child.24) #8, !dbg !925
-  %57 = getelementptr inbounds %struct._Chv* %child.24, i64 0, i32 10, !dbg !928
-  %58 = load %struct._Chv** %57, align 8, !dbg !928, !tbaa !886
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %58, i64 0, metadata !116, metadata !123), !dbg !871
-  %59 = icmp eq %struct._Chv* %58, null, !dbg !929
-  br i1 %59, label %._crit_edge, label %56, !dbg !923
+for.body37:                                       ; preds = %for.body37.lr.ph, %for.body37
+  %child.282 = phi %struct._Chv* [ %firstchild, %for.body37.lr.ph ], [ %20, %for.body37 ]
+  tail call void @Chv_assembleChv(%struct._Chv* %newchv, %struct._Chv* %child.282) #8, !dbg !449
+  %next39 = getelementptr inbounds %struct._Chv* %child.282, i64 0, i32 10, !dbg !447
+  %20 = load %struct._Chv** %next39, align 8, !dbg !447, !tbaa !120
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %20}, i64 0, metadata !106), !dbg !447
+  %cmp36 = icmp eq %struct._Chv* %20, null, !dbg !447
+  br i1 %cmp36, label %for.end40, label %for.body37, !dbg !447
 
-._crit_edge:                                      ; preds = %56
-  ret i32 %ndelay.2, !dbg !930
+for.end40:                                        ; preds = %for.body37
+  ret i32 %ndelay.2, !dbg !451
 }

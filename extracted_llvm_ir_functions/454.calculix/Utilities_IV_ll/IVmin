@@ -1,58 +1,57 @@
 define i32 @IVmin(i32 %size, i32* %y, i32* %ploc) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !235, metadata !380), !dbg !796
-  tail call void @llvm.dbg.value(metadata i32* %y, i64 0, metadata !236, metadata !380), !dbg !797
-  tail call void @llvm.dbg.value(metadata i32* %ploc, i64 0, metadata !237, metadata !380), !dbg !798
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !238, metadata !380), !dbg !799
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !239, metadata !380), !dbg !800
-  %1 = icmp sgt i32 %size, 0, !dbg !801
-  br i1 %1, label %2, label %16, !dbg !802
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !210), !dbg !596
+  tail call void @llvm.dbg.value(metadata !{i32* %y}, i64 0, metadata !211), !dbg !597
+  tail call void @llvm.dbg.value(metadata !{i32* %ploc}, i64 0, metadata !212), !dbg !598
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !213), !dbg !599
+  tail call void @llvm.dbg.value(metadata !551, i64 0, metadata !214), !dbg !600
+  %cmp = icmp sgt i32 %size, 0, !dbg !601
+  br i1 %cmp, label %if.then, label %if.end10, !dbg !601
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp eq i32* %y, null, !dbg !803
-  br i1 %3, label %4, label %7, !dbg !804
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq i32* %y, null, !dbg !602
+  br i1 %cmp1, label %if.then2, label %if.else, !dbg !602
 
-; <label>:4                                       ; preds = %2
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !805, !tbaa !399
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([68 x i8]* @.str18, i64 0, i64 0), i32 %size, i32* null, i32* %ploc) #8, !dbg !807
-  tail call void @exit(i32 -1) #9, !dbg !808
-  unreachable, !dbg !808
+if.then2:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !603, !tbaa !341
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([68 x i8]* @.str18, i64 0, i64 0), i32 %size, i32* null, i32* %ploc) #7, !dbg !603
+  tail call void @exit(i32 -1) #8, !dbg !605
+  unreachable, !dbg !605
 
-; <label>:7                                       ; preds = %2
-  %8 = load i32* %y, align 4, !dbg !809, !tbaa !414
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !238, metadata !380), !dbg !799
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !239, metadata !380), !dbg !800
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !240, metadata !380), !dbg !810
-  %9 = icmp sgt i32 %size, 1, !dbg !811
-  br i1 %9, label %.lr.ph, label %._crit_edge, !dbg !814
+if.else:                                          ; preds = %if.then
+  %1 = load i32* %y, align 4, !dbg !606, !tbaa !351
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !213), !dbg !606
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !214), !dbg !607
+  tail call void @llvm.dbg.value(metadata !346, i64 0, metadata !215), !dbg !608
+  %cmp325 = icmp sgt i32 %size, 1, !dbg !608
+  br i1 %cmp325, label %for.body, label %for.end, !dbg !608
 
-.lr.ph:                                           ; preds = %7
-  %10 = add i32 %size, -1, !dbg !814
-  br label %11, !dbg !814
+for.body:                                         ; preds = %if.else, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %if.else ]
+  %loc.027 = phi i32 [ %i.0.loc.0, %for.body ], [ 0, %if.else ]
+  %minval.026 = phi i32 [ %.minval.0, %for.body ], [ %1, %if.else ]
+  %arrayidx4 = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !610
+  %2 = load i32* %arrayidx4, align 4, !dbg !610, !tbaa !351
+  %cmp5 = icmp sgt i32 %minval.026, %2, !dbg !610
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !213), !dbg !612
+  tail call void @llvm.dbg.value(metadata !566, i64 0, metadata !214), !dbg !614
+  %.minval.0 = select i1 %cmp5, i32 %2, i32 %minval.026, !dbg !610
+  %3 = trunc i64 %indvars.iv to i32, !dbg !610
+  %i.0.loc.0 = select i1 %cmp5, i32 %3, i32 %loc.027, !dbg !610
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !608
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !608
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !608
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !608
 
-; <label>:11                                      ; preds = %11, %.lr.ph
-  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %11 ]
-  %loc.02 = phi i32 [ 0, %.lr.ph ], [ %i.0.loc.0, %11 ]
-  %minval.01 = phi i32 [ %8, %.lr.ph ], [ %.minval.0, %11 ]
-  %12 = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !815
-  %13 = load i32* %12, align 4, !dbg !815, !tbaa !414
-  %14 = icmp sgt i32 %minval.01, %13, !dbg !818
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !238, metadata !380), !dbg !799
-  %.minval.0 = select i1 %14, i32 %13, i32 %minval.01, !dbg !819
-  %15 = trunc i64 %indvars.iv to i32, !dbg !819
-  %i.0.loc.0 = select i1 %14, i32 %15, i32 %loc.02, !dbg !819
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !814
-  %exitcond = icmp eq i32 %15, %10, !dbg !814
-  br i1 %exitcond, label %._crit_edge, label %11, !dbg !814
+for.end:                                          ; preds = %for.body, %if.else
+  %loc.0.lcssa = phi i32 [ 0, %if.else ], [ %i.0.loc.0, %for.body ]
+  %minval.0.lcssa = phi i32 [ %1, %if.else ], [ %.minval.0, %for.body ]
+  store i32 %loc.0.lcssa, i32* %ploc, align 4, !dbg !615, !tbaa !351
+  br label %if.end10, !dbg !616
 
-._crit_edge:                                      ; preds = %11, %7
-  %loc.0.lcssa = phi i32 [ 0, %7 ], [ %i.0.loc.0, %11 ]
-  %minval.0.lcssa = phi i32 [ %8, %7 ], [ %.minval.0, %11 ]
-  store i32 %loc.0.lcssa, i32* %ploc, align 4, !dbg !820, !tbaa !414
-  br label %16, !dbg !821
-
-; <label>:16                                      ; preds = %._crit_edge, %0
-  %minval.2 = phi i32 [ %minval.0.lcssa, %._crit_edge ], [ 0, %0 ]
-  %loc.2 = phi i32 [ %loc.0.lcssa, %._crit_edge ], [ -1, %0 ]
-  store i32 %loc.2, i32* %ploc, align 4, !dbg !822, !tbaa !414
-  ret i32 %minval.2, !dbg !823
+if.end10:                                         ; preds = %for.end, %entry
+  %minval.2 = phi i32 [ %minval.0.lcssa, %for.end ], [ 0, %entry ]
+  %loc.2 = phi i32 [ %loc.0.lcssa, %for.end ], [ -1, %entry ]
+  store i32 %loc.2, i32* %ploc, align 4, !dbg !617, !tbaa !351
+  ret i32 %minval.2, !dbg !618
 }

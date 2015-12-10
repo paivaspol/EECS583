@@ -1,18 +1,19 @@
-define i32 @is_hidden(%struct.t_pargs* nocapture readonly %pa) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.t_pargs* %pa, i64 0, metadata !174, metadata !346), !dbg !479
-  %1 = getelementptr inbounds %struct.t_pargs* %pa, i64 0, i32 4, !dbg !480
-  %2 = load i8** %1, align 8, !dbg !480, !tbaa !481
-  %3 = tail call i8* @strstr(i8* %2, i8* getelementptr inbounds ([7 x i8]* @.str, i64 0, i64 0)) #10, !dbg !485
-  %4 = icmp eq i8* %3, null, !dbg !486
-  br i1 %4, label %5, label %8, !dbg !487
+define i32 @is_hidden(%struct.t_pargs* nocapture %pa) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_pargs* %pa}, i64 0, metadata !67), !dbg !220
+  %desc = getelementptr inbounds %struct.t_pargs* %pa, i64 0, i32 4, !dbg !221
+  %0 = load i8** %desc, align 8, !dbg !221, !tbaa !222
+  %call = tail call i8* @strstr(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str, i64 0, i64 0)) #8, !dbg !221
+  %cmp = icmp eq i8* %call, null, !dbg !221
+  br i1 %cmp, label %lor.rhs, label %lor.end, !dbg !221
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i8* @strstr(i8* %2, i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0)) #10, !dbg !488
-  %7 = icmp ne i8* %6, null, !dbg !489
-  br label %8, !dbg !487
+lor.rhs:                                          ; preds = %entry
+  %call2 = tail call i8* @strstr(i8* %0, i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !225
+  %cmp3 = icmp ne i8* %call2, null, !dbg !225
+  br label %lor.end, !dbg !225
 
-; <label>:8                                       ; preds = %0, %5
-  %9 = phi i1 [ true, %0 ], [ %7, %5 ]
-  %10 = zext i1 %9 to i32, !dbg !487
-  ret i32 %10, !dbg !490
+lor.end:                                          ; preds = %entry, %lor.rhs
+  %1 = phi i1 [ true, %entry ], [ %cmp3, %lor.rhs ]
+  %lor.ext = zext i1 %1 to i32, !dbg !225
+  ret i32 %lor.ext, !dbg !225
 }

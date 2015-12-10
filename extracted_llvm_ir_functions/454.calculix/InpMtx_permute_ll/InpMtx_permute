@@ -1,234 +1,217 @@
 define void @InpMtx_permute(%struct._InpMtx* %inpmtx, i32* %rowOldToNew, i32* %colOldToNew) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !49, metadata !68), !dbg !69
-  tail call void @llvm.dbg.value(metadata i32* %rowOldToNew, i64 0, metadata !50, metadata !68), !dbg !70
-  tail call void @llvm.dbg.value(metadata i32* %colOldToNew, i64 0, metadata !51, metadata !68), !dbg !71
-  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !72
-  br i1 %1, label %2, label %5, !dbg !74
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !48), !dbg !60
+  tail call void @llvm.dbg.value(metadata !{i32* %rowOldToNew}, i64 0, metadata !49), !dbg !61
+  tail call void @llvm.dbg.value(metadata !{i32* %colOldToNew}, i64 0, metadata !50), !dbg !62
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !63
+  br i1 %cmp, label %if.then, label %if.end, !dbg !63
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !75, !tbaa !77
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), %struct._InpMtx* null, i32* %rowOldToNew, i32* %colOldToNew) #5, !dbg !81
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !64, !tbaa !66
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), %struct._InpMtx* null, i32* %rowOldToNew, i32* %colOldToNew) #5, !dbg !64
+  tail call void @exit(i32 -1) #6, !dbg !69
+  unreachable, !dbg !69
+
+if.end:                                           ; preds = %entry
+  %coordType = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 0, !dbg !70
+  %1 = load i32* %coordType, align 4, !dbg !70, !tbaa !71
+  %.off = add i32 %1, -1, !dbg !70
+  %2 = icmp ugt i32 %.off, 2, !dbg !70
+  br i1 %2, label %if.then4, label %if.end7, !dbg !70
+
+if.then4:                                         ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !72, !tbaa !66
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32* %rowOldToNew, i32* %colOldToNew, i32 %1) #5, !dbg !72
+  tail call void @exit(i32 -1) #6, !dbg !74
+  unreachable, !dbg !74
+
+if.end7:                                          ; preds = %if.end
+  %cmp8 = icmp eq i32* %rowOldToNew, null, !dbg !75
+  %cmp9 = icmp eq i32* %colOldToNew, null, !dbg !75
+  %or.cond209 = and i1 %cmp8, %cmp9, !dbg !75
+  br i1 %or.cond209, label %return, label %if.end11, !dbg !75
+
+if.end11:                                         ; preds = %if.end7
+  %nent12 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4, !dbg !76
+  %4 = load i32* %nent12, align 4, !dbg !76, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !53), !dbg !76
+  %cmp13 = icmp eq i32 %4, 0, !dbg !76
+  br i1 %cmp13, label %return, label %if.end15, !dbg !76
+
+if.end15:                                         ; preds = %if.end11
+  %call16 = tail call i32* @InpMtx_ivec1(%struct._InpMtx* %inpmtx) #5, !dbg !77
+  tail call void @llvm.dbg.value(metadata !{i32* %call16}, i64 0, metadata !55), !dbg !77
+  %call17 = tail call i32* @InpMtx_ivec2(%struct._InpMtx* %inpmtx) #5, !dbg !78
+  tail call void @llvm.dbg.value(metadata !{i32* %call17}, i64 0, metadata !56), !dbg !78
+  %cmp18 = icmp eq i32* %call16, null, !dbg !79
+  %cmp20 = icmp eq i32* %call17, null, !dbg !79
+  %or.cond210 = or i1 %cmp18, %cmp20, !dbg !79
+  br i1 %or.cond210, label %if.then21, label %if.end23, !dbg !79
+
+if.then21:                                        ; preds = %if.end15
+  %5 = load %struct._IO_FILE** @stderr, align 8, !dbg !80, !tbaa !66
+  %call22 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([77 x i8]* @.str2, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32* %rowOldToNew, i32* %colOldToNew, i32 %4, i32* %call16, i32* %call17) #5, !dbg !80
   tail call void @exit(i32 -1) #6, !dbg !82
   unreachable, !dbg !82
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 0, !dbg !83
-  %7 = load i32* %6, align 4, !dbg !83, !tbaa !85
-  %.off = add i32 %7, -1, !dbg !91
-  %8 = icmp ugt i32 %.off, 2, !dbg !91
-  br i1 %8, label %9, label %12, !dbg !91
+if.end23:                                         ; preds = %if.end15
+  %6 = load i32* %coordType, align 4, !dbg !83, !tbaa !71
+  switch i32 %6, label %if.end119 [
+    i32 1, label %for.cond.preheader
+    i32 2, label %for.cond51.preheader
+    i32 3, label %for.cond83.preheader
+  ], !dbg !83
 
-; <label>:9                                       ; preds = %5
-  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !92, !tbaa !77
-  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32* %rowOldToNew, i32* %colOldToNew, i32 %7) #5, !dbg !94
-  tail call void @exit(i32 -1) #6, !dbg !95
-  unreachable, !dbg !95
+for.cond83.preheader:                             ; preds = %if.end23
+  %cmp84223 = icmp sgt i32 %4, 0, !dbg !84
+  br i1 %cmp84223, label %for.body85, label %if.end119, !dbg !84
 
-; <label>:12                                      ; preds = %5
-  %13 = icmp eq i32* %rowOldToNew, null, !dbg !96
-  %14 = icmp eq i32* %colOldToNew, null, !dbg !98
-  %or.cond = and i1 %13, %14, !dbg !99
-  br i1 %or.cond, label %99, label %15, !dbg !99
+for.cond51.preheader:                             ; preds = %if.end23
+  %cmp52220 = icmp sgt i32 %4, 0, !dbg !86
+  br i1 %cmp52220, label %for.body53, label %if.end119, !dbg !86
 
-; <label>:15                                      ; preds = %12
-  %16 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4, !dbg !100
-  %17 = load i32* %16, align 4, !dbg !100, !tbaa !102
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !54, metadata !68), !dbg !103
-  %18 = icmp eq i32 %17, 0, !dbg !104
-  br i1 %18, label %99, label %19, !dbg !105
+for.cond.preheader:                               ; preds = %if.end23
+  %cmp27217 = icmp sgt i32 %4, 0, !dbg !89
+  br i1 %cmp27217, label %for.body, label %if.end119, !dbg !89
 
-; <label>:19                                      ; preds = %15
-  %20 = tail call i32* @InpMtx_ivec1(%struct._InpMtx* %inpmtx) #5, !dbg !106
-  tail call void @llvm.dbg.value(metadata i32* %20, i64 0, metadata !56, metadata !68), !dbg !107
-  %21 = tail call i32* @InpMtx_ivec2(%struct._InpMtx* %inpmtx) #5, !dbg !108
-  tail call void @llvm.dbg.value(metadata i32* %21, i64 0, metadata !57, metadata !68), !dbg !109
-  %22 = icmp eq i32* %20, null, !dbg !110
-  %23 = icmp eq i32* %21, null, !dbg !112
-  %or.cond3 = or i1 %22, %23, !dbg !113
-  br i1 %or.cond3, label %24, label %27, !dbg !113
+for.body:                                         ; preds = %for.cond.preheader, %if.end43
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end43 ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds i32* %call16, i64 %indvars.iv, !dbg !92
+  %7 = load i32* %arrayidx, align 4, !dbg !92, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %7}, i64 0, metadata !54), !dbg !92
+  %arrayidx29 = getelementptr inbounds i32* %call17, i64 %indvars.iv, !dbg !92
+  %8 = load i32* %arrayidx29, align 4, !dbg !92, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %8}, i64 0, metadata !51), !dbg !92
+  %cmp30 = icmp slt i32 %7, 0, !dbg !94
+  %or.cond211 = or i1 %cmp30, %cmp8, !dbg !94
+  br i1 %or.cond211, label %if.end36, label %if.then33, !dbg !94
 
-; <label>:24                                      ; preds = %19
-  %25 = load %struct.__sFILE** @__stderrp, align 8, !dbg !114, !tbaa !77
-  %26 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %25, i8* getelementptr inbounds ([77 x i8]* @.str2, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32* %rowOldToNew, i32* %colOldToNew, i32 %17, i32* %20, i32* %21) #5, !dbg !116
-  tail call void @exit(i32 -1) #6, !dbg !117
-  unreachable, !dbg !117
+if.then33:                                        ; preds = %for.body
+  %idxprom34 = sext i32 %7 to i64, !dbg !95
+  %arrayidx35 = getelementptr inbounds i32* %rowOldToNew, i64 %idxprom34, !dbg !95
+  %9 = load i32* %arrayidx35, align 4, !dbg !95, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !54), !dbg !95
+  br label %if.end36, !dbg !97
 
-; <label>:27                                      ; preds = %19
-  %28 = load i32* %6, align 4, !dbg !118, !tbaa !85
-  switch i32 %28, label %.loopexit [
-    i32 1, label %.preheader
-    i32 2, label %.preheader17
-    i32 3, label %.preheader19
-  ], !dbg !119
+if.end36:                                         ; preds = %for.body, %if.then33
+  %row.0 = phi i32 [ %9, %if.then33 ], [ %7, %for.body ]
+  %cmp37 = icmp slt i32 %8, 0, !dbg !98
+  %or.cond212 = or i1 %cmp37, %cmp9, !dbg !98
+  br i1 %or.cond212, label %if.end43, label %if.then40, !dbg !98
 
-.preheader19:                                     ; preds = %27
-  %29 = icmp sgt i32 %17, 0, !dbg !120
-  br i1 %29, label %.lr.ph25, label %.loopexit, !dbg !123
+if.then40:                                        ; preds = %if.end36
+  %idxprom41 = sext i32 %8 to i64, !dbg !99
+  %arrayidx42 = getelementptr inbounds i32* %colOldToNew, i64 %idxprom41, !dbg !99
+  %10 = load i32* %arrayidx42, align 4, !dbg !99, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %10}, i64 0, metadata !51), !dbg !99
+  br label %if.end43, !dbg !101
 
-.lr.ph25:                                         ; preds = %.preheader19
-  %30 = icmp ne i32* %rowOldToNew, null, !dbg !124
-  %31 = icmp ne i32* %colOldToNew, null, !dbg !127
-  %32 = add i32 %17, -1, !dbg !123
-  br label %75, !dbg !123
+if.end43:                                         ; preds = %if.end36, %if.then40
+  %col.0 = phi i32 [ %10, %if.then40 ], [ %8, %if.end36 ]
+  store i32 %row.0, i32* %arrayidx, align 4, !dbg !102, !tbaa !71
+  store i32 %col.0, i32* %arrayidx29, align 4, !dbg !102, !tbaa !71
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !89
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !89
+  %exitcond = icmp eq i32 %lftr.wideiv, %4, !dbg !89
+  br i1 %exitcond, label %if.end119, label %for.body, !dbg !89
 
-.preheader17:                                     ; preds = %27
-  %33 = icmp sgt i32 %17, 0, !dbg !129
-  br i1 %33, label %.lr.ph23, label %.loopexit, !dbg !133
+for.body53:                                       ; preds = %for.cond51.preheader, %if.end71
+  %indvars.iv225 = phi i64 [ %indvars.iv.next226, %if.end71 ], [ 0, %for.cond51.preheader ]
+  %arrayidx55 = getelementptr inbounds i32* %call16, i64 %indvars.iv225, !dbg !103
+  %11 = load i32* %arrayidx55, align 4, !dbg !103, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %11}, i64 0, metadata !51), !dbg !103
+  %arrayidx57 = getelementptr inbounds i32* %call17, i64 %indvars.iv225, !dbg !103
+  %12 = load i32* %arrayidx57, align 4, !dbg !103, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %12}, i64 0, metadata !54), !dbg !103
+  %cmp58 = icmp slt i32 %12, 0, !dbg !105
+  %or.cond213 = or i1 %cmp58, %cmp8, !dbg !105
+  br i1 %or.cond213, label %if.end64, label %if.then61, !dbg !105
 
-.lr.ph23:                                         ; preds = %.preheader17
-  %34 = icmp ne i32* %rowOldToNew, null, !dbg !134
-  %35 = icmp ne i32* %colOldToNew, null, !dbg !137
-  %36 = add i32 %17, -1, !dbg !133
-  br label %58, !dbg !133
+if.then61:                                        ; preds = %for.body53
+  %idxprom62 = sext i32 %12 to i64, !dbg !106
+  %arrayidx63 = getelementptr inbounds i32* %rowOldToNew, i64 %idxprom62, !dbg !106
+  %13 = load i32* %arrayidx63, align 4, !dbg !106, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %13}, i64 0, metadata !54), !dbg !106
+  br label %if.end64, !dbg !108
 
-.preheader:                                       ; preds = %27
-  %37 = icmp sgt i32 %17, 0, !dbg !139
-  br i1 %37, label %.lr.ph, label %.loopexit, !dbg !143
+if.end64:                                         ; preds = %for.body53, %if.then61
+  %row.1 = phi i32 [ %13, %if.then61 ], [ %12, %for.body53 ]
+  %cmp65 = icmp slt i32 %11, 0, !dbg !109
+  %or.cond214 = or i1 %cmp65, %cmp9, !dbg !109
+  br i1 %or.cond214, label %if.end71, label %if.then68, !dbg !109
 
-.lr.ph:                                           ; preds = %.preheader
-  %38 = icmp ne i32* %rowOldToNew, null, !dbg !144
-  %39 = icmp ne i32* %colOldToNew, null, !dbg !147
-  %40 = add i32 %17, -1, !dbg !143
-  br label %41, !dbg !143
+if.then68:                                        ; preds = %if.end64
+  %idxprom69 = sext i32 %11 to i64, !dbg !110
+  %arrayidx70 = getelementptr inbounds i32* %colOldToNew, i64 %idxprom69, !dbg !110
+  %14 = load i32* %arrayidx70, align 4, !dbg !110, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %14}, i64 0, metadata !51), !dbg !110
+  br label %if.end71, !dbg !112
 
-; <label>:41                                      ; preds = %57, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %57 ]
-  %42 = getelementptr inbounds i32* %20, i64 %indvars.iv, !dbg !149
-  %43 = load i32* %42, align 4, !dbg !149, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %43, i64 0, metadata !55, metadata !68), !dbg !151
-  %44 = getelementptr inbounds i32* %21, i64 %indvars.iv, !dbg !152
-  %45 = load i32* %44, align 4, !dbg !152, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %45, i64 0, metadata !52, metadata !68), !dbg !153
-  %46 = icmp sgt i32 %43, -1, !dbg !154
-  %or.cond5 = and i1 %38, %46, !dbg !155
-  br i1 %or.cond5, label %47, label %51, !dbg !155
+if.end71:                                         ; preds = %if.end64, %if.then68
+  %col.1 = phi i32 [ %14, %if.then68 ], [ %11, %if.end64 ]
+  store i32 %col.1, i32* %arrayidx55, align 4, !dbg !113, !tbaa !71
+  store i32 %row.1, i32* %arrayidx57, align 4, !dbg !113, !tbaa !71
+  %indvars.iv.next226 = add i64 %indvars.iv225, 1, !dbg !86
+  %lftr.wideiv227 = trunc i64 %indvars.iv.next226 to i32, !dbg !86
+  %exitcond228 = icmp eq i32 %lftr.wideiv227, %4, !dbg !86
+  br i1 %exitcond228, label %if.end119, label %for.body53, !dbg !86
 
-; <label>:47                                      ; preds = %41
-  %48 = sext i32 %43 to i64, !dbg !156
-  %49 = getelementptr inbounds i32* %rowOldToNew, i64 %48, !dbg !156
-  %50 = load i32* %49, align 4, !dbg !156, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %50, i64 0, metadata !55, metadata !68), !dbg !151
-  br label %51, !dbg !158
+for.body85:                                       ; preds = %for.cond83.preheader, %if.end107
+  %indvars.iv229 = phi i64 [ %indvars.iv.next230, %if.end107 ], [ 0, %for.cond83.preheader ]
+  %arrayidx87 = getelementptr inbounds i32* %call16, i64 %indvars.iv229, !dbg !114
+  %15 = load i32* %arrayidx87, align 4, !dbg !114, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %15}, i64 0, metadata !57), !dbg !114
+  %arrayidx89 = getelementptr inbounds i32* %call17, i64 %indvars.iv229, !dbg !114
+  %16 = load i32* %arrayidx89, align 4, !dbg !114, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %16}, i64 0, metadata !59), !dbg !114
+  %cmp90 = icmp sgt i32 %16, -1, !dbg !116
+  tail call void @llvm.dbg.value(metadata !{i32 %15}, i64 0, metadata !54), !dbg !117
+  tail call void @llvm.dbg.value(metadata !{i32 %15}, i64 0, metadata !51), !dbg !119
+  %sub = select i1 %cmp90, i32 0, i32 %16, !dbg !116
+  %row.2 = sub nsw i32 %15, %sub, !dbg !116
+  %add = select i1 %cmp90, i32 %16, i32 0, !dbg !116
+  %col.2 = add nsw i32 %add, %15, !dbg !116
+  %cmp94 = icmp slt i32 %row.2, 0, !dbg !121
+  %or.cond215 = or i1 %cmp94, %cmp8, !dbg !121
+  br i1 %or.cond215, label %if.end100, label %if.then97, !dbg !121
 
-; <label>:51                                      ; preds = %47, %41
-  %row.0 = phi i32 [ %50, %47 ], [ %43, %41 ]
-  %52 = icmp sgt i32 %45, -1, !dbg !159
-  %or.cond7 = and i1 %39, %52, !dbg !160
-  br i1 %or.cond7, label %53, label %57, !dbg !160
+if.then97:                                        ; preds = %for.body85
+  %idxprom98 = sext i32 %row.2 to i64, !dbg !122
+  %arrayidx99 = getelementptr inbounds i32* %rowOldToNew, i64 %idxprom98, !dbg !122
+  %17 = load i32* %arrayidx99, align 4, !dbg !122, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %17}, i64 0, metadata !54), !dbg !122
+  br label %if.end100, !dbg !124
 
-; <label>:53                                      ; preds = %51
-  %54 = sext i32 %45 to i64, !dbg !161
-  %55 = getelementptr inbounds i32* %colOldToNew, i64 %54, !dbg !161
-  %56 = load i32* %55, align 4, !dbg !161, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %56, i64 0, metadata !52, metadata !68), !dbg !153
-  br label %57, !dbg !163
+if.end100:                                        ; preds = %for.body85, %if.then97
+  %row.3 = phi i32 [ %17, %if.then97 ], [ %row.2, %for.body85 ]
+  %cmp101 = icmp slt i32 %col.2, 0, !dbg !125
+  %or.cond216 = or i1 %cmp101, %cmp9, !dbg !125
+  br i1 %or.cond216, label %if.end107, label %if.then104, !dbg !125
 
-; <label>:57                                      ; preds = %53, %51
-  %col.0 = phi i32 [ %56, %53 ], [ %45, %51 ]
-  store i32 %row.0, i32* %42, align 4, !dbg !164, !tbaa !150
-  store i32 %col.0, i32* %44, align 4, !dbg !165, !tbaa !150
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !143
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !143
-  %exitcond = icmp eq i32 %lftr.wideiv, %40, !dbg !143
-  br i1 %exitcond, label %.loopexit, label %41, !dbg !143
+if.then104:                                       ; preds = %if.end100
+  %idxprom105 = sext i32 %col.2 to i64, !dbg !126
+  %arrayidx106 = getelementptr inbounds i32* %colOldToNew, i64 %idxprom105, !dbg !126
+  %18 = load i32* %arrayidx106, align 4, !dbg !126, !tbaa !71
+  tail call void @llvm.dbg.value(metadata !{i32 %18}, i64 0, metadata !51), !dbg !126
+  br label %if.end107, !dbg !128
 
-; <label>:58                                      ; preds = %74, %.lr.ph23
-  %indvars.iv26 = phi i64 [ 0, %.lr.ph23 ], [ %indvars.iv.next27, %74 ]
-  %59 = getelementptr inbounds i32* %20, i64 %indvars.iv26, !dbg !166
-  %60 = load i32* %59, align 4, !dbg !166, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %60, i64 0, metadata !52, metadata !68), !dbg !153
-  %61 = getelementptr inbounds i32* %21, i64 %indvars.iv26, !dbg !167
-  %62 = load i32* %61, align 4, !dbg !167, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %62, i64 0, metadata !55, metadata !68), !dbg !151
-  %63 = icmp sgt i32 %62, -1, !dbg !168
-  %or.cond9 = and i1 %34, %63, !dbg !169
-  br i1 %or.cond9, label %64, label %68, !dbg !169
+if.end107:                                        ; preds = %if.end100, %if.then104
+  %col.3 = phi i32 [ %18, %if.then104 ], [ %col.2, %if.end100 ]
+  %cmp108 = icmp sle i32 %col.3, %row.3, !dbg !129
+  %cond = select i1 %cmp108, i32 %col.3, i32 %row.3, !dbg !129
+  store i32 %cond, i32* %arrayidx87, align 4, !dbg !129, !tbaa !71
+  %sub111 = sub nsw i32 %col.3, %row.3, !dbg !130
+  store i32 %sub111, i32* %arrayidx89, align 4, !dbg !130, !tbaa !71
+  %indvars.iv.next230 = add i64 %indvars.iv229, 1, !dbg !84
+  %lftr.wideiv231 = trunc i64 %indvars.iv.next230 to i32, !dbg !84
+  %exitcond232 = icmp eq i32 %lftr.wideiv231, %4, !dbg !84
+  br i1 %exitcond232, label %if.end119, label %for.body85, !dbg !84
 
-; <label>:64                                      ; preds = %58
-  %65 = sext i32 %62 to i64, !dbg !170
-  %66 = getelementptr inbounds i32* %rowOldToNew, i64 %65, !dbg !170
-  %67 = load i32* %66, align 4, !dbg !170, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %67, i64 0, metadata !55, metadata !68), !dbg !151
-  br label %68, !dbg !172
+if.end119:                                        ; preds = %for.cond83.preheader, %if.end107, %for.cond51.preheader, %if.end71, %for.cond.preheader, %if.end43, %if.end23
+  %storageMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1, !dbg !131
+  store i32 1, i32* %storageMode, align 4, !dbg !131, !tbaa !71
+  br label %return, !dbg !132
 
-; <label>:68                                      ; preds = %64, %58
-  %row.1 = phi i32 [ %67, %64 ], [ %62, %58 ]
-  %69 = icmp sgt i32 %60, -1, !dbg !173
-  %or.cond11 = and i1 %35, %69, !dbg !174
-  br i1 %or.cond11, label %70, label %74, !dbg !174
-
-; <label>:70                                      ; preds = %68
-  %71 = sext i32 %60 to i64, !dbg !175
-  %72 = getelementptr inbounds i32* %colOldToNew, i64 %71, !dbg !175
-  %73 = load i32* %72, align 4, !dbg !175, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %73, i64 0, metadata !52, metadata !68), !dbg !153
-  br label %74, !dbg !177
-
-; <label>:74                                      ; preds = %70, %68
-  %col.1 = phi i32 [ %73, %70 ], [ %60, %68 ]
-  store i32 %col.1, i32* %59, align 4, !dbg !178, !tbaa !150
-  store i32 %row.1, i32* %61, align 4, !dbg !179, !tbaa !150
-  %indvars.iv.next27 = add nuw nsw i64 %indvars.iv26, 1, !dbg !133
-  %lftr.wideiv28 = trunc i64 %indvars.iv26 to i32, !dbg !133
-  %exitcond29 = icmp eq i32 %lftr.wideiv28, %36, !dbg !133
-  br i1 %exitcond29, label %.loopexit, label %58, !dbg !133
-
-; <label>:75                                      ; preds = %94, %.lr.ph25
-  %indvars.iv30 = phi i64 [ 0, %.lr.ph25 ], [ %indvars.iv.next31, %94 ]
-  %76 = getelementptr inbounds i32* %20, i64 %indvars.iv30, !dbg !180
-  %77 = load i32* %76, align 4, !dbg !180, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %77, i64 0, metadata !58, metadata !68), !dbg !181
-  %78 = getelementptr inbounds i32* %21, i64 %indvars.iv30, !dbg !182
-  %79 = load i32* %78, align 4, !dbg !182, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %79, i64 0, metadata !63, metadata !68), !dbg !183
-  %80 = icmp sgt i32 %79, -1, !dbg !184
-  tail call void @llvm.dbg.value(metadata i32 %77, i64 0, metadata !55, metadata !68), !dbg !151
-  tail call void @llvm.dbg.value(metadata i32 %77, i64 0, metadata !52, metadata !68), !dbg !153
-  %81 = select i1 %80, i32 0, i32 %79, !dbg !186
-  %row.2 = sub nsw i32 %77, %81, !dbg !186
-  %82 = select i1 %80, i32 %79, i32 0, !dbg !186
-  %col.2 = add nsw i32 %82, %77, !dbg !186
-  %83 = icmp sgt i32 %row.2, -1, !dbg !187
-  %or.cond13 = and i1 %30, %83, !dbg !188
-  br i1 %or.cond13, label %84, label %88, !dbg !188
-
-; <label>:84                                      ; preds = %75
-  %85 = sext i32 %row.2 to i64, !dbg !189
-  %86 = getelementptr inbounds i32* %rowOldToNew, i64 %85, !dbg !189
-  %87 = load i32* %86, align 4, !dbg !189, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %87, i64 0, metadata !55, metadata !68), !dbg !151
-  br label %88, !dbg !191
-
-; <label>:88                                      ; preds = %84, %75
-  %row.3 = phi i32 [ %87, %84 ], [ %row.2, %75 ]
-  %89 = icmp sgt i32 %col.2, -1, !dbg !192
-  %or.cond15 = and i1 %31, %89, !dbg !193
-  br i1 %or.cond15, label %90, label %94, !dbg !193
-
-; <label>:90                                      ; preds = %88
-  %91 = sext i32 %col.2 to i64, !dbg !194
-  %92 = getelementptr inbounds i32* %colOldToNew, i64 %91, !dbg !194
-  %93 = load i32* %92, align 4, !dbg !194, !tbaa !150
-  tail call void @llvm.dbg.value(metadata i32 %93, i64 0, metadata !52, metadata !68), !dbg !153
-  br label %94, !dbg !196
-
-; <label>:94                                      ; preds = %90, %88
-  %col.3 = phi i32 [ %93, %90 ], [ %col.2, %88 ]
-  %95 = icmp sle i32 %col.3, %row.3, !dbg !197
-  %96 = select i1 %95, i32 %col.3, i32 %row.3, !dbg !198
-  store i32 %96, i32* %76, align 4, !dbg !199, !tbaa !150
-  %97 = sub nsw i32 %col.3, %row.3, !dbg !200
-  store i32 %97, i32* %78, align 4, !dbg !201, !tbaa !150
-  %indvars.iv.next31 = add nuw nsw i64 %indvars.iv30, 1, !dbg !123
-  %lftr.wideiv32 = trunc i64 %indvars.iv30 to i32, !dbg !123
-  %exitcond33 = icmp eq i32 %lftr.wideiv32, %32, !dbg !123
-  br i1 %exitcond33, label %.loopexit, label %75, !dbg !123
-
-.loopexit:                                        ; preds = %94, %74, %57, %.preheader19, %.preheader17, %.preheader, %27
-  %98 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1, !dbg !202
-  store i32 1, i32* %98, align 4, !dbg !203, !tbaa !204
-  br label %99, !dbg !205
-
-; <label>:99                                      ; preds = %15, %12, %.loopexit
-  ret void, !dbg !206
+return:                                           ; preds = %if.end7, %if.end11, %if.end119
+  ret void, !dbg !132
 }

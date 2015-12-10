@@ -1,76 +1,79 @@
-define i32 @_ZN3pov18POVFPU_AddFunctionEPNS_12FunctionCodeE(%"struct.pov::FunctionCode"* nocapture readonly %f) #2 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::FunctionCode"* %f, i64 0, metadata !541, metadata !1171), !dbg !1438
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !542, metadata !1171), !dbg !1439
-  %1 = load %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !1440, !tbaa !1183
-  %2 = icmp eq %"struct.pov::FunctionEntry_Struct"* %1, null, !dbg !1442
-  %3 = bitcast %"struct.pov::FunctionEntry_Struct"* %1 to i8*
-  br i1 %2, label %4, label %9, !dbg !1443
+define i32 @_ZN3pov18POVFPU_AddFunctionEPNS_12FunctionCodeE(%"struct.pov::FunctionCode"* nocapture %f) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::FunctionCode"* %f}, i64 0, metadata !272), !dbg !630
+  tail call void @llvm.dbg.value(metadata !134, i64 0, metadata !273), !dbg !631
+  %0 = load %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !632, !tbaa !493
+  %cmp = icmp eq %"struct.pov::FunctionEntry_Struct"* %0, null, !dbg !632
+  br i1 %cmp, label %if.then, label %if.end, !dbg !632
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 1208, i8* getelementptr inbounds ([69 x i8]* @.str51, i64 0, i64 0), i32 1091, i8* getelementptr inbounds ([18 x i8]* @.str57, i64 0, i64 0)) #8, !dbg !1444
-  store i8* %5, i8** bitcast (%"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE to i8**), align 8, !dbg !1446, !tbaa !1183
-  %6 = bitcast %"struct.pov::FunctionCode"* %f to i8*, !dbg !1447
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %6, i64 1200, i32 8, i1 false), !dbg !1447, !tbaa.struct !1448
-  %7 = getelementptr inbounds i8* %5, i64 1200, !dbg !1451
-  %8 = bitcast i8* %7 to i32*, !dbg !1451
-  store i32 1, i32* %8, align 4, !dbg !1452, !tbaa !1309
-  store i32 1, i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !1453, !tbaa !1189
-  br label %36, !dbg !1454
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 1208, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 1091, i8* getelementptr inbounds ([18 x i8]* @.str57, i64 0, i64 0)) #9, !dbg !633
+  %1 = bitcast i8* %call to %"struct.pov::FunctionEntry_Struct"*, !dbg !633
+  store %"struct.pov::FunctionEntry_Struct"* %1, %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !633, !tbaa !493
+  %2 = bitcast %"struct.pov::FunctionCode"* %f to i8*, !dbg !635
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call, i8* %2, i64 1200, i32 8, i1 false), !dbg !635, !tbaa.struct !636
+  %reference_count = getelementptr inbounds i8* %call, i64 1200, !dbg !638
+  %3 = bitcast i8* %reference_count to i32*, !dbg !638
+  store i32 1, i32* %3, align 4, !dbg !638, !tbaa !498
+  store i32 1, i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !639, !tbaa !498
+  br label %return, !dbg !640
 
-; <label>:9                                       ; preds = %0
-  %10 = load i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !1455, !tbaa !1189
-  %11 = icmp eq i32 %10, 1048575, !dbg !1457
-  br i1 %11, label %.preheader, label %23, !dbg !1458
+if.end:                                           ; preds = %entry
+  %4 = load i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !641, !tbaa !498
+  %cmp3 = icmp eq i32 %4, 1048575, !dbg !641
+  br i1 %cmp3, label %for.body, label %if.else, !dbg !641
 
-.preheader:                                       ; preds = %9, %16
-  %fn.02 = phi i32 [ %17, %16 ], [ 0, %9 ]
-  %12 = zext i32 %fn.02 to i64, !dbg !1459
-  %13 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %1, i64 %12, i32 1, !dbg !1465
-  %14 = load i32* %13, align 4, !dbg !1465, !tbaa !1309
-  %15 = icmp eq i32 %14, 0, !dbg !1466
-  br i1 %15, label %.thread, label %16, !dbg !1467
+for.cond:                                         ; preds = %for.body
+  %cmp5 = icmp ult i32 %inc, 1048575, !dbg !642
+  br i1 %cmp5, label %for.body, label %for.end, !dbg !642
 
-; <label>:16                                      ; preds = %.preheader
-  %17 = add nuw nsw i32 %fn.02, 1, !dbg !1468
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !542, metadata !1171), !dbg !1439
-  %18 = icmp ult i32 %17, 1048575, !dbg !1469
-  br i1 %18, label %.preheader, label %19, !dbg !1470
+for.body:                                         ; preds = %if.end, %for.cond
+  %fn.031 = phi i32 [ %inc, %for.cond ], [ 0, %if.end ]
+  %idxprom = zext i32 %fn.031 to i64, !dbg !645
+  %reference_count7 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %0, i64 %idxprom, i32 1, !dbg !645
+  %5 = load i32* %reference_count7, align 4, !dbg !645, !tbaa !498
+  %cmp8 = icmp eq i32 %5, 0, !dbg !645
+  %inc = add i32 %fn.031, 1, !dbg !642
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !273), !dbg !642
+  br i1 %cmp8, label %for.end, label %for.cond, !dbg !645
 
-; <label>:19                                      ; preds = %16
-  %20 = icmp eq i32 %17, 1048575, !dbg !1471
-  br i1 %20, label %21, label %.thread, !dbg !1473
+for.end:                                          ; preds = %for.body, %for.cond
+  %fn.0.lcssa = phi i32 [ %fn.031, %for.body ], [ %inc, %for.cond ]
+  %cmp11 = icmp eq i32 %fn.0.lcssa, 1048575, !dbg !647
+  br i1 %cmp11, label %if.then12, label %if.end16, !dbg !647
 
-; <label>:21                                      ; preds = %19
-  %22 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([52 x i8]* @.str58, i64 0, i64 0), i32 1048575) #8, !dbg !1474
-  %.pre = load i8** bitcast (%"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE to i8**), align 8, !dbg !1475, !tbaa !1183
-  %.pre4 = load i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !1475, !tbaa !1189
-  br label %.thread, !dbg !1474
+if.then12:                                        ; preds = %for.end
+  %call13 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([52 x i8]* @.str58, i64 0, i64 0), i32 1048575) #9, !dbg !648
+  %.pre = load %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !649, !tbaa !493
+  %.pre32 = load i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !649, !tbaa !498
+  br label %if.end16, !dbg !648
 
-; <label>:23                                      ; preds = %9
-  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !542, metadata !1171), !dbg !1439
-  %24 = add i32 %10, 1, !dbg !1476
-  store i32 %24, i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !1476, !tbaa !1189
-  br label %.thread
+if.else:                                          ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !273), !dbg !650
+  %inc15 = add i32 %4, 1, !dbg !652
+  store i32 %inc15, i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !652, !tbaa !498
+  br label %if.end16
 
-.thread:                                          ; preds = %.preheader, %19, %21, %23
-  %25 = phi i32 [ %.pre4, %21 ], [ 1048575, %19 ], [ %24, %23 ], [ 1048575, %.preheader ]
-  %26 = phi i8* [ %.pre, %21 ], [ %3, %19 ], [ %3, %23 ], [ %3, %.preheader ]
-  %fn.1 = phi i32 [ 1048575, %21 ], [ %17, %19 ], [ %10, %23 ], [ %fn.02, %.preheader ]
-  %27 = zext i32 %25 to i64, !dbg !1475
-  %28 = mul nuw nsw i64 %27, 1208, !dbg !1475
-  %29 = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %26, i64 %28, i8* getelementptr inbounds ([69 x i8]* @.str51, i64 0, i64 0), i32 1117, i8* getelementptr inbounds ([18 x i8]* @.str57, i64 0, i64 0)) #8, !dbg !1475
-  %30 = bitcast i8* %29 to %"struct.pov::FunctionEntry_Struct"*, !dbg !1478
-  store i8* %29, i8** bitcast (%"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE to i8**), align 8, !dbg !1479, !tbaa !1183
-  %31 = zext i32 %fn.1 to i64, !dbg !1480
-  %32 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %30, i64 %31, i32 0, !dbg !1481
-  %33 = bitcast %"struct.pov::FunctionCode"* %32 to i8*, !dbg !1482
-  %34 = bitcast %"struct.pov::FunctionCode"* %f to i8*, !dbg !1482
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %33, i8* %34, i64 1200, i32 8, i1 false), !dbg !1482, !tbaa.struct !1448
-  %35 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %30, i64 %31, i32 1, !dbg !1483
-  store i32 1, i32* %35, align 4, !dbg !1484, !tbaa !1309
-  br label %36, !dbg !1485
+if.end16:                                         ; preds = %for.end, %if.then12, %if.else
+  %6 = phi i32 [ %.pre32, %if.then12 ], [ 1048575, %for.end ], [ %inc15, %if.else ]
+  %7 = phi %"struct.pov::FunctionEntry_Struct"* [ %.pre, %if.then12 ], [ %0, %for.end ], [ %0, %if.else ]
+  %fn.1 = phi i32 [ 1048575, %if.then12 ], [ %fn.0.lcssa, %for.end ], [ %4, %if.else ]
+  %8 = bitcast %"struct.pov::FunctionEntry_Struct"* %7 to i8*, !dbg !649
+  %conv = zext i32 %6 to i64, !dbg !649
+  %mul = mul i64 %conv, 1208, !dbg !649
+  %call17 = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %8, i64 %mul, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 1117, i8* getelementptr inbounds ([18 x i8]* @.str57, i64 0, i64 0)) #9, !dbg !649
+  %9 = bitcast i8* %call17 to %"struct.pov::FunctionEntry_Struct"*, !dbg !649
+  store %"struct.pov::FunctionEntry_Struct"* %9, %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !649, !tbaa !493
+  %idxprom18 = zext i32 %fn.1 to i64, !dbg !653
+  %fn20 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %9, i64 %idxprom18, i32 0, !dbg !653
+  %10 = bitcast %"struct.pov::FunctionCode"* %fn20 to i8*, !dbg !653
+  %11 = bitcast %"struct.pov::FunctionCode"* %f to i8*, !dbg !653
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %11, i64 1200, i32 8, i1 false), !dbg !653, !tbaa.struct !636
+  %reference_count23 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %9, i64 %idxprom18, i32 1, !dbg !654
+  store i32 1, i32* %reference_count23, align 4, !dbg !654, !tbaa !498
+  br label %return, !dbg !655
 
-; <label>:36                                      ; preds = %.thread, %4
-  %.0 = phi i32 [ 0, %4 ], [ %fn.1, %.thread ]
-  ret i32 %.0, !dbg !1486
+return:                                           ; preds = %if.end16, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ %fn.1, %if.end16 ]
+  ret i32 %retval.0, !dbg !656
 }

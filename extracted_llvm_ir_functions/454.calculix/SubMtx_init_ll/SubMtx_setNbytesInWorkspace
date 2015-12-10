@@ -1,20 +1,21 @@
 define void @SubMtx_setNbytesInWorkspace(%struct._SubMtx* %mtx, i32 %nbytes) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %mtx, i64 0, metadata !62, metadata !102), !dbg !199
-  tail call void @llvm.dbg.value(metadata i32 %nbytes, i64 0, metadata !63, metadata !102), !dbg !200
-  %1 = icmp eq %struct._SubMtx* %mtx, null, !dbg !201
-  br i1 %1, label %2, label %5, !dbg !203
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %mtx}, i64 0, metadata !63), !dbg !157
+  tail call void @llvm.dbg.value(metadata !{i32 %nbytes}, i64 0, metadata !64), !dbg !158
+  %cmp = icmp eq %struct._SubMtx* %mtx, null, !dbg !159
+  br i1 %cmp, label %if.then, label %if.end, !dbg !159
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !204, !tbaa !115
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([61 x i8]* @.str6, i64 0, i64 0), %struct._SubMtx* null) #6, !dbg !206
-  tail call void @exit(i32 -1) #7, !dbg !207
-  unreachable, !dbg !207
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !160, !tbaa !108
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([61 x i8]* @.str6, i64 0, i64 0), %struct._SubMtx* null) #6, !dbg !160
+  tail call void @exit(i32 -1) #7, !dbg !162
+  unreachable, !dbg !162
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8, !dbg !208
-  %7 = sext i32 %nbytes to i64, !dbg !209
-  %8 = lshr i64 %7, 3, !dbg !210
-  %9 = trunc i64 %8 to i32, !dbg !209
-  tail call void @DV_setSize(%struct._DV* %6, i32 %9) #6, !dbg !211
-  ret void, !dbg !212
+if.end:                                           ; preds = %entry
+  %wrkDV = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8, !dbg !163
+  %conv = sext i32 %nbytes to i64, !dbg !163
+  %div = lshr i64 %conv, 3, !dbg !163
+  %conv1 = trunc i64 %div to i32, !dbg !163
+  tail call void @DV_setSize(%struct._DV* %wrkDV, i32 %conv1) #6, !dbg !163
+  ret void, !dbg !164
 }

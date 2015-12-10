@@ -1,9 +1,12 @@
 define void @warning_for_asm(%struct.rtx_def* nocapture %insn, i8* %msgid, ...) #0 {
 entry:
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  call fastcc void @diagnostic_for_asm(%struct.rtx_def* %insn, i8* %msgid, [1 x %struct.__va_list_tag]* %ap, i32 1) #5
-  call void @llvm.va_end(i8* %arraydecay1)
-  ret void
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !342), !dbg !558
+  call void @llvm.dbg.value(metadata !{i8* %msgid}, i64 0, metadata !343), !dbg !558
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !344), !dbg !559
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !559
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !559
+  call fastcc void @diagnostic_for_asm(%struct.rtx_def* %insn, i8* %msgid, [1 x %struct.__va_list_tag]* %ap, i32 1) #6, !dbg !560
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !562
+  ret void, !dbg !563
 }

@@ -1,24 +1,28 @@
-define i32 @size_of_sleb128(i64 %value) #5 {
+define i32 @size_of_sleb128(i64 %value) #6 {
 entry:
-  br label %do.body
+  tail call void @llvm.dbg.value(metadata !{i64 %value}, i64 0, metadata !1007), !dbg !1284
+  tail call void @llvm.dbg.value(metadata !561, i64 0, metadata !1008), !dbg !1285
+  br label %do.body, !dbg !1286
 
 do.body:                                          ; preds = %do.body.backedge, %entry
   %size.0 = phi i32 [ 1, %entry ], [ %phitmp16, %do.body.backedge ]
   %value.addr.0 = phi i64 [ %value, %entry ], [ %value.addr.0.be, %do.body.backedge ]
-  %value.addr.0.tr = trunc i64 %value.addr.0 to i32
-  %shr = ashr i64 %value.addr.0, 7
+  %value.addr.0.tr = trunc i64 %value.addr.0 to i32, !dbg !1287
+  %shr = ashr i64 %value.addr.0, 7, !dbg !1289
+  tail call void @llvm.dbg.value(metadata !{i64 %shr}, i64 0, metadata !1007), !dbg !1289
+  tail call void @llvm.dbg.value(metadata !{i32 %size.0}, i64 0, metadata !1008), !dbg !1290
   switch i64 %shr, label %do.body.backedge [
     i64 0, label %land.lhs.true
     i64 -1, label %land.rhs
-  ]
+  ], !dbg !1291
 
 land.lhs.true:                                    ; preds = %do.body
-  %and2 = and i32 %value.addr.0.tr, 64
-  %cmp3 = icmp eq i32 %and2, 0
-  br i1 %cmp3, label %do.end, label %do.body.backedge
+  %and2 = and i32 %value.addr.0.tr, 64, !dbg !1291
+  %cmp3 = icmp eq i32 %and2, 0, !dbg !1291
+  br i1 %cmp3, label %do.end, label %do.body.backedge, !dbg !1291
 
 land.rhs:                                         ; preds = %do.body
-  %and7 = and i32 %value.addr.0.tr, 64
+  %and7 = and i32 %value.addr.0.tr, 64, !dbg !1291
   %phitmp = icmp eq i32 %and7, 0
   br i1 %phitmp, label %do.body.backedge, label %do.end
 
@@ -28,5 +32,5 @@ do.body.backedge:                                 ; preds = %land.rhs, %do.body,
   br label %do.body
 
 do.end:                                           ; preds = %land.lhs.true, %land.rhs
-  ret i32 %size.0
+  ret i32 %size.0, !dbg !1292
 }

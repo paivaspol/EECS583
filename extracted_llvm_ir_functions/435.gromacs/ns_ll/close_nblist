@@ -1,44 +1,45 @@
-define internal fastcc void @close_nblist(%struct.t_nblist* nocapture %nlist) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.t_nblist* %nlist, i64 0, metadata !1210, metadata !1411), !dbg !4186
-  %1 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 2, !dbg !4187
-  %2 = load i32* %1, align 4, !dbg !4187, !tbaa !1790
-  %3 = icmp sgt i32 %2, 0, !dbg !4188
-  br i1 %3, label %4, label %29, !dbg !4189
+define internal fastcc void @close_nblist(%struct.t_nblist* nocapture %nlist) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_nblist* %nlist}, i64 0, metadata !896), !dbg !2758
+  %maxnri = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 2, !dbg !2759
+  %0 = load i32* %maxnri, align 4, !dbg !2759, !tbaa !1398
+  %cmp = icmp sgt i32 %0, 0, !dbg !2759
+  br i1 %cmp, label %if.then, label %if.end15, !dbg !2759
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 1, !dbg !4190
-  %6 = load i32* %5, align 4, !dbg !4190, !tbaa !1487
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !1211, metadata !1411), !dbg !4191
-  %7 = add nsw i32 %6, 1, !dbg !4192
-  %8 = sext i32 %7 to i64, !dbg !4194
-  %9 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 10, !dbg !4195
-  %10 = load i32** %9, align 8, !dbg !4195, !tbaa !1814
-  %11 = getelementptr inbounds i32* %10, i64 %8, !dbg !4194
-  %12 = load i32* %11, align 4, !dbg !4194, !tbaa !1473
-  %13 = sext i32 %6 to i64, !dbg !4196
-  %14 = getelementptr inbounds i32* %10, i64 %13, !dbg !4196
-  %15 = load i32* %14, align 4, !dbg !4196, !tbaa !1473
-  %16 = icmp sgt i32 %12, %15, !dbg !4197
-  br i1 %16, label %17, label %29, !dbg !4198
+if.then:                                          ; preds = %entry
+  %nri1 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 1, !dbg !2760
+  %1 = load i32* %nri1, align 4, !dbg !2760, !tbaa !1398
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !897), !dbg !2760
+  %add = add nsw i32 %1, 1, !dbg !2761
+  %idxprom = sext i32 %add to i64, !dbg !2761
+  %jindex = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 10, !dbg !2761
+  %2 = load i32** %jindex, align 8, !dbg !2761, !tbaa !1403
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !2761
+  %3 = load i32* %arrayidx, align 4, !dbg !2761, !tbaa !1398
+  %idxprom2 = sext i32 %1 to i64, !dbg !2761
+  %arrayidx4 = getelementptr inbounds i32* %2, i64 %idxprom2, !dbg !2761
+  %4 = load i32* %arrayidx4, align 4, !dbg !2761, !tbaa !1398
+  %cmp5 = icmp sgt i32 %3, %4, !dbg !2761
+  br i1 %cmp5, label %land.lhs.true, label %if.end15, !dbg !2761
 
-; <label>:17                                      ; preds = %4
-  %18 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 8, !dbg !4199
-  %19 = load i32** %18, align 8, !dbg !4199, !tbaa !1819
-  %20 = getelementptr inbounds i32* %19, i64 %13, !dbg !4200
-  %21 = load i32* %20, align 4, !dbg !4200, !tbaa !1473
-  %22 = icmp eq i32 %21, -1, !dbg !4201
-  br i1 %22, label %29, label %23, !dbg !4202
+land.lhs.true:                                    ; preds = %if.then
+  %gid = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 8, !dbg !2761
+  %5 = load i32** %gid, align 8, !dbg !2761, !tbaa !1403
+  %arrayidx7 = getelementptr inbounds i32* %5, i64 %idxprom2, !dbg !2761
+  %6 = load i32* %arrayidx7, align 4, !dbg !2761, !tbaa !1398
+  %cmp8 = icmp eq i32 %6, -1, !dbg !2761
+  br i1 %cmp8, label %if.end15, label %if.then9, !dbg !2761
 
-; <label>:23                                      ; preds = %17
-  store i32 %7, i32* %5, align 4, !dbg !4203, !tbaa !1487
-  %24 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 3, !dbg !4205
-  %25 = load i32* %24, align 4, !dbg !4205, !tbaa !1801
-  %26 = add nsw i32 %6, 2, !dbg !4206
-  %27 = sext i32 %26 to i64, !dbg !4207
-  %28 = getelementptr inbounds i32* %10, i64 %27, !dbg !4207
-  store i32 %25, i32* %28, align 4, !dbg !4208, !tbaa !1473
-  br label %29, !dbg !4209
+if.then9:                                         ; preds = %land.lhs.true
+  store i32 %add, i32* %nri1, align 4, !dbg !2762, !tbaa !1398
+  %nrj = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 3, !dbg !2764
+  %7 = load i32* %nrj, align 4, !dbg !2764, !tbaa !1398
+  %add11 = add nsw i32 %1, 2, !dbg !2764
+  %idxprom12 = sext i32 %add11 to i64, !dbg !2764
+  %arrayidx14 = getelementptr inbounds i32* %2, i64 %idxprom12, !dbg !2764
+  store i32 %7, i32* %arrayidx14, align 4, !dbg !2764, !tbaa !1398
+  br label %if.end15, !dbg !2765
 
-; <label>:29                                      ; preds = %17, %4, %23, %0
-  ret void, !dbg !4210
+if.end15:                                         ; preds = %land.lhs.true, %if.then, %if.then9, %entry
+  ret void, !dbg !2766
 }

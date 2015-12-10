@@ -1,30 +1,32 @@
 define i32 @CactusDefaultOutputVarAsByMethod(%struct.cGH* %GH, i8* %var, i8* %methodname, i8* %alias) #1 {
+entry:
   %method = alloca %struct.IOMethod*, align 8
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !161, metadata !237), !dbg !437
-  tail call void @llvm.dbg.value(metadata i8* %var, i64 0, metadata !162, metadata !237), !dbg !438
-  tail call void @llvm.dbg.value(metadata i8* %methodname, i64 0, metadata !163, metadata !237), !dbg !439
-  tail call void @llvm.dbg.value(metadata i8* %alias, i64 0, metadata !164, metadata !237), !dbg !440
-  %1 = load %struct.cHandledData** @IOMethods, align 8, !dbg !441, !tbaa !241
-  %2 = bitcast %struct.IOMethod** %method to i8**, !dbg !442
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %methodname, i8** %2) #6, !dbg !443
-  call void @llvm.dbg.value(metadata %struct.IOMethod** %method, i64 0, metadata !166, metadata !237), !dbg !444
-  %4 = load %struct.IOMethod** %method, align 8, !dbg !445, !tbaa !241
-  %5 = icmp eq %struct.IOMethod* %4, null, !dbg !445
-  br i1 %5, label %10, label %6, !dbg !447
+  call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !161), !dbg !349
+  call void @llvm.dbg.value(metadata !{i8* %var}, i64 0, metadata !162), !dbg !350
+  call void @llvm.dbg.value(metadata !{i8* %methodname}, i64 0, metadata !163), !dbg !351
+  call void @llvm.dbg.value(metadata !{i8* %alias}, i64 0, metadata !164), !dbg !352
+  call void @llvm.dbg.declare(metadata !{%struct.IOMethod** %method}, metadata !166), !dbg !353
+  %0 = load %struct.cHandledData** @IOMethods, align 8, !dbg !354, !tbaa !235
+  %1 = bitcast %struct.IOMethod** %method to i8**, !dbg !354
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %methodname, i8** %1) #6, !dbg !354
+  call void @llvm.dbg.value(metadata !{%struct.IOMethod** %method}, i64 0, metadata !166), !dbg !355
+  %2 = load %struct.IOMethod** %method, align 8, !dbg !355, !tbaa !235
+  %tobool = icmp eq %struct.IOMethod* %2, null, !dbg !355
+  br i1 %tobool, label %if.else, label %if.then, !dbg !355
 
-; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct.IOMethod* %4, i64 0, i32 3, !dbg !448
-  %8 = load i32 (%struct.cGH*, i8*, i8*)** %7, align 8, !dbg !448, !tbaa !270
-  %9 = call i32 %8(%struct.cGH* %GH, i8* %var, i8* %alias) #6, !dbg !450
-  call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !165, metadata !237), !dbg !451
-  br label %12, !dbg !452
+if.then:                                          ; preds = %entry
+  %OutputVarAs = getelementptr inbounds %struct.IOMethod* %2, i64 0, i32 3, !dbg !356
+  %3 = load i32 (%struct.cGH*, i8*, i8*)** %OutputVarAs, align 8, !dbg !356, !tbaa !235
+  %call2 = call i32 %3(%struct.cGH* %GH, i8* %var, i8* %alias) #6, !dbg !356
+  call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !165), !dbg !356
+  br label %if.end, !dbg !358
 
-; <label>:10                                      ; preds = %0
-  %11 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 730, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([88 x i8]* @.str2, i64 0, i64 0), i8* %methodname, i8* %var) #6, !dbg !453
-  call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !165, metadata !237), !dbg !451
-  br label %12
+if.else:                                          ; preds = %entry
+  %call3 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 730, i8* getelementptr inbounds ([66 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([88 x i8]* @.str2, i64 0, i64 0), i8* %methodname, i8* %var) #6, !dbg !359
+  call void @llvm.dbg.value(metadata !361, i64 0, metadata !165), !dbg !362
+  br label %if.end
 
-; <label>:12                                      ; preds = %10, %6
-  %retval.0 = phi i32 [ %9, %6 ], [ -1, %10 ]
-  ret i32 %retval.0, !dbg !455
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call2, %if.then ], [ -1, %if.else ]
+  ret i32 %retval1.0, !dbg !363
 }

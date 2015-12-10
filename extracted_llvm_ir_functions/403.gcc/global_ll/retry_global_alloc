@@ -1,51 +1,54 @@
 define void @retry_global_alloc(i32 %regno, i64 %forbidden_regs) #0 {
 entry:
-  %idxprom = sext i32 %regno to i64
-  %0 = load i32** @reg_allocno, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds i32* %0, i64 %idxprom
-  %1 = load i32* %arrayidx, align 4, !tbaa !0
-  %cmp = icmp sgt i32 %1, -1
-  br i1 %cmp, label %if.then, label %if.end21
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !508), !dbg !1470
+  tail call void @llvm.dbg.value(metadata !{i64 %forbidden_regs}, i64 0, metadata !509), !dbg !1471
+  %idxprom = sext i32 %regno to i64, !dbg !1472
+  %0 = load i32** @reg_allocno, align 8, !dbg !1472, !tbaa !914
+  %arrayidx = getelementptr inbounds i32* %0, i64 %idxprom, !dbg !1472
+  %1 = load i32* %arrayidx, align 4, !dbg !1472, !tbaa !911
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !510), !dbg !1472
+  %cmp = icmp sgt i32 %1, -1, !dbg !1473
+  br i1 %cmp, label %if.then, label %if.end21, !dbg !1473
 
 if.then:                                          ; preds = %entry
-  tail call fastcc void @find_reg(i32 %1, i64 %forbidden_regs, i32 0, i32 0, i32 1) #7
-  %2 = load i16** @reg_renumber, align 8, !tbaa !3
-  %arrayidx2 = getelementptr inbounds i16* %2, i64 %idxprom
-  %3 = load i16* %arrayidx2, align 2, !tbaa !5
-  %cmp3 = icmp slt i16 %3, 0
-  br i1 %cmp3, label %land.lhs.true, label %if.end
+  tail call fastcc void @find_reg(i32 %1, i64 %forbidden_regs, i32 0, i32 0, i32 1) #8, !dbg !1474
+  %2 = load i16** @reg_renumber, align 8, !dbg !1476, !tbaa !914
+  %arrayidx2 = getelementptr inbounds i16* %2, i64 %idxprom, !dbg !1476
+  %3 = load i16* %arrayidx2, align 2, !dbg !1476, !tbaa !936
+  %cmp3 = icmp slt i16 %3, 0, !dbg !1476
+  br i1 %cmp3, label %land.lhs.true, label %if.end, !dbg !1476
 
 land.lhs.true:                                    ; preds = %if.then
-  %call = tail call i32 @reg_alternate_class(i32 %regno) #5
-  %cmp5 = icmp eq i32 %call, 0
-  br i1 %cmp5, label %if.end, label %if.then7
+  %call = tail call i32 @reg_alternate_class(i32 %regno) #6, !dbg !1477
+  %cmp5 = icmp eq i32 %call, 0, !dbg !1477
+  br i1 %cmp5, label %if.end, label %if.then7, !dbg !1477
 
 if.then7:                                         ; preds = %land.lhs.true
-  tail call fastcc void @find_reg(i32 %1, i64 %forbidden_regs, i32 1, i32 0, i32 1) #7
-  br label %if.end
+  tail call fastcc void @find_reg(i32 %1, i64 %forbidden_regs, i32 1, i32 0, i32 1) #8, !dbg !1478
+  br label %if.end, !dbg !1478
 
 if.end:                                           ; preds = %land.lhs.true, %if.then7, %if.then
-  %4 = load i16** @reg_renumber, align 8, !tbaa !3
-  %arrayidx9 = getelementptr inbounds i16* %4, i64 %idxprom
-  %5 = load i16* %arrayidx9, align 2, !tbaa !5
-  %cmp11 = icmp sgt i16 %5, -1
-  br i1 %cmp11, label %if.then13, label %if.end21
+  %4 = load i16** @reg_renumber, align 8, !dbg !1479, !tbaa !914
+  %arrayidx9 = getelementptr inbounds i16* %4, i64 %idxprom, !dbg !1479
+  %5 = load i16* %arrayidx9, align 2, !dbg !1479, !tbaa !936
+  %cmp11 = icmp sgt i16 %5, -1, !dbg !1479
+  br i1 %cmp11, label %if.then13, label %if.end21, !dbg !1479
 
 if.then13:                                        ; preds = %if.end
-  %conv10 = sext i16 %5 to i32
-  %6 = load %struct.function** @cfun, align 8, !tbaa !3
-  %emit = getelementptr inbounds %struct.function* %6, i64 0, i32 3
-  %7 = load %struct.emit_status** %emit, align 8, !tbaa !3
-  %x_regno_reg_rtx = getelementptr inbounds %struct.emit_status* %7, i64 0, i32 12
-  %8 = load %struct.rtx_def*** %x_regno_reg_rtx, align 8, !tbaa !3
-  %arrayidx18 = getelementptr inbounds %struct.rtx_def** %8, i64 %idxprom
-  %9 = load %struct.rtx_def** %arrayidx18, align 8, !tbaa !3
-  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %9, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx19 to i32*
-  store i32 %conv10, i32* %rtuint, align 4, !tbaa !0
-  tail call void @mark_home_live(i32 %regno) #5
-  br label %if.end21
+  %conv10 = sext i16 %5 to i32, !dbg !1479
+  %6 = load %struct.function** @cfun, align 8, !dbg !1480, !tbaa !914
+  %emit = getelementptr inbounds %struct.function* %6, i64 0, i32 3, !dbg !1480
+  %7 = load %struct.emit_status** %emit, align 8, !dbg !1480, !tbaa !914
+  %x_regno_reg_rtx = getelementptr inbounds %struct.emit_status* %7, i64 0, i32 12, !dbg !1480
+  %8 = load %struct.rtx_def*** %x_regno_reg_rtx, align 8, !dbg !1480, !tbaa !914
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def** %8, i64 %idxprom, !dbg !1480
+  %9 = load %struct.rtx_def** %arrayidx18, align 8, !dbg !1480, !tbaa !914
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %9, i64 0, i32 1, i64 0, !dbg !1480
+  %rtuint = bitcast %union.rtunion_def* %arrayidx19 to i32*, !dbg !1480
+  store i32 %conv10, i32* %rtuint, align 4, !dbg !1480, !tbaa !911
+  tail call void @mark_home_live(i32 %regno) #6, !dbg !1482
+  br label %if.end21, !dbg !1483
 
 if.end21:                                         ; preds = %if.end, %if.then13, %entry
-  ret void
+  ret void, !dbg !1484
 }

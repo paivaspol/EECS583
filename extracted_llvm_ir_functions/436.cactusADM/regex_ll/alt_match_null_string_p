@@ -1,57 +1,59 @@
 define internal fastcc signext i8 @alt_match_null_string_p(i8* %p, i8* %end, %union.register_info_type* nocapture %reg_info) #0 {
+entry:
   %p1 = alloca i8*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %p, i64 0, metadata !452, metadata !797), !dbg !4110
-  tail call void @llvm.dbg.value(metadata i8* %end, i64 0, metadata !453, metadata !797), !dbg !4111
-  tail call void @llvm.dbg.value(metadata %union.register_info_type* %reg_info, i64 0, metadata !454, metadata !797), !dbg !4112
-  tail call void @llvm.dbg.value(metadata i8* %p, i64 0, metadata !456, metadata !797), !dbg !4113
-  store i8* %p, i8** %p1, align 8, !dbg !4113, !tbaa !856
-  tail call void @llvm.dbg.value(metadata i8** %p1, i64 0, metadata !456, metadata !797), !dbg !4113
-  %1 = icmp ult i8* %p, %end, !dbg !4114
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !4115
+  call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !688), !dbg !2287
+  call void @llvm.dbg.value(metadata !{i8* %end}, i64 0, metadata !689), !dbg !2287
+  call void @llvm.dbg.value(metadata !{%union.register_info_type* %reg_info}, i64 0, metadata !690), !dbg !2288
+  call void @llvm.dbg.declare(metadata !{i8** %p1}, metadata !692), !dbg !2289
+  call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !692), !dbg !2289
+  store i8* %p, i8** %p1, align 8, !dbg !2289, !tbaa !722
+  call void @llvm.dbg.value(metadata !{i8** %p1}, i64 0, metadata !692), !dbg !2290
+  %cmp9 = icmp ult i8* %p, %end, !dbg !2290
+  br i1 %cmp9, label %while.body, label %return, !dbg !2290
 
-.lr.ph:                                           ; preds = %0, %.backedge
-  %2 = phi i8* [ %14, %.backedge ], [ %p, %0 ]
-  %3 = load i8* %2, align 1, !dbg !4116, !tbaa !844
-  %cond = icmp eq i8 %3, 15, !dbg !4118
-  br i1 %cond, label %4, label %16, !dbg !4118
+while.body:                                       ; preds = %entry, %while.cond.backedge
+  %0 = phi i8* [ %4, %while.cond.backedge ], [ %p, %entry ]
+  %1 = load i8* %0, align 1, !dbg !2291, !tbaa !714
+  %cond = icmp eq i8 %1, 15, !dbg !2291
+  br i1 %cond, label %sw.bb, label %sw.default, !dbg !2291
 
-; <label>:4                                       ; preds = %.lr.ph
-  %5 = getelementptr inbounds i8* %2, i64 1, !dbg !4119
-  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !456, metadata !797), !dbg !4113
-  store i8* %5, i8** %p1, align 8, !dbg !4119, !tbaa !856
-  %6 = load i8* %5, align 1, !dbg !4121, !tbaa !844
-  %7 = zext i8 %6 to i32, !dbg !4121
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !455, metadata !797), !dbg !4124
-  %8 = getelementptr inbounds i8* %2, i64 2, !dbg !4121
-  %9 = load i8* %8, align 1, !dbg !4121, !tbaa !844
-  %10 = sext i8 %9 to i32, !dbg !4121
-  %11 = shl nsw i32 %10, 8, !dbg !4121
-  %12 = or i32 %11, %7, !dbg !4121
-  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !455, metadata !797), !dbg !4124
-  %addconv = add nsw i32 %12, 3, !dbg !4125
-  %.sum = sext i32 %addconv to i64, !dbg !4125
-  %13 = getelementptr inbounds i8* %2, i64 %.sum, !dbg !4125
-  tail call void @llvm.dbg.value(metadata i8* %13, i64 0, metadata !456, metadata !797), !dbg !4113
-  store i8* %13, i8** %p1, align 8, !dbg !4125, !tbaa !856
-  br label %.backedge, !dbg !4126
+sw.bb:                                            ; preds = %while.body
+  %incdec.ptr = getelementptr inbounds i8* %0, i64 1, !dbg !2293
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !692), !dbg !2293
+  store i8* %incdec.ptr, i8** %p1, align 8, !dbg !2293, !tbaa !722
+  %2 = load i8* %incdec.ptr, align 1, !dbg !2295, !tbaa !714
+  %conv2 = zext i8 %2 to i32, !dbg !2295
+  call void @llvm.dbg.value(metadata !{i32 %conv2}, i64 0, metadata !691), !dbg !2295
+  %add.ptr = getelementptr inbounds i8* %0, i64 2, !dbg !2295
+  %3 = load i8* %add.ptr, align 1, !dbg !2295, !tbaa !714
+  %conv3 = sext i8 %3 to i32, !dbg !2295
+  %shl = shl nsw i32 %conv3, 8, !dbg !2295
+  %add = or i32 %shl, %conv2, !dbg !2295
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !691), !dbg !2295
+  %addconv = add nsw i32 %add, 3, !dbg !2298
+  %add.ptr4.sum = sext i32 %addconv to i64, !dbg !2298
+  %add.ptr6 = getelementptr inbounds i8* %0, i64 %add.ptr4.sum, !dbg !2298
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr6}, i64 0, metadata !692), !dbg !2298
+  store i8* %add.ptr6, i8** %p1, align 8, !dbg !2298, !tbaa !722
+  br label %while.cond.backedge, !dbg !2299
 
-.backedge:                                        ; preds = %..backedge_crit_edge, %4
-  %14 = phi i8* [ %.pre, %..backedge_crit_edge ], [ %13, %4 ]
-  tail call void @llvm.dbg.value(metadata i8** %p1, i64 0, metadata !456, metadata !797), !dbg !4113
-  %15 = icmp ult i8* %14, %end, !dbg !4114
-  br i1 %15, label %.lr.ph, label %._crit_edge, !dbg !4115
+while.cond.backedge:                              ; preds = %sw.default.while.cond.backedge_crit_edge, %sw.bb
+  %4 = phi i8* [ %.pre, %sw.default.while.cond.backedge_crit_edge ], [ %add.ptr6, %sw.bb ]
+  call void @llvm.dbg.value(metadata !{i8** %p1}, i64 0, metadata !692), !dbg !2290
+  %cmp = icmp ult i8* %4, %end, !dbg !2290
+  br i1 %cmp, label %while.body, label %return, !dbg !2290
 
-; <label>:16                                      ; preds = %.lr.ph
-  tail call void @llvm.dbg.value(metadata i8** %p1, i64 0, metadata !456, metadata !797), !dbg !4113
-  %17 = call fastcc signext i8 @common_op_match_null_string_p(i8** %p1, i8* %end, %union.register_info_type* %reg_info) #8, !dbg !4127
-  %18 = icmp eq i8 %17, 0, !dbg !4127
-  br i1 %18, label %._crit_edge, label %..backedge_crit_edge, !dbg !4129
+sw.default:                                       ; preds = %while.body
+  %call = call fastcc signext i8 @common_op_match_null_string_p(i8** %p1, i8* %end, %union.register_info_type* %reg_info) #9, !dbg !2300
+  %tobool = icmp eq i8 %call, 0, !dbg !2300
+  br i1 %tobool, label %return, label %sw.default.while.cond.backedge_crit_edge, !dbg !2300
 
-..backedge_crit_edge:                             ; preds = %16
-  %.pre = load i8** %p1, align 8, !dbg !4130, !tbaa !856
-  br label %.backedge, !dbg !4129
+sw.default.while.cond.backedge_crit_edge:         ; preds = %sw.default
+  call void @llvm.dbg.value(metadata !{i8** %p1}, i64 0, metadata !692), !dbg !2290
+  %.pre = load i8** %p1, align 8, !dbg !2290, !tbaa !722
+  br label %while.cond.backedge, !dbg !2300
 
-._crit_edge:                                      ; preds = %16, %.backedge, %0
-  %.0 = phi i8 [ 1, %0 ], [ 0, %16 ], [ 1, %.backedge ]
-  ret i8 %.0, !dbg !4131
+return:                                           ; preds = %while.cond.backedge, %sw.default, %entry
+  %retval.0 = phi i8 [ 1, %entry ], [ 0, %sw.default ], [ 1, %while.cond.backedge ]
+  ret i8 %retval.0, !dbg !2301
 }

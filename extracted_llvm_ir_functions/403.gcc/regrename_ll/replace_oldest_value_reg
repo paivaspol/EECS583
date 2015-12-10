@@ -1,34 +1,39 @@
 define internal fastcc zeroext i1 @replace_oldest_value_reg(%struct.rtx_def** nocapture %loc, i32 %class, %struct.rtx_def* nocapture %insn, %struct.value_data* nocapture %vd) #0 {
 entry:
-  %0 = load %struct.rtx_def** %loc, align 8, !tbaa !0
-  %call = tail call fastcc %struct.rtx_def* @find_oldest_value_reg(i32 %class, %struct.rtx_def* %0, %struct.value_data* %vd) #6
-  %tobool = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool, label %return, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %loc}, i64 0, metadata !661), !dbg !1543
+  tail call void @llvm.dbg.value(metadata !{i32 %class}, i64 0, metadata !662), !dbg !1544
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !663), !dbg !1545
+  tail call void @llvm.dbg.value(metadata !{%struct.value_data* %vd}, i64 0, metadata !664), !dbg !1546
+  %0 = load %struct.rtx_def** %loc, align 8, !dbg !1547, !tbaa !949
+  %call = tail call fastcc %struct.rtx_def* @find_oldest_value_reg(i32 %class, %struct.rtx_def* %0, %struct.value_data* %vd) #7, !dbg !1547
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !665), !dbg !1547
+  %tobool = icmp eq %struct.rtx_def* %call, null, !dbg !1548
+  br i1 %tobool, label %return, label %if.then, !dbg !1548
 
 if.then:                                          ; preds = %entry
-  %1 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !0
-  %tobool1 = icmp eq %struct._IO_FILE* %1, null
-  br i1 %tobool1, label %if.end, label %if.then2
+  %1 = load %struct._IO_FILE** @rtl_dump_file, align 8, !dbg !1549, !tbaa !949
+  %tobool1 = icmp eq %struct._IO_FILE* %1, null, !dbg !1549
+  br i1 %tobool1, label %if.end, label %if.then2, !dbg !1549
 
 if.then2:                                         ; preds = %if.then
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
-  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %2 = load i32* %rtint, align 4, !tbaa !3
-  %3 = load %struct.rtx_def** %loc, align 8, !tbaa !0
-  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx4 to i32*
-  %4 = load i32* %rtuint, align 4, !tbaa !3
-  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0
-  %rtuint7 = bitcast %union.rtunion_def* %arrayidx6 to i32*
-  %5 = load i32* %rtuint7, align 4, !tbaa !3
-  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([34 x i8]* @.str11, i64 0, i64 0), i32 %2, i32 %4, i32 %5) #5
-  br label %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0, !dbg !1551
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !1551
+  %2 = load i32* %rtint, align 4, !dbg !1551, !tbaa !953
+  %3 = load %struct.rtx_def** %loc, align 8, !dbg !1551, !tbaa !949
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0, !dbg !1551
+  %rtuint = bitcast %union.rtunion_def* %arrayidx4 to i32*, !dbg !1551
+  %4 = load i32* %rtuint, align 4, !dbg !1551, !tbaa !953
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0, !dbg !1551
+  %rtuint7 = bitcast %union.rtunion_def* %arrayidx6 to i32*, !dbg !1551
+  %5 = load i32* %rtuint7, align 4, !dbg !1551, !tbaa !953
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([34 x i8]* @.str11, i64 0, i64 0), i32 %2, i32 %4, i32 %5) #6, !dbg !1551
+  br label %if.end, !dbg !1551
 
 if.end:                                           ; preds = %if.then, %if.then2
-  store %struct.rtx_def* %call, %struct.rtx_def** %loc, align 8, !tbaa !0
-  br label %return
+  store %struct.rtx_def* %call, %struct.rtx_def** %loc, align 8, !dbg !1552, !tbaa !949
+  br label %return, !dbg !1553
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i1 [ true, %if.end ], [ false, %entry ]
-  ret i1 %retval.0
+  ret i1 %retval.0, !dbg !1554
 }

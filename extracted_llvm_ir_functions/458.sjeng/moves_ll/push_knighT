@@ -1,35 +1,36 @@
 define void @push_knighT(i32 %target) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %target, i64 0, metadata !100, metadata !145), !dbg !1357
-  %1 = sext i32 %target to i64, !dbg !1358
-  %2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %1, !dbg !1358
-  %3 = load i32* %2, align 4, !dbg !1358, !tbaa !163
-  %4 = icmp eq i32 %3, 13, !dbg !1360
-  %5 = load i32* @captures, align 4
-  %6 = icmp ne i32 %5, 0, !dbg !1361
-  %or.cond = and i1 %4, %6, !dbg !1362
-  br i1 %or.cond, label %18, label %7, !dbg !1362
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %target}, i64 0, metadata !101), !dbg !595
+  %idxprom = sext i32 %target to i64, !dbg !596
+  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom, !dbg !596
+  %0 = load i32* %arrayidx, align 4, !dbg !596, !tbaa !145
+  %cmp = icmp eq i32 %0, 13, !dbg !596
+  %1 = load i32* @captures, align 4, !dbg !596, !tbaa !146
+  %tobool = icmp ne i32 %1, 0, !dbg !596
+  %or.cond = and i1 %cmp, %tobool, !dbg !596
+  br i1 %or.cond, label %return, label %if.end, !dbg !596
 
-; <label>:7                                       ; preds = %0
-  br i1 %4, label %8, label %9, !dbg !1363
+if.end:                                           ; preds = %entry
+  br i1 %cmp, label %if.then4, label %if.else, !dbg !597
 
-; <label>:8                                       ; preds = %7
-  tail call void @add_move(i32 %target, i32 0) #5, !dbg !1364
-  br label %18, !dbg !1367
+if.then4:                                         ; preds = %if.end
+  tail call void @add_move(i32 %target, i32 0) #5, !dbg !598
+  br label %return, !dbg !600
 
-; <label>:9                                       ; preds = %7
-  %10 = load i32* @gfrom, align 4, !dbg !1368, !tbaa !163
-  %11 = sext i32 %10 to i64, !dbg !1370
-  %12 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %11, !dbg !1370
-  %13 = load i32* %12, align 4, !dbg !1370, !tbaa !163
-  %14 = xor i32 %13, %3, !dbg !1371
-  %15 = and i32 %14, 1, !dbg !1371
-  %16 = icmp eq i32 %15, 0, !dbg !1371
-  br i1 %16, label %18, label %17, !dbg !1372
+if.else:                                          ; preds = %if.end
+  %2 = load i32* @gfrom, align 4, !dbg !601, !tbaa !145
+  %idxprom7 = sext i32 %2 to i64, !dbg !601
+  %arrayidx8 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom7, !dbg !601
+  %3 = load i32* %arrayidx8, align 4, !dbg !601, !tbaa !145
+  %4 = xor i32 %3, %0, !dbg !601
+  %5 = and i32 %4, 1, !dbg !601
+  %cmp10 = icmp eq i32 %5, 0, !dbg !601
+  br i1 %cmp10, label %return, label %if.then11, !dbg !601
 
-; <label>:17                                      ; preds = %9
-  tail call void @add_capture(i32 %target, i32 %3, i32 0, i32 0) #5, !dbg !1373
-  br label %18, !dbg !1375
+if.then11:                                        ; preds = %if.else
+  tail call void @add_capture(i32 %target, i32 %0, i32 0, i32 0) #5, !dbg !602
+  br label %return, !dbg !604
 
-; <label>:18                                      ; preds = %9, %0, %17, %8
-  ret void, !dbg !1376
+return:                                           ; preds = %if.else, %entry, %if.then11, %if.then4
+  ret void, !dbg !605
 }

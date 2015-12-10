@@ -1,0 +1,42 @@
+define void @_ZN21XalanFileOutputStreamC2EPKc(%class.XalanFileOutputStream* nocapture %this, i8* %theFileName) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.XalanFileOutputStream* %this}, i64 0, metadata !162), !dbg !298
+  tail call void @llvm.dbg.value(metadata !{i8* %theFileName}, i64 0, metadata !165), !dbg !299
+  %0 = getelementptr inbounds %class.XalanFileOutputStream* %this, i64 0, i32 0, !dbg !300
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([4 x i8*]* @_ZTV21XalanFileOutputStream, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !300, !tbaa !302
+  %m_fileName = getelementptr inbounds %class.XalanFileOutputStream* %this, i64 0, i32 1, !dbg !300
+  store i8* %theFileName, i8** %m_fileName, align 8, !dbg !300, !tbaa !304
+  %m_handle = getelementptr inbounds %class.XalanFileOutputStream* %this, i64 0, i32 2, !dbg !300
+  tail call void @llvm.dbg.value(metadata !{i8* %theFileName}, i64 0, metadata !306) #7, !dbg !308
+  %call.i = tail call %struct._IO_FILE* @fopen(i8* %theFileName, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0)) #8, !dbg !309
+  store %struct._IO_FILE* %call.i, %struct._IO_FILE** %m_handle, align 8, !dbg !307, !tbaa !304
+  %cmp = icmp eq %struct._IO_FILE* %call.i, null, !dbg !310
+  br i1 %cmp, label %if.then, label %if.end, !dbg !310
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 16) #7, !dbg !312
+  %call3 = tail call i32* @__errno_location() #9, !dbg !314
+  %1 = load i32* %call3, align 4, !dbg !314, !tbaa !315
+  tail call void @llvm.dbg.value(metadata !316, i64 0, metadata !317), !dbg !318
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !319), !dbg !320
+  %2 = bitcast i8* %exception to i32 (...)***, !dbg !321
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([4 x i8*]* @_ZTVN21XalanFileOutputStream34XalanFileOutputStreamOpenExceptionE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %2, align 8, !dbg !321, !tbaa !302
+  %call.i78 = invoke fastcc i8* @_ZL18FormatMessageLocalPKcS0_i(i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i32 %1) #10
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  %m_pMessage.i = getelementptr inbounds i8* %exception, i64 8, !dbg !321
+  %3 = bitcast i8* %m_pMessage.i to i8**, !dbg !321
+  store i8* %call.i78, i8** %3, align 8, !dbg !322, !tbaa !304
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8* }* @_ZTIN21XalanFileOutputStream34XalanFileOutputStreamOpenExceptionE to i8*), i8* bitcast (void (%"class.XalanFileOutputStream::XalanFileOutputStreamOpenException"*)* @_ZN21XalanFileOutputStream34XalanFileOutputStreamOpenExceptionD2Ev to i8*)) #11, !dbg !314
+  unreachable, !dbg !314
+
+lpad:                                             ; preds = %if.then
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !314
+  tail call void @__cxa_free_exception(i8* %exception) #7, !dbg !314
+  resume { i8*, i32 } %4, !dbg !314
+
+if.end:                                           ; preds = %entry
+  ret void, !dbg !323
+}

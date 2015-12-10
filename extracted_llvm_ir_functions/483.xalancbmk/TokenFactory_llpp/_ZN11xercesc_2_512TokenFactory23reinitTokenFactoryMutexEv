@@ -1,0 +1,37 @@
+define void @_ZN11xercesc_2_512TokenFactory23reinitTokenFactoryMutexEv() #1 align 2 {
+entry:
+  %0 = load %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_5L16sTokFactoryMutexE, align 8, !dbg !2273, !tbaa !2274
+  %isnull = icmp eq %"class.xercesc_2_5::XMLMutex"* %0, null, !dbg !2273
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !2273
+
+delete.notnull:                                   ; preds = %entry
+  invoke void @_ZN11xercesc_2_58XMLMutexD1Ev(%"class.xercesc_2_5::XMLMutex"* %0) #6
+          to label %invoke.cont unwind label %lpad, !dbg !2273
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %1 = bitcast %"class.xercesc_2_5::XMLMutex"* %0 to i8*, !dbg !2273
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %1) #6, !dbg !2273
+  br label %delete.end, !dbg !2273
+
+delete.end:                                       ; preds = %invoke.cont, %entry
+  store %"class.xercesc_2_5::XMLMutex"* null, %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_5L16sTokFactoryMutexE, align 8, !dbg !2277, !tbaa !2274
+  store i1 false, i1* @_ZN11xercesc_2_5L26sTokFactoryMutexRegisteredE, align 1
+  ret void, !dbg !2278
+
+lpad:                                             ; preds = %delete.notnull
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2273
+  %3 = bitcast %"class.xercesc_2_5::XMLMutex"* %0 to i8*, !dbg !2273
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %3) #6
+          to label %eh.resume unwind label %terminate.lpad, !dbg !2273
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %2, !dbg !2273
+
+terminate.lpad:                                   ; preds = %lpad
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !2273
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !2273
+  tail call void @__clang_call_terminate(i8* %5) #7, !dbg !2273
+  unreachable, !dbg !2273
+}

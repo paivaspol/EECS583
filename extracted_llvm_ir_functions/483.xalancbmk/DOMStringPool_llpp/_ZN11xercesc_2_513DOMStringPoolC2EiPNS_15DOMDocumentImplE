@@ -1,0 +1,38 @@
+define void @_ZN11xercesc_2_513DOMStringPoolC2EiPNS_15DOMDocumentImplE(%"class.xercesc_2_5::DOMStringPool"* nocapture %this, i32 %hashTableSize, %"class.xercesc_2_5::DOMDocumentImpl"* %doc) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMStringPool"* %this}, i64 0, metadata !1615), !dbg !2201
+  tail call void @llvm.dbg.value(metadata !{i32 %hashTableSize}, i64 0, metadata !1617), !dbg !2201
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMDocumentImpl"* %doc}, i64 0, metadata !1618), !dbg !2201
+  %fDoc = getelementptr inbounds %"class.xercesc_2_5::DOMStringPool"* %this, i64 0, i32 0, !dbg !2202
+  store %"class.xercesc_2_5::DOMDocumentImpl"* %doc, %"class.xercesc_2_5::DOMDocumentImpl"** %fDoc, align 8, !dbg !2202, !tbaa !2203
+  %fHashTableSize = getelementptr inbounds %"class.xercesc_2_5::DOMStringPool"* %this, i64 0, i32 2, !dbg !2202
+  store i32 %hashTableSize, i32* %fHashTableSize, align 4, !dbg !2202, !tbaa !2206
+  %conv = sext i32 %hashTableSize to i64, !dbg !2207
+  %mul = shl nsw i64 %conv, 3, !dbg !2207
+  %call = tail call i8* @_ZN11xercesc_2_515DOMDocumentImpl8allocateEm(%"class.xercesc_2_5::DOMDocumentImpl"* %doc, i64 %mul) #5, !dbg !2207
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !1619), !dbg !2207
+  %0 = bitcast i8* %call to %"struct.xercesc_2_5::DOMStringPoolEntry"**, !dbg !2208
+  %fHashTable = getelementptr inbounds %"class.xercesc_2_5::DOMStringPool"* %this, i64 0, i32 1, !dbg !2208
+  store %"struct.xercesc_2_5::DOMStringPoolEntry"** %0, %"struct.xercesc_2_5::DOMStringPoolEntry"*** %fHashTable, align 8, !dbg !2208, !tbaa !2203
+  tail call void @llvm.dbg.value(metadata !1577, i64 0, metadata !1622), !dbg !2209
+  %1 = load i32* %fHashTableSize, align 4, !dbg !2209, !tbaa !2206
+  %cmp8 = icmp sgt i32 %1, 0, !dbg !2209
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !2209
+
+for.body:                                         ; preds = %entry, %for.body.for.body_crit_edge
+  %2 = phi %"struct.xercesc_2_5::DOMStringPoolEntry"** [ %.pre, %for.body.for.body_crit_edge ], [ %0, %entry ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds %"struct.xercesc_2_5::DOMStringPoolEntry"** %2, i64 %indvars.iv, !dbg !2210
+  store %"struct.xercesc_2_5::DOMStringPoolEntry"* null, %"struct.xercesc_2_5::DOMStringPoolEntry"** %arrayidx, align 8, !dbg !2210, !tbaa !2203
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2209
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !2209
+  %cmp = icmp slt i32 %3, %1, !dbg !2209
+  br i1 %cmp, label %for.body.for.body_crit_edge, label %for.end, !dbg !2209
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %.pre = load %"struct.xercesc_2_5::DOMStringPoolEntry"*** %fHashTable, align 8, !dbg !2210, !tbaa !2203
+  br label %for.body, !dbg !2209
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !2211
+}

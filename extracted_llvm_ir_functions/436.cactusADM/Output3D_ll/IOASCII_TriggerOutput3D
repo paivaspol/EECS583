@@ -1,25 +1,26 @@
 define i32 @IOASCII_TriggerOutput3D(%struct.cGH* %GH, i32 %vindex) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !114, metadata !231), !dbg !432
-  tail call void @llvm.dbg.value(metadata i32 %vindex, i64 0, metadata !115, metadata !231), !dbg !433
-  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #5, !dbg !434
-  %2 = tail call i8* @CCTK_VarName(i32 %vindex) #5, !dbg !435
-  tail call void @llvm.dbg.value(metadata i8* %2, i64 0, metadata !117, metadata !231), !dbg !436
-  %3 = tail call i32 @IOASCII_Write3D(%struct.cGH* %GH, i32 %vindex, i8* %2) #5, !dbg !437
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !116, metadata !231), !dbg !438
-  %4 = icmp eq i32 %3, 0, !dbg !439
-  br i1 %4, label %5, label %13, !dbg !441
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !114), !dbg !333
+  tail call void @llvm.dbg.value(metadata !{i32 %vindex}, i64 0, metadata !115), !dbg !333
+  %call = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #6, !dbg !334
+  %call2 = tail call i8* @CCTK_VarName(i32 %vindex) #6, !dbg !335
+  tail call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !117), !dbg !335
+  %call3 = tail call i32 @IOASCII_Write3D(%struct.cGH* %GH, i32 %vindex, i8* %call2) #6, !dbg !336
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !116), !dbg !336
+  %cmp = icmp eq i32 %call3, 0, !dbg !337
+  br i1 %cmp, label %if.then, label %if.end, !dbg !337
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1, !dbg !442
-  %7 = load i32* %6, align 4, !dbg !442, !tbaa !265
-  %8 = sext i32 %vindex to i64, !dbg !444
-  %9 = getelementptr inbounds i8* %1, i64 80, !dbg !445
-  %10 = bitcast i8* %9 to i32**, !dbg !445
-  %11 = load i32** %10, align 8, !dbg !445, !tbaa !268
-  %12 = getelementptr inbounds i32* %11, i64 %8, !dbg !444
-  store i32 %7, i32* %12, align 4, !dbg !446, !tbaa !271
-  br label %13, !dbg !447
+if.then:                                          ; preds = %entry
+  %cctk_iteration = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1, !dbg !338
+  %0 = load i32* %cctk_iteration, align 4, !dbg !338, !tbaa !231
+  %idxprom = sext i32 %vindex to i64, !dbg !338
+  %out3D_last = getelementptr inbounds i8* %call, i64 80, !dbg !338
+  %1 = bitcast i8* %out3D_last to i32**, !dbg !338
+  %2 = load i32** %1, align 8, !dbg !338, !tbaa !242
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !338
+  store i32 %0, i32* %arrayidx, align 4, !dbg !338, !tbaa !231
+  br label %if.end, !dbg !340
 
-; <label>:13                                      ; preds = %5, %0
-  ret i32 %3, !dbg !448
+if.end:                                           ; preds = %if.then, %entry
+  ret i32 %call3, !dbg !341
 }

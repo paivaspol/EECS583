@@ -1,22 +1,23 @@
 define i32 @ETree_root(%struct._ETree* %etree) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ETree* %etree, i64 0, metadata !53, metadata !117), !dbg !157
-  %1 = icmp eq %struct._ETree* %etree, null, !dbg !158
-  br i1 %1, label %6, label %2, !dbg !160
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !52), !dbg !134
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !135
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !135
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2, !dbg !161
-  %4 = load %struct._Tree** %3, align 8, !dbg !161, !tbaa !155
-  %5 = icmp eq %struct._Tree* %4, null, !dbg !162
-  br i1 %5, label %6, label %9, !dbg !163
+lor.lhs.false:                                    ; preds = %entry
+  %tree = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2, !dbg !135
+  %0 = load %struct._Tree** %tree, align 8, !dbg !135, !tbaa !116
+  %cmp1 = icmp eq %struct._Tree* %0, null, !dbg !135
+  br i1 %cmp1, label %if.then, label %if.end, !dbg !135
 
-; <label>:6                                       ; preds = %2, %0
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !164, !tbaa !124
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), %struct._ETree* %etree) #5, !dbg !166
-  tail call void @exit(i32 -1) #6, !dbg !167
-  unreachable, !dbg !167
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !136, !tbaa !116
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), %struct._ETree* %etree) #5, !dbg !136
+  tail call void @exit(i32 -1) #6, !dbg !138
+  unreachable, !dbg !138
 
-; <label>:9                                       ; preds = %2
-  %10 = getelementptr inbounds %struct._Tree* %4, i64 0, i32 1, !dbg !168
-  %11 = load i32* %10, align 4, !dbg !168, !tbaa !169
-  ret i32 %11, !dbg !171
+if.end:                                           ; preds = %lor.lhs.false
+  %root = getelementptr inbounds %struct._Tree* %0, i64 0, i32 1, !dbg !139
+  %2 = load i32* %root, align 4, !dbg !139, !tbaa !121
+  ret i32 %2, !dbg !139
 }

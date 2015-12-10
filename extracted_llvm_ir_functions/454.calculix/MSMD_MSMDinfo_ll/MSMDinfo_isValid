@@ -1,25 +1,28 @@
-define i32 @MSMDinfo_isValid(%struct._MSMDinfo* readonly %info) #3 {
-  tail call void @llvm.dbg.value(metadata %struct._MSMDinfo* %info, i64 0, metadata !134, metadata !144), !dbg !360
-  %1 = icmp eq %struct._MSMDinfo* %info, null, !dbg !361
-  br i1 %1, label %11, label %2, !dbg !363
+define i32 @MSMDinfo_isValid(%struct._MSMDinfo* %info) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._MSMDinfo* %info}, i64 0, metadata !126), !dbg !247
+  %cmp = icmp eq %struct._MSMDinfo* %info, null, !dbg !248
+  br i1 %cmp, label %if.end, label %lor.lhs.false, !dbg !248
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct._MSMDinfo* %info, i64 0, i32 0, !dbg !364
-  %4 = load i32* %3, align 4, !dbg !364, !tbaa !157
-  %5 = icmp eq i32 %4, 3, !dbg !365
-  %6 = icmp ugt i32 %4, 6, !dbg !366
-  %7 = or i1 %6, %5, !dbg !366
-  br i1 %7, label %11, label %8, !dbg !366
+lor.lhs.false:                                    ; preds = %entry
+  %compressFlag = getelementptr inbounds %struct._MSMDinfo* %info, i64 0, i32 0, !dbg !248
+  %0 = load i32* %compressFlag, align 4, !dbg !248, !tbaa !139
+  %cmp1 = icmp slt i32 %0, 0, !dbg !248
+  %cmp4 = icmp eq i32 %0, 3, !dbg !248
+  %or.cond = or i1 %cmp1, %cmp4, !dbg !248
+  %cmp7 = icmp sgt i32 %0, 6, !dbg !248
+  %or.cond18 = or i1 %or.cond, %cmp7, !dbg !248
+  br i1 %or.cond18, label %if.end, label %lor.lhs.false8, !dbg !248
 
-; <label>:8                                       ; preds = %2
-  %9 = getelementptr inbounds %struct._MSMDinfo* %info, i64 0, i32 1, !dbg !367
-  %10 = load i32* %9, align 4, !dbg !367, !tbaa !163
-  %.off = add i32 %10, -1, !dbg !368
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !135, metadata !144), !dbg !369
-  %not. = icmp ult i32 %.off, 4, !dbg !368
-  %. = zext i1 %not. to i32, !dbg !368
-  ret i32 %., !dbg !368
+lor.lhs.false8:                                   ; preds = %lor.lhs.false
+  %prioType = getelementptr inbounds %struct._MSMDinfo* %info, i64 0, i32 1, !dbg !248
+  %1 = load i32* %prioType, align 4, !dbg !248, !tbaa !139
+  %.off = add i32 %1, -1, !dbg !248
+  tail call void @llvm.dbg.value(metadata !249, i64 0, metadata !127), !dbg !250
+  %not. = icmp ult i32 %.off, 4, !dbg !248
+  %. = zext i1 %not. to i32, !dbg !248
+  ret i32 %., !dbg !248
 
-; <label>:11                                      ; preds = %0, %2
-  ret i32 0, !dbg !370
+if.end:                                           ; preds = %entry, %lor.lhs.false
+  ret i32 0, !dbg !252
 }

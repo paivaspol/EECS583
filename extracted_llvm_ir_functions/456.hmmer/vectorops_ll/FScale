@@ -1,26 +1,23 @@
 define void @FScale(float* nocapture %vec, i32 %n, float %scale) #0 {
-  tail call void @llvm.dbg.value(metadata float* %vec, i64 0, metadata !34, metadata !206), !dbg !246
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !35, metadata !206), !dbg !247
-  tail call void @llvm.dbg.value(metadata float %scale, i64 0, metadata !36, metadata !206), !dbg !248
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !37, metadata !206), !dbg !249
-  %1 = icmp sgt i32 %n, 0, !dbg !250
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !253
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %vec}, i64 0, metadata !34), !dbg !218
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !35), !dbg !218
+  tail call void @llvm.dbg.value(metadata !{float %scale}, i64 0, metadata !36), !dbg !218
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !37), !dbg !219
+  %cmp3 = icmp sgt i32 %n, 0, !dbg !219
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !219
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %n, -1, !dbg !253
-  br label %3, !dbg !253
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !219
+  %0 = load float* %arrayidx, align 4, !dbg !219, !tbaa !212
+  %mul = fmul float %0, %scale, !dbg !219
+  store float %mul, float* %arrayidx, align 4, !dbg !219, !tbaa !212
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !219
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !219
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !219
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !219
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !254
-  %5 = load float* %4, align 4, !dbg !255, !tbaa !232
-  %6 = fmul float %5, %scale, !dbg !255
-  store float %6, float* %4, align 4, !dbg !255, !tbaa !232
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !253
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !253
-  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !253
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !253
-
-._crit_edge:                                      ; preds = %3, %0
-  ret void, !dbg !256
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !221
 }

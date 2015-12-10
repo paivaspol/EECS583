@@ -1,33 +1,33 @@
 define void @_ZN3pov31Build_Bounding_Sphere_HierarchyEPPNS_19BSphere_Tree_StructEiPS2_(%"struct.pov::BSphere_Tree_Struct"** %Root, i32 %nElem, %"struct.pov::BSphere_Tree_Struct"*** %Elements) #0 {
-  %1 = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %"struct.pov::BSphere_Tree_Struct"** %Root, i64 0, metadata !71, metadata !609), !dbg !610
-  tail call void @llvm.dbg.value(metadata i32 %nElem, i64 0, metadata !72, metadata !609), !dbg !611
-  store i32 %nElem, i32* %1, align 4, !tbaa !612
-  tail call void @llvm.dbg.value(metadata %"struct.pov::BSphere_Tree_Struct"*** %Elements, i64 0, metadata !73, metadata !609), !dbg !616
-  %2 = shl nsw i32 %nElem, 1, !dbg !617
-  store i32 %2, i32* @_ZN3povL11maxelementsE, align 4, !dbg !618, !tbaa !612
-  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !72, metadata !609), !dbg !611
-  %3 = icmp sgt i32 %nElem, 0, !dbg !619
-  br i1 %3, label %.preheader, label %.loopexit, !dbg !621
+entry:
+  %nElem.addr = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"** %Root}, i64 0, metadata !40), !dbg !257
+  call void @llvm.dbg.value(metadata !{i32 %nElem}, i64 0, metadata !42), !dbg !257
+  store i32 %nElem, i32* %nElem.addr, align 4, !tbaa !258
+  call void @llvm.dbg.declare(metadata !{i32* %nElem.addr}, metadata !42), !dbg !257
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"*** %Elements}, i64 0, metadata !43), !dbg !257
+  %mul = shl nsw i32 %nElem, 1, !dbg !261
+  store i32 %mul, i32* @_ZN3povL11maxelementsE, align 4, !dbg !261, !tbaa !258
+  call void @llvm.dbg.value(metadata !{i32* %nElem.addr}, i64 0, metadata !42), !dbg !262
+  %cmp = icmp sgt i32 %nElem, 0, !dbg !262
+  br i1 %cmp, label %while.cond.preheader, label %if.end, !dbg !262
 
-.preheader:                                       ; preds = %0
-  call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !72, metadata !609), !dbg !611
-  %4 = call fastcc i32 @_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii(%"struct.pov::BSphere_Tree_Struct"** %Root, %"struct.pov::BSphere_Tree_Struct"*** %Elements, i32* %1, i32 0, i32 %nElem) #7, !dbg !622
-  %5 = icmp eq i32 %4, 0, !dbg !624
-  br i1 %5, label %.lr.ph, label %.loopexit, !dbg !625
+while.cond.preheader:                             ; preds = %entry
+  %call3 = call fastcc i32 @_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii(%"struct.pov::BSphere_Tree_Struct"** %Root, %"struct.pov::BSphere_Tree_Struct"*** %Elements, i32* %nElem.addr, i32 0, i32 %nElem) #7, !dbg !263
+  %cmp14 = icmp eq i32 %call3, 0, !dbg !263
+  br i1 %cmp14, label %while.body, label %if.end, !dbg !263
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %high.01 = phi i32 [ %6, %.lr.ph ], [ %nElem, %.preheader ]
-  call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !74, metadata !609), !dbg !626
-  call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !72, metadata !609), !dbg !611
-  %6 = load i32* %1, align 4, !dbg !627, !tbaa !612
-  call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !75, metadata !609), !dbg !629
-  call void @_ZN3pov12Do_CooperateEi(i32 0) #7, !dbg !630
-  call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !72, metadata !609), !dbg !611
-  %7 = call fastcc i32 @_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii(%"struct.pov::BSphere_Tree_Struct"** %Root, %"struct.pov::BSphere_Tree_Struct"*** %Elements, i32* %1, i32 %high.01, i32 %6) #7, !dbg !622
-  %8 = icmp eq i32 %7, 0, !dbg !624
-  br i1 %8, label %.lr.ph, label %.loopexit, !dbg !625
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %high.05 = phi i32 [ %0, %while.body ], [ %nElem, %while.cond.preheader ]
+  call void @llvm.dbg.value(metadata !{i32 %high.05}, i64 0, metadata !44), !dbg !265
+  call void @llvm.dbg.value(metadata !{i32* %nElem.addr}, i64 0, metadata !42), !dbg !267
+  %0 = load i32* %nElem.addr, align 4, !dbg !267, !tbaa !258
+  call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !45), !dbg !267
+  call void @_ZN3pov12Do_CooperateEi(i32 0) #7, !dbg !268
+  %call = call fastcc i32 @_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii(%"struct.pov::BSphere_Tree_Struct"** %Root, %"struct.pov::BSphere_Tree_Struct"*** %Elements, i32* %nElem.addr, i32 %high.05, i32 %0) #7, !dbg !263
+  %cmp1 = icmp eq i32 %call, 0, !dbg !263
+  br i1 %cmp1, label %while.body, label %if.end, !dbg !263
 
-.loopexit:                                        ; preds = %.lr.ph, %.preheader, %0
-  ret void, !dbg !631
+if.end:                                           ; preds = %while.cond.preheader, %while.body, %entry
+  ret void, !dbg !269
 }

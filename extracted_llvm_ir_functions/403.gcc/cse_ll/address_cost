@@ -1,31 +1,33 @@
 define i32 @address_cost(%struct.rtx_def* %x, i32 %mode) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 70
-  br i1 %cmp, label %land.lhs.true, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !525), !dbg !1772
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !526), !dbg !1773
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !1774
+  %bf.load = load i32* %0, align 8, !dbg !1774
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1774
+  %cmp = icmp eq i32 %bf.clear, 70, !dbg !1774
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !1774
 
 land.lhs.true:                                    ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load1 = load i32* %2, align 8
-  %bf.clear2 = and i32 %bf.load1, 65535
-  %cmp3 = icmp eq i32 %bf.clear2, 61
-  br i1 %cmp3, label %return, label %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !1774
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1774
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1774, !tbaa !1677
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !1774
+  %bf.load1 = load i32* %2, align 8, !dbg !1774
+  %bf.clear2 = and i32 %bf.load1, 65535, !dbg !1774
+  %cmp3 = icmp eq i32 %bf.clear2, 61, !dbg !1774
+  br i1 %cmp3, label %return, label %if.end, !dbg !1774
 
 if.end:                                           ; preds = %land.lhs.true, %entry
-  %call = tail call i32 @memory_address_p(i32 %mode, %struct.rtx_def* %x) #6
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.end5
+  %call = tail call i32 @memory_address_p(i32 %mode, %struct.rtx_def* %x) #7, !dbg !1775
+  %tobool = icmp eq i32 %call, 0, !dbg !1775
+  br i1 %tobool, label %return, label %if.end5, !dbg !1775
 
 if.end5:                                          ; preds = %if.end
-  %call6 = tail call i32 @ix86_address_cost(%struct.rtx_def* %x) #6
-  br label %return
+  %call6 = tail call i32 @ix86_address_cost(%struct.rtx_def* %x) #7, !dbg !1776
+  br label %return, !dbg !1776
 
 return:                                           ; preds = %if.end, %land.lhs.true, %if.end5
   %retval.0 = phi i32 [ %call6, %if.end5 ], [ -1, %land.lhs.true ], [ 1000, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1777
 }

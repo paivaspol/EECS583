@@ -1,42 +1,43 @@
 define internal fastcc void @prepareToAddNewEntries(%struct._InpMtx* %inpmtx, i32 %nnewent) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !210, metadata !320), !dbg !1269
-  tail call void @llvm.dbg.value(metadata i32 %nnewent, i64 0, metadata !211, metadata !320), !dbg !1270
-  %1 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4, !dbg !1271
-  %2 = load i32* %1, align 4, !dbg !1271, !tbaa !365
-  %3 = add nsw i32 %2, %nnewent, !dbg !1273
-  %4 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 3, !dbg !1274
-  %5 = load i32* %4, align 4, !dbg !1274, !tbaa !1275
-  %6 = icmp sgt i32 %3, %5, !dbg !1276
-  br i1 %6, label %7, label %9, !dbg !1277
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !207), !dbg !862
+  tail call void @llvm.dbg.value(metadata !{i32 %nnewent}, i64 0, metadata !208), !dbg !863
+  %nent = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4, !dbg !864
+  %0 = load i32* %nent, align 4, !dbg !864, !tbaa !313
+  %add = add nsw i32 %0, %nnewent, !dbg !864
+  %maxnent = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 3, !dbg !864
+  %1 = load i32* %maxnent, align 4, !dbg !864, !tbaa !313
+  %cmp = icmp sgt i32 %add, %1, !dbg !864
+  br i1 %cmp, label %if.then, label %if.end, !dbg !864
 
-; <label>:7                                       ; preds = %0
-  tail call void @InpMtx_sortAndCompress(%struct._InpMtx* %inpmtx) #5, !dbg !1278
-  %8 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1, !dbg !1280
-  store i32 2, i32* %8, align 4, !dbg !1281, !tbaa !435
-  %.pre = load i32* %1, align 4, !dbg !1282, !tbaa !365
-  %.pre1 = load i32* %4, align 4, !dbg !1283, !tbaa !1275
-  br label %9, !dbg !1284
+if.then:                                          ; preds = %entry
+  tail call void @InpMtx_sortAndCompress(%struct._InpMtx* %inpmtx) #5, !dbg !865
+  %storageMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1, !dbg !867
+  store i32 2, i32* %storageMode, align 4, !dbg !867, !tbaa !313
+  %.pre = load i32* %nent, align 4, !dbg !868, !tbaa !313
+  %.pre31 = load i32* %maxnent, align 4, !dbg !868, !tbaa !313
+  br label %if.end, !dbg !869
 
-; <label>:9                                       ; preds = %7, %0
-  %10 = phi i32 [ %.pre1, %7 ], [ %5, %0 ]
-  %11 = phi i32 [ %.pre, %7 ], [ %2, %0 ]
-  %12 = add nsw i32 %11, %nnewent, !dbg !1285
-  %13 = icmp sgt i32 %12, %10, !dbg !1286
-  br i1 %13, label %14, label %21, !dbg !1287
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre31, %if.then ], [ %1, %entry ]
+  %3 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %add2 = add nsw i32 %3, %nnewent, !dbg !868
+  %cmp4 = icmp sgt i32 %add2, %2, !dbg !868
+  br i1 %cmp4, label %if.then5, label %if.end16, !dbg !868
 
-; <label>:14                                      ; preds = %9
-  %15 = sitofp i32 %10 to double, !dbg !1288
-  %16 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 5, !dbg !1289
-  %17 = load double* %16, align 8, !dbg !1289, !tbaa !1290
-  %18 = fmul double %15, %17, !dbg !1291
-  %19 = fptosi double %18 to i32, !dbg !1288
-  tail call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !212, metadata !320), !dbg !1292
-  %20 = icmp slt i32 %19, %12, !dbg !1293
-  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !212, metadata !320), !dbg !1292
-  %. = select i1 %20, i32 %12, i32 %19, !dbg !1295
-  tail call void @InpMtx_setMaxnent(%struct._InpMtx* %inpmtx, i32 %.) #5, !dbg !1296
-  br label %21, !dbg !1297
+if.then5:                                         ; preds = %if.end
+  %conv = sitofp i32 %2 to double, !dbg !870
+  %resizeMultiple = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 5, !dbg !870
+  %4 = load double* %resizeMultiple, align 8, !dbg !870, !tbaa !355
+  %mul = fmul double %conv, %4, !dbg !870
+  %conv7 = fptosi double %mul to i32, !dbg !870
+  tail call void @llvm.dbg.value(metadata !{i32 %conv7}, i64 0, metadata !209), !dbg !870
+  %cmp10 = icmp slt i32 %conv7, %add2, !dbg !871
+  tail call void @llvm.dbg.value(metadata !{i32 %add2}, i64 0, metadata !209), !dbg !872
+  %add2.conv7 = select i1 %cmp10, i32 %add2, i32 %conv7, !dbg !871
+  tail call void @InpMtx_setMaxnent(%struct._InpMtx* %inpmtx, i32 %add2.conv7) #5, !dbg !874
+  br label %if.end16, !dbg !875
 
-; <label>:21                                      ; preds = %14, %9
-  ret void, !dbg !1298
+if.end16:                                         ; preds = %if.then5, %if.end
+  ret void, !dbg !876
 }

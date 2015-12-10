@@ -1,68 +1,72 @@
 define internal fastcc %struct._SubMtx* @initBJ(i32 %type, i32 %J, i32 %nJ, i32 %nrhs, %struct._SubMtxManager* %mtxmanager) #0 {
-  %1 = alloca i32, align 4
-  %2 = alloca i32, align 4
+entry:
+  %nJ.addr = alloca i32, align 4
+  %nrhs.addr = alloca i32, align 4
   %entries = alloca double*, align 8
   %inc1 = alloca i32, align 4
   %inc2 = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata i32 %nJ, i64 0, metadata !461, metadata !530), !dbg !1028
-  store i32 %nJ, i32* %1, align 4, !tbaa !552
-  tail call void @llvm.dbg.value(metadata i32 %nrhs, i64 0, metadata !462, metadata !530), !dbg !1029
-  store i32 %nrhs, i32* %2, align 4, !tbaa !552
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !464, metadata !530), !dbg !1030
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* null, i64 0, metadata !465, metadata !530), !dbg !1031
-  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !461, metadata !530), !dbg !1028
-  %3 = mul nsw i32 %nrhs, %nJ, !dbg !1032
-  %4 = tail call i32 @SubMtx_nbytesNeeded(i32 %type, i32 1, i32 %nJ, i32 %nrhs, i32 %3) #6, !dbg !1033
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !470, metadata !530), !dbg !1034
-  %5 = tail call %struct._SubMtx* @SubMtxManager_newObjectOfSizeNbytes(%struct._SubMtxManager* %mtxmanager, i32 %4) #6, !dbg !1035
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %5, i64 0, metadata !466, metadata !530), !dbg !1036
-  %6 = icmp eq %struct._SubMtx* %5, null, !dbg !1037
-  br i1 %6, label %7, label %10, !dbg !1039
+  call void @llvm.dbg.value(metadata !{i32 %nJ}, i64 0, metadata !512), !dbg !826
+  store i32 %nJ, i32* %nJ.addr, align 4, !tbaa !534
+  call void @llvm.dbg.declare(metadata !{i32* %nJ.addr}, metadata !512), !dbg !826
+  call void @llvm.dbg.value(metadata !{i32 %nrhs}, i64 0, metadata !513), !dbg !827
+  store i32 %nrhs, i32* %nrhs.addr, align 4, !tbaa !534
+  call void @llvm.dbg.declare(metadata !{i32* %nrhs.addr}, metadata !513), !dbg !827
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !515), !dbg !828
+  call void @llvm.dbg.value(metadata !829, i64 0, metadata !516), !dbg !830
+  call void @llvm.dbg.declare(metadata !{double** %entries}, metadata !518), !dbg !831
+  call void @llvm.dbg.declare(metadata !{i32* %inc1}, metadata !519), !dbg !832
+  call void @llvm.dbg.declare(metadata !{i32* %inc2}, metadata !520), !dbg !832
+  call void @llvm.dbg.value(metadata !{i32* %nJ.addr}, i64 0, metadata !512), !dbg !833
+  %mul = mul nsw i32 %nrhs, %nJ, !dbg !833
+  %call = call i32 @SubMtx_nbytesNeeded(i32 %type, i32 1, i32 %nJ, i32 %nrhs, i32 %mul) #6, !dbg !833
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !521), !dbg !833
+  %call1 = call %struct._SubMtx* @SubMtxManager_newObjectOfSizeNbytes(%struct._SubMtxManager* %mtxmanager, i32 %call) #6, !dbg !834
+  call void @llvm.dbg.value(metadata !{%struct._SubMtx* %call1}, i64 0, metadata !517), !dbg !834
+  %cmp = icmp eq %struct._SubMtx* %call1, null, !dbg !835
+  br i1 %cmp, label %if.then, label %if.end, !dbg !835
 
-; <label>:7                                       ; preds = %0
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1040, !tbaa !600
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([48 x i8]* @.str32, i64 0, i64 0), i32 %J) #6, !dbg !1042
-  tail call void @exit(i32 -1) #7, !dbg !1043
-  unreachable, !dbg !1043
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !836, !tbaa !542
+  %call2 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str50, i64 0, i64 0), i32 %J) #6, !dbg !836
+  call void @exit(i32 -1) #7, !dbg !838
+  unreachable, !dbg !838
 
-; <label>:10                                      ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !461, metadata !530), !dbg !1028
-  tail call void @llvm.dbg.value(metadata i32* %2, i64 0, metadata !462, metadata !530), !dbg !1029
-  tail call void @SubMtx_init(%struct._SubMtx* %5, i32 %type, i32 1, i32 %J, i32 0, i32 %nJ, i32 %nrhs, i32 %3) #6, !dbg !1044
-  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !461, metadata !530), !dbg !1028
-  tail call void @llvm.dbg.value(metadata i32* %2, i64 0, metadata !462, metadata !530), !dbg !1029
-  tail call void @llvm.dbg.value(metadata double** %entries, i64 0, metadata !467, metadata !530), !dbg !1045
-  tail call void @llvm.dbg.value(metadata i32* %inc1, i64 0, metadata !468, metadata !530), !dbg !1046
-  tail call void @llvm.dbg.value(metadata i32* %inc2, i64 0, metadata !469, metadata !530), !dbg !1047
-  call void @SubMtx_denseInfo(%struct._SubMtx* %5, i32* %1, i32* %2, i32* %inc1, i32* %inc2, double** %entries) #6, !dbg !1048
-  switch i32 %type, label %22 [
-    i32 1, label %11
-    i32 2, label %16
-  ], !dbg !1049
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.value(metadata !{i32* %nJ.addr}, i64 0, metadata !512), !dbg !839
+  %1 = load i32* %nJ.addr, align 4, !dbg !839, !tbaa !534
+  call void @llvm.dbg.value(metadata !{i32* %nrhs.addr}, i64 0, metadata !513), !dbg !839
+  %2 = load i32* %nrhs.addr, align 4, !dbg !839, !tbaa !534
+  %mul3 = mul nsw i32 %2, %1, !dbg !839
+  call void @SubMtx_init(%struct._SubMtx* %call1, i32 %type, i32 1, i32 %J, i32 0, i32 %1, i32 %2, i32 %mul3) #6, !dbg !839
+  call void @SubMtx_denseInfo(%struct._SubMtx* %call1, i32* %nJ.addr, i32* %nrhs.addr, i32* %inc1, i32* %inc2, double** %entries) #6, !dbg !840
+  switch i32 %type, label %if.end12 [
+    i32 1, label %if.then5
+    i32 2, label %if.then8
+  ], !dbg !841
 
-; <label>:11                                      ; preds = %10
-  call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !461, metadata !530), !dbg !1028
-  %12 = load i32* %1, align 4, !dbg !1050, !tbaa !552
-  call void @llvm.dbg.value(metadata i32* %2, i64 0, metadata !462, metadata !530), !dbg !1029
-  %13 = load i32* %2, align 4, !dbg !1053, !tbaa !552
-  %14 = mul nsw i32 %13, %12, !dbg !1054
-  call void @llvm.dbg.value(metadata double** %entries, i64 0, metadata !467, metadata !530), !dbg !1045
-  %15 = load double** %entries, align 8, !dbg !1055, !tbaa !600
-  call void @DVzero(i32 %14, double* %15) #6, !dbg !1056
-  br label %22, !dbg !1057
+if.then5:                                         ; preds = %if.end
+  call void @llvm.dbg.value(metadata !{i32* %nJ.addr}, i64 0, metadata !512), !dbg !842
+  %3 = load i32* %nJ.addr, align 4, !dbg !842, !tbaa !534
+  call void @llvm.dbg.value(metadata !{i32* %nrhs.addr}, i64 0, metadata !513), !dbg !842
+  %4 = load i32* %nrhs.addr, align 4, !dbg !842, !tbaa !534
+  %mul6 = mul nsw i32 %4, %3, !dbg !842
+  call void @llvm.dbg.value(metadata !{double** %entries}, i64 0, metadata !518), !dbg !842
+  %5 = load double** %entries, align 8, !dbg !842, !tbaa !542
+  call void @DVzero(i32 %mul6, double* %5) #6, !dbg !842
+  br label %if.end12, !dbg !844
 
-; <label>:16                                      ; preds = %10
-  call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !461, metadata !530), !dbg !1028
-  %17 = load i32* %1, align 4, !dbg !1058, !tbaa !552
-  %18 = shl i32 %17, 1, !dbg !1061
-  call void @llvm.dbg.value(metadata i32* %2, i64 0, metadata !462, metadata !530), !dbg !1029
-  %19 = load i32* %2, align 4, !dbg !1062, !tbaa !552
-  %20 = mul nsw i32 %18, %19, !dbg !1063
-  call void @llvm.dbg.value(metadata double** %entries, i64 0, metadata !467, metadata !530), !dbg !1045
-  %21 = load double** %entries, align 8, !dbg !1064, !tbaa !600
-  call void @DVzero(i32 %20, double* %21) #6, !dbg !1065
-  br label %22, !dbg !1066
+if.then8:                                         ; preds = %if.end
+  call void @llvm.dbg.value(metadata !{i32* %nJ.addr}, i64 0, metadata !512), !dbg !845
+  %6 = load i32* %nJ.addr, align 4, !dbg !845, !tbaa !534
+  %mul9 = shl i32 %6, 1, !dbg !845
+  call void @llvm.dbg.value(metadata !{i32* %nrhs.addr}, i64 0, metadata !513), !dbg !845
+  %7 = load i32* %nrhs.addr, align 4, !dbg !845, !tbaa !534
+  %mul10 = mul nsw i32 %mul9, %7, !dbg !845
+  call void @llvm.dbg.value(metadata !{double** %entries}, i64 0, metadata !518), !dbg !845
+  %8 = load double** %entries, align 8, !dbg !845, !tbaa !542
+  call void @DVzero(i32 %mul10, double* %8) #6, !dbg !845
+  br label %if.end12, !dbg !847
 
-; <label>:22                                      ; preds = %10, %16, %11
-  ret %struct._SubMtx* %5, !dbg !1067
+if.end12:                                         ; preds = %if.end, %if.then8, %if.then5
+  ret %struct._SubMtx* %call1, !dbg !848
 }

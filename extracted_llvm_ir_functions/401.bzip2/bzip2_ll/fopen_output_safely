@@ -1,22 +1,23 @@
-define %struct.__sFILE* @fopen_output_safely(i8* %name, i8* %mode) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !91, metadata !524), !dbg !525
-  tail call void @llvm.dbg.value(metadata i8* %mode, i64 0, metadata !92, metadata !524), !dbg !526
-  %1 = tail call i32 (i8*, i32, ...)* @"\01_open"(i8* %name, i32 2561, i32 384) #9, !dbg !527
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !94, metadata !524), !dbg !528
-  %2 = icmp eq i32 %1, -1, !dbg !529
-  br i1 %2, label %8, label %3, !dbg !531
+define noalias %struct._IO_FILE* @fopen_output_safely(i8* nocapture %name, i8* nocapture %mode) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !87), !dbg !475
+  tail call void @llvm.dbg.value(metadata !{i8* %mode}, i64 0, metadata !88), !dbg !475
+  %call = tail call i32 (i8*, i32, ...)* @open(i8* %name, i32 193, i32 384) #10, !dbg !476
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !90), !dbg !476
+  %cmp = icmp eq i32 %call, -1, !dbg !477
+  br i1 %cmp, label %return, label %if.end, !dbg !477
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call %struct.__sFILE* @"\01_fdopen"(i32 %1, i8* %mode) #9, !dbg !532
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %4, i64 0, metadata !93, metadata !524), !dbg !533
-  %5 = icmp eq %struct.__sFILE* %4, null, !dbg !534
-  br i1 %5, label %6, label %8, !dbg !536
+if.end:                                           ; preds = %entry
+  %call1 = tail call %struct._IO_FILE* @fdopen(i32 %call, i8* %mode) #10, !dbg !478
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call1}, i64 0, metadata !89), !dbg !478
+  %cmp2 = icmp eq %struct._IO_FILE* %call1, null, !dbg !479
+  br i1 %cmp2, label %if.then3, label %return, !dbg !479
 
-; <label>:6                                       ; preds = %3
-  %7 = tail call i32 @"\01_close"(i32 %1) #9, !dbg !537
-  br label %8, !dbg !537
+if.then3:                                         ; preds = %if.end
+  %call4 = tail call i32 @close(i32 %call) #10, !dbg !479
+  br label %return, !dbg !479
 
-; <label>:8                                       ; preds = %3, %6, %0
-  %.0 = phi %struct.__sFILE* [ null, %0 ], [ null, %6 ], [ %4, %3 ]
-  ret %struct.__sFILE* %.0, !dbg !538
+return:                                           ; preds = %if.end, %if.then3, %entry
+  %retval.0 = phi %struct._IO_FILE* [ null, %entry ], [ null, %if.then3 ], [ %call1, %if.end ]
+  ret %struct._IO_FILE* %retval.0, !dbg !480
 }

@@ -1,39 +1,44 @@
 define internal fastcc i32 @flow_loop_level_compute(%struct.loop* %loop, i32 %depth) #0 {
 entry:
-  %tobool = icmp eq %struct.loop* %loop, null
-  br i1 %tobool, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !428), !dbg !937
+  tail call void @llvm.dbg.value(metadata !{i32 %depth}, i64 0, metadata !429), !dbg !938
+  tail call void @llvm.dbg.value(metadata !843, i64 0, metadata !431), !dbg !939
+  %tobool = icmp eq %struct.loop* %loop, null, !dbg !940
+  br i1 %tobool, label %return, label %if.end, !dbg !940
 
 if.end:                                           ; preds = %entry
-  %inner1 = getelementptr inbounds %struct.loop* %loop, i64 0, i32 18
-  %inner.016 = load %struct.loop** %inner1, align 8
-  %tobool217 = icmp eq %struct.loop* %inner.016, null
-  br i1 %tobool217, label %for.end, label %for.body.lr.ph
+  %inner1 = getelementptr inbounds %struct.loop* %loop, i64 0, i32 18, !dbg !941
+  %inner.016 = load %struct.loop** %inner1, align 8, !dbg !941
+  %tobool217 = icmp eq %struct.loop* %inner.016, null, !dbg !941
+  br i1 %tobool217, label %for.end, label %for.body.lr.ph, !dbg !941
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %add = add nsw i32 %depth, 1
-  br label %for.body
+  %add = add nsw i32 %depth, 1, !dbg !942
+  br label %for.body, !dbg !941
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %inner.019 = phi %struct.loop* [ %inner.016, %for.body.lr.ph ], [ %inner.0, %for.body ]
   %level.018 = phi i32 [ 1, %for.body.lr.ph ], [ %cond, %for.body ]
-  %call = tail call fastcc i32 @flow_loop_level_compute(%struct.loop* %inner.019, i32 %add) #6
-  %add3 = add nsw i32 %call, 1
-  %cmp = icmp sgt i32 %add3, %level.018
-  %cond = select i1 %cmp, i32 %add3, i32 %level.018
-  %next = getelementptr inbounds %struct.loop* %inner.019, i64 0, i32 19
-  %inner.0 = load %struct.loop** %next, align 8
-  %tobool2 = icmp eq %struct.loop* %inner.0, null
-  br i1 %tobool2, label %for.end, label %for.body
+  %call = tail call fastcc i32 @flow_loop_level_compute(%struct.loop* %inner.019, i32 %add) #7, !dbg !942
+  %add3 = add nsw i32 %call, 1, !dbg !942
+  tail call void @llvm.dbg.value(metadata !{i32 %add3}, i64 0, metadata !432), !dbg !942
+  %cmp = icmp sgt i32 %add3, %level.018, !dbg !943
+  %cond = select i1 %cmp, i32 %add3, i32 %level.018, !dbg !943
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !431), !dbg !943
+  %next = getelementptr inbounds %struct.loop* %inner.019, i64 0, i32 19, !dbg !941
+  %inner.0 = load %struct.loop** %next, align 8, !dbg !941
+  %tobool2 = icmp eq %struct.loop* %inner.0, null, !dbg !941
+  br i1 %tobool2, label %for.end, label %for.body, !dbg !941
 
 for.end:                                          ; preds = %for.body, %if.end
   %level.0.lcssa = phi i32 [ 1, %if.end ], [ %cond, %for.body ]
-  %level4 = getelementptr inbounds %struct.loop* %loop, i64 0, i32 16
-  store i32 %level.0.lcssa, i32* %level4, align 4, !tbaa !3
-  %depth5 = getelementptr inbounds %struct.loop* %loop, i64 0, i32 15
-  store i32 %depth, i32* %depth5, align 4, !tbaa !3
-  br label %return
+  %level4 = getelementptr inbounds %struct.loop* %loop, i64 0, i32 16, !dbg !944
+  store i32 %level.0.lcssa, i32* %level4, align 4, !dbg !944, !tbaa !568
+  %depth5 = getelementptr inbounds %struct.loop* %loop, i64 0, i32 15, !dbg !945
+  store i32 %depth, i32* %depth5, align 4, !dbg !945, !tbaa !568
+  br label %return, !dbg !946
 
 return:                                           ; preds = %entry, %for.end
   %retval.0 = phi i32 [ %level.0.lcssa, %for.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !947
 }

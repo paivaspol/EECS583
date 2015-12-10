@@ -1,18 +1,15 @@
 define internal noalias i8* @CCTKi_TimerGetTimeOfDayCreate(i32 %timernum) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %timernum, i64 0, metadata !90, metadata !234), !dbg !260
-  tail call void @llvm.dbg.value(metadata i32 %timernum, i64 0, metadata !90, metadata !234), !dbg !260
-  %1 = tail call i8* @malloc(i64 32) #6, !dbg !261
-  %2 = icmp eq i8* %1, null, !dbg !262
-  br i1 %2, label %7, label %3, !dbg !264
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %timernum}, i64 0, metadata !243), !dbg !324
+  tail call void @llvm.dbg.value(metadata !{i32 %timernum}, i64 0, metadata !243), !dbg !325
+  %call = tail call noalias i8* @malloc(i64 32) #6, !dbg !326
+  %tobool = icmp eq i8* %call, null, !dbg !327
+  br i1 %tobool, label %if.end, label %if.then, !dbg !327
 
-; <label>:3                                       ; preds = %0
-  %4 = bitcast i8* %1 to i64*, !dbg !265
-  store i64 0, i64* %4, align 8, !dbg !267, !tbaa !268
-  %5 = getelementptr inbounds i8* %1, i64 8, !dbg !272
-  %6 = bitcast i8* %5 to i32*, !dbg !272
-  store i32 0, i32* %6, align 4, !dbg !273, !tbaa !274
-  br label %7, !dbg !275
+if.then:                                          ; preds = %entry
+  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 16, i32 8, i1 false), !dbg !328
+  br label %if.end, !dbg !330
 
-; <label>:7                                       ; preds = %0, %3
-  ret i8* %1, !dbg !276
+if.end:                                           ; preds = %entry, %if.then
+  ret i8* %call, !dbg !331
 }

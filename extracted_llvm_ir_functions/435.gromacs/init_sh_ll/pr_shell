@@ -1,63 +1,60 @@
-define internal fastcc void @pr_shell(%struct.__sFILE* %log, i32 %ns, %struct.t_shell* nocapture readonly %s) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !473, metadata !482), !dbg !899
-  tail call void @llvm.dbg.value(metadata i32 %ns, i64 0, metadata !474, metadata !482), !dbg !900
-  tail call void @llvm.dbg.value(metadata %struct.t_shell* %s, i64 0, metadata !475, metadata !482), !dbg !901
-  %1 = icmp eq %struct.__sFILE* %log, null, !dbg !902
-  br i1 %1, label %.loopexit, label %2, !dbg !904
+define internal fastcc void @pr_shell(%struct._IO_FILE* %log, i32 %ns, %struct.t_shell* nocapture %s) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %log}, i64 0, metadata !341), !dbg !458
+  tail call void @llvm.dbg.value(metadata !{i32 %ns}, i64 0, metadata !342), !dbg !458
+  tail call void @llvm.dbg.value(metadata !{%struct.t_shell* %s}, i64 0, metadata !343), !dbg !458
+  %tobool = icmp eq %struct._IO_FILE* %log, null, !dbg !459
+  br i1 %tobool, label %if.end30, label %if.then, !dbg !459
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str10, i64 0, i64 0), i64 11, i64 1, %struct.__sFILE* %log), !dbg !905
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([25 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str16, i64 0, i64 0)) #7, !dbg !907
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !476, metadata !482), !dbg !908
-  %5 = icmp sgt i32 %ns, 0, !dbg !909
-  br i1 %5, label %.lr.ph, label %.loopexit, !dbg !912
+if.then:                                          ; preds = %entry
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str10, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %log), !dbg !460
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([25 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str16, i64 0, i64 0)) #5, !dbg !462
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !344), !dbg !463
+  %cmp52 = icmp sgt i32 %ns, 0, !dbg !463
+  br i1 %cmp52, label %for.body, label %if.end30, !dbg !463
 
-.lr.ph:                                           ; preds = %2
-  %6 = add i32 %ns, -1, !dbg !912
-  br label %7, !dbg !912
+for.body:                                         ; preds = %if.then, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.then ]
+  %shell = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 1, !dbg !465
+  %1 = load i32* %shell, align 4, !dbg !465, !tbaa !364
+  %k_1 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 6, !dbg !465
+  %2 = load float* %k_1, align 4, !dbg !465, !tbaa !385
+  %conv = fpext float %2 to double, !dbg !465
+  %div = fdiv double 1.000000e+00, %conv, !dbg !465
+  %nucl1 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 2, !dbg !465
+  %3 = load i32* %nucl1, align 4, !dbg !465, !tbaa !364
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([16 x i8]* @.str17, i64 0, i64 0), i32 %1, double %div, i32 %3) #5, !dbg !465
+  %nnucl = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 0, !dbg !467
+  %4 = load i32* %nnucl, align 4, !dbg !467, !tbaa !364
+  switch i32 %4, label %if.else27 [
+    i32 2, label %if.then11
+    i32 3, label %if.then20
+  ], !dbg !467
 
-; <label>:7                                       ; preds = %30, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %30 ]
-  %8 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 1, !dbg !913
-  %9 = load i32* %8, align 4, !dbg !913, !tbaa !775
-  %10 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 6, !dbg !915
-  %11 = load float* %10, align 4, !dbg !915, !tbaa !719
-  %12 = fpext float %11 to double, !dbg !916
-  %13 = fdiv double 1.000000e+00, %12, !dbg !917
-  %14 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 2, !dbg !918
-  %15 = load i32* %14, align 4, !dbg !918, !tbaa !788
-  %16 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([16 x i8]* @.str17, i64 0, i64 0), i32 %9, double %13, i32 %15) #7, !dbg !919
-  %17 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 0, !dbg !920
-  %18 = load i32* %17, align 4, !dbg !920, !tbaa !715
-  switch i32 %18, label %29 [
-    i32 2, label %19
-    i32 3, label %23
-  ], !dbg !922
+if.then11:                                        ; preds = %for.body
+  %nucl2 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 3, !dbg !468
+  %5 = load i32* %nucl2, align 4, !dbg !468, !tbaa !364
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([7 x i8]* @.str18, i64 0, i64 0), i32 %5) #5, !dbg !468
+  br label %for.inc, !dbg !468
 
-; <label>:19                                      ; preds = %7
-  %20 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 3, !dbg !923
-  %21 = load i32* %20, align 4, !dbg !923, !tbaa !795
-  %22 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([7 x i8]* @.str18, i64 0, i64 0), i32 %21) #7, !dbg !924
-  br label %30, !dbg !924
+if.then20:                                        ; preds = %for.body
+  %nucl223 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 3, !dbg !469
+  %6 = load i32* %nucl223, align 4, !dbg !469, !tbaa !364
+  %nucl3 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 4, !dbg !469
+  %7 = load i32* %nucl3, align 4, !dbg !469, !tbaa !364
+  %call26 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([12 x i8]* @.str19, i64 0, i64 0), i32 %6, i32 %7) #5, !dbg !469
+  br label %for.inc, !dbg !469
 
-; <label>:23                                      ; preds = %7
-  %24 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 3, !dbg !925
-  %25 = load i32* %24, align 4, !dbg !925, !tbaa !795
-  %26 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 4, !dbg !927
-  %27 = load i32* %26, align 4, !dbg !927, !tbaa !802
-  %28 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([12 x i8]* @.str19, i64 0, i64 0), i32 %25, i32 %27) #7, !dbg !928
-  br label %30, !dbg !928
+if.else27:                                        ; preds = %for.body
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %log), !dbg !470
+  br label %for.inc
 
-; <label>:29                                      ; preds = %7
-  %fputc = tail call i32 @fputc(i32 10, %struct.__sFILE* %log), !dbg !929
-  br label %30
+for.inc:                                          ; preds = %if.then11, %if.else27, %if.then20
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !463
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !463
+  %exitcond = icmp eq i32 %lftr.wideiv, %ns, !dbg !463
+  br i1 %exitcond, label %if.end30, label %for.body, !dbg !463
 
-; <label>:30                                      ; preds = %19, %29, %23
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !912
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !912
-  %exitcond = icmp eq i32 %lftr.wideiv, %6, !dbg !912
-  br i1 %exitcond, label %.loopexit, label %7, !dbg !912
-
-.loopexit:                                        ; preds = %30, %2, %0
-  ret void, !dbg !930
+if.end30:                                         ; preds = %if.then, %for.inc, %entry
+  ret void, !dbg !471
 }

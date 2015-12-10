@@ -1,26 +1,23 @@
-define void @_Z29POVMSStream_ReadDataUnorderedPhS_i(i8* nocapture readonly %stream, i8* nocapture %data, i32 %datasize) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %stream, i64 0, metadata !327, metadata !1201), !dbg !2857
-  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !328, metadata !1201), !dbg !2858
-  tail call void @llvm.dbg.value(metadata i32 %datasize, i64 0, metadata !329, metadata !1201), !dbg !2859
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !330, metadata !1201), !dbg !2860
-  %1 = icmp sgt i32 %datasize, 0, !dbg !2861
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !2862
+define void @_Z29POVMSStream_ReadDataUnorderedPhS_i(i8* nocapture %stream, i8* nocapture %data, i32 %datasize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %stream}, i64 0, metadata !291), !dbg !1741
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !292), !dbg !1741
+  tail call void @llvm.dbg.value(metadata !{i32 %datasize}, i64 0, metadata !293), !dbg !1741
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !294), !dbg !1742
+  %cmp6 = icmp sgt i32 %datasize, 0, !dbg !1742
+  br i1 %cmp6, label %for.body, label %for.end, !dbg !1742
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %datasize, -1, !dbg !2862
-  br label %3, !dbg !2862
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8* %stream, i64 %indvars.iv, !dbg !1743
+  %0 = load i8* %arrayidx, align 1, !dbg !1743, !tbaa !918
+  %arrayidx2 = getelementptr inbounds i8* %data, i64 %indvars.iv, !dbg !1743
+  store i8 %0, i8* %arrayidx2, align 1, !dbg !1743, !tbaa !918
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1742
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1742
+  %exitcond = icmp eq i32 %lftr.wideiv, %datasize, !dbg !1742
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1742
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds i8* %stream, i64 %indvars.iv, !dbg !2863
-  %5 = load i8* %4, align 1, !dbg !2863, !tbaa !1562
-  %6 = getelementptr inbounds i8* %data, i64 %indvars.iv, !dbg !2864
-  store i8 %5, i8* %6, align 1, !dbg !2865, !tbaa !1562
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2862
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !2862
-  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !2862
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !2862
-
-._crit_edge:                                      ; preds = %3, %0
-  ret void, !dbg !2866
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !1744
 }

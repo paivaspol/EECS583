@@ -1,36 +1,32 @@
 define i32 @FreeIntStack(%struct.intstack_s* nocapture %stack) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %stack, i64 0, metadata !44, metadata !54), !dbg !109
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !46, metadata !54), !dbg !110
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %stack, i64 0, metadata !30, metadata !54) #6, !dbg !111
-  %1 = getelementptr inbounds %struct.intstack_s* %stack, i64 0, i32 1, !dbg !113
-  %2 = load %struct.intstack_s** %1, align 8, !dbg !113, !tbaa !61
-  %3 = icmp eq %struct.intstack_s* %2, null, !dbg !114
-  br i1 %3, label %._crit_edge, label %.lr.ph, !dbg !115
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %stack}, i64 0, metadata !43), !dbg !77
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !45), !dbg !78
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %stack}, i64 0, metadata !79) #5, !dbg !81
+  %nxt.i = getelementptr inbounds %struct.intstack_s* %stack, i64 0, i32 1, !dbg !82
+  %0 = load %struct.intstack_s** %nxt.i, align 8, !dbg !82, !tbaa !49
+  %cmp.i4 = icmp eq %struct.intstack_s* %0, null, !dbg !82
+  br i1 %cmp.i4, label %while.end, label %while.body, !dbg !82
 
-.lr.ph:                                           ; preds = %0
-  %4 = bitcast %struct.intstack_s** %1 to i64*, !dbg !116
-  br label %5, !dbg !115
+while.body:                                       ; preds = %entry, %while.body
+  %1 = phi %struct.intstack_s* [ %4, %while.body ], [ %0, %entry ]
+  %count.05 = phi i32 [ %inc, %while.body ], [ 0, %entry ]
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %1}, i64 0, metadata !83) #5, !dbg !84
+  %nxt2.i = getelementptr inbounds %struct.intstack_s* %1, i64 0, i32 1, !dbg !85
+  %2 = load %struct.intstack_s** %nxt2.i, align 8, !dbg !85, !tbaa !49
+  store %struct.intstack_s* %2, %struct.intstack_s** %nxt.i, align 8, !dbg !85, !tbaa !49
+  %3 = bitcast %struct.intstack_s* %1 to i8*, !dbg !86
+  tail call void @free(i8* %3) #4, !dbg !86
+  %inc = add nsw i32 %count.05, 1, !dbg !87
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !45), !dbg !87
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %stack}, i64 0, metadata !79) #5, !dbg !81
+  %4 = load %struct.intstack_s** %nxt.i, align 8, !dbg !82, !tbaa !49
+  %cmp.i = icmp eq %struct.intstack_s* %4, null, !dbg !82
+  br i1 %cmp.i, label %while.end, label %while.body, !dbg !82
 
-; <label>:5                                       ; preds = %.lr.ph, %5
-  %6 = phi %struct.intstack_s* [ %2, %.lr.ph ], [ %12, %5 ]
-  %count.01 = phi i32 [ 0, %.lr.ph ], [ %11, %5 ]
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %12, i64 0, metadata !32, metadata !54) #6, !dbg !117
-  %7 = getelementptr inbounds %struct.intstack_s* %6, i64 0, i32 1, !dbg !118
-  %8 = bitcast %struct.intstack_s** %7 to i64*, !dbg !118
-  %9 = load i64* %8, align 8, !dbg !118, !tbaa !61
-  store i64 %9, i64* %4, align 8, !dbg !116, !tbaa !61
-  %10 = bitcast %struct.intstack_s* %6 to i8*, !dbg !119
-  tail call void @free(i8* %10) #4, !dbg !120
-  %11 = add nuw nsw i32 %count.01, 1, !dbg !121
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !46, metadata !54), !dbg !110
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %stack, i64 0, metadata !30, metadata !54) #6, !dbg !111
-  %12 = load %struct.intstack_s** %1, align 8, !dbg !113, !tbaa !61
-  %13 = icmp eq %struct.intstack_s* %12, null, !dbg !114
-  br i1 %13, label %._crit_edge, label %5, !dbg !115
-
-._crit_edge:                                      ; preds = %5, %0
-  %count.0.lcssa = phi i32 [ 0, %0 ], [ %11, %5 ]
-  %14 = bitcast %struct.intstack_s* %stack to i8*, !dbg !122
-  tail call void @free(i8* %14) #5, !dbg !123
-  ret i32 %count.0.lcssa, !dbg !124
+while.end:                                        ; preds = %while.body, %entry
+  %count.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %while.body ]
+  %5 = bitcast %struct.intstack_s* %stack to i8*, !dbg !88
+  tail call void @free(i8* %5) #4, !dbg !88
+  ret i32 %count.0.lcssa, !dbg !89
 }

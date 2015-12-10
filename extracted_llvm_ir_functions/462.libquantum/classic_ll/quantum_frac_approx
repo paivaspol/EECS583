@@ -1,71 +1,72 @@
 define void @quantum_frac_approx(i32* nocapture %a, i32* nocapture %b, i32 %width) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %a, i64 0, metadata !26, metadata !53), !dbg !72
-  tail call void @llvm.dbg.value(metadata i32* %b, i64 0, metadata !27, metadata !53), !dbg !73
-  tail call void @llvm.dbg.value(metadata i32 %width, i64 0, metadata !28, metadata !53), !dbg !74
-  %1 = load i32* %a, align 4, !dbg !75, !tbaa !76
-  %2 = sitofp i32 %1 to float, !dbg !80
-  %3 = load i32* %b, align 4, !dbg !81, !tbaa !76
-  %4 = sitofp i32 %3 to float, !dbg !81
-  %5 = fdiv float %2, %4, !dbg !82
-  tail call void @llvm.dbg.value(metadata float %5, i64 0, metadata !29, metadata !53), !dbg !83
-  tail call void @llvm.dbg.value(metadata float %5, i64 0, metadata !30, metadata !53), !dbg !84
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !32, metadata !53), !dbg !85
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !33, metadata !53), !dbg !86
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !34, metadata !53), !dbg !87
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !35, metadata !53), !dbg !88
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !36, metadata !53), !dbg !89
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !37, metadata !53), !dbg !90
-  %6 = shl i32 1, %width, !dbg !91
-  %7 = fpext float %5 to double, !dbg !94
-  %8 = shl nsw i32 %6, 1, !dbg !95
-  %9 = sitofp i32 %8 to double, !dbg !96
-  %10 = fdiv double 1.000000e+00, %9, !dbg !97
-  br label %11, !dbg !98
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %a}, i64 0, metadata !24), !dbg !62
+  tail call void @llvm.dbg.value(metadata !{i32* %b}, i64 0, metadata !25), !dbg !62
+  tail call void @llvm.dbg.value(metadata !{i32 %width}, i64 0, metadata !26), !dbg !62
+  %0 = load i32* %a, align 4, !dbg !63, !tbaa !64
+  %conv = sitofp i32 %0 to float, !dbg !63
+  %1 = load i32* %b, align 4, !dbg !63, !tbaa !64
+  %conv1 = sitofp i32 %1 to float, !dbg !63
+  %div = fdiv float %conv, %conv1, !dbg !63
+  tail call void @llvm.dbg.value(metadata !{float %div}, i64 0, metadata !27), !dbg !63
+  tail call void @llvm.dbg.value(metadata !{float %div}, i64 0, metadata !29), !dbg !67
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !31), !dbg !68
+  tail call void @llvm.dbg.value(metadata !49, i64 0, metadata !32), !dbg !68
+  tail call void @llvm.dbg.value(metadata !49, i64 0, metadata !33), !dbg !68
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !34), !dbg !68
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !35), !dbg !68
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !36), !dbg !68
+  %shl = shl i32 1, %width, !dbg !69
+  %conv20 = fpext float %div to double, !dbg !71
+  %mul23 = shl nsw i32 %shl, 1, !dbg !71
+  %conv24 = sitofp i32 %mul23 to double, !dbg !71
+  %div25 = fdiv double 1.000000e+00, %conv24, !dbg !71
+  br label %do.body, !dbg !72
 
-; <label>:11                                      ; preds = %18, %0
-  %g.0 = phi float [ %5, %0 ], [ %23, %18 ]
-  %num2.0 = phi i32 [ 0, %0 ], [ %num1.0, %18 ]
-  %den2.0 = phi i32 [ 1, %0 ], [ %den1.0, %18 ]
-  %num1.0 = phi i32 [ 1, %0 ], [ %25, %18 ]
-  %den1.0 = phi i32 [ 0, %0 ], [ %16, %18 ]
-  %num.0 = phi i32 [ 0, %0 ], [ %25, %18 ]
-  %12 = fpext float %g.0 to double, !dbg !99
-  %13 = fadd double %12, 5.000000e-06, !dbg !100
-  %14 = fptosi double %13 to i32, !dbg !101
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !31, metadata !53), !dbg !102
-  tail call void @llvm.dbg.value(metadata float %22, i64 0, metadata !30, metadata !53), !dbg !84
-  tail call void @llvm.dbg.value(metadata float %23, i64 0, metadata !30, metadata !53), !dbg !84
-  %15 = mul nsw i32 %den1.0, %14, !dbg !103
-  %16 = add nsw i32 %15, %den2.0, !dbg !104
-  %17 = icmp sgt i32 %16, %6, !dbg !105
-  br i1 %17, label %32, label %18, !dbg !106
+do.body:                                          ; preds = %if.end, %entry
+  %g.0 = phi float [ %div, %entry ], [ %conv10, %if.end ]
+  %num2.0 = phi i32 [ 0, %entry ], [ %num1.0, %if.end ]
+  %den2.0 = phi i32 [ 1, %entry ], [ %den1.0, %if.end ]
+  %num1.0 = phi i32 [ 1, %entry ], [ %add14, %if.end ]
+  %den1.0 = phi i32 [ 0, %entry ], [ %add11, %if.end ]
+  %num.0 = phi i32 [ 0, %entry ], [ %add14, %if.end ]
+  %conv2 = fpext float %g.0 to double, !dbg !73
+  %add = fadd double %conv2, 5.000000e-06, !dbg !73
+  %conv3 = fptosi double %add to i32, !dbg !73
+  tail call void @llvm.dbg.value(metadata !{i32 %conv3}, i64 0, metadata !30), !dbg !73
+  tail call void @llvm.dbg.value(metadata !{float %conv7}, i64 0, metadata !29), !dbg !74
+  tail call void @llvm.dbg.value(metadata !{float %conv10}, i64 0, metadata !29), !dbg !75
+  %mul = mul nsw i32 %den1.0, %conv3, !dbg !69
+  %add11 = add nsw i32 %mul, %den2.0, !dbg !69
+  %cmp = icmp sgt i32 %add11, %shl, !dbg !69
+  br i1 %cmp, label %do.end, label %if.end, !dbg !69
 
-; <label>:18                                      ; preds = %11
-  %19 = sitofp i32 %14 to double, !dbg !107
-  %20 = fadd double %19, -5.000000e-06, !dbg !108
-  %21 = fsub double %12, %20, !dbg !109
-  %22 = fptrunc double %21 to float, !dbg !109
-  %23 = fdiv float 1.000000e+00, %22, !dbg !110
-  %24 = mul nsw i32 %14, %num1.0, !dbg !111
-  %25 = add nsw i32 %24, %num2.0, !dbg !112
-  tail call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !36, metadata !53), !dbg !89
-  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !37, metadata !53), !dbg !90
-  tail call void @llvm.dbg.value(metadata i32 %num1.0, i64 0, metadata !32, metadata !53), !dbg !85
-  tail call void @llvm.dbg.value(metadata i32 %den1.0, i64 0, metadata !33, metadata !53), !dbg !86
-  tail call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !34, metadata !53), !dbg !87
-  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !35, metadata !53), !dbg !88
-  %26 = sitofp i32 %25 to double, !dbg !113
-  %27 = sitofp i32 %16 to double, !dbg !114
-  %28 = fdiv double %26, %27, !dbg !115
-  %29 = fsub double %28, %7, !dbg !116
-  %30 = tail call double @fabs(double %29) #4, !dbg !117
-  %31 = fcmp ogt double %30, %10, !dbg !118
-  br i1 %31, label %11, label %32, !dbg !119
+if.end:                                           ; preds = %do.body
+  %conv4 = sitofp i32 %conv3 to double, !dbg !74
+  %sub = fadd double %conv4, -5.000000e-06, !dbg !74
+  %sub6 = fsub double %conv2, %sub, !dbg !74
+  %conv7 = fptrunc double %sub6 to float, !dbg !74
+  %conv10 = fdiv float 1.000000e+00, %conv7, !dbg !75
+  %mul13 = mul nsw i32 %conv3, %num1.0, !dbg !76
+  %add14 = add nsw i32 %mul13, %num2.0, !dbg !76
+  tail call void @llvm.dbg.value(metadata !{i32 %add14}, i64 0, metadata !35), !dbg !76
+  tail call void @llvm.dbg.value(metadata !{i32 %add11}, i64 0, metadata !36), !dbg !77
+  tail call void @llvm.dbg.value(metadata !{i32 %num1.0}, i64 0, metadata !31), !dbg !78
+  tail call void @llvm.dbg.value(metadata !{i32 %den1.0}, i64 0, metadata !32), !dbg !79
+  tail call void @llvm.dbg.value(metadata !{i32 %add14}, i64 0, metadata !33), !dbg !80
+  tail call void @llvm.dbg.value(metadata !{i32 %add11}, i64 0, metadata !34), !dbg !81
+  %conv17 = sitofp i32 %add14 to double, !dbg !71
+  %conv18 = sitofp i32 %add11 to double, !dbg !71
+  %div19 = fdiv double %conv17, %conv18, !dbg !71
+  %sub21 = fsub double %div19, %conv20, !dbg !71
+  %call = tail call double @fabs(double %sub21) #4, !dbg !71
+  %cmp26 = fcmp ogt double %call, %div25, !dbg !71
+  br i1 %cmp26, label %do.body, label %do.end, !dbg !71
 
-; <label>:32                                      ; preds = %11, %18
-  %num.1 = phi i32 [ %num.0, %11 ], [ %25, %18 ]
-  %den.1 = phi i32 [ %den1.0, %11 ], [ %16, %18 ]
-  store i32 %num.1, i32* %a, align 4, !dbg !120, !tbaa !76
-  store i32 %den.1, i32* %b, align 4, !dbg !121, !tbaa !76
-  ret void, !dbg !122
+do.end:                                           ; preds = %do.body, %if.end
+  %num.1 = phi i32 [ %num.0, %do.body ], [ %add14, %if.end ]
+  %den.1 = phi i32 [ %den1.0, %do.body ], [ %add11, %if.end ]
+  store i32 %num.1, i32* %a, align 4, !dbg !82, !tbaa !64
+  store i32 %den.1, i32* %b, align 4, !dbg !83, !tbaa !64
+  ret void, !dbg !84
 }

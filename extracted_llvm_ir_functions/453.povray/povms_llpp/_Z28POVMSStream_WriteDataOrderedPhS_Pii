@@ -1,30 +1,27 @@
-define void @_Z28POVMSStream_WriteDataOrderedPhS_Pii(i8* nocapture readonly %data, i8* nocapture %stream, i32* nocapture readonly %order, i32 %datasize) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !384, metadata !1201), !dbg !2947
-  tail call void @llvm.dbg.value(metadata i8* %stream, i64 0, metadata !385, metadata !1201), !dbg !2948
-  tail call void @llvm.dbg.value(metadata i32* %order, i64 0, metadata !386, metadata !1201), !dbg !2949
-  tail call void @llvm.dbg.value(metadata i32 %datasize, i64 0, metadata !387, metadata !1201), !dbg !2950
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !388, metadata !1201), !dbg !2951
-  %1 = icmp sgt i32 %datasize, 0, !dbg !2952
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !2953
+define void @_Z28POVMSStream_WriteDataOrderedPhS_Pii(i8* nocapture %data, i8* nocapture %stream, i32* nocapture %order, i32 %datasize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !353), !dbg !1792
+  tail call void @llvm.dbg.value(metadata !{i8* %stream}, i64 0, metadata !354), !dbg !1792
+  tail call void @llvm.dbg.value(metadata !{i32* %order}, i64 0, metadata !355), !dbg !1792
+  tail call void @llvm.dbg.value(metadata !{i32 %datasize}, i64 0, metadata !356), !dbg !1792
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !357), !dbg !1793
+  %cmp8 = icmp sgt i32 %datasize, 0, !dbg !1793
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !1793
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %datasize, -1, !dbg !2953
-  br label %3, !dbg !2953
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8* %data, i64 %indvars.iv, !dbg !1794
+  %0 = load i8* %arrayidx, align 1, !dbg !1794, !tbaa !918
+  %arrayidx2 = getelementptr inbounds i32* %order, i64 %indvars.iv, !dbg !1794
+  %1 = load i32* %arrayidx2, align 4, !dbg !1794, !tbaa !937
+  %idxprom3 = sext i32 %1 to i64, !dbg !1794
+  %arrayidx4 = getelementptr inbounds i8* %stream, i64 %idxprom3, !dbg !1794
+  store i8 %0, i8* %arrayidx4, align 1, !dbg !1794, !tbaa !918
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1793
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1793
+  %exitcond = icmp eq i32 %lftr.wideiv, %datasize, !dbg !1793
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1793
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds i8* %data, i64 %indvars.iv, !dbg !2954
-  %5 = load i8* %4, align 1, !dbg !2954, !tbaa !1562
-  %6 = getelementptr inbounds i32* %order, i64 %indvars.iv, !dbg !2955
-  %7 = load i32* %6, align 4, !dbg !2955, !tbaa !1260
-  %8 = sext i32 %7 to i64, !dbg !2956
-  %9 = getelementptr inbounds i8* %stream, i64 %8, !dbg !2956
-  store i8 %5, i8* %9, align 1, !dbg !2957, !tbaa !1562
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2953
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !2953
-  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !2953
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !2953
-
-._crit_edge:                                      ; preds = %3, %0
-  ret void, !dbg !2958
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !1795
 }

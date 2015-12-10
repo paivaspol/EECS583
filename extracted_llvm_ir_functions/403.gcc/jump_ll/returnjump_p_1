@@ -1,27 +1,30 @@
 define internal i32 @returnjump_p_1(%struct.rtx_def** nocapture %loc, i8* nocapture %data) #2 {
 entry:
-  %0 = load %struct.rtx_def** %loc, align 8, !tbaa !3
-  %tobool = icmp eq %struct.rtx_def* %0, null
-  br i1 %tobool, label %land.end8, label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %loc}, i64 0, metadata !750), !dbg !1268
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !751), !dbg !1269
+  %0 = load %struct.rtx_def** %loc, align 8, !dbg !1270, !tbaa !810
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !752), !dbg !1270
+  %tobool = icmp eq %struct.rtx_def* %0, null, !dbg !1271
+  br i1 %tobool, label %land.end8, label %land.rhs, !dbg !1271
 
 land.rhs:                                         ; preds = %entry
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 51
-  br i1 %cmp, label %land.end8, label %lor.rhs
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !1271
+  %bf.load = load i32* %1, align 8, !dbg !1271
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1271
+  %cmp = icmp eq i32 %bf.clear, 51, !dbg !1271
+  br i1 %cmp, label %land.end8, label %lor.rhs, !dbg !1271
 
 lor.rhs:                                          ; preds = %land.rhs
-  %cmp3 = icmp eq i32 %bf.clear, 47
-  br i1 %cmp3, label %land.rhs4, label %land.end8
+  %cmp3 = icmp eq i32 %bf.clear, 47, !dbg !1271
+  br i1 %cmp3, label %land.rhs4, label %land.end8, !dbg !1271
 
 land.rhs4:                                        ; preds = %lor.rhs
-  %bf.clear6 = and i32 %bf.load, 16777216
-  %tobool7 = icmp ne i32 %bf.clear6, 0
+  %bf.clear6 = and i32 %bf.load, 16777216, !dbg !1271
+  %tobool7 = icmp ne i32 %bf.clear6, 0, !dbg !1271
   br label %land.end8
 
 land.end8:                                        ; preds = %entry, %land.rhs, %land.rhs4, %lor.rhs
   %2 = phi i1 [ false, %entry ], [ true, %land.rhs ], [ false, %lor.rhs ], [ %tobool7, %land.rhs4 ]
   %land.ext = zext i1 %2 to i32
-  ret i32 %land.ext
+  ret i32 %land.ext, !dbg !1272
 }

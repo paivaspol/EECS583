@@ -1,48 +1,57 @@
 define i32 @get_best_mode(i32 %bitsize, i32 %bitpos, i32 %align, i32 %largest_mode, i32 %volatilep) #4 {
 entry:
-  %0 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !tbaa !5
-  %cmp34 = icmp eq i32 %0, 0
-  br i1 %cmp34, label %return, label %for.body
+  tail call void @llvm.dbg.value(metadata !{i32 %bitsize}, i64 0, metadata !1133), !dbg !1968
+  tail call void @llvm.dbg.value(metadata !{i32 %bitpos}, i64 0, metadata !1134), !dbg !1968
+  tail call void @llvm.dbg.value(metadata !{i32 %align}, i64 0, metadata !1135), !dbg !1969
+  tail call void @llvm.dbg.value(metadata !{i32 %largest_mode}, i64 0, metadata !1136), !dbg !1970
+  tail call void @llvm.dbg.value(metadata !{i32 %volatilep}, i64 0, metadata !1137), !dbg !1971
+  tail call void @llvm.dbg.value(metadata !404, i64 0, metadata !1139), !dbg !1972
+  %0 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !dbg !1973, !tbaa !1232
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !1138), !dbg !1973
+  %cmp34 = icmp eq i32 %0, 0, !dbg !1973
+  br i1 %cmp34, label %return, label %for.body, !dbg !1973
 
 for.body:                                         ; preds = %entry, %for.inc
   %mode.035 = phi i32 [ %conv5, %for.inc ], [ %0, %entry ]
-  %idxprom = sext i32 %mode.035 to i64
-  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
-  %1 = load i16* %arrayidx, align 2, !tbaa !4
-  %conv = zext i16 %1 to i32
-  %rem = urem i32 %bitpos, %conv
-  %add = add i32 %rem, %bitsize
-  %cmp1 = icmp ugt i32 %add, %conv
-  br i1 %cmp1, label %for.inc, label %lor.lhs.false
+  %idxprom = sext i32 %mode.035 to i64, !dbg !1975
+  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom, !dbg !1975
+  %1 = load i16* %arrayidx, align 2, !dbg !1975, !tbaa !1229
+  %conv = zext i16 %1 to i32, !dbg !1975
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1139), !dbg !1975
+  %rem = urem i32 %bitpos, %conv, !dbg !1977
+  %add = add i32 %rem, %bitsize, !dbg !1977
+  %cmp1 = icmp ugt i32 %add, %conv, !dbg !1977
+  br i1 %cmp1, label %for.inc, label %lor.lhs.false, !dbg !1977
 
 for.inc:                                          ; preds = %for.body
-  %arrayidx4 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom
-  %2 = load i8* %arrayidx4, align 1, !tbaa !1
-  %conv5 = zext i8 %2 to i32
-  %cmp = icmp eq i8 %2, 0
-  br i1 %cmp, label %return, label %for.body
+  %arrayidx4 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom, !dbg !1978
+  %2 = load i8* %arrayidx4, align 1, !dbg !1978, !tbaa !1184
+  %conv5 = zext i8 %2 to i32, !dbg !1978
+  tail call void @llvm.dbg.value(metadata !{i32 %conv5}, i64 0, metadata !1138), !dbg !1978
+  %cmp = icmp eq i8 %2, 0, !dbg !1973
+  br i1 %cmp, label %return, label %for.body, !dbg !1973
 
 lor.lhs.false:                                    ; preds = %for.body
-  %cmp8 = icmp ult i32 %conv, 128
-  %cond = select i1 %cmp8, i32 %conv, i32 128
-  %cmp10 = icmp ugt i32 %cond, %align
-  br i1 %cmp10, label %return, label %lor.lhs.false12
+  %cmp8 = icmp ult i32 %conv, 128, !dbg !1979
+  %cond = select i1 %cmp8, i32 %conv, i32 128, !dbg !1979
+  %cmp10 = icmp ugt i32 %cond, %align, !dbg !1979
+  br i1 %cmp10, label %return, label %lor.lhs.false12, !dbg !1979
 
 lor.lhs.false12:                                  ; preds = %lor.lhs.false
-  %cmp13 = icmp eq i32 %largest_mode, 0
-  br i1 %cmp13, label %if.end21, label %land.lhs.true
+  %cmp13 = icmp eq i32 %largest_mode, 0, !dbg !1979
+  br i1 %cmp13, label %if.end21, label %land.lhs.true, !dbg !1979
 
 land.lhs.true:                                    ; preds = %lor.lhs.false12
-  %idxprom15 = sext i32 %largest_mode to i64
-  %arrayidx16 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom15
-  %3 = load i16* %arrayidx16, align 2, !tbaa !4
-  %cmp18 = icmp ugt i16 %1, %3
-  br i1 %cmp18, label %return, label %if.end21
+  %idxprom15 = sext i32 %largest_mode to i64, !dbg !1979
+  %arrayidx16 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom15, !dbg !1979
+  %3 = load i16* %arrayidx16, align 2, !dbg !1979, !tbaa !1229
+  %cmp18 = icmp ugt i16 %1, %3, !dbg !1979
+  br i1 %cmp18, label %return, label %if.end21, !dbg !1979
 
 if.end21:                                         ; preds = %lor.lhs.false12, %land.lhs.true
-  br label %return
+  br label %return, !dbg !1980
 
 return:                                           ; preds = %entry, %for.inc, %lor.lhs.false, %land.lhs.true, %if.end21
   %retval.0 = phi i32 [ %mode.035, %if.end21 ], [ 0, %land.lhs.true ], [ 0, %lor.lhs.false ], [ 0, %for.inc ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1981
 }

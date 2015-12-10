@@ -1,27 +1,28 @@
-define i32 @bea_is_dual_infeasible(%struct.arc* nocapture readonly %arc, i64 %red_cost) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.arc* %arc, i64 0, metadata !46, metadata !94), !dbg !95
-  tail call void @llvm.dbg.value(metadata i64 %red_cost, i64 0, metadata !47, metadata !94), !dbg !96
-  %1 = icmp slt i64 %red_cost, 0, !dbg !97
-  br i1 %1, label %2, label %6, !dbg !98
+define i32 @bea_is_dual_infeasible(%struct.arc* nocapture %arc, i64 %red_cost) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %arc}, i64 0, metadata !46), !dbg !90
+  tail call void @llvm.dbg.value(metadata !{i64 %red_cost}, i64 0, metadata !47), !dbg !90
+  %cmp = icmp slt i64 %red_cost, 0, !dbg !91
+  br i1 %cmp, label %land.lhs.true, label %lor.rhs, !dbg !91
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.arc* %arc, i64 0, i32 3, !dbg !99
-  %4 = load i32* %3, align 4, !dbg !99, !tbaa !100
-  %5 = icmp eq i32 %4, 1, !dbg !107
-  br label %.thread, !dbg !108
+land.lhs.true:                                    ; preds = %entry
+  %ident = getelementptr inbounds %struct.arc* %arc, i64 0, i32 3, !dbg !91
+  %0 = load i32* %ident, align 4, !dbg !91, !tbaa !92
+  %cmp1 = icmp eq i32 %0, 1, !dbg !91
+  br i1 %cmp1, label %lor.end, label %lor.rhs, !dbg !91
 
-; <label>:6                                       ; preds = %0
-  %7 = icmp sgt i64 %red_cost, 0, !dbg !109
-  br i1 %7, label %8, label %.thread, !dbg !110
+lor.rhs:                                          ; preds = %land.lhs.true, %entry
+  %cmp2 = icmp sgt i64 %red_cost, 0, !dbg !91
+  br i1 %cmp2, label %land.rhs, label %lor.end, !dbg !91
 
-; <label>:8                                       ; preds = %6
-  %9 = getelementptr inbounds %struct.arc* %arc, i64 0, i32 3, !dbg !111
-  %10 = load i32* %9, align 4, !dbg !111, !tbaa !100
-  %11 = icmp eq i32 %10, 2, !dbg !112
-  br label %.thread
+land.rhs:                                         ; preds = %lor.rhs
+  %ident3 = getelementptr inbounds %struct.arc* %arc, i64 0, i32 3, !dbg !91
+  %1 = load i32* %ident3, align 4, !dbg !91, !tbaa !92
+  %cmp4 = icmp eq i32 %1, 2, !dbg !91
+  br label %lor.end
 
-.thread:                                          ; preds = %2, %6, %8
-  %12 = phi i1 [ false, %6 ], [ %11, %8 ], [ %5, %2 ]
-  %13 = zext i1 %12 to i32, !dbg !108
-  ret i32 %13, !dbg !113
+lor.end:                                          ; preds = %lor.rhs, %land.rhs, %land.lhs.true
+  %2 = phi i1 [ true, %land.lhs.true ], [ false, %lor.rhs ], [ %cmp4, %land.rhs ]
+  %lor.ext = zext i1 %2 to i32
+  ret i32 %lor.ext, !dbg !95
 }

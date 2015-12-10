@@ -1,0 +1,39 @@
+define i32 @XalanDestroyXPathEvaluator(i8* %theXalanHandle) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %theXalanHandle}, i64 0, metadata !7066), !dbg !12805
+  %.b = load i1* @_ZL12fInitialized, align 1
+  br i1 %.b, label %if.else, label %return, !dbg !12806
+
+if.else:                                          ; preds = %entry
+  %.b12 = load i1* @_ZL11fTerminated, align 1
+  br i1 %.b12, label %return, label %if.else5, !dbg !12807
+
+if.else5:                                         ; preds = %if.else
+  %cmp6 = icmp eq i8* %theXalanHandle, null, !dbg !12808
+  br i1 %cmp6, label %return, label %delete.notnull, !dbg !12808
+
+delete.notnull:                                   ; preds = %if.else5
+  tail call void @llvm.dbg.value(metadata !84, i64 0, metadata !7067), !dbg !12809
+  tail call void @llvm.dbg.value(metadata !{i8* %theXalanHandle}, i64 0, metadata !12810), !dbg !12813
+  %0 = bitcast i8* %theXalanHandle to %"class.xalanc_1_8::XPathEvaluator"*, !dbg !12814
+  invoke void @_ZN10xalanc_1_814XPathEvaluatorD1Ev(%"class.xalanc_1_8::XPathEvaluator"* %0) #7
+          to label %invoke.cont10 unwind label %lpad9, !dbg !12811
+
+invoke.cont10:                                    ; preds = %delete.notnull
+  tail call void @_ZdlPv(i8* %theXalanHandle) #8, !dbg !12811
+  br label %return, !dbg !12811
+
+lpad9:                                            ; preds = %delete.notnull
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !12811
+  %2 = extractvalue { i8*, i32 } %1, 0, !dbg !12811
+  tail call void @_ZdlPv(i8* %theXalanHandle) #8, !dbg !12811
+  %3 = tail call i8* @__cxa_begin_catch(i8* %2) #6, !dbg !12816
+  tail call void @llvm.dbg.value(metadata !12800, i64 0, metadata !7067), !dbg !12817
+  tail call void @__cxa_end_catch(), !dbg !12819
+  br label %return, !dbg !12819
+
+return:                                           ; preds = %lpad9, %invoke.cont10, %if.else5, %if.else, %entry
+  %retval.0 = phi i32 [ 5, %entry ], [ 2, %if.else ], [ 7, %if.else5 ], [ 0, %invoke.cont10 ], [ 13, %lpad9 ]
+  ret i32 %retval.0, !dbg !12820
+}

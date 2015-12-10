@@ -1,97 +1,94 @@
-define void @PrintPlan7Stats(%struct.__sFILE* nocapture %fp, %struct.plan7_s* %hmm, i8** nocapture readonly %dsq, i32 %nseq, %struct.p7trace_s** nocapture readonly %tr) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !272, metadata !327), !dbg !1602
-  tail call void @llvm.dbg.value(metadata %struct.plan7_s* %hmm, i64 0, metadata !273, metadata !327), !dbg !1603
-  tail call void @llvm.dbg.value(metadata i8** %dsq, i64 0, metadata !274, metadata !327), !dbg !1604
-  tail call void @llvm.dbg.value(metadata i32 %nseq, i64 0, metadata !275, metadata !327), !dbg !1605
-  tail call void @llvm.dbg.value(metadata %struct.p7trace_s** %tr, i64 0, metadata !276, metadata !327), !dbg !1606
-  tail call void @P7Logoddsify(%struct.plan7_s* %hmm, i32 1) #10, !dbg !1607
-  %1 = load i8** %dsq, align 8, !dbg !1608, !tbaa !437
-  %2 = load %struct.p7trace_s** %tr, align 8, !dbg !1609, !tbaa !437
-  %3 = tail call float @P7TraceScore(%struct.plan7_s* %hmm, i8* %1, %struct.p7trace_s* %2) #9, !dbg !1610
-  tail call void @llvm.dbg.value(metadata float %3, i64 0, metadata !278, metadata !327), !dbg !1611
-  tail call void @llvm.dbg.value(metadata float %3, i64 0, metadata !281, metadata !327), !dbg !1612
-  tail call void @llvm.dbg.value(metadata float %3, i64 0, metadata !280, metadata !327), !dbg !1613
-  tail call void @llvm.dbg.value(metadata float %3, i64 0, metadata !279, metadata !327), !dbg !1614
-  tail call void @llvm.dbg.value(metadata float %5, i64 0, metadata !282, metadata !327), !dbg !1615
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !277, metadata !327), !dbg !1616
-  %4 = icmp sgt i32 %nseq, 1, !dbg !1617
-  br i1 %4, label %.lr.ph, label %._crit_edge12, !dbg !1620
+define void @PrintPlan7Stats(%struct._IO_FILE* nocapture %fp, %struct.plan7_s* %hmm, i8** nocapture %dsq, i32 %nseq, %struct.p7trace_s** nocapture %tr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !262), !dbg !720
+  tail call void @llvm.dbg.value(metadata !{%struct.plan7_s* %hmm}, i64 0, metadata !263), !dbg !720
+  tail call void @llvm.dbg.value(metadata !{i8** %dsq}, i64 0, metadata !264), !dbg !720
+  tail call void @llvm.dbg.value(metadata !{i32 %nseq}, i64 0, metadata !265), !dbg !720
+  tail call void @llvm.dbg.value(metadata !{%struct.p7trace_s** %tr}, i64 0, metadata !266), !dbg !721
+  tail call void @P7Logoddsify(%struct.plan7_s* %hmm, i32 1) #9, !dbg !722
+  %0 = load i8** %dsq, align 8, !dbg !723, !tbaa !354
+  %1 = load %struct.p7trace_s** %tr, align 8, !dbg !723, !tbaa !354
+  %call = tail call float @P7TraceScore(%struct.plan7_s* %hmm, i8* %0, %struct.p7trace_s* %1) #8, !dbg !723
+  tail call void @llvm.dbg.value(metadata !{float %call}, i64 0, metadata !268), !dbg !723
+  tail call void @llvm.dbg.value(metadata !{float %call}, i64 0, metadata !271), !dbg !724
+  tail call void @llvm.dbg.value(metadata !{float %call}, i64 0, metadata !270), !dbg !724
+  tail call void @llvm.dbg.value(metadata !{float %call}, i64 0, metadata !269), !dbg !724
+  %mul = fmul float %call, %call, !dbg !725
+  tail call void @llvm.dbg.value(metadata !{float %mul}, i64 0, metadata !272), !dbg !725
+  tail call void @llvm.dbg.value(metadata !373, i64 0, metadata !267), !dbg !726
+  %cmp70 = icmp sgt i32 %nseq, 1, !dbg !726
+  br i1 %cmp70, label %for.body, label %for.end.if.end26_crit_edge, !dbg !726
 
-.lr.ph:                                           ; preds = %0
-  %5 = fmul float %3, %3, !dbg !1621
-  %6 = add i32 %nseq, -1, !dbg !1620
-  br label %7, !dbg !1620
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
+  %sqsum.075 = phi float [ %add7, %for.body ], [ %mul, %entry ]
+  %worst.074 = phi float [ %worst.1, %for.body ], [ %call, %entry ]
+  %best.073 = phi float [ %best.1, %for.body ], [ %call, %entry ]
+  %total.072 = phi float [ %add, %for.body ], [ %call, %entry ]
+  %arrayidx2 = getelementptr inbounds i8** %dsq, i64 %indvars.iv, !dbg !728
+  %2 = load i8** %arrayidx2, align 8, !dbg !728, !tbaa !354
+  %arrayidx4 = getelementptr inbounds %struct.p7trace_s** %tr, i64 %indvars.iv, !dbg !728
+  %3 = load %struct.p7trace_s** %arrayidx4, align 8, !dbg !728, !tbaa !354
+  %call5 = tail call float @P7TraceScore(%struct.plan7_s* %hmm, i8* %2, %struct.p7trace_s* %3) #8, !dbg !728
+  tail call void @llvm.dbg.value(metadata !{float %call5}, i64 0, metadata !268), !dbg !728
+  %add = fadd float %total.072, %call5, !dbg !730
+  tail call void @llvm.dbg.value(metadata !{float %add}, i64 0, metadata !269), !dbg !730
+  %mul6 = fmul float %call5, %call5, !dbg !731
+  %add7 = fadd float %sqsum.075, %mul6, !dbg !731
+  tail call void @llvm.dbg.value(metadata !{float %add7}, i64 0, metadata !272), !dbg !731
+  %cmp8 = fcmp ogt float %call5, %best.073, !dbg !732
+  tail call void @llvm.dbg.value(metadata !{float %call5}, i64 0, metadata !270), !dbg !732
+  %best.1 = select i1 %cmp8, float %call5, float %best.073, !dbg !732
+  %cmp9 = fcmp olt float %call5, %worst.074, !dbg !733
+  tail call void @llvm.dbg.value(metadata !{float %call5}, i64 0, metadata !271), !dbg !733
+  %worst.1 = select i1 %cmp9, float %call5, float %worst.074, !dbg !733
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !726
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !726
+  %exitcond = icmp eq i32 %lftr.wideiv, %nseq, !dbg !726
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !726
 
-; <label>:7                                       ; preds = %7, %.lr.ph
-  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %7 ]
-  %sqsum.07 = phi float [ %5, %.lr.ph ], [ %15, %7 ]
-  %worst.06 = phi float [ %3, %.lr.ph ], [ %worst.1, %7 ]
-  %best.05 = phi float [ %3, %.lr.ph ], [ %best.1, %7 ]
-  %total.04 = phi float [ %3, %.lr.ph ], [ %13, %7 ]
-  %8 = getelementptr inbounds i8** %dsq, i64 %indvars.iv, !dbg !1622
-  %9 = load i8** %8, align 8, !dbg !1622, !tbaa !437
-  %10 = getelementptr inbounds %struct.p7trace_s** %tr, i64 %indvars.iv, !dbg !1624
-  %11 = load %struct.p7trace_s** %10, align 8, !dbg !1624, !tbaa !437
-  %12 = tail call float @P7TraceScore(%struct.plan7_s* %hmm, i8* %9, %struct.p7trace_s* %11) #9, !dbg !1625
-  tail call void @llvm.dbg.value(metadata float %12, i64 0, metadata !278, metadata !327), !dbg !1611
-  %13 = fadd float %total.04, %12, !dbg !1626
-  tail call void @llvm.dbg.value(metadata float %13, i64 0, metadata !279, metadata !327), !dbg !1614
-  %14 = fmul float %12, %12, !dbg !1627
-  %15 = fadd float %sqsum.07, %14, !dbg !1628
-  tail call void @llvm.dbg.value(metadata float %15, i64 0, metadata !282, metadata !327), !dbg !1615
-  %16 = fcmp ogt float %12, %best.05, !dbg !1629
-  tail call void @llvm.dbg.value(metadata float %12, i64 0, metadata !280, metadata !327), !dbg !1613
-  %best.1 = select i1 %16, float %12, float %best.05, !dbg !1631
-  %17 = fcmp olt float %12, %worst.06, !dbg !1632
-  tail call void @llvm.dbg.value(metadata float %12, i64 0, metadata !281, metadata !327), !dbg !1612
-  %worst.1 = select i1 %17, float %12, float %worst.06, !dbg !1634
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1620
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1620
-  %exitcond = icmp eq i32 %lftr.wideiv, %6, !dbg !1620
-  br i1 %exitcond, label %._crit_edge, label %7, !dbg !1620
+for.end:                                          ; preds = %for.body
+  br i1 %cmp70, label %if.then13, label %for.end.if.end26_crit_edge, !dbg !734
 
-._crit_edge:                                      ; preds = %7
-  br i1 %4, label %18, label %._crit_edge12, !dbg !1635
+for.end.if.end26_crit_edge:                       ; preds = %entry, %for.end
+  %total.0.lcssa84 = phi float [ %add, %for.end ], [ %call, %entry ]
+  %best.0.lcssa82 = phi float [ %best.1, %for.end ], [ %call, %entry ]
+  %worst.0.lcssa80 = phi float [ %worst.1, %for.end ], [ %call, %entry ]
+  %conv27.pre = sitofp i32 %nseq to float, !dbg !735
+  br label %if.end26, !dbg !734
 
-._crit_edge12:                                    ; preds = %0, %._crit_edge
-  %total.0.lcssa18 = phi float [ %13, %._crit_edge ], [ %3, %0 ]
-  %best.0.lcssa16 = phi float [ %best.1, %._crit_edge ], [ %3, %0 ]
-  %worst.0.lcssa14 = phi float [ %worst.1, %._crit_edge ], [ %3, %0 ]
-  %.pre = sitofp i32 %nseq to float, !dbg !1636
-  br label %30, !dbg !1635
+if.then13:                                        ; preds = %for.end
+  %mul14 = fmul float %add, %add, !dbg !736
+  %conv = sitofp i32 %nseq to float, !dbg !736
+  %div = fdiv float %mul14, %conv, !dbg !736
+  %sub = fsub float %add7, %div, !dbg !736
+  %conv15 = fpext float %sub to double, !dbg !736
+  %conv17 = fpext float %conv to double, !dbg !736
+  %sub18 = fadd double %conv17, -1.000000e+00, !dbg !736
+  %div19 = fdiv double %conv15, %sub18, !dbg !736
+  %conv20 = fptrunc double %div19 to float, !dbg !736
+  tail call void @llvm.dbg.value(metadata !{float %conv20}, i64 0, metadata !273), !dbg !736
+  %cmp21 = fcmp ogt float %conv20, 0.000000e+00, !dbg !738
+  br i1 %cmp21, label %cond.true, label %if.end26, !dbg !738
 
-; <label>:18                                      ; preds = %._crit_edge
-  %19 = fmul float %13, %13, !dbg !1637
-  %20 = sitofp i32 %nseq to float, !dbg !1640
-  %21 = fdiv float %19, %20, !dbg !1641
-  %22 = fsub float %15, %21, !dbg !1642
-  %23 = fpext float %22 to double, !dbg !1643
-  %24 = fpext float %20 to double, !dbg !1644
-  %25 = fadd double %24, -1.000000e+00, !dbg !1645
-  %26 = fdiv double %23, %25, !dbg !1646
-  %27 = fptrunc double %26 to float, !dbg !1643
-  tail call void @llvm.dbg.value(metadata float %27, i64 0, metadata !283, metadata !327), !dbg !1647
-  %28 = fcmp ogt float %27, 0.000000e+00, !dbg !1648
-  br i1 %28, label %29, label %30, !dbg !1649
+cond.true:                                        ; preds = %if.then13
+  %phitmp68 = tail call float @sqrtf(float %conv20) #3, !dbg !738
+  %phitmp69 = fpext float %phitmp68 to double, !dbg !738
+  br label %if.end26, !dbg !738
 
-; <label>:29                                      ; preds = %18
-  %sqrtf = tail call float @sqrtf(float %27) #6, !dbg !1650
-  %phitmp2 = fpext float %sqrtf to double, !dbg !1649
-  br label %30, !dbg !1649
-
-; <label>:30                                      ; preds = %._crit_edge12, %29, %18
-  %total.0.lcssa17 = phi float [ %total.0.lcssa18, %._crit_edge12 ], [ %13, %29 ], [ %13, %18 ]
-  %best.0.lcssa15 = phi float [ %best.0.lcssa16, %._crit_edge12 ], [ %best.1, %29 ], [ %best.1, %18 ]
-  %worst.0.lcssa13 = phi float [ %worst.0.lcssa14, %._crit_edge12 ], [ %worst.1, %29 ], [ %worst.1, %18 ]
-  %.pre-phi = phi float [ %.pre, %._crit_edge12 ], [ %20, %29 ], [ %20, %18 ], !dbg !1636
-  %stddev.0 = phi double [ 0.000000e+00, %._crit_edge12 ], [ %phitmp2, %29 ], [ 0.000000e+00, %18 ]
-  %31 = fdiv float %total.0.lcssa17, %.pre-phi, !dbg !1651
-  %32 = fpext float %31 to double, !dbg !1652
-  %33 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str3, i64 0, i64 0), double %32) #9, !dbg !1653
-  %34 = fpext float %worst.0.lcssa13 to double, !dbg !1654
-  %35 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str4, i64 0, i64 0), double %34) #9, !dbg !1655
-  %36 = fpext float %best.0.lcssa15 to double, !dbg !1656
-  %37 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str5, i64 0, i64 0), double %36) #9, !dbg !1657
-  %38 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str6, i64 0, i64 0), double %stddev.0) #9, !dbg !1658
-  ret void, !dbg !1659
+if.end26:                                         ; preds = %for.end.if.end26_crit_edge, %cond.true, %if.then13
+  %total.0.lcssa83 = phi float [ %total.0.lcssa84, %for.end.if.end26_crit_edge ], [ %add, %cond.true ], [ %add, %if.then13 ]
+  %best.0.lcssa81 = phi float [ %best.0.lcssa82, %for.end.if.end26_crit_edge ], [ %best.1, %cond.true ], [ %best.1, %if.then13 ]
+  %worst.0.lcssa79 = phi float [ %worst.0.lcssa80, %for.end.if.end26_crit_edge ], [ %worst.1, %cond.true ], [ %worst.1, %if.then13 ]
+  %conv27.pre-phi = phi float [ %conv27.pre, %for.end.if.end26_crit_edge ], [ %conv, %cond.true ], [ %conv, %if.then13 ], !dbg !735
+  %stddev.0 = phi double [ 0.000000e+00, %for.end.if.end26_crit_edge ], [ %phitmp69, %cond.true ], [ 0.000000e+00, %if.then13 ]
+  %div28 = fdiv float %total.0.lcssa83, %conv27.pre-phi, !dbg !735
+  %conv29 = fpext float %div28 to double, !dbg !735
+  %call30 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str3, i64 0, i64 0), double %conv29) #8, !dbg !735
+  %conv31 = fpext float %worst.0.lcssa79 to double, !dbg !739
+  %call32 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str4, i64 0, i64 0), double %conv31) #8, !dbg !739
+  %conv33 = fpext float %best.0.lcssa81 to double, !dbg !740
+  %call34 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str5, i64 0, i64 0), double %conv33) #8, !dbg !740
+  %call36 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str6, i64 0, i64 0), double %stddev.0) #8, !dbg !741
+  ret void, !dbg !742
 }

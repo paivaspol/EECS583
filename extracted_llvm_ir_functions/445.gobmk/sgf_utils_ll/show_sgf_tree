@@ -1,32 +1,33 @@
-define i32 @show_sgf_tree(%struct.SGFNode_t* nocapture readonly %node) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFNode_t* %node, i64 0, metadata !57, metadata !90), !dbg !189
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !58, metadata !90), !dbg !190
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !58, metadata !90), !dbg !190
-  %1 = tail call i32 @show_sgf_properties(%struct.SGFNode_t* %node) #8, !dbg !191
-  %2 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 2, !dbg !192
-  %3 = load %struct.SGFNode_t** %2, align 8, !dbg !192, !tbaa !182
-  %4 = icmp eq %struct.SGFNode_t* %3, null, !dbg !194
-  br i1 %4, label %8, label %5, !dbg !195
+define i32 @show_sgf_tree(%struct.SGFNode_t* nocapture %node) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFNode_t* %node}, i64 0, metadata !61), !dbg !131
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !62), !dbg !132
+  tail call void @llvm.dbg.value(metadata !133, i64 0, metadata !62), !dbg !134
+  %call = tail call i32 @show_sgf_properties(%struct.SGFNode_t* %node) #8, !dbg !135
+  %child = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 2, !dbg !136
+  %0 = load %struct.SGFNode_t** %child, align 8, !dbg !136, !tbaa !86
+  %tobool = icmp eq %struct.SGFNode_t* %0, null, !dbg !136
+  br i1 %tobool, label %if.end, label %if.then, !dbg !136
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %3) #8, !dbg !196
-  %7 = add nsw i32 %6, 1, !dbg !197
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !58, metadata !90), !dbg !190
-  br label %8, !dbg !198
+if.then:                                          ; preds = %entry
+  %call2 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %0) #8, !dbg !137
+  %add = add nsw i32 %call2, 1, !dbg !137
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !62), !dbg !137
+  br label %if.end, !dbg !137
 
-; <label>:8                                       ; preds = %0, %5
-  %n.0 = phi i32 [ %7, %5 ], [ 1, %0 ]
-  %9 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 3, !dbg !199
-  %10 = load %struct.SGFNode_t** %9, align 8, !dbg !199, !tbaa !176
-  %11 = icmp eq %struct.SGFNode_t* %10, null, !dbg !201
-  br i1 %11, label %15, label %12, !dbg !202
+if.end:                                           ; preds = %entry, %if.then
+  %n.0 = phi i32 [ %add, %if.then ], [ 1, %entry ]
+  %next = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 3, !dbg !138
+  %1 = load %struct.SGFNode_t** %next, align 8, !dbg !138, !tbaa !86
+  %tobool3 = icmp eq %struct.SGFNode_t* %1, null, !dbg !138
+  br i1 %tobool3, label %if.end8, label %if.then4, !dbg !138
 
-; <label>:12                                      ; preds = %8
-  %13 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %10) #8, !dbg !203
-  %14 = add nsw i32 %13, %n.0, !dbg !204
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !58, metadata !90), !dbg !190
-  ret i32 %14, !dbg !205
+if.then4:                                         ; preds = %if.end
+  %call6 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %1) #8, !dbg !139
+  %add7 = add nsw i32 %call6, %n.0, !dbg !139
+  tail call void @llvm.dbg.value(metadata !{i32 %add7}, i64 0, metadata !62), !dbg !139
+  ret i32 %add7, !dbg !140
 
-; <label>:15                                      ; preds = %8
-  ret i32 %n.0, !dbg !205
+if.end8:                                          ; preds = %if.end
+  ret i32 %n.0, !dbg !140
 }

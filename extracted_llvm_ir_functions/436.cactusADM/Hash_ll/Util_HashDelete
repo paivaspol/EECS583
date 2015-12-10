@@ -1,130 +1,132 @@
-define i32 @Util_HashDelete(%struct.T_HASH* nocapture %hash, i32 %klen, i8* nocapture readonly %key, i32 %hashval) #1 {
+define i32 @Util_HashDelete(%struct.T_HASH* nocapture %hash, i32 %klen, i8* nocapture %key, i32 %hashval) #1 {
+entry:
   %location = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct.T_HASH* %hash, i64 0, metadata !85, metadata !143), !dbg !464
-  tail call void @llvm.dbg.value(metadata i32 %klen, i64 0, metadata !86, metadata !143), !dbg !465
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !87, metadata !143), !dbg !466
-  tail call void @llvm.dbg.value(metadata i32 %hashval, i64 0, metadata !88, metadata !143), !dbg !467
-  %1 = icmp eq i32 %hashval, 0, !dbg !468
-  br i1 %1, label %2, label %Util_HashHash.exit, !dbg !470
+  call void @llvm.dbg.value(metadata !{%struct.T_HASH* %hash}, i64 0, metadata !85), !dbg !335
+  call void @llvm.dbg.value(metadata !{i32 %klen}, i64 0, metadata !86), !dbg !336
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !87), !dbg !337
+  call void @llvm.dbg.value(metadata !{i32 %hashval}, i64 0, metadata !88), !dbg !338
+  %tobool = icmp eq i32 %hashval, 0, !dbg !339
+  br i1 %tobool, label %if.then, label %if.end, !dbg !339
 
-; <label>:2                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 %klen, i64 0, metadata !105, metadata !143), !dbg !471
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !106, metadata !143), !dbg !474
-  tail call void @llvm.dbg.value(metadata i32 %klen, i64 0, metadata !108, metadata !143), !dbg !475
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !109, metadata !143), !dbg !476
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !107, metadata !143), !dbg !477
-  %3 = icmp eq i32 %klen, 0, !dbg !478
-  br i1 %3, label %Util_HashHash.exit, label %.lr.ph.i, !dbg !478
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i32 %klen}, i64 0, metadata !340), !dbg !343
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !344), !dbg !345
+  tail call void @llvm.dbg.value(metadata !{i32 %klen}, i64 0, metadata !346), !dbg !347
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !348), !dbg !349
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !350), !dbg !351
+  %tobool1.i = icmp eq i32 %klen, 0, !dbg !352
+  br i1 %tobool1.i, label %if.end, label %while.body.i, !dbg !352
 
-.lr.ph.i:                                         ; preds = %2, %.lr.ph.i
-  %pos.03.i = phi i8* [ %6, %.lr.ph.i ], [ %key, %2 ], !dbg !479
-  %i.02.i = phi i32 [ %4, %.lr.ph.i ], [ %klen, %2 ], !dbg !479
-  %hash.01.i = phi i32 [ %9, %.lr.ph.i ], [ 0, %2 ], !dbg !479
-  %4 = add nsw i32 %i.02.i, -1, !dbg !480
-  %5 = mul i32 %hash.01.i, 33, !dbg !481
-  %6 = getelementptr inbounds i8* %pos.03.i, i64 1, !dbg !482
-  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !109, metadata !143), !dbg !476
-  %7 = load i8* %pos.03.i, align 1, !dbg !483, !tbaa !258
-  %8 = sext i8 %7 to i32, !dbg !483
-  %9 = add i32 %8, %5, !dbg !484
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !107, metadata !143), !dbg !477
-  %10 = icmp eq i32 %4, 0, !dbg !478
-  br i1 %10, label %Util_HashHash.exit, label %.lr.ph.i, !dbg !478
+while.body.i:                                     ; preds = %if.then, %while.body.i
+  %pos.04.i = phi i8* [ %incdec.ptr.i, %while.body.i ], [ %key, %if.then ]
+  %i.03.i = phi i32 [ %dec.i, %while.body.i ], [ %klen, %if.then ]
+  %hash.02.i = phi i32 [ %add.i, %while.body.i ], [ 0, %if.then ]
+  %dec.i = add nsw i32 %i.03.i, -1, !dbg !352
+  %mul.i = mul i32 %hash.02.i, 33, !dbg !353
+  %incdec.ptr.i = getelementptr inbounds i8* %pos.04.i, i64 1, !dbg !353
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i}, i64 0, metadata !348), !dbg !353
+  %0 = load i8* %pos.04.i, align 1, !dbg !353, !tbaa !146
+  %conv.i = sext i8 %0 to i32, !dbg !353
+  %add.i = add i32 %conv.i, %mul.i, !dbg !353
+  tail call void @llvm.dbg.value(metadata !{i32 %add.i}, i64 0, metadata !350), !dbg !353
+  %tobool.i = icmp eq i32 %dec.i, 0, !dbg !352
+  br i1 %tobool.i, label %if.end, label %while.body.i, !dbg !352
 
-Util_HashHash.exit:                               ; preds = %.lr.ph.i, %2, %0
-  %.0 = phi i32 [ %hashval, %0 ], [ 0, %2 ], [ %9, %.lr.ph.i ]
-  %11 = getelementptr inbounds %struct.T_HASH* %hash, i64 0, i32 0, !dbg !485
-  %12 = load i32* %11, align 4, !dbg !485, !tbaa !156
-  %13 = urem i32 %.0, %12, !dbg !486
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !90, metadata !143), !dbg !487
-  store volatile i32 %13, i32* %location, align 4, !dbg !488
-  tail call void @llvm.dbg.value(metadata i32* %location, i64 0, metadata !90, metadata !143), !dbg !487
-  %14 = load volatile i32* %location, align 4, !dbg !489
-  %15 = getelementptr inbounds %struct.T_HASH* %hash, i64 0, i32 3, !dbg !490
-  tail call void @llvm.dbg.value(metadata i32* %location, i64 0, metadata !90, metadata !143), !dbg !487
-  %16 = load volatile i32* %location, align 4, !dbg !491
-  %17 = zext i32 %16 to i64, !dbg !493
-  %18 = load %struct.T_HASH_ENTRY*** %15, align 8, !dbg !494, !tbaa !172
-  %19 = getelementptr inbounds %struct.T_HASH_ENTRY** %18, i64 %17, !dbg !493
-  br label %20, !dbg !495
+if.end:                                           ; preds = %while.body.i, %if.then, %entry
+  %hashval.addr.0 = phi i32 [ %hashval, %entry ], [ 0, %if.then ], [ %add.i, %while.body.i ]
+  %size = getelementptr inbounds %struct.T_HASH* %hash, i64 0, i32 0, !dbg !354
+  %1 = load i32* %size, align 4, !dbg !354, !tbaa !145
+  %rem = urem i32 %hashval.addr.0, %1, !dbg !354
+  call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !90), !dbg !354
+  store volatile i32 %rem, i32* %location, align 4, !dbg !354
+  call void @llvm.dbg.value(metadata !{i32* %location}, i64 0, metadata !90), !dbg !355
+  %location.0.load74 = load volatile i32* %location, align 4, !dbg !355
+  %array = getelementptr inbounds %struct.T_HASH* %hash, i64 0, i32 3, !dbg !355
+  %2 = load %struct.T_HASH_ENTRY*** %array, align 8, !dbg !355, !tbaa !151
+  call void @llvm.dbg.value(metadata !{i32* %location}, i64 0, metadata !90), !dbg !356
+  %location.0.load75 = load volatile i32* %location, align 4, !dbg !356
+  %idxprom2 = zext i32 %location.0.load75 to i64, !dbg !356
+  %arrayidx4 = getelementptr inbounds %struct.T_HASH_ENTRY** %2, i64 %idxprom2, !dbg !356
+  br label %for.cond, !dbg !356
 
-; <label>:20                                      ; preds = %22, %Util_HashHash.exit
-  %entry.0.in = phi %struct.T_HASH_ENTRY** [ %19, %Util_HashHash.exit ], [ %26, %22 ]
-  %entry.0 = load %struct.T_HASH_ENTRY** %entry.0.in, align 8, !dbg !493
-  %21 = icmp eq %struct.T_HASH_ENTRY* %entry.0, null, !dbg !496
-  br i1 %21, label %.critedge, label %22, !dbg !496
+for.cond:                                         ; preds = %for.body, %if.end
+  %entry1.0.in = phi %struct.T_HASH_ENTRY** [ %arrayidx4, %if.end ], [ %next11, %for.body ]
+  %entry1.0 = load %struct.T_HASH_ENTRY** %entry1.0.in, align 8, !dbg !356
+  %tobool5 = icmp eq %struct.T_HASH_ENTRY* %entry1.0, null, !dbg !356
+  br i1 %tobool5, label %if.end45, label %for.body, !dbg !356
 
-; <label>:22                                      ; preds = %20
-  %23 = getelementptr inbounds %struct.T_HASH_ENTRY* %entry.0, i64 0, i32 2, !dbg !497
-  %24 = load i32* %23, align 4, !dbg !497, !tbaa !273
-  %25 = icmp eq i32 %.0, %24, !dbg !501
-  %26 = getelementptr inbounds %struct.T_HASH_ENTRY* %entry.0, i64 0, i32 1, !dbg !502
-  br i1 %25, label %27, label %20, !dbg !506
+for.body:                                         ; preds = %for.cond
+  %hash6 = getelementptr inbounds %struct.T_HASH_ENTRY* %entry1.0, i64 0, i32 2, !dbg !358
+  %3 = load i32* %hash6, align 4, !dbg !358, !tbaa !145
+  %cmp = icmp eq i32 %hashval.addr.0, %3, !dbg !358
+  %next11 = getelementptr inbounds %struct.T_HASH_ENTRY* %entry1.0, i64 0, i32 1, !dbg !360
+  br i1 %cmp, label %if.then10, label %for.cond, !dbg !358
 
-; <label>:27                                      ; preds = %22
-  %28 = load %struct.T_HASH_ENTRY** %26, align 8, !dbg !502, !tbaa !202
-  %29 = icmp eq %struct.T_HASH_ENTRY* %28, null, !dbg !507
-  %30 = ptrtoint %struct.T_HASH_ENTRY* %28 to i64
-  %.phi.trans.insert = getelementptr inbounds %struct.T_HASH_ENTRY* %entry.0, i64 0, i32 0
-  %.pre = load %struct.T_HASH_ENTRY** %.phi.trans.insert, align 8, !dbg !508, !tbaa !368
-  %31 = icmp eq %struct.T_HASH_ENTRY* %.pre, null, !dbg !510
-  br i1 %29, label %38, label %32, !dbg !511
+if.then10:                                        ; preds = %for.body
+  %4 = load %struct.T_HASH_ENTRY** %next11, align 8, !dbg !360, !tbaa !151
+  %tobool12 = icmp eq %struct.T_HASH_ENTRY* %4, null, !dbg !360
+  %last21.phi.trans.insert = getelementptr inbounds %struct.T_HASH_ENTRY* %entry1.0, i64 0, i32 0
+  %.pre = load %struct.T_HASH_ENTRY** %last21.phi.trans.insert, align 8, !dbg !362, !tbaa !151
+  %tobool22 = icmp eq %struct.T_HASH_ENTRY* %.pre, null, !dbg !362
+  br i1 %tobool12, label %if.else, label %land.lhs.true, !dbg !360
 
-; <label>:32                                      ; preds = %27
-  %33 = getelementptr inbounds %struct.T_HASH_ENTRY* %28, i64 0, i32 0, !dbg !512
-  br i1 %31, label %41, label %34, !dbg !515
+land.lhs.true:                                    ; preds = %if.then10
+  %last31 = getelementptr inbounds %struct.T_HASH_ENTRY* %4, i64 0, i32 0, !dbg !363
+  br i1 %tobool22, label %if.then29, label %if.then14, !dbg !360
 
-; <label>:34                                      ; preds = %32
-  store %struct.T_HASH_ENTRY* %.pre, %struct.T_HASH_ENTRY** %33, align 8, !dbg !516, !tbaa !368
-  %35 = load %struct.T_HASH_ENTRY** %.phi.trans.insert, align 8, !dbg !518, !tbaa !368
-  %36 = getelementptr inbounds %struct.T_HASH_ENTRY* %35, i64 0, i32 1, !dbg !519
-  %37 = bitcast %struct.T_HASH_ENTRY** %36 to i64*, !dbg !520
-  store i64 %30, i64* %37, align 8, !dbg !520, !tbaa !202
-  br label %53, !dbg !521
+if.then14:                                        ; preds = %land.lhs.true
+  store %struct.T_HASH_ENTRY* %.pre, %struct.T_HASH_ENTRY** %last31, align 8, !dbg !365, !tbaa !151
+  %5 = load %struct.T_HASH_ENTRY** %next11, align 8, !dbg !367, !tbaa !151
+  %6 = load %struct.T_HASH_ENTRY** %last21.phi.trans.insert, align 8, !dbg !367, !tbaa !151
+  %next20 = getelementptr inbounds %struct.T_HASH_ENTRY* %6, i64 0, i32 1, !dbg !367
+  store %struct.T_HASH_ENTRY* %5, %struct.T_HASH_ENTRY** %next20, align 8, !dbg !367, !tbaa !151
+  br label %if.end42, !dbg !368
 
-; <label>:38                                      ; preds = %27
-  br i1 %31, label %46, label %39, !dbg !522
+if.else:                                          ; preds = %if.then10
+  br i1 %tobool22, label %if.else36, label %if.then23, !dbg !362
 
-; <label>:39                                      ; preds = %38
-  %40 = getelementptr inbounds %struct.T_HASH_ENTRY* %.pre, i64 0, i32 1, !dbg !523
-  store %struct.T_HASH_ENTRY* null, %struct.T_HASH_ENTRY** %40, align 8, !dbg !525, !tbaa !202
-  br label %53, !dbg !526
+if.then23:                                        ; preds = %if.else
+  %next25 = getelementptr inbounds %struct.T_HASH_ENTRY* %.pre, i64 0, i32 1, !dbg !369
+  store %struct.T_HASH_ENTRY* null, %struct.T_HASH_ENTRY** %next25, align 8, !dbg !369, !tbaa !151
+  br label %if.end42, !dbg !371
 
-; <label>:41                                      ; preds = %32
-  store %struct.T_HASH_ENTRY* null, %struct.T_HASH_ENTRY** %33, align 8, !dbg !527, !tbaa !368
-  tail call void @llvm.dbg.value(metadata i32* %location, i64 0, metadata !90, metadata !143), !dbg !487
-  %42 = load volatile i32* %location, align 4, !dbg !528
-  %43 = zext i32 %42 to i64, !dbg !529
-  %44 = getelementptr inbounds %struct.T_HASH_ENTRY** %18, i64 %43, !dbg !529
-  %45 = bitcast %struct.T_HASH_ENTRY** %44 to i64*, !dbg !530
-  store i64 %30, i64* %45, align 8, !dbg !530, !tbaa !198
-  br label %53, !dbg !531
+if.then29:                                        ; preds = %land.lhs.true
+  store %struct.T_HASH_ENTRY* null, %struct.T_HASH_ENTRY** %last31, align 8, !dbg !363, !tbaa !151
+  %7 = load %struct.T_HASH_ENTRY** %next11, align 8, !dbg !372, !tbaa !151
+  call void @llvm.dbg.value(metadata !{i32* %location}, i64 0, metadata !90), !dbg !372
+  %location.0.load76 = load volatile i32* %location, align 4, !dbg !372
+  %idxprom33 = zext i32 %location.0.load76 to i64, !dbg !372
+  %8 = load %struct.T_HASH_ENTRY*** %array, align 8, !dbg !372, !tbaa !151
+  %arrayidx35 = getelementptr inbounds %struct.T_HASH_ENTRY** %8, i64 %idxprom33, !dbg !372
+  store %struct.T_HASH_ENTRY* %7, %struct.T_HASH_ENTRY** %arrayidx35, align 8, !dbg !372, !tbaa !151
+  br label %if.end42, !dbg !373
 
-; <label>:46                                      ; preds = %38
-  tail call void @llvm.dbg.value(metadata i32* %location, i64 0, metadata !90, metadata !143), !dbg !487
-  %47 = load volatile i32* %location, align 4, !dbg !532
-  %48 = zext i32 %47 to i64, !dbg !534
-  %49 = getelementptr inbounds %struct.T_HASH_ENTRY** %18, i64 %48, !dbg !534
-  store %struct.T_HASH_ENTRY* null, %struct.T_HASH_ENTRY** %49, align 8, !dbg !535, !tbaa !198
-  %50 = getelementptr inbounds %struct.T_HASH* %hash, i64 0, i32 1, !dbg !536
-  %51 = load i32* %50, align 4, !dbg !537, !tbaa !164
-  %52 = add i32 %51, -1, !dbg !537
-  store i32 %52, i32* %50, align 4, !dbg !537, !tbaa !164
-  br label %53
+if.else36:                                        ; preds = %if.else
+  call void @llvm.dbg.value(metadata !{i32* %location}, i64 0, metadata !90), !dbg !374
+  %location.0.load77 = load volatile i32* %location, align 4, !dbg !374
+  %idxprom37 = zext i32 %location.0.load77 to i64, !dbg !374
+  %9 = load %struct.T_HASH_ENTRY*** %array, align 8, !dbg !374, !tbaa !151
+  %arrayidx39 = getelementptr inbounds %struct.T_HASH_ENTRY** %9, i64 %idxprom37, !dbg !374
+  store %struct.T_HASH_ENTRY* null, %struct.T_HASH_ENTRY** %arrayidx39, align 8, !dbg !374, !tbaa !151
+  %fill = getelementptr inbounds %struct.T_HASH* %hash, i64 0, i32 1, !dbg !376
+  %10 = load i32* %fill, align 4, !dbg !376, !tbaa !145
+  %dec = add i32 %10, -1, !dbg !376
+  store i32 %dec, i32* %fill, align 4, !dbg !376, !tbaa !145
+  br label %if.end42
 
-; <label>:53                                      ; preds = %39, %46, %41, %34
-  %54 = getelementptr inbounds %struct.T_HASH_ENTRY* %entry.0, i64 0, i32 4, !dbg !538
-  %55 = load i8** %54, align 8, !dbg !538, !tbaa !206
-  tail call void @free(i8* %55) #7, !dbg !539
-  %56 = bitcast %struct.T_HASH_ENTRY* %entry.0 to i8*, !dbg !540
-  tail call void @free(i8* %56) #7, !dbg !541
-  %57 = getelementptr inbounds %struct.T_HASH* %hash, i64 0, i32 2, !dbg !542
-  %58 = load i32* %57, align 4, !dbg !543, !tbaa !167
-  %59 = add i32 %58, -1, !dbg !543
-  store i32 %59, i32* %57, align 4, !dbg !543, !tbaa !167
-  br label %.critedge, !dbg !544
+if.end42:                                         ; preds = %if.then23, %if.else36, %if.then29, %if.then14
+  %key43 = getelementptr inbounds %struct.T_HASH_ENTRY* %entry1.0, i64 0, i32 4, !dbg !377
+  %11 = load i8** %key43, align 8, !dbg !377, !tbaa !151
+  call void @free(i8* %11) #6, !dbg !377
+  %12 = bitcast %struct.T_HASH_ENTRY* %entry1.0 to i8*, !dbg !378
+  call void @free(i8* %12) #6, !dbg !378
+  %keys = getelementptr inbounds %struct.T_HASH* %hash, i64 0, i32 2, !dbg !379
+  %13 = load i32* %keys, align 4, !dbg !379, !tbaa !145
+  %dec44 = add i32 %13, -1, !dbg !379
+  store i32 %dec44, i32* %keys, align 4, !dbg !379, !tbaa !145
+  br label %if.end45, !dbg !380
 
-.critedge:                                        ; preds = %20, %53
-  %60 = phi i32 [ 1, %53 ], [ 0, %20 ]
-  ret i32 %60, !dbg !545
+if.end45:                                         ; preds = %for.cond, %if.end42
+  %tobool583 = phi i32 [ 1, %if.end42 ], [ 0, %for.cond ]
+  ret i32 %tobool583, !dbg !381
 }

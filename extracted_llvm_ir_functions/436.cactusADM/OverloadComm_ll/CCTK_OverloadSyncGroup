@@ -1,26 +1,27 @@
 define i32 @CCTK_OverloadSyncGroup(i32 (%struct.cGH*, i8*)* %func) #1 {
-  tail call void @llvm.dbg.value(metadata i32 (%struct.cGH*, i8*)* %func, i64 0, metadata !56, metadata !346), !dbg !347
-  %1 = icmp eq i32 (%struct.cGH*, i8*)* %func, null, !dbg !348
-  %2 = load i32* @CCTK_OverloadSyncGroup.overloaded, align 4, !dbg !350, !tbaa !353
-  br i1 %1, label %9, label %3, !dbg !347
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 (%struct.cGH*, i8*)* %func}, i64 0, metadata !58), !dbg !345
+  %tobool = icmp eq i32 (%struct.cGH*, i8*)* %func, null, !dbg !346
+  %0 = load i32* @CCTK_OverloadSyncGroup.overloaded, align 4, !dbg !347, !tbaa !349
+  br i1 %tobool, label %if.end3, label %if.then, !dbg !346
 
-; <label>:3                                       ; preds = %0
-  %4 = icmp slt i32 %2, 2, !dbg !350
-  br i1 %4, label %5, label %7, !dbg !357
+if.then:                                          ; preds = %entry
+  %cmp = icmp slt i32 %0, 2, !dbg !347
+  br i1 %cmp, label %if.then1, label %if.else, !dbg !347
 
-; <label>:5                                       ; preds = %3
-  store i32 (%struct.cGH*, i8*)* %func, i32 (%struct.cGH*, i8*)** @CCTK_SyncGroup, align 8, !dbg !358, !tbaa !360
-  %6 = add nsw i32 %2, 1, !dbg !358
-  store i32 %6, i32* @CCTK_OverloadSyncGroup.overloaded, align 4, !dbg !358, !tbaa !353
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !57, metadata !346), !dbg !347
-  br label %9, !dbg !358
+if.then1:                                         ; preds = %if.then
+  store i32 (%struct.cGH*, i8*)* %func, i32 (%struct.cGH*, i8*)** @CCTK_SyncGroup, align 8, !dbg !352, !tbaa !354
+  %inc = add nsw i32 %0, 1, !dbg !352
+  store i32 %inc, i32* @CCTK_OverloadSyncGroup.overloaded, align 4, !dbg !352, !tbaa !349
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !59), !dbg !352
+  br label %if.end3, !dbg !352
 
-; <label>:7                                       ; preds = %3
-  %8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 46, i8* getelementptr inbounds ([97 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([59 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([10 x i8]* @.str4, i64 0, i64 0)) #5, !dbg !362
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !57, metadata !346), !dbg !347
-  br label %9
+if.else:                                          ; preds = %if.then
+  %call = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 46, i8* getelementptr inbounds ([85 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([59 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([10 x i8]* @.str4, i64 0, i64 0)) #5, !dbg !355
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !59), !dbg !355
+  br label %if.end3
 
-; <label>:9                                       ; preds = %0, %5, %7
-  %return_code.0 = phi i32 [ %6, %5 ], [ 0, %7 ], [ %2, %0 ]
-  ret i32 %return_code.0, !dbg !347
+if.end3:                                          ; preds = %entry, %if.then1, %if.else
+  %return_code.0 = phi i32 [ %inc, %if.then1 ], [ 0, %if.else ], [ %0, %entry ]
+  ret i32 %return_code.0, !dbg !346
 }

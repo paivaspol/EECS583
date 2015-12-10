@@ -1,0 +1,50 @@
+define i32 @_ZN11xercesc_2_510ParentNode9getLengthEv(%"class.xercesc_2_5::ParentNode"* nocapture %this) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ParentNode"* %this}, i64 0, metadata !3181), !dbg !3516
+  %fCachedLength = getelementptr inbounds %"class.xercesc_2_5::ParentNode"* %this, i64 0, i32 3, !dbg !3517
+  %0 = load i32* %fCachedLength, align 4, !dbg !3517, !tbaa !3469
+  %cmp = icmp eq i32 %0, -1, !dbg !3517
+  br i1 %cmp, label %if.then, label %if.end11, !dbg !3517
+
+if.then:                                          ; preds = %entry
+  %fCachedChildIndex = getelementptr inbounds %"class.xercesc_2_5::ParentNode"* %this, i64 0, i32 5, !dbg !3518
+  %1 = load i32* %fCachedChildIndex, align 4, !dbg !3518, !tbaa !3469
+  %cmp2 = icmp eq i32 %1, -1, !dbg !3518
+  br i1 %cmp2, label %while.cond.preheader, label %land.lhs.true, !dbg !3518
+
+land.lhs.true:                                    ; preds = %if.then
+  %fCachedChild = getelementptr inbounds %"class.xercesc_2_5::ParentNode"* %this, i64 0, i32 4, !dbg !3518
+  %2 = load %"class.xercesc_2_5::ChildNode"** %fCachedChild, align 8, !dbg !3518, !tbaa !3465
+  %cmp3 = icmp eq %"class.xercesc_2_5::ChildNode"* %2, null, !dbg !3518
+  br i1 %cmp3, label %while.cond.preheader, label %while.cond.preheader.thread, !dbg !3518
+
+while.cond.preheader.thread:                      ; preds = %land.lhs.true
+  store i32 %1, i32* %fCachedLength, align 4, !dbg !3519, !tbaa !3469
+  br label %while.body, !dbg !3521
+
+while.cond.preheader:                             ; preds = %if.then, %land.lhs.true
+  %firstChild = getelementptr inbounds %"class.xercesc_2_5::ParentNode"* %this, i64 0, i32 2, !dbg !3522
+  %3 = load %"class.xercesc_2_5::ChildNode"** %firstChild, align 8, !dbg !3522, !tbaa !3465
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ChildNode"* %3}, i64 0, metadata !3182), !dbg !3522
+  store i32 0, i32* %fCachedLength, align 4, !dbg !3519, !tbaa !3469
+  %cmp914 = icmp eq %"class.xercesc_2_5::ChildNode"* %3, null, !dbg !3521
+  br i1 %cmp914, label %if.end11, label %while.body, !dbg !3521
+
+while.body:                                       ; preds = %while.cond.preheader, %while.cond.preheader.thread, %while.body
+  %4 = phi i32 [ %inc, %while.body ], [ %1, %while.cond.preheader.thread ], [ 0, %while.cond.preheader ], !dbg !3523
+  %node.015 = phi %"class.xercesc_2_5::ChildNode"* [ %5, %while.body ], [ %2, %while.cond.preheader.thread ], [ %3, %while.cond.preheader ]
+  %inc = add nsw i32 %4, 1, !dbg !3523
+  %nextSibling = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %node.015, i64 0, i32 2, !dbg !3525
+  %5 = load %"class.xercesc_2_5::ChildNode"** %nextSibling, align 8, !dbg !3525, !tbaa !3465
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ChildNode"* %5}, i64 0, metadata !3182), !dbg !3525
+  %cmp9 = icmp eq %"class.xercesc_2_5::ChildNode"* %5, null, !dbg !3521
+  br i1 %cmp9, label %while.cond.if.end11.loopexit_crit_edge, label %while.body, !dbg !3521
+
+while.cond.if.end11.loopexit_crit_edge:           ; preds = %while.body
+  store i32 %inc, i32* %fCachedLength, align 4, !dbg !3523, !tbaa !3469
+  br label %if.end11, !dbg !3521
+
+if.end11:                                         ; preds = %while.cond.preheader, %while.cond.if.end11.loopexit_crit_edge, %entry
+  %6 = phi i32 [ %0, %entry ], [ %inc, %while.cond.if.end11.loopexit_crit_edge ], [ 0, %while.cond.preheader ]
+  ret i32 %6, !dbg !3526
+}

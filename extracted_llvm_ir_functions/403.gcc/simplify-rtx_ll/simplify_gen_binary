@@ -1,40 +1,49 @@
 define %struct.rtx_def* @simplify_gen_binary(i32 %code, i32 %mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #0 {
 entry:
-  %idxprom = sext i32 %code to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom
-  %0 = load i8* %arrayidx, align 1, !tbaa !0
-  %cmp = icmp eq i8 %0, 99
-  br i1 %cmp, label %land.lhs.true, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !334), !dbg !728
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !335), !dbg !729
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op0}, i64 0, metadata !336), !dbg !730
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op1}, i64 0, metadata !337), !dbg !730
+  %idxprom = sext i32 %code to i64, !dbg !731
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom, !dbg !731
+  %0 = load i8* %arrayidx, align 1, !dbg !731, !tbaa !732
+  %cmp = icmp eq i8 %0, 99, !dbg !731
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !731
 
 land.lhs.true:                                    ; preds = %entry
-  %call = tail call i32 @swap_commutative_operands_p(%struct.rtx_def* %op0, %struct.rtx_def* %op1) #4
-  %tobool = icmp eq i32 %call, 0
-  %op0.op1 = select i1 %tobool, %struct.rtx_def* %op0, %struct.rtx_def* %op1
-  %op1.op0 = select i1 %tobool, %struct.rtx_def* %op1, %struct.rtx_def* %op0
-  br label %if.end
+  %call = tail call i32 @swap_commutative_operands_p(%struct.rtx_def* %op0, %struct.rtx_def* %op1) #5, !dbg !734
+  %tobool = icmp eq i32 %call, 0, !dbg !734
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op0}, i64 0, metadata !338), !dbg !735
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op1}, i64 0, metadata !336), !dbg !735
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op0}, i64 0, metadata !337), !dbg !735
+  %op0.op1 = select i1 %tobool, %struct.rtx_def* %op0, %struct.rtx_def* %op1, !dbg !734
+  %op1.op0 = select i1 %tobool, %struct.rtx_def* %op1, %struct.rtx_def* %op0, !dbg !734
+  br label %if.end, !dbg !734
 
 if.end:                                           ; preds = %land.lhs.true, %entry
   %op0.addr.0 = phi %struct.rtx_def* [ %op0, %entry ], [ %op0.op1, %land.lhs.true ]
   %op1.addr.0 = phi %struct.rtx_def* [ %op1, %entry ], [ %op1.op0, %land.lhs.true ]
-  %call2 = tail call %struct.rtx_def* @simplify_binary_operation(i32 %code, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0) #5
-  %tobool3 = icmp eq %struct.rtx_def* %call2, null
-  br i1 %tobool3, label %if.end5, label %return
+  %call2 = tail call %struct.rtx_def* @simplify_binary_operation(i32 %code, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0) #6, !dbg !736
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call2}, i64 0, metadata !338), !dbg !736
+  %tobool3 = icmp eq %struct.rtx_def* %call2, null, !dbg !737
+  br i1 %tobool3, label %if.end5, label %return, !dbg !737
 
 if.end5:                                          ; preds = %if.end
-  %code.off = add i32 %code, -75
-  %1 = icmp ult i32 %code.off, 2
-  br i1 %1, label %if.then10, label %if.end15
+  %code.off = add i32 %code, -75, !dbg !738
+  %1 = icmp ult i32 %code.off, 2, !dbg !738
+  br i1 %1, label %if.then10, label %if.end15, !dbg !738
 
 if.then10:                                        ; preds = %if.end5
-  %call11 = tail call fastcc %struct.rtx_def* @simplify_plus_minus(i32 %code, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0, i32 1) #5
-  %tobool12 = icmp eq %struct.rtx_def* %call11, null
-  br i1 %tobool12, label %if.end15, label %return
+  %call11 = tail call fastcc %struct.rtx_def* @simplify_plus_minus(i32 %code, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0, i32 1) #6, !dbg !739
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call11}, i64 0, metadata !338), !dbg !739
+  %tobool12 = icmp eq %struct.rtx_def* %call11, null, !dbg !741
+  br i1 %tobool12, label %if.end15, label %return, !dbg !741
 
 if.end15:                                         ; preds = %if.then10, %if.end5
-  %call16 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %code, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0) #4
-  br label %return
+  %call16 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %code, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0) #5, !dbg !742
+  br label %return, !dbg !742
 
 return:                                           ; preds = %if.then10, %if.end, %if.end15
   %retval.0 = phi %struct.rtx_def* [ %call16, %if.end15 ], [ %call2, %if.end ], [ %call11, %if.then10 ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !743
 }

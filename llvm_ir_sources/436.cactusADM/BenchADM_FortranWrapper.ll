@@ -1,6 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BenchADM_FortranWrapper.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BenchADM_FortranWrapper.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.cGH = type { i32, i32, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double, double*, double*, i32*, i32*, i32, i32*, double, i8***, i8**, %struct.cGHGroupData* }
 %struct.cGHGroupData = type { i8, i8 }
@@ -165,2483 +165,2478 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str78 = private unnamed_addr constant [8 x i8] c"GRID::z\00", align 1
 @_cctk_one = external global i32
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTKi_BindingsFortranWrapperBenchADM(%struct.cGH* %GH, i8* nocapture %fpointer) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !53, metadata !140), !dbg !141
-  tail call void @llvm.dbg.value(metadata i8* %fpointer, i64 0, metadata !54, metadata !140), !dbg !142
-  %1 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxx, align 4, !dbg !143, !tbaa !145
-  %2 = icmp eq i32 %1, -1, !dbg !143
-  br i1 %2, label %3, label %5, !dbg !149
-
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str, i64 0, i64 0)) #3, !dbg !143
-  store i32 %4, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxx, align 4, !dbg !143, !tbaa !145
-  br label %5, !dbg !143
-
-; <label>:5                                       ; preds = %3, %0
-  %6 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, align 4, !dbg !150, !tbaa !145
-  %7 = icmp eq i32 %6, -1, !dbg !150
-  br i1 %7, label %8, label %10, !dbg !149
-
-; <label>:8                                       ; preds = %5
-  %9 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !150
-  store i32 %9, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, align 4, !dbg !150, !tbaa !145
-  br label %10, !dbg !150
-
-; <label>:10                                      ; preds = %8, %5
-  %11 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxy, align 4, !dbg !152, !tbaa !145
-  %12 = icmp eq i32 %11, -1, !dbg !152
-  br i1 %12, label %13, label %15, !dbg !149
-
-; <label>:13                                      ; preds = %10
-  %14 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str2, i64 0, i64 0)) #3, !dbg !152
-  store i32 %14, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxy, align 4, !dbg !152, !tbaa !145
-  br label %15, !dbg !152
-
-; <label>:15                                      ; preds = %13, %10
-  %16 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxz, align 4, !dbg !154, !tbaa !145
-  %17 = icmp eq i32 %16, -1, !dbg !154
-  br i1 %17, label %18, label %20, !dbg !149
-
-; <label>:18                                      ; preds = %15
-  %19 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str3, i64 0, i64 0)) #3, !dbg !154
-  store i32 %19, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxz, align 4, !dbg !154, !tbaa !145
-  br label %20, !dbg !154
-
-; <label>:20                                      ; preds = %18, %15
-  %21 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyy, align 4, !dbg !156, !tbaa !145
-  %22 = icmp eq i32 %21, -1, !dbg !156
-  br i1 %22, label %23, label %25, !dbg !149
-
-; <label>:23                                      ; preds = %20
-  %24 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str4, i64 0, i64 0)) #3, !dbg !156
-  store i32 %24, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyy, align 4, !dbg !156, !tbaa !145
-  br label %25, !dbg !156
-
-; <label>:25                                      ; preds = %23, %20
-  %26 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyz, align 4, !dbg !158, !tbaa !145
-  %27 = icmp eq i32 %26, -1, !dbg !158
-  br i1 %27, label %28, label %30, !dbg !149
-
-; <label>:28                                      ; preds = %25
-  %29 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !158
-  store i32 %29, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyz, align 4, !dbg !158, !tbaa !145
-  br label %30, !dbg !158
-
-; <label>:30                                      ; preds = %28, %25
-  %31 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gzz, align 4, !dbg !160, !tbaa !145
-  %32 = icmp eq i32 %31, -1, !dbg !160
-  br i1 %32, label %33, label %35, !dbg !149
-
-; <label>:33                                      ; preds = %30
-  %34 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str6, i64 0, i64 0)) #3, !dbg !160
-  store i32 %34, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gzz, align 4, !dbg !160, !tbaa !145
-  br label %35, !dbg !160
-
-; <label>:35                                      ; preds = %33, %30
-  %36 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxx_stag, align 4, !dbg !162, !tbaa !145
-  %37 = icmp eq i32 %36, -1, !dbg !162
-  br i1 %37, label %38, label %40, !dbg !149
-
-; <label>:38                                      ; preds = %35
-  %39 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str7, i64 0, i64 0)) #3, !dbg !162
-  store i32 %39, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxx_stag, align 4, !dbg !162, !tbaa !145
-  br label %40, !dbg !162
-
-; <label>:40                                      ; preds = %38, %35
-  %41 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, align 4, !dbg !164, !tbaa !145
-  %42 = icmp eq i32 %41, -1, !dbg !164
-  br i1 %42, label %43, label %45, !dbg !149
-
-; <label>:43                                      ; preds = %40
-  %44 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !164
-  store i32 %44, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, align 4, !dbg !164, !tbaa !145
-  br label %45, !dbg !164
-
-; <label>:45                                      ; preds = %43, %40
-  %46 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxy_stag, align 4, !dbg !166, !tbaa !145
-  %47 = icmp eq i32 %46, -1, !dbg !166
-  br i1 %47, label %48, label %50, !dbg !149
-
-; <label>:48                                      ; preds = %45
-  %49 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str9, i64 0, i64 0)) #3, !dbg !166
-  store i32 %49, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxy_stag, align 4, !dbg !166, !tbaa !145
-  br label %50, !dbg !166
-
-; <label>:50                                      ; preds = %48, %45
-  %51 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxz_stag, align 4, !dbg !168, !tbaa !145
-  %52 = icmp eq i32 %51, -1, !dbg !168
-  br i1 %52, label %53, label %55, !dbg !149
-
-; <label>:53                                      ; preds = %50
-  %54 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str10, i64 0, i64 0)) #3, !dbg !168
-  store i32 %54, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxz_stag, align 4, !dbg !168, !tbaa !145
-  br label %55, !dbg !168
-
-; <label>:55                                      ; preds = %53, %50
-  %56 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyy_stag, align 4, !dbg !170, !tbaa !145
-  %57 = icmp eq i32 %56, -1, !dbg !170
-  br i1 %57, label %58, label %60, !dbg !149
-
-; <label>:58                                      ; preds = %55
-  %59 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str11, i64 0, i64 0)) #3, !dbg !170
-  store i32 %59, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyy_stag, align 4, !dbg !170, !tbaa !145
-  br label %60, !dbg !170
-
-; <label>:60                                      ; preds = %58, %55
-  %61 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyz_stag, align 4, !dbg !172, !tbaa !145
-  %62 = icmp eq i32 %61, -1, !dbg !172
-  br i1 %62, label %63, label %65, !dbg !149
-
-; <label>:63                                      ; preds = %60
-  %64 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str12, i64 0, i64 0)) #3, !dbg !172
-  store i32 %64, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyz_stag, align 4, !dbg !172, !tbaa !145
-  br label %65, !dbg !172
-
-; <label>:65                                      ; preds = %63, %60
-  %66 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kzz_stag, align 4, !dbg !174, !tbaa !145
-  %67 = icmp eq i32 %66, -1, !dbg !174
-  br i1 %67, label %68, label %70, !dbg !149
-
-; <label>:68                                      ; preds = %65
-  %69 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str13, i64 0, i64 0)) #3, !dbg !174
-  store i32 %69, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kzz_stag, align 4, !dbg !174, !tbaa !145
-  br label %70, !dbg !174
-
-; <label>:70                                      ; preds = %68, %65
-  %71 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxx, align 4, !dbg !176, !tbaa !145
-  %72 = icmp eq i32 %71, -1, !dbg !176
-  br i1 %72, label %73, label %75, !dbg !149
-
-; <label>:73                                      ; preds = %70
-  %74 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str14, i64 0, i64 0)) #3, !dbg !176
-  store i32 %74, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxx, align 4, !dbg !176, !tbaa !145
-  br label %75, !dbg !176
-
-; <label>:75                                      ; preds = %73, %70
-  %76 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, align 4, !dbg !178, !tbaa !145
-  %77 = icmp eq i32 %76, -1, !dbg !178
-  br i1 %77, label %78, label %80, !dbg !149
-
-; <label>:78                                      ; preds = %75
-  %79 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !178
-  store i32 %79, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, align 4, !dbg !178, !tbaa !145
-  br label %80, !dbg !178
-
-; <label>:80                                      ; preds = %78, %75
-  %81 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxy, align 4, !dbg !180, !tbaa !145
-  %82 = icmp eq i32 %81, -1, !dbg !180
-  br i1 %82, label %83, label %85, !dbg !149
-
-; <label>:83                                      ; preds = %80
-  %84 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str16, i64 0, i64 0)) #3, !dbg !180
-  store i32 %84, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxy, align 4, !dbg !180, !tbaa !145
-  br label %85, !dbg !180
-
-; <label>:85                                      ; preds = %83, %80
-  %86 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxz, align 4, !dbg !182, !tbaa !145
-  %87 = icmp eq i32 %86, -1, !dbg !182
-  br i1 %87, label %88, label %90, !dbg !149
-
-; <label>:88                                      ; preds = %85
-  %89 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str17, i64 0, i64 0)) #3, !dbg !182
-  store i32 %89, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxz, align 4, !dbg !182, !tbaa !145
-  br label %90, !dbg !182
-
-; <label>:90                                      ; preds = %88, %85
-  %91 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyy, align 4, !dbg !184, !tbaa !145
-  %92 = icmp eq i32 %91, -1, !dbg !184
-  br i1 %92, label %93, label %95, !dbg !149
-
-; <label>:93                                      ; preds = %90
-  %94 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str18, i64 0, i64 0)) #3, !dbg !184
-  store i32 %94, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyy, align 4, !dbg !184, !tbaa !145
-  br label %95, !dbg !184
-
-; <label>:95                                      ; preds = %93, %90
-  %96 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyz, align 4, !dbg !186, !tbaa !145
-  %97 = icmp eq i32 %96, -1, !dbg !186
-  br i1 %97, label %98, label %100, !dbg !149
-
-; <label>:98                                      ; preds = %95
-  %99 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str19, i64 0, i64 0)) #3, !dbg !186
-  store i32 %99, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyz, align 4, !dbg !186, !tbaa !145
-  br label %100, !dbg !186
-
-; <label>:100                                     ; preds = %98, %95
-  %101 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gzz, align 4, !dbg !188, !tbaa !145
-  %102 = icmp eq i32 %101, -1, !dbg !188
-  br i1 %102, label %103, label %105, !dbg !149
-
-; <label>:103                                     ; preds = %100
-  %104 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str20, i64 0, i64 0)) #3, !dbg !188
-  store i32 %104, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gzz, align 4, !dbg !188, !tbaa !145
-  br label %105, !dbg !188
-
-; <label>:105                                     ; preds = %103, %100
-  %106 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxx, align 4, !dbg !190, !tbaa !145
-  %107 = icmp eq i32 %106, -1, !dbg !190
-  br i1 %107, label %108, label %110, !dbg !149
-
-; <label>:108                                     ; preds = %105
-  %109 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str21, i64 0, i64 0)) #3, !dbg !190
-  store i32 %109, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxx, align 4, !dbg !190, !tbaa !145
-  br label %110, !dbg !190
-
-; <label>:110                                     ; preds = %108, %105
-  %111 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxy, align 4, !dbg !192, !tbaa !145
-  %112 = icmp eq i32 %111, -1, !dbg !192
-  br i1 %112, label %113, label %115, !dbg !149
-
-; <label>:113                                     ; preds = %110
-  %114 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str22, i64 0, i64 0)) #3, !dbg !192
-  store i32 %114, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxy, align 4, !dbg !192, !tbaa !145
-  br label %115, !dbg !192
-
-; <label>:115                                     ; preds = %113, %110
-  %116 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxz, align 4, !dbg !194, !tbaa !145
-  %117 = icmp eq i32 %116, -1, !dbg !194
-  br i1 %117, label %118, label %120, !dbg !149
-
-; <label>:118                                     ; preds = %115
-  %119 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str23, i64 0, i64 0)) #3, !dbg !194
-  store i32 %119, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxz, align 4, !dbg !194, !tbaa !145
-  br label %120, !dbg !194
-
-; <label>:120                                     ; preds = %118, %115
-  %121 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyy, align 4, !dbg !196, !tbaa !145
-  %122 = icmp eq i32 %121, -1, !dbg !196
-  br i1 %122, label %123, label %125, !dbg !149
-
-; <label>:123                                     ; preds = %120
-  %124 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str24, i64 0, i64 0)) #3, !dbg !196
-  store i32 %124, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyy, align 4, !dbg !196, !tbaa !145
-  br label %125, !dbg !196
-
-; <label>:125                                     ; preds = %123, %120
-  %126 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyz, align 4, !dbg !198, !tbaa !145
-  %127 = icmp eq i32 %126, -1, !dbg !198
-  br i1 %127, label %128, label %130, !dbg !149
-
-; <label>:128                                     ; preds = %125
-  %129 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str25, i64 0, i64 0)) #3, !dbg !198
-  store i32 %129, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyz, align 4, !dbg !198, !tbaa !145
-  br label %130, !dbg !198
-
-; <label>:130                                     ; preds = %128, %125
-  %131 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kzz, align 4, !dbg !200, !tbaa !145
-  %132 = icmp eq i32 %131, -1, !dbg !200
-  br i1 %132, label %133, label %135, !dbg !149
-
-; <label>:133                                     ; preds = %130
-  %134 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str26, i64 0, i64 0)) #3, !dbg !200
-  store i32 %134, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kzz, align 4, !dbg !200, !tbaa !145
-  br label %135, !dbg !200
-
-; <label>:135                                     ; preds = %133, %130
-  %136 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_active_slicing_handle, align 4, !dbg !202, !tbaa !145
-  %137 = icmp eq i32 %136, -1, !dbg !202
-  br i1 %137, label %138, label %140, !dbg !149
-
-; <label>:138                                     ; preds = %135
-  %139 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([32 x i8]* @.str27, i64 0, i64 0)) #3, !dbg !202
-  store i32 %139, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_active_slicing_handle, align 4, !dbg !202, !tbaa !145
-  br label %140, !dbg !202
-
-; <label>:140                                     ; preds = %138, %135
-  %141 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_slicing_flags, align 4, !dbg !204, !tbaa !145
-  %142 = icmp eq i32 %141, -1, !dbg !204
-  br i1 %142, label %143, label %145, !dbg !149
-
-; <label>:143                                     ; preds = %140
-  %144 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([24 x i8]* @.str28, i64 0, i64 0)) #3, !dbg !204
-  store i32 %144, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_slicing_flags, align 4, !dbg !204, !tbaa !145
-  br label %145, !dbg !204
-
-; <label>:145                                     ; preds = %143, %140
-  %146 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_alp, align 4, !dbg !206, !tbaa !145
-  %147 = icmp eq i32 %146, -1, !dbg !206
-  br i1 %147, label %148, label %150, !dbg !149
-
-; <label>:148                                     ; preds = %145
-  %149 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str29, i64 0, i64 0)) #3, !dbg !206
-  store i32 %149, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_alp, align 4, !dbg !206, !tbaa !145
-  br label %150, !dbg !206
-
-; <label>:150                                     ; preds = %148, %145
-  %151 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, align 4, !dbg !208, !tbaa !145
-  %152 = icmp eq i32 %151, -1, !dbg !208
-  br i1 %152, label %153, label %155, !dbg !149
-
-; <label>:153                                     ; preds = %150
-  %154 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !208
-  store i32 %154, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, align 4, !dbg !208, !tbaa !145
-  br label %155, !dbg !208
-
-; <label>:155                                     ; preds = %153, %150
-  %156 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betax, align 4, !dbg !210, !tbaa !145
-  %157 = icmp eq i32 %156, -1, !dbg !210
-  br i1 %157, label %158, label %160, !dbg !149
-
-; <label>:158                                     ; preds = %155
-  %159 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str31, i64 0, i64 0)) #3, !dbg !210
-  store i32 %159, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betax, align 4, !dbg !210, !tbaa !145
-  br label %160, !dbg !210
-
-; <label>:160                                     ; preds = %158, %155
-  %161 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, align 4, !dbg !212, !tbaa !145
-  %162 = icmp eq i32 %161, -1, !dbg !212
-  br i1 %162, label %163, label %165, !dbg !149
-
-; <label>:163                                     ; preds = %160
-  %164 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !212
-  store i32 %164, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, align 4, !dbg !212, !tbaa !145
-  br label %165, !dbg !212
-
-; <label>:165                                     ; preds = %163, %160
-  %166 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betay, align 4, !dbg !214, !tbaa !145
-  %167 = icmp eq i32 %166, -1, !dbg !214
-  br i1 %167, label %168, label %170, !dbg !149
-
-; <label>:168                                     ; preds = %165
-  %169 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str33, i64 0, i64 0)) #3, !dbg !214
-  store i32 %169, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betay, align 4, !dbg !214, !tbaa !145
-  br label %170, !dbg !214
-
-; <label>:170                                     ; preds = %168, %165
-  %171 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betaz, align 4, !dbg !216, !tbaa !145
-  %172 = icmp eq i32 %171, -1, !dbg !216
-  br i1 %172, label %173, label %175, !dbg !149
-
-; <label>:173                                     ; preds = %170
-  %174 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str34, i64 0, i64 0)) #3, !dbg !216
-  store i32 %174, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betaz, align 4, !dbg !216, !tbaa !145
-  br label %175, !dbg !216
-
-; <label>:175                                     ; preds = %173, %170
-  %176 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dx, align 4, !dbg !218, !tbaa !145
-  %177 = icmp eq i32 %176, -1, !dbg !218
-  br i1 %177, label %178, label %180, !dbg !149
-
-; <label>:178                                     ; preds = %175
-  %179 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str35, i64 0, i64 0)) #3, !dbg !218
-  store i32 %179, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dx, align 4, !dbg !218, !tbaa !145
-  br label %180, !dbg !218
-
-; <label>:180                                     ; preds = %178, %175
-  %181 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_gridspacings, align 4, !dbg !220, !tbaa !145
-  %182 = icmp eq i32 %181, -1, !dbg !220
-  br i1 %182, label %183, label %185, !dbg !149
-
-; <label>:183                                     ; preds = %180
-  %184 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([19 x i8]* @.str36, i64 0, i64 0)) #3, !dbg !220
-  store i32 %184, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_gridspacings, align 4, !dbg !220, !tbaa !145
-  br label %185, !dbg !220
-
-; <label>:185                                     ; preds = %183, %180
-  %186 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dy, align 4, !dbg !222, !tbaa !145
-  %187 = icmp eq i32 %186, -1, !dbg !222
-  br i1 %187, label %188, label %190, !dbg !149
-
-; <label>:188                                     ; preds = %185
-  %189 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str37, i64 0, i64 0)) #3, !dbg !222
-  store i32 %189, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dy, align 4, !dbg !222, !tbaa !145
-  br label %190, !dbg !222
-
-; <label>:190                                     ; preds = %188, %185
-  %191 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dz, align 4, !dbg !224, !tbaa !145
-  %192 = icmp eq i32 %191, -1, !dbg !224
-  br i1 %192, label %193, label %195, !dbg !149
-
-; <label>:193                                     ; preds = %190
-  %194 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str38, i64 0, i64 0)) #3, !dbg !224
-  store i32 %194, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dz, align 4, !dbg !224, !tbaa !145
-  br label %195, !dbg !224
-
-; <label>:195                                     ; preds = %193, %190
-  %196 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_conformal_state, align 4, !dbg !226, !tbaa !145
-  %197 = icmp eq i32 %196, -1, !dbg !226
-  br i1 %197, label %198, label %200, !dbg !149
-
-; <label>:198                                     ; preds = %195
-  %199 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([26 x i8]* @.str39, i64 0, i64 0)) #3, !dbg !226
-  store i32 %199, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_conformal_state, align 4, !dbg !226, !tbaa !145
-  br label %200, !dbg !226
-
-; <label>:200                                     ; preds = %198, %195
-  %201 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_flags, align 4, !dbg !228, !tbaa !145
-  %202 = icmp eq i32 %201, -1, !dbg !228
-  br i1 %202, label %203, label %205, !dbg !149
-
-; <label>:203                                     ; preds = %200
-  %204 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([16 x i8]* @.str40, i64 0, i64 0)) #3, !dbg !228
-  store i32 %204, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_flags, align 4, !dbg !228, !tbaa !145
-  br label %205, !dbg !228
-
-; <label>:205                                     ; preds = %203, %200
-  %206 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_min_time, align 4, !dbg !230, !tbaa !145
-  %207 = icmp eq i32 %206, -1, !dbg !230
-  br i1 %207, label %208, label %210, !dbg !149
-
-; <label>:208                                     ; preds = %205
-  %209 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str41, i64 0, i64 0)) #3, !dbg !230
-  store i32 %209, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_min_time, align 4, !dbg !230, !tbaa !145
-  br label %210, !dbg !230
-
-; <label>:210                                     ; preds = %208, %205
-  %211 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_speedvars, align 4, !dbg !232, !tbaa !145
-  %212 = icmp eq i32 %211, -1, !dbg !232
-  br i1 %212, label %213, label %215, !dbg !149
-
-; <label>:213                                     ; preds = %210
-  %214 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([16 x i8]* @.str42, i64 0, i64 0)) #3, !dbg !232
-  store i32 %214, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_speedvars, align 4, !dbg !232, !tbaa !145
-  br label %215, !dbg !232
-
-; <label>:215                                     ; preds = %213, %210
-  %216 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_wave_speed, align 4, !dbg !234, !tbaa !145
-  %217 = icmp eq i32 %216, -1, !dbg !234
-  br i1 %217, label %218, label %220, !dbg !149
-
-; <label>:218                                     ; preds = %215
-  %219 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([25 x i8]* @.str43, i64 0, i64 0)) #3, !dbg !234
-  store i32 %219, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_wave_speed, align 4, !dbg !234, !tbaa !145
-  br label %220, !dbg !234
-
-; <label>:220                                     ; preds = %218, %215
-  %221 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_emask, align 4, !dbg !236, !tbaa !145
-  %222 = icmp eq i32 %221, -1, !dbg !236
-  br i1 %222, label %223, label %225, !dbg !149
-
-; <label>:223                                     ; preds = %220
-  %224 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str44, i64 0, i64 0)) #3, !dbg !236
-  store i32 %224, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_emask, align 4, !dbg !236, !tbaa !145
-  br label %225, !dbg !236
-
-; <label>:225                                     ; preds = %223, %220
-  %226 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, align 4, !dbg !238, !tbaa !145
-  %227 = icmp eq i32 %226, -1, !dbg !238
-  br i1 %227, label %228, label %230, !dbg !149
-
-; <label>:228                                     ; preds = %225
-  %229 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !238
-  store i32 %229, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, align 4, !dbg !238, !tbaa !145
-  br label %230, !dbg !238
-
-; <label>:230                                     ; preds = %228, %225
-  %231 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxx, align 4, !dbg !240, !tbaa !145
-  %232 = icmp eq i32 %231, -1, !dbg !240
-  br i1 %232, label %233, label %235, !dbg !149
-
-; <label>:233                                     ; preds = %230
-  %234 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str46, i64 0, i64 0)) #3, !dbg !240
-  store i32 %234, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxx, align 4, !dbg !240, !tbaa !145
-  br label %235, !dbg !240
-
-; <label>:235                                     ; preds = %233, %230
-  %236 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, align 4, !dbg !242, !tbaa !145
-  %237 = icmp eq i32 %236, -1, !dbg !242
-  br i1 %237, label %238, label %240, !dbg !149
-
-; <label>:238                                     ; preds = %235
-  %239 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !242
-  store i32 %239, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, align 4, !dbg !242, !tbaa !145
-  br label %240, !dbg !242
-
-; <label>:240                                     ; preds = %238, %235
-  %241 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxy, align 4, !dbg !244, !tbaa !145
-  %242 = icmp eq i32 %241, -1, !dbg !244
-  br i1 %242, label %243, label %245, !dbg !149
-
-; <label>:243                                     ; preds = %240
-  %244 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str48, i64 0, i64 0)) #3, !dbg !244
-  store i32 %244, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxy, align 4, !dbg !244, !tbaa !145
-  br label %245, !dbg !244
-
-; <label>:245                                     ; preds = %243, %240
-  %246 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxz, align 4, !dbg !246, !tbaa !145
-  %247 = icmp eq i32 %246, -1, !dbg !246
-  br i1 %247, label %248, label %250, !dbg !149
-
-; <label>:248                                     ; preds = %245
-  %249 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str49, i64 0, i64 0)) #3, !dbg !246
-  store i32 %249, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxz, align 4, !dbg !246, !tbaa !145
-  br label %250, !dbg !246
-
-; <label>:250                                     ; preds = %248, %245
-  %251 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyy, align 4, !dbg !248, !tbaa !145
-  %252 = icmp eq i32 %251, -1, !dbg !248
-  br i1 %252, label %253, label %255, !dbg !149
-
-; <label>:253                                     ; preds = %250
-  %254 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str50, i64 0, i64 0)) #3, !dbg !248
-  store i32 %254, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyy, align 4, !dbg !248, !tbaa !145
-  br label %255, !dbg !248
-
-; <label>:255                                     ; preds = %253, %250
-  %256 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyz, align 4, !dbg !250, !tbaa !145
-  %257 = icmp eq i32 %256, -1, !dbg !250
-  br i1 %257, label %258, label %260, !dbg !149
-
-; <label>:258                                     ; preds = %255
-  %259 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str51, i64 0, i64 0)) #3, !dbg !250
-  store i32 %259, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyz, align 4, !dbg !250, !tbaa !145
-  br label %260, !dbg !250
-
-; <label>:260                                     ; preds = %258, %255
-  %261 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gzz, align 4, !dbg !252, !tbaa !145
-  %262 = icmp eq i32 %261, -1, !dbg !252
-  br i1 %262, label %263, label %265, !dbg !149
-
-; <label>:263                                     ; preds = %260
-  %264 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str52, i64 0, i64 0)) #3, !dbg !252
-  store i32 %264, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gzz, align 4, !dbg !252, !tbaa !145
-  br label %265, !dbg !252
-
-; <label>:265                                     ; preds = %263, %260
-  %266 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxx, align 4, !dbg !254, !tbaa !145
-  %267 = icmp eq i32 %266, -1, !dbg !254
-  br i1 %267, label %268, label %270, !dbg !149
-
-; <label>:268                                     ; preds = %265
-  %269 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str53, i64 0, i64 0)) #3, !dbg !254
-  store i32 %269, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxx, align 4, !dbg !254, !tbaa !145
-  br label %270, !dbg !254
-
-; <label>:270                                     ; preds = %268, %265
-  %271 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, align 4, !dbg !256, !tbaa !145
-  %272 = icmp eq i32 %271, -1, !dbg !256
-  br i1 %272, label %273, label %275, !dbg !149
-
-; <label>:273                                     ; preds = %270
-  %274 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !256
-  store i32 %274, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, align 4, !dbg !256, !tbaa !145
-  br label %275, !dbg !256
-
-; <label>:275                                     ; preds = %273, %270
-  %276 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxy, align 4, !dbg !258, !tbaa !145
-  %277 = icmp eq i32 %276, -1, !dbg !258
-  br i1 %277, label %278, label %280, !dbg !149
-
-; <label>:278                                     ; preds = %275
-  %279 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str55, i64 0, i64 0)) #3, !dbg !258
-  store i32 %279, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxy, align 4, !dbg !258, !tbaa !145
-  br label %280, !dbg !258
-
-; <label>:280                                     ; preds = %278, %275
-  %281 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxz, align 4, !dbg !260, !tbaa !145
-  %282 = icmp eq i32 %281, -1, !dbg !260
-  br i1 %282, label %283, label %285, !dbg !149
-
-; <label>:283                                     ; preds = %280
-  %284 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str56, i64 0, i64 0)) #3, !dbg !260
-  store i32 %284, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxz, align 4, !dbg !260, !tbaa !145
-  br label %285, !dbg !260
-
-; <label>:285                                     ; preds = %283, %280
-  %286 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyy, align 4, !dbg !262, !tbaa !145
-  %287 = icmp eq i32 %286, -1, !dbg !262
-  br i1 %287, label %288, label %290, !dbg !149
-
-; <label>:288                                     ; preds = %285
-  %289 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str57, i64 0, i64 0)) #3, !dbg !262
-  store i32 %289, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyy, align 4, !dbg !262, !tbaa !145
-  br label %290, !dbg !262
-
-; <label>:290                                     ; preds = %288, %285
-  %291 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyz, align 4, !dbg !264, !tbaa !145
-  %292 = icmp eq i32 %291, -1, !dbg !264
-  br i1 %292, label %293, label %295, !dbg !149
-
-; <label>:293                                     ; preds = %290
-  %294 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str58, i64 0, i64 0)) #3, !dbg !264
-  store i32 %294, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyz, align 4, !dbg !264, !tbaa !145
-  br label %295, !dbg !264
-
-; <label>:295                                     ; preds = %293, %290
-  %296 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kzz, align 4, !dbg !266, !tbaa !145
-  %297 = icmp eq i32 %296, -1, !dbg !266
-  br i1 %297, label %298, label %300, !dbg !149
-
-; <label>:298                                     ; preds = %295
-  %299 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str59, i64 0, i64 0)) #3, !dbg !266
-  store i32 %299, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kzz, align 4, !dbg !266, !tbaa !145
-  br label %300, !dbg !266
-
-; <label>:300                                     ; preds = %298, %295
-  %301 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psi, align 4, !dbg !268, !tbaa !145
-  %302 = icmp eq i32 %301, -1, !dbg !268
-  br i1 %302, label %303, label %305, !dbg !149
-
-; <label>:303                                     ; preds = %300
-  %304 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str60, i64 0, i64 0)) #3, !dbg !268
-  store i32 %304, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psi, align 4, !dbg !268, !tbaa !145
-  br label %305, !dbg !268
-
-; <label>:305                                     ; preds = %303, %300
-  %306 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, align 4, !dbg !270, !tbaa !145
-  %307 = icmp eq i32 %306, -1, !dbg !270
-  br i1 %307, label %308, label %310, !dbg !149
-
-; <label>:308                                     ; preds = %305
-  %309 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !270
-  store i32 %309, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, align 4, !dbg !270, !tbaa !145
-  br label %310, !dbg !270
-
-; <label>:310                                     ; preds = %308, %305
-  %311 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psix, align 4, !dbg !272, !tbaa !145
-  %312 = icmp eq i32 %311, -1, !dbg !272
-  br i1 %312, label %313, label %315, !dbg !149
-
-; <label>:313                                     ; preds = %310
-  %314 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([15 x i8]* @.str62, i64 0, i64 0)) #3, !dbg !272
-  store i32 %314, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psix, align 4, !dbg !272, !tbaa !145
-  br label %315, !dbg !272
-
-; <label>:315                                     ; preds = %313, %310
-  %316 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, align 4, !dbg !274, !tbaa !145
-  %317 = icmp eq i32 %316, -1, !dbg !274
-  br i1 %317, label %318, label %320, !dbg !149
-
-; <label>:318                                     ; preds = %315
-  %319 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !274
-  store i32 %319, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, align 4, !dbg !274, !tbaa !145
-  br label %320, !dbg !274
-
-; <label>:320                                     ; preds = %318, %315
-  %321 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixx, align 4, !dbg !276, !tbaa !145
-  %322 = icmp eq i32 %321, -1, !dbg !276
-  br i1 %322, label %323, label %325, !dbg !149
-
-; <label>:323                                     ; preds = %320
-  %324 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str64, i64 0, i64 0)) #3, !dbg !276
-  store i32 %324, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixx, align 4, !dbg !276, !tbaa !145
-  br label %325, !dbg !276
-
-; <label>:325                                     ; preds = %323, %320
-  %326 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, align 4, !dbg !278, !tbaa !145
-  %327 = icmp eq i32 %326, -1, !dbg !278
-  br i1 %327, label %328, label %330, !dbg !149
-
-; <label>:328                                     ; preds = %325
-  %329 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !278
-  store i32 %329, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, align 4, !dbg !278, !tbaa !145
-  br label %330, !dbg !278
-
-; <label>:330                                     ; preds = %328, %325
-  %331 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixy, align 4, !dbg !280, !tbaa !145
-  %332 = icmp eq i32 %331, -1, !dbg !280
-  br i1 %332, label %333, label %335, !dbg !149
-
-; <label>:333                                     ; preds = %330
-  %334 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str66, i64 0, i64 0)) #3, !dbg !280
-  store i32 %334, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixy, align 4, !dbg !280, !tbaa !145
-  br label %335, !dbg !280
-
-; <label>:335                                     ; preds = %333, %330
-  %336 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixz, align 4, !dbg !282, !tbaa !145
-  %337 = icmp eq i32 %336, -1, !dbg !282
-  br i1 %337, label %338, label %340, !dbg !149
-
-; <label>:338                                     ; preds = %335
-  %339 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str67, i64 0, i64 0)) #3, !dbg !282
-  store i32 %339, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixz, align 4, !dbg !282, !tbaa !145
-  br label %340, !dbg !282
-
-; <label>:340                                     ; preds = %338, %335
-  %341 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiy, align 4, !dbg !284, !tbaa !145
-  %342 = icmp eq i32 %341, -1, !dbg !284
-  br i1 %342, label %343, label %345, !dbg !149
-
-; <label>:343                                     ; preds = %340
-  %344 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([15 x i8]* @.str68, i64 0, i64 0)) #3, !dbg !284
-  store i32 %344, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiy, align 4, !dbg !284, !tbaa !145
-  br label %345, !dbg !284
-
-; <label>:345                                     ; preds = %343, %340
-  %346 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyy, align 4, !dbg !286, !tbaa !145
-  %347 = icmp eq i32 %346, -1, !dbg !286
-  br i1 %347, label %348, label %350, !dbg !149
-
-; <label>:348                                     ; preds = %345
-  %349 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str69, i64 0, i64 0)) #3, !dbg !286
-  store i32 %349, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyy, align 4, !dbg !286, !tbaa !145
-  br label %350, !dbg !286
-
-; <label>:350                                     ; preds = %348, %345
-  %351 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyz, align 4, !dbg !288, !tbaa !145
-  %352 = icmp eq i32 %351, -1, !dbg !288
-  br i1 %352, label %353, label %355, !dbg !149
-
-; <label>:353                                     ; preds = %350
-  %354 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str70, i64 0, i64 0)) #3, !dbg !288
-  store i32 %354, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyz, align 4, !dbg !288, !tbaa !145
-  br label %355, !dbg !288
-
-; <label>:355                                     ; preds = %353, %350
-  %356 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiz, align 4, !dbg !290, !tbaa !145
-  %357 = icmp eq i32 %356, -1, !dbg !290
-  br i1 %357, label %358, label %360, !dbg !149
-
-; <label>:358                                     ; preds = %355
-  %359 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([15 x i8]* @.str71, i64 0, i64 0)) #3, !dbg !290
-  store i32 %359, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiz, align 4, !dbg !290, !tbaa !145
-  br label %360, !dbg !290
-
-; <label>:360                                     ; preds = %358, %355
-  %361 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psizz, align 4, !dbg !292, !tbaa !145
-  %362 = icmp eq i32 %361, -1, !dbg !292
-  br i1 %362, label %363, label %365, !dbg !149
-
-; <label>:363                                     ; preds = %360
-  %364 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str72, i64 0, i64 0)) #3, !dbg !292
-  store i32 %364, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psizz, align 4, !dbg !292, !tbaa !145
-  br label %365, !dbg !292
-
-; <label>:365                                     ; preds = %363, %360
-  %366 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_r, align 4, !dbg !294, !tbaa !145
-  %367 = icmp eq i32 %366, -1, !dbg !294
-  br i1 %367, label %368, label %370, !dbg !149
-
-; <label>:368                                     ; preds = %365
-  %369 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str73, i64 0, i64 0)) #3, !dbg !294
-  store i32 %369, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_r, align 4, !dbg !294, !tbaa !145
-  br label %370, !dbg !294
-
-; <label>:370                                     ; preds = %368, %365
-  %371 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, align 4, !dbg !296, !tbaa !145
-  %372 = icmp eq i32 %371, -1, !dbg !296
-  br i1 %372, label %373, label %375, !dbg !149
-
-; <label>:373                                     ; preds = %370
-  %374 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !296
-  store i32 %374, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, align 4, !dbg !296, !tbaa !145
-  br label %375, !dbg !296
-
-; <label>:375                                     ; preds = %373, %370
-  %376 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_shift_state, align 4, !dbg !298, !tbaa !145
-  %377 = icmp eq i32 %376, -1, !dbg !298
-  br i1 %377, label %378, label %380, !dbg !149
-
-; <label>:378                                     ; preds = %375
-  %379 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([22 x i8]* @.str75, i64 0, i64 0)) #3, !dbg !298
-  store i32 %379, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_shift_state, align 4, !dbg !298, !tbaa !145
-  br label %380, !dbg !298
-
-; <label>:380                                     ; preds = %378, %375
-  %381 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_x, align 4, !dbg !300, !tbaa !145
-  %382 = icmp eq i32 %381, -1, !dbg !300
-  br i1 %382, label %383, label %385, !dbg !149
-
-; <label>:383                                     ; preds = %380
-  %384 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str76, i64 0, i64 0)) #3, !dbg !300
-  store i32 %384, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_x, align 4, !dbg !300, !tbaa !145
-  br label %385, !dbg !300
-
-; <label>:385                                     ; preds = %383, %380
-  %386 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_y, align 4, !dbg !302, !tbaa !145
-  %387 = icmp eq i32 %386, -1, !dbg !302
-  br i1 %387, label %388, label %390, !dbg !149
-
-; <label>:388                                     ; preds = %385
-  %389 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str77, i64 0, i64 0)) #3, !dbg !302
-  store i32 %389, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_y, align 4, !dbg !302, !tbaa !145
-  br label %390, !dbg !302
-
-; <label>:390                                     ; preds = %388, %385
-  %391 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_z, align 4, !dbg !304, !tbaa !145
-  %392 = icmp eq i32 %391, -1, !dbg !304
-  br i1 %392, label %393, label %395, !dbg !149
-
-; <label>:393                                     ; preds = %390
-  %394 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str78, i64 0, i64 0)) #3, !dbg !304
-  store i32 %394, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_z, align 4, !dbg !304, !tbaa !145
-  br label %395, !dbg !304
-
-; <label>:395                                     ; preds = %393, %390
-  %396 = bitcast i8* %fpointer to void (i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, %struct.cGH*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*, i32*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, i32*, double*, double*, double*)*, !dbg !306
-  tail call void @llvm.dbg.value(metadata void (i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, %struct.cGH*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*, i32*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, i32*, double*, double*, double*)* %396, i64 0, metadata !55, metadata !140), !dbg !307
-  %397 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 0, !dbg !308
-  %398 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 2, !dbg !308
-  %399 = load i32** %398, align 8, !dbg !308, !tbaa !309
-  %400 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 3, !dbg !308
-  %401 = load i32** %400, align 8, !dbg !308, !tbaa !313
-  %402 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 4, !dbg !308
-  %403 = load i32** %402, align 8, !dbg !308, !tbaa !314
-  %404 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 5, !dbg !308
-  %405 = load i32** %404, align 8, !dbg !308, !tbaa !315
-  %406 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 6, !dbg !308
-  %407 = load i32** %406, align 8, !dbg !308, !tbaa !316
-  %408 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 8, !dbg !308
-  %409 = load i32** %408, align 8, !dbg !308, !tbaa !317
-  %410 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 7, !dbg !308
-  %411 = load i32** %410, align 8, !dbg !308, !tbaa !318
-  %412 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 12, !dbg !308
-  %413 = load i32** %412, align 8, !dbg !308, !tbaa !319
-  %414 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 9, !dbg !308
-  %415 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 16, !dbg !308
-  %416 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 10, !dbg !308
-  %417 = load double** %416, align 8, !dbg !308, !tbaa !320
-  %418 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 11, !dbg !308
-  %419 = load double** %418, align 8, !dbg !308, !tbaa !321
-  %420 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 13, !dbg !308
-  %421 = load i32** %420, align 8, !dbg !308, !tbaa !322
-  %422 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 14, !dbg !308
-  %423 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 15, !dbg !308
-  %424 = load i32** %423, align 8, !dbg !308, !tbaa !323
-  %425 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1, !dbg !308
-  %426 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, align 4, !dbg !308, !tbaa !145
-  %427 = icmp slt i32 %426, 0, !dbg !308
-  br i1 %427, label %.thread4, label %428, !dbg !308
-
-; <label>:428                                     ; preds = %395
-  %429 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !308
-  %430 = icmp eq i32 %429, 0, !dbg !308
-  br i1 %430, label %433, label %431, !dbg !308
-
-; <label>:431                                     ; preds = %428
-  %432 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !308
-  br label %433, !dbg !308
-
-; <label>:433                                     ; preds = %428, %431
-  %.ph = phi i32* [ @_cctk_one, %428 ], [ %432, %431 ]
-  %.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, align 4, !dbg !308, !tbaa !145
-  %434 = icmp slt i32 %.pr, 0, !dbg !308
-  br i1 %434, label %.thread4, label %435, !dbg !308
-
-; <label>:435                                     ; preds = %433
-  %436 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !308
-  %437 = icmp eq i32 %436, 0, !dbg !308
-  br i1 %437, label %.thread, label %438, !dbg !308
-
-; <label>:438                                     ; preds = %435
-  %439 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread, !dbg !308
-
-.thread:                                          ; preds = %435, %438
-  %.ph2.ph = phi i32* [ %439, %438 ], [ @_cctk_one, %435 ]
-  %.pr3.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, align 4, !dbg !308, !tbaa !145
-  %440 = icmp slt i32 %.pr3.pr, 0, !dbg !308
-  br i1 %440, label %.thread4, label %441, !dbg !308
-
-; <label>:441                                     ; preds = %.thread
-  %442 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !308
-  %443 = icmp eq i32 %442, 0, !dbg !308
-  br i1 %443, label %.thread4, label %444, !dbg !308
-
-; <label>:444                                     ; preds = %441
-  %445 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread4, !dbg !308
-
-.thread4:                                         ; preds = %395, %433, %441, %444, %.thread
-  %446 = phi i32* [ %.ph2.ph, %.thread ], [ %.ph2.ph, %444 ], [ %.ph2.ph, %441 ], [ @_cctk_one, %433 ], [ @_cctk_one, %395 ]
-  %447 = phi i32* [ %.ph, %.thread ], [ %.ph, %444 ], [ %.ph, %441 ], [ %.ph, %433 ], [ @_cctk_one, %395 ]
-  %448 = phi i32* [ @_cctk_one, %.thread ], [ %445, %444 ], [ @_cctk_one, %441 ], [ @_cctk_one, %433 ], [ @_cctk_one, %395 ], !dbg !308
-  %449 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, align 4, !dbg !308, !tbaa !145
-  %450 = icmp slt i32 %449, 0, !dbg !308
-  br i1 %450, label %.thread11, label %451, !dbg !308
-
-; <label>:451                                     ; preds = %.thread4
-  %452 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !308
-  %453 = icmp eq i32 %452, 0, !dbg !308
-  br i1 %453, label %456, label %454, !dbg !308
-
-; <label>:454                                     ; preds = %451
-  %455 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !308
-  br label %456, !dbg !308
-
-; <label>:456                                     ; preds = %451, %454
-  %.ph5 = phi i32* [ @_cctk_one, %451 ], [ %455, %454 ]
-  %.pr6 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, align 4, !dbg !308, !tbaa !145
-  %457 = icmp slt i32 %.pr6, 0, !dbg !308
-  br i1 %457, label %.thread11, label %458, !dbg !308
-
-; <label>:458                                     ; preds = %456
-  %459 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !308
-  %460 = icmp eq i32 %459, 0, !dbg !308
-  br i1 %460, label %.thread7, label %461, !dbg !308
-
-; <label>:461                                     ; preds = %458
-  %462 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread7, !dbg !308
-
-.thread7:                                         ; preds = %458, %461
-  %.ph9.ph = phi i32* [ %462, %461 ], [ @_cctk_one, %458 ]
-  %.pr10.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, align 4, !dbg !308, !tbaa !145
-  %463 = icmp slt i32 %.pr10.pr, 0, !dbg !308
-  br i1 %463, label %.thread11, label %464, !dbg !308
-
-; <label>:464                                     ; preds = %.thread7
-  %465 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !308
-  %466 = icmp eq i32 %465, 0, !dbg !308
-  br i1 %466, label %.thread11, label %467, !dbg !308
-
-; <label>:467                                     ; preds = %464
-  %468 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread11, !dbg !308
-
-.thread11:                                        ; preds = %.thread4, %456, %464, %467, %.thread7
-  %469 = phi i32* [ %.ph9.ph, %.thread7 ], [ %.ph9.ph, %467 ], [ %.ph9.ph, %464 ], [ @_cctk_one, %456 ], [ @_cctk_one, %.thread4 ]
-  %470 = phi i32* [ %.ph5, %.thread7 ], [ %.ph5, %467 ], [ %.ph5, %464 ], [ %.ph5, %456 ], [ @_cctk_one, %.thread4 ]
-  %471 = phi i32* [ @_cctk_one, %.thread7 ], [ %468, %467 ], [ @_cctk_one, %464 ], [ @_cctk_one, %456 ], [ @_cctk_one, %.thread4 ], !dbg !308
-  %472 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, align 4, !dbg !308, !tbaa !145
-  %473 = icmp slt i32 %472, 0, !dbg !308
-  br i1 %473, label %.thread18, label %474, !dbg !308
-
-; <label>:474                                     ; preds = %.thread11
-  %475 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !308
-  %476 = icmp eq i32 %475, 0, !dbg !308
-  br i1 %476, label %479, label %477, !dbg !308
-
-; <label>:477                                     ; preds = %474
-  %478 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !308
-  br label %479, !dbg !308
-
-; <label>:479                                     ; preds = %474, %477
-  %.ph12 = phi i32* [ @_cctk_one, %474 ], [ %478, %477 ]
-  %.pr13 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, align 4, !dbg !308, !tbaa !145
-  %480 = icmp slt i32 %.pr13, 0, !dbg !308
-  br i1 %480, label %.thread18, label %481, !dbg !308
-
-; <label>:481                                     ; preds = %479
-  %482 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !308
-  %483 = icmp eq i32 %482, 0, !dbg !308
-  br i1 %483, label %.thread14, label %484, !dbg !308
-
-; <label>:484                                     ; preds = %481
-  %485 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread14, !dbg !308
-
-.thread14:                                        ; preds = %481, %484
-  %.ph16.ph = phi i32* [ %485, %484 ], [ @_cctk_one, %481 ]
-  %.pr17.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, align 4, !dbg !308, !tbaa !145
-  %486 = icmp slt i32 %.pr17.pr, 0, !dbg !308
-  br i1 %486, label %.thread18, label %487, !dbg !308
-
-; <label>:487                                     ; preds = %.thread14
-  %488 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !308
-  %489 = icmp eq i32 %488, 0, !dbg !308
-  br i1 %489, label %.thread18, label %490, !dbg !308
-
-; <label>:490                                     ; preds = %487
-  %491 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread18, !dbg !308
-
-.thread18:                                        ; preds = %.thread11, %479, %487, %490, %.thread14
-  %492 = phi i32* [ %.ph16.ph, %.thread14 ], [ %.ph16.ph, %490 ], [ %.ph16.ph, %487 ], [ @_cctk_one, %479 ], [ @_cctk_one, %.thread11 ]
-  %493 = phi i32* [ %.ph12, %.thread14 ], [ %.ph12, %490 ], [ %.ph12, %487 ], [ %.ph12, %479 ], [ @_cctk_one, %.thread11 ]
-  %494 = phi i32* [ @_cctk_one, %.thread14 ], [ %491, %490 ], [ @_cctk_one, %487 ], [ @_cctk_one, %479 ], [ @_cctk_one, %.thread11 ], !dbg !308
-  %495 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxx, align 4, !dbg !308, !tbaa !145
-  %496 = icmp slt i32 %495, 0, !dbg !308
-  br i1 %496, label %.thread20, label %497, !dbg !308
-
-; <label>:497                                     ; preds = %.thread18
-  %498 = sext i32 %495 to i64, !dbg !308
-  %499 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %500 = load i8**** %499, align 8, !dbg !308, !tbaa !324
-  %501 = getelementptr inbounds i8*** %500, i64 %498, !dbg !308
-  %502 = bitcast i8*** %501 to double***, !dbg !308
-  %503 = load double*** %502, align 8, !dbg !308, !tbaa !325
-  %504 = load double** %503, align 8, !dbg !308, !tbaa !325
-  %505 = getelementptr inbounds double** %503, i64 1, !dbg !308
-  %506 = bitcast double** %505 to i8**, !dbg !308
-  %507 = load i8** %506, align 8, !dbg !308, !tbaa !325
-  br label %.thread20, !dbg !308
-
-.thread20:                                        ; preds = %.thread18, %497
-  %508 = phi double* [ %504, %497 ], [ null, %.thread18 ]
-  %509 = phi i8* [ %507, %497 ], [ null, %.thread18 ], !dbg !308
-  %510 = bitcast i8* %509 to double*, !dbg !308
-  %511 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxy, align 4, !dbg !308, !tbaa !145
-  %512 = icmp slt i32 %511, 0, !dbg !308
-  br i1 %512, label %.thread22, label %513, !dbg !308
-
-; <label>:513                                     ; preds = %.thread20
-  %514 = sext i32 %511 to i64, !dbg !308
-  %515 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %516 = load i8**** %515, align 8, !dbg !308, !tbaa !324
-  %517 = getelementptr inbounds i8*** %516, i64 %514, !dbg !308
-  %518 = bitcast i8*** %517 to double***, !dbg !308
-  %519 = load double*** %518, align 8, !dbg !308, !tbaa !325
-  %520 = load double** %519, align 8, !dbg !308, !tbaa !325
-  %521 = getelementptr inbounds double** %519, i64 1, !dbg !308
-  %522 = bitcast double** %521 to i8**, !dbg !308
-  %523 = load i8** %522, align 8, !dbg !308, !tbaa !325
-  br label %.thread22, !dbg !308
-
-.thread22:                                        ; preds = %.thread20, %513
-  %524 = phi double* [ %520, %513 ], [ null, %.thread20 ]
-  %525 = phi i8* [ %523, %513 ], [ null, %.thread20 ], !dbg !308
-  %526 = bitcast i8* %525 to double*, !dbg !308
-  %527 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxz, align 4, !dbg !308, !tbaa !145
-  %528 = icmp slt i32 %527, 0, !dbg !308
-  br i1 %528, label %.thread24, label %529, !dbg !308
-
-; <label>:529                                     ; preds = %.thread22
-  %530 = sext i32 %527 to i64, !dbg !308
-  %531 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %532 = load i8**** %531, align 8, !dbg !308, !tbaa !324
-  %533 = getelementptr inbounds i8*** %532, i64 %530, !dbg !308
-  %534 = bitcast i8*** %533 to double***, !dbg !308
-  %535 = load double*** %534, align 8, !dbg !308, !tbaa !325
-  %536 = load double** %535, align 8, !dbg !308, !tbaa !325
-  %537 = getelementptr inbounds double** %535, i64 1, !dbg !308
-  %538 = bitcast double** %537 to i8**, !dbg !308
-  %539 = load i8** %538, align 8, !dbg !308, !tbaa !325
-  br label %.thread24, !dbg !308
-
-.thread24:                                        ; preds = %.thread22, %529
-  %540 = phi double* [ %536, %529 ], [ null, %.thread22 ]
-  %541 = phi i8* [ %539, %529 ], [ null, %.thread22 ], !dbg !308
-  %542 = bitcast i8* %541 to double*, !dbg !308
-  %543 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyy, align 4, !dbg !308, !tbaa !145
-  %544 = icmp slt i32 %543, 0, !dbg !308
-  br i1 %544, label %.thread26, label %545, !dbg !308
-
-; <label>:545                                     ; preds = %.thread24
-  %546 = sext i32 %543 to i64, !dbg !308
-  %547 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %548 = load i8**** %547, align 8, !dbg !308, !tbaa !324
-  %549 = getelementptr inbounds i8*** %548, i64 %546, !dbg !308
-  %550 = bitcast i8*** %549 to double***, !dbg !308
-  %551 = load double*** %550, align 8, !dbg !308, !tbaa !325
-  %552 = load double** %551, align 8, !dbg !308, !tbaa !325
-  %553 = getelementptr inbounds double** %551, i64 1, !dbg !308
-  %554 = bitcast double** %553 to i8**, !dbg !308
-  %555 = load i8** %554, align 8, !dbg !308, !tbaa !325
-  br label %.thread26, !dbg !308
-
-.thread26:                                        ; preds = %.thread24, %545
-  %556 = phi double* [ %552, %545 ], [ null, %.thread24 ]
-  %557 = phi i8* [ %555, %545 ], [ null, %.thread24 ], !dbg !308
-  %558 = bitcast i8* %557 to double*, !dbg !308
-  %559 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyz, align 4, !dbg !308, !tbaa !145
-  %560 = icmp slt i32 %559, 0, !dbg !308
-  br i1 %560, label %.thread28, label %561, !dbg !308
-
-; <label>:561                                     ; preds = %.thread26
-  %562 = sext i32 %559 to i64, !dbg !308
-  %563 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %564 = load i8**** %563, align 8, !dbg !308, !tbaa !324
-  %565 = getelementptr inbounds i8*** %564, i64 %562, !dbg !308
-  %566 = bitcast i8*** %565 to double***, !dbg !308
-  %567 = load double*** %566, align 8, !dbg !308, !tbaa !325
-  %568 = load double** %567, align 8, !dbg !308, !tbaa !325
-  %569 = getelementptr inbounds double** %567, i64 1, !dbg !308
-  %570 = bitcast double** %569 to i8**, !dbg !308
-  %571 = load i8** %570, align 8, !dbg !308, !tbaa !325
-  br label %.thread28, !dbg !308
-
-.thread28:                                        ; preds = %.thread26, %561
-  %572 = phi double* [ %568, %561 ], [ null, %.thread26 ]
-  %573 = phi i8* [ %571, %561 ], [ null, %.thread26 ], !dbg !308
-  %574 = bitcast i8* %573 to double*, !dbg !308
-  %575 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gzz, align 4, !dbg !308, !tbaa !145
-  %576 = icmp slt i32 %575, 0, !dbg !308
-  br i1 %576, label %.thread30, label %577, !dbg !308
-
-; <label>:577                                     ; preds = %.thread28
-  %578 = sext i32 %575 to i64, !dbg !308
-  %579 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %580 = load i8**** %579, align 8, !dbg !308, !tbaa !324
-  %581 = getelementptr inbounds i8*** %580, i64 %578, !dbg !308
-  %582 = bitcast i8*** %581 to double***, !dbg !308
-  %583 = load double*** %582, align 8, !dbg !308, !tbaa !325
-  %584 = load double** %583, align 8, !dbg !308, !tbaa !325
-  %585 = getelementptr inbounds double** %583, i64 1, !dbg !308
-  %586 = bitcast double** %585 to i8**, !dbg !308
-  %587 = load i8** %586, align 8, !dbg !308, !tbaa !325
-  br label %.thread30, !dbg !308
-
-.thread30:                                        ; preds = %.thread28, %577
-  %588 = phi double* [ %584, %577 ], [ null, %.thread28 ]
-  %589 = phi i8* [ %587, %577 ], [ null, %.thread28 ], !dbg !308
-  %590 = bitcast i8* %589 to double*, !dbg !308
-  %591 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxx_stag, align 4, !dbg !308, !tbaa !145
-  %592 = icmp slt i32 %591, 0, !dbg !308
-  br i1 %592, label %.thread36, label %593, !dbg !308
-
-; <label>:593                                     ; preds = %.thread30
-  %594 = sext i32 %591 to i64, !dbg !308
-  %595 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %596 = load i8**** %595, align 8, !dbg !308, !tbaa !324
-  %597 = getelementptr inbounds i8*** %596, i64 %594, !dbg !308
-  %598 = bitcast i8*** %597 to double***, !dbg !308
-  %599 = load double*** %598, align 8, !dbg !308, !tbaa !325
-  %600 = load double** %599, align 8, !dbg !308, !tbaa !325
-  %601 = getelementptr inbounds double** %599, i64 1, !dbg !308
-  %602 = load double** %601, align 8, !dbg !308, !tbaa !325
-  %603 = getelementptr inbounds double** %599, i64 2, !dbg !308
-  %604 = bitcast double** %603 to i8**, !dbg !308
-  %605 = load i8** %604, align 8, !dbg !308, !tbaa !325
-  br label %.thread36, !dbg !308
-
-.thread36:                                        ; preds = %.thread30, %593
-  %606 = phi double* [ %602, %593 ], [ null, %.thread30 ]
-  %607 = phi double* [ %600, %593 ], [ null, %.thread30 ]
-  %608 = phi i8* [ %605, %593 ], [ null, %.thread30 ], !dbg !308
-  %609 = bitcast i8* %608 to double*, !dbg !308
-  %610 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxy_stag, align 4, !dbg !308, !tbaa !145
-  %611 = icmp slt i32 %610, 0, !dbg !308
-  br i1 %611, label %.thread42, label %612, !dbg !308
-
-; <label>:612                                     ; preds = %.thread36
-  %613 = sext i32 %610 to i64, !dbg !308
-  %614 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %615 = load i8**** %614, align 8, !dbg !308, !tbaa !324
-  %616 = getelementptr inbounds i8*** %615, i64 %613, !dbg !308
-  %617 = bitcast i8*** %616 to double***, !dbg !308
-  %618 = load double*** %617, align 8, !dbg !308, !tbaa !325
-  %619 = load double** %618, align 8, !dbg !308, !tbaa !325
-  %620 = getelementptr inbounds double** %618, i64 1, !dbg !308
-  %621 = load double** %620, align 8, !dbg !308, !tbaa !325
-  %622 = getelementptr inbounds double** %618, i64 2, !dbg !308
-  %623 = bitcast double** %622 to i8**, !dbg !308
-  %624 = load i8** %623, align 8, !dbg !308, !tbaa !325
-  br label %.thread42, !dbg !308
-
-.thread42:                                        ; preds = %.thread36, %612
-  %625 = phi double* [ %621, %612 ], [ null, %.thread36 ]
-  %626 = phi double* [ %619, %612 ], [ null, %.thread36 ]
-  %627 = phi i8* [ %624, %612 ], [ null, %.thread36 ], !dbg !308
-  %628 = bitcast i8* %627 to double*, !dbg !308
-  %629 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxz_stag, align 4, !dbg !308, !tbaa !145
-  %630 = icmp slt i32 %629, 0, !dbg !308
-  br i1 %630, label %.thread48, label %631, !dbg !308
-
-; <label>:631                                     ; preds = %.thread42
-  %632 = sext i32 %629 to i64, !dbg !308
-  %633 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %634 = load i8**** %633, align 8, !dbg !308, !tbaa !324
-  %635 = getelementptr inbounds i8*** %634, i64 %632, !dbg !308
-  %636 = bitcast i8*** %635 to double***, !dbg !308
-  %637 = load double*** %636, align 8, !dbg !308, !tbaa !325
-  %638 = load double** %637, align 8, !dbg !308, !tbaa !325
-  %639 = getelementptr inbounds double** %637, i64 1, !dbg !308
-  %640 = load double** %639, align 8, !dbg !308, !tbaa !325
-  %641 = getelementptr inbounds double** %637, i64 2, !dbg !308
-  %642 = bitcast double** %641 to i8**, !dbg !308
-  %643 = load i8** %642, align 8, !dbg !308, !tbaa !325
-  br label %.thread48, !dbg !308
-
-.thread48:                                        ; preds = %.thread42, %631
-  %644 = phi double* [ %640, %631 ], [ null, %.thread42 ]
-  %645 = phi double* [ %638, %631 ], [ null, %.thread42 ]
-  %646 = phi i8* [ %643, %631 ], [ null, %.thread42 ], !dbg !308
-  %647 = bitcast i8* %646 to double*, !dbg !308
-  %648 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyy_stag, align 4, !dbg !308, !tbaa !145
-  %649 = icmp slt i32 %648, 0, !dbg !308
-  br i1 %649, label %.thread54, label %650, !dbg !308
-
-; <label>:650                                     ; preds = %.thread48
-  %651 = sext i32 %648 to i64, !dbg !308
-  %652 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %653 = load i8**** %652, align 8, !dbg !308, !tbaa !324
-  %654 = getelementptr inbounds i8*** %653, i64 %651, !dbg !308
-  %655 = bitcast i8*** %654 to double***, !dbg !308
-  %656 = load double*** %655, align 8, !dbg !308, !tbaa !325
-  %657 = load double** %656, align 8, !dbg !308, !tbaa !325
-  %658 = getelementptr inbounds double** %656, i64 1, !dbg !308
-  %659 = load double** %658, align 8, !dbg !308, !tbaa !325
-  %660 = getelementptr inbounds double** %656, i64 2, !dbg !308
-  %661 = bitcast double** %660 to i8**, !dbg !308
-  %662 = load i8** %661, align 8, !dbg !308, !tbaa !325
-  br label %.thread54, !dbg !308
-
-.thread54:                                        ; preds = %.thread48, %650
-  %663 = phi double* [ %659, %650 ], [ null, %.thread48 ]
-  %664 = phi double* [ %657, %650 ], [ null, %.thread48 ]
-  %665 = phi i8* [ %662, %650 ], [ null, %.thread48 ], !dbg !308
-  %666 = bitcast i8* %665 to double*, !dbg !308
-  %667 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyz_stag, align 4, !dbg !308, !tbaa !145
-  %668 = icmp slt i32 %667, 0, !dbg !308
-  br i1 %668, label %.thread60, label %669, !dbg !308
-
-; <label>:669                                     ; preds = %.thread54
-  %670 = sext i32 %667 to i64, !dbg !308
-  %671 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %672 = load i8**** %671, align 8, !dbg !308, !tbaa !324
-  %673 = getelementptr inbounds i8*** %672, i64 %670, !dbg !308
-  %674 = bitcast i8*** %673 to double***, !dbg !308
-  %675 = load double*** %674, align 8, !dbg !308, !tbaa !325
-  %676 = load double** %675, align 8, !dbg !308, !tbaa !325
-  %677 = getelementptr inbounds double** %675, i64 1, !dbg !308
-  %678 = load double** %677, align 8, !dbg !308, !tbaa !325
-  %679 = getelementptr inbounds double** %675, i64 2, !dbg !308
-  %680 = bitcast double** %679 to i8**, !dbg !308
-  %681 = load i8** %680, align 8, !dbg !308, !tbaa !325
-  br label %.thread60, !dbg !308
-
-.thread60:                                        ; preds = %.thread54, %669
-  %682 = phi double* [ %678, %669 ], [ null, %.thread54 ]
-  %683 = phi double* [ %676, %669 ], [ null, %.thread54 ]
-  %684 = phi i8* [ %681, %669 ], [ null, %.thread54 ], !dbg !308
-  %685 = bitcast i8* %684 to double*, !dbg !308
-  %686 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kzz_stag, align 4, !dbg !308, !tbaa !145
-  %687 = icmp slt i32 %686, 0, !dbg !308
-  br i1 %687, label %.thread66, label %688, !dbg !308
-
-; <label>:688                                     ; preds = %.thread60
-  %689 = sext i32 %686 to i64, !dbg !308
-  %690 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %691 = load i8**** %690, align 8, !dbg !308, !tbaa !324
-  %692 = getelementptr inbounds i8*** %691, i64 %689, !dbg !308
-  %693 = bitcast i8*** %692 to double***, !dbg !308
-  %694 = load double*** %693, align 8, !dbg !308, !tbaa !325
-  %695 = load double** %694, align 8, !dbg !308, !tbaa !325
-  %696 = getelementptr inbounds double** %694, i64 1, !dbg !308
-  %697 = load double** %696, align 8, !dbg !308, !tbaa !325
-  %698 = getelementptr inbounds double** %694, i64 2, !dbg !308
-  %699 = bitcast double** %698 to i8**, !dbg !308
-  %700 = load i8** %699, align 8, !dbg !308, !tbaa !325
-  br label %.thread66, !dbg !308
-
-.thread66:                                        ; preds = %.thread60, %688
-  %701 = phi double* [ %697, %688 ], [ null, %.thread60 ]
-  %702 = phi double* [ %695, %688 ], [ null, %.thread60 ]
-  %703 = phi i8* [ %700, %688 ], [ null, %.thread60 ], !dbg !308
-  %704 = bitcast i8* %703 to double*, !dbg !308
-  %705 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxx, align 4, !dbg !308, !tbaa !145
-  %706 = icmp slt i32 %705, 0, !dbg !308
-  br i1 %706, label %714, label %707, !dbg !308
-
-; <label>:707                                     ; preds = %.thread66
-  %708 = sext i32 %705 to i64, !dbg !308
-  %709 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %710 = load i8**** %709, align 8, !dbg !308, !tbaa !324
-  %711 = getelementptr inbounds i8*** %710, i64 %708, !dbg !308
-  %712 = load i8*** %711, align 8, !dbg !308, !tbaa !325
-  %713 = load i8** %712, align 8, !dbg !308, !tbaa !325
-  br label %714, !dbg !308
-
-; <label>:714                                     ; preds = %.thread66, %707
-  %715 = phi i8* [ %713, %707 ], [ null, %.thread66 ], !dbg !308
-  %716 = bitcast i8* %715 to double*, !dbg !308
-  %717 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxy, align 4, !dbg !308, !tbaa !145
-  %718 = icmp slt i32 %717, 0, !dbg !308
-  br i1 %718, label %726, label %719, !dbg !308
-
-; <label>:719                                     ; preds = %714
-  %720 = sext i32 %717 to i64, !dbg !308
-  %721 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %722 = load i8**** %721, align 8, !dbg !308, !tbaa !324
-  %723 = getelementptr inbounds i8*** %722, i64 %720, !dbg !308
-  %724 = load i8*** %723, align 8, !dbg !308, !tbaa !325
-  %725 = load i8** %724, align 8, !dbg !308, !tbaa !325
-  br label %726, !dbg !308
-
-; <label>:726                                     ; preds = %714, %719
-  %727 = phi i8* [ %725, %719 ], [ null, %714 ], !dbg !308
-  %728 = bitcast i8* %727 to double*, !dbg !308
-  %729 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxz, align 4, !dbg !308, !tbaa !145
-  %730 = icmp slt i32 %729, 0, !dbg !308
-  br i1 %730, label %738, label %731, !dbg !308
-
-; <label>:731                                     ; preds = %726
-  %732 = sext i32 %729 to i64, !dbg !308
-  %733 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %734 = load i8**** %733, align 8, !dbg !308, !tbaa !324
-  %735 = getelementptr inbounds i8*** %734, i64 %732, !dbg !308
-  %736 = load i8*** %735, align 8, !dbg !308, !tbaa !325
-  %737 = load i8** %736, align 8, !dbg !308, !tbaa !325
-  br label %738, !dbg !308
-
-; <label>:738                                     ; preds = %726, %731
-  %739 = phi i8* [ %737, %731 ], [ null, %726 ], !dbg !308
-  %740 = bitcast i8* %739 to double*, !dbg !308
-  %741 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyy, align 4, !dbg !308, !tbaa !145
-  %742 = icmp slt i32 %741, 0, !dbg !308
-  br i1 %742, label %750, label %743, !dbg !308
-
-; <label>:743                                     ; preds = %738
-  %744 = sext i32 %741 to i64, !dbg !308
-  %745 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %746 = load i8**** %745, align 8, !dbg !308, !tbaa !324
-  %747 = getelementptr inbounds i8*** %746, i64 %744, !dbg !308
-  %748 = load i8*** %747, align 8, !dbg !308, !tbaa !325
-  %749 = load i8** %748, align 8, !dbg !308, !tbaa !325
-  br label %750, !dbg !308
-
-; <label>:750                                     ; preds = %738, %743
-  %751 = phi i8* [ %749, %743 ], [ null, %738 ], !dbg !308
-  %752 = bitcast i8* %751 to double*, !dbg !308
-  %753 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyz, align 4, !dbg !308, !tbaa !145
-  %754 = icmp slt i32 %753, 0, !dbg !308
-  br i1 %754, label %762, label %755, !dbg !308
-
-; <label>:755                                     ; preds = %750
-  %756 = sext i32 %753 to i64, !dbg !308
-  %757 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %758 = load i8**** %757, align 8, !dbg !308, !tbaa !324
-  %759 = getelementptr inbounds i8*** %758, i64 %756, !dbg !308
-  %760 = load i8*** %759, align 8, !dbg !308, !tbaa !325
-  %761 = load i8** %760, align 8, !dbg !308, !tbaa !325
-  br label %762, !dbg !308
-
-; <label>:762                                     ; preds = %750, %755
-  %763 = phi i8* [ %761, %755 ], [ null, %750 ], !dbg !308
-  %764 = bitcast i8* %763 to double*, !dbg !308
-  %765 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gzz, align 4, !dbg !308, !tbaa !145
-  %766 = icmp slt i32 %765, 0, !dbg !308
-  br i1 %766, label %774, label %767, !dbg !308
-
-; <label>:767                                     ; preds = %762
-  %768 = sext i32 %765 to i64, !dbg !308
-  %769 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %770 = load i8**** %769, align 8, !dbg !308, !tbaa !324
-  %771 = getelementptr inbounds i8*** %770, i64 %768, !dbg !308
-  %772 = load i8*** %771, align 8, !dbg !308, !tbaa !325
-  %773 = load i8** %772, align 8, !dbg !308, !tbaa !325
-  br label %774, !dbg !308
-
-; <label>:774                                     ; preds = %762, %767
-  %775 = phi i8* [ %773, %767 ], [ null, %762 ], !dbg !308
-  %776 = bitcast i8* %775 to double*, !dbg !308
-  %777 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxx, align 4, !dbg !308, !tbaa !145
-  %778 = icmp slt i32 %777, 0, !dbg !308
-  br i1 %778, label %786, label %779, !dbg !308
-
-; <label>:779                                     ; preds = %774
-  %780 = sext i32 %777 to i64, !dbg !308
-  %781 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %782 = load i8**** %781, align 8, !dbg !308, !tbaa !324
-  %783 = getelementptr inbounds i8*** %782, i64 %780, !dbg !308
-  %784 = load i8*** %783, align 8, !dbg !308, !tbaa !325
-  %785 = load i8** %784, align 8, !dbg !308, !tbaa !325
-  br label %786, !dbg !308
-
-; <label>:786                                     ; preds = %774, %779
-  %787 = phi i8* [ %785, %779 ], [ null, %774 ], !dbg !308
-  %788 = bitcast i8* %787 to double*, !dbg !308
-  %789 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxy, align 4, !dbg !308, !tbaa !145
-  %790 = icmp slt i32 %789, 0, !dbg !308
-  br i1 %790, label %798, label %791, !dbg !308
-
-; <label>:791                                     ; preds = %786
-  %792 = sext i32 %789 to i64, !dbg !308
-  %793 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %794 = load i8**** %793, align 8, !dbg !308, !tbaa !324
-  %795 = getelementptr inbounds i8*** %794, i64 %792, !dbg !308
-  %796 = load i8*** %795, align 8, !dbg !308, !tbaa !325
-  %797 = load i8** %796, align 8, !dbg !308, !tbaa !325
-  br label %798, !dbg !308
-
-; <label>:798                                     ; preds = %786, %791
-  %799 = phi i8* [ %797, %791 ], [ null, %786 ], !dbg !308
-  %800 = bitcast i8* %799 to double*, !dbg !308
-  %801 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxz, align 4, !dbg !308, !tbaa !145
-  %802 = icmp slt i32 %801, 0, !dbg !308
-  br i1 %802, label %810, label %803, !dbg !308
-
-; <label>:803                                     ; preds = %798
-  %804 = sext i32 %801 to i64, !dbg !308
-  %805 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %806 = load i8**** %805, align 8, !dbg !308, !tbaa !324
-  %807 = getelementptr inbounds i8*** %806, i64 %804, !dbg !308
-  %808 = load i8*** %807, align 8, !dbg !308, !tbaa !325
-  %809 = load i8** %808, align 8, !dbg !308, !tbaa !325
-  br label %810, !dbg !308
-
-; <label>:810                                     ; preds = %798, %803
-  %811 = phi i8* [ %809, %803 ], [ null, %798 ], !dbg !308
-  %812 = bitcast i8* %811 to double*, !dbg !308
-  %813 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyy, align 4, !dbg !308, !tbaa !145
-  %814 = icmp slt i32 %813, 0, !dbg !308
-  br i1 %814, label %822, label %815, !dbg !308
-
-; <label>:815                                     ; preds = %810
-  %816 = sext i32 %813 to i64, !dbg !308
-  %817 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %818 = load i8**** %817, align 8, !dbg !308, !tbaa !324
-  %819 = getelementptr inbounds i8*** %818, i64 %816, !dbg !308
-  %820 = load i8*** %819, align 8, !dbg !308, !tbaa !325
-  %821 = load i8** %820, align 8, !dbg !308, !tbaa !325
-  br label %822, !dbg !308
-
-; <label>:822                                     ; preds = %810, %815
-  %823 = phi i8* [ %821, %815 ], [ null, %810 ], !dbg !308
-  %824 = bitcast i8* %823 to double*, !dbg !308
-  %825 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyz, align 4, !dbg !308, !tbaa !145
-  %826 = icmp slt i32 %825, 0, !dbg !308
-  br i1 %826, label %834, label %827, !dbg !308
-
-; <label>:827                                     ; preds = %822
-  %828 = sext i32 %825 to i64, !dbg !308
-  %829 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %830 = load i8**** %829, align 8, !dbg !308, !tbaa !324
-  %831 = getelementptr inbounds i8*** %830, i64 %828, !dbg !308
-  %832 = load i8*** %831, align 8, !dbg !308, !tbaa !325
-  %833 = load i8** %832, align 8, !dbg !308, !tbaa !325
-  br label %834, !dbg !308
-
-; <label>:834                                     ; preds = %822, %827
-  %835 = phi i8* [ %833, %827 ], [ null, %822 ], !dbg !308
-  %836 = bitcast i8* %835 to double*, !dbg !308
-  %837 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kzz, align 4, !dbg !308, !tbaa !145
-  %838 = icmp slt i32 %837, 0, !dbg !308
-  br i1 %838, label %846, label %839, !dbg !308
-
-; <label>:839                                     ; preds = %834
-  %840 = sext i32 %837 to i64, !dbg !308
-  %841 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %842 = load i8**** %841, align 8, !dbg !308, !tbaa !324
-  %843 = getelementptr inbounds i8*** %842, i64 %840, !dbg !308
-  %844 = load i8*** %843, align 8, !dbg !308, !tbaa !325
-  %845 = load i8** %844, align 8, !dbg !308, !tbaa !325
-  br label %846, !dbg !308
-
-; <label>:846                                     ; preds = %834, %839
-  %847 = phi i8* [ %845, %839 ], [ null, %834 ], !dbg !308
-  %848 = bitcast i8* %847 to double*, !dbg !308
-  %849 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, align 4, !dbg !308, !tbaa !145
-  %850 = icmp slt i32 %849, 0, !dbg !308
-  br i1 %850, label %.thread73, label %851, !dbg !308
-
-; <label>:851                                     ; preds = %846
-  %852 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !308
-  %853 = icmp eq i32 %852, 0, !dbg !308
-  br i1 %853, label %856, label %854, !dbg !308
-
-; <label>:854                                     ; preds = %851
-  %855 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !308
-  br label %856, !dbg !308
-
-; <label>:856                                     ; preds = %851, %854
-  %.ph67 = phi i32* [ @_cctk_one, %851 ], [ %855, %854 ]
-  %.pr68 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, align 4, !dbg !308, !tbaa !145
-  %857 = icmp slt i32 %.pr68, 0, !dbg !308
-  br i1 %857, label %.thread73, label %858, !dbg !308
-
-; <label>:858                                     ; preds = %856
-  %859 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !308
-  %860 = icmp eq i32 %859, 0, !dbg !308
-  br i1 %860, label %.thread69, label %861, !dbg !308
-
-; <label>:861                                     ; preds = %858
-  %862 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread69, !dbg !308
-
-.thread69:                                        ; preds = %858, %861
-  %.ph71.ph = phi i32* [ %862, %861 ], [ @_cctk_one, %858 ]
-  %.pr72.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, align 4, !dbg !308, !tbaa !145
-  %863 = icmp slt i32 %.pr72.pr, 0, !dbg !308
-  br i1 %863, label %.thread73, label %864, !dbg !308
-
-; <label>:864                                     ; preds = %.thread69
-  %865 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !308
-  %866 = icmp eq i32 %865, 0, !dbg !308
-  br i1 %866, label %.thread73, label %867, !dbg !308
-
-; <label>:867                                     ; preds = %864
-  %868 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread73, !dbg !308
-
-.thread73:                                        ; preds = %846, %856, %864, %867, %.thread69
-  %869 = phi i32* [ %.ph71.ph, %.thread69 ], [ %.ph71.ph, %867 ], [ %.ph71.ph, %864 ], [ @_cctk_one, %856 ], [ @_cctk_one, %846 ]
-  %870 = phi i32* [ %.ph67, %.thread69 ], [ %.ph67, %867 ], [ %.ph67, %864 ], [ %.ph67, %856 ], [ @_cctk_one, %846 ]
-  %871 = phi i32* [ @_cctk_one, %.thread69 ], [ %868, %867 ], [ @_cctk_one, %864 ], [ @_cctk_one, %856 ], [ @_cctk_one, %846 ], !dbg !308
-  %872 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, align 4, !dbg !308, !tbaa !145
-  %873 = icmp slt i32 %872, 0, !dbg !308
-  br i1 %873, label %.thread80, label %874, !dbg !308
-
-; <label>:874                                     ; preds = %.thread73
-  %875 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !308
-  %876 = icmp eq i32 %875, 0, !dbg !308
-  br i1 %876, label %879, label %877, !dbg !308
-
-; <label>:877                                     ; preds = %874
-  %878 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !308
-  br label %879, !dbg !308
-
-; <label>:879                                     ; preds = %874, %877
-  %.ph74 = phi i32* [ @_cctk_one, %874 ], [ %878, %877 ]
-  %.pr75 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, align 4, !dbg !308, !tbaa !145
-  %880 = icmp slt i32 %.pr75, 0, !dbg !308
-  br i1 %880, label %.thread80, label %881, !dbg !308
-
-; <label>:881                                     ; preds = %879
-  %882 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !308
-  %883 = icmp eq i32 %882, 0, !dbg !308
-  br i1 %883, label %.thread76, label %884, !dbg !308
-
-; <label>:884                                     ; preds = %881
-  %885 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread76, !dbg !308
-
-.thread76:                                        ; preds = %881, %884
-  %.ph78.ph = phi i32* [ %885, %884 ], [ @_cctk_one, %881 ]
-  %.pr79.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, align 4, !dbg !308, !tbaa !145
-  %886 = icmp slt i32 %.pr79.pr, 0, !dbg !308
-  br i1 %886, label %.thread80, label %887, !dbg !308
-
-; <label>:887                                     ; preds = %.thread76
-  %888 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !308
-  %889 = icmp eq i32 %888, 0, !dbg !308
-  br i1 %889, label %.thread80, label %890, !dbg !308
-
-; <label>:890                                     ; preds = %887
-  %891 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread80, !dbg !308
-
-.thread80:                                        ; preds = %.thread73, %879, %887, %890, %.thread76
-  %892 = phi i32* [ %.ph78.ph, %.thread76 ], [ %.ph78.ph, %890 ], [ %.ph78.ph, %887 ], [ @_cctk_one, %879 ], [ @_cctk_one, %.thread73 ]
-  %893 = phi i32* [ %.ph74, %.thread76 ], [ %.ph74, %890 ], [ %.ph74, %887 ], [ %.ph74, %879 ], [ @_cctk_one, %.thread73 ]
-  %894 = phi i32* [ @_cctk_one, %.thread76 ], [ %891, %890 ], [ @_cctk_one, %887 ], [ @_cctk_one, %879 ], [ @_cctk_one, %.thread73 ], !dbg !308
-  %895 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, align 4, !dbg !308, !tbaa !145
-  %896 = icmp slt i32 %895, 0, !dbg !308
-  br i1 %896, label %.thread87, label %897, !dbg !308
-
-; <label>:897                                     ; preds = %.thread80
-  %898 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !308
-  %899 = icmp eq i32 %898, 0, !dbg !308
-  br i1 %899, label %902, label %900, !dbg !308
-
-; <label>:900                                     ; preds = %897
-  %901 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !308
-  br label %902, !dbg !308
-
-; <label>:902                                     ; preds = %897, %900
-  %.ph81 = phi i32* [ @_cctk_one, %897 ], [ %901, %900 ]
-  %.pr82 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, align 4, !dbg !308, !tbaa !145
-  %903 = icmp slt i32 %.pr82, 0, !dbg !308
-  br i1 %903, label %.thread87, label %904, !dbg !308
-
-; <label>:904                                     ; preds = %902
-  %905 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !308
-  %906 = icmp eq i32 %905, 0, !dbg !308
-  br i1 %906, label %.thread83, label %907, !dbg !308
-
-; <label>:907                                     ; preds = %904
-  %908 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread83, !dbg !308
-
-.thread83:                                        ; preds = %904, %907
-  %.ph85.ph = phi i32* [ %908, %907 ], [ @_cctk_one, %904 ]
-  %.pr86.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, align 4, !dbg !308, !tbaa !145
-  %909 = icmp slt i32 %.pr86.pr, 0, !dbg !308
-  br i1 %909, label %.thread87, label %910, !dbg !308
-
-; <label>:910                                     ; preds = %.thread83
-  %911 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !308
-  %912 = icmp eq i32 %911, 0, !dbg !308
-  br i1 %912, label %.thread87, label %913, !dbg !308
-
-; <label>:913                                     ; preds = %910
-  %914 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread87, !dbg !308
-
-.thread87:                                        ; preds = %.thread80, %902, %910, %913, %.thread83
-  %915 = phi i32* [ %.ph85.ph, %.thread83 ], [ %.ph85.ph, %913 ], [ %.ph85.ph, %910 ], [ @_cctk_one, %902 ], [ @_cctk_one, %.thread80 ]
-  %916 = phi i32* [ %.ph81, %.thread83 ], [ %.ph81, %913 ], [ %.ph81, %910 ], [ %.ph81, %902 ], [ @_cctk_one, %.thread80 ]
-  %917 = phi i32* [ @_cctk_one, %.thread83 ], [ %914, %913 ], [ @_cctk_one, %910 ], [ @_cctk_one, %902 ], [ @_cctk_one, %.thread80 ], !dbg !308
-  %918 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, align 4, !dbg !308, !tbaa !145
-  %919 = icmp slt i32 %918, 0, !dbg !308
-  br i1 %919, label %.thread94, label %920, !dbg !308
-
-; <label>:920                                     ; preds = %.thread87
-  %921 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !308
-  %922 = icmp eq i32 %921, 0, !dbg !308
-  br i1 %922, label %925, label %923, !dbg !308
-
-; <label>:923                                     ; preds = %920
-  %924 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !308
-  br label %925, !dbg !308
-
-; <label>:925                                     ; preds = %920, %923
-  %.ph88 = phi i32* [ @_cctk_one, %920 ], [ %924, %923 ]
-  %.pr89 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, align 4, !dbg !308, !tbaa !145
-  %926 = icmp slt i32 %.pr89, 0, !dbg !308
-  br i1 %926, label %.thread94, label %927, !dbg !308
-
-; <label>:927                                     ; preds = %925
-  %928 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !308
-  %929 = icmp eq i32 %928, 0, !dbg !308
-  br i1 %929, label %.thread90, label %930, !dbg !308
-
-; <label>:930                                     ; preds = %927
-  %931 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread90, !dbg !308
-
-.thread90:                                        ; preds = %927, %930
-  %.ph92.ph = phi i32* [ %931, %930 ], [ @_cctk_one, %927 ]
-  %.pr93.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, align 4, !dbg !308, !tbaa !145
-  %932 = icmp slt i32 %.pr93.pr, 0, !dbg !308
-  br i1 %932, label %.thread94, label %933, !dbg !308
-
-; <label>:933                                     ; preds = %.thread90
-  %934 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !308
-  %935 = icmp eq i32 %934, 0, !dbg !308
-  br i1 %935, label %.thread94, label %936, !dbg !308
-
-; <label>:936                                     ; preds = %933
-  %937 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread94, !dbg !308
-
-.thread94:                                        ; preds = %.thread87, %925, %933, %936, %.thread90
-  %938 = phi i32* [ %.ph92.ph, %.thread90 ], [ %.ph92.ph, %936 ], [ %.ph92.ph, %933 ], [ @_cctk_one, %925 ], [ @_cctk_one, %.thread87 ]
-  %939 = phi i32* [ %.ph88, %.thread90 ], [ %.ph88, %936 ], [ %.ph88, %933 ], [ %.ph88, %925 ], [ @_cctk_one, %.thread87 ]
-  %940 = phi i32* [ @_cctk_one, %.thread90 ], [ %937, %936 ], [ @_cctk_one, %933 ], [ @_cctk_one, %925 ], [ @_cctk_one, %.thread87 ], !dbg !308
-  %941 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, align 4, !dbg !308, !tbaa !145
-  %942 = icmp slt i32 %941, 0, !dbg !308
-  br i1 %942, label %.thread101, label %943, !dbg !308
-
-; <label>:943                                     ; preds = %.thread94
-  %944 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !308
-  %945 = icmp eq i32 %944, 0, !dbg !308
-  br i1 %945, label %948, label %946, !dbg !308
-
-; <label>:946                                     ; preds = %943
-  %947 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !308
-  br label %948, !dbg !308
-
-; <label>:948                                     ; preds = %943, %946
-  %.ph95 = phi i32* [ @_cctk_one, %943 ], [ %947, %946 ]
-  %.pr96 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, align 4, !dbg !308, !tbaa !145
-  %949 = icmp slt i32 %.pr96, 0, !dbg !308
-  br i1 %949, label %.thread101, label %950, !dbg !308
-
-; <label>:950                                     ; preds = %948
-  %951 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !308
-  %952 = icmp eq i32 %951, 0, !dbg !308
-  br i1 %952, label %.thread97, label %953, !dbg !308
-
-; <label>:953                                     ; preds = %950
-  %954 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread97, !dbg !308
-
-.thread97:                                        ; preds = %950, %953
-  %.ph99.ph = phi i32* [ %954, %953 ], [ @_cctk_one, %950 ]
-  %.pr100.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, align 4, !dbg !308, !tbaa !145
-  %955 = icmp slt i32 %.pr100.pr, 0, !dbg !308
-  br i1 %955, label %.thread101, label %956, !dbg !308
-
-; <label>:956                                     ; preds = %.thread97
-  %957 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !308
-  %958 = icmp eq i32 %957, 0, !dbg !308
-  br i1 %958, label %.thread101, label %959, !dbg !308
-
-; <label>:959                                     ; preds = %956
-  %960 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread101, !dbg !308
-
-.thread101:                                       ; preds = %.thread94, %948, %956, %959, %.thread97
-  %961 = phi i32* [ %.ph99.ph, %.thread97 ], [ %.ph99.ph, %959 ], [ %.ph99.ph, %956 ], [ @_cctk_one, %948 ], [ @_cctk_one, %.thread94 ]
-  %962 = phi i32* [ %.ph95, %.thread97 ], [ %.ph95, %959 ], [ %.ph95, %956 ], [ %.ph95, %948 ], [ @_cctk_one, %.thread94 ]
-  %963 = phi i32* [ @_cctk_one, %.thread97 ], [ %960, %959 ], [ @_cctk_one, %956 ], [ @_cctk_one, %948 ], [ @_cctk_one, %.thread94 ], !dbg !308
-  %964 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, align 4, !dbg !308, !tbaa !145
-  %965 = icmp slt i32 %964, 0, !dbg !308
-  br i1 %965, label %.thread108, label %966, !dbg !308
-
-; <label>:966                                     ; preds = %.thread101
-  %967 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !308
-  %968 = icmp eq i32 %967, 0, !dbg !308
-  br i1 %968, label %971, label %969, !dbg !308
-
-; <label>:969                                     ; preds = %966
-  %970 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !308
-  br label %971, !dbg !308
-
-; <label>:971                                     ; preds = %966, %969
-  %.ph102 = phi i32* [ @_cctk_one, %966 ], [ %970, %969 ]
-  %.pr103 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, align 4, !dbg !308, !tbaa !145
-  %972 = icmp slt i32 %.pr103, 0, !dbg !308
-  br i1 %972, label %.thread108, label %973, !dbg !308
-
-; <label>:973                                     ; preds = %971
-  %974 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !308
-  %975 = icmp eq i32 %974, 0, !dbg !308
-  br i1 %975, label %.thread104, label %976, !dbg !308
-
-; <label>:976                                     ; preds = %973
-  %977 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread104, !dbg !308
-
-.thread104:                                       ; preds = %973, %976
-  %.ph106.ph = phi i32* [ %977, %976 ], [ @_cctk_one, %973 ]
-  %.pr107.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, align 4, !dbg !308, !tbaa !145
-  %978 = icmp slt i32 %.pr107.pr, 0, !dbg !308
-  br i1 %978, label %.thread108, label %979, !dbg !308
-
-; <label>:979                                     ; preds = %.thread104
-  %980 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !308
-  %981 = icmp eq i32 %980, 0, !dbg !308
-  br i1 %981, label %.thread108, label %982, !dbg !308
-
-; <label>:982                                     ; preds = %979
-  %983 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread108, !dbg !308
-
-.thread108:                                       ; preds = %.thread101, %971, %979, %982, %.thread104
-  %984 = phi i32* [ %.ph106.ph, %.thread104 ], [ %.ph106.ph, %982 ], [ %.ph106.ph, %979 ], [ @_cctk_one, %971 ], [ @_cctk_one, %.thread101 ]
-  %985 = phi i32* [ %.ph102, %.thread104 ], [ %.ph102, %982 ], [ %.ph102, %979 ], [ %.ph102, %971 ], [ @_cctk_one, %.thread101 ]
-  %986 = phi i32* [ @_cctk_one, %.thread104 ], [ %983, %982 ], [ @_cctk_one, %979 ], [ @_cctk_one, %971 ], [ @_cctk_one, %.thread101 ], !dbg !308
-  %987 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, align 4, !dbg !308, !tbaa !145
-  %988 = icmp slt i32 %987, 0, !dbg !308
-  br i1 %988, label %.thread115, label %989, !dbg !308
-
-; <label>:989                                     ; preds = %.thread108
-  %990 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !308
-  %991 = icmp eq i32 %990, 0, !dbg !308
-  br i1 %991, label %994, label %992, !dbg !308
-
-; <label>:992                                     ; preds = %989
-  %993 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !308
-  br label %994, !dbg !308
-
-; <label>:994                                     ; preds = %989, %992
-  %.ph109 = phi i32* [ @_cctk_one, %989 ], [ %993, %992 ]
-  %.pr110 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, align 4, !dbg !308, !tbaa !145
-  %995 = icmp slt i32 %.pr110, 0, !dbg !308
-  br i1 %995, label %.thread115, label %996, !dbg !308
-
-; <label>:996                                     ; preds = %994
-  %997 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !308
-  %998 = icmp eq i32 %997, 0, !dbg !308
-  br i1 %998, label %.thread111, label %999, !dbg !308
-
-; <label>:999                                     ; preds = %996
-  %1000 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread111, !dbg !308
-
-.thread111:                                       ; preds = %996, %999
-  %.ph113.ph = phi i32* [ %1000, %999 ], [ @_cctk_one, %996 ]
-  %.pr114.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, align 4, !dbg !308, !tbaa !145
-  %1001 = icmp slt i32 %.pr114.pr, 0, !dbg !308
-  br i1 %1001, label %.thread115, label %1002, !dbg !308
-
-; <label>:1002                                    ; preds = %.thread111
-  %1003 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !308
-  %1004 = icmp eq i32 %1003, 0, !dbg !308
-  br i1 %1004, label %.thread115, label %1005, !dbg !308
-
-; <label>:1005                                    ; preds = %1002
-  %1006 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread115, !dbg !308
-
-.thread115:                                       ; preds = %.thread108, %994, %1002, %1005, %.thread111
-  %1007 = phi i32* [ %.ph113.ph, %.thread111 ], [ %.ph113.ph, %1005 ], [ %.ph113.ph, %1002 ], [ @_cctk_one, %994 ], [ @_cctk_one, %.thread108 ]
-  %1008 = phi i32* [ %.ph109, %.thread111 ], [ %.ph109, %1005 ], [ %.ph109, %1002 ], [ %.ph109, %994 ], [ @_cctk_one, %.thread108 ]
-  %1009 = phi i32* [ @_cctk_one, %.thread111 ], [ %1006, %1005 ], [ @_cctk_one, %1002 ], [ @_cctk_one, %994 ], [ @_cctk_one, %.thread108 ], !dbg !308
-  %1010 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, align 4, !dbg !308, !tbaa !145
-  %1011 = icmp slt i32 %1010, 0, !dbg !308
-  br i1 %1011, label %.thread122, label %1012, !dbg !308
-
-; <label>:1012                                    ; preds = %.thread115
-  %1013 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !308
-  %1014 = icmp eq i32 %1013, 0, !dbg !308
-  br i1 %1014, label %1017, label %1015, !dbg !308
-
-; <label>:1015                                    ; preds = %1012
-  %1016 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !308
-  br label %1017, !dbg !308
-
-; <label>:1017                                    ; preds = %1012, %1015
-  %.ph116 = phi i32* [ @_cctk_one, %1012 ], [ %1016, %1015 ]
-  %.pr117 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, align 4, !dbg !308, !tbaa !145
-  %1018 = icmp slt i32 %.pr117, 0, !dbg !308
-  br i1 %1018, label %.thread122, label %1019, !dbg !308
-
-; <label>:1019                                    ; preds = %1017
-  %1020 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !308
-  %1021 = icmp eq i32 %1020, 0, !dbg !308
-  br i1 %1021, label %.thread118, label %1022, !dbg !308
-
-; <label>:1022                                    ; preds = %1019
-  %1023 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread118, !dbg !308
-
-.thread118:                                       ; preds = %1019, %1022
-  %.ph120.ph = phi i32* [ %1023, %1022 ], [ @_cctk_one, %1019 ]
-  %.pr121.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, align 4, !dbg !308, !tbaa !145
-  %1024 = icmp slt i32 %.pr121.pr, 0, !dbg !308
-  br i1 %1024, label %.thread122, label %1025, !dbg !308
-
-; <label>:1025                                    ; preds = %.thread118
-  %1026 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !308
-  %1027 = icmp eq i32 %1026, 0, !dbg !308
-  br i1 %1027, label %.thread122, label %1028, !dbg !308
-
-; <label>:1028                                    ; preds = %1025
-  %1029 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread122, !dbg !308
-
-.thread122:                                       ; preds = %.thread115, %1017, %1025, %1028, %.thread118
-  %1030 = phi i32* [ %.ph120.ph, %.thread118 ], [ %.ph120.ph, %1028 ], [ %.ph120.ph, %1025 ], [ @_cctk_one, %1017 ], [ @_cctk_one, %.thread115 ]
-  %1031 = phi i32* [ %.ph116, %.thread118 ], [ %.ph116, %1028 ], [ %.ph116, %1025 ], [ %.ph116, %1017 ], [ @_cctk_one, %.thread115 ]
-  %1032 = phi i32* [ @_cctk_one, %.thread118 ], [ %1029, %1028 ], [ @_cctk_one, %1025 ], [ @_cctk_one, %1017 ], [ @_cctk_one, %.thread115 ], !dbg !308
-  %1033 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, align 4, !dbg !308, !tbaa !145
-  %1034 = icmp slt i32 %1033, 0, !dbg !308
-  br i1 %1034, label %.thread129, label %1035, !dbg !308
-
-; <label>:1035                                    ; preds = %.thread122
-  %1036 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !308
-  %1037 = icmp eq i32 %1036, 0, !dbg !308
-  br i1 %1037, label %1040, label %1038, !dbg !308
-
-; <label>:1038                                    ; preds = %1035
-  %1039 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !308
-  br label %1040, !dbg !308
-
-; <label>:1040                                    ; preds = %1035, %1038
-  %.ph123 = phi i32* [ @_cctk_one, %1035 ], [ %1039, %1038 ]
-  %.pr124 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, align 4, !dbg !308, !tbaa !145
-  %1041 = icmp slt i32 %.pr124, 0, !dbg !308
-  br i1 %1041, label %.thread129, label %1042, !dbg !308
-
-; <label>:1042                                    ; preds = %1040
-  %1043 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !308
-  %1044 = icmp eq i32 %1043, 0, !dbg !308
-  br i1 %1044, label %.thread125, label %1045, !dbg !308
-
-; <label>:1045                                    ; preds = %1042
-  %1046 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread125, !dbg !308
-
-.thread125:                                       ; preds = %1042, %1045
-  %.ph127.ph = phi i32* [ %1046, %1045 ], [ @_cctk_one, %1042 ]
-  %.pr128.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, align 4, !dbg !308, !tbaa !145
-  %1047 = icmp slt i32 %.pr128.pr, 0, !dbg !308
-  br i1 %1047, label %.thread129, label %1048, !dbg !308
-
-; <label>:1048                                    ; preds = %.thread125
-  %1049 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !308
-  %1050 = icmp eq i32 %1049, 0, !dbg !308
-  br i1 %1050, label %.thread129, label %1051, !dbg !308
-
-; <label>:1051                                    ; preds = %1048
-  %1052 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !308
-  br label %.thread129, !dbg !308
-
-.thread129:                                       ; preds = %.thread122, %1040, %1048, %1051, %.thread125
-  %1053 = phi i32* [ %.ph127.ph, %.thread125 ], [ %.ph127.ph, %1051 ], [ %.ph127.ph, %1048 ], [ @_cctk_one, %1040 ], [ @_cctk_one, %.thread122 ]
-  %1054 = phi i32* [ %.ph123, %.thread125 ], [ %.ph123, %1051 ], [ %.ph123, %1048 ], [ %.ph123, %1040 ], [ @_cctk_one, %.thread122 ]
-  %1055 = phi i32* [ @_cctk_one, %.thread125 ], [ %1052, %1051 ], [ @_cctk_one, %1048 ], [ @_cctk_one, %1040 ], [ @_cctk_one, %.thread122 ], !dbg !308
-  %1056 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_active_slicing_handle, align 4, !dbg !308, !tbaa !145
-  %1057 = icmp slt i32 %1056, 0, !dbg !308
-  br i1 %1057, label %1065, label %1058, !dbg !308
-
-; <label>:1058                                    ; preds = %.thread129
-  %1059 = sext i32 %1056 to i64, !dbg !308
-  %1060 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1061 = load i8**** %1060, align 8, !dbg !308, !tbaa !324
-  %1062 = getelementptr inbounds i8*** %1061, i64 %1059, !dbg !308
-  %1063 = load i8*** %1062, align 8, !dbg !308, !tbaa !325
-  %1064 = load i8** %1063, align 8, !dbg !308, !tbaa !325
-  br label %1065, !dbg !308
-
-; <label>:1065                                    ; preds = %.thread129, %1058
-  %1066 = phi i8* [ %1064, %1058 ], [ null, %.thread129 ], !dbg !308
-  %1067 = bitcast i8* %1066 to i32*, !dbg !308
-  %1068 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_alp, align 4, !dbg !308, !tbaa !145
-  %1069 = icmp slt i32 %1068, 0, !dbg !308
-  br i1 %1069, label %1077, label %1070, !dbg !308
-
-; <label>:1070                                    ; preds = %1065
-  %1071 = sext i32 %1068 to i64, !dbg !308
-  %1072 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1073 = load i8**** %1072, align 8, !dbg !308, !tbaa !324
-  %1074 = getelementptr inbounds i8*** %1073, i64 %1071, !dbg !308
-  %1075 = load i8*** %1074, align 8, !dbg !308, !tbaa !325
-  %1076 = load i8** %1075, align 8, !dbg !308, !tbaa !325
-  br label %1077, !dbg !308
-
-; <label>:1077                                    ; preds = %1065, %1070
-  %1078 = phi i8* [ %1076, %1070 ], [ null, %1065 ], !dbg !308
-  %1079 = bitcast i8* %1078 to double*, !dbg !308
-  %1080 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betax, align 4, !dbg !308, !tbaa !145
-  %1081 = icmp slt i32 %1080, 0, !dbg !308
-  br i1 %1081, label %1089, label %1082, !dbg !308
-
-; <label>:1082                                    ; preds = %1077
-  %1083 = sext i32 %1080 to i64, !dbg !308
-  %1084 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1085 = load i8**** %1084, align 8, !dbg !308, !tbaa !324
-  %1086 = getelementptr inbounds i8*** %1085, i64 %1083, !dbg !308
-  %1087 = load i8*** %1086, align 8, !dbg !308, !tbaa !325
-  %1088 = load i8** %1087, align 8, !dbg !308, !tbaa !325
-  br label %1089, !dbg !308
-
-; <label>:1089                                    ; preds = %1077, %1082
-  %1090 = phi i8* [ %1088, %1082 ], [ null, %1077 ], !dbg !308
-  %1091 = bitcast i8* %1090 to double*, !dbg !308
-  %1092 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betay, align 4, !dbg !308, !tbaa !145
-  %1093 = icmp slt i32 %1092, 0, !dbg !308
-  br i1 %1093, label %1101, label %1094, !dbg !308
-
-; <label>:1094                                    ; preds = %1089
-  %1095 = sext i32 %1092 to i64, !dbg !308
-  %1096 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1097 = load i8**** %1096, align 8, !dbg !308, !tbaa !324
-  %1098 = getelementptr inbounds i8*** %1097, i64 %1095, !dbg !308
-  %1099 = load i8*** %1098, align 8, !dbg !308, !tbaa !325
-  %1100 = load i8** %1099, align 8, !dbg !308, !tbaa !325
-  br label %1101, !dbg !308
-
-; <label>:1101                                    ; preds = %1089, %1094
-  %1102 = phi i8* [ %1100, %1094 ], [ null, %1089 ], !dbg !308
-  %1103 = bitcast i8* %1102 to double*, !dbg !308
-  %1104 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betaz, align 4, !dbg !308, !tbaa !145
-  %1105 = icmp slt i32 %1104, 0, !dbg !308
-  br i1 %1105, label %1113, label %1106, !dbg !308
-
-; <label>:1106                                    ; preds = %1101
-  %1107 = sext i32 %1104 to i64, !dbg !308
-  %1108 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1109 = load i8**** %1108, align 8, !dbg !308, !tbaa !324
-  %1110 = getelementptr inbounds i8*** %1109, i64 %1107, !dbg !308
-  %1111 = load i8*** %1110, align 8, !dbg !308, !tbaa !325
-  %1112 = load i8** %1111, align 8, !dbg !308, !tbaa !325
-  br label %1113, !dbg !308
-
-; <label>:1113                                    ; preds = %1101, %1106
-  %1114 = phi i8* [ %1112, %1106 ], [ null, %1101 ], !dbg !308
-  %1115 = bitcast i8* %1114 to double*, !dbg !308
-  %1116 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dx, align 4, !dbg !308, !tbaa !145
-  %1117 = icmp slt i32 %1116, 0, !dbg !308
-  br i1 %1117, label %1125, label %1118, !dbg !308
-
-; <label>:1118                                    ; preds = %1113
-  %1119 = sext i32 %1116 to i64, !dbg !308
-  %1120 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1121 = load i8**** %1120, align 8, !dbg !308, !tbaa !324
-  %1122 = getelementptr inbounds i8*** %1121, i64 %1119, !dbg !308
-  %1123 = load i8*** %1122, align 8, !dbg !308, !tbaa !325
-  %1124 = load i8** %1123, align 8, !dbg !308, !tbaa !325
-  br label %1125, !dbg !308
-
-; <label>:1125                                    ; preds = %1113, %1118
-  %1126 = phi i8* [ %1124, %1118 ], [ null, %1113 ], !dbg !308
-  %1127 = bitcast i8* %1126 to double*, !dbg !308
-  %1128 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dy, align 4, !dbg !308, !tbaa !145
-  %1129 = icmp slt i32 %1128, 0, !dbg !308
-  br i1 %1129, label %1137, label %1130, !dbg !308
-
-; <label>:1130                                    ; preds = %1125
-  %1131 = sext i32 %1128 to i64, !dbg !308
-  %1132 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1133 = load i8**** %1132, align 8, !dbg !308, !tbaa !324
-  %1134 = getelementptr inbounds i8*** %1133, i64 %1131, !dbg !308
-  %1135 = load i8*** %1134, align 8, !dbg !308, !tbaa !325
-  %1136 = load i8** %1135, align 8, !dbg !308, !tbaa !325
-  br label %1137, !dbg !308
-
-; <label>:1137                                    ; preds = %1125, %1130
-  %1138 = phi i8* [ %1136, %1130 ], [ null, %1125 ], !dbg !308
-  %1139 = bitcast i8* %1138 to double*, !dbg !308
-  %1140 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dz, align 4, !dbg !308, !tbaa !145
-  %1141 = icmp slt i32 %1140, 0, !dbg !308
-  br i1 %1141, label %1149, label %1142, !dbg !308
-
-; <label>:1142                                    ; preds = %1137
-  %1143 = sext i32 %1140 to i64, !dbg !308
-  %1144 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1145 = load i8**** %1144, align 8, !dbg !308, !tbaa !324
-  %1146 = getelementptr inbounds i8*** %1145, i64 %1143, !dbg !308
-  %1147 = load i8*** %1146, align 8, !dbg !308, !tbaa !325
-  %1148 = load i8** %1147, align 8, !dbg !308, !tbaa !325
-  br label %1149, !dbg !308
-
-; <label>:1149                                    ; preds = %1137, %1142
-  %1150 = phi i8* [ %1148, %1142 ], [ null, %1137 ], !dbg !308
-  %1151 = bitcast i8* %1150 to double*, !dbg !308
-  %1152 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_conformal_state, align 4, !dbg !308, !tbaa !145
-  %1153 = icmp slt i32 %1152, 0, !dbg !308
-  br i1 %1153, label %1161, label %1154, !dbg !308
-
-; <label>:1154                                    ; preds = %1149
-  %1155 = sext i32 %1152 to i64, !dbg !308
-  %1156 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1157 = load i8**** %1156, align 8, !dbg !308, !tbaa !324
-  %1158 = getelementptr inbounds i8*** %1157, i64 %1155, !dbg !308
-  %1159 = load i8*** %1158, align 8, !dbg !308, !tbaa !325
-  %1160 = load i8** %1159, align 8, !dbg !308, !tbaa !325
-  br label %1161, !dbg !308
-
-; <label>:1161                                    ; preds = %1149, %1154
-  %1162 = phi i8* [ %1160, %1154 ], [ null, %1149 ], !dbg !308
-  %1163 = bitcast i8* %1162 to i32*, !dbg !308
-  %1164 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_min_time, align 4, !dbg !308, !tbaa !145
-  %1165 = icmp slt i32 %1164, 0, !dbg !308
-  br i1 %1165, label %1173, label %1166, !dbg !308
-
-; <label>:1166                                    ; preds = %1161
-  %1167 = sext i32 %1164 to i64, !dbg !308
-  %1168 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1169 = load i8**** %1168, align 8, !dbg !308, !tbaa !324
-  %1170 = getelementptr inbounds i8*** %1169, i64 %1167, !dbg !308
-  %1171 = load i8*** %1170, align 8, !dbg !308, !tbaa !325
-  %1172 = load i8** %1171, align 8, !dbg !308, !tbaa !325
-  br label %1173, !dbg !308
-
-; <label>:1173                                    ; preds = %1161, %1166
-  %1174 = phi i8* [ %1172, %1166 ], [ null, %1161 ], !dbg !308
-  %1175 = bitcast i8* %1174 to double*, !dbg !308
-  %1176 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_wave_speed, align 4, !dbg !308, !tbaa !145
-  %1177 = icmp slt i32 %1176, 0, !dbg !308
-  br i1 %1177, label %1185, label %1178, !dbg !308
-
-; <label>:1178                                    ; preds = %1173
-  %1179 = sext i32 %1176 to i64, !dbg !308
-  %1180 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1181 = load i8**** %1180, align 8, !dbg !308, !tbaa !324
-  %1182 = getelementptr inbounds i8*** %1181, i64 %1179, !dbg !308
-  %1183 = load i8*** %1182, align 8, !dbg !308, !tbaa !325
-  %1184 = load i8** %1183, align 8, !dbg !308, !tbaa !325
-  br label %1185, !dbg !308
-
-; <label>:1185                                    ; preds = %1173, %1178
-  %1186 = phi i8* [ %1184, %1178 ], [ null, %1173 ], !dbg !308
-  %1187 = bitcast i8* %1186 to double*, !dbg !308
-  %1188 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_emask, align 4, !dbg !308, !tbaa !145
-  %1189 = icmp slt i32 %1188, 0, !dbg !308
-  br i1 %1189, label %1197, label %1190, !dbg !308
-
-; <label>:1190                                    ; preds = %1185
-  %1191 = sext i32 %1188 to i64, !dbg !308
-  %1192 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1193 = load i8**** %1192, align 8, !dbg !308, !tbaa !324
-  %1194 = getelementptr inbounds i8*** %1193, i64 %1191, !dbg !308
-  %1195 = load i8*** %1194, align 8, !dbg !308, !tbaa !325
-  %1196 = load i8** %1195, align 8, !dbg !308, !tbaa !325
-  br label %1197, !dbg !308
-
-; <label>:1197                                    ; preds = %1185, %1190
-  %1198 = phi i8* [ %1196, %1190 ], [ null, %1185 ], !dbg !308
-  %1199 = bitcast i8* %1198 to double*, !dbg !308
-  %1200 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxx, align 4, !dbg !308, !tbaa !145
-  %1201 = icmp slt i32 %1200, 0, !dbg !308
-  br i1 %1201, label %1209, label %1202, !dbg !308
-
-; <label>:1202                                    ; preds = %1197
-  %1203 = sext i32 %1200 to i64, !dbg !308
-  %1204 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1205 = load i8**** %1204, align 8, !dbg !308, !tbaa !324
-  %1206 = getelementptr inbounds i8*** %1205, i64 %1203, !dbg !308
-  %1207 = load i8*** %1206, align 8, !dbg !308, !tbaa !325
-  %1208 = load i8** %1207, align 8, !dbg !308, !tbaa !325
-  br label %1209, !dbg !308
-
-; <label>:1209                                    ; preds = %1197, %1202
-  %1210 = phi i8* [ %1208, %1202 ], [ null, %1197 ], !dbg !308
-  %1211 = bitcast i8* %1210 to double*, !dbg !308
-  %1212 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxy, align 4, !dbg !308, !tbaa !145
-  %1213 = icmp slt i32 %1212, 0, !dbg !308
-  br i1 %1213, label %1221, label %1214, !dbg !308
-
-; <label>:1214                                    ; preds = %1209
-  %1215 = sext i32 %1212 to i64, !dbg !308
-  %1216 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1217 = load i8**** %1216, align 8, !dbg !308, !tbaa !324
-  %1218 = getelementptr inbounds i8*** %1217, i64 %1215, !dbg !308
-  %1219 = load i8*** %1218, align 8, !dbg !308, !tbaa !325
-  %1220 = load i8** %1219, align 8, !dbg !308, !tbaa !325
-  br label %1221, !dbg !308
-
-; <label>:1221                                    ; preds = %1209, %1214
-  %1222 = phi i8* [ %1220, %1214 ], [ null, %1209 ], !dbg !308
-  %1223 = bitcast i8* %1222 to double*, !dbg !308
-  %1224 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxz, align 4, !dbg !308, !tbaa !145
-  %1225 = icmp slt i32 %1224, 0, !dbg !308
-  br i1 %1225, label %1233, label %1226, !dbg !308
-
-; <label>:1226                                    ; preds = %1221
-  %1227 = sext i32 %1224 to i64, !dbg !308
-  %1228 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1229 = load i8**** %1228, align 8, !dbg !308, !tbaa !324
-  %1230 = getelementptr inbounds i8*** %1229, i64 %1227, !dbg !308
-  %1231 = load i8*** %1230, align 8, !dbg !308, !tbaa !325
-  %1232 = load i8** %1231, align 8, !dbg !308, !tbaa !325
-  br label %1233, !dbg !308
-
-; <label>:1233                                    ; preds = %1221, %1226
-  %1234 = phi i8* [ %1232, %1226 ], [ null, %1221 ], !dbg !308
-  %1235 = bitcast i8* %1234 to double*, !dbg !308
-  %1236 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyy, align 4, !dbg !308, !tbaa !145
-  %1237 = icmp slt i32 %1236, 0, !dbg !308
-  br i1 %1237, label %1245, label %1238, !dbg !308
-
-; <label>:1238                                    ; preds = %1233
-  %1239 = sext i32 %1236 to i64, !dbg !308
-  %1240 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1241 = load i8**** %1240, align 8, !dbg !308, !tbaa !324
-  %1242 = getelementptr inbounds i8*** %1241, i64 %1239, !dbg !308
-  %1243 = load i8*** %1242, align 8, !dbg !308, !tbaa !325
-  %1244 = load i8** %1243, align 8, !dbg !308, !tbaa !325
-  br label %1245, !dbg !308
-
-; <label>:1245                                    ; preds = %1233, %1238
-  %1246 = phi i8* [ %1244, %1238 ], [ null, %1233 ], !dbg !308
-  %1247 = bitcast i8* %1246 to double*, !dbg !308
-  %1248 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyz, align 4, !dbg !308, !tbaa !145
-  %1249 = icmp slt i32 %1248, 0, !dbg !308
-  br i1 %1249, label %1257, label %1250, !dbg !308
-
-; <label>:1250                                    ; preds = %1245
-  %1251 = sext i32 %1248 to i64, !dbg !308
-  %1252 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1253 = load i8**** %1252, align 8, !dbg !308, !tbaa !324
-  %1254 = getelementptr inbounds i8*** %1253, i64 %1251, !dbg !308
-  %1255 = load i8*** %1254, align 8, !dbg !308, !tbaa !325
-  %1256 = load i8** %1255, align 8, !dbg !308, !tbaa !325
-  br label %1257, !dbg !308
-
-; <label>:1257                                    ; preds = %1245, %1250
-  %1258 = phi i8* [ %1256, %1250 ], [ null, %1245 ], !dbg !308
-  %1259 = bitcast i8* %1258 to double*, !dbg !308
-  %1260 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gzz, align 4, !dbg !308, !tbaa !145
-  %1261 = icmp slt i32 %1260, 0, !dbg !308
-  br i1 %1261, label %1269, label %1262, !dbg !308
-
-; <label>:1262                                    ; preds = %1257
-  %1263 = sext i32 %1260 to i64, !dbg !308
-  %1264 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1265 = load i8**** %1264, align 8, !dbg !308, !tbaa !324
-  %1266 = getelementptr inbounds i8*** %1265, i64 %1263, !dbg !308
-  %1267 = load i8*** %1266, align 8, !dbg !308, !tbaa !325
-  %1268 = load i8** %1267, align 8, !dbg !308, !tbaa !325
-  br label %1269, !dbg !308
-
-; <label>:1269                                    ; preds = %1257, %1262
-  %1270 = phi i8* [ %1268, %1262 ], [ null, %1257 ], !dbg !308
-  %1271 = bitcast i8* %1270 to double*, !dbg !308
-  %1272 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxx, align 4, !dbg !308, !tbaa !145
-  %1273 = icmp slt i32 %1272, 0, !dbg !308
-  br i1 %1273, label %1281, label %1274, !dbg !308
-
-; <label>:1274                                    ; preds = %1269
-  %1275 = sext i32 %1272 to i64, !dbg !308
-  %1276 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1277 = load i8**** %1276, align 8, !dbg !308, !tbaa !324
-  %1278 = getelementptr inbounds i8*** %1277, i64 %1275, !dbg !308
-  %1279 = load i8*** %1278, align 8, !dbg !308, !tbaa !325
-  %1280 = load i8** %1279, align 8, !dbg !308, !tbaa !325
-  br label %1281, !dbg !308
-
-; <label>:1281                                    ; preds = %1269, %1274
-  %1282 = phi i8* [ %1280, %1274 ], [ null, %1269 ], !dbg !308
-  %1283 = bitcast i8* %1282 to double*, !dbg !308
-  %1284 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxy, align 4, !dbg !308, !tbaa !145
-  %1285 = icmp slt i32 %1284, 0, !dbg !308
-  br i1 %1285, label %1293, label %1286, !dbg !308
-
-; <label>:1286                                    ; preds = %1281
-  %1287 = sext i32 %1284 to i64, !dbg !308
-  %1288 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1289 = load i8**** %1288, align 8, !dbg !308, !tbaa !324
-  %1290 = getelementptr inbounds i8*** %1289, i64 %1287, !dbg !308
-  %1291 = load i8*** %1290, align 8, !dbg !308, !tbaa !325
-  %1292 = load i8** %1291, align 8, !dbg !308, !tbaa !325
-  br label %1293, !dbg !308
-
-; <label>:1293                                    ; preds = %1281, %1286
-  %1294 = phi i8* [ %1292, %1286 ], [ null, %1281 ], !dbg !308
-  %1295 = bitcast i8* %1294 to double*, !dbg !308
-  %1296 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxz, align 4, !dbg !308, !tbaa !145
-  %1297 = icmp slt i32 %1296, 0, !dbg !308
-  br i1 %1297, label %1305, label %1298, !dbg !308
-
-; <label>:1298                                    ; preds = %1293
-  %1299 = sext i32 %1296 to i64, !dbg !308
-  %1300 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1301 = load i8**** %1300, align 8, !dbg !308, !tbaa !324
-  %1302 = getelementptr inbounds i8*** %1301, i64 %1299, !dbg !308
-  %1303 = load i8*** %1302, align 8, !dbg !308, !tbaa !325
-  %1304 = load i8** %1303, align 8, !dbg !308, !tbaa !325
-  br label %1305, !dbg !308
-
-; <label>:1305                                    ; preds = %1293, %1298
-  %1306 = phi i8* [ %1304, %1298 ], [ null, %1293 ], !dbg !308
-  %1307 = bitcast i8* %1306 to double*, !dbg !308
-  %1308 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyy, align 4, !dbg !308, !tbaa !145
-  %1309 = icmp slt i32 %1308, 0, !dbg !308
-  br i1 %1309, label %1317, label %1310, !dbg !308
-
-; <label>:1310                                    ; preds = %1305
-  %1311 = sext i32 %1308 to i64, !dbg !308
-  %1312 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1313 = load i8**** %1312, align 8, !dbg !308, !tbaa !324
-  %1314 = getelementptr inbounds i8*** %1313, i64 %1311, !dbg !308
-  %1315 = load i8*** %1314, align 8, !dbg !308, !tbaa !325
-  %1316 = load i8** %1315, align 8, !dbg !308, !tbaa !325
-  br label %1317, !dbg !308
-
-; <label>:1317                                    ; preds = %1305, %1310
-  %1318 = phi i8* [ %1316, %1310 ], [ null, %1305 ], !dbg !308
-  %1319 = bitcast i8* %1318 to double*, !dbg !308
-  %1320 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyz, align 4, !dbg !308, !tbaa !145
-  %1321 = icmp slt i32 %1320, 0, !dbg !308
-  br i1 %1321, label %1329, label %1322, !dbg !308
-
-; <label>:1322                                    ; preds = %1317
-  %1323 = sext i32 %1320 to i64, !dbg !308
-  %1324 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1325 = load i8**** %1324, align 8, !dbg !308, !tbaa !324
-  %1326 = getelementptr inbounds i8*** %1325, i64 %1323, !dbg !308
-  %1327 = load i8*** %1326, align 8, !dbg !308, !tbaa !325
-  %1328 = load i8** %1327, align 8, !dbg !308, !tbaa !325
-  br label %1329, !dbg !308
-
-; <label>:1329                                    ; preds = %1317, %1322
-  %1330 = phi i8* [ %1328, %1322 ], [ null, %1317 ], !dbg !308
-  %1331 = bitcast i8* %1330 to double*, !dbg !308
-  %1332 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kzz, align 4, !dbg !308, !tbaa !145
-  %1333 = icmp slt i32 %1332, 0, !dbg !308
-  br i1 %1333, label %1342, label %1334, !dbg !308
-
-; <label>:1334                                    ; preds = %1329
-  %1335 = sext i32 %1332 to i64, !dbg !308
-  %1336 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1337 = load i8**** %1336, align 8, !dbg !308, !tbaa !324
-  %1338 = getelementptr inbounds i8*** %1337, i64 %1335, !dbg !308
-  %1339 = bitcast i8*** %1338 to double***, !dbg !308
-  %1340 = load double*** %1339, align 8, !dbg !308, !tbaa !325
-  %1341 = load double** %1340, align 8, !dbg !308, !tbaa !325
-  br label %1342, !dbg !308
-
-; <label>:1342                                    ; preds = %1329, %1334
-  %1343 = phi double* [ %1341, %1334 ], [ null, %1329 ]
-  %1344 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psi, align 4, !dbg !308, !tbaa !145
-  %1345 = icmp slt i32 %1344, 0, !dbg !308
-  br i1 %1345, label %1354, label %1346, !dbg !308
-
-; <label>:1346                                    ; preds = %1342
-  %1347 = sext i32 %1344 to i64, !dbg !308
-  %1348 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1349 = load i8**** %1348, align 8, !dbg !308, !tbaa !324
-  %1350 = getelementptr inbounds i8*** %1349, i64 %1347, !dbg !308
-  %1351 = bitcast i8*** %1350 to double***, !dbg !308
-  %1352 = load double*** %1351, align 8, !dbg !308, !tbaa !325
-  %1353 = load double** %1352, align 8, !dbg !308, !tbaa !325
-  br label %1354, !dbg !308
-
-; <label>:1354                                    ; preds = %1342, %1346
-  %1355 = phi double* [ %1353, %1346 ], [ null, %1342 ]
-  %1356 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psix, align 4, !dbg !308, !tbaa !145
-  %1357 = icmp slt i32 %1356, 0, !dbg !308
-  br i1 %1357, label %1366, label %1358, !dbg !308
-
-; <label>:1358                                    ; preds = %1354
-  %1359 = sext i32 %1356 to i64, !dbg !308
-  %1360 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1361 = load i8**** %1360, align 8, !dbg !308, !tbaa !324
-  %1362 = getelementptr inbounds i8*** %1361, i64 %1359, !dbg !308
-  %1363 = bitcast i8*** %1362 to double***, !dbg !308
-  %1364 = load double*** %1363, align 8, !dbg !308, !tbaa !325
-  %1365 = load double** %1364, align 8, !dbg !308, !tbaa !325
-  br label %1366, !dbg !308
-
-; <label>:1366                                    ; preds = %1354, %1358
-  %1367 = phi double* [ %1365, %1358 ], [ null, %1354 ]
-  %1368 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixx, align 4, !dbg !308, !tbaa !145
-  %1369 = icmp slt i32 %1368, 0, !dbg !308
-  br i1 %1369, label %1378, label %1370, !dbg !308
-
-; <label>:1370                                    ; preds = %1366
-  %1371 = sext i32 %1368 to i64, !dbg !308
-  %1372 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1373 = load i8**** %1372, align 8, !dbg !308, !tbaa !324
-  %1374 = getelementptr inbounds i8*** %1373, i64 %1371, !dbg !308
-  %1375 = bitcast i8*** %1374 to double***, !dbg !308
-  %1376 = load double*** %1375, align 8, !dbg !308, !tbaa !325
-  %1377 = load double** %1376, align 8, !dbg !308, !tbaa !325
-  br label %1378, !dbg !308
-
-; <label>:1378                                    ; preds = %1366, %1370
-  %1379 = phi double* [ %1377, %1370 ], [ null, %1366 ]
-  %1380 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixy, align 4, !dbg !308, !tbaa !145
-  %1381 = icmp slt i32 %1380, 0, !dbg !308
-  br i1 %1381, label %1390, label %1382, !dbg !308
-
-; <label>:1382                                    ; preds = %1378
-  %1383 = sext i32 %1380 to i64, !dbg !308
-  %1384 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1385 = load i8**** %1384, align 8, !dbg !308, !tbaa !324
-  %1386 = getelementptr inbounds i8*** %1385, i64 %1383, !dbg !308
-  %1387 = bitcast i8*** %1386 to double***, !dbg !308
-  %1388 = load double*** %1387, align 8, !dbg !308, !tbaa !325
-  %1389 = load double** %1388, align 8, !dbg !308, !tbaa !325
-  br label %1390, !dbg !308
-
-; <label>:1390                                    ; preds = %1378, %1382
-  %1391 = phi double* [ %1389, %1382 ], [ null, %1378 ]
-  %1392 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixz, align 4, !dbg !308, !tbaa !145
-  %1393 = icmp slt i32 %1392, 0, !dbg !308
-  br i1 %1393, label %1402, label %1394, !dbg !308
-
-; <label>:1394                                    ; preds = %1390
-  %1395 = sext i32 %1392 to i64, !dbg !308
-  %1396 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1397 = load i8**** %1396, align 8, !dbg !308, !tbaa !324
-  %1398 = getelementptr inbounds i8*** %1397, i64 %1395, !dbg !308
-  %1399 = bitcast i8*** %1398 to double***, !dbg !308
-  %1400 = load double*** %1399, align 8, !dbg !308, !tbaa !325
-  %1401 = load double** %1400, align 8, !dbg !308, !tbaa !325
-  br label %1402, !dbg !308
-
-; <label>:1402                                    ; preds = %1390, %1394
-  %1403 = phi double* [ %1401, %1394 ], [ null, %1390 ]
-  %1404 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiy, align 4, !dbg !308, !tbaa !145
-  %1405 = icmp slt i32 %1404, 0, !dbg !308
-  br i1 %1405, label %1414, label %1406, !dbg !308
-
-; <label>:1406                                    ; preds = %1402
-  %1407 = sext i32 %1404 to i64, !dbg !308
-  %1408 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1409 = load i8**** %1408, align 8, !dbg !308, !tbaa !324
-  %1410 = getelementptr inbounds i8*** %1409, i64 %1407, !dbg !308
-  %1411 = bitcast i8*** %1410 to double***, !dbg !308
-  %1412 = load double*** %1411, align 8, !dbg !308, !tbaa !325
-  %1413 = load double** %1412, align 8, !dbg !308, !tbaa !325
-  br label %1414, !dbg !308
-
-; <label>:1414                                    ; preds = %1402, %1406
-  %1415 = phi double* [ %1413, %1406 ], [ null, %1402 ]
-  %1416 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyy, align 4, !dbg !308, !tbaa !145
-  %1417 = icmp slt i32 %1416, 0, !dbg !308
-  br i1 %1417, label %1426, label %1418, !dbg !308
-
-; <label>:1418                                    ; preds = %1414
-  %1419 = sext i32 %1416 to i64, !dbg !308
-  %1420 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1421 = load i8**** %1420, align 8, !dbg !308, !tbaa !324
-  %1422 = getelementptr inbounds i8*** %1421, i64 %1419, !dbg !308
-  %1423 = bitcast i8*** %1422 to double***, !dbg !308
-  %1424 = load double*** %1423, align 8, !dbg !308, !tbaa !325
-  %1425 = load double** %1424, align 8, !dbg !308, !tbaa !325
-  br label %1426, !dbg !308
-
-; <label>:1426                                    ; preds = %1414, %1418
-  %1427 = phi double* [ %1425, %1418 ], [ null, %1414 ]
-  %1428 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyz, align 4, !dbg !308, !tbaa !145
-  %1429 = icmp slt i32 %1428, 0, !dbg !308
-  br i1 %1429, label %1438, label %1430, !dbg !308
-
-; <label>:1430                                    ; preds = %1426
-  %1431 = sext i32 %1428 to i64, !dbg !308
-  %1432 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1433 = load i8**** %1432, align 8, !dbg !308, !tbaa !324
-  %1434 = getelementptr inbounds i8*** %1433, i64 %1431, !dbg !308
-  %1435 = bitcast i8*** %1434 to double***, !dbg !308
-  %1436 = load double*** %1435, align 8, !dbg !308, !tbaa !325
-  %1437 = load double** %1436, align 8, !dbg !308, !tbaa !325
-  br label %1438, !dbg !308
-
-; <label>:1438                                    ; preds = %1426, %1430
-  %1439 = phi double* [ %1437, %1430 ], [ null, %1426 ]
-  %1440 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiz, align 4, !dbg !308, !tbaa !145
-  %1441 = icmp slt i32 %1440, 0, !dbg !308
-  br i1 %1441, label %1450, label %1442, !dbg !308
-
-; <label>:1442                                    ; preds = %1438
-  %1443 = sext i32 %1440 to i64, !dbg !308
-  %1444 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1445 = load i8**** %1444, align 8, !dbg !308, !tbaa !324
-  %1446 = getelementptr inbounds i8*** %1445, i64 %1443, !dbg !308
-  %1447 = bitcast i8*** %1446 to double***, !dbg !308
-  %1448 = load double*** %1447, align 8, !dbg !308, !tbaa !325
-  %1449 = load double** %1448, align 8, !dbg !308, !tbaa !325
-  br label %1450, !dbg !308
-
-; <label>:1450                                    ; preds = %1438, %1442
-  %1451 = phi double* [ %1449, %1442 ], [ null, %1438 ]
-  %1452 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psizz, align 4, !dbg !308, !tbaa !145
-  %1453 = icmp slt i32 %1452, 0, !dbg !308
-  br i1 %1453, label %1462, label %1454, !dbg !308
-
-; <label>:1454                                    ; preds = %1450
-  %1455 = sext i32 %1452 to i64, !dbg !308
-  %1456 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1457 = load i8**** %1456, align 8, !dbg !308, !tbaa !324
-  %1458 = getelementptr inbounds i8*** %1457, i64 %1455, !dbg !308
-  %1459 = bitcast i8*** %1458 to double***, !dbg !308
-  %1460 = load double*** %1459, align 8, !dbg !308, !tbaa !325
-  %1461 = load double** %1460, align 8, !dbg !308, !tbaa !325
-  br label %1462, !dbg !308
-
-; <label>:1462                                    ; preds = %1450, %1454
-  %1463 = phi double* [ %1461, %1454 ], [ null, %1450 ]
-  %1464 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_r, align 4, !dbg !308, !tbaa !145
-  %1465 = icmp slt i32 %1464, 0, !dbg !308
-  br i1 %1465, label %1474, label %1466, !dbg !308
-
-; <label>:1466                                    ; preds = %1462
-  %1467 = sext i32 %1464 to i64, !dbg !308
-  %1468 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1469 = load i8**** %1468, align 8, !dbg !308, !tbaa !324
-  %1470 = getelementptr inbounds i8*** %1469, i64 %1467, !dbg !308
-  %1471 = bitcast i8*** %1470 to double***, !dbg !308
-  %1472 = load double*** %1471, align 8, !dbg !308, !tbaa !325
-  %1473 = load double** %1472, align 8, !dbg !308, !tbaa !325
-  br label %1474, !dbg !308
-
-; <label>:1474                                    ; preds = %1462, %1466
-  %1475 = phi double* [ %1473, %1466 ], [ null, %1462 ]
-  %1476 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_shift_state, align 4, !dbg !308, !tbaa !145
-  %1477 = icmp slt i32 %1476, 0, !dbg !308
-  br i1 %1477, label %1486, label %1478, !dbg !308
-
-; <label>:1478                                    ; preds = %1474
-  %1479 = sext i32 %1476 to i64, !dbg !308
-  %1480 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1481 = load i8**** %1480, align 8, !dbg !308, !tbaa !324
-  %1482 = getelementptr inbounds i8*** %1481, i64 %1479, !dbg !308
-  %1483 = bitcast i8*** %1482 to i32***, !dbg !308
-  %1484 = load i32*** %1483, align 8, !dbg !308, !tbaa !325
-  %1485 = load i32** %1484, align 8, !dbg !308, !tbaa !325
-  br label %1486, !dbg !308
-
-; <label>:1486                                    ; preds = %1474, %1478
-  %1487 = phi i32* [ %1485, %1478 ], [ null, %1474 ]
-  %1488 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_x, align 4, !dbg !308, !tbaa !145
-  %1489 = icmp slt i32 %1488, 0, !dbg !308
-  br i1 %1489, label %1498, label %1490, !dbg !308
-
-; <label>:1490                                    ; preds = %1486
-  %1491 = sext i32 %1488 to i64, !dbg !308
-  %1492 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1493 = load i8**** %1492, align 8, !dbg !308, !tbaa !324
-  %1494 = getelementptr inbounds i8*** %1493, i64 %1491, !dbg !308
-  %1495 = bitcast i8*** %1494 to double***, !dbg !308
-  %1496 = load double*** %1495, align 8, !dbg !308, !tbaa !325
-  %1497 = load double** %1496, align 8, !dbg !308, !tbaa !325
-  br label %1498, !dbg !308
-
-; <label>:1498                                    ; preds = %1486, %1490
-  %1499 = phi double* [ %1497, %1490 ], [ null, %1486 ]
-  %1500 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_y, align 4, !dbg !308, !tbaa !145
-  %1501 = icmp slt i32 %1500, 0, !dbg !308
-  br i1 %1501, label %1510, label %1502, !dbg !308
-
-; <label>:1502                                    ; preds = %1498
-  %1503 = sext i32 %1500 to i64, !dbg !308
-  %1504 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1505 = load i8**** %1504, align 8, !dbg !308, !tbaa !324
-  %1506 = getelementptr inbounds i8*** %1505, i64 %1503, !dbg !308
-  %1507 = bitcast i8*** %1506 to double***, !dbg !308
-  %1508 = load double*** %1507, align 8, !dbg !308, !tbaa !325
-  %1509 = load double** %1508, align 8, !dbg !308, !tbaa !325
-  br label %1510, !dbg !308
-
-; <label>:1510                                    ; preds = %1498, %1502
-  %1511 = phi double* [ %1509, %1502 ], [ null, %1498 ]
-  %1512 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_z, align 4, !dbg !308, !tbaa !145
-  %1513 = icmp slt i32 %1512, 0, !dbg !308
-  br i1 %1513, label %1522, label %1514, !dbg !308
-
-; <label>:1514                                    ; preds = %1510
-  %1515 = sext i32 %1512 to i64, !dbg !308
-  %1516 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !308
-  %1517 = load i8**** %1516, align 8, !dbg !308, !tbaa !324
-  %1518 = getelementptr inbounds i8*** %1517, i64 %1515, !dbg !308
-  %1519 = bitcast i8*** %1518 to double***, !dbg !308
-  %1520 = load double*** %1519, align 8, !dbg !308, !tbaa !325
-  %1521 = load double** %1520, align 8, !dbg !308, !tbaa !325
-  br label %1522, !dbg !308
-
-; <label>:1522                                    ; preds = %1510, %1514
-  %1523 = phi double* [ %1521, %1514 ], [ null, %1510 ]
-  tail call void %396(i32* %397, i32* %399, i32* %401, i32* %403, i32* %405, i32* %407, i32* %409, i32* %411, i32* %413, double* %414, double* %415, double* %417, double* %419, i32* %421, i32* %422, i32* %424, i32* %425, %struct.cGH* %GH, i32* %447, i32* %446, i32* %448, i32* %470, i32* %469, i32* %471, i32* %493, i32* %492, i32* %494, double* %508, double* %510, double* %524, double* %526, double* %540, double* %542, double* %556, double* %558, double* %572, double* %574, double* %588, double* %590, double* %607, double* %606, double* %609, double* %626, double* %625, double* %628, double* %645, double* %644, double* %647, double* %664, double* %663, double* %666, double* %683, double* %682, double* %685, double* %702, double* %701, double* %704, double* %716, double* %728, double* %740, double* %752, double* %764, double* %776, double* %788, double* %800, double* %812, double* %824, double* %836, double* %848, i32* %870, i32* %869, i32* %871, i32* %893, i32* %892, i32* %894, i32* %916, i32* %915, i32* %917, i32* %939, i32* %938, i32* %940, i32* %962, i32* %961, i32* %963, i32* %985, i32* %984, i32* %986, i32* %1008, i32* %1007, i32* %1009, i32* %1031, i32* %1030, i32* %1032, i32* %1054, i32* %1053, i32* %1055, i32* %1067, double* %1079, double* %1091, double* %1103, double* %1115, double* %1127, double* %1139, double* %1151, i32* %1163, double* %1175, double* %1187, double* %1199, double* %1211, double* %1223, double* %1235, double* %1247, double* %1259, double* %1271, double* %1283, double* %1295, double* %1307, double* %1319, double* %1331, double* %1343, double* %1355, double* %1367, double* %1379, double* %1391, double* %1403, double* %1415, double* %1427, double* %1439, double* %1451, double* %1463, double* %1475, i32* %1487, double* %1499, double* %1511, double* %1523) #3, !dbg !326
-  ret i32 0, !dbg !327
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !48), !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i8* %fpointer}, i64 0, metadata !49), !dbg !136
+  %0 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxx, align 4, !dbg !137, !tbaa !138
+  %cmp = icmp eq i32 %0, -1, !dbg !137
+  br i1 %cmp, label %if.then, label %if.end, !dbg !137
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxx, align 4, !dbg !137, !tbaa !138
+  br label %if.end, !dbg !137
+
+if.end:                                           ; preds = %if.then, %entry
+  %1 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, align 4, !dbg !137, !tbaa !138
+  %cmp1 = icmp eq i32 %1, -1, !dbg !137
+  br i1 %cmp1, label %if.then2, label %if.end4, !dbg !137
+
+if.then2:                                         ; preds = %if.end
+  %call3 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call3, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, align 4, !dbg !137, !tbaa !138
+  br label %if.end4, !dbg !137
+
+if.end4:                                          ; preds = %if.then2, %if.end
+  %2 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxy, align 4, !dbg !137, !tbaa !138
+  %cmp5 = icmp eq i32 %2, -1, !dbg !137
+  br i1 %cmp5, label %if.then6, label %if.end8, !dbg !137
+
+if.then6:                                         ; preds = %if.end4
+  %call7 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str2, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call7, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxy, align 4, !dbg !137, !tbaa !138
+  br label %if.end8, !dbg !137
+
+if.end8:                                          ; preds = %if.then6, %if.end4
+  %3 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxz, align 4, !dbg !137, !tbaa !138
+  %cmp9 = icmp eq i32 %3, -1, !dbg !137
+  br i1 %cmp9, label %if.then10, label %if.end12, !dbg !137
+
+if.then10:                                        ; preds = %if.end8
+  %call11 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str3, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call11, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxz, align 4, !dbg !137, !tbaa !138
+  br label %if.end12, !dbg !137
+
+if.end12:                                         ; preds = %if.then10, %if.end8
+  %4 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyy, align 4, !dbg !137, !tbaa !138
+  %cmp13 = icmp eq i32 %4, -1, !dbg !137
+  br i1 %cmp13, label %if.then14, label %if.end16, !dbg !137
+
+if.then14:                                        ; preds = %if.end12
+  %call15 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str4, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call15, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyy, align 4, !dbg !137, !tbaa !138
+  br label %if.end16, !dbg !137
+
+if.end16:                                         ; preds = %if.then14, %if.end12
+  %5 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyz, align 4, !dbg !137, !tbaa !138
+  %cmp17 = icmp eq i32 %5, -1, !dbg !137
+  br i1 %cmp17, label %if.then18, label %if.end20, !dbg !137
+
+if.then18:                                        ; preds = %if.end16
+  %call19 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call19, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyz, align 4, !dbg !137, !tbaa !138
+  br label %if.end20, !dbg !137
+
+if.end20:                                         ; preds = %if.then18, %if.end16
+  %6 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gzz, align 4, !dbg !137, !tbaa !138
+  %cmp21 = icmp eq i32 %6, -1, !dbg !137
+  br i1 %cmp21, label %if.then22, label %if.end24, !dbg !137
+
+if.then22:                                        ; preds = %if.end20
+  %call23 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([18 x i8]* @.str6, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call23, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gzz, align 4, !dbg !137, !tbaa !138
+  br label %if.end24, !dbg !137
+
+if.end24:                                         ; preds = %if.then22, %if.end20
+  %7 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxx_stag, align 4, !dbg !137, !tbaa !138
+  %cmp25 = icmp eq i32 %7, -1, !dbg !137
+  br i1 %cmp25, label %if.then26, label %if.end28, !dbg !137
+
+if.then26:                                        ; preds = %if.end24
+  %call27 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str7, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call27, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxx_stag, align 4, !dbg !137, !tbaa !138
+  br label %if.end28, !dbg !137
+
+if.end28:                                         ; preds = %if.then26, %if.end24
+  %8 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, align 4, !dbg !137, !tbaa !138
+  %cmp29 = icmp eq i32 %8, -1, !dbg !137
+  br i1 %cmp29, label %if.then30, label %if.end32, !dbg !137
+
+if.then30:                                        ; preds = %if.end28
+  %call31 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call31, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, align 4, !dbg !137, !tbaa !138
+  br label %if.end32, !dbg !137
+
+if.end32:                                         ; preds = %if.then30, %if.end28
+  %9 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxy_stag, align 4, !dbg !137, !tbaa !138
+  %cmp33 = icmp eq i32 %9, -1, !dbg !137
+  br i1 %cmp33, label %if.then34, label %if.end36, !dbg !137
+
+if.then34:                                        ; preds = %if.end32
+  %call35 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str9, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call35, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxy_stag, align 4, !dbg !137, !tbaa !138
+  br label %if.end36, !dbg !137
+
+if.end36:                                         ; preds = %if.then34, %if.end32
+  %10 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxz_stag, align 4, !dbg !137, !tbaa !138
+  %cmp37 = icmp eq i32 %10, -1, !dbg !137
+  br i1 %cmp37, label %if.then38, label %if.end40, !dbg !137
+
+if.then38:                                        ; preds = %if.end36
+  %call39 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str10, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call39, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxz_stag, align 4, !dbg !137, !tbaa !138
+  br label %if.end40, !dbg !137
+
+if.end40:                                         ; preds = %if.then38, %if.end36
+  %11 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyy_stag, align 4, !dbg !137, !tbaa !138
+  %cmp41 = icmp eq i32 %11, -1, !dbg !137
+  br i1 %cmp41, label %if.then42, label %if.end44, !dbg !137
+
+if.then42:                                        ; preds = %if.end40
+  %call43 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str11, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call43, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyy_stag, align 4, !dbg !137, !tbaa !138
+  br label %if.end44, !dbg !137
+
+if.end44:                                         ; preds = %if.then42, %if.end40
+  %12 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyz_stag, align 4, !dbg !137, !tbaa !138
+  %cmp45 = icmp eq i32 %12, -1, !dbg !137
+  br i1 %cmp45, label %if.then46, label %if.end48, !dbg !137
+
+if.then46:                                        ; preds = %if.end44
+  %call47 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str12, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call47, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyz_stag, align 4, !dbg !137, !tbaa !138
+  br label %if.end48, !dbg !137
+
+if.end48:                                         ; preds = %if.then46, %if.end44
+  %13 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kzz_stag, align 4, !dbg !137, !tbaa !138
+  %cmp49 = icmp eq i32 %13, -1, !dbg !137
+  br i1 %cmp49, label %if.then50, label %if.end52, !dbg !137
+
+if.then50:                                        ; preds = %if.end48
+  %call51 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str13, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call51, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kzz_stag, align 4, !dbg !137, !tbaa !138
+  br label %if.end52, !dbg !137
+
+if.end52:                                         ; preds = %if.then50, %if.end48
+  %14 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxx, align 4, !dbg !137, !tbaa !138
+  %cmp53 = icmp eq i32 %14, -1, !dbg !137
+  br i1 %cmp53, label %if.then54, label %if.end56, !dbg !137
+
+if.then54:                                        ; preds = %if.end52
+  %call55 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str14, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call55, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxx, align 4, !dbg !137, !tbaa !138
+  br label %if.end56, !dbg !137
+
+if.end56:                                         ; preds = %if.then54, %if.end52
+  %15 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, align 4, !dbg !137, !tbaa !138
+  %cmp57 = icmp eq i32 %15, -1, !dbg !137
+  br i1 %cmp57, label %if.then58, label %if.end60, !dbg !137
+
+if.then58:                                        ; preds = %if.end56
+  %call59 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call59, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, align 4, !dbg !137, !tbaa !138
+  br label %if.end60, !dbg !137
+
+if.end60:                                         ; preds = %if.then58, %if.end56
+  %16 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxy, align 4, !dbg !137, !tbaa !138
+  %cmp61 = icmp eq i32 %16, -1, !dbg !137
+  br i1 %cmp61, label %if.then62, label %if.end64, !dbg !137
+
+if.then62:                                        ; preds = %if.end60
+  %call63 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str16, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call63, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxy, align 4, !dbg !137, !tbaa !138
+  br label %if.end64, !dbg !137
+
+if.end64:                                         ; preds = %if.then62, %if.end60
+  %17 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxz, align 4, !dbg !137, !tbaa !138
+  %cmp65 = icmp eq i32 %17, -1, !dbg !137
+  br i1 %cmp65, label %if.then66, label %if.end68, !dbg !137
+
+if.then66:                                        ; preds = %if.end64
+  %call67 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str17, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call67, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxz, align 4, !dbg !137, !tbaa !138
+  br label %if.end68, !dbg !137
+
+if.end68:                                         ; preds = %if.then66, %if.end64
+  %18 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyy, align 4, !dbg !137, !tbaa !138
+  %cmp69 = icmp eq i32 %18, -1, !dbg !137
+  br i1 %cmp69, label %if.then70, label %if.end72, !dbg !137
+
+if.then70:                                        ; preds = %if.end68
+  %call71 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str18, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call71, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyy, align 4, !dbg !137, !tbaa !138
+  br label %if.end72, !dbg !137
+
+if.end72:                                         ; preds = %if.then70, %if.end68
+  %19 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyz, align 4, !dbg !137, !tbaa !138
+  %cmp73 = icmp eq i32 %19, -1, !dbg !137
+  br i1 %cmp73, label %if.then74, label %if.end76, !dbg !137
+
+if.then74:                                        ; preds = %if.end72
+  %call75 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str19, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call75, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyz, align 4, !dbg !137, !tbaa !138
+  br label %if.end76, !dbg !137
+
+if.end76:                                         ; preds = %if.then74, %if.end72
+  %20 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gzz, align 4, !dbg !137, !tbaa !138
+  %cmp77 = icmp eq i32 %20, -1, !dbg !137
+  br i1 %cmp77, label %if.then78, label %if.end80, !dbg !137
+
+if.then78:                                        ; preds = %if.end76
+  %call79 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str20, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call79, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gzz, align 4, !dbg !137, !tbaa !138
+  br label %if.end80, !dbg !137
+
+if.end80:                                         ; preds = %if.then78, %if.end76
+  %21 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxx, align 4, !dbg !137, !tbaa !138
+  %cmp81 = icmp eq i32 %21, -1, !dbg !137
+  br i1 %cmp81, label %if.then82, label %if.end84, !dbg !137
+
+if.then82:                                        ; preds = %if.end80
+  %call83 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str21, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call83, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxx, align 4, !dbg !137, !tbaa !138
+  br label %if.end84, !dbg !137
+
+if.end84:                                         ; preds = %if.then82, %if.end80
+  %22 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxy, align 4, !dbg !137, !tbaa !138
+  %cmp85 = icmp eq i32 %22, -1, !dbg !137
+  br i1 %cmp85, label %if.then86, label %if.end88, !dbg !137
+
+if.then86:                                        ; preds = %if.end84
+  %call87 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str22, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call87, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxy, align 4, !dbg !137, !tbaa !138
+  br label %if.end88, !dbg !137
+
+if.end88:                                         ; preds = %if.then86, %if.end84
+  %23 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxz, align 4, !dbg !137, !tbaa !138
+  %cmp89 = icmp eq i32 %23, -1, !dbg !137
+  br i1 %cmp89, label %if.then90, label %if.end92, !dbg !137
+
+if.then90:                                        ; preds = %if.end88
+  %call91 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str23, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call91, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxz, align 4, !dbg !137, !tbaa !138
+  br label %if.end92, !dbg !137
+
+if.end92:                                         ; preds = %if.then90, %if.end88
+  %24 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyy, align 4, !dbg !137, !tbaa !138
+  %cmp93 = icmp eq i32 %24, -1, !dbg !137
+  br i1 %cmp93, label %if.then94, label %if.end96, !dbg !137
+
+if.then94:                                        ; preds = %if.end92
+  %call95 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str24, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call95, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyy, align 4, !dbg !137, !tbaa !138
+  br label %if.end96, !dbg !137
+
+if.end96:                                         ; preds = %if.then94, %if.end92
+  %25 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyz, align 4, !dbg !137, !tbaa !138
+  %cmp97 = icmp eq i32 %25, -1, !dbg !137
+  br i1 %cmp97, label %if.then98, label %if.end100, !dbg !137
+
+if.then98:                                        ; preds = %if.end96
+  %call99 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str25, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call99, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyz, align 4, !dbg !137, !tbaa !138
+  br label %if.end100, !dbg !137
+
+if.end100:                                        ; preds = %if.then98, %if.end96
+  %26 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kzz, align 4, !dbg !137, !tbaa !138
+  %cmp101 = icmp eq i32 %26, -1, !dbg !137
+  br i1 %cmp101, label %if.then102, label %if.end104, !dbg !137
+
+if.then102:                                       ; preds = %if.end100
+  %call103 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([19 x i8]* @.str26, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call103, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kzz, align 4, !dbg !137, !tbaa !138
+  br label %if.end104, !dbg !137
+
+if.end104:                                        ; preds = %if.then102, %if.end100
+  %27 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_active_slicing_handle, align 4, !dbg !137, !tbaa !138
+  %cmp105 = icmp eq i32 %27, -1, !dbg !137
+  br i1 %cmp105, label %if.then106, label %if.end108, !dbg !137
+
+if.then106:                                       ; preds = %if.end104
+  %call107 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([32 x i8]* @.str27, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call107, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_active_slicing_handle, align 4, !dbg !137, !tbaa !138
+  br label %if.end108, !dbg !137
+
+if.end108:                                        ; preds = %if.then106, %if.end104
+  %28 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_slicing_flags, align 4, !dbg !137, !tbaa !138
+  %cmp109 = icmp eq i32 %28, -1, !dbg !137
+  br i1 %cmp109, label %if.then110, label %if.end112, !dbg !137
+
+if.then110:                                       ; preds = %if.end108
+  %call111 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([24 x i8]* @.str28, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call111, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_slicing_flags, align 4, !dbg !137, !tbaa !138
+  br label %if.end112, !dbg !137
+
+if.end112:                                        ; preds = %if.then110, %if.end108
+  %29 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_alp, align 4, !dbg !137, !tbaa !138
+  %cmp113 = icmp eq i32 %29, -1, !dbg !137
+  br i1 %cmp113, label %if.then114, label %if.end116, !dbg !137
+
+if.then114:                                       ; preds = %if.end112
+  %call115 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str29, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call115, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_alp, align 4, !dbg !137, !tbaa !138
+  br label %if.end116, !dbg !137
+
+if.end116:                                        ; preds = %if.then114, %if.end112
+  %30 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, align 4, !dbg !137, !tbaa !138
+  %cmp117 = icmp eq i32 %30, -1, !dbg !137
+  br i1 %cmp117, label %if.then118, label %if.end120, !dbg !137
+
+if.then118:                                       ; preds = %if.end116
+  %call119 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call119, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, align 4, !dbg !137, !tbaa !138
+  br label %if.end120, !dbg !137
+
+if.end120:                                        ; preds = %if.then118, %if.end116
+  %31 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betax, align 4, !dbg !137, !tbaa !138
+  %cmp121 = icmp eq i32 %31, -1, !dbg !137
+  br i1 %cmp121, label %if.then122, label %if.end124, !dbg !137
+
+if.then122:                                       ; preds = %if.end120
+  %call123 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str31, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call123, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betax, align 4, !dbg !137, !tbaa !138
+  br label %if.end124, !dbg !137
+
+if.end124:                                        ; preds = %if.then122, %if.end120
+  %32 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, align 4, !dbg !137, !tbaa !138
+  %cmp125 = icmp eq i32 %32, -1, !dbg !137
+  br i1 %cmp125, label %if.then126, label %if.end128, !dbg !137
+
+if.then126:                                       ; preds = %if.end124
+  %call127 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call127, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, align 4, !dbg !137, !tbaa !138
+  br label %if.end128, !dbg !137
+
+if.end128:                                        ; preds = %if.then126, %if.end124
+  %33 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betay, align 4, !dbg !137, !tbaa !138
+  %cmp129 = icmp eq i32 %33, -1, !dbg !137
+  br i1 %cmp129, label %if.then130, label %if.end132, !dbg !137
+
+if.then130:                                       ; preds = %if.end128
+  %call131 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str33, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call131, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betay, align 4, !dbg !137, !tbaa !138
+  br label %if.end132, !dbg !137
+
+if.end132:                                        ; preds = %if.then130, %if.end128
+  %34 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betaz, align 4, !dbg !137, !tbaa !138
+  %cmp133 = icmp eq i32 %34, -1, !dbg !137
+  br i1 %cmp133, label %if.then134, label %if.end136, !dbg !137
+
+if.then134:                                       ; preds = %if.end132
+  %call135 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str34, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call135, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betaz, align 4, !dbg !137, !tbaa !138
+  br label %if.end136, !dbg !137
+
+if.end136:                                        ; preds = %if.then134, %if.end132
+  %35 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dx, align 4, !dbg !137, !tbaa !138
+  %cmp137 = icmp eq i32 %35, -1, !dbg !137
+  br i1 %cmp137, label %if.then138, label %if.end140, !dbg !137
+
+if.then138:                                       ; preds = %if.end136
+  %call139 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str35, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call139, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dx, align 4, !dbg !137, !tbaa !138
+  br label %if.end140, !dbg !137
+
+if.end140:                                        ; preds = %if.then138, %if.end136
+  %36 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_gridspacings, align 4, !dbg !137, !tbaa !138
+  %cmp141 = icmp eq i32 %36, -1, !dbg !137
+  br i1 %cmp141, label %if.then142, label %if.end144, !dbg !137
+
+if.then142:                                       ; preds = %if.end140
+  %call143 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([19 x i8]* @.str36, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call143, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_gridspacings, align 4, !dbg !137, !tbaa !138
+  br label %if.end144, !dbg !137
+
+if.end144:                                        ; preds = %if.then142, %if.end140
+  %37 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dy, align 4, !dbg !137, !tbaa !138
+  %cmp145 = icmp eq i32 %37, -1, !dbg !137
+  br i1 %cmp145, label %if.then146, label %if.end148, !dbg !137
+
+if.then146:                                       ; preds = %if.end144
+  %call147 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str37, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call147, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dy, align 4, !dbg !137, !tbaa !138
+  br label %if.end148, !dbg !137
+
+if.end148:                                        ; preds = %if.then146, %if.end144
+  %38 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dz, align 4, !dbg !137, !tbaa !138
+  %cmp149 = icmp eq i32 %38, -1, !dbg !137
+  br i1 %cmp149, label %if.then150, label %if.end152, !dbg !137
+
+if.then150:                                       ; preds = %if.end148
+  %call151 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str38, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call151, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dz, align 4, !dbg !137, !tbaa !138
+  br label %if.end152, !dbg !137
+
+if.end152:                                        ; preds = %if.then150, %if.end148
+  %39 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_conformal_state, align 4, !dbg !137, !tbaa !138
+  %cmp153 = icmp eq i32 %39, -1, !dbg !137
+  br i1 %cmp153, label %if.then154, label %if.end156, !dbg !137
+
+if.then154:                                       ; preds = %if.end152
+  %call155 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([26 x i8]* @.str39, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call155, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_conformal_state, align 4, !dbg !137, !tbaa !138
+  br label %if.end156, !dbg !137
+
+if.end156:                                        ; preds = %if.then154, %if.end152
+  %40 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_flags, align 4, !dbg !137, !tbaa !138
+  %cmp157 = icmp eq i32 %40, -1, !dbg !137
+  br i1 %cmp157, label %if.then158, label %if.end160, !dbg !137
+
+if.then158:                                       ; preds = %if.end156
+  %call159 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([16 x i8]* @.str40, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call159, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_flags, align 4, !dbg !137, !tbaa !138
+  br label %if.end160, !dbg !137
+
+if.end160:                                        ; preds = %if.then158, %if.end156
+  %41 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_min_time, align 4, !dbg !137, !tbaa !138
+  %cmp161 = icmp eq i32 %41, -1, !dbg !137
+  br i1 %cmp161, label %if.then162, label %if.end164, !dbg !137
+
+if.then162:                                       ; preds = %if.end160
+  %call163 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str41, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call163, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_min_time, align 4, !dbg !137, !tbaa !138
+  br label %if.end164, !dbg !137
+
+if.end164:                                        ; preds = %if.then162, %if.end160
+  %42 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_speedvars, align 4, !dbg !137, !tbaa !138
+  %cmp165 = icmp eq i32 %42, -1, !dbg !137
+  br i1 %cmp165, label %if.then166, label %if.end168, !dbg !137
+
+if.then166:                                       ; preds = %if.end164
+  %call167 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([16 x i8]* @.str42, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call167, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_speedvars, align 4, !dbg !137, !tbaa !138
+  br label %if.end168, !dbg !137
+
+if.end168:                                        ; preds = %if.then166, %if.end164
+  %43 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_wave_speed, align 4, !dbg !137, !tbaa !138
+  %cmp169 = icmp eq i32 %43, -1, !dbg !137
+  br i1 %cmp169, label %if.then170, label %if.end172, !dbg !137
+
+if.then170:                                       ; preds = %if.end168
+  %call171 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([25 x i8]* @.str43, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call171, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_wave_speed, align 4, !dbg !137, !tbaa !138
+  br label %if.end172, !dbg !137
+
+if.end172:                                        ; preds = %if.then170, %if.end168
+  %44 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_emask, align 4, !dbg !137, !tbaa !138
+  %cmp173 = icmp eq i32 %44, -1, !dbg !137
+  br i1 %cmp173, label %if.then174, label %if.end176, !dbg !137
+
+if.then174:                                       ; preds = %if.end172
+  %call175 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str44, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call175, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_emask, align 4, !dbg !137, !tbaa !138
+  br label %if.end176, !dbg !137
+
+if.end176:                                        ; preds = %if.then174, %if.end172
+  %45 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, align 4, !dbg !137, !tbaa !138
+  %cmp177 = icmp eq i32 %45, -1, !dbg !137
+  br i1 %cmp177, label %if.then178, label %if.end180, !dbg !137
+
+if.then178:                                       ; preds = %if.end176
+  %call179 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call179, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, align 4, !dbg !137, !tbaa !138
+  br label %if.end180, !dbg !137
+
+if.end180:                                        ; preds = %if.then178, %if.end176
+  %46 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxx, align 4, !dbg !137, !tbaa !138
+  %cmp181 = icmp eq i32 %46, -1, !dbg !137
+  br i1 %cmp181, label %if.then182, label %if.end184, !dbg !137
+
+if.then182:                                       ; preds = %if.end180
+  %call183 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str46, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call183, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxx, align 4, !dbg !137, !tbaa !138
+  br label %if.end184, !dbg !137
+
+if.end184:                                        ; preds = %if.then182, %if.end180
+  %47 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, align 4, !dbg !137, !tbaa !138
+  %cmp185 = icmp eq i32 %47, -1, !dbg !137
+  br i1 %cmp185, label %if.then186, label %if.end188, !dbg !137
+
+if.then186:                                       ; preds = %if.end184
+  %call187 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call187, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, align 4, !dbg !137, !tbaa !138
+  br label %if.end188, !dbg !137
+
+if.end188:                                        ; preds = %if.then186, %if.end184
+  %48 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxy, align 4, !dbg !137, !tbaa !138
+  %cmp189 = icmp eq i32 %48, -1, !dbg !137
+  br i1 %cmp189, label %if.then190, label %if.end192, !dbg !137
+
+if.then190:                                       ; preds = %if.end188
+  %call191 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str48, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call191, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxy, align 4, !dbg !137, !tbaa !138
+  br label %if.end192, !dbg !137
+
+if.end192:                                        ; preds = %if.then190, %if.end188
+  %49 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxz, align 4, !dbg !137, !tbaa !138
+  %cmp193 = icmp eq i32 %49, -1, !dbg !137
+  br i1 %cmp193, label %if.then194, label %if.end196, !dbg !137
+
+if.then194:                                       ; preds = %if.end192
+  %call195 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str49, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call195, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxz, align 4, !dbg !137, !tbaa !138
+  br label %if.end196, !dbg !137
+
+if.end196:                                        ; preds = %if.then194, %if.end192
+  %50 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyy, align 4, !dbg !137, !tbaa !138
+  %cmp197 = icmp eq i32 %50, -1, !dbg !137
+  br i1 %cmp197, label %if.then198, label %if.end200, !dbg !137
+
+if.then198:                                       ; preds = %if.end196
+  %call199 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str50, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call199, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyy, align 4, !dbg !137, !tbaa !138
+  br label %if.end200, !dbg !137
+
+if.end200:                                        ; preds = %if.then198, %if.end196
+  %51 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyz, align 4, !dbg !137, !tbaa !138
+  %cmp201 = icmp eq i32 %51, -1, !dbg !137
+  br i1 %cmp201, label %if.then202, label %if.end204, !dbg !137
+
+if.then202:                                       ; preds = %if.end200
+  %call203 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str51, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call203, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyz, align 4, !dbg !137, !tbaa !138
+  br label %if.end204, !dbg !137
+
+if.end204:                                        ; preds = %if.then202, %if.end200
+  %52 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gzz, align 4, !dbg !137, !tbaa !138
+  %cmp205 = icmp eq i32 %52, -1, !dbg !137
+  br i1 %cmp205, label %if.then206, label %if.end208, !dbg !137
+
+if.then206:                                       ; preds = %if.end204
+  %call207 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str52, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call207, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gzz, align 4, !dbg !137, !tbaa !138
+  br label %if.end208, !dbg !137
+
+if.end208:                                        ; preds = %if.then206, %if.end204
+  %53 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxx, align 4, !dbg !137, !tbaa !138
+  %cmp209 = icmp eq i32 %53, -1, !dbg !137
+  br i1 %cmp209, label %if.then210, label %if.end212, !dbg !137
+
+if.then210:                                       ; preds = %if.end208
+  %call211 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str53, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call211, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxx, align 4, !dbg !137, !tbaa !138
+  br label %if.end212, !dbg !137
+
+if.end212:                                        ; preds = %if.then210, %if.end208
+  %54 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, align 4, !dbg !137, !tbaa !138
+  %cmp213 = icmp eq i32 %54, -1, !dbg !137
+  br i1 %cmp213, label %if.then214, label %if.end216, !dbg !137
+
+if.then214:                                       ; preds = %if.end212
+  %call215 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call215, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, align 4, !dbg !137, !tbaa !138
+  br label %if.end216, !dbg !137
+
+if.end216:                                        ; preds = %if.then214, %if.end212
+  %55 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxy, align 4, !dbg !137, !tbaa !138
+  %cmp217 = icmp eq i32 %55, -1, !dbg !137
+  br i1 %cmp217, label %if.then218, label %if.end220, !dbg !137
+
+if.then218:                                       ; preds = %if.end216
+  %call219 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str55, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call219, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxy, align 4, !dbg !137, !tbaa !138
+  br label %if.end220, !dbg !137
+
+if.end220:                                        ; preds = %if.then218, %if.end216
+  %56 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxz, align 4, !dbg !137, !tbaa !138
+  %cmp221 = icmp eq i32 %56, -1, !dbg !137
+  br i1 %cmp221, label %if.then222, label %if.end224, !dbg !137
+
+if.then222:                                       ; preds = %if.end220
+  %call223 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str56, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call223, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxz, align 4, !dbg !137, !tbaa !138
+  br label %if.end224, !dbg !137
+
+if.end224:                                        ; preds = %if.then222, %if.end220
+  %57 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyy, align 4, !dbg !137, !tbaa !138
+  %cmp225 = icmp eq i32 %57, -1, !dbg !137
+  br i1 %cmp225, label %if.then226, label %if.end228, !dbg !137
+
+if.then226:                                       ; preds = %if.end224
+  %call227 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str57, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call227, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyy, align 4, !dbg !137, !tbaa !138
+  br label %if.end228, !dbg !137
+
+if.end228:                                        ; preds = %if.then226, %if.end224
+  %58 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyz, align 4, !dbg !137, !tbaa !138
+  %cmp229 = icmp eq i32 %58, -1, !dbg !137
+  br i1 %cmp229, label %if.then230, label %if.end232, !dbg !137
+
+if.then230:                                       ; preds = %if.end228
+  %call231 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str58, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call231, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyz, align 4, !dbg !137, !tbaa !138
+  br label %if.end232, !dbg !137
+
+if.end232:                                        ; preds = %if.then230, %if.end228
+  %59 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kzz, align 4, !dbg !137, !tbaa !138
+  %cmp233 = icmp eq i32 %59, -1, !dbg !137
+  br i1 %cmp233, label %if.then234, label %if.end236, !dbg !137
+
+if.then234:                                       ; preds = %if.end232
+  %call235 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str59, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call235, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kzz, align 4, !dbg !137, !tbaa !138
+  br label %if.end236, !dbg !137
+
+if.end236:                                        ; preds = %if.then234, %if.end232
+  %60 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psi, align 4, !dbg !137, !tbaa !138
+  %cmp237 = icmp eq i32 %60, -1, !dbg !137
+  br i1 %cmp237, label %if.then238, label %if.end240, !dbg !137
+
+if.then238:                                       ; preds = %if.end236
+  %call239 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str60, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call239, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psi, align 4, !dbg !137, !tbaa !138
+  br label %if.end240, !dbg !137
+
+if.end240:                                        ; preds = %if.then238, %if.end236
+  %61 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, align 4, !dbg !137, !tbaa !138
+  %cmp241 = icmp eq i32 %61, -1, !dbg !137
+  br i1 %cmp241, label %if.then242, label %if.end244, !dbg !137
+
+if.then242:                                       ; preds = %if.end240
+  %call243 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call243, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, align 4, !dbg !137, !tbaa !138
+  br label %if.end244, !dbg !137
+
+if.end244:                                        ; preds = %if.then242, %if.end240
+  %62 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psix, align 4, !dbg !137, !tbaa !138
+  %cmp245 = icmp eq i32 %62, -1, !dbg !137
+  br i1 %cmp245, label %if.then246, label %if.end248, !dbg !137
+
+if.then246:                                       ; preds = %if.end244
+  %call247 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([15 x i8]* @.str62, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call247, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psix, align 4, !dbg !137, !tbaa !138
+  br label %if.end248, !dbg !137
+
+if.end248:                                        ; preds = %if.then246, %if.end244
+  %63 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, align 4, !dbg !137, !tbaa !138
+  %cmp249 = icmp eq i32 %63, -1, !dbg !137
+  br i1 %cmp249, label %if.then250, label %if.end252, !dbg !137
+
+if.then250:                                       ; preds = %if.end248
+  %call251 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call251, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, align 4, !dbg !137, !tbaa !138
+  br label %if.end252, !dbg !137
+
+if.end252:                                        ; preds = %if.then250, %if.end248
+  %64 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixx, align 4, !dbg !137, !tbaa !138
+  %cmp253 = icmp eq i32 %64, -1, !dbg !137
+  br i1 %cmp253, label %if.then254, label %if.end256, !dbg !137
+
+if.then254:                                       ; preds = %if.end252
+  %call255 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str64, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call255, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixx, align 4, !dbg !137, !tbaa !138
+  br label %if.end256, !dbg !137
+
+if.end256:                                        ; preds = %if.then254, %if.end252
+  %65 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, align 4, !dbg !137, !tbaa !138
+  %cmp257 = icmp eq i32 %65, -1, !dbg !137
+  br i1 %cmp257, label %if.then258, label %if.end260, !dbg !137
+
+if.then258:                                       ; preds = %if.end256
+  %call259 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call259, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, align 4, !dbg !137, !tbaa !138
+  br label %if.end260, !dbg !137
+
+if.end260:                                        ; preds = %if.then258, %if.end256
+  %66 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixy, align 4, !dbg !137, !tbaa !138
+  %cmp261 = icmp eq i32 %66, -1, !dbg !137
+  br i1 %cmp261, label %if.then262, label %if.end264, !dbg !137
+
+if.then262:                                       ; preds = %if.end260
+  %call263 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str66, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call263, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixy, align 4, !dbg !137, !tbaa !138
+  br label %if.end264, !dbg !137
+
+if.end264:                                        ; preds = %if.then262, %if.end260
+  %67 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixz, align 4, !dbg !137, !tbaa !138
+  %cmp265 = icmp eq i32 %67, -1, !dbg !137
+  br i1 %cmp265, label %if.then266, label %if.end268, !dbg !137
+
+if.then266:                                       ; preds = %if.end264
+  %call267 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str67, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call267, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixz, align 4, !dbg !137, !tbaa !138
+  br label %if.end268, !dbg !137
+
+if.end268:                                        ; preds = %if.then266, %if.end264
+  %68 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiy, align 4, !dbg !137, !tbaa !138
+  %cmp269 = icmp eq i32 %68, -1, !dbg !137
+  br i1 %cmp269, label %if.then270, label %if.end272, !dbg !137
+
+if.then270:                                       ; preds = %if.end268
+  %call271 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([15 x i8]* @.str68, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call271, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiy, align 4, !dbg !137, !tbaa !138
+  br label %if.end272, !dbg !137
+
+if.end272:                                        ; preds = %if.then270, %if.end268
+  %69 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyy, align 4, !dbg !137, !tbaa !138
+  %cmp273 = icmp eq i32 %69, -1, !dbg !137
+  br i1 %cmp273, label %if.then274, label %if.end276, !dbg !137
+
+if.then274:                                       ; preds = %if.end272
+  %call275 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str69, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call275, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyy, align 4, !dbg !137, !tbaa !138
+  br label %if.end276, !dbg !137
+
+if.end276:                                        ; preds = %if.then274, %if.end272
+  %70 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyz, align 4, !dbg !137, !tbaa !138
+  %cmp277 = icmp eq i32 %70, -1, !dbg !137
+  br i1 %cmp277, label %if.then278, label %if.end280, !dbg !137
+
+if.then278:                                       ; preds = %if.end276
+  %call279 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str70, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call279, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyz, align 4, !dbg !137, !tbaa !138
+  br label %if.end280, !dbg !137
+
+if.end280:                                        ; preds = %if.then278, %if.end276
+  %71 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiz, align 4, !dbg !137, !tbaa !138
+  %cmp281 = icmp eq i32 %71, -1, !dbg !137
+  br i1 %cmp281, label %if.then282, label %if.end284, !dbg !137
+
+if.then282:                                       ; preds = %if.end280
+  %call283 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([15 x i8]* @.str71, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call283, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiz, align 4, !dbg !137, !tbaa !138
+  br label %if.end284, !dbg !137
+
+if.end284:                                        ; preds = %if.then282, %if.end280
+  %72 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psizz, align 4, !dbg !137, !tbaa !138
+  %cmp285 = icmp eq i32 %72, -1, !dbg !137
+  br i1 %cmp285, label %if.then286, label %if.end288, !dbg !137
+
+if.then286:                                       ; preds = %if.end284
+  %call287 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str72, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call287, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psizz, align 4, !dbg !137, !tbaa !138
+  br label %if.end288, !dbg !137
+
+if.end288:                                        ; preds = %if.then286, %if.end284
+  %73 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_r, align 4, !dbg !137, !tbaa !138
+  %cmp289 = icmp eq i32 %73, -1, !dbg !137
+  br i1 %cmp289, label %if.then290, label %if.end292, !dbg !137
+
+if.then290:                                       ; preds = %if.end288
+  %call291 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str73, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call291, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_r, align 4, !dbg !137, !tbaa !138
+  br label %if.end292, !dbg !137
+
+if.end292:                                        ; preds = %if.then290, %if.end288
+  %74 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, align 4, !dbg !137, !tbaa !138
+  %cmp293 = icmp eq i32 %74, -1, !dbg !137
+  br i1 %cmp293, label %if.then294, label %if.end296, !dbg !137
+
+if.then294:                                       ; preds = %if.end292
+  %call295 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call295, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, align 4, !dbg !137, !tbaa !138
+  br label %if.end296, !dbg !137
+
+if.end296:                                        ; preds = %if.then294, %if.end292
+  %75 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_shift_state, align 4, !dbg !137, !tbaa !138
+  %cmp297 = icmp eq i32 %75, -1, !dbg !137
+  br i1 %cmp297, label %if.then298, label %if.end300, !dbg !137
+
+if.then298:                                       ; preds = %if.end296
+  %call299 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([22 x i8]* @.str75, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call299, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_shift_state, align 4, !dbg !137, !tbaa !138
+  br label %if.end300, !dbg !137
+
+if.end300:                                        ; preds = %if.then298, %if.end296
+  %76 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_x, align 4, !dbg !137, !tbaa !138
+  %cmp301 = icmp eq i32 %76, -1, !dbg !137
+  br i1 %cmp301, label %if.then302, label %if.end304, !dbg !137
+
+if.then302:                                       ; preds = %if.end300
+  %call303 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str76, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call303, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_x, align 4, !dbg !137, !tbaa !138
+  br label %if.end304, !dbg !137
+
+if.end304:                                        ; preds = %if.then302, %if.end300
+  %77 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_y, align 4, !dbg !137, !tbaa !138
+  %cmp305 = icmp eq i32 %77, -1, !dbg !137
+  br i1 %cmp305, label %if.then306, label %if.end308, !dbg !137
+
+if.then306:                                       ; preds = %if.end304
+  %call307 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str77, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call307, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_y, align 4, !dbg !137, !tbaa !138
+  br label %if.end308, !dbg !137
+
+if.end308:                                        ; preds = %if.then306, %if.end304
+  %78 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_z, align 4, !dbg !137, !tbaa !138
+  %cmp309 = icmp eq i32 %78, -1, !dbg !137
+  br i1 %cmp309, label %if.then310, label %if.end312, !dbg !137
+
+if.then310:                                       ; preds = %if.end308
+  %call311 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str78, i64 0, i64 0)) #3, !dbg !137
+  store i32 %call311, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_z, align 4, !dbg !137, !tbaa !138
+  br label %if.end312, !dbg !137
+
+if.end312:                                        ; preds = %if.end308, %if.then310
+  %79 = bitcast i8* %fpointer to void (i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, %struct.cGH*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*, i32*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, i32*, double*, double*, double*)*, !dbg !141
+  tail call void @llvm.dbg.value(metadata !{void (i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, %struct.cGH*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*, i32*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, i32*, double*, double*, double*)* %79}, i64 0, metadata !50), !dbg !141
+  %cctk_dim = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 0, !dbg !142
+  %cctk_gsh = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 2, !dbg !142
+  %80 = load i32** %cctk_gsh, align 8, !dbg !142, !tbaa !143
+  %cctk_lsh = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 3, !dbg !142
+  %81 = load i32** %cctk_lsh, align 8, !dbg !142, !tbaa !143
+  %cctk_lbnd = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 4, !dbg !142
+  %82 = load i32** %cctk_lbnd, align 8, !dbg !142, !tbaa !143
+  %cctk_ubnd = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 5, !dbg !142
+  %83 = load i32** %cctk_ubnd, align 8, !dbg !142, !tbaa !143
+  %cctk_lssh = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 6, !dbg !142
+  %84 = load i32** %cctk_lssh, align 8, !dbg !142, !tbaa !143
+  %cctk_from = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 8, !dbg !142
+  %85 = load i32** %cctk_from, align 8, !dbg !142, !tbaa !143
+  %cctk_to = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 7, !dbg !142
+  %86 = load i32** %cctk_to, align 8, !dbg !142, !tbaa !143
+  %cctk_bbox = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 12, !dbg !142
+  %87 = load i32** %cctk_bbox, align 8, !dbg !142, !tbaa !143
+  %cctk_delta_time = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 9, !dbg !142
+  %cctk_time = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 16, !dbg !142
+  %cctk_delta_space = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 10, !dbg !142
+  %88 = load double** %cctk_delta_space, align 8, !dbg !142, !tbaa !143
+  %cctk_origin_space = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 11, !dbg !142
+  %89 = load double** %cctk_origin_space, align 8, !dbg !142, !tbaa !143
+  %cctk_levfac = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 13, !dbg !142
+  %90 = load i32** %cctk_levfac, align 8, !dbg !142, !tbaa !143
+  %cctk_convlevel = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 14, !dbg !142
+  %cctk_nghostzones = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 15, !dbg !142
+  %91 = load i32** %cctk_nghostzones, align 8, !dbg !142, !tbaa !143
+  %cctk_iteration = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1, !dbg !142
+  %92 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, align 4, !dbg !142, !tbaa !138
+  %cmp313 = icmp slt i32 %92, 0, !dbg !142
+  br i1 %cmp313, label %cond.end342, label %cond.false, !dbg !142
+
+cond.false:                                       ; preds = %if.end312
+  %call314 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !142
+  %tobool = icmp eq i32 %call314, 0, !dbg !142
+  br i1 %tobool, label %cond.end318, label %cond.true315, !dbg !142
+
+cond.true315:                                     ; preds = %cond.false
+  %call316 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end318, !dbg !142
+
+cond.end318:                                      ; preds = %cond.false, %cond.true315
+  %cond319.ph = phi i32* [ @_cctk_one, %cond.false ], [ %call316, %cond.true315 ]
+  %.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, align 4, !dbg !142, !tbaa !138
+  %cmp320 = icmp slt i32 %.pr, 0, !dbg !142
+  br i1 %cmp320, label %cond.end342, label %cond.false322, !dbg !142
+
+cond.false322:                                    ; preds = %cond.end318
+  %call323 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !142
+  %tobool324 = icmp eq i32 %call323, 0, !dbg !142
+  br i1 %tobool324, label %cond.end330, label %cond.true325, !dbg !142
+
+cond.true325:                                     ; preds = %cond.false322
+  %call326 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end330, !dbg !142
+
+cond.end330:                                      ; preds = %cond.false322, %cond.true325
+  %cond331.ph.ph = phi i32* [ @_cctk_one, %cond.false322 ], [ %call326, %cond.true325 ]
+  %.pr1718.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, align 4, !dbg !142, !tbaa !138
+  %cmp332 = icmp slt i32 %.pr1718.pr, 0, !dbg !142
+  br i1 %cmp332, label %cond.end342, label %cond.false334, !dbg !142
+
+cond.false334:                                    ; preds = %cond.end330
+  %call335 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !142
+  %tobool336 = icmp eq i32 %call335, 0, !dbg !142
+  br i1 %tobool336, label %cond.end342, label %cond.true337, !dbg !142
+
+cond.true337:                                     ; preds = %cond.false334
+  %call338 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end342, !dbg !142
+
+cond.end342:                                      ; preds = %cond.false334, %cond.end330, %cond.end318, %if.end312, %cond.true337
+  %cond3311721 = phi i32* [ %cond331.ph.ph, %cond.true337 ], [ @_cctk_one, %if.end312 ], [ @_cctk_one, %cond.end318 ], [ %cond331.ph.ph, %cond.end330 ], [ %cond331.ph.ph, %cond.false334 ]
+  %cond31917171720 = phi i32* [ %cond319.ph, %cond.true337 ], [ @_cctk_one, %if.end312 ], [ %cond319.ph, %cond.end318 ], [ %cond319.ph, %cond.end330 ], [ %cond319.ph, %cond.false334 ]
+  %cond343 = phi i32* [ %call338, %cond.true337 ], [ @_cctk_one, %if.end312 ], [ @_cctk_one, %cond.end318 ], [ @_cctk_one, %cond.end330 ], [ @_cctk_one, %cond.false334 ], !dbg !142
+  %93 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, align 4, !dbg !142, !tbaa !138
+  %cmp344 = icmp slt i32 %93, 0, !dbg !142
+  br i1 %cmp344, label %cond.end378, label %cond.false346, !dbg !142
+
+cond.false346:                                    ; preds = %cond.end342
+  %call347 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !142
+  %tobool348 = icmp eq i32 %call347, 0, !dbg !142
+  br i1 %tobool348, label %cond.end354, label %cond.true349, !dbg !142
+
+cond.true349:                                     ; preds = %cond.false346
+  %call350 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end354, !dbg !142
+
+cond.end354:                                      ; preds = %cond.false346, %cond.true349
+  %cond355.ph = phi i32* [ @_cctk_one, %cond.false346 ], [ %call350, %cond.true349 ]
+  %.pr1722 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, align 4, !dbg !142, !tbaa !138
+  %cmp356 = icmp slt i32 %.pr1722, 0, !dbg !142
+  br i1 %cmp356, label %cond.end378, label %cond.false358, !dbg !142
+
+cond.false358:                                    ; preds = %cond.end354
+  %call359 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !142
+  %tobool360 = icmp eq i32 %call359, 0, !dbg !142
+  br i1 %tobool360, label %cond.end366, label %cond.true361, !dbg !142
+
+cond.true361:                                     ; preds = %cond.false358
+  %call362 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end366, !dbg !142
+
+cond.end366:                                      ; preds = %cond.false358, %cond.true361
+  %cond367.ph.ph = phi i32* [ @_cctk_one, %cond.false358 ], [ %call362, %cond.true361 ]
+  %.pr1725.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, align 4, !dbg !142, !tbaa !138
+  %cmp368 = icmp slt i32 %.pr1725.pr, 0, !dbg !142
+  br i1 %cmp368, label %cond.end378, label %cond.false370, !dbg !142
+
+cond.false370:                                    ; preds = %cond.end366
+  %call371 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !142
+  %tobool372 = icmp eq i32 %call371, 0, !dbg !142
+  br i1 %tobool372, label %cond.end378, label %cond.true373, !dbg !142
+
+cond.true373:                                     ; preds = %cond.false370
+  %call374 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end378, !dbg !142
+
+cond.end378:                                      ; preds = %cond.false370, %cond.end366, %cond.end354, %cond.end342, %cond.true373
+  %cond3671728 = phi i32* [ %cond367.ph.ph, %cond.true373 ], [ @_cctk_one, %cond.end342 ], [ @_cctk_one, %cond.end354 ], [ %cond367.ph.ph, %cond.end366 ], [ %cond367.ph.ph, %cond.false370 ]
+  %cond35517241727 = phi i32* [ %cond355.ph, %cond.true373 ], [ @_cctk_one, %cond.end342 ], [ %cond355.ph, %cond.end354 ], [ %cond355.ph, %cond.end366 ], [ %cond355.ph, %cond.false370 ]
+  %cond379 = phi i32* [ %call374, %cond.true373 ], [ @_cctk_one, %cond.end342 ], [ @_cctk_one, %cond.end354 ], [ @_cctk_one, %cond.end366 ], [ @_cctk_one, %cond.false370 ], !dbg !142
+  %94 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, align 4, !dbg !142, !tbaa !138
+  %cmp380 = icmp slt i32 %94, 0, !dbg !142
+  br i1 %cmp380, label %cond.end414, label %cond.false382, !dbg !142
+
+cond.false382:                                    ; preds = %cond.end378
+  %call383 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !142
+  %tobool384 = icmp eq i32 %call383, 0, !dbg !142
+  br i1 %tobool384, label %cond.end390, label %cond.true385, !dbg !142
+
+cond.true385:                                     ; preds = %cond.false382
+  %call386 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end390, !dbg !142
+
+cond.end390:                                      ; preds = %cond.false382, %cond.true385
+  %cond391.ph = phi i32* [ @_cctk_one, %cond.false382 ], [ %call386, %cond.true385 ]
+  %.pr1729 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, align 4, !dbg !142, !tbaa !138
+  %cmp392 = icmp slt i32 %.pr1729, 0, !dbg !142
+  br i1 %cmp392, label %cond.end414, label %cond.false394, !dbg !142
+
+cond.false394:                                    ; preds = %cond.end390
+  %call395 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !142
+  %tobool396 = icmp eq i32 %call395, 0, !dbg !142
+  br i1 %tobool396, label %cond.end402, label %cond.true397, !dbg !142
+
+cond.true397:                                     ; preds = %cond.false394
+  %call398 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end402, !dbg !142
+
+cond.end402:                                      ; preds = %cond.false394, %cond.true397
+  %cond403.ph.ph = phi i32* [ @_cctk_one, %cond.false394 ], [ %call398, %cond.true397 ]
+  %.pr1732.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, align 4, !dbg !142, !tbaa !138
+  %cmp404 = icmp slt i32 %.pr1732.pr, 0, !dbg !142
+  br i1 %cmp404, label %cond.end414, label %cond.false406, !dbg !142
+
+cond.false406:                                    ; preds = %cond.end402
+  %call407 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !142
+  %tobool408 = icmp eq i32 %call407, 0, !dbg !142
+  br i1 %tobool408, label %cond.end414, label %cond.true409, !dbg !142
+
+cond.true409:                                     ; preds = %cond.false406
+  %call410 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([22 x i8]* @.str15, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end414, !dbg !142
+
+cond.end414:                                      ; preds = %cond.false406, %cond.end402, %cond.end390, %cond.end378, %cond.true409
+  %cond4031735 = phi i32* [ %cond403.ph.ph, %cond.true409 ], [ @_cctk_one, %cond.end378 ], [ @_cctk_one, %cond.end390 ], [ %cond403.ph.ph, %cond.end402 ], [ %cond403.ph.ph, %cond.false406 ]
+  %cond39117311734 = phi i32* [ %cond391.ph, %cond.true409 ], [ @_cctk_one, %cond.end378 ], [ %cond391.ph, %cond.end390 ], [ %cond391.ph, %cond.end402 ], [ %cond391.ph, %cond.false406 ]
+  %cond415 = phi i32* [ %call410, %cond.true409 ], [ @_cctk_one, %cond.end378 ], [ @_cctk_one, %cond.end390 ], [ @_cctk_one, %cond.end402 ], [ @_cctk_one, %cond.false406 ], !dbg !142
+  %95 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxx, align 4, !dbg !142, !tbaa !138
+  %cmp416 = icmp slt i32 %95, 0, !dbg !142
+  br i1 %cmp416, label %cond.end429, label %cond.false424, !dbg !142
+
+cond.false424:                                    ; preds = %cond.end414
+  %idxprom = sext i32 %95 to i64, !dbg !142
+  %data = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %96 = load i8**** %data, align 8, !dbg !142, !tbaa !143
+  %arrayidx = getelementptr inbounds i8*** %96, i64 %idxprom, !dbg !142
+  %97 = load i8*** %arrayidx, align 8, !dbg !142, !tbaa !143
+  %98 = load i8** %97, align 8, !dbg !142, !tbaa !143
+  %phitmp = bitcast i8* %98 to double*, !dbg !142
+  %arrayidx428 = getelementptr inbounds i8** %97, i64 1, !dbg !142
+  %99 = load i8** %arrayidx428, align 8, !dbg !142, !tbaa !143
+  %phitmp1636 = bitcast i8* %99 to double*, !dbg !142
+  br label %cond.end429, !dbg !142
+
+cond.end429:                                      ; preds = %cond.end414, %cond.false424
+  %cond4211738 = phi double* [ %phitmp, %cond.false424 ], [ null, %cond.end414 ]
+  %cond430 = phi double* [ %phitmp1636, %cond.false424 ], [ null, %cond.end414 ]
+  %100 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxy, align 4, !dbg !142, !tbaa !138
+  %cmp431 = icmp slt i32 %100, 0, !dbg !142
+  br i1 %cmp431, label %cond.end447, label %cond.false442, !dbg !142
+
+cond.false442:                                    ; preds = %cond.end429
+  %idxprom434 = sext i32 %100 to i64, !dbg !142
+  %data435 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %101 = load i8**** %data435, align 8, !dbg !142, !tbaa !143
+  %arrayidx436 = getelementptr inbounds i8*** %101, i64 %idxprom434, !dbg !142
+  %102 = load i8*** %arrayidx436, align 8, !dbg !142, !tbaa !143
+  %103 = load i8** %102, align 8, !dbg !142, !tbaa !143
+  %phitmp1637 = bitcast i8* %103 to double*, !dbg !142
+  %arrayidx446 = getelementptr inbounds i8** %102, i64 1, !dbg !142
+  %104 = load i8** %arrayidx446, align 8, !dbg !142, !tbaa !143
+  %phitmp1638 = bitcast i8* %104 to double*, !dbg !142
+  br label %cond.end447, !dbg !142
+
+cond.end447:                                      ; preds = %cond.end429, %cond.false442
+  %cond4391741 = phi double* [ %phitmp1637, %cond.false442 ], [ null, %cond.end429 ]
+  %cond448 = phi double* [ %phitmp1638, %cond.false442 ], [ null, %cond.end429 ]
+  %105 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxz, align 4, !dbg !142, !tbaa !138
+  %cmp449 = icmp slt i32 %105, 0, !dbg !142
+  br i1 %cmp449, label %cond.end465, label %cond.false460, !dbg !142
+
+cond.false460:                                    ; preds = %cond.end447
+  %idxprom452 = sext i32 %105 to i64, !dbg !142
+  %data453 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %106 = load i8**** %data453, align 8, !dbg !142, !tbaa !143
+  %arrayidx454 = getelementptr inbounds i8*** %106, i64 %idxprom452, !dbg !142
+  %107 = load i8*** %arrayidx454, align 8, !dbg !142, !tbaa !143
+  %108 = load i8** %107, align 8, !dbg !142, !tbaa !143
+  %phitmp1639 = bitcast i8* %108 to double*, !dbg !142
+  %arrayidx464 = getelementptr inbounds i8** %107, i64 1, !dbg !142
+  %109 = load i8** %arrayidx464, align 8, !dbg !142, !tbaa !143
+  %phitmp1640 = bitcast i8* %109 to double*, !dbg !142
+  br label %cond.end465, !dbg !142
+
+cond.end465:                                      ; preds = %cond.end447, %cond.false460
+  %cond4571744 = phi double* [ %phitmp1639, %cond.false460 ], [ null, %cond.end447 ]
+  %cond466 = phi double* [ %phitmp1640, %cond.false460 ], [ null, %cond.end447 ]
+  %110 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyy, align 4, !dbg !142, !tbaa !138
+  %cmp467 = icmp slt i32 %110, 0, !dbg !142
+  br i1 %cmp467, label %cond.end483, label %cond.false478, !dbg !142
+
+cond.false478:                                    ; preds = %cond.end465
+  %idxprom470 = sext i32 %110 to i64, !dbg !142
+  %data471 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %111 = load i8**** %data471, align 8, !dbg !142, !tbaa !143
+  %arrayidx472 = getelementptr inbounds i8*** %111, i64 %idxprom470, !dbg !142
+  %112 = load i8*** %arrayidx472, align 8, !dbg !142, !tbaa !143
+  %113 = load i8** %112, align 8, !dbg !142, !tbaa !143
+  %phitmp1641 = bitcast i8* %113 to double*, !dbg !142
+  %arrayidx482 = getelementptr inbounds i8** %112, i64 1, !dbg !142
+  %114 = load i8** %arrayidx482, align 8, !dbg !142, !tbaa !143
+  %phitmp1642 = bitcast i8* %114 to double*, !dbg !142
+  br label %cond.end483, !dbg !142
+
+cond.end483:                                      ; preds = %cond.end465, %cond.false478
+  %cond4751747 = phi double* [ %phitmp1641, %cond.false478 ], [ null, %cond.end465 ]
+  %cond484 = phi double* [ %phitmp1642, %cond.false478 ], [ null, %cond.end465 ]
+  %115 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyz, align 4, !dbg !142, !tbaa !138
+  %cmp485 = icmp slt i32 %115, 0, !dbg !142
+  br i1 %cmp485, label %cond.end501, label %cond.false496, !dbg !142
+
+cond.false496:                                    ; preds = %cond.end483
+  %idxprom488 = sext i32 %115 to i64, !dbg !142
+  %data489 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %116 = load i8**** %data489, align 8, !dbg !142, !tbaa !143
+  %arrayidx490 = getelementptr inbounds i8*** %116, i64 %idxprom488, !dbg !142
+  %117 = load i8*** %arrayidx490, align 8, !dbg !142, !tbaa !143
+  %118 = load i8** %117, align 8, !dbg !142, !tbaa !143
+  %phitmp1643 = bitcast i8* %118 to double*, !dbg !142
+  %arrayidx500 = getelementptr inbounds i8** %117, i64 1, !dbg !142
+  %119 = load i8** %arrayidx500, align 8, !dbg !142, !tbaa !143
+  %phitmp1644 = bitcast i8* %119 to double*, !dbg !142
+  br label %cond.end501, !dbg !142
+
+cond.end501:                                      ; preds = %cond.end483, %cond.false496
+  %cond4931750 = phi double* [ %phitmp1643, %cond.false496 ], [ null, %cond.end483 ]
+  %cond502 = phi double* [ %phitmp1644, %cond.false496 ], [ null, %cond.end483 ]
+  %120 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gzz, align 4, !dbg !142, !tbaa !138
+  %cmp503 = icmp slt i32 %120, 0, !dbg !142
+  br i1 %cmp503, label %cond.end519, label %cond.false514, !dbg !142
+
+cond.false514:                                    ; preds = %cond.end501
+  %idxprom506 = sext i32 %120 to i64, !dbg !142
+  %data507 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %121 = load i8**** %data507, align 8, !dbg !142, !tbaa !143
+  %arrayidx508 = getelementptr inbounds i8*** %121, i64 %idxprom506, !dbg !142
+  %122 = load i8*** %arrayidx508, align 8, !dbg !142, !tbaa !143
+  %123 = load i8** %122, align 8, !dbg !142, !tbaa !143
+  %phitmp1645 = bitcast i8* %123 to double*, !dbg !142
+  %arrayidx518 = getelementptr inbounds i8** %122, i64 1, !dbg !142
+  %124 = load i8** %arrayidx518, align 8, !dbg !142, !tbaa !143
+  %phitmp1646 = bitcast i8* %124 to double*, !dbg !142
+  br label %cond.end519, !dbg !142
+
+cond.end519:                                      ; preds = %cond.end501, %cond.false514
+  %cond5111753 = phi double* [ %phitmp1645, %cond.false514 ], [ null, %cond.end501 ]
+  %cond520 = phi double* [ %phitmp1646, %cond.false514 ], [ null, %cond.end501 ]
+  %125 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxx_stag, align 4, !dbg !142, !tbaa !138
+  %cmp521 = icmp slt i32 %125, 0, !dbg !142
+  br i1 %cmp521, label %cond.end546, label %cond.false541, !dbg !142
+
+cond.false541:                                    ; preds = %cond.end519
+  %idxprom524 = sext i32 %125 to i64, !dbg !142
+  %data525 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %126 = load i8**** %data525, align 8, !dbg !142, !tbaa !143
+  %arrayidx526 = getelementptr inbounds i8*** %126, i64 %idxprom524, !dbg !142
+  %127 = load i8*** %arrayidx526, align 8, !dbg !142, !tbaa !143
+  %128 = load i8** %127, align 8, !dbg !142, !tbaa !143
+  %phitmp1647 = bitcast i8* %128 to double*, !dbg !142
+  %arrayidx536 = getelementptr inbounds i8** %127, i64 1, !dbg !142
+  %129 = load i8** %arrayidx536, align 8, !dbg !142, !tbaa !143
+  %phitmp1648 = bitcast i8* %129 to double*, !dbg !142
+  %arrayidx545 = getelementptr inbounds i8** %127, i64 2, !dbg !142
+  %130 = load i8** %arrayidx545, align 8, !dbg !142, !tbaa !143
+  %phitmp1649 = bitcast i8* %130 to double*, !dbg !142
+  br label %cond.end546, !dbg !142
+
+cond.end546:                                      ; preds = %cond.end519, %cond.false541
+  %cond5381760 = phi double* [ %phitmp1648, %cond.false541 ], [ null, %cond.end519 ]
+  %cond52917561759 = phi double* [ %phitmp1647, %cond.false541 ], [ null, %cond.end519 ]
+  %cond547 = phi double* [ %phitmp1649, %cond.false541 ], [ null, %cond.end519 ]
+  %131 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxy_stag, align 4, !dbg !142, !tbaa !138
+  %cmp548 = icmp slt i32 %131, 0, !dbg !142
+  br i1 %cmp548, label %cond.end573, label %cond.false568, !dbg !142
+
+cond.false568:                                    ; preds = %cond.end546
+  %idxprom551 = sext i32 %131 to i64, !dbg !142
+  %data552 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %132 = load i8**** %data552, align 8, !dbg !142, !tbaa !143
+  %arrayidx553 = getelementptr inbounds i8*** %132, i64 %idxprom551, !dbg !142
+  %133 = load i8*** %arrayidx553, align 8, !dbg !142, !tbaa !143
+  %134 = load i8** %133, align 8, !dbg !142, !tbaa !143
+  %phitmp1650 = bitcast i8* %134 to double*, !dbg !142
+  %arrayidx563 = getelementptr inbounds i8** %133, i64 1, !dbg !142
+  %135 = load i8** %arrayidx563, align 8, !dbg !142, !tbaa !143
+  %phitmp1651 = bitcast i8* %135 to double*, !dbg !142
+  %arrayidx572 = getelementptr inbounds i8** %133, i64 2, !dbg !142
+  %136 = load i8** %arrayidx572, align 8, !dbg !142, !tbaa !143
+  %phitmp1652 = bitcast i8* %136 to double*, !dbg !142
+  br label %cond.end573, !dbg !142
+
+cond.end573:                                      ; preds = %cond.end546, %cond.false568
+  %cond5651767 = phi double* [ %phitmp1651, %cond.false568 ], [ null, %cond.end546 ]
+  %cond55617631766 = phi double* [ %phitmp1650, %cond.false568 ], [ null, %cond.end546 ]
+  %cond574 = phi double* [ %phitmp1652, %cond.false568 ], [ null, %cond.end546 ]
+  %137 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxz_stag, align 4, !dbg !142, !tbaa !138
+  %cmp575 = icmp slt i32 %137, 0, !dbg !142
+  br i1 %cmp575, label %cond.end600, label %cond.false595, !dbg !142
+
+cond.false595:                                    ; preds = %cond.end573
+  %idxprom578 = sext i32 %137 to i64, !dbg !142
+  %data579 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %138 = load i8**** %data579, align 8, !dbg !142, !tbaa !143
+  %arrayidx580 = getelementptr inbounds i8*** %138, i64 %idxprom578, !dbg !142
+  %139 = load i8*** %arrayidx580, align 8, !dbg !142, !tbaa !143
+  %140 = load i8** %139, align 8, !dbg !142, !tbaa !143
+  %phitmp1653 = bitcast i8* %140 to double*, !dbg !142
+  %arrayidx590 = getelementptr inbounds i8** %139, i64 1, !dbg !142
+  %141 = load i8** %arrayidx590, align 8, !dbg !142, !tbaa !143
+  %phitmp1654 = bitcast i8* %141 to double*, !dbg !142
+  %arrayidx599 = getelementptr inbounds i8** %139, i64 2, !dbg !142
+  %142 = load i8** %arrayidx599, align 8, !dbg !142, !tbaa !143
+  %phitmp1655 = bitcast i8* %142 to double*, !dbg !142
+  br label %cond.end600, !dbg !142
+
+cond.end600:                                      ; preds = %cond.end573, %cond.false595
+  %cond5921774 = phi double* [ %phitmp1654, %cond.false595 ], [ null, %cond.end573 ]
+  %cond58317701773 = phi double* [ %phitmp1653, %cond.false595 ], [ null, %cond.end573 ]
+  %cond601 = phi double* [ %phitmp1655, %cond.false595 ], [ null, %cond.end573 ]
+  %143 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyy_stag, align 4, !dbg !142, !tbaa !138
+  %cmp602 = icmp slt i32 %143, 0, !dbg !142
+  br i1 %cmp602, label %cond.end627, label %cond.false622, !dbg !142
+
+cond.false622:                                    ; preds = %cond.end600
+  %idxprom605 = sext i32 %143 to i64, !dbg !142
+  %data606 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %144 = load i8**** %data606, align 8, !dbg !142, !tbaa !143
+  %arrayidx607 = getelementptr inbounds i8*** %144, i64 %idxprom605, !dbg !142
+  %145 = load i8*** %arrayidx607, align 8, !dbg !142, !tbaa !143
+  %146 = load i8** %145, align 8, !dbg !142, !tbaa !143
+  %phitmp1656 = bitcast i8* %146 to double*, !dbg !142
+  %arrayidx617 = getelementptr inbounds i8** %145, i64 1, !dbg !142
+  %147 = load i8** %arrayidx617, align 8, !dbg !142, !tbaa !143
+  %phitmp1657 = bitcast i8* %147 to double*, !dbg !142
+  %arrayidx626 = getelementptr inbounds i8** %145, i64 2, !dbg !142
+  %148 = load i8** %arrayidx626, align 8, !dbg !142, !tbaa !143
+  %phitmp1658 = bitcast i8* %148 to double*, !dbg !142
+  br label %cond.end627, !dbg !142
+
+cond.end627:                                      ; preds = %cond.end600, %cond.false622
+  %cond6191781 = phi double* [ %phitmp1657, %cond.false622 ], [ null, %cond.end600 ]
+  %cond61017771780 = phi double* [ %phitmp1656, %cond.false622 ], [ null, %cond.end600 ]
+  %cond628 = phi double* [ %phitmp1658, %cond.false622 ], [ null, %cond.end600 ]
+  %149 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyz_stag, align 4, !dbg !142, !tbaa !138
+  %cmp629 = icmp slt i32 %149, 0, !dbg !142
+  br i1 %cmp629, label %cond.end654, label %cond.false649, !dbg !142
+
+cond.false649:                                    ; preds = %cond.end627
+  %idxprom632 = sext i32 %149 to i64, !dbg !142
+  %data633 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %150 = load i8**** %data633, align 8, !dbg !142, !tbaa !143
+  %arrayidx634 = getelementptr inbounds i8*** %150, i64 %idxprom632, !dbg !142
+  %151 = load i8*** %arrayidx634, align 8, !dbg !142, !tbaa !143
+  %152 = load i8** %151, align 8, !dbg !142, !tbaa !143
+  %phitmp1659 = bitcast i8* %152 to double*, !dbg !142
+  %arrayidx644 = getelementptr inbounds i8** %151, i64 1, !dbg !142
+  %153 = load i8** %arrayidx644, align 8, !dbg !142, !tbaa !143
+  %phitmp1660 = bitcast i8* %153 to double*, !dbg !142
+  %arrayidx653 = getelementptr inbounds i8** %151, i64 2, !dbg !142
+  %154 = load i8** %arrayidx653, align 8, !dbg !142, !tbaa !143
+  %phitmp1661 = bitcast i8* %154 to double*, !dbg !142
+  br label %cond.end654, !dbg !142
+
+cond.end654:                                      ; preds = %cond.end627, %cond.false649
+  %cond6461788 = phi double* [ %phitmp1660, %cond.false649 ], [ null, %cond.end627 ]
+  %cond63717841787 = phi double* [ %phitmp1659, %cond.false649 ], [ null, %cond.end627 ]
+  %cond655 = phi double* [ %phitmp1661, %cond.false649 ], [ null, %cond.end627 ]
+  %155 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kzz_stag, align 4, !dbg !142, !tbaa !138
+  %cmp656 = icmp slt i32 %155, 0, !dbg !142
+  br i1 %cmp656, label %cond.end681, label %cond.false676, !dbg !142
+
+cond.false676:                                    ; preds = %cond.end654
+  %idxprom659 = sext i32 %155 to i64, !dbg !142
+  %data660 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %156 = load i8**** %data660, align 8, !dbg !142, !tbaa !143
+  %arrayidx661 = getelementptr inbounds i8*** %156, i64 %idxprom659, !dbg !142
+  %157 = load i8*** %arrayidx661, align 8, !dbg !142, !tbaa !143
+  %158 = load i8** %157, align 8, !dbg !142, !tbaa !143
+  %phitmp1662 = bitcast i8* %158 to double*, !dbg !142
+  %arrayidx671 = getelementptr inbounds i8** %157, i64 1, !dbg !142
+  %159 = load i8** %arrayidx671, align 8, !dbg !142, !tbaa !143
+  %phitmp1663 = bitcast i8* %159 to double*, !dbg !142
+  %arrayidx680 = getelementptr inbounds i8** %157, i64 2, !dbg !142
+  %160 = load i8** %arrayidx680, align 8, !dbg !142, !tbaa !143
+  %phitmp1664 = bitcast i8* %160 to double*, !dbg !142
+  br label %cond.end681, !dbg !142
+
+cond.end681:                                      ; preds = %cond.end654, %cond.false676
+  %cond6731795 = phi double* [ %phitmp1663, %cond.false676 ], [ null, %cond.end654 ]
+  %cond66417911794 = phi double* [ %phitmp1662, %cond.false676 ], [ null, %cond.end654 ]
+  %cond682 = phi double* [ %phitmp1664, %cond.false676 ], [ null, %cond.end654 ]
+  %161 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxx, align 4, !dbg !142, !tbaa !138
+  %cmp683 = icmp slt i32 %161, 0, !dbg !142
+  br i1 %cmp683, label %cond.end690, label %cond.false685, !dbg !142
+
+cond.false685:                                    ; preds = %cond.end681
+  %idxprom686 = sext i32 %161 to i64, !dbg !142
+  %data687 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %162 = load i8**** %data687, align 8, !dbg !142, !tbaa !143
+  %arrayidx688 = getelementptr inbounds i8*** %162, i64 %idxprom686, !dbg !142
+  %163 = load i8*** %arrayidx688, align 8, !dbg !142, !tbaa !143
+  %164 = load i8** %163, align 8, !dbg !142, !tbaa !143
+  %phitmp1665 = bitcast i8* %164 to double*, !dbg !142
+  br label %cond.end690, !dbg !142
+
+cond.end690:                                      ; preds = %cond.end681, %cond.false685
+  %cond691 = phi double* [ %phitmp1665, %cond.false685 ], [ null, %cond.end681 ]
+  %165 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxy, align 4, !dbg !142, !tbaa !138
+  %cmp692 = icmp slt i32 %165, 0, !dbg !142
+  br i1 %cmp692, label %cond.end699, label %cond.false694, !dbg !142
+
+cond.false694:                                    ; preds = %cond.end690
+  %idxprom695 = sext i32 %165 to i64, !dbg !142
+  %data696 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %166 = load i8**** %data696, align 8, !dbg !142, !tbaa !143
+  %arrayidx697 = getelementptr inbounds i8*** %166, i64 %idxprom695, !dbg !142
+  %167 = load i8*** %arrayidx697, align 8, !dbg !142, !tbaa !143
+  %168 = load i8** %167, align 8, !dbg !142, !tbaa !143
+  %phitmp1666 = bitcast i8* %168 to double*, !dbg !142
+  br label %cond.end699, !dbg !142
+
+cond.end699:                                      ; preds = %cond.end690, %cond.false694
+  %cond700 = phi double* [ %phitmp1666, %cond.false694 ], [ null, %cond.end690 ]
+  %169 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxz, align 4, !dbg !142, !tbaa !138
+  %cmp701 = icmp slt i32 %169, 0, !dbg !142
+  br i1 %cmp701, label %cond.end708, label %cond.false703, !dbg !142
+
+cond.false703:                                    ; preds = %cond.end699
+  %idxprom704 = sext i32 %169 to i64, !dbg !142
+  %data705 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %170 = load i8**** %data705, align 8, !dbg !142, !tbaa !143
+  %arrayidx706 = getelementptr inbounds i8*** %170, i64 %idxprom704, !dbg !142
+  %171 = load i8*** %arrayidx706, align 8, !dbg !142, !tbaa !143
+  %172 = load i8** %171, align 8, !dbg !142, !tbaa !143
+  %phitmp1667 = bitcast i8* %172 to double*, !dbg !142
+  br label %cond.end708, !dbg !142
+
+cond.end708:                                      ; preds = %cond.end699, %cond.false703
+  %cond709 = phi double* [ %phitmp1667, %cond.false703 ], [ null, %cond.end699 ]
+  %173 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyy, align 4, !dbg !142, !tbaa !138
+  %cmp710 = icmp slt i32 %173, 0, !dbg !142
+  br i1 %cmp710, label %cond.end717, label %cond.false712, !dbg !142
+
+cond.false712:                                    ; preds = %cond.end708
+  %idxprom713 = sext i32 %173 to i64, !dbg !142
+  %data714 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %174 = load i8**** %data714, align 8, !dbg !142, !tbaa !143
+  %arrayidx715 = getelementptr inbounds i8*** %174, i64 %idxprom713, !dbg !142
+  %175 = load i8*** %arrayidx715, align 8, !dbg !142, !tbaa !143
+  %176 = load i8** %175, align 8, !dbg !142, !tbaa !143
+  %phitmp1668 = bitcast i8* %176 to double*, !dbg !142
+  br label %cond.end717, !dbg !142
+
+cond.end717:                                      ; preds = %cond.end708, %cond.false712
+  %cond718 = phi double* [ %phitmp1668, %cond.false712 ], [ null, %cond.end708 ]
+  %177 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyz, align 4, !dbg !142, !tbaa !138
+  %cmp719 = icmp slt i32 %177, 0, !dbg !142
+  br i1 %cmp719, label %cond.end726, label %cond.false721, !dbg !142
+
+cond.false721:                                    ; preds = %cond.end717
+  %idxprom722 = sext i32 %177 to i64, !dbg !142
+  %data723 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %178 = load i8**** %data723, align 8, !dbg !142, !tbaa !143
+  %arrayidx724 = getelementptr inbounds i8*** %178, i64 %idxprom722, !dbg !142
+  %179 = load i8*** %arrayidx724, align 8, !dbg !142, !tbaa !143
+  %180 = load i8** %179, align 8, !dbg !142, !tbaa !143
+  %phitmp1669 = bitcast i8* %180 to double*, !dbg !142
+  br label %cond.end726, !dbg !142
+
+cond.end726:                                      ; preds = %cond.end717, %cond.false721
+  %cond727 = phi double* [ %phitmp1669, %cond.false721 ], [ null, %cond.end717 ]
+  %181 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gzz, align 4, !dbg !142, !tbaa !138
+  %cmp728 = icmp slt i32 %181, 0, !dbg !142
+  br i1 %cmp728, label %cond.end735, label %cond.false730, !dbg !142
+
+cond.false730:                                    ; preds = %cond.end726
+  %idxprom731 = sext i32 %181 to i64, !dbg !142
+  %data732 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %182 = load i8**** %data732, align 8, !dbg !142, !tbaa !143
+  %arrayidx733 = getelementptr inbounds i8*** %182, i64 %idxprom731, !dbg !142
+  %183 = load i8*** %arrayidx733, align 8, !dbg !142, !tbaa !143
+  %184 = load i8** %183, align 8, !dbg !142, !tbaa !143
+  %phitmp1670 = bitcast i8* %184 to double*, !dbg !142
+  br label %cond.end735, !dbg !142
+
+cond.end735:                                      ; preds = %cond.end726, %cond.false730
+  %cond736 = phi double* [ %phitmp1670, %cond.false730 ], [ null, %cond.end726 ]
+  %185 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxx, align 4, !dbg !142, !tbaa !138
+  %cmp737 = icmp slt i32 %185, 0, !dbg !142
+  br i1 %cmp737, label %cond.end744, label %cond.false739, !dbg !142
+
+cond.false739:                                    ; preds = %cond.end735
+  %idxprom740 = sext i32 %185 to i64, !dbg !142
+  %data741 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %186 = load i8**** %data741, align 8, !dbg !142, !tbaa !143
+  %arrayidx742 = getelementptr inbounds i8*** %186, i64 %idxprom740, !dbg !142
+  %187 = load i8*** %arrayidx742, align 8, !dbg !142, !tbaa !143
+  %188 = load i8** %187, align 8, !dbg !142, !tbaa !143
+  %phitmp1671 = bitcast i8* %188 to double*, !dbg !142
+  br label %cond.end744, !dbg !142
+
+cond.end744:                                      ; preds = %cond.end735, %cond.false739
+  %cond745 = phi double* [ %phitmp1671, %cond.false739 ], [ null, %cond.end735 ]
+  %189 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxy, align 4, !dbg !142, !tbaa !138
+  %cmp746 = icmp slt i32 %189, 0, !dbg !142
+  br i1 %cmp746, label %cond.end753, label %cond.false748, !dbg !142
+
+cond.false748:                                    ; preds = %cond.end744
+  %idxprom749 = sext i32 %189 to i64, !dbg !142
+  %data750 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %190 = load i8**** %data750, align 8, !dbg !142, !tbaa !143
+  %arrayidx751 = getelementptr inbounds i8*** %190, i64 %idxprom749, !dbg !142
+  %191 = load i8*** %arrayidx751, align 8, !dbg !142, !tbaa !143
+  %192 = load i8** %191, align 8, !dbg !142, !tbaa !143
+  %phitmp1672 = bitcast i8* %192 to double*, !dbg !142
+  br label %cond.end753, !dbg !142
+
+cond.end753:                                      ; preds = %cond.end744, %cond.false748
+  %cond754 = phi double* [ %phitmp1672, %cond.false748 ], [ null, %cond.end744 ]
+  %193 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxz, align 4, !dbg !142, !tbaa !138
+  %cmp755 = icmp slt i32 %193, 0, !dbg !142
+  br i1 %cmp755, label %cond.end762, label %cond.false757, !dbg !142
+
+cond.false757:                                    ; preds = %cond.end753
+  %idxprom758 = sext i32 %193 to i64, !dbg !142
+  %data759 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %194 = load i8**** %data759, align 8, !dbg !142, !tbaa !143
+  %arrayidx760 = getelementptr inbounds i8*** %194, i64 %idxprom758, !dbg !142
+  %195 = load i8*** %arrayidx760, align 8, !dbg !142, !tbaa !143
+  %196 = load i8** %195, align 8, !dbg !142, !tbaa !143
+  %phitmp1673 = bitcast i8* %196 to double*, !dbg !142
+  br label %cond.end762, !dbg !142
+
+cond.end762:                                      ; preds = %cond.end753, %cond.false757
+  %cond763 = phi double* [ %phitmp1673, %cond.false757 ], [ null, %cond.end753 ]
+  %197 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyy, align 4, !dbg !142, !tbaa !138
+  %cmp764 = icmp slt i32 %197, 0, !dbg !142
+  br i1 %cmp764, label %cond.end771, label %cond.false766, !dbg !142
+
+cond.false766:                                    ; preds = %cond.end762
+  %idxprom767 = sext i32 %197 to i64, !dbg !142
+  %data768 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %198 = load i8**** %data768, align 8, !dbg !142, !tbaa !143
+  %arrayidx769 = getelementptr inbounds i8*** %198, i64 %idxprom767, !dbg !142
+  %199 = load i8*** %arrayidx769, align 8, !dbg !142, !tbaa !143
+  %200 = load i8** %199, align 8, !dbg !142, !tbaa !143
+  %phitmp1674 = bitcast i8* %200 to double*, !dbg !142
+  br label %cond.end771, !dbg !142
+
+cond.end771:                                      ; preds = %cond.end762, %cond.false766
+  %cond772 = phi double* [ %phitmp1674, %cond.false766 ], [ null, %cond.end762 ]
+  %201 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyz, align 4, !dbg !142, !tbaa !138
+  %cmp773 = icmp slt i32 %201, 0, !dbg !142
+  br i1 %cmp773, label %cond.end780, label %cond.false775, !dbg !142
+
+cond.false775:                                    ; preds = %cond.end771
+  %idxprom776 = sext i32 %201 to i64, !dbg !142
+  %data777 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %202 = load i8**** %data777, align 8, !dbg !142, !tbaa !143
+  %arrayidx778 = getelementptr inbounds i8*** %202, i64 %idxprom776, !dbg !142
+  %203 = load i8*** %arrayidx778, align 8, !dbg !142, !tbaa !143
+  %204 = load i8** %203, align 8, !dbg !142, !tbaa !143
+  %phitmp1675 = bitcast i8* %204 to double*, !dbg !142
+  br label %cond.end780, !dbg !142
+
+cond.end780:                                      ; preds = %cond.end771, %cond.false775
+  %cond781 = phi double* [ %phitmp1675, %cond.false775 ], [ null, %cond.end771 ]
+  %205 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kzz, align 4, !dbg !142, !tbaa !138
+  %cmp782 = icmp slt i32 %205, 0, !dbg !142
+  br i1 %cmp782, label %cond.end789, label %cond.false784, !dbg !142
+
+cond.false784:                                    ; preds = %cond.end780
+  %idxprom785 = sext i32 %205 to i64, !dbg !142
+  %data786 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %206 = load i8**** %data786, align 8, !dbg !142, !tbaa !143
+  %arrayidx787 = getelementptr inbounds i8*** %206, i64 %idxprom785, !dbg !142
+  %207 = load i8*** %arrayidx787, align 8, !dbg !142, !tbaa !143
+  %208 = load i8** %207, align 8, !dbg !142, !tbaa !143
+  %phitmp1676 = bitcast i8* %208 to double*, !dbg !142
+  br label %cond.end789, !dbg !142
+
+cond.end789:                                      ; preds = %cond.end780, %cond.false784
+  %cond790 = phi double* [ %phitmp1676, %cond.false784 ], [ null, %cond.end780 ]
+  %209 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, align 4, !dbg !142, !tbaa !138
+  %cmp791 = icmp slt i32 %209, 0, !dbg !142
+  br i1 %cmp791, label %cond.end825, label %cond.false793, !dbg !142
+
+cond.false793:                                    ; preds = %cond.end789
+  %call794 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !142
+  %tobool795 = icmp eq i32 %call794, 0, !dbg !142
+  br i1 %tobool795, label %cond.end801, label %cond.true796, !dbg !142
+
+cond.true796:                                     ; preds = %cond.false793
+  %call797 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end801, !dbg !142
+
+cond.end801:                                      ; preds = %cond.false793, %cond.true796
+  %cond802.ph = phi i32* [ @_cctk_one, %cond.false793 ], [ %call797, %cond.true796 ]
+  %.pr1796 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, align 4, !dbg !142, !tbaa !138
+  %cmp803 = icmp slt i32 %.pr1796, 0, !dbg !142
+  br i1 %cmp803, label %cond.end825, label %cond.false805, !dbg !142
+
+cond.false805:                                    ; preds = %cond.end801
+  %call806 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !142
+  %tobool807 = icmp eq i32 %call806, 0, !dbg !142
+  br i1 %tobool807, label %cond.end813, label %cond.true808, !dbg !142
+
+cond.true808:                                     ; preds = %cond.false805
+  %call809 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end813, !dbg !142
+
+cond.end813:                                      ; preds = %cond.false805, %cond.true808
+  %cond814.ph.ph = phi i32* [ @_cctk_one, %cond.false805 ], [ %call809, %cond.true808 ]
+  %.pr1799.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, align 4, !dbg !142, !tbaa !138
+  %cmp815 = icmp slt i32 %.pr1799.pr, 0, !dbg !142
+  br i1 %cmp815, label %cond.end825, label %cond.false817, !dbg !142
+
+cond.false817:                                    ; preds = %cond.end813
+  %call818 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !142
+  %tobool819 = icmp eq i32 %call818, 0, !dbg !142
+  br i1 %tobool819, label %cond.end825, label %cond.true820, !dbg !142
+
+cond.true820:                                     ; preds = %cond.false817
+  %call821 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([17 x i8]* @.str61, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end825, !dbg !142
+
+cond.end825:                                      ; preds = %cond.false817, %cond.end813, %cond.end801, %cond.end789, %cond.true820
+  %cond8141802 = phi i32* [ %cond814.ph.ph, %cond.true820 ], [ @_cctk_one, %cond.end789 ], [ @_cctk_one, %cond.end801 ], [ %cond814.ph.ph, %cond.end813 ], [ %cond814.ph.ph, %cond.false817 ]
+  %cond80217981801 = phi i32* [ %cond802.ph, %cond.true820 ], [ @_cctk_one, %cond.end789 ], [ %cond802.ph, %cond.end801 ], [ %cond802.ph, %cond.end813 ], [ %cond802.ph, %cond.false817 ]
+  %cond826 = phi i32* [ %call821, %cond.true820 ], [ @_cctk_one, %cond.end789 ], [ @_cctk_one, %cond.end801 ], [ @_cctk_one, %cond.end813 ], [ @_cctk_one, %cond.false817 ], !dbg !142
+  %210 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, align 4, !dbg !142, !tbaa !138
+  %cmp827 = icmp slt i32 %210, 0, !dbg !142
+  br i1 %cmp827, label %cond.end861, label %cond.false829, !dbg !142
+
+cond.false829:                                    ; preds = %cond.end825
+  %call830 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !142
+  %tobool831 = icmp eq i32 %call830, 0, !dbg !142
+  br i1 %tobool831, label %cond.end837, label %cond.true832, !dbg !142
+
+cond.true832:                                     ; preds = %cond.false829
+  %call833 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end837, !dbg !142
+
+cond.end837:                                      ; preds = %cond.false829, %cond.true832
+  %cond838.ph = phi i32* [ @_cctk_one, %cond.false829 ], [ %call833, %cond.true832 ]
+  %.pr1803 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, align 4, !dbg !142, !tbaa !138
+  %cmp839 = icmp slt i32 %.pr1803, 0, !dbg !142
+  br i1 %cmp839, label %cond.end861, label %cond.false841, !dbg !142
+
+cond.false841:                                    ; preds = %cond.end837
+  %call842 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !142
+  %tobool843 = icmp eq i32 %call842, 0, !dbg !142
+  br i1 %tobool843, label %cond.end849, label %cond.true844, !dbg !142
+
+cond.true844:                                     ; preds = %cond.false841
+  %call845 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end849, !dbg !142
+
+cond.end849:                                      ; preds = %cond.false841, %cond.true844
+  %cond850.ph.ph = phi i32* [ @_cctk_one, %cond.false841 ], [ %call845, %cond.true844 ]
+  %.pr1806.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, align 4, !dbg !142, !tbaa !138
+  %cmp851 = icmp slt i32 %.pr1806.pr, 0, !dbg !142
+  br i1 %cmp851, label %cond.end861, label %cond.false853, !dbg !142
+
+cond.false853:                                    ; preds = %cond.end849
+  %call854 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !142
+  %tobool855 = icmp eq i32 %call854, 0, !dbg !142
+  br i1 %tobool855, label %cond.end861, label %cond.true856, !dbg !142
+
+cond.true856:                                     ; preds = %cond.false853
+  %call857 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([25 x i8]* @.str63, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end861, !dbg !142
+
+cond.end861:                                      ; preds = %cond.false853, %cond.end849, %cond.end837, %cond.end825, %cond.true856
+  %cond8501809 = phi i32* [ %cond850.ph.ph, %cond.true856 ], [ @_cctk_one, %cond.end825 ], [ @_cctk_one, %cond.end837 ], [ %cond850.ph.ph, %cond.end849 ], [ %cond850.ph.ph, %cond.false853 ]
+  %cond83818051808 = phi i32* [ %cond838.ph, %cond.true856 ], [ @_cctk_one, %cond.end825 ], [ %cond838.ph, %cond.end837 ], [ %cond838.ph, %cond.end849 ], [ %cond838.ph, %cond.false853 ]
+  %cond862 = phi i32* [ %call857, %cond.true856 ], [ @_cctk_one, %cond.end825 ], [ @_cctk_one, %cond.end837 ], [ @_cctk_one, %cond.end849 ], [ @_cctk_one, %cond.false853 ], !dbg !142
+  %211 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, align 4, !dbg !142, !tbaa !138
+  %cmp863 = icmp slt i32 %211, 0, !dbg !142
+  br i1 %cmp863, label %cond.end897, label %cond.false865, !dbg !142
+
+cond.false865:                                    ; preds = %cond.end861
+  %call866 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !142
+  %tobool867 = icmp eq i32 %call866, 0, !dbg !142
+  br i1 %tobool867, label %cond.end873, label %cond.true868, !dbg !142
+
+cond.true868:                                     ; preds = %cond.false865
+  %call869 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end873, !dbg !142
+
+cond.end873:                                      ; preds = %cond.false865, %cond.true868
+  %cond874.ph = phi i32* [ @_cctk_one, %cond.false865 ], [ %call869, %cond.true868 ]
+  %.pr1810 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, align 4, !dbg !142, !tbaa !138
+  %cmp875 = icmp slt i32 %.pr1810, 0, !dbg !142
+  br i1 %cmp875, label %cond.end897, label %cond.false877, !dbg !142
+
+cond.false877:                                    ; preds = %cond.end873
+  %call878 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !142
+  %tobool879 = icmp eq i32 %call878, 0, !dbg !142
+  br i1 %tobool879, label %cond.end885, label %cond.true880, !dbg !142
+
+cond.true880:                                     ; preds = %cond.false877
+  %call881 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end885, !dbg !142
+
+cond.end885:                                      ; preds = %cond.false877, %cond.true880
+  %cond886.ph.ph = phi i32* [ @_cctk_one, %cond.false877 ], [ %call881, %cond.true880 ]
+  %.pr1813.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, align 4, !dbg !142, !tbaa !138
+  %cmp887 = icmp slt i32 %.pr1813.pr, 0, !dbg !142
+  br i1 %cmp887, label %cond.end897, label %cond.false889, !dbg !142
+
+cond.false889:                                    ; preds = %cond.end885
+  %call890 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !142
+  %tobool891 = icmp eq i32 %call890, 0, !dbg !142
+  br i1 %tobool891, label %cond.end897, label %cond.true892, !dbg !142
+
+cond.true892:                                     ; preds = %cond.false889
+  %call893 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([25 x i8]* @.str65, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end897, !dbg !142
+
+cond.end897:                                      ; preds = %cond.false889, %cond.end885, %cond.end873, %cond.end861, %cond.true892
+  %cond8861816 = phi i32* [ %cond886.ph.ph, %cond.true892 ], [ @_cctk_one, %cond.end861 ], [ @_cctk_one, %cond.end873 ], [ %cond886.ph.ph, %cond.end885 ], [ %cond886.ph.ph, %cond.false889 ]
+  %cond87418121815 = phi i32* [ %cond874.ph, %cond.true892 ], [ @_cctk_one, %cond.end861 ], [ %cond874.ph, %cond.end873 ], [ %cond874.ph, %cond.end885 ], [ %cond874.ph, %cond.false889 ]
+  %cond898 = phi i32* [ %call893, %cond.true892 ], [ @_cctk_one, %cond.end861 ], [ @_cctk_one, %cond.end873 ], [ @_cctk_one, %cond.end885 ], [ @_cctk_one, %cond.false889 ], !dbg !142
+  %212 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, align 4, !dbg !142, !tbaa !138
+  %cmp899 = icmp slt i32 %212, 0, !dbg !142
+  br i1 %cmp899, label %cond.end933, label %cond.false901, !dbg !142
+
+cond.false901:                                    ; preds = %cond.end897
+  %call902 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !142
+  %tobool903 = icmp eq i32 %call902, 0, !dbg !142
+  br i1 %tobool903, label %cond.end909, label %cond.true904, !dbg !142
+
+cond.true904:                                     ; preds = %cond.false901
+  %call905 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end909, !dbg !142
+
+cond.end909:                                      ; preds = %cond.false901, %cond.true904
+  %cond910.ph = phi i32* [ @_cctk_one, %cond.false901 ], [ %call905, %cond.true904 ]
+  %.pr1817 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, align 4, !dbg !142, !tbaa !138
+  %cmp911 = icmp slt i32 %.pr1817, 0, !dbg !142
+  br i1 %cmp911, label %cond.end933, label %cond.false913, !dbg !142
+
+cond.false913:                                    ; preds = %cond.end909
+  %call914 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !142
+  %tobool915 = icmp eq i32 %call914, 0, !dbg !142
+  br i1 %tobool915, label %cond.end921, label %cond.true916, !dbg !142
+
+cond.true916:                                     ; preds = %cond.false913
+  %call917 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end921, !dbg !142
+
+cond.end921:                                      ; preds = %cond.false913, %cond.true916
+  %cond922.ph.ph = phi i32* [ @_cctk_one, %cond.false913 ], [ %call917, %cond.true916 ]
+  %.pr1820.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, align 4, !dbg !142, !tbaa !138
+  %cmp923 = icmp slt i32 %.pr1820.pr, 0, !dbg !142
+  br i1 %cmp923, label %cond.end933, label %cond.false925, !dbg !142
+
+cond.false925:                                    ; preds = %cond.end921
+  %call926 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !142
+  %tobool927 = icmp eq i32 %call926, 0, !dbg !142
+  br i1 %tobool927, label %cond.end933, label %cond.true928, !dbg !142
+
+cond.true928:                                     ; preds = %cond.false925
+  %call929 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([18 x i8]* @.str74, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end933, !dbg !142
+
+cond.end933:                                      ; preds = %cond.false925, %cond.end921, %cond.end909, %cond.end897, %cond.true928
+  %cond9221823 = phi i32* [ %cond922.ph.ph, %cond.true928 ], [ @_cctk_one, %cond.end897 ], [ @_cctk_one, %cond.end909 ], [ %cond922.ph.ph, %cond.end921 ], [ %cond922.ph.ph, %cond.false925 ]
+  %cond91018191822 = phi i32* [ %cond910.ph, %cond.true928 ], [ @_cctk_one, %cond.end897 ], [ %cond910.ph, %cond.end909 ], [ %cond910.ph, %cond.end921 ], [ %cond910.ph, %cond.false925 ]
+  %cond934 = phi i32* [ %call929, %cond.true928 ], [ @_cctk_one, %cond.end897 ], [ @_cctk_one, %cond.end909 ], [ @_cctk_one, %cond.end921 ], [ @_cctk_one, %cond.false925 ], !dbg !142
+  %213 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, align 4, !dbg !142, !tbaa !138
+  %cmp935 = icmp slt i32 %213, 0, !dbg !142
+  br i1 %cmp935, label %cond.end969, label %cond.false937, !dbg !142
+
+cond.false937:                                    ; preds = %cond.end933
+  %call938 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !142
+  %tobool939 = icmp eq i32 %call938, 0, !dbg !142
+  br i1 %tobool939, label %cond.end945, label %cond.true940, !dbg !142
+
+cond.true940:                                     ; preds = %cond.false937
+  %call941 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end945, !dbg !142
+
+cond.end945:                                      ; preds = %cond.false937, %cond.true940
+  %cond946.ph = phi i32* [ @_cctk_one, %cond.false937 ], [ %call941, %cond.true940 ]
+  %.pr1824 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, align 4, !dbg !142, !tbaa !138
+  %cmp947 = icmp slt i32 %.pr1824, 0, !dbg !142
+  br i1 %cmp947, label %cond.end969, label %cond.false949, !dbg !142
+
+cond.false949:                                    ; preds = %cond.end945
+  %call950 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !142
+  %tobool951 = icmp eq i32 %call950, 0, !dbg !142
+  br i1 %tobool951, label %cond.end957, label %cond.true952, !dbg !142
+
+cond.true952:                                     ; preds = %cond.false949
+  %call953 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end957, !dbg !142
+
+cond.end957:                                      ; preds = %cond.false949, %cond.true952
+  %cond958.ph.ph = phi i32* [ @_cctk_one, %cond.false949 ], [ %call953, %cond.true952 ]
+  %.pr1827.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, align 4, !dbg !142, !tbaa !138
+  %cmp959 = icmp slt i32 %.pr1827.pr, 0, !dbg !142
+  br i1 %cmp959, label %cond.end969, label %cond.false961, !dbg !142
+
+cond.false961:                                    ; preds = %cond.end957
+  %call962 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !142
+  %tobool963 = icmp eq i32 %call962, 0, !dbg !142
+  br i1 %tobool963, label %cond.end969, label %cond.true964, !dbg !142
+
+cond.true964:                                     ; preds = %cond.false961
+  %call965 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end969, !dbg !142
+
+cond.end969:                                      ; preds = %cond.false961, %cond.end957, %cond.end945, %cond.end933, %cond.true964
+  %cond9581830 = phi i32* [ %cond958.ph.ph, %cond.true964 ], [ @_cctk_one, %cond.end933 ], [ @_cctk_one, %cond.end945 ], [ %cond958.ph.ph, %cond.end957 ], [ %cond958.ph.ph, %cond.false961 ]
+  %cond94618261829 = phi i32* [ %cond946.ph, %cond.true964 ], [ @_cctk_one, %cond.end933 ], [ %cond946.ph, %cond.end945 ], [ %cond946.ph, %cond.end957 ], [ %cond946.ph, %cond.false961 ]
+  %cond970 = phi i32* [ %call965, %cond.true964 ], [ @_cctk_one, %cond.end933 ], [ @_cctk_one, %cond.end945 ], [ @_cctk_one, %cond.end957 ], [ @_cctk_one, %cond.false961 ], !dbg !142
+  %214 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, align 4, !dbg !142, !tbaa !138
+  %cmp971 = icmp slt i32 %214, 0, !dbg !142
+  br i1 %cmp971, label %cond.end1005, label %cond.false973, !dbg !142
+
+cond.false973:                                    ; preds = %cond.end969
+  %call974 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !142
+  %tobool975 = icmp eq i32 %call974, 0, !dbg !142
+  br i1 %tobool975, label %cond.end981, label %cond.true976, !dbg !142
+
+cond.true976:                                     ; preds = %cond.false973
+  %call977 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end981, !dbg !142
+
+cond.end981:                                      ; preds = %cond.false973, %cond.true976
+  %cond982.ph = phi i32* [ @_cctk_one, %cond.false973 ], [ %call977, %cond.true976 ]
+  %.pr1831 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, align 4, !dbg !142, !tbaa !138
+  %cmp983 = icmp slt i32 %.pr1831, 0, !dbg !142
+  br i1 %cmp983, label %cond.end1005, label %cond.false985, !dbg !142
+
+cond.false985:                                    ; preds = %cond.end981
+  %call986 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !142
+  %tobool987 = icmp eq i32 %call986, 0, !dbg !142
+  br i1 %tobool987, label %cond.end993, label %cond.true988, !dbg !142
+
+cond.true988:                                     ; preds = %cond.false985
+  %call989 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end993, !dbg !142
+
+cond.end993:                                      ; preds = %cond.false985, %cond.true988
+  %cond994.ph.ph = phi i32* [ @_cctk_one, %cond.false985 ], [ %call989, %cond.true988 ]
+  %.pr1834.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, align 4, !dbg !142, !tbaa !138
+  %cmp995 = icmp slt i32 %.pr1834.pr, 0, !dbg !142
+  br i1 %cmp995, label %cond.end1005, label %cond.false997, !dbg !142
+
+cond.false997:                                    ; preds = %cond.end993
+  %call998 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !142
+  %tobool999 = icmp eq i32 %call998, 0, !dbg !142
+  br i1 %tobool999, label %cond.end1005, label %cond.true1000, !dbg !142
+
+cond.true1000:                                    ; preds = %cond.false997
+  %call1001 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([16 x i8]* @.str30, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end1005, !dbg !142
+
+cond.end1005:                                     ; preds = %cond.false997, %cond.end993, %cond.end981, %cond.end969, %cond.true1000
+  %cond9941837 = phi i32* [ %cond994.ph.ph, %cond.true1000 ], [ @_cctk_one, %cond.end969 ], [ @_cctk_one, %cond.end981 ], [ %cond994.ph.ph, %cond.end993 ], [ %cond994.ph.ph, %cond.false997 ]
+  %cond98218331836 = phi i32* [ %cond982.ph, %cond.true1000 ], [ @_cctk_one, %cond.end969 ], [ %cond982.ph, %cond.end981 ], [ %cond982.ph, %cond.end993 ], [ %cond982.ph, %cond.false997 ]
+  %cond1006 = phi i32* [ %call1001, %cond.true1000 ], [ @_cctk_one, %cond.end969 ], [ @_cctk_one, %cond.end981 ], [ @_cctk_one, %cond.end993 ], [ @_cctk_one, %cond.false997 ], !dbg !142
+  %215 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, align 4, !dbg !142, !tbaa !138
+  %cmp1007 = icmp slt i32 %215, 0, !dbg !142
+  br i1 %cmp1007, label %cond.end1041, label %cond.false1009, !dbg !142
+
+cond.false1009:                                   ; preds = %cond.end1005
+  %call1010 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !142
+  %tobool1011 = icmp eq i32 %call1010, 0, !dbg !142
+  br i1 %tobool1011, label %cond.end1017, label %cond.true1012, !dbg !142
+
+cond.true1012:                                    ; preds = %cond.false1009
+  %call1013 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end1017, !dbg !142
+
+cond.end1017:                                     ; preds = %cond.false1009, %cond.true1012
+  %cond1018.ph = phi i32* [ @_cctk_one, %cond.false1009 ], [ %call1013, %cond.true1012 ]
+  %.pr1838 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, align 4, !dbg !142, !tbaa !138
+  %cmp1019 = icmp slt i32 %.pr1838, 0, !dbg !142
+  br i1 %cmp1019, label %cond.end1041, label %cond.false1021, !dbg !142
+
+cond.false1021:                                   ; preds = %cond.end1017
+  %call1022 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !142
+  %tobool1023 = icmp eq i32 %call1022, 0, !dbg !142
+  br i1 %tobool1023, label %cond.end1029, label %cond.true1024, !dbg !142
+
+cond.true1024:                                    ; preds = %cond.false1021
+  %call1025 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end1029, !dbg !142
+
+cond.end1029:                                     ; preds = %cond.false1021, %cond.true1024
+  %cond1030.ph.ph = phi i32* [ @_cctk_one, %cond.false1021 ], [ %call1025, %cond.true1024 ]
+  %.pr1841.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, align 4, !dbg !142, !tbaa !138
+  %cmp1031 = icmp slt i32 %.pr1841.pr, 0, !dbg !142
+  br i1 %cmp1031, label %cond.end1041, label %cond.false1033, !dbg !142
+
+cond.false1033:                                   ; preds = %cond.end1029
+  %call1034 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !142
+  %tobool1035 = icmp eq i32 %call1034, 0, !dbg !142
+  br i1 %tobool1035, label %cond.end1041, label %cond.true1036, !dbg !142
+
+cond.true1036:                                    ; preds = %cond.false1033
+  %call1037 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([15 x i8]* @.str45, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end1041, !dbg !142
+
+cond.end1041:                                     ; preds = %cond.false1033, %cond.end1029, %cond.end1017, %cond.end1005, %cond.true1036
+  %cond10301844 = phi i32* [ %cond1030.ph.ph, %cond.true1036 ], [ @_cctk_one, %cond.end1005 ], [ @_cctk_one, %cond.end1017 ], [ %cond1030.ph.ph, %cond.end1029 ], [ %cond1030.ph.ph, %cond.false1033 ]
+  %cond101818401843 = phi i32* [ %cond1018.ph, %cond.true1036 ], [ @_cctk_one, %cond.end1005 ], [ %cond1018.ph, %cond.end1017 ], [ %cond1018.ph, %cond.end1029 ], [ %cond1018.ph, %cond.false1033 ]
+  %cond1042 = phi i32* [ %call1037, %cond.true1036 ], [ @_cctk_one, %cond.end1005 ], [ @_cctk_one, %cond.end1017 ], [ @_cctk_one, %cond.end1029 ], [ @_cctk_one, %cond.false1033 ], !dbg !142
+  %216 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, align 4, !dbg !142, !tbaa !138
+  %cmp1043 = icmp slt i32 %216, 0, !dbg !142
+  br i1 %cmp1043, label %cond.end1077, label %cond.false1045, !dbg !142
+
+cond.false1045:                                   ; preds = %cond.end1041
+  %call1046 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !142
+  %tobool1047 = icmp eq i32 %call1046, 0, !dbg !142
+  br i1 %tobool1047, label %cond.end1053, label %cond.true1048, !dbg !142
+
+cond.true1048:                                    ; preds = %cond.false1045
+  %call1049 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end1053, !dbg !142
+
+cond.end1053:                                     ; preds = %cond.false1045, %cond.true1048
+  %cond1054.ph = phi i32* [ @_cctk_one, %cond.false1045 ], [ %call1049, %cond.true1048 ]
+  %.pr1845 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, align 4, !dbg !142, !tbaa !138
+  %cmp1055 = icmp slt i32 %.pr1845, 0, !dbg !142
+  br i1 %cmp1055, label %cond.end1077, label %cond.false1057, !dbg !142
+
+cond.false1057:                                   ; preds = %cond.end1053
+  %call1058 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !142
+  %tobool1059 = icmp eq i32 %call1058, 0, !dbg !142
+  br i1 %tobool1059, label %cond.end1065, label %cond.true1060, !dbg !142
+
+cond.true1060:                                    ; preds = %cond.false1057
+  %call1061 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end1065, !dbg !142
+
+cond.end1065:                                     ; preds = %cond.false1057, %cond.true1060
+  %cond1066.ph.ph = phi i32* [ @_cctk_one, %cond.false1057 ], [ %call1061, %cond.true1060 ]
+  %.pr1848.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, align 4, !dbg !142, !tbaa !138
+  %cmp1067 = icmp slt i32 %.pr1848.pr, 0, !dbg !142
+  br i1 %cmp1067, label %cond.end1077, label %cond.false1069, !dbg !142
+
+cond.false1069:                                   ; preds = %cond.end1065
+  %call1070 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !142
+  %tobool1071 = icmp eq i32 %call1070, 0, !dbg !142
+  br i1 %tobool1071, label %cond.end1077, label %cond.true1072, !dbg !142
+
+cond.true1072:                                    ; preds = %cond.false1069
+  %call1073 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end1077, !dbg !142
+
+cond.end1077:                                     ; preds = %cond.end1041, %cond.end1053, %cond.false1069, %cond.true1072, %cond.end1065
+  %cond10661851 = phi i32* [ %cond1066.ph.ph, %cond.end1065 ], [ %cond1066.ph.ph, %cond.true1072 ], [ %cond1066.ph.ph, %cond.false1069 ], [ @_cctk_one, %cond.end1053 ], [ @_cctk_one, %cond.end1041 ]
+  %cond105418471850 = phi i32* [ %cond1054.ph, %cond.end1065 ], [ %cond1054.ph, %cond.true1072 ], [ %cond1054.ph, %cond.false1069 ], [ %cond1054.ph, %cond.end1053 ], [ @_cctk_one, %cond.end1041 ]
+  %cond1078 = phi i32* [ @_cctk_one, %cond.end1065 ], [ %call1073, %cond.true1072 ], [ @_cctk_one, %cond.false1069 ], [ @_cctk_one, %cond.end1053 ], [ @_cctk_one, %cond.end1041 ], !dbg !142
+  %217 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, align 4, !dbg !142, !tbaa !138
+  %cmp1079 = icmp slt i32 %217, 0, !dbg !142
+  br i1 %cmp1079, label %cond.end1113, label %cond.false1081, !dbg !142
+
+cond.false1081:                                   ; preds = %cond.end1077
+  %call1082 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !142
+  %tobool1083 = icmp eq i32 %call1082, 0, !dbg !142
+  br i1 %tobool1083, label %cond.end1089, label %cond.true1084, !dbg !142
+
+cond.true1084:                                    ; preds = %cond.false1081
+  %call1085 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end1089, !dbg !142
+
+cond.end1089:                                     ; preds = %cond.false1081, %cond.true1084
+  %cond1090.ph = phi i32* [ @_cctk_one, %cond.false1081 ], [ %call1085, %cond.true1084 ]
+  %.pr1852 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, align 4, !dbg !142, !tbaa !138
+  %cmp1091 = icmp slt i32 %.pr1852, 0, !dbg !142
+  br i1 %cmp1091, label %cond.end1113, label %cond.false1093, !dbg !142
+
+cond.false1093:                                   ; preds = %cond.end1089
+  %call1094 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !142
+  %tobool1095 = icmp eq i32 %call1094, 0, !dbg !142
+  br i1 %tobool1095, label %cond.end1101, label %cond.true1096, !dbg !142
+
+cond.true1096:                                    ; preds = %cond.false1093
+  %call1097 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end1101, !dbg !142
+
+cond.end1101:                                     ; preds = %cond.false1093, %cond.true1096
+  %cond1102.ph.ph = phi i32* [ @_cctk_one, %cond.false1093 ], [ %call1097, %cond.true1096 ]
+  %.pr1855.pr = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, align 4, !dbg !142, !tbaa !138
+  %cmp1103 = icmp slt i32 %.pr1855.pr, 0, !dbg !142
+  br i1 %cmp1103, label %cond.end1113, label %cond.false1105, !dbg !142
+
+cond.false1105:                                   ; preds = %cond.end1101
+  %call1106 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !142
+  %tobool1107 = icmp eq i32 %call1106, 0, !dbg !142
+  br i1 %tobool1107, label %cond.end1113, label %cond.true1108, !dbg !142
+
+cond.true1108:                                    ; preds = %cond.false1105
+  %call1109 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([16 x i8]* @.str32, i64 0, i64 0)) #3, !dbg !142
+  br label %cond.end1113, !dbg !142
+
+cond.end1113:                                     ; preds = %cond.end1077, %cond.end1089, %cond.false1105, %cond.true1108, %cond.end1101
+  %cond11021858 = phi i32* [ %cond1102.ph.ph, %cond.end1101 ], [ %cond1102.ph.ph, %cond.true1108 ], [ %cond1102.ph.ph, %cond.false1105 ], [ @_cctk_one, %cond.end1089 ], [ @_cctk_one, %cond.end1077 ]
+  %cond109018541857 = phi i32* [ %cond1090.ph, %cond.end1101 ], [ %cond1090.ph, %cond.true1108 ], [ %cond1090.ph, %cond.false1105 ], [ %cond1090.ph, %cond.end1089 ], [ @_cctk_one, %cond.end1077 ]
+  %cond1114 = phi i32* [ @_cctk_one, %cond.end1101 ], [ %call1109, %cond.true1108 ], [ @_cctk_one, %cond.false1105 ], [ @_cctk_one, %cond.end1089 ], [ @_cctk_one, %cond.end1077 ], !dbg !142
+  %218 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_active_slicing_handle, align 4, !dbg !142, !tbaa !138
+  %cmp1115 = icmp slt i32 %218, 0, !dbg !142
+  br i1 %cmp1115, label %cond.end1122, label %cond.false1117, !dbg !142
+
+cond.false1117:                                   ; preds = %cond.end1113
+  %idxprom1118 = sext i32 %218 to i64, !dbg !142
+  %data1119 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %219 = load i8**** %data1119, align 8, !dbg !142, !tbaa !143
+  %arrayidx1120 = getelementptr inbounds i8*** %219, i64 %idxprom1118, !dbg !142
+  %220 = load i8*** %arrayidx1120, align 8, !dbg !142, !tbaa !143
+  %221 = load i8** %220, align 8, !dbg !142, !tbaa !143
+  %phitmp1677 = bitcast i8* %221 to i32*, !dbg !142
+  br label %cond.end1122, !dbg !142
+
+cond.end1122:                                     ; preds = %cond.end1113, %cond.false1117
+  %cond1123 = phi i32* [ %phitmp1677, %cond.false1117 ], [ null, %cond.end1113 ]
+  %222 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_alp, align 4, !dbg !142, !tbaa !138
+  %cmp1124 = icmp slt i32 %222, 0, !dbg !142
+  br i1 %cmp1124, label %cond.end1131, label %cond.false1126, !dbg !142
+
+cond.false1126:                                   ; preds = %cond.end1122
+  %idxprom1127 = sext i32 %222 to i64, !dbg !142
+  %data1128 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %223 = load i8**** %data1128, align 8, !dbg !142, !tbaa !143
+  %arrayidx1129 = getelementptr inbounds i8*** %223, i64 %idxprom1127, !dbg !142
+  %224 = load i8*** %arrayidx1129, align 8, !dbg !142, !tbaa !143
+  %225 = load i8** %224, align 8, !dbg !142, !tbaa !143
+  %phitmp1678 = bitcast i8* %225 to double*, !dbg !142
+  br label %cond.end1131, !dbg !142
+
+cond.end1131:                                     ; preds = %cond.end1122, %cond.false1126
+  %cond1132 = phi double* [ %phitmp1678, %cond.false1126 ], [ null, %cond.end1122 ]
+  %226 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betax, align 4, !dbg !142, !tbaa !138
+  %cmp1133 = icmp slt i32 %226, 0, !dbg !142
+  br i1 %cmp1133, label %cond.end1140, label %cond.false1135, !dbg !142
+
+cond.false1135:                                   ; preds = %cond.end1131
+  %idxprom1136 = sext i32 %226 to i64, !dbg !142
+  %data1137 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %227 = load i8**** %data1137, align 8, !dbg !142, !tbaa !143
+  %arrayidx1138 = getelementptr inbounds i8*** %227, i64 %idxprom1136, !dbg !142
+  %228 = load i8*** %arrayidx1138, align 8, !dbg !142, !tbaa !143
+  %229 = load i8** %228, align 8, !dbg !142, !tbaa !143
+  %phitmp1679 = bitcast i8* %229 to double*, !dbg !142
+  br label %cond.end1140, !dbg !142
+
+cond.end1140:                                     ; preds = %cond.end1131, %cond.false1135
+  %cond1141 = phi double* [ %phitmp1679, %cond.false1135 ], [ null, %cond.end1131 ]
+  %230 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betay, align 4, !dbg !142, !tbaa !138
+  %cmp1142 = icmp slt i32 %230, 0, !dbg !142
+  br i1 %cmp1142, label %cond.end1149, label %cond.false1144, !dbg !142
+
+cond.false1144:                                   ; preds = %cond.end1140
+  %idxprom1145 = sext i32 %230 to i64, !dbg !142
+  %data1146 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %231 = load i8**** %data1146, align 8, !dbg !142, !tbaa !143
+  %arrayidx1147 = getelementptr inbounds i8*** %231, i64 %idxprom1145, !dbg !142
+  %232 = load i8*** %arrayidx1147, align 8, !dbg !142, !tbaa !143
+  %233 = load i8** %232, align 8, !dbg !142, !tbaa !143
+  %phitmp1680 = bitcast i8* %233 to double*, !dbg !142
+  br label %cond.end1149, !dbg !142
+
+cond.end1149:                                     ; preds = %cond.end1140, %cond.false1144
+  %cond1150 = phi double* [ %phitmp1680, %cond.false1144 ], [ null, %cond.end1140 ]
+  %234 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betaz, align 4, !dbg !142, !tbaa !138
+  %cmp1151 = icmp slt i32 %234, 0, !dbg !142
+  br i1 %cmp1151, label %cond.end1158, label %cond.false1153, !dbg !142
+
+cond.false1153:                                   ; preds = %cond.end1149
+  %idxprom1154 = sext i32 %234 to i64, !dbg !142
+  %data1155 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %235 = load i8**** %data1155, align 8, !dbg !142, !tbaa !143
+  %arrayidx1156 = getelementptr inbounds i8*** %235, i64 %idxprom1154, !dbg !142
+  %236 = load i8*** %arrayidx1156, align 8, !dbg !142, !tbaa !143
+  %237 = load i8** %236, align 8, !dbg !142, !tbaa !143
+  %phitmp1681 = bitcast i8* %237 to double*, !dbg !142
+  br label %cond.end1158, !dbg !142
+
+cond.end1158:                                     ; preds = %cond.end1149, %cond.false1153
+  %cond1159 = phi double* [ %phitmp1681, %cond.false1153 ], [ null, %cond.end1149 ]
+  %238 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dx, align 4, !dbg !142, !tbaa !138
+  %cmp1160 = icmp slt i32 %238, 0, !dbg !142
+  br i1 %cmp1160, label %cond.end1167, label %cond.false1162, !dbg !142
+
+cond.false1162:                                   ; preds = %cond.end1158
+  %idxprom1163 = sext i32 %238 to i64, !dbg !142
+  %data1164 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %239 = load i8**** %data1164, align 8, !dbg !142, !tbaa !143
+  %arrayidx1165 = getelementptr inbounds i8*** %239, i64 %idxprom1163, !dbg !142
+  %240 = load i8*** %arrayidx1165, align 8, !dbg !142, !tbaa !143
+  %241 = load i8** %240, align 8, !dbg !142, !tbaa !143
+  %phitmp1682 = bitcast i8* %241 to double*, !dbg !142
+  br label %cond.end1167, !dbg !142
+
+cond.end1167:                                     ; preds = %cond.end1158, %cond.false1162
+  %cond1168 = phi double* [ %phitmp1682, %cond.false1162 ], [ null, %cond.end1158 ]
+  %242 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dy, align 4, !dbg !142, !tbaa !138
+  %cmp1169 = icmp slt i32 %242, 0, !dbg !142
+  br i1 %cmp1169, label %cond.end1176, label %cond.false1171, !dbg !142
+
+cond.false1171:                                   ; preds = %cond.end1167
+  %idxprom1172 = sext i32 %242 to i64, !dbg !142
+  %data1173 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %243 = load i8**** %data1173, align 8, !dbg !142, !tbaa !143
+  %arrayidx1174 = getelementptr inbounds i8*** %243, i64 %idxprom1172, !dbg !142
+  %244 = load i8*** %arrayidx1174, align 8, !dbg !142, !tbaa !143
+  %245 = load i8** %244, align 8, !dbg !142, !tbaa !143
+  %phitmp1683 = bitcast i8* %245 to double*, !dbg !142
+  br label %cond.end1176, !dbg !142
+
+cond.end1176:                                     ; preds = %cond.end1167, %cond.false1171
+  %cond1177 = phi double* [ %phitmp1683, %cond.false1171 ], [ null, %cond.end1167 ]
+  %246 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dz, align 4, !dbg !142, !tbaa !138
+  %cmp1178 = icmp slt i32 %246, 0, !dbg !142
+  br i1 %cmp1178, label %cond.end1185, label %cond.false1180, !dbg !142
+
+cond.false1180:                                   ; preds = %cond.end1176
+  %idxprom1181 = sext i32 %246 to i64, !dbg !142
+  %data1182 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %247 = load i8**** %data1182, align 8, !dbg !142, !tbaa !143
+  %arrayidx1183 = getelementptr inbounds i8*** %247, i64 %idxprom1181, !dbg !142
+  %248 = load i8*** %arrayidx1183, align 8, !dbg !142, !tbaa !143
+  %249 = load i8** %248, align 8, !dbg !142, !tbaa !143
+  %phitmp1684 = bitcast i8* %249 to double*, !dbg !142
+  br label %cond.end1185, !dbg !142
+
+cond.end1185:                                     ; preds = %cond.end1176, %cond.false1180
+  %cond1186 = phi double* [ %phitmp1684, %cond.false1180 ], [ null, %cond.end1176 ]
+  %250 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_conformal_state, align 4, !dbg !142, !tbaa !138
+  %cmp1187 = icmp slt i32 %250, 0, !dbg !142
+  br i1 %cmp1187, label %cond.end1194, label %cond.false1189, !dbg !142
+
+cond.false1189:                                   ; preds = %cond.end1185
+  %idxprom1190 = sext i32 %250 to i64, !dbg !142
+  %data1191 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %251 = load i8**** %data1191, align 8, !dbg !142, !tbaa !143
+  %arrayidx1192 = getelementptr inbounds i8*** %251, i64 %idxprom1190, !dbg !142
+  %252 = load i8*** %arrayidx1192, align 8, !dbg !142, !tbaa !143
+  %253 = load i8** %252, align 8, !dbg !142, !tbaa !143
+  %phitmp1685 = bitcast i8* %253 to i32*, !dbg !142
+  br label %cond.end1194, !dbg !142
+
+cond.end1194:                                     ; preds = %cond.end1185, %cond.false1189
+  %cond1195 = phi i32* [ %phitmp1685, %cond.false1189 ], [ null, %cond.end1185 ]
+  %254 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_min_time, align 4, !dbg !142, !tbaa !138
+  %cmp1196 = icmp slt i32 %254, 0, !dbg !142
+  br i1 %cmp1196, label %cond.end1203, label %cond.false1198, !dbg !142
+
+cond.false1198:                                   ; preds = %cond.end1194
+  %idxprom1199 = sext i32 %254 to i64, !dbg !142
+  %data1200 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %255 = load i8**** %data1200, align 8, !dbg !142, !tbaa !143
+  %arrayidx1201 = getelementptr inbounds i8*** %255, i64 %idxprom1199, !dbg !142
+  %256 = load i8*** %arrayidx1201, align 8, !dbg !142, !tbaa !143
+  %257 = load i8** %256, align 8, !dbg !142, !tbaa !143
+  %phitmp1686 = bitcast i8* %257 to double*, !dbg !142
+  br label %cond.end1203, !dbg !142
+
+cond.end1203:                                     ; preds = %cond.end1194, %cond.false1198
+  %cond1204 = phi double* [ %phitmp1686, %cond.false1198 ], [ null, %cond.end1194 ]
+  %258 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_wave_speed, align 4, !dbg !142, !tbaa !138
+  %cmp1205 = icmp slt i32 %258, 0, !dbg !142
+  br i1 %cmp1205, label %cond.end1212, label %cond.false1207, !dbg !142
+
+cond.false1207:                                   ; preds = %cond.end1203
+  %idxprom1208 = sext i32 %258 to i64, !dbg !142
+  %data1209 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %259 = load i8**** %data1209, align 8, !dbg !142, !tbaa !143
+  %arrayidx1210 = getelementptr inbounds i8*** %259, i64 %idxprom1208, !dbg !142
+  %260 = load i8*** %arrayidx1210, align 8, !dbg !142, !tbaa !143
+  %261 = load i8** %260, align 8, !dbg !142, !tbaa !143
+  %phitmp1687 = bitcast i8* %261 to double*, !dbg !142
+  br label %cond.end1212, !dbg !142
+
+cond.end1212:                                     ; preds = %cond.end1203, %cond.false1207
+  %cond1213 = phi double* [ %phitmp1687, %cond.false1207 ], [ null, %cond.end1203 ]
+  %262 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_emask, align 4, !dbg !142, !tbaa !138
+  %cmp1214 = icmp slt i32 %262, 0, !dbg !142
+  br i1 %cmp1214, label %cond.end1221, label %cond.false1216, !dbg !142
+
+cond.false1216:                                   ; preds = %cond.end1212
+  %idxprom1217 = sext i32 %262 to i64, !dbg !142
+  %data1218 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %263 = load i8**** %data1218, align 8, !dbg !142, !tbaa !143
+  %arrayidx1219 = getelementptr inbounds i8*** %263, i64 %idxprom1217, !dbg !142
+  %264 = load i8*** %arrayidx1219, align 8, !dbg !142, !tbaa !143
+  %265 = load i8** %264, align 8, !dbg !142, !tbaa !143
+  %phitmp1688 = bitcast i8* %265 to double*, !dbg !142
+  br label %cond.end1221, !dbg !142
+
+cond.end1221:                                     ; preds = %cond.end1212, %cond.false1216
+  %cond1222 = phi double* [ %phitmp1688, %cond.false1216 ], [ null, %cond.end1212 ]
+  %266 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxx, align 4, !dbg !142, !tbaa !138
+  %cmp1223 = icmp slt i32 %266, 0, !dbg !142
+  br i1 %cmp1223, label %cond.end1230, label %cond.false1225, !dbg !142
+
+cond.false1225:                                   ; preds = %cond.end1221
+  %idxprom1226 = sext i32 %266 to i64, !dbg !142
+  %data1227 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %267 = load i8**** %data1227, align 8, !dbg !142, !tbaa !143
+  %arrayidx1228 = getelementptr inbounds i8*** %267, i64 %idxprom1226, !dbg !142
+  %268 = load i8*** %arrayidx1228, align 8, !dbg !142, !tbaa !143
+  %269 = load i8** %268, align 8, !dbg !142, !tbaa !143
+  %phitmp1689 = bitcast i8* %269 to double*, !dbg !142
+  br label %cond.end1230, !dbg !142
+
+cond.end1230:                                     ; preds = %cond.end1221, %cond.false1225
+  %cond1231 = phi double* [ %phitmp1689, %cond.false1225 ], [ null, %cond.end1221 ]
+  %270 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxy, align 4, !dbg !142, !tbaa !138
+  %cmp1232 = icmp slt i32 %270, 0, !dbg !142
+  br i1 %cmp1232, label %cond.end1239, label %cond.false1234, !dbg !142
+
+cond.false1234:                                   ; preds = %cond.end1230
+  %idxprom1235 = sext i32 %270 to i64, !dbg !142
+  %data1236 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %271 = load i8**** %data1236, align 8, !dbg !142, !tbaa !143
+  %arrayidx1237 = getelementptr inbounds i8*** %271, i64 %idxprom1235, !dbg !142
+  %272 = load i8*** %arrayidx1237, align 8, !dbg !142, !tbaa !143
+  %273 = load i8** %272, align 8, !dbg !142, !tbaa !143
+  %phitmp1690 = bitcast i8* %273 to double*, !dbg !142
+  br label %cond.end1239, !dbg !142
+
+cond.end1239:                                     ; preds = %cond.end1230, %cond.false1234
+  %cond1240 = phi double* [ %phitmp1690, %cond.false1234 ], [ null, %cond.end1230 ]
+  %274 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxz, align 4, !dbg !142, !tbaa !138
+  %cmp1241 = icmp slt i32 %274, 0, !dbg !142
+  br i1 %cmp1241, label %cond.end1248, label %cond.false1243, !dbg !142
+
+cond.false1243:                                   ; preds = %cond.end1239
+  %idxprom1244 = sext i32 %274 to i64, !dbg !142
+  %data1245 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %275 = load i8**** %data1245, align 8, !dbg !142, !tbaa !143
+  %arrayidx1246 = getelementptr inbounds i8*** %275, i64 %idxprom1244, !dbg !142
+  %276 = load i8*** %arrayidx1246, align 8, !dbg !142, !tbaa !143
+  %277 = load i8** %276, align 8, !dbg !142, !tbaa !143
+  %phitmp1691 = bitcast i8* %277 to double*, !dbg !142
+  br label %cond.end1248, !dbg !142
+
+cond.end1248:                                     ; preds = %cond.end1239, %cond.false1243
+  %cond1249 = phi double* [ %phitmp1691, %cond.false1243 ], [ null, %cond.end1239 ]
+  %278 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyy, align 4, !dbg !142, !tbaa !138
+  %cmp1250 = icmp slt i32 %278, 0, !dbg !142
+  br i1 %cmp1250, label %cond.end1257, label %cond.false1252, !dbg !142
+
+cond.false1252:                                   ; preds = %cond.end1248
+  %idxprom1253 = sext i32 %278 to i64, !dbg !142
+  %data1254 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %279 = load i8**** %data1254, align 8, !dbg !142, !tbaa !143
+  %arrayidx1255 = getelementptr inbounds i8*** %279, i64 %idxprom1253, !dbg !142
+  %280 = load i8*** %arrayidx1255, align 8, !dbg !142, !tbaa !143
+  %281 = load i8** %280, align 8, !dbg !142, !tbaa !143
+  %phitmp1692 = bitcast i8* %281 to double*, !dbg !142
+  br label %cond.end1257, !dbg !142
+
+cond.end1257:                                     ; preds = %cond.end1248, %cond.false1252
+  %cond1258 = phi double* [ %phitmp1692, %cond.false1252 ], [ null, %cond.end1248 ]
+  %282 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyz, align 4, !dbg !142, !tbaa !138
+  %cmp1259 = icmp slt i32 %282, 0, !dbg !142
+  br i1 %cmp1259, label %cond.end1266, label %cond.false1261, !dbg !142
+
+cond.false1261:                                   ; preds = %cond.end1257
+  %idxprom1262 = sext i32 %282 to i64, !dbg !142
+  %data1263 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %283 = load i8**** %data1263, align 8, !dbg !142, !tbaa !143
+  %arrayidx1264 = getelementptr inbounds i8*** %283, i64 %idxprom1262, !dbg !142
+  %284 = load i8*** %arrayidx1264, align 8, !dbg !142, !tbaa !143
+  %285 = load i8** %284, align 8, !dbg !142, !tbaa !143
+  %phitmp1693 = bitcast i8* %285 to double*, !dbg !142
+  br label %cond.end1266, !dbg !142
+
+cond.end1266:                                     ; preds = %cond.end1257, %cond.false1261
+  %cond1267 = phi double* [ %phitmp1693, %cond.false1261 ], [ null, %cond.end1257 ]
+  %286 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gzz, align 4, !dbg !142, !tbaa !138
+  %cmp1268 = icmp slt i32 %286, 0, !dbg !142
+  br i1 %cmp1268, label %cond.end1275, label %cond.false1270, !dbg !142
+
+cond.false1270:                                   ; preds = %cond.end1266
+  %idxprom1271 = sext i32 %286 to i64, !dbg !142
+  %data1272 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %287 = load i8**** %data1272, align 8, !dbg !142, !tbaa !143
+  %arrayidx1273 = getelementptr inbounds i8*** %287, i64 %idxprom1271, !dbg !142
+  %288 = load i8*** %arrayidx1273, align 8, !dbg !142, !tbaa !143
+  %289 = load i8** %288, align 8, !dbg !142, !tbaa !143
+  %phitmp1694 = bitcast i8* %289 to double*, !dbg !142
+  br label %cond.end1275, !dbg !142
+
+cond.end1275:                                     ; preds = %cond.end1266, %cond.false1270
+  %cond1276 = phi double* [ %phitmp1694, %cond.false1270 ], [ null, %cond.end1266 ]
+  %290 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxx, align 4, !dbg !142, !tbaa !138
+  %cmp1277 = icmp slt i32 %290, 0, !dbg !142
+  br i1 %cmp1277, label %cond.end1284, label %cond.false1279, !dbg !142
+
+cond.false1279:                                   ; preds = %cond.end1275
+  %idxprom1280 = sext i32 %290 to i64, !dbg !142
+  %data1281 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %291 = load i8**** %data1281, align 8, !dbg !142, !tbaa !143
+  %arrayidx1282 = getelementptr inbounds i8*** %291, i64 %idxprom1280, !dbg !142
+  %292 = load i8*** %arrayidx1282, align 8, !dbg !142, !tbaa !143
+  %293 = load i8** %292, align 8, !dbg !142, !tbaa !143
+  %phitmp1695 = bitcast i8* %293 to double*, !dbg !142
+  br label %cond.end1284, !dbg !142
+
+cond.end1284:                                     ; preds = %cond.end1275, %cond.false1279
+  %cond1285 = phi double* [ %phitmp1695, %cond.false1279 ], [ null, %cond.end1275 ]
+  %294 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxy, align 4, !dbg !142, !tbaa !138
+  %cmp1286 = icmp slt i32 %294, 0, !dbg !142
+  br i1 %cmp1286, label %cond.end1293, label %cond.false1288, !dbg !142
+
+cond.false1288:                                   ; preds = %cond.end1284
+  %idxprom1289 = sext i32 %294 to i64, !dbg !142
+  %data1290 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %295 = load i8**** %data1290, align 8, !dbg !142, !tbaa !143
+  %arrayidx1291 = getelementptr inbounds i8*** %295, i64 %idxprom1289, !dbg !142
+  %296 = load i8*** %arrayidx1291, align 8, !dbg !142, !tbaa !143
+  %297 = load i8** %296, align 8, !dbg !142, !tbaa !143
+  %phitmp1696 = bitcast i8* %297 to double*, !dbg !142
+  br label %cond.end1293, !dbg !142
+
+cond.end1293:                                     ; preds = %cond.end1284, %cond.false1288
+  %cond1294 = phi double* [ %phitmp1696, %cond.false1288 ], [ null, %cond.end1284 ]
+  %298 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxz, align 4, !dbg !142, !tbaa !138
+  %cmp1295 = icmp slt i32 %298, 0, !dbg !142
+  br i1 %cmp1295, label %cond.end1302, label %cond.false1297, !dbg !142
+
+cond.false1297:                                   ; preds = %cond.end1293
+  %idxprom1298 = sext i32 %298 to i64, !dbg !142
+  %data1299 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %299 = load i8**** %data1299, align 8, !dbg !142, !tbaa !143
+  %arrayidx1300 = getelementptr inbounds i8*** %299, i64 %idxprom1298, !dbg !142
+  %300 = load i8*** %arrayidx1300, align 8, !dbg !142, !tbaa !143
+  %301 = load i8** %300, align 8, !dbg !142, !tbaa !143
+  %phitmp1697 = bitcast i8* %301 to double*, !dbg !142
+  br label %cond.end1302, !dbg !142
+
+cond.end1302:                                     ; preds = %cond.end1293, %cond.false1297
+  %cond1303 = phi double* [ %phitmp1697, %cond.false1297 ], [ null, %cond.end1293 ]
+  %302 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyy, align 4, !dbg !142, !tbaa !138
+  %cmp1304 = icmp slt i32 %302, 0, !dbg !142
+  br i1 %cmp1304, label %cond.end1311, label %cond.false1306, !dbg !142
+
+cond.false1306:                                   ; preds = %cond.end1302
+  %idxprom1307 = sext i32 %302 to i64, !dbg !142
+  %data1308 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %303 = load i8**** %data1308, align 8, !dbg !142, !tbaa !143
+  %arrayidx1309 = getelementptr inbounds i8*** %303, i64 %idxprom1307, !dbg !142
+  %304 = load i8*** %arrayidx1309, align 8, !dbg !142, !tbaa !143
+  %305 = load i8** %304, align 8, !dbg !142, !tbaa !143
+  %phitmp1698 = bitcast i8* %305 to double*, !dbg !142
+  br label %cond.end1311, !dbg !142
+
+cond.end1311:                                     ; preds = %cond.end1302, %cond.false1306
+  %cond1312 = phi double* [ %phitmp1698, %cond.false1306 ], [ null, %cond.end1302 ]
+  %306 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyz, align 4, !dbg !142, !tbaa !138
+  %cmp1313 = icmp slt i32 %306, 0, !dbg !142
+  br i1 %cmp1313, label %cond.end1320, label %cond.false1315, !dbg !142
+
+cond.false1315:                                   ; preds = %cond.end1311
+  %idxprom1316 = sext i32 %306 to i64, !dbg !142
+  %data1317 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %307 = load i8**** %data1317, align 8, !dbg !142, !tbaa !143
+  %arrayidx1318 = getelementptr inbounds i8*** %307, i64 %idxprom1316, !dbg !142
+  %308 = load i8*** %arrayidx1318, align 8, !dbg !142, !tbaa !143
+  %309 = load i8** %308, align 8, !dbg !142, !tbaa !143
+  %phitmp1699 = bitcast i8* %309 to double*, !dbg !142
+  br label %cond.end1320, !dbg !142
+
+cond.end1320:                                     ; preds = %cond.end1311, %cond.false1315
+  %cond1321 = phi double* [ %phitmp1699, %cond.false1315 ], [ null, %cond.end1311 ]
+  %310 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kzz, align 4, !dbg !142, !tbaa !138
+  %cmp1322 = icmp slt i32 %310, 0, !dbg !142
+  br i1 %cmp1322, label %cond.end1329, label %cond.false1324, !dbg !142
+
+cond.false1324:                                   ; preds = %cond.end1320
+  %idxprom1325 = sext i32 %310 to i64, !dbg !142
+  %data1326 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %311 = load i8**** %data1326, align 8, !dbg !142, !tbaa !143
+  %arrayidx1327 = getelementptr inbounds i8*** %311, i64 %idxprom1325, !dbg !142
+  %312 = load i8*** %arrayidx1327, align 8, !dbg !142, !tbaa !143
+  %313 = load i8** %312, align 8, !dbg !142, !tbaa !143
+  %phitmp1700 = bitcast i8* %313 to double*, !dbg !142
+  br label %cond.end1329, !dbg !142
+
+cond.end1329:                                     ; preds = %cond.end1320, %cond.false1324
+  %cond1330 = phi double* [ %phitmp1700, %cond.false1324 ], [ null, %cond.end1320 ]
+  %314 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psi, align 4, !dbg !142, !tbaa !138
+  %cmp1331 = icmp slt i32 %314, 0, !dbg !142
+  br i1 %cmp1331, label %cond.end1338, label %cond.false1333, !dbg !142
+
+cond.false1333:                                   ; preds = %cond.end1329
+  %idxprom1334 = sext i32 %314 to i64, !dbg !142
+  %data1335 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %315 = load i8**** %data1335, align 8, !dbg !142, !tbaa !143
+  %arrayidx1336 = getelementptr inbounds i8*** %315, i64 %idxprom1334, !dbg !142
+  %316 = load i8*** %arrayidx1336, align 8, !dbg !142, !tbaa !143
+  %317 = load i8** %316, align 8, !dbg !142, !tbaa !143
+  %phitmp1701 = bitcast i8* %317 to double*, !dbg !142
+  br label %cond.end1338, !dbg !142
+
+cond.end1338:                                     ; preds = %cond.end1329, %cond.false1333
+  %cond1339 = phi double* [ %phitmp1701, %cond.false1333 ], [ null, %cond.end1329 ]
+  %318 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psix, align 4, !dbg !142, !tbaa !138
+  %cmp1340 = icmp slt i32 %318, 0, !dbg !142
+  br i1 %cmp1340, label %cond.end1347, label %cond.false1342, !dbg !142
+
+cond.false1342:                                   ; preds = %cond.end1338
+  %idxprom1343 = sext i32 %318 to i64, !dbg !142
+  %data1344 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %319 = load i8**** %data1344, align 8, !dbg !142, !tbaa !143
+  %arrayidx1345 = getelementptr inbounds i8*** %319, i64 %idxprom1343, !dbg !142
+  %320 = load i8*** %arrayidx1345, align 8, !dbg !142, !tbaa !143
+  %321 = load i8** %320, align 8, !dbg !142, !tbaa !143
+  %phitmp1702 = bitcast i8* %321 to double*, !dbg !142
+  br label %cond.end1347, !dbg !142
+
+cond.end1347:                                     ; preds = %cond.end1338, %cond.false1342
+  %cond1348 = phi double* [ %phitmp1702, %cond.false1342 ], [ null, %cond.end1338 ]
+  %322 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixx, align 4, !dbg !142, !tbaa !138
+  %cmp1349 = icmp slt i32 %322, 0, !dbg !142
+  br i1 %cmp1349, label %cond.end1356, label %cond.false1351, !dbg !142
+
+cond.false1351:                                   ; preds = %cond.end1347
+  %idxprom1352 = sext i32 %322 to i64, !dbg !142
+  %data1353 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %323 = load i8**** %data1353, align 8, !dbg !142, !tbaa !143
+  %arrayidx1354 = getelementptr inbounds i8*** %323, i64 %idxprom1352, !dbg !142
+  %324 = load i8*** %arrayidx1354, align 8, !dbg !142, !tbaa !143
+  %325 = load i8** %324, align 8, !dbg !142, !tbaa !143
+  %phitmp1703 = bitcast i8* %325 to double*, !dbg !142
+  br label %cond.end1356, !dbg !142
+
+cond.end1356:                                     ; preds = %cond.end1347, %cond.false1351
+  %cond1357 = phi double* [ %phitmp1703, %cond.false1351 ], [ null, %cond.end1347 ]
+  %326 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixy, align 4, !dbg !142, !tbaa !138
+  %cmp1358 = icmp slt i32 %326, 0, !dbg !142
+  br i1 %cmp1358, label %cond.end1365, label %cond.false1360, !dbg !142
+
+cond.false1360:                                   ; preds = %cond.end1356
+  %idxprom1361 = sext i32 %326 to i64, !dbg !142
+  %data1362 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %327 = load i8**** %data1362, align 8, !dbg !142, !tbaa !143
+  %arrayidx1363 = getelementptr inbounds i8*** %327, i64 %idxprom1361, !dbg !142
+  %328 = load i8*** %arrayidx1363, align 8, !dbg !142, !tbaa !143
+  %329 = load i8** %328, align 8, !dbg !142, !tbaa !143
+  %phitmp1704 = bitcast i8* %329 to double*, !dbg !142
+  br label %cond.end1365, !dbg !142
+
+cond.end1365:                                     ; preds = %cond.end1356, %cond.false1360
+  %cond1366 = phi double* [ %phitmp1704, %cond.false1360 ], [ null, %cond.end1356 ]
+  %330 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixz, align 4, !dbg !142, !tbaa !138
+  %cmp1367 = icmp slt i32 %330, 0, !dbg !142
+  br i1 %cmp1367, label %cond.end1374, label %cond.false1369, !dbg !142
+
+cond.false1369:                                   ; preds = %cond.end1365
+  %idxprom1370 = sext i32 %330 to i64, !dbg !142
+  %data1371 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %331 = load i8**** %data1371, align 8, !dbg !142, !tbaa !143
+  %arrayidx1372 = getelementptr inbounds i8*** %331, i64 %idxprom1370, !dbg !142
+  %332 = load i8*** %arrayidx1372, align 8, !dbg !142, !tbaa !143
+  %333 = load i8** %332, align 8, !dbg !142, !tbaa !143
+  %phitmp1705 = bitcast i8* %333 to double*, !dbg !142
+  br label %cond.end1374, !dbg !142
+
+cond.end1374:                                     ; preds = %cond.end1365, %cond.false1369
+  %cond1375 = phi double* [ %phitmp1705, %cond.false1369 ], [ null, %cond.end1365 ]
+  %334 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiy, align 4, !dbg !142, !tbaa !138
+  %cmp1376 = icmp slt i32 %334, 0, !dbg !142
+  br i1 %cmp1376, label %cond.end1383, label %cond.false1378, !dbg !142
+
+cond.false1378:                                   ; preds = %cond.end1374
+  %idxprom1379 = sext i32 %334 to i64, !dbg !142
+  %data1380 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %335 = load i8**** %data1380, align 8, !dbg !142, !tbaa !143
+  %arrayidx1381 = getelementptr inbounds i8*** %335, i64 %idxprom1379, !dbg !142
+  %336 = load i8*** %arrayidx1381, align 8, !dbg !142, !tbaa !143
+  %337 = load i8** %336, align 8, !dbg !142, !tbaa !143
+  %phitmp1706 = bitcast i8* %337 to double*, !dbg !142
+  br label %cond.end1383, !dbg !142
+
+cond.end1383:                                     ; preds = %cond.end1374, %cond.false1378
+  %cond1384 = phi double* [ %phitmp1706, %cond.false1378 ], [ null, %cond.end1374 ]
+  %338 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyy, align 4, !dbg !142, !tbaa !138
+  %cmp1385 = icmp slt i32 %338, 0, !dbg !142
+  br i1 %cmp1385, label %cond.end1392, label %cond.false1387, !dbg !142
+
+cond.false1387:                                   ; preds = %cond.end1383
+  %idxprom1388 = sext i32 %338 to i64, !dbg !142
+  %data1389 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %339 = load i8**** %data1389, align 8, !dbg !142, !tbaa !143
+  %arrayidx1390 = getelementptr inbounds i8*** %339, i64 %idxprom1388, !dbg !142
+  %340 = load i8*** %arrayidx1390, align 8, !dbg !142, !tbaa !143
+  %341 = load i8** %340, align 8, !dbg !142, !tbaa !143
+  %phitmp1707 = bitcast i8* %341 to double*, !dbg !142
+  br label %cond.end1392, !dbg !142
+
+cond.end1392:                                     ; preds = %cond.end1383, %cond.false1387
+  %cond1393 = phi double* [ %phitmp1707, %cond.false1387 ], [ null, %cond.end1383 ]
+  %342 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyz, align 4, !dbg !142, !tbaa !138
+  %cmp1394 = icmp slt i32 %342, 0, !dbg !142
+  br i1 %cmp1394, label %cond.end1401, label %cond.false1396, !dbg !142
+
+cond.false1396:                                   ; preds = %cond.end1392
+  %idxprom1397 = sext i32 %342 to i64, !dbg !142
+  %data1398 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %343 = load i8**** %data1398, align 8, !dbg !142, !tbaa !143
+  %arrayidx1399 = getelementptr inbounds i8*** %343, i64 %idxprom1397, !dbg !142
+  %344 = load i8*** %arrayidx1399, align 8, !dbg !142, !tbaa !143
+  %345 = load i8** %344, align 8, !dbg !142, !tbaa !143
+  %phitmp1708 = bitcast i8* %345 to double*, !dbg !142
+  br label %cond.end1401, !dbg !142
+
+cond.end1401:                                     ; preds = %cond.end1392, %cond.false1396
+  %cond1402 = phi double* [ %phitmp1708, %cond.false1396 ], [ null, %cond.end1392 ]
+  %346 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiz, align 4, !dbg !142, !tbaa !138
+  %cmp1403 = icmp slt i32 %346, 0, !dbg !142
+  br i1 %cmp1403, label %cond.end1410, label %cond.false1405, !dbg !142
+
+cond.false1405:                                   ; preds = %cond.end1401
+  %idxprom1406 = sext i32 %346 to i64, !dbg !142
+  %data1407 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %347 = load i8**** %data1407, align 8, !dbg !142, !tbaa !143
+  %arrayidx1408 = getelementptr inbounds i8*** %347, i64 %idxprom1406, !dbg !142
+  %348 = load i8*** %arrayidx1408, align 8, !dbg !142, !tbaa !143
+  %349 = load i8** %348, align 8, !dbg !142, !tbaa !143
+  %phitmp1709 = bitcast i8* %349 to double*, !dbg !142
+  br label %cond.end1410, !dbg !142
+
+cond.end1410:                                     ; preds = %cond.end1401, %cond.false1405
+  %cond1411 = phi double* [ %phitmp1709, %cond.false1405 ], [ null, %cond.end1401 ]
+  %350 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psizz, align 4, !dbg !142, !tbaa !138
+  %cmp1412 = icmp slt i32 %350, 0, !dbg !142
+  br i1 %cmp1412, label %cond.end1419, label %cond.false1414, !dbg !142
+
+cond.false1414:                                   ; preds = %cond.end1410
+  %idxprom1415 = sext i32 %350 to i64, !dbg !142
+  %data1416 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %351 = load i8**** %data1416, align 8, !dbg !142, !tbaa !143
+  %arrayidx1417 = getelementptr inbounds i8*** %351, i64 %idxprom1415, !dbg !142
+  %352 = load i8*** %arrayidx1417, align 8, !dbg !142, !tbaa !143
+  %353 = load i8** %352, align 8, !dbg !142, !tbaa !143
+  %phitmp1710 = bitcast i8* %353 to double*, !dbg !142
+  br label %cond.end1419, !dbg !142
+
+cond.end1419:                                     ; preds = %cond.end1410, %cond.false1414
+  %cond1420 = phi double* [ %phitmp1710, %cond.false1414 ], [ null, %cond.end1410 ]
+  %354 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_r, align 4, !dbg !142, !tbaa !138
+  %cmp1421 = icmp slt i32 %354, 0, !dbg !142
+  br i1 %cmp1421, label %cond.end1428, label %cond.false1423, !dbg !142
+
+cond.false1423:                                   ; preds = %cond.end1419
+  %idxprom1424 = sext i32 %354 to i64, !dbg !142
+  %data1425 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %355 = load i8**** %data1425, align 8, !dbg !142, !tbaa !143
+  %arrayidx1426 = getelementptr inbounds i8*** %355, i64 %idxprom1424, !dbg !142
+  %356 = load i8*** %arrayidx1426, align 8, !dbg !142, !tbaa !143
+  %357 = load i8** %356, align 8, !dbg !142, !tbaa !143
+  %phitmp1711 = bitcast i8* %357 to double*, !dbg !142
+  br label %cond.end1428, !dbg !142
+
+cond.end1428:                                     ; preds = %cond.end1419, %cond.false1423
+  %cond1429 = phi double* [ %phitmp1711, %cond.false1423 ], [ null, %cond.end1419 ]
+  %358 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_shift_state, align 4, !dbg !142, !tbaa !138
+  %cmp1430 = icmp slt i32 %358, 0, !dbg !142
+  br i1 %cmp1430, label %cond.end1437, label %cond.false1432, !dbg !142
+
+cond.false1432:                                   ; preds = %cond.end1428
+  %idxprom1433 = sext i32 %358 to i64, !dbg !142
+  %data1434 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %359 = load i8**** %data1434, align 8, !dbg !142, !tbaa !143
+  %arrayidx1435 = getelementptr inbounds i8*** %359, i64 %idxprom1433, !dbg !142
+  %360 = load i8*** %arrayidx1435, align 8, !dbg !142, !tbaa !143
+  %361 = load i8** %360, align 8, !dbg !142, !tbaa !143
+  %phitmp1712 = bitcast i8* %361 to i32*, !dbg !142
+  br label %cond.end1437, !dbg !142
+
+cond.end1437:                                     ; preds = %cond.end1428, %cond.false1432
+  %cond1438 = phi i32* [ %phitmp1712, %cond.false1432 ], [ null, %cond.end1428 ]
+  %362 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_x, align 4, !dbg !142, !tbaa !138
+  %cmp1439 = icmp slt i32 %362, 0, !dbg !142
+  br i1 %cmp1439, label %cond.end1446, label %cond.false1441, !dbg !142
+
+cond.false1441:                                   ; preds = %cond.end1437
+  %idxprom1442 = sext i32 %362 to i64, !dbg !142
+  %data1443 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %363 = load i8**** %data1443, align 8, !dbg !142, !tbaa !143
+  %arrayidx1444 = getelementptr inbounds i8*** %363, i64 %idxprom1442, !dbg !142
+  %364 = load i8*** %arrayidx1444, align 8, !dbg !142, !tbaa !143
+  %365 = load i8** %364, align 8, !dbg !142, !tbaa !143
+  %phitmp1713 = bitcast i8* %365 to double*, !dbg !142
+  br label %cond.end1446, !dbg !142
+
+cond.end1446:                                     ; preds = %cond.end1437, %cond.false1441
+  %cond1447 = phi double* [ %phitmp1713, %cond.false1441 ], [ null, %cond.end1437 ]
+  %366 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_y, align 4, !dbg !142, !tbaa !138
+  %cmp1448 = icmp slt i32 %366, 0, !dbg !142
+  br i1 %cmp1448, label %cond.end1455, label %cond.false1450, !dbg !142
+
+cond.false1450:                                   ; preds = %cond.end1446
+  %idxprom1451 = sext i32 %366 to i64, !dbg !142
+  %data1452 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %367 = load i8**** %data1452, align 8, !dbg !142, !tbaa !143
+  %arrayidx1453 = getelementptr inbounds i8*** %367, i64 %idxprom1451, !dbg !142
+  %368 = load i8*** %arrayidx1453, align 8, !dbg !142, !tbaa !143
+  %369 = load i8** %368, align 8, !dbg !142, !tbaa !143
+  %phitmp1714 = bitcast i8* %369 to double*, !dbg !142
+  br label %cond.end1455, !dbg !142
+
+cond.end1455:                                     ; preds = %cond.end1446, %cond.false1450
+  %cond1456 = phi double* [ %phitmp1714, %cond.false1450 ], [ null, %cond.end1446 ]
+  %370 = load i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_z, align 4, !dbg !142, !tbaa !138
+  %cmp1457 = icmp slt i32 %370, 0, !dbg !142
+  br i1 %cmp1457, label %cond.end1464, label %cond.false1459, !dbg !142
+
+cond.false1459:                                   ; preds = %cond.end1455
+  %idxprom1460 = sext i32 %370 to i64, !dbg !142
+  %data1461 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !142
+  %371 = load i8**** %data1461, align 8, !dbg !142, !tbaa !143
+  %arrayidx1462 = getelementptr inbounds i8*** %371, i64 %idxprom1460, !dbg !142
+  %372 = load i8*** %arrayidx1462, align 8, !dbg !142, !tbaa !143
+  %373 = load i8** %372, align 8, !dbg !142, !tbaa !143
+  %phitmp1715 = bitcast i8* %373 to double*, !dbg !142
+  br label %cond.end1464, !dbg !142
+
+cond.end1464:                                     ; preds = %cond.end1455, %cond.false1459
+  %cond1465 = phi double* [ %phitmp1715, %cond.false1459 ], [ null, %cond.end1455 ]
+  tail call void %79(i32* %cctk_dim, i32* %80, i32* %81, i32* %82, i32* %83, i32* %84, i32* %85, i32* %86, i32* %87, double* %cctk_delta_time, double* %cctk_time, double* %88, double* %89, i32* %90, i32* %cctk_convlevel, i32* %91, i32* %cctk_iteration, %struct.cGH* %GH, i32* %cond31917171720, i32* %cond3311721, i32* %cond343, i32* %cond35517241727, i32* %cond3671728, i32* %cond379, i32* %cond39117311734, i32* %cond4031735, i32* %cond415, double* %cond4211738, double* %cond430, double* %cond4391741, double* %cond448, double* %cond4571744, double* %cond466, double* %cond4751747, double* %cond484, double* %cond4931750, double* %cond502, double* %cond5111753, double* %cond520, double* %cond52917561759, double* %cond5381760, double* %cond547, double* %cond55617631766, double* %cond5651767, double* %cond574, double* %cond58317701773, double* %cond5921774, double* %cond601, double* %cond61017771780, double* %cond6191781, double* %cond628, double* %cond63717841787, double* %cond6461788, double* %cond655, double* %cond66417911794, double* %cond6731795, double* %cond682, double* %cond691, double* %cond700, double* %cond709, double* %cond718, double* %cond727, double* %cond736, double* %cond745, double* %cond754, double* %cond763, double* %cond772, double* %cond781, double* %cond790, i32* %cond80217981801, i32* %cond8141802, i32* %cond826, i32* %cond83818051808, i32* %cond8501809, i32* %cond862, i32* %cond87418121815, i32* %cond8861816, i32* %cond898, i32* %cond91018191822, i32* %cond9221823, i32* %cond934, i32* %cond94618261829, i32* %cond9581830, i32* %cond970, i32* %cond98218331836, i32* %cond9941837, i32* %cond1006, i32* %cond101818401843, i32* %cond10301844, i32* %cond1042, i32* %cond105418471850, i32* %cond10661851, i32* %cond1078, i32* %cond109018541857, i32* %cond11021858, i32* %cond1114, i32* %cond1123, double* %cond1132, double* %cond1141, double* %cond1150, double* %cond1159, double* %cond1168, double* %cond1177, double* %cond1186, i32* %cond1195, double* %cond1204, double* %cond1213, double* %cond1222, double* %cond1231, double* %cond1240, double* %cond1249, double* %cond1258, double* %cond1267, double* %cond1276, double* %cond1285, double* %cond1294, double* %cond1303, double* %cond1312, double* %cond1321, double* %cond1330, double* %cond1339, double* %cond1348, double* %cond1357, double* %cond1366, double* %cond1375, double* %cond1384, double* %cond1393, double* %cond1402, double* %cond1411, double* %cond1420, double* %cond1429, i32* %cond1438, double* %cond1447, double* %cond1456, double* %cond1465) #3, !dbg !142
+  ret i32 0, !dbg !144
 }
 
 ; Function Attrs: optsize
@@ -2657,342 +2652,157 @@ declare i32 @CCTK_QueryGroupStorage(%struct.cGH*, i8*) #1
 declare i32* @CCTK_ArrayGroupSize(%struct.cGH*, i32, i8*) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
 attributes #3 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!136, !137, !138}
-!llvm.ident = !{!139}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !48, globals: !56, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BenchADM_FortranWrapper.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !46, !9, !36, !7}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DISubroutineType(types: !6)
-!6 = !{null, !7, !7, !7, !7, !7, !7, !7, !7, !7, !9, !9, !9, !9, !7, !7, !7, !7, !11, !46, !46, !46, !46, !46, !46, !46, !46, !46, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !46, !7, !9, !9, !9, !9, !9, !9, !9, !7, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !9, !7, !9, !9, !9}
-!7 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !8, size: 64, align: 64)
-!8 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!9 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !10, size: 64, align: 64)
-!10 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!11 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !12, size: 64, align: 64)
-!12 = !DIDerivedType(tag: DW_TAG_typedef, name: "cGH", file: !13, line: 75, baseType: !14)
-!13 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/../include/cGH.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!14 = !DICompositeType(tag: DW_TAG_structure_type, file: !13, line: 24, size: 1216, align: 64, elements: !15)
-!15 = !{!16, !17, !18, !19, !20, !21, !22, !23, !24, !25, !26, !27, !28, !29, !30, !31, !32, !33, !37, !38}
-!16 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_dim", scope: !14, file: !13, line: 26, baseType: !8, size: 32, align: 32)
-!17 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_iteration", scope: !14, file: !13, line: 27, baseType: !8, size: 32, align: 32, offset: 32)
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_gsh", scope: !14, file: !13, line: 30, baseType: !7, size: 64, align: 64, offset: 64)
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_lsh", scope: !14, file: !13, line: 31, baseType: !7, size: 64, align: 64, offset: 128)
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_lbnd", scope: !14, file: !13, line: 32, baseType: !7, size: 64, align: 64, offset: 192)
-!21 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_ubnd", scope: !14, file: !13, line: 33, baseType: !7, size: 64, align: 64, offset: 256)
-!22 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_lssh", scope: !14, file: !13, line: 36, baseType: !7, size: 64, align: 64, offset: 320)
-!23 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_to", scope: !14, file: !13, line: 39, baseType: !7, size: 64, align: 64, offset: 384)
-!24 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_from", scope: !14, file: !13, line: 40, baseType: !7, size: 64, align: 64, offset: 448)
-!25 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_delta_time", scope: !14, file: !13, line: 43, baseType: !10, size: 64, align: 64, offset: 512)
-!26 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_delta_space", scope: !14, file: !13, line: 44, baseType: !9, size: 64, align: 64, offset: 576)
-!27 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_origin_space", scope: !14, file: !13, line: 47, baseType: !9, size: 64, align: 64, offset: 640)
-!28 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_bbox", scope: !14, file: !13, line: 51, baseType: !7, size: 64, align: 64, offset: 704)
-!29 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_levfac", scope: !14, file: !13, line: 54, baseType: !7, size: 64, align: 64, offset: 768)
-!30 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_convlevel", scope: !14, file: !13, line: 57, baseType: !8, size: 32, align: 32, offset: 832)
-!31 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_nghostzones", scope: !14, file: !13, line: 60, baseType: !7, size: 64, align: 64, offset: 896)
-!32 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_time", scope: !14, file: !13, line: 63, baseType: !10, size: 64, align: 64, offset: 960)
-!33 = !DIDerivedType(tag: DW_TAG_member, name: "data", scope: !14, file: !13, line: 67, baseType: !34, size: 64, align: 64, offset: 1024)
-!34 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !35, size: 64, align: 64)
-!35 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !36, size: 64, align: 64)
-!36 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!37 = !DIDerivedType(tag: DW_TAG_member, name: "extensions", scope: !14, file: !13, line: 70, baseType: !35, size: 64, align: 64, offset: 1088)
-!38 = !DIDerivedType(tag: DW_TAG_member, name: "GroupData", scope: !14, file: !13, line: 73, baseType: !39, size: 64, align: 64, offset: 1152)
-!39 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !40, size: 64, align: 64)
-!40 = !DIDerivedType(tag: DW_TAG_typedef, name: "cGHGroupData", file: !13, line: 22, baseType: !41)
-!41 = !DICompositeType(tag: DW_TAG_structure_type, file: !13, line: 18, size: 16, align: 8, elements: !42)
-!42 = !{!43, !45}
-!43 = !DIDerivedType(tag: DW_TAG_member, name: "storage", scope: !41, file: !13, line: 20, baseType: !44, size: 8, align: 8)
-!44 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!45 = !DIDerivedType(tag: DW_TAG_member, name: "comm", scope: !41, file: !13, line: 21, baseType: !44, size: 8, align: 8, offset: 8)
-!46 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !47, size: 64, align: 64)
-!47 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !8)
-!48 = !{!49}
-!49 = !DISubprogram(name: "CCTKi_BindingsFortranWrapperBenchADM", scope: !1, file: !1, line: 13, type: !50, isLocal: false, isDefinition: true, scopeLine: 14, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.cGH*, i8*)* @CCTKi_BindingsFortranWrapperBenchADM, variables: !52)
-!50 = !DISubroutineType(types: !51)
-!51 = !{!8, !11, !36}
-!52 = !{!53, !54, !55}
-!53 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "GH", arg: 1, scope: !49, file: !1, line: 13, type: !11)
-!54 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "fpointer", arg: 2, scope: !49, file: !1, line: 13, type: !36)
-!55 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "function", scope: !49, file: !1, line: 15, type: !4)
-!56 = !{!57, !58, !59, !60, !61, !62, !63, !64, !65, !66, !67, !68, !69, !70, !71, !72, !73, !74, !75, !76, !77, !78, !79, !80, !81, !82, !83, !84, !85, !86, !87, !88, !89, !90, !91, !92, !93, !94, !95, !96, !97, !98, !99, !100, !101, !102, !103, !104, !105, !106, !107, !108, !109, !110, !111, !112, !113, !114, !115, !116, !117, !118, !119, !120, !121, !122, !123, !124, !125, !126, !127, !128, !129, !130, !131, !132, !133, !134, !135}
-!57 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_gxx", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxx)
-!58 = !DIGlobalVariable(name: "CCTKGROUPNUM_ADM_metric_prev", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev)
-!59 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_gxy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxy)
-!60 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_gxz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxz)
-!61 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_gyy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyy)
-!62 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_gyz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyz)
-!63 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_gzz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gzz)
-!64 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_kxx_stag", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxx_stag)
-!65 = !DIGlobalVariable(name: "CCTKGROUPNUM_ADM_curv_stag", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag)
-!66 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_kxy_stag", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxy_stag)
-!67 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_kxz_stag", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxz_stag)
-!68 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_kyy_stag", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyy_stag)
-!69 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_kyz_stag", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyz_stag)
-!70 = !DIGlobalVariable(name: "CCTKARGNUM_ADM_kzz_stag", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kzz_stag)
-!71 = !DIGlobalVariable(name: "CCTKARGNUM_adms_gxx", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxx)
-!72 = !DIGlobalVariable(name: "CCTKGROUPNUM_ADM_sources", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources)
-!73 = !DIGlobalVariable(name: "CCTKARGNUM_adms_gxy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxy)
-!74 = !DIGlobalVariable(name: "CCTKARGNUM_adms_gxz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxz)
-!75 = !DIGlobalVariable(name: "CCTKARGNUM_adms_gyy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyy)
-!76 = !DIGlobalVariable(name: "CCTKARGNUM_adms_gyz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyz)
-!77 = !DIGlobalVariable(name: "CCTKARGNUM_adms_gzz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gzz)
-!78 = !DIGlobalVariable(name: "CCTKARGNUM_adms_kxx", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxx)
-!79 = !DIGlobalVariable(name: "CCTKARGNUM_adms_kxy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxy)
-!80 = !DIGlobalVariable(name: "CCTKARGNUM_adms_kxz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxz)
-!81 = !DIGlobalVariable(name: "CCTKARGNUM_adms_kyy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyy)
-!82 = !DIGlobalVariable(name: "CCTKARGNUM_adms_kyz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyz)
-!83 = !DIGlobalVariable(name: "CCTKARGNUM_adms_kzz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kzz)
-!84 = !DIGlobalVariable(name: "CCTKARGNUM_active_slicing_handle", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_active_slicing_handle)
-!85 = !DIGlobalVariable(name: "CCTKGROUPNUM_slicing_flags", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_slicing_flags)
-!86 = !DIGlobalVariable(name: "CCTKARGNUM_alp", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_alp)
-!87 = !DIGlobalVariable(name: "CCTKGROUPNUM_lapse", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse)
-!88 = !DIGlobalVariable(name: "CCTKARGNUM_betax", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betax)
-!89 = !DIGlobalVariable(name: "CCTKGROUPNUM_shift", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift)
-!90 = !DIGlobalVariable(name: "CCTKARGNUM_betay", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betay)
-!91 = !DIGlobalVariable(name: "CCTKARGNUM_betaz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betaz)
-!92 = !DIGlobalVariable(name: "CCTKARGNUM_coarse_dx", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dx)
-!93 = !DIGlobalVariable(name: "CCTKGROUPNUM_gridspacings", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_gridspacings)
-!94 = !DIGlobalVariable(name: "CCTKARGNUM_coarse_dy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dy)
-!95 = !DIGlobalVariable(name: "CCTKARGNUM_coarse_dz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dz)
-!96 = !DIGlobalVariable(name: "CCTKARGNUM_conformal_state", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_conformal_state)
-!97 = !DIGlobalVariable(name: "CCTKGROUPNUM_flags", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_flags)
-!98 = !DIGlobalVariable(name: "CCTKARGNUM_courant_min_time", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_min_time)
-!99 = !DIGlobalVariable(name: "CCTKGROUPNUM_speedvars", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_speedvars)
-!100 = !DIGlobalVariable(name: "CCTKARGNUM_courant_wave_speed", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_wave_speed)
-!101 = !DIGlobalVariable(name: "CCTKARGNUM_emask", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_emask)
-!102 = !DIGlobalVariable(name: "CCTKGROUPNUM_mask", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask)
-!103 = !DIGlobalVariable(name: "CCTKARGNUM_gxx", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxx)
-!104 = !DIGlobalVariable(name: "CCTKGROUPNUM_metric", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric)
-!105 = !DIGlobalVariable(name: "CCTKARGNUM_gxy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxy)
-!106 = !DIGlobalVariable(name: "CCTKARGNUM_gxz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxz)
-!107 = !DIGlobalVariable(name: "CCTKARGNUM_gyy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyy)
-!108 = !DIGlobalVariable(name: "CCTKARGNUM_gyz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyz)
-!109 = !DIGlobalVariable(name: "CCTKARGNUM_gzz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gzz)
-!110 = !DIGlobalVariable(name: "CCTKARGNUM_kxx", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxx)
-!111 = !DIGlobalVariable(name: "CCTKGROUPNUM_curv", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv)
-!112 = !DIGlobalVariable(name: "CCTKARGNUM_kxy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxy)
-!113 = !DIGlobalVariable(name: "CCTKARGNUM_kxz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxz)
-!114 = !DIGlobalVariable(name: "CCTKARGNUM_kyy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyy)
-!115 = !DIGlobalVariable(name: "CCTKARGNUM_kyz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyz)
-!116 = !DIGlobalVariable(name: "CCTKARGNUM_kzz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kzz)
-!117 = !DIGlobalVariable(name: "CCTKARGNUM_psi", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psi)
-!118 = !DIGlobalVariable(name: "CCTKGROUPNUM_confac", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac)
-!119 = !DIGlobalVariable(name: "CCTKARGNUM_psix", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psix)
-!120 = !DIGlobalVariable(name: "CCTKGROUPNUM_confac_1derivs", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs)
-!121 = !DIGlobalVariable(name: "CCTKARGNUM_psixx", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixx)
-!122 = !DIGlobalVariable(name: "CCTKGROUPNUM_confac_2derivs", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs)
-!123 = !DIGlobalVariable(name: "CCTKARGNUM_psixy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixy)
-!124 = !DIGlobalVariable(name: "CCTKARGNUM_psixz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixz)
-!125 = !DIGlobalVariable(name: "CCTKARGNUM_psiy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiy)
-!126 = !DIGlobalVariable(name: "CCTKARGNUM_psiyy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyy)
-!127 = !DIGlobalVariable(name: "CCTKARGNUM_psiyz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyz)
-!128 = !DIGlobalVariable(name: "CCTKARGNUM_psiz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiz)
-!129 = !DIGlobalVariable(name: "CCTKARGNUM_psizz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psizz)
-!130 = !DIGlobalVariable(name: "CCTKARGNUM_r", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_r)
-!131 = !DIGlobalVariable(name: "CCTKGROUPNUM_coordinates", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates)
-!132 = !DIGlobalVariable(name: "CCTKARGNUM_shift_state", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_shift_state)
-!133 = !DIGlobalVariable(name: "CCTKARGNUM_x", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_x)
-!134 = !DIGlobalVariable(name: "CCTKARGNUM_y", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_y)
-!135 = !DIGlobalVariable(name: "CCTKARGNUM_z", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_z)
-!136 = !{i32 2, !"Dwarf Version", i32 2}
-!137 = !{i32 2, !"Debug Info Version", i32 700000003}
-!138 = !{i32 1, !"PIC Level", i32 2}
-!139 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!140 = !DIExpression()
-!141 = !DILocation(line: 13, column: 47, scope: !49)
-!142 = !DILocation(line: 13, column: 57, scope: !49)
-!143 = !DILocation(line: 18, column: 3, scope: !144)
-!144 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!145 = !{!146, !146, i64 0}
-!146 = !{!"int", !147, i64 0}
-!147 = !{!"omnipotent char", !148, i64 0}
-!148 = !{!"Simple C/C++ TBAA"}
-!149 = !DILocation(line: 18, column: 3, scope: !49)
-!150 = !DILocation(line: 18, column: 3, scope: !151)
-!151 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!152 = !DILocation(line: 18, column: 3, scope: !153)
-!153 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!154 = !DILocation(line: 18, column: 3, scope: !155)
-!155 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!156 = !DILocation(line: 18, column: 3, scope: !157)
-!157 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!158 = !DILocation(line: 18, column: 3, scope: !159)
-!159 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!160 = !DILocation(line: 18, column: 3, scope: !161)
-!161 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!162 = !DILocation(line: 18, column: 3, scope: !163)
-!163 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!164 = !DILocation(line: 18, column: 3, scope: !165)
-!165 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!166 = !DILocation(line: 18, column: 3, scope: !167)
-!167 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!168 = !DILocation(line: 18, column: 3, scope: !169)
-!169 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!170 = !DILocation(line: 18, column: 3, scope: !171)
-!171 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!172 = !DILocation(line: 18, column: 3, scope: !173)
-!173 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!174 = !DILocation(line: 18, column: 3, scope: !175)
-!175 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!176 = !DILocation(line: 18, column: 3, scope: !177)
-!177 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!178 = !DILocation(line: 18, column: 3, scope: !179)
-!179 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!180 = !DILocation(line: 18, column: 3, scope: !181)
-!181 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!182 = !DILocation(line: 18, column: 3, scope: !183)
-!183 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!184 = !DILocation(line: 18, column: 3, scope: !185)
-!185 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!186 = !DILocation(line: 18, column: 3, scope: !187)
-!187 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!188 = !DILocation(line: 18, column: 3, scope: !189)
-!189 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!190 = !DILocation(line: 18, column: 3, scope: !191)
-!191 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!192 = !DILocation(line: 18, column: 3, scope: !193)
-!193 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!194 = !DILocation(line: 18, column: 3, scope: !195)
-!195 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!196 = !DILocation(line: 18, column: 3, scope: !197)
-!197 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!198 = !DILocation(line: 18, column: 3, scope: !199)
-!199 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!200 = !DILocation(line: 18, column: 3, scope: !201)
-!201 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!202 = !DILocation(line: 18, column: 3, scope: !203)
-!203 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!204 = !DILocation(line: 18, column: 3, scope: !205)
-!205 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!206 = !DILocation(line: 18, column: 3, scope: !207)
-!207 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!208 = !DILocation(line: 18, column: 3, scope: !209)
-!209 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!210 = !DILocation(line: 18, column: 3, scope: !211)
-!211 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!212 = !DILocation(line: 18, column: 3, scope: !213)
-!213 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!214 = !DILocation(line: 18, column: 3, scope: !215)
-!215 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!216 = !DILocation(line: 18, column: 3, scope: !217)
-!217 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!218 = !DILocation(line: 18, column: 3, scope: !219)
-!219 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!220 = !DILocation(line: 18, column: 3, scope: !221)
-!221 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!222 = !DILocation(line: 18, column: 3, scope: !223)
-!223 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!224 = !DILocation(line: 18, column: 3, scope: !225)
-!225 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!226 = !DILocation(line: 18, column: 3, scope: !227)
-!227 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!228 = !DILocation(line: 18, column: 3, scope: !229)
-!229 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!230 = !DILocation(line: 18, column: 3, scope: !231)
-!231 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!232 = !DILocation(line: 18, column: 3, scope: !233)
-!233 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!234 = !DILocation(line: 18, column: 3, scope: !235)
-!235 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!236 = !DILocation(line: 18, column: 3, scope: !237)
-!237 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!238 = !DILocation(line: 18, column: 3, scope: !239)
-!239 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!240 = !DILocation(line: 18, column: 3, scope: !241)
-!241 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!242 = !DILocation(line: 18, column: 3, scope: !243)
-!243 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!244 = !DILocation(line: 18, column: 3, scope: !245)
-!245 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!246 = !DILocation(line: 18, column: 3, scope: !247)
-!247 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!248 = !DILocation(line: 18, column: 3, scope: !249)
-!249 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!250 = !DILocation(line: 18, column: 3, scope: !251)
-!251 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!252 = !DILocation(line: 18, column: 3, scope: !253)
-!253 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!254 = !DILocation(line: 18, column: 3, scope: !255)
-!255 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!256 = !DILocation(line: 18, column: 3, scope: !257)
-!257 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!258 = !DILocation(line: 18, column: 3, scope: !259)
-!259 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!260 = !DILocation(line: 18, column: 3, scope: !261)
-!261 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!262 = !DILocation(line: 18, column: 3, scope: !263)
-!263 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!264 = !DILocation(line: 18, column: 3, scope: !265)
-!265 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!266 = !DILocation(line: 18, column: 3, scope: !267)
-!267 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!268 = !DILocation(line: 18, column: 3, scope: !269)
-!269 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!270 = !DILocation(line: 18, column: 3, scope: !271)
-!271 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!272 = !DILocation(line: 18, column: 3, scope: !273)
-!273 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!274 = !DILocation(line: 18, column: 3, scope: !275)
-!275 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!276 = !DILocation(line: 18, column: 3, scope: !277)
-!277 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!278 = !DILocation(line: 18, column: 3, scope: !279)
-!279 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!280 = !DILocation(line: 18, column: 3, scope: !281)
-!281 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!282 = !DILocation(line: 18, column: 3, scope: !283)
-!283 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!284 = !DILocation(line: 18, column: 3, scope: !285)
-!285 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!286 = !DILocation(line: 18, column: 3, scope: !287)
-!287 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!288 = !DILocation(line: 18, column: 3, scope: !289)
-!289 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!290 = !DILocation(line: 18, column: 3, scope: !291)
-!291 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!292 = !DILocation(line: 18, column: 3, scope: !293)
-!293 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!294 = !DILocation(line: 18, column: 3, scope: !295)
-!295 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!296 = !DILocation(line: 18, column: 3, scope: !297)
-!297 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!298 = !DILocation(line: 18, column: 3, scope: !299)
-!299 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!300 = !DILocation(line: 18, column: 3, scope: !301)
-!301 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!302 = !DILocation(line: 18, column: 3, scope: !303)
-!303 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!304 = !DILocation(line: 18, column: 3, scope: !305)
-!305 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!306 = !DILocation(line: 20, column: 14, scope: !49)
-!307 = !DILocation(line: 15, column: 10, scope: !49)
-!308 = !DILocation(line: 22, column: 12, scope: !49)
-!309 = !{!310, !311, i64 8}
-!310 = !{!"", !146, i64 0, !146, i64 4, !311, i64 8, !311, i64 16, !311, i64 24, !311, i64 32, !311, i64 40, !311, i64 48, !311, i64 56, !312, i64 64, !311, i64 72, !311, i64 80, !311, i64 88, !311, i64 96, !146, i64 104, !311, i64 112, !312, i64 120, !311, i64 128, !311, i64 136, !311, i64 144}
-!311 = !{!"any pointer", !147, i64 0}
-!312 = !{!"double", !147, i64 0}
-!313 = !{!310, !311, i64 16}
-!314 = !{!310, !311, i64 24}
-!315 = !{!310, !311, i64 32}
-!316 = !{!310, !311, i64 40}
-!317 = !{!310, !311, i64 56}
-!318 = !{!310, !311, i64 48}
-!319 = !{!310, !311, i64 88}
-!320 = !{!310, !311, i64 72}
-!321 = !{!310, !311, i64 80}
-!322 = !{!310, !311, i64 96}
-!323 = !{!310, !311, i64 112}
-!324 = !{!310, !311, i64 128}
-!325 = !{!311, !311, i64 0}
-!326 = !DILocation(line: 22, column: 3, scope: !49)
-!327 = !DILocation(line: 24, column: 3, scope: !49)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !56, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BenchADM_FortranWrapper.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BenchADM_FortranWrapper.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_BindingsFortranWrapperBenchADM", metadata !"CCTKi_BindingsFortranWrapperBenchADM", metadata !"", i32 13, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.cGH*, i8*)* @CCTKi_BindingsFortranWrapperBenchADM, null, null, metadata !47, i32 14} ; [ DW_TAG_subprogram ] [line 13] [def] [scope 14] [CCTKi_BindingsFortranWrapperBenchADM]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/BenchADM_FortranWrapper.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8, metadata !9, metadata !37}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !10} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from cGH]
+!10 = metadata !{i32 786454, metadata !1, null, metadata !"cGH", i32 75, i64 0, i64 0, i64 0, i32 0, metadata !11} ; [ DW_TAG_typedef ] [cGH] [line 75, size 0, align 0, offset 0] [from ]
+!11 = metadata !{i32 786451, metadata !12, null, metadata !"", i32 24, i64 1216, i64 64, i32 0, i32 0, null, metadata !13, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 24, size 1216, align 64, offset 0] [from ]
+!12 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/../include/cGH.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!13 = metadata !{metadata !14, metadata !15, metadata !16, metadata !18, metadata !19, metadata !20, metadata !21, metadata !22, metadata !23, metadata !24, metadata !26, metadata !28, metadata !29, metadata !30, metadata !31, metadata !32, metadata !33, metadata !34, metadata !38, metadata !39}
+!14 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_dim", i32 26, i64 32, i64 32, i64 0, i32 0, metadata !8} ; [ DW_TAG_member ] [cctk_dim] [line 26, size 32, align 32, offset 0] [from int]
+!15 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_iteration", i32 27, i64 32, i64 32, i64 32, i32 0, metadata !8} ; [ DW_TAG_member ] [cctk_iteration] [line 27, size 32, align 32, offset 32] [from int]
+!16 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_gsh", i32 30, i64 64, i64 64, i64 64, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_gsh] [line 30, size 64, align 64, offset 64] [from ]
+!17 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !8} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!18 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_lsh", i32 31, i64 64, i64 64, i64 128, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_lsh] [line 31, size 64, align 64, offset 128] [from ]
+!19 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_lbnd", i32 32, i64 64, i64 64, i64 192, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_lbnd] [line 32, size 64, align 64, offset 192] [from ]
+!20 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_ubnd", i32 33, i64 64, i64 64, i64 256, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_ubnd] [line 33, size 64, align 64, offset 256] [from ]
+!21 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_lssh", i32 36, i64 64, i64 64, i64 320, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_lssh] [line 36, size 64, align 64, offset 320] [from ]
+!22 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_to", i32 39, i64 64, i64 64, i64 384, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_to] [line 39, size 64, align 64, offset 384] [from ]
+!23 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_from", i32 40, i64 64, i64 64, i64 448, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_from] [line 40, size 64, align 64, offset 448] [from ]
+!24 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_delta_time", i32 43, i64 64, i64 64, i64 512, i32 0, metadata !25} ; [ DW_TAG_member ] [cctk_delta_time] [line 43, size 64, align 64, offset 512] [from double]
+!25 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!26 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_delta_space", i32 44, i64 64, i64 64, i64 576, i32 0, metadata !27} ; [ DW_TAG_member ] [cctk_delta_space] [line 44, size 64, align 64, offset 576] [from ]
+!27 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !25} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from double]
+!28 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_origin_space", i32 47, i64 64, i64 64, i64 640, i32 0, metadata !27} ; [ DW_TAG_member ] [cctk_origin_space] [line 47, size 64, align 64, offset 640] [from ]
+!29 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_bbox", i32 51, i64 64, i64 64, i64 704, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_bbox] [line 51, size 64, align 64, offset 704] [from ]
+!30 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_levfac", i32 54, i64 64, i64 64, i64 768, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_levfac] [line 54, size 64, align 64, offset 768] [from ]
+!31 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_convlevel", i32 57, i64 32, i64 32, i64 832, i32 0, metadata !8} ; [ DW_TAG_member ] [cctk_convlevel] [line 57, size 32, align 32, offset 832] [from int]
+!32 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_nghostzones", i32 60, i64 64, i64 64, i64 896, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_nghostzones] [line 60, size 64, align 64, offset 896] [from ]
+!33 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_time", i32 63, i64 64, i64 64, i64 960, i32 0, metadata !25} ; [ DW_TAG_member ] [cctk_time] [line 63, size 64, align 64, offset 960] [from double]
+!34 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"data", i32 67, i64 64, i64 64, i64 1024, i32 0, metadata !35} ; [ DW_TAG_member ] [data] [line 67, size 64, align 64, offset 1024] [from ]
+!35 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !36} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!36 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !37} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!37 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!38 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"extensions", i32 70, i64 64, i64 64, i64 1088, i32 0, metadata !36} ; [ DW_TAG_member ] [extensions] [line 70, size 64, align 64, offset 1088] [from ]
+!39 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"GroupData", i32 73, i64 64, i64 64, i64 1152, i32 0, metadata !40} ; [ DW_TAG_member ] [GroupData] [line 73, size 64, align 64, offset 1152] [from ]
+!40 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !41} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from cGHGroupData]
+!41 = metadata !{i32 786454, metadata !12, null, metadata !"cGHGroupData", i32 22, i64 0, i64 0, i64 0, i32 0, metadata !42} ; [ DW_TAG_typedef ] [cGHGroupData] [line 22, size 0, align 0, offset 0] [from ]
+!42 = metadata !{i32 786451, metadata !12, null, metadata !"", i32 18, i64 16, i64 8, i32 0, i32 0, null, metadata !43, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 18, size 16, align 8, offset 0] [from ]
+!43 = metadata !{metadata !44, metadata !46}
+!44 = metadata !{i32 786445, metadata !12, metadata !42, metadata !"storage", i32 20, i64 8, i64 8, i64 0, i32 0, metadata !45} ; [ DW_TAG_member ] [storage] [line 20, size 8, align 8, offset 0] [from char]
+!45 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!46 = metadata !{i32 786445, metadata !12, metadata !42, metadata !"comm", i32 21, i64 8, i64 8, i64 8, i32 0, metadata !45} ; [ DW_TAG_member ] [comm] [line 21, size 8, align 8, offset 8] [from char]
+!47 = metadata !{metadata !48, metadata !49, metadata !50}
+!48 = metadata !{i32 786689, metadata !4, metadata !"GH", metadata !5, i32 16777229, metadata !9, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [GH] [line 13]
+!49 = metadata !{i32 786689, metadata !4, metadata !"fpointer", metadata !5, i32 33554445, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [fpointer] [line 13]
+!50 = metadata !{i32 786688, metadata !4, metadata !"function", metadata !5, i32 15, metadata !51, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [function] [line 15]
+!51 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !52} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!52 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !53, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!53 = metadata !{null, metadata !17, metadata !17, metadata !17, metadata !17, metadata !17, metadata !17, metadata !17, metadata !17, metadata !17, metadata !27, metadata !27, metadata !27, metadata !27, metadata !17, metadata !17, metadata !17, metadata !17, metadata !9, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !54, metadata !17, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !17, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !17, metadata !27, metadata !27, metadata !27}
+!54 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !55} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!55 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !8} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from int]
+!56 = metadata !{metadata !57, metadata !58, metadata !59, metadata !60, metadata !61, metadata !62, metadata !63, metadata !64, metadata !65, metadata !66, metadata !67, metadata !68, metadata !69, metadata !70, metadata !71, metadata !72, metadata !73, metadata !74, metadata !75, metadata !76, metadata !77, metadata !78, metadata !79, metadata !80, metadata !81, metadata !82, metadata !83, metadata !84, metadata !85, metadata !86, metadata !87, metadata !88, metadata !89, metadata !90, metadata !91, metadata !92, metadata !93, metadata !94, metadata !95, metadata !96, metadata !97, metadata !98, metadata !99, metadata !100, metadata !101, metadata !102, metadata !103, metadata !104, metadata !105, metadata !106, metadata !107, metadata !108, metadata !109, metadata !110, metadata !111, metadata !112, metadata !113, metadata !114, metadata !115, metadata !116, metadata !117, metadata !118, metadata !119, metadata !120, metadata !121, metadata !122, metadata !123, metadata !124, metadata !125, metadata !126, metadata !127, metadata !128, metadata !129, metadata !130, metadata !131, metadata !132, metadata !133, metadata !134, metadata !135}
+!57 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_gxx", metadata !"CCTKARGNUM_ADM_gxx", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxx, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_gxx] [line 17] [local] [def]
+!58 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_ADM_metric_prev", metadata !"CCTKGROUPNUM_ADM_metric_prev", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_metric_prev, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_ADM_metric_prev] [line 17] [local] [def]
+!59 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_gxy", metadata !"CCTKARGNUM_ADM_gxy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_gxy] [line 17] [local] [def]
+!60 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_gxz", metadata !"CCTKARGNUM_ADM_gxz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gxz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_gxz] [line 17] [local] [def]
+!61 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_gyy", metadata !"CCTKARGNUM_ADM_gyy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_gyy] [line 17] [local] [def]
+!62 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_gyz", metadata !"CCTKARGNUM_ADM_gyz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gyz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_gyz] [line 17] [local] [def]
+!63 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_gzz", metadata !"CCTKARGNUM_ADM_gzz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_gzz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_gzz] [line 17] [local] [def]
+!64 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_kxx_stag", metadata !"CCTKARGNUM_ADM_kxx_stag", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxx_stag, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_kxx_stag] [line 17] [local] [def]
+!65 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_ADM_curv_stag", metadata !"CCTKGROUPNUM_ADM_curv_stag", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_curv_stag, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_ADM_curv_stag] [line 17] [local] [def]
+!66 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_kxy_stag", metadata !"CCTKARGNUM_ADM_kxy_stag", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxy_stag, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_kxy_stag] [line 17] [local] [def]
+!67 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_kxz_stag", metadata !"CCTKARGNUM_ADM_kxz_stag", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kxz_stag, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_kxz_stag] [line 17] [local] [def]
+!68 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_kyy_stag", metadata !"CCTKARGNUM_ADM_kyy_stag", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyy_stag, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_kyy_stag] [line 17] [local] [def]
+!69 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_kyz_stag", metadata !"CCTKARGNUM_ADM_kyz_stag", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kyz_stag, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_kyz_stag] [line 17] [local] [def]
+!70 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_ADM_kzz_stag", metadata !"CCTKARGNUM_ADM_kzz_stag", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_ADM_kzz_stag, null} ; [ DW_TAG_variable ] [CCTKARGNUM_ADM_kzz_stag] [line 17] [local] [def]
+!71 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_gxx", metadata !"CCTKARGNUM_adms_gxx", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxx, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_gxx] [line 17] [local] [def]
+!72 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_ADM_sources", metadata !"CCTKGROUPNUM_ADM_sources", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_ADM_sources, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_ADM_sources] [line 17] [local] [def]
+!73 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_gxy", metadata !"CCTKARGNUM_adms_gxy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_gxy] [line 17] [local] [def]
+!74 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_gxz", metadata !"CCTKARGNUM_adms_gxz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gxz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_gxz] [line 17] [local] [def]
+!75 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_gyy", metadata !"CCTKARGNUM_adms_gyy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_gyy] [line 17] [local] [def]
+!76 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_gyz", metadata !"CCTKARGNUM_adms_gyz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gyz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_gyz] [line 17] [local] [def]
+!77 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_gzz", metadata !"CCTKARGNUM_adms_gzz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_gzz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_gzz] [line 17] [local] [def]
+!78 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_kxx", metadata !"CCTKARGNUM_adms_kxx", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxx, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_kxx] [line 17] [local] [def]
+!79 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_kxy", metadata !"CCTKARGNUM_adms_kxy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_kxy] [line 17] [local] [def]
+!80 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_kxz", metadata !"CCTKARGNUM_adms_kxz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kxz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_kxz] [line 17] [local] [def]
+!81 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_kyy", metadata !"CCTKARGNUM_adms_kyy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_kyy] [line 17] [local] [def]
+!82 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_kyz", metadata !"CCTKARGNUM_adms_kyz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kyz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_kyz] [line 17] [local] [def]
+!83 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_adms_kzz", metadata !"CCTKARGNUM_adms_kzz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_adms_kzz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_adms_kzz] [line 17] [local] [def]
+!84 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_active_slicing_handle", metadata !"CCTKARGNUM_active_slicing_handle", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_active_slicing_handle, null} ; [ DW_TAG_variable ] [CCTKARGNUM_active_slicing_handle] [line 17] [local] [def]
+!85 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_slicing_flags", metadata !"CCTKGROUPNUM_slicing_flags", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_slicing_flags, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_slicing_flags] [line 17] [local] [def]
+!86 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_alp", metadata !"CCTKARGNUM_alp", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_alp, null} ; [ DW_TAG_variable ] [CCTKARGNUM_alp] [line 17] [local] [def]
+!87 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_lapse", metadata !"CCTKGROUPNUM_lapse", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_lapse, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_lapse] [line 17] [local] [def]
+!88 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_betax", metadata !"CCTKARGNUM_betax", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betax, null} ; [ DW_TAG_variable ] [CCTKARGNUM_betax] [line 17] [local] [def]
+!89 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_shift", metadata !"CCTKGROUPNUM_shift", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_shift, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_shift] [line 17] [local] [def]
+!90 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_betay", metadata !"CCTKARGNUM_betay", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betay, null} ; [ DW_TAG_variable ] [CCTKARGNUM_betay] [line 17] [local] [def]
+!91 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_betaz", metadata !"CCTKARGNUM_betaz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_betaz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_betaz] [line 17] [local] [def]
+!92 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_coarse_dx", metadata !"CCTKARGNUM_coarse_dx", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dx, null} ; [ DW_TAG_variable ] [CCTKARGNUM_coarse_dx] [line 17] [local] [def]
+!93 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_gridspacings", metadata !"CCTKGROUPNUM_gridspacings", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_gridspacings, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_gridspacings] [line 17] [local] [def]
+!94 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_coarse_dy", metadata !"CCTKARGNUM_coarse_dy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_coarse_dy] [line 17] [local] [def]
+!95 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_coarse_dz", metadata !"CCTKARGNUM_coarse_dz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_coarse_dz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_coarse_dz] [line 17] [local] [def]
+!96 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_conformal_state", metadata !"CCTKARGNUM_conformal_state", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_conformal_state, null} ; [ DW_TAG_variable ] [CCTKARGNUM_conformal_state] [line 17] [local] [def]
+!97 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_flags", metadata !"CCTKGROUPNUM_flags", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_flags, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_flags] [line 17] [local] [def]
+!98 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_courant_min_time", metadata !"CCTKARGNUM_courant_min_time", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_min_time, null} ; [ DW_TAG_variable ] [CCTKARGNUM_courant_min_time] [line 17] [local] [def]
+!99 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_speedvars", metadata !"CCTKGROUPNUM_speedvars", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_speedvars, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_speedvars] [line 17] [local] [def]
+!100 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_courant_wave_speed", metadata !"CCTKARGNUM_courant_wave_speed", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_courant_wave_speed, null} ; [ DW_TAG_variable ] [CCTKARGNUM_courant_wave_speed] [line 17] [local] [def]
+!101 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_emask", metadata !"CCTKARGNUM_emask", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_emask, null} ; [ DW_TAG_variable ] [CCTKARGNUM_emask] [line 17] [local] [def]
+!102 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_mask", metadata !"CCTKGROUPNUM_mask", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_mask, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_mask] [line 17] [local] [def]
+!103 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_gxx", metadata !"CCTKARGNUM_gxx", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxx, null} ; [ DW_TAG_variable ] [CCTKARGNUM_gxx] [line 17] [local] [def]
+!104 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_metric", metadata !"CCTKGROUPNUM_metric", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_metric, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_metric] [line 17] [local] [def]
+!105 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_gxy", metadata !"CCTKARGNUM_gxy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_gxy] [line 17] [local] [def]
+!106 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_gxz", metadata !"CCTKARGNUM_gxz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gxz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_gxz] [line 17] [local] [def]
+!107 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_gyy", metadata !"CCTKARGNUM_gyy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_gyy] [line 17] [local] [def]
+!108 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_gyz", metadata !"CCTKARGNUM_gyz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gyz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_gyz] [line 17] [local] [def]
+!109 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_gzz", metadata !"CCTKARGNUM_gzz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_gzz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_gzz] [line 17] [local] [def]
+!110 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_kxx", metadata !"CCTKARGNUM_kxx", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxx, null} ; [ DW_TAG_variable ] [CCTKARGNUM_kxx] [line 17] [local] [def]
+!111 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_curv", metadata !"CCTKGROUPNUM_curv", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_curv, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_curv] [line 17] [local] [def]
+!112 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_kxy", metadata !"CCTKARGNUM_kxy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_kxy] [line 17] [local] [def]
+!113 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_kxz", metadata !"CCTKARGNUM_kxz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kxz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_kxz] [line 17] [local] [def]
+!114 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_kyy", metadata !"CCTKARGNUM_kyy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_kyy] [line 17] [local] [def]
+!115 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_kyz", metadata !"CCTKARGNUM_kyz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kyz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_kyz] [line 17] [local] [def]
+!116 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_kzz", metadata !"CCTKARGNUM_kzz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_kzz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_kzz] [line 17] [local] [def]
+!117 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_psi", metadata !"CCTKARGNUM_psi", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psi, null} ; [ DW_TAG_variable ] [CCTKARGNUM_psi] [line 17] [local] [def]
+!118 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_confac", metadata !"CCTKGROUPNUM_confac", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_confac] [line 17] [local] [def]
+!119 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_psix", metadata !"CCTKARGNUM_psix", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psix, null} ; [ DW_TAG_variable ] [CCTKARGNUM_psix] [line 17] [local] [def]
+!120 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_confac_1derivs", metadata !"CCTKGROUPNUM_confac_1derivs", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_1derivs, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_confac_1derivs] [line 17] [local] [def]
+!121 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_psixx", metadata !"CCTKARGNUM_psixx", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixx, null} ; [ DW_TAG_variable ] [CCTKARGNUM_psixx] [line 17] [local] [def]
+!122 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_confac_2derivs", metadata !"CCTKGROUPNUM_confac_2derivs", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_confac_2derivs, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_confac_2derivs] [line 17] [local] [def]
+!123 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_psixy", metadata !"CCTKARGNUM_psixy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_psixy] [line 17] [local] [def]
+!124 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_psixz", metadata !"CCTKARGNUM_psixz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psixz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_psixz] [line 17] [local] [def]
+!125 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_psiy", metadata !"CCTKARGNUM_psiy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_psiy] [line 17] [local] [def]
+!126 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_psiyy", metadata !"CCTKARGNUM_psiyy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_psiyy] [line 17] [local] [def]
+!127 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_psiyz", metadata !"CCTKARGNUM_psiyz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiyz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_psiyz] [line 17] [local] [def]
+!128 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_psiz", metadata !"CCTKARGNUM_psiz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psiz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_psiz] [line 17] [local] [def]
+!129 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_psizz", metadata !"CCTKARGNUM_psizz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_psizz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_psizz] [line 17] [local] [def]
+!130 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_r", metadata !"CCTKARGNUM_r", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_r, null} ; [ DW_TAG_variable ] [CCTKARGNUM_r] [line 17] [local] [def]
+!131 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_coordinates", metadata !"CCTKGROUPNUM_coordinates", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKGROUPNUM_coordinates, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_coordinates] [line 17] [local] [def]
+!132 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_shift_state", metadata !"CCTKARGNUM_shift_state", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_shift_state, null} ; [ DW_TAG_variable ] [CCTKARGNUM_shift_state] [line 17] [local] [def]
+!133 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_x", metadata !"CCTKARGNUM_x", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_x, null} ; [ DW_TAG_variable ] [CCTKARGNUM_x] [line 17] [local] [def]
+!134 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_y", metadata !"CCTKARGNUM_y", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_y, null} ; [ DW_TAG_variable ] [CCTKARGNUM_y] [line 17] [local] [def]
+!135 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_z", metadata !"CCTKARGNUM_z", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperBenchADM.CCTKARGNUM_z, null} ; [ DW_TAG_variable ] [CCTKARGNUM_z] [line 17] [local] [def]
+!136 = metadata !{i32 13, i32 0, metadata !4, null}
+!137 = metadata !{i32 18, i32 0, metadata !4, null}
+!138 = metadata !{metadata !"int", metadata !139}
+!139 = metadata !{metadata !"omnipotent char", metadata !140}
+!140 = metadata !{metadata !"Simple C/C++ TBAA"}
+!141 = metadata !{i32 20, i32 0, metadata !4, null}
+!142 = metadata !{i32 22, i32 0, metadata !4, null}
+!143 = metadata !{metadata !"any pointer", metadata !139}
+!144 = metadata !{i32 24, i32 0, metadata !4, null}

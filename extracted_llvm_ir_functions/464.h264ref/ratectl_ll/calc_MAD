@@ -1,41 +1,38 @@
 define double @calc_MAD() #5 {
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !68, metadata !1021), !dbg !1712
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !66, metadata !1021), !dbg !1713
-  br label %overflow.checked, !dbg !1714
+entry:
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !64), !dbg !1120
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !62), !dbg !1121
+  br label %for.cond1.preheader, !dbg !1121
 
-overflow.checked:                                 ; preds = %0, %middle.block
-  %indvars.iv5 = phi i64 [ 0, %0 ], [ %indvars.iv.next6, %middle.block ]
-  %s.03 = phi i32 [ 0, %0 ], [ %9, %middle.block ]
-  %1 = insertelement <4 x i32> <i32 undef, i32 0, i32 0, i32 0>, i32 %s.03, i32 0
-  br label %vector.body
+for.cond1.preheader:                              ; preds = %for.inc6, %entry
+  %indvars.iv18 = phi i64 [ 0, %entry ], [ %indvars.iv.next19, %for.inc6 ]
+  %s.016 = phi i32 [ 0, %entry ], [ %add, %for.inc6 ]
+  br label %for.body3, !dbg !1123
 
-vector.body:                                      ; preds = %vector.body, %overflow.checked
-  %index = phi i64 [ 0, %overflow.checked ], [ %index.next, %vector.body ], !dbg !1716
-  %vec.phi = phi <4 x i32> [ %1, %overflow.checked ], [ %7, %vector.body ]
-  %2 = getelementptr inbounds [16 x [16 x i32]]* @diffy, i64 0, i64 %indvars.iv5, i64 %index, !dbg !1719
-  %3 = bitcast i32* %2 to <4 x i32>*, !dbg !1719
-  %wide.load = load <4 x i32>* %3, align 16, !dbg !1719, !tbaa !946
-  %4 = icmp sgt <4 x i32> %wide.load, <i32 -1, i32 -1, i32 -1, i32 -1>, !dbg !1721
-  %5 = sub <4 x i32> zeroinitializer, %wide.load, !dbg !1721
-  %6 = select <4 x i1> %4, <4 x i32> %wide.load, <4 x i32> %5, !dbg !1721
-  %7 = add nsw <4 x i32> %6, %vec.phi, !dbg !1722
-  %index.next = add i64 %index, 4, !dbg !1716
-  %8 = icmp eq i64 %index.next, 16, !dbg !1716
-  br i1 %8, label %middle.block, label %vector.body, !dbg !1716, !llvm.loop !1723
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %s.115 = phi i32 [ %s.016, %for.cond1.preheader ], [ %add, %for.body3 ]
+  %arrayidx5 = getelementptr inbounds [16 x [16 x i32]]* @diffy, i64 0, i64 %indvars.iv18, i64 %indvars.iv, !dbg !1125
+  %0 = load i32* %arrayidx5, align 4, !dbg !1125, !tbaa !807
+  %ispos = icmp sgt i32 %0, -1, !dbg !1125
+  %neg = sub i32 0, %0, !dbg !1125
+  %1 = select i1 %ispos, i32 %0, i32 %neg, !dbg !1125
+  %add = add nsw i32 %1, %s.115, !dbg !1125
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !64), !dbg !1125
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1123
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1123
+  %exitcond = icmp eq i32 %lftr.wideiv, 16, !dbg !1123
+  br i1 %exitcond, label %for.inc6, label %for.body3, !dbg !1123
 
-middle.block:                                     ; preds = %vector.body
-  %rdx.shuf = shufflevector <4 x i32> %7, <4 x i32> undef, <4 x i32> <i32 2, i32 3, i32 undef, i32 undef>, !dbg !1722
-  %bin.rdx = add <4 x i32> %7, %rdx.shuf, !dbg !1722
-  %rdx.shuf8 = shufflevector <4 x i32> %bin.rdx, <4 x i32> undef, <4 x i32> <i32 1, i32 undef, i32 undef, i32 undef>, !dbg !1722
-  %bin.rdx9 = add <4 x i32> %bin.rdx, %rdx.shuf8, !dbg !1722
-  %9 = extractelement <4 x i32> %bin.rdx9, i32 0, !dbg !1722
-  %indvars.iv.next6 = add nuw nsw i64 %indvars.iv5, 1, !dbg !1714
-  %exitcond7 = icmp eq i64 %indvars.iv.next6, 16, !dbg !1714
-  br i1 %exitcond7, label %10, label %overflow.checked, !dbg !1714
+for.inc6:                                         ; preds = %for.body3
+  %indvars.iv.next19 = add i64 %indvars.iv18, 1, !dbg !1121
+  %lftr.wideiv20 = trunc i64 %indvars.iv.next19 to i32, !dbg !1121
+  %exitcond21 = icmp eq i32 %lftr.wideiv20, 16, !dbg !1121
+  br i1 %exitcond21, label %for.end8, label %for.cond1.preheader, !dbg !1121
 
-; <label>:10                                      ; preds = %middle.block
-  %11 = sitofp i32 %9 to double, !dbg !1726
-  %12 = fmul double %11, 3.906250e-03, !dbg !1727
-  tail call void @llvm.dbg.value(metadata double %12, i64 0, metadata !69, metadata !1021), !dbg !1728
-  ret double %12, !dbg !1729
+for.end8:                                         ; preds = %for.inc6
+  %conv = sitofp i32 %add to double, !dbg !1126
+  %div = fmul double %conv, 3.906250e-03, !dbg !1126
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !65), !dbg !1126
+  ret double %div, !dbg !1127
 }

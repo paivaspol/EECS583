@@ -1,36 +1,39 @@
-define void @_ZN9regmngobj17foundemptyregionsEv(%class.regmngobj* nocapture readonly %this) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.regmngobj* %this, i64 0, metadata !426, metadata !675), !dbg !906
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !427, metadata !675), !dbg !907
-  %1 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 16, i32 4, !dbg !908
-  %2 = load i32* %1, align 4, !dbg !908, !tbaa !771
-  %3 = icmp sgt i32 %2, 0, !dbg !911
-  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !912
+define void @_ZN9regmngobj17foundemptyregionsEv(%class.regmngobj* nocapture %this) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.regmngobj* %this}, i64 0, metadata !424), !dbg !893
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !425), !dbg !894
+  %elemqu = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 16, i32 4, !dbg !894
+  %0 = load i32* %elemqu, align 4, !dbg !894, !tbaa !781
+  %cmp12 = icmp sgt i32 %0, 0, !dbg !894
+  br i1 %cmp12, label %for.body.lr.ph, label %for.end, !dbg !894
 
-.lr.ph:                                           ; preds = %0
-  %4 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 16, i32 0, !dbg !913
-  %5 = load %class.regobj*** %4, align 8, !dbg !913, !tbaa !710
-  %6 = sext i32 %2 to i64, !dbg !912
-  br label %7, !dbg !912
+for.body.lr.ph:                                   ; preds = %entry
+  %ep.i = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 16, i32 0, !dbg !896
+  %1 = load %class.regobj*** %ep.i, align 8, !dbg !896, !tbaa !777
+  br label %for.body, !dbg !894
 
-; <label>:7                                       ; preds = %.lr.ph, %15
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %15 ]
-  %8 = getelementptr inbounds %class.regobj** %5, i64 %indvars.iv, !dbg !913
-  %9 = load %class.regobj** %8, align 8, !dbg !916, !tbaa !779
-  %10 = getelementptr inbounds %class.regobj* %9, i64 0, i32 4, !dbg !917
-  %11 = load i32* %10, align 4, !dbg !917, !tbaa !918
-  %12 = icmp eq i32 %11, 0, !dbg !922
-  br i1 %12, label %13, label %15, !dbg !923
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  tail call void @llvm.dbg.value(metadata !796, i64 0, metadata !898), !dbg !899
+  %arrayidx.i = getelementptr inbounds %class.regobj** %1, i64 %indvars.iv, !dbg !896
+  %2 = load %class.regobj** %arrayidx.i, align 8, !dbg !897, !tbaa !777
+  %square = getelementptr inbounds %class.regobj* %2, i64 0, i32 4, !dbg !897
+  %3 = load i32* %square, align 4, !dbg !897, !tbaa !781
+  %cmp3 = icmp eq i32 %3, 0, !dbg !897
+  br i1 %cmp3, label %if.then, label %for.inc, !dbg !897
 
-; <label>:13                                      ; preds = %7
-  %14 = getelementptr inbounds %class.regobj* %9, i64 0, i32 1, !dbg !924
-  store i8 0, i8* %14, align 1, !dbg !925, !tbaa !926
-  br label %15, !dbg !927
+if.then:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !796, i64 0, metadata !900), !dbg !902
+  %flexist = getelementptr inbounds %class.regobj* %2, i64 0, i32 1, !dbg !901
+  store i8 0, i8* %flexist, align 1, !dbg !901, !tbaa !875
+  br label %for.inc, !dbg !901
 
-; <label>:15                                      ; preds = %7, %13
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !912
-  %16 = icmp slt i64 %indvars.iv.next, %6, !dbg !911
-  br i1 %16, label %7, label %._crit_edge, !dbg !912
+for.inc:                                          ; preds = %for.body, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !894
+  %4 = trunc i64 %indvars.iv.next to i32, !dbg !894
+  %cmp = icmp slt i32 %4, %0, !dbg !894
+  br i1 %cmp, label %for.body, label %for.end, !dbg !894
 
-._crit_edge:                                      ; preds = %15, %0
-  ret void, !dbg !928
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !903
 }

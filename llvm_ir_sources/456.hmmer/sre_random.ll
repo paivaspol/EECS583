@@ -1,6 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/456.hmmer/src/sre_random.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 @sre_random.rnd1 = internal unnamed_addr global i64 0, align 8
 @sre_random.rnd2 = internal unnamed_addr global i64 0, align 8
@@ -21,822 +21,660 @@ target triple = "x86_64-apple-macosx10.10.0"
 @Gaussrandom.y = internal unnamed_addr global double 0.000000e+00, align 8
 @Gaussrandom.tt = internal unnamed_addr global double 0.000000e+00, align 8
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define double @sre_random() #0 {
-  tail call void @llvm.dbg.value(metadata i64 40014, i64 0, metadata !15, metadata !93), !dbg !94
-  tail call void @llvm.dbg.value(metadata i64 2147483563, i64 0, metadata !16, metadata !93), !dbg !95
-  tail call void @llvm.dbg.value(metadata i64 53668, i64 0, metadata !17, metadata !93), !dbg !96
-  tail call void @llvm.dbg.value(metadata i64 12211, i64 0, metadata !18, metadata !93), !dbg !97
-  tail call void @llvm.dbg.value(metadata i64 40692, i64 0, metadata !19, metadata !93), !dbg !98
-  tail call void @llvm.dbg.value(metadata i64 2147483399, i64 0, metadata !20, metadata !93), !dbg !99
-  tail call void @llvm.dbg.value(metadata i64 52774, i64 0, metadata !21, metadata !93), !dbg !100
-  tail call void @llvm.dbg.value(metadata i64 3791, i64 0, metadata !22, metadata !93), !dbg !101
-  %1 = load i32* @sre_randseed, align 4, !dbg !102, !tbaa !104
-  %2 = icmp sgt i32 %1, 0, !dbg !108
-  br i1 %2, label %3, label %._crit_edge, !dbg !109
+entry:
+  tail call void @llvm.dbg.value(metadata !89, i64 0, metadata !15), !dbg !90
+  tail call void @llvm.dbg.value(metadata !91, i64 0, metadata !16), !dbg !92
+  tail call void @llvm.dbg.value(metadata !93, i64 0, metadata !17), !dbg !94
+  tail call void @llvm.dbg.value(metadata !95, i64 0, metadata !18), !dbg !96
+  tail call void @llvm.dbg.value(metadata !97, i64 0, metadata !19), !dbg !98
+  tail call void @llvm.dbg.value(metadata !99, i64 0, metadata !20), !dbg !100
+  tail call void @llvm.dbg.value(metadata !101, i64 0, metadata !21), !dbg !102
+  tail call void @llvm.dbg.value(metadata !103, i64 0, metadata !22), !dbg !104
+  %0 = load i32* @sre_randseed, align 4, !dbg !105, !tbaa !106
+  %cmp = icmp sgt i32 %0, 0, !dbg !105
+  br i1 %cmp, label %if.then, label %entry.if.end28_crit_edge, !dbg !105
 
-._crit_edge:                                      ; preds = %0
-  %.pre = load i64* @sre_random.rnd1, align 8, !dbg !110, !tbaa !111
-  %.pre12 = load i64* @sre_random.rnd2, align 8, !dbg !113, !tbaa !111
-  br label %25, !dbg !109
+entry.if.end28_crit_edge:                         ; preds = %entry
+  %.pre = load i64* @sre_random.rnd1, align 8, !dbg !109, !tbaa !110
+  %.pre109 = load i64* @sre_random.rnd2, align 8, !dbg !111, !tbaa !110
+  br label %if.end28, !dbg !105
 
-; <label>:3                                       ; preds = %0
-  %4 = sext i32 %1 to i64, !dbg !114
-  store i64 %4, i64* @sre_random.rnd1, align 8, !dbg !116, !tbaa !111
-  store i64 %4, i64* @sre_random.rnd2, align 8, !dbg !117, !tbaa !111
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !14, metadata !93), !dbg !118
-  br label %5, !dbg !119
+if.then:                                          ; preds = %entry
+  %conv = sext i32 %0 to i64, !dbg !112
+  store i64 %conv, i64* @sre_random.rnd1, align 8, !dbg !112, !tbaa !110
+  store i64 %conv, i64* @sre_random.rnd2, align 8, !dbg !114, !tbaa !110
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !13), !dbg !115
+  br label %for.body, !dbg !115
 
-; <label>:5                                       ; preds = %5, %3
-  %indvars.iv = phi i64 [ 0, %3 ], [ %indvars.iv.next, %5 ]
-  %storemerge411 = phi i64 [ %4, %3 ], [ %storemerge4, %5 ], !dbg !121
-  %.10 = phi i64 [ %4, %3 ], [ %., %5 ], !dbg !124
-  %6 = srem i64 %.10, 53668, !dbg !121
-  %7 = mul nsw i64 %6, 40014, !dbg !125
-  tail call void @llvm.dbg.value(metadata i64 %7, i64 0, metadata !12, metadata !93), !dbg !126
-  %8 = sdiv i64 %.10, 53668, !dbg !127
-  %9 = mul nsw i64 %8, -12211, !dbg !128
-  %10 = add i64 %7, %9, !dbg !128
-  %11 = icmp slt i64 %10, 0, !dbg !129
-  %12 = add nsw i64 %10, 2147483563, !dbg !131
-  %. = select i1 %11, i64 %12, i64 %10, !dbg !132
-  %13 = srem i64 %storemerge411, 52774, !dbg !133
-  %14 = mul nsw i64 %13, 40692, !dbg !134
-  tail call void @llvm.dbg.value(metadata i64 %14, i64 0, metadata !12, metadata !93), !dbg !126
-  %15 = sdiv i64 %storemerge411, 52774, !dbg !135
-  %16 = mul nsw i64 %15, -3791, !dbg !136
-  %17 = add i64 %14, %16, !dbg !136
-  %18 = icmp slt i64 %17, 0, !dbg !137
-  %19 = add nsw i64 %17, 2147483399, !dbg !139
-  %storemerge4 = select i1 %18, i64 %19, i64 %17, !dbg !140
-  %20 = sub nsw i64 %., %storemerge4, !dbg !141
-  %21 = getelementptr inbounds [64 x i64]* @sre_random.tbl, i64 0, i64 %indvars.iv, !dbg !142
-  %22 = icmp slt i64 %20, 0, !dbg !143
-  %23 = add nsw i64 %20, 2147483563, !dbg !145
-  %.6 = select i1 %22, i64 %23, i64 %20, !dbg !146
-  store i64 %.6, i64* %21, align 8, !dbg !147, !tbaa !111
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !119
-  %exitcond = icmp eq i64 %indvars.iv.next, 64, !dbg !119
-  br i1 %exitcond, label %24, label %5, !dbg !119
+for.body:                                         ; preds = %for.body, %if.then
+  %indvars.iv = phi i64 [ 0, %if.then ], [ %indvars.iv.next, %for.body ]
+  %storemerge104108 = phi i64 [ %conv, %if.then ], [ %storemerge104, %for.body ], !dbg !117
+  %add.sub107 = phi i64 [ %conv, %if.then ], [ %add.sub, %for.body ], !dbg !117
+  %rem = srem i64 %add.sub107, 53668, !dbg !117
+  %mul = mul nsw i64 %rem, 40014, !dbg !117
+  tail call void @llvm.dbg.value(metadata !{i64 %mul}, i64 0, metadata !10), !dbg !117
+  %div = sdiv i64 %add.sub107, 53668, !dbg !119
+  %1 = mul i64 %div, -12211, !dbg !120
+  %sub = add i64 %1, %mul, !dbg !120
+  %cmp5 = icmp slt i64 %sub, 0, !dbg !121
+  %add = add nsw i64 %sub, 2147483563, !dbg !121
+  %add.sub = select i1 %cmp5, i64 %add, i64 %sub, !dbg !121
+  %rem8 = srem i64 %storemerge104108, 52774, !dbg !122
+  %mul9 = mul nsw i64 %rem8, 40692, !dbg !122
+  tail call void @llvm.dbg.value(metadata !{i64 %mul9}, i64 0, metadata !10), !dbg !122
+  %div10 = sdiv i64 %storemerge104108, 52774, !dbg !123
+  %2 = mul i64 %div10, -3791, !dbg !124
+  %sub12 = add i64 %2, %mul9, !dbg !124
+  %cmp13 = icmp slt i64 %sub12, 0, !dbg !125
+  %add16 = add nsw i64 %sub12, 2147483399, !dbg !125
+  %storemerge104 = select i1 %cmp13, i64 %add16, i64 %sub12, !dbg !125
+  %sub18 = sub nsw i64 %add.sub, %storemerge104, !dbg !126
+  %arrayidx = getelementptr inbounds [64 x i64]* @sre_random.tbl, i64 0, i64 %indvars.iv, !dbg !126
+  %cmp21 = icmp slt i64 %sub18, 0, !dbg !127
+  %add26 = add nsw i64 %sub18, 2147483563, !dbg !127
+  %add26.sub18 = select i1 %cmp21, i64 %add26, i64 %sub18, !dbg !127
+  store i64 %add26.sub18, i64* %arrayidx, align 8, !dbg !126, !tbaa !110
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !115
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !115
+  %exitcond = icmp eq i32 %lftr.wideiv, 64, !dbg !115
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !115
 
-; <label>:24                                      ; preds = %5
-  store i64 %., i64* @sre_random.rnd1, align 8, !dbg !148, !tbaa !111
-  store i64 %storemerge4, i64* @sre_random.rnd2, align 8, !dbg !149, !tbaa !111
-  store i32 0, i32* @sre_randseed, align 4, !dbg !150, !tbaa !104
-  br label %25, !dbg !151
+for.end:                                          ; preds = %for.body
+  store i64 %add.sub, i64* @sre_random.rnd1, align 8, !dbg !120, !tbaa !110
+  store i64 %storemerge104, i64* @sre_random.rnd2, align 8, !dbg !124, !tbaa !110
+  store i32 0, i32* @sre_randseed, align 4, !dbg !128, !tbaa !106
+  br label %if.end28, !dbg !129
 
-; <label>:25                                      ; preds = %._crit_edge, %24
-  %26 = phi i64 [ %.pre12, %._crit_edge ], [ %storemerge4, %24 ]
-  %27 = phi i64 [ %.pre, %._crit_edge ], [ %., %24 ]
-  %28 = srem i64 %27, 53668, !dbg !152
-  %29 = mul nsw i64 %28, 40014, !dbg !153
-  tail call void @llvm.dbg.value(metadata i64 %29, i64 0, metadata !12, metadata !93), !dbg !126
-  %30 = sdiv i64 %27, 53668, !dbg !154
-  %31 = mul nsw i64 %30, -12211, !dbg !155
-  %32 = add i64 %29, %31, !dbg !155
-  %33 = icmp slt i64 %32, 0, !dbg !156
-  %34 = add nsw i64 %32, 2147483563, !dbg !158
-  %.7 = select i1 %33, i64 %34, i64 %32, !dbg !159
-  store i64 %.7, i64* @sre_random.rnd1, align 8, !dbg !160, !tbaa !111
-  %35 = srem i64 %26, 52774, !dbg !161
-  %36 = mul nsw i64 %35, 40692, !dbg !162
-  tail call void @llvm.dbg.value(metadata i64 %36, i64 0, metadata !12, metadata !93), !dbg !126
-  %37 = sdiv i64 %26, 52774, !dbg !163
-  %38 = mul nsw i64 %37, -3791, !dbg !164
-  %39 = add i64 %36, %38, !dbg !164
-  %40 = icmp slt i64 %39, 0, !dbg !165
-  %41 = add nsw i64 %39, 2147483399, !dbg !167
-  %storemerge1 = select i1 %40, i64 %41, i64 %39, !dbg !168
-  store i64 %storemerge1, i64* @sre_random.rnd2, align 8, !dbg !169, !tbaa !111
-  %42 = load i64* @sre_random.rnd, align 8, !dbg !170, !tbaa !111
-  %43 = sitofp i64 %42 to double, !dbg !171
-  %44 = fdiv double %43, 0x41DFFFFFEAC00000, !dbg !172
-  %45 = fmul double %44, 6.400000e+01, !dbg !173
-  %46 = fptosi double %45 to i32, !dbg !174
-  tail call void @llvm.dbg.value(metadata i32 %46, i64 0, metadata !14, metadata !93), !dbg !118
-  %47 = sext i32 %46 to i64, !dbg !175
-  %48 = getelementptr inbounds [64 x i64]* @sre_random.tbl, i64 0, i64 %47, !dbg !175
-  %49 = load i64* %48, align 8, !dbg !175, !tbaa !111
-  store i64 %49, i64* @sre_random.rnd, align 8, !dbg !176, !tbaa !111
-  %50 = sub nsw i64 %.7, %storemerge1, !dbg !177
-  %51 = icmp slt i64 %50, 0, !dbg !178
-  %52 = add nsw i64 %50, 2147483563, !dbg !180
-  %.8 = select i1 %51, i64 %52, i64 %50, !dbg !181
-  store i64 %.8, i64* %48, align 8, !dbg !182, !tbaa !111
-  %53 = sitofp i64 %49 to double, !dbg !183
-  %54 = fdiv double %53, 0x41DFFFFFEAC00000, !dbg !184
-  ret double %54, !dbg !185
+if.end28:                                         ; preds = %entry.if.end28_crit_edge, %for.end
+  %3 = phi i64 [ %.pre109, %entry.if.end28_crit_edge ], [ %storemerge104, %for.end ]
+  %4 = phi i64 [ %.pre, %entry.if.end28_crit_edge ], [ %add.sub, %for.end ]
+  %rem29 = srem i64 %4, 53668, !dbg !109
+  %mul30 = mul nsw i64 %rem29, 40014, !dbg !109
+  tail call void @llvm.dbg.value(metadata !{i64 %mul30}, i64 0, metadata !10), !dbg !109
+  %div31 = sdiv i64 %4, 53668, !dbg !130
+  %5 = mul i64 %div31, -12211, !dbg !131
+  %sub33 = add i64 %5, %mul30, !dbg !131
+  %cmp34 = icmp slt i64 %sub33, 0, !dbg !132
+  %add37 = add nsw i64 %sub33, 2147483563, !dbg !132
+  %add37.sub33 = select i1 %cmp34, i64 %add37, i64 %sub33, !dbg !132
+  store i64 %add37.sub33, i64* @sre_random.rnd1, align 8, !dbg !131, !tbaa !110
+  %rem39 = srem i64 %3, 52774, !dbg !111
+  %mul40 = mul nsw i64 %rem39, 40692, !dbg !111
+  tail call void @llvm.dbg.value(metadata !{i64 %mul40}, i64 0, metadata !10), !dbg !111
+  %div41 = sdiv i64 %3, 52774, !dbg !133
+  %6 = mul i64 %div41, -3791, !dbg !134
+  %sub43 = add i64 %6, %mul40, !dbg !134
+  %cmp44 = icmp slt i64 %sub43, 0, !dbg !135
+  %add47 = add nsw i64 %sub43, 2147483399, !dbg !135
+  %storemerge101 = select i1 %cmp44, i64 %add47, i64 %sub43, !dbg !135
+  store i64 %storemerge101, i64* @sre_random.rnd2, align 8, !dbg !134, !tbaa !110
+  %7 = load i64* @sre_random.rnd, align 8, !dbg !136, !tbaa !110
+  %conv49 = sitofp i64 %7 to double, !dbg !136
+  %div51 = fdiv double %conv49, 0x41DFFFFFEAC00000, !dbg !136
+  %mul52 = fmul double %div51, 6.400000e+01, !dbg !136
+  %conv53 = fptosi double %mul52 to i32, !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i32 %conv53}, i64 0, metadata !13), !dbg !136
+  %idxprom54 = sext i32 %conv53 to i64, !dbg !137
+  %arrayidx55 = getelementptr inbounds [64 x i64]* @sre_random.tbl, i64 0, i64 %idxprom54, !dbg !137
+  %8 = load i64* %arrayidx55, align 8, !dbg !137, !tbaa !110
+  store i64 %8, i64* @sre_random.rnd, align 8, !dbg !137, !tbaa !110
+  %sub56 = sub nsw i64 %add37.sub33, %storemerge101, !dbg !138
+  %cmp61 = icmp slt i64 %sub56, 0, !dbg !139
+  %add66 = add nsw i64 %sub56, 2147483563, !dbg !139
+  %add66.sub56 = select i1 %cmp61, i64 %add66, i64 %sub56, !dbg !139
+  store i64 %add66.sub56, i64* %arrayidx55, align 8, !dbg !138, !tbaa !110
+  %conv68 = sitofp i64 %8 to double, !dbg !140
+  %div70 = fdiv double %conv68, 0x41DFFFFFEAC00000, !dbg !140
+  ret double %div70, !dbg !140
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @sre_srandom(i32 %seed) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %seed, i64 0, metadata !27, metadata !93), !dbg !186
-  %1 = icmp slt i32 %seed, 0, !dbg !187
-  %2 = sub nsw i32 0, %seed, !dbg !189
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !27, metadata !93), !dbg !186
-  %.seed = select i1 %1, i32 %2, i32 %seed, !dbg !190
-  %3 = icmp eq i32 %.seed, 0, !dbg !191
-  tail call void @llvm.dbg.value(metadata i32 42, i64 0, metadata !27, metadata !93), !dbg !186
-  %.1 = select i1 %3, i32 42, i32 %.seed, !dbg !193
-  store i32 %.1, i32* @sre_randseed, align 4, !dbg !194, !tbaa !104
-  ret void, !dbg !195
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %seed}, i64 0, metadata !27), !dbg !141
+  %cmp = icmp slt i32 %seed, 0, !dbg !142
+  %mul = sub i32 0, %seed, !dbg !142
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !27), !dbg !142
+  %mul.seed = select i1 %cmp, i32 %mul, i32 %seed, !dbg !142
+  %cmp1 = icmp eq i32 %mul.seed, 0, !dbg !143
+  tail call void @llvm.dbg.value(metadata !144, i64 0, metadata !27), !dbg !143
+  %seed.addr.1 = select i1 %cmp1, i32 42, i32 %mul.seed, !dbg !143
+  store i32 %seed.addr.1, i32* @sre_randseed, align 4, !dbg !145, !tbaa !106
+  ret void, !dbg !146
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define double @sre_random_positive() #0 {
-  br label %1, !dbg !196
+entry:
+  br label %do.body, !dbg !147
 
-; <label>:1                                       ; preds = %1, %0
-  %2 = tail call double @sre_random() #3, !dbg !197
-  tail call void @llvm.dbg.value(metadata double %2, i64 0, metadata !30, metadata !93), !dbg !199
-  %3 = fcmp oeq double %2, 0.000000e+00, !dbg !200
-  br i1 %3, label %1, label %4, !dbg !201
+do.body:                                          ; preds = %do.body, %entry
+  %call = tail call double @sre_random() #3, !dbg !148
+  tail call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !30), !dbg !148
+  %cmp = fcmp oeq double %call, 0.000000e+00, !dbg !148
+  br i1 %cmp, label %do.body, label %do.end, !dbg !148
 
-; <label>:4                                       ; preds = %1
-  ret double %2, !dbg !202
+do.end:                                           ; preds = %do.body
+  ret double %call, !dbg !150
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define double @ExponentialRandom() #0 {
-  br label %1, !dbg !203
+entry:
+  br label %do.body, !dbg !151
 
-; <label>:1                                       ; preds = %1, %0
-  %2 = tail call double @sre_random() #3, !dbg !204
-  tail call void @llvm.dbg.value(metadata double %2, i64 0, metadata !33, metadata !93), !dbg !205
-  %3 = fcmp oeq double %2, 0.000000e+00, !dbg !206
-  br i1 %3, label %1, label %4, !dbg !207
+do.body:                                          ; preds = %do.body, %entry
+  %call = tail call double @sre_random() #3, !dbg !151
+  tail call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !33), !dbg !151
+  %cmp = fcmp oeq double %call, 0.000000e+00, !dbg !151
+  br i1 %cmp, label %do.body, label %do.end, !dbg !151
 
-; <label>:4                                       ; preds = %1
-  %5 = tail call double @log(double %2) #4, !dbg !208
-  %6 = fsub double -0.000000e+00, %5, !dbg !209
-  ret double %6, !dbg !210
+do.end:                                           ; preds = %do.body
+  %call1 = tail call double @log(double %call) #4, !dbg !152
+  %sub = fsub double -0.000000e+00, %call1, !dbg !152
+  ret double %sub, !dbg !152
 }
 
-; Function Attrs: nounwind optsize readnone
+; Function Attrs: nounwind optsize
 declare double @log(double) #1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define double @Gaussrandom(double %mean, double %stddev) #0 {
-  tail call void @llvm.dbg.value(metadata double %mean, i64 0, metadata !38, metadata !93), !dbg !211
-  tail call void @llvm.dbg.value(metadata double %stddev, i64 0, metadata !39, metadata !93), !dbg !212
-  %1 = tail call double @sre_random() #3, !dbg !213
-  %2 = fcmp ogt double %1, 5.000000e-01, !dbg !214
-  %storemerge6 = select i1 %2, double 1.000000e+00, double 0.000000e+00, !dbg !216
-  store double %storemerge6, double* @Gaussrandom.s, align 8, !dbg !217, !tbaa !218
-  %3 = fsub double %1, %storemerge6, !dbg !220
-  %4 = fadd double %1, %3, !dbg !221
-  %5 = fmul double %4, 3.200000e+01, !dbg !222
-  store double %5, double* @Gaussrandom.u, align 8, !dbg !223, !tbaa !218
-  %6 = fptosi double %5 to i64, !dbg !224
-  %7 = icmp eq i64 %6, 32, !dbg !225
-  %. = select i1 %7, i64 31, i64 %6, !dbg !227
-  store i64 %., i64* @Gaussrandom.i, align 8, !dbg !228, !tbaa !111
-  %8 = icmp eq i64 %., 0, !dbg !229
-  br i1 %8, label %58, label %9, !dbg !231
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %mean}, i64 0, metadata !38), !dbg !153
+  tail call void @llvm.dbg.value(metadata !{double %stddev}, i64 0, metadata !39), !dbg !153
+  %call = tail call double @sre_random() #3, !dbg !154
+  %cmp = fcmp ogt double %call, 5.000000e-01, !dbg !155
+  %storemerge78 = select i1 %cmp, double 1.000000e+00, double 0.000000e+00, !dbg !155
+  store double %storemerge78, double* @Gaussrandom.s, align 8, !dbg !156, !tbaa !157
+  %sub = fsub double %call, %storemerge78, !dbg !158
+  %add = fadd double %call, %sub, !dbg !158
+  %mul = fmul double %add, 3.200000e+01, !dbg !159
+  store double %mul, double* @Gaussrandom.u, align 8, !dbg !159, !tbaa !157
+  %conv = fptosi double %mul to i64, !dbg !160
+  %cmp1 = icmp eq i64 %conv, 32, !dbg !161
+  %.conv = select i1 %cmp1, i64 31, i64 %conv, !dbg !161
+  store i64 %.conv, i64* @Gaussrandom.i, align 8, !dbg !161, !tbaa !110
+  %cmp5 = icmp eq i64 %.conv, 0, !dbg !162
+  br i1 %cmp5, label %S100, label %if.end8, !dbg !162
 
-; <label>:9                                       ; preds = %0
-  %10 = sitofp i64 %. to double, !dbg !232
-  %11 = fsub double %5, %10, !dbg !233
-  store double %11, double* @Gaussrandom.ustar, align 8, !dbg !234, !tbaa !218
-  %.sum = add i64 %., -1, !dbg !235
-  %12 = getelementptr inbounds [32 x double]* @Gaussrandom.a, i64 0, i64 %.sum, !dbg !235
-  %13 = bitcast double* %12 to i64*, !dbg !236
-  %14 = load i64* %13, align 8, !dbg !236, !tbaa !218
-  store i64 %14, i64* bitcast (double* @Gaussrandom.aa to i64*), align 8, !dbg !237, !tbaa !218
-  %15 = getelementptr inbounds [31 x double]* @Gaussrandom.t, i64 0, i64 %.sum, !dbg !238
-  %16 = load double* %15, align 8, !dbg !240, !tbaa !218
-  %17 = fcmp ugt double %11, %16, !dbg !241
-  br i1 %17, label %._crit_edge22, label %.lr.ph21, !dbg !242
+if.end8:                                          ; preds = %entry
+  %conv9 = sitofp i64 %.conv to double, !dbg !163
+  %sub10 = fsub double %mul, %conv9, !dbg !163
+  store double %sub10, double* @Gaussrandom.ustar, align 8, !dbg !163, !tbaa !157
+  %add.ptr.sum = add i64 %.conv, -1, !dbg !164
+  %add.ptr11 = getelementptr inbounds [32 x double]* @Gaussrandom.a, i64 0, i64 %add.ptr.sum, !dbg !164
+  %0 = load double* %add.ptr11, align 8, !dbg !164, !tbaa !157
+  store double %0, double* @Gaussrandom.aa, align 8, !dbg !164, !tbaa !157
+  %add.ptr1395 = getelementptr inbounds [31 x double]* @Gaussrandom.t, i64 0, i64 %add.ptr.sum, !dbg !165
+  %1 = load double* %add.ptr1395, align 8, !dbg !165, !tbaa !157
+  %cmp1496 = fcmp ugt double %sub10, %1, !dbg !165
+  br i1 %cmp1496, label %if.end17, label %S60, !dbg !165
 
-._crit_edge22:                                    ; preds = %52, %9
-  %.lcssa11 = phi double [ %16, %9 ], [ %56, %52 ]
-  %.sum1.lcssa = phi i64 [ %.sum, %9 ], [ %.sum1, %52 ]
-  %.lcssa8 = phi double [ %11, %9 ], [ %53, %52 ]
-  %18 = fsub double %.lcssa8, %.lcssa11, !dbg !243
-  %19 = getelementptr inbounds [31 x double]* @Gaussrandom.h, i64 0, i64 %.sum1.lcssa, !dbg !244
-  %20 = load double* %19, align 8, !dbg !245, !tbaa !218
-  %21 = fmul double %18, %20, !dbg !246
-  store double %21, double* @Gaussrandom.w, align 8, !dbg !247, !tbaa !218
-  br label %.loopexit, !dbg !248
+if.end17:                                         ; preds = %if.end48, %if.end8
+  %.lcssa91 = phi double [ %1, %if.end8 ], [ %14, %if.end48 ]
+  %add.ptr12.sum.lcssa = phi i64 [ %add.ptr.sum, %if.end8 ], [ %add.ptr12.sum, %if.end48 ]
+  %.lcssa = phi double [ %sub10, %if.end8 ], [ %call49, %if.end48 ]
+  %sub20 = fsub double %.lcssa, %.lcssa91, !dbg !166
+  %add.ptr22 = getelementptr inbounds [31 x double]* @Gaussrandom.h, i64 0, i64 %add.ptr12.sum.lcssa, !dbg !166
+  %2 = load double* %add.ptr22, align 8, !dbg !166, !tbaa !157
+  %mul23 = fmul double %sub20, %2, !dbg !166
+  store double %mul23, double* @Gaussrandom.w, align 8, !dbg !166, !tbaa !157
+  br label %S50, !dbg !166
 
-.loopexit:                                        ; preds = %.lr.ph21, %48, %83, %._crit_edge22
-  %22 = load double* @Gaussrandom.aa, align 8, !dbg !249, !tbaa !218
-  %23 = load double* @Gaussrandom.w, align 8, !dbg !250, !tbaa !218
-  %24 = fadd double %22, %23, !dbg !251
-  store double %24, double* @Gaussrandom.y, align 8, !dbg !252, !tbaa !218
-  store double %24, double* @Gaussrandom.snorm, align 8, !dbg !253, !tbaa !218
-  %25 = load double* @Gaussrandom.s, align 8, !dbg !254, !tbaa !218
-  %26 = fcmp oeq double %25, 1.000000e+00, !dbg !256
-  br i1 %26, label %27, label %29, !dbg !257
+S50:                                              ; preds = %if.then47, %S60, %S160, %if.end17
+  %3 = load double* @Gaussrandom.aa, align 8, !dbg !167, !tbaa !157
+  %4 = load double* @Gaussrandom.w, align 8, !dbg !167, !tbaa !157
+  %add24 = fadd double %3, %4, !dbg !167
+  store double %add24, double* @Gaussrandom.y, align 8, !dbg !167, !tbaa !157
+  store double %add24, double* @Gaussrandom.snorm, align 8, !dbg !168, !tbaa !157
+  %5 = load double* @Gaussrandom.s, align 8, !dbg !169, !tbaa !157
+  %cmp25 = fcmp oeq double %5, 1.000000e+00, !dbg !169
+  br i1 %cmp25, label %if.then27, label %if.end29, !dbg !169
 
-; <label>:27                                      ; preds = %.loopexit
-  %28 = fsub double -0.000000e+00, %24, !dbg !258
-  store double %28, double* @Gaussrandom.snorm, align 8, !dbg !259, !tbaa !218
-  br label %29, !dbg !260
+if.then27:                                        ; preds = %S50
+  %sub28 = fsub double -0.000000e+00, %add24, !dbg !169
+  store double %sub28, double* @Gaussrandom.snorm, align 8, !dbg !169, !tbaa !157
+  br label %if.end29, !dbg !169
 
-; <label>:29                                      ; preds = %27, %.loopexit
-  %30 = phi double [ %28, %27 ], [ %24, %.loopexit ]
-  %31 = fmul double %30, %stddev, !dbg !261
-  %32 = fadd double %31, %mean, !dbg !262
-  ret double %32, !dbg !263
+if.end29:                                         ; preds = %if.then27, %S50
+  %6 = phi double [ %sub28, %if.then27 ], [ %add24, %S50 ]
+  %mul30 = fmul double %6, %stddev, !dbg !170
+  %add31 = fadd double %mul30, %mean, !dbg !170
+  ret double %add31, !dbg !170
 
-.lr.ph21:                                         ; preds = %9, %52
-  %33 = tail call double @sre_random() #3, !dbg !264
-  store double %33, double* @Gaussrandom.u, align 8, !dbg !265, !tbaa !218
-  %34 = load i64* @Gaussrandom.i, align 8, !dbg !266, !tbaa !111
-  %35 = getelementptr inbounds [32 x double]* @Gaussrandom.a, i64 0, i64 %34, !dbg !267
-  %36 = load double* %35, align 8, !dbg !268, !tbaa !218
-  %37 = load double* @Gaussrandom.aa, align 8, !dbg !269, !tbaa !218
-  %38 = fsub double %36, %37, !dbg !270
-  %39 = fmul double %33, %38, !dbg !271
-  store double %39, double* @Gaussrandom.w, align 8, !dbg !272, !tbaa !218
-  %40 = fmul double %39, 5.000000e-01, !dbg !273
-  %41 = fadd double %37, %40, !dbg !274
-  %42 = fmul double %39, %41, !dbg !275
-  store double %42, double* @Gaussrandom.tt, align 8, !dbg !276, !tbaa !218
-  %43 = load double* @Gaussrandom.ustar, align 8, !dbg !277, !tbaa !218
-  %44 = fcmp ogt double %43, %42, !dbg !279
-  br i1 %44, label %.loopexit, label %.lr.ph17, !dbg !280
+S60:                                              ; preds = %if.end8, %if.end48
+  %call32 = tail call double @sre_random() #3, !dbg !171
+  store double %call32, double* @Gaussrandom.u, align 8, !dbg !171, !tbaa !157
+  %7 = load i64* @Gaussrandom.i, align 8, !dbg !172, !tbaa !110
+  %add.ptr33 = getelementptr inbounds [32 x double]* @Gaussrandom.a, i64 0, i64 %7, !dbg !172
+  %8 = load double* %add.ptr33, align 8, !dbg !172, !tbaa !157
+  %9 = load double* @Gaussrandom.aa, align 8, !dbg !172, !tbaa !157
+  %sub34 = fsub double %8, %9, !dbg !172
+  %mul35 = fmul double %call32, %sub34, !dbg !172
+  store double %mul35, double* @Gaussrandom.w, align 8, !dbg !172, !tbaa !157
+  %mul36 = fmul double %mul35, 5.000000e-01, !dbg !173
+  %add37 = fadd double %9, %mul36, !dbg !173
+  %mul38 = fmul double %mul35, %add37, !dbg !173
+  store double %mul38, double* @Gaussrandom.tt, align 8, !dbg !173, !tbaa !157
+  %10 = load double* @Gaussrandom.ustar, align 8, !dbg !174, !tbaa !157
+  %cmp4086 = fcmp ogt double %10, %mul38, !dbg !174
+  br i1 %cmp4086, label %S50, label %if.end43, !dbg !174
 
-.lr.ph17:                                         ; preds = %.lr.ph21, %48
-  %45 = tail call double @sre_random() #3, !dbg !281
-  store double %45, double* @Gaussrandom.u, align 8, !dbg !282, !tbaa !218
-  %46 = load double* @Gaussrandom.ustar, align 8, !dbg !283, !tbaa !218
-  %47 = fcmp ult double %46, %45, !dbg !285
-  br i1 %47, label %52, label %48, !dbg !286
+if.end43:                                         ; preds = %S60, %if.then47
+  %call44 = tail call double @sre_random() #3, !dbg !175
+  store double %call44, double* @Gaussrandom.u, align 8, !dbg !175, !tbaa !157
+  %11 = load double* @Gaussrandom.ustar, align 8, !dbg !176, !tbaa !157
+  %cmp45 = fcmp ult double %11, %call44, !dbg !176
+  br i1 %cmp45, label %if.end48, label %if.then47, !dbg !176
 
-; <label>:48                                      ; preds = %.lr.ph17
-  store double %45, double* @Gaussrandom.tt, align 8, !dbg !287, !tbaa !218
-  %49 = tail call double @sre_random() #3, !dbg !288
-  store double %49, double* @Gaussrandom.ustar, align 8, !dbg !289, !tbaa !218
-  %50 = load double* @Gaussrandom.tt, align 8, !dbg !290, !tbaa !218
-  %51 = fcmp ogt double %49, %50, !dbg !279
-  br i1 %51, label %.loopexit, label %.lr.ph17, !dbg !280
+if.then47:                                        ; preds = %if.end43
+  store double %call44, double* @Gaussrandom.tt, align 8, !dbg !177, !tbaa !157
+  %call39 = tail call double @sre_random() #3, !dbg !178
+  store double %call39, double* @Gaussrandom.ustar, align 8, !dbg !178, !tbaa !157
+  %12 = load double* @Gaussrandom.tt, align 8, !dbg !174, !tbaa !157
+  %cmp40 = fcmp ogt double %call39, %12, !dbg !174
+  br i1 %cmp40, label %S50, label %if.end43, !dbg !174
 
-; <label>:52                                      ; preds = %.lr.ph17
-  %53 = tail call double @sre_random() #3, !dbg !291
-  store double %53, double* @Gaussrandom.ustar, align 8, !dbg !292, !tbaa !218
-  %54 = load i64* @Gaussrandom.i, align 8, !dbg !293, !tbaa !111
-  %.sum1 = add i64 %54, -1, !dbg !238
-  %55 = getelementptr inbounds [31 x double]* @Gaussrandom.t, i64 0, i64 %.sum1, !dbg !238
-  %56 = load double* %55, align 8, !dbg !240, !tbaa !218
-  %57 = fcmp ugt double %53, %56, !dbg !241
-  br i1 %57, label %._crit_edge22, label %.lr.ph21, !dbg !242
+if.end48:                                         ; preds = %if.end43
+  %call49 = tail call double @sre_random() #3, !dbg !179
+  store double %call49, double* @Gaussrandom.ustar, align 8, !dbg !179, !tbaa !157
+  %13 = load i64* @Gaussrandom.i, align 8, !dbg !165, !tbaa !110
+  %add.ptr12.sum = add i64 %13, -1, !dbg !165
+  %add.ptr13 = getelementptr inbounds [31 x double]* @Gaussrandom.t, i64 0, i64 %add.ptr12.sum, !dbg !165
+  %14 = load double* %add.ptr13, align 8, !dbg !165, !tbaa !157
+  %cmp14 = fcmp ugt double %call49, %14, !dbg !165
+  br i1 %cmp14, label %if.end17, label %S60, !dbg !165
 
-; <label>:58                                      ; preds = %0
-  store i64 6, i64* @Gaussrandom.i, align 8, !dbg !294, !tbaa !111
-  store double 2.153875e+00, double* @Gaussrandom.aa, align 8, !dbg !295, !tbaa !218
-  %59 = fadd double %5, %5, !dbg !296
-  store double %59, double* @Gaussrandom.u, align 8, !dbg !296, !tbaa !218
-  %60 = fcmp olt double %59, 1.000000e+00, !dbg !297
-  br i1 %60, label %.lr.ph, label %70, !dbg !299
+S100:                                             ; preds = %entry
+  store i64 6, i64* @Gaussrandom.i, align 8, !dbg !180, !tbaa !110
+  store double 2.153875e+00, double* @Gaussrandom.aa, align 8, !dbg !181, !tbaa !157
+  %add5479 = fadd double %mul, %mul, !dbg !182
+  store double %add5479, double* @Gaussrandom.u, align 8, !dbg !182, !tbaa !157
+  %cmp5580 = fcmp olt double %add5479, 1.000000e+00, !dbg !183
+  br i1 %cmp5580, label %if.then57, label %if.end58, !dbg !183
 
-.lr.ph:                                           ; preds = %58, %.lr.ph
-  %61 = phi double [ %68, %.lr.ph ], [ %59, %58 ], !dbg !300
-  %62 = phi double [ %66, %.lr.ph ], [ 2.153875e+00, %58 ], !dbg !300
-  %63 = phi i64 [ %67, %.lr.ph ], [ 6, %58 ], !dbg !301
-  %.sum5 = add i64 %63, -1, !dbg !300
-  %64 = getelementptr inbounds [31 x double]* @Gaussrandom.d, i64 0, i64 %.sum5, !dbg !300
-  %65 = load double* %64, align 8, !dbg !302, !tbaa !218
-  %66 = fadd double %65, %62, !dbg !303
-  %67 = add nsw i64 %63, 1, !dbg !304
-  %68 = fadd double %61, %61, !dbg !296
-  %69 = fcmp olt double %68, 1.000000e+00, !dbg !297
-  br i1 %69, label %.lr.ph, label %._crit_edge, !dbg !299
+if.then57:                                        ; preds = %S100, %if.then57
+  %add5483 = phi double [ %add54, %if.then57 ], [ %add5479, %S100 ], !dbg !184
+  %add5282 = phi double [ %add52, %if.then57 ], [ 2.153875e+00, %S100 ], !dbg !184
+  %add5381 = phi i64 [ %add53, %if.then57 ], [ 6, %S100 ], !dbg !184
+  %add.ptr50.sum = add i64 %add5381, -1, !dbg !184
+  %add.ptr51 = getelementptr inbounds [31 x double]* @Gaussrandom.d, i64 0, i64 %add.ptr50.sum, !dbg !184
+  %15 = load double* %add.ptr51, align 8, !dbg !184, !tbaa !157
+  %add52 = fadd double %15, %add5282, !dbg !184
+  %add53 = add nsw i64 %add5381, 1, !dbg !185
+  %add54 = fadd double %add5483, %add5483, !dbg !182
+  %cmp55 = fcmp olt double %add54, 1.000000e+00, !dbg !183
+  br i1 %cmp55, label %if.then57, label %S120.if.end58_crit_edge, !dbg !183
 
-._crit_edge:                                      ; preds = %.lr.ph
-  store i64 %67, i64* @Gaussrandom.i, align 8, !dbg !304, !tbaa !111
-  store double %66, double* @Gaussrandom.aa, align 8, !dbg !303, !tbaa !218
-  store double %68, double* @Gaussrandom.u, align 8, !dbg !296, !tbaa !218
-  br label %70, !dbg !299
+S120.if.end58_crit_edge:                          ; preds = %if.then57
+  store i64 %add53, i64* @Gaussrandom.i, align 8, !dbg !185, !tbaa !110
+  store double %add52, double* @Gaussrandom.aa, align 8, !dbg !184, !tbaa !157
+  store double %add54, double* @Gaussrandom.u, align 8, !dbg !182, !tbaa !157
+  br label %if.end58, !dbg !183
 
-; <label>:70                                      ; preds = %._crit_edge, %58
-  %71 = phi double [ %66, %._crit_edge ], [ 2.153875e+00, %58 ]
-  %72 = phi i64 [ %67, %._crit_edge ], [ 6, %58 ]
-  %.lcssa = phi double [ %68, %._crit_edge ], [ %59, %58 ]
-  %73 = fadd double %.lcssa, -1.000000e+00, !dbg !305
-  br label %74, !dbg !306
+if.end58:                                         ; preds = %S120.if.end58_crit_edge, %S100
+  %16 = phi double [ %add52, %S120.if.end58_crit_edge ], [ 2.153875e+00, %S100 ]
+  %17 = phi i64 [ %add53, %S120.if.end58_crit_edge ], [ 6, %S100 ]
+  %add54.lcssa = phi double [ %add54, %S120.if.end58_crit_edge ], [ %add5479, %S100 ]
+  %sub59 = fadd double %add54.lcssa, -1.000000e+00, !dbg !186
+  br label %S140, !dbg !186
 
-; <label>:74                                      ; preds = %91, %70
-  %75 = phi double [ %71, %70 ], [ %.pre32, %91 ]
-  %76 = phi i64 [ %72, %70 ], [ %.pre, %91 ]
-  %storemerge = phi double [ %73, %70 ], [ %92, %91 ]
-  store double %storemerge, double* @Gaussrandom.u, align 8, !dbg !307, !tbaa !218
-  %.sum3 = add i64 %76, -1, !dbg !308
-  %77 = getelementptr inbounds [31 x double]* @Gaussrandom.d, i64 0, i64 %.sum3, !dbg !308
-  %78 = load double* %77, align 8, !dbg !309, !tbaa !218
-  %79 = fmul double %storemerge, %78, !dbg !310
-  store double %79, double* @Gaussrandom.w, align 8, !dbg !311, !tbaa !218
-  %80 = fmul double %79, 5.000000e-01, !dbg !312
-  %81 = fadd double %75, %80, !dbg !313
-  %82 = fmul double %79, %81, !dbg !314
-  br label %83, !dbg !315
+S140:                                             ; preds = %if.end75, %if.end58
+  %18 = phi double [ %16, %if.end58 ], [ %.pre103, %if.end75 ]
+  %19 = phi i64 [ %17, %if.end58 ], [ %.pre, %if.end75 ]
+  %storemerge = phi double [ %sub59, %if.end58 ], [ %call76, %if.end75 ]
+  store double %storemerge, double* @Gaussrandom.u, align 8, !dbg !187, !tbaa !157
+  %add.ptr60.sum = add i64 %19, -1, !dbg !188
+  %add.ptr61 = getelementptr inbounds [31 x double]* @Gaussrandom.d, i64 0, i64 %add.ptr60.sum, !dbg !188
+  %20 = load double* %add.ptr61, align 8, !dbg !188, !tbaa !157
+  %mul62 = fmul double %storemerge, %20, !dbg !188
+  store double %mul62, double* @Gaussrandom.w, align 8, !dbg !188, !tbaa !157
+  %mul63 = fmul double %mul62, 5.000000e-01, !dbg !189
+  %add64 = fadd double %18, %mul63, !dbg !189
+  %mul65 = fmul double %mul62, %add64, !dbg !189
+  br label %S160, !dbg !190
 
-; <label>:83                                      ; preds = %87, %74
-  %storemerge4 = phi double [ %82, %74 ], [ %88, %87 ]
-  store double %storemerge4, double* @Gaussrandom.tt, align 8, !dbg !316, !tbaa !218
-  %84 = tail call double @sre_random() #3, !dbg !317
-  store double %84, double* @Gaussrandom.ustar, align 8, !dbg !318, !tbaa !218
-  %85 = load double* @Gaussrandom.tt, align 8, !dbg !319, !tbaa !218
-  %86 = fcmp ogt double %84, %85, !dbg !321
-  br i1 %86, label %.loopexit, label %87, !dbg !322
+S160:                                             ; preds = %if.end70, %S140
+  %storemerge77 = phi double [ %mul65, %S140 ], [ %call71, %if.end70 ]
+  store double %storemerge77, double* @Gaussrandom.tt, align 8, !dbg !191, !tbaa !157
+  %call66 = tail call double @sre_random() #3, !dbg !192
+  store double %call66, double* @Gaussrandom.ustar, align 8, !dbg !192, !tbaa !157
+  %21 = load double* @Gaussrandom.tt, align 8, !dbg !193, !tbaa !157
+  %cmp67 = fcmp ogt double %call66, %21, !dbg !193
+  br i1 %cmp67, label %S50, label %if.end70, !dbg !193
 
-; <label>:87                                      ; preds = %83
-  %88 = tail call double @sre_random() #3, !dbg !323
-  store double %88, double* @Gaussrandom.u, align 8, !dbg !324, !tbaa !218
-  %89 = load double* @Gaussrandom.ustar, align 8, !dbg !325, !tbaa !218
-  %90 = fcmp ult double %89, %88, !dbg !327
-  br i1 %90, label %91, label %83, !dbg !328
+if.end70:                                         ; preds = %S160
+  %call71 = tail call double @sre_random() #3, !dbg !194
+  store double %call71, double* @Gaussrandom.u, align 8, !dbg !194, !tbaa !157
+  %22 = load double* @Gaussrandom.ustar, align 8, !dbg !195, !tbaa !157
+  %cmp72 = fcmp ult double %22, %call71, !dbg !195
+  br i1 %cmp72, label %if.end75, label %S160, !dbg !195
 
-; <label>:91                                      ; preds = %87
-  %92 = tail call double @sre_random() #3, !dbg !329
-  %.pre = load i64* @Gaussrandom.i, align 8, !dbg !330, !tbaa !111
-  %.pre32 = load double* @Gaussrandom.aa, align 8, !dbg !331, !tbaa !218
-  br label %74, !dbg !332
+if.end75:                                         ; preds = %if.end70
+  %call76 = tail call double @sre_random() #3, !dbg !187
+  %.pre = load i64* @Gaussrandom.i, align 8, !dbg !188, !tbaa !110
+  %.pre103 = load double* @Gaussrandom.aa, align 8, !dbg !189, !tbaa !157
+  br label %S140, !dbg !196
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @DChoose(double* nocapture readonly %p, i32 %N) #0 {
-  tail call void @llvm.dbg.value(metadata double* %p, i64 0, metadata !45, metadata !93), !dbg !333
-  tail call void @llvm.dbg.value(metadata i32 %N, i64 0, metadata !46, metadata !93), !dbg !334
-  %1 = tail call double @sre_random() #3, !dbg !335
-  tail call void @llvm.dbg.value(metadata double %1, i64 0, metadata !47, metadata !93), !dbg !336
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !48, metadata !93), !dbg !337
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !49, metadata !93), !dbg !338
-  %2 = icmp sgt i32 %N, 0, !dbg !339
-  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !342
+; Function Attrs: nounwind optsize uwtable
+define i32 @DChoose(double* nocapture %p, i32 %N) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %p}, i64 0, metadata !45), !dbg !197
+  tail call void @llvm.dbg.value(metadata !{i32 %N}, i64 0, metadata !46), !dbg !197
+  %call = tail call double @sre_random() #3, !dbg !198
+  tail call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !47), !dbg !198
+  tail call void @llvm.dbg.value(metadata !199, i64 0, metadata !48), !dbg !200
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !49), !dbg !201
+  %cmp9 = icmp sgt i32 %N, 0, !dbg !201
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !201
 
-.lr.ph:                                           ; preds = %0
-  %3 = sext i32 %N to i64, !dbg !342
-  br label %4, !dbg !342
+for.cond:                                         ; preds = %for.body
+  %inc = add nsw i32 %i.011, 1, !dbg !201
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !201
+  %cmp = icmp slt i32 %0, %N, !dbg !201
+  br i1 %cmp, label %for.body, label %for.end, !dbg !201
 
-; <label>:4                                       ; preds = %.lr.ph, %9
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %sum.02 = phi double [ 0.000000e+00, %.lr.ph ], [ %7, %9 ]
-  %5 = getelementptr inbounds double* %p, i64 %indvars.iv, !dbg !343
-  %6 = load double* %5, align 8, !dbg !343, !tbaa !218
-  %7 = fadd double %sum.02, %6, !dbg !345
-  tail call void @llvm.dbg.value(metadata double %7, i64 0, metadata !48, metadata !93), !dbg !337
-  %8 = fcmp olt double %1, %7, !dbg !346
-  br i1 %8, label %.loopexit, label %9, !dbg !348
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %i.011 = phi i32 [ %inc, %for.cond ], [ 0, %entry ]
+  %sum.010 = phi double [ %add, %for.cond ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds double* %p, i64 %indvars.iv, !dbg !203
+  %1 = load double* %arrayidx, align 8, !dbg !203, !tbaa !157
+  %add = fadd double %sum.010, %1, !dbg !203
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !48), !dbg !203
+  %cmp1 = fcmp olt double %call, %add, !dbg !205
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !201
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !49), !dbg !201
+  br i1 %cmp1, label %return, label %for.cond, !dbg !205
 
-; <label>:9                                       ; preds = %4
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !342
-  %10 = icmp slt i64 %indvars.iv.next, %3, !dbg !339
-  br i1 %10, label %4, label %._crit_edge, !dbg !342
+for.end:                                          ; preds = %for.cond, %entry
+  %call2 = tail call double @sre_random() #3, !dbg !206
+  %conv = sitofp i32 %N to double, !dbg !206
+  %mul = fmul double %conv, %call2, !dbg !206
+  %conv3 = fptosi double %mul to i32, !dbg !206
+  br label %return, !dbg !206
 
-._crit_edge:                                      ; preds = %9, %0
-  %11 = tail call double @sre_random() #3, !dbg !349
-  %12 = sitofp i32 %N to double, !dbg !350
-  %13 = fmul double %12, %11, !dbg !351
-  %14 = fptosi double %13 to i32, !dbg !352
-  br label %16, !dbg !353
-
-.loopexit:                                        ; preds = %4
-  %15 = trunc i64 %indvars.iv to i32
-  br label %16
-
-; <label>:16                                      ; preds = %.loopexit, %._crit_edge
-  %.0 = phi i32 [ %14, %._crit_edge ], [ %15, %.loopexit ]
-  ret i32 %.0, !dbg !354
+return:                                           ; preds = %for.body, %for.end
+  %retval.0 = phi i32 [ %conv3, %for.end ], [ %i.011, %for.body ]
+  ret i32 %retval.0, !dbg !207
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @FChoose(float* nocapture readonly %p, i32 %N) #0 {
-  tail call void @llvm.dbg.value(metadata float* %p, i64 0, metadata !56, metadata !93), !dbg !355
-  tail call void @llvm.dbg.value(metadata i32 %N, i64 0, metadata !57, metadata !93), !dbg !356
-  %1 = tail call double @sre_random() #3, !dbg !357
-  %2 = fptrunc double %1 to float, !dbg !357
-  tail call void @llvm.dbg.value(metadata float %2, i64 0, metadata !58, metadata !93), !dbg !358
-  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !59, metadata !93), !dbg !359
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !60, metadata !93), !dbg !360
-  %3 = icmp sgt i32 %N, 0, !dbg !361
-  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !364
+; Function Attrs: nounwind optsize uwtable
+define i32 @FChoose(float* nocapture %p, i32 %N) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %p}, i64 0, metadata !56), !dbg !208
+  tail call void @llvm.dbg.value(metadata !{i32 %N}, i64 0, metadata !57), !dbg !208
+  %call = tail call double @sre_random() #3, !dbg !209
+  %conv = fptrunc double %call to float, !dbg !209
+  tail call void @llvm.dbg.value(metadata !{float %conv}, i64 0, metadata !58), !dbg !209
+  tail call void @llvm.dbg.value(metadata !210, i64 0, metadata !59), !dbg !211
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !60), !dbg !212
+  %cmp12 = icmp sgt i32 %N, 0, !dbg !212
+  br i1 %cmp12, label %for.body, label %for.end, !dbg !212
 
-.lr.ph:                                           ; preds = %0
-  %4 = sext i32 %N to i64, !dbg !364
-  br label %5, !dbg !364
+for.cond:                                         ; preds = %for.body
+  %inc = add nsw i32 %i.014, 1, !dbg !212
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !212
+  %cmp = icmp slt i32 %0, %N, !dbg !212
+  br i1 %cmp, label %for.body, label %for.end, !dbg !212
 
-; <label>:5                                       ; preds = %.lr.ph, %10
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %10 ]
-  %sum.02 = phi float [ 0.000000e+00, %.lr.ph ], [ %8, %10 ]
-  %6 = getelementptr inbounds float* %p, i64 %indvars.iv, !dbg !365
-  %7 = load float* %6, align 4, !dbg !365, !tbaa !367
-  %8 = fadd float %sum.02, %7, !dbg !369
-  tail call void @llvm.dbg.value(metadata float %8, i64 0, metadata !59, metadata !93), !dbg !359
-  %9 = fcmp olt float %2, %8, !dbg !370
-  br i1 %9, label %.loopexit, label %10, !dbg !372
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %i.014 = phi i32 [ %inc, %for.cond ], [ 0, %entry ]
+  %sum.013 = phi float [ %add, %for.cond ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds float* %p, i64 %indvars.iv, !dbg !214
+  %1 = load float* %arrayidx, align 4, !dbg !214, !tbaa !216
+  %add = fadd float %sum.013, %1, !dbg !214
+  tail call void @llvm.dbg.value(metadata !{float %add}, i64 0, metadata !59), !dbg !214
+  %cmp2 = fcmp olt float %conv, %add, !dbg !217
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !212
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !60), !dbg !212
+  br i1 %cmp2, label %return, label %for.cond, !dbg !217
 
-; <label>:10                                      ; preds = %5
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !364
-  %11 = icmp slt i64 %indvars.iv.next, %4, !dbg !361
-  br i1 %11, label %5, label %._crit_edge, !dbg !364
+for.end:                                          ; preds = %for.cond, %entry
+  %call4 = tail call double @sre_random() #3, !dbg !218
+  %conv5 = sitofp i32 %N to double, !dbg !218
+  %mul = fmul double %conv5, %call4, !dbg !218
+  %conv6 = fptosi double %mul to i32, !dbg !218
+  br label %return, !dbg !218
 
-._crit_edge:                                      ; preds = %10, %0
-  %12 = tail call double @sre_random() #3, !dbg !373
-  %13 = sitofp i32 %N to double, !dbg !374
-  %14 = fmul double %13, %12, !dbg !375
-  %15 = fptosi double %14 to i32, !dbg !376
-  br label %17, !dbg !377
-
-.loopexit:                                        ; preds = %5
-  %16 = trunc i64 %indvars.iv to i32
-  br label %17
-
-; <label>:17                                      ; preds = %.loopexit, %._crit_edge
-  %.0 = phi i32 [ %15, %._crit_edge ], [ %16, %.loopexit ]
-  ret i32 %.0, !dbg !378
+return:                                           ; preds = %for.body, %for.end
+  %retval.0 = phi i32 [ %conv6, %for.end ], [ %i.014, %for.body ]
+  ret i32 %retval.0, !dbg !219
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
 attributes #3 = { optsize }
-attributes #4 = { nounwind optsize readnone }
+attributes #4 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!89, !90, !91}
-!llvm.ident = !{!92}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !7, globals: !61, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/456.hmmer/src/sre_random.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !5, !6}
-!4 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!5 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!6 = !DIBasicType(name: "long int", size: 64, align: 64, encoding: DW_ATE_signed)
-!7 = !{!8, !23, !28, !31, !34, !40, !50}
-!8 = !DISubprogram(name: "sre_random", scope: !1, file: !1, line: 46, type: !9, isLocal: false, isDefinition: true, scopeLine: 47, flags: DIFlagPrototyped, isOptimized: true, function: double ()* @sre_random, variables: !11)
-!9 = !DISubroutineType(types: !10)
-!10 = !{!5}
-!11 = !{!12, !13, !14, !15, !16, !17, !18, !19, !20, !21, !22}
-!12 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "x", scope: !8, file: !1, line: 52, type: !6)
-!13 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "y", scope: !8, file: !1, line: 52, type: !6)
-!14 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !8, file: !1, line: 53, type: !4)
-!15 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "a1", scope: !8, file: !1, line: 58, type: !6)
-!16 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "m1", scope: !8, file: !1, line: 59, type: !6)
-!17 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "q1", scope: !8, file: !1, line: 60, type: !6)
-!18 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "r1", scope: !8, file: !1, line: 61, type: !6)
-!19 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "a2", scope: !8, file: !1, line: 63, type: !6)
-!20 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "m2", scope: !8, file: !1, line: 64, type: !6)
-!21 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "q2", scope: !8, file: !1, line: 65, type: !6)
-!22 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "r2", scope: !8, file: !1, line: 66, type: !6)
-!23 = !DISubprogram(name: "sre_srandom", scope: !1, file: !1, line: 117, type: !24, isLocal: false, isDefinition: true, scopeLine: 118, flags: DIFlagPrototyped, isOptimized: true, function: void (i32)* @sre_srandom, variables: !26)
-!24 = !DISubroutineType(types: !25)
-!25 = !{null, !4}
-!26 = !{!27}
-!27 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "seed", arg: 1, scope: !23, file: !1, line: 117, type: !4)
-!28 = !DISubprogram(name: "sre_random_positive", scope: !1, file: !1, line: 130, type: !9, isLocal: false, isDefinition: true, scopeLine: 131, flags: DIFlagPrototyped, isOptimized: true, function: double ()* @sre_random_positive, variables: !29)
-!29 = !{!30}
-!30 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "x", scope: !28, file: !1, line: 132, type: !5)
-!31 = !DISubprogram(name: "ExponentialRandom", scope: !1, file: !1, line: 148, type: !9, isLocal: false, isDefinition: true, scopeLine: 149, flags: DIFlagPrototyped, isOptimized: true, function: double ()* @ExponentialRandom, variables: !32)
-!32 = !{!33}
-!33 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "x", scope: !31, file: !1, line: 150, type: !5)
-!34 = !DISubprogram(name: "Gaussrandom", scope: !1, file: !1, line: 173, type: !35, isLocal: false, isDefinition: true, scopeLine: 174, flags: DIFlagPrototyped, isOptimized: true, function: double (double, double)* @Gaussrandom, variables: !37)
-!35 = !DISubroutineType(types: !36)
-!36 = !{!5, !5, !5}
-!37 = !{!38, !39}
-!38 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "mean", arg: 1, scope: !34, file: !1, line: 173, type: !5)
-!39 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "stddev", arg: 2, scope: !34, file: !1, line: 173, type: !5)
-!40 = !DISubprogram(name: "DChoose", scope: !1, file: !1, line: 283, type: !41, isLocal: false, isDefinition: true, scopeLine: 284, flags: DIFlagPrototyped, isOptimized: true, function: i32 (double*, i32)* @DChoose, variables: !44)
-!41 = !DISubroutineType(types: !42)
-!42 = !{!4, !43, !4}
-!43 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!44 = !{!45, !46, !47, !48, !49}
-!45 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "p", arg: 1, scope: !40, file: !1, line: 283, type: !43)
-!46 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "N", arg: 2, scope: !40, file: !1, line: 283, type: !4)
-!47 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "roll", scope: !40, file: !1, line: 285, type: !5)
-!48 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "sum", scope: !40, file: !1, line: 286, type: !5)
-!49 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !40, file: !1, line: 287, type: !4)
-!50 = !DISubprogram(name: "FChoose", scope: !1, file: !1, line: 299, type: !51, isLocal: false, isDefinition: true, scopeLine: 300, flags: DIFlagPrototyped, isOptimized: true, function: i32 (float*, i32)* @FChoose, variables: !55)
-!51 = !DISubroutineType(types: !52)
-!52 = !{!4, !53, !4}
-!53 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !54, size: 64, align: 64)
-!54 = !DIBasicType(name: "float", size: 32, align: 32, encoding: DW_ATE_float)
-!55 = !{!56, !57, !58, !59, !60}
-!56 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "p", arg: 1, scope: !50, file: !1, line: 299, type: !53)
-!57 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "N", arg: 2, scope: !50, file: !1, line: 299, type: !4)
-!58 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "roll", scope: !50, file: !1, line: 301, type: !54)
-!59 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "sum", scope: !50, file: !1, line: 302, type: !54)
-!60 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !50, file: !1, line: 303, type: !4)
-!61 = !{!62, !63, !64, !65, !69, !73, !77, !78, !79, !80, !81, !82, !83, !84, !85, !86, !87, !88}
-!62 = !DIGlobalVariable(name: "rnd1", scope: !8, file: !1, line: 48, type: !6, isLocal: true, isDefinition: true, variable: i64* @sre_random.rnd1)
-!63 = !DIGlobalVariable(name: "rnd2", scope: !8, file: !1, line: 49, type: !6, isLocal: true, isDefinition: true, variable: i64* @sre_random.rnd2)
-!64 = !DIGlobalVariable(name: "rnd", scope: !8, file: !1, line: 50, type: !6, isLocal: true, isDefinition: true, variable: i64* @sre_random.rnd)
-!65 = !DIGlobalVariable(name: "tbl", scope: !8, file: !1, line: 51, type: !66, isLocal: true, isDefinition: true, variable: [64 x i64]* @sre_random.tbl)
-!66 = !DICompositeType(tag: DW_TAG_array_type, baseType: !6, size: 4096, align: 64, elements: !67)
-!67 = !{!68}
-!68 = !DISubrange(count: 64)
-!69 = !DIGlobalVariable(name: "a", scope: !34, file: !1, line: 175, type: !70, isLocal: true, isDefinition: true, variable: [32 x double]* @Gaussrandom.a)
-!70 = !DICompositeType(tag: DW_TAG_array_type, baseType: !5, size: 2048, align: 64, elements: !71)
-!71 = !{!72}
-!72 = !DISubrange(count: 32)
-!73 = !DIGlobalVariable(name: "d", scope: !34, file: !1, line: 181, type: !74, isLocal: true, isDefinition: true, variable: [31 x double]* @Gaussrandom.d)
-!74 = !DICompositeType(tag: DW_TAG_array_type, baseType: !5, size: 1984, align: 64, elements: !75)
-!75 = !{!76}
-!76 = !DISubrange(count: 31)
-!77 = !DIGlobalVariable(name: "t", scope: !34, file: !1, line: 187, type: !74, isLocal: true, isDefinition: true, variable: [31 x double]* @Gaussrandom.t)
-!78 = !DIGlobalVariable(name: "h", scope: !34, file: !1, line: 194, type: !74, isLocal: true, isDefinition: true, variable: [31 x double]* @Gaussrandom.h)
-!79 = !DIGlobalVariable(name: "i", scope: !34, file: !1, line: 201, type: !6, isLocal: true, isDefinition: true, variable: i64* @Gaussrandom.i)
-!80 = !DIGlobalVariable(name: "snorm", scope: !34, file: !1, line: 202, type: !5, isLocal: true, isDefinition: true, variable: double* @Gaussrandom.snorm)
-!81 = !DIGlobalVariable(name: "u", scope: !34, file: !1, line: 202, type: !5, isLocal: true, isDefinition: true, variable: double* @Gaussrandom.u)
-!82 = !DIGlobalVariable(name: "s", scope: !34, file: !1, line: 202, type: !5, isLocal: true, isDefinition: true, variable: double* @Gaussrandom.s)
-!83 = !DIGlobalVariable(name: "ustar", scope: !34, file: !1, line: 202, type: !5, isLocal: true, isDefinition: true, variable: double* @Gaussrandom.ustar)
-!84 = !DIGlobalVariable(name: "aa", scope: !34, file: !1, line: 202, type: !5, isLocal: true, isDefinition: true, variable: double* @Gaussrandom.aa)
-!85 = !DIGlobalVariable(name: "w", scope: !34, file: !1, line: 202, type: !5, isLocal: true, isDefinition: true, variable: double* @Gaussrandom.w)
-!86 = !DIGlobalVariable(name: "y", scope: !34, file: !1, line: 202, type: !5, isLocal: true, isDefinition: true, variable: double* @Gaussrandom.y)
-!87 = !DIGlobalVariable(name: "tt", scope: !34, file: !1, line: 202, type: !5, isLocal: true, isDefinition: true, variable: double* @Gaussrandom.tt)
-!88 = !DIGlobalVariable(name: "sre_randseed", scope: !0, file: !1, line: 16, type: !4, isLocal: true, isDefinition: true, variable: i32* @sre_randseed)
-!89 = !{i32 2, !"Dwarf Version", i32 2}
-!90 = !{i32 2, !"Debug Info Version", i32 700000003}
-!91 = !{i32 1, !"PIC Level", i32 2}
-!92 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!93 = !DIExpression()
-!94 = !DILocation(line: 58, column: 8, scope: !8)
-!95 = !DILocation(line: 59, column: 8, scope: !8)
-!96 = !DILocation(line: 60, column: 8, scope: !8)
-!97 = !DILocation(line: 61, column: 8, scope: !8)
-!98 = !DILocation(line: 63, column: 8, scope: !8)
-!99 = !DILocation(line: 64, column: 8, scope: !8)
-!100 = !DILocation(line: 65, column: 8, scope: !8)
-!101 = !DILocation(line: 66, column: 8, scope: !8)
-!102 = !DILocation(line: 68, column: 7, scope: !103)
-!103 = distinct !DILexicalBlock(scope: !8, file: !1, line: 68, column: 7)
-!104 = !{!105, !105, i64 0}
-!105 = !{!"int", !106, i64 0}
-!106 = !{!"omnipotent char", !107, i64 0}
-!107 = !{!"Simple C/C++ TBAA"}
-!108 = !DILocation(line: 68, column: 20, scope: !103)
-!109 = !DILocation(line: 68, column: 7, scope: !8)
-!110 = !DILocation(line: 91, column: 14, scope: !8)
-!111 = !{!112, !112, i64 0}
-!112 = !{!"long", !106, i64 0}
-!113 = !DILocation(line: 96, column: 14, scope: !8)
-!114 = !DILocation(line: 70, column: 14, scope: !115)
-!115 = distinct !DILexicalBlock(scope: !103, file: !1, line: 69, column: 5)
-!116 = !DILocation(line: 70, column: 12, scope: !115)
-!117 = !DILocation(line: 71, column: 12, scope: !115)
-!118 = !DILocation(line: 53, column: 7, scope: !8)
-!119 = !DILocation(line: 73, column: 7, scope: !120)
-!120 = distinct !DILexicalBlock(scope: !115, file: !1, line: 73, column: 7)
-!121 = !DILocation(line: 74, column: 17, scope: !122)
-!122 = distinct !DILexicalBlock(scope: !123, file: !1, line: 73, column: 32)
-!123 = distinct !DILexicalBlock(scope: !120, file: !1, line: 73, column: 7)
-!124 = !DILocation(line: 74, column: 13, scope: !122)
-!125 = !DILocation(line: 74, column: 11, scope: !122)
-!126 = !DILocation(line: 52, column: 8, scope: !8)
-!127 = !DILocation(line: 75, column: 17, scope: !122)
-!128 = !DILocation(line: 76, column: 10, scope: !122)
-!129 = !DILocation(line: 77, column: 11, scope: !130)
-!130 = distinct !DILexicalBlock(scope: !122, file: !1, line: 77, column: 6)
-!131 = !DILocation(line: 77, column: 21, scope: !130)
-!132 = !DILocation(line: 77, column: 6, scope: !122)
-!133 = !DILocation(line: 79, column: 17, scope: !122)
-!134 = !DILocation(line: 79, column: 11, scope: !122)
-!135 = !DILocation(line: 80, column: 17, scope: !122)
-!136 = !DILocation(line: 81, column: 10, scope: !122)
-!137 = !DILocation(line: 82, column: 11, scope: !138)
-!138 = distinct !DILexicalBlock(scope: !122, file: !1, line: 82, column: 6)
-!139 = !DILocation(line: 82, column: 21, scope: !138)
-!140 = !DILocation(line: 82, column: 6, scope: !122)
-!141 = !DILocation(line: 84, column: 15, scope: !122)
-!142 = !DILocation(line: 84, column: 2, scope: !122)
-!143 = !DILocation(line: 85, column: 13, scope: !144)
-!144 = distinct !DILexicalBlock(scope: !122, file: !1, line: 85, column: 6)
-!145 = !DILocation(line: 85, column: 25, scope: !144)
-!146 = !DILocation(line: 85, column: 6, scope: !122)
-!147 = !DILocation(line: 84, column: 9, scope: !122)
-!148 = !DILocation(line: 76, column: 7, scope: !122)
-!149 = !DILocation(line: 81, column: 7, scope: !122)
-!150 = !DILocation(line: 87, column: 20, scope: !115)
-!151 = !DILocation(line: 88, column: 5, scope: !115)
-!152 = !DILocation(line: 91, column: 18, scope: !8)
-!153 = !DILocation(line: 91, column: 12, scope: !8)
-!154 = !DILocation(line: 92, column: 18, scope: !8)
-!155 = !DILocation(line: 93, column: 11, scope: !8)
-!156 = !DILocation(line: 94, column: 12, scope: !157)
-!157 = distinct !DILexicalBlock(scope: !8, file: !1, line: 94, column: 7)
-!158 = !DILocation(line: 94, column: 22, scope: !157)
-!159 = !DILocation(line: 94, column: 7, scope: !8)
-!160 = !DILocation(line: 93, column: 8, scope: !8)
-!161 = !DILocation(line: 96, column: 18, scope: !8)
-!162 = !DILocation(line: 96, column: 12, scope: !8)
-!163 = !DILocation(line: 97, column: 18, scope: !8)
-!164 = !DILocation(line: 98, column: 11, scope: !8)
-!165 = !DILocation(line: 99, column: 12, scope: !166)
-!166 = distinct !DILexicalBlock(scope: !8, file: !1, line: 99, column: 7)
-!167 = !DILocation(line: 99, column: 22, scope: !166)
-!168 = !DILocation(line: 99, column: 7, scope: !8)
-!169 = !DILocation(line: 98, column: 8, scope: !8)
-!170 = !DILocation(line: 102, column: 26, scope: !8)
-!171 = !DILocation(line: 102, column: 17, scope: !8)
-!172 = !DILocation(line: 102, column: 30, scope: !8)
-!173 = !DILocation(line: 102, column: 45, scope: !8)
-!174 = !DILocation(line: 102, column: 9, scope: !8)
-!175 = !DILocation(line: 103, column: 9, scope: !8)
-!176 = !DILocation(line: 103, column: 7, scope: !8)
-!177 = !DILocation(line: 105, column: 16, scope: !8)
-!178 = !DILocation(line: 106, column: 14, scope: !179)
-!179 = distinct !DILexicalBlock(scope: !8, file: !1, line: 106, column: 7)
-!180 = !DILocation(line: 106, column: 26, scope: !179)
-!181 = !DILocation(line: 106, column: 7, scope: !8)
-!182 = !DILocation(line: 105, column: 10, scope: !8)
-!183 = !DILocation(line: 108, column: 11, scope: !8)
-!184 = !DILocation(line: 108, column: 24, scope: !8)
-!185 = !DILocation(line: 108, column: 3, scope: !8)
-!186 = !DILocation(line: 117, column: 17, scope: !23)
-!187 = !DILocation(line: 119, column: 12, scope: !188)
-!188 = distinct !DILexicalBlock(scope: !23, file: !1, line: 119, column: 7)
-!189 = !DILocation(line: 119, column: 28, scope: !188)
-!190 = !DILocation(line: 119, column: 7, scope: !23)
-!191 = !DILocation(line: 120, column: 12, scope: !192)
-!192 = distinct !DILexicalBlock(scope: !23, file: !1, line: 120, column: 7)
-!193 = !DILocation(line: 120, column: 7, scope: !23)
-!194 = !DILocation(line: 121, column: 16, scope: !23)
-!195 = !DILocation(line: 122, column: 1, scope: !23)
-!196 = !DILocation(line: 133, column: 3, scope: !28)
-!197 = !DILocation(line: 133, column: 12, scope: !198)
-!198 = distinct !DILexicalBlock(scope: !28, file: !1, line: 133, column: 6)
-!199 = !DILocation(line: 132, column: 10, scope: !28)
-!200 = !DILocation(line: 133, column: 37, scope: !28)
-!201 = !DILocation(line: 133, column: 26, scope: !198)
-!202 = !DILocation(line: 134, column: 3, scope: !28)
-!203 = !DILocation(line: 152, column: 3, scope: !31)
-!204 = !DILocation(line: 152, column: 10, scope: !31)
-!205 = !DILocation(line: 150, column: 10, scope: !31)
-!206 = !DILocation(line: 152, column: 33, scope: !31)
-!207 = !DILocation(line: 152, column: 6, scope: !31)
-!208 = !DILocation(line: 153, column: 11, scope: !31)
-!209 = !DILocation(line: 153, column: 10, scope: !31)
-!210 = !DILocation(line: 153, column: 3, scope: !31)
-!211 = !DILocation(line: 173, column: 20, scope: !34)
-!212 = !DILocation(line: 173, column: 33, scope: !34)
-!213 = !DILocation(line: 204, column: 7, scope: !34)
-!214 = !DILocation(line: 206, column: 8, scope: !215)
-!215 = distinct !DILexicalBlock(scope: !34, file: !1, line: 206, column: 6)
-!216 = !DILocation(line: 206, column: 6, scope: !34)
-!217 = !DILocation(line: 205, column: 5, scope: !34)
-!218 = !{!219, !219, i64 0}
-!219 = !{!"double", !106, i64 0}
-!220 = !DILocation(line: 207, column: 10, scope: !34)
-!221 = !DILocation(line: 207, column: 5, scope: !34)
-!222 = !DILocation(line: 208, column: 11, scope: !34)
-!223 = !DILocation(line: 208, column: 5, scope: !34)
-!224 = !DILocation(line: 209, column: 7, scope: !34)
-!225 = !DILocation(line: 210, column: 8, scope: !226)
-!226 = distinct !DILexicalBlock(scope: !34, file: !1, line: 210, column: 6)
-!227 = !DILocation(line: 210, column: 6, scope: !34)
-!228 = !DILocation(line: 210, column: 17, scope: !226)
-!229 = !DILocation(line: 211, column: 8, scope: !230)
-!230 = distinct !DILexicalBlock(scope: !34, file: !1, line: 211, column: 6)
-!231 = !DILocation(line: 211, column: 6, scope: !34)
-!232 = !DILocation(line: 215, column: 13, scope: !34)
-!233 = !DILocation(line: 215, column: 12, scope: !34)
-!234 = !DILocation(line: 215, column: 9, scope: !34)
-!235 = !DILocation(line: 216, column: 13, scope: !34)
-!236 = !DILocation(line: 216, column: 8, scope: !34)
-!237 = !DILocation(line: 216, column: 6, scope: !34)
-!238 = !DILocation(line: 218, column: 20, scope: !239)
-!239 = distinct !DILexicalBlock(scope: !34, file: !1, line: 218, column: 6)
-!240 = !DILocation(line: 218, column: 15, scope: !239)
-!241 = !DILocation(line: 218, column: 12, scope: !239)
-!242 = !DILocation(line: 218, column: 6, scope: !34)
-!243 = !DILocation(line: 219, column: 13, scope: !34)
-!244 = !DILocation(line: 219, column: 29, scope: !34)
-!245 = !DILocation(line: 219, column: 24, scope: !34)
-!246 = !DILocation(line: 219, column: 23, scope: !34)
-!247 = !DILocation(line: 219, column: 5, scope: !34)
-!248 = !DILocation(line: 219, column: 3, scope: !34)
-!249 = !DILocation(line: 224, column: 7, scope: !34)
-!250 = !DILocation(line: 224, column: 10, scope: !34)
-!251 = !DILocation(line: 224, column: 9, scope: !34)
-!252 = !DILocation(line: 224, column: 5, scope: !34)
-!253 = !DILocation(line: 225, column: 9, scope: !34)
-!254 = !DILocation(line: 226, column: 6, scope: !255)
-!255 = distinct !DILexicalBlock(scope: !34, file: !1, line: 226, column: 6)
-!256 = !DILocation(line: 226, column: 8, scope: !255)
-!257 = !DILocation(line: 226, column: 6, scope: !34)
-!258 = !DILocation(line: 226, column: 24, scope: !255)
-!259 = !DILocation(line: 226, column: 22, scope: !255)
-!260 = !DILocation(line: 226, column: 16, scope: !255)
-!261 = !DILocation(line: 227, column: 17, scope: !34)
-!262 = !DILocation(line: 227, column: 24, scope: !34)
-!263 = !DILocation(line: 227, column: 3, scope: !34)
-!264 = !DILocation(line: 232, column: 7, scope: !34)
-!265 = !DILocation(line: 232, column: 5, scope: !34)
-!266 = !DILocation(line: 233, column: 14, scope: !34)
-!267 = !DILocation(line: 233, column: 13, scope: !34)
-!268 = !DILocation(line: 233, column: 10, scope: !34)
-!269 = !DILocation(line: 233, column: 17, scope: !34)
-!270 = !DILocation(line: 233, column: 16, scope: !34)
-!271 = !DILocation(line: 233, column: 8, scope: !34)
-!272 = !DILocation(line: 233, column: 5, scope: !34)
-!273 = !DILocation(line: 234, column: 12, scope: !34)
-!274 = !DILocation(line: 234, column: 14, scope: !34)
-!275 = !DILocation(line: 234, column: 18, scope: !34)
-!276 = !DILocation(line: 234, column: 6, scope: !34)
-!277 = !DILocation(line: 240, column: 6, scope: !278)
-!278 = distinct !DILexicalBlock(scope: !34, file: !1, line: 240, column: 6)
-!279 = !DILocation(line: 240, column: 12, scope: !278)
-!280 = !DILocation(line: 240, column: 6, scope: !34)
-!281 = !DILocation(line: 241, column: 7, scope: !34)
-!282 = !DILocation(line: 241, column: 5, scope: !34)
-!283 = !DILocation(line: 242, column: 6, scope: !284)
-!284 = distinct !DILexicalBlock(scope: !34, file: !1, line: 242, column: 6)
-!285 = !DILocation(line: 242, column: 12, scope: !284)
-!286 = !DILocation(line: 242, column: 6, scope: !34)
-!287 = !DILocation(line: 237, column: 6, scope: !34)
-!288 = !DILocation(line: 238, column: 11, scope: !34)
-!289 = !DILocation(line: 238, column: 9, scope: !34)
-!290 = !DILocation(line: 240, column: 14, scope: !278)
-!291 = !DILocation(line: 243, column: 11, scope: !34)
-!292 = !DILocation(line: 243, column: 9, scope: !34)
-!293 = !DILocation(line: 218, column: 19, scope: !239)
-!294 = !DILocation(line: 249, column: 5, scope: !34)
-!295 = !DILocation(line: 250, column: 6, scope: !34)
-!296 = !DILocation(line: 256, column: 5, scope: !34)
-!297 = !DILocation(line: 257, column: 8, scope: !298)
-!298 = distinct !DILexicalBlock(scope: !34, file: !1, line: 257, column: 6)
-!299 = !DILocation(line: 257, column: 6, scope: !34)
-!300 = !DILocation(line: 253, column: 14, scope: !34)
-!301 = !DILocation(line: 253, column: 13, scope: !34)
-!302 = !DILocation(line: 253, column: 9, scope: !34)
-!303 = !DILocation(line: 253, column: 6, scope: !34)
-!304 = !DILocation(line: 254, column: 5, scope: !34)
-!305 = !DILocation(line: 258, column: 5, scope: !34)
-!306 = !DILocation(line: 258, column: 3, scope: !34)
-!307 = !DILocation(line: 270, column: 5, scope: !34)
-!308 = !DILocation(line: 260, column: 14, scope: !34)
-!309 = !DILocation(line: 260, column: 9, scope: !34)
-!310 = !DILocation(line: 260, column: 8, scope: !34)
-!311 = !DILocation(line: 260, column: 5, scope: !34)
-!312 = !DILocation(line: 261, column: 12, scope: !34)
-!313 = !DILocation(line: 261, column: 14, scope: !34)
-!314 = !DILocation(line: 261, column: 18, scope: !34)
-!315 = !DILocation(line: 262, column: 3, scope: !34)
-!316 = !DILocation(line: 264, column: 6, scope: !34)
-!317 = !DILocation(line: 266, column: 11, scope: !34)
-!318 = !DILocation(line: 266, column: 9, scope: !34)
-!319 = !DILocation(line: 267, column: 14, scope: !320)
-!320 = distinct !DILexicalBlock(scope: !34, file: !1, line: 267, column: 6)
-!321 = !DILocation(line: 267, column: 12, scope: !320)
-!322 = !DILocation(line: 267, column: 6, scope: !34)
-!323 = !DILocation(line: 268, column: 7, scope: !34)
-!324 = !DILocation(line: 268, column: 5, scope: !34)
-!325 = !DILocation(line: 269, column: 6, scope: !326)
-!326 = distinct !DILexicalBlock(scope: !34, file: !1, line: 269, column: 6)
-!327 = !DILocation(line: 269, column: 12, scope: !326)
-!328 = !DILocation(line: 269, column: 6, scope: !34)
-!329 = !DILocation(line: 270, column: 7, scope: !34)
-!330 = !DILocation(line: 260, column: 13, scope: !34)
-!331 = !DILocation(line: 261, column: 15, scope: !34)
-!332 = !DILocation(line: 271, column: 3, scope: !34)
-!333 = !DILocation(line: 283, column: 17, scope: !40)
-!334 = !DILocation(line: 283, column: 24, scope: !40)
-!335 = !DILocation(line: 289, column: 13, scope: !40)
-!336 = !DILocation(line: 285, column: 10, scope: !40)
-!337 = !DILocation(line: 286, column: 10, scope: !40)
-!338 = !DILocation(line: 287, column: 10, scope: !40)
-!339 = !DILocation(line: 291, column: 17, scope: !340)
-!340 = distinct !DILexicalBlock(scope: !341, file: !1, line: 291, column: 3)
-!341 = distinct !DILexicalBlock(scope: !40, file: !1, line: 291, column: 3)
-!342 = !DILocation(line: 291, column: 3, scope: !341)
-!343 = !DILocation(line: 293, column: 14, scope: !344)
-!344 = distinct !DILexicalBlock(scope: !340, file: !1, line: 292, column: 5)
-!345 = !DILocation(line: 293, column: 11, scope: !344)
-!346 = !DILocation(line: 294, column: 16, scope: !347)
-!347 = distinct !DILexicalBlock(scope: !344, file: !1, line: 294, column: 11)
-!348 = !DILocation(line: 294, column: 11, scope: !344)
-!349 = !DILocation(line: 296, column: 17, scope: !40)
-!350 = !DILocation(line: 296, column: 32, scope: !40)
-!351 = !DILocation(line: 296, column: 30, scope: !40)
-!352 = !DILocation(line: 296, column: 10, scope: !40)
-!353 = !DILocation(line: 296, column: 3, scope: !40)
-!354 = !DILocation(line: 297, column: 1, scope: !40)
-!355 = !DILocation(line: 299, column: 16, scope: !50)
-!356 = !DILocation(line: 299, column: 23, scope: !50)
-!357 = !DILocation(line: 305, column: 13, scope: !50)
-!358 = !DILocation(line: 301, column: 9, scope: !50)
-!359 = !DILocation(line: 302, column: 9, scope: !50)
-!360 = !DILocation(line: 303, column: 9, scope: !50)
-!361 = !DILocation(line: 307, column: 17, scope: !362)
-!362 = distinct !DILexicalBlock(scope: !363, file: !1, line: 307, column: 3)
-!363 = distinct !DILexicalBlock(scope: !50, file: !1, line: 307, column: 3)
-!364 = !DILocation(line: 307, column: 3, scope: !363)
-!365 = !DILocation(line: 309, column: 14, scope: !366)
-!366 = distinct !DILexicalBlock(scope: !362, file: !1, line: 308, column: 5)
-!367 = !{!368, !368, i64 0}
-!368 = !{!"float", !106, i64 0}
-!369 = !DILocation(line: 309, column: 11, scope: !366)
-!370 = !DILocation(line: 310, column: 16, scope: !371)
-!371 = distinct !DILexicalBlock(scope: !366, file: !1, line: 310, column: 11)
-!372 = !DILocation(line: 310, column: 11, scope: !366)
-!373 = !DILocation(line: 312, column: 17, scope: !50)
-!374 = !DILocation(line: 312, column: 32, scope: !50)
-!375 = !DILocation(line: 312, column: 30, scope: !50)
-!376 = !DILocation(line: 312, column: 10, scope: !50)
-!377 = !DILocation(line: 312, column: 3, scope: !50)
-!378 = !DILocation(line: 313, column: 1, scope: !50)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !61, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !23, metadata !28, metadata !31, metadata !34, metadata !40, metadata !50}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"sre_random", metadata !"sre_random", metadata !"", i32 46, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, double ()* @sre_random, null, null, metadata !9, i32 47} ; [ DW_TAG_subprogram ] [line 46] [def] [scope 47] [sre_random]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!9 = metadata !{metadata !10, metadata !12, metadata !13, metadata !15, metadata !16, metadata !17, metadata !18, metadata !19, metadata !20, metadata !21, metadata !22}
+!10 = metadata !{i32 786688, metadata !4, metadata !"x", metadata !5, i32 52, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [x] [line 52]
+!11 = metadata !{i32 786468, null, null, metadata !"long int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [long int] [line 0, size 64, align 64, offset 0, enc DW_ATE_signed]
+!12 = metadata !{i32 786688, metadata !4, metadata !"y", metadata !5, i32 52, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [y] [line 52]
+!13 = metadata !{i32 786688, metadata !4, metadata !"i", metadata !5, i32 53, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 53]
+!14 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!15 = metadata !{i32 786688, metadata !4, metadata !"a1", metadata !5, i32 58, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [a1] [line 58]
+!16 = metadata !{i32 786688, metadata !4, metadata !"m1", metadata !5, i32 59, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [m1] [line 59]
+!17 = metadata !{i32 786688, metadata !4, metadata !"q1", metadata !5, i32 60, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [q1] [line 60]
+!18 = metadata !{i32 786688, metadata !4, metadata !"r1", metadata !5, i32 61, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [r1] [line 61]
+!19 = metadata !{i32 786688, metadata !4, metadata !"a2", metadata !5, i32 63, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [a2] [line 63]
+!20 = metadata !{i32 786688, metadata !4, metadata !"m2", metadata !5, i32 64, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [m2] [line 64]
+!21 = metadata !{i32 786688, metadata !4, metadata !"q2", metadata !5, i32 65, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [q2] [line 65]
+!22 = metadata !{i32 786688, metadata !4, metadata !"r2", metadata !5, i32 66, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [r2] [line 66]
+!23 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"sre_srandom", metadata !"sre_srandom", metadata !"", i32 117, metadata !24, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32)* @sre_srandom, null, null, metadata !26, i32 118} ; [ DW_TAG_subprogram ] [line 117] [def] [scope 118] [sre_srandom]
+!24 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !25, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!25 = metadata !{null, metadata !14}
+!26 = metadata !{metadata !27}
+!27 = metadata !{i32 786689, metadata !23, metadata !"seed", metadata !5, i32 16777333, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [seed] [line 117]
+!28 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"sre_random_positive", metadata !"sre_random_positive", metadata !"", i32 130, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, double ()* @sre_random_positive, null, null, metadata !29, i32 131} ; [ DW_TAG_subprogram ] [line 130] [def] [scope 131] [sre_random_positive]
+!29 = metadata !{metadata !30}
+!30 = metadata !{i32 786688, metadata !28, metadata !"x", metadata !5, i32 132, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [x] [line 132]
+!31 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"ExponentialRandom", metadata !"ExponentialRandom", metadata !"", i32 148, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, double ()* @ExponentialRandom, null, null, metadata !32, i32 149} ; [ DW_TAG_subprogram ] [line 148] [def] [scope 149] [ExponentialRandom]
+!32 = metadata !{metadata !33}
+!33 = metadata !{i32 786688, metadata !31, metadata !"x", metadata !5, i32 150, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [x] [line 150]
+!34 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Gaussrandom", metadata !"Gaussrandom", metadata !"", i32 173, metadata !35, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, double (double, double)* @Gaussrandom, null, null, metadata !37, i32 174} ; [ DW_TAG_subprogram ] [line 173] [def] [scope 174] [Gaussrandom]
+!35 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !36, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!36 = metadata !{metadata !8, metadata !8, metadata !8}
+!37 = metadata !{metadata !38, metadata !39}
+!38 = metadata !{i32 786689, metadata !34, metadata !"mean", metadata !5, i32 16777389, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mean] [line 173]
+!39 = metadata !{i32 786689, metadata !34, metadata !"stddev", metadata !5, i32 33554605, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [stddev] [line 173]
+!40 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DChoose", metadata !"DChoose", metadata !"", i32 283, metadata !41, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (double*, i32)* @DChoose, null, null, metadata !44, i32 284} ; [ DW_TAG_subprogram ] [line 283] [def] [scope 284] [DChoose]
+!41 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !42, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!42 = metadata !{metadata !14, metadata !43, metadata !14}
+!43 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !8} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from double]
+!44 = metadata !{metadata !45, metadata !46, metadata !47, metadata !48, metadata !49}
+!45 = metadata !{i32 786689, metadata !40, metadata !"p", metadata !5, i32 16777499, metadata !43, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [p] [line 283]
+!46 = metadata !{i32 786689, metadata !40, metadata !"N", metadata !5, i32 33554715, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [N] [line 283]
+!47 = metadata !{i32 786688, metadata !40, metadata !"roll", metadata !5, i32 285, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [roll] [line 285]
+!48 = metadata !{i32 786688, metadata !40, metadata !"sum", metadata !5, i32 286, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sum] [line 286]
+!49 = metadata !{i32 786688, metadata !40, metadata !"i", metadata !5, i32 287, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 287]
+!50 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"FChoose", metadata !"FChoose", metadata !"", i32 299, metadata !51, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (float*, i32)* @FChoose, null, null, metadata !55, i32 300} ; [ DW_TAG_subprogram ] [line 299] [def] [scope 300] [FChoose]
+!51 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !52, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!52 = metadata !{metadata !14, metadata !53, metadata !14}
+!53 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !54} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from float]
+!54 = metadata !{i32 786468, null, null, metadata !"float", i32 0, i64 32, i64 32, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [float] [line 0, size 32, align 32, offset 0, enc DW_ATE_float]
+!55 = metadata !{metadata !56, metadata !57, metadata !58, metadata !59, metadata !60}
+!56 = metadata !{i32 786689, metadata !50, metadata !"p", metadata !5, i32 16777515, metadata !53, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [p] [line 299]
+!57 = metadata !{i32 786689, metadata !50, metadata !"N", metadata !5, i32 33554731, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [N] [line 299]
+!58 = metadata !{i32 786688, metadata !50, metadata !"roll", metadata !5, i32 301, metadata !54, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [roll] [line 301]
+!59 = metadata !{i32 786688, metadata !50, metadata !"sum", metadata !5, i32 302, metadata !54, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sum] [line 302]
+!60 = metadata !{i32 786688, metadata !50, metadata !"i", metadata !5, i32 303, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 303]
+!61 = metadata !{metadata !62, metadata !63, metadata !64, metadata !65, metadata !69, metadata !73, metadata !77, metadata !78, metadata !79, metadata !80, metadata !81, metadata !82, metadata !83, metadata !84, metadata !85, metadata !86, metadata !87, metadata !88}
+!62 = metadata !{i32 786484, i32 0, metadata !4, metadata !"rnd1", metadata !"rnd1", metadata !"", metadata !5, i32 48, metadata !11, i32 1, i32 1, i64* @sre_random.rnd1, null} ; [ DW_TAG_variable ] [rnd1] [line 48] [local] [def]
+!63 = metadata !{i32 786484, i32 0, metadata !4, metadata !"rnd2", metadata !"rnd2", metadata !"", metadata !5, i32 49, metadata !11, i32 1, i32 1, i64* @sre_random.rnd2, null} ; [ DW_TAG_variable ] [rnd2] [line 49] [local] [def]
+!64 = metadata !{i32 786484, i32 0, metadata !4, metadata !"rnd", metadata !"rnd", metadata !"", metadata !5, i32 50, metadata !11, i32 1, i32 1, i64* @sre_random.rnd, null} ; [ DW_TAG_variable ] [rnd] [line 50] [local] [def]
+!65 = metadata !{i32 786484, i32 0, metadata !4, metadata !"tbl", metadata !"tbl", metadata !"", metadata !5, i32 51, metadata !66, i32 1, i32 1, [64 x i64]* @sre_random.tbl, null} ; [ DW_TAG_variable ] [tbl] [line 51] [local] [def]
+!66 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 4096, i64 64, i32 0, i32 0, metadata !11, metadata !67, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 4096, align 64, offset 0] [from long int]
+!67 = metadata !{metadata !68}
+!68 = metadata !{i32 786465, i64 0, i64 64}       ; [ DW_TAG_subrange_type ] [0, 63]
+!69 = metadata !{i32 786484, i32 0, metadata !34, metadata !"a", metadata !"a", metadata !"", metadata !5, i32 175, metadata !70, i32 1, i32 1, [32 x double]* @Gaussrandom.a, null} ; [ DW_TAG_variable ] [a] [line 175] [local] [def]
+!70 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 2048, i64 64, i32 0, i32 0, metadata !8, metadata !71, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 2048, align 64, offset 0] [from double]
+!71 = metadata !{metadata !72}
+!72 = metadata !{i32 786465, i64 0, i64 32}       ; [ DW_TAG_subrange_type ] [0, 31]
+!73 = metadata !{i32 786484, i32 0, metadata !34, metadata !"d", metadata !"d", metadata !"", metadata !5, i32 181, metadata !74, i32 1, i32 1, [31 x double]* @Gaussrandom.d, null} ; [ DW_TAG_variable ] [d] [line 181] [local] [def]
+!74 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 1984, i64 64, i32 0, i32 0, metadata !8, metadata !75, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 1984, align 64, offset 0] [from double]
+!75 = metadata !{metadata !76}
+!76 = metadata !{i32 786465, i64 0, i64 31}       ; [ DW_TAG_subrange_type ] [0, 30]
+!77 = metadata !{i32 786484, i32 0, metadata !34, metadata !"t", metadata !"t", metadata !"", metadata !5, i32 187, metadata !74, i32 1, i32 1, [31 x double]* @Gaussrandom.t, null} ; [ DW_TAG_variable ] [t] [line 187] [local] [def]
+!78 = metadata !{i32 786484, i32 0, metadata !34, metadata !"h", metadata !"h", metadata !"", metadata !5, i32 194, metadata !74, i32 1, i32 1, [31 x double]* @Gaussrandom.h, null} ; [ DW_TAG_variable ] [h] [line 194] [local] [def]
+!79 = metadata !{i32 786484, i32 0, metadata !34, metadata !"i", metadata !"i", metadata !"", metadata !5, i32 201, metadata !11, i32 1, i32 1, i64* @Gaussrandom.i, null} ; [ DW_TAG_variable ] [i] [line 201] [local] [def]
+!80 = metadata !{i32 786484, i32 0, metadata !34, metadata !"snorm", metadata !"snorm", metadata !"", metadata !5, i32 202, metadata !8, i32 1, i32 1, double* @Gaussrandom.snorm, null} ; [ DW_TAG_variable ] [snorm] [line 202] [local] [def]
+!81 = metadata !{i32 786484, i32 0, metadata !34, metadata !"u", metadata !"u", metadata !"", metadata !5, i32 202, metadata !8, i32 1, i32 1, double* @Gaussrandom.u, null} ; [ DW_TAG_variable ] [u] [line 202] [local] [def]
+!82 = metadata !{i32 786484, i32 0, metadata !34, metadata !"s", metadata !"s", metadata !"", metadata !5, i32 202, metadata !8, i32 1, i32 1, double* @Gaussrandom.s, null} ; [ DW_TAG_variable ] [s] [line 202] [local] [def]
+!83 = metadata !{i32 786484, i32 0, metadata !34, metadata !"ustar", metadata !"ustar", metadata !"", metadata !5, i32 202, metadata !8, i32 1, i32 1, double* @Gaussrandom.ustar, null} ; [ DW_TAG_variable ] [ustar] [line 202] [local] [def]
+!84 = metadata !{i32 786484, i32 0, metadata !34, metadata !"aa", metadata !"aa", metadata !"", metadata !5, i32 202, metadata !8, i32 1, i32 1, double* @Gaussrandom.aa, null} ; [ DW_TAG_variable ] [aa] [line 202] [local] [def]
+!85 = metadata !{i32 786484, i32 0, metadata !34, metadata !"w", metadata !"w", metadata !"", metadata !5, i32 202, metadata !8, i32 1, i32 1, double* @Gaussrandom.w, null} ; [ DW_TAG_variable ] [w] [line 202] [local] [def]
+!86 = metadata !{i32 786484, i32 0, metadata !34, metadata !"y", metadata !"y", metadata !"", metadata !5, i32 202, metadata !8, i32 1, i32 1, double* @Gaussrandom.y, null} ; [ DW_TAG_variable ] [y] [line 202] [local] [def]
+!87 = metadata !{i32 786484, i32 0, metadata !34, metadata !"tt", metadata !"tt", metadata !"", metadata !5, i32 202, metadata !8, i32 1, i32 1, double* @Gaussrandom.tt, null} ; [ DW_TAG_variable ] [tt] [line 202] [local] [def]
+!88 = metadata !{i32 786484, i32 0, null, metadata !"sre_randseed", metadata !"sre_randseed", metadata !"", metadata !5, i32 16, metadata !14, i32 1, i32 1, i32* @sre_randseed, null} ; [ DW_TAG_variable ] [sre_randseed] [line 16] [local] [def]
+!89 = metadata !{i64 40014}
+!90 = metadata !{i32 58, i32 0, metadata !4, null} ; [ DW_TAG_imported_module ]
+!91 = metadata !{i64 2147483563}
+!92 = metadata !{i32 59, i32 0, metadata !4, null}
+!93 = metadata !{i64 53668}
+!94 = metadata !{i32 60, i32 0, metadata !4, null}
+!95 = metadata !{i64 12211}
+!96 = metadata !{i32 61, i32 0, metadata !4, null}
+!97 = metadata !{i64 40692}
+!98 = metadata !{i32 63, i32 0, metadata !4, null}
+!99 = metadata !{i64 2147483399}
+!100 = metadata !{i32 64, i32 0, metadata !4, null}
+!101 = metadata !{i64 52774}
+!102 = metadata !{i32 65, i32 0, metadata !4, null}
+!103 = metadata !{i64 3791}
+!104 = metadata !{i32 66, i32 0, metadata !4, null}
+!105 = metadata !{i32 68, i32 0, metadata !4, null}
+!106 = metadata !{metadata !"int", metadata !107}
+!107 = metadata !{metadata !"omnipotent char", metadata !108}
+!108 = metadata !{metadata !"Simple C/C++ TBAA"}
+!109 = metadata !{i32 91, i32 0, metadata !4, null}
+!110 = metadata !{metadata !"long", metadata !107}
+!111 = metadata !{i32 96, i32 0, metadata !4, null}
+!112 = metadata !{i32 70, i32 0, metadata !113, null}
+!113 = metadata !{i32 786443, metadata !1, metadata !4, i32 69, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c]
+!114 = metadata !{i32 71, i32 0, metadata !113, null}
+!115 = metadata !{i32 73, i32 0, metadata !116, null}
+!116 = metadata !{i32 786443, metadata !1, metadata !113, i32 73, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c]
+!117 = metadata !{i32 74, i32 0, metadata !118, null}
+!118 = metadata !{i32 786443, metadata !1, metadata !116, i32 73, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c]
+!119 = metadata !{i32 75, i32 0, metadata !118, null}
+!120 = metadata !{i32 76, i32 0, metadata !118, null}
+!121 = metadata !{i32 77, i32 0, metadata !118, null}
+!122 = metadata !{i32 79, i32 0, metadata !118, null}
+!123 = metadata !{i32 80, i32 0, metadata !118, null}
+!124 = metadata !{i32 81, i32 0, metadata !118, null}
+!125 = metadata !{i32 82, i32 0, metadata !118, null}
+!126 = metadata !{i32 84, i32 0, metadata !118, null}
+!127 = metadata !{i32 85, i32 0, metadata !118, null}
+!128 = metadata !{i32 87, i32 0, metadata !113, null}
+!129 = metadata !{i32 88, i32 0, metadata !113, null}
+!130 = metadata !{i32 92, i32 0, metadata !4, null}
+!131 = metadata !{i32 93, i32 0, metadata !4, null}
+!132 = metadata !{i32 94, i32 0, metadata !4, null}
+!133 = metadata !{i32 97, i32 0, metadata !4, null}
+!134 = metadata !{i32 98, i32 0, metadata !4, null}
+!135 = metadata !{i32 99, i32 0, metadata !4, null}
+!136 = metadata !{i32 102, i32 0, metadata !4, null}
+!137 = metadata !{i32 103, i32 0, metadata !4, null}
+!138 = metadata !{i32 105, i32 0, metadata !4, null}
+!139 = metadata !{i32 106, i32 0, metadata !4, null}
+!140 = metadata !{i32 108, i32 0, metadata !4, null}
+!141 = metadata !{i32 117, i32 0, metadata !23, null}
+!142 = metadata !{i32 119, i32 0, metadata !23, null}
+!143 = metadata !{i32 120, i32 0, metadata !23, null}
+!144 = metadata !{i32 42}
+!145 = metadata !{i32 121, i32 0, metadata !23, null}
+!146 = metadata !{i32 122, i32 0, metadata !23, null}
+!147 = metadata !{i32 133, i32 0, metadata !28, null}
+!148 = metadata !{i32 133, i32 0, metadata !149, null}
+!149 = metadata !{i32 786443, metadata !1, metadata !28, i32 133, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c]
+!150 = metadata !{i32 134, i32 0, metadata !28, null}
+!151 = metadata !{i32 152, i32 0, metadata !31, null}
+!152 = metadata !{i32 153, i32 0, metadata !31, null}
+!153 = metadata !{i32 173, i32 0, metadata !34, null}
+!154 = metadata !{i32 204, i32 0, metadata !34, null}
+!155 = metadata !{i32 206, i32 0, metadata !34, null}
+!156 = metadata !{i32 205, i32 0, metadata !34, null}
+!157 = metadata !{metadata !"double", metadata !107}
+!158 = metadata !{i32 207, i32 0, metadata !34, null}
+!159 = metadata !{i32 208, i32 0, metadata !34, null}
+!160 = metadata !{i32 209, i32 0, metadata !34, null}
+!161 = metadata !{i32 210, i32 0, metadata !34, null}
+!162 = metadata !{i32 211, i32 0, metadata !34, null}
+!163 = metadata !{i32 215, i32 0, metadata !34, null}
+!164 = metadata !{i32 216, i32 0, metadata !34, null}
+!165 = metadata !{i32 218, i32 0, metadata !34, null}
+!166 = metadata !{i32 219, i32 0, metadata !34, null}
+!167 = metadata !{i32 224, i32 0, metadata !34, null}
+!168 = metadata !{i32 225, i32 0, metadata !34, null}
+!169 = metadata !{i32 226, i32 0, metadata !34, null}
+!170 = metadata !{i32 227, i32 0, metadata !34, null}
+!171 = metadata !{i32 232, i32 0, metadata !34, null}
+!172 = metadata !{i32 233, i32 0, metadata !34, null}
+!173 = metadata !{i32 234, i32 0, metadata !34, null}
+!174 = metadata !{i32 240, i32 0, metadata !34, null}
+!175 = metadata !{i32 241, i32 0, metadata !34, null}
+!176 = metadata !{i32 242, i32 0, metadata !34, null}
+!177 = metadata !{i32 237, i32 0, metadata !34, null}
+!178 = metadata !{i32 238, i32 0, metadata !34, null}
+!179 = metadata !{i32 243, i32 0, metadata !34, null}
+!180 = metadata !{i32 249, i32 0, metadata !34, null}
+!181 = metadata !{i32 250, i32 0, metadata !34, null}
+!182 = metadata !{i32 256, i32 0, metadata !34, null}
+!183 = metadata !{i32 257, i32 0, metadata !34, null}
+!184 = metadata !{i32 253, i32 0, metadata !34, null}
+!185 = metadata !{i32 254, i32 0, metadata !34, null}
+!186 = metadata !{i32 258, i32 0, metadata !34, null}
+!187 = metadata !{i32 270, i32 0, metadata !34, null}
+!188 = metadata !{i32 260, i32 0, metadata !34, null}
+!189 = metadata !{i32 261, i32 0, metadata !34, null}
+!190 = metadata !{i32 262, i32 0, metadata !34, null}
+!191 = metadata !{i32 264, i32 0, metadata !34, null}
+!192 = metadata !{i32 266, i32 0, metadata !34, null}
+!193 = metadata !{i32 267, i32 0, metadata !34, null}
+!194 = metadata !{i32 268, i32 0, metadata !34, null}
+!195 = metadata !{i32 269, i32 0, metadata !34, null}
+!196 = metadata !{i32 271, i32 0, metadata !34, null}
+!197 = metadata !{i32 283, i32 0, metadata !40, null}
+!198 = metadata !{i32 289, i32 0, metadata !40, null}
+!199 = metadata !{double 0.000000e+00}
+!200 = metadata !{i32 290, i32 0, metadata !40, null}
+!201 = metadata !{i32 291, i32 0, metadata !202, null}
+!202 = metadata !{i32 786443, metadata !1, metadata !40, i32 291, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c]
+!203 = metadata !{i32 293, i32 0, metadata !204, null}
+!204 = metadata !{i32 786443, metadata !1, metadata !202, i32 292, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c]
+!205 = metadata !{i32 294, i32 0, metadata !204, null}
+!206 = metadata !{i32 296, i32 0, metadata !40, null}
+!207 = metadata !{i32 297, i32 0, metadata !40, null}
+!208 = metadata !{i32 299, i32 0, metadata !50, null}
+!209 = metadata !{i32 305, i32 0, metadata !50, null}
+!210 = metadata !{float 0.000000e+00}
+!211 = metadata !{i32 306, i32 0, metadata !50, null}
+!212 = metadata !{i32 307, i32 0, metadata !213, null}
+!213 = metadata !{i32 786443, metadata !1, metadata !50, i32 307, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c]
+!214 = metadata !{i32 309, i32 0, metadata !215, null}
+!215 = metadata !{i32 786443, metadata !1, metadata !213, i32 308, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/456.hmmer/src/sre_random.c]
+!216 = metadata !{metadata !"float", metadata !107}
+!217 = metadata !{i32 310, i32 0, metadata !215, null}
+!218 = metadata !{i32 312, i32 0, metadata !50, null}
+!219 = metadata !{i32 313, i32 0, metadata !50, null}

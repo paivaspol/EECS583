@@ -1,31 +1,37 @@
 define void @ht_forall(%struct.ht* nocapture %table, i32 (%struct.cpp_reader*, %struct.ht_identifier*, i8*)* nocapture %cb, i8* %v) #0 {
 entry:
-  %entries = getelementptr inbounds %struct.ht* %table, i64 0, i32 1
-  %0 = load %struct.ht_identifier*** %entries, align 8, !tbaa !3
-  %nslots = getelementptr inbounds %struct.ht* %table, i64 0, i32 3
-  %1 = load i32* %nslots, align 4, !tbaa !0
-  %idx.ext = zext i32 %1 to i64
-  %add.ptr = getelementptr inbounds %struct.ht_identifier** %0, i64 %idx.ext
-  %pfile = getelementptr inbounds %struct.ht* %table, i64 0, i32 5
-  br label %do.body
+  tail call void @llvm.dbg.value(metadata !{%struct.ht* %table}, i64 0, metadata !138), !dbg !292
+  tail call void @llvm.dbg.value(metadata !{i32 (%struct.cpp_reader*, %struct.ht_identifier*, i8*)* %cb}, i64 0, metadata !139), !dbg !293
+  tail call void @llvm.dbg.value(metadata !{i8* %v}, i64 0, metadata !140), !dbg !294
+  %entries = getelementptr inbounds %struct.ht* %table, i64 0, i32 1, !dbg !295
+  %0 = load %struct.ht_identifier*** %entries, align 8, !dbg !295, !tbaa !204
+  tail call void @llvm.dbg.value(metadata !{%struct.ht_identifier** %0}, i64 0, metadata !141), !dbg !295
+  %nslots = getelementptr inbounds %struct.ht* %table, i64 0, i32 3, !dbg !296
+  %1 = load i32* %nslots, align 4, !dbg !296, !tbaa !200
+  %idx.ext = zext i32 %1 to i64, !dbg !296
+  %add.ptr = getelementptr inbounds %struct.ht_identifier** %0, i64 %idx.ext, !dbg !296
+  tail call void @llvm.dbg.value(metadata !{%struct.ht_identifier** %add.ptr}, i64 0, metadata !142), !dbg !296
+  %pfile = getelementptr inbounds %struct.ht* %table, i64 0, i32 5, !dbg !297
+  br label %do.body, !dbg !299
 
 do.body:                                          ; preds = %do.cond, %entry
   %p.0 = phi %struct.ht_identifier** [ %0, %entry ], [ %incdec.ptr, %do.cond ]
-  %2 = load %struct.ht_identifier** %p.0, align 8, !tbaa !3
-  %tobool = icmp eq %struct.ht_identifier* %2, null
-  br i1 %tobool, label %do.cond, label %if.then
+  %2 = load %struct.ht_identifier** %p.0, align 8, !dbg !300, !tbaa !204
+  %tobool = icmp eq %struct.ht_identifier* %2, null, !dbg !300
+  br i1 %tobool, label %do.cond, label %if.then, !dbg !300
 
 if.then:                                          ; preds = %do.body
-  %3 = load %struct.cpp_reader** %pfile, align 8, !tbaa !3
-  %call = tail call i32 %cb(%struct.cpp_reader* %3, %struct.ht_identifier* %2, i8* %v) #6
-  %cmp = icmp eq i32 %call, 0
-  br i1 %cmp, label %do.end, label %do.cond
+  %3 = load %struct.cpp_reader** %pfile, align 8, !dbg !297, !tbaa !204
+  %call = tail call i32 %cb(%struct.cpp_reader* %3, %struct.ht_identifier* %2, i8* %v) #7, !dbg !297
+  %cmp = icmp eq i32 %call, 0, !dbg !297
+  br i1 %cmp, label %do.end, label %do.cond, !dbg !297
 
 do.cond:                                          ; preds = %do.body, %if.then
-  %incdec.ptr = getelementptr inbounds %struct.ht_identifier** %p.0, i64 1
-  %cmp3 = icmp ult %struct.ht_identifier** %incdec.ptr, %add.ptr
-  br i1 %cmp3, label %do.body, label %do.end
+  %incdec.ptr = getelementptr inbounds %struct.ht_identifier** %p.0, i64 1, !dbg !301
+  tail call void @llvm.dbg.value(metadata !{%struct.ht_identifier** %incdec.ptr}, i64 0, metadata !141), !dbg !301
+  %cmp3 = icmp ult %struct.ht_identifier** %incdec.ptr, %add.ptr, !dbg !301
+  br i1 %cmp3, label %do.body, label %do.end, !dbg !301
 
 do.end:                                           ; preds = %if.then, %do.cond
-  ret void
+  ret void, !dbg !302
 }

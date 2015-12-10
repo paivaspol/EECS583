@@ -1,32 +1,34 @@
-define internal fastcc void @handle_newline(%struct.cpp_reader* nocapture %pfile) #1 {
+define internal fastcc void @handle_newline(%struct.cpp_reader* nocapture %pfile) #2 {
 entry:
-  %buffer1 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
-  %0 = load %struct.cpp_buffer** %buffer1, align 8, !tbaa !0
-  %cur = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 0
-  %1 = load i8** %cur, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i8* %1, i64 -1
-  %2 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = zext i8 %2 to i32
-  %3 = load i8* %1, align 1, !tbaa !1
-  %conv4 = zext i8 %3 to i32
-  %add = add nsw i32 %conv4, %conv
-  %cmp = icmp eq i32 %add, 23
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !954), !dbg !1734
+  %buffer1 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0, !dbg !1735
+  %0 = load %struct.cpp_buffer** %buffer1, align 8, !dbg !1735, !tbaa !995
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_buffer* %0}, i64 0, metadata !955), !dbg !1735
+  %cur = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 0, !dbg !1736
+  %1 = load i8** %cur, align 8, !dbg !1736, !tbaa !995
+  %arrayidx = getelementptr inbounds i8* %1, i64 -1, !dbg !1736
+  %2 = load i8* %arrayidx, align 1, !dbg !1736, !tbaa !996
+  %conv = zext i8 %2 to i32, !dbg !1736
+  %3 = load i8* %1, align 1, !dbg !1736, !tbaa !996
+  %conv4 = zext i8 %3 to i32, !dbg !1736
+  %add = add nsw i32 %conv4, %conv, !dbg !1736
+  %cmp = icmp eq i32 %add, 23, !dbg !1736
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1736
 
 if.then:                                          ; preds = %entry
-  %incdec.ptr = getelementptr inbounds i8* %1, i64 1
-  store i8* %incdec.ptr, i8** %cur, align 8, !tbaa !0
-  br label %if.end
+  %incdec.ptr = getelementptr inbounds i8* %1, i64 1, !dbg !1737
+  store i8* %incdec.ptr, i8** %cur, align 8, !dbg !1737, !tbaa !995
+  br label %if.end, !dbg !1737
 
 if.end:                                           ; preds = %if.then, %entry
   %4 = phi i8* [ %incdec.ptr, %if.then ], [ %1, %entry ]
-  %line_base = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 3
-  store i8* %4, i8** %line_base, align 8, !tbaa !0
-  %col_adjust = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 8
-  store i32 0, i32* %col_adjust, align 4, !tbaa !3
-  %line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 4
-  %5 = load i32* %line, align 4, !tbaa !3
-  %inc = add i32 %5, 1
-  store i32 %inc, i32* %line, align 4, !tbaa !3
-  ret void
+  %line_base = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 3, !dbg !1738
+  store i8* %4, i8** %line_base, align 8, !dbg !1738, !tbaa !995
+  %col_adjust = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 8, !dbg !1739
+  store i32 0, i32* %col_adjust, align 4, !dbg !1739, !tbaa !1019
+  %line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 4, !dbg !1740
+  %5 = load i32* %line, align 4, !dbg !1740, !tbaa !1019
+  %inc = add i32 %5, 1, !dbg !1740
+  store i32 %inc, i32* %line, align 4, !dbg !1740, !tbaa !1019
+  ret void, !dbg !1741
 }

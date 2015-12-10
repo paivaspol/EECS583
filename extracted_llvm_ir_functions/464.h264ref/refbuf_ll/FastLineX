@@ -1,14 +1,15 @@
-define i16* @FastLineX(i32 %dummy, i16* readnone %Pic, i32 %y, i32 %x, i32 %height, i32 %width) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %dummy, i64 0, metadata !54, metadata !635), !dbg !729
-  tail call void @llvm.dbg.value(metadata i16* %Pic, i64 0, metadata !55, metadata !635), !dbg !730
-  tail call void @llvm.dbg.value(metadata i32 %y, i64 0, metadata !56, metadata !635), !dbg !731
-  tail call void @llvm.dbg.value(metadata i32 %x, i64 0, metadata !57, metadata !635), !dbg !732
-  tail call void @llvm.dbg.value(metadata i32 %height, i64 0, metadata !58, metadata !635), !dbg !733
-  tail call void @llvm.dbg.value(metadata i32 %width, i64 0, metadata !59, metadata !635), !dbg !734
-  %1 = mul nsw i32 %width, %y, !dbg !735
-  %2 = sext i32 %1 to i64, !dbg !736
-  %3 = sext i32 %x to i64, !dbg !737
-  %.sum = add nsw i64 %2, %3, !dbg !737
-  %4 = getelementptr inbounds i16* %Pic, i64 %.sum, !dbg !737
-  ret i16* %4, !dbg !738
+define i16* @FastLineX(i32 %dummy, i16* %Pic, i32 %y, i32 %x, i32 %height, i32 %width) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %dummy}, i64 0, metadata !55), !dbg !659
+  tail call void @llvm.dbg.value(metadata !{i16* %Pic}, i64 0, metadata !56), !dbg !659
+  tail call void @llvm.dbg.value(metadata !{i32 %y}, i64 0, metadata !57), !dbg !659
+  tail call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !58), !dbg !659
+  tail call void @llvm.dbg.value(metadata !{i32 %height}, i64 0, metadata !59), !dbg !659
+  tail call void @llvm.dbg.value(metadata !{i32 %width}, i64 0, metadata !60), !dbg !659
+  %mul = mul nsw i32 %width, %y, !dbg !660
+  %idx.ext = sext i32 %mul to i64, !dbg !660
+  %idx.ext1 = sext i32 %x to i64, !dbg !660
+  %add.ptr.sum = add i64 %idx.ext, %idx.ext1, !dbg !660
+  %add.ptr2 = getelementptr inbounds i16* %Pic, i64 %add.ptr.sum, !dbg !660
+  ret i16* %add.ptr2, !dbg !660
 }

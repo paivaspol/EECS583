@@ -1,30 +1,34 @@
-define i32 @reg_classes_intersect_p(i32 %c1, i32 %c2) #3 {
+define i32 @reg_classes_intersect_p(i32 %c1, i32 %c2) #4 {
 entry:
-  %cmp = icmp eq i32 %c1, %c2
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %c1}, i64 0, metadata !660), !dbg !1587
+  tail call void @llvm.dbg.value(metadata !{i32 %c2}, i64 0, metadata !661), !dbg !1588
+  %cmp = icmp eq i32 %c1, %c2, !dbg !1589
+  br i1 %cmp, label %return, label %if.end, !dbg !1589
 
 if.end:                                           ; preds = %entry
-  %cmp1 = icmp eq i32 %c1, 24
-  %cmp2 = icmp eq i32 %c2, 24
-  %or.cond = or i1 %cmp1, %cmp2
-  br i1 %or.cond, label %return, label %if.end4
+  %cmp1 = icmp eq i32 %c1, 24, !dbg !1590
+  %cmp2 = icmp eq i32 %c2, 24, !dbg !1590
+  %or.cond = or i1 %cmp1, %cmp2, !dbg !1590
+  br i1 %or.cond, label %return, label %if.end4, !dbg !1590
 
 if.end4:                                          ; preds = %if.end
-  %idxprom = sext i32 %c1 to i64
-  %arrayidx = getelementptr inbounds [25 x i64]* @reg_class_contents, i64 0, i64 %idxprom
-  %0 = load i64* %arrayidx, align 8, !tbaa !0
-  %idxprom5 = sext i32 %c2 to i64
-  %arrayidx6 = getelementptr inbounds [25 x i64]* @reg_class_contents, i64 0, i64 %idxprom5
-  %1 = load i64* %arrayidx6, align 8, !tbaa !0
-  %and = and i64 %1, %0
-  %2 = load i64* getelementptr inbounds ([25 x i64]* @reg_class_contents, i64 0, i64 0), align 16, !tbaa !0
-  %neg = xor i64 %2, -1
-  %and7 = and i64 %and, %neg
-  %not.cmp8 = icmp ne i64 %and7, 0
-  %. = zext i1 %not.cmp8 to i32
-  br label %return
+  %idxprom = sext i32 %c1 to i64, !dbg !1591
+  %arrayidx = getelementptr inbounds [25 x i64]* @reg_class_contents, i64 0, i64 %idxprom, !dbg !1591
+  %0 = load i64* %arrayidx, align 8, !dbg !1591, !tbaa !953
+  tail call void @llvm.dbg.value(metadata !{i64 %0}, i64 0, metadata !662), !dbg !1591
+  %idxprom5 = sext i32 %c2 to i64, !dbg !1592
+  %arrayidx6 = getelementptr inbounds [25 x i64]* @reg_class_contents, i64 0, i64 %idxprom5, !dbg !1592
+  %1 = load i64* %arrayidx6, align 8, !dbg !1592, !tbaa !953
+  %and = and i64 %1, %0, !dbg !1592
+  tail call void @llvm.dbg.value(metadata !{i64 %and}, i64 0, metadata !662), !dbg !1592
+  %2 = load i64* getelementptr inbounds ([25 x i64]* @reg_class_contents, i64 0, i64 0), align 16, !dbg !1593, !tbaa !953
+  %neg = xor i64 %2, -1, !dbg !1593
+  %and7 = and i64 %and, %neg, !dbg !1593
+  %not.cmp8 = icmp ne i64 %and7, 0, !dbg !1594
+  %. = zext i1 %not.cmp8 to i32, !dbg !1594
+  br label %return, !dbg !1594
 
 return:                                           ; preds = %if.end4, %if.end, %entry
   %retval.0 = phi i32 [ 1, %entry ], [ 1, %if.end ], [ %., %if.end4 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1594
 }

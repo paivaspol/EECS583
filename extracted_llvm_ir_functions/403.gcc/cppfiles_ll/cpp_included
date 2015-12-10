@@ -1,23 +1,26 @@
 define i32 @cpp_included(%struct.cpp_reader* %pfile, i8* %fname) #0 {
 entry:
-  %0 = load i8* %fname, align 1, !tbaa !1
+  call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !632), !dbg !924
+  call void @llvm.dbg.value(metadata !{i8* %fname}, i64 0, metadata !633), !dbg !925
+  %0 = load i8* %fname, align 1, !dbg !926, !tbaa !882
   switch i8 %0, label %if.end [
     i8 47, label %if.then
     i8 36, label %if.then
-  ]
+  ], !dbg !926
 
 if.then:                                          ; preds = %entry, %entry
-  %all_include_files = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 25
-  %1 = load %struct.splay_tree_s** %all_include_files, align 8, !tbaa !0
-  %2 = ptrtoint i8* %fname to i64
-  %call = call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %1, i64 %2) #6
-  %tobool = icmp eq %struct.splay_tree_node_s* %call, null
-  br i1 %tobool, label %land.end, label %land.rhs
+  %all_include_files = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 25, !dbg !927
+  %1 = load %struct.splay_tree_s** %all_include_files, align 8, !dbg !927, !tbaa !881
+  %2 = ptrtoint i8* %fname to i64, !dbg !927
+  %call = call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %1, i64 %2) #7, !dbg !927
+  call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %call}, i64 0, metadata !637), !dbg !927
+  %tobool = icmp eq %struct.splay_tree_node_s* %call, null, !dbg !929
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !929
 
 land.rhs:                                         ; preds = %if.then
-  %value = getelementptr inbounds %struct.splay_tree_node_s* %call, i64 0, i32 1
-  %3 = load i64* %value, align 8, !tbaa !4
-  %tobool6 = icmp ne i64 %3, 0
+  %value = getelementptr inbounds %struct.splay_tree_node_s* %call, i64 0, i32 1, !dbg !929
+  %3 = load i64* %value, align 8, !dbg !929, !tbaa !930
+  %tobool6 = icmp ne i64 %3, 0, !dbg !929
   br label %land.end
 
 land.end:                                         ; preds = %if.then, %land.rhs
@@ -26,69 +29,72 @@ land.end:                                         ; preds = %if.then, %land.rhs
   br label %return
 
 if.end:                                           ; preds = %entry
-  %call7 = call i64 @strlen(i8* %fname) #9
-  %max_include_len = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 26
-  %5 = load i32* %max_include_len, align 4, !tbaa !3
-  %conv8 = zext i32 %5 to i64
-  %add = add i64 %call7, 2
-  %add9 = add i64 %add, %conv8
-  %6 = alloca i8, i64 %add9, align 1
-  %quote_include = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 5
-  %path.054 = load %struct.search_path** %quote_include, align 8
-  %tobool1055 = icmp eq %struct.search_path* %path.054, null
-  br i1 %tobool1055, label %return, label %for.body.lr.ph
+  %call7 = call i64 @strlen(i8* %fname) #10, !dbg !931
+  %max_include_len = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 26, !dbg !931
+  %5 = load i32* %max_include_len, align 4, !dbg !931, !tbaa !921
+  %conv8 = zext i32 %5 to i64, !dbg !931
+  %add = add i64 %call7, 2, !dbg !931
+  %add9 = add i64 %add, %conv8, !dbg !931
+  %6 = alloca i8, i64 %add9, align 1, !dbg !931
+  call void @llvm.dbg.value(metadata !{i8* %6}, i64 0, metadata !635), !dbg !931
+  %quote_include = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 5, !dbg !932
+  %path.054 = load %struct.search_path** %quote_include, align 8, !dbg !932
+  %tobool1055 = icmp eq %struct.search_path* %path.054, null, !dbg !932
+  br i1 %tobool1055, label %return, label %for.body.lr.ph, !dbg !932
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %remap = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 36
-  %all_include_files25 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 25
-  br label %for.body
+  %remap = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 36, !dbg !934
+  %all_include_files25 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 25, !dbg !936
+  br label %for.body, !dbg !932
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc
   %path.056 = phi %struct.search_path* [ %path.054, %for.body.lr.ph ], [ %path.0, %for.inc ]
-  %name11 = getelementptr inbounds %struct.search_path* %path.056, i64 0, i32 1
-  %7 = load i8** %name11, align 8, !tbaa !0
-  %len = getelementptr inbounds %struct.search_path* %path.056, i64 0, i32 2
-  %8 = load i32* %len, align 4, !tbaa !3
-  %conv12 = zext i32 %8 to i64
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %6, i8* %7, i64 %conv12, i32 1, i1 false)
-  %9 = load i32* %len, align 4, !tbaa !3
-  %idxprom = zext i32 %9 to i64
-  %arrayidx14 = getelementptr inbounds i8* %6, i64 %idxprom
-  store i8 47, i8* %arrayidx14, align 1, !tbaa !1
-  %10 = load i32* %len, align 4, !tbaa !3
-  %add16 = add i32 %10, 1
-  %idxprom17 = zext i32 %add16 to i64
-  %arrayidx18 = getelementptr inbounds i8* %6, i64 %idxprom17
-  %call19 = call i8* @strcpy(i8* %arrayidx18, i8* %fname) #6
-  %11 = load i8* %remap, align 1, !tbaa !1
-  %tobool21 = icmp eq i8 %11, 0
-  br i1 %tobool21, label %if.end24, label %if.then22
+  %name11 = getelementptr inbounds %struct.search_path* %path.056, i64 0, i32 1, !dbg !937
+  %7 = load i8** %name11, align 8, !dbg !937, !tbaa !881
+  %len = getelementptr inbounds %struct.search_path* %path.056, i64 0, i32 2, !dbg !937
+  %8 = load i32* %len, align 4, !dbg !937, !tbaa !921
+  %conv12 = zext i32 %8 to i64, !dbg !937
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %6, i8* %7, i64 %conv12, i32 1, i1 false), !dbg !937
+  %9 = load i32* %len, align 4, !dbg !938, !tbaa !921
+  %idxprom = zext i32 %9 to i64, !dbg !938
+  %arrayidx14 = getelementptr inbounds i8* %6, i64 %idxprom, !dbg !938
+  store i8 47, i8* %arrayidx14, align 1, !dbg !938, !tbaa !882
+  %10 = load i32* %len, align 4, !dbg !939, !tbaa !921
+  %add16 = add i32 %10, 1, !dbg !939
+  %idxprom17 = zext i32 %add16 to i64, !dbg !939
+  %arrayidx18 = getelementptr inbounds i8* %6, i64 %idxprom17, !dbg !939
+  %call19 = call i8* @strcpy(i8* %arrayidx18, i8* %fname) #7, !dbg !939
+  %11 = load i8* %remap, align 1, !dbg !934, !tbaa !882
+  %tobool21 = icmp eq i8 %11, 0, !dbg !934
+  br i1 %tobool21, label %if.end24, label %if.then22, !dbg !934
 
 if.then22:                                        ; preds = %for.body
-  %call23 = call fastcc i8* @remap_filename(%struct.cpp_reader* %pfile, i8* %6, %struct.search_path* %path.056) #7
-  br label %if.end24
+  %call23 = call fastcc i8* @remap_filename(%struct.cpp_reader* %pfile, i8* %6, %struct.search_path* %path.056) #8, !dbg !940
+  call void @llvm.dbg.value(metadata !{i8* %call23}, i64 0, metadata !636), !dbg !940
+  br label %if.end24, !dbg !940
 
 if.end24:                                         ; preds = %for.body, %if.then22
   %n.0 = phi i8* [ %call23, %if.then22 ], [ %6, %for.body ]
-  %12 = load %struct.splay_tree_s** %all_include_files25, align 8, !tbaa !0
-  %13 = ptrtoint i8* %n.0 to i64
-  %call26 = call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %12, i64 %13) #6
-  %tobool27 = icmp eq %struct.splay_tree_node_s* %call26, null
-  br i1 %tobool27, label %for.inc, label %land.lhs.true
+  %12 = load %struct.splay_tree_s** %all_include_files25, align 8, !dbg !936, !tbaa !881
+  %13 = ptrtoint i8* %n.0 to i64, !dbg !936
+  %call26 = call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %12, i64 %13) #7, !dbg !936
+  call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %call26}, i64 0, metadata !637), !dbg !936
+  %tobool27 = icmp eq %struct.splay_tree_node_s* %call26, null, !dbg !941
+  br i1 %tobool27, label %for.inc, label %land.lhs.true, !dbg !941
 
 land.lhs.true:                                    ; preds = %if.end24
-  %value28 = getelementptr inbounds %struct.splay_tree_node_s* %call26, i64 0, i32 1
-  %14 = load i64* %value28, align 8, !tbaa !4
-  %tobool29 = icmp eq i64 %14, 0
-  br i1 %tobool29, label %for.inc, label %return
+  %value28 = getelementptr inbounds %struct.splay_tree_node_s* %call26, i64 0, i32 1, !dbg !941
+  %14 = load i64* %value28, align 8, !dbg !941, !tbaa !930
+  %tobool29 = icmp eq i64 %14, 0, !dbg !941
+  br i1 %tobool29, label %for.inc, label %return, !dbg !941
 
 for.inc:                                          ; preds = %land.lhs.true, %if.end24
-  %next = getelementptr inbounds %struct.search_path* %path.056, i64 0, i32 0
-  %path.0 = load %struct.search_path** %next, align 8
-  %tobool10 = icmp eq %struct.search_path* %path.0, null
-  br i1 %tobool10, label %return, label %for.body
+  %next = getelementptr inbounds %struct.search_path* %path.056, i64 0, i32 0, !dbg !932
+  %path.0 = load %struct.search_path** %next, align 8, !dbg !932
+  %tobool10 = icmp eq %struct.search_path* %path.0, null, !dbg !932
+  br i1 %tobool10, label %return, label %for.body, !dbg !932
 
 return:                                           ; preds = %if.end, %land.lhs.true, %for.inc, %land.end
   %retval.0 = phi i32 [ %land.ext, %land.end ], [ 0, %if.end ], [ 1, %land.lhs.true ], [ 0, %for.inc ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !942
 }

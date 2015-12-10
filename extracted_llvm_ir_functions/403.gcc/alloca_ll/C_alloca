@@ -1,83 +1,86 @@
 define i8* @C_alloca(i64 %size) #0 {
+entry:
   %probe = alloca i8, align 1
-  tail call void @llvm.dbg.value(metadata i64 %size, i64 0, metadata !29, metadata !55), !dbg !56
-  tail call void @llvm.dbg.value(metadata i8* %probe, i64 0, metadata !31, metadata !55), !dbg !57
-  %1 = load i32* @stack_dir, align 4, !dbg !58, !tbaa !60
-  %2 = icmp eq i32 %1, 0, !dbg !64
-  br i1 %2, label %3, label %4, !dbg !65
+  call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !12), !dbg !48
+  call void @llvm.dbg.declare(metadata !{i8* %probe}, metadata !13), !dbg !49
+  call void @llvm.dbg.value(metadata !{i8* %probe}, i64 0, metadata !15), !dbg !50
+  %0 = load i32* @stack_dir, align 4, !dbg !51, !tbaa !52
+  %cmp = icmp eq i32 %0, 0, !dbg !51
+  br i1 %cmp, label %if.then, label %if.end, !dbg !51
 
-; <label>:3                                       ; preds = %0
-  tail call fastcc void @find_stack_direction() #5, !dbg !66
-  br label %4, !dbg !66
+if.then:                                          ; preds = %entry
+  call fastcc void @find_stack_direction() #5, !dbg !55
+  br label %if.end, !dbg !55
 
-; <label>:4                                       ; preds = %3, %0
-  %5 = load %union.hdr** @last_alloca_header, align 8, !dbg !67, !tbaa !68
-  tail call void @llvm.dbg.value(metadata %union.hdr* %5, i64 0, metadata !32, metadata !55), !dbg !70
-  %6 = icmp eq %union.hdr* %5, null, !dbg !71
-  br i1 %6, label %._crit_edge, label %.lr.ph, !dbg !72
+if.end:                                           ; preds = %if.then, %entry
+  %1 = load %union.hdr** @last_alloca_header, align 8, !dbg !56, !tbaa !57
+  call void @llvm.dbg.value(metadata !{%union.hdr* %1}, i64 0, metadata !17), !dbg !56
+  %cmp134 = icmp eq %union.hdr* %1, null, !dbg !56
+  br i1 %cmp134, label %for.end, label %for.body, !dbg !56
 
-.lr.ph:                                           ; preds = %4, %18
-  %hp.01 = phi %union.hdr* [ %20, %18 ], [ %5, %4 ]
-  %7 = load i32* @stack_dir, align 4, !dbg !73, !tbaa !60
-  %8 = icmp sgt i32 %7, 0, !dbg !74
-  br i1 %8, label %9, label %thread-pre-split, !dbg !75
+for.body:                                         ; preds = %if.then9, %if.end
+  %hp.035 = phi %union.hdr* [ %1, %if.end ], [ %5, %if.then9 ]
+  %2 = load i32* @stack_dir, align 4, !dbg !58, !tbaa !52
+  %cmp2 = icmp sgt i32 %2, 0, !dbg !58
+  br i1 %cmp2, label %land.lhs.true, label %lor.lhs.false, !dbg !58
 
-; <label>:9                                       ; preds = %.lr.ph
-  %10 = getelementptr inbounds %union.hdr* %hp.01, i64 0, i32 0, i32 1, !dbg !76
-  %11 = load i8** %10, align 8, !dbg !76, !tbaa !77
-  %12 = icmp ugt i8* %11, %probe, !dbg !79
-  br i1 %12, label %18, label %._crit_edge, !dbg !80
+land.lhs.true:                                    ; preds = %for.body
+  %deep = getelementptr inbounds %union.hdr* %hp.035, i64 0, i32 0, i32 1, !dbg !58
+  %3 = load i8** %deep, align 8, !dbg !58, !tbaa !57
+  %cmp3 = icmp ugt i8* %3, %probe, !dbg !58
+  br i1 %cmp3, label %if.then9, label %lor.lhs.false, !dbg !58
 
-thread-pre-split:                                 ; preds = %.lr.ph
-  %13 = icmp slt i32 %7, 0, !dbg !81
-  br i1 %13, label %14, label %._crit_edge, !dbg !82
+lor.lhs.false:                                    ; preds = %land.lhs.true, %for.body
+  %cmp4 = icmp slt i32 %2, 0, !dbg !58
+  br i1 %cmp4, label %land.lhs.true5, label %for.end, !dbg !58
 
-; <label>:14                                      ; preds = %thread-pre-split
-  %15 = getelementptr inbounds %union.hdr* %hp.01, i64 0, i32 0, i32 1, !dbg !83
-  %16 = load i8** %15, align 8, !dbg !83, !tbaa !77
-  %17 = icmp ult i8* %16, %probe, !dbg !84
-  br i1 %17, label %18, label %._crit_edge, !dbg !85
+land.lhs.true5:                                   ; preds = %lor.lhs.false
+  %deep7 = getelementptr inbounds %union.hdr* %hp.035, i64 0, i32 0, i32 1, !dbg !58
+  %4 = load i8** %deep7, align 8, !dbg !58, !tbaa !57
+  %cmp8 = icmp ult i8* %4, %probe, !dbg !58
+  br i1 %cmp8, label %if.then9, label %for.end, !dbg !58
 
-; <label>:18                                      ; preds = %14, %9
-  %19 = getelementptr inbounds %union.hdr* %hp.01, i64 0, i32 0, i32 0, !dbg !86
-  %20 = load %union.hdr** %19, align 8, !dbg !86, !tbaa !87
-  call void @llvm.dbg.value(metadata %union.hdr* %20, i64 0, metadata !34, metadata !55), !dbg !88
-  %21 = bitcast %union.hdr* %hp.01 to i8*, !dbg !89
-  call void @free(i8* %21) #5, !dbg !90
-  call void @llvm.dbg.value(metadata %union.hdr* %20, i64 0, metadata !32, metadata !55), !dbg !70
-  %22 = icmp eq %union.hdr* %20, null, !dbg !71
-  br i1 %22, label %._crit_edge, label %.lr.ph, !dbg !72
+if.then9:                                         ; preds = %land.lhs.true5, %land.lhs.true
+  %next = getelementptr inbounds %union.hdr* %hp.035, i64 0, i32 0, i32 0, !dbg !59
+  %5 = load %union.hdr** %next, align 8, !dbg !59, !tbaa !57
+  call void @llvm.dbg.value(metadata !60, i64 0, metadata !33), !dbg !59
+  %6 = bitcast %union.hdr* %hp.035 to i8*, !dbg !61
+  call void @free(i8* %6) #6, !dbg !61
+  call void @llvm.dbg.value(metadata !60, i64 0, metadata !17), !dbg !62
+  %cmp1 = icmp eq %union.hdr* %5, null, !dbg !56
+  br i1 %cmp1, label %for.end, label %for.body, !dbg !56
 
-._crit_edge:                                      ; preds = %9, %14, %thread-pre-split, %18, %4
-  %hp.0.lcssa = phi %union.hdr* [ null, %4 ], [ %hp.01, %9 ], [ %hp.01, %14 ], [ %hp.01, %thread-pre-split ], [ null, %18 ]
-  store %union.hdr* %hp.0.lcssa, %union.hdr** @last_alloca_header, align 8, !dbg !91, !tbaa !68
-  %23 = icmp eq i64 %size, 0, !dbg !92
-  br i1 %23, label %35, label %24, !dbg !94
+for.end:                                          ; preds = %if.then9, %lor.lhs.false, %land.lhs.true5, %if.end
+  %hp.0.lcssa = phi %union.hdr* [ null, %if.end ], [ %hp.035, %land.lhs.true5 ], [ %hp.035, %lor.lhs.false ], [ null, %if.then9 ]
+  store %union.hdr* %hp.0.lcssa, %union.hdr** @last_alloca_header, align 8, !dbg !63, !tbaa !57
+  %cmp12 = icmp eq i64 %size, 0, !dbg !64
+  br i1 %cmp12, label %return, label %if.end14, !dbg !64
 
-; <label>:24                                      ; preds = %._crit_edge
-  %25 = add i64 %size, 16, !dbg !95
-  %26 = call noalias i8* @xmalloc(i64 %25) #6, !dbg !96
-  call void @llvm.dbg.value(metadata i8* %26, i64 0, metadata !39, metadata !55), !dbg !97
-  %27 = icmp eq i8* %26, null, !dbg !98
-  br i1 %27, label %28, label %29, !dbg !100
+if.end14:                                         ; preds = %for.end
+  %add = add i64 %size, 16, !dbg !65
+  %call = call noalias i8* @xmalloc(i64 %add) #6, !dbg !65
+  call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !36), !dbg !65
+  %cmp15 = icmp eq i8* %call, null, !dbg !66
+  br i1 %cmp15, label %if.then16, label %if.end17, !dbg !66
 
-; <label>:28                                      ; preds = %24
-  call void @abort() #7, !dbg !101
-  unreachable, !dbg !101
+if.then16:                                        ; preds = %if.end14
+  call void @abort() #7, !dbg !67
+  unreachable, !dbg !67
 
-; <label>:29                                      ; preds = %24
-  %30 = load i64* bitcast (%union.hdr** @last_alloca_header to i64*), align 8, !dbg !102, !tbaa !68
-  %31 = bitcast i8* %26 to i64*, !dbg !103
-  store i64 %30, i64* %31, align 8, !dbg !103, !tbaa !87
-  %32 = getelementptr inbounds i8* %26, i64 8, !dbg !104
-  %33 = bitcast i8* %32 to i8**, !dbg !104
-  call void @llvm.dbg.value(metadata i8* %probe, i64 0, metadata !30, metadata !55), !dbg !105
-  store i8* %probe, i8** %33, align 8, !dbg !106, !tbaa !77
-  store i8* %26, i8** bitcast (%union.hdr** @last_alloca_header to i8**), align 8, !dbg !107, !tbaa !68
-  %34 = getelementptr inbounds i8* %26, i64 16, !dbg !108
-  br label %35, !dbg !109
+if.end17:                                         ; preds = %if.end14
+  %7 = load %union.hdr** @last_alloca_header, align 8, !dbg !68, !tbaa !57
+  %8 = bitcast i8* %call to %union.hdr*, !dbg !68
+  %next19 = bitcast i8* %call to %union.hdr**, !dbg !68
+  store %union.hdr* %7, %union.hdr** %next19, align 8, !dbg !68, !tbaa !57
+  %deep21 = getelementptr inbounds i8* %call, i64 8, !dbg !69
+  %9 = bitcast i8* %deep21 to i8**, !dbg !69
+  call void @llvm.dbg.value(metadata !{i8* %probe}, i64 0, metadata !13), !dbg !69
+  store i8* %probe, i8** %9, align 8, !dbg !69, !tbaa !57
+  store %union.hdr* %8, %union.hdr** @last_alloca_header, align 8, !dbg !70, !tbaa !57
+  %add.ptr = getelementptr inbounds i8* %call, i64 16, !dbg !71
+  br label %return, !dbg !71
 
-; <label>:35                                      ; preds = %._crit_edge, %29
-  %.0 = phi i8* [ %34, %29 ], [ null, %._crit_edge ]
-  ret i8* %.0, !dbg !110
+return:                                           ; preds = %for.end, %if.end17
+  %retval.0 = phi i8* [ %add.ptr, %if.end17 ], [ null, %for.end ]
+  ret i8* %retval.0, !dbg !72
 }

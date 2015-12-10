@@ -1,39 +1,36 @@
 define void @Drand_fillIvector(%struct._Drand* %drand, i32 %size, i32* %ivec) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !49, metadata !57), !dbg !205
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !50, metadata !57), !dbg !206
-  tail call void @llvm.dbg.value(metadata i32* %ivec, i64 0, metadata !51, metadata !57), !dbg !207
-  %1 = icmp eq %struct._Drand* %drand, null, !dbg !208
-  %2 = icmp slt i32 %size, 0, !dbg !210
-  %or.cond = or i1 %1, %2, !dbg !211
-  %3 = icmp eq i32* %ivec, null, !dbg !212
-  %or.cond3 = or i1 %or.cond, %3, !dbg !211
-  br i1 %or.cond3, label %6, label %.preheader, !dbg !211
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Drand* %drand}, i64 0, metadata !48), !dbg !124
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !49), !dbg !125
+  tail call void @llvm.dbg.value(metadata !{i32* %ivec}, i64 0, metadata !50), !dbg !126
+  %cmp = icmp eq %struct._Drand* %drand, null, !dbg !127
+  %cmp1 = icmp slt i32 %size, 0, !dbg !127
+  %or.cond = or i1 %cmp, %cmp1, !dbg !127
+  %cmp3 = icmp eq i32* %ivec, null, !dbg !127
+  %or.cond14 = or i1 %or.cond, %cmp3, !dbg !127
+  br i1 %or.cond14, label %if.then, label %for.cond.preheader, !dbg !127
 
-.preheader:                                       ; preds = %0
-  %4 = icmp sgt i32 %size, 0, !dbg !213
-  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !216
+for.cond.preheader:                               ; preds = %entry
+  %cmp415 = icmp sgt i32 %size, 0, !dbg !128
+  br i1 %cmp415, label %for.body, label %for.end, !dbg !128
 
-.lr.ph:                                           ; preds = %.preheader
-  %5 = add i32 %size, -1, !dbg !216
-  br label %9, !dbg !216
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !130, !tbaa !56
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str3, i64 0, i64 0), %struct._Drand* %drand, i32 %size, i32* %ivec) #4, !dbg !130
+  tail call void @exit(i32 -1) #5, !dbg !132
+  unreachable, !dbg !132
 
-; <label>:6                                       ; preds = %0
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !217, !tbaa !64
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([57 x i8]* @.str3, i64 0, i64 0), %struct._Drand* %drand, i32 %size, i32* %ivec) #5, !dbg !219
-  tail call void @exit(i32 -1) #6, !dbg !220
-  unreachable, !dbg !220
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %call5 = tail call double @Drand_value(%struct._Drand* %drand) #6, !dbg !133
+  %conv = fptosi double %call5 to i32, !dbg !133
+  %arrayidx = getelementptr inbounds i32* %ivec, i64 %indvars.iv, !dbg !133
+  store i32 %conv, i32* %arrayidx, align 4, !dbg !133, !tbaa !61
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !128
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !128
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !128
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !128
 
-; <label>:9                                       ; preds = %9, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %10 = tail call double @Drand_value(%struct._Drand* %drand) #8, !dbg !221
-  %11 = fptosi double %10 to i32, !dbg !223
-  %12 = getelementptr inbounds i32* %ivec, i64 %indvars.iv, !dbg !224
-  store i32 %11, i32* %12, align 4, !dbg !225, !tbaa !226
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !216
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !216
-  %exitcond = icmp eq i32 %lftr.wideiv, %5, !dbg !216
-  br i1 %exitcond, label %._crit_edge, label %9, !dbg !216
-
-._crit_edge:                                      ; preds = %9, %.preheader
-  ret void, !dbg !227
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void, !dbg !135
 }

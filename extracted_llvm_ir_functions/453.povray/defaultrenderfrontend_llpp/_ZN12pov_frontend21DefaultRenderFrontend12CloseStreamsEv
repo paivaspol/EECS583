@@ -1,40 +1,42 @@
 define void @_ZN12pov_frontend21DefaultRenderFrontend12CloseStreamsEv(%"class.pov_frontend::DefaultRenderFrontend"* nocapture %this) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.pov_frontend::DefaultRenderFrontend"* %this, i64 0, metadata !859, metadata !1448), !dbg !1728
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !860, metadata !1448), !dbg !1729
-  br label %1, !dbg !1730
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::DefaultRenderFrontend"* %this}, i64 0, metadata !676), !dbg !1010
+  tail call void @llvm.dbg.value(metadata !438, i64 0, metadata !677), !dbg !1011
+  br label %for.body, !dbg !1011
 
-; <label>:1                                       ; preds = %15, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %15 ]
-  %2 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %this, i64 0, i32 0, i32 0, i32 1, i64 %indvars.iv, !dbg !1731
-  %3 = load %"class.pov_base::TextStreamBuffer"** %2, align 8, !dbg !1731, !tbaa !1631
-  %4 = icmp eq %"class.pov_base::TextStreamBuffer"* %3, null, !dbg !1735
-  br i1 %4, label %10, label %5, !dbg !1736
+for.body:                                         ; preds = %if.end19, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %if.end19 ]
+  %arrayidx = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %this, i64 0, i32 0, i32 0, i32 1, i64 %indvars.iv, !dbg !1012
+  %0 = load %"class.pov_base::TextStreamBuffer"** %arrayidx, align 8, !dbg !1012, !tbaa !969
+  %cmp2 = icmp eq %"class.pov_base::TextStreamBuffer"* %0, null, !dbg !1012
+  br i1 %cmp2, label %if.end, label %delete.notnull, !dbg !1012
 
-; <label>:5                                       ; preds = %1
-  %6 = bitcast %"class.pov_base::TextStreamBuffer"* %3 to void (%"class.pov_base::TextStreamBuffer"*)***, !dbg !1737
-  %7 = load void (%"class.pov_base::TextStreamBuffer"*)*** %6, align 8, !dbg !1737, !tbaa !1454
-  %8 = getelementptr inbounds void (%"class.pov_base::TextStreamBuffer"*)** %7, i64 1, !dbg !1737
-  %9 = load void (%"class.pov_base::TextStreamBuffer"*)** %8, align 8, !dbg !1737
-  tail call void %9(%"class.pov_base::TextStreamBuffer"* %3) #10, !dbg !1737
-  br label %10, !dbg !1737
+delete.notnull:                                   ; preds = %for.body
+  %1 = bitcast %"class.pov_base::TextStreamBuffer"* %0 to void (%"class.pov_base::TextStreamBuffer"*)***, !dbg !1014
+  %vtable = load void (%"class.pov_base::TextStreamBuffer"*)*** %1, align 8, !dbg !1014, !tbaa !812
+  %vfn = getelementptr inbounds void (%"class.pov_base::TextStreamBuffer"*)** %vtable, i64 1, !dbg !1014
+  %2 = load void (%"class.pov_base::TextStreamBuffer"*)** %vfn, align 8, !dbg !1014
+  tail call void %2(%"class.pov_base::TextStreamBuffer"* %0) #8, !dbg !1014
+  br label %if.end, !dbg !1014
 
-; <label>:10                                      ; preds = %1, %5
-  store %"class.pov_base::TextStreamBuffer"* null, %"class.pov_base::TextStreamBuffer"** %2, align 8, !dbg !1738, !tbaa !1631
-  %11 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %this, i64 0, i32 0, i32 0, i32 2, i64 %indvars.iv, !dbg !1739
-  %12 = load i8** %11, align 8, !dbg !1739, !tbaa !1631
-  %13 = icmp eq i8* %12, null, !dbg !1741
-  br i1 %13, label %15, label %14, !dbg !1742
+if.end:                                           ; preds = %for.body, %delete.notnull
+  store %"class.pov_base::TextStreamBuffer"* null, %"class.pov_base::TextStreamBuffer"** %arrayidx, align 8, !dbg !1015, !tbaa !969
+  %arrayidx10 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %this, i64 0, i32 0, i32 0, i32 2, i64 %indvars.iv, !dbg !1016
+  %3 = load i8** %arrayidx10, align 8, !dbg !1016, !tbaa !969
+  %cmp11 = icmp eq i8* %3, null, !dbg !1016
+  br i1 %cmp11, label %if.end19, label %delete.notnull17, !dbg !1016
 
-; <label>:14                                      ; preds = %10
-  tail call void @_ZdaPv(i8* %12) #12, !dbg !1743
-  br label %15, !dbg !1743
+delete.notnull17:                                 ; preds = %if.end
+  tail call void @_ZdaPv(i8* %3) #10, !dbg !1017
+  br label %if.end19, !dbg !1017
 
-; <label>:15                                      ; preds = %10, %14
-  store i8* null, i8** %11, align 8, !dbg !1744, !tbaa !1631
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1730
-  %exitcond = icmp eq i64 %indvars.iv.next, 8, !dbg !1730
-  br i1 %exitcond, label %16, label %1, !dbg !1730
+if.end19:                                         ; preds = %if.end, %delete.notnull17
+  store i8* null, i8** %arrayidx10, align 8, !dbg !1018, !tbaa !969
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1011
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1011
+  %exitcond = icmp eq i32 %lftr.wideiv, 8, !dbg !1011
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1011
 
-; <label>:16                                      ; preds = %15
-  ret void, !dbg !1745
+for.end:                                          ; preds = %if.end19
+  ret void, !dbg !1019
 }

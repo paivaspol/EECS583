@@ -1,33 +1,34 @@
-define i32 @_ZN3pov11UCS2_strcmpEPtS0_(i16* nocapture readonly %s1, i16* nocapture readonly %s2) #3 {
-  tail call void @llvm.dbg.value(metadata i16* %s1, i64 0, metadata !793, metadata !1286), !dbg !2011
-  tail call void @llvm.dbg.value(metadata i16* %s2, i64 0, metadata !794, metadata !1286), !dbg !2012
-  br label %1, !dbg !2013
+define i32 @_ZN3pov11UCS2_strcmpEPtS0_(i16* nocapture %s1, i16* nocapture %s2) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %s1}, i64 0, metadata !718), !dbg !1238
+  tail call void @llvm.dbg.value(metadata !{i16* %s2}, i64 0, metadata !719), !dbg !1238
+  br label %while.cond, !dbg !1239
 
-; <label>:1                                       ; preds = %5, %0
-  %.02 = phi i16* [ %s2, %0 ], [ %6, %5 ]
-  %.01 = phi i16* [ %s1, %0 ], [ %7, %5 ]
-  tail call void @llvm.dbg.value(metadata i16* %7, i64 0, metadata !793, metadata !1286), !dbg !2011
-  %2 = load i16* %.01, align 2, !dbg !2014, !tbaa !1338
-  tail call void @llvm.dbg.value(metadata i16 %2, i64 0, metadata !795, metadata !1286), !dbg !2015
-  tail call void @llvm.dbg.value(metadata i16* %6, i64 0, metadata !794, metadata !1286), !dbg !2012
-  %3 = load i16* %.02, align 2, !dbg !2016, !tbaa !1338
-  tail call void @llvm.dbg.value(metadata i16 %3, i64 0, metadata !796, metadata !1286), !dbg !2017
-  %4 = icmp eq i16 %2, %3, !dbg !2018
-  br i1 %4, label %5, label %9, !dbg !2013
+while.cond:                                       ; preds = %while.body, %entry
+  %s2.addr.0 = phi i16* [ %s2, %entry ], [ %incdec.ptr1, %while.body ]
+  %s1.addr.0 = phi i16* [ %s1, %entry ], [ %incdec.ptr, %while.body ]
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !718), !dbg !1239
+  %0 = load i16* %s1.addr.0, align 2, !dbg !1239, !tbaa !868
+  tail call void @llvm.dbg.value(metadata !{i16 %0}, i64 0, metadata !720), !dbg !1239
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr1}, i64 0, metadata !719), !dbg !1239
+  %1 = load i16* %s2.addr.0, align 2, !dbg !1239, !tbaa !868
+  tail call void @llvm.dbg.value(metadata !{i16 %1}, i64 0, metadata !721), !dbg !1239
+  %cmp = icmp eq i16 %0, %1, !dbg !1239
+  br i1 %cmp, label %while.body, label %while.end, !dbg !1239
 
-; <label>:5                                       ; preds = %1
-  %6 = getelementptr inbounds i16* %.02, i64 1, !dbg !2019
-  %7 = getelementptr inbounds i16* %.01, i64 1, !dbg !2020
-  %8 = icmp eq i16 %2, 0, !dbg !2021
-  br i1 %8, label %.loopexit, label %1, !dbg !2024
+while.body:                                       ; preds = %while.cond
+  %incdec.ptr1 = getelementptr inbounds i16* %s2.addr.0, i64 1, !dbg !1239
+  %incdec.ptr = getelementptr inbounds i16* %s1.addr.0, i64 1, !dbg !1239
+  %cmp4 = icmp eq i16 %0, 0, !dbg !1240
+  br i1 %cmp4, label %return, label %while.cond, !dbg !1240
 
-; <label>:9                                       ; preds = %1
-  %10 = zext i16 %2 to i32, !dbg !2025
-  %11 = zext i16 %3 to i32, !dbg !2026
-  %12 = sub nsw i32 %10, %11, !dbg !2027
-  br label %.loopexit, !dbg !2028
+while.end:                                        ; preds = %while.cond
+  %conv = zext i16 %0 to i32, !dbg !1239
+  %conv2 = zext i16 %1 to i32, !dbg !1239
+  %sub = sub nsw i32 %conv, %conv2, !dbg !1242
+  br label %return, !dbg !1242
 
-.loopexit:                                        ; preds = %5, %9
-  %.0 = phi i32 [ %12, %9 ], [ 0, %5 ]
-  ret i32 %.0, !dbg !2029
+return:                                           ; preds = %while.body, %while.end
+  %retval.0 = phi i32 [ %sub, %while.end ], [ 0, %while.body ]
+  ret i32 %retval.0, !dbg !1243
 }

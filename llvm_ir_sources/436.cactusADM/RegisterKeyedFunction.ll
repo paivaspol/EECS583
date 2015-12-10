@@ -1,174 +1,152 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 @.str = private unnamed_addr constant [97 x i8] c"$Header: /cactus/Cactus/src/util/RegisterKeyedFunction.c,v 1.6 2001/05/10 12:35:21 goodale Exp $\00", align 1
 
-; Function Attrs: nounwind optsize readnone ssp uwtable
+; Function Attrs: nounwind optsize readnone uwtable
 define i8* @CCTKi_version_util_RegisterKeyedFunction_c() #0 {
-  ret i8* getelementptr inbounds ([97 x i8]* @.str, i64 0, i64 0), !dbg !47
+entry:
+  ret i8* getelementptr inbounds ([97 x i8]* @.str, i64 0, i64 0), !dbg !42
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @RegisterKeyedFunction(void ()** nocapture %array, i32 %min, i32 %max, i32 %key, void ()* %func) #1 {
-  tail call void @llvm.dbg.value(metadata void ()** %array, i64 0, metadata !28, metadata !48), !dbg !49
-  tail call void @llvm.dbg.value(metadata i32 %min, i64 0, metadata !29, metadata !48), !dbg !50
-  tail call void @llvm.dbg.value(metadata i32 %max, i64 0, metadata !30, metadata !48), !dbg !51
-  tail call void @llvm.dbg.value(metadata i32 %key, i64 0, metadata !31, metadata !48), !dbg !52
-  tail call void @llvm.dbg.value(metadata void ()* %func, i64 0, metadata !32, metadata !48), !dbg !53
-  %1 = icmp slt i32 %key, %min, !dbg !54
-  %2 = icmp sgt i32 %key, %max, !dbg !56
-  %or.cond = or i1 %1, %2, !dbg !57
-  br i1 %or.cond, label %9, label %3, !dbg !57
+entry:
+  tail call void @llvm.dbg.value(metadata !{void ()** %array}, i64 0, metadata !27), !dbg !43
+  tail call void @llvm.dbg.value(metadata !{i32 %min}, i64 0, metadata !28), !dbg !44
+  tail call void @llvm.dbg.value(metadata !{i32 %max}, i64 0, metadata !29), !dbg !44
+  tail call void @llvm.dbg.value(metadata !{i32 %key}, i64 0, metadata !30), !dbg !45
+  tail call void @llvm.dbg.value(metadata !{void ()* %func}, i64 0, metadata !31), !dbg !45
+  %cmp = icmp slt i32 %key, %min, !dbg !46
+  %cmp1 = icmp sgt i32 %key, %max, !dbg !46
+  %or.cond = or i1 %cmp, %cmp1, !dbg !46
+  br i1 %or.cond, label %if.end7, label %if.then, !dbg !46
 
-; <label>:3                                       ; preds = %0
-  %4 = sext i32 %key to i64, !dbg !58
-  %5 = getelementptr inbounds void ()** %array, i64 %4, !dbg !58
-  %6 = load void ()** %5, align 8, !dbg !58, !tbaa !61
-  %7 = icmp eq void ()* %6, null, !dbg !65
-  br i1 %7, label %8, label %9, !dbg !66
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %key to i64, !dbg !47
+  %arrayidx = getelementptr inbounds void ()** %array, i64 %idxprom, !dbg !47
+  %0 = load void ()** %arrayidx, align 8, !dbg !47, !tbaa !49
+  %cmp2 = icmp eq void ()* %0, null, !dbg !47
+  br i1 %cmp2, label %if.then3, label %if.end7, !dbg !47
 
-; <label>:8                                       ; preds = %3
-  store void ()* %func, void ()** %5, align 8, !dbg !67, !tbaa !61
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !33, metadata !48), !dbg !69
-  br label %9, !dbg !70
+if.then3:                                         ; preds = %if.then
+  store void ()* %func, void ()** %arrayidx, align 8, !dbg !52, !tbaa !49
+  tail call void @llvm.dbg.value(metadata !9, i64 0, metadata !32), !dbg !54
+  br label %if.end7, !dbg !55
 
-; <label>:9                                       ; preds = %0, %3, %8
-  %return_code.0 = phi i32 [ 0, %8 ], [ 1, %3 ], [ 2, %0 ]
-  ret i32 %return_code.0, !dbg !71
+if.end7:                                          ; preds = %entry, %if.then, %if.then3
+  %return_code.0 = phi i32 [ 0, %if.then3 ], [ 1, %if.then ], [ 2, %entry ]
+  ret i32 %return_code.0, !dbg !56
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define noalias void ()** @CreateKeyedFunctionArray(i32 %size) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !38, metadata !48), !dbg !72
-  %1 = sext i32 %size to i64, !dbg !73
-  %2 = shl nsw i64 %1, 3, !dbg !74
-  %3 = tail call i8* @malloc(i64 %2) #5, !dbg !75
-  %4 = bitcast i8* %3 to void ()**, !dbg !76
-  tail call void @llvm.dbg.value(metadata void ()** %4, i64 0, metadata !39, metadata !48), !dbg !77
-  %5 = icmp ne i8* %3, null, !dbg !78
-  %6 = icmp sgt i32 %size, 0, !dbg !80
-  %or.cond = and i1 %5, %6, !dbg !84
-  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !84
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !37), !dbg !57
+  %conv = sext i32 %size to i64, !dbg !58
+  %mul = shl nsw i64 %conv, 3, !dbg !58
+  %call = tail call noalias i8* @malloc(i64 %mul) #5, !dbg !58
+  %0 = bitcast i8* %call to void ()**, !dbg !58
+  tail call void @llvm.dbg.value(metadata !{void ()** %0}, i64 0, metadata !38), !dbg !58
+  %tobool = icmp ne i8* %call, null, !dbg !59
+  %cmp7 = icmp sgt i32 %size, 0, !dbg !60
+  %or.cond = and i1 %tobool, %cmp7, !dbg !59
+  br i1 %or.cond, label %for.body.lr.ph, label %if.end, !dbg !59
 
-.lr.ph:                                           ; preds = %0
-  %7 = add i32 %size, -1, !dbg !85
-  %8 = zext i32 %7 to i64
-  %9 = shl nuw nsw i64 %8, 3, !dbg !85
-  %10 = add nuw nsw i64 %9, 8, !dbg !85
-  call void @llvm.memset.p0i8.i64(i8* %3, i8 0, i64 %10, i32 8, i1 false), !dbg !86
-  br label %.loopexit, !dbg !85
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = add i32 %size, -1, !dbg !60
+  %2 = zext i32 %1 to i64
+  %3 = shl nuw nsw i64 %2, 3, !dbg !60
+  %4 = add i64 %3, 8, !dbg !60
+  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 %4, i32 8, i1 false), !dbg !63
+  br label %if.end, !dbg !60
 
-.loopexit:                                        ; preds = %0, %.lr.ph
-  ret void ()** %4, !dbg !88
+if.end:                                           ; preds = %entry, %for.body.lr.ph
+  ret void ()** %0, !dbg !65
 }
 
 ; Function Attrs: nounwind optsize
 declare noalias i8* @malloc(i64) #2
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #3
+declare void @llvm.dbg.value(metadata, i64, metadata) #3
 
 ; Function Attrs: nounwind
 declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #4
 
-attributes #0 = { nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #3 = { nounwind readnone }
 attributes #4 = { nounwind }
 attributes #5 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!43, !44, !45}
-!llvm.ident = !{!46}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !9, subprograms: !15, globals: !41, imports: !22)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{!3}
-!3 = !DICompositeType(tag: DW_TAG_enumeration_type, name: "RegisterKeyedFunctionErrors", file: !4, line: 36, size: 32, align: 32, elements: !5)
-!4 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/RegisterKeyedFunction.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!5 = !{!6, !7, !8}
-!6 = !DIEnumerator(name: "REG_KEYED_FUNCTION_SUCCESS", value: 0)
-!7 = !DIEnumerator(name: "REG_KEYED_FUNCTION_ALREADY_ASSIGNED", value: 1)
-!8 = !DIEnumerator(name: "REG_KEYED_FUNCTION_RANGE_ERROR", value: 2)
-!9 = !{!10, !11}
-!10 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!11 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !12, size: 64, align: 64)
-!12 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !13, size: 64, align: 64)
-!13 = !DISubroutineType(types: !14)
-!14 = !{null}
-!15 = !{!16, !23, !34}
-!16 = !DISubprogram(name: "CCTKi_version_util_RegisterKeyedFunction_c", scope: !1, file: !1, line: 19, type: !17, isLocal: false, isDefinition: true, scopeLine: 19, flags: DIFlagPrototyped, isOptimized: true, function: i8* ()* @CCTKi_version_util_RegisterKeyedFunction_c, variables: !22)
-!17 = !DISubroutineType(types: !18)
-!18 = !{!19}
-!19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64, align: 64)
-!20 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !21)
-!21 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!22 = !{}
-!23 = !DISubprogram(name: "RegisterKeyedFunction", scope: !1, file: !1, line: 35, type: !24, isLocal: false, isDefinition: true, scopeLine: 38, flags: DIFlagPrototyped, isOptimized: true, function: i32 (void ()**, i32, i32, i32, void ()*)* @RegisterKeyedFunction, variables: !27)
-!24 = !DISubroutineType(types: !25)
-!25 = !{!26, !11, !26, !26, !26, !12}
-!26 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!27 = !{!28, !29, !30, !31, !32, !33}
-!28 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "array", arg: 1, scope: !23, file: !1, line: 35, type: !11)
-!29 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "min", arg: 2, scope: !23, file: !1, line: 36, type: !26)
-!30 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "max", arg: 3, scope: !23, file: !1, line: 36, type: !26)
-!31 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "key", arg: 4, scope: !23, file: !1, line: 37, type: !26)
-!32 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "func", arg: 5, scope: !23, file: !1, line: 37, type: !12)
-!33 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "return_code", scope: !23, file: !1, line: 39, type: !26)
-!34 = !DISubprogram(name: "CreateKeyedFunctionArray", scope: !1, file: !1, line: 80, type: !35, isLocal: false, isDefinition: true, scopeLine: 81, flags: DIFlagPrototyped, isOptimized: true, function: void ()** (i32)* @CreateKeyedFunctionArray, variables: !37)
-!35 = !DISubroutineType(types: !36)
-!36 = !{!11, !26}
-!37 = !{!38, !39, !40}
-!38 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "size", arg: 1, scope: !34, file: !1, line: 80, type: !26)
-!39 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "array", scope: !34, file: !1, line: 82, type: !11)
-!40 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !34, file: !1, line: 83, type: !26)
-!41 = !{!42}
-!42 = !DIGlobalVariable(name: "rcsid", scope: !0, file: !1, line: 17, type: !19, isLocal: true, isDefinition: true)
-!43 = !{i32 2, !"Dwarf Version", i32 2}
-!44 = !{i32 2, !"Debug Info Version", i32 700000003}
-!45 = !{i32 1, !"PIC Level", i32 2}
-!46 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!47 = !DILocation(line: 19, column: 1, scope: !16)
-!48 = !DIExpression()
-!49 = !DILocation(line: 35, column: 34, scope: !23)
-!50 = !DILocation(line: 36, column: 31, scope: !23)
-!51 = !DILocation(line: 36, column: 40, scope: !23)
-!52 = !DILocation(line: 37, column: 31, scope: !23)
-!53 = !DILocation(line: 37, column: 43, scope: !23)
-!54 = !DILocation(line: 41, column: 10, scope: !55)
-!55 = distinct !DILexicalBlock(scope: !23, file: !1, line: 41, column: 6)
-!56 = !DILocation(line: 41, column: 24, scope: !55)
-!57 = !DILocation(line: 41, column: 17, scope: !55)
-!58 = !DILocation(line: 43, column: 8, scope: !59)
-!59 = distinct !DILexicalBlock(scope: !60, file: !1, line: 43, column: 8)
-!60 = distinct !DILexicalBlock(scope: !55, file: !1, line: 42, column: 3)
-!61 = !{!62, !62, i64 0}
-!62 = !{!"any pointer", !63, i64 0}
-!63 = !{!"omnipotent char", !64, i64 0}
-!64 = !{!"Simple C/C++ TBAA"}
-!65 = !DILocation(line: 43, column: 19, scope: !59)
-!66 = !DILocation(line: 43, column: 8, scope: !60)
-!67 = !DILocation(line: 45, column: 18, scope: !68)
-!68 = distinct !DILexicalBlock(scope: !59, file: !1, line: 44, column: 5)
-!69 = !DILocation(line: 39, column: 7, scope: !23)
-!70 = !DILocation(line: 47, column: 5, scope: !68)
-!71 = !DILocation(line: 58, column: 3, scope: !23)
-!72 = !DILocation(line: 80, column: 40, scope: !34)
-!73 = !DILocation(line: 86, column: 35, scope: !34)
-!74 = !DILocation(line: 86, column: 39, scope: !34)
-!75 = !DILocation(line: 86, column: 28, scope: !34)
-!76 = !DILocation(line: 86, column: 11, scope: !34)
-!77 = !DILocation(line: 82, column: 11, scope: !34)
-!78 = !DILocation(line: 88, column: 6, scope: !79)
-!79 = distinct !DILexicalBlock(scope: !34, file: !1, line: 88, column: 6)
-!80 = !DILocation(line: 91, column: 18, scope: !81)
-!81 = distinct !DILexicalBlock(scope: !82, file: !1, line: 91, column: 5)
-!82 = distinct !DILexicalBlock(scope: !83, file: !1, line: 91, column: 5)
-!83 = distinct !DILexicalBlock(scope: !79, file: !1, line: 89, column: 3)
-!84 = !DILocation(line: 88, column: 6, scope: !34)
-!85 = !DILocation(line: 91, column: 5, scope: !82)
-!86 = !DILocation(line: 93, column: 16, scope: !87)
-!87 = distinct !DILexicalBlock(scope: !81, file: !1, line: 92, column: 5)
-!88 = !DILocation(line: 97, column: 3, scope: !34)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !9, metadata !10, metadata !40, metadata !9, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{metadata !3}
+!3 = metadata !{i32 786436, metadata !4, null, metadata !"RegisterKeyedFunctionErrors", i32 36, i64 32, i64 32, i32 0, i32 0, null, metadata !5, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [RegisterKeyedFunctionErrors] [line 36, size 32, align 32, offset 0] [from ]
+!4 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/RegisterKeyedFunction.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!5 = metadata !{metadata !6, metadata !7, metadata !8}
+!6 = metadata !{i32 786472, metadata !"REG_KEYED_FUNCTION_SUCCESS", i64 0} ; [ DW_TAG_enumerator ] [REG_KEYED_FUNCTION_SUCCESS :: 0]
+!7 = metadata !{i32 786472, metadata !"REG_KEYED_FUNCTION_ALREADY_ASSIGNED", i64 1} ; [ DW_TAG_enumerator ] [REG_KEYED_FUNCTION_ALREADY_ASSIGNED :: 1]
+!8 = metadata !{i32 786472, metadata !"REG_KEYED_FUNCTION_RANGE_ERROR", i64 2} ; [ DW_TAG_enumerator ] [REG_KEYED_FUNCTION_RANGE_ERROR :: 2]
+!9 = metadata !{i32 0}
+!10 = metadata !{metadata !11, metadata !18, metadata !33}
+!11 = metadata !{i32 786478, metadata !1, metadata !12, metadata !"CCTKi_version_util_RegisterKeyedFunction_c", metadata !"CCTKi_version_util_RegisterKeyedFunction_c", metadata !"", i32 19, metadata !13, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* ()* @CCTKi_version_util_RegisterKeyedFunction_c, null, null, metadata !9, i32 19} ; [ DW_TAG_subprogram ] [line 19] [def] [CCTKi_version_util_RegisterKeyedFunction_c]
+!12 = metadata !{i32 786473, metadata !1}         ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c]
+!13 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !14, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!14 = metadata !{metadata !15}
+!15 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !16} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!16 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !17} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!17 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!18 = metadata !{i32 786478, metadata !1, metadata !12, metadata !"RegisterKeyedFunction", metadata !"RegisterKeyedFunction", metadata !"", i32 35, metadata !19, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (void ()**, i32, i32, i32, void ()*)* @RegisterKeyedFunction, null, null, metadata !26, i32 38} ; [ DW_TAG_subprogram ] [line 35] [def] [scope 38] [RegisterKeyedFunction]
+!19 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !20, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!20 = metadata !{metadata !21, metadata !22, metadata !21, metadata !21, metadata !21, metadata !23}
+!21 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!22 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !23} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!23 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !24} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!24 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !25, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!25 = metadata !{null}
+!26 = metadata !{metadata !27, metadata !28, metadata !29, metadata !30, metadata !31, metadata !32}
+!27 = metadata !{i32 786689, metadata !18, metadata !"array", metadata !12, i32 16777251, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [array] [line 35]
+!28 = metadata !{i32 786689, metadata !18, metadata !"min", metadata !12, i32 33554468, metadata !21, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [min] [line 36]
+!29 = metadata !{i32 786689, metadata !18, metadata !"max", metadata !12, i32 50331684, metadata !21, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [max] [line 36]
+!30 = metadata !{i32 786689, metadata !18, metadata !"key", metadata !12, i32 67108901, metadata !21, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [key] [line 37]
+!31 = metadata !{i32 786689, metadata !18, metadata !"func", metadata !12, i32 83886117, metadata !23, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [func] [line 37]
+!32 = metadata !{i32 786688, metadata !18, metadata !"return_code", metadata !12, i32 39, metadata !21, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [return_code] [line 39]
+!33 = metadata !{i32 786478, metadata !1, metadata !12, metadata !"CreateKeyedFunctionArray", metadata !"CreateKeyedFunctionArray", metadata !"", i32 80, metadata !34, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()** (i32)* @CreateKeyedFunctionArray, null, null, metadata !36, i32 81} ; [ DW_TAG_subprogram ] [line 80] [def] [scope 81] [CreateKeyedFunctionArray]
+!34 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !35, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!35 = metadata !{metadata !22, metadata !21}
+!36 = metadata !{metadata !37, metadata !38, metadata !39}
+!37 = metadata !{i32 786689, metadata !33, metadata !"size", metadata !12, i32 16777296, metadata !21, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [size] [line 80]
+!38 = metadata !{i32 786688, metadata !33, metadata !"array", metadata !12, i32 82, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [array] [line 82]
+!39 = metadata !{i32 786688, metadata !33, metadata !"i", metadata !12, i32 83, metadata !21, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 83]
+!40 = metadata !{metadata !41}
+!41 = metadata !{i32 786484, i32 0, null, metadata !"rcsid", metadata !"rcsid", metadata !"", metadata !12, i32 17, metadata !15, i32 1, i32 1, null, null}
+!42 = metadata !{i32 19, i32 0, metadata !11, null}
+!43 = metadata !{i32 35, i32 0, metadata !18, null}
+!44 = metadata !{i32 36, i32 0, metadata !18, null}
+!45 = metadata !{i32 37, i32 0, metadata !18, null}
+!46 = metadata !{i32 41, i32 0, metadata !18, null}
+!47 = metadata !{i32 43, i32 0, metadata !48, null}
+!48 = metadata !{i32 786443, metadata !1, metadata !18, i32 42, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c]
+!49 = metadata !{metadata !"any pointer", metadata !50}
+!50 = metadata !{metadata !"omnipotent char", metadata !51}
+!51 = metadata !{metadata !"Simple C/C++ TBAA"}
+!52 = metadata !{i32 45, i32 0, metadata !53, null}
+!53 = metadata !{i32 786443, metadata !1, metadata !48, i32 44, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c]
+!54 = metadata !{i32 46, i32 0, metadata !53, null}
+!55 = metadata !{i32 47, i32 0, metadata !53, null}
+!56 = metadata !{i32 58, i32 0, metadata !18, null} ; [ DW_TAG_imported_module ]
+!57 = metadata !{i32 80, i32 0, metadata !33, null}
+!58 = metadata !{i32 86, i32 0, metadata !33, null}
+!59 = metadata !{i32 88, i32 0, metadata !33, null}
+!60 = metadata !{i32 91, i32 0, metadata !61, null}
+!61 = metadata !{i32 786443, metadata !1, metadata !62, i32 91, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c]
+!62 = metadata !{i32 786443, metadata !1, metadata !33, i32 89, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c]
+!63 = metadata !{i32 93, i32 0, metadata !64, null}
+!64 = metadata !{i32 786443, metadata !1, metadata !61, i32 92, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/RegisterKeyedFunction.c]
+!65 = metadata !{i32 97, i32 0, metadata !33, null}

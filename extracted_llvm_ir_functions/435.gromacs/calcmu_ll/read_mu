@@ -1,40 +1,35 @@
-define i32 @read_mu(%struct.__sFILE* nocapture %fp, float* nocapture %mu, float* nocapture %vol) #4 {
+define i32 @read_mu(%struct._IO_FILE* nocapture %fp, float* nocapture %mu, float* nocapture %vol) #0 {
+entry:
   %mmm = alloca [4 x float], align 16
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !241, metadata !261), !dbg !439
-  tail call void @llvm.dbg.value(metadata float* %mu, i64 0, metadata !242, metadata !261), !dbg !440
-  tail call void @llvm.dbg.value(metadata float* %vol, i64 0, metadata !243, metadata !261), !dbg !441
-  tail call void @llvm.dbg.declare(metadata [4 x float]* %mmm, metadata !244, metadata !261), !dbg !442
-  %1 = bitcast [4 x float]* %mmm to i8*, !dbg !443
-  %2 = call i64 @fread(i8* %1, i64 64, i64 1, %struct.__sFILE* %fp) #8, !dbg !445
-  %3 = icmp eq i64 %2, 1, !dbg !446
-  br i1 %3, label %4, label %22, !dbg !447
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !111), !dbg !155
+  call void @llvm.dbg.value(metadata !{float* %mu}, i64 0, metadata !112), !dbg !155
+  call void @llvm.dbg.value(metadata !{float* %vol}, i64 0, metadata !113), !dbg !155
+  call void @llvm.dbg.declare(metadata !{[4 x float]* %mmm}, metadata !114), !dbg !156
+  %0 = bitcast [4 x float]* %mmm to i8*, !dbg !157
+  %call = call i64 @fread(i8* %0, i64 64, i64 1, %struct._IO_FILE* %fp) #4, !dbg !157
+  %cmp = icmp eq i64 %call, 1, !dbg !157
+  br i1 %cmp, label %if.end, label %return, !dbg !157
 
-; <label>:4                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata float* %mu, i64 0, metadata !256, metadata !261), !dbg !448
-  %5 = bitcast [4 x float]* %mmm to i64*, !dbg !450
-  %6 = load i64* %5, align 16, !dbg !450
-  %7 = trunc i64 %6 to i32, !dbg !450
-  %8 = bitcast float* %mu to i32*, !dbg !451
-  store i32 %7, i32* %8, align 4, !dbg !451, !tbaa !357
-  %9 = lshr i64 %6, 32
-  %10 = trunc i64 %9 to i32
-  %11 = getelementptr inbounds float* %mu, i64 1, !dbg !452
-  %12 = bitcast float* %11 to i32*, !dbg !453
-  store i32 %10, i32* %12, align 4, !dbg !453, !tbaa !357
-  %13 = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 2, !dbg !454
-  %14 = bitcast float* %13 to i64*, !dbg !454
-  %15 = load i64* %14, align 8, !dbg !454
-  %16 = trunc i64 %15 to i32, !dbg !454
-  %17 = getelementptr inbounds float* %mu, i64 2, !dbg !455
-  %18 = bitcast float* %17 to i32*, !dbg !456
-  store i32 %16, i32* %18, align 4, !dbg !456, !tbaa !357
-  %19 = lshr i64 %15, 32
-  %20 = trunc i64 %19 to i32
-  %21 = bitcast float* %vol to i32*, !dbg !457
-  store i32 %20, i32* %21, align 4, !dbg !457, !tbaa !357
-  br label %22, !dbg !458
+if.end:                                           ; preds = %entry
+  %arraydecay = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 0, !dbg !157
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay}, i64 0, metadata !158), !dbg !160
+  tail call void @llvm.dbg.value(metadata !{float* %mu}, i64 0, metadata !161), !dbg !160
+  %1 = load float* %arraydecay, align 16, !dbg !162, !tbaa !147
+  store float %1, float* %mu, align 4, !dbg !162, !tbaa !147
+  %arrayidx2.i = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 1, !dbg !164
+  %2 = load float* %arrayidx2.i, align 4, !dbg !164, !tbaa !147
+  %arrayidx3.i = getelementptr inbounds float* %mu, i64 1, !dbg !164
+  store float %2, float* %arrayidx3.i, align 4, !dbg !164, !tbaa !147
+  %arrayidx4.i = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 2, !dbg !165
+  %3 = load float* %arrayidx4.i, align 8, !dbg !165, !tbaa !147
+  %arrayidx5.i = getelementptr inbounds float* %mu, i64 2, !dbg !165
+  store float %3, float* %arrayidx5.i, align 4, !dbg !165, !tbaa !147
+  %arrayidx = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 3, !dbg !166
+  %4 = load float* %arrayidx, align 4, !dbg !166, !tbaa !147
+  store float %4, float* %vol, align 4, !dbg !166, !tbaa !147
+  br label %return, !dbg !167
 
-; <label>:22                                      ; preds = %0, %4
-  %.0 = phi i32 [ 1, %4 ], [ 0, %0 ]
-  ret i32 %.0, !dbg !459
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !167
 }

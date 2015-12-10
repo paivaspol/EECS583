@@ -1,18 +1,19 @@
 define void @Chv_free(%struct._Chv* %chv) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv, i64 0, metadata !53, metadata !62), !dbg !122
-  %1 = icmp eq %struct._Chv* %chv, null, !dbg !123
-  br i1 %1, label %2, label %5, !dbg !125
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %chv}, i64 0, metadata !50), !dbg !85
+  %cmp = icmp eq %struct._Chv* %chv, null, !dbg !86
+  br i1 %cmp, label %if.then, label %if.end, !dbg !86
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !126, !tbaa !67
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([42 x i8]* @.str4, i64 0, i64 0), %struct._Chv* null) #6, !dbg !128
-  tail call void @exit(i32 -1) #7, !dbg !129
-  unreachable, !dbg !129
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !87, !tbaa !55
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([42 x i8]* @.str4, i64 0, i64 0), %struct._Chv* null) #6, !dbg !87
+  tail call void @exit(i32 -1) #7, !dbg !89
+  unreachable, !dbg !89
 
-; <label>:5                                       ; preds = %0
-  tail call void @Chv_clearData(%struct._Chv* %chv) #8, !dbg !130
-  %6 = bitcast %struct._Chv* %chv to i8*, !dbg !131
-  tail call void @free(i8* %6) #8, !dbg !131
-  tail call void @llvm.dbg.value(metadata %struct._Chv* null, i64 0, metadata !53, metadata !62), !dbg !122
-  ret void, !dbg !134
+if.end:                                           ; preds = %entry
+  tail call void @Chv_clearData(%struct._Chv* %chv) #8, !dbg !90
+  %1 = bitcast %struct._Chv* %chv to i8*, !dbg !91
+  tail call void @free(i8* %1) #6, !dbg !91
+  tail call void @llvm.dbg.value(metadata !93, i64 0, metadata !50), !dbg !91
+  ret void, !dbg !94
 }

@@ -1,16 +1,17 @@
-define i8* @ShortProgram() #4 {
-  %1 = load i8** @program, align 8, !dbg !1130, !tbaa !1132
-  %2 = icmp eq i8* %1, null, !dbg !1130
-  br i1 %2, label %7, label %3, !dbg !1133
+define i8* @ShortProgram() #0 {
+entry:
+  %0 = load i8** @program, align 8, !dbg !635, !tbaa !636
+  %tobool = icmp eq i8* %0, null, !dbg !635
+  br i1 %tobool, label %return, label %if.then, !dbg !635
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i8* @strrchr(i8* %1, i32 47) #12, !dbg !1134
-  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !361, metadata !852), !dbg !1137
-  %5 = icmp eq i8* %4, null, !dbg !1138
-  %6 = getelementptr inbounds i8* %4, i64 1, !dbg !1139
-  %. = select i1 %5, i8* %1, i8* %6, !dbg !1140
-  ret i8* %., !dbg !1140
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @strrchr(i8* %0, i32 47) #10, !dbg !639
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !93), !dbg !639
+  %cmp = icmp eq i8* %call, null, !dbg !639
+  %add.ptr = getelementptr inbounds i8* %call, i64 1, !dbg !641
+  %.add.ptr = select i1 %cmp, i8* %0, i8* %add.ptr, !dbg !639
+  ret i8* %.add.ptr, !dbg !639
 
-; <label>:7                                       ; preds = %0
-  ret i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), !dbg !1141
+return:                                           ; preds = %entry
+  ret i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), !dbg !642
 }

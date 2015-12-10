@@ -1,26 +1,27 @@
 define void @Lock_clearData(%struct._Lock* %lock) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Lock* %lock, i64 0, metadata !31, metadata !43), !dbg !64
-  %1 = icmp eq %struct._Lock* %lock, null, !dbg !65
-  br i1 %1, label %2, label %5, !dbg !67
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Lock* %lock}, i64 0, metadata !27), !dbg !47
+  %cmp = icmp eq %struct._Lock* %lock, null, !dbg !48
+  br i1 %cmp, label %if.then, label %if.end, !dbg !48
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !68, !tbaa !48
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([48 x i8]* @.str3, i64 0, i64 0), %struct._Lock* null) #5, !dbg !70
-  tail call void @exit(i32 -1) #6, !dbg !71
-  unreachable, !dbg !71
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !49, !tbaa !35
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str3, i64 0, i64 0), %struct._Lock* null) #5, !dbg !49
+  tail call void @exit(i32 -1) #6, !dbg !51
+  unreachable, !dbg !51
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Lock* %lock, i64 0, i32 0, !dbg !72
-  %7 = load i8** %6, align 8, !dbg !72, !tbaa !74
-  %8 = icmp eq i8* %7, null, !dbg !77
-  br i1 %8, label %10, label %9, !dbg !78
+if.end:                                           ; preds = %entry
+  %mutex = getelementptr inbounds %struct._Lock* %lock, i64 0, i32 0, !dbg !52
+  %1 = load i8** %mutex, align 8, !dbg !52, !tbaa !35
+  %cmp1 = icmp eq i8* %1, null, !dbg !52
+  br i1 %cmp1, label %if.end9, label %if.then5, !dbg !52
 
-; <label>:9                                       ; preds = %5
-  tail call void @free(i8* %7) #7, !dbg !79
-  store i8* null, i8** %6, align 8, !dbg !79, !tbaa !74
-  br label %10, !dbg !79
+if.then5:                                         ; preds = %if.end
+  tail call void @free(i8* %1) #5, !dbg !53
+  store i8* null, i8** %mutex, align 8, !dbg !53, !tbaa !35
+  br label %if.end9, !dbg !53
 
-; <label>:10                                      ; preds = %5, %9
-  tail call void @Lock_setDefaultFields(%struct._Lock* %lock) #7, !dbg !83
-  ret void, !dbg !84
+if.end9:                                          ; preds = %if.end, %if.then5
+  tail call void @Lock_setDefaultFields(%struct._Lock* %lock) #7, !dbg !56
+  ret void, !dbg !57
 }

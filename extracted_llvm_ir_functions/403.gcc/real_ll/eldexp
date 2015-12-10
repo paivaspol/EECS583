@@ -1,13 +1,20 @@
 define internal fastcc void @eldexp(i16* nocapture %x, i32 %pwr2, i16* nocapture %y) #0 {
 entry:
   %xi = alloca [9 x i16], align 16
-  %arraydecay = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 0
-  call fastcc void @emovi(i16* %x, i16* %arraydecay) #6
-  %arrayidx = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 1
-  %0 = load i16* %arrayidx, align 2, !tbaa !0
-  %conv = zext i16 %0 to i32
-  %add = add nsw i32 %conv, %pwr2
-  call fastcc void @emdnorm(i16* %arraydecay, i32 0, i32 0, i32 %add, i32 64) #6
-  call fastcc void @emovo(i16* %arraydecay, i16* %y) #6
-  ret void
+  call void @llvm.dbg.value(metadata !{i16* %x}, i64 0, metadata !507), !dbg !2116
+  call void @llvm.dbg.value(metadata !{i32 %pwr2}, i64 0, metadata !508), !dbg !2117
+  call void @llvm.dbg.value(metadata !{i16* %y}, i64 0, metadata !509), !dbg !2118
+  call void @llvm.dbg.declare(metadata !{[9 x i16]* %xi}, metadata !510), !dbg !2119
+  %arraydecay = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 0, !dbg !2120
+  call fastcc void @emovi(i16* %x, i16* %arraydecay) #7, !dbg !2120
+  %arrayidx = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 1, !dbg !2121
+  %0 = load i16* %arrayidx, align 2, !dbg !2121, !tbaa !1057
+  %conv = zext i16 %0 to i32, !dbg !2121
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !514), !dbg !2121
+  %add = add nsw i32 %conv, %pwr2, !dbg !2122
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !514), !dbg !2122
+  call void @llvm.dbg.value(metadata !250, i64 0, metadata !515), !dbg !2123
+  call fastcc void @emdnorm(i16* %arraydecay, i32 0, i32 0, i32 %add, i32 64) #7, !dbg !2124
+  call fastcc void @emovo(i16* %arraydecay, i16* %y) #7, !dbg !2125
+  ret void, !dbg !2126
 }

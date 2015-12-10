@@ -1,0 +1,74 @@
+define linkonce_odr void @_ZN11xercesc_2_514RefHashTableOfINS_17DatatypeValidatorEE9removeAllEv(%"class.xercesc_2_5::RefHashTableOf.48"* nocapture %this) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf.48"* %this}, i64 0, metadata !10225), !dbg !14083
+  tail call void @llvm.dbg.value(metadata !3125, i64 0, metadata !10226), !dbg !14084
+  %fHashModulus = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf.48"* %this, i64 0, i32 3, !dbg !14084
+  %0 = load i32* %fHashModulus, align 4, !dbg !14084, !tbaa !11832
+  %cmp17 = icmp eq i32 %0, 0, !dbg !14084
+  br i1 %cmp17, label %for.end, label %for.body.lr.ph, !dbg !14084
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fBucketList = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf.48"* %this, i64 0, i32 2, !dbg !14085
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf.48"* %this, i64 0, i32 1, !dbg !14086
+  br label %for.body, !dbg !14084
+
+for.body:                                         ; preds = %for.body.lr.ph, %while.end
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %10, %while.end ]
+  %buckInd.018 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %while.end ]
+  %idxprom = zext i32 %buckInd.018 to i64, !dbg !14085
+  %2 = load %"struct.xercesc_2_5::RefHashTableBucketElem.49"*** %fBucketList, align 8, !dbg !14085, !tbaa !11844
+  %arrayidx = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem.49"** %2, i64 %idxprom, !dbg !14085
+  %3 = load %"struct.xercesc_2_5::RefHashTableBucketElem.49"** %arrayidx, align 8, !dbg !14085, !tbaa !11844
+  tail call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::RefHashTableBucketElem.49"* %3}, i64 0, metadata !10228), !dbg !14085
+  %tobool15 = icmp eq %"struct.xercesc_2_5::RefHashTableBucketElem.49"* %3, null, !dbg !14088
+  br i1 %tobool15, label %while.end, label %while.body, !dbg !14088
+
+while.body:                                       ; preds = %for.body, %delete.notnull4
+  %curElem.016 = phi %"struct.xercesc_2_5::RefHashTableBucketElem.49"* [ %4, %delete.notnull4 ], [ %3, %for.body ]
+  %fNext = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem.49"* %curElem.016, i64 0, i32 1, !dbg !14089
+  %4 = load %"struct.xercesc_2_5::RefHashTableBucketElem.49"** %fNext, align 8, !dbg !14089, !tbaa !11844
+  tail call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::RefHashTableBucketElem.49"* %4}, i64 0, metadata !10230), !dbg !14089
+  %5 = load i8* %fAdoptedElems, align 1, !dbg !14086, !tbaa !13883, !range !13884
+  %tobool2 = icmp eq i8 %5, 0, !dbg !14086
+  br i1 %tobool2, label %delete.notnull4, label %if.then, !dbg !14086
+
+if.then:                                          ; preds = %while.body
+  %fData = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem.49"* %curElem.016, i64 0, i32 0, !dbg !14090
+  %6 = load %"class.xercesc_2_5::DatatypeValidator"** %fData, align 8, !dbg !14090, !tbaa !11844
+  %isnull = icmp eq %"class.xercesc_2_5::DatatypeValidator"* %6, null, !dbg !14090
+  br i1 %isnull, label %delete.notnull4, label %delete.notnull, !dbg !14090
+
+delete.notnull:                                   ; preds = %if.then
+  %7 = bitcast %"class.xercesc_2_5::DatatypeValidator"* %6 to void (%"class.xercesc_2_5::DatatypeValidator"*)***, !dbg !14090
+  %vtable = load void (%"class.xercesc_2_5::DatatypeValidator"*)*** %7, align 8, !dbg !14090, !tbaa !12275
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::DatatypeValidator"*)** %vtable, i64 1, !dbg !14090
+  %8 = load void (%"class.xercesc_2_5::DatatypeValidator"*)** %vfn, align 8, !dbg !14090
+  tail call void %8(%"class.xercesc_2_5::DatatypeValidator"* %6) #9, !dbg !14090
+  br label %delete.notnull4, !dbg !14090
+
+delete.notnull4:                                  ; preds = %delete.notnull, %if.then, %while.body
+  %9 = bitcast %"struct.xercesc_2_5::RefHashTableBucketElem.49"* %curElem.016 to i8*, !dbg !14091
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %9) #9, !dbg !14091
+  %tobool = icmp eq %"struct.xercesc_2_5::RefHashTableBucketElem.49"* %4, null, !dbg !14088
+  br i1 %tobool, label %while.cond.while.end_crit_edge, label %while.body, !dbg !14088
+
+while.cond.while.end_crit_edge:                   ; preds = %delete.notnull4
+  %.pre = load %"struct.xercesc_2_5::RefHashTableBucketElem.49"*** %fBucketList, align 8, !dbg !14092, !tbaa !11844
+  %.pre19 = load i32* %fHashModulus, align 4, !dbg !14084, !tbaa !11832
+  br label %while.end, !dbg !14088
+
+while.end:                                        ; preds = %while.cond.while.end_crit_edge, %for.body
+  %10 = phi i32 [ %.pre19, %while.cond.while.end_crit_edge ], [ %1, %for.body ], !dbg !14092
+  %11 = phi %"struct.xercesc_2_5::RefHashTableBucketElem.49"** [ %.pre, %while.cond.while.end_crit_edge ], [ %2, %for.body ]
+  %arrayidx8 = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem.49"** %11, i64 %idxprom, !dbg !14092
+  store %"struct.xercesc_2_5::RefHashTableBucketElem.49"* null, %"struct.xercesc_2_5::RefHashTableBucketElem.49"** %arrayidx8, align 8, !dbg !14092, !tbaa !11844
+  %inc = add i32 %buckInd.018, 1, !dbg !14084
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !10226), !dbg !14084
+  %cmp = icmp ult i32 %inc, %10, !dbg !14084
+  br i1 %cmp, label %for.body, label %for.end, !dbg !14084
+
+for.end:                                          ; preds = %while.end, %entry
+  %fCount = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf.48"* %this, i64 0, i32 5, !dbg !14093
+  store i32 0, i32* %fCount, align 4, !dbg !14093, !tbaa !11832
+  ret void, !dbg !14094
+}

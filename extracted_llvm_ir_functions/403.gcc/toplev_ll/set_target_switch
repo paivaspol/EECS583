@@ -1,83 +1,90 @@
 define internal fastcc void @set_target_switch(i8* %name) #0 {
 entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !1697), !dbg !3780
+  tail call void @llvm.dbg.value(metadata !691, i64 0, metadata !1699), !dbg !3781
+  tail call void @llvm.dbg.value(metadata !3105, i64 0, metadata !1698), !dbg !3782
+  br label %for.body, !dbg !3782
 
 for.body:                                         ; preds = %for.inc, %entry
   %j.050 = phi i64 [ 0, %entry ], [ %inc, %for.inc ]
   %valid_target_option.049 = phi i32 [ 0, %entry ], [ %valid_target_option.1, %for.inc ]
-  %name1 = getelementptr inbounds [56 x %struct.anon.3]* @target_switches, i64 0, i64 %j.050, i32 0
-  %0 = load i8** %name1, align 8, !tbaa !4
-  %call = tail call i32 @strcmp(i8* %0, i8* %name) #12
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.then, label %for.inc
+  %name1 = getelementptr inbounds [56 x %struct.anon.3]* @target_switches, i64 0, i64 %j.050, i32 0, !dbg !3784
+  %0 = load i8** %name1, align 8, !dbg !3784, !tbaa !2171
+  %call = tail call i32 @strcmp(i8* %0, i8* %name) #13, !dbg !3784
+  %tobool = icmp eq i32 %call, 0, !dbg !3784
+  br i1 %tobool, label %if.then, label %for.inc, !dbg !3784
 
 if.then:                                          ; preds = %for.body
-  %value = getelementptr inbounds [56 x %struct.anon.3]* @target_switches, i64 0, i64 %j.050, i32 1
-  %1 = load i32* %value, align 8, !tbaa !0
-  %2 = lshr i64 14797515875766282, %j.050
-  %3 = and i64 %2, 1
-  %cmp3 = icmp eq i64 %3, 0
-  br i1 %cmp3, label %if.else, label %if.then4
+  %value = getelementptr inbounds [56 x %struct.anon.3]* @target_switches, i64 0, i64 %j.050, i32 1, !dbg !3785
+  %1 = load i32* %value, align 8, !dbg !3785, !tbaa !2059
+  %2 = lshr i64 14797515875766282, %j.050, !dbg !3785
+  %3 = and i64 %2, 1, !dbg !3785
+  %cmp3 = icmp eq i64 %3, 0, !dbg !3785
+  br i1 %cmp3, label %if.else, label %if.then4, !dbg !3785
 
 if.then4:                                         ; preds = %if.then
-  %neg = add i32 %1, -1
-  %4 = load i32* @target_flags, align 4, !tbaa !0
-  %and = and i32 %4, %neg
-  br label %if.end
+  %neg = add i32 %1, -1, !dbg !3787
+  %4 = load i32* @target_flags, align 4, !dbg !3787, !tbaa !2059
+  %and = and i32 %4, %neg, !dbg !3787
+  br label %if.end, !dbg !3787
 
 if.else:                                          ; preds = %if.then
-  %5 = load i32* @target_flags, align 4, !tbaa !0
-  %or = or i32 %5, %1
+  %5 = load i32* @target_flags, align 4, !dbg !3788, !tbaa !2059
+  %or = or i32 %5, %1, !dbg !3788
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then4
   %storemerge = phi i32 [ %or, %if.else ], [ %and, %if.then4 ]
-  store i32 %storemerge, i32* @target_flags, align 4, !tbaa !0
-  br label %for.inc
+  store i32 %storemerge, i32* @target_flags, align 4, !dbg !3787, !tbaa !2059
+  tail call void @llvm.dbg.value(metadata !2185, i64 0, metadata !1699), !dbg !3789
+  br label %for.inc, !dbg !3790
 
 for.inc:                                          ; preds = %for.body, %if.end
   %valid_target_option.1 = phi i32 [ %valid_target_option.049, %for.body ], [ 1, %if.end ]
-  %inc = add i64 %j.050, 1
-  %exitcond51 = icmp eq i64 %inc, 56
-  br i1 %exitcond51, label %for.end, label %for.body
+  %inc = add i64 %j.050, 1, !dbg !3782
+  tail call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !1698), !dbg !3782
+  %exitcond51 = icmp eq i64 %inc, 56, !dbg !3782
+  br i1 %exitcond51, label %for.end, label %for.body, !dbg !3782
 
 for.end:                                          ; preds = %for.inc
-  %tobool10 = icmp eq i32 %valid_target_option.1, 0
-  br i1 %tobool10, label %for.body14, label %if.end31
+  %tobool10 = icmp eq i32 %valid_target_option.1, 0, !dbg !3791
+  br i1 %tobool10, label %for.body14, label %if.end31, !dbg !3791
 
 for.body14:                                       ; preds = %for.end, %for.inc25
   %j.148 = phi i64 [ %inc26, %for.inc25 ], [ 0, %for.end ]
   %valid_target_option.247 = phi i32 [ %valid_target_option.3, %for.inc25 ], [ 0, %for.end ]
-  %prefix = getelementptr inbounds [13 x %struct.anon.4]* @target_options, i64 0, i64 %j.148, i32 0
-  %6 = load i8** %prefix, align 8, !tbaa !4
-  %call16 = tail call i64 @strlen(i8* %6) #12
-  %sext = shl i64 %call16, 32
-  %conv19 = ashr exact i64 %sext, 32
-  %call20 = tail call i32 @strncmp(i8* %6, i8* %name, i64 %conv19) #12
-  %tobool21 = icmp eq i32 %call20, 0
-  br i1 %tobool21, label %if.then22, label %for.inc25
+  %prefix = getelementptr inbounds [13 x %struct.anon.4]* @target_options, i64 0, i64 %j.148, i32 0, !dbg !3792
+  %6 = load i8** %prefix, align 8, !dbg !3792, !tbaa !2171
+  %call16 = tail call i64 @strlen(i8* %6) #13, !dbg !3792
+  %sext = shl i64 %call16, 32, !dbg !3793
+  %conv19 = ashr exact i64 %sext, 32, !dbg !3793
+  %call20 = tail call i32 @strncmp(i8* %6, i8* %name, i64 %conv19) #13, !dbg !3793
+  %tobool21 = icmp eq i32 %call20, 0, !dbg !3793
+  br i1 %tobool21, label %if.then22, label %for.inc25, !dbg !3793
 
 if.then22:                                        ; preds = %for.body14
-  %add.ptr = getelementptr inbounds i8* %name, i64 %conv19
-  %variable = getelementptr inbounds [13 x %struct.anon.4]* @target_options, i64 0, i64 %j.148, i32 1
-  %7 = load i8*** %variable, align 8, !tbaa !4
-  store i8* %add.ptr, i8** %7, align 8, !tbaa !4
-  br label %for.inc25
+  %add.ptr = getelementptr inbounds i8* %name, i64 %conv19, !dbg !3794
+  %variable = getelementptr inbounds [13 x %struct.anon.4]* @target_options, i64 0, i64 %j.148, i32 1, !dbg !3794
+  %7 = load i8*** %variable, align 8, !dbg !3794, !tbaa !2171
+  store i8* %add.ptr, i8** %7, align 8, !dbg !3794, !tbaa !2171
+  tail call void @llvm.dbg.value(metadata !2185, i64 0, metadata !1699), !dbg !3796
+  br label %for.inc25, !dbg !3797
 
 for.inc25:                                        ; preds = %for.body14, %if.then22
   %valid_target_option.3 = phi i32 [ %valid_target_option.247, %for.body14 ], [ 1, %if.then22 ]
-  %inc26 = add i64 %j.148, 1
-  %exitcond = icmp eq i64 %inc26, 13
-  br i1 %exitcond, label %if.end28, label %for.body14
+  %inc26 = add i64 %j.148, 1, !dbg !3798
+  tail call void @llvm.dbg.value(metadata !{i64 %inc26}, i64 0, metadata !1698), !dbg !3798
+  %exitcond = icmp eq i64 %inc26, 13, !dbg !3798
+  br i1 %exitcond, label %if.end28, label %for.body14, !dbg !3798
 
 if.end28:                                         ; preds = %for.inc25
-  %tobool29 = icmp eq i32 %valid_target_option.3, 0
-  br i1 %tobool29, label %if.then30, label %if.end31
+  %tobool29 = icmp eq i32 %valid_target_option.3, 0, !dbg !3799
+  br i1 %tobool29, label %if.then30, label %if.end31, !dbg !3799
 
 if.then30:                                        ; preds = %if.end28
-  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([20 x i8]* @.str, i64 0, i64 0), i8* %name) #11
-  br label %if.end31
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([20 x i8]* @.str, i64 0, i64 0), i8* %name) #12, !dbg !3800
+  br label %if.end31, !dbg !3800
 
 if.end31:                                         ; preds = %for.end, %if.end28, %if.then30
-  ret void
+  ret void, !dbg !3801
 }

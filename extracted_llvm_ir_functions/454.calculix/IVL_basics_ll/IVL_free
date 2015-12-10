@@ -1,18 +1,19 @@
 define noalias %struct._IVL* @IVL_free(%struct._IVL* %ivl) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._IVL* %ivl, i64 0, metadata !56, metadata !65), !dbg !179
-  %1 = icmp eq %struct._IVL* %ivl, null, !dbg !180
-  br i1 %1, label %2, label %5, !dbg !182
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IVL* %ivl}, i64 0, metadata !51), !dbg !112
+  %cmp = icmp eq %struct._IVL* %ivl, null, !dbg !113
+  br i1 %cmp, label %if.then, label %if.end, !dbg !113
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !183, !tbaa !70
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([42 x i8]* @.str5, i64 0, i64 0), %struct._IVL* null) #6, !dbg !185
-  tail call void @exit(i32 -1) #7, !dbg !186
-  unreachable, !dbg !186
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !114, !tbaa !56
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([42 x i8]* @.str5, i64 0, i64 0), %struct._IVL* null) #6, !dbg !114
+  tail call void @exit(i32 -1) #7, !dbg !116
+  unreachable, !dbg !116
 
-; <label>:5                                       ; preds = %0
-  tail call void @IVL_clearData(%struct._IVL* %ivl) #8, !dbg !187
-  %6 = bitcast %struct._IVL* %ivl to i8*, !dbg !188
-  tail call void @free(i8* %6) #8, !dbg !188
-  tail call void @llvm.dbg.value(metadata %struct._IVL* null, i64 0, metadata !56, metadata !65), !dbg !179
-  ret %struct._IVL* null, !dbg !191
+if.end:                                           ; preds = %entry
+  tail call void @IVL_clearData(%struct._IVL* %ivl) #8, !dbg !117
+  %1 = bitcast %struct._IVL* %ivl to i8*, !dbg !118
+  tail call void @free(i8* %1) #6, !dbg !118
+  tail call void @llvm.dbg.value(metadata !120, i64 0, metadata !51), !dbg !118
+  ret %struct._IVL* null, !dbg !121
 }

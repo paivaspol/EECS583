@@ -1,80 +1,83 @@
 define void @InpMtx_changeStorageMode(%struct._InpMtx* %inpmtx, i32 %newMode) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !72, metadata !79), !dbg !302
-  tail call void @llvm.dbg.value(metadata i32 %newMode, i64 0, metadata !73, metadata !79), !dbg !303
-  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !304
-  br i1 %1, label %2, label %5, !dbg !306
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !71), !dbg !224
+  tail call void @llvm.dbg.value(metadata !{i32 %newMode}, i64 0, metadata !72), !dbg !225
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !226
+  br i1 %cmp, label %if.then, label %if.end, !dbg !226
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !307, !tbaa !90
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([66 x i8]* @.str7, i64 0, i64 0), %struct._InpMtx* null, i32 %newMode) #5, !dbg !309
-  tail call void @exit(i32 -1) #6, !dbg !310
-  unreachable, !dbg !310
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !227, !tbaa !82
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([66 x i8]* @.str7, i64 0, i64 0), %struct._InpMtx* null, i32 %newMode) #5, !dbg !227
+  tail call void @exit(i32 -1) #6, !dbg !229
+  unreachable, !dbg !229
 
-; <label>:5                                       ; preds = %0
-  %newMode.off = add i32 %newMode, -1, !dbg !311
-  %switch = icmp ult i32 %newMode.off, 3, !dbg !311
-  br i1 %switch, label %9, label %6, !dbg !311
+if.end:                                           ; preds = %entry
+  %newMode.off = add i32 %newMode, -1, !dbg !230
+  %1 = icmp ugt i32 %newMode.off, 1, !dbg !230
+  %cmp4 = icmp ne i32 %newMode, 3, !dbg !230
+  %or.cond44 = and i1 %1, %cmp4, !dbg !230
+  br i1 %or.cond44, label %if.then5, label %if.end7, !dbg !230
 
-; <label>:6                                       ; preds = %5
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !313, !tbaa !90
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([72 x i8]* @.str8, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %newMode) #5, !dbg !315
-  tail call void @exit(i32 -1) #6, !dbg !316
-  unreachable, !dbg !316
+if.then5:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !231, !tbaa !82
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([72 x i8]* @.str8, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %newMode) #5, !dbg !231
+  tail call void @exit(i32 -1) #6, !dbg !233
+  unreachable, !dbg !233
 
-; <label>:9                                       ; preds = %5
-  %10 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1, !dbg !317
-  %11 = load i32* %10, align 4, !dbg !317, !tbaa !204
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !74, metadata !79), !dbg !318
-  %12 = icmp eq i32 %11, %newMode, !dbg !319
-  br i1 %12, label %23, label %13, !dbg !321
+if.end7:                                          ; preds = %if.end
+  %storageMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1, !dbg !234
+  %3 = load i32* %storageMode, align 4, !dbg !234, !tbaa !87
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !73), !dbg !234
+  %cmp8 = icmp eq i32 %3, %newMode, !dbg !235
+  br i1 %cmp8, label %return, label %if.end10, !dbg !235
 
-; <label>:13                                      ; preds = %9
-  switch i32 %11, label %23 [
-    i32 1, label %14
-    i32 2, label %17
-    i32 3, label %20
-  ], !dbg !322
+if.end10:                                         ; preds = %if.end7
+  switch i32 %3, label %return [
+    i32 1, label %if.then12
+    i32 2, label %if.then23
+    i32 3, label %if.then35
+  ], !dbg !236
 
-; <label>:14                                      ; preds = %13
-  switch i32 %newMode, label %23 [
-    i32 2, label %15
-    i32 3, label %16
-  ], !dbg !323
+if.then12:                                        ; preds = %if.end10
+  switch i32 %newMode, label %return [
+    i32 2, label %if.then14
+    i32 3, label %if.then17
+  ], !dbg !237
 
-; <label>:15                                      ; preds = %14
-  tail call void @InpMtx_sortAndCompress(%struct._InpMtx* %inpmtx) #5, !dbg !326
-  store i32 2, i32* %10, align 4, !dbg !329, !tbaa !204
-  br label %23, !dbg !330
+if.then14:                                        ; preds = %if.then12
+  tail call void @InpMtx_sortAndCompress(%struct._InpMtx* %inpmtx) #5, !dbg !239
+  store i32 2, i32* %storageMode, align 4, !dbg !241, !tbaa !87
+  br label %return, !dbg !242
 
-; <label>:16                                      ; preds = %14
-  tail call void @InpMtx_sortAndCompress(%struct._InpMtx* %inpmtx) #5, !dbg !331
-  tail call void @InpMtx_convertToVectors(%struct._InpMtx* %inpmtx) #5, !dbg !334
-  store i32 3, i32* %10, align 4, !dbg !335, !tbaa !204
-  br label %23, !dbg !336
+if.then17:                                        ; preds = %if.then12
+  tail call void @InpMtx_sortAndCompress(%struct._InpMtx* %inpmtx) #5, !dbg !243
+  tail call void @InpMtx_convertToVectors(%struct._InpMtx* %inpmtx) #5, !dbg !245
+  store i32 3, i32* %storageMode, align 4, !dbg !246, !tbaa !87
+  br label %return, !dbg !247
 
-; <label>:17                                      ; preds = %13
-  switch i32 %newMode, label %23 [
-    i32 1, label %18
-    i32 3, label %19
-  ], !dbg !337
+if.then23:                                        ; preds = %if.end10
+  switch i32 %newMode, label %return [
+    i32 1, label %if.then25
+    i32 3, label %if.then29
+  ], !dbg !248
 
-; <label>:18                                      ; preds = %17
-  store i32 1, i32* %10, align 4, !dbg !340, !tbaa !204
-  br label %23, !dbg !343
+if.then25:                                        ; preds = %if.then23
+  store i32 1, i32* %storageMode, align 4, !dbg !250, !tbaa !87
+  br label %return, !dbg !252
 
-; <label>:19                                      ; preds = %17
-  tail call void @InpMtx_convertToVectors(%struct._InpMtx* %inpmtx) #5, !dbg !344
-  store i32 3, i32* %10, align 4, !dbg !347, !tbaa !204
-  br label %23, !dbg !348
+if.then29:                                        ; preds = %if.then23
+  tail call void @InpMtx_convertToVectors(%struct._InpMtx* %inpmtx) #5, !dbg !253
+  store i32 3, i32* %storageMode, align 4, !dbg !255, !tbaa !87
+  br label %return, !dbg !256
 
-; <label>:20                                      ; preds = %13
-  %21 = icmp ult i32 %newMode.off, 2, !dbg !349
-  br i1 %21, label %22, label %23, !dbg !349
+if.then35:                                        ; preds = %if.end10
+  %4 = icmp ult i32 %newMode.off, 2, !dbg !257
+  br i1 %4, label %if.then38, label %return, !dbg !257
 
-; <label>:22                                      ; preds = %20
-  store i32 %newMode, i32* %10, align 4, !dbg !353, !tbaa !204
-  br label %23, !dbg !355
+if.then38:                                        ; preds = %if.then35
+  store i32 %newMode, i32* %storageMode, align 4, !dbg !259, !tbaa !87
+  br label %return, !dbg !261
 
-; <label>:23                                      ; preds = %13, %17, %14, %16, %15, %20, %22, %18, %19, %9
-  ret void, !dbg !356
+return:                                           ; preds = %if.end10, %if.then23, %if.then12, %if.then17, %if.then14, %if.then35, %if.then38, %if.then25, %if.then29, %if.end7
+  ret void, !dbg !262
 }

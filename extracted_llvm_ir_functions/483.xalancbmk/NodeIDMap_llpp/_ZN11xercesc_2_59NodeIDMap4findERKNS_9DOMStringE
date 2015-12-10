@@ -1,0 +1,78 @@
+define %"class.xercesc_2_5::AttrImpl"* @_ZN11xercesc_2_59NodeIDMap4findERKNS_9DOMStringE(%"class.xercesc_2_5::NodeIDMap"* nocapture %this, %"class.xercesc_2_5::DOMString"* %id) #1 align 2 {
+entry:
+  %temp.lvalue = alloca %"class.xercesc_2_5::DOMString", align 8
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::NodeIDMap"* %this}, i64 0, metadata !1237), !dbg !1540
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMString"* %id}, i64 0, metadata !1238), !dbg !1540
+  %call = call i16* @_ZNK11xercesc_2_59DOMString9rawBufferEv(%"class.xercesc_2_5::DOMString"* %id) #6, !dbg !1541
+  %call2 = call i32 @_ZNK11xercesc_2_59DOMString6lengthEv(%"class.xercesc_2_5::DOMString"* %id) #6, !dbg !1541
+  %fSize = getelementptr inbounds %"class.xercesc_2_5::NodeIDMap"* %this, i64 0, i32 3, !dbg !1541
+  %0 = load i32* %fSize, align 4, !dbg !1541, !tbaa !1438
+  %sub = add i32 %0, -1, !dbg !1541
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::NodeIDMap"* %this, i64 0, i32 6, !dbg !1541
+  %1 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !1541, !tbaa !1434
+  %call3 = call i32 @_ZN11xercesc_2_59XMLString5hashNEPKtjjPNS_13MemoryManagerE(i16* %call, i32 %call2, i32 %sub, %"class.xercesc_2_5::MemoryManager"* %1) #6, !dbg !1541
+  call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !1239), !dbg !1541
+  %inc = add i32 %call3, 1, !dbg !1542
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1239), !dbg !1542
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1240), !dbg !1543
+  %fTable = getelementptr inbounds %"class.xercesc_2_5::NodeIDMap"* %this, i64 0, i32 1, !dbg !1544
+  br label %while.body, !dbg !1545
+
+while.body:                                       ; preds = %if.end11, %if.then14, %entry
+  %currentHash.0 = phi i32 [ %inc, %entry ], [ %rem, %if.then14 ], [ %add, %if.end11 ]
+  %idxprom = zext i32 %currentHash.0 to i64, !dbg !1544
+  %2 = load %"class.xercesc_2_5::AttrImpl"*** %fTable, align 8, !dbg !1544, !tbaa !1434
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::AttrImpl"** %2, i64 %idxprom, !dbg !1544
+  %3 = load %"class.xercesc_2_5::AttrImpl"** %arrayidx, align 8, !dbg !1544, !tbaa !1434
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::AttrImpl"* %3}, i64 0, metadata !1241), !dbg !1544
+  %magicptr = ptrtoint %"class.xercesc_2_5::AttrImpl"* %3 to i64, !dbg !1546
+  switch i64 %magicptr, label %land.rhs [
+    i64 0, label %return
+    i64 -1, label %if.end11
+  ], !dbg !1546
+
+land.rhs:                                         ; preds = %while.body
+  %4 = bitcast %"class.xercesc_2_5::AttrImpl"* %3 to void (%"class.xercesc_2_5::DOMString"*, %"class.xercesc_2_5::AttrImpl"*)***, !dbg !1547
+  %vtable = load void (%"class.xercesc_2_5::DOMString"*, %"class.xercesc_2_5::AttrImpl"*)*** %4, align 8, !dbg !1547, !tbaa !1432
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::DOMString"*, %"class.xercesc_2_5::AttrImpl"*)** %vtable, i64 49, !dbg !1547
+  %5 = load void (%"class.xercesc_2_5::DOMString"*, %"class.xercesc_2_5::AttrImpl"*)** %vfn, align 8, !dbg !1547
+  call void %5(%"class.xercesc_2_5::DOMString"* sret %temp.lvalue, %"class.xercesc_2_5::AttrImpl"* %3) #6, !dbg !1547
+  %call5 = invoke zeroext i1 @_ZNK11xercesc_2_59DOMString6equalsERKS0_(%"class.xercesc_2_5::DOMString"* %temp.lvalue, %"class.xercesc_2_5::DOMString"* %id) #6
+          to label %cleanup.done unwind label %lpad, !dbg !1547
+
+cleanup.done:                                     ; preds = %land.rhs
+  call void @_ZN11xercesc_2_59DOMStringD1Ev(%"class.xercesc_2_5::DOMString"* %temp.lvalue) #6
+  br i1 %call5, label %return, label %if.end11, !dbg !1547
+
+lpad:                                             ; preds = %land.rhs
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1547
+  invoke void @_ZN11xercesc_2_59DOMStringD1Ev(%"class.xercesc_2_5::DOMString"* %temp.lvalue) #6
+          to label %eh.resume unwind label %terminate.lpad, !dbg !1547
+
+if.end11:                                         ; preds = %cleanup.done, %while.body
+  %add = add i32 %currentHash.0, %inc, !dbg !1548
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !1240), !dbg !1548
+  %7 = load i32* %fSize, align 4, !dbg !1549, !tbaa !1438
+  %cmp13 = icmp ult i32 %add, %7, !dbg !1549
+  br i1 %cmp13, label %while.body, label %if.then14, !dbg !1549
+
+if.then14:                                        ; preds = %if.end11
+  %rem = urem i32 %add, %7, !dbg !1550
+  call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !1240), !dbg !1550
+  br label %while.body, !dbg !1550
+
+return:                                           ; preds = %cleanup.done, %while.body
+  %retval.0 = phi %"class.xercesc_2_5::AttrImpl"* [ null, %while.body ], [ %3, %cleanup.done ]
+  ret %"class.xercesc_2_5::AttrImpl"* %retval.0, !dbg !1551
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %6, !dbg !1547
+
+terminate.lpad:                                   ; preds = %lpad
+  %8 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !1547
+  %9 = extractvalue { i8*, i32 } %8, 0, !dbg !1547
+  call void @__clang_call_terminate(i8* %9) #8, !dbg !1547
+  unreachable, !dbg !1547
+}

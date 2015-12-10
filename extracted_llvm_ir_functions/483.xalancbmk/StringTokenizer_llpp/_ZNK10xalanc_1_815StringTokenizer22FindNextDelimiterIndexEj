@@ -1,0 +1,60 @@
+define i32 @_ZNK10xalanc_1_815StringTokenizer22FindNextDelimiterIndexEj(%"class.xalanc_1_8::StringTokenizer"* nocapture %this, i32 %theStartIndex) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::StringTokenizer"* %this}, i64 0, metadata !1551), !dbg !2358
+  tail call void @llvm.dbg.value(metadata !{i32 %theStartIndex}, i64 0, metadata !1552), !dbg !2358
+  tail call void @llvm.dbg.value(metadata !2359, i64 0, metadata !1553), !dbg !2360
+  tail call void @llvm.dbg.value(metadata !{i32 %theStartIndex}, i64 0, metadata !1554), !dbg !2361
+  %m_stringLength = getelementptr inbounds %"class.xalanc_1_8::StringTokenizer"* %this, i64 0, i32 4, !dbg !2362
+  %0 = load i32* %m_stringLength, align 4, !dbg !2362, !tbaa !2108
+  %cmp6 = icmp ugt i32 %0, %theStartIndex, !dbg !2362
+  br i1 %cmp6, label %while.body.lr.ph, label %while.end
+
+while.body.lr.ph:                                 ; preds = %entry
+  %m_string = getelementptr inbounds %"class.xalanc_1_8::StringTokenizer"* %this, i64 0, i32 0, !dbg !2363
+  %1 = load i16** %m_string, align 8, !dbg !2363, !tbaa !2043
+  %m_tokens = getelementptr inbounds %"class.xalanc_1_8::StringTokenizer"* %this, i64 0, i32 1, !dbg !2364
+  %2 = load i16** %m_tokens, align 8, !dbg !2364, !tbaa !2043
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %2 to i64, !dbg !2365
+  %m_tokensLength = getelementptr inbounds %"class.xalanc_1_8::StringTokenizer"* %this, i64 0, i32 5, !dbg !2364
+  %3 = load i32* %m_tokensLength, align 4, !dbg !2364, !tbaa !2108
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %_ZN10xalanc_1_87indexOfEPKtt.exit
+  %theIndex.07 = phi i32 [ %theStartIndex, %while.body.lr.ph ], [ %theIndex.0.inc, %_ZN10xalanc_1_87indexOfEPKtt.exit ]
+  %idxprom = zext i32 %theIndex.07 to i64, !dbg !2363
+  %arrayidx = getelementptr inbounds i16* %1, i64 %idxprom, !dbg !2363
+  %4 = load i16* %arrayidx, align 2, !dbg !2363, !tbaa !2183
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !1555), !dbg !2363
+  tail call void @llvm.dbg.value(metadata !{i16* %2}, i64 0, metadata !2366), !dbg !2367
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !2368), !dbg !2369
+  tail call void @llvm.dbg.value(metadata !{i16* %2}, i64 0, metadata !2370), !dbg !2371
+  br label %while.cond.i, !dbg !2372
+
+while.cond.i:                                     ; preds = %while.cond.i, %while.body
+  %thePointer.0.i = phi i16* [ %2, %while.body ], [ %incdec.ptr.i, %while.cond.i ]
+  %5 = load i16* %thePointer.0.i, align 2, !dbg !2372, !tbaa !2183
+  %cmp3.i = icmp ne i16 %5, 0, !dbg !2372
+  %not.cmp.i = icmp ne i16 %5, %4, !dbg !2372
+  %.cmp3.i = and i1 %cmp3.i, %not.cmp.i, !dbg !2372
+  %incdec.ptr.i = getelementptr inbounds i16* %thePointer.0.i, i64 1, !dbg !2373
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr.i}, i64 0, metadata !2370), !dbg !2373
+  br i1 %.cmp3.i, label %while.cond.i, label %_ZN10xalanc_1_87indexOfEPKtt.exit
+
+_ZN10xalanc_1_87indexOfEPKtt.exit:                ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %thePointer.0.i to i64, !dbg !2365
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !2365
+  %sub.ptr.div8.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !2365
+  %conv4.i = trunc i64 %sub.ptr.div8.i to i32, !dbg !2365
+  %cmp3 = icmp ult i32 %conv4.i, %3, !dbg !2364
+  %6 = zext i1 %cmp3 to i32, !dbg !2364
+  %inc = xor i32 %6, 1, !dbg !2364
+  %theIndex.0.inc = add i32 %inc, %theIndex.07, !dbg !2364
+  %cmp = icmp ult i32 %theIndex.0.inc, %0, !dbg !2362
+  %cmp2 = xor i1 %cmp3, true, !dbg !2362
+  %cmp2. = and i1 %cmp, %cmp2, !dbg !2362
+  br i1 %cmp2., label %while.body, label %while.end
+
+while.end:                                        ; preds = %_ZN10xalanc_1_87indexOfEPKtt.exit, %entry
+  %theIndex.0.lcssa = phi i32 [ %theStartIndex, %entry ], [ %theIndex.0.inc, %_ZN10xalanc_1_87indexOfEPKtt.exit ]
+  ret i32 %theIndex.0.lcssa, !dbg !2375
+}

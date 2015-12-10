@@ -1,11 +1,14 @@
 define internal fastcc %struct.rtx_def* @safe_vector_operand(%struct.rtx_def* %x, i32 %mode) #1 {
 entry:
-  %0 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !4
-  %cmp = icmp eq %struct.rtx_def* %0, %x
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !3363), !dbg !9682
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !3364), !dbg !9683
+  %0 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !dbg !9684, !tbaa !4365
+  %cmp = icmp eq %struct.rtx_def* %0, %x, !dbg !9684
+  br i1 %cmp, label %if.end, label %return, !dbg !9684
 
 if.end:                                           ; preds = %entry
-  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 %mode) #9
+  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 %mode) #10, !dbg !9685
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !3363), !dbg !9685
   switch i32 %mode, label %cond.false20 [
     i32 5, label %cond.end
     i32 4, label %cond.false
@@ -15,29 +18,29 @@ if.end:                                           ; preds = %entry
     i32 39, label %cond.false
     i32 44, label %cond.false
     i32 46, label %cond.end22
-  ]
+  ], !dbg !9686
 
 cond.false:                                       ; preds = %if.end, %if.end, %if.end, %if.end, %if.end, %if.end
-  %call15 = tail call %struct.rtx_def* @gen_rtx_SUBREG(i32 5, %struct.rtx_def* %call, i32 0) #9
-  br label %cond.end
+  %call15 = tail call %struct.rtx_def* @gen_rtx_SUBREG(i32 5, %struct.rtx_def* %call, i32 0) #10, !dbg !9687
+  br label %cond.end, !dbg !9687
 
 cond.end:                                         ; preds = %if.end, %cond.false
-  %cond = phi %struct.rtx_def* [ %call15, %cond.false ], [ %call, %if.end ]
-  %call16 = tail call %struct.rtx_def* @gen_mmx_clrdi(%struct.rtx_def* %cond) #9
-  %call17 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call16) #9
-  br label %return
+  %cond = phi %struct.rtx_def* [ %call15, %cond.false ], [ %call, %if.end ], !dbg !9687
+  %call16 = tail call %struct.rtx_def* @gen_mmx_clrdi(%struct.rtx_def* %cond) #10, !dbg !9687
+  %call17 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call16) #10, !dbg !9687
+  br label %return, !dbg !9687
 
 cond.false20:                                     ; preds = %if.end
-  %call21 = tail call %struct.rtx_def* @gen_rtx_SUBREG(i32 46, %struct.rtx_def* %call, i32 0) #9
-  br label %cond.end22
+  %call21 = tail call %struct.rtx_def* @gen_rtx_SUBREG(i32 46, %struct.rtx_def* %call, i32 0) #10, !dbg !9688
+  br label %cond.end22, !dbg !9688
 
 cond.end22:                                       ; preds = %if.end, %cond.false20
-  %cond23 = phi %struct.rtx_def* [ %call21, %cond.false20 ], [ %call, %if.end ]
-  %call24 = tail call %struct.rtx_def* @gen_sse_clrv4sf(%struct.rtx_def* %cond23) #9
-  %call25 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call24) #9
+  %cond23 = phi %struct.rtx_def* [ %call21, %cond.false20 ], [ %call, %if.end ], !dbg !9688
+  %call24 = tail call %struct.rtx_def* @gen_sse_clrv4sf(%struct.rtx_def* %cond23) #10, !dbg !9688
+  %call25 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call24) #10, !dbg !9688
   br label %return
 
 return:                                           ; preds = %cond.end, %cond.end22, %entry
   %retval.0 = phi %struct.rtx_def* [ %x, %entry ], [ %call, %cond.end22 ], [ %call, %cond.end ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !9689
 }

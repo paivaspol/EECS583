@@ -1,35 +1,36 @@
-define %struct.T_TREE* @Util_BinTreeFindNode(%struct.T_TREE* readonly %root, i8* %data, i32 (i8*, i8*)* %compare) #1 {
+define %struct.T_TREE* @Util_BinTreeFindNode(%struct.T_TREE* %root, i8* %data, i32 (i8*, i8*)* %compare) #1 {
+entry:
   br label %tailrecurse
 
-tailrecurse:                                      ; preds = %tailrecurse.backedge, %0
-  %root.tr = phi %struct.T_TREE* [ %root, %0 ], [ %root.tr.be, %tailrecurse.backedge ]
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %root.tr, i64 0, metadata !74, metadata !86), !dbg !219
-  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !75, metadata !86), !dbg !220
-  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %compare, i64 0, metadata !76, metadata !86), !dbg !221
-  %1 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 3, !dbg !222
-  %2 = load i8** %1, align 8, !dbg !222, !tbaa !104
-  %3 = tail call i32 %compare(i8* %data, i8* %2) #5, !dbg !224
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !77, metadata !86), !dbg !225
-  %4 = icmp slt i32 %3, 0, !dbg !226
-  br i1 %4, label %5, label %7, !dbg !227
+tailrecurse:                                      ; preds = %tailrecurse.backedge, %entry
+  %root.tr = phi %struct.T_TREE* [ %root, %entry ], [ %root.tr.be, %tailrecurse.backedge ]
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root.tr}, i64 0, metadata !74), !dbg !154
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !75), !dbg !155
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %compare}, i64 0, metadata !76), !dbg !156
+  %data1 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 3, !dbg !157
+  %0 = load i8** %data1, align 8, !dbg !157, !tbaa !93
+  %call = tail call i32 %compare(i8* %data, i8* %0) #5, !dbg !157
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !77), !dbg !157
+  %cmp = icmp slt i32 %call, 0, !dbg !157
+  br i1 %cmp, label %if.then, label %if.else, !dbg !157
 
-; <label>:5                                       ; preds = %tailrecurse
-  %6 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 0, !dbg !228
-  br label %tailrecurse.backedge, !dbg !230
+if.then:                                          ; preds = %tailrecurse
+  %left = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 0, !dbg !158
+  br label %tailrecurse.backedge, !dbg !158
 
-tailrecurse.backedge:                             ; preds = %5, %9
-  %root.tr.be.in = phi %struct.T_TREE** [ %6, %5 ], [ %10, %9 ]
-  %root.tr.be = load %struct.T_TREE** %root.tr.be.in, align 8, !dbg !228
+tailrecurse.backedge:                             ; preds = %if.then, %if.then4
+  %root.tr.be.in = phi %struct.T_TREE** [ %left, %if.then ], [ %right, %if.then4 ]
+  %root.tr.be = load %struct.T_TREE** %root.tr.be.in, align 8, !dbg !158
   br label %tailrecurse
 
-; <label>:7                                       ; preds = %tailrecurse
-  %8 = icmp sgt i32 %3, 0, !dbg !231
-  br i1 %8, label %9, label %11, !dbg !233
+if.else:                                          ; preds = %tailrecurse
+  %cmp3 = icmp sgt i32 %call, 0, !dbg !160
+  br i1 %cmp3, label %if.then4, label %if.end11, !dbg !160
 
-; <label>:9                                       ; preds = %7
-  %10 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 1, !dbg !234
-  br label %tailrecurse.backedge, !dbg !236
+if.then4:                                         ; preds = %if.else
+  %right = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 1, !dbg !161
+  br label %tailrecurse.backedge, !dbg !161
 
-; <label>:11                                      ; preds = %7
-  ret %struct.T_TREE* %root.tr, !dbg !237
+if.end11:                                         ; preds = %if.else
+  ret %struct.T_TREE* %root.tr, !dbg !163
 }

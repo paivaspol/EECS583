@@ -1,0 +1,157 @@
+define void @_ZN10xalanc_1_817XalanOutputStream9transcodeEPKtjRSt6vectorIcSaIcEE(%"class.xalanc_1_8::XalanOutputStream"* nocapture %this, i16* %theBuffer, i32 %theBufferLength, %"class.std::vector.0"* %theDestination) #2 align 2 {
+entry:
+  %theSourceBytesEaten = alloca i32, align 4
+  %theTargetBytesEaten = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanOutputStream"* %this}, i64 0, metadata !2049), !dbg !4082
+  call void @llvm.dbg.value(metadata !{i16* %theBuffer}, i64 0, metadata !2050), !dbg !4083
+  call void @llvm.dbg.value(metadata !{i32 %theBufferLength}, i64 0, metadata !2051), !dbg !4084
+  call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %theDestination}, i64 0, metadata !2052), !dbg !4085
+  %m_transcoder = getelementptr inbounds %"class.xalanc_1_8::XalanOutputStream"* %this, i64 0, i32 2, !dbg !4086
+  %0 = load %"class.xalanc_1_8::XalanOutputTranscoder"** %m_transcoder, align 8, !dbg !4086, !tbaa !3609
+  %cmp = icmp eq %"class.xalanc_1_8::XalanOutputTranscoder"* %0, null, !dbg !4086
+  br i1 %cmp, label %if.then, label %if.else8, !dbg !4086
+
+if.then:                                          ; preds = %entry
+  %call = call zeroext i1 @_ZN10xalanc_1_824TranscodeToLocalCodePageEPKtjRSt6vectorIcSaIcEEb(i16* %theBuffer, i32 %theBufferLength, %"class.std::vector.0"* %theDestination, i1 zeroext false) #8, !dbg !4087
+  br i1 %call, label %if.end43, label %if.then3, !dbg !4087
+
+if.then3:                                         ; preds = %if.then
+  %m_throwTranscodeException = getelementptr inbounds %"class.xalanc_1_8::XalanOutputStream"* %this, i64 0, i32 7, !dbg !4089
+  %1 = load i8* %m_throwTranscodeException, align 1, !dbg !4089, !tbaa !3620, !range !4063
+  %tobool = icmp eq i8 %1, 0, !dbg !4089
+  br i1 %tobool, label %if.end43, label %if.then6, !dbg !4089
+
+if.then6:                                         ; preds = %if.then3
+  %exception = call i8* @__cxa_allocate_exception(i64 120) #6, !dbg !4091
+  %2 = bitcast i8* %exception to %"class.xalanc_1_8::XalanOutputStream::TranscodingException"*, !dbg !4091
+  invoke void @_ZN10xalanc_1_817XalanOutputStream20TranscodingExceptionC2Ev(%"class.xalanc_1_8::XalanOutputStream::TranscodingException"* %2) #8
+          to label %invoke.cont unwind label %lpad, !dbg !4091
+
+invoke.cont:                                      ; preds = %if.then6
+  call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN10xalanc_1_817XalanOutputStream20TranscodingExceptionE to i8*), i8* bitcast (void (%"class.xalanc_1_8::XalanOutputStream::XalanOutputStreamException"*)* @_ZN10xalanc_1_817XalanOutputStream26XalanOutputStreamExceptionD2Ev to i8*)) #12, !dbg !4091
+  unreachable, !dbg !4091
+
+lpad:                                             ; preds = %if.then6
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4091
+  %4 = extractvalue { i8*, i32 } %3, 0, !dbg !4091
+  %5 = extractvalue { i8*, i32 } %3, 1, !dbg !4091
+  call void @__cxa_free_exception(i8* %exception) #6, !dbg !4091
+  br label %eh.resume, !dbg !4091
+
+if.else8:                                         ; preds = %entry
+  call void @llvm.dbg.value(metadata !4093, i64 0, metadata !2053), !dbg !4094
+  call void @llvm.dbg.value(metadata !137, i64 0, metadata !2055), !dbg !4095
+  call void @llvm.dbg.value(metadata !137, i64 0, metadata !2056), !dbg !4096
+  call void @llvm.dbg.value(metadata !{i16* %theBuffer}, i64 0, metadata !2057), !dbg !4097
+  call void @llvm.dbg.value(metadata !{i32 %theBufferLength}, i64 0, metadata !2058), !dbg !4098
+  %mul = shl i32 %theBufferLength, 1, !dbg !4099
+  call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !2059), !dbg !4099
+  call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !2060), !dbg !4100
+  %_M_start.i = getelementptr inbounds %"class.std::vector.0"* %theDestination, i64 0, i32 0, i32 0, i32 0, !dbg !4101
+  %m_throwTranscodeException15 = getelementptr inbounds %"class.xalanc_1_8::XalanOutputStream"* %this, i64 0, i32 7, !dbg !4103
+  br label %do.body, !dbg !4105
+
+do.body:                                          ; preds = %do.cond, %if.else8
+  %theTotalBytesFilled.0 = phi i32 [ 0, %if.else8 ], [ %add25, %do.cond ]
+  %theTotalBytesEaten.0 = phi i32 [ 0, %if.else8 ], [ %add26, %do.cond ]
+  %theBufferPosition.0 = phi i16* [ %theBuffer, %if.else8 ], [ %add.ptr31, %do.cond ]
+  %theRemainingBufferLength.0 = phi i32 [ %theBufferLength, %if.else8 ], [ %sub, %do.cond ]
+  %theDestinationSize.0 = phi i32 [ %mul, %if.else8 ], [ %mul32, %do.cond ]
+  %theTargetSize.0 = phi i32 [ %mul, %if.else8 ], [ %theDestinationSize.0, %do.cond ]
+  %add64 = or i32 %theDestinationSize.0, 1, !dbg !4106
+  %conv9 = zext i32 %add64 to i64, !dbg !4106
+  call void @_ZNSt6vectorIcSaIcEE6resizeEmc(%"class.std::vector.0"* %theDestination, i64 %conv9, i8 signext 0) #8, !dbg !4106
+  call void @llvm.dbg.declare(metadata !{i32* %theSourceBytesEaten}, metadata !2061), !dbg !4107
+  call void @llvm.dbg.value(metadata !137, i64 0, metadata !2061), !dbg !4107
+  store i32 0, i32* %theSourceBytesEaten, align 4, !dbg !4107, !tbaa !3607
+  call void @llvm.dbg.declare(metadata !{i32* %theTargetBytesEaten}, metadata !2063), !dbg !4108
+  call void @llvm.dbg.value(metadata !137, i64 0, metadata !2063), !dbg !4108
+  store i32 0, i32* %theTargetBytesEaten, align 4, !dbg !4108, !tbaa !3607
+  %6 = load %"class.xalanc_1_8::XalanOutputTranscoder"** %m_transcoder, align 8, !dbg !4109, !tbaa !3609
+  %7 = bitcast %"class.xalanc_1_8::XalanOutputTranscoder"* %6 to i32 (%"class.xalanc_1_8::XalanOutputTranscoder"*, i16*, i32, i8*, i32, i32*, i32*)***, !dbg !4109
+  %vtable = load i32 (%"class.xalanc_1_8::XalanOutputTranscoder"*, i16*, i32, i8*, i32, i32*, i32*)*** %7, align 8, !dbg !4109, !tbaa !3605
+  %vfn = getelementptr inbounds i32 (%"class.xalanc_1_8::XalanOutputTranscoder"*, i16*, i32, i8*, i32, i32*, i32*)** %vtable, i64 2, !dbg !4109
+  %8 = load i32 (%"class.xalanc_1_8::XalanOutputTranscoder"*, i16*, i32, i8*, i32, i32*, i32*)** %vfn, align 8, !dbg !4109
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %theDestination}, i64 0, metadata !4110), !dbg !4111
+  tail call void @llvm.dbg.value(metadata !4073, i64 0, metadata !4112), !dbg !4111
+  %9 = load i8** %_M_start.i, align 8, !dbg !4101, !tbaa !3609
+  %idx.ext = zext i32 %theTotalBytesFilled.0 to i64, !dbg !4102
+  %add.ptr = getelementptr inbounds i8* %9, i64 %idx.ext, !dbg !4102
+  %call12 = call i32 %8(%"class.xalanc_1_8::XalanOutputTranscoder"* %6, i16* %theBufferPosition.0, i32 %theRemainingBufferLength.0, i8* %add.ptr, i32 %theTargetSize.0, i32* %theSourceBytesEaten, i32* %theTargetBytesEaten) #8, !dbg !4102
+  call void @llvm.dbg.value(metadata !{i32 %call12}, i64 0, metadata !2064), !dbg !4102
+  %cmp13 = icmp eq i32 %call12, 0, !dbg !4113
+  br i1 %cmp13, label %if.end24, label %if.then14, !dbg !4113
+
+if.then14:                                        ; preds = %do.body
+  %10 = load i8* %m_throwTranscodeException15, align 1, !dbg !4103, !tbaa !3620, !range !4063
+  %tobool16 = icmp eq i8 %10, 0, !dbg !4103
+  br i1 %tobool16, label %if.end24, label %if.then19, !dbg !4103
+
+if.then19:                                        ; preds = %if.then14
+  %exception20 = call i8* @__cxa_allocate_exception(i64 120) #6, !dbg !4114
+  %11 = bitcast i8* %exception20 to %"class.xalanc_1_8::XalanOutputStream::TranscodingException"*, !dbg !4114
+  invoke void @_ZN10xalanc_1_817XalanOutputStream20TranscodingExceptionC2Ev(%"class.xalanc_1_8::XalanOutputStream::TranscodingException"* %11) #8
+          to label %invoke.cont22 unwind label %lpad21, !dbg !4114
+
+invoke.cont22:                                    ; preds = %if.then19
+  call void @__cxa_throw(i8* %exception20, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN10xalanc_1_817XalanOutputStream20TranscodingExceptionE to i8*), i8* bitcast (void (%"class.xalanc_1_8::XalanOutputStream::XalanOutputStreamException"*)* @_ZN10xalanc_1_817XalanOutputStream26XalanOutputStreamExceptionD2Ev to i8*)) #12, !dbg !4114
+  unreachable, !dbg !4114
+
+lpad21:                                           ; preds = %if.then19
+  %12 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4114
+  %13 = extractvalue { i8*, i32 } %12, 0, !dbg !4114
+  %14 = extractvalue { i8*, i32 } %12, 1, !dbg !4114
+  call void @__cxa_free_exception(i8* %exception20) #6, !dbg !4114
+  br label %eh.resume, !dbg !4114
+
+if.end24:                                         ; preds = %if.then14, %do.body
+  call void @llvm.dbg.value(metadata !{i32* %theTargetBytesEaten}, i64 0, metadata !2063), !dbg !4116
+  %15 = load i32* %theTargetBytesEaten, align 4, !dbg !4116, !tbaa !3607
+  %add25 = add i32 %15, %theTotalBytesFilled.0, !dbg !4116
+  call void @llvm.dbg.value(metadata !{i32 %add25}, i64 0, metadata !2055), !dbg !4116
+  call void @llvm.dbg.value(metadata !{i32* %theSourceBytesEaten}, i64 0, metadata !2061), !dbg !4117
+  %16 = load i32* %theSourceBytesEaten, align 4, !dbg !4117, !tbaa !3607
+  %add26 = add i32 %16, %theTotalBytesEaten.0, !dbg !4117
+  call void @llvm.dbg.value(metadata !{i32 %add26}, i64 0, metadata !2056), !dbg !4117
+  %cmp27 = icmp eq i32 %add26, %theBufferLength, !dbg !4118
+  br i1 %cmp27, label %do.end, label %do.cond, !dbg !4118
+
+do.cond:                                          ; preds = %if.end24
+  %idx.ext30 = zext i32 %16 to i64, !dbg !4119
+  %add.ptr31 = getelementptr inbounds i16* %theBufferPosition.0, i64 %idx.ext30, !dbg !4119
+  call void @llvm.dbg.value(metadata !{i16* %add.ptr31}, i64 0, metadata !2057), !dbg !4119
+  %sub = sub i32 %theRemainingBufferLength.0, %16, !dbg !4121
+  call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !2058), !dbg !4121
+  call void @llvm.dbg.value(metadata !{i32 %theDestinationSize.0}, i64 0, metadata !2060), !dbg !4122
+  %mul32 = shl i32 %theDestinationSize.0, 1, !dbg !4123
+  call void @llvm.dbg.value(metadata !{i32 %mul32}, i64 0, metadata !2059), !dbg !4123
+  br label %do.body, !dbg !4124
+
+do.end:                                           ; preds = %if.end24
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %theDestination}, i64 0, metadata !4125), !dbg !4127
+  %_M_finish.i = getelementptr inbounds %"class.std::vector.0"* %theDestination, i64 0, i32 0, i32 0, i32 1, !dbg !4128
+  %17 = load i8** %_M_finish.i, align 8, !dbg !4128, !tbaa !3609
+  %18 = load i8** %_M_start.i, align 8, !dbg !4128, !tbaa !3609
+  %sub.ptr.lhs.cast.i = ptrtoint i8* %17 to i64, !dbg !4128
+  %sub.ptr.rhs.cast.i = ptrtoint i8* %18 to i64, !dbg !4128
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !4128
+  %conv38 = zext i32 %add25 to i64, !dbg !4126
+  %cmp39 = icmp eq i64 %sub.ptr.sub.i, %conv38, !dbg !4126
+  br i1 %cmp39, label %if.end43, label %if.then40, !dbg !4126
+
+if.then40:                                        ; preds = %do.end
+  call void @_ZNSt6vectorIcSaIcEE6resizeEmc(%"class.std::vector.0"* %theDestination, i64 %conv38, i8 signext 0) #8, !dbg !4129
+  br label %if.end43, !dbg !4131
+
+if.end43:                                         ; preds = %if.then3, %if.then, %do.end, %if.then40
+  ret void, !dbg !4132
+
+eh.resume:                                        ; preds = %lpad21, %lpad
+  %ehselector.slot.0 = phi i32 [ %5, %lpad ], [ %14, %lpad21 ]
+  %exn.slot.0 = phi i8* [ %4, %lpad ], [ %13, %lpad21 ]
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !4091
+  %lpad.val44 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !4091
+  resume { i8*, i32 } %lpad.val44, !dbg !4091
+}

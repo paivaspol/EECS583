@@ -1,31 +1,30 @@
 define void @Chv_columnIndices(%struct._Chv* %chv, i32* %pncol, i32** %pcolind) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv, i64 0, metadata !63, metadata !194), !dbg !298
-  tail call void @llvm.dbg.value(metadata i32* %pncol, i64 0, metadata !64, metadata !194), !dbg !299
-  tail call void @llvm.dbg.value(metadata i32** %pcolind, i64 0, metadata !65, metadata !194), !dbg !300
-  %1 = icmp eq %struct._Chv* %chv, null, !dbg !301
-  %2 = icmp eq i32* %pncol, null, !dbg !303
-  %or.cond = or i1 %1, %2, !dbg !304
-  %3 = icmp eq i32** %pcolind, null, !dbg !305
-  %or.cond3 = or i1 %or.cond, %3, !dbg !304
-  br i1 %or.cond3, label %4, label %7, !dbg !304
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %chv}, i64 0, metadata !64), !dbg !245
+  tail call void @llvm.dbg.value(metadata !{i32* %pncol}, i64 0, metadata !65), !dbg !246
+  tail call void @llvm.dbg.value(metadata !{i32** %pcolind}, i64 0, metadata !66), !dbg !247
+  %cmp = icmp eq %struct._Chv* %chv, null, !dbg !248
+  %cmp1 = icmp eq i32* %pncol, null, !dbg !248
+  %or.cond = or i1 %cmp, %cmp1, !dbg !248
+  %cmp3 = icmp eq i32** %pcolind, null, !dbg !248
+  %or.cond12 = or i1 %or.cond, %cmp3, !dbg !248
+  br i1 %or.cond12, label %if.then, label %if.end, !dbg !248
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !306, !tbaa !201
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([57 x i8]* @.str6, i64 0, i64 0), %struct._Chv* %chv, i32* %pncol, i32** %pcolind) #5, !dbg !308
-  tail call void @exit(i32 -1) #6, !dbg !309
-  unreachable, !dbg !309
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !249, !tbaa !196
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str6, i64 0, i64 0), %struct._Chv* %chv, i32* %pncol, i32** %pcolind) #5, !dbg !249
+  tail call void @exit(i32 -1) #6, !dbg !251
+  unreachable, !dbg !251
 
-; <label>:7                                       ; preds = %0
-  %8 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 1, !dbg !310
-  %9 = load i32* %8, align 4, !dbg !310, !tbaa !250
-  %10 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 3, !dbg !311
-  %11 = load i32* %10, align 4, !dbg !311, !tbaa !257
-  %12 = add nsw i32 %11, %9, !dbg !312
-  store i32 %12, i32* %pncol, align 4, !dbg !313, !tbaa !252
-  %13 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 7, !dbg !314
-  %14 = bitcast i32** %13 to i64*, !dbg !314
-  %15 = load i64* %14, align 8, !dbg !314, !tbaa !291
-  %16 = bitcast i32** %pcolind to i64*, !dbg !315
-  store i64 %15, i64* %16, align 8, !dbg !315, !tbaa !201
-  ret void, !dbg !316
+if.end:                                           ; preds = %entry
+  %nD = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 1, !dbg !252
+  %1 = load i32* %nD, align 4, !dbg !252, !tbaa !201
+  %nU = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 3, !dbg !252
+  %2 = load i32* %nU, align 4, !dbg !252, !tbaa !201
+  %add = add nsw i32 %2, %1, !dbg !252
+  store i32 %add, i32* %pncol, align 4, !dbg !252, !tbaa !201
+  %colind = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 7, !dbg !253
+  %3 = load i32** %colind, align 8, !dbg !253, !tbaa !196
+  store i32* %3, i32** %pcolind, align 8, !dbg !253, !tbaa !196
+  ret void, !dbg !254
 }

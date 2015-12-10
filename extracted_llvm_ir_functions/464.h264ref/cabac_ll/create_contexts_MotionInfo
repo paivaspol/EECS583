@@ -1,14 +1,15 @@
 define noalias %struct.MotionInfoContexts* @create_contexts_MotionInfo() #0 {
-  %1 = tail call i8* @calloc(i64 1, i64 1504) #6, !dbg !1040
-  %2 = bitcast i8* %1 to %struct.MotionInfoContexts*, !dbg !1041
-  tail call void @llvm.dbg.value(metadata %struct.MotionInfoContexts* %2, i64 0, metadata !202, metadata !1011), !dbg !1042
-  %3 = icmp eq i8* %1, null, !dbg !1043
-  br i1 %3, label %4, label %5, !dbg !1045
+entry:
+  %call = tail call noalias i8* @calloc(i64 1, i64 1504) #6, !dbg !1000
+  %0 = bitcast i8* %call to %struct.MotionInfoContexts*, !dbg !1000
+  tail call void @llvm.dbg.value(metadata !{%struct.MotionInfoContexts* %0}, i64 0, metadata !172), !dbg !1000
+  %cmp = icmp eq i8* %call, null, !dbg !1001
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1001
 
-; <label>:4                                       ; preds = %0
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([37 x i8]* @.str, i64 0, i64 0)) #6, !dbg !1046
-  br label %5, !dbg !1046
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([37 x i8]* @.str, i64 0, i64 0)) #6, !dbg !1002
+  br label %if.end, !dbg !1002
 
-; <label>:5                                       ; preds = %4, %0
-  ret %struct.MotionInfoContexts* %2, !dbg !1047
+if.end:                                           ; preds = %if.then, %entry
+  ret %struct.MotionInfoContexts* %0, !dbg !1003
 }

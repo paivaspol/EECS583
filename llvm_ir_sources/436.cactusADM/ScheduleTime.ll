@@ -1,6 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ScheduleTime.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ScheduleTime.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.anon = type { i8*, i32 }
 
@@ -25,51 +25,52 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str17 = private unnamed_addr constant [13 x i8] c"CCTK_PRESTEP\00", align 1
 @.str18 = private unnamed_addr constant [19 x i8] c"Set fixed timestep\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_BindingsSchedule_Time() #0 {
-  %1 = load i8** getelementptr inbounds (%struct.anon* @timerest_, i64 0, i32 0), align 8, !dbg !30, !tbaa !31
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !10, metadata !37), !dbg !30
-  %2 = tail call i32 @CCTKi_ScheduleGroupStorage(i8* getelementptr inbounds ([16 x i8]* @.str, i64 0, i64 0)) #3, !dbg !38
-  %3 = tail call i32 @CCTKi_ScheduleGroupStorage(i8* getelementptr inbounds ([19 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !39
-  %4 = tail call i32 @CCTKi_ScheduleGroupComm(i8* getelementptr inbounds ([16 x i8]* @.str, i64 0, i64 0)) #3, !dbg !40
-  %5 = tail call i32 @CCTKi_ScheduleGroupComm(i8* getelementptr inbounds ([19 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !41
-  %6 = tail call i32 (i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, ...)* @CCTKi_ScheduleFunction(i8* bitcast (i32 ()* @Time_Initialise to i8*), i8* getelementptr inbounds ([16 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([26 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i32 0, i32 0, i32 0, i32 0, i32 0, i32 2, i32 0, i32 0, i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str9, i64 0, i64 0)) #3, !dbg !42
-  %7 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([15 x i8]* @.str10, i64 0, i64 0)) #3, !dbg !43
-  %8 = icmp eq i32 %7, 0, !dbg !43
-  br i1 %8, label %11, label %9, !dbg !45
+entry:
+  %0 = load i8** getelementptr inbounds (%struct.anon* @timerest_, i64 0, i32 0), align 8, !dbg !25, !tbaa !26
+  tail call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !9), !dbg !25
+  %call = tail call i32 @CCTKi_ScheduleGroupStorage(i8* getelementptr inbounds ([16 x i8]* @.str, i64 0, i64 0)) #3, !dbg !29
+  %call1 = tail call i32 @CCTKi_ScheduleGroupStorage(i8* getelementptr inbounds ([19 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !30
+  %call2 = tail call i32 @CCTKi_ScheduleGroupComm(i8* getelementptr inbounds ([16 x i8]* @.str, i64 0, i64 0)) #3, !dbg !31
+  %call3 = tail call i32 @CCTKi_ScheduleGroupComm(i8* getelementptr inbounds ([19 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !32
+  %call4 = tail call i32 (i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, ...)* @CCTKi_ScheduleFunction(i8* bitcast (i32 ()* @Time_Initialise to i8*), i8* getelementptr inbounds ([16 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([26 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i32 0, i32 0, i32 0, i32 0, i32 0, i32 2, i32 0, i32 0, i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str9, i64 0, i64 0)) #3, !dbg !33
+  %call5 = tail call i32 @CCTK_Equals(i8* %0, i8* getelementptr inbounds ([15 x i8]* @.str10, i64 0, i64 0)) #3, !dbg !34
+  %tobool = icmp eq i32 %call5, 0, !dbg !34
+  br i1 %tobool, label %if.else, label %if.then, !dbg !34
 
-; <label>:9                                       ; preds = %0
-  %10 = tail call i32 (i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, ...)* @CCTKi_ScheduleFunction(i8* bitcast (i32 ()* @Time_Simple to i8*), i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 1, i32 0, i8* getelementptr inbounds ([19 x i8]* @.str12, i64 0, i64 0)) #3, !dbg !46
-  br label %22, !dbg !48
+if.then:                                          ; preds = %entry
+  %call6 = tail call i32 (i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, ...)* @CCTKi_ScheduleFunction(i8* bitcast (i32 ()* @Time_Simple to i8*), i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 1, i32 0, i8* getelementptr inbounds ([19 x i8]* @.str12, i64 0, i64 0)) #3, !dbg !35
+  br label %if.end16, !dbg !37
 
-; <label>:11                                      ; preds = %0
-  %12 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0)) #3, !dbg !49
-  %13 = icmp eq i32 %12, 0, !dbg !49
-  br i1 %13, label %14, label %17, !dbg !51
+if.else:                                          ; preds = %entry
+  %call7 = tail call i32 @CCTK_Equals(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0)) #3, !dbg !38
+  %tobool8 = icmp eq i32 %call7, 0, !dbg !38
+  br i1 %tobool8, label %lor.lhs.false, label %if.then11, !dbg !38
 
-; <label>:14                                      ; preds = %11
-  %15 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([13 x i8]* @.str14, i64 0, i64 0)) #3, !dbg !52
-  %16 = icmp eq i32 %15, 0, !dbg !52
-  br i1 %16, label %20, label %17, !dbg !53
+lor.lhs.false:                                    ; preds = %if.else
+  %call9 = tail call i32 @CCTK_Equals(i8* %0, i8* getelementptr inbounds ([13 x i8]* @.str14, i64 0, i64 0)) #3, !dbg !39
+  %tobool10 = icmp eq i32 %call9, 0, !dbg !39
+  br i1 %tobool10, label %if.else14, label %if.then11, !dbg !39
 
-; <label>:17                                      ; preds = %14, %11
-  %18 = tail call i32 (i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, ...)* @CCTKi_ScheduleFunction(i8* bitcast (i32 ()* @Time_Simple to i8*), i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 1, i32 0, i8* getelementptr inbounds ([19 x i8]* @.str12, i64 0, i64 0)) #3, !dbg !54
-  %19 = tail call i32 (i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, ...)* @CCTKi_ScheduleFunction(i8* bitcast (i32 ()* @Time_Courant to i8*), i8* getelementptr inbounds ([13 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([30 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([13 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 0) #3, !dbg !56
-  br label %22, !dbg !57
+if.then11:                                        ; preds = %lor.lhs.false, %if.else
+  %call12 = tail call i32 (i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, ...)* @CCTKi_ScheduleFunction(i8* bitcast (i32 ()* @Time_Simple to i8*), i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 1, i32 0, i8* getelementptr inbounds ([19 x i8]* @.str12, i64 0, i64 0)) #3, !dbg !40
+  %call13 = tail call i32 (i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, ...)* @CCTKi_ScheduleFunction(i8* bitcast (i32 ()* @Time_Courant to i8*), i8* getelementptr inbounds ([13 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([30 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([13 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 0) #3, !dbg !42
+  br label %if.end16, !dbg !43
 
-; <label>:20                                      ; preds = %14
-  %21 = tail call i32 (i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, ...)* @CCTKi_ScheduleFunction(i8* bitcast (i32 ()* @Time_Given to i8*), i8* getelementptr inbounds ([11 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([19 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 0) #3, !dbg !58
-  br label %22
+if.else14:                                        ; preds = %lor.lhs.false
+  %call15 = tail call i32 (i8*, i8*, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32, i32, ...)* @CCTKi_ScheduleFunction(i8* bitcast (i32 ()* @Time_Given to i8*), i8* getelementptr inbounds ([11 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([19 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 0) #3, !dbg !44
+  br label %if.end16
 
-; <label>:22                                      ; preds = %17, %20, %9
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !23, metadata !37), !dbg !30
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !23, metadata !37), !dbg !30
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !23, metadata !37), !dbg !30
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !23, metadata !37), !dbg !30
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !23, metadata !37), !dbg !30
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !23, metadata !37), !dbg !30
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !23, metadata !37), !dbg !30
-  ret void, !dbg !60
+if.end16:                                         ; preds = %if.then11, %if.else14, %if.then
+  tail call void @llvm.dbg.value(metadata !46, i64 0, metadata !22), !dbg !47
+  tail call void @llvm.dbg.value(metadata !46, i64 0, metadata !22), !dbg !47
+  tail call void @llvm.dbg.value(metadata !46, i64 0, metadata !22), !dbg !47
+  tail call void @llvm.dbg.value(metadata !46, i64 0, metadata !22), !dbg !47
+  tail call void @llvm.dbg.value(metadata !46, i64 0, metadata !22), !dbg !47
+  tail call void @llvm.dbg.value(metadata !46, i64 0, metadata !22), !dbg !47
+  tail call void @llvm.dbg.value(metadata !46, i64 0, metadata !22), !dbg !47
+  ret void, !dbg !47
 }
 
 ; Function Attrs: optsize
@@ -97,75 +98,60 @@ declare i32 @Time_Courant() #1
 declare i32 @Time_Given() #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
 attributes #3 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!26, !27, !28}
-!llvm.ident = !{!29}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !5, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ScheduleTime.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!5 = !{!6}
-!6 = !DISubprogram(name: "CCTKi_BindingsSchedule_Time", scope: !1, file: !1, line: 35, type: !7, isLocal: false, isDefinition: true, scopeLine: 36, flags: DIFlagPrototyped, isOptimized: true, function: void ()* @CCTKi_BindingsSchedule_Time, variables: !9)
-!7 = !DISubroutineType(types: !8)
-!8 = !{null}
-!9 = !{!10, !14, !17, !20, !21, !22, !23}
-!10 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timestep_method", scope: !6, file: !1, line: 37, type: !11)
-!11 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !12, size: 64, align: 64)
-!12 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !13)
-!13 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!14 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timestep_outonly", scope: !6, file: !1, line: 37, type: !15)
-!15 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !16)
-!16 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!17 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "courant_fac", scope: !6, file: !1, line: 37, type: !18)
-!18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
-!19 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!20 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "dtfac", scope: !6, file: !1, line: 37, type: !18)
-!21 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timestep", scope: !6, file: !1, line: 37, type: !18)
-!22 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "outtimestep_every", scope: !6, file: !1, line: 37, type: !15)
-!23 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_pdummy_pointer", scope: !6, file: !1, line: 37, type: !24)
-!24 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !25, size: 64, align: 64)
-!25 = !DIDerivedType(tag: DW_TAG_const_type, baseType: null)
-!26 = !{i32 2, !"Dwarf Version", i32 2}
-!27 = !{i32 2, !"Debug Info Version", i32 700000003}
-!28 = !{i32 1, !"PIC Level", i32 2}
-!29 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!30 = !DILocation(line: 37, column: 3, scope: !6)
-!31 = !{!32, !33, i64 0}
-!32 = !{!"", !33, i64 0, !36, i64 8}
-!33 = !{!"any pointer", !34, i64 0}
-!34 = !{!"omnipotent char", !35, i64 0}
-!35 = !{!"Simple C/C++ TBAA"}
-!36 = !{!"int", !34, i64 0}
-!37 = !DIExpression()
-!38 = !DILocation(line: 38, column: 3, scope: !6)
-!39 = !DILocation(line: 39, column: 3, scope: !6)
-!40 = !DILocation(line: 40, column: 3, scope: !6)
-!41 = !DILocation(line: 41, column: 3, scope: !6)
-!42 = !DILocation(line: 43, column: 3, scope: !6)
-!43 = !DILocation(line: 62, column: 5, scope: !44)
-!44 = distinct !DILexicalBlock(scope: !6, file: !1, line: 62, column: 5)
-!45 = !DILocation(line: 62, column: 5, scope: !6)
-!46 = !DILocation(line: 66, column: 3, scope: !47)
-!47 = distinct !DILexicalBlock(scope: !44, file: !1, line: 64, column: 1)
-!48 = !DILocation(line: 84, column: 1, scope: !47)
-!49 = !DILocation(line: 86, column: 10, scope: !50)
-!50 = distinct !DILexicalBlock(scope: !44, file: !1, line: 86, column: 10)
-!51 = !DILocation(line: 86, column: 57, scope: !50)
-!52 = !DILocation(line: 88, column: 10, scope: !50)
-!53 = !DILocation(line: 86, column: 10, scope: !44)
-!54 = !DILocation(line: 92, column: 3, scope: !55)
-!55 = distinct !DILexicalBlock(scope: !50, file: !1, line: 90, column: 1)
-!56 = !DILocation(line: 110, column: 3, scope: !55)
-!57 = !DILocation(line: 127, column: 1, scope: !55)
-!58 = !DILocation(line: 133, column: 3, scope: !59)
-!59 = distinct !DILexicalBlock(scope: !50, file: !1, line: 131, column: 1)
-!60 = !DILocation(line: 153, column: 22, scope: !6)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ScheduleTime.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ScheduleTime.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_BindingsSchedule_Time", metadata !"CCTKi_BindingsSchedule_Time", metadata !"", i32 35, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @CCTKi_BindingsSchedule_Time, null, null, metadata !8, i32 36} ; [ DW_TAG_subprogram ] [line 35] [def] [scope 36] [CCTKi_BindingsSchedule_Time]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ScheduleTime.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{null}
+!8 = metadata !{metadata !9, metadata !13, metadata !16, metadata !19, metadata !20, metadata !21, metadata !22}
+!9 = metadata !{i32 786688, metadata !4, metadata !"timestep_method", metadata !5, i32 37, metadata !10, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timestep_method] [line 37]
+!10 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !11} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!11 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !12} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!12 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!13 = metadata !{i32 786688, metadata !4, metadata !"timestep_outonly", metadata !5, i32 37, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timestep_outonly] [line 37]
+!14 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !15} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from int]
+!15 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!16 = metadata !{i32 786688, metadata !4, metadata !"courant_fac", metadata !5, i32 37, metadata !17, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [courant_fac] [line 37]
+!17 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !18} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from double]
+!18 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!19 = metadata !{i32 786688, metadata !4, metadata !"dtfac", metadata !5, i32 37, metadata !17, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [dtfac] [line 37]
+!20 = metadata !{i32 786688, metadata !4, metadata !"timestep", metadata !5, i32 37, metadata !17, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timestep] [line 37]
+!21 = metadata !{i32 786688, metadata !4, metadata !"outtimestep_every", metadata !5, i32 37, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [outtimestep_every] [line 37]
+!22 = metadata !{i32 786688, metadata !4, metadata !"cctk_pdummy_pointer", metadata !5, i32 37, metadata !23, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_pdummy_pointer] [line 37]
+!23 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !24} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!24 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from ]
+!25 = metadata !{i32 37, i32 0, metadata !4, null}
+!26 = metadata !{metadata !"any pointer", metadata !27}
+!27 = metadata !{metadata !"omnipotent char", metadata !28}
+!28 = metadata !{metadata !"Simple C/C++ TBAA"}
+!29 = metadata !{i32 38, i32 0, metadata !4, null}
+!30 = metadata !{i32 39, i32 0, metadata !4, null}
+!31 = metadata !{i32 40, i32 0, metadata !4, null}
+!32 = metadata !{i32 41, i32 0, metadata !4, null}
+!33 = metadata !{i32 43, i32 0, metadata !4, null}
+!34 = metadata !{i32 62, i32 0, metadata !4, null}
+!35 = metadata !{i32 66, i32 0, metadata !36, null}
+!36 = metadata !{i32 786443, metadata !1, metadata !4, i32 64, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ScheduleTime.c]
+!37 = metadata !{i32 84, i32 0, metadata !36, null}
+!38 = metadata !{i32 86, i32 0, metadata !4, null}
+!39 = metadata !{i32 88, i32 0, metadata !4, null}
+!40 = metadata !{i32 92, i32 0, metadata !41, null}
+!41 = metadata !{i32 786443, metadata !1, metadata !4, i32 90, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ScheduleTime.c]
+!42 = metadata !{i32 110, i32 0, metadata !41, null}
+!43 = metadata !{i32 127, i32 0, metadata !41, null}
+!44 = metadata !{i32 133, i32 0, metadata !45, null}
+!45 = metadata !{i32 786443, metadata !1, metadata !4, i32 131, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ScheduleTime.c]
+!46 = metadata !{i8* undef}
+!47 = metadata !{i32 153, i32 0, metadata !4, null}

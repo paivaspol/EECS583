@@ -1,17 +1,18 @@
 define i32 @clip1a_chr(i32 %a) #3 {
-  tail call void @llvm.dbg.value(metadata i32 %a, i64 0, metadata !87, metadata !1584), !dbg !1705
-  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1706, !tbaa !1587
-  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 156, !dbg !1707
-  %3 = load i32* %2, align 4, !dbg !1707, !tbaa !1708
-  %4 = icmp slt i32 %3, %a, !dbg !1709
-  br i1 %4, label %8, label %5, !dbg !1710
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %a}, i64 0, metadata !88), !dbg !1610
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1611, !tbaa !1576
+  %max_imgpel_value_uv = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 156, !dbg !1611
+  %1 = load i32* %max_imgpel_value_uv, align 4, !dbg !1611, !tbaa !1579
+  %cmp = icmp slt i32 %1, %a, !dbg !1611
+  br i1 %cmp, label %cond.end5, label %cond.false, !dbg !1611
 
-; <label>:5                                       ; preds = %0
-  %6 = icmp slt i32 %a, 0, !dbg !1711
-  %7 = select i1 %6, i32 0, i32 %a, !dbg !1712
-  br label %8, !dbg !1712
+cond.false:                                       ; preds = %entry
+  %cmp2 = icmp slt i32 %a, 0, !dbg !1611
+  %cond = select i1 %cmp2, i32 0, i32 %a, !dbg !1611
+  br label %cond.end5, !dbg !1611
 
-; <label>:8                                       ; preds = %0, %5
-  %9 = phi i32 [ %7, %5 ], [ %3, %0 ], !dbg !1710
-  ret i32 %9, !dbg !1713
+cond.end5:                                        ; preds = %entry, %cond.false
+  %cond6 = phi i32 [ %cond, %cond.false ], [ %1, %entry ], !dbg !1611
+  ret i32 %cond6, !dbg !1611
 }

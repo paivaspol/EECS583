@@ -1,37 +1,37 @@
-define i32 @_ZNK6soplex6IdxSet6numberEi(%"class.soplex::IdxSet"* nocapture readonly %this, i32 %i) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::IdxSet"* %this, i64 0, metadata !68, metadata !111), !dbg !134
-  tail call void @llvm.dbg.value(metadata i32 %i, i64 0, metadata !69, metadata !111), !dbg !135
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !70, metadata !111), !dbg !136
-  tail call void @llvm.dbg.value(metadata %"class.soplex::IdxSet"* %this, i64 0, metadata !98, metadata !111), !dbg !137
-  %1 = getelementptr inbounds %"class.soplex::IdxSet"* %this, i64 0, i32 0, !dbg !140
-  %2 = load i32* %1, align 4, !dbg !140, !tbaa !119
-  %3 = icmp sgt i32 %2, 0, !dbg !141
-  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !142
+define i32 @_ZNK6soplex6IdxSet6numberEi(%"class.soplex::IdxSet"* nocapture %this, i32 %i) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::IdxSet"* %this}, i64 0, metadata !85), !dbg !139
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !86), !dbg !139
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !87), !dbg !140
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::IdxSet"* %this}, i64 0, metadata !141), !dbg !142
+  %num.i = getelementptr inbounds %"class.soplex::IdxSet"* %this, i64 0, i32 0, !dbg !143
+  %0 = load i32* %num.i, align 4, !dbg !143, !tbaa !132
+  %cmp5 = icmp sgt i32 %0, 0, !dbg !140
+  br i1 %cmp5, label %for.body.lr.ph, label %return, !dbg !140
 
-.lr.ph:                                           ; preds = %0
-  %4 = getelementptr inbounds %"class.soplex::IdxSet"* %this, i64 0, i32 2, !dbg !143
-  %5 = load i32** %4, align 8, !dbg !143, !tbaa !129
-  br label %6, !dbg !142
+for.body.lr.ph:                                   ; preds = %entry
+  %idx = getelementptr inbounds %"class.soplex::IdxSet"* %this, i64 0, i32 2, !dbg !144
+  %1 = load i32** %idx, align 8, !dbg !144, !tbaa !136
+  br label %for.body, !dbg !140
 
-; <label>:6                                       ; preds = %.lr.ph, %10
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %10 ]
-  %7 = getelementptr inbounds i32* %5, i64 %indvars.iv, !dbg !143
-  %8 = load i32* %7, align 4, !dbg !143, !tbaa !130
-  %9 = icmp eq i32 %8, %i, !dbg !145
-  br i1 %9, label %._crit_edge2, label %10, !dbg !146
+for.cond:                                         ; preds = %for.body
+  %inc = add nsw i32 %n.06, 1, !dbg !140
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::IdxSet"* %this}, i64 0, metadata !141), !dbg !142
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !140
+  %cmp = icmp slt i32 %2, %0, !dbg !140
+  br i1 %cmp, label %for.body, label %return, !dbg !140
 
-; <label>:10                                      ; preds = %6
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !142
-  tail call void @llvm.dbg.value(metadata %"class.soplex::IdxSet"* %this, i64 0, metadata !98, metadata !111), !dbg !137
-  %11 = sext i32 %2 to i64, !dbg !141
-  %12 = icmp slt i64 %indvars.iv.next, %11, !dbg !141
-  br i1 %12, label %6, label %._crit_edge, !dbg !142
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %n.06 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.cond ]
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv, !dbg !144
+  %3 = load i32* %arrayidx, align 4, !dbg !144, !tbaa !132
+  %cmp2 = icmp eq i32 %3, %i, !dbg !144
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !140
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !87), !dbg !140
+  br i1 %cmp2, label %return, label %for.cond, !dbg !144
 
-._crit_edge2:                                     ; preds = %6
-  %13 = trunc i64 %indvars.iv to i32, !dbg !146
-  br label %._crit_edge, !dbg !146
-
-._crit_edge:                                      ; preds = %10, %._crit_edge2, %0
-  %.0 = phi i32 [ %13, %._crit_edge2 ], [ -1, %0 ], [ -1, %10 ]
-  ret i32 %.0, !dbg !147
+return:                                           ; preds = %for.cond, %for.body, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %n.06, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0, !dbg !145
 }

@@ -1,0 +1,38 @@
+define void @_ZN10xalanc_1_819PlatformSupportInitC2Ev(%"class.xalanc_1_8::PlatformSupportInit"* %this) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::PlatformSupportInit"* %this}, i64 0, metadata !64), !dbg !80
+  %m_xalanDOMInit = getelementptr inbounds %"class.xalanc_1_8::PlatformSupportInit"* %this, i64 0, i32 0, !dbg !81
+  tail call void @_ZN10xalanc_1_812XalanDOMInitC1Ev(%"class.xalanc_1_8::XalanDOMInit"* %m_xalanDOMInit) #4, !dbg !81
+  %0 = load i64* @_ZN10xalanc_1_819PlatformSupportInit13s_initCounterE, align 8, !dbg !82, !tbaa !84
+  %inc = add i64 %0, 1, !dbg !82
+  store i64 %inc, i64* @_ZN10xalanc_1_819PlatformSupportInit13s_initCounterE, align 8, !dbg !82, !tbaa !84
+  %cmp = icmp eq i64 %0, 0, !dbg !87
+  br i1 %cmp, label %if.then, label %if.end, !dbg !87
+
+if.then:                                          ; preds = %entry
+  invoke void @_ZN10xalanc_1_818XalanMessageLoader12createLoaderEv() #4
+          to label %.noexc unwind label %lpad
+
+.noexc:                                           ; preds = %if.then
+  invoke void @_ZN10xalanc_1_824XalanTranscodingServices10initializeEv() #4
+          to label %if.end unwind label %lpad
+
+lpad:                                             ; preds = %.noexc, %if.then
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !88
+  invoke void @_ZN10xalanc_1_812XalanDOMInitD1Ev(%"class.xalanc_1_8::XalanDOMInit"* %m_xalanDOMInit) #4
+          to label %eh.resume unwind label %terminate.lpad, !dbg !90
+
+if.end:                                           ; preds = %.noexc, %entry
+  ret void, !dbg !90
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %1, !dbg !90
+
+terminate.lpad:                                   ; preds = %lpad
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !90
+  %3 = extractvalue { i8*, i32 } %2, 0, !dbg !90
+  tail call void @__clang_call_terminate(i8* %3) #5, !dbg !90
+  unreachable, !dbg !90
+}

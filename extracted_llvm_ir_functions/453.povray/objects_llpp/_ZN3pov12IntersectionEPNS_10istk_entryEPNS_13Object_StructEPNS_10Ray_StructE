@@ -1,85 +1,86 @@
 define zeroext i1 @_ZN3pov12IntersectionEPNS_10istk_entryEPNS_13Object_StructEPNS_10Ray_StructE(%"struct.pov::istk_entry"* nocapture %Ray_Intersection, %"struct.pov::Object_Struct"* %Object, %"struct.pov::Ray_Struct"* %Ray) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, metadata !910, metadata !1323), !dbg !1324
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !911, metadata !1323), !dbg !1325
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !912, metadata !1323), !dbg !1326
-  tail call void @llvm.dbg.value(metadata double 0x7FF0000000000000, i64 0, metadata !915, metadata !1323), !dbg !1327
-  %1 = icmp eq %"struct.pov::Object_Struct"* %Object, null, !dbg !1328
-  br i1 %1, label %37, label %2, !dbg !1330
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %Ray_Intersection}, i64 0, metadata !916), !dbg !1111
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !918), !dbg !1111
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Ray}, i64 0, metadata !919), !dbg !1111
+  tail call void @llvm.dbg.value(metadata !1112, i64 0, metadata !924), !dbg !1113
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %Object, null, !dbg !1114
+  br i1 %cmp, label %return, label %if.end, !dbg !1114
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 6, !dbg !1331
-  %4 = load %"struct.pov::Object_Struct"** %3, align 8, !dbg !1331, !tbaa !1333
-  %5 = tail call zeroext i1 @_ZN3pov12Ray_In_BoundEPNS_10Ray_StructEPNS_13Object_StructE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Object_Struct"* %4) #5, !dbg !1341
-  br i1 %5, label %6, label %37, !dbg !1342
+if.end:                                           ; preds = %entry
+  %Bound = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 6, !dbg !1115
+  %0 = load %"struct.pov::Object_Struct"** %Bound, align 8, !dbg !1115, !tbaa !1116
+  %call = tail call zeroext i1 @_ZN3pov12Ray_In_BoundEPNS_10Ray_StructEPNS_13Object_StructE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Object_Struct"* %0) #5, !dbg !1115
+  br i1 %call, label %if.end2, label %return, !dbg !1115
 
-; <label>:6                                       ; preds = %2
-  %7 = tail call %"struct.pov::istack_struct"* @_ZN3pov11open_istackEv() #5, !dbg !1343
-  tail call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %7, i64 0, metadata !913, metadata !1323), !dbg !1344
-  %8 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 0, !dbg !1345
-  %9 = load %"struct.pov::Method_Struct"** %8, align 8, !dbg !1345, !tbaa !1347
-  %10 = getelementptr inbounds %"struct.pov::Method_Struct"* %9, i64 0, i32 0, !dbg !1345
-  %11 = load i32 (%"struct.pov::Object_Struct"*, %"struct.pov::Ray_Struct"*, %"struct.pov::istack_struct"*)** %10, align 8, !dbg !1345, !tbaa !1348
-  %12 = tail call i32 %11(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istack_struct"* %7) #5, !dbg !1345
-  %13 = icmp eq i32 %12, 0, !dbg !1345
-  br i1 %13, label %34, label %.preheader, !dbg !1350
+if.end2:                                          ; preds = %if.end
+  %call3 = tail call %"struct.pov::istack_struct"* @_ZN3pov11open_istackEv() #5, !dbg !1119
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %call3}, i64 0, metadata !920), !dbg !1119
+  %Methods = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 0, !dbg !1120
+  %1 = load %"struct.pov::Method_Struct"** %Methods, align 8, !dbg !1120, !tbaa !1116
+  %All_Intersections_Method = getelementptr inbounds %"struct.pov::Method_Struct"* %1, i64 0, i32 0, !dbg !1120
+  %2 = load i32 (%"struct.pov::Object_Struct"*, %"struct.pov::Ray_Struct"*, %"struct.pov::istack_struct"*)** %All_Intersections_Method, align 8, !dbg !1120, !tbaa !1116
+  %call4 = tail call i32 %2(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istack_struct"* %call3) #5, !dbg !1120
+  %tobool = icmp eq i32 %call4, 0, !dbg !1120
+  br i1 %tobool, label %if.else, label %while.cond.preheader, !dbg !1120
 
-.preheader:                                       ; preds = %6
-  %14 = getelementptr inbounds %"struct.pov::istack_struct"* %7, i64 0, i32 3, !dbg !1351
-  %15 = getelementptr inbounds %"struct.pov::istack_struct"* %7, i64 0, i32 1, !dbg !1354
-  %16 = bitcast %"struct.pov::istk_entry"* %Ray_Intersection to i8*, !dbg !1355
-  br label %.outer, !dbg !1359
+while.cond.preheader:                             ; preds = %if.end2
+  %top_entry.i = getelementptr inbounds %"struct.pov::istack_struct"* %call3, i64 0, i32 3, !dbg !1121
+  %istack.i = getelementptr inbounds %"struct.pov::istack_struct"* %call3, i64 0, i32 1, !dbg !1121
+  %3 = bitcast %"struct.pov::istk_entry"* %Ray_Intersection to i8*, !dbg !1124
+  br label %while.cond.outer, !dbg !1127
 
-.outer:                                           ; preds = %.preheader, %29
-  %Closest.0.ph = phi double [ 0x7FF0000000000000, %.preheader ], [ %31, %29 ]
-  %.pre = load i32* %14, align 4, !dbg !1351, !tbaa !1360
-  br label %17
+while.cond.outer:                                 ; preds = %while.cond.preheader, %if.then9
+  %Closest.0.ph = phi double [ %8, %if.then9 ], [ 0x7FF0000000000000, %while.cond.preheader ]
+  %.pre = load i32* %top_entry.i, align 4, !dbg !1121, !tbaa !1128
+  br label %while.cond
 
-; <label>:17                                      ; preds = %.outer, %25
-  %18 = phi i32 [ %.pre, %.outer ], [ %20, %25 ]
-  tail call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %7, i64 0, metadata !1007, metadata !1323), !dbg !1359
-  %19 = icmp eq i32 %18, 0, !dbg !1362
-  br i1 %19, label %_ZN3pov9pop_entryEPNS_13istack_structE.exit.thread, label %_ZN3pov9pop_entryEPNS_13istack_structE.exit, !dbg !1363
+while.cond:                                       ; preds = %while.cond.outer, %while.body
+  %4 = phi i32 [ %.pre, %while.cond.outer ], [ %dec.i, %while.body ]
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %call3}, i64 0, metadata !1129), !dbg !1127
+  %cmp.i = icmp eq i32 %4, 0, !dbg !1121
+  br i1 %cmp.i, label %while.end, label %_ZN3pov9pop_entryEPNS_13istack_structE.exit, !dbg !1121
 
-_ZN3pov9pop_entryEPNS_13istack_structE.exit:      ; preds = %17
-  %20 = add i32 %18, -1, !dbg !1364
-  store i32 %20, i32* %14, align 4, !dbg !1364, !tbaa !1360
-  %21 = zext i32 %20 to i64, !dbg !1365
-  %22 = load %"struct.pov::istk_entry"** %15, align 8, !dbg !1354, !tbaa !1366
-  %23 = getelementptr inbounds %"struct.pov::istk_entry"* %22, i64 %21, !dbg !1365
-  tail call void @llvm.dbg.value(metadata %"struct.pov::istk_entry"* %23, i64 0, metadata !914, metadata !1323), !dbg !1367
-  %24 = icmp eq %"struct.pov::istk_entry"* %23, null, !dbg !1368
-  br i1 %24, label %_ZN3pov9pop_entryEPNS_13istack_structE.exit.thread, label %25, !dbg !1369
+_ZN3pov9pop_entryEPNS_13istack_structE.exit:      ; preds = %while.cond
+  %dec.i = add i32 %4, -1, !dbg !1121
+  store i32 %dec.i, i32* %top_entry.i, align 4, !dbg !1121, !tbaa !1128
+  %idxprom.i = zext i32 %dec.i to i64, !dbg !1121
+  %5 = load %"struct.pov::istk_entry"** %istack.i, align 8, !dbg !1121, !tbaa !1116
+  %arrayidx.i = getelementptr inbounds %"struct.pov::istk_entry"* %5, i64 %idxprom.i, !dbg !1121
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %arrayidx.i}, i64 0, metadata !923), !dbg !1122
+  %cmp7 = icmp eq %"struct.pov::istk_entry"* %arrayidx.i, null, !dbg !1122
+  br i1 %cmp7, label %while.end, label %while.body, !dbg !1122
 
-; <label>:25                                      ; preds = %_ZN3pov9pop_entryEPNS_13istack_structE.exit
-  %26 = getelementptr inbounds %"struct.pov::istk_entry"* %23, i64 0, i32 0, !dbg !1370
-  %27 = load double* %26, align 8, !dbg !1370, !tbaa !1371
-  %28 = fcmp olt double %27, %Closest.0.ph, !dbg !1374
-  br i1 %28, label %29, label %17, !dbg !1375
+while.body:                                       ; preds = %_ZN3pov9pop_entryEPNS_13istack_structE.exit
+  %Depth = getelementptr inbounds %"struct.pov::istk_entry"* %arrayidx.i, i64 0, i32 0, !dbg !1130
+  %6 = load double* %Depth, align 8, !dbg !1130, !tbaa !1131
+  %cmp8 = fcmp olt double %6, %Closest.0.ph, !dbg !1130
+  br i1 %cmp8, label %if.then9, label %while.cond, !dbg !1130
 
-; <label>:29                                      ; preds = %25
-  %30 = bitcast %"struct.pov::istk_entry"* %23 to i8*, !dbg !1355
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %16, i8* %30, i64 200, i32 8, i1 false), !dbg !1355, !tbaa.struct !1376
-  %31 = load double* %26, align 8, !dbg !1381, !tbaa !1371
-  tail call void @llvm.dbg.value(metadata double %31, i64 0, metadata !915, metadata !1323), !dbg !1327
-  br label %.outer, !dbg !1382
+if.then9:                                         ; preds = %while.body
+  %7 = bitcast %"struct.pov::istk_entry"* %arrayidx.i to i8*, !dbg !1124
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %3, i8* %7, i64 200, i32 8, i1 false), !dbg !1124, !tbaa.struct !1132
+  %8 = load double* %Depth, align 8, !dbg !1133, !tbaa !1131
+  tail call void @llvm.dbg.value(metadata !{double %8}, i64 0, metadata !924), !dbg !1133
+  br label %while.cond.outer, !dbg !1134
 
-_ZN3pov9pop_entryEPNS_13istack_structE.exit.thread: ; preds = %17, %_ZN3pov9pop_entryEPNS_13istack_structE.exit
-  tail call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %7, i64 0, metadata !994, metadata !1323), !dbg !1383
-  %32 = load i64* bitcast (%"struct.pov::istack_struct"** @_ZN3pov11free_istackE to i64*), align 8, !dbg !1385, !tbaa !1379
-  %33 = bitcast %"struct.pov::istack_struct"* %7 to i64*, !dbg !1386
-  store i64 %32, i64* %33, align 8, !dbg !1386, !tbaa !1387
-  store %"struct.pov::istack_struct"* %7, %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1388, !tbaa !1379
-  br label %37, !dbg !1389
+while.end:                                        ; preds = %while.cond, %_ZN3pov9pop_entryEPNS_13istack_structE.exit
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %call3}, i64 0, metadata !1135), !dbg !1137
+  %9 = load %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1138, !tbaa !1116
+  %next.i21 = getelementptr inbounds %"struct.pov::istack_struct"* %call3, i64 0, i32 0, !dbg !1138
+  store %"struct.pov::istack_struct"* %9, %"struct.pov::istack_struct"** %next.i21, align 8, !dbg !1138, !tbaa !1116
+  store %"struct.pov::istack_struct"* %call3, %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1139, !tbaa !1116
+  br label %return, !dbg !1140
 
-; <label>:34                                      ; preds = %6
-  tail call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %7, i64 0, metadata !994, metadata !1323), !dbg !1390
-  %35 = load i64* bitcast (%"struct.pov::istack_struct"** @_ZN3pov11free_istackE to i64*), align 8, !dbg !1393, !tbaa !1379
-  %36 = bitcast %"struct.pov::istack_struct"* %7 to i64*, !dbg !1394
-  store i64 %35, i64* %36, align 8, !dbg !1394, !tbaa !1387
-  store %"struct.pov::istack_struct"* %7, %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1395, !tbaa !1379
-  br label %37, !dbg !1396
+if.else:                                          ; preds = %if.end2
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %call3}, i64 0, metadata !1141), !dbg !1144
+  %10 = load %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1145, !tbaa !1116
+  %next.i = getelementptr inbounds %"struct.pov::istack_struct"* %call3, i64 0, i32 0, !dbg !1145
+  store %"struct.pov::istack_struct"* %10, %"struct.pov::istack_struct"** %next.i, align 8, !dbg !1145, !tbaa !1116
+  store %"struct.pov::istack_struct"* %call3, %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1146, !tbaa !1116
+  br label %return, !dbg !1147
 
-; <label>:37                                      ; preds = %2, %0, %34, %_ZN3pov9pop_entryEPNS_13istack_structE.exit.thread
-  %.0 = phi i1 [ true, %_ZN3pov9pop_entryEPNS_13istack_structE.exit.thread ], [ false, %34 ], [ false, %0 ], [ false, %2 ]
-  ret i1 %.0, !dbg !1397
+return:                                           ; preds = %if.end, %entry, %if.else, %while.end
+  %retval.0 = phi i1 [ true, %while.end ], [ false, %if.else ], [ false, %entry ], [ false, %if.end ]
+  ret i1 %retval.0, !dbg !1148
 }

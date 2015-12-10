@@ -1,0 +1,29 @@
+define linkonce_odr zeroext i1 @_ZN10xalanc_1_87XObject7booleanEd(double %theNumber) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %theNumber}, i64 0, metadata !2145), !dbg !2412
+  tail call void @llvm.dbg.value(metadata !{double %theNumber}, i64 0, metadata !2413), !dbg !2416
+  tail call void @llvm.dbg.declare(metadata !2417, metadata !2237), !dbg !2418
+  %0 = load i64* bitcast (%"union.xalanc_1_8::DoubleSupport::NumberUnion"* @_ZN10xalanc_1_813DoubleSupport5s_NaNE to i64*), align 8, !dbg !2419
+  %1 = trunc i64 %0 to i32, !dbg !2419
+  %2 = bitcast double %theNumber to i64, !dbg !2419
+  %temp.sroa.0.0.extract.trunc.i = trunc i64 %2 to i32, !dbg !2419
+  %cmp.i = icmp eq i32 %1, %temp.sroa.0.0.extract.trunc.i, !dbg !2419
+  br i1 %cmp.i, label %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit, label %land.rhs, !dbg !2419
+
+_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit:      ; preds = %entry
+  %3 = lshr i64 %0, 32
+  %4 = trunc i64 %3 to i32
+  %temp.sroa.0.4.extract.shift.i = lshr i64 %2, 32, !dbg !2419
+  %temp.sroa.0.4.extract.trunc.i = trunc i64 %temp.sroa.0.4.extract.shift.i to i32, !dbg !2419
+  %cmp2.i = icmp eq i32 %4, %temp.sroa.0.4.extract.trunc.i, !dbg !2419
+  br i1 %cmp2.i, label %land.end, label %land.rhs, !dbg !2414
+
+land.rhs:                                         ; preds = %entry, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit
+  %call1 = tail call zeroext i1 @_ZN10xalanc_1_813DoubleSupport5equalEdd(double %theNumber, double 0.000000e+00) #5, !dbg !2414
+  %lnot = xor i1 %call1, true, !dbg !2414
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit
+  %5 = phi i1 [ false, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit ], [ %lnot, %land.rhs ]
+  ret i1 %5, !dbg !2420
+}

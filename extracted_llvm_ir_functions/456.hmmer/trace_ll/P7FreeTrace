@@ -1,24 +1,25 @@
 define void @P7FreeTrace(%struct.p7trace_s* %tr) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.p7trace_s* %tr, i64 0, metadata !36, metadata !463), !dbg !496
-  %1 = icmp eq %struct.p7trace_s* %tr, null, !dbg !497
-  br i1 %1, label %12, label %2, !dbg !499
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.p7trace_s* %tr}, i64 0, metadata !51), !dbg !489
+  %cmp = icmp eq %struct.p7trace_s* %tr, null, !dbg !490
+  br i1 %cmp, label %return, label %if.end, !dbg !490
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 3, !dbg !500
-  %4 = bitcast i32** %3 to i8**, !dbg !500
-  %5 = load i8** %4, align 8, !dbg !500, !tbaa !483
-  tail call void @free(i8* %5) #7, !dbg !501
-  %6 = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 2, !dbg !502
-  %7 = bitcast i32** %6 to i8**, !dbg !502
-  %8 = load i8** %7, align 8, !dbg !502, !tbaa !479
-  tail call void @free(i8* %8) #7, !dbg !503
-  %9 = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 1, !dbg !504
-  %10 = load i8** %9, align 8, !dbg !504, !tbaa !470
-  tail call void @free(i8* %10) #7, !dbg !505
-  %11 = bitcast %struct.p7trace_s* %tr to i8*, !dbg !506
-  tail call void @free(i8* %11) #7, !dbg !507
-  br label %12, !dbg !508
+if.end:                                           ; preds = %entry
+  %pos = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 3, !dbg !491
+  %0 = load i32** %pos, align 8, !dbg !491, !tbaa !477
+  %1 = bitcast i32* %0 to i8*, !dbg !491
+  tail call void @free(i8* %1) #7, !dbg !491
+  %nodeidx = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 2, !dbg !492
+  %2 = load i32** %nodeidx, align 8, !dbg !492, !tbaa !477
+  %3 = bitcast i32* %2 to i8*, !dbg !492
+  tail call void @free(i8* %3) #7, !dbg !492
+  %statetype = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 1, !dbg !493
+  %4 = load i8** %statetype, align 8, !dbg !493, !tbaa !477
+  tail call void @free(i8* %4) #7, !dbg !493
+  %5 = bitcast %struct.p7trace_s* %tr to i8*, !dbg !494
+  tail call void @free(i8* %5) #7, !dbg !494
+  br label %return, !dbg !494
 
-; <label>:12                                      ; preds = %0, %2
-  ret void, !dbg !508
+return:                                           ; preds = %entry, %if.end
+  ret void, !dbg !494
 }

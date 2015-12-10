@@ -1,34 +1,35 @@
 define i32 @ix86_attr_length_address_default(%struct.rtx_def* %insn) #1 {
 entry:
-  tail call void @extract_insn_cached(%struct.rtx_def* %insn) #9
-  %0 = load i8* getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 7), align 4, !tbaa !1
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !3180), !dbg !9225
+  tail call void @extract_insn_cached(%struct.rtx_def* %insn) #10, !dbg !9226
+  %0 = load i8* getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 7), align 4, !dbg !9227, !tbaa !4348
   %1 = sext i8 %0 to i64
-  br label %for.cond
+  br label %for.cond, !dbg !9227
 
 for.cond:                                         ; preds = %for.body, %entry
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ %1, %entry ]
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %2 = trunc i64 %indvars.iv to i32
-  %cmp = icmp sgt i32 %2, 0
-  br i1 %cmp, label %for.body, label %return
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !9229
+  %2 = trunc i64 %indvars.iv to i32, !dbg !9227
+  %cmp = icmp sgt i32 %2, 0, !dbg !9227
+  br i1 %cmp, label %for.body, label %return, !dbg !9227
 
 for.body:                                         ; preds = %for.cond
-  %arrayidx = getelementptr inbounds %struct.recog_data* @recog_data, i64 0, i32 0, i64 %indvars.iv.next
-  %3 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !4
-  %4 = bitcast %struct.rtx_def* %3 to i32*
-  %bf.load = load i32* %4, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp2 = icmp eq i32 %bf.clear, 66
-  br i1 %cmp2, label %if.then, label %for.cond
+  %arrayidx = getelementptr inbounds %struct.recog_data* @recog_data, i64 0, i32 0, i64 %indvars.iv.next, !dbg !9229
+  %3 = load %struct.rtx_def** %arrayidx, align 8, !dbg !9229, !tbaa !4365
+  %4 = bitcast %struct.rtx_def* %3 to i32*, !dbg !9229
+  %bf.load = load i32* %4, align 8, !dbg !9229
+  %bf.clear = and i32 %bf.load, 65535, !dbg !9229
+  %cmp2 = icmp eq i32 %bf.clear, 66, !dbg !9229
+  br i1 %cmp2, label %if.then, label %for.cond, !dbg !9229
 
 if.then:                                          ; preds = %for.body
-  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**
-  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %call = tail call fastcc i32 @memory_address_length(%struct.rtx_def* %5) #10
-  br label %return
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0, !dbg !9230
+  %rtx = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**, !dbg !9230
+  %5 = load %struct.rtx_def** %rtx, align 8, !dbg !9230, !tbaa !4365
+  %call = tail call fastcc i32 @memory_address_length(%struct.rtx_def* %5) #11, !dbg !9230
+  br label %return, !dbg !9230
 
 return:                                           ; preds = %for.cond, %if.then
   %retval.0 = phi i32 [ %call, %if.then ], [ 0, %for.cond ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !9232
 }

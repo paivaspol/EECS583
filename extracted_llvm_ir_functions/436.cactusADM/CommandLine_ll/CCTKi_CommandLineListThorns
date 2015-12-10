@@ -1,18 +1,19 @@
 define void @CCTKi_CommandLineListThorns() #1 {
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !372, !tbaa !136
-  %2 = tail call i32 %1(%struct.cGH* null) #6, !dbg !372
-  %3 = icmp eq i32 %2, 0, !dbg !374
-  br i1 %3, label %4, label %7, !dbg !375
+entry:
+  %0 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !260, !tbaa !129
+  %call = tail call i32 %0(%struct.cGH* null) #6, !dbg !260
+  %cmp = icmp eq i32 %call, 0, !dbg !260
+  br i1 %cmp, label %if.then, label %if.end, !dbg !260
 
-; <label>:4                                       ; preds = %0
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([45 x i8]* @str, i64 0, i64 0)), !dbg !376
-  %5 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !378, !tbaa !136
-  %6 = tail call i32 @CCTKi_PrintThorns(%struct.__sFILE* %5, i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i32 0) #6, !dbg !379
-  %puts1 = tail call i32 @puts(i8* getelementptr inbounds ([45 x i8]* @str47, i64 0, i64 0)), !dbg !380
-  br label %7, !dbg !381
+if.then:                                          ; preds = %entry
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([45 x i8]* @str, i64 0, i64 0)), !dbg !261
+  %1 = load %struct._IO_FILE** @stdout, align 8, !dbg !263, !tbaa !129
+  %call2 = tail call i32 @CCTKi_PrintThorns(%struct._IO_FILE* %1, i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i32 0) #6, !dbg !263
+  %puts5 = tail call i32 @puts(i8* getelementptr inbounds ([45 x i8]* @str47, i64 0, i64 0)), !dbg !264
+  br label %if.end, !dbg !265
 
-; <label>:7                                       ; preds = %4, %0
-  %8 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !382, !tbaa !136
-  %9 = tail call i32 %8(%struct.cGH* null, i32 1) #6, !dbg !382
-  ret void, !dbg !383
+if.end:                                           ; preds = %if.then, %entry
+  %2 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !266, !tbaa !129
+  %call4 = tail call i32 %2(%struct.cGH* null, i32 1) #6, !dbg !266
+  ret void, !dbg !267
 }

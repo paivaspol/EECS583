@@ -1,35 +1,36 @@
 define void @Pencil_clearData(%struct._Pencil* %pencil) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Pencil* %pencil, i64 0, metadata !74, metadata !88), !dbg !115
-  %1 = icmp eq %struct._Pencil* %pencil, null, !dbg !116
-  br i1 %1, label %2, label %5, !dbg !118
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Pencil* %pencil}, i64 0, metadata !69), !dbg !94
+  %cmp = icmp eq %struct._Pencil* %pencil, null, !dbg !95
+  br i1 %cmp, label %if.then, label %if.end, !dbg !95
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !119, !tbaa !93
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([50 x i8]* @.str3, i64 0, i64 0), %struct._Pencil* null) #6, !dbg !121
-  tail call void @exit(i32 -1) #7, !dbg !122
-  unreachable, !dbg !122
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !96, !tbaa !79
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str3, i64 0, i64 0), %struct._Pencil* null) #6, !dbg !96
+  tail call void @exit(i32 -1) #7, !dbg !98
+  unreachable, !dbg !98
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2, !dbg !123
-  %7 = load %struct._InpMtx** %6, align 8, !dbg !123, !tbaa !125
-  %8 = icmp eq %struct._InpMtx* %7, null, !dbg !126
-  br i1 %8, label %11, label %9, !dbg !127
+if.end:                                           ; preds = %entry
+  %inpmtxA = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2, !dbg !99
+  %1 = load %struct._InpMtx** %inpmtxA, align 8, !dbg !99, !tbaa !79
+  %cmp1 = icmp eq %struct._InpMtx* %1, null, !dbg !99
+  br i1 %cmp1, label %if.end5, label %if.then2, !dbg !99
 
-; <label>:9                                       ; preds = %5
-  %10 = tail call %struct._InpMtx* @InpMtx_free(%struct._InpMtx* %7) #6, !dbg !128
-  br label %11, !dbg !130
+if.then2:                                         ; preds = %if.end
+  %call4 = tail call %struct._InpMtx* @InpMtx_free(%struct._InpMtx* %1) #6, !dbg !100
+  br label %if.end5, !dbg !102
 
-; <label>:11                                      ; preds = %5, %9
-  %12 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3, !dbg !131
-  %13 = load %struct._InpMtx** %12, align 8, !dbg !131, !tbaa !133
-  %14 = icmp eq %struct._InpMtx* %13, null, !dbg !134
-  br i1 %14, label %17, label %15, !dbg !135
+if.end5:                                          ; preds = %if.end, %if.then2
+  %inpmtxB = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3, !dbg !103
+  %2 = load %struct._InpMtx** %inpmtxB, align 8, !dbg !103, !tbaa !79
+  %cmp6 = icmp eq %struct._InpMtx* %2, null, !dbg !103
+  br i1 %cmp6, label %if.end10, label %if.then7, !dbg !103
 
-; <label>:15                                      ; preds = %11
-  %16 = tail call %struct._InpMtx* @InpMtx_free(%struct._InpMtx* %13) #6, !dbg !136
-  br label %17, !dbg !138
+if.then7:                                         ; preds = %if.end5
+  %call9 = tail call %struct._InpMtx* @InpMtx_free(%struct._InpMtx* %2) #6, !dbg !104
+  br label %if.end10, !dbg !106
 
-; <label>:17                                      ; preds = %11, %15
-  tail call void @Pencil_setDefaultFields(%struct._Pencil* %pencil) #8, !dbg !139
-  ret void, !dbg !140
+if.end10:                                         ; preds = %if.end5, %if.then7
+  tail call void @Pencil_setDefaultFields(%struct._Pencil* %pencil) #8, !dbg !107
+  ret void, !dbg !108
 }

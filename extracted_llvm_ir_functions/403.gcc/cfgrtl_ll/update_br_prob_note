@@ -1,64 +1,66 @@
 define void @update_br_prob_note(%struct.basic_block_def* nocapture %bb) #0 {
 entry:
-  %end = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1
-  %0 = load %struct.rtx_def** %end, align 8, !tbaa !0
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 33
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %bb}, i64 0, metadata !1281), !dbg !2171
+  %end = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1, !dbg !2172
+  %0 = load %struct.rtx_def** %end, align 8, !dbg !2172, !tbaa !1516
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !2172
+  %bf.load = load i32* %1, align 8, !dbg !2172
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2172
+  %cmp = icmp eq i32 %bf.clear, 33, !dbg !2172
+  br i1 %cmp, label %if.end, label %return, !dbg !2172
 
 if.end:                                           ; preds = %entry
-  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %0, i32 16, %struct.rtx_def* null) #5
-  %tobool = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool, label %return, label %lor.lhs.false
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %0, i32 16, %struct.rtx_def* null) #6, !dbg !2173
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1282), !dbg !2173
+  %tobool = icmp eq %struct.rtx_def* %call, null, !dbg !2174
+  br i1 %tobool, label %return, label %lor.lhs.false, !dbg !2174
 
 lor.lhs.false:                                    ; preds = %if.end
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %rtwint = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0, i32 0
-  %3 = load i64* %rtwint, align 8, !tbaa !4
-  %succ = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5
-  %4 = load %struct.edge_def** %succ, align 8, !tbaa !0
-  %flags = getelementptr inbounds %struct.edge_def* %4, i64 0, i32 6
-  %5 = load i32* %flags, align 4, !tbaa !3
-  %and = and i32 %5, 1
-  %tobool4 = icmp eq i32 %and, 0
-  br i1 %tobool4, label %cond.end, label %cond.true
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0, !dbg !2174
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !2174
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !2174, !tbaa !1516
+  %rtwint = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0, i32 0, !dbg !2174
+  %3 = load i64* %rtwint, align 8, !dbg !2174, !tbaa !1669
+  %succ = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5, !dbg !2174
+  %4 = load %struct.edge_def** %succ, align 8, !dbg !2174, !tbaa !1516
+  %flags = getelementptr inbounds %struct.edge_def* %4, i64 0, i32 6, !dbg !2174
+  %5 = load i32* %flags, align 4, !dbg !2174, !tbaa !1533
+  %and = and i32 %5, 1, !dbg !2174
+  %tobool4 = icmp eq i32 %and, 0, !dbg !2174
+  br i1 %tobool4, label %cond.end, label %cond.true, !dbg !2174
 
 cond.true:                                        ; preds = %lor.lhs.false
-  %succ_next = getelementptr inbounds %struct.edge_def* %4, i64 0, i32 1
-  %6 = load %struct.edge_def** %succ_next, align 8, !tbaa !0
-  br label %cond.end
+  %succ_next = getelementptr inbounds %struct.edge_def* %4, i64 0, i32 1, !dbg !2174
+  %6 = load %struct.edge_def** %succ_next, align 8, !dbg !2174, !tbaa !1516
+  br label %cond.end, !dbg !2174
 
 cond.end:                                         ; preds = %lor.lhs.false, %cond.true
-  %cond = phi %struct.edge_def* [ %6, %cond.true ], [ %4, %lor.lhs.false ]
-  %probability = getelementptr inbounds %struct.edge_def* %cond, i64 0, i32 7
-  %7 = load i32* %probability, align 4, !tbaa !3
-  %conv = sext i32 %7 to i64
-  %cmp7 = icmp eq i64 %3, %conv
-  br i1 %cmp7, label %return, label %if.end10
+  %cond = phi %struct.edge_def* [ %6, %cond.true ], [ %4, %lor.lhs.false ], !dbg !2174
+  %probability = getelementptr inbounds %struct.edge_def* %cond, i64 0, i32 7, !dbg !2174
+  %7 = load i32* %probability, align 4, !dbg !2174, !tbaa !1533
+  %conv = sext i32 %7 to i64, !dbg !2174
+  %cmp7 = icmp eq i64 %3, %conv, !dbg !2174
+  br i1 %cmp7, label %return, label %if.end10, !dbg !2174
 
 if.end10:                                         ; preds = %cond.end
-  br i1 %tobool4, label %cond.end20, label %cond.true15
+  br i1 %tobool4, label %cond.end20, label %cond.true15, !dbg !2175
 
 cond.true15:                                      ; preds = %if.end10
-  %succ_next17 = getelementptr inbounds %struct.edge_def* %4, i64 0, i32 1
-  %8 = load %struct.edge_def** %succ_next17, align 8, !tbaa !0
-  br label %cond.end20
+  %succ_next17 = getelementptr inbounds %struct.edge_def* %4, i64 0, i32 1, !dbg !2175
+  %8 = load %struct.edge_def** %succ_next17, align 8, !dbg !2175, !tbaa !1516
+  br label %cond.end20, !dbg !2175
 
 cond.end20:                                       ; preds = %if.end10, %cond.true15
-  %cond21 = phi %struct.edge_def* [ %8, %cond.true15 ], [ %4, %if.end10 ]
-  %probability22 = getelementptr inbounds %struct.edge_def* %cond21, i64 0, i32 7
-  %9 = load i32* %probability22, align 4, !tbaa !3
-  %conv23 = sext i32 %9 to i64
-  %call24 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv23) #5
-  %10 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
-  %call24.c = ptrtoint %struct.rtx_def* %call24 to i64
-  store i64 %call24.c, i64* %10, align 8, !tbaa !0
-  br label %return
+  %cond21 = phi %struct.edge_def* [ %8, %cond.true15 ], [ %4, %if.end10 ], !dbg !2175
+  %probability22 = getelementptr inbounds %struct.edge_def* %cond21, i64 0, i32 7, !dbg !2175
+  %9 = load i32* %probability22, align 4, !dbg !2175, !tbaa !1533
+  %conv23 = sext i32 %9 to i64, !dbg !2175
+  %call24 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv23) #6, !dbg !2175
+  %10 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0, !dbg !2175
+  %call24.c = ptrtoint %struct.rtx_def* %call24 to i64, !dbg !2175
+  store i64 %call24.c, i64* %10, align 8, !dbg !2175, !tbaa !1516
+  br label %return, !dbg !2175
 
 return:                                           ; preds = %if.end, %entry, %cond.end, %cond.end20
-  ret void
+  ret void, !dbg !2175
 }

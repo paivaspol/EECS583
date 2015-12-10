@@ -1,0 +1,24 @@
+define %"class.pov_base::IOBase"* @_ZN8pov_base6IOBase5writeEPvm(%"class.pov_base::IOBase"* %this, i8* nocapture %buffer, i64 %count) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IOBase"* %this}, i64 0, metadata !191), !dbg !784
+  tail call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !192), !dbg !784
+  tail call void @llvm.dbg.value(metadata !{i64 %count}, i64 0, metadata !193), !dbg !784
+  %fail = getelementptr inbounds %"class.pov_base::IOBase"* %this, i64 0, i32 1, !dbg !785
+  %0 = load i8* %fail, align 1, !dbg !785, !tbaa !687, !range !766
+  %tobool = icmp ne i8 %0, 0, !dbg !785
+  %cmp = icmp eq i64 %count, 0, !dbg !785
+  %or.cond = or i1 %tobool, %cmp, !dbg !785
+  br i1 %or.cond, label %if.end, label %if.then, !dbg !785
+
+if.then:                                          ; preds = %entry
+  %f = getelementptr inbounds %"class.pov_base::IOBase"* %this, i64 0, i32 2, !dbg !786
+  %1 = load %struct._IO_FILE** %f, align 8, !dbg !786, !tbaa !689
+  %call = tail call i64 @fwrite(i8* %buffer, i64 %count, i64 1, %struct._IO_FILE* %1) #9, !dbg !786
+  %cmp2 = icmp ne i64 %call, 1, !dbg !786
+  %frombool = zext i1 %cmp2 to i8, !dbg !786
+  store i8 %frombool, i8* %fail, align 1, !dbg !786, !tbaa !687
+  br label %if.end, !dbg !786
+
+if.end:                                           ; preds = %entry, %if.then
+  ret %"class.pov_base::IOBase"* %this, !dbg !787
+}

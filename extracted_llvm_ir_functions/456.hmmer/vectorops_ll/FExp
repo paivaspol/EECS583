@@ -1,27 +1,24 @@
 define void @FExp(float* nocapture %vec, i32 %n) #0 {
-  tail call void @llvm.dbg.value(metadata float* %vec, i64 0, metadata !185, metadata !206), !dbg !568
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !186, metadata !206), !dbg !569
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !187, metadata !206), !dbg !570
-  %1 = icmp sgt i32 %n, 0, !dbg !571
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !574
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %vec}, i64 0, metadata !185), !dbg !354
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !186), !dbg !354
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !187), !dbg !355
+  %cmp8 = icmp sgt i32 %n, 0, !dbg !355
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !355
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %n, -1, !dbg !574
-  br label %3, !dbg !574
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !355
+  %0 = load float* %arrayidx, align 4, !dbg !355, !tbaa !212
+  %conv = fpext float %0 to double, !dbg !355
+  %call = tail call double @exp(double %conv) #4, !dbg !355
+  %conv1 = fptrunc double %call to float, !dbg !355
+  store float %conv1, float* %arrayidx, align 4, !dbg !355, !tbaa !212
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !355
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !355
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !355
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !355
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !575
-  %5 = load float* %4, align 4, !dbg !575, !tbaa !232
-  %6 = fpext float %5 to double, !dbg !575
-  %7 = tail call double @exp(double %6) #4, !dbg !576
-  %8 = fptrunc double %7 to float, !dbg !576
-  store float %8, float* %4, align 4, !dbg !577, !tbaa !232
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !574
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !574
-  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !574
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !574
-
-._crit_edge:                                      ; preds = %3, %0
-  ret void, !dbg !578
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !357
 }

@@ -1,29 +1,31 @@
 define void @sbitmap_ones(%struct.simple_bitmap_def* nocapture %bmap) #0 {
 entry:
-  %elms = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 3
-  %0 = bitcast [1 x i64]* %elms to i8*
-  %bytes = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 2
-  %1 = load i32* %bytes, align 4, !tbaa !0
-  %conv = zext i32 %1 to i64
-  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 -1, i64 %conv, i32 1, i1 false)
-  %n_bits = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 0
-  %2 = load i32* %n_bits, align 4, !tbaa !0
-  %rem = and i32 %2, 63
-  %tobool = icmp eq i32 %rem, 0
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def* %bmap}, i64 0, metadata !138), !dbg !591
+  %elms = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 3, !dbg !592
+  %0 = bitcast [1 x i64]* %elms to i8*, !dbg !592
+  %bytes = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 2, !dbg !592
+  %1 = load i32* %bytes, align 4, !dbg !592, !tbaa !559
+  %conv = zext i32 %1 to i64, !dbg !592
+  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 -1, i64 %conv, i32 1, i1 false), !dbg !592
+  %n_bits = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 0, !dbg !593
+  %2 = load i32* %n_bits, align 4, !dbg !593, !tbaa !559
+  %rem = and i32 %2, 63, !dbg !593
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !139), !dbg !593
+  %tobool = icmp eq i32 %rem, 0, !dbg !594
+  br i1 %tobool, label %if.end, label %if.then, !dbg !594
 
 if.then:                                          ; preds = %entry
-  %sub = sub i32 64, %rem
-  %sh_prom = zext i32 %sub to i64
-  %shr = lshr i64 -1, %sh_prom
-  %size = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 1
-  %3 = load i32* %size, align 4, !tbaa !0
-  %sub1 = add i32 %3, -1
-  %idxprom = zext i32 %sub1 to i64
-  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 3, i64 %idxprom
-  store i64 %shr, i64* %arrayidx, align 8, !tbaa !4
-  br label %if.end
+  %sub = sub i32 64, %rem, !dbg !595
+  %sh_prom = zext i32 %sub to i64, !dbg !595
+  %shr = lshr i64 -1, %sh_prom, !dbg !595
+  %size = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 1, !dbg !595
+  %3 = load i32* %size, align 4, !dbg !595, !tbaa !559
+  %sub1 = add i32 %3, -1, !dbg !595
+  %idxprom = zext i32 %sub1 to i64, !dbg !595
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 3, i64 %idxprom, !dbg !595
+  store i64 %shr, i64* %arrayidx, align 8, !dbg !595, !tbaa !596
+  br label %if.end, !dbg !595
 
 if.end:                                           ; preds = %entry, %if.then
-  ret void
+  ret void, !dbg !597
 }

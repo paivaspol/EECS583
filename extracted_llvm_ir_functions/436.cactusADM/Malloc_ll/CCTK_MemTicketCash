@@ -1,25 +1,26 @@
 define i64 @CCTK_MemTicketCash(i32 %this_ticket) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_ticket, i64 0, metadata !76, metadata !120), !dbg !232
-  %1 = load %struct.cHandledData** @ticketDB, align 8, !dbg !233, !tbaa !132
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_ticket) #7, !dbg !234
-  %3 = icmp eq i8* %2, null, !dbg !235
-  br i1 %3, label %9, label %4, !dbg !237
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_ticket}, i64 0, metadata !72), !dbg !168
+  %0 = load %struct.cHandledData** @ticketDB, align 8, !dbg !169, !tbaa !117
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %this_ticket) #7, !dbg !169
+  %tobool = icmp eq i8* %call, null, !dbg !170
+  br i1 %tobool, label %if.else, label %if.then, !dbg !170
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to i64*, !dbg !238
-  %6 = load i64* %5, align 8, !dbg !238, !tbaa !224
-  tail call void @llvm.dbg.value(metadata i64 %6, i64 0, metadata !78, metadata !120), !dbg !240
-  %7 = load i64* @totmem, align 8, !dbg !241, !tbaa !157
-  %8 = sub i64 %7, %6, !dbg !243
-  tail call void @llvm.dbg.value(metadata i64 %8, i64 0, metadata !77, metadata !120), !dbg !244
-  br label %11, !dbg !245
+if.then:                                          ; preds = %entry
+  %size = bitcast i8* %call to i64*, !dbg !171
+  %1 = load i64* %size, align 8, !dbg !171, !tbaa !122
+  tail call void @llvm.dbg.value(metadata !{i64 %1}, i64 0, metadata !74), !dbg !171
+  %2 = load i64* @totmem, align 8, !dbg !173, !tbaa !122
+  %sub = sub i64 %2, %1, !dbg !174
+  tail call void @llvm.dbg.value(metadata !{i64 %sub}, i64 0, metadata !73), !dbg !174
+  br label %if.end, !dbg !175
 
-; <label>:9                                       ; preds = %0
-  %10 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 474, i8* getelementptr inbounds ([75 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8]* @.str4, i64 0, i64 0), i32 %this_ticket) #7, !dbg !246
-  tail call void @llvm.dbg.value(metadata i64 666, i64 0, metadata !77, metadata !120), !dbg !244
-  br label %11
+if.else:                                          ; preds = %entry
+  %call2 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 474, i8* getelementptr inbounds ([63 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8]* @.str4, i64 0, i64 0), i32 %this_ticket) #7, !dbg !176
+  tail call void @llvm.dbg.value(metadata !178, i64 0, metadata !73), !dbg !179
+  br label %if.end
 
-; <label>:11                                      ; preds = %9, %4
-  %tdiff.0 = phi i64 [ %8, %4 ], [ 666, %9 ]
-  ret i64 %tdiff.0, !dbg !248
+if.end:                                           ; preds = %if.else, %if.then
+  %tdiff.0 = phi i64 [ %sub, %if.then ], [ 666, %if.else ]
+  ret i64 %tdiff.0, !dbg !180
 }

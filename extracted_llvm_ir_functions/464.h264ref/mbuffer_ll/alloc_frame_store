@@ -1,20 +1,21 @@
-define noalias %struct.frame_store* @alloc_frame_store() #1 {
-  %1 = tail call i8* @calloc(i64 1, i64 64) #8, !dbg !1630
-  %2 = bitcast i8* %1 to %struct.frame_store*, !dbg !1630
-  tail call void @llvm.dbg.value(metadata %struct.frame_store* %2, i64 0, metadata !147, metadata !1408), !dbg !1631
-  %3 = icmp eq i8* %1, null, !dbg !1632
-  br i1 %3, label %4, label %5, !dbg !1634
+define noalias %struct.frame_store* @alloc_frame_store() #2 {
+entry:
+  %call = tail call noalias i8* @calloc(i64 1, i64 64) #8, !dbg !1504
+  %0 = bitcast i8* %call to %struct.frame_store*, !dbg !1504
+  tail call void @llvm.dbg.value(metadata !{%struct.frame_store* %0}, i64 0, metadata !143), !dbg !1504
+  %cmp = icmp eq i8* %call, null, !dbg !1505
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1505
 
-; <label>:4                                       ; preds = %0
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([21 x i8]* @.str6, i64 0, i64 0)) #8, !dbg !1635
-  br label %5, !dbg !1635
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([21 x i8]* @.str6, i64 0, i64 0)) #8, !dbg !1506
+  br label %if.end, !dbg !1506
 
-; <label>:5                                       ; preds = %4, %0
-  %6 = getelementptr inbounds i8* %1, i64 32, !dbg !1636
-  %7 = bitcast i8* %6 to i32*, !dbg !1636
-  store i32 0, i32* %7, align 4, !dbg !1637, !tbaa !1638
-  %8 = getelementptr inbounds i8* %1, i64 40, !dbg !1639
-  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 16, i32 4, i1 false), !dbg !1640
-  call void @llvm.memset.p0i8.i64(i8* %8, i8 0, i64 24, i32 8, i1 false), !dbg !1641
-  ret %struct.frame_store* %2, !dbg !1642
+if.end:                                           ; preds = %if.then, %entry
+  %is_output = getelementptr inbounds i8* %call, i64 32, !dbg !1507
+  %1 = bitcast i8* %is_output to i32*, !dbg !1507
+  store i32 0, i32* %1, align 4, !dbg !1507, !tbaa !1366
+  %frame = getelementptr inbounds i8* %call, i64 40, !dbg !1508
+  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 16, i32 4, i1 false), !dbg !1509
+  call void @llvm.memset.p0i8.i64(i8* %frame, i8 0, i64 24, i32 8, i1 false), !dbg !1508
+  ret %struct.frame_store* %0, !dbg !1510
 }

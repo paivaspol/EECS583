@@ -1,33 +1,30 @@
 define void @DLog(double* nocapture %vec, i32 %n) #0 {
-  tail call void @llvm.dbg.value(metadata double* %vec, i64 0, metadata !170, metadata !206), !dbg !527
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !171, metadata !206), !dbg !528
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !172, metadata !206), !dbg !529
-  %1 = icmp sgt i32 %n, 0, !dbg !530
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !533
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %vec}, i64 0, metadata !170), !dbg !340
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !171), !dbg !340
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !172), !dbg !341
+  %cmp14 = icmp sgt i32 %n, 0, !dbg !341
+  br i1 %cmp14, label %for.body, label %for.end, !dbg !341
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %n, -1, !dbg !533
-  br label %3, !dbg !533
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds double* %vec, i64 %indvars.iv, !dbg !343
+  %0 = load double* %arrayidx, align 8, !dbg !343, !tbaa !205
+  %cmp1 = fcmp ogt double %0, 0.000000e+00, !dbg !343
+  br i1 %cmp1, label %if.then, label %for.inc, !dbg !343
 
-; <label>:3                                       ; preds = %9, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %4 = getelementptr inbounds double* %vec, i64 %indvars.iv, !dbg !534
-  %5 = load double* %4, align 8, !dbg !534, !tbaa !217
-  %6 = fcmp ogt double %5, 0.000000e+00, !dbg !536
-  br i1 %6, label %7, label %9, !dbg !537
+if.then:                                          ; preds = %for.body
+  %call = tail call double @log(double %0) #4, !dbg !343
+  br label %for.inc, !dbg !343
 
-; <label>:7                                       ; preds = %3
-  %8 = tail call double @log(double %5) #4, !dbg !538
-  br label %9, !dbg !539
+for.inc:                                          ; preds = %for.body, %if.then
+  %storemerge = phi double [ %call, %if.then ], [ 0xFFEFFFFFFFFFFFFF, %for.body ]
+  store double %storemerge, double* %arrayidx, align 8, !dbg !343, !tbaa !205
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !341
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !341
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !341
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !341
 
-; <label>:9                                       ; preds = %3, %7
-  %storemerge = phi double [ %8, %7 ], [ 0xFFEFFFFFFFFFFFFF, %3 ]
-  store double %storemerge, double* %4, align 8, !dbg !540, !tbaa !217
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !533
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !533
-  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !533
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !533
-
-._crit_edge:                                      ; preds = %9, %0
-  ret void, !dbg !541
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !344
 }

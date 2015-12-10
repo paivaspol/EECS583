@@ -1,42 +1,45 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.uStringList = type { i32, %struct.iInternalStringList*, %struct.iInternalStringList*, %struct.iInternalStringList* }
 %struct.iInternalStringList = type { %struct.iInternalStringList*, i8* }
 
 @.str = private unnamed_addr constant [85 x i8] c"$Header: /cactus/Cactus/src/util/StringList.c,v 1.3 2001/09/01 10:48:39 tradke Exp $\00", align 1
 
-; Function Attrs: nounwind optsize readnone ssp uwtable
+; Function Attrs: nounwind optsize readnone uwtable
 define i8* @CCTKi_version_util_StringList_c() #0 {
-  ret i8* getelementptr inbounds ([85 x i8]* @.str, i64 0, i64 0), !dbg !62
+entry:
+  ret i8* getelementptr inbounds ([85 x i8]* @.str, i64 0, i64 0), !dbg !58
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define noalias %struct.uStringList* @Util_StringListCreate(i32 %size) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !31, metadata !63), !dbg !64
-  %1 = tail call i8* @malloc(i64 32) #5, !dbg !65
-  %2 = bitcast i8* %1 to %struct.uStringList*, !dbg !66
-  tail call void @llvm.dbg.value(metadata %struct.uStringList* %2, i64 0, metadata !32, metadata !63), !dbg !67
-  %3 = icmp eq i8* %1, null, !dbg !68
-  br i1 %3, label %13, label %4, !dbg !70
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !31), !dbg !59
+  %call = tail call noalias i8* @malloc(i64 32) #5, !dbg !60
+  %0 = bitcast i8* %call to %struct.uStringList*, !dbg !60
+  tail call void @llvm.dbg.value(metadata !{%struct.uStringList* %0}, i64 0, metadata !32), !dbg !60
+  %tobool = icmp eq i8* %call, null, !dbg !61
+  br i1 %tobool, label %if.end, label %if.then, !dbg !61
 
-; <label>:4                                       ; preds = %0
-  %5 = add nsw i32 %size, 1, !dbg !71
-  %6 = sext i32 %5 to i64, !dbg !73
-  %7 = tail call i8* @calloc(i64 %6, i64 16) #5, !dbg !74
-  %8 = getelementptr inbounds i8* %1, i64 8, !dbg !75
-  %9 = bitcast i8* %8 to i8**, !dbg !76
-  store i8* %7, i8** %9, align 8, !dbg !76, !tbaa !77
-  %10 = getelementptr inbounds i8* %1, i64 24, !dbg !83
-  %11 = bitcast i8* %10 to %struct.iInternalStringList**, !dbg !83
-  store %struct.iInternalStringList* null, %struct.iInternalStringList** %11, align 8, !dbg !84, !tbaa !85
-  %12 = bitcast i8* %1 to i32*, !dbg !86
-  store i32 0, i32* %12, align 4, !dbg !87, !tbaa !88
-  br label %13, !dbg !89
+if.then:                                          ; preds = %entry
+  %add = add nsw i32 %size, 1, !dbg !62
+  %conv = sext i32 %add to i64, !dbg !62
+  %call1 = tail call noalias i8* @calloc(i64 %conv, i64 16) #5, !dbg !62
+  %1 = bitcast i8* %call1 to %struct.iInternalStringList*, !dbg !62
+  %list = getelementptr inbounds i8* %call, i64 8, !dbg !62
+  %2 = bitcast i8* %list to %struct.iInternalStringList**, !dbg !62
+  store %struct.iInternalStringList* %1, %struct.iInternalStringList** %2, align 8, !dbg !62, !tbaa !64
+  %current = getelementptr inbounds i8* %call, i64 24, !dbg !67
+  %3 = bitcast i8* %current to %struct.iInternalStringList**, !dbg !67
+  store %struct.iInternalStringList* null, %struct.iInternalStringList** %3, align 8, !dbg !67, !tbaa !64
+  %fill = bitcast i8* %call to i32*, !dbg !68
+  store i32 0, i32* %fill, align 4, !dbg !68, !tbaa !69
+  br label %if.end, !dbg !70
 
-; <label>:13                                      ; preds = %0, %4
-  ret %struct.uStringList* %2, !dbg !90
+if.end:                                           ; preds = %entry, %if.then
+  ret %struct.uStringList* %0, !dbg !71
 }
 
 ; Function Attrs: nounwind optsize
@@ -45,114 +48,118 @@ declare noalias i8* @malloc(i64) #2
 ; Function Attrs: nounwind optsize
 declare noalias i8* @calloc(i64, i64) #2
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @Util_StringListAdd(%struct.uStringList* nocapture %list, i8* %item) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.uStringList* %list, i64 0, metadata !37, metadata !63), !dbg !91
-  tail call void @llvm.dbg.value(metadata i8* %item, i64 0, metadata !38, metadata !63), !dbg !92
-  %1 = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 0, !dbg !93
-  %2 = load i32* %1, align 4, !dbg !93, !tbaa !88
-  %3 = icmp eq i32 %2, 0, !dbg !95
-  br i1 %3, label %4, label %16, !dbg !96
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.uStringList* %list}, i64 0, metadata !37), !dbg !72
+  tail call void @llvm.dbg.value(metadata !{i8* %item}, i64 0, metadata !38), !dbg !72
+  %fill = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 0, !dbg !73
+  %0 = load i32* %fill, align 4, !dbg !73, !tbaa !69
+  %cmp = icmp eq i32 %0, 0, !dbg !73
+  br i1 %cmp, label %if.then, label %if.else, !dbg !73
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 1, !dbg !97
-  %6 = bitcast %struct.iInternalStringList** %5 to i64*, !dbg !97
-  %7 = load i64* %6, align 8, !dbg !97, !tbaa !77
-  %8 = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 2, !dbg !99
-  %9 = bitcast %struct.iInternalStringList** %8 to i64*, !dbg !100
-  store i64 %7, i64* %9, align 8, !dbg !100, !tbaa !101
-  %10 = tail call i8* @Util_Strdup(i8* %item) #5, !dbg !102
-  %11 = load %struct.iInternalStringList** %8, align 8, !dbg !103, !tbaa !101
-  %12 = getelementptr inbounds %struct.iInternalStringList* %11, i64 0, i32 1, !dbg !104
-  store i8* %10, i8** %12, align 8, !dbg !105, !tbaa !106
-  %13 = getelementptr inbounds %struct.iInternalStringList* %11, i64 0, i32 0, !dbg !108
-  store %struct.iInternalStringList* null, %struct.iInternalStringList** %13, align 8, !dbg !109, !tbaa !110
-  %14 = load i32* %1, align 4, !dbg !111, !tbaa !88
-  %15 = add nsw i32 %14, 1, !dbg !111
-  store i32 %15, i32* %1, align 4, !dbg !111, !tbaa !88
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !39, metadata !63), !dbg !112
-  br label %.thread, !dbg !113
+if.then:                                          ; preds = %entry
+  %list2 = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 1, !dbg !74
+  %1 = load %struct.iInternalStringList** %list2, align 8, !dbg !74, !tbaa !64
+  %head = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 2, !dbg !74
+  store %struct.iInternalStringList* %1, %struct.iInternalStringList** %head, align 8, !dbg !74, !tbaa !64
+  %call = tail call i8* @Util_Strdup(i8* %item) #5, !dbg !76
+  %2 = load %struct.iInternalStringList** %head, align 8, !dbg !76, !tbaa !64
+  %string = getelementptr inbounds %struct.iInternalStringList* %2, i64 0, i32 1, !dbg !76
+  store i8* %call, i8** %string, align 8, !dbg !76, !tbaa !64
+  %3 = load %struct.iInternalStringList** %head, align 8, !dbg !77, !tbaa !64
+  %next = getelementptr inbounds %struct.iInternalStringList* %3, i64 0, i32 0, !dbg !77
+  store %struct.iInternalStringList* null, %struct.iInternalStringList** %next, align 8, !dbg !77, !tbaa !64
+  %4 = load i32* %fill, align 4, !dbg !78, !tbaa !69
+  %inc = add nsw i32 %4, 1, !dbg !78
+  store i32 %inc, i32* %fill, align 4, !dbg !78, !tbaa !69
+  tail call void @llvm.dbg.value(metadata !79, i64 0, metadata !39), !dbg !80
+  br label %if.end62, !dbg !81
 
-; <label>:16                                      ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !39, metadata !63), !dbg !112
-  tail call void @llvm.dbg.value(metadata %struct.iInternalStringList* null, i64 0, metadata !42, metadata !63), !dbg !114
-  %17 = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 2, !dbg !115
-  %this.05 = load %struct.iInternalStringList** %17, align 8, !dbg !115
-  %18 = icmp eq %struct.iInternalStringList* %this.05, null, !dbg !118
-  br i1 %18, label %._crit_edge, label %.lr.ph, !dbg !118
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !82, i64 0, metadata !39), !dbg !83
+  tail call void @llvm.dbg.value(metadata !85, i64 0, metadata !42), !dbg !86
+  %head6 = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 2, !dbg !87
+  %this.0103 = load %struct.iInternalStringList** %head6, align 8, !dbg !87
+  %tobool104 = icmp eq %struct.iInternalStringList* %this.0103, null, !dbg !87
+  br i1 %tobool104, label %if.then42, label %for.body, !dbg !87
 
-.lr.ph:                                           ; preds = %16, %40
-  %this.07 = phi %struct.iInternalStringList* [ %this.0, %40 ], [ %this.05, %16 ]
-  %prev.06 = phi %struct.iInternalStringList* [ %this.07, %40 ], [ null, %16 ]
-  %19 = getelementptr inbounds %struct.iInternalStringList* %this.07, i64 0, i32 1, !dbg !119
-  %20 = load i8** %19, align 8, !dbg !119, !tbaa !106
-  %21 = tail call i32 @Util_StrCmpi(i8* %item, i8* %20) #5, !dbg !123
-  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !40, metadata !63), !dbg !124
-  %22 = icmp slt i32 %21, 0, !dbg !125
-  br i1 %22, label %23, label %38, !dbg !126
+for.cond:                                         ; preds = %if.else35
+  %next40 = getelementptr inbounds %struct.iInternalStringList* %this.0106, i64 0, i32 0, !dbg !87
+  %this.0 = load %struct.iInternalStringList** %next40, align 8, !dbg !87
+  %tobool = icmp eq %struct.iInternalStringList* %this.0, null, !dbg !87
+  br i1 %tobool, label %if.then42, label %for.body, !dbg !87
 
-; <label>:23                                      ; preds = %.lr.ph
-  %24 = tail call i8* @Util_Strdup(i8* %item) #5, !dbg !127
-  %25 = load i32* %1, align 4, !dbg !129, !tbaa !88
-  %26 = sext i32 %25 to i64, !dbg !130
-  %27 = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 1, !dbg !131
-  %28 = load %struct.iInternalStringList** %27, align 8, !dbg !131, !tbaa !77
-  %29 = getelementptr inbounds %struct.iInternalStringList* %28, i64 %26, i32 1, !dbg !132
-  store i8* %24, i8** %29, align 8, !dbg !133, !tbaa !106
-  %30 = getelementptr inbounds %struct.iInternalStringList* %28, i64 %26, i32 0, !dbg !134
-  store %struct.iInternalStringList* %this.07, %struct.iInternalStringList** %30, align 8, !dbg !135, !tbaa !110
-  %31 = icmp eq %struct.iInternalStringList* %prev.06, null, !dbg !136
-  %32 = getelementptr inbounds %struct.iInternalStringList* %28, i64 %26, !dbg !138
-  br i1 %31, label %35, label %33, !dbg !140
+for.body:                                         ; preds = %if.else, %for.cond
+  %this.0106 = phi %struct.iInternalStringList* [ %this.0, %for.cond ], [ %this.0103, %if.else ]
+  %prev.0105 = phi %struct.iInternalStringList* [ %this.0106, %for.cond ], [ null, %if.else ]
+  %string7 = getelementptr inbounds %struct.iInternalStringList* %this.0106, i64 0, i32 1, !dbg !89
+  %5 = load i8** %string7, align 8, !dbg !89, !tbaa !64
+  %call8 = tail call i32 @Util_StrCmpi(i8* %item, i8* %5) #5, !dbg !89
+  tail call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !40), !dbg !89
+  %cmp9 = icmp slt i32 %call8, 0, !dbg !89
+  br i1 %cmp9, label %if.then10, label %if.else35, !dbg !89
 
-; <label>:33                                      ; preds = %23
-  %34 = getelementptr inbounds %struct.iInternalStringList* %prev.06, i64 0, i32 0, !dbg !141
-  store %struct.iInternalStringList* %32, %struct.iInternalStringList** %34, align 8, !dbg !142, !tbaa !110
-  br label %36, !dbg !143
+if.then10:                                        ; preds = %for.body
+  %call11 = tail call i8* @Util_Strdup(i8* %item) #5, !dbg !91
+  %6 = load i32* %fill, align 4, !dbg !91, !tbaa !69
+  %idxprom = sext i32 %6 to i64, !dbg !91
+  %list13 = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 1, !dbg !91
+  %7 = load %struct.iInternalStringList** %list13, align 8, !dbg !91, !tbaa !64
+  %string14 = getelementptr inbounds %struct.iInternalStringList* %7, i64 %idxprom, i32 1, !dbg !91
+  store i8* %call11, i8** %string14, align 8, !dbg !91, !tbaa !64
+  %8 = load %struct.iInternalStringList** %list13, align 8, !dbg !93, !tbaa !64
+  %next19 = getelementptr inbounds %struct.iInternalStringList* %8, i64 %idxprom, i32 0, !dbg !93
+  store %struct.iInternalStringList* %this.0106, %struct.iInternalStringList** %next19, align 8, !dbg !93, !tbaa !64
+  %tobool20 = icmp eq %struct.iInternalStringList* %prev.0105, null, !dbg !94
+  %9 = load %struct.iInternalStringList** %list13, align 8, !dbg !95, !tbaa !64
+  %arrayidx25 = getelementptr inbounds %struct.iInternalStringList* %9, i64 %idxprom, !dbg !95
+  br i1 %tobool20, label %if.else27, label %if.then21, !dbg !94
 
-; <label>:35                                      ; preds = %23
-  store %struct.iInternalStringList* %32, %struct.iInternalStringList** %17, align 8, !dbg !144, !tbaa !101
-  br label %36
+if.then21:                                        ; preds = %if.then10
+  %next26 = getelementptr inbounds %struct.iInternalStringList* %prev.0105, i64 0, i32 0, !dbg !95
+  store %struct.iInternalStringList* %arrayidx25, %struct.iInternalStringList** %next26, align 8, !dbg !95, !tbaa !64
+  br label %if.end, !dbg !97
 
-; <label>:36                                      ; preds = %35, %33
-  %37 = add nsw i32 %25, 1, !dbg !146
-  store i32 %37, i32* %1, align 4, !dbg !146, !tbaa !88
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !39, metadata !63), !dbg !112
-  br label %.thread, !dbg !147
+if.else27:                                        ; preds = %if.then10
+  store %struct.iInternalStringList* %arrayidx25, %struct.iInternalStringList** %head6, align 8, !dbg !98, !tbaa !64
+  br label %if.end
 
-; <label>:38                                      ; preds = %.lr.ph
-  %39 = icmp eq i32 %21, 0, !dbg !148
-  br i1 %39, label %.thread, label %40, !dbg !150
+if.end:                                           ; preds = %if.else27, %if.then21
+  %inc34 = add nsw i32 %6, 1, !dbg !100
+  store i32 %inc34, i32* %fill, align 4, !dbg !100, !tbaa !69
+  tail call void @llvm.dbg.value(metadata !79, i64 0, metadata !39), !dbg !101
+  br label %if.end62, !dbg !102
 
-; <label>:40                                      ; preds = %38
-  tail call void @llvm.dbg.value(metadata %struct.iInternalStringList* %this.0, i64 0, metadata !42, metadata !63), !dbg !114
-  %41 = getelementptr inbounds %struct.iInternalStringList* %this.07, i64 0, i32 0, !dbg !151
-  %this.0 = load %struct.iInternalStringList** %41, align 8, !dbg !115
-  %42 = icmp eq %struct.iInternalStringList* %this.0, null, !dbg !118
-  br i1 %42, label %._crit_edge, label %.lr.ph, !dbg !118
+if.else35:                                        ; preds = %for.body
+  %cmp36 = icmp eq i32 %call8, 0, !dbg !103
+  tail call void @llvm.dbg.value(metadata !{%struct.iInternalStringList* %this.0106}, i64 0, metadata !42), !dbg !104
+  br i1 %cmp36, label %if.end62, label %for.cond, !dbg !103
 
-._crit_edge:                                      ; preds = %40, %16
-  %prev.0.lcssa = phi %struct.iInternalStringList* [ null, %16 ], [ %this.07, %40 ]
-  %43 = tail call i8* @Util_Strdup(i8* %item) #5, !dbg !152
-  %44 = load i32* %1, align 4, !dbg !155, !tbaa !88
-  %45 = sext i32 %44 to i64, !dbg !156
-  %46 = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 1, !dbg !157
-  %47 = load %struct.iInternalStringList** %46, align 8, !dbg !157, !tbaa !77
-  %48 = getelementptr inbounds %struct.iInternalStringList* %47, i64 %45, i32 1, !dbg !158
-  store i8* %43, i8** %48, align 8, !dbg !159, !tbaa !106
-  %49 = getelementptr inbounds %struct.iInternalStringList* %47, i64 %45, i32 0, !dbg !160
-  store %struct.iInternalStringList* null, %struct.iInternalStringList** %49, align 8, !dbg !161, !tbaa !110
-  %50 = getelementptr inbounds %struct.iInternalStringList* %47, i64 %45, !dbg !162
-  %51 = getelementptr inbounds %struct.iInternalStringList* %prev.0.lcssa, i64 0, i32 0, !dbg !163
-  store %struct.iInternalStringList* %50, %struct.iInternalStringList** %51, align 8, !dbg !164, !tbaa !110
-  %52 = add nsw i32 %44, 1, !dbg !165
-  store i32 %52, i32* %1, align 4, !dbg !165, !tbaa !88
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !39, metadata !63), !dbg !112
-  br label %.thread, !dbg !166
+if.then42:                                        ; preds = %if.else, %for.cond
+  %prev.0.lcssa = phi %struct.iInternalStringList* [ null, %if.else ], [ %this.0106, %for.cond ]
+  %call43 = tail call i8* @Util_Strdup(i8* %item) #5, !dbg !105
+  %10 = load i32* %fill, align 4, !dbg !105, !tbaa !69
+  %idxprom45 = sext i32 %10 to i64, !dbg !105
+  %list46 = getelementptr inbounds %struct.uStringList* %list, i64 0, i32 1, !dbg !105
+  %11 = load %struct.iInternalStringList** %list46, align 8, !dbg !105, !tbaa !64
+  %string48 = getelementptr inbounds %struct.iInternalStringList* %11, i64 %idxprom45, i32 1, !dbg !105
+  store i8* %call43, i8** %string48, align 8, !dbg !105, !tbaa !64
+  %12 = load %struct.iInternalStringList** %list46, align 8, !dbg !107, !tbaa !64
+  %next53 = getelementptr inbounds %struct.iInternalStringList* %12, i64 %idxprom45, i32 0, !dbg !107
+  store %struct.iInternalStringList* null, %struct.iInternalStringList** %next53, align 8, !dbg !107, !tbaa !64
+  %13 = load %struct.iInternalStringList** %list46, align 8, !dbg !108, !tbaa !64
+  %arrayidx57 = getelementptr inbounds %struct.iInternalStringList* %13, i64 %idxprom45, !dbg !108
+  %next58 = getelementptr inbounds %struct.iInternalStringList* %prev.0.lcssa, i64 0, i32 0, !dbg !108
+  store %struct.iInternalStringList* %arrayidx57, %struct.iInternalStringList** %next58, align 8, !dbg !108, !tbaa !64
+  %inc60 = add nsw i32 %10, 1, !dbg !109
+  store i32 %inc60, i32* %fill, align 4, !dbg !109, !tbaa !69
+  tail call void @llvm.dbg.value(metadata !79, i64 0, metadata !39), !dbg !110
+  br label %if.end62, !dbg !111
 
-.thread:                                          ; preds = %38, %36, %._crit_edge, %4
-  %retval.1 = phi i32 [ 1, %4 ], [ 1, %._crit_edge ], [ 1, %36 ], [ 0, %38 ]
-  ret i32 %retval.1, !dbg !167
+if.end62:                                         ; preds = %if.end, %if.else35, %if.then42, %if.then
+  %retval1.1 = phi i32 [ 1, %if.then ], [ 1, %if.then42 ], [ 1, %if.end ], [ 0, %if.else35 ]
+  ret i32 %retval1.1, !dbg !112
 }
 
 ; Function Attrs: optsize
@@ -161,300 +168,222 @@ declare i8* @Util_Strdup(i8*) #3
 ; Function Attrs: optsize
 declare i32 @Util_StrCmpi(i8*, i8*) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i8* @Util_StringListNext(%struct.uStringList* nocapture %this, i32 %flag) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.uStringList* %this, i64 0, metadata !47, metadata !63), !dbg !168
-  tail call void @llvm.dbg.value(metadata i32 %flag, i64 0, metadata !48, metadata !63), !dbg !169
-  %1 = icmp eq i32 %flag, 0, !dbg !170
-  br i1 %1, label %._crit_edge, label %2, !dbg !172
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.uStringList* %this}, i64 0, metadata !47), !dbg !113
+  tail call void @llvm.dbg.value(metadata !{i32 %flag}, i64 0, metadata !48), !dbg !113
+  %tobool = icmp eq i32 %flag, 0, !dbg !114
+  br i1 %tobool, label %entry.if.end_crit_edge, label %if.then, !dbg !114
 
-._crit_edge:                                      ; preds = %0
-  %.phi.trans.insert = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3
-  %.pre = load %struct.iInternalStringList** %.phi.trans.insert, align 8, !dbg !173, !tbaa !85
-  br label %9, !dbg !172
+entry.if.end_crit_edge:                           ; preds = %entry
+  %current2.phi.trans.insert = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3
+  %.pre = load %struct.iInternalStringList** %current2.phi.trans.insert, align 8, !dbg !115, !tbaa !64
+  br label %if.end, !dbg !114
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 2, !dbg !175
-  %4 = bitcast %struct.iInternalStringList** %3 to i64*, !dbg !175
-  %5 = load i64* %4, align 8, !dbg !175, !tbaa !101
-  %6 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3, !dbg !177
-  %7 = bitcast %struct.iInternalStringList** %6 to i64*, !dbg !178
-  store i64 %5, i64* %7, align 8, !dbg !178, !tbaa !85
-  %8 = inttoptr i64 %5 to %struct.iInternalStringList*
-  br label %9, !dbg !179
+if.then:                                          ; preds = %entry
+  %head = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 2, !dbg !116
+  %0 = load %struct.iInternalStringList** %head, align 8, !dbg !116, !tbaa !64
+  %current = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3, !dbg !116
+  store %struct.iInternalStringList* %0, %struct.iInternalStringList** %current, align 8, !dbg !116, !tbaa !64
+  br label %if.end, !dbg !118
 
-; <label>:9                                       ; preds = %._crit_edge, %2
-  %.pre-phi = phi %struct.iInternalStringList** [ %.phi.trans.insert, %._crit_edge ], [ %6, %2 ], !dbg !173
-  %10 = phi %struct.iInternalStringList* [ %.pre, %._crit_edge ], [ %8, %2 ]
-  %11 = icmp eq %struct.iInternalStringList* %10, null, !dbg !180
-  br i1 %11, label %18, label %12, !dbg !181
+if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
+  %1 = phi %struct.iInternalStringList* [ %.pre, %entry.if.end_crit_edge ], [ %0, %if.then ]
+  %tobool3 = icmp eq %struct.iInternalStringList* %1, null, !dbg !115
+  br i1 %tobool3, label %if.end8, label %if.then4, !dbg !115
 
-; <label>:12                                      ; preds = %9
-  %13 = getelementptr inbounds %struct.iInternalStringList* %10, i64 0, i32 1, !dbg !182
-  %14 = load i8** %13, align 8, !dbg !182, !tbaa !106
-  tail call void @llvm.dbg.value(metadata i8* %14, i64 0, metadata !49, metadata !63), !dbg !184
-  %15 = bitcast %struct.iInternalStringList* %10 to i64*, !dbg !185
-  %16 = load i64* %15, align 8, !dbg !185, !tbaa !110
-  %17 = bitcast %struct.iInternalStringList** %.pre-phi to i64*, !dbg !186
-  store i64 %16, i64* %17, align 8, !dbg !186, !tbaa !85
-  br label %18, !dbg !187
+if.then4:                                         ; preds = %if.end
+  %current2 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3, !dbg !115
+  %string = getelementptr inbounds %struct.iInternalStringList* %1, i64 0, i32 1, !dbg !119
+  %2 = load i8** %string, align 8, !dbg !119, !tbaa !64
+  tail call void @llvm.dbg.value(metadata !{i8* %2}, i64 0, metadata !49), !dbg !119
+  %next = getelementptr inbounds %struct.iInternalStringList* %1, i64 0, i32 0, !dbg !121
+  %3 = load %struct.iInternalStringList** %next, align 8, !dbg !121, !tbaa !64
+  store %struct.iInternalStringList* %3, %struct.iInternalStringList** %current2, align 8, !dbg !121, !tbaa !64
+  br label %if.end8, !dbg !122
 
-; <label>:18                                      ; preds = %9, %12
-  %retval.0 = phi i8* [ %14, %12 ], [ null, %9 ]
-  ret i8* %retval.0, !dbg !188
+if.end8:                                          ; preds = %if.end, %if.then4
+  %retval1.0 = phi i8* [ %2, %if.then4 ], [ null, %if.end ]
+  ret i8* %retval1.0, !dbg !123
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @Util_StringListDestroy(%struct.uStringList* nocapture %this) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.uStringList* %this, i64 0, metadata !54, metadata !63), !dbg !189
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !55, metadata !63), !dbg !190
-  %1 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 0, !dbg !191
-  %2 = load i32* %1, align 4, !dbg !191, !tbaa !88
-  %3 = icmp sgt i32 %2, 0, !dbg !194
-  %4 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 1, !dbg !195
-  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !197
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.uStringList* %this}, i64 0, metadata !54), !dbg !124
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !55), !dbg !125
+  %fill = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 0, !dbg !125
+  %0 = load i32* %fill, align 4, !dbg !125, !tbaa !69
+  %cmp7 = icmp sgt i32 %0, 0, !dbg !125
+  %list = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 1, !dbg !127
+  br i1 %cmp7, label %for.body, label %for.end, !dbg !125
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %0 ]
-  %5 = load %struct.iInternalStringList** %4, align 8, !dbg !195, !tbaa !77
-  %6 = getelementptr inbounds %struct.iInternalStringList* %5, i64 %indvars.iv, i32 1, !dbg !198
-  %7 = load i8** %6, align 8, !dbg !198, !tbaa !106
-  tail call void @free(i8* %7) #6, !dbg !199
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !197
-  %8 = load i32* %1, align 4, !dbg !191, !tbaa !88
-  %9 = sext i32 %8 to i64, !dbg !194
-  %10 = icmp slt i64 %indvars.iv.next, %9, !dbg !194
-  br i1 %10, label %.lr.ph, label %._crit_edge, !dbg !197
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %1 = load %struct.iInternalStringList** %list, align 8, !dbg !127, !tbaa !64
+  %string = getelementptr inbounds %struct.iInternalStringList* %1, i64 %indvars.iv, i32 1, !dbg !127
+  %2 = load i8** %string, align 8, !dbg !127, !tbaa !64
+  tail call void @free(i8* %2) #5, !dbg !127
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !125
+  %3 = load i32* %fill, align 4, !dbg !125, !tbaa !69
+  %4 = trunc i64 %indvars.iv.next to i32, !dbg !125
+  %cmp = icmp slt i32 %4, %3, !dbg !125
+  br i1 %cmp, label %for.body, label %for.end, !dbg !125
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  %11 = bitcast %struct.iInternalStringList** %4 to i8**, !dbg !200
-  %12 = load i8** %11, align 8, !dbg !200, !tbaa !77
-  tail call void @free(i8* %12) #6, !dbg !201
-  %13 = bitcast %struct.uStringList* %this to i8*, !dbg !202
-  tail call void @free(i8* %13) #6, !dbg !203
-  ret void, !dbg !204
+for.end:                                          ; preds = %entry, %for.body
+  %5 = load %struct.iInternalStringList** %list, align 8, !dbg !129, !tbaa !64
+  %6 = bitcast %struct.iInternalStringList* %5 to i8*, !dbg !129
+  tail call void @free(i8* %6) #5, !dbg !129
+  %7 = bitcast %struct.uStringList* %this to i8*, !dbg !130
+  tail call void @free(i8* %7) #5, !dbg !130
+  ret void, !dbg !131
 }
 
 ; Function Attrs: nounwind optsize
 declare void @free(i8* nocapture) #2
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #4
+declare void @llvm.dbg.value(metadata, i64, metadata) #4
 
-attributes #0 = { nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #4 = { nounwind readnone }
 attributes #5 = { nounwind optsize }
-attributes #6 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!58, !59, !60}
-!llvm.ident = !{!61}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !21, globals: !56, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DIDerivedType(tag: DW_TAG_typedef, name: "uStringList", file: !6, line: 30, baseType: !7)
-!6 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/util_StringList.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!7 = !DICompositeType(tag: DW_TAG_structure_type, file: !6, line: 24, size: 256, align: 64, elements: !8)
-!8 = !{!9, !11, !19, !20}
-!9 = !DIDerivedType(tag: DW_TAG_member, name: "fill", scope: !7, file: !6, line: 26, baseType: !10, size: 32, align: 32)
-!10 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!11 = !DIDerivedType(tag: DW_TAG_member, name: "list", scope: !7, file: !6, line: 27, baseType: !12, size: 64, align: 64, offset: 64)
-!12 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !13, size: 64, align: 64)
-!13 = !DICompositeType(tag: DW_TAG_structure_type, name: "iInternalStringList", file: !6, line: 18, size: 128, align: 64, elements: !14)
-!14 = !{!15, !16}
-!15 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !13, file: !6, line: 20, baseType: !12, size: 64, align: 64)
-!16 = !DIDerivedType(tag: DW_TAG_member, name: "string", scope: !13, file: !6, line: 21, baseType: !17, size: 64, align: 64, offset: 64)
-!17 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !18, size: 64, align: 64)
-!18 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "head", scope: !7, file: !6, line: 28, baseType: !12, size: 64, align: 64, offset: 128)
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "current", scope: !7, file: !6, line: 29, baseType: !12, size: 64, align: 64, offset: 192)
-!21 = !{!22, !27, !33, !43, !50}
-!22 = !DISubprogram(name: "CCTKi_version_util_StringList_c", scope: !1, file: !1, line: 26, type: !23, isLocal: false, isDefinition: true, scopeLine: 26, flags: DIFlagPrototyped, isOptimized: true, function: i8* ()* @CCTKi_version_util_StringList_c, variables: !2)
-!23 = !DISubroutineType(types: !24)
-!24 = !{!25}
-!25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64, align: 64)
-!26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !18)
-!27 = !DISubprogram(name: "Util_StringListCreate", scope: !1, file: !1, line: 74, type: !28, isLocal: false, isDefinition: true, scopeLine: 75, flags: DIFlagPrototyped, isOptimized: true, function: %struct.uStringList* (i32)* @Util_StringListCreate, variables: !30)
-!28 = !DISubroutineType(types: !29)
-!29 = !{!4, !10}
-!30 = !{!31, !32}
-!31 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "size", arg: 1, scope: !27, file: !1, line: 74, type: !10)
-!32 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "this", scope: !27, file: !1, line: 76, type: !4)
-!33 = !DISubprogram(name: "Util_StringListAdd", scope: !1, file: !1, line: 125, type: !34, isLocal: false, isDefinition: true, scopeLine: 126, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.uStringList*, i8*)* @Util_StringListAdd, variables: !36)
-!34 = !DISubroutineType(types: !35)
-!35 = !{!10, !4, !25}
-!36 = !{!37, !38, !39, !40, !41, !42}
-!37 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "list", arg: 1, scope: !33, file: !1, line: 125, type: !4)
-!38 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "item", arg: 2, scope: !33, file: !1, line: 125, type: !25)
-!39 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "retval", scope: !33, file: !1, line: 127, type: !10)
-!40 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "position", scope: !33, file: !1, line: 128, type: !10)
-!41 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "this", scope: !33, file: !1, line: 129, type: !12)
-!42 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "prev", scope: !33, file: !1, line: 129, type: !12)
-!43 = !DISubprogram(name: "Util_StringListNext", scope: !1, file: !1, line: 219, type: !44, isLocal: false, isDefinition: true, scopeLine: 220, flags: DIFlagPrototyped, isOptimized: true, function: i8* (%struct.uStringList*, i32)* @Util_StringListNext, variables: !46)
-!44 = !DISubroutineType(types: !45)
-!45 = !{!25, !4, !10}
-!46 = !{!47, !48, !49}
-!47 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this", arg: 1, scope: !43, file: !1, line: 219, type: !4)
-!48 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "flag", arg: 2, scope: !43, file: !1, line: 219, type: !10)
-!49 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "retval", scope: !43, file: !1, line: 221, type: !25)
-!50 = !DISubprogram(name: "Util_StringListDestroy", scope: !1, file: !1, line: 262, type: !51, isLocal: false, isDefinition: true, scopeLine: 263, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct.uStringList*)* @Util_StringListDestroy, variables: !53)
-!51 = !DISubroutineType(types: !52)
-!52 = !{null, !4}
-!53 = !{!54, !55}
-!54 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this", arg: 1, scope: !50, file: !1, line: 262, type: !4)
-!55 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !50, file: !1, line: 264, type: !10)
-!56 = !{!57}
-!57 = !DIGlobalVariable(name: "rcsid", scope: !0, file: !1, line: 23, type: !25, isLocal: true, isDefinition: true)
-!58 = !{i32 2, !"Dwarf Version", i32 2}
-!59 = !{i32 2, !"Debug Info Version", i32 700000003}
-!60 = !{i32 1, !"PIC Level", i32 2}
-!61 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!62 = !DILocation(line: 26, column: 1, scope: !22)
-!63 = !DIExpression()
-!64 = !DILocation(line: 74, column: 40, scope: !27)
-!65 = !DILocation(line: 78, column: 23, scope: !27)
-!66 = !DILocation(line: 78, column: 8, scope: !27)
-!67 = !DILocation(line: 76, column: 16, scope: !27)
-!68 = !DILocation(line: 80, column: 6, scope: !69)
-!69 = distinct !DILexicalBlock(scope: !27, file: !1, line: 80, column: 6)
-!70 = !DILocation(line: 80, column: 6, scope: !27)
-!71 = !DILocation(line: 82, column: 27, scope: !72)
-!72 = distinct !DILexicalBlock(scope: !69, file: !1, line: 81, column: 3)
-!73 = !DILocation(line: 82, column: 23, scope: !72)
-!74 = !DILocation(line: 82, column: 16, scope: !72)
-!75 = !DILocation(line: 82, column: 11, scope: !72)
-!76 = !DILocation(line: 82, column: 15, scope: !72)
-!77 = !{!78, !82, i64 8}
-!78 = !{!"", !79, i64 0, !82, i64 8, !82, i64 16, !82, i64 24}
-!79 = !{!"int", !80, i64 0}
-!80 = !{!"omnipotent char", !81, i64 0}
-!81 = !{!"Simple C/C++ TBAA"}
-!82 = !{!"any pointer", !80, i64 0}
-!83 = !DILocation(line: 84, column: 11, scope: !72)
-!84 = !DILocation(line: 84, column: 19, scope: !72)
-!85 = !{!78, !82, i64 24}
-!86 = !DILocation(line: 85, column: 11, scope: !72)
-!87 = !DILocation(line: 85, column: 15, scope: !72)
-!88 = !{!78, !79, i64 0}
-!89 = !DILocation(line: 86, column: 3, scope: !72)
-!90 = !DILocation(line: 88, column: 3, scope: !27)
-!91 = !DILocation(line: 125, column: 37, scope: !33)
-!92 = !DILocation(line: 125, column: 55, scope: !33)
-!93 = !DILocation(line: 131, column: 12, scope: !94)
-!94 = distinct !DILexicalBlock(scope: !33, file: !1, line: 131, column: 6)
-!95 = !DILocation(line: 131, column: 17, scope: !94)
-!96 = !DILocation(line: 131, column: 6, scope: !33)
-!97 = !DILocation(line: 133, column: 24, scope: !98)
-!98 = distinct !DILexicalBlock(scope: !94, file: !1, line: 132, column: 3)
-!99 = !DILocation(line: 133, column: 11, scope: !98)
-!100 = !DILocation(line: 133, column: 16, scope: !98)
-!101 = !{!78, !82, i64 16}
-!102 = !DILocation(line: 134, column: 26, scope: !98)
-!103 = !DILocation(line: 134, column: 11, scope: !98)
-!104 = !DILocation(line: 134, column: 17, scope: !98)
-!105 = !DILocation(line: 134, column: 24, scope: !98)
-!106 = !{!107, !82, i64 8}
-!107 = !{!"iInternalStringList", !82, i64 0, !82, i64 8}
-!108 = !DILocation(line: 135, column: 17, scope: !98)
-!109 = !DILocation(line: 135, column: 24, scope: !98)
-!110 = !{!107, !82, i64 0}
-!111 = !DILocation(line: 136, column: 15, scope: !98)
-!112 = !DILocation(line: 127, column: 7, scope: !33)
-!113 = !DILocation(line: 138, column: 3, scope: !98)
-!114 = !DILocation(line: 129, column: 38, scope: !33)
-!115 = !DILocation(line: 143, column: 20, scope: !116)
-!116 = distinct !DILexicalBlock(scope: !117, file: !1, line: 143, column: 5)
-!117 = distinct !DILexicalBlock(scope: !94, file: !1, line: 140, column: 3)
-!118 = !DILocation(line: 143, column: 5, scope: !116)
-!119 = !DILocation(line: 145, column: 46, scope: !120)
-!120 = distinct !DILexicalBlock(scope: !121, file: !1, line: 145, column: 10)
-!121 = distinct !DILexicalBlock(scope: !122, file: !1, line: 144, column: 5)
-!122 = distinct !DILexicalBlock(scope: !116, file: !1, line: 143, column: 5)
-!123 = !DILocation(line: 145, column: 22, scope: !120)
-!124 = !DILocation(line: 128, column: 7, scope: !33)
-!125 = !DILocation(line: 145, column: 55, scope: !120)
-!126 = !DILocation(line: 145, column: 10, scope: !121)
-!127 = !DILocation(line: 147, column: 41, scope: !128)
-!128 = distinct !DILexicalBlock(scope: !120, file: !1, line: 146, column: 7)
-!129 = !DILocation(line: 147, column: 26, scope: !128)
-!130 = !DILocation(line: 147, column: 9, scope: !128)
-!131 = !DILocation(line: 147, column: 15, scope: !128)
-!132 = !DILocation(line: 147, column: 32, scope: !128)
-!133 = !DILocation(line: 147, column: 39, scope: !128)
-!134 = !DILocation(line: 148, column: 32, scope: !128)
-!135 = !DILocation(line: 148, column: 39, scope: !128)
-!136 = !DILocation(line: 149, column: 12, scope: !137)
-!137 = distinct !DILexicalBlock(scope: !128, file: !1, line: 149, column: 12)
-!138 = !DILocation(line: 151, column: 25, scope: !139)
-!139 = distinct !DILexicalBlock(scope: !137, file: !1, line: 150, column: 9)
-!140 = !DILocation(line: 149, column: 12, scope: !128)
-!141 = !DILocation(line: 151, column: 17, scope: !139)
-!142 = !DILocation(line: 151, column: 21, scope: !139)
-!143 = !DILocation(line: 152, column: 9, scope: !139)
-!144 = !DILocation(line: 155, column: 21, scope: !145)
-!145 = distinct !DILexicalBlock(scope: !137, file: !1, line: 154, column: 9)
-!146 = !DILocation(line: 158, column: 19, scope: !128)
-!147 = !DILocation(line: 160, column: 9, scope: !128)
-!148 = !DILocation(line: 162, column: 25, scope: !149)
-!149 = distinct !DILexicalBlock(scope: !120, file: !1, line: 162, column: 16)
-!150 = !DILocation(line: 162, column: 16, scope: !120)
-!151 = !DILocation(line: 143, column: 43, scope: !122)
-!152 = !DILocation(line: 173, column: 39, scope: !153)
-!153 = distinct !DILexicalBlock(scope: !154, file: !1, line: 172, column: 5)
-!154 = distinct !DILexicalBlock(scope: !117, file: !1, line: 171, column: 8)
-!155 = !DILocation(line: 173, column: 24, scope: !153)
-!156 = !DILocation(line: 173, column: 7, scope: !153)
-!157 = !DILocation(line: 173, column: 13, scope: !153)
-!158 = !DILocation(line: 173, column: 30, scope: !153)
-!159 = !DILocation(line: 173, column: 37, scope: !153)
-!160 = !DILocation(line: 174, column: 30, scope: !153)
-!161 = !DILocation(line: 174, column: 37, scope: !153)
-!162 = !DILocation(line: 175, column: 20, scope: !153)
-!163 = !DILocation(line: 175, column: 13, scope: !153)
-!164 = !DILocation(line: 175, column: 17, scope: !153)
-!165 = !DILocation(line: 176, column: 17, scope: !153)
-!166 = !DILocation(line: 178, column: 5, scope: !153)
-!167 = !DILocation(line: 181, column: 3, scope: !33)
-!168 = !DILocation(line: 219, column: 46, scope: !43)
-!169 = !DILocation(line: 219, column: 56, scope: !43)
-!170 = !DILocation(line: 223, column: 6, scope: !171)
-!171 = distinct !DILexicalBlock(scope: !43, file: !1, line: 223, column: 6)
-!172 = !DILocation(line: 223, column: 6, scope: !43)
-!173 = !DILocation(line: 228, column: 12, scope: !174)
-!174 = distinct !DILexicalBlock(scope: !43, file: !1, line: 228, column: 6)
-!175 = !DILocation(line: 225, column: 25, scope: !176)
-!176 = distinct !DILexicalBlock(scope: !171, file: !1, line: 224, column: 3)
-!177 = !DILocation(line: 225, column: 11, scope: !176)
-!178 = !DILocation(line: 225, column: 18, scope: !176)
-!179 = !DILocation(line: 226, column: 3, scope: !176)
-!180 = !DILocation(line: 228, column: 6, scope: !174)
-!181 = !DILocation(line: 228, column: 6, scope: !43)
-!182 = !DILocation(line: 230, column: 29, scope: !183)
-!183 = distinct !DILexicalBlock(scope: !174, file: !1, line: 229, column: 3)
-!184 = !DILocation(line: 221, column: 15, scope: !43)
-!185 = !DILocation(line: 231, column: 34, scope: !183)
-!186 = !DILocation(line: 231, column: 18, scope: !183)
-!187 = !DILocation(line: 232, column: 3, scope: !183)
-!188 = !DILocation(line: 238, column: 3, scope: !43)
-!189 = !DILocation(line: 262, column: 42, scope: !50)
-!190 = !DILocation(line: 264, column: 7, scope: !50)
-!191 = !DILocation(line: 265, column: 22, scope: !192)
-!192 = distinct !DILexicalBlock(scope: !193, file: !1, line: 265, column: 3)
-!193 = distinct !DILexicalBlock(scope: !50, file: !1, line: 265, column: 3)
-!194 = !DILocation(line: 265, column: 14, scope: !192)
-!195 = !DILocation(line: 267, column: 16, scope: !196)
-!196 = distinct !DILexicalBlock(scope: !192, file: !1, line: 266, column: 3)
-!197 = !DILocation(line: 265, column: 3, scope: !193)
-!198 = !DILocation(line: 267, column: 24, scope: !196)
-!199 = !DILocation(line: 267, column: 5, scope: !196)
-!200 = !DILocation(line: 269, column: 14, scope: !50)
-!201 = !DILocation(line: 269, column: 3, scope: !50)
-!202 = !DILocation(line: 270, column: 8, scope: !50)
-!203 = !DILocation(line: 270, column: 3, scope: !50)
-!204 = !DILocation(line: 271, column: 1, scope: !50)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !56, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !11, metadata !33, metadata !43, metadata !50}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_version_util_StringList_c", metadata !"CCTKi_version_util_StringList_c", metadata !"", i32 26, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* ()* @CCTKi_version_util_StringList_c, null, null, metadata !2, i32 26} ; [ DW_TAG_subprogram ] [line 26] [def] [CCTKi_version_util_StringList_c]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!9 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!10 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!11 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Util_StringListCreate", metadata !"Util_StringListCreate", metadata !"", i32 74, metadata !12, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct.uStringList* (i32)* @Util_StringListCreate, null, null, metadata !30, i32 75} ; [ DW_TAG_subprogram ] [line 74] [def] [scope 75] [Util_StringListCreate]
+!12 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !13, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!13 = metadata !{metadata !14, metadata !20}
+!14 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !15} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from uStringList]
+!15 = metadata !{i32 786454, metadata !1, null, metadata !"uStringList", i32 30, i64 0, i64 0, i64 0, i32 0, metadata !16} ; [ DW_TAG_typedef ] [uStringList] [line 30, size 0, align 0, offset 0] [from ]
+!16 = metadata !{i32 786451, metadata !17, null, metadata !"", i32 24, i64 256, i64 64, i32 0, i32 0, null, metadata !18, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 24, size 256, align 64, offset 0] [from ]
+!17 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/util_StringList.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!18 = metadata !{metadata !19, metadata !21, metadata !28, metadata !29}
+!19 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"fill", i32 26, i64 32, i64 32, i64 0, i32 0, metadata !20} ; [ DW_TAG_member ] [fill] [line 26, size 32, align 32, offset 0] [from int]
+!20 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!21 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"list", i32 27, i64 64, i64 64, i64 64, i32 0, metadata !22} ; [ DW_TAG_member ] [list] [line 27, size 64, align 64, offset 64] [from ]
+!22 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !23} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from iInternalStringList]
+!23 = metadata !{i32 786451, metadata !17, null, metadata !"iInternalStringList", i32 18, i64 128, i64 64, i32 0, i32 0, null, metadata !24, i32 0, null, null} ; [ DW_TAG_structure_type ] [iInternalStringList] [line 18, size 128, align 64, offset 0] [from ]
+!24 = metadata !{metadata !25, metadata !26}
+!25 = metadata !{i32 786445, metadata !17, metadata !23, metadata !"next", i32 20, i64 64, i64 64, i64 0, i32 0, metadata !22} ; [ DW_TAG_member ] [next] [line 20, size 64, align 64, offset 0] [from ]
+!26 = metadata !{i32 786445, metadata !17, metadata !23, metadata !"string", i32 21, i64 64, i64 64, i64 64, i32 0, metadata !27} ; [ DW_TAG_member ] [string] [line 21, size 64, align 64, offset 64] [from ]
+!27 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !10} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!28 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"head", i32 28, i64 64, i64 64, i64 128, i32 0, metadata !22} ; [ DW_TAG_member ] [head] [line 28, size 64, align 64, offset 128] [from ]
+!29 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"current", i32 29, i64 64, i64 64, i64 192, i32 0, metadata !22} ; [ DW_TAG_member ] [current] [line 29, size 64, align 64, offset 192] [from ]
+!30 = metadata !{metadata !31, metadata !32}
+!31 = metadata !{i32 786689, metadata !11, metadata !"size", metadata !5, i32 16777290, metadata !20, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [size] [line 74]
+!32 = metadata !{i32 786688, metadata !11, metadata !"this", metadata !5, i32 76, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [this] [line 76]
+!33 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Util_StringListAdd", metadata !"Util_StringListAdd", metadata !"", i32 125, metadata !34, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.uStringList*, i8*)* @Util_StringListAdd, null, null, metadata !36, i32 126} ; [ DW_TAG_subprogram ] [line 125] [def] [scope 126] [Util_StringListAdd]
+!34 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !35, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!35 = metadata !{metadata !20, metadata !14, metadata !8}
+!36 = metadata !{metadata !37, metadata !38, metadata !39, metadata !40, metadata !41, metadata !42}
+!37 = metadata !{i32 786689, metadata !33, metadata !"list", metadata !5, i32 16777341, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [list] [line 125]
+!38 = metadata !{i32 786689, metadata !33, metadata !"item", metadata !5, i32 33554557, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [item] [line 125]
+!39 = metadata !{i32 786688, metadata !33, metadata !"retval", metadata !5, i32 127, metadata !20, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [retval] [line 127]
+!40 = metadata !{i32 786688, metadata !33, metadata !"position", metadata !5, i32 128, metadata !20, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [position] [line 128]
+!41 = metadata !{i32 786688, metadata !33, metadata !"this", metadata !5, i32 129, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [this] [line 129]
+!42 = metadata !{i32 786688, metadata !33, metadata !"prev", metadata !5, i32 129, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [prev] [line 129]
+!43 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Util_StringListNext", metadata !"Util_StringListNext", metadata !"", i32 219, metadata !44, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* (%struct.uStringList*, i32)* @Util_StringListNext, null, null, metadata !46, i32 220} ; [ DW_TAG_subprogram ] [line 219] [def] [scope 220] [Util_StringListNext]
+!44 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !45, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!45 = metadata !{metadata !8, metadata !14, metadata !20}
+!46 = metadata !{metadata !47, metadata !48, metadata !49}
+!47 = metadata !{i32 786689, metadata !43, metadata !"this", metadata !5, i32 16777435, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 219]
+!48 = metadata !{i32 786689, metadata !43, metadata !"flag", metadata !5, i32 33554651, metadata !20, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [flag] [line 219]
+!49 = metadata !{i32 786688, metadata !43, metadata !"retval", metadata !5, i32 221, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [retval] [line 221]
+!50 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Util_StringListDestroy", metadata !"Util_StringListDestroy", metadata !"", i32 262, metadata !51, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct.uStringList*)* @Util_StringListDestroy, null, null, metadata !53, i32 263} ; [ DW_TAG_subprogram ] [line 262] [def] [scope 263] [Util_StringListDestroy]
+!51 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !52, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!52 = metadata !{null, metadata !14}
+!53 = metadata !{metadata !54, metadata !55}
+!54 = metadata !{i32 786689, metadata !50, metadata !"this", metadata !5, i32 16777478, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 262]
+!55 = metadata !{i32 786688, metadata !50, metadata !"i", metadata !5, i32 264, metadata !20, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 264]
+!56 = metadata !{metadata !57}
+!57 = metadata !{i32 786484, i32 0, null, metadata !"rcsid", metadata !"rcsid", metadata !"", metadata !5, i32 23, metadata !8, i32 1, i32 1, null, null}
+!58 = metadata !{i32 26, i32 0, metadata !4, null}
+!59 = metadata !{i32 74, i32 0, metadata !11, null}
+!60 = metadata !{i32 78, i32 0, metadata !11, null}
+!61 = metadata !{i32 80, i32 0, metadata !11, null}
+!62 = metadata !{i32 82, i32 0, metadata !63, null}
+!63 = metadata !{i32 786443, metadata !1, metadata !11, i32 81, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!64 = metadata !{metadata !"any pointer", metadata !65}
+!65 = metadata !{metadata !"omnipotent char", metadata !66}
+!66 = metadata !{metadata !"Simple C/C++ TBAA"}
+!67 = metadata !{i32 84, i32 0, metadata !63, null}
+!68 = metadata !{i32 85, i32 0, metadata !63, null}
+!69 = metadata !{metadata !"int", metadata !65}
+!70 = metadata !{i32 86, i32 0, metadata !63, null}
+!71 = metadata !{i32 88, i32 0, metadata !11, null}
+!72 = metadata !{i32 125, i32 0, metadata !33, null}
+!73 = metadata !{i32 131, i32 0, metadata !33, null}
+!74 = metadata !{i32 133, i32 0, metadata !75, null}
+!75 = metadata !{i32 786443, metadata !1, metadata !33, i32 132, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!76 = metadata !{i32 134, i32 0, metadata !75, null}
+!77 = metadata !{i32 135, i32 0, metadata !75, null}
+!78 = metadata !{i32 136, i32 0, metadata !75, null}
+!79 = metadata !{i32 1}
+!80 = metadata !{i32 137, i32 0, metadata !75, null}
+!81 = metadata !{i32 138, i32 0, metadata !75, null}
+!82 = metadata !{i32 -1}
+!83 = metadata !{i32 141, i32 0, metadata !84, null}
+!84 = metadata !{i32 786443, metadata !1, metadata !33, i32 140, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!85 = metadata !{%struct.iInternalStringList* null}
+!86 = metadata !{i32 142, i32 0, metadata !84, null}
+!87 = metadata !{i32 143, i32 0, metadata !88, null}
+!88 = metadata !{i32 786443, metadata !1, metadata !84, i32 143, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!89 = metadata !{i32 145, i32 0, metadata !90, null}
+!90 = metadata !{i32 786443, metadata !1, metadata !88, i32 144, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!91 = metadata !{i32 147, i32 0, metadata !92, null}
+!92 = metadata !{i32 786443, metadata !1, metadata !90, i32 146, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!93 = metadata !{i32 148, i32 0, metadata !92, null}
+!94 = metadata !{i32 149, i32 0, metadata !92, null}
+!95 = metadata !{i32 151, i32 0, metadata !96, null}
+!96 = metadata !{i32 786443, metadata !1, metadata !92, i32 150, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!97 = metadata !{i32 152, i32 0, metadata !96, null}
+!98 = metadata !{i32 155, i32 0, metadata !99, null}
+!99 = metadata !{i32 786443, metadata !1, metadata !92, i32 154, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!100 = metadata !{i32 158, i32 0, metadata !92, null}
+!101 = metadata !{i32 159, i32 0, metadata !92, null}
+!102 = metadata !{i32 160, i32 0, metadata !92, null}
+!103 = metadata !{i32 162, i32 0, metadata !90, null}
+!104 = metadata !{i32 168, i32 0, metadata !90, null}
+!105 = metadata !{i32 173, i32 0, metadata !106, null}
+!106 = metadata !{i32 786443, metadata !1, metadata !84, i32 172, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!107 = metadata !{i32 174, i32 0, metadata !106, null}
+!108 = metadata !{i32 175, i32 0, metadata !106, null}
+!109 = metadata !{i32 176, i32 0, metadata !106, null}
+!110 = metadata !{i32 177, i32 0, metadata !106, null}
+!111 = metadata !{i32 178, i32 0, metadata !106, null}
+!112 = metadata !{i32 181, i32 0, metadata !33, null}
+!113 = metadata !{i32 219, i32 0, metadata !43, null}
+!114 = metadata !{i32 223, i32 0, metadata !43, null}
+!115 = metadata !{i32 228, i32 0, metadata !43, null}
+!116 = metadata !{i32 225, i32 0, metadata !117, null}
+!117 = metadata !{i32 786443, metadata !1, metadata !43, i32 224, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!118 = metadata !{i32 226, i32 0, metadata !117, null}
+!119 = metadata !{i32 230, i32 0, metadata !120, null}
+!120 = metadata !{i32 786443, metadata !1, metadata !43, i32 229, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!121 = metadata !{i32 231, i32 0, metadata !120, null}
+!122 = metadata !{i32 232, i32 0, metadata !120, null}
+!123 = metadata !{i32 238, i32 0, metadata !43, null}
+!124 = metadata !{i32 262, i32 0, metadata !50, null}
+!125 = metadata !{i32 265, i32 0, metadata !126, null}
+!126 = metadata !{i32 786443, metadata !1, metadata !50, i32 265, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!127 = metadata !{i32 267, i32 0, metadata !128, null}
+!128 = metadata !{i32 786443, metadata !1, metadata !126, i32 266, i32 0, i32 14} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/StringList.c]
+!129 = metadata !{i32 269, i32 0, metadata !50, null}
+!130 = metadata !{i32 270, i32 0, metadata !50, null}
+!131 = metadata !{i32 271, i32 0, metadata !50, null}

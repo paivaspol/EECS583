@@ -1,85 +1,88 @@
 define noalias %struct.CSobj* @create_coding_state() #0 {
-  %1 = tail call i8* @calloc(i64 1, i64 352) #6, !dbg !714
-  %2 = bitcast i8* %1 to %struct.CSobj*, !dbg !716
-  tail call void @llvm.dbg.value(metadata %struct.CSobj* %2, i64 0, metadata !167, metadata !678), !dbg !717
-  %3 = icmp eq i8* %1, null, !dbg !718
-  br i1 %3, label %4, label %5, !dbg !719
+entry:
+  %call = tail call noalias i8* @calloc(i64 1, i64 352) #5, !dbg !682
+  %0 = bitcast i8* %call to %struct.CSobj*, !dbg !682
+  tail call void @llvm.dbg.value(metadata !{%struct.CSobj* %0}, i64 0, metadata !166), !dbg !682
+  %cmp = icmp eq i8* %call, null, !dbg !682
+  br i1 %cmp, label %if.then, label %if.end, !dbg !682
 
-; <label>:4                                       ; preds = %0
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([22 x i8]* @.str, i64 0, i64 0)) #6, !dbg !720
-  br label %5, !dbg !720
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([22 x i8]* @.str, i64 0, i64 0)) #5, !dbg !683
+  br label %if.end, !dbg !683
 
-; <label>:5                                       ; preds = %4, %0
-  %6 = load %struct.InputParameters** @input, align 8, !dbg !721, !tbaa !722
-  %7 = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 61, !dbg !723
-  %8 = load i32* %7, align 4, !dbg !723, !tbaa !724
-  %9 = icmp eq i32 %8, 0, !dbg !727
-  %10 = select i1 %9, i32 1, i32 3, !dbg !721
-  %11 = bitcast i8* %1 to i32*, !dbg !728
-  store i32 %10, i32* %11, align 4, !dbg !729, !tbaa !730
-  %12 = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 59, !dbg !731
-  %13 = load i32* %12, align 4, !dbg !731, !tbaa !733
-  %14 = icmp eq i32 %13, 1, !dbg !734
-  br i1 %14, label %15, label %22, !dbg !735
+if.end:                                           ; preds = %if.then, %entry
+  %1 = load %struct.InputParameters** @input, align 8, !dbg !684, !tbaa !671
+  %partition_mode = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 61, !dbg !684
+  %2 = load i32* %partition_mode, align 4, !dbg !684, !tbaa !685
+  %cmp1 = icmp eq i32 %2, 0, !dbg !684
+  %cond = select i1 %cmp1, i32 1, i32 3, !dbg !684
+  %no_part = bitcast i8* %call to i32*, !dbg !684
+  store i32 %cond, i32* %no_part, align 4, !dbg !684, !tbaa !685
+  %symbol_mode = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 59, !dbg !686
+  %3 = load i32* %symbol_mode, align 4, !dbg !686, !tbaa !685
+  %cmp2 = icmp eq i32 %3, 1, !dbg !686
+  br i1 %cmp2, label %if.then3, label %if.else, !dbg !686
 
-; <label>:15                                      ; preds = %5
-  %16 = zext i32 %10 to i64, !dbg !736
-  %17 = tail call i8* @calloc(i64 %16, i64 104) #6, !dbg !739
-  %18 = getelementptr inbounds i8* %1, i64 8, !dbg !740
-  %19 = bitcast i8* %18 to i8**, !dbg !741
-  store i8* %17, i8** %19, align 8, !dbg !741, !tbaa !686
-  %20 = icmp eq i8* %17, null, !dbg !742
-  br i1 %20, label %21, label %25, !dbg !743
+if.then3:                                         ; preds = %if.end
+  %conv42 = zext i32 %cond to i64, !dbg !687
+  %call5 = tail call noalias i8* @calloc(i64 %conv42, i64 104) #5, !dbg !687
+  %4 = bitcast i8* %call5 to %struct.EncodingEnvironment*, !dbg !687
+  %encenv = getelementptr inbounds i8* %call, i64 8, !dbg !687
+  %5 = bitcast i8* %encenv to %struct.EncodingEnvironment**, !dbg !687
+  store %struct.EncodingEnvironment* %4, %struct.EncodingEnvironment** %5, align 8, !dbg !687, !tbaa !671
+  %cmp6 = icmp eq i8* %call5, null, !dbg !687
+  br i1 %cmp6, label %if.then8, label %if.end11, !dbg !687
 
-; <label>:21                                      ; preds = %15
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([30 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !744
-  br label %25, !dbg !744
+if.then8:                                         ; preds = %if.then3
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([30 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !689
+  br label %if.end11, !dbg !689
 
-; <label>:22                                      ; preds = %5
-  %23 = getelementptr inbounds i8* %1, i64 8, !dbg !745
-  %24 = bitcast i8* %23 to %struct.EncodingEnvironment**, !dbg !745
-  store %struct.EncodingEnvironment* null, %struct.EncodingEnvironment** %24, align 8, !dbg !747, !tbaa !686
-  br label %25
+if.else:                                          ; preds = %if.end
+  %encenv10 = getelementptr inbounds i8* %call, i64 8, !dbg !690
+  %6 = bitcast i8* %encenv10 to %struct.EncodingEnvironment**, !dbg !690
+  store %struct.EncodingEnvironment* null, %struct.EncodingEnvironment** %6, align 8, !dbg !690, !tbaa !671
+  br label %if.end11
 
-; <label>:25                                      ; preds = %15, %21, %22
-  %26 = zext i32 %10 to i64, !dbg !748
-  %27 = tail call i8* @calloc(i64 %26, i64 48) #6, !dbg !750
-  %28 = getelementptr inbounds i8* %1, i64 16, !dbg !751
-  %29 = bitcast i8* %28 to i8**, !dbg !752
-  store i8* %27, i8** %29, align 8, !dbg !752, !tbaa !699
-  %30 = icmp eq i8* %27, null, !dbg !753
-  br i1 %30, label %31, label %32, !dbg !754
+if.end11:                                         ; preds = %if.then3, %if.then8, %if.else
+  %conv1343 = zext i32 %cond to i64, !dbg !692
+  %call14 = tail call noalias i8* @calloc(i64 %conv1343, i64 48) #5, !dbg !692
+  %7 = bitcast i8* %call14 to %struct.Bitstream*, !dbg !692
+  %bitstream = getelementptr inbounds i8* %call, i64 16, !dbg !692
+  %8 = bitcast i8* %bitstream to %struct.Bitstream**, !dbg !692
+  store %struct.Bitstream* %7, %struct.Bitstream** %8, align 8, !dbg !692, !tbaa !671
+  %cmp15 = icmp eq i8* %call14, null, !dbg !692
+  br i1 %cmp15, label %if.then17, label %if.end18, !dbg !692
 
-; <label>:31                                      ; preds = %25
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([33 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !755
-  br label %32, !dbg !755
+if.then17:                                        ; preds = %if.end11
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([33 x i8]* @.str2, i64 0, i64 0)) #5, !dbg !693
+  br label %if.end18, !dbg !693
 
-; <label>:32                                      ; preds = %31, %25
-  %33 = load %struct.InputParameters** @input, align 8, !dbg !756, !tbaa !722
-  %34 = getelementptr inbounds %struct.InputParameters* %33, i64 0, i32 59, !dbg !757
-  %35 = load i32* %34, align 4, !dbg !757, !tbaa !733
-  %36 = getelementptr inbounds i8* %1, i64 24, !dbg !758
-  %37 = bitcast i8* %36 to i32*, !dbg !758
-  store i32 %35, i32* %37, align 4, !dbg !759, !tbaa !760
-  %38 = icmp eq i32 %35, 1, !dbg !761
-  br i1 %38, label %39, label %46, !dbg !763
+if.end18:                                         ; preds = %if.end11, %if.then17
+  %9 = load %struct.InputParameters** @input, align 8, !dbg !694, !tbaa !671
+  %symbol_mode19 = getelementptr inbounds %struct.InputParameters* %9, i64 0, i32 59, !dbg !694
+  %10 = load i32* %symbol_mode19, align 4, !dbg !694, !tbaa !685
+  %symbol_mode20 = getelementptr inbounds i8* %call, i64 24, !dbg !694
+  %11 = bitcast i8* %symbol_mode20 to i32*, !dbg !694
+  store i32 %10, i32* %11, align 4, !dbg !694, !tbaa !685
+  %cmp22 = icmp eq i32 %10, 1, !dbg !695
+  br i1 %cmp22, label %if.then24, label %if.else27, !dbg !695
 
-; <label>:39                                      ; preds = %32
-  %40 = tail call %struct.MotionInfoContexts* @create_contexts_MotionInfo() #6, !dbg !764
-  %41 = getelementptr inbounds i8* %1, i64 32, !dbg !766
-  %42 = bitcast i8* %41 to %struct.MotionInfoContexts**, !dbg !766
-  store %struct.MotionInfoContexts* %40, %struct.MotionInfoContexts** %42, align 8, !dbg !767, !tbaa !705
-  %43 = tail call %struct.TextureInfoContexts* @create_contexts_TextureInfo() #6, !dbg !768
-  %44 = getelementptr inbounds i8* %1, i64 40, !dbg !769
-  %45 = bitcast i8* %44 to %struct.TextureInfoContexts**, !dbg !769
-  store %struct.TextureInfoContexts* %43, %struct.TextureInfoContexts** %45, align 8, !dbg !770, !tbaa !708
-  br label %48, !dbg !771
+if.then24:                                        ; preds = %if.end18
+  %call25 = tail call %struct.MotionInfoContexts* @create_contexts_MotionInfo() #5, !dbg !696
+  %mot_ctx = getelementptr inbounds i8* %call, i64 32, !dbg !696
+  %12 = bitcast i8* %mot_ctx to %struct.MotionInfoContexts**, !dbg !696
+  store %struct.MotionInfoContexts* %call25, %struct.MotionInfoContexts** %12, align 8, !dbg !696, !tbaa !671
+  %call26 = tail call %struct.TextureInfoContexts* @create_contexts_TextureInfo() #5, !dbg !698
+  %tex_ctx = getelementptr inbounds i8* %call, i64 40, !dbg !698
+  %13 = bitcast i8* %tex_ctx to %struct.TextureInfoContexts**, !dbg !698
+  store %struct.TextureInfoContexts* %call26, %struct.TextureInfoContexts** %13, align 8, !dbg !698, !tbaa !671
+  br label %if.end30, !dbg !699
 
-; <label>:46                                      ; preds = %32
-  %47 = getelementptr inbounds i8* %1, i64 32, !dbg !772
-  call void @llvm.memset.p0i8.i64(i8* %47, i8 0, i64 16, i32 8, i1 false), !dbg !774
-  br label %48
+if.else27:                                        ; preds = %if.end18
+  %mot_ctx28 = getelementptr inbounds i8* %call, i64 32, !dbg !700
+  call void @llvm.memset.p0i8.i64(i8* %mot_ctx28, i8 0, i64 16, i32 8, i1 false), !dbg !702
+  br label %if.end30
 
-; <label>:48                                      ; preds = %46, %39
-  ret %struct.CSobj* %2, !dbg !775
+if.end30:                                         ; preds = %if.else27, %if.then24
+  ret %struct.CSobj* %0, !dbg !703
 }

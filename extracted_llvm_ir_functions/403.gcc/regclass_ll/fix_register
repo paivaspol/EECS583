@@ -1,42 +1,46 @@
 define void @fix_register(i8* %name, i32 %fixed, i32 %call_used) #0 {
 entry:
-  %call = tail call i32 @decode_reg_name(i8* %name) #5
-  %cmp = icmp sgt i32 %call, -1
-  br i1 %cmp, label %if.then, label %if.else14
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !483), !dbg !1208
+  tail call void @llvm.dbg.value(metadata !{i32 %fixed}, i64 0, metadata !484), !dbg !1209
+  tail call void @llvm.dbg.value(metadata !{i32 %call_used}, i64 0, metadata !485), !dbg !1209
+  %call = tail call i32 @decode_reg_name(i8* %name) #6, !dbg !1210
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !486), !dbg !1210
+  %cmp = icmp sgt i32 %call, -1, !dbg !1210
+  br i1 %cmp, label %if.then, label %if.else14, !dbg !1210
 
 if.then:                                          ; preds = %entry
-  %0 = and i32 %call, -2
-  %1 = icmp eq i32 %0, 6
-  br i1 %1, label %land.lhs.true, label %if.else
+  %0 = and i32 %call, -2, !dbg !1211
+  %1 = icmp eq i32 %0, 6, !dbg !1211
+  br i1 %1, label %land.lhs.true, label %if.else, !dbg !1211
 
 land.lhs.true:                                    ; preds = %if.then
-  %cmp3 = icmp eq i32 %fixed, 0
-  %cmp5 = icmp eq i32 %call_used, 0
-  %or.cond = or i1 %cmp3, %cmp5
-  br i1 %or.cond, label %if.then6, label %if.else
+  %cmp3 = icmp eq i32 %fixed, 0, !dbg !1211
+  %cmp5 = icmp eq i32 %call_used, 0, !dbg !1211
+  %or.cond = or i1 %cmp3, %cmp5, !dbg !1211
+  br i1 %or.cond, label %if.then6, label %if.else, !dbg !1211
 
 if.then6:                                         ; preds = %land.lhs.true
-  %idxprom = sext i32 %call_used to i64
-  %idxprom7 = sext i32 %fixed to i64
-  %arrayidx8 = getelementptr inbounds [2 x [2 x i8*]]* @fix_register.what_option, i64 0, i64 %idxprom7, i64 %idxprom
-  %2 = load i8** %arrayidx8, align 8, !tbaa !7
-  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([32 x i8]* @.str4, i64 0, i64 0), i8* %name, i8* %2) #5
-  br label %if.end15
+  %idxprom = sext i32 %call_used to i64, !dbg !1213
+  %idxprom7 = sext i32 %fixed to i64, !dbg !1213
+  %arrayidx8 = getelementptr inbounds [2 x [2 x i8*]]* @fix_register.what_option, i64 0, i64 %idxprom7, i64 %idxprom, !dbg !1213
+  %2 = load i8** %arrayidx8, align 8, !dbg !1213, !tbaa !1154
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([32 x i8]* @.str4, i64 0, i64 0), i8* %name, i8* %2) #6, !dbg !1213
+  br label %if.end15, !dbg !1215
 
 if.else:                                          ; preds = %land.lhs.true, %if.then
-  %conv = trunc i32 %fixed to i8
-  %idxprom9 = sext i32 %call to i64
-  %arrayidx10 = getelementptr inbounds [53 x i8]* @fixed_regs, i64 0, i64 %idxprom9
-  store i8 %conv, i8* %arrayidx10, align 1, !tbaa !1
-  %conv11 = trunc i32 %call_used to i8
-  %arrayidx13 = getelementptr inbounds [53 x i8]* @call_used_regs, i64 0, i64 %idxprom9
-  store i8 %conv11, i8* %arrayidx13, align 1, !tbaa !1
+  %conv = trunc i32 %fixed to i8, !dbg !1216
+  %idxprom9 = sext i32 %call to i64, !dbg !1216
+  %arrayidx10 = getelementptr inbounds [53 x i8]* @fixed_regs, i64 0, i64 %idxprom9, !dbg !1216
+  store i8 %conv, i8* %arrayidx10, align 1, !dbg !1216, !tbaa !954
+  %conv11 = trunc i32 %call_used to i8, !dbg !1218
+  %arrayidx13 = getelementptr inbounds [53 x i8]* @call_used_regs, i64 0, i64 %idxprom9, !dbg !1218
+  store i8 %conv11, i8* %arrayidx13, align 1, !dbg !1218, !tbaa !954
   br label %if.end15
 
 if.else14:                                        ; preds = %entry
-  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([26 x i8]* @.str5, i64 0, i64 0), i8* %name) #5
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([26 x i8]* @.str5, i64 0, i64 0), i8* %name) #6, !dbg !1219
   br label %if.end15
 
 if.end15:                                         ; preds = %if.then6, %if.else, %if.else14
-  ret void
+  ret void, !dbg !1221
 }

@@ -1,42 +1,41 @@
 define i32 @IOUtil_AdvertiseFile(%struct.cGH* %GH, i8* %filename, %struct.ioAdvertisedFileDesc* %description) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !82, metadata !107), !dbg !129
-  tail call void @llvm.dbg.value(metadata i8* %filename, i64 0, metadata !83, metadata !107), !dbg !130
-  tail call void @llvm.dbg.value(metadata %struct.ioAdvertisedFileDesc* %description, i64 0, metadata !84, metadata !107), !dbg !131
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !85, metadata !107), !dbg !132
-  %listener.01 = load %struct.PNamedData** @listener_DB, align 8, !dbg !133
-  %1 = icmp eq %struct.PNamedData* %listener.01, null, !dbg !134
-  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !134
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !82), !dbg !118
+  tail call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !83), !dbg !118
+  tail call void @llvm.dbg.value(metadata !{%struct.ioAdvertisedFileDesc* %description}, i64 0, metadata !84), !dbg !119
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !85), !dbg !120
+  %listener.010 = load %struct.PNamedData** @listener_DB, align 8, !dbg !121
+  %tobool11 = icmp eq %struct.PNamedData* %listener.010, null, !dbg !122
+  br i1 %tobool11, label %while.end, label %while.body, !dbg !122
 
-.lr.ph:                                           ; preds = %0, %13
-  %listener.03 = phi %struct.PNamedData* [ %listener.0, %13 ], [ %listener.01, %0 ]
-  %retval.02 = phi i32 [ %retval.1, %13 ], [ 0, %0 ]
-  %2 = getelementptr inbounds %struct.PNamedData* %listener.03, i64 0, i32 3, !dbg !135
-  %3 = bitcast i8** %2 to %struct.ioAdvertisedFileListenerCallbacks**, !dbg !135
-  %4 = load %struct.ioAdvertisedFileListenerCallbacks** %3, align 8, !dbg !135, !tbaa !137
-  tail call void @llvm.dbg.value(metadata %struct.ioAdvertisedFileListenerCallbacks* %4, i64 0, metadata !98, metadata !107), !dbg !142
-  %5 = icmp eq %struct.ioAdvertisedFileListenerCallbacks* %4, null, !dbg !143
-  br i1 %5, label %13, label %6, !dbg !145
+while.body:                                       ; preds = %entry, %if.end
+  %listener.013 = phi %struct.PNamedData* [ %listener.0, %if.end ], [ %listener.010, %entry ]
+  %retval1.012 = phi i32 [ %retval1.1, %if.end ], [ 0, %entry ]
+  %data = getelementptr inbounds %struct.PNamedData* %listener.013, i64 0, i32 3, !dbg !123
+  %0 = load i8** %data, align 8, !dbg !123, !tbaa !125
+  %tobool2 = icmp eq i8* %0, null, !dbg !128
+  br i1 %tobool2, label %if.end, label %land.lhs.true, !dbg !128
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds %struct.ioAdvertisedFileListenerCallbacks* %4, i64 0, i32 0, !dbg !146
-  %8 = load i32 (%struct.cGH*, i8*, %struct.ioAdvertisedFileDesc*)** %7, align 8, !dbg !146, !tbaa !147
-  %9 = icmp eq i32 (%struct.cGH*, i8*, %struct.ioAdvertisedFileDesc*)* %8, null, !dbg !149
-  br i1 %9, label %13, label %10, !dbg !150
+land.lhs.true:                                    ; preds = %while.body
+  %advertise = bitcast i8* %0 to i32 (%struct.cGH*, i8*, %struct.ioAdvertisedFileDesc*)**, !dbg !128
+  %1 = load i32 (%struct.cGH*, i8*, %struct.ioAdvertisedFileDesc*)** %advertise, align 8, !dbg !128, !tbaa !125
+  %tobool3 = icmp eq i32 (%struct.cGH*, i8*, %struct.ioAdvertisedFileDesc*)* %1, null, !dbg !128
+  br i1 %tobool3, label %if.end, label %if.then, !dbg !128
 
-; <label>:10                                      ; preds = %6
-  %11 = tail call i32 %8(%struct.cGH* %GH, i8* %filename, %struct.ioAdvertisedFileDesc* %description) #5, !dbg !151
-  %12 = or i32 %11, %retval.02, !dbg !152
-  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !85, metadata !107), !dbg !132
-  br label %13, !dbg !153
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call i32 %1(%struct.cGH* %GH, i8* %filename, %struct.ioAdvertisedFileDesc* %description) #5, !dbg !129
+  %or = or i32 %call, %retval1.012, !dbg !129
+  tail call void @llvm.dbg.value(metadata !{i32 %or}, i64 0, metadata !85), !dbg !129
+  br label %if.end, !dbg !129
 
-; <label>:13                                      ; preds = %6, %.lr.ph, %10
-  %retval.1 = phi i32 [ %12, %10 ], [ %retval.02, %6 ], [ %retval.02, %.lr.ph ]
-  %14 = getelementptr inbounds %struct.PNamedData* %listener.03, i64 0, i32 1, !dbg !154
-  %listener.0 = load %struct.PNamedData** %14, align 8, !dbg !133
-  %15 = icmp eq %struct.PNamedData* %listener.0, null, !dbg !134
-  br i1 %15, label %._crit_edge, label %.lr.ph, !dbg !134
+if.end:                                           ; preds = %land.lhs.true, %while.body, %if.then
+  %retval1.1 = phi i32 [ %or, %if.then ], [ %retval1.012, %land.lhs.true ], [ %retval1.012, %while.body ]
+  %next = getelementptr inbounds %struct.PNamedData* %listener.013, i64 0, i32 1, !dbg !130
+  %listener.0 = load %struct.PNamedData** %next, align 8, !dbg !121
+  %tobool = icmp eq %struct.PNamedData* %listener.0, null, !dbg !122
+  br i1 %tobool, label %while.end, label %while.body, !dbg !122
 
-._crit_edge:                                      ; preds = %13, %0
-  %retval.0.lcssa = phi i32 [ 0, %0 ], [ %retval.1, %13 ]
-  ret i32 %retval.0.lcssa, !dbg !155
+while.end:                                        ; preds = %if.end, %entry
+  %retval1.0.lcssa = phi i32 [ 0, %entry ], [ %retval1.1, %if.end ]
+  ret i32 %retval1.0.lcssa, !dbg !131
 }

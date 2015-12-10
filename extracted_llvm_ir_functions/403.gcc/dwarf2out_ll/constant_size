@@ -1,18 +1,21 @@
 define internal fastcc i32 @constant_size(i64 %value) #1 {
 entry:
-  %cmp = icmp eq i64 %value, 0
-  br i1 %cmp, label %if.end, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i64 %value}, i64 0, metadata !2086), !dbg !7108
+  %cmp = icmp eq i64 %value, 0, !dbg !7109
+  br i1 %cmp, label %if.end, label %if.else, !dbg !7109
 
 if.else:                                          ; preds = %entry
-  %call = tail call i32 @floor_log2_wide(i64 %value) #9
+  %call = tail call i32 @floor_log2_wide(i64 %value) #10, !dbg !7110
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !2087), !dbg !7110
   %phitmp = sdiv i32 %call, 8
   %phitmp5 = sext i32 %phitmp to i64
   br label %if.end
 
 if.end:                                           ; preds = %entry, %if.else
   %log.0 = phi i64 [ %phitmp5, %if.else ], [ 0, %entry ]
-  %call1 = tail call i32 @floor_log2_wide(i64 %log.0) #9
-  %add = add nsw i32 %call1, 1
-  %shl = shl i32 1, %add
-  ret i32 %shl
+  %call1 = tail call i32 @floor_log2_wide(i64 %log.0) #10, !dbg !7111
+  %add = add nsw i32 %call1, 1, !dbg !7111
+  %shl = shl i32 1, %add, !dbg !7111
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !2087), !dbg !7111
+  ret i32 %shl, !dbg !7112
 }

@@ -1,78 +1,79 @@
 define void @levrun_linfo_c2x2(i32 %level, i32 %run, i32* nocapture %len, i32* nocapture %info) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %level, i64 0, metadata !182, metadata !814), !dbg !1033
-  tail call void @llvm.dbg.value(metadata i32 %run, i64 0, metadata !183, metadata !814), !dbg !1034
-  tail call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !184, metadata !814), !dbg !1035
-  tail call void @llvm.dbg.value(metadata i32* %info, i64 0, metadata !185, metadata !814), !dbg !1036
-  %1 = icmp eq i32 %level, 0, !dbg !1037
-  br i1 %1, label %2, label %3, !dbg !1039
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %level}, i64 0, metadata !181), !dbg !901
+  tail call void @llvm.dbg.value(metadata !{i32 %run}, i64 0, metadata !182), !dbg !901
+  tail call void @llvm.dbg.value(metadata !{i32* %len}, i64 0, metadata !183), !dbg !901
+  tail call void @llvm.dbg.value(metadata !{i32* %info}, i64 0, metadata !184), !dbg !901
+  %cmp = icmp eq i32 %level, 0, !dbg !902
+  br i1 %cmp, label %if.then, label %if.end, !dbg !902
 
-; <label>:2                                       ; preds = %0
-  store i32 1, i32* %len, align 4, !dbg !1040, !tbaa !863
-  br label %32, !dbg !1042
+if.then:                                          ; preds = %entry
+  store i32 1, i32* %len, align 4, !dbg !903, !tbaa !806
+  br label %return, !dbg !905
 
-; <label>:3                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !189, metadata !814), !dbg !1043
-  %4 = icmp slt i32 %level, 1, !dbg !1044
-  %. = zext i1 %4 to i32, !dbg !1046
-  tail call void @llvm.dbg.value(metadata i32 %., i64 0, metadata !189, metadata !814), !dbg !1043
-  %ispos = icmp sgt i32 %level, -1, !dbg !1047
-  %neg = sub i32 0, %level, !dbg !1047
-  %5 = select i1 %ispos, i32 %level, i32 %neg, !dbg !1047
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !186, metadata !814), !dbg !1048
-  %6 = sext i32 %run to i64, !dbg !1049
-  %7 = getelementptr inbounds [4 x i32]* @levrun_linfo_c2x2.LEVRUN, i64 0, i64 %6, !dbg !1049
-  %8 = load i32* %7, align 4, !dbg !1049, !tbaa !863
-  %9 = icmp sgt i32 %5, %8, !dbg !1051
-  br i1 %9, label %16, label %10, !dbg !1052
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !33, i64 0, metadata !188), !dbg !906
+  %cmp1 = icmp slt i32 %level, 1, !dbg !907
+  %. = zext i1 %cmp1 to i32, !dbg !907
+  tail call void @llvm.dbg.value(metadata !{i32 %.}, i64 0, metadata !188), !dbg !908
+  %ispos = icmp sgt i32 %level, -1, !dbg !910
+  %neg = sub i32 0, %level, !dbg !910
+  %0 = select i1 %ispos, i32 %level, i32 %neg, !dbg !910
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !185), !dbg !910
+  %idxprom = sext i32 %run to i64, !dbg !911
+  %arrayidx = getelementptr inbounds [4 x i32]* @levrun_linfo_c2x2.LEVRUN, i64 0, i64 %idxprom, !dbg !911
+  %1 = load i32* %arrayidx, align 4, !dbg !911, !tbaa !806
+  %cmp4 = icmp sgt i32 %0, %1, !dbg !911
+  br i1 %cmp4, label %if.else, label %if.then5, !dbg !911
 
-; <label>:10                                      ; preds = %3
-  %11 = add nsw i32 %5, -1, !dbg !1053
-  %12 = sext i32 %11 to i64, !dbg !1055
-  %13 = getelementptr inbounds [2 x [2 x i32]]* @levrun_linfo_c2x2.NTAB, i64 0, i64 %12, i64 %6, !dbg !1055
-  %14 = load i32* %13, align 4, !dbg !1055, !tbaa !863
-  %15 = add nsw i32 %14, 1, !dbg !1056
-  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !188, metadata !814), !dbg !1057
-  br label %21, !dbg !1058
+if.then5:                                         ; preds = %if.end
+  %sub = add nsw i32 %0, -1, !dbg !912
+  %idxprom7 = sext i32 %sub to i64, !dbg !912
+  %arrayidx9 = getelementptr inbounds [2 x [2 x i32]]* @levrun_linfo_c2x2.NTAB, i64 0, i64 %idxprom7, i64 %idxprom, !dbg !912
+  %2 = load i32* %arrayidx9, align 4, !dbg !912, !tbaa !806
+  %add = add nsw i32 %2, 1, !dbg !912
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !187), !dbg !912
+  br label %if.end15, !dbg !914
 
-; <label>:16                                      ; preds = %3
-  %17 = sub nsw i32 %5, %8, !dbg !1059
-  %18 = shl i32 %17, 3, !dbg !1061
-  %19 = shl i32 %run, 1, !dbg !1062
-  %20 = add nsw i32 %18, %19, !dbg !1063
-  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !188, metadata !814), !dbg !1057
-  br label %21
+if.else:                                          ; preds = %if.end
+  %sub12 = sub nsw i32 %0, %1, !dbg !915
+  %mul = shl i32 %sub12, 3, !dbg !915
+  %mul13 = shl i32 %run, 1, !dbg !915
+  %add14 = add nsw i32 %mul, %mul13, !dbg !915
+  tail call void @llvm.dbg.value(metadata !{i32 %add14}, i64 0, metadata !187), !dbg !915
+  br label %if.end15
 
-; <label>:21                                      ; preds = %16, %10
-  %n.0 = phi i32 [ %15, %10 ], [ %20, %16 ]
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !187, metadata !814), !dbg !1064
-  %nn.0.in.off2 = add i32 %n.0, 1, !dbg !1065
-  %22 = icmp ugt i32 %nn.0.in.off2, 2, !dbg !1065
-  br i1 %22, label %.lr.ph, label %.critedge, !dbg !1068
+if.end15:                                         ; preds = %if.else, %if.then5
+  %n.0 = phi i32 [ %add, %if.then5 ], [ %add14, %if.else ]
+  tail call void @llvm.dbg.value(metadata !33, i64 0, metadata !186), !dbg !917
+  br label %land.rhs, !dbg !917
 
-.lr.ph:                                           ; preds = %21, %.lr.ph
-  %nn.0.in4 = phi i32 [ %nn.0, %.lr.ph ], [ %n.0, %21 ]
-  %i.03 = phi i32 [ %23, %.lr.ph ], [ 0, %21 ]
-  %nn.0 = sdiv i32 %nn.0.in4, 2, !dbg !1069
-  %23 = add nuw nsw i32 %i.03, 1, !dbg !1070
-  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !187, metadata !814), !dbg !1064
-  %24 = icmp slt i32 %23, 16, !dbg !1071
-  %nn.0.in.off = add nsw i32 %nn.0, 1, !dbg !1065
-  %25 = icmp ugt i32 %nn.0.in.off, 2, !dbg !1065
-  %or.cond = and i1 %24, %25, !dbg !1068
-  br i1 %or.cond, label %.lr.ph, label %.critedge, !dbg !1068
+for.cond:                                         ; preds = %land.rhs
+  %nn.042 = sdiv i32 %nn.042.in, 2, !dbg !919
+  %cmp16 = icmp slt i32 %inc, 16, !dbg !917
+  br i1 %cmp16, label %land.rhs, label %for.end, !dbg !917
 
-.critedge:                                        ; preds = %.lr.ph, %21
-  %i.0.lcssa = phi i32 [ 0, %21 ], [ %23, %.lr.ph ]
-  %26 = shl nsw i32 %i.0.lcssa, 1, !dbg !1072
-  %27 = or i32 %26, 1, !dbg !1073
-  store i32 %27, i32* %len, align 4, !dbg !1074, !tbaa !863
-  %28 = tail call double @ldexp(double 1.000000e+00, i32 %i.0.lcssa) #1, !dbg !1075
-  %29 = fptosi double %28 to i32, !dbg !1076
-  %30 = add i32 %n.0, %., !dbg !1077
-  %31 = sub i32 %30, %29, !dbg !1078
-  store i32 %31, i32* %info, align 4, !dbg !1079, !tbaa !863
-  br label %32, !dbg !1080
+land.rhs:                                         ; preds = %if.end15, %for.cond
+  %nn.042.in = phi i32 [ %n.0, %if.end15 ], [ %nn.042, %for.cond ]
+  %i.040 = phi i32 [ 0, %if.end15 ], [ %inc, %for.cond ]
+  %nn.0.in.off = add i32 %nn.042.in, 1, !dbg !917
+  %3 = icmp ugt i32 %nn.0.in.off, 2, !dbg !917
+  %inc = add nsw i32 %i.040, 1, !dbg !917
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !186), !dbg !917
+  br i1 %3, label %for.cond, label %for.end
 
-; <label>:32                                      ; preds = %.critedge, %2
-  ret void, !dbg !1080
+for.end:                                          ; preds = %for.cond, %land.rhs
+  %i.0.lcssa = phi i32 [ %inc, %for.cond ], [ %i.040, %land.rhs ]
+  %mul19 = shl nsw i32 %i.0.lcssa, 1, !dbg !920
+  %add2038 = or i32 %mul19, 1, !dbg !920
+  store i32 %add2038, i32* %len, align 4, !dbg !920, !tbaa !806
+  %4 = tail call double @ldexp(double 1.000000e+00, i32 %i.0.lcssa) #2, !dbg !921
+  %conv22 = fptosi double %4 to i32, !dbg !921
+  %sub23 = add i32 %n.0, %., !dbg !921
+  %add24 = sub i32 %sub23, %conv22, !dbg !921
+  store i32 %add24, i32* %info, align 4, !dbg !921, !tbaa !806
+  br label %return, !dbg !921
+
+return:                                           ; preds = %for.end, %if.then
+  ret void, !dbg !921
 }

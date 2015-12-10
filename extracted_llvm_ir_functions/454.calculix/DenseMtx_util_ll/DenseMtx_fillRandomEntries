@@ -1,48 +1,49 @@
 define void @DenseMtx_fillRandomEntries(%struct._DenseMtx* %mtx, %struct._Drand* %drand) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !116, metadata !195), !dbg !508
-  tail call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !117, metadata !195), !dbg !509
-  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !510
-  %2 = icmp eq %struct._Drand* %drand, null, !dbg !512
-  %or.cond = or i1 %1, %2, !dbg !513
-  br i1 %or.cond, label %3, label %6, !dbg !513
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DenseMtx* %mtx}, i64 0, metadata !117), !dbg !309
+  tail call void @llvm.dbg.value(metadata !{%struct._Drand* %drand}, i64 0, metadata !118), !dbg !310
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null, !dbg !311
+  %cmp1 = icmp eq %struct._Drand* %drand, null, !dbg !311
+  %or.cond = or i1 %cmp, %cmp1, !dbg !311
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !311
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !514, !tbaa !202
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), %struct._DenseMtx* %mtx, %struct._Drand* %drand) #7, !dbg !516
-  tail call void @exit(i32 -1) #8, !dbg !517
-  unreachable, !dbg !517
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !312, !tbaa !199
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), %struct._DenseMtx* %mtx, %struct._Drand* %drand) #7, !dbg !312
+  tail call void @exit(i32 -1) #8, !dbg !314
+  unreachable, !dbg !314
 
-; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0, !dbg !518
-  %8 = load i32* %7, align 4, !dbg !518, !tbaa !302
-  switch i32 %8, label %26 [
-    i32 1, label %9
-    i32 2, label %17
-  ], !dbg !520
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0, !dbg !315
+  %1 = load i32* %type, align 4, !dbg !315, !tbaa !206
+  switch i32 %1, label %if.end13 [
+    i32 1, label %if.then3
+    i32 2, label %if.then6
+  ], !dbg !315
 
-; <label>:9                                       ; preds = %6
-  %10 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !521
-  %11 = load i32* %10, align 4, !dbg !521, !tbaa !275
-  %12 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4, !dbg !523
-  %13 = load i32* %12, align 4, !dbg !523, !tbaa !286
-  %14 = mul nsw i32 %13, %11, !dbg !524
-  %15 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9, !dbg !525
-  %16 = load double** %15, align 8, !dbg !525, !tbaa !308
-  tail call void @Drand_fillDvector(%struct._Drand* %drand, i32 %14, double* %16) #7, !dbg !526
-  br label %26, !dbg !527
+if.then3:                                         ; preds = %if.end
+  %nrow = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !316
+  %2 = load i32* %nrow, align 4, !dbg !316, !tbaa !206
+  %ncol = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4, !dbg !316
+  %3 = load i32* %ncol, align 4, !dbg !316, !tbaa !206
+  %mul = mul nsw i32 %3, %2, !dbg !316
+  %entries = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9, !dbg !316
+  %4 = load double** %entries, align 8, !dbg !316, !tbaa !199
+  tail call void @Drand_fillDvector(%struct._Drand* %drand, i32 %mul, double* %4) #7, !dbg !316
+  br label %if.end13, !dbg !318
 
-; <label>:17                                      ; preds = %6
-  %18 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !528
-  %19 = load i32* %18, align 4, !dbg !528, !tbaa !275
-  %20 = shl i32 %19, 1, !dbg !531
-  %21 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4, !dbg !532
-  %22 = load i32* %21, align 4, !dbg !532, !tbaa !286
-  %23 = mul nsw i32 %20, %22, !dbg !533
-  %24 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9, !dbg !534
-  %25 = load double** %24, align 8, !dbg !534, !tbaa !308
-  tail call void @Drand_fillDvector(%struct._Drand* %drand, i32 %23, double* %25) #7, !dbg !535
-  br label %26, !dbg !536
+if.then6:                                         ; preds = %if.end
+  %nrow7 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !319
+  %5 = load i32* %nrow7, align 4, !dbg !319, !tbaa !206
+  %mul8 = shl i32 %5, 1, !dbg !319
+  %ncol9 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4, !dbg !319
+  %6 = load i32* %ncol9, align 4, !dbg !319, !tbaa !206
+  %mul10 = mul nsw i32 %mul8, %6, !dbg !319
+  %entries11 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9, !dbg !319
+  %7 = load double** %entries11, align 8, !dbg !319, !tbaa !199
+  tail call void @Drand_fillDvector(%struct._Drand* %drand, i32 %mul10, double* %7) #7, !dbg !319
+  br label %if.end13, !dbg !321
 
-; <label>:26                                      ; preds = %6, %17, %9
-  ret void, !dbg !537
+if.end13:                                         ; preds = %if.end, %if.then6, %if.then3
+  ret void, !dbg !322
 }

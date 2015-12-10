@@ -1,30 +1,31 @@
 define %"class.pov_base::IStream"* @_ZN3pov11Locate_FileEPcjS0_b(i8* %filename, i32 %stype, i8* %buffer, i1 zeroext %err_flag) #3 {
-  tail call void @llvm.dbg.value(metadata i8* %filename, i64 0, metadata !372, metadata !685), !dbg !742
-  tail call void @llvm.dbg.value(metadata i32 %stype, i64 0, metadata !373, metadata !685), !dbg !743
-  tail call void @llvm.dbg.value(metadata i8* %buffer, i64 0, metadata !374, metadata !685), !dbg !744
-  tail call void @llvm.dbg.value(metadata i1 %err_flag, i64 0, metadata !375, metadata !685), !dbg !745
-  %1 = tail call i8* @_ZN3pov15Locate_FilenameEPcjb(i8* %filename, i32 %stype, i1 zeroext %err_flag) #10, !dbg !746
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !377, metadata !685), !dbg !747
-  %2 = icmp eq i8* %1, null, !dbg !748
-  br i1 %2, label %9, label %3, !dbg !750
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !130), !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i32 %stype}, i64 0, metadata !131), !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !132), !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i1 %err_flag}, i64 0, metadata !133), !dbg !239
+  %call = tail call i8* @_ZN3pov15Locate_FilenameEPcjb(i8* %filename, i32 %stype, i1 zeroext %err_flag) #9, !dbg !240
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !135), !dbg !240
+  %cmp = icmp eq i8* %call, null, !dbg !241
+  br i1 %cmp, label %if.end5, label %if.then, !dbg !241
 
-; <label>:3                                       ; preds = %0
-  %4 = icmp eq i8* %buffer, null, !dbg !751
-  br i1 %4, label %7, label %5, !dbg !754
+if.then:                                          ; preds = %entry
+  %tobool1 = icmp eq i8* %buffer, null, !dbg !242
+  br i1 %tobool1, label %delete.notnull, label %if.then2, !dbg !242
 
-; <label>:5                                       ; preds = %3
-  %6 = tail call i8* @strcpy(i8* %buffer, i8* %1) #10, !dbg !751
-  br label %7, !dbg !751
+if.then2:                                         ; preds = %if.then
+  %call3 = tail call i8* @strcpy(i8* %buffer, i8* %call) #8, !dbg !242
+  br label %delete.notnull, !dbg !242
 
-; <label>:7                                       ; preds = %5, %3
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !358, metadata !685), !dbg !755
-  tail call void @llvm.dbg.value(metadata i32 %stype, i64 0, metadata !359, metadata !685), !dbg !757
-  %8 = tail call %"class.pov_base::IStream"* @_ZN8pov_base11New_IStreamEPKcj(i8* %1, i32 %stype) #10, !dbg !758
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::IStream"* %8, i64 0, metadata !376, metadata !685), !dbg !759
-  tail call void @_ZdaPv(i8* %1) #11, !dbg !760
-  br label %9, !dbg !760
+delete.notnull:                                   ; preds = %if.then2, %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !244), !dbg !246
+  tail call void @llvm.dbg.value(metadata !{i32 %stype}, i64 0, metadata !247), !dbg !246
+  %call.i = tail call %"class.pov_base::IStream"* @_ZN8pov_base11New_IStreamEPKcj(i8* %call, i32 %stype) #9, !dbg !248
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %call.i}, i64 0, metadata !134), !dbg !245
+  tail call void @_ZdaPv(i8* %call) #8, !dbg !249
+  br label %if.end5, !dbg !249
 
-; <label>:9                                       ; preds = %0, %7
-  %result.0 = phi %"class.pov_base::IStream"* [ %8, %7 ], [ null, %0 ]
-  ret %"class.pov_base::IStream"* %result.0, !dbg !761
+if.end5:                                          ; preds = %entry, %delete.notnull
+  %result.0 = phi %"class.pov_base::IStream"* [ %call.i, %delete.notnull ], [ null, %entry ]
+  ret %"class.pov_base::IStream"* %result.0, !dbg !250
 }

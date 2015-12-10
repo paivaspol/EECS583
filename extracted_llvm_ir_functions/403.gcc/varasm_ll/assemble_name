@@ -1,35 +1,39 @@
 define void @assemble_name(%struct._IO_FILE* %file, i8* %name) #0 {
 entry:
-  %0 = load i8* %name, align 1, !tbaa !1
-  %cmp = icmp eq i8 %0, 42
-  %idx.ext = zext i1 %cmp to i64
-  %add.ptr = getelementptr inbounds i8* %name, i64 %idx.ext
-  %call = tail call %union.tree_node* @maybe_get_identifier(i8* %add.ptr) #9
-  %tobool = icmp eq %union.tree_node* %call, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !1455), !dbg !2678
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !1456), !dbg !2679
+  %0 = load i8* %name, align 1, !dbg !2680, !tbaa !2353
+  %cmp = icmp eq i8 %0, 42, !dbg !2680
+  %idx.ext = zext i1 %cmp to i64, !dbg !2680
+  %add.ptr = getelementptr inbounds i8* %name, i64 %idx.ext, !dbg !2680
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !1457), !dbg !2680
+  %call = tail call %union.tree_node* @maybe_get_identifier(i8* %add.ptr) #10, !dbg !2681
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1458), !dbg !2681
+  %tobool = icmp eq %union.tree_node* %call, null, !dbg !2682
+  br i1 %tobool, label %if.end, label %if.then, !dbg !2682
 
 if.then:                                          ; preds = %entry
-  %static_flag = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 2
-  %1 = bitcast [4 x i8]* %static_flag to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.set = or i32 %bf.load, 262144
-  store i32 %bf.set, i32* %1, align 8
-  br label %if.end
+  %static_flag = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 2, !dbg !2683
+  %1 = bitcast [4 x i8]* %static_flag to i32*, !dbg !2683
+  %bf.load = load i32* %1, align 8, !dbg !2683
+  %bf.set = or i32 %bf.load, 262144, !dbg !2683
+  store i32 %bf.set, i32* %1, align 8, !dbg !2683
+  br label %if.end, !dbg !2683
 
 if.end:                                           ; preds = %entry, %if.then
-  %2 = load i8* %name, align 1, !tbaa !1
-  %cmp4 = icmp eq i8 %2, 42
-  br i1 %cmp4, label %if.then6, label %if.else
+  %2 = load i8* %name, align 1, !dbg !2684, !tbaa !2353
+  %cmp4 = icmp eq i8 %2, 42, !dbg !2684
+  br i1 %cmp4, label %if.then6, label %if.else, !dbg !2684
 
 if.then6:                                         ; preds = %if.end
-  %arrayidx7 = getelementptr inbounds i8* %name, i64 1
-  %call8 = tail call i32 @fputs(i8* %arrayidx7, %struct._IO_FILE* %file) #9
-  br label %if.end9
+  %arrayidx7 = getelementptr inbounds i8* %name, i64 1, !dbg !2685
+  %call8 = tail call i32 @fputs(i8* %arrayidx7, %struct._IO_FILE* %file) #10, !dbg !2685
+  br label %if.end9, !dbg !2685
 
 if.else:                                          ; preds = %if.end
-  tail call void (%struct._IO_FILE*, i8*, ...)* @asm_fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str95, i64 0, i64 0), i8* %name) #9
+  tail call void (%struct._IO_FILE*, i8*, ...)* @asm_fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str95, i64 0, i64 0), i8* %name) #10, !dbg !2686
   br label %if.end9
 
 if.end9:                                          ; preds = %if.else, %if.then6
-  ret void
+  ret void, !dbg !2687
 }

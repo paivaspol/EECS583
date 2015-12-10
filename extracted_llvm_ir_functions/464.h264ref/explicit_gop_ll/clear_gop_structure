@@ -1,13 +1,14 @@
 define void @clear_gop_structure() #0 {
-  %1 = load %struct.GOP_DATA** @gop_structure, align 8, !dbg !856, !tbaa !655
-  %2 = icmp eq %struct.GOP_DATA* %1, null, !dbg !856
-  br i1 %2, label %5, label %3, !dbg !858
+entry:
+  %0 = load %struct.GOP_DATA** @gop_structure, align 8, !dbg !741, !tbaa !648
+  %tobool = icmp eq %struct.GOP_DATA* %0, null, !dbg !741
+  br i1 %tobool, label %if.end, label %if.then, !dbg !741
 
-; <label>:3                                       ; preds = %0
-  %4 = bitcast %struct.GOP_DATA* %1 to i8*, !dbg !859
-  tail call void @free(i8* %4) #6, !dbg !860
-  br label %5, !dbg !860
+if.then:                                          ; preds = %entry
+  %1 = bitcast %struct.GOP_DATA* %0 to i8*, !dbg !742
+  tail call void @free(i8* %1) #6, !dbg !742
+  br label %if.end, !dbg !742
 
-; <label>:5                                       ; preds = %0, %3
-  ret void, !dbg !861
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !743
 }

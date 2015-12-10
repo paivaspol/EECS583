@@ -1,17 +1,18 @@
 define %struct._ZV* @ZV_new() #0 {
-  %1 = tail call i8* @malloc(i64 24) #5, !dbg !42
-  %2 = bitcast i8* %1 to %struct._ZV*, !dbg !42
-  tail call void @llvm.dbg.value(metadata %struct._ZV* %2, i64 0, metadata !26, metadata !46), !dbg !47
-  %3 = icmp eq i8* %1, null, !dbg !42
-  br i1 %3, label %4, label %7, !dbg !48
+entry:
+  %call = tail call noalias i8* @malloc(i64 24) #5, !dbg !33
+  %0 = bitcast i8* %call to %struct._ZV*, !dbg !33
+  tail call void @llvm.dbg.value(metadata !{%struct._ZV* %0}, i64 0, metadata !21), !dbg !33
+  %cmp = icmp eq i8* %call, null, !dbg !33
+  br i1 %cmp, label %if.then, label %if.end, !dbg !33
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !49, !tbaa !51
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 24, i32 19, i8* getelementptr inbounds ([85 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !49
-  tail call void @exit(i32 -1) #6, !dbg !49
-  unreachable, !dbg !49
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !35, !tbaa !37
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 24, i32 19, i8* getelementptr inbounds ([73 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !35
+  tail call void @exit(i32 -1) #6, !dbg !35
+  unreachable, !dbg !35
 
-; <label>:7                                       ; preds = %0
-  tail call void @ZV_setDefaultFields(%struct._ZV* %2) #7, !dbg !55
-  ret %struct._ZV* %2, !dbg !56
+if.end:                                           ; preds = %entry
+  tail call void @ZV_setDefaultFields(%struct._ZV* %0) #7, !dbg !40
+  ret %struct._ZV* %0, !dbg !41
 }

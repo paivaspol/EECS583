@@ -1,26 +1,27 @@
-define i32 @first_rtl_op(i32 %code) #3 {
+define i32 @first_rtl_op(i32 %code) #4 {
 entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !1190), !dbg !2575
   switch i32 %code, label %sw.default [
     i32 118, label %return
     i32 136, label %sw.bb1
     i32 120, label %sw.bb1
     i32 55, label %return
     i32 54, label %sw.bb3
-  ]
+  ], !dbg !2576
 
 sw.bb1:                                           ; preds = %entry, %entry
-  br label %return
+  br label %return, !dbg !2577
 
 sw.bb3:                                           ; preds = %entry
-  br label %return
+  br label %return, !dbg !2578
 
 sw.default:                                       ; preds = %entry
-  %idxprom = sext i32 %code to i64
-  %arrayidx = getelementptr inbounds [256 x i32]* @tree_code_length, i64 0, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !4
-  br label %return
+  %idxprom = sext i32 %code to i64, !dbg !2579
+  %arrayidx = getelementptr inbounds [256 x i32]* @tree_code_length, i64 0, i64 %idxprom, !dbg !2579
+  %0 = load i32* %arrayidx, align 4, !dbg !2579, !tbaa !1932
+  br label %return, !dbg !2579
 
 return:                                           ; preds = %entry, %entry, %sw.default, %sw.bb3, %sw.bb1
   %retval.0 = phi i32 [ %0, %sw.default ], [ 3, %sw.bb3 ], [ 0, %sw.bb1 ], [ 2, %entry ], [ 2, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2580
 }

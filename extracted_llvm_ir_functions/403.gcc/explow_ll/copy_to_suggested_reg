@@ -1,21 +1,25 @@
-define %struct.rtx_def* @copy_to_suggested_reg(%struct.rtx_def* %x, %struct.rtx_def* %target, i32 %mode) #1 {
+define %struct.rtx_def* @copy_to_suggested_reg(%struct.rtx_def* %x, %struct.rtx_def* %target, i32 %mode) #2 {
 entry:
-  %tobool = icmp eq %struct.rtx_def* %target, null
-  br i1 %tobool, label %if.else, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1790), !dbg !2159
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %target}, i64 0, metadata !1791), !dbg !2159
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !1792), !dbg !2160
+  %tobool = icmp eq %struct.rtx_def* %target, null, !dbg !2161
+  br i1 %tobool, label %if.else, label %land.lhs.true, !dbg !2161
 
 land.lhs.true:                                    ; preds = %entry
-  %0 = bitcast %struct.rtx_def* %target to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 61
-  br i1 %cmp, label %if.end, label %if.else
+  %0 = bitcast %struct.rtx_def* %target to i32*, !dbg !2161
+  %bf.load = load i32* %0, align 8, !dbg !2161
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2161
+  %cmp = icmp eq i32 %bf.clear, 61, !dbg !2161
+  br i1 %cmp, label %if.end, label %if.else, !dbg !2161
 
 if.else:                                          ; preds = %entry, %land.lhs.true
-  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 %mode) #4
+  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 %mode) #5, !dbg !2162
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1793), !dbg !2162
   br label %if.end
 
 if.end:                                           ; preds = %land.lhs.true, %if.else
   %temp.0 = phi %struct.rtx_def* [ %call, %if.else ], [ %target, %land.lhs.true ]
-  %call1 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %temp.0, %struct.rtx_def* %x) #4
-  ret %struct.rtx_def* %temp.0
+  %call1 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %temp.0, %struct.rtx_def* %x) #5, !dbg !2163
+  ret %struct.rtx_def* %temp.0, !dbg !2164
 }

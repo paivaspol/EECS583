@@ -1,25 +1,27 @@
 define void @disable_builtin_function(i8* %name) #0 {
 entry:
-  %call = tail call i32 @strncmp(i8* %name, i8* getelementptr inbounds ([11 x i8]* @.str77, i64 0, i64 0), i64 10) #10
-  %cmp = icmp eq i32 %call, 0
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !1743), !dbg !3430
+  %call = tail call i32 @strncmp(i8* %name, i8* getelementptr inbounds ([11 x i8]* @.str77, i64 0, i64 0), i64 10) #11, !dbg !3431
+  %cmp = icmp eq i32 %call, 0, !dbg !3431
+  br i1 %cmp, label %if.then, label %if.else, !dbg !3431
 
 if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([38 x i8]* @.str178, i64 0, i64 0), i8* %name) #8
-  br label %if.end
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([38 x i8]* @.str178, i64 0, i64 0), i8* %name) #9, !dbg !3432
+  br label %if.end, !dbg !3432
 
 if.else:                                          ; preds = %entry
-  %call1 = tail call noalias i8* @xmalloc(i64 16) #8
-  %0 = bitcast i8* %call1 to %struct.disabled_builtin*
-  %name2 = bitcast i8* %call1 to i8**
-  store i8* %name, i8** %name2, align 8, !tbaa !3
-  %1 = load %struct.disabled_builtin** @disabled_builtins, align 8, !tbaa !3
-  %next = getelementptr inbounds i8* %call1, i64 8
-  %2 = bitcast i8* %next to %struct.disabled_builtin**
-  store %struct.disabled_builtin* %1, %struct.disabled_builtin** %2, align 8, !tbaa !3
-  store %struct.disabled_builtin* %0, %struct.disabled_builtin** @disabled_builtins, align 8, !tbaa !3
+  %call1 = tail call noalias i8* @xmalloc(i64 16) #9, !dbg !3433
+  %0 = bitcast i8* %call1 to %struct.disabled_builtin*, !dbg !3433
+  tail call void @llvm.dbg.value(metadata !{%struct.disabled_builtin* %0}, i64 0, metadata !1744), !dbg !3433
+  %name2 = bitcast i8* %call1 to i8**, !dbg !3434
+  store i8* %name, i8** %name2, align 8, !dbg !3434, !tbaa !2305
+  %1 = load %struct.disabled_builtin** @disabled_builtins, align 8, !dbg !3435, !tbaa !2305
+  %next = getelementptr inbounds i8* %call1, i64 8, !dbg !3435
+  %2 = bitcast i8* %next to %struct.disabled_builtin**, !dbg !3435
+  store %struct.disabled_builtin* %1, %struct.disabled_builtin** %2, align 8, !dbg !3435, !tbaa !2305
+  store %struct.disabled_builtin* %0, %struct.disabled_builtin** @disabled_builtins, align 8, !dbg !3436, !tbaa !2305
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  ret void
+  ret void, !dbg !3437
 }

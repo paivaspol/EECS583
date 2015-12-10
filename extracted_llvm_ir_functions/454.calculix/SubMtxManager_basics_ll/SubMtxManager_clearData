@@ -1,48 +1,44 @@
 define void @SubMtxManager_clearData(%struct._SubMtxManager* %manager) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._SubMtxManager* %manager, i64 0, metadata !72, metadata !85), !dbg !106
-  %1 = icmp eq %struct._SubMtxManager* %manager, null, !dbg !107
-  br i1 %1, label %6, label %.preheader, !dbg !109
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtxManager* %manager}, i64 0, metadata !70), !dbg !91
+  %cmp = icmp eq %struct._SubMtxManager* %manager, null, !dbg !92
+  br i1 %cmp, label %if.then, label %while.cond.preheader, !dbg !92
 
-.preheader:                                       ; preds = %0
-  %2 = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 0, !dbg !110
-  %3 = load %struct._SubMtx** %2, align 8, !dbg !110, !tbaa !111
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %3, i64 0, metadata !73, metadata !85), !dbg !114
-  %4 = icmp eq %struct._SubMtx* %3, null, !dbg !115
-  br i1 %4, label %._crit_edge, label %.lr.ph, !dbg !116
+while.cond.preheader:                             ; preds = %entry
+  %head = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 0, !dbg !93
+  %0 = load %struct._SubMtx** %head, align 8, !dbg !93, !tbaa !79
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %0}, i64 0, metadata !71), !dbg !93
+  %cmp114 = icmp eq %struct._SubMtx* %0, null, !dbg !93
+  br i1 %cmp114, label %while.end, label %while.body, !dbg !93
 
-.lr.ph:                                           ; preds = %.preheader
-  %5 = bitcast %struct._SubMtxManager* %manager to i64*, !dbg !117
-  br label %9, !dbg !116
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !94, !tbaa !79
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([57 x i8]* @.str3, i64 0, i64 0), %struct._SubMtxManager* null) #6, !dbg !94
+  tail call void @exit(i32 -1) #7, !dbg !96
+  unreachable, !dbg !96
 
-; <label>:6                                       ; preds = %0
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !119, !tbaa !90
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([57 x i8]* @.str3, i64 0, i64 0), %struct._SubMtxManager* null) #6, !dbg !121
-  tail call void @exit(i32 -1) #7, !dbg !122
-  unreachable, !dbg !122
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %2 = phi %struct._SubMtx* [ %4, %while.body ], [ %0, %while.cond.preheader ]
+  %next = getelementptr inbounds %struct._SubMtx* %2, i64 0, i32 9, !dbg !97
+  %3 = load %struct._SubMtx** %next, align 8, !dbg !97, !tbaa !79
+  store %struct._SubMtx* %3, %struct._SubMtx** %head, align 8, !dbg !97, !tbaa !79
+  tail call void @SubMtx_free(%struct._SubMtx* %2) #6, !dbg !99
+  %4 = load %struct._SubMtx** %head, align 8, !dbg !93, !tbaa !79
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %2}, i64 0, metadata !71), !dbg !93
+  %cmp1 = icmp eq %struct._SubMtx* %4, null, !dbg !93
+  br i1 %cmp1, label %while.end, label %while.body, !dbg !93
 
-; <label>:9                                       ; preds = %.lr.ph, %9
-  %10 = phi %struct._SubMtx* [ %3, %.lr.ph ], [ %14, %9 ]
-  %11 = getelementptr inbounds %struct._SubMtx* %10, i64 0, i32 9, !dbg !123
-  %12 = bitcast %struct._SubMtx** %11 to i64*, !dbg !123
-  %13 = load i64* %12, align 8, !dbg !123, !tbaa !124
-  store i64 %13, i64* %5, align 8, !dbg !117, !tbaa !111
-  tail call void @SubMtx_free(%struct._SubMtx* %10) #6, !dbg !127
-  %14 = load %struct._SubMtx** %2, align 8, !dbg !110, !tbaa !111
-  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %14, i64 0, metadata !73, metadata !85), !dbg !114
-  %15 = icmp eq %struct._SubMtx* %14, null, !dbg !115
-  br i1 %15, label %._crit_edge, label %9, !dbg !116
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %lock = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 1, !dbg !100
+  %5 = load %struct._Lock** %lock, align 8, !dbg !100, !tbaa !79
+  %cmp3 = icmp eq %struct._Lock* %5, null, !dbg !100
+  br i1 %cmp3, label %if.end6, label %if.then4, !dbg !100
 
-._crit_edge:                                      ; preds = %9, %.preheader
-  %16 = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 1, !dbg !128
-  %17 = load %struct._Lock** %16, align 8, !dbg !128, !tbaa !130
-  %18 = icmp eq %struct._Lock* %17, null, !dbg !131
-  br i1 %18, label %20, label %19, !dbg !132
+if.then4:                                         ; preds = %while.end
+  tail call void @Lock_free(%struct._Lock* %5) #6, !dbg !101
+  br label %if.end6, !dbg !103
 
-; <label>:19                                      ; preds = %._crit_edge
-  tail call void @Lock_free(%struct._Lock* %17) #6, !dbg !133
-  br label %20, !dbg !135
-
-; <label>:20                                      ; preds = %._crit_edge, %19
-  tail call void @SubMtxManager_setDefaultFields(%struct._SubMtxManager* %manager) #8, !dbg !136
-  ret void, !dbg !137
+if.end6:                                          ; preds = %while.end, %if.then4
+  tail call void @SubMtxManager_setDefaultFields(%struct._SubMtxManager* %manager) #8, !dbg !104
+  ret void, !dbg !105
 }

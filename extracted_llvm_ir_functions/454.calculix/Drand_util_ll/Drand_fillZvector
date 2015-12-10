@@ -1,38 +1,36 @@
 define void @Drand_fillZvector(%struct._Drand* %drand, i32 %size, double* %dvec) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !34, metadata !57), !dbg !161
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !35, metadata !57), !dbg !162
-  tail call void @llvm.dbg.value(metadata double* %dvec, i64 0, metadata !36, metadata !57), !dbg !163
-  %1 = icmp eq %struct._Drand* %drand, null, !dbg !164
-  %2 = icmp slt i32 %size, 0, !dbg !166
-  %or.cond = or i1 %1, %2, !dbg !167
-  %3 = icmp eq double* %dvec, null, !dbg !168
-  %or.cond3 = or i1 %or.cond, %3, !dbg !167
-  br i1 %or.cond3, label %7, label %.preheader, !dbg !167
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Drand* %drand}, i64 0, metadata !33), !dbg !100
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !34), !dbg !101
+  tail call void @llvm.dbg.value(metadata !{double* %dvec}, i64 0, metadata !35), !dbg !102
+  %cmp = icmp eq %struct._Drand* %drand, null, !dbg !103
+  %cmp1 = icmp slt i32 %size, 0, !dbg !103
+  %or.cond = or i1 %cmp, %cmp1, !dbg !103
+  %cmp3 = icmp eq double* %dvec, null, !dbg !103
+  %or.cond14 = or i1 %or.cond, %cmp3, !dbg !103
+  br i1 %or.cond14, label %if.then, label %for.cond.preheader, !dbg !103
 
-.preheader:                                       ; preds = %0
-  %4 = icmp sgt i32 %size, 0, !dbg !169
-  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !172
+for.cond.preheader:                               ; preds = %entry
+  %mul = shl nsw i32 %size, 1, !dbg !104
+  %cmp415 = icmp sgt i32 %size, 0, !dbg !104
+  br i1 %cmp415, label %for.body, label %for.end, !dbg !104
 
-.lr.ph:                                           ; preds = %.preheader
-  %5 = shl nsw i32 %size, 1, !dbg !173
-  %6 = sext i32 %5 to i64, !dbg !172
-  br label %10, !dbg !172
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !106, !tbaa !56
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), %struct._Drand* %drand, i32 %size, double* %dvec) #4, !dbg !106
+  tail call void @exit(i32 -1) #5, !dbg !108
+  unreachable, !dbg !108
 
-; <label>:7                                       ; preds = %0
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !174, !tbaa !64
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), %struct._Drand* %drand, i32 %size, double* %dvec) #5, !dbg !176
-  tail call void @exit(i32 -1) #6, !dbg !177
-  unreachable, !dbg !177
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %call5 = tail call double @Drand_value(%struct._Drand* %drand) #6, !dbg !109
+  %arrayidx = getelementptr inbounds double* %dvec, i64 %indvars.iv, !dbg !109
+  store double %call5, double* %arrayidx, align 8, !dbg !109, !tbaa !64
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !104
+  %1 = trunc i64 %indvars.iv.next to i32, !dbg !104
+  %cmp4 = icmp slt i32 %1, %mul, !dbg !104
+  br i1 %cmp4, label %for.body, label %for.end, !dbg !104
 
-; <label>:10                                      ; preds = %.lr.ph, %10
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %10 ]
-  %11 = tail call double @Drand_value(%struct._Drand* %drand) #8, !dbg !178
-  %12 = getelementptr inbounds double* %dvec, i64 %indvars.iv, !dbg !180
-  store double %11, double* %12, align 8, !dbg !181, !tbaa !182
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !172
-  %13 = icmp slt i64 %indvars.iv.next, %6, !dbg !169
-  br i1 %13, label %10, label %._crit_edge, !dbg !172
-
-._crit_edge:                                      ; preds = %10, %.preheader
-  ret void, !dbg !183
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void, !dbg !111
 }

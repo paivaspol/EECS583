@@ -1,30 +1,31 @@
-define float @gauss(float %am, float %sd, i32* %ig) #4 {
-  tail call void @llvm.dbg.value(metadata float %am, i64 0, metadata !89, metadata !280), !dbg !319
-  tail call void @llvm.dbg.value(metadata float %sd, i64 0, metadata !90, metadata !280), !dbg !320
-  tail call void @llvm.dbg.value(metadata i32* %ig, i64 0, metadata !91, metadata !280), !dbg !321
-  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !92, metadata !280), !dbg !322
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !93, metadata !280), !dbg !323
-  br label %1, !dbg !324
+define float @gauss(float %am, float %sd, i32* %ig) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %am}, i64 0, metadata !13), !dbg !263
+  tail call void @llvm.dbg.value(metadata !{float %sd}, i64 0, metadata !14), !dbg !263
+  tail call void @llvm.dbg.value(metadata !{i32* %ig}, i64 0, metadata !15), !dbg !263
+  tail call void @llvm.dbg.value(metadata !264, i64 0, metadata !16), !dbg !265
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !17), !dbg !266
+  br label %for.body, !dbg !266
 
-; <label>:1                                       ; preds = %1, %0
-  %a.02 = phi float [ 0.000000e+00, %0 ], [ %3, %1 ]
-  %i.01 = phi i32 [ 0, %0 ], [ %4, %1 ]
-  %2 = tail call float @rando(i32* %ig) #7, !dbg !326
-  %3 = fadd float %a.02, %2, !dbg !328
-  tail call void @llvm.dbg.value(metadata float %3, i64 0, metadata !92, metadata !280), !dbg !322
-  %4 = add nuw nsw i32 %i.01, 1, !dbg !329
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !93, metadata !280), !dbg !323
-  %exitcond = icmp eq i32 %4, 12, !dbg !324
-  br i1 %exitcond, label %5, label %1, !dbg !324
+for.body:                                         ; preds = %for.body, %entry
+  %a.07 = phi float [ 0.000000e+00, %entry ], [ %add, %for.body ]
+  %i.06 = phi i32 [ 0, %entry ], [ %inc, %for.body ]
+  %call = tail call float @rando(i32* %ig) #5, !dbg !268
+  %add = fadd float %a.07, %call, !dbg !268
+  tail call void @llvm.dbg.value(metadata !{float %add}, i64 0, metadata !16), !dbg !268
+  %inc = add nsw i32 %i.06, 1, !dbg !266
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !17), !dbg !266
+  %exitcond = icmp eq i32 %inc, 12, !dbg !266
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !266
 
-; <label>:5                                       ; preds = %1
-  %6 = fpext float %3 to double, !dbg !330
-  %7 = fadd double %6, -6.000000e+00, !dbg !331
-  %8 = fpext float %sd to double, !dbg !332
-  %9 = fmul double %8, %7, !dbg !333
-  %10 = fpext float %am to double, !dbg !334
-  %11 = fadd double %10, %9, !dbg !335
-  %12 = fptrunc double %11 to float, !dbg !336
-  tail call void @llvm.dbg.value(metadata float %12, i64 0, metadata !94, metadata !280), !dbg !337
-  ret float %12, !dbg !338
+for.end:                                          ; preds = %for.body
+  %conv = fpext float %add to double, !dbg !269
+  %sub = fadd double %conv, -6.000000e+00, !dbg !269
+  %conv1 = fpext float %sd to double, !dbg !269
+  %mul = fmul double %conv1, %sub, !dbg !269
+  %conv2 = fpext float %am to double, !dbg !269
+  %add3 = fadd double %conv2, %mul, !dbg !269
+  %conv4 = fptrunc double %add3 to float, !dbg !269
+  tail call void @llvm.dbg.value(metadata !{float %conv4}, i64 0, metadata !18), !dbg !269
+  ret float %conv4, !dbg !270
 }

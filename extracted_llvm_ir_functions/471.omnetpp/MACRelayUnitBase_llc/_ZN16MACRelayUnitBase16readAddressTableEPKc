@@ -1,99 +1,98 @@
-define void @_ZN16MACRelayUnitBase16readAddressTableEPKc(%class.MACRelayUnitBase* %this, i8* %fileName) #0 align 2 {
-  %1 = alloca %class.MACAddress, align 8
-  tail call void @llvm.dbg.value(metadata %class.MACRelayUnitBase* %this, i64 0, metadata !4999, metadata !6977), !dbg !7044
-  tail call void @llvm.dbg.value(metadata i8* %fileName, i64 0, metadata !5000, metadata !6977), !dbg !7045
-  %2 = tail call %struct.__sFILE* @"\01_fopen"(i8* %fileName, i8* getelementptr inbounds ([2 x i8]* @.str28, i64 0, i64 0)) #12, !dbg !7046
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %2, i64 0, metadata !5001, metadata !6977), !dbg !7047
-  %3 = icmp eq %struct.__sFILE* %2, null, !dbg !7048
-  br i1 %3, label %4, label %.preheader, !dbg !7050
+define void @_ZN16MACRelayUnitBase16readAddressTableEPKc(%class.MACRelayUnitBase* %this, i8* %fileName) #2 align 2 {
+entry:
+  %ref.tmp = alloca %class.MACAddress, align 8
+  call void @llvm.dbg.value(metadata !{%class.MACRelayUnitBase* %this}, i64 0, metadata !5487), !dbg !6126
+  call void @llvm.dbg.value(metadata !{i8* %fileName}, i64 0, metadata !5488), !dbg !6126
+  %call = call %struct._IO_FILE* @fopen(i8* %fileName, i8* getelementptr inbounds ([2 x i8]* @.str28, i64 0, i64 0)) #9, !dbg !6127
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call}, i64 0, metadata !5489), !dbg !6127
+  %cmp = icmp eq %struct._IO_FILE* %call, null, !dbg !6128
+  br i1 %cmp, label %if.then, label %while.cond.preheader, !dbg !6128
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 0, !dbg !7051
-  tail call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %5, i8* getelementptr inbounds ([36 x i8]* @.str29, i64 0, i64 0), i8* %fileName) #12, !dbg !7051
-  br label %.preheader, !dbg !7051
+if.then:                                          ; preds = %entry
+  %0 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 0, !dbg !6129
+  call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %0, i8* getelementptr inbounds ([36 x i8]* @.str29, i64 0, i64 0), i8* %fileName) #9, !dbg !6129
+  br label %while.cond.preheader, !dbg !6129
 
-.preheader:                                       ; preds = %4, %0
-  %6 = call i8* @_Z8fgetlineP7__sFILE(%struct.__sFILE* %2) #12, !dbg !7052
-  call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !5002, metadata !6977), !dbg !7053
-  %7 = icmp eq i8* %6, null, !dbg !7054
-  br i1 %7, label %._crit_edge, label %.lr.ph, !dbg !7055
+while.cond.preheader:                             ; preds = %if.then, %entry
+  %call231 = call i8* @_Z8fgetlineP8_IO_FILE(%struct._IO_FILE* %call) #9, !dbg !6130
+  call void @llvm.dbg.value(metadata !{i8* %call231}, i64 0, metadata !5540), !dbg !6130
+  %cmp332 = icmp eq i8* %call231, null, !dbg !6130
+  br i1 %cmp332, label %while.end, label %while.body.lr.ph, !dbg !6130
 
-.lr.ph:                                           ; preds = %.preheader
-  %8 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 0, !dbg !7056
-  %9 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 4, !dbg !7058
-  %10 = getelementptr inbounds %class.MACAddress* %1, i64 0, i32 0, !dbg !7059
-  br label %11, !dbg !7055
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %1 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 0, !dbg !6131
+  %addresstable = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 4, !dbg !6132
+  %2 = getelementptr inbounds %class.MACAddress* %ref.tmp, i64 0, i32 0, !dbg !6133
+  br label %while.body, !dbg !6130
 
-; <label>:11                                      ; preds = %.lr.ph, %.backedge
-  %12 = phi i8* [ %6, %.lr.ph ], [ %16, %.backedge ]
-  %lineno.02 = phi i32 [ 0, %.lr.ph ], [ %13, %.backedge ]
-  %13 = add nuw nsw i32 %lineno.02, 1, !dbg !7063
-  call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !5003, metadata !6977), !dbg !7064
-  %14 = load i8* %12, align 1, !dbg !7065, !tbaa !7037
-  %15 = icmp eq i8 %14, 35, !dbg !7067
-  br i1 %15, label %.backedge, label %18, !dbg !7068
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %call234 = phi i8* [ %call231, %while.body.lr.ph ], [ %call2, %while.cond.backedge ]
+  %lineno.033 = phi i32 [ 0, %while.body.lr.ph ], [ %inc, %while.cond.backedge ]
+  %inc = add nsw i32 %lineno.033, 1, !dbg !6137
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !5541), !dbg !6137
+  %3 = load i8* %call234, align 1, !dbg !6138, !tbaa !6101
+  %cmp4 = icmp eq i8 %3, 35, !dbg !6138
+  br i1 %cmp4, label %while.cond.backedge, label %if.end6, !dbg !6138
 
-.backedge:                                        ; preds = %11, %28, %18
-  %16 = call i8* @_Z8fgetlineP7__sFILE(%struct.__sFILE* %2) #12, !dbg !7052
-  call void @llvm.dbg.value(metadata i8* %16, i64 0, metadata !5002, metadata !6977), !dbg !7053
-  %17 = icmp eq i8* %16, null, !dbg !7054
-  br i1 %17, label %._crit_edge, label %11, !dbg !7055
+while.cond.backedge:                              ; preds = %while.body, %delete.notnull, %if.end6
+  %call2 = call i8* @_Z8fgetlineP8_IO_FILE(%struct._IO_FILE* %call) #9, !dbg !6130
+  call void @llvm.dbg.value(metadata !{i8* %call234}, i64 0, metadata !5540), !dbg !6130
+  %cmp3 = icmp eq i8* %call2, null, !dbg !6130
+  br i1 %cmp3, label %while.end, label %while.body, !dbg !6130
 
-; <label>:18                                      ; preds = %11
-  %19 = call i8* @strtok(i8* %12, i8* getelementptr inbounds ([3 x i8]* @.str30, i64 0, i64 0)) #12, !dbg !7069
-  call void @llvm.dbg.value(metadata i8* %19, i64 0, metadata !5004, metadata !6977), !dbg !7070
-  %20 = call i8* @strtok(i8* null, i8* getelementptr inbounds ([3 x i8]* @.str30, i64 0, i64 0)) #12, !dbg !7071
-  call void @llvm.dbg.value(metadata i8* %20, i64 0, metadata !5006, metadata !6977), !dbg !7072
-  %21 = icmp eq i8* %19, null, !dbg !7073
-  br i1 %21, label %.backedge, label %22, !dbg !7075
+if.end6:                                          ; preds = %while.body
+  %call7 = call i8* @strtok(i8* %call234, i8* getelementptr inbounds ([3 x i8]* @.str30, i64 0, i64 0)) #10, !dbg !6139
+  call void @llvm.dbg.value(metadata !{i8* %call7}, i64 0, metadata !5542), !dbg !6139
+  %call8 = call i8* @strtok(i8* null, i8* getelementptr inbounds ([3 x i8]* @.str30, i64 0, i64 0)) #10, !dbg !6140
+  call void @llvm.dbg.value(metadata !{i8* %call8}, i64 0, metadata !5544), !dbg !6140
+  %tobool = icmp eq i8* %call7, null, !dbg !6141
+  br i1 %tobool, label %while.cond.backedge, label %if.end10, !dbg !6141
 
-; <label>:22                                      ; preds = %18
-  %23 = icmp eq i8* %20, null, !dbg !7076
-  br i1 %23, label %24, label %25, !dbg !7077
+if.end10:                                         ; preds = %if.end6
+  %tobool11 = icmp eq i8* %call8, null, !dbg !6142
+  br i1 %tobool11, label %if.then12, label %if.end13, !dbg !6142
 
-; <label>:24                                      ; preds = %22
-  call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %8, i8* getelementptr inbounds ([43 x i8]* @.str31, i64 0, i64 0), i32 %13, i8* %fileName) #12, !dbg !7056
-  br label %25, !dbg !7056
+if.then12:                                        ; preds = %if.end10
+  call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %1, i8* getelementptr inbounds ([43 x i8]* @.str31, i64 0, i64 0), i32 %inc, i8* %fileName) #9, !dbg !6131
+  br label %if.end13, !dbg !6131
 
-; <label>:25                                      ; preds = %22, %24
-  call void @llvm.dbg.declare(metadata %"struct.MACRelayUnitBase::AddressEntry"* undef, metadata !5007, metadata !6977), !dbg !7078
-  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !5007, metadata !7079), !dbg !7078
-  %26 = call i32 @atoi(i8* %20) #12, !dbg !7080
-  call void @llvm.dbg.value(metadata i32 %26, i64 0, metadata !5007, metadata !7081), !dbg !7078
-  call void @_ZN10MACAddressC1EPKc(%class.MACAddress* %1, i8* %19) #12, !dbg !7082
-  %27 = invoke dereferenceable(16) %"struct.MACRelayUnitBase::AddressEntry"* @_ZNSt3__13mapI10MACAddressN16MACRelayUnitBase12AddressEntryENS2_11MAC_compareENS_9allocatorINS_4pairIKS1_S3_EEEEEixERS7_(%"class.std::__1::map"* %9, %class.MACAddress* dereferenceable(16) %1) #12
-          to label %28 unwind label %31, !dbg !7058
+if.end13:                                         ; preds = %if.end10, %if.then12
+  call void @llvm.dbg.declare(metadata !6143, metadata !5545), !dbg !6144
+  %call15 = call i32 @atoi(i8* %call8) #11, !dbg !6145
+  call void @_ZN10MACAddressC1EPKc(%class.MACAddress* %ref.tmp, i8* %call7) #9, !dbg !6132
+  %call17 = invoke %"struct.MACRelayUnitBase::AddressEntry"* @_ZNSt3mapI10MACAddressN16MACRelayUnitBase12AddressEntryENS1_11MAC_compareESaISt4pairIKS0_S2_EEEixERS5_(%"class.std::map"* %addresstable, %class.MACAddress* %ref.tmp) #9
+          to label %delete.notnull unwind label %lpad, !dbg !6132
 
-; <label>:28                                      ; preds = %25
-  %29 = getelementptr inbounds %"struct.MACRelayUnitBase::AddressEntry"* %27, i64 0, i32 0, !dbg !7083
-  store i32 %26, i32* %29, align 8, !dbg !7083
-  %30 = getelementptr inbounds %"struct.MACRelayUnitBase::AddressEntry"* %27, i64 0, i32 1, !dbg !7083
-  store double 0.000000e+00, double* %30, align 8, !dbg !7083
-  call void @llvm.dbg.value(metadata %class.MACAddress* %1, i64 0, metadata !5080, metadata !6977), !dbg !7084
-  call void @llvm.dbg.value(metadata %class.MACAddress* %1, i64 0, metadata !5084, metadata !6977), !dbg !7085
-  call void @_ZN15MACAddress_BaseD2Ev(%class.MACAddress_Base* %10) #12, !dbg !7059
-  call void @_ZdaPv(i8* %12) #13, !dbg !7086
-  br label %.backedge, !dbg !7086
+delete.notnull:                                   ; preds = %if.end13
+  %entry14.sroa.0.0.idx = getelementptr inbounds %"struct.MACRelayUnitBase::AddressEntry"* %call17, i64 0, i32 0, !dbg !6132
+  store i32 %call15, i32* %entry14.sroa.0.0.idx, align 8, !dbg !6132
+  %entry14.sroa.2.8.idx21 = getelementptr inbounds %"struct.MACRelayUnitBase::AddressEntry"* %call17, i64 0, i32 1, !dbg !6132
+  store double 0.000000e+00, double* %entry14.sroa.2.8.idx21, align 8, !dbg !6132
+  call void @llvm.dbg.value(metadata !{%class.MACAddress* %ref.tmp}, i64 0, metadata !6146), !dbg !6147
+  call void @llvm.dbg.value(metadata !{%class.MACAddress* %ref.tmp}, i64 0, metadata !6148), !dbg !6149
+  call void @_ZN15MACAddress_BaseD2Ev(%class.MACAddress_Base* %2) #9, !dbg !6133
+  call void @_ZdaPv(i8* %call234) #10, !dbg !6150
+  br label %while.cond.backedge, !dbg !6150
 
-; <label>:31                                      ; preds = %25
-  %32 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !7087
-  call void @llvm.dbg.value(metadata %class.MACAddress* %1, i64 0, metadata !5080, metadata !6977), !dbg !7088
-  call void @llvm.dbg.value(metadata %class.MACAddress* %1, i64 0, metadata !5084, metadata !6977), !dbg !7090
-  invoke void @_ZN15MACAddress_BaseD2Ev(%class.MACAddress_Base* %10) #12
-          to label %_ZN10MACAddressD1Ev.exit unwind label %34, !dbg !7092
+lpad:                                             ; preds = %if.end13
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !6132
+  call void @llvm.dbg.value(metadata !{%class.MACAddress* %ref.tmp}, i64 0, metadata !6146), !dbg !6147
+  call void @llvm.dbg.value(metadata !{%class.MACAddress* %ref.tmp}, i64 0, metadata !6148), !dbg !6149
+  invoke void @_ZN15MACAddress_BaseD2Ev(%class.MACAddress_Base* %2) #9
+          to label %eh.resume unwind label %terminate.lpad
 
-._crit_edge:                                      ; preds = %.backedge, %.preheader
-  %33 = call i32 @fclose(%struct.__sFILE* %2) #12, !dbg !7093
-  ret void, !dbg !7094
+while.end:                                        ; preds = %while.cond.backedge, %while.cond.preheader
+  %call19 = call i32 @fclose(%struct._IO_FILE* %call) #9, !dbg !6151
+  ret void, !dbg !6152
 
-_ZN10MACAddressD1Ev.exit:                         ; preds = %31
-  resume { i8*, i32 } %32, !dbg !7058
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %4, !dbg !6132
 
-; <label>:34                                      ; preds = %31
-  %35 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          catch i8* null, !dbg !7058
-  %36 = extractvalue { i8*, i32 } %35, 0, !dbg !7058
-  call void @__clang_call_terminate(i8* %36) #14, !dbg !7058
-  unreachable, !dbg !7058
+terminate.lpad:                                   ; preds = %lpad
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !6132
+  %6 = extractvalue { i8*, i32 } %5, 0, !dbg !6132
+  call void @__clang_call_terminate(i8* %6) #12, !dbg !6132
+  unreachable, !dbg !6132
 }

@@ -1,46 +1,50 @@
 define internal fastcc void @equate_decl_number_to_die(%union.tree_node* nocapture %decl, %struct.die_struct* %decl_die) #1 {
 entry:
-  %uid = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 3
-  %0 = load i32* %uid, align 4, !tbaa !0
-  %1 = load i32* @decl_die_table_allocated, align 4, !tbaa !0
-  %cmp = icmp ult i32 %0, %1
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !2929), !dbg !10878
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %decl_die}, i64 0, metadata !2930), !dbg !10879
+  %uid = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 3, !dbg !10880
+  %0 = load i32* %uid, align 4, !dbg !10880, !tbaa !3758
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !2931), !dbg !10880
+  %1 = load i32* @decl_die_table_allocated, align 4, !dbg !10881, !tbaa !3758
+  %cmp = icmp ult i32 %0, %1, !dbg !10881
+  br i1 %cmp, label %if.end, label %if.then, !dbg !10881
 
 if.then:                                          ; preds = %entry
-  %sub = add i32 %0, 256
-  %div = and i32 %sub, -256
-  %2 = load %struct.die_struct*** @decl_die_table, align 8, !tbaa !4
-  %3 = bitcast %struct.die_struct** %2 to i8*
-  %conv = zext i32 %div to i64
-  %mul3 = shl nuw nsw i64 %conv, 3
-  %call = tail call i8* @xrealloc(i8* %3, i64 %mul3) #9
-  %4 = bitcast i8* %call to %struct.die_struct**
-  store %struct.die_struct** %4, %struct.die_struct*** @decl_die_table, align 8, !tbaa !4
-  %5 = load i32* @decl_die_table_allocated, align 4, !tbaa !0
-  %idxprom = zext i32 %5 to i64
-  %arrayidx = getelementptr inbounds %struct.die_struct** %4, i64 %idxprom
-  %6 = bitcast %struct.die_struct** %arrayidx to i8*
-  %sub4 = sub i32 %div, %5
-  %conv5 = zext i32 %sub4 to i64
-  %mul6 = shl nuw nsw i64 %conv5, 3
-  tail call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 %mul6, i32 1, i1 false)
-  store i32 %div, i32* @decl_die_table_allocated, align 4, !tbaa !0
-  br label %if.end
+  %sub = add i32 %0, 256, !dbg !10882
+  %div = and i32 %sub, -256, !dbg !10882
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !2932), !dbg !10882
+  %2 = load %struct.die_struct*** @decl_die_table, align 8, !dbg !10884, !tbaa !3768
+  %3 = bitcast %struct.die_struct** %2 to i8*, !dbg !10884
+  %conv = zext i32 %div to i64, !dbg !10884
+  %mul3 = shl nuw nsw i64 %conv, 3, !dbg !10884
+  %call = tail call i8* @xrealloc(i8* %3, i64 %mul3) #10, !dbg !10884
+  %4 = bitcast i8* %call to %struct.die_struct**, !dbg !10884
+  store %struct.die_struct** %4, %struct.die_struct*** @decl_die_table, align 8, !dbg !10884, !tbaa !3768
+  %5 = load i32* @decl_die_table_allocated, align 4, !dbg !10885, !tbaa !3758
+  %idxprom = zext i32 %5 to i64, !dbg !10885
+  %arrayidx = getelementptr inbounds %struct.die_struct** %4, i64 %idxprom, !dbg !10885
+  %6 = bitcast %struct.die_struct** %arrayidx to i8*, !dbg !10885
+  %sub4 = sub i32 %div, %5, !dbg !10885
+  %conv5 = zext i32 %sub4 to i64, !dbg !10885
+  %mul6 = shl nuw nsw i64 %conv5, 3, !dbg !10885
+  tail call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 %mul6, i32 1, i1 false), !dbg !10885
+  store i32 %div, i32* @decl_die_table_allocated, align 4, !dbg !10886, !tbaa !3758
+  br label %if.end, !dbg !10887
 
 if.end:                                           ; preds = %entry, %if.then
-  %7 = load i32* @decl_die_table_in_use, align 4, !tbaa !0
-  %cmp7 = icmp ult i32 %0, %7
-  br i1 %cmp7, label %if.end11, label %if.then9
+  %7 = load i32* @decl_die_table_in_use, align 4, !dbg !10888, !tbaa !3758
+  %cmp7 = icmp ult i32 %0, %7, !dbg !10888
+  br i1 %cmp7, label %if.end11, label %if.then9, !dbg !10888
 
 if.then9:                                         ; preds = %if.end
-  %add10 = add i32 %0, 1
-  store i32 %add10, i32* @decl_die_table_in_use, align 4, !tbaa !0
-  br label %if.end11
+  %add10 = add i32 %0, 1, !dbg !10889
+  store i32 %add10, i32* @decl_die_table_in_use, align 4, !dbg !10889, !tbaa !3758
+  br label %if.end11, !dbg !10889
 
 if.end11:                                         ; preds = %if.end, %if.then9
-  %idxprom12 = zext i32 %0 to i64
-  %8 = load %struct.die_struct*** @decl_die_table, align 8, !tbaa !4
-  %arrayidx13 = getelementptr inbounds %struct.die_struct** %8, i64 %idxprom12
-  store %struct.die_struct* %decl_die, %struct.die_struct** %arrayidx13, align 8, !tbaa !4
-  ret void
+  %idxprom12 = zext i32 %0 to i64, !dbg !10890
+  %8 = load %struct.die_struct*** @decl_die_table, align 8, !dbg !10890, !tbaa !3768
+  %arrayidx13 = getelementptr inbounds %struct.die_struct** %8, i64 %idxprom12, !dbg !10890
+  store %struct.die_struct* %decl_die, %struct.die_struct** %arrayidx13, align 8, !dbg !10890, !tbaa !3768
+  ret void, !dbg !10891
 }

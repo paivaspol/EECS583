@@ -1,63 +1,65 @@
 define void @Chv_init(%struct._Chv* %chv, i32 %id, i32 %nD, i32 %nL, i32 %nU, i32 %type, i32 %symflag) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv, i64 0, metadata !73, metadata !105), !dbg !306
-  tail call void @llvm.dbg.value(metadata i32 %id, i64 0, metadata !74, metadata !105), !dbg !307
-  tail call void @llvm.dbg.value(metadata i32 %nD, i64 0, metadata !75, metadata !105), !dbg !308
-  tail call void @llvm.dbg.value(metadata i32 %nL, i64 0, metadata !76, metadata !105), !dbg !309
-  tail call void @llvm.dbg.value(metadata i32 %nU, i64 0, metadata !77, metadata !105), !dbg !310
-  tail call void @llvm.dbg.value(metadata i32 %type, i64 0, metadata !78, metadata !105), !dbg !311
-  tail call void @llvm.dbg.value(metadata i32 %symflag, i64 0, metadata !79, metadata !105), !dbg !312
-  %1 = icmp eq %struct._Chv* %chv, null, !dbg !313
-  %2 = icmp slt i32 %nD, 1, !dbg !315
-  %or.cond = or i1 %1, %2, !dbg !316
-  %3 = or i32 %nU, %nL, !dbg !316
-  %4 = icmp slt i32 %3, 0, !dbg !316
-  %5 = or i1 %or.cond, %4, !dbg !316
-  br i1 %5, label %6, label %9, !dbg !316
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %chv}, i64 0, metadata !74), !dbg !204
+  tail call void @llvm.dbg.value(metadata !{i32 %id}, i64 0, metadata !75), !dbg !205
+  tail call void @llvm.dbg.value(metadata !{i32 %nD}, i64 0, metadata !76), !dbg !206
+  tail call void @llvm.dbg.value(metadata !{i32 %nL}, i64 0, metadata !77), !dbg !207
+  tail call void @llvm.dbg.value(metadata !{i32 %nU}, i64 0, metadata !78), !dbg !208
+  tail call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !79), !dbg !209
+  tail call void @llvm.dbg.value(metadata !{i32 %symflag}, i64 0, metadata !80), !dbg !210
+  %cmp = icmp eq %struct._Chv* %chv, null, !dbg !211
+  %cmp1 = icmp slt i32 %nD, 1, !dbg !211
+  %or.cond = or i1 %cmp, %cmp1, !dbg !211
+  %cmp3 = icmp slt i32 %nL, 0, !dbg !211
+  %or.cond37 = or i1 %or.cond, %cmp3, !dbg !211
+  %cmp5 = icmp slt i32 %nU, 0, !dbg !211
+  %or.cond38 = or i1 %or.cond37, %cmp5, !dbg !211
+  br i1 %or.cond38, label %if.then, label %if.end, !dbg !211
 
-; <label>:6                                       ; preds = %0
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !317, !tbaa !115
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([69 x i8]* @.str10, i64 0, i64 0), %struct._Chv* %chv, i32 %nD, i32 %nL, i32 %nU) #5, !dbg !319
-  tail call void @exit(i32 -1) #6, !dbg !320
-  unreachable, !dbg !320
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !212, !tbaa !110
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([69 x i8]* @.str10, i64 0, i64 0), %struct._Chv* %chv, i32 %nD, i32 %nL, i32 %nU) #5, !dbg !212
+  tail call void @exit(i32 -1) #6, !dbg !214
+  unreachable, !dbg !214
 
-; <label>:9                                       ; preds = %0
-  switch i32 %type, label %18 [
-    i32 1, label %10
-    i32 2, label %14
-  ], !dbg !321
+if.end:                                           ; preds = %entry
+  switch i32 %type, label %sw.default13 [
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb8
+  ], !dbg !215
 
-; <label>:10                                      ; preds = %9
-  switch i32 %symflag, label %11 [
-    i32 0, label %21
-    i32 2, label %21
-  ], !dbg !322
+sw.bb:                                            ; preds = %if.end
+  switch i32 %symflag, label %sw.default [
+    i32 0, label %sw.epilog15
+    i32 2, label %sw.epilog15
+  ], !dbg !216
 
-; <label>:11                                      ; preds = %10
-  %12 = load %struct.__sFILE** @__stderrp, align 8, !dbg !324, !tbaa !115
-  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %12, i8* getelementptr inbounds ([115 x i8]* @.str11, i64 0, i64 0), i32 %symflag) #5, !dbg !326
-  tail call void @exit(i32 -1) #6, !dbg !327
-  unreachable, !dbg !327
+sw.default:                                       ; preds = %sw.bb
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !218, !tbaa !110
+  %call7 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([115 x i8]* @.str11, i64 0, i64 0), i32 %symflag) #5, !dbg !218
+  tail call void @exit(i32 -1) #6, !dbg !220
+  unreachable, !dbg !220
 
-; <label>:14                                      ; preds = %9
-  %switch = icmp ult i32 %symflag, 3, !dbg !328
-  br i1 %switch, label %21, label %15, !dbg !328
+sw.bb8:                                           ; preds = %if.end
+  %switch = icmp ult i32 %symflag, 3, !dbg !221
+  br i1 %switch, label %sw.epilog15, label %sw.default10, !dbg !221
 
-; <label>:15                                      ; preds = %14
-  %16 = load %struct.__sFILE** @__stderrp, align 8, !dbg !329, !tbaa !115
-  %17 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %16, i8* getelementptr inbounds ([138 x i8]* @.str12, i64 0, i64 0), i32 %symflag) #5, !dbg !331
-  tail call void @exit(i32 -1) #6, !dbg !332
-  unreachable, !dbg !332
+sw.default10:                                     ; preds = %sw.bb8
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !222, !tbaa !110
+  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([138 x i8]* @.str12, i64 0, i64 0), i32 %symflag) #5, !dbg !222
+  tail call void @exit(i32 -1) #6, !dbg !224
+  unreachable, !dbg !224
 
-; <label>:18                                      ; preds = %9
-  %19 = load %struct.__sFILE** @__stderrp, align 8, !dbg !333, !tbaa !115
-  %20 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %19, i8* getelementptr inbounds ([81 x i8]* @.str13, i64 0, i64 0), i32 %type) #5, !dbg !334
-  tail call void @exit(i32 -1) #6, !dbg !335
-  unreachable, !dbg !335
+sw.default13:                                     ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !225, !tbaa !110
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([81 x i8]* @.str13, i64 0, i64 0), i32 %type) #5, !dbg !225
+  tail call void @exit(i32 -1) #6, !dbg !226
+  unreachable, !dbg !226
 
-; <label>:21                                      ; preds = %14, %10, %10
-  %22 = tail call i32 @Chv_nbytesNeeded(i32 %nD, i32 %nL, i32 %nU, i32 %type, i32 %symflag) #7, !dbg !336
-  tail call void @llvm.dbg.value(metadata i32 %22, i64 0, metadata !80, metadata !105), !dbg !337
-  tail call void @Chv_setNbytesInWorkspace(%struct._Chv* %chv, i32 %22) #7, !dbg !338
-  tail call void @Chv_setFields(%struct._Chv* %chv, i32 %id, i32 %nD, i32 %nL, i32 %nU, i32 %type, i32 %symflag) #7, !dbg !339
-  ret void, !dbg !340
+sw.epilog15:                                      ; preds = %sw.bb8, %sw.bb, %sw.bb
+  %call16 = tail call i32 @Chv_nbytesNeeded(i32 %nD, i32 %nL, i32 %nU, i32 %type, i32 %symflag) #7, !dbg !227
+  tail call void @llvm.dbg.value(metadata !{i32 %call16}, i64 0, metadata !81), !dbg !227
+  tail call void @Chv_setNbytesInWorkspace(%struct._Chv* %chv, i32 %call16) #7, !dbg !228
+  tail call void @Chv_setFields(%struct._Chv* %chv, i32 %id, i32 %nD, i32 %nL, i32 %nU, i32 %type, i32 %symflag) #7, !dbg !229
+  ret void, !dbg !230
 }

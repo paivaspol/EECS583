@@ -1,0 +1,33 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_10RegxParser17ReferencePositionEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf"* nocapture %this) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf"* %this}, i64 0, metadata !2481), !dbg !4845
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 2, !dbg !4846
+  %0 = load i32* %fCurCount, align 4, !dbg !4846, !tbaa !3271
+  %tobool = icmp eq i32 %0, 0, !dbg !4846
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !4846
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !4847
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !4847, !tbaa !3271
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 1, !dbg !4848
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !4848, !tbaa !3279, !range !4812
+  %tobool3 = icmp eq i8 %1, 0, !dbg !4848
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !4848
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !4849
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 4, !dbg !4849
+  %2 = load %"class.xercesc_2_5::RegxParser::ReferencePosition"*** %fElemList, align 8, !dbg !4849, !tbaa !3278
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::RegxParser::ReferencePosition"** %2, i64 %idxprom, !dbg !4849
+  %3 = load %"class.xercesc_2_5::RegxParser::ReferencePosition"** %arrayidx, align 8, !dbg !4849, !tbaa !3278
+  %isnull = icmp eq %"class.xercesc_2_5::RegxParser::ReferencePosition"* %3, null, !dbg !4849
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !4849
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast %"class.xercesc_2_5::RegxParser::ReferencePosition"* %3 to i8*, !dbg !4849
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %4) #9, !dbg !4849
+  br label %if.end6, !dbg !4849
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !4849
+}

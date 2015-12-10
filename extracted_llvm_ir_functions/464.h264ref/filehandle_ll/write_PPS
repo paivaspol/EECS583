@@ -1,13 +1,14 @@
 define i32 @write_PPS(i32 %len, i32 %PPS_id) #4 {
-  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !23, metadata !597), !dbg !608
-  tail call void @llvm.dbg.value(metadata i32 %PPS_id, i64 0, metadata !24, metadata !597), !dbg !609
-  tail call void @llvm.dbg.value(metadata %struct.NALU_t* null, i64 0, metadata !25, metadata !597), !dbg !610
-  %1 = tail call %struct.NALU_t* @GeneratePic_parameter_set_NALU(i32 %PPS_id) #6, !dbg !611
-  tail call void @llvm.dbg.value(metadata %struct.NALU_t* %1, i64 0, metadata !25, metadata !597), !dbg !610
-  %2 = load i32 (%struct.NALU_t*)** @WriteNALU, align 8, !dbg !612, !tbaa !601
-  %3 = tail call i32 %2(%struct.NALU_t* %1) #6, !dbg !612
-  %4 = add nsw i32 %3, %len, !dbg !613
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !23, metadata !597), !dbg !608
-  tail call void @FreeNALU(%struct.NALU_t* %1) #6, !dbg !614
-  ret i32 %4, !dbg !615
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %len}, i64 0, metadata !24), !dbg !595
+  tail call void @llvm.dbg.value(metadata !{i32 %PPS_id}, i64 0, metadata !25), !dbg !595
+  tail call void @llvm.dbg.value(metadata !596, i64 0, metadata !26), !dbg !597
+  %call = tail call %struct.NALU_t* @GeneratePic_parameter_set_NALU(i32 %PPS_id) #6, !dbg !598
+  tail call void @llvm.dbg.value(metadata !{%struct.NALU_t* %call}, i64 0, metadata !26), !dbg !598
+  %0 = load i32 (%struct.NALU_t*)** @WriteNALU, align 8, !dbg !599, !tbaa !590
+  %call1 = tail call i32 %0(%struct.NALU_t* %call) #6, !dbg !599
+  %add = add nsw i32 %call1, %len, !dbg !599
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !24), !dbg !599
+  tail call void @FreeNALU(%struct.NALU_t* %call) #6, !dbg !600
+  ret i32 %add, !dbg !601
 }

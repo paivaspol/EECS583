@@ -1,16 +1,17 @@
 define i8* @Statetype(i8 signext %st) #0 {
-  tail call void @llvm.dbg.value(metadata i8 %st, i64 0, metadata !13, metadata !222), !dbg !223
-  %1 = sext i8 %st to i32, !dbg !224
-  %switch.tableidx = add nsw i32 %1, -1, !dbg !225
-  %2 = icmp ult i32 %switch.tableidx, 10, !dbg !225
-  br i1 %2, label %switch.lookup, label %4, !dbg !225
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8 %st}, i64 0, metadata !11), !dbg !214
+  %conv = sext i8 %st to i32, !dbg !215
+  %switch.tableidx = add i32 %conv, -1, !dbg !215
+  %0 = icmp ult i32 %switch.tableidx, 10, !dbg !215
+  br i1 %0, label %switch.lookup, label %return, !dbg !215
 
-switch.lookup:                                    ; preds = %0
-  %3 = sext i32 %switch.tableidx to i64, !dbg !225
-  %switch.gep = getelementptr inbounds [10 x i8*]* @switch.table, i64 0, i64 %3, !dbg !225
-  %switch.load = load i8** %switch.gep, align 8, !dbg !225
-  ret i8* %switch.load, !dbg !225
+switch.lookup:                                    ; preds = %entry
+  %1 = sext i32 %switch.tableidx to i64, !dbg !215
+  %switch.gep = getelementptr inbounds [10 x i8*]* @switch.table, i64 0, i64 %1, !dbg !215
+  %switch.load = load i8** %switch.gep, align 8, !dbg !215
+  ret i8* %switch.load, !dbg !215
 
-; <label>:4                                       ; preds = %0
-  ret i8* getelementptr inbounds ([6 x i8]* @.str10, i64 0, i64 0), !dbg !226
+return:                                           ; preds = %entry
+  ret i8* getelementptr inbounds ([6 x i8]* @.str10, i64 0, i64 0), !dbg !216
 }

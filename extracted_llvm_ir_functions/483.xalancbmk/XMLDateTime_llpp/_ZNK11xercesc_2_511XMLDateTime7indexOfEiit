@@ -1,0 +1,36 @@
+define i32 @_ZNK11xercesc_2_511XMLDateTime7indexOfEiit(%"class.xercesc_2_5::XMLDateTime"* nocapture %this, i32 %start, i32 %end, i16 zeroext %ch) #7 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLDateTime"* %this}, i64 0, metadata !1444), !dbg !3918
+  tail call void @llvm.dbg.value(metadata !{i32 %start}, i64 0, metadata !1445), !dbg !3918
+  tail call void @llvm.dbg.value(metadata !{i32 %end}, i64 0, metadata !1446), !dbg !3918
+  tail call void @llvm.dbg.value(metadata !{i16 %ch}, i64 0, metadata !1447), !dbg !3918
+  tail call void @llvm.dbg.value(metadata !{i32 %start}, i64 0, metadata !1448), !dbg !3919
+  %cmp6 = icmp slt i32 %start, %end, !dbg !3919
+  br i1 %cmp6, label %for.body.lr.ph, label %return, !dbg !3919
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fBuffer = getelementptr inbounds %"class.xercesc_2_5::XMLDateTime"* %this, i64 0, i32 6, !dbg !3920
+  %0 = load i16** %fBuffer, align 8, !dbg !3920, !tbaa !2446
+  %1 = sext i32 %start to i64
+  br label %for.body, !dbg !3919
+
+for.cond:                                         ; preds = %for.body
+  %inc = add nsw i32 %i.07, 1, !dbg !3919
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !3919
+  %cmp = icmp slt i32 %2, %end, !dbg !3919
+  br i1 %cmp, label %for.body, label %return, !dbg !3919
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %i.07 = phi i32 [ %start, %for.body.lr.ph ], [ %inc, %for.cond ]
+  %arrayidx = getelementptr inbounds i16* %0, i64 %indvars.iv, !dbg !3920
+  %3 = load i16* %arrayidx, align 2, !dbg !3920, !tbaa !2552
+  %cmp3 = icmp eq i16 %3, %ch, !dbg !3920
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3919
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1448), !dbg !3919
+  br i1 %cmp3, label %return, label %for.cond, !dbg !3920
+
+return:                                           ; preds = %for.cond, %for.body, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %i.07, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0, !dbg !3921
+}

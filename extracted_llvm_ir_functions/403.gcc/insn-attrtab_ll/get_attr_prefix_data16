@@ -1,17 +1,18 @@
 define i32 @get_attr_prefix_data16(%struct.rtx_def* %insn) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
-  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %0 = load i32* %rtint, align 4, !tbaa !0
-  %cmp = icmp sgt i32 %0, -1
-  br i1 %cmp, label %cond.end, label %cond.false
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !622), !dbg !1194
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4, !dbg !1195
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !1195
+  %0 = load i32* %rtint, align 4, !dbg !1195, !tbaa !822
+  %cmp = icmp sgt i32 %0, -1, !dbg !1195
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !1195
 
 cond.false:                                       ; preds = %entry
-  %call = tail call i32 @recog_memoized_1(%struct.rtx_def* %insn) #3
-  br label %cond.end
+  %call = tail call i32 @recog_memoized_1(%struct.rtx_def* %insn) #4, !dbg !1195
+  br label %cond.end, !dbg !1195
 
 cond.end:                                         ; preds = %entry, %cond.false
-  %cond = phi i32 [ %call, %cond.false ], [ %0, %entry ]
+  %cond = phi i32 [ %call, %cond.false ], [ %0, %entry ], !dbg !1195
   switch i32 %cond, label %sw.default [
     i32 412, label %sw.bb
     i32 296, label %sw.bb5
@@ -68,51 +69,51 @@ cond.end:                                         ; preds = %entry, %cond.false
     i32 6, label %return
     i32 51, label %sw.bb11
     i32 -1, label %sw.bb16
-  ]
+  ], !dbg !1195
 
 sw.bb:                                            ; preds = %cond.end
-  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %insn) #3
-  %1 = load i32* @which_alternative, align 4, !tbaa !0
-  %cmp4 = icmp eq i32 %1, 0
-  %. = zext i1 %cmp4 to i32
-  br label %return
+  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %insn) #4, !dbg !1196
+  %1 = load i32* @which_alternative, align 4, !dbg !1198, !tbaa !822
+  %cmp4 = icmp eq i32 %1, 0, !dbg !1198
+  %. = zext i1 %cmp4 to i32, !dbg !1199
+  br label %return, !dbg !1199
 
 sw.bb5:                                           ; preds = %cond.end, %cond.end
-  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %insn) #3
-  %2 = load i32* @which_alternative, align 4, !tbaa !0
-  %3 = icmp ult i32 %2, 2
-  %.33 = zext i1 %3 to i32
-  br label %return
+  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %insn) #4, !dbg !1201
+  %2 = load i32* @which_alternative, align 4, !dbg !1202, !tbaa !822
+  %3 = icmp ult i32 %2, 2, !dbg !1202
+  %.33 = zext i1 %3 to i32, !dbg !1203
+  br label %return, !dbg !1203
 
 sw.bb11:                                          ; preds = %cond.end
-  %call12 = tail call i32 @get_attr_mode(%struct.rtx_def* %insn) #5
-  %cmp13 = icmp eq i32 %call12, 3
-  %.34 = zext i1 %cmp13 to i32
-  br label %return
+  %call12 = tail call i32 @get_attr_mode(%struct.rtx_def* %insn) #6, !dbg !1205
+  %cmp13 = icmp eq i32 %call12, 3, !dbg !1205
+  %.34 = zext i1 %cmp13 to i32, !dbg !1206
+  br label %return, !dbg !1206
 
 sw.bb16:                                          ; preds = %cond.end
-  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
-  %rtx = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %5 = bitcast %struct.rtx_def* %4 to i32*
-  %bf.load = load i32* %5, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp19 = icmp eq i32 %bf.clear, 40
-  br i1 %cmp19, label %sw.default, label %land.lhs.true
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3, !dbg !1208
+  %rtx = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**, !dbg !1208
+  %4 = load %struct.rtx_def** %rtx, align 8, !dbg !1208, !tbaa !827
+  %5 = bitcast %struct.rtx_def* %4 to i32*, !dbg !1208
+  %bf.load = load i32* %5, align 8, !dbg !1208
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1208
+  %cmp19 = icmp eq i32 %bf.clear, 40, !dbg !1208
+  br i1 %cmp19, label %sw.default, label %land.lhs.true, !dbg !1208
 
 land.lhs.true:                                    ; preds = %sw.bb16
-  %call23 = tail call i32 @asm_noperands(%struct.rtx_def* %4) #3
-  %cmp24 = icmp slt i32 %call23, 0
-  br i1 %cmp24, label %if.then25, label %sw.default
+  %call23 = tail call i32 @asm_noperands(%struct.rtx_def* %4) #4, !dbg !1209
+  %cmp24 = icmp slt i32 %call23, 0, !dbg !1209
+  br i1 %cmp24, label %if.then25, label %sw.default, !dbg !1209
 
 if.then25:                                        ; preds = %land.lhs.true
-  tail call void @_fatal_insn_not_found(%struct.rtx_def* %insn, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 20460, i8* getelementptr inbounds ([23 x i8]* @__FUNCTION__.get_attr_prefix_data16, i64 0, i64 0)) #4
-  unreachable
+  tail call void @_fatal_insn_not_found(%struct.rtx_def* %insn, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 20460, i8* getelementptr inbounds ([23 x i8]* @__FUNCTION__.get_attr_prefix_data16, i64 0, i64 0)) #5, !dbg !1210
+  unreachable, !dbg !1210
 
 sw.default:                                       ; preds = %sw.bb16, %land.lhs.true, %cond.end
-  br label %return
+  br label %return, !dbg !1211
 
 return:                                           ; preds = %sw.bb11, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %sw.bb5, %sw.bb, %sw.default
   %retval.0 = phi i32 [ 0, %sw.default ], [ %., %sw.bb ], [ %.33, %sw.bb5 ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ %.34, %sw.bb11 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1212
 }

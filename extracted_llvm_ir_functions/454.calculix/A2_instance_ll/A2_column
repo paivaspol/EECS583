@@ -1,71 +1,72 @@
 define double* @A2_column(%struct._A2* %mtx, i32 %jcol) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._A2* %mtx, i64 0, metadata !49, metadata !114), !dbg !221
-  tail call void @llvm.dbg.value(metadata i32 %jcol, i64 0, metadata !50, metadata !114), !dbg !222
-  %1 = icmp eq %struct._A2* %mtx, null, !dbg !223
-  br i1 %1, label %2, label %5, !dbg !225
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._A2* %mtx}, i64 0, metadata !48), !dbg !167
+  tail call void @llvm.dbg.value(metadata !{i32 %jcol}, i64 0, metadata !49), !dbg !168
+  %cmp = icmp eq %struct._A2* %mtx, null, !dbg !169
+  br i1 %cmp, label %if.then, label %if.end, !dbg !169
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !226, !tbaa !121
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([46 x i8]* @.str9, i64 0, i64 0), %struct._A2* null, i32 %jcol) #4, !dbg !228
-  tail call void @exit(i32 -1) #5, !dbg !229
-  unreachable, !dbg !229
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !170, !tbaa !113
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str9, i64 0, i64 0), %struct._A2* null, i32 %jcol) #4, !dbg !170
+  tail call void @exit(i32 -1) #5, !dbg !172
+  unreachable, !dbg !172
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6, !dbg !230
-  %7 = load double** %6, align 8, !dbg !230, !tbaa !174
-  %8 = icmp eq double* %7, null, !dbg !232
-  br i1 %8, label %9, label %12, !dbg !233
+if.end:                                           ; preds = %entry
+  %entries = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6, !dbg !173
+  %1 = load double** %entries, align 8, !dbg !173, !tbaa !113
+  %cmp1 = icmp eq double* %1, null, !dbg !173
+  br i1 %cmp1, label %if.then2, label %if.end4, !dbg !173
 
-; <label>:9                                       ; preds = %5
-  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !234, !tbaa !121
-  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([67 x i8]* @.str10, i64 0, i64 0), %struct._A2* %mtx, i32 %jcol) #4, !dbg !236
-  tail call void @exit(i32 -1) #5, !dbg !237
-  unreachable, !dbg !237
+if.then2:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !174, !tbaa !113
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([67 x i8]* @.str10, i64 0, i64 0), %struct._A2* %mtx, i32 %jcol) #4, !dbg !174
+  tail call void @exit(i32 -1) #5, !dbg !176
+  unreachable, !dbg !176
 
-; <label>:12                                      ; preds = %5
-  %13 = icmp sgt i32 %jcol, -1, !dbg !238
-  %.phi.trans.insert = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2
-  %.pre = load i32* %.phi.trans.insert, align 4, !dbg !240, !tbaa !141
-  %14 = icmp sgt i32 %.pre, %jcol, !dbg !242
-  %or.cond = and i1 %13, %14, !dbg !243
-  br i1 %or.cond, label %17, label %._crit_edge, !dbg !243
+if.end4:                                          ; preds = %if.end
+  %cmp5 = icmp sgt i32 %jcol, -1, !dbg !177
+  %n28.phi.trans.insert = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2
+  %.pre = load i32* %n28.phi.trans.insert, align 4, !dbg !178, !tbaa !118
+  %cmp6 = icmp sgt i32 %.pre, %jcol, !dbg !177
+  %or.cond = and i1 %cmp5, %cmp6, !dbg !177
+  br i1 %or.cond, label %if.end10, label %if.then7, !dbg !177
 
-._crit_edge:                                      ; preds = %12
-  %15 = load %struct.__sFILE** @__stderrp, align 8, !dbg !244, !tbaa !121
-  %16 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %15, i8* getelementptr inbounds ([66 x i8]* @.str11, i64 0, i64 0), %struct._A2* %mtx, i32 %jcol, i32 %jcol, i32 %.pre) #4, !dbg !245
-  tail call void @exit(i32 -1) #5, !dbg !246
-  unreachable, !dbg !246
+if.then7:                                         ; preds = %if.end4
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !178, !tbaa !113
+  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([66 x i8]* @.str11, i64 0, i64 0), %struct._A2* %mtx, i32 %jcol, i32 %jcol, i32 %.pre) #4, !dbg !178
+  tail call void @exit(i32 -1) #5, !dbg !180
+  unreachable, !dbg !180
 
-; <label>:17                                      ; preds = %12
-  %18 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0, !dbg !247
-  %19 = load i32* %18, align 4, !dbg !247, !tbaa !204
-  switch i32 %19, label %29 [
-    i32 1, label %20
-    i32 2, label %24
-  ], !dbg !249
+if.end10:                                         ; preds = %if.end4
+  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0, !dbg !181
+  %4 = load i32* %type, align 4, !dbg !181, !tbaa !118
+  switch i32 %4, label %if.else23 [
+    i32 1, label %if.then12
+    i32 2, label %if.then16
+  ], !dbg !181
 
-; <label>:20                                      ; preds = %17
-  %21 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4, !dbg !250
-  %22 = load i32* %21, align 4, !dbg !250, !tbaa !163
-  %23 = mul nsw i32 %22, %jcol, !dbg !252
-  br label %32, !dbg !253
+if.then12:                                        ; preds = %if.end10
+  %inc2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4, !dbg !182
+  %5 = load i32* %inc2, align 4, !dbg !182, !tbaa !118
+  %mul = mul nsw i32 %5, %jcol, !dbg !182
+  br label %if.end27, !dbg !184
 
-; <label>:24                                      ; preds = %17
-  %25 = shl i32 %jcol, 1, !dbg !254
-  %26 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4, !dbg !257
-  %27 = load i32* %26, align 4, !dbg !257, !tbaa !163
-  %28 = mul nsw i32 %25, %27, !dbg !258
-  br label %32
+if.then16:                                        ; preds = %if.end10
+  %mul18 = shl i32 %jcol, 1, !dbg !185
+  %inc219 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4, !dbg !185
+  %6 = load i32* %inc219, align 4, !dbg !185, !tbaa !118
+  %mul20 = mul nsw i32 %mul18, %6, !dbg !185
+  br label %if.end27
 
-; <label>:29                                      ; preds = %17
-  %30 = load %struct.__sFILE** @__stderrp, align 8, !dbg !259, !tbaa !121
-  %31 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %30, i8* getelementptr inbounds ([85 x i8]* @.str12, i64 0, i64 0), %struct._A2* %mtx, i32 %jcol, i32 %19) #4, !dbg !261
-  tail call void @exit(i32 -1) #5, !dbg !262
-  unreachable, !dbg !262
+if.else23:                                        ; preds = %if.end10
+  %7 = load %struct._IO_FILE** @stderr, align 8, !dbg !187, !tbaa !113
+  %call25 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([85 x i8]* @.str12, i64 0, i64 0), %struct._A2* %mtx, i32 %jcol, i32 %4) #4, !dbg !187
+  tail call void @exit(i32 -1) #5, !dbg !189
+  unreachable, !dbg !189
 
-; <label>:32                                      ; preds = %24, %20
-  %.pn.in = phi i32 [ %23, %20 ], [ %28, %24 ]
-  %.pn = sext i32 %.pn.in to i64, !dbg !263
-  %col.0 = getelementptr inbounds double* %7, i64 %.pn, !dbg !263
-  ret double* %col.0, !dbg !264
+if.end27:                                         ; preds = %if.then16, %if.then12
+  %idx.ext.pn.in = phi i32 [ %mul, %if.then12 ], [ %mul20, %if.then16 ]
+  %idx.ext.pn = sext i32 %idx.ext.pn.in to i64, !dbg !182
+  %col.0 = getelementptr inbounds double* %1, i64 %idx.ext.pn, !dbg !182
+  ret double* %col.0, !dbg !190
 }

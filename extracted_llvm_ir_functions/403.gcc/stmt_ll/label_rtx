@@ -1,34 +1,35 @@
 define %struct.rtx_def* @label_rtx(%union.tree_node* %label) #0 {
 entry:
-  %code = getelementptr inbounds %union.tree_node* %label, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 31
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %label}, i64 0, metadata !1335), !dbg !2582
+  %code = getelementptr inbounds %union.tree_node* %label, i64 0, i32 0, i32 0, i32 2, !dbg !2583
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !2583
+  %bf.load = load i32* %0, align 8, !dbg !2583
+  %bf.clear = and i32 %bf.load, 255, !dbg !2583
+  %cmp = icmp eq i32 %bf.clear, 31, !dbg !2583
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2583
 
 if.then:                                          ; preds = %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 683, i8* getelementptr inbounds ([10 x i8]* @__FUNCTION__.label_rtx, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 683, i8* getelementptr inbounds ([10 x i8]* @__FUNCTION__.label_rtx, i64 0, i64 0)) #9, !dbg !2584
+  unreachable, !dbg !2584
 
 if.end:                                           ; preds = %entry
-  %rtl = getelementptr inbounds %union.tree_node* %label, i64 0, i32 0, i32 17
-  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct.rtx_def* %1, null
-  br i1 %cmp1, label %if.end5, label %cond.end
+  %rtl = getelementptr inbounds %union.tree_node* %label, i64 0, i32 0, i32 17, !dbg !2585
+  %1 = load %struct.rtx_def** %rtl, align 8, !dbg !2585, !tbaa !2438
+  %cmp1 = icmp eq %struct.rtx_def* %1, null, !dbg !2585
+  br i1 %cmp1, label %if.end5, label %cond.end, !dbg !2585
 
 if.end5:                                          ; preds = %if.end
-  %call = tail call %struct.rtx_def* @gen_label_rtx() #7
-  store %struct.rtx_def* %call, %struct.rtx_def** %rtl, align 8, !tbaa !0
-  %tobool = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool, label %cond.false, label %cond.end
+  %call = tail call %struct.rtx_def* @gen_label_rtx() #8, !dbg !2586
+  store %struct.rtx_def* %call, %struct.rtx_def** %rtl, align 8, !dbg !2586, !tbaa !2438
+  %tobool = icmp eq %struct.rtx_def* %call, null, !dbg !2587
+  br i1 %tobool, label %cond.false, label %cond.end, !dbg !2587
 
 cond.false:                                       ; preds = %if.end5
-  tail call void @make_decl_rtl(%union.tree_node* %label, i8* null) #7
-  %2 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
-  br label %cond.end
+  tail call void @make_decl_rtl(%union.tree_node* %label, i8* null) #8, !dbg !2587
+  %2 = load %struct.rtx_def** %rtl, align 8, !dbg !2587, !tbaa !2438
+  br label %cond.end, !dbg !2587
 
 cond.end:                                         ; preds = %if.end, %if.end5, %cond.false
-  %cond = phi %struct.rtx_def* [ %2, %cond.false ], [ %call, %if.end5 ], [ %1, %if.end ]
-  ret %struct.rtx_def* %cond
+  %cond = phi %struct.rtx_def* [ %2, %cond.false ], [ %call, %if.end5 ], [ %1, %if.end ], !dbg !2587
+  ret %struct.rtx_def* %cond, !dbg !2587
 }

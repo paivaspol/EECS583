@@ -1,19 +1,22 @@
 define %union.tree_node* @build_reference_type(%union.tree_node* %to_type) #0 {
 entry:
-  %0 = getelementptr inbounds %union.tree_node* %to_type, i64 0, i32 0, i32 9
-  %1 = load %union.tree_node** %0, align 8, !tbaa !0
-  %tobool = icmp eq %union.tree_node* %1, null
-  br i1 %tobool, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %to_type}, i64 0, metadata !1555), !dbg !3207
+  %0 = getelementptr inbounds %union.tree_node* %to_type, i64 0, i32 0, i32 9, !dbg !3208
+  %1 = load %union.tree_node** %0, align 8, !dbg !3208, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %1}, i64 0, metadata !1556), !dbg !3208
+  %tobool = icmp eq %union.tree_node* %1, null, !dbg !3209
+  br i1 %tobool, label %if.end, label %return, !dbg !3209
 
 if.end:                                           ; preds = %entry
-  %call = tail call %union.tree_node* @make_node(i32 15) #10
-  %type1 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 1
-  store %union.tree_node* %to_type, %union.tree_node** %type1, align 8, !tbaa !0
-  store %union.tree_node* %call, %union.tree_node** %0, align 8, !tbaa !0
-  tail call void @layout_type(%union.tree_node* %call) #9
-  br label %return
+  %call = tail call %union.tree_node* @make_node(i32 15) #11, !dbg !3210
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1556), !dbg !3210
+  %type1 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 1, !dbg !3211
+  store %union.tree_node* %to_type, %union.tree_node** %type1, align 8, !dbg !3211, !tbaa !1913
+  store %union.tree_node* %call, %union.tree_node** %0, align 8, !dbg !3212, !tbaa !1913
+  tail call void @layout_type(%union.tree_node* %call) #10, !dbg !3213
+  br label %return, !dbg !3214
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi %union.tree_node* [ %call, %if.end ], [ %1, %entry ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !3215
 }

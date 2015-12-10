@@ -1,0 +1,48 @@
+define linkonce_odr i16* @_ZN10xalanc_1_821ScalarToDecimalStringIlEEPtT_S1_(i64 %theValue, i16* %theOutput) #10 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i64 %theValue}, i64 0, metadata !4603), !dbg !8938
+  tail call void @llvm.dbg.value(metadata !{i16* %theOutput}, i64 0, metadata !4604), !dbg !8939
+  store i16 0, i16* %theOutput, align 2, !dbg !8940, !tbaa !6609
+  %cmp = icmp slt i64 %theValue, 0, !dbg !8941
+  br i1 %cmp, label %do.body, label %do.body3, !dbg !8941
+
+do.body:                                          ; preds = %entry, %do.body
+  %theValue.addr.0 = phi i64 [ %div, %do.body ], [ %theValue, %entry ]
+  %theOutput.addr.0 = phi i16* [ %incdec.ptr, %do.body ], [ %theOutput, %entry ]
+  %rem = srem i64 %theValue.addr.0, 10, !dbg !8942
+  %add = sub i64 48, %rem, !dbg !8942
+  %conv = trunc i64 %add to i16, !dbg !8942
+  %incdec.ptr = getelementptr inbounds i16* %theOutput.addr.0, i64 -1, !dbg !8942
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !4604), !dbg !8942
+  store i16 %conv, i16* %incdec.ptr, align 2, !dbg !8942, !tbaa !6609
+  %div = sdiv i64 %theValue.addr.0, 10, !dbg !8945
+  tail call void @llvm.dbg.value(metadata !{i64 %div}, i64 0, metadata !4603), !dbg !8945
+  %theValue.addr.0.off = add i64 %theValue.addr.0, 9, !dbg !8946
+  %0 = icmp ugt i64 %theValue.addr.0.off, 18, !dbg !8946
+  br i1 %0, label %do.body, label %do.end, !dbg !8946
+
+do.end:                                           ; preds = %do.body
+  %incdec.ptr2 = getelementptr inbounds i16* %theOutput.addr.0, i64 -2, !dbg !8947
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr2}, i64 0, metadata !4604), !dbg !8947
+  store i16 45, i16* %incdec.ptr2, align 2, !dbg !8947, !tbaa !6609
+  br label %if.end, !dbg !8948
+
+do.body3:                                         ; preds = %entry, %do.body3
+  %theValue.addr.1 = phi i64 [ %div8, %do.body3 ], [ %theValue, %entry ]
+  %theOutput.addr.1 = phi i16* [ %incdec.ptr7, %do.body3 ], [ %theOutput, %entry ]
+  %rem4 = srem i64 %theValue.addr.1, 10, !dbg !8949
+  %add5 = add nsw i64 %rem4, 48, !dbg !8949
+  %conv6 = trunc i64 %add5 to i16, !dbg !8949
+  %incdec.ptr7 = getelementptr inbounds i16* %theOutput.addr.1, i64 -1, !dbg !8949
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr7}, i64 0, metadata !4604), !dbg !8949
+  store i16 %conv6, i16* %incdec.ptr7, align 2, !dbg !8949, !tbaa !6609
+  %div8 = sdiv i64 %theValue.addr.1, 10, !dbg !8952
+  tail call void @llvm.dbg.value(metadata !{i64 %div8}, i64 0, metadata !4603), !dbg !8952
+  %theValue.addr.1.off = add i64 %theValue.addr.1, 9, !dbg !8953
+  %1 = icmp ugt i64 %theValue.addr.1.off, 18, !dbg !8953
+  br i1 %1, label %do.body3, label %if.end, !dbg !8953
+
+if.end:                                           ; preds = %do.body3, %do.end
+  %theOutput.addr.2 = phi i16* [ %incdec.ptr2, %do.end ], [ %incdec.ptr7, %do.body3 ]
+  ret i16* %theOutput.addr.2, !dbg !8954
+}

@@ -1,16 +1,17 @@
 define i32 @DenseMtx_columnIncrement(%struct._DenseMtx* %mtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !55, metadata !132), !dbg !193
-  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !194
-  br i1 %1, label %2, label %5, !dbg !196
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DenseMtx* %mtx}, i64 0, metadata !56), !dbg !162
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null, !dbg !163
+  br i1 %cmp, label %if.then, label %if.end, !dbg !163
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !197, !tbaa !139
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([58 x i8]* @.str4, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !199
-  tail call void @exit(i32 -1) #7, !dbg !200
-  unreachable, !dbg !200
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !164, !tbaa !134
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str4, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !164
+  tail call void @exit(i32 -1) #7, !dbg !166
+  unreachable, !dbg !166
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 6, !dbg !201
-  %7 = load i32* %6, align 4, !dbg !201, !tbaa !202
-  ret i32 %7, !dbg !203
+if.end:                                           ; preds = %entry
+  %inc2 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 6, !dbg !167
+  %1 = load i32* %inc2, align 4, !dbg !167, !tbaa !139
+  ret i32 %1, !dbg !167
 }

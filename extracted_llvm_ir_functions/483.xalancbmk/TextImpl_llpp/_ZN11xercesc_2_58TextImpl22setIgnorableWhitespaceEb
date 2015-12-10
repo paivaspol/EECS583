@@ -1,0 +1,24 @@
+define void @_ZN11xercesc_2_58TextImpl22setIgnorableWhitespaceEb(%"class.xercesc_2_5::TextImpl"* nocapture %this, i1 zeroext %ignorable) unnamed_addr #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::TextImpl"* %this}, i64 0, metadata !3204), !dbg !3539
+  tail call void @llvm.dbg.value(metadata !{i1 %ignorable}, i64 0, metadata !3205), !dbg !3539
+  tail call void @llvm.dbg.value(metadata !{i1 %ignorable}, i64 0, metadata !3540), !dbg !3542
+  %flags.i = getelementptr inbounds %"class.xercesc_2_5::TextImpl"* %this, i64 0, i32 0, i32 0, i32 0, i32 2, !dbg !3543
+  %0 = load i16* %flags.i, align 2, !dbg !3543, !tbaa !3495
+  %1 = load i16* @_ZN11xercesc_2_58NodeImpl11IGNORABLEWSE, align 2, !dbg !3543, !tbaa !3495
+  br i1 %ignorable, label %cond.true.i, label %cond.false.i, !dbg !3543
+
+cond.true.i:                                      ; preds = %entry
+  %or.i = or i16 %1, %0, !dbg !3543
+  br label %_ZN11xercesc_2_58NodeImpl19ignorableWhitespaceEb.exit, !dbg !3543
+
+cond.false.i:                                     ; preds = %entry
+  %neg.i = xor i16 %1, -1, !dbg !3543
+  %and.i = and i16 %0, %neg.i, !dbg !3543
+  br label %_ZN11xercesc_2_58NodeImpl19ignorableWhitespaceEb.exit, !dbg !3543
+
+_ZN11xercesc_2_58NodeImpl19ignorableWhitespaceEb.exit: ; preds = %cond.true.i, %cond.false.i
+  %cond.i = phi i16 [ %or.i, %cond.true.i ], [ %and.i, %cond.false.i ], !dbg !3543
+  store i16 %cond.i, i16* %flags.i, align 2, !dbg !3543, !tbaa !3495
+  ret void, !dbg !3545
+}

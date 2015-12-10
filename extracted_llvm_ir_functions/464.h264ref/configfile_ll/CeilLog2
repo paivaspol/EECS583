@@ -1,22 +1,23 @@
 define i32 @CeilLog2(i32 %uiVal) #8 {
-  tail call void @llvm.dbg.value(metadata i32 %uiVal, i64 0, metadata !132, metadata !858), !dbg !2192
-  %1 = add i32 %uiVal, -1, !dbg !2193
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !133, metadata !858), !dbg !2194
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !134, metadata !858), !dbg !2195
-  %2 = icmp eq i32 %1, 0, !dbg !2196
-  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !2197
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %uiVal}, i64 0, metadata !117), !dbg !1458
+  %sub = add i32 %uiVal, -1, !dbg !1459
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !118), !dbg !1459
+  tail call void @llvm.dbg.value(metadata !22, i64 0, metadata !119), !dbg !1460
+  %cmp3 = icmp eq i32 %sub, 0, !dbg !1461
+  br i1 %cmp3, label %while.end, label %while.body, !dbg !1461
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %uiRet.02 = phi i32 [ %4, %.lr.ph ], [ 0, %0 ]
-  %uiTmp.01 = phi i32 [ %3, %.lr.ph ], [ %1, %0 ]
-  %3 = lshr i32 %uiTmp.01, 1, !dbg !2198
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !133, metadata !858), !dbg !2194
-  %4 = add i32 %uiRet.02, 1, !dbg !2199
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !134, metadata !858), !dbg !2195
-  %5 = icmp eq i32 %3, 0, !dbg !2196
-  br i1 %5, label %._crit_edge, label %.lr.ph, !dbg !2197
+while.body:                                       ; preds = %entry, %while.body
+  %uiRet.05 = phi i32 [ %inc, %while.body ], [ 0, %entry ]
+  %uiTmp.04 = phi i32 [ %shr, %while.body ], [ %sub, %entry ]
+  %shr = lshr i32 %uiTmp.04, 1, !dbg !1462
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !118), !dbg !1462
+  %inc = add i32 %uiRet.05, 1, !dbg !1463
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !119), !dbg !1463
+  %cmp = icmp eq i32 %shr, 0, !dbg !1461
+  br i1 %cmp, label %while.end, label %while.body, !dbg !1461
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  %uiRet.0.lcssa = phi i32 [ 0, %0 ], [ %4, %.lr.ph ]
-  ret i32 %uiRet.0.lcssa, !dbg !2200
+while.end:                                        ; preds = %while.body, %entry
+  %uiRet.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %while.body ]
+  ret i32 %uiRet.0.lcssa, !dbg !1464
 }

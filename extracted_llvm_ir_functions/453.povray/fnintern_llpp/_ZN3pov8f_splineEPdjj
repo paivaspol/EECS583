@@ -1,79 +1,80 @@
-define void @_ZN3pov8f_splineEPdjj(double* nocapture readonly %ptr, i32 %fn, i32 %sp) #2 {
+define void @_ZN3pov8f_splineEPdjj(double* nocapture %ptr, i32 %fn, i32 %sp) #2 {
+entry:
   %Result = alloca [5 x double], align 16
   %Terms = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata double* %ptr, i64 0, metadata !1754, metadata !2347), !dbg !6023
-  tail call void @llvm.dbg.value(metadata i32 %fn, i64 0, metadata !1755, metadata !2347), !dbg !6024
-  tail call void @llvm.dbg.value(metadata i32 %sp, i64 0, metadata !1756, metadata !2347), !dbg !6025
-  %1 = bitcast [5 x double]* %Result to i8*, !dbg !6026
-  call void @llvm.lifetime.start(i64 40, i8* %1) #5, !dbg !6026
-  tail call void @llvm.dbg.declare(metadata [5 x double]* %Result, metadata !1757, metadata !2347), !dbg !6027
-  %2 = tail call %"struct.pov::FunctionCode"* @_ZN3pov18POVFPU_GetFunctionEj(i32 %fn) #8, !dbg !6028
-  tail call void @llvm.dbg.value(metadata %"struct.pov::FunctionCode"* %2, i64 0, metadata !1758, metadata !2347), !dbg !6029
-  %3 = getelementptr inbounds %"struct.pov::FunctionCode"* %2, i64 0, i32 14, !dbg !6030
-  %4 = load i8** %3, align 8, !dbg !6030, !tbaa !5186
-  %5 = icmp eq i8* %4, null, !dbg !6032
-  br i1 %5, label %6, label %9, !dbg !6033
+  call void @llvm.dbg.value(metadata !{double* %ptr}, i64 0, metadata !1476), !dbg !2629
+  call void @llvm.dbg.value(metadata !{i32 %fn}, i64 0, metadata !1477), !dbg !2629
+  call void @llvm.dbg.value(metadata !{i32 %sp}, i64 0, metadata !1478), !dbg !2629
+  %0 = bitcast [5 x double]* %Result to i8*, !dbg !2630
+  call void @llvm.lifetime.start(i64 40, i8* %0) #6, !dbg !2630
+  call void @llvm.dbg.declare(metadata !{[5 x double]* %Result}, metadata !1479), !dbg !2630
+  %call = call %"struct.pov::FunctionCode"* @_ZN3pov18POVFPU_GetFunctionEj(i32 %fn) #10, !dbg !2631
+  call void @llvm.dbg.value(metadata !{%"struct.pov::FunctionCode"* %call}, i64 0, metadata !1482), !dbg !2631
+  call void @llvm.dbg.declare(metadata !{i32* %Terms}, metadata !1483), !dbg !2632
+  %private_data = getelementptr inbounds %"struct.pov::FunctionCode"* %call, i64 0, i32 14, !dbg !2633
+  %1 = load i8** %private_data, align 8, !dbg !2633, !tbaa !2392
+  %cmp = icmp eq i8* %1, null, !dbg !2633
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2633
 
-; <label>:6                                       ; preds = %0
-  tail call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %sp, double 0.000000e+00) #8, !dbg !6034
-  %7 = add i32 %sp, 1, !dbg !6036
-  tail call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %7, double 0.000000e+00) #8, !dbg !6037
-  %8 = add i32 %sp, 2, !dbg !6038
-  tail call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %8, double 0.000000e+00) #8, !dbg !6039
-  br label %41, !dbg !6040
+if.then:                                          ; preds = %entry
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %sp, double 0.000000e+00) #10, !dbg !2634
+  %add1 = add i32 %sp, 1, !dbg !2636
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %add1, double 0.000000e+00) #10, !dbg !2636
+  %add2 = add i32 %sp, 2, !dbg !2637
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %add2, double 0.000000e+00) #10, !dbg !2637
+  br label %cleanup, !dbg !2638
 
-; <label>:9                                       ; preds = %0
-  %10 = bitcast i8* %4 to %"struct.pov::Spline_Struct"*
-  %11 = getelementptr inbounds i8* %4, i64 28, !dbg !6041
-  %12 = bitcast i8* %11 to i32*, !dbg !6041
-  %13 = load i32* %12, align 4, !dbg !6041, !tbaa !6042
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !1759, metadata !2347), !dbg !6045
-  store i32 %13, i32* %Terms, align 4, !dbg !6046, !tbaa !6047
-  %14 = sext i32 %13 to i64, !dbg !6048
-  %15 = getelementptr inbounds double* %ptr, i64 %14, !dbg !6048
-  %16 = load double* %15, align 8, !dbg !6048, !tbaa !2351
-  %17 = getelementptr inbounds [5 x double]* %Result, i64 0, i64 0, !dbg !6049
-  tail call void @llvm.dbg.value(metadata i32* %Terms, i64 0, metadata !1759, metadata !2347), !dbg !6045
-  %18 = call double @_ZN3pov14Get_Spline_ValEPNS_13Spline_StructEdPdPi(%"struct.pov::Spline_Struct"* %10, double %16, double* %17, i32* %Terms) #8, !dbg !6050
-  %19 = load double* %17, align 16, !dbg !6051, !tbaa !2351
-  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %sp, double %19) #8, !dbg !6052
-  %20 = add i32 %sp, 1, !dbg !6053
-  %21 = getelementptr inbounds [5 x double]* %Result, i64 0, i64 1, !dbg !6054
-  %22 = load double* %21, align 8, !dbg !6054, !tbaa !2351
-  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %20, double %22) #8, !dbg !6055
-  call void @llvm.dbg.value(metadata i32* %Terms, i64 0, metadata !1759, metadata !2347), !dbg !6045
-  %23 = load i32* %Terms, align 4, !dbg !6056, !tbaa !6047
-  %24 = icmp sgt i32 %23, 2, !dbg !6058
-  br i1 %24, label %25, label %41, !dbg !6059
+if.end:                                           ; preds = %entry
+  %Terms4 = getelementptr inbounds i8* %1, i64 28, !dbg !2639
+  %2 = bitcast i8* %Terms4 to i32*, !dbg !2639
+  %3 = load i32* %2, align 4, !dbg !2639, !tbaa !2640
+  call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !1483), !dbg !2639
+  store i32 %3, i32* %Terms, align 4, !dbg !2639, !tbaa !2640
+  %4 = bitcast i8* %1 to %"struct.pov::Spline_Struct"*, !dbg !2641
+  %idxprom = sext i32 %3 to i64, !dbg !2641
+  %arrayidx = getelementptr inbounds double* %ptr, i64 %idxprom, !dbg !2641
+  %5 = load double* %arrayidx, align 8, !dbg !2641, !tbaa !1656
+  %arraydecay = getelementptr inbounds [5 x double]* %Result, i64 0, i64 0, !dbg !2641
+  %call6 = call double @_ZN3pov14Get_Spline_ValEPNS_13Spline_StructEdPdPi(%"struct.pov::Spline_Struct"* %4, double %5, double* %arraydecay, i32* %Terms) #10, !dbg !2641
+  %6 = load double* %arraydecay, align 16, !dbg !2642, !tbaa !1656
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %sp, double %6) #10, !dbg !2642
+  %add9 = add i32 %sp, 1, !dbg !2643
+  %arrayidx10 = getelementptr inbounds [5 x double]* %Result, i64 0, i64 1, !dbg !2643
+  %7 = load double* %arrayidx10, align 8, !dbg !2643, !tbaa !1656
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %add9, double %7) #10, !dbg !2643
+  call void @llvm.dbg.value(metadata !{i32* %Terms}, i64 0, metadata !1483), !dbg !2644
+  %8 = load i32* %Terms, align 4, !dbg !2644, !tbaa !2640
+  %cmp11 = icmp sgt i32 %8, 2, !dbg !2644
+  br i1 %cmp11, label %if.then12, label %cleanup, !dbg !2644
 
-; <label>:25                                      ; preds = %9
-  %26 = add i32 %sp, 2, !dbg !6060
-  %27 = getelementptr inbounds [5 x double]* %Result, i64 0, i64 2, !dbg !6062
-  %28 = load double* %27, align 16, !dbg !6062, !tbaa !2351
-  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %26, double %28) #8, !dbg !6063
-  call void @llvm.dbg.value(metadata i32* %Terms, i64 0, metadata !1759, metadata !2347), !dbg !6045
-  %29 = load i32* %Terms, align 4, !dbg !6064, !tbaa !6047
-  %30 = icmp sgt i32 %29, 3, !dbg !6066
-  br i1 %30, label %31, label %41, !dbg !6067
+if.then12:                                        ; preds = %if.end
+  %add13 = add i32 %sp, 2, !dbg !2645
+  %arrayidx14 = getelementptr inbounds [5 x double]* %Result, i64 0, i64 2, !dbg !2645
+  %9 = load double* %arrayidx14, align 16, !dbg !2645, !tbaa !1656
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %add13, double %9) #10, !dbg !2645
+  call void @llvm.dbg.value(metadata !{i32* %Terms}, i64 0, metadata !1483), !dbg !2647
+  %10 = load i32* %Terms, align 4, !dbg !2647, !tbaa !2640
+  %cmp15 = icmp sgt i32 %10, 3, !dbg !2647
+  br i1 %cmp15, label %if.then16, label %cleanup, !dbg !2647
 
-; <label>:31                                      ; preds = %25
-  %32 = add i32 %sp, 3, !dbg !6068
-  %33 = getelementptr inbounds [5 x double]* %Result, i64 0, i64 3, !dbg !6070
-  %34 = load double* %33, align 8, !dbg !6070, !tbaa !2351
-  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %32, double %34) #8, !dbg !6071
-  call void @llvm.dbg.value(metadata i32* %Terms, i64 0, metadata !1759, metadata !2347), !dbg !6045
-  %35 = load i32* %Terms, align 4, !dbg !6072, !tbaa !6047
-  %36 = icmp sgt i32 %35, 4, !dbg !6074
-  br i1 %36, label %37, label %41, !dbg !6075
+if.then16:                                        ; preds = %if.then12
+  %add17 = add i32 %sp, 3, !dbg !2648
+  %arrayidx18 = getelementptr inbounds [5 x double]* %Result, i64 0, i64 3, !dbg !2648
+  %11 = load double* %arrayidx18, align 8, !dbg !2648, !tbaa !1656
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %add17, double %11) #10, !dbg !2648
+  call void @llvm.dbg.value(metadata !{i32* %Terms}, i64 0, metadata !1483), !dbg !2650
+  %12 = load i32* %Terms, align 4, !dbg !2650, !tbaa !2640
+  %cmp19 = icmp sgt i32 %12, 4, !dbg !2650
+  br i1 %cmp19, label %if.then20, label %cleanup, !dbg !2650
 
-; <label>:37                                      ; preds = %31
-  %38 = add i32 %sp, 4, !dbg !6076
-  %39 = getelementptr inbounds [5 x double]* %Result, i64 0, i64 4, !dbg !6077
-  %40 = load double* %39, align 16, !dbg !6077, !tbaa !2351
-  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %38, double %40) #8, !dbg !6078
-  br label %41, !dbg !6078
+if.then20:                                        ; preds = %if.then16
+  %add22 = add i32 %sp, 4, !dbg !2651
+  %arrayidx23 = getelementptr inbounds [5 x double]* %Result, i64 0, i64 4, !dbg !2651
+  %13 = load double* %arrayidx23, align 16, !dbg !2651, !tbaa !1656
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 %add22, double %13) #10, !dbg !2651
+  br label %cleanup, !dbg !2651
 
-; <label>:41                                      ; preds = %9, %31, %37, %25, %6
-  call void @llvm.lifetime.end(i64 40, i8* %1) #5, !dbg !6079
-  ret void, !dbg !6079
+cleanup:                                          ; preds = %if.end, %if.then16, %if.then20, %if.then12, %if.then
+  call void @llvm.lifetime.end(i64 40, i8* %0) #6, !dbg !2652
+  ret void, !dbg !2653
 }

@@ -1,28 +1,32 @@
 define internal fastcc void @remove_fake_successors(%struct.basic_block_def* nocapture %bb) #0 {
 entry:
-  %succ = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5
-  %0 = load %struct.edge_def** %succ, align 8, !tbaa !0
-  %tobool4 = icmp eq %struct.edge_def* %0, null
-  br i1 %tobool4, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %bb}, i64 0, metadata !725), !dbg !1119
+  %succ = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5, !dbg !1120
+  %0 = load %struct.edge_def** %succ, align 8, !dbg !1120, !tbaa !741
+  tail call void @llvm.dbg.value(metadata !{%struct.edge_def* %0}, i64 0, metadata !726), !dbg !1120
+  %tobool4 = icmp eq %struct.edge_def* %0, null, !dbg !1120
+  br i1 %tobool4, label %for.end, label %for.body, !dbg !1120
 
 for.body:                                         ; preds = %entry, %for.cond.backedge
   %e.05 = phi %struct.edge_def* [ %1, %for.cond.backedge ], [ %0, %entry ]
-  %succ_next = getelementptr inbounds %struct.edge_def* %e.05, i64 0, i32 1
-  %1 = load %struct.edge_def** %succ_next, align 8, !tbaa !0
-  %flags = getelementptr inbounds %struct.edge_def* %e.05, i64 0, i32 6
-  %2 = load i32* %flags, align 4, !tbaa !3
-  %and = and i32 %2, 16
-  %cmp = icmp eq i32 %and, 0
-  br i1 %cmp, label %for.cond.backedge, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.edge_def* %e.05}, i64 0, metadata !727), !dbg !1121
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.05, i64 0, i32 1, !dbg !1122
+  %1 = load %struct.edge_def** %succ_next, align 8, !dbg !1122, !tbaa !741
+  tail call void @llvm.dbg.value(metadata !{%struct.edge_def* %1}, i64 0, metadata !726), !dbg !1122
+  %flags = getelementptr inbounds %struct.edge_def* %e.05, i64 0, i32 6, !dbg !1123
+  %2 = load i32* %flags, align 4, !dbg !1123, !tbaa !755
+  %and = and i32 %2, 16, !dbg !1123
+  %cmp = icmp eq i32 %and, 0, !dbg !1123
+  br i1 %cmp, label %for.cond.backedge, label %if.then, !dbg !1123
 
 if.then:                                          ; preds = %for.body
-  tail call void @remove_edge(%struct.edge_def* %e.05) #6
-  br label %for.cond.backedge
+  tail call void @remove_edge(%struct.edge_def* %e.05) #7, !dbg !1124
+  br label %for.cond.backedge, !dbg !1124
 
 for.cond.backedge:                                ; preds = %if.then, %for.body
-  %tobool = icmp eq %struct.edge_def* %1, null
-  br i1 %tobool, label %for.end, label %for.body
+  %tobool = icmp eq %struct.edge_def* %1, null, !dbg !1120
+  br i1 %tobool, label %for.end, label %for.body, !dbg !1120
 
 for.end:                                          ; preds = %for.cond.backedge, %entry
-  ret void
+  ret void, !dbg !1125
 }

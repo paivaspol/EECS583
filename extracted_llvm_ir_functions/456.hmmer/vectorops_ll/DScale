@@ -1,26 +1,23 @@
 define void @DScale(double* nocapture %vec, i32 %n, double %scale) #0 {
-  tail call void @llvm.dbg.value(metadata double* %vec, i64 0, metadata !28, metadata !206), !dbg !235
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !29, metadata !206), !dbg !236
-  tail call void @llvm.dbg.value(metadata double %scale, i64 0, metadata !30, metadata !206), !dbg !237
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !31, metadata !206), !dbg !238
-  %1 = icmp sgt i32 %n, 0, !dbg !239
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !242
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %vec}, i64 0, metadata !28), !dbg !214
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !29), !dbg !214
+  tail call void @llvm.dbg.value(metadata !{double %scale}, i64 0, metadata !30), !dbg !214
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !31), !dbg !215
+  %cmp3 = icmp sgt i32 %n, 0, !dbg !215
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !215
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %n, -1, !dbg !242
-  br label %3, !dbg !242
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds double* %vec, i64 %indvars.iv, !dbg !215
+  %0 = load double* %arrayidx, align 8, !dbg !215, !tbaa !205
+  %mul = fmul double %0, %scale, !dbg !215
+  store double %mul, double* %arrayidx, align 8, !dbg !215, !tbaa !205
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !215
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !215
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !215
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !215
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds double* %vec, i64 %indvars.iv, !dbg !243
-  %5 = load double* %4, align 8, !dbg !244, !tbaa !217
-  %6 = fmul double %5, %scale, !dbg !244
-  store double %6, double* %4, align 8, !dbg !244, !tbaa !217
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !242
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !242
-  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !242
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !242
-
-._crit_edge:                                      ; preds = %3, %0
-  ret void, !dbg !245
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !217
 }

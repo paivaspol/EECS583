@@ -1,27 +1,28 @@
 define void @write_stored_frame(%struct.frame_store* %fs, i32 %p_out) #2 {
-  tail call void @llvm.dbg.value(metadata %struct.frame_store* %fs, i64 0, metadata !198, metadata !724), !dbg !1075
-  tail call void @llvm.dbg.value(metadata i32 %p_out, i64 0, metadata !199, metadata !724), !dbg !1076
-  tail call void @flush_direct_output(i32 %p_out) #7, !dbg !1077
-  %1 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 0, !dbg !1078
-  %2 = load i32* %1, align 4, !dbg !1078, !tbaa !998
-  %3 = icmp slt i32 %2, 3, !dbg !1080
-  br i1 %3, label %4, label %5, !dbg !1081
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.frame_store* %fs}, i64 0, metadata !195), !dbg !851
+  tail call void @llvm.dbg.value(metadata !{i32 %p_out}, i64 0, metadata !196), !dbg !851
+  tail call void @flush_direct_output(i32 %p_out) #7, !dbg !852
+  %is_used = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 0, !dbg !853
+  %0 = load i32* %is_used, align 4, !dbg !853, !tbaa !752
+  %cmp = icmp slt i32 %0, 3, !dbg !853
+  br i1 %cmp, label %if.then, label %if.else, !dbg !853
 
-; <label>:4                                       ; preds = %0
-  tail call void @write_unpaired_field(%struct.frame_store* %fs, i32 %p_out) #7, !dbg !1082
-  br label %8, !dbg !1084
+if.then:                                          ; preds = %entry
+  tail call void @write_unpaired_field(%struct.frame_store* %fs, i32 %p_out) #7, !dbg !854
+  br label %if.end, !dbg !856
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 10, !dbg !1085
-  %7 = load %struct.storable_picture** %6, align 8, !dbg !1085, !tbaa !1019
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %7, i64 0, metadata !134, metadata !724) #9, !dbg !1087
-  tail call void @llvm.dbg.value(metadata i32 %p_out, i64 0, metadata !135, metadata !724) #9, !dbg !1089
-  tail call void @llvm.dbg.value(metadata i32 undef, i64 0, metadata !136, metadata !724) #9, !dbg !1090
-  tail call void @write_out_picture(%struct.storable_picture* %7, i32 %p_out) #6, !dbg !1091
-  br label %8
+if.else:                                          ; preds = %entry
+  %frame = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 10, !dbg !857
+  %1 = load %struct.storable_picture** %frame, align 8, !dbg !857, !tbaa !739
+  tail call void @llvm.dbg.value(metadata !{%struct.storable_picture* %1}, i64 0, metadata !859) #3, !dbg !860
+  tail call void @llvm.dbg.value(metadata !{i32 %p_out}, i64 0, metadata !861) #3, !dbg !860
+  tail call void @llvm.dbg.value(metadata !822, i64 0, metadata !862) #3, !dbg !860
+  tail call void @write_out_picture(%struct.storable_picture* %1, i32 %p_out) #8, !dbg !863
+  br label %if.end
 
-; <label>:8                                       ; preds = %5, %4
-  %9 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 8, !dbg !1092
-  store i32 1, i32* %9, align 4, !dbg !1093, !tbaa !1094
-  ret void, !dbg !1095
+if.end:                                           ; preds = %if.else, %if.then
+  %is_output = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 8, !dbg !864
+  store i32 1, i32* %is_output, align 4, !dbg !864, !tbaa !752
+  ret void, !dbg !865
 }

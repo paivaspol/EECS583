@@ -1,25 +1,26 @@
 define i32 @Einstein_RegisterTimeToSlice(i32 %handle, i32 (%struct.cGH*)* %func) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !80, metadata !207), !dbg !251
-  tail call void @llvm.dbg.value(metadata i32 (%struct.cGH*)* %func, i64 0, metadata !81, metadata !207), !dbg !252
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !82, metadata !207), !dbg !253
-  %1 = load %struct.cHandledData** @Eslicings, align 8, !dbg !254, !tbaa !210
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #7, !dbg !255
-  %3 = icmp eq i8* %2, null, !dbg !256
-  br i1 %3, label %7, label %4, !dbg !258
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !80), !dbg !234
+  tail call void @llvm.dbg.value(metadata !{i32 (%struct.cGH*)* %func}, i64 0, metadata !81), !dbg !234
+  tail call void @llvm.dbg.value(metadata !235, i64 0, metadata !82), !dbg !236
+  %0 = load %struct.cHandledData** @Eslicings, align 8, !dbg !237, !tbaa !205
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %handle) #7, !dbg !237
+  %tobool = icmp eq i8* %call, null, !dbg !238
+  br i1 %tobool, label %if.else, label %if.then, !dbg !238
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds i8* %2, i64 16, !dbg !259
-  %6 = bitcast i8* %5 to i32 (%struct.cGH*)**, !dbg !259
-  store i32 (%struct.cGH*)* %func, i32 (%struct.cGH*)** %6, align 8, !dbg !261, !tbaa !233
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !82, metadata !207), !dbg !253
-  br label %9, !dbg !262
+if.then:                                          ; preds = %entry
+  %timetoslice = getelementptr inbounds i8* %call, i64 16, !dbg !239
+  %1 = bitcast i8* %timetoslice to i32 (%struct.cGH*)**, !dbg !239
+  store i32 (%struct.cGH*)* %func, i32 (%struct.cGH*)** %1, align 8, !dbg !239, !tbaa !205
+  tail call void @llvm.dbg.value(metadata !235, i64 0, metadata !82), !dbg !241
+  br label %if.end, !dbg !242
 
-; <label>:7                                       ; preds = %0
-  %8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 195, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([49 x i8]* @.str4, i64 0, i64 0), i32 %handle) #7, !dbg !263
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !82, metadata !207), !dbg !253
-  br label %9
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 195, i8* getelementptr inbounds ([66 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([49 x i8]* @.str4, i64 0, i64 0), i32 %handle) #7, !dbg !243
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !82), !dbg !245
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %4
-  %return_code.0 = phi i32 [ 1, %4 ], [ 0, %7 ]
-  ret i32 %return_code.0, !dbg !265
+if.end:                                           ; preds = %if.else, %if.then
+  %return_code.0 = phi i32 [ 1, %if.then ], [ 0, %if.else ]
+  ret i32 %return_code.0, !dbg !246
 }

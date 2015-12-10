@@ -1,135 +1,130 @@
 define internal void @_ZN3povL12Destroy_MeshEPNS_13Object_StructE(%"struct.pov::Object_Struct"* %Object) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !1398, metadata !2016), !dbg !2967
-  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !2968
-  %2 = load %"struct.pov::Transform_Struct"** %1, align 8, !dbg !2968, !tbaa !2036
-  tail call void @_ZN3pov17Destroy_TransformEPNS_16Transform_StructE(%"struct.pov::Transform_Struct"* %2) #7, !dbg !2969
-  %3 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !2970
-  %4 = bitcast %"struct.pov::Object_Struct"** %3 to %"struct.pov::Texture_Struct"***, !dbg !2970
-  %5 = load %"struct.pov::Texture_Struct"*** %4, align 8, !dbg !2970, !tbaa !2899
-  %6 = icmp eq %"struct.pov::Texture_Struct"** %5, null, !dbg !2972
-  br i1 %6, label %20, label %.preheader, !dbg !2973
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1422), !dbg !2329
+  %0 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !2330
+  %1 = load %"struct.pov::Transform_Struct"** %0, align 8, !dbg !2330, !tbaa !1750
+  tail call void @_ZN3pov17Destroy_TransformEPNS_16Transform_StructE(%"struct.pov::Transform_Struct"* %1) #7, !dbg !2330
+  %Textures = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !2331
+  %2 = load %"struct.pov::Object_Struct"** %Textures, align 8, !dbg !2331
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %2, null, !dbg !2331
+  br i1 %cmp, label %if.end, label %for.cond.preheader, !dbg !2331
 
-.preheader:                                       ; preds = %0
-  %7 = bitcast %"struct.pov::Texture_Struct"** %5 to i8*
-  %8 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 1, !dbg !2974
-  %9 = bitcast i32* %8 to i64*, !dbg !2974
-  %10 = load i64* %9, align 8, !dbg !2974, !tbaa !2904
-  %11 = icmp sgt i64 %10, 0, !dbg !2978
-  br i1 %11, label %.lr.ph.preheader, label %.preheader._crit_edge, !dbg !2979
+for.cond.preheader:                               ; preds = %entry
+  %Number_Of_Textures = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 1, !dbg !2332
+  %3 = bitcast i32* %Number_Of_Textures to i64*, !dbg !2332
+  %4 = load i64* %3, align 8, !dbg !2332, !tbaa !1739
+  %cmp167 = icmp sgt i64 %4, 0, !dbg !2332
+  br i1 %cmp167, label %for.body, label %for.end, !dbg !2332
 
-.lr.ph.preheader:                                 ; preds = %.preheader
-  %12 = load %"struct.pov::Texture_Struct"** %5, align 8, !dbg !2980, !tbaa !2132
-  tail call void @_ZN3pov16Destroy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %12) #7, !dbg !2982
-  %13 = load i64* %9, align 8, !dbg !2974, !tbaa !2904
-  %14 = icmp sgt i64 %13, 1, !dbg !2978
-  br i1 %14, label %._crit_edge2, label %._crit_edge, !dbg !2979
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %5 = phi %"struct.pov::Object_Struct"* [ %9, %for.body ], [ %2, %for.cond.preheader ]
+  %6 = bitcast %"struct.pov::Object_Struct"* %5 to %"struct.pov::Texture_Struct"**, !dbg !2335
+  %arrayidx = getelementptr inbounds %"struct.pov::Texture_Struct"** %6, i64 %indvars.iv, !dbg !2335
+  %7 = load %"struct.pov::Texture_Struct"** %arrayidx, align 8, !dbg !2335, !tbaa !1750
+  tail call void @_ZN3pov16Destroy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %7) #7, !dbg !2335
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2332
+  %8 = load i64* %3, align 8, !dbg !2332, !tbaa !1739
+  %cmp1 = icmp slt i64 %indvars.iv.next, %8, !dbg !2332
+  %9 = load %"struct.pov::Object_Struct"** %Textures, align 8, !dbg !2335
+  br i1 %cmp1, label %for.body, label %for.end, !dbg !2332
 
-._crit_edge2:                                     ; preds = %.lr.ph.preheader, %._crit_edge2
-  %indvars.iv.next8 = phi i64 [ %indvars.iv.next, %._crit_edge2 ], [ 1, %.lr.ph.preheader ]
-  %.pre = load %"struct.pov::Texture_Struct"*** %4, align 8, !dbg !2983, !tbaa !2899
-  %15 = getelementptr inbounds %"struct.pov::Texture_Struct"** %.pre, i64 %indvars.iv.next8, !dbg !2980
-  %16 = load %"struct.pov::Texture_Struct"** %15, align 8, !dbg !2980, !tbaa !2132
-  tail call void @_ZN3pov16Destroy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %16) #7, !dbg !2982
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv.next8, 1, !dbg !2979
-  %17 = load i64* %9, align 8, !dbg !2974, !tbaa !2904
-  %18 = icmp slt i64 %indvars.iv.next, %17, !dbg !2978
-  br i1 %18, label %._crit_edge2, label %._crit_edge, !dbg !2979
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %.lcssa = phi %"struct.pov::Object_Struct"* [ %2, %for.cond.preheader ], [ %9, %for.body ]
+  %10 = bitcast %"struct.pov::Object_Struct"* %.lcssa to i8*, !dbg !2337
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %10, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 853) #7, !dbg !2337
+  store %"struct.pov::Object_Struct"* null, %"struct.pov::Object_Struct"** %Textures, align 8, !dbg !2337, !tbaa !1750
+  br label %if.end, !dbg !2339
 
-._crit_edge:                                      ; preds = %._crit_edge2, %.lr.ph.preheader
-  %.phi.trans.insert = bitcast %"struct.pov::Object_Struct"** %3 to i8**
-  %.pre3 = load i8** %.phi.trans.insert, align 8, !dbg !2984, !tbaa !2899
-  br label %.preheader._crit_edge, !dbg !2979
+if.end:                                           ; preds = %entry, %for.end
+  %Data = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !2340
+  %11 = bitcast %"struct.pov::Object_Struct"* %Data to %"struct.pov::Mesh_Data_Struct"**, !dbg !2340
+  %12 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2340, !tbaa !1750
+  %References = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %12, i64 0, i32 0, !dbg !2340
+  %13 = load i32* %References, align 4, !dbg !2340, !tbaa !1782
+  %dec = add nsw i32 %13, -1, !dbg !2340
+  store i32 %dec, i32* %References, align 4, !dbg !2340, !tbaa !1782
+  %cmp5 = icmp eq i32 %dec, 0, !dbg !2340
+  br i1 %cmp5, label %if.then6, label %if.end42, !dbg !2340
 
-.preheader._crit_edge:                            ; preds = %.preheader, %._crit_edge
-  %19 = phi i8* [ %.pre3, %._crit_edge ], [ %7, %.preheader ]
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %19, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 853) #7, !dbg !2984
-  store %"struct.pov::Texture_Struct"** null, %"struct.pov::Texture_Struct"*** %4, align 8, !dbg !2984, !tbaa !2899
-  br label %20, !dbg !2986
+if.then6:                                         ; preds = %if.end
+  %Tree = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %12, i64 0, i32 9, !dbg !2341
+  %14 = load %"struct.pov::BBox_Tree_Struct"** %Tree, align 8, !dbg !2341, !tbaa !1750
+  tail call void @_ZN3pov17Destroy_BBox_TreeEPNS_16BBox_Tree_StructE(%"struct.pov::BBox_Tree_Struct"* %14) #7, !dbg !2341
+  %15 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2343, !tbaa !1750
+  %Normals = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %15, i64 0, i32 5, !dbg !2343
+  %16 = load [3 x float]** %Normals, align 8, !dbg !2343, !tbaa !1750
+  %cmp9 = icmp eq [3 x float]* %16, null, !dbg !2343
+  br i1 %cmp9, label %if.end15, label %if.then10, !dbg !2343
 
-; <label>:20                                      ; preds = %0, %.preheader._crit_edge
-  %21 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !2987
-  %22 = bitcast %"struct.pov::Object_Struct"* %21 to %"struct.pov::Mesh_Data_Struct"**, !dbg !2987
-  %23 = load %"struct.pov::Mesh_Data_Struct"** %22, align 8, !dbg !2987, !tbaa !2084
-  %24 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %23, i64 0, i32 0, !dbg !2989
-  %25 = load i32* %24, align 4, !dbg !2990, !tbaa !2896
-  %26 = add nsw i32 %25, -1, !dbg !2990
-  store i32 %26, i32* %24, align 4, !dbg !2990, !tbaa !2896
-  %27 = icmp eq i32 %26, 0, !dbg !2991
-  br i1 %27, label %28, label %65, !dbg !2992
+if.then10:                                        ; preds = %if.then6
+  %17 = bitcast [3 x float]* %16 to i8*, !dbg !2344
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %17, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 862) #7, !dbg !2344
+  %18 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2344, !tbaa !1750
+  %Normals14 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %18, i64 0, i32 5, !dbg !2344
+  store [3 x float]* null, [3 x float]** %Normals14, align 8, !dbg !2344, !tbaa !1750
+  %.pre = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2347, !tbaa !1750
+  br label %if.end15, !dbg !2348
 
-; <label>:28                                      ; preds = %20
-  %29 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %23, i64 0, i32 9, !dbg !2993
-  %30 = load %"struct.pov::BBox_Tree_Struct"** %29, align 8, !dbg !2993, !tbaa !2086
-  tail call void @_ZN3pov17Destroy_BBox_TreeEPNS_16BBox_Tree_StructE(%"struct.pov::BBox_Tree_Struct"* %30) #7, !dbg !2995
-  %31 = load %"struct.pov::Mesh_Data_Struct"** %22, align 8, !dbg !2996, !tbaa !2084
-  %32 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %31, i64 0, i32 5, !dbg !2998
-  %33 = load [3 x float]** %32, align 8, !dbg !2998, !tbaa !2396
-  %34 = icmp eq [3 x float]* %33, null, !dbg !2999
-  br i1 %34, label %39, label %35, !dbg !3000
+if.end15:                                         ; preds = %if.then6, %if.then10
+  %19 = phi %"struct.pov::Mesh_Data_Struct"* [ %15, %if.then6 ], [ %.pre, %if.then10 ]
+  %UVCoords = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %19, i64 0, i32 7, !dbg !2347
+  %20 = load [2 x double]** %UVCoords, align 8, !dbg !2347, !tbaa !1750
+  %cmp17 = icmp eq [2 x double]* %20, null, !dbg !2347
+  br i1 %cmp17, label %if.end23, label %if.then18, !dbg !2347
 
-; <label>:35                                      ; preds = %28
-  %36 = bitcast [3 x float]* %33 to i8*, !dbg !3001
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %36, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 862) #7, !dbg !3001
-  %37 = load %"struct.pov::Mesh_Data_Struct"** %22, align 8, !dbg !3001, !tbaa !2084
-  %38 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %37, i64 0, i32 5, !dbg !3001
-  store [3 x float]* null, [3 x float]** %38, align 8, !dbg !3001, !tbaa !2396
-  br label %39, !dbg !3004
+if.then18:                                        ; preds = %if.end15
+  %21 = bitcast [2 x double]* %20 to i8*, !dbg !2349
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %21, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 868) #7, !dbg !2349
+  %22 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2349, !tbaa !1750
+  %UVCoords22 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %22, i64 0, i32 7, !dbg !2349
+  store [2 x double]* null, [2 x double]** %UVCoords22, align 8, !dbg !2349, !tbaa !1750
+  %.pre71 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2352, !tbaa !1750
+  br label %if.end23, !dbg !2353
 
-; <label>:39                                      ; preds = %28, %35
-  %.in = phi %"struct.pov::Mesh_Data_Struct"* [ %31, %28 ], [ %37, %35 ]
-  %40 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %.in, i64 0, i32 7, !dbg !3005
-  %41 = load [2 x double]** %40, align 8, !dbg !3005, !tbaa !2857
-  %42 = icmp eq [2 x double]* %41, null, !dbg !3007
-  br i1 %42, label %47, label %43, !dbg !3008
+if.end23:                                         ; preds = %if.end15, %if.then18
+  %23 = phi %"struct.pov::Mesh_Data_Struct"* [ %19, %if.end15 ], [ %.pre71, %if.then18 ]
+  %Vertices = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %23, i64 0, i32 6, !dbg !2352
+  %24 = load [3 x float]** %Vertices, align 8, !dbg !2352, !tbaa !1750
+  %cmp25 = icmp eq [3 x float]* %24, null, !dbg !2352
+  br i1 %cmp25, label %if.end31, label %if.then26, !dbg !2352
 
-; <label>:43                                      ; preds = %39
-  %44 = bitcast [2 x double]* %41 to i8*, !dbg !3009
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %44, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 868) #7, !dbg !3009
-  %45 = load %"struct.pov::Mesh_Data_Struct"** %22, align 8, !dbg !3009, !tbaa !2084
-  %46 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %45, i64 0, i32 7, !dbg !3009
-  store [2 x double]* null, [2 x double]** %46, align 8, !dbg !3009, !tbaa !2857
-  br label %47, !dbg !3012
+if.then26:                                        ; preds = %if.end23
+  %25 = bitcast [3 x float]* %24 to i8*, !dbg !2354
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %25, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 874) #7, !dbg !2354
+  %26 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2354, !tbaa !1750
+  %Vertices30 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %26, i64 0, i32 6, !dbg !2354
+  store [3 x float]* null, [3 x float]** %Vertices30, align 8, !dbg !2354, !tbaa !1750
+  %.pre72 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2357, !tbaa !1750
+  br label %if.end31, !dbg !2358
 
-; <label>:47                                      ; preds = %39, %43
-  %.in5 = phi %"struct.pov::Mesh_Data_Struct"* [ %.in, %39 ], [ %45, %43 ]
-  %48 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %.in5, i64 0, i32 6, !dbg !3013
-  %49 = load [3 x float]** %48, align 8, !dbg !3013, !tbaa !2426
-  %50 = icmp eq [3 x float]* %49, null, !dbg !3015
-  br i1 %50, label %55, label %51, !dbg !3016
+if.end31:                                         ; preds = %if.end23, %if.then26
+  %27 = phi %"struct.pov::Mesh_Data_Struct"* [ %23, %if.end23 ], [ %.pre72, %if.then26 ]
+  %Triangles = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %27, i64 0, i32 8, !dbg !2357
+  %28 = load %"struct.pov::Mesh_Triangle_Struct"** %Triangles, align 8, !dbg !2357, !tbaa !1750
+  %cmp33 = icmp eq %"struct.pov::Mesh_Triangle_Struct"* %28, null, !dbg !2357
+  br i1 %cmp33, label %if.end39, label %if.then34, !dbg !2357
 
-; <label>:51                                      ; preds = %47
-  %52 = bitcast [3 x float]* %49 to i8*, !dbg !3017
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %52, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 874) #7, !dbg !3017
-  %53 = load %"struct.pov::Mesh_Data_Struct"** %22, align 8, !dbg !3017, !tbaa !2084
-  %54 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %53, i64 0, i32 6, !dbg !3017
-  store [3 x float]* null, [3 x float]** %54, align 8, !dbg !3017, !tbaa !2426
-  br label %55, !dbg !3020
+if.then34:                                        ; preds = %if.end31
+  %29 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %28, i64 0, i32 0, !dbg !2359
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %29, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 879) #7, !dbg !2359
+  %30 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2359, !tbaa !1750
+  %Triangles38 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %30, i64 0, i32 8, !dbg !2359
+  store %"struct.pov::Mesh_Triangle_Struct"* null, %"struct.pov::Mesh_Triangle_Struct"** %Triangles38, align 8, !dbg !2359, !tbaa !1750
+  %.pre73 = load %"struct.pov::Mesh_Data_Struct"** %11, align 8, !dbg !2362, !tbaa !1750
+  br label %if.end39, !dbg !2364
 
-; <label>:55                                      ; preds = %47, %51
-  %.in6 = phi %"struct.pov::Mesh_Data_Struct"* [ %.in5, %47 ], [ %53, %51 ]
-  %56 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %.in6, i64 0, i32 8, !dbg !3021
-  %57 = load %"struct.pov::Mesh_Triangle_Struct"** %56, align 8, !dbg !3021, !tbaa !2102
-  %58 = icmp eq %"struct.pov::Mesh_Triangle_Struct"* %57, null, !dbg !3023
-  br i1 %58, label %63, label %59, !dbg !3024
+if.end39:                                         ; preds = %if.end31, %if.then34
+  %31 = phi %"struct.pov::Mesh_Data_Struct"* [ %27, %if.end31 ], [ %.pre73, %if.then34 ]
+  %32 = bitcast %"struct.pov::Mesh_Data_Struct"* %31 to i8*, !dbg !2362
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %32, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 882) #7, !dbg !2362
+  %33 = getelementptr inbounds %"struct.pov::Object_Struct"* %Data, i64 0, i32 0, !dbg !2362
+  store %"struct.pov::Method_Struct"* null, %"struct.pov::Method_Struct"** %33, align 8, !dbg !2362, !tbaa !1750
+  br label %if.end42, !dbg !2365
 
-; <label>:59                                      ; preds = %55
-  %60 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %57, i64 0, i32 0, !dbg !3025
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %60, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 879) #7, !dbg !3025
-  %61 = load %"struct.pov::Mesh_Data_Struct"** %22, align 8, !dbg !3025, !tbaa !2084
-  %62 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %61, i64 0, i32 8, !dbg !3025
-  store %"struct.pov::Mesh_Triangle_Struct"* null, %"struct.pov::Mesh_Triangle_Struct"** %62, align 8, !dbg !3025, !tbaa !2102
-  br label %63, !dbg !3028
-
-; <label>:63                                      ; preds = %55, %59
-  %.in7 = phi %"struct.pov::Mesh_Data_Struct"* [ %.in6, %55 ], [ %61, %59 ]
-  %64 = bitcast %"struct.pov::Mesh_Data_Struct"* %.in7 to i8*
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %64, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 882) #7, !dbg !3029
-  store %"struct.pov::Mesh_Data_Struct"* null, %"struct.pov::Mesh_Data_Struct"** %22, align 8, !dbg !3029, !tbaa !2084
-  br label %65, !dbg !3031
-
-; <label>:65                                      ; preds = %63, %20
-  %66 = bitcast %"struct.pov::Object_Struct"* %Object to i8*, !dbg !3032
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %66, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 885) #7, !dbg !3032
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* null, i64 0, metadata !1398, metadata !2016), !dbg !2967
-  ret void, !dbg !3034
+if.end42:                                         ; preds = %if.end39, %if.end
+  %34 = bitcast %"struct.pov::Object_Struct"* %Object to i8*, !dbg !2366
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %34, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 885) #7, !dbg !2366
+  tail call void @llvm.dbg.value(metadata !2368, i64 0, metadata !1422), !dbg !2366
+  ret void, !dbg !2369
 }

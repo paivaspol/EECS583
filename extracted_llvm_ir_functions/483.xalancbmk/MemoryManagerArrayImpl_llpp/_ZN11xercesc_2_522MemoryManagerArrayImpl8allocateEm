@@ -1,0 +1,48 @@
+define noalias i8* @_ZN11xercesc_2_522MemoryManagerArrayImpl8allocateEm(%"class.xercesc_2_5::MemoryManagerArrayImpl"* nocapture %this, i64 %size) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManagerArrayImpl"* %this}, i64 0, metadata !486), !dbg !614
+  tail call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !489), !dbg !614
+  %call = invoke noalias i8* @_Znam(i64 %size) #8
+          to label %invoke.cont unwind label %invoke.cont3, !dbg !615
+
+invoke.cont:                                      ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !490), !dbg !615
+  %cmp = icmp eq i8* %call, null, !dbg !617
+  br i1 %cmp, label %invoke.cont8, label %if.then, !dbg !617
+
+invoke.cont3:                                     ; preds = %entry
+  %0 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !615
+  %1 = extractvalue { i8*, i32 } %0, 0, !dbg !615
+  %2 = tail call i8* @__cxa_begin_catch(i8* %1) #9, !dbg !618
+  %exception = tail call i8* @__cxa_allocate_exception(i64 1) #9, !dbg !619
+  invoke void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_520OutOfMemoryExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::OutOfMemoryException"*)* @_ZN11xercesc_2_520OutOfMemoryExceptionD1Ev to i8*)) #10
+          to label %unreachable unwind label %ehcleanup, !dbg !619
+
+ehcleanup:                                        ; preds = %invoke.cont3
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !619
+  invoke void @__cxa_end_catch()
+          to label %eh.resume unwind label %terminate.lpad, !dbg !621
+
+if.then:                                          ; preds = %invoke.cont
+  ret i8* %call, !dbg !622
+
+invoke.cont8:                                     ; preds = %invoke.cont
+  %exception6 = tail call i8* @__cxa_allocate_exception(i64 1) #9, !dbg !624
+  tail call void @__cxa_throw(i8* %exception6, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_520OutOfMemoryExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::OutOfMemoryException"*)* @_ZN11xercesc_2_520OutOfMemoryExceptionD1Ev to i8*)) #10, !dbg !624
+  unreachable, !dbg !624
+
+eh.resume:                                        ; preds = %ehcleanup
+  resume { i8*, i32 } %3, !dbg !621
+
+terminate.lpad:                                   ; preds = %ehcleanup
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !621
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !621
+  tail call void @__clang_call_terminate(i8* %5) #11, !dbg !621
+  unreachable, !dbg !621
+
+unreachable:                                      ; preds = %invoke.cont3
+  unreachable
+}

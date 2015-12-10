@@ -1,41 +1,42 @@
 define void @_ZN3pov18Transform_TexturesEPNS_14Texture_StructEPNS_16Transform_StructE(%"struct.pov::Texture_Struct"* %Textures, %"struct.pov::Transform_Struct"* %Trans) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Texture_Struct"* %Textures, i64 0, metadata !1114, metadata !1747), !dbg !2780
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1115, metadata !1747), !dbg !2781
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Texture_Struct"* %Textures, i64 0, metadata !1116, metadata !1747), !dbg !2782
-  %1 = icmp eq %"struct.pov::Texture_Struct"* %Textures, null, !dbg !2783
-  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !2786
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Texture_Struct"* %Textures}, i64 0, metadata !1102), !dbg !2065
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1103), !dbg !2065
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Texture_Struct"* %Textures}, i64 0, metadata !1104), !dbg !2066
+  %cmp8 = icmp eq %"struct.pov::Texture_Struct"* %Textures, null, !dbg !2066
+  br i1 %cmp8, label %for.end, label %for.body, !dbg !2066
 
-.lr.ph:                                           ; preds = %0, %14
-  %Layer.01 = phi %"struct.pov::Texture_Struct"* [ %17, %14 ], [ %Textures, %0 ]
-  %2 = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.01, i64 0, i32 0, !dbg !2787
-  %3 = load i16* %2, align 2, !dbg !2787, !tbaa !2790
-  %4 = icmp eq i16 %3, 1, !dbg !2792
-  br i1 %4, label %5, label %12, !dbg !2793
+for.body:                                         ; preds = %entry, %for.inc
+  %Layer.09 = phi %"struct.pov::Texture_Struct"* [ %7, %for.inc ], [ %Textures, %entry ]
+  %Type = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.09, i64 0, i32 0, !dbg !2068
+  %0 = load i16* %Type, align 2, !dbg !2068, !tbaa !1459
+  %cmp1 = icmp eq i16 %0, 1, !dbg !2068
+  br i1 %cmp1, label %if.then, label %if.else, !dbg !2068
 
-; <label>:5                                       ; preds = %.lr.ph
-  %6 = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.01, i64 0, i32 12, !dbg !2794
-  %7 = bitcast %"struct.pov::Pigment_Struct"** %6 to %"struct.pov::Pattern_Struct"**, !dbg !2794
-  %8 = load %"struct.pov::Pattern_Struct"** %7, align 8, !dbg !2794, !tbaa !2796
-  tail call void @_ZN3pov18Transform_TpatternEPNS_14Pattern_StructEPNS_16Transform_StructE(%"struct.pov::Pattern_Struct"* %8, %"struct.pov::Transform_Struct"* %Trans) #8, !dbg !2797
-  %9 = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.01, i64 0, i32 13, !dbg !2798
-  %10 = bitcast %"struct.pov::Tnormal_Struct"** %9 to %"struct.pov::Pattern_Struct"**, !dbg !2798
-  %11 = load %"struct.pov::Pattern_Struct"** %10, align 8, !dbg !2798, !tbaa !2799
-  tail call void @_ZN3pov18Transform_TpatternEPNS_14Pattern_StructEPNS_16Transform_StructE(%"struct.pov::Pattern_Struct"* %11, %"struct.pov::Transform_Struct"* %Trans) #8, !dbg !2800
-  br label %14, !dbg !2801
+if.then:                                          ; preds = %for.body
+  %Pigment = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.09, i64 0, i32 12, !dbg !2070
+  %1 = load %"struct.pov::Pigment_Struct"** %Pigment, align 8, !dbg !2070, !tbaa !1545
+  %2 = bitcast %"struct.pov::Pigment_Struct"* %1 to %"struct.pov::Pattern_Struct"*, !dbg !2070
+  tail call void @_ZN3pov18Transform_TpatternEPNS_14Pattern_StructEPNS_16Transform_StructE(%"struct.pov::Pattern_Struct"* %2, %"struct.pov::Transform_Struct"* %Trans) #9, !dbg !2070
+  %Tnormal = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.09, i64 0, i32 13, !dbg !2072
+  %3 = load %"struct.pov::Tnormal_Struct"** %Tnormal, align 8, !dbg !2072, !tbaa !1545
+  %4 = bitcast %"struct.pov::Tnormal_Struct"* %3 to %"struct.pov::Pattern_Struct"*, !dbg !2072
+  tail call void @_ZN3pov18Transform_TpatternEPNS_14Pattern_StructEPNS_16Transform_StructE(%"struct.pov::Pattern_Struct"* %4, %"struct.pov::Transform_Struct"* %Trans) #9, !dbg !2072
+  br label %for.inc, !dbg !2073
 
-; <label>:12                                      ; preds = %.lr.ph
-  %13 = bitcast %"struct.pov::Texture_Struct"* %Layer.01 to %"struct.pov::Pattern_Struct"*, !dbg !2802
-  tail call void @_ZN3pov18Transform_TpatternEPNS_14Pattern_StructEPNS_16Transform_StructE(%"struct.pov::Pattern_Struct"* %13, %"struct.pov::Transform_Struct"* %Trans) #8, !dbg !2804
-  br label %14
+if.else:                                          ; preds = %for.body
+  %5 = bitcast %"struct.pov::Texture_Struct"* %Layer.09 to %"struct.pov::Pattern_Struct"*, !dbg !2074
+  tail call void @_ZN3pov18Transform_TpatternEPNS_14Pattern_StructEPNS_16Transform_StructE(%"struct.pov::Pattern_Struct"* %5, %"struct.pov::Transform_Struct"* %Trans) #9, !dbg !2074
+  br label %for.inc
 
-; <label>:14                                      ; preds = %5, %12
-  %15 = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.01, i64 0, i32 8, !dbg !2805
-  %16 = bitcast %"struct.pov::Pattern_Struct"** %15 to %"struct.pov::Texture_Struct"**, !dbg !2805
-  %17 = load %"struct.pov::Texture_Struct"** %16, align 8, !dbg !2805, !tbaa !2806
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Texture_Struct"* %17, i64 0, metadata !1116, metadata !1747), !dbg !2782
-  %18 = icmp eq %"struct.pov::Texture_Struct"* %17, null, !dbg !2783
-  br i1 %18, label %._crit_edge, label %.lr.ph, !dbg !2786
+for.inc:                                          ; preds = %if.then, %if.else
+  %Next = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.09, i64 0, i32 8, !dbg !2066
+  %6 = load %"struct.pov::Pattern_Struct"** %Next, align 8, !dbg !2066, !tbaa !1545
+  %7 = bitcast %"struct.pov::Pattern_Struct"* %6 to %"struct.pov::Texture_Struct"*, !dbg !2066
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Texture_Struct"* %7}, i64 0, metadata !1104), !dbg !2066
+  %cmp = icmp eq %"struct.pov::Pattern_Struct"* %6, null, !dbg !2066
+  br i1 %cmp, label %for.end, label %for.body, !dbg !2066
 
-._crit_edge:                                      ; preds = %14, %0
-  ret void, !dbg !2807
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !2076
 }

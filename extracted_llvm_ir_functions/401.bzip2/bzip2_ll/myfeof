@@ -1,15 +1,16 @@
-define internal fastcc zeroext i8 @myfeof(%struct.__sFILE* nocapture %f) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %f, i64 0, metadata !358, metadata !524), !dbg !2673
-  %1 = tail call i32 @fgetc(%struct.__sFILE* %f) #9, !dbg !2674
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !359, metadata !524), !dbg !2675
-  %2 = icmp eq i32 %1, -1, !dbg !2676
-  br i1 %2, label %5, label %3, !dbg !2678
+define internal fastcc zeroext i8 @myfeof(%struct._IO_FILE* nocapture %f) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %f}, i64 0, metadata !199), !dbg !1447
+  %call = tail call i32 @fgetc(%struct._IO_FILE* %f) #10, !dbg !1448
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !200), !dbg !1448
+  %cmp = icmp eq i32 %call, -1, !dbg !1449
+  br i1 %cmp, label %return, label %if.end, !dbg !1449
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @ungetc(i32 %1, %struct.__sFILE* %f) #9, !dbg !2679
-  br label %5, !dbg !2680
+if.end:                                           ; preds = %entry
+  %call1 = tail call i32 @ungetc(i32 %call, %struct._IO_FILE* %f) #10, !dbg !1450
+  br label %return, !dbg !1451
 
-; <label>:5                                       ; preds = %0, %3
-  %.0 = phi i8 [ 0, %3 ], [ 1, %0 ]
-  ret i8 %.0, !dbg !2681
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i8 [ 0, %if.end ], [ 1, %entry ]
+  ret i8 %retval.0, !dbg !1451
 }

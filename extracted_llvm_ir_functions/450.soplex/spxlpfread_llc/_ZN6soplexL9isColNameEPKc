@@ -1,18 +1,21 @@
-define internal fastcc zeroext i1 @_ZN6soplexL9isColNameEPKc(i8* nocapture readonly %s) #8 {
-  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !4116, metadata !5395), !dbg !6667
-  %1 = load i8* %s, align 1, !dbg !6668, !tbaa !5639
-  %2 = and i8 %1, -33, !dbg !6669
-  %3 = add i8 %2, -65, !dbg !6669
-  %4 = icmp ult i8 %3, 26, !dbg !6669
-  br i1 %4, label %8, label %5, !dbg !6669
+define internal fastcc zeroext i1 @_ZN6soplexL9isColNameEPKc(i8* nocapture %s) #7 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !5517), !dbg !6347
+  %0 = load i8* %s, align 1, !dbg !6348, !tbaa !5728
+  %.off = add i8 %0, -65, !dbg !6348
+  %1 = icmp ult i8 %.off, 26, !dbg !6348
+  %.off15 = add i8 %0, -97, !dbg !6348
+  %2 = icmp ult i8 %.off15, 26, !dbg !6348
+  %or.cond = or i1 %1, %2, !dbg !6348
+  br i1 %or.cond, label %lor.end, label %lor.rhs, !dbg !6348
 
-; <label>:5                                       ; preds = %0
-  %6 = sext i8 %1 to i32, !dbg !6670
-  %memchr = tail call i8* @memchr(i8* getelementptr inbounds ([21 x i8]* @.str21, i64 0, i64 0), i32 %6, i64 21), !dbg !6671
-  %7 = icmp ne i8* %memchr, null, !dbg !6672
-  br label %8, !dbg !6673
+lor.rhs:                                          ; preds = %entry
+  %conv8 = sext i8 %0 to i32, !dbg !6350
+  %memchr = tail call i8* @memchr(i8* getelementptr inbounds ([21 x i8]* @.str24, i64 0, i64 0), i32 %conv8, i64 21), !dbg !6350
+  %cmp9 = icmp ne i8* %memchr, null, !dbg !6350
+  br label %lor.end, !dbg !6350
 
-; <label>:8                                       ; preds = %0, %5
-  %9 = phi i1 [ %7, %5 ], [ true, %0 ]
-  ret i1 %9, !dbg !6674
+lor.end:                                          ; preds = %entry, %lor.rhs
+  %3 = phi i1 [ %cmp9, %lor.rhs ], [ true, %entry ]
+  ret i1 %3, !dbg !6350
 }

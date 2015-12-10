@@ -1,33 +1,34 @@
-define linkonce_odr void @_ZN6soplex9DataArrayIdE6reSizeEi(%"class.soplex::DataArray.0"* nocapture %this, i32 %newsize) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %this, i64 0, metadata !6247, metadata !7116), !dbg !8222
-  tail call void @llvm.dbg.value(metadata i32 %newsize, i64 0, metadata !6248, metadata !7116), !dbg !8223
-  %1 = getelementptr inbounds %"class.soplex::DataArray.0"* %this, i64 0, i32 1, !dbg !8224
-  %2 = load i32* %1, align 4, !dbg !8224, !tbaa !7142
-  %3 = icmp slt i32 %2, %newsize, !dbg !8226
-  br i1 %3, label %4, label %11, !dbg !8227
+define linkonce_odr void @_ZN6soplex9DataArrayIdE6reSizeEi(%"class.soplex::DataArray.0"* nocapture %this, i32 %newsize) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.0"* %this}, i64 0, metadata !7371), !dbg !8753
+  tail call void @llvm.dbg.value(metadata !{i32 %newsize}, i64 0, metadata !7372), !dbg !8753
+  %themax = getelementptr inbounds %"class.soplex::DataArray.0"* %this, i64 0, i32 1, !dbg !8754
+  %0 = load i32* %themax, align 4, !dbg !8754, !tbaa !7989
+  %cmp = icmp slt i32 %0, %newsize, !dbg !8754
+  br i1 %cmp, label %if.then, label %if.else, !dbg !8754
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %"class.soplex::DataArray.0"* %this, i64 0, i32 3, !dbg !8228
-  %6 = load double* %5, align 8, !dbg !8228, !tbaa !7151
-  %7 = sitofp i32 %newsize to double, !dbg !8229
-  %8 = fmul double %7, %6, !dbg !8230
-  %9 = fptosi double %8 to i32, !dbg !8228
-  %10 = tail call i64 @_ZN6soplex9DataArrayIdE5reMaxEii(%"class.soplex::DataArray.0"* %this, i32 %9, i32 %newsize) #12, !dbg !8231
-  br label %16, !dbg !8231
+if.then:                                          ; preds = %entry
+  %memFactor = getelementptr inbounds %"class.soplex::DataArray.0"* %this, i64 0, i32 3, !dbg !8756
+  %1 = load double* %memFactor, align 8, !dbg !8756, !tbaa !7990
+  %conv = sitofp i32 %newsize to double, !dbg !8756
+  %mul = fmul double %conv, %1, !dbg !8756
+  %conv2 = fptosi double %mul to i32, !dbg !8756
+  %call = tail call i64 @_ZN6soplex9DataArrayIdE5reMaxEii(%"class.soplex::DataArray.0"* %this, i32 %conv2, i32 %newsize) #11, !dbg !8756
+  br label %if.end7, !dbg !8756
 
-; <label>:11                                      ; preds = %0
-  %12 = icmp slt i32 %newsize, 0, !dbg !8232
-  %13 = getelementptr inbounds %"class.soplex::DataArray.0"* %this, i64 0, i32 0, !dbg !8234
-  br i1 %12, label %14, label %15, !dbg !8235
+if.else:                                          ; preds = %entry
+  %cmp3 = icmp slt i32 %newsize, 0, !dbg !8757
+  %thesize = getelementptr inbounds %"class.soplex::DataArray.0"* %this, i64 0, i32 0, !dbg !8758
+  br i1 %cmp3, label %if.then4, label %if.else5, !dbg !8757
 
-; <label>:14                                      ; preds = %11
-  store i32 0, i32* %13, align 4, !dbg !8236, !tbaa !7146
-  br label %16, !dbg !8234
+if.then4:                                         ; preds = %if.else
+  store i32 0, i32* %thesize, align 4, !dbg !8758, !tbaa !7989
+  br label %if.end7, !dbg !8758
 
-; <label>:15                                      ; preds = %11
-  store i32 %newsize, i32* %13, align 4, !dbg !8237, !tbaa !7146
-  br label %16
+if.else5:                                         ; preds = %if.else
+  store i32 %newsize, i32* %thesize, align 4, !dbg !8759, !tbaa !7989
+  br label %if.end7
 
-; <label>:16                                      ; preds = %14, %15, %4
-  ret void, !dbg !8238
+if.end7:                                          ; preds = %if.then4, %if.else5, %if.then
+  ret void, !dbg !8760
 }

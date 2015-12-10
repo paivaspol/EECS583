@@ -1,15 +1,16 @@
-define void @bndscalarvn_(i32* nocapture %ierr, %struct.cGH* %GH, i32* %stencil, double* nocapture readonly %scalar, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !224, metadata !1207), !dbg !2192
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !225, metadata !1207), !dbg !2193
-  tail call void @llvm.dbg.value(metadata i32* %stencil, i64 0, metadata !226, metadata !1207), !dbg !2194
-  tail call void @llvm.dbg.value(metadata double* %scalar, i64 0, metadata !227, metadata !1207), !dbg !2195
-  tail call void @llvm.dbg.value(metadata i8* %cctk_str1, i64 0, metadata !228, metadata !1207), !dbg !2196
-  tail call void @llvm.dbg.value(metadata i32 %cctk_strlen1, i64 0, metadata !229, metadata !1207), !dbg !2196
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #6, !dbg !2197
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !230, metadata !1207), !dbg !2197
-  %2 = load double* %scalar, align 8, !dbg !2198, !tbaa !1486
-  %3 = tail call i32 @BndScalarVN(%struct.cGH* %GH, i32* %stencil, double %2, i8* %1) #7, !dbg !2199
-  store i32 %3, i32* %ierr, align 4, !dbg !2200, !tbaa !1262
-  tail call void @free(i8* %1) #7, !dbg !2201
-  ret void, !dbg !2202
+define void @bndscalarvn_(i32* nocapture %ierr, %struct.cGH* %GH, i32* %stencil, double* nocapture %scalar, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !199), !dbg !1465
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !200), !dbg !1466
+  tail call void @llvm.dbg.value(metadata !{i32* %stencil}, i64 0, metadata !201), !dbg !1467
+  tail call void @llvm.dbg.value(metadata !{double* %scalar}, i64 0, metadata !202), !dbg !1468
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !203), !dbg !1469
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !204), !dbg !1469
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #6, !dbg !1470
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !205), !dbg !1470
+  %0 = load double* %scalar, align 8, !dbg !1471, !tbaa !1030
+  %call1 = tail call i32 @BndScalarVN(%struct.cGH* %GH, i32* %stencil, double %0, i8* %call) #7, !dbg !1471
+  store i32 %call1, i32* %ierr, align 4, !dbg !1471, !tbaa !922
+  tail call void @free(i8* %call) #6, !dbg !1472
+  ret void, !dbg !1473
 }

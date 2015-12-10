@@ -1,0 +1,40 @@
+define linkonce_odr i64 @_ZNKSt6vectorItSaItEE12_M_check_lenEmPKc(%"class.std::vector.0"* nocapture %this, i64 %__n, i8* %__s) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %this}, i64 0, metadata !2451), !dbg !6325
+  tail call void @llvm.dbg.value(metadata !{i64 %__n}, i64 0, metadata !2453), !dbg !6325
+  tail call void @llvm.dbg.value(metadata !{i64 %__n}, i64 0, metadata !6326), !dbg !6328
+  tail call void @llvm.dbg.value(metadata !{i64 %__n}, i64 0, metadata !2453), !dbg !6329
+  tail call void @llvm.dbg.value(metadata !{i8* %__s}, i64 0, metadata !2454), !dbg !6325
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %this}, i64 0, metadata !6330), !dbg !6331
+  %_M_finish.i25 = getelementptr inbounds %"class.std::vector.0"* %this, i64 0, i32 0, i32 0, i32 1, !dbg !6332
+  %0 = load i16** %_M_finish.i25, align 8, !dbg !6332, !tbaa !4007
+  %_M_start.i26 = getelementptr inbounds %"class.std::vector.0"* %this, i64 0, i32 0, i32 0, i32 0, !dbg !6332
+  %1 = load i16** %_M_start.i26, align 8, !dbg !6332, !tbaa !4007
+  %sub.ptr.lhs.cast.i27 = ptrtoint i16* %0 to i64, !dbg !6332
+  %sub.ptr.rhs.cast.i28 = ptrtoint i16* %1 to i64, !dbg !6332
+  %sub.ptr.sub.i29 = sub i64 %sub.ptr.lhs.cast.i27, %sub.ptr.rhs.cast.i28, !dbg !6332
+  %sub.ptr.div.i30 = ashr exact i64 %sub.ptr.sub.i29, 1, !dbg !6332
+  %sub = sub i64 9223372036854775807, %sub.ptr.div.i30, !dbg !6329
+  %cmp = icmp ult i64 %sub, %__n, !dbg !6329
+  br i1 %cmp, label %if.then, label %if.end, !dbg !6329
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZSt20__throw_length_errorPKc(i8* %__s) #11, !dbg !6333
+  unreachable, !dbg !6333
+
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %this}, i64 0, metadata !6334), !dbg !6335
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %this}, i64 0, metadata !6334), !dbg !6335
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.div.i30}, i64 0, metadata !6336), !dbg !6328
+  %cmp.i = icmp ult i64 %sub.ptr.div.i30, %__n, !dbg !6337
+  %.sroa.speculated = select i1 %cmp.i, i64 %__n, i64 %sub.ptr.div.i30, !dbg !6327
+  %uadd = tail call { i64, i1 } @llvm.uadd.with.overflow.i64(i64 %sub.ptr.div.i30, i64 %.sroa.speculated), !dbg !6327
+  %2 = extractvalue { i64, i1 } %uadd, 0, !dbg !6327
+  tail call void @llvm.dbg.value(metadata !{i64 %2}, i64 0, metadata !2455), !dbg !6327
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %this}, i64 0, metadata !6339), !dbg !6341
+  %cmp7 = extractvalue { i64, i1 } %uadd, 1, !dbg !6340
+  %cmp9 = icmp slt i64 %2, 0, !dbg !6340
+  %or.cond = or i1 %cmp7, %cmp9, !dbg !6340
+  %cond = select i1 %or.cond, i64 9223372036854775807, i64 %2, !dbg !6340
+  ret i64 %cond, !dbg !6340
+}

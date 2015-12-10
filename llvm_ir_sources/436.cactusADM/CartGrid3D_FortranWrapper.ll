@@ -1,6 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/CartGrid3D_FortranWrapper.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/CartGrid3D_FortranWrapper.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.cGH = type { i32, i32, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double, double*, double*, i32*, i32*, i32, i32*, double, i8***, i8**, %struct.cGHGroupData* }
 %struct.cGHGroupData = type { i8, i8 }
@@ -25,292 +25,293 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str8 = private unnamed_addr constant [8 x i8] c"grid::z\00", align 1
 @_cctk_one = external global i32
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTKi_BindingsFortranWrapperCartGrid3D(%struct.cGH* %GH, i8* nocapture %fpointer) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !53, metadata !70), !dbg !71
-  tail call void @llvm.dbg.value(metadata i8* %fpointer, i64 0, metadata !54, metadata !70), !dbg !72
-  %1 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dx, align 4, !dbg !73, !tbaa !75
-  %2 = icmp eq i32 %1, -1, !dbg !73
-  br i1 %2, label %3, label %5, !dbg !79
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !48), !dbg !66
+  tail call void @llvm.dbg.value(metadata !{i8* %fpointer}, i64 0, metadata !49), !dbg !66
+  %0 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dx, align 4, !dbg !67, !tbaa !68
+  %cmp = icmp eq i32 %0, -1, !dbg !67
+  br i1 %cmp, label %if.then, label %if.end, !dbg !67
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str, i64 0, i64 0)) #3, !dbg !73
-  store i32 %4, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dx, align 4, !dbg !73, !tbaa !75
-  br label %5, !dbg !73
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str, i64 0, i64 0)) #3, !dbg !67
+  store i32 %call, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dx, align 4, !dbg !67, !tbaa !68
+  br label %if.end, !dbg !67
 
-; <label>:5                                       ; preds = %3, %0
-  %6 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_gridspacings, align 4, !dbg !80, !tbaa !75
-  %7 = icmp eq i32 %6, -1, !dbg !80
-  br i1 %7, label %8, label %10, !dbg !79
+if.end:                                           ; preds = %if.then, %entry
+  %1 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_gridspacings, align 4, !dbg !67, !tbaa !68
+  %cmp1 = icmp eq i32 %1, -1, !dbg !67
+  br i1 %cmp1, label %if.then2, label %if.end4, !dbg !67
 
-; <label>:8                                       ; preds = %5
-  %9 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([19 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !80
-  store i32 %9, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_gridspacings, align 4, !dbg !80, !tbaa !75
-  br label %10, !dbg !80
+if.then2:                                         ; preds = %if.end
+  %call3 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([19 x i8]* @.str1, i64 0, i64 0)) #3, !dbg !67
+  store i32 %call3, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_gridspacings, align 4, !dbg !67, !tbaa !68
+  br label %if.end4, !dbg !67
 
-; <label>:10                                      ; preds = %8, %5
-  %11 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dy, align 4, !dbg !82, !tbaa !75
-  %12 = icmp eq i32 %11, -1, !dbg !82
-  br i1 %12, label %13, label %15, !dbg !79
+if.end4:                                          ; preds = %if.then2, %if.end
+  %2 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dy, align 4, !dbg !67, !tbaa !68
+  %cmp5 = icmp eq i32 %2, -1, !dbg !67
+  br i1 %cmp5, label %if.then6, label %if.end8, !dbg !67
 
-; <label>:13                                      ; preds = %10
-  %14 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str2, i64 0, i64 0)) #3, !dbg !82
-  store i32 %14, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dy, align 4, !dbg !82, !tbaa !75
-  br label %15, !dbg !82
+if.then6:                                         ; preds = %if.end4
+  %call7 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str2, i64 0, i64 0)) #3, !dbg !67
+  store i32 %call7, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dy, align 4, !dbg !67, !tbaa !68
+  br label %if.end8, !dbg !67
 
-; <label>:15                                      ; preds = %13, %10
-  %16 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dz, align 4, !dbg !84, !tbaa !75
-  %17 = icmp eq i32 %16, -1, !dbg !84
-  br i1 %17, label %18, label %20, !dbg !79
+if.end8:                                          ; preds = %if.then6, %if.end4
+  %3 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dz, align 4, !dbg !67, !tbaa !68
+  %cmp9 = icmp eq i32 %3, -1, !dbg !67
+  br i1 %cmp9, label %if.then10, label %if.end12, !dbg !67
 
-; <label>:18                                      ; preds = %15
-  %19 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str3, i64 0, i64 0)) #3, !dbg !84
-  store i32 %19, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dz, align 4, !dbg !84, !tbaa !75
-  br label %20, !dbg !84
+if.then10:                                        ; preds = %if.end8
+  %call11 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str3, i64 0, i64 0)) #3, !dbg !67
+  store i32 %call11, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dz, align 4, !dbg !67, !tbaa !68
+  br label %if.end12, !dbg !67
 
-; <label>:20                                      ; preds = %18, %15
-  %21 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_r, align 4, !dbg !86, !tbaa !75
-  %22 = icmp eq i32 %21, -1, !dbg !86
-  br i1 %22, label %23, label %25, !dbg !79
+if.end12:                                         ; preds = %if.then10, %if.end8
+  %4 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_r, align 4, !dbg !67, !tbaa !68
+  %cmp13 = icmp eq i32 %4, -1, !dbg !67
+  br i1 %cmp13, label %if.then14, label %if.end16, !dbg !67
 
-; <label>:23                                      ; preds = %20
-  %24 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0)) #3, !dbg !86
-  store i32 %24, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_r, align 4, !dbg !86, !tbaa !75
-  br label %25, !dbg !86
+if.then14:                                        ; preds = %if.end12
+  %call15 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0)) #3, !dbg !67
+  store i32 %call15, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_r, align 4, !dbg !67, !tbaa !68
+  br label %if.end16, !dbg !67
 
-; <label>:25                                      ; preds = %23, %20
-  %26 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, align 4, !dbg !88, !tbaa !75
-  %27 = icmp eq i32 %26, -1, !dbg !88
-  br i1 %27, label %28, label %30, !dbg !79
+if.end16:                                         ; preds = %if.then14, %if.end12
+  %5 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, align 4, !dbg !67, !tbaa !68
+  %cmp17 = icmp eq i32 %5, -1, !dbg !67
+  br i1 %cmp17, label %if.then18, label %if.end20, !dbg !67
 
-; <label>:28                                      ; preds = %25
-  %29 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !88
-  store i32 %29, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, align 4, !dbg !88, !tbaa !75
-  br label %30, !dbg !88
+if.then18:                                        ; preds = %if.end16
+  %call19 = tail call i32 @CCTK_GroupIndex(i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !67
+  store i32 %call19, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, align 4, !dbg !67, !tbaa !68
+  br label %if.end20, !dbg !67
 
-; <label>:30                                      ; preds = %28, %25
-  %31 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_x, align 4, !dbg !90, !tbaa !75
-  %32 = icmp eq i32 %31, -1, !dbg !90
-  br i1 %32, label %33, label %35, !dbg !79
+if.end20:                                         ; preds = %if.then18, %if.end16
+  %6 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_x, align 4, !dbg !67, !tbaa !68
+  %cmp21 = icmp eq i32 %6, -1, !dbg !67
+  br i1 %cmp21, label %if.then22, label %if.end24, !dbg !67
 
-; <label>:33                                      ; preds = %30
-  %34 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str6, i64 0, i64 0)) #3, !dbg !90
-  store i32 %34, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_x, align 4, !dbg !90, !tbaa !75
-  br label %35, !dbg !90
+if.then22:                                        ; preds = %if.end20
+  %call23 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str6, i64 0, i64 0)) #3, !dbg !67
+  store i32 %call23, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_x, align 4, !dbg !67, !tbaa !68
+  br label %if.end24, !dbg !67
 
-; <label>:35                                      ; preds = %33, %30
-  %36 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_y, align 4, !dbg !92, !tbaa !75
-  %37 = icmp eq i32 %36, -1, !dbg !92
-  br i1 %37, label %38, label %40, !dbg !79
+if.end24:                                         ; preds = %if.then22, %if.end20
+  %7 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_y, align 4, !dbg !67, !tbaa !68
+  %cmp25 = icmp eq i32 %7, -1, !dbg !67
+  br i1 %cmp25, label %if.then26, label %if.end28, !dbg !67
 
-; <label>:38                                      ; preds = %35
-  %39 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str7, i64 0, i64 0)) #3, !dbg !92
-  store i32 %39, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_y, align 4, !dbg !92, !tbaa !75
-  br label %40, !dbg !92
+if.then26:                                        ; preds = %if.end24
+  %call27 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str7, i64 0, i64 0)) #3, !dbg !67
+  store i32 %call27, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_y, align 4, !dbg !67, !tbaa !68
+  br label %if.end28, !dbg !67
 
-; <label>:40                                      ; preds = %38, %35
-  %41 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_z, align 4, !dbg !94, !tbaa !75
-  %42 = icmp eq i32 %41, -1, !dbg !94
-  br i1 %42, label %43, label %45, !dbg !79
+if.end28:                                         ; preds = %if.then26, %if.end24
+  %8 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_z, align 4, !dbg !67, !tbaa !68
+  %cmp29 = icmp eq i32 %8, -1, !dbg !67
+  br i1 %cmp29, label %if.then30, label %if.end32, !dbg !67
 
-; <label>:43                                      ; preds = %40
-  %44 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !94
-  store i32 %44, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_z, align 4, !dbg !94, !tbaa !75
-  br label %45, !dbg !94
+if.then30:                                        ; preds = %if.end28
+  %call31 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str8, i64 0, i64 0)) #3, !dbg !67
+  store i32 %call31, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_z, align 4, !dbg !67, !tbaa !68
+  br label %if.end32, !dbg !67
 
-; <label>:45                                      ; preds = %43, %40
-  %46 = bitcast i8* %fpointer to void (i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, %struct.cGH*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*)*, !dbg !96
-  tail call void @llvm.dbg.value(metadata void (i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, %struct.cGH*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*)* %46, i64 0, metadata !55, metadata !70), !dbg !97
-  %47 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 0, !dbg !98
-  %48 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 2, !dbg !98
-  %49 = load i32** %48, align 8, !dbg !98, !tbaa !99
-  %50 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 3, !dbg !98
-  %51 = load i32** %50, align 8, !dbg !98, !tbaa !103
-  %52 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 4, !dbg !98
-  %53 = load i32** %52, align 8, !dbg !98, !tbaa !104
-  %54 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 5, !dbg !98
-  %55 = load i32** %54, align 8, !dbg !98, !tbaa !105
-  %56 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 6, !dbg !98
-  %57 = load i32** %56, align 8, !dbg !98, !tbaa !106
-  %58 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 8, !dbg !98
-  %59 = load i32** %58, align 8, !dbg !98, !tbaa !107
-  %60 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 7, !dbg !98
-  %61 = load i32** %60, align 8, !dbg !98, !tbaa !108
-  %62 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 12, !dbg !98
-  %63 = load i32** %62, align 8, !dbg !98, !tbaa !109
-  %64 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 9, !dbg !98
-  %65 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 16, !dbg !98
-  %66 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 10, !dbg !98
-  %67 = load double** %66, align 8, !dbg !98, !tbaa !110
-  %68 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 11, !dbg !98
-  %69 = load double** %68, align 8, !dbg !98, !tbaa !111
-  %70 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 13, !dbg !98
-  %71 = load i32** %70, align 8, !dbg !98, !tbaa !112
-  %72 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 14, !dbg !98
-  %73 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 15, !dbg !98
-  %74 = load i32** %73, align 8, !dbg !98, !tbaa !113
-  %75 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1, !dbg !98
-  %76 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, align 4, !dbg !98, !tbaa !75
-  %77 = icmp slt i32 %76, 0, !dbg !98
-  br i1 %77, label %.thread4, label %78, !dbg !98
+if.end32:                                         ; preds = %if.end28, %if.then30
+  %9 = bitcast i8* %fpointer to void (i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, %struct.cGH*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*)*, !dbg !71
+  tail call void @llvm.dbg.value(metadata !{void (i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double*, double*, double*, double*, i32*, i32*, i32*, i32*, %struct.cGH*, i32*, i32*, i32*, double*, double*, double*, double*, double*, double*, double*)* %9}, i64 0, metadata !50), !dbg !71
+  %cctk_dim = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 0, !dbg !72
+  %cctk_gsh = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 2, !dbg !72
+  %10 = load i32** %cctk_gsh, align 8, !dbg !72, !tbaa !73
+  %cctk_lsh = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 3, !dbg !72
+  %11 = load i32** %cctk_lsh, align 8, !dbg !72, !tbaa !73
+  %cctk_lbnd = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 4, !dbg !72
+  %12 = load i32** %cctk_lbnd, align 8, !dbg !72, !tbaa !73
+  %cctk_ubnd = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 5, !dbg !72
+  %13 = load i32** %cctk_ubnd, align 8, !dbg !72, !tbaa !73
+  %cctk_lssh = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 6, !dbg !72
+  %14 = load i32** %cctk_lssh, align 8, !dbg !72, !tbaa !73
+  %cctk_from = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 8, !dbg !72
+  %15 = load i32** %cctk_from, align 8, !dbg !72, !tbaa !73
+  %cctk_to = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 7, !dbg !72
+  %16 = load i32** %cctk_to, align 8, !dbg !72, !tbaa !73
+  %cctk_bbox = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 12, !dbg !72
+  %17 = load i32** %cctk_bbox, align 8, !dbg !72, !tbaa !73
+  %cctk_delta_time = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 9, !dbg !72
+  %cctk_time = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 16, !dbg !72
+  %cctk_delta_space = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 10, !dbg !72
+  %18 = load double** %cctk_delta_space, align 8, !dbg !72, !tbaa !73
+  %cctk_origin_space = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 11, !dbg !72
+  %19 = load double** %cctk_origin_space, align 8, !dbg !72, !tbaa !73
+  %cctk_levfac = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 13, !dbg !72
+  %20 = load i32** %cctk_levfac, align 8, !dbg !72, !tbaa !73
+  %cctk_convlevel = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 14, !dbg !72
+  %cctk_nghostzones = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 15, !dbg !72
+  %21 = load i32** %cctk_nghostzones, align 8, !dbg !72, !tbaa !73
+  %cctk_iteration = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1, !dbg !72
+  %22 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, align 4, !dbg !72, !tbaa !68
+  %cmp33 = icmp slt i32 %22, 0, !dbg !72
+  br i1 %cmp33, label %cond.end62, label %cond.false, !dbg !72
 
-; <label>:78                                      ; preds = %45
-  %79 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !98
-  %80 = icmp eq i32 %79, 0, !dbg !98
-  br i1 %80, label %83, label %81, !dbg !98
+cond.false:                                       ; preds = %if.end32
+  %call34 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !72
+  %tobool = icmp eq i32 %call34, 0, !dbg !72
+  br i1 %tobool, label %cond.end38, label %cond.true35, !dbg !72
 
-; <label>:81                                      ; preds = %78
-  %82 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !98
-  br label %83, !dbg !98
+cond.true35:                                      ; preds = %cond.false
+  %call36 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 0, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !72
+  br label %cond.end38, !dbg !72
 
-; <label>:83                                      ; preds = %78, %81
-  %.ph = phi i32* [ @_cctk_one, %78 ], [ %82, %81 ]
-  %.pr = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, align 4, !dbg !98, !tbaa !75
-  %84 = icmp slt i32 %.pr, 0, !dbg !98
-  br i1 %84, label %.thread4, label %85, !dbg !98
+cond.end38:                                       ; preds = %cond.false, %cond.true35
+  %cond39.ph = phi i32* [ @_cctk_one, %cond.false ], [ %call36, %cond.true35 ]
+  %.pr = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, align 4, !dbg !72, !tbaa !68
+  %cmp40 = icmp slt i32 %.pr, 0, !dbg !72
+  br i1 %cmp40, label %cond.end62, label %cond.false42, !dbg !72
 
-; <label>:85                                      ; preds = %83
-  %86 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !98
-  %87 = icmp eq i32 %86, 0, !dbg !98
-  br i1 %87, label %.thread, label %88, !dbg !98
+cond.false42:                                     ; preds = %cond.end38
+  %call43 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !72
+  %tobool44 = icmp eq i32 %call43, 0, !dbg !72
+  br i1 %tobool44, label %cond.end50, label %cond.true45, !dbg !72
 
-; <label>:88                                      ; preds = %85
-  %89 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !98
-  br label %.thread, !dbg !98
+cond.true45:                                      ; preds = %cond.false42
+  %call46 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 1, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !72
+  br label %cond.end50, !dbg !72
 
-.thread:                                          ; preds = %85, %88
-  %.ph2.ph = phi i32* [ %89, %88 ], [ @_cctk_one, %85 ]
-  %.pr3.pr = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, align 4, !dbg !98, !tbaa !75
-  %90 = icmp slt i32 %.pr3.pr, 0, !dbg !98
-  br i1 %90, label %.thread4, label %91, !dbg !98
+cond.end50:                                       ; preds = %cond.false42, %cond.true45
+  %cond51.ph.ph = phi i32* [ @_cctk_one, %cond.false42 ], [ %call46, %cond.true45 ]
+  %.pr162.pr = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, align 4, !dbg !72, !tbaa !68
+  %cmp52 = icmp slt i32 %.pr162.pr, 0, !dbg !72
+  br i1 %cmp52, label %cond.end62, label %cond.false54, !dbg !72
 
-; <label>:91                                      ; preds = %.thread
-  %92 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !98
-  %93 = icmp eq i32 %92, 0, !dbg !98
-  br i1 %93, label %.thread4, label %94, !dbg !98
+cond.false54:                                     ; preds = %cond.end50
+  %call55 = tail call i32 @CCTK_QueryGroupStorage(%struct.cGH* %GH, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !72
+  %tobool56 = icmp eq i32 %call55, 0, !dbg !72
+  br i1 %tobool56, label %cond.end62, label %cond.true57, !dbg !72
 
-; <label>:94                                      ; preds = %91
-  %95 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !98
-  br label %.thread4, !dbg !98
+cond.true57:                                      ; preds = %cond.false54
+  %call58 = tail call i32* @CCTK_ArrayGroupSize(%struct.cGH* %GH, i32 2, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #3, !dbg !72
+  br label %cond.end62, !dbg !72
 
-.thread4:                                         ; preds = %45, %83, %91, %94, %.thread
-  %96 = phi i32* [ %.ph2.ph, %.thread ], [ %.ph2.ph, %94 ], [ %.ph2.ph, %91 ], [ @_cctk_one, %83 ], [ @_cctk_one, %45 ]
-  %97 = phi i32* [ %.ph, %.thread ], [ %.ph, %94 ], [ %.ph, %91 ], [ %.ph, %83 ], [ @_cctk_one, %45 ]
-  %98 = phi i32* [ @_cctk_one, %.thread ], [ %95, %94 ], [ @_cctk_one, %91 ], [ @_cctk_one, %83 ], [ @_cctk_one, %45 ], !dbg !98
-  %99 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dx, align 4, !dbg !98, !tbaa !75
-  %100 = icmp slt i32 %99, 0, !dbg !98
-  br i1 %100, label %109, label %101, !dbg !98
+cond.end62:                                       ; preds = %cond.false54, %cond.end50, %cond.end38, %if.end32, %cond.true57
+  %cond51165 = phi i32* [ %cond51.ph.ph, %cond.true57 ], [ @_cctk_one, %if.end32 ], [ @_cctk_one, %cond.end38 ], [ %cond51.ph.ph, %cond.end50 ], [ %cond51.ph.ph, %cond.false54 ]
+  %cond39161164 = phi i32* [ %cond39.ph, %cond.true57 ], [ @_cctk_one, %if.end32 ], [ %cond39.ph, %cond.end38 ], [ %cond39.ph, %cond.end50 ], [ %cond39.ph, %cond.false54 ]
+  %cond63 = phi i32* [ %call58, %cond.true57 ], [ @_cctk_one, %if.end32 ], [ @_cctk_one, %cond.end38 ], [ @_cctk_one, %cond.end50 ], [ @_cctk_one, %cond.false54 ], !dbg !72
+  %23 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dx, align 4, !dbg !72, !tbaa !68
+  %cmp64 = icmp slt i32 %23, 0, !dbg !72
+  br i1 %cmp64, label %cond.end68, label %cond.false66, !dbg !72
 
-; <label>:101                                     ; preds = %.thread4
-  %102 = sext i32 %99 to i64, !dbg !98
-  %103 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !98
-  %104 = load i8**** %103, align 8, !dbg !98, !tbaa !114
-  %105 = getelementptr inbounds i8*** %104, i64 %102, !dbg !98
-  %106 = bitcast i8*** %105 to double***, !dbg !98
-  %107 = load double*** %106, align 8, !dbg !98, !tbaa !115
-  %108 = load double** %107, align 8, !dbg !98, !tbaa !115
-  br label %109, !dbg !98
+cond.false66:                                     ; preds = %cond.end62
+  %idxprom = sext i32 %23 to i64, !dbg !72
+  %data = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !72
+  %24 = load i8**** %data, align 8, !dbg !72, !tbaa !73
+  %arrayidx = getelementptr inbounds i8*** %24, i64 %idxprom, !dbg !72
+  %25 = load i8*** %arrayidx, align 8, !dbg !72, !tbaa !73
+  %26 = load i8** %25, align 8, !dbg !72, !tbaa !73
+  %phitmp = bitcast i8* %26 to double*, !dbg !72
+  br label %cond.end68, !dbg !72
 
-; <label>:109                                     ; preds = %.thread4, %101
-  %110 = phi double* [ %108, %101 ], [ null, %.thread4 ]
-  %111 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dy, align 4, !dbg !98, !tbaa !75
-  %112 = icmp slt i32 %111, 0, !dbg !98
-  br i1 %112, label %121, label %113, !dbg !98
+cond.end68:                                       ; preds = %cond.end62, %cond.false66
+  %cond69 = phi double* [ %phitmp, %cond.false66 ], [ null, %cond.end62 ]
+  %27 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dy, align 4, !dbg !72, !tbaa !68
+  %cmp70 = icmp slt i32 %27, 0, !dbg !72
+  br i1 %cmp70, label %cond.end77, label %cond.false72, !dbg !72
 
-; <label>:113                                     ; preds = %109
-  %114 = sext i32 %111 to i64, !dbg !98
-  %115 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !98
-  %116 = load i8**** %115, align 8, !dbg !98, !tbaa !114
-  %117 = getelementptr inbounds i8*** %116, i64 %114, !dbg !98
-  %118 = bitcast i8*** %117 to double***, !dbg !98
-  %119 = load double*** %118, align 8, !dbg !98, !tbaa !115
-  %120 = load double** %119, align 8, !dbg !98, !tbaa !115
-  br label %121, !dbg !98
+cond.false72:                                     ; preds = %cond.end68
+  %idxprom73 = sext i32 %27 to i64, !dbg !72
+  %data74 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !72
+  %28 = load i8**** %data74, align 8, !dbg !72, !tbaa !73
+  %arrayidx75 = getelementptr inbounds i8*** %28, i64 %idxprom73, !dbg !72
+  %29 = load i8*** %arrayidx75, align 8, !dbg !72, !tbaa !73
+  %30 = load i8** %29, align 8, !dbg !72, !tbaa !73
+  %phitmp154 = bitcast i8* %30 to double*, !dbg !72
+  br label %cond.end77, !dbg !72
 
-; <label>:121                                     ; preds = %109, %113
-  %122 = phi double* [ %120, %113 ], [ null, %109 ]
-  %123 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dz, align 4, !dbg !98, !tbaa !75
-  %124 = icmp slt i32 %123, 0, !dbg !98
-  br i1 %124, label %133, label %125, !dbg !98
+cond.end77:                                       ; preds = %cond.end68, %cond.false72
+  %cond78 = phi double* [ %phitmp154, %cond.false72 ], [ null, %cond.end68 ]
+  %31 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dz, align 4, !dbg !72, !tbaa !68
+  %cmp79 = icmp slt i32 %31, 0, !dbg !72
+  br i1 %cmp79, label %cond.end86, label %cond.false81, !dbg !72
 
-; <label>:125                                     ; preds = %121
-  %126 = sext i32 %123 to i64, !dbg !98
-  %127 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !98
-  %128 = load i8**** %127, align 8, !dbg !98, !tbaa !114
-  %129 = getelementptr inbounds i8*** %128, i64 %126, !dbg !98
-  %130 = bitcast i8*** %129 to double***, !dbg !98
-  %131 = load double*** %130, align 8, !dbg !98, !tbaa !115
-  %132 = load double** %131, align 8, !dbg !98, !tbaa !115
-  br label %133, !dbg !98
+cond.false81:                                     ; preds = %cond.end77
+  %idxprom82 = sext i32 %31 to i64, !dbg !72
+  %data83 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !72
+  %32 = load i8**** %data83, align 8, !dbg !72, !tbaa !73
+  %arrayidx84 = getelementptr inbounds i8*** %32, i64 %idxprom82, !dbg !72
+  %33 = load i8*** %arrayidx84, align 8, !dbg !72, !tbaa !73
+  %34 = load i8** %33, align 8, !dbg !72, !tbaa !73
+  %phitmp155 = bitcast i8* %34 to double*, !dbg !72
+  br label %cond.end86, !dbg !72
 
-; <label>:133                                     ; preds = %121, %125
-  %134 = phi double* [ %132, %125 ], [ null, %121 ]
-  %135 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_r, align 4, !dbg !98, !tbaa !75
-  %136 = icmp slt i32 %135, 0, !dbg !98
-  br i1 %136, label %145, label %137, !dbg !98
+cond.end86:                                       ; preds = %cond.end77, %cond.false81
+  %cond87 = phi double* [ %phitmp155, %cond.false81 ], [ null, %cond.end77 ]
+  %35 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_r, align 4, !dbg !72, !tbaa !68
+  %cmp88 = icmp slt i32 %35, 0, !dbg !72
+  br i1 %cmp88, label %cond.end95, label %cond.false90, !dbg !72
 
-; <label>:137                                     ; preds = %133
-  %138 = sext i32 %135 to i64, !dbg !98
-  %139 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !98
-  %140 = load i8**** %139, align 8, !dbg !98, !tbaa !114
-  %141 = getelementptr inbounds i8*** %140, i64 %138, !dbg !98
-  %142 = bitcast i8*** %141 to double***, !dbg !98
-  %143 = load double*** %142, align 8, !dbg !98, !tbaa !115
-  %144 = load double** %143, align 8, !dbg !98, !tbaa !115
-  br label %145, !dbg !98
+cond.false90:                                     ; preds = %cond.end86
+  %idxprom91 = sext i32 %35 to i64, !dbg !72
+  %data92 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !72
+  %36 = load i8**** %data92, align 8, !dbg !72, !tbaa !73
+  %arrayidx93 = getelementptr inbounds i8*** %36, i64 %idxprom91, !dbg !72
+  %37 = load i8*** %arrayidx93, align 8, !dbg !72, !tbaa !73
+  %38 = load i8** %37, align 8, !dbg !72, !tbaa !73
+  %phitmp156 = bitcast i8* %38 to double*, !dbg !72
+  br label %cond.end95, !dbg !72
 
-; <label>:145                                     ; preds = %133, %137
-  %146 = phi double* [ %144, %137 ], [ null, %133 ]
-  %147 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_x, align 4, !dbg !98, !tbaa !75
-  %148 = icmp slt i32 %147, 0, !dbg !98
-  br i1 %148, label %157, label %149, !dbg !98
+cond.end95:                                       ; preds = %cond.end86, %cond.false90
+  %cond96 = phi double* [ %phitmp156, %cond.false90 ], [ null, %cond.end86 ]
+  %39 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_x, align 4, !dbg !72, !tbaa !68
+  %cmp97 = icmp slt i32 %39, 0, !dbg !72
+  br i1 %cmp97, label %cond.end104, label %cond.false99, !dbg !72
 
-; <label>:149                                     ; preds = %145
-  %150 = sext i32 %147 to i64, !dbg !98
-  %151 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !98
-  %152 = load i8**** %151, align 8, !dbg !98, !tbaa !114
-  %153 = getelementptr inbounds i8*** %152, i64 %150, !dbg !98
-  %154 = bitcast i8*** %153 to double***, !dbg !98
-  %155 = load double*** %154, align 8, !dbg !98, !tbaa !115
-  %156 = load double** %155, align 8, !dbg !98, !tbaa !115
-  br label %157, !dbg !98
+cond.false99:                                     ; preds = %cond.end95
+  %idxprom100 = sext i32 %39 to i64, !dbg !72
+  %data101 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !72
+  %40 = load i8**** %data101, align 8, !dbg !72, !tbaa !73
+  %arrayidx102 = getelementptr inbounds i8*** %40, i64 %idxprom100, !dbg !72
+  %41 = load i8*** %arrayidx102, align 8, !dbg !72, !tbaa !73
+  %42 = load i8** %41, align 8, !dbg !72, !tbaa !73
+  %phitmp157 = bitcast i8* %42 to double*, !dbg !72
+  br label %cond.end104, !dbg !72
 
-; <label>:157                                     ; preds = %145, %149
-  %158 = phi double* [ %156, %149 ], [ null, %145 ]
-  %159 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_y, align 4, !dbg !98, !tbaa !75
-  %160 = icmp slt i32 %159, 0, !dbg !98
-  br i1 %160, label %169, label %161, !dbg !98
+cond.end104:                                      ; preds = %cond.end95, %cond.false99
+  %cond105 = phi double* [ %phitmp157, %cond.false99 ], [ null, %cond.end95 ]
+  %43 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_y, align 4, !dbg !72, !tbaa !68
+  %cmp106 = icmp slt i32 %43, 0, !dbg !72
+  br i1 %cmp106, label %cond.end113, label %cond.false108, !dbg !72
 
-; <label>:161                                     ; preds = %157
-  %162 = sext i32 %159 to i64, !dbg !98
-  %163 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !98
-  %164 = load i8**** %163, align 8, !dbg !98, !tbaa !114
-  %165 = getelementptr inbounds i8*** %164, i64 %162, !dbg !98
-  %166 = bitcast i8*** %165 to double***, !dbg !98
-  %167 = load double*** %166, align 8, !dbg !98, !tbaa !115
-  %168 = load double** %167, align 8, !dbg !98, !tbaa !115
-  br label %169, !dbg !98
+cond.false108:                                    ; preds = %cond.end104
+  %idxprom109 = sext i32 %43 to i64, !dbg !72
+  %data110 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !72
+  %44 = load i8**** %data110, align 8, !dbg !72, !tbaa !73
+  %arrayidx111 = getelementptr inbounds i8*** %44, i64 %idxprom109, !dbg !72
+  %45 = load i8*** %arrayidx111, align 8, !dbg !72, !tbaa !73
+  %46 = load i8** %45, align 8, !dbg !72, !tbaa !73
+  %phitmp158 = bitcast i8* %46 to double*, !dbg !72
+  br label %cond.end113, !dbg !72
 
-; <label>:169                                     ; preds = %157, %161
-  %170 = phi double* [ %168, %161 ], [ null, %157 ]
-  %171 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_z, align 4, !dbg !98, !tbaa !75
-  %172 = icmp slt i32 %171, 0, !dbg !98
-  br i1 %172, label %181, label %173, !dbg !98
+cond.end113:                                      ; preds = %cond.end104, %cond.false108
+  %cond114 = phi double* [ %phitmp158, %cond.false108 ], [ null, %cond.end104 ]
+  %47 = load i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_z, align 4, !dbg !72, !tbaa !68
+  %cmp115 = icmp slt i32 %47, 0, !dbg !72
+  br i1 %cmp115, label %cond.end122, label %cond.false117, !dbg !72
 
-; <label>:173                                     ; preds = %169
-  %174 = sext i32 %171 to i64, !dbg !98
-  %175 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !98
-  %176 = load i8**** %175, align 8, !dbg !98, !tbaa !114
-  %177 = getelementptr inbounds i8*** %176, i64 %174, !dbg !98
-  %178 = bitcast i8*** %177 to double***, !dbg !98
-  %179 = load double*** %178, align 8, !dbg !98, !tbaa !115
-  %180 = load double** %179, align 8, !dbg !98, !tbaa !115
-  br label %181, !dbg !98
+cond.false117:                                    ; preds = %cond.end113
+  %idxprom118 = sext i32 %47 to i64, !dbg !72
+  %data119 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !72
+  %48 = load i8**** %data119, align 8, !dbg !72, !tbaa !73
+  %arrayidx120 = getelementptr inbounds i8*** %48, i64 %idxprom118, !dbg !72
+  %49 = load i8*** %arrayidx120, align 8, !dbg !72, !tbaa !73
+  %50 = load i8** %49, align 8, !dbg !72, !tbaa !73
+  %phitmp159 = bitcast i8* %50 to double*, !dbg !72
+  br label %cond.end122, !dbg !72
 
-; <label>:181                                     ; preds = %169, %173
-  %182 = phi double* [ %180, %173 ], [ null, %169 ]
-  tail call void %46(i32* %47, i32* %49, i32* %51, i32* %53, i32* %55, i32* %57, i32* %59, i32* %61, i32* %63, double* %64, double* %65, double* %67, double* %69, i32* %71, i32* %72, i32* %74, i32* %75, %struct.cGH* %GH, i32* %97, i32* %96, i32* %98, double* %110, double* %122, double* %134, double* %146, double* %158, double* %170, double* %182) #3, !dbg !116
-  ret i32 0, !dbg !117
+cond.end122:                                      ; preds = %cond.end113, %cond.false117
+  %cond123 = phi double* [ %phitmp159, %cond.false117 ], [ null, %cond.end113 ]
+  tail call void %9(i32* %cctk_dim, i32* %10, i32* %11, i32* %12, i32* %13, i32* %14, i32* %15, i32* %16, i32* %17, double* %cctk_delta_time, double* %cctk_time, double* %18, double* %19, i32* %20, i32* %cctk_convlevel, i32* %21, i32* %cctk_iteration, %struct.cGH* %GH, i32* %cond39161164, i32* %cond51165, i32* %cond63, double* %cond69, double* %cond78, double* %cond87, double* %cond96, double* %cond105, double* %cond114, double* %cond123) #3, !dbg !72
+  ret i32 0, !dbg !74
 }
 
 ; Function Attrs: optsize
@@ -326,132 +327,87 @@ declare i32 @CCTK_QueryGroupStorage(%struct.cGH*, i8*) #1
 declare i32* @CCTK_ArrayGroupSize(%struct.cGH*, i32, i8*) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
 attributes #3 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!66, !67, !68}
-!llvm.ident = !{!69}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !48, globals: !56, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/CartGrid3D_FortranWrapper.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !46, !9, !36}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DISubroutineType(types: !6)
-!6 = !{null, !7, !7, !7, !7, !7, !7, !7, !7, !7, !9, !9, !9, !9, !7, !7, !7, !7, !11, !46, !46, !46, !9, !9, !9, !9, !9, !9, !9}
-!7 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !8, size: 64, align: 64)
-!8 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!9 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !10, size: 64, align: 64)
-!10 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!11 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !12, size: 64, align: 64)
-!12 = !DIDerivedType(tag: DW_TAG_typedef, name: "cGH", file: !13, line: 75, baseType: !14)
-!13 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/../include/cGH.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!14 = !DICompositeType(tag: DW_TAG_structure_type, file: !13, line: 24, size: 1216, align: 64, elements: !15)
-!15 = !{!16, !17, !18, !19, !20, !21, !22, !23, !24, !25, !26, !27, !28, !29, !30, !31, !32, !33, !37, !38}
-!16 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_dim", scope: !14, file: !13, line: 26, baseType: !8, size: 32, align: 32)
-!17 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_iteration", scope: !14, file: !13, line: 27, baseType: !8, size: 32, align: 32, offset: 32)
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_gsh", scope: !14, file: !13, line: 30, baseType: !7, size: 64, align: 64, offset: 64)
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_lsh", scope: !14, file: !13, line: 31, baseType: !7, size: 64, align: 64, offset: 128)
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_lbnd", scope: !14, file: !13, line: 32, baseType: !7, size: 64, align: 64, offset: 192)
-!21 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_ubnd", scope: !14, file: !13, line: 33, baseType: !7, size: 64, align: 64, offset: 256)
-!22 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_lssh", scope: !14, file: !13, line: 36, baseType: !7, size: 64, align: 64, offset: 320)
-!23 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_to", scope: !14, file: !13, line: 39, baseType: !7, size: 64, align: 64, offset: 384)
-!24 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_from", scope: !14, file: !13, line: 40, baseType: !7, size: 64, align: 64, offset: 448)
-!25 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_delta_time", scope: !14, file: !13, line: 43, baseType: !10, size: 64, align: 64, offset: 512)
-!26 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_delta_space", scope: !14, file: !13, line: 44, baseType: !9, size: 64, align: 64, offset: 576)
-!27 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_origin_space", scope: !14, file: !13, line: 47, baseType: !9, size: 64, align: 64, offset: 640)
-!28 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_bbox", scope: !14, file: !13, line: 51, baseType: !7, size: 64, align: 64, offset: 704)
-!29 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_levfac", scope: !14, file: !13, line: 54, baseType: !7, size: 64, align: 64, offset: 768)
-!30 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_convlevel", scope: !14, file: !13, line: 57, baseType: !8, size: 32, align: 32, offset: 832)
-!31 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_nghostzones", scope: !14, file: !13, line: 60, baseType: !7, size: 64, align: 64, offset: 896)
-!32 = !DIDerivedType(tag: DW_TAG_member, name: "cctk_time", scope: !14, file: !13, line: 63, baseType: !10, size: 64, align: 64, offset: 960)
-!33 = !DIDerivedType(tag: DW_TAG_member, name: "data", scope: !14, file: !13, line: 67, baseType: !34, size: 64, align: 64, offset: 1024)
-!34 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !35, size: 64, align: 64)
-!35 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !36, size: 64, align: 64)
-!36 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!37 = !DIDerivedType(tag: DW_TAG_member, name: "extensions", scope: !14, file: !13, line: 70, baseType: !35, size: 64, align: 64, offset: 1088)
-!38 = !DIDerivedType(tag: DW_TAG_member, name: "GroupData", scope: !14, file: !13, line: 73, baseType: !39, size: 64, align: 64, offset: 1152)
-!39 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !40, size: 64, align: 64)
-!40 = !DIDerivedType(tag: DW_TAG_typedef, name: "cGHGroupData", file: !13, line: 22, baseType: !41)
-!41 = !DICompositeType(tag: DW_TAG_structure_type, file: !13, line: 18, size: 16, align: 8, elements: !42)
-!42 = !{!43, !45}
-!43 = !DIDerivedType(tag: DW_TAG_member, name: "storage", scope: !41, file: !13, line: 20, baseType: !44, size: 8, align: 8)
-!44 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!45 = !DIDerivedType(tag: DW_TAG_member, name: "comm", scope: !41, file: !13, line: 21, baseType: !44, size: 8, align: 8, offset: 8)
-!46 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !47, size: 64, align: 64)
-!47 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !8)
-!48 = !{!49}
-!49 = !DISubprogram(name: "CCTKi_BindingsFortranWrapperCartGrid3D", scope: !1, file: !1, line: 13, type: !50, isLocal: false, isDefinition: true, scopeLine: 14, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.cGH*, i8*)* @CCTKi_BindingsFortranWrapperCartGrid3D, variables: !52)
-!50 = !DISubroutineType(types: !51)
-!51 = !{!8, !11, !36}
-!52 = !{!53, !54, !55}
-!53 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "GH", arg: 1, scope: !49, file: !1, line: 13, type: !11)
-!54 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "fpointer", arg: 2, scope: !49, file: !1, line: 13, type: !36)
-!55 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "function", scope: !49, file: !1, line: 15, type: !4)
-!56 = !{!57, !58, !59, !60, !61, !62, !63, !64, !65}
-!57 = !DIGlobalVariable(name: "CCTKARGNUM_coarse_dx", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dx)
-!58 = !DIGlobalVariable(name: "CCTKGROUPNUM_gridspacings", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_gridspacings)
-!59 = !DIGlobalVariable(name: "CCTKARGNUM_coarse_dy", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dy)
-!60 = !DIGlobalVariable(name: "CCTKARGNUM_coarse_dz", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dz)
-!61 = !DIGlobalVariable(name: "CCTKARGNUM_r", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_r)
-!62 = !DIGlobalVariable(name: "CCTKGROUPNUM_coordinates", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates)
-!63 = !DIGlobalVariable(name: "CCTKARGNUM_x", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_x)
-!64 = !DIGlobalVariable(name: "CCTKARGNUM_y", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_y)
-!65 = !DIGlobalVariable(name: "CCTKARGNUM_z", scope: !49, file: !1, line: 17, type: !8, isLocal: true, isDefinition: true, variable: i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_z)
-!66 = !{i32 2, !"Dwarf Version", i32 2}
-!67 = !{i32 2, !"Debug Info Version", i32 700000003}
-!68 = !{i32 1, !"PIC Level", i32 2}
-!69 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!70 = !DIExpression()
-!71 = !DILocation(line: 13, column: 49, scope: !49)
-!72 = !DILocation(line: 13, column: 59, scope: !49)
-!73 = !DILocation(line: 18, column: 3, scope: !74)
-!74 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!75 = !{!76, !76, i64 0}
-!76 = !{!"int", !77, i64 0}
-!77 = !{!"omnipotent char", !78, i64 0}
-!78 = !{!"Simple C/C++ TBAA"}
-!79 = !DILocation(line: 18, column: 3, scope: !49)
-!80 = !DILocation(line: 18, column: 3, scope: !81)
-!81 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!82 = !DILocation(line: 18, column: 3, scope: !83)
-!83 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!84 = !DILocation(line: 18, column: 3, scope: !85)
-!85 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!86 = !DILocation(line: 18, column: 3, scope: !87)
-!87 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!88 = !DILocation(line: 18, column: 3, scope: !89)
-!89 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!90 = !DILocation(line: 18, column: 3, scope: !91)
-!91 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!92 = !DILocation(line: 18, column: 3, scope: !93)
-!93 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!94 = !DILocation(line: 18, column: 3, scope: !95)
-!95 = distinct !DILexicalBlock(scope: !49, file: !1, line: 18, column: 3)
-!96 = !DILocation(line: 20, column: 14, scope: !49)
-!97 = !DILocation(line: 15, column: 10, scope: !49)
-!98 = !DILocation(line: 22, column: 12, scope: !49)
-!99 = !{!100, !101, i64 8}
-!100 = !{!"", !76, i64 0, !76, i64 4, !101, i64 8, !101, i64 16, !101, i64 24, !101, i64 32, !101, i64 40, !101, i64 48, !101, i64 56, !102, i64 64, !101, i64 72, !101, i64 80, !101, i64 88, !101, i64 96, !76, i64 104, !101, i64 112, !102, i64 120, !101, i64 128, !101, i64 136, !101, i64 144}
-!101 = !{!"any pointer", !77, i64 0}
-!102 = !{!"double", !77, i64 0}
-!103 = !{!100, !101, i64 16}
-!104 = !{!100, !101, i64 24}
-!105 = !{!100, !101, i64 32}
-!106 = !{!100, !101, i64 40}
-!107 = !{!100, !101, i64 56}
-!108 = !{!100, !101, i64 48}
-!109 = !{!100, !101, i64 88}
-!110 = !{!100, !101, i64 72}
-!111 = !{!100, !101, i64 80}
-!112 = !{!100, !101, i64 96}
-!113 = !{!100, !101, i64 112}
-!114 = !{!100, !101, i64 128}
-!115 = !{!101, !101, i64 0}
-!116 = !DILocation(line: 22, column: 3, scope: !49)
-!117 = !DILocation(line: 24, column: 3, scope: !49)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !56, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/CartGrid3D_FortranWrapper.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/CartGrid3D_FortranWrapper.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_BindingsFortranWrapperCartGrid3D", metadata !"CCTKi_BindingsFortranWrapperCartGrid3D", metadata !"", i32 13, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.cGH*, i8*)* @CCTKi_BindingsFortranWrapperCartGrid3D, null, null, metadata !47, i32 14} ; [ DW_TAG_subprogram ] [line 13] [def] [scope 14] [CCTKi_BindingsFortranWrapperCartGrid3D]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/CartGrid3D_FortranWrapper.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8, metadata !9, metadata !37}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !10} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from cGH]
+!10 = metadata !{i32 786454, metadata !1, null, metadata !"cGH", i32 75, i64 0, i64 0, i64 0, i32 0, metadata !11} ; [ DW_TAG_typedef ] [cGH] [line 75, size 0, align 0, offset 0] [from ]
+!11 = metadata !{i32 786451, metadata !12, null, metadata !"", i32 24, i64 1216, i64 64, i32 0, i32 0, null, metadata !13, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 24, size 1216, align 64, offset 0] [from ]
+!12 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/../include/cGH.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!13 = metadata !{metadata !14, metadata !15, metadata !16, metadata !18, metadata !19, metadata !20, metadata !21, metadata !22, metadata !23, metadata !24, metadata !26, metadata !28, metadata !29, metadata !30, metadata !31, metadata !32, metadata !33, metadata !34, metadata !38, metadata !39}
+!14 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_dim", i32 26, i64 32, i64 32, i64 0, i32 0, metadata !8} ; [ DW_TAG_member ] [cctk_dim] [line 26, size 32, align 32, offset 0] [from int]
+!15 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_iteration", i32 27, i64 32, i64 32, i64 32, i32 0, metadata !8} ; [ DW_TAG_member ] [cctk_iteration] [line 27, size 32, align 32, offset 32] [from int]
+!16 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_gsh", i32 30, i64 64, i64 64, i64 64, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_gsh] [line 30, size 64, align 64, offset 64] [from ]
+!17 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !8} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!18 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_lsh", i32 31, i64 64, i64 64, i64 128, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_lsh] [line 31, size 64, align 64, offset 128] [from ]
+!19 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_lbnd", i32 32, i64 64, i64 64, i64 192, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_lbnd] [line 32, size 64, align 64, offset 192] [from ]
+!20 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_ubnd", i32 33, i64 64, i64 64, i64 256, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_ubnd] [line 33, size 64, align 64, offset 256] [from ]
+!21 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_lssh", i32 36, i64 64, i64 64, i64 320, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_lssh] [line 36, size 64, align 64, offset 320] [from ]
+!22 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_to", i32 39, i64 64, i64 64, i64 384, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_to] [line 39, size 64, align 64, offset 384] [from ]
+!23 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_from", i32 40, i64 64, i64 64, i64 448, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_from] [line 40, size 64, align 64, offset 448] [from ]
+!24 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_delta_time", i32 43, i64 64, i64 64, i64 512, i32 0, metadata !25} ; [ DW_TAG_member ] [cctk_delta_time] [line 43, size 64, align 64, offset 512] [from double]
+!25 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!26 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_delta_space", i32 44, i64 64, i64 64, i64 576, i32 0, metadata !27} ; [ DW_TAG_member ] [cctk_delta_space] [line 44, size 64, align 64, offset 576] [from ]
+!27 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !25} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from double]
+!28 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_origin_space", i32 47, i64 64, i64 64, i64 640, i32 0, metadata !27} ; [ DW_TAG_member ] [cctk_origin_space] [line 47, size 64, align 64, offset 640] [from ]
+!29 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_bbox", i32 51, i64 64, i64 64, i64 704, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_bbox] [line 51, size 64, align 64, offset 704] [from ]
+!30 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_levfac", i32 54, i64 64, i64 64, i64 768, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_levfac] [line 54, size 64, align 64, offset 768] [from ]
+!31 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_convlevel", i32 57, i64 32, i64 32, i64 832, i32 0, metadata !8} ; [ DW_TAG_member ] [cctk_convlevel] [line 57, size 32, align 32, offset 832] [from int]
+!32 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_nghostzones", i32 60, i64 64, i64 64, i64 896, i32 0, metadata !17} ; [ DW_TAG_member ] [cctk_nghostzones] [line 60, size 64, align 64, offset 896] [from ]
+!33 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"cctk_time", i32 63, i64 64, i64 64, i64 960, i32 0, metadata !25} ; [ DW_TAG_member ] [cctk_time] [line 63, size 64, align 64, offset 960] [from double]
+!34 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"data", i32 67, i64 64, i64 64, i64 1024, i32 0, metadata !35} ; [ DW_TAG_member ] [data] [line 67, size 64, align 64, offset 1024] [from ]
+!35 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !36} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!36 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !37} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!37 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!38 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"extensions", i32 70, i64 64, i64 64, i64 1088, i32 0, metadata !36} ; [ DW_TAG_member ] [extensions] [line 70, size 64, align 64, offset 1088] [from ]
+!39 = metadata !{i32 786445, metadata !12, metadata !11, metadata !"GroupData", i32 73, i64 64, i64 64, i64 1152, i32 0, metadata !40} ; [ DW_TAG_member ] [GroupData] [line 73, size 64, align 64, offset 1152] [from ]
+!40 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !41} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from cGHGroupData]
+!41 = metadata !{i32 786454, metadata !12, null, metadata !"cGHGroupData", i32 22, i64 0, i64 0, i64 0, i32 0, metadata !42} ; [ DW_TAG_typedef ] [cGHGroupData] [line 22, size 0, align 0, offset 0] [from ]
+!42 = metadata !{i32 786451, metadata !12, null, metadata !"", i32 18, i64 16, i64 8, i32 0, i32 0, null, metadata !43, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 18, size 16, align 8, offset 0] [from ]
+!43 = metadata !{metadata !44, metadata !46}
+!44 = metadata !{i32 786445, metadata !12, metadata !42, metadata !"storage", i32 20, i64 8, i64 8, i64 0, i32 0, metadata !45} ; [ DW_TAG_member ] [storage] [line 20, size 8, align 8, offset 0] [from char]
+!45 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!46 = metadata !{i32 786445, metadata !12, metadata !42, metadata !"comm", i32 21, i64 8, i64 8, i64 8, i32 0, metadata !45} ; [ DW_TAG_member ] [comm] [line 21, size 8, align 8, offset 8] [from char]
+!47 = metadata !{metadata !48, metadata !49, metadata !50}
+!48 = metadata !{i32 786689, metadata !4, metadata !"GH", metadata !5, i32 16777229, metadata !9, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [GH] [line 13]
+!49 = metadata !{i32 786689, metadata !4, metadata !"fpointer", metadata !5, i32 33554445, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [fpointer] [line 13]
+!50 = metadata !{i32 786688, metadata !4, metadata !"function", metadata !5, i32 15, metadata !51, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [function] [line 15]
+!51 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !52} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!52 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !53, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!53 = metadata !{null, metadata !17, metadata !17, metadata !17, metadata !17, metadata !17, metadata !17, metadata !17, metadata !17, metadata !17, metadata !27, metadata !27, metadata !27, metadata !27, metadata !17, metadata !17, metadata !17, metadata !17, metadata !9, metadata !54, metadata !54, metadata !54, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27, metadata !27}
+!54 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !55} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!55 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !8} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from int]
+!56 = metadata !{metadata !57, metadata !58, metadata !59, metadata !60, metadata !61, metadata !62, metadata !63, metadata !64, metadata !65}
+!57 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_coarse_dx", metadata !"CCTKARGNUM_coarse_dx", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dx, null} ; [ DW_TAG_variable ] [CCTKARGNUM_coarse_dx] [line 17] [local] [def]
+!58 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_gridspacings", metadata !"CCTKGROUPNUM_gridspacings", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_gridspacings, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_gridspacings] [line 17] [local] [def]
+!59 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_coarse_dy", metadata !"CCTKARGNUM_coarse_dy", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dy, null} ; [ DW_TAG_variable ] [CCTKARGNUM_coarse_dy] [line 17] [local] [def]
+!60 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_coarse_dz", metadata !"CCTKARGNUM_coarse_dz", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_coarse_dz, null} ; [ DW_TAG_variable ] [CCTKARGNUM_coarse_dz] [line 17] [local] [def]
+!61 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_r", metadata !"CCTKARGNUM_r", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_r, null} ; [ DW_TAG_variable ] [CCTKARGNUM_r] [line 17] [local] [def]
+!62 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKGROUPNUM_coordinates", metadata !"CCTKGROUPNUM_coordinates", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKGROUPNUM_coordinates, null} ; [ DW_TAG_variable ] [CCTKGROUPNUM_coordinates] [line 17] [local] [def]
+!63 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_x", metadata !"CCTKARGNUM_x", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_x, null} ; [ DW_TAG_variable ] [CCTKARGNUM_x] [line 17] [local] [def]
+!64 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_y", metadata !"CCTKARGNUM_y", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_y, null} ; [ DW_TAG_variable ] [CCTKARGNUM_y] [line 17] [local] [def]
+!65 = metadata !{i32 786484, i32 0, metadata !4, metadata !"CCTKARGNUM_z", metadata !"CCTKARGNUM_z", metadata !"", metadata !5, i32 17, metadata !8, i32 1, i32 1, i32* @CCTKi_BindingsFortranWrapperCartGrid3D.CCTKARGNUM_z, null} ; [ DW_TAG_variable ] [CCTKARGNUM_z] [line 17] [local] [def]
+!66 = metadata !{i32 13, i32 0, metadata !4, null}
+!67 = metadata !{i32 18, i32 0, metadata !4, null}
+!68 = metadata !{metadata !"int", metadata !69}
+!69 = metadata !{metadata !"omnipotent char", metadata !70}
+!70 = metadata !{metadata !"Simple C/C++ TBAA"}
+!71 = metadata !{i32 20, i32 0, metadata !4, null}
+!72 = metadata !{i32 22, i32 0, metadata !4, null}
+!73 = metadata !{metadata !"any pointer", metadata !69}
+!74 = metadata !{i32 24, i32 0, metadata !4, null}

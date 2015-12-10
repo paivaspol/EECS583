@@ -1,22 +1,28 @@
 define void @dump_sbitmap_vector(%struct._IO_FILE* nocapture %file, i8* %title, i8* %subtitle, %struct.simple_bitmap_def** nocapture %bmaps, i32 %n_maps) #0 {
 entry:
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str7, i64 0, i64 0), i8* %title) #6
-  %cmp8 = icmp sgt i32 %n_maps, 0
-  br i1 %cmp8, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !547), !dbg !848
+  tail call void @llvm.dbg.value(metadata !{i8* %title}, i64 0, metadata !548), !dbg !849
+  tail call void @llvm.dbg.value(metadata !{i8* %subtitle}, i64 0, metadata !549), !dbg !849
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def** %bmaps}, i64 0, metadata !550), !dbg !850
+  tail call void @llvm.dbg.value(metadata !{i32 %n_maps}, i64 0, metadata !551), !dbg !851
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str7, i64 0, i64 0), i8* %title) #7, !dbg !852
+  tail call void @llvm.dbg.value(metadata !66, i64 0, metadata !552), !dbg !853
+  %cmp8 = icmp sgt i32 %n_maps, 0, !dbg !853
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !853
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %0 = trunc i64 %indvars.iv to i32
-  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([7 x i8]* @.str8, i64 0, i64 0), i8* %subtitle, i32 %0) #6
-  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def** %bmaps, i64 %indvars.iv
-  %1 = load %struct.simple_bitmap_def** %arrayidx, align 8, !tbaa !3
-  tail call void @dump_sbitmap(%struct._IO_FILE* %file, %struct.simple_bitmap_def* %1) #8
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n_maps
-  br i1 %exitcond, label %for.end, label %for.body
+  %0 = trunc i64 %indvars.iv to i32, !dbg !855
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([7 x i8]* @.str8, i64 0, i64 0), i8* %subtitle, i32 %0) #7, !dbg !855
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def** %bmaps, i64 %indvars.iv, !dbg !857
+  %1 = load %struct.simple_bitmap_def** %arrayidx, align 8, !dbg !857, !tbaa !578
+  tail call void @dump_sbitmap(%struct._IO_FILE* %file, %struct.simple_bitmap_def* %1) #9, !dbg !857
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !853
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !853
+  %exitcond = icmp eq i32 %lftr.wideiv, %n_maps, !dbg !853
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !853
 
 for.end:                                          ; preds = %for.body, %entry
-  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file)
-  ret void
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file), !dbg !858
+  ret void, !dbg !859
 }

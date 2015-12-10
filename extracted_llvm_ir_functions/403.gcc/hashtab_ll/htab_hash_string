@@ -1,23 +1,31 @@
 define i32 @htab_hash_string(i8* nocapture %p) #6 {
 entry:
-  %0 = load i8* %p, align 1, !tbaa !1
-  %cmp3 = icmp eq i8 %0, 0
-  br i1 %cmp3, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !153), !dbg !441
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !154), !dbg !442
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !158), !dbg !443
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !154), !dbg !444
+  %0 = load i8* %p, align 1, !dbg !444, !tbaa !222
+  tail call void @llvm.dbg.value(metadata !{i8 %0}, i64 0, metadata !159), !dbg !444
+  %cmp3 = icmp eq i8 %0, 0, !dbg !444
+  br i1 %cmp3, label %while.end, label %while.body, !dbg !444
 
 while.body:                                       ; preds = %entry, %while.body
   %1 = phi i8 [ %2, %while.body ], [ %0, %entry ]
   %str.05 = phi i8* [ %incdec.ptr, %while.body ], [ %p, %entry ]
   %r.04 = phi i32 [ %sub, %while.body ], [ 0, %entry ]
-  %conv = zext i8 %1 to i32
-  %incdec.ptr = getelementptr inbounds i8* %str.05, i64 1
-  %mul = mul i32 %r.04, 67
-  %add = add i32 %mul, -113
-  %sub = add i32 %add, %conv
-  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
-  %cmp = icmp eq i8 %2, 0
-  br i1 %cmp, label %while.end, label %while.body
+  %conv = zext i8 %1 to i32, !dbg !444
+  %incdec.ptr = getelementptr inbounds i8* %str.05, i64 1, !dbg !444
+  %mul = mul i32 %r.04, 67, !dbg !445
+  %add = add i32 %mul, -113, !dbg !445
+  %sub = add i32 %add, %conv, !dbg !445
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !158), !dbg !445
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !154), !dbg !444
+  %2 = load i8* %incdec.ptr, align 1, !dbg !444, !tbaa !222
+  tail call void @llvm.dbg.value(metadata !{i8 %1}, i64 0, metadata !159), !dbg !444
+  %cmp = icmp eq i8 %2, 0, !dbg !444
+  br i1 %cmp, label %while.end, label %while.body, !dbg !444
 
 while.end:                                        ; preds = %while.body, %entry
   %r.0.lcssa = phi i32 [ 0, %entry ], [ %sub, %while.body ]
-  ret i32 %r.0.lcssa
+  ret i32 %r.0.lcssa, !dbg !446
 }

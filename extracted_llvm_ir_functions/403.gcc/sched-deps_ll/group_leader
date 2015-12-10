@@ -1,23 +1,26 @@
-define internal fastcc %struct.rtx_def* @group_leader(%struct.rtx_def* %insn) #1 {
+define internal fastcc %struct.rtx_def* @group_leader(%struct.rtx_def* %insn) #2 {
 entry:
-  br label %do.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !613), !dbg !1394
+  br label %do.body, !dbg !1395
 
 do.body:                                          ; preds = %land.lhs.true, %entry
   %insn.addr.0 = phi %struct.rtx_def* [ %insn, %entry ], [ %call, %land.lhs.true ]
-  %call = tail call %struct.rtx_def* @next_nonnote_insn(%struct.rtx_def* %insn.addr.0) #7
-  %tobool = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool, label %do.end, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn.addr.0}, i64 0, metadata !614), !dbg !1396
+  %call = tail call %struct.rtx_def* @next_nonnote_insn(%struct.rtx_def* %insn.addr.0) #8, !dbg !1398
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !613), !dbg !1398
+  %tobool = icmp eq %struct.rtx_def* %call, null, !dbg !1399
+  br i1 %tobool, label %do.end, label %land.lhs.true, !dbg !1399
 
 land.lhs.true:                                    ; preds = %do.body
-  %0 = bitcast %struct.rtx_def* %call to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 268435456
-  %tobool1 = icmp eq i32 %bf.clear, 0
-  %bf.clear3 = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear3, 36
-  %or.cond = or i1 %tobool1, %cmp
-  br i1 %or.cond, label %do.end, label %do.body
+  %0 = bitcast %struct.rtx_def* %call to i32*, !dbg !1399
+  %bf.load = load i32* %0, align 8, !dbg !1399
+  %bf.clear = and i32 %bf.load, 268435456, !dbg !1399
+  %tobool1 = icmp eq i32 %bf.clear, 0, !dbg !1399
+  %bf.clear3 = and i32 %bf.load, 65535, !dbg !1399
+  %cmp = icmp eq i32 %bf.clear3, 36, !dbg !1399
+  %or.cond = or i1 %tobool1, %cmp, !dbg !1399
+  br i1 %or.cond, label %do.end, label %do.body, !dbg !1399
 
 do.end:                                           ; preds = %land.lhs.true, %do.body
-  ret %struct.rtx_def* %insn.addr.0
+  ret %struct.rtx_def* %insn.addr.0, !dbg !1400
 }

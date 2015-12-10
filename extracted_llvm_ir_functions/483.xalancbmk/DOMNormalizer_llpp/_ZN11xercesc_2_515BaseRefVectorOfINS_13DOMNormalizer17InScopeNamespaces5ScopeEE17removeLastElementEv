@@ -1,0 +1,54 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_13DOMNormalizer17InScopeNamespaces5ScopeEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf"* nocapture %this) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf"* %this}, i64 0, metadata !4973), !dbg !6895
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 2, !dbg !6896
+  %0 = load i32* %fCurCount, align 4, !dbg !6896, !tbaa !5726
+  %tobool = icmp eq i32 %0, 0, !dbg !6896
+  br i1 %tobool, label %if.end7, label %if.end, !dbg !6896
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !6897
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !6897, !tbaa !5726
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 1, !dbg !6898
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !6898, !tbaa !6102, !range !6489
+  %tobool3 = icmp eq i8 %1, 0, !dbg !6898
+  br i1 %tobool3, label %if.end7, label %if.then4, !dbg !6898
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !6899
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 4, !dbg !6899
+  %2 = load %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"*** %fElemList, align 8, !dbg !6899, !tbaa !5715
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"** %2, i64 %idxprom, !dbg !6899
+  %3 = load %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"** %arrayidx, align 8, !dbg !6899, !tbaa !5715
+  %isnull = icmp eq %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"* %3, null, !dbg !6899
+  br i1 %isnull, label %if.end7, label %delete.notnull, !dbg !6899
+
+delete.notnull:                                   ; preds = %if.then4
+  invoke void @_ZN11xercesc_2_513DOMNormalizer17InScopeNamespaces5ScopeD2Ev(%"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"* %3) #10
+          to label %invoke.cont unwind label %lpad, !dbg !6899
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %4 = bitcast %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"* %3 to i8*, !dbg !6899
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %4) #10, !dbg !6899
+  br label %if.end7, !dbg !6899
+
+lpad:                                             ; preds = %delete.notnull
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !6899
+  %6 = bitcast %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"* %3 to i8*, !dbg !6899
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %6) #10
+          to label %eh.resume unwind label %terminate.lpad, !dbg !6899
+
+if.end7:                                          ; preds = %if.end, %entry, %if.then4, %invoke.cont
+  ret void, !dbg !6899
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %5, !dbg !6899
+
+terminate.lpad:                                   ; preds = %lpad
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !6899
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !6899
+  tail call void @__clang_call_terminate(i8* %8) #9, !dbg !6899
+  unreachable, !dbg !6899
+}

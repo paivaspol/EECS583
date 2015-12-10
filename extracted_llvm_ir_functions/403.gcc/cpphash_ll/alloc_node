@@ -1,69 +1,76 @@
 define internal %struct.cpp_hashnode* @alloc_node(%struct.ht* nocapture %table) #0 {
 entry:
-  %pfile = getelementptr inbounds %struct.ht* %table, i64 0, i32 5
-  %0 = load %struct.cpp_reader** %pfile, align 8, !tbaa !2
-  %chunk_limit = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 4
-  %1 = load i8** %chunk_limit, align 8, !tbaa !2
-  %next_free = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 3
-  %2 = load i8** %next_free, align 8, !tbaa !2
-  %sub.ptr.lhs.cast = ptrtoint i8* %1 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %2 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %cmp = icmp slt i64 %sub.ptr.sub, 32
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.ht* %table}, i64 0, metadata !535), !dbg !613
+  %pfile = getelementptr inbounds %struct.ht* %table, i64 0, i32 5, !dbg !614
+  %0 = load %struct.cpp_reader** %pfile, align 8, !dbg !614, !tbaa !554
+  tail call void @llvm.dbg.value(metadata !{%struct.obstack* %hash_ob}, i64 0, metadata !537), !dbg !614
+  tail call void @llvm.dbg.value(metadata !{%struct.obstack* %hash_ob}, i64 0, metadata !539), !dbg !615
+  tail call void @llvm.dbg.value(metadata !616, i64 0, metadata !541), !dbg !615
+  %chunk_limit = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 4, !dbg !615
+  %1 = load i8** %chunk_limit, align 8, !dbg !615, !tbaa !554
+  %next_free = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 3, !dbg !615
+  %2 = load i8** %next_free, align 8, !dbg !615, !tbaa !554
+  %sub.ptr.lhs.cast = ptrtoint i8* %1 to i64, !dbg !615
+  %sub.ptr.rhs.cast = ptrtoint i8* %2 to i64, !dbg !615
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !615
+  %cmp = icmp slt i64 %sub.ptr.sub, 32, !dbg !615
+  br i1 %cmp, label %if.then, label %if.end, !dbg !615
 
 if.then:                                          ; preds = %entry
-  %hash_ob = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32
-  tail call void @_obstack_newchunk(%struct.obstack* %hash_ob, i32 32) #3
-  %.pre = load i8** %next_free, align 8, !tbaa !2
-  br label %if.end
+  %hash_ob = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, !dbg !614
+  tail call void @_obstack_newchunk(%struct.obstack* %hash_ob, i32 32) #4, !dbg !615
+  %.pre = load i8** %next_free, align 8, !dbg !615, !tbaa !554
+  br label %if.end, !dbg !615
 
 if.end:                                           ; preds = %if.then, %entry
   %3 = phi i8* [ %.pre, %if.then ], [ %2, %entry ]
-  %add.ptr = getelementptr inbounds i8* %3, i64 32
-  store i8* %add.ptr, i8** %next_free, align 8, !tbaa !2
-  %object_base = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 2
-  %4 = load i8** %object_base, align 8, !tbaa !2
-  %cmp4 = icmp eq i8* %add.ptr, %4
-  br i1 %cmp4, label %if.then6, label %if.end7
+  %add.ptr = getelementptr inbounds i8* %3, i64 32, !dbg !615
+  store i8* %add.ptr, i8** %next_free, align 8, !dbg !615, !tbaa !554
+  tail call void @llvm.dbg.value(metadata !{%struct.obstack* %hash_ob}, i64 0, metadata !542), !dbg !617
+  %object_base = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 2, !dbg !617
+  %4 = load i8** %object_base, align 8, !dbg !617, !tbaa !554
+  tail call void @llvm.dbg.value(metadata !{i8* %4}, i64 0, metadata !544), !dbg !617
+  %cmp4 = icmp eq i8* %add.ptr, %4, !dbg !617
+  br i1 %cmp4, label %if.then6, label %if.end7, !dbg !617
 
 if.then6:                                         ; preds = %if.end
-  %maybe_empty_object = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 10
-  %bf.load = load i8* %maybe_empty_object, align 8
-  %bf.set = or i8 %bf.load, 2
-  store i8 %bf.set, i8* %maybe_empty_object, align 8
-  br label %if.end7
+  %maybe_empty_object = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 10, !dbg !617
+  %bf.load = load i8* %maybe_empty_object, align 8, !dbg !617
+  %bf.set = or i8 %bf.load, 2, !dbg !617
+  store i8 %bf.set, i8* %maybe_empty_object, align 8, !dbg !617
+  br label %if.end7, !dbg !617
 
 if.end7:                                          ; preds = %if.end, %if.then6
-  %sub.ptr.lhs.cast9 = ptrtoint i8* %add.ptr to i64
-  %alignment_mask = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 6
-  %5 = load i32* %alignment_mask, align 4, !tbaa !3
-  %conv11 = sext i32 %5 to i64
-  %add = add nsw i64 %conv11, %sub.ptr.lhs.cast9
-  %neg = xor i32 %5, -1
-  %conv13 = sext i32 %neg to i64
-  %and = and i64 %add, %conv13
-  %add.ptr14 = getelementptr inbounds i8* null, i64 %and
-  store i8* %add.ptr14, i8** %next_free, align 8, !tbaa !2
-  %chunk = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 1
-  %6 = load %struct._obstack_chunk** %chunk, align 8, !tbaa !2
-  %sub.ptr.lhs.cast17 = ptrtoint i8* %add.ptr14 to i64
-  %sub.ptr.rhs.cast18 = ptrtoint %struct._obstack_chunk* %6 to i64
-  %sub.ptr.sub19 = sub i64 %sub.ptr.lhs.cast17, %sub.ptr.rhs.cast18
-  %7 = load i8** %chunk_limit, align 8, !tbaa !2
-  %sub.ptr.lhs.cast22 = ptrtoint i8* %7 to i64
-  %sub.ptr.sub24 = sub i64 %sub.ptr.lhs.cast22, %sub.ptr.rhs.cast18
-  %cmp25 = icmp sgt i64 %sub.ptr.sub19, %sub.ptr.sub24
-  br i1 %cmp25, label %if.then27, label %if.end30
+  %sub.ptr.lhs.cast9 = ptrtoint i8* %add.ptr to i64, !dbg !617
+  %alignment_mask = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 6, !dbg !617
+  %5 = load i32* %alignment_mask, align 4, !dbg !617, !tbaa !618
+  %conv11 = sext i32 %5 to i64, !dbg !617
+  %add = add nsw i64 %conv11, %sub.ptr.lhs.cast9, !dbg !617
+  %neg = xor i32 %5, -1, !dbg !617
+  %conv13 = sext i32 %neg to i64, !dbg !617
+  %and = and i64 %add, %conv13, !dbg !617
+  %add.ptr14 = getelementptr inbounds i8* null, i64 %and, !dbg !617
+  store i8* %add.ptr14, i8** %next_free, align 8, !dbg !617, !tbaa !554
+  %chunk = getelementptr inbounds %struct.cpp_reader* %0, i64 0, i32 32, i32 1, !dbg !617
+  %6 = load %struct._obstack_chunk** %chunk, align 8, !dbg !617, !tbaa !554
+  %sub.ptr.lhs.cast17 = ptrtoint i8* %add.ptr14 to i64, !dbg !617
+  %sub.ptr.rhs.cast18 = ptrtoint %struct._obstack_chunk* %6 to i64, !dbg !617
+  %sub.ptr.sub19 = sub i64 %sub.ptr.lhs.cast17, %sub.ptr.rhs.cast18, !dbg !617
+  %7 = load i8** %chunk_limit, align 8, !dbg !617, !tbaa !554
+  %sub.ptr.lhs.cast22 = ptrtoint i8* %7 to i64, !dbg !617
+  %sub.ptr.sub24 = sub i64 %sub.ptr.lhs.cast22, %sub.ptr.rhs.cast18, !dbg !617
+  %cmp25 = icmp sgt i64 %sub.ptr.sub19, %sub.ptr.sub24, !dbg !617
+  br i1 %cmp25, label %if.then27, label %if.end30, !dbg !617
 
 if.then27:                                        ; preds = %if.end7
-  store i8* %7, i8** %next_free, align 8, !tbaa !2
-  br label %if.end30
+  store i8* %7, i8** %next_free, align 8, !dbg !617, !tbaa !554
+  br label %if.end30, !dbg !617
 
 if.end30:                                         ; preds = %if.then27, %if.end7
   %8 = phi i8* [ %7, %if.then27 ], [ %add.ptr14, %if.end7 ]
-  store i8* %8, i8** %object_base, align 8, !tbaa !2
-  %9 = bitcast i8* %4 to %struct.cpp_hashnode*
-  tail call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 32, i32 1, i1 false)
-  ret %struct.cpp_hashnode* %9
+  store i8* %8, i8** %object_base, align 8, !dbg !617, !tbaa !554
+  %9 = bitcast i8* %4 to %struct.cpp_hashnode*, !dbg !614
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %9}, i64 0, metadata !536), !dbg !614
+  tail call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 32, i32 1, i1 false), !dbg !619
+  ret %struct.cpp_hashnode* %9, !dbg !620
 }

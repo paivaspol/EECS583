@@ -1,0 +1,54 @@
+define linkonce_odr void @_ZN11xercesc_2_524RefHashTableOfEnumeratorINS_10XMLRefInfoEE8findNextEv(%"class.xercesc_2_5::RefHashTableOfEnumerator"* nocapture %this) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOfEnumerator"* %this}, i64 0, metadata !6595), !dbg !10612
+  %fCurElem = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOfEnumerator"* %this, i64 0, i32 2, !dbg !10613
+  %0 = load %"struct.xercesc_2_5::RefHashTableBucketElem"** %fCurElem, align 8, !dbg !10613, !tbaa !8169
+  %tobool = icmp eq %"struct.xercesc_2_5::RefHashTableBucketElem"* %0, null, !dbg !10613
+  br i1 %tobool, label %if.then6, label %if.end, !dbg !10613
+
+if.end:                                           ; preds = %entry
+  %fNext = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem"* %0, i64 0, i32 1, !dbg !10614
+  %1 = load %"struct.xercesc_2_5::RefHashTableBucketElem"** %fNext, align 8, !dbg !10614, !tbaa !8169
+  store %"struct.xercesc_2_5::RefHashTableBucketElem"* %1, %"struct.xercesc_2_5::RefHashTableBucketElem"** %fCurElem, align 8, !dbg !10614, !tbaa !8169
+  %tobool5 = icmp eq %"struct.xercesc_2_5::RefHashTableBucketElem"* %1, null, !dbg !10615
+  br i1 %tobool5, label %if.then6, label %if.end29, !dbg !10615
+
+if.then6:                                         ; preds = %entry, %if.end
+  %fCurHash = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOfEnumerator"* %this, i64 0, i32 3, !dbg !10616
+  %2 = load i32* %fCurHash, align 4, !dbg !10616, !tbaa !8183
+  %inc = add i32 %2, 1, !dbg !10616
+  store i32 %inc, i32* %fCurHash, align 4, !dbg !10616, !tbaa !8183
+  %fToEnum = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOfEnumerator"* %this, i64 0, i32 4, !dbg !10618
+  %3 = load %"class.xercesc_2_5::RefHashTableOf.13"** %fToEnum, align 8, !dbg !10618, !tbaa !8169
+  %fHashModulus = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf.13"* %3, i64 0, i32 3, !dbg !10618
+  %4 = load i32* %fHashModulus, align 4, !dbg !10618, !tbaa !8183
+  %cmp = icmp eq i32 %inc, %4, !dbg !10618
+  br i1 %cmp, label %if.end29, label %while.body.preheader, !dbg !10618
+
+while.body.preheader:                             ; preds = %if.then6
+  %fBucketList = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf.13"* %3, i64 0, i32 2, !dbg !10619
+  %5 = load %"struct.xercesc_2_5::RefHashTableBucketElem"*** %fBucketList, align 8, !dbg !10619, !tbaa !8169
+  br label %while.body, !dbg !10619
+
+while.body:                                       ; preds = %while.body.preheader, %if.end14
+  %6 = phi i32 [ %inc, %while.body.preheader ], [ %inc16, %if.end14 ]
+  %idxprom = zext i32 %6 to i64, !dbg !10619
+  %arrayidx = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem"** %5, i64 %idxprom, !dbg !10619
+  %7 = load %"struct.xercesc_2_5::RefHashTableBucketElem"** %arrayidx, align 8, !dbg !10619, !tbaa !8169
+  %tobool12 = icmp eq %"struct.xercesc_2_5::RefHashTableBucketElem"* %7, null, !dbg !10619
+  br i1 %tobool12, label %if.end14, label %while.end, !dbg !10619
+
+if.end14:                                         ; preds = %while.body
+  %inc16 = add i32 %6, 1, !dbg !10621
+  store i32 %inc16, i32* %fCurHash, align 4, !dbg !10621, !tbaa !8183
+  %8 = load i32* %fHashModulus, align 4, !dbg !10622, !tbaa !8183
+  %cmp20 = icmp eq i32 %inc16, %8, !dbg !10622
+  br i1 %cmp20, label %if.end29, label %while.body, !dbg !10622
+
+while.end:                                        ; preds = %while.body
+  store %"struct.xercesc_2_5::RefHashTableBucketElem"* %7, %"struct.xercesc_2_5::RefHashTableBucketElem"** %fCurElem, align 8, !dbg !10623, !tbaa !8169
+  br label %if.end29, !dbg !10624
+
+if.end29:                                         ; preds = %if.end14, %if.end, %if.then6, %while.end
+  ret void, !dbg !10625
+}

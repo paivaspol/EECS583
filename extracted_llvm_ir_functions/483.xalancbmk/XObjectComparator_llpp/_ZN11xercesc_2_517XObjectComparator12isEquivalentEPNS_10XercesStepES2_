@@ -1,0 +1,33 @@
+define zeroext i1 @_ZN11xercesc_2_517XObjectComparator12isEquivalentEPNS_10XercesStepES2_(%"class.xercesc_2_5::XercesStep"* %lValue, %"class.xercesc_2_5::XercesStep"* %rValue) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XercesStep"* %lValue}, i64 0, metadata !8825), !dbg !10623
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XercesStep"* %rValue}, i64 0, metadata !8826), !dbg !10624
+  %cmp = icmp eq %"class.xercesc_2_5::XercesStep"* %lValue, %rValue, !dbg !10625
+  br i1 %cmp, label %return, label %if.end, !dbg !10625
+
+if.end:                                           ; preds = %entry
+  %tobool = icmp ne %"class.xercesc_2_5::XercesStep"* %lValue, null, !dbg !10625
+  %tobool1 = icmp eq %"class.xercesc_2_5::XercesStep"* %rValue, null, !dbg !10625
+  %or.cond20 = xor i1 %tobool, %tobool1, !dbg !10625
+  br i1 %or.cond20, label %if.end6, label %return, !dbg !10625
+
+if.end6:                                          ; preds = %if.end
+  %fAxisType = getelementptr inbounds %"class.xercesc_2_5::XercesStep"* %lValue, i64 0, i32 1, !dbg !10626
+  %0 = load i16* %fAxisType, align 2, !dbg !10626, !tbaa !9959
+  %fAxisType7 = getelementptr inbounds %"class.xercesc_2_5::XercesStep"* %rValue, i64 0, i32 1, !dbg !10626
+  %1 = load i16* %fAxisType7, align 2, !dbg !10626, !tbaa !9959
+  %cmp9 = icmp eq i16 %0, %1, !dbg !10626
+  br i1 %cmp9, label %land.rhs, label %return, !dbg !10626
+
+land.rhs:                                         ; preds = %if.end6
+  %fNodeTest = getelementptr inbounds %"class.xercesc_2_5::XercesStep"* %lValue, i64 0, i32 2, !dbg !10627
+  %2 = load %"class.xercesc_2_5::XercesNodeTest"** %fNodeTest, align 8, !dbg !10627, !tbaa !9839
+  %fNodeTest10 = getelementptr inbounds %"class.xercesc_2_5::XercesStep"* %rValue, i64 0, i32 2, !dbg !10627
+  %3 = load %"class.xercesc_2_5::XercesNodeTest"** %fNodeTest10, align 8, !dbg !10627, !tbaa !9839
+  %call = tail call zeroext i1 @_ZN11xercesc_2_517XObjectComparator12isEquivalentEPNS_14XercesNodeTestES2_(%"class.xercesc_2_5::XercesNodeTest"* %2, %"class.xercesc_2_5::XercesNodeTest"* %3) #10, !dbg !10627
+  br label %return
+
+return:                                           ; preds = %if.end, %if.end6, %land.rhs, %entry
+  %retval.0 = phi i1 [ true, %entry ], [ false, %if.end ], [ false, %if.end6 ], [ %call, %land.rhs ]
+  ret i1 %retval.0, !dbg !10628
+}

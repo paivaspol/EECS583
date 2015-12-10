@@ -1,59 +1,60 @@
 define void @invert_br_probabilities(%struct.rtx_def* nocapture %insn) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6
-  %note.0.in41 = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %note.042 = load %struct.rtx_def** %note.0.in41, align 8
-  %tobool43 = icmp eq %struct.rtx_def* %note.042, null
-  br i1 %tobool43, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !989), !dbg !1261
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6, !dbg !1262
+  %note.0.in41 = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1262
+  %note.042 = load %struct.rtx_def** %note.0.in41, align 8, !dbg !1262
+  %tobool43 = icmp eq %struct.rtx_def* %note.042, null, !dbg !1262
+  br i1 %tobool43, label %for.end, label %for.body, !dbg !1262
 
 for.body:                                         ; preds = %entry, %for.inc
   %note.044 = phi %struct.rtx_def* [ %note.0, %for.inc ], [ %note.042, %entry ]
-  %0 = bitcast %struct.rtx_def* %note.044 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
+  %0 = bitcast %struct.rtx_def* %note.044 to i32*, !dbg !1264
+  %bf.load = load i32* %0, align 8, !dbg !1264
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !1264
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !1264
   switch i32 %bf.clear, label %for.inc [
     i32 16, label %if.then
     i32 20, label %if.then13
-  ]
+  ], !dbg !1264
 
 if.then:                                          ; preds = %for.body
-  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %note.044, i64 0, i32 1, i64 0
-  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx3, align 8, !tbaa !0
-  %rtwint = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0, i32 0
-  %2 = load i64* %rtwint, align 8, !tbaa !4
-  %sub = sub nsw i64 10000, %2
-  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %sub) #5
-  %3 = getelementptr inbounds %union.rtunion_def* %arrayidx2, i64 0, i32 0
-  %call.c = ptrtoint %struct.rtx_def* %call to i64
-  store i64 %call.c, i64* %3, align 8, !tbaa !0
-  br label %for.inc
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %note.044, i64 0, i32 1, i64 0, !dbg !1265
+  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**, !dbg !1265
+  %1 = load %struct.rtx_def** %rtx3, align 8, !dbg !1265, !tbaa !1232
+  %rtwint = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0, i32 0, !dbg !1265
+  %2 = load i64* %rtwint, align 8, !dbg !1265, !tbaa !1266
+  %sub = sub nsw i64 10000, %2, !dbg !1265
+  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %sub) #6, !dbg !1265
+  %3 = getelementptr inbounds %union.rtunion_def* %arrayidx2, i64 0, i32 0, !dbg !1265
+  %call.c = ptrtoint %struct.rtx_def* %call to i64, !dbg !1265
+  store i64 %call.c, i64* %3, align 8, !dbg !1265, !tbaa !1232
+  br label %for.inc, !dbg !1265
 
 if.then13:                                        ; preds = %for.body
-  %arrayidx15 = getelementptr inbounds %struct.rtx_def* %note.044, i64 0, i32 1, i64 0
-  %rtx16 = bitcast %union.rtunion_def* %arrayidx15 to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %rtx16, align 8, !tbaa !0
-  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 1
-  %rtx19 = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**
-  %5 = load %struct.rtx_def** %rtx19, align 8, !tbaa !0
-  %rtwint22 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 0, i32 0
-  %6 = load i64* %rtwint22, align 8, !tbaa !4
-  %sub23 = sub nsw i64 10000, %6
-  %call24 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %sub23) #5
-  %7 = load %struct.rtx_def** %rtx16, align 8, !tbaa !0
-  %8 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 1, i32 0
-  %call24.c = ptrtoint %struct.rtx_def* %call24 to i64
-  store i64 %call24.c, i64* %8, align 8, !tbaa !0
-  br label %for.inc
+  %arrayidx15 = getelementptr inbounds %struct.rtx_def* %note.044, i64 0, i32 1, i64 0, !dbg !1267
+  %rtx16 = bitcast %union.rtunion_def* %arrayidx15 to %struct.rtx_def**, !dbg !1267
+  %4 = load %struct.rtx_def** %rtx16, align 8, !dbg !1267, !tbaa !1232
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 1, !dbg !1267
+  %rtx19 = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**, !dbg !1267
+  %5 = load %struct.rtx_def** %rtx19, align 8, !dbg !1267, !tbaa !1232
+  %rtwint22 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 0, i32 0, !dbg !1267
+  %6 = load i64* %rtwint22, align 8, !dbg !1267, !tbaa !1266
+  %sub23 = sub nsw i64 10000, %6, !dbg !1267
+  %call24 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %sub23) #6, !dbg !1267
+  %7 = load %struct.rtx_def** %rtx16, align 8, !dbg !1267, !tbaa !1232
+  %8 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 1, i32 0, !dbg !1267
+  %call24.c = ptrtoint %struct.rtx_def* %call24 to i64, !dbg !1267
+  store i64 %call24.c, i64* %8, align 8, !dbg !1267, !tbaa !1232
+  br label %for.inc, !dbg !1267
 
 for.inc:                                          ; preds = %for.body, %if.then, %if.then13
-  %arrayidx33 = getelementptr inbounds %struct.rtx_def* %note.044, i64 0, i32 1, i64 1
-  %note.0.in = bitcast %union.rtunion_def* %arrayidx33 to %struct.rtx_def**
-  %note.0 = load %struct.rtx_def** %note.0.in, align 8
-  %tobool = icmp eq %struct.rtx_def* %note.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %arrayidx33 = getelementptr inbounds %struct.rtx_def* %note.044, i64 0, i32 1, i64 1, !dbg !1262
+  %note.0.in = bitcast %union.rtunion_def* %arrayidx33 to %struct.rtx_def**, !dbg !1262
+  %note.0 = load %struct.rtx_def** %note.0.in, align 8, !dbg !1262
+  %tobool = icmp eq %struct.rtx_def* %note.0, null, !dbg !1262
+  br i1 %tobool, label %for.end, label %for.body, !dbg !1262
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !1268
 }

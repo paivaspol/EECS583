@@ -1,105 +1,106 @@
-define void @_ZN12pov_frontend14RenderFrontend11StartRenderER12POVMS_Object(%"class.pov_frontend::RenderFrontend"* nocapture %this, %class.POVMS_Object* dereferenceable(24) %renderoptions) #0 align 2 {
+define void @_ZN12pov_frontend14RenderFrontend11StartRenderER12POVMS_Object(%"class.pov_frontend::RenderFrontend"* nocapture %this, %class.POVMS_Object* %renderoptions) #0 align 2 {
+entry:
   %optionsmsg = alloca %class.POVMS_Message, align 8
   %startmsg = alloca %class.POVMS_Message, align 8
-  tail call void @llvm.dbg.value(metadata %"class.pov_frontend::RenderFrontend"* %this, i64 0, metadata !735, metadata !1246), !dbg !1357
-  tail call void @llvm.dbg.value(metadata %class.POVMS_Object* %renderoptions, i64 0, metadata !736, metadata !1246), !dbg !1358
-  %1 = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 3, !dbg !1359
-  %2 = load i32* %1, align 4, !dbg !1359, !tbaa !1268
-  %3 = icmp eq i32 %2, 1, !dbg !1361
-  br i1 %3, label %7, label %4, !dbg !1362
+  call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !743), !dbg !885
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Object* %renderoptions}, i64 0, metadata !744), !dbg !885
+  %state = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 3, !dbg !886
+  %0 = load i32* %state, align 4, !dbg !886, !tbaa !826
+  %cmp = icmp eq i32 %0, 1, !dbg !886
+  br i1 %cmp, label %if.end, label %if.then, !dbg !886
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @__cxa_allocate_exception(i64 4) #10, !dbg !1363
-  %6 = bitcast i8* %5 to i32*, !dbg !1363
-  store i32 2, i32* %6, align 4, !dbg !1363, !tbaa !1364
-  tail call void @__cxa_throw(i8* %5, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #12, !dbg !1363
-  unreachable, !dbg !1363
+if.then:                                          ; preds = %entry
+  %exception = call i8* @__cxa_allocate_exception(i64 4) #8, !dbg !887
+  %1 = bitcast i8* %exception to i32*, !dbg !887
+  store i32 2, i32* %1, align 4, !dbg !887, !tbaa !888
+  call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #10, !dbg !887
+  unreachable, !dbg !887
 
-; <label>:7                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata %class.POVMS_Message* %optionsmsg, i64 0, metadata !737, metadata !1246), !dbg !1366
-  call void @_ZN13POVMS_MessageC1Ejjj(%class.POVMS_Message* %optionsmsg, i32 1380937844, i32 1131704940, i32 1380937844) #7, !dbg !1366
-  invoke void @_ZN13POVMS_MessageC1Ejjj(%class.POVMS_Message* %startmsg, i32 707406378, i32 1131704940, i32 1380019308) #7
-          to label %8 unwind label %22, !dbg !1367
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.declare(metadata !{%class.POVMS_Message* %optionsmsg}, metadata !745), !dbg !889
+  call void @_ZN13POVMS_MessageC1Ejjj(%class.POVMS_Message* %optionsmsg, i32 1380937844, i32 1131704940, i32 1380937844) #6, !dbg !889
+  call void @llvm.dbg.declare(metadata !{%class.POVMS_Message* %startmsg}, metadata !746), !dbg !890
+  invoke void @_ZN13POVMS_MessageC1Ejjj(%class.POVMS_Message* %startmsg, i32 707406378, i32 1131704940, i32 1380019308) #6
+          to label %invoke.cont unwind label %lpad, !dbg !890
 
-; <label>:8                                       ; preds = %7
-  %9 = getelementptr inbounds %class.POVMS_Message* %optionsmsg, i64 0, i32 0, !dbg !1368
-  invoke void @_ZN12POVMS_Object5MergeERS_(%class.POVMS_Object* %9, %class.POVMS_Object* dereferenceable(24) %renderoptions) #7
-          to label %10 unwind label %26, !dbg !1368
+invoke.cont:                                      ; preds = %if.end
+  %2 = getelementptr inbounds %class.POVMS_Message* %optionsmsg, i64 0, i32 0, !dbg !891
+  invoke void @_ZN12POVMS_Object5MergeERS_(%class.POVMS_Object* %2, %class.POVMS_Object* %renderoptions) #6
+          to label %invoke.cont3 unwind label %lpad2, !dbg !891
 
-; <label>:10                                      ; preds = %8
-  %11 = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 1, !dbg !1369
-  %12 = load i8** %11, align 8, !dbg !1369, !tbaa !1265
-  invoke void @_ZN13POVMS_Message21SetDestinationAddressEPv(%class.POVMS_Message* %optionsmsg, i8* %12) #7
-          to label %13 unwind label %26, !dbg !1370
+invoke.cont3:                                     ; preds = %invoke.cont
+  %backendaddress = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 1, !dbg !892
+  %3 = load i8** %backendaddress, align 8, !dbg !892, !tbaa !822
+  invoke void @_ZN13POVMS_Message21SetDestinationAddressEPv(%class.POVMS_Message* %optionsmsg, i8* %3) #6
+          to label %invoke.cont4 unwind label %lpad2, !dbg !892
 
-; <label>:13                                      ; preds = %10
-  %14 = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 2, !dbg !1371
-  %15 = load i8** %14, align 8, !dbg !1371, !tbaa !1258
-  invoke void @_Z17POVMS_SendMessagePvR13POVMS_MessagePS0_i(i8* %15, %class.POVMS_Message* dereferenceable(24) %optionsmsg, %class.POVMS_Message* null, i32 1) #7
-          to label %16 unwind label %26, !dbg !1372
+invoke.cont4:                                     ; preds = %invoke.cont3
+  %context = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 2, !dbg !893
+  %4 = load i8** %context, align 8, !dbg !893, !tbaa !822
+  invoke void @_Z17POVMS_SendMessagePvR13POVMS_MessagePS0_i(i8* %4, %class.POVMS_Message* %optionsmsg, %class.POVMS_Message* null, i32 1) #6
+          to label %invoke.cont5 unwind label %lpad2, !dbg !893
 
-; <label>:16                                      ; preds = %13
-  %17 = load i8** %11, align 8, !dbg !1373, !tbaa !1265
-  invoke void @_ZN13POVMS_Message21SetDestinationAddressEPv(%class.POVMS_Message* %startmsg, i8* %17) #7
-          to label %18 unwind label %26, !dbg !1374
+invoke.cont5:                                     ; preds = %invoke.cont4
+  %5 = load i8** %backendaddress, align 8, !dbg !894, !tbaa !822
+  invoke void @_ZN13POVMS_Message21SetDestinationAddressEPv(%class.POVMS_Message* %startmsg, i8* %5) #6
+          to label %invoke.cont7 unwind label %lpad2, !dbg !894
 
-; <label>:18                                      ; preds = %16
-  %19 = load i8** %14, align 8, !dbg !1375, !tbaa !1258
-  invoke void @_Z17POVMS_SendMessagePvR13POVMS_MessagePS0_i(i8* %19, %class.POVMS_Message* dereferenceable(24) %startmsg, %class.POVMS_Message* null, i32 1) #7
-          to label %20 unwind label %26, !dbg !1376
+invoke.cont7:                                     ; preds = %invoke.cont5
+  %6 = load i8** %context, align 8, !dbg !895, !tbaa !822
+  invoke void @_Z17POVMS_SendMessagePvR13POVMS_MessagePS0_i(i8* %6, %class.POVMS_Message* %startmsg, %class.POVMS_Message* null, i32 1) #6
+          to label %invoke.cont9 unwind label %lpad2, !dbg !895
 
-; <label>:20                                      ; preds = %18
-  store i32 2, i32* %1, align 4, !dbg !1377, !tbaa !1268
-  call void @llvm.dbg.value(metadata %class.POVMS_Message* %startmsg, i64 0, metadata !760, metadata !1246), !dbg !1378
-  call void @llvm.dbg.value(metadata %class.POVMS_Message* %startmsg, i64 0, metadata !764, metadata !1246), !dbg !1380
-  %21 = getelementptr inbounds %class.POVMS_Message* %startmsg, i64 0, i32 0, !dbg !1382
-  invoke void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %21) #7
-          to label %_ZN13POVMS_MessageD1Ev.exit unwind label %22, !dbg !1382
+invoke.cont9:                                     ; preds = %invoke.cont7
+  store i32 2, i32* %state, align 4, !dbg !896, !tbaa !826
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %startmsg}, i64 0, metadata !897), !dbg !899
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %startmsg}, i64 0, metadata !900), !dbg !901
+  %7 = getelementptr inbounds %class.POVMS_Message* %startmsg, i64 0, i32 0, !dbg !902
+  invoke void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %7) #6
+          to label %invoke.cont11 unwind label %lpad
 
-_ZN13POVMS_MessageD1Ev.exit:                      ; preds = %20
-  call void @llvm.dbg.value(metadata %class.POVMS_Message* %optionsmsg, i64 0, metadata !737, metadata !1246), !dbg !1366
-  call void @llvm.dbg.value(metadata %class.POVMS_Message* %optionsmsg, i64 0, metadata !760, metadata !1246), !dbg !1384
-  call void @llvm.dbg.value(metadata %class.POVMS_Message* %optionsmsg, i64 0, metadata !764, metadata !1246), !dbg !1386
-  call void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %9) #7, !dbg !1388
-  ret void, !dbg !1389
+invoke.cont11:                                    ; preds = %invoke.cont9
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %optionsmsg}, i64 0, metadata !897), !dbg !899
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %optionsmsg}, i64 0, metadata !900), !dbg !901
+  call void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %2) #6, !dbg !902
+  ret void, !dbg !898
 
-; <label>:22                                      ; preds = %20, %7
-  %23 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !1389
-  %24 = extractvalue { i8*, i32 } %23, 0, !dbg !1389
-  %25 = extractvalue { i8*, i32 } %23, 1, !dbg !1389
-  %.pre = getelementptr inbounds %class.POVMS_Message* %optionsmsg, i64 0, i32 0, !dbg !1390
-  br label %_ZN13POVMS_MessageD1Ev.exit2, !dbg !1389
+lpad:                                             ; preds = %invoke.cont9, %if.end
+  %8 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !890
+  %9 = extractvalue { i8*, i32 } %8, 0, !dbg !890
+  %10 = extractvalue { i8*, i32 } %8, 1, !dbg !890
+  %.pre = getelementptr inbounds %class.POVMS_Message* %optionsmsg, i64 0, i32 0, !dbg !902
+  br label %ehcleanup, !dbg !890
 
-; <label>:26                                      ; preds = %18, %16, %13, %10, %8
-  %27 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !1389
-  %28 = extractvalue { i8*, i32 } %27, 0, !dbg !1389
-  %29 = extractvalue { i8*, i32 } %27, 1, !dbg !1389
-  call void @llvm.dbg.value(metadata %class.POVMS_Message* %startmsg, i64 0, metadata !760, metadata !1246), !dbg !1393
-  call void @llvm.dbg.value(metadata %class.POVMS_Message* %startmsg, i64 0, metadata !764, metadata !1246), !dbg !1395
-  %30 = getelementptr inbounds %class.POVMS_Message* %startmsg, i64 0, i32 0, !dbg !1397
-  invoke void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %30) #7
-          to label %_ZN13POVMS_MessageD1Ev.exit2 unwind label %33, !dbg !1397
+lpad2:                                            ; preds = %invoke.cont7, %invoke.cont5, %invoke.cont4, %invoke.cont3, %invoke.cont
+  %11 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !891
+  %12 = extractvalue { i8*, i32 } %11, 0, !dbg !891
+  %13 = extractvalue { i8*, i32 } %11, 1, !dbg !891
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %startmsg}, i64 0, metadata !897), !dbg !899
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %startmsg}, i64 0, metadata !900), !dbg !901
+  %14 = getelementptr inbounds %class.POVMS_Message* %startmsg, i64 0, i32 0, !dbg !902
+  invoke void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %14) #6
+          to label %ehcleanup unwind label %terminate.lpad
 
-_ZN13POVMS_MessageD1Ev.exit2:                     ; preds = %26, %22
-  %.pre-phi = phi %class.POVMS_Object* [ %9, %26 ], [ %.pre, %22 ], !dbg !1390
-  %.01 = phi i8* [ %28, %26 ], [ %24, %22 ]
-  %.0 = phi i32 [ %29, %26 ], [ %25, %22 ]
-  call void @llvm.dbg.value(metadata %class.POVMS_Message* %optionsmsg, i64 0, metadata !760, metadata !1246), !dbg !1398
-  call void @llvm.dbg.value(metadata %class.POVMS_Message* %optionsmsg, i64 0, metadata !764, metadata !1246), !dbg !1399
-  invoke void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %.pre-phi) #7
-          to label %_ZN13POVMS_MessageD1Ev.exit3 unwind label %33, !dbg !1390
+ehcleanup:                                        ; preds = %lpad2, %lpad
+  %.pre-phi = phi %class.POVMS_Object* [ %2, %lpad2 ], [ %.pre, %lpad ], !dbg !902
+  %exn.slot.0 = phi i8* [ %12, %lpad2 ], [ %9, %lpad ]
+  %ehselector.slot.0 = phi i32 [ %13, %lpad2 ], [ %10, %lpad ]
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %optionsmsg}, i64 0, metadata !897), !dbg !899
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %optionsmsg}, i64 0, metadata !900), !dbg !901
+  invoke void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %.pre-phi) #6
+          to label %eh.resume unwind label %terminate.lpad
 
-_ZN13POVMS_MessageD1Ev.exit3:                     ; preds = %_ZN13POVMS_MessageD1Ev.exit2
-  %31 = insertvalue { i8*, i32 } undef, i8* %.01, 0, !dbg !1389
-  %32 = insertvalue { i8*, i32 } %31, i32 %.0, 1, !dbg !1389
-  resume { i8*, i32 } %32, !dbg !1389
+eh.resume:                                        ; preds = %ehcleanup
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !898
+  %lpad.val14 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !898
+  resume { i8*, i32 } %lpad.val14, !dbg !898
 
-; <label>:33                                      ; preds = %_ZN13POVMS_MessageD1Ev.exit2, %26
-  %34 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          catch i8* null, !dbg !1389
-  %35 = extractvalue { i8*, i32 } %34, 0, !dbg !1389
-  call void @__clang_call_terminate(i8* %35) #9, !dbg !1389
-  unreachable, !dbg !1389
+terminate.lpad:                                   ; preds = %ehcleanup, %lpad2
+  %15 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !898
+  %16 = extractvalue { i8*, i32 } %15, 0, !dbg !898
+  call void @__clang_call_terminate(i8* %16) #7, !dbg !898
+  unreachable, !dbg !898
 }

@@ -1,16 +1,17 @@
 define i32 @ZV_owned(%struct._ZV* %dv) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ZV* %dv, i64 0, metadata !22, metadata !74), !dbg !75
-  %1 = icmp eq %struct._ZV* %dv, null, !dbg !76
-  br i1 %1, label %2, label %5, !dbg !78
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ZV* %dv}, i64 0, metadata !21), !dbg !68
+  %cmp = icmp eq %struct._ZV* %dv, null, !dbg !69
+  br i1 %cmp, label %if.then, label %if.end, !dbg !69
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !79, !tbaa !81
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0), %struct._ZV* null) #5, !dbg !85
-  tail call void @exit(i32 -1) #6, !dbg !86
-  unreachable, !dbg !86
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !70, !tbaa !72
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0), %struct._ZV* null) #5, !dbg !70
+  tail call void @exit(i32 -1) #6, !dbg !75
+  unreachable, !dbg !75
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 2, !dbg !87
-  %7 = load i32* %6, align 4, !dbg !87, !tbaa !88
-  ret i32 %7, !dbg !91
+if.end:                                           ; preds = %entry
+  %owned = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 2, !dbg !76
+  %1 = load i32* %owned, align 4, !dbg !76, !tbaa !77
+  ret i32 %1, !dbg !76
 }

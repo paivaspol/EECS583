@@ -1,40 +1,41 @@
 define void @PUGH_DestroyConnectivity(%struct.PConnectivity** %conn) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.PConnectivity** %conn, i64 0, metadata !127, metadata !374), !dbg !1558
-  %1 = icmp eq %struct.PConnectivity** %conn, null, !dbg !1559
-  br i1 %1, label %24, label %2, !dbg !1561
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.PConnectivity** %conn}, i64 0, metadata !87), !dbg !908
+  %tobool = icmp eq %struct.PConnectivity** %conn, null, !dbg !909
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !909
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.PConnectivity** %conn, align 8, !dbg !1562, !tbaa !486
-  %4 = icmp eq %struct.PConnectivity* %3, null, !dbg !1562
-  br i1 %4, label %24, label %5, !dbg !1563
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct.PConnectivity** %conn, align 8, !dbg !909, !tbaa !397
+  %tobool1 = icmp eq %struct.PConnectivity* %0, null, !dbg !909
+  br i1 %tobool1, label %if.end, label %if.then, !dbg !909
 
-; <label>:5                                       ; preds = %2
-  %6 = getelementptr inbounds %struct.PConnectivity* %3, i64 0, i32 3, !dbg !1564
-  %7 = bitcast i32** %6 to i8**, !dbg !1564
-  %8 = load i8** %7, align 8, !dbg !1564, !tbaa !1224
-  tail call void @free(i8* %8) #8, !dbg !1566
-  %9 = load %struct.PConnectivity** %conn, align 8, !dbg !1567, !tbaa !486
-  %10 = getelementptr inbounds %struct.PConnectivity* %9, i64 0, i32 2, !dbg !1568
-  %11 = bitcast i32*** %10 to i8***, !dbg !1568
-  %12 = load i8*** %11, align 8, !dbg !1568, !tbaa !1230
-  %13 = load i8** %12, align 8, !dbg !1569, !tbaa !486
-  tail call void @free(i8* %13) #8, !dbg !1570
-  %14 = load %struct.PConnectivity** %conn, align 8, !dbg !1571, !tbaa !486
-  %15 = getelementptr inbounds %struct.PConnectivity* %14, i64 0, i32 2, !dbg !1572
-  %16 = bitcast i32*** %15 to i8**, !dbg !1572
-  %17 = load i8** %16, align 8, !dbg !1572, !tbaa !1230
-  tail call void @free(i8* %17) #8, !dbg !1573
-  %18 = load %struct.PConnectivity** %conn, align 8, !dbg !1574, !tbaa !486
-  %19 = getelementptr inbounds %struct.PConnectivity* %18, i64 0, i32 1, !dbg !1575
-  %20 = bitcast i32** %19 to i8**, !dbg !1575
-  %21 = load i8** %20, align 8, !dbg !1575, !tbaa !1219
-  tail call void @free(i8* %21) #8, !dbg !1576
-  %22 = bitcast %struct.PConnectivity** %conn to i8**, !dbg !1577
-  %23 = load i8** %22, align 8, !dbg !1577, !tbaa !486
-  tail call void @free(i8* %23) #8, !dbg !1578
-  store %struct.PConnectivity* null, %struct.PConnectivity** %conn, align 8, !dbg !1579, !tbaa !486
-  br label %24, !dbg !1580
+if.then:                                          ; preds = %land.lhs.true
+  %perme = getelementptr inbounds %struct.PConnectivity* %0, i64 0, i32 3, !dbg !910
+  %1 = load i32** %perme, align 8, !dbg !910, !tbaa !397
+  %2 = bitcast i32* %1 to i8*, !dbg !910
+  tail call void @free(i8* %2) #7, !dbg !910
+  %3 = load %struct.PConnectivity** %conn, align 8, !dbg !912, !tbaa !397
+  %neighbours = getelementptr inbounds %struct.PConnectivity* %3, i64 0, i32 2, !dbg !912
+  %4 = load i32*** %neighbours, align 8, !dbg !912, !tbaa !397
+  %5 = load i32** %4, align 8, !dbg !912, !tbaa !397
+  %6 = bitcast i32* %5 to i8*, !dbg !912
+  tail call void @free(i8* %6) #7, !dbg !912
+  %7 = load %struct.PConnectivity** %conn, align 8, !dbg !913, !tbaa !397
+  %neighbours2 = getelementptr inbounds %struct.PConnectivity* %7, i64 0, i32 2, !dbg !913
+  %8 = load i32*** %neighbours2, align 8, !dbg !913, !tbaa !397
+  %9 = bitcast i32** %8 to i8*, !dbg !913
+  tail call void @free(i8* %9) #7, !dbg !913
+  %10 = load %struct.PConnectivity** %conn, align 8, !dbg !914, !tbaa !397
+  %nprocs = getelementptr inbounds %struct.PConnectivity* %10, i64 0, i32 1, !dbg !914
+  %11 = load i32** %nprocs, align 8, !dbg !914, !tbaa !397
+  %12 = bitcast i32* %11 to i8*, !dbg !914
+  tail call void @free(i8* %12) #7, !dbg !914
+  %13 = load %struct.PConnectivity** %conn, align 8, !dbg !915, !tbaa !397
+  %14 = bitcast %struct.PConnectivity* %13 to i8*, !dbg !915
+  tail call void @free(i8* %14) #7, !dbg !915
+  store %struct.PConnectivity* null, %struct.PConnectivity** %conn, align 8, !dbg !916, !tbaa !397
+  br label %if.end, !dbg !917
 
-; <label>:24                                      ; preds = %2, %0, %5
-  ret void, !dbg !1581
+if.end:                                           ; preds = %land.lhs.true, %entry, %if.then
+  ret void, !dbg !918
 }

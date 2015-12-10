@@ -1,18 +1,21 @@
 define zeroext i1 @_cpp_read_file(%struct.cpp_reader* %pfile, i8* %fname) #0 {
 entry:
-  %call = tail call fastcc %struct.include_file* @open_file(%struct.cpp_reader* %pfile, i8* %fname) #7
-  %cmp = icmp eq %struct.include_file* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !670), !dbg !1197
+  tail call void @llvm.dbg.value(metadata !{i8* %fname}, i64 0, metadata !671), !dbg !1198
+  %call = tail call fastcc %struct.include_file* @open_file(%struct.cpp_reader* %pfile, i8* %fname) #8, !dbg !1199
+  tail call void @llvm.dbg.value(metadata !{%struct.include_file* %call}, i64 0, metadata !672), !dbg !1199
+  %cmp = icmp eq %struct.include_file* %call, null, !dbg !1200
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1200
 
 if.then:                                          ; preds = %entry
-  tail call void @cpp_error_from_errno(%struct.cpp_reader* %pfile, i8* %fname) #6
-  br label %return
+  tail call void @cpp_error_from_errno(%struct.cpp_reader* %pfile, i8* %fname) #7, !dbg !1201
+  br label %return, !dbg !1203
 
 if.end:                                           ; preds = %entry
-  %call1 = tail call fastcc zeroext i1 @stack_include_file(%struct.cpp_reader* %pfile, %struct.include_file* %call) #7
-  br label %return
+  %call1 = tail call fastcc zeroext i1 @stack_include_file(%struct.cpp_reader* %pfile, %struct.include_file* %call) #8, !dbg !1204
+  br label %return, !dbg !1204
 
 return:                                           ; preds = %if.end, %if.then
   %retval.0 = phi i1 [ false, %if.then ], [ %call1, %if.end ]
-  ret i1 %retval.0
+  ret i1 %retval.0, !dbg !1205
 }

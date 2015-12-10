@@ -1,36 +1,37 @@
 define i32 @regno_clobbered_at_setjmp(i32 %regno) #0 {
 entry:
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 0
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !1561), !dbg !3284
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !3285, !tbaa !2128
+  %cmp = icmp eq i32 %0, 0, !dbg !3285
+  br i1 %cmp, label %return, label %if.end, !dbg !3285
 
 if.end:                                           ; preds = %entry
-  %idxprom = sext i32 %regno to i64
-  %1 = load %struct.varray_head_tag** @reg_n_info, align 8, !tbaa !3
-  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4
-  %reg = bitcast %union.varray_data_tag* %data to [1 x %struct.reg_info_def*]*
-  %arrayidx = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg, i64 0, i64 %idxprom
-  %2 = load %struct.reg_info_def** %arrayidx, align 8, !tbaa !3
-  %sets = getelementptr inbounds %struct.reg_info_def* %2, i64 0, i32 3
-  %3 = load i32* %sets, align 4, !tbaa !0
-  %cmp1 = icmp sgt i32 %3, 1
-  br i1 %cmp1, label %land.rhs, label %lor.lhs.false
+  %idxprom = sext i32 %regno to i64, !dbg !3286
+  %1 = load %struct.varray_head_tag** @reg_n_info, align 8, !dbg !3286, !tbaa !2131
+  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4, !dbg !3286
+  %reg = bitcast %union.varray_data_tag* %data to [1 x %struct.reg_info_def*]*, !dbg !3286
+  %arrayidx = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg, i64 0, i64 %idxprom, !dbg !3286
+  %2 = load %struct.reg_info_def** %arrayidx, align 8, !dbg !3286, !tbaa !2131
+  %sets = getelementptr inbounds %struct.reg_info_def* %2, i64 0, i32 3, !dbg !3286
+  %3 = load i32* %sets, align 4, !dbg !3286, !tbaa !2128
+  %cmp1 = icmp sgt i32 %3, 1, !dbg !3286
+  br i1 %cmp1, label %land.rhs, label %lor.lhs.false, !dbg !3286
 
 lor.lhs.false:                                    ; preds = %if.end
-  %4 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
-  %data2 = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 4
-  %arrayidx3 = bitcast %union.varray_data_tag* %data2 to %struct.basic_block_def**
-  %5 = load %struct.basic_block_def** %arrayidx3, align 8, !tbaa !3
-  %global_live_at_start = getelementptr inbounds %struct.basic_block_def* %5, i64 0, i32 8
-  %6 = load %struct.bitmap_head_def** %global_live_at_start, align 8, !tbaa !3
-  %call = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %6, i32 %regno) #6
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %land.end, label %land.rhs
+  %4 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !3287, !tbaa !2131
+  %data2 = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 4, !dbg !3287
+  %arrayidx3 = bitcast %union.varray_data_tag* %data2 to %struct.basic_block_def**, !dbg !3287
+  %5 = load %struct.basic_block_def** %arrayidx3, align 8, !dbg !3287, !tbaa !2131
+  %global_live_at_start = getelementptr inbounds %struct.basic_block_def* %5, i64 0, i32 8, !dbg !3287
+  %6 = load %struct.bitmap_head_def** %global_live_at_start, align 8, !dbg !3287, !tbaa !2131
+  %call = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %6, i32 %regno) #7, !dbg !3287
+  %tobool = icmp eq i32 %call, 0, !dbg !3287
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !3287
 
 land.rhs:                                         ; preds = %lor.lhs.false, %if.end
-  %7 = load %struct.bitmap_head_def** @regs_live_at_setjmp, align 8, !tbaa !3
-  %call4 = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %7, i32 %regno) #6
-  %tobool5 = icmp ne i32 %call4, 0
+  %7 = load %struct.bitmap_head_def** @regs_live_at_setjmp, align 8, !dbg !3288, !tbaa !2131
+  %call4 = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %7, i32 %regno) #7, !dbg !3288
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !3288
   br label %land.end
 
 land.end:                                         ; preds = %lor.lhs.false, %land.rhs
@@ -40,5 +41,5 @@ land.end:                                         ; preds = %lor.lhs.false, %lan
 
 return:                                           ; preds = %entry, %land.end
   %retval.0 = phi i32 [ %land.ext, %land.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3289
 }

@@ -1,0 +1,35 @@
+define zeroext i1 @_ZN11xercesc_2_510XMLChar1_112isValidQNameEPKtj(i16* %toCheck, i32 %count) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !221), !dbg !385
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !222), !dbg !386
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !223), !dbg !387
+  %call = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* %toCheck, i16 zeroext 58) #5, !dbg !388
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !224), !dbg !388
+  %cmp = icmp eq i32 %call, 0, !dbg !389
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !389
+
+lor.lhs.false:                                    ; preds = %entry
+  %sub = add i32 %count, -1, !dbg !389
+  %cmp1 = icmp eq i32 %call, %sub, !dbg !389
+  br i1 %cmp1, label %return, label %if.end, !dbg !389
+
+if.end:                                           ; preds = %lor.lhs.false
+  %cmp2 = icmp eq i32 %call, -1, !dbg !390
+  br i1 %cmp2, label %if.end8, label %if.then3, !dbg !390
+
+if.then3:                                         ; preds = %if.end
+  %call4 = tail call zeroext i1 @_ZN11xercesc_2_510XMLChar1_113isValidNCNameEPKtj(i16* %toCheck, i32 %call) #5, !dbg !391
+  br i1 %call4, label %if.end8, label %return, !dbg !391
+
+if.end8:                                          ; preds = %if.then3, %if.end
+  %idx.ext = sext i32 %call to i64, !dbg !393
+  %add.ptr.sum = add i64 %idx.ext, 1, !dbg !393
+  %add.ptr9 = getelementptr inbounds i16* %toCheck, i64 %add.ptr.sum, !dbg !393
+  %sub11 = sub i32 %sub, %call, !dbg !393
+  %call12 = tail call zeroext i1 @_ZN11xercesc_2_510XMLChar1_113isValidNCNameEPKtj(i16* %add.ptr9, i32 %sub11) #5, !dbg !393
+  br label %return, !dbg !393
+
+return:                                           ; preds = %if.then3, %entry, %lor.lhs.false, %if.end8
+  %retval.0 = phi i1 [ %call12, %if.end8 ], [ false, %lor.lhs.false ], [ false, %entry ], [ false, %if.then3 ]
+  ret i1 %retval.0, !dbg !394
+}

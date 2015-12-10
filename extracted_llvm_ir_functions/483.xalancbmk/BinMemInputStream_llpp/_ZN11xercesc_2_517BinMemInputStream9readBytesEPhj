@@ -1,0 +1,33 @@
+define i32 @_ZN11xercesc_2_517BinMemInputStream9readBytesEPhj(%"class.xercesc_2_5::BinMemInputStream"* nocapture %this, i8* nocapture %toFill, i32 %maxToRead) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BinMemInputStream"* %this}, i64 0, metadata !228), !dbg !265
+  tail call void @llvm.dbg.value(metadata !{i8* %toFill}, i64 0, metadata !229), !dbg !265
+  tail call void @llvm.dbg.value(metadata !{i32 %maxToRead}, i64 0, metadata !230), !dbg !266
+  %fCapacity = getelementptr inbounds %"class.xercesc_2_5::BinMemInputStream"* %this, i64 0, i32 3, !dbg !267
+  %0 = load i32* %fCapacity, align 4, !dbg !267, !tbaa !248
+  %fCurIndex = getelementptr inbounds %"class.xercesc_2_5::BinMemInputStream"* %this, i64 0, i32 4, !dbg !267
+  %1 = load i32* %fCurIndex, align 4, !dbg !267, !tbaa !248
+  %sub = sub i32 %0, %1, !dbg !267
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !231), !dbg !267
+  %tobool = icmp eq i32 %0, %1, !dbg !268
+  br i1 %tobool, label %return, label %if.end, !dbg !268
+
+if.end:                                           ; preds = %entry
+  %cmp = icmp ult i32 %sub, %maxToRead, !dbg !269
+  %cond = select i1 %cmp, i32 %sub, i32 %maxToRead, !dbg !269
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !232), !dbg !269
+  %idxprom = zext i32 %1 to i64, !dbg !270
+  %fBuffer = getelementptr inbounds %"class.xercesc_2_5::BinMemInputStream"* %this, i64 0, i32 1, !dbg !270
+  %2 = load i8** %fBuffer, align 8, !dbg !270, !tbaa !245
+  %arrayidx = getelementptr inbounds i8* %2, i64 %idxprom, !dbg !270
+  %conv = zext i32 %cond to i64, !dbg !270
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %toFill, i8* %arrayidx, i64 %conv, i32 1, i1 false), !dbg !270
+  %3 = load i32* %fCurIndex, align 4, !dbg !271, !tbaa !248
+  %add = add i32 %3, %cond, !dbg !271
+  store i32 %add, i32* %fCurIndex, align 4, !dbg !271, !tbaa !248
+  br label %return, !dbg !272
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ %cond, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !273
+}

@@ -1,0 +1,43 @@
+define i32 @_ZN11xercesc_2_59XMLString14compareNStringEPKtS2_j(i16* nocapture %str1, i16* nocapture %str2, i32 %maxChars) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %str1}, i64 0, metadata !1800), !dbg !3391
+  tail call void @llvm.dbg.value(metadata !{i16* %str2}, i64 0, metadata !1801), !dbg !3392
+  tail call void @llvm.dbg.value(metadata !{i32 %maxChars}, i64 0, metadata !1802), !dbg !3393
+  tail call void @llvm.dbg.value(metadata !{i16* %str1}, i64 0, metadata !1803), !dbg !3394
+  tail call void @llvm.dbg.value(metadata !{i16* %str2}, i64 0, metadata !1804), !dbg !3395
+  tail call void @llvm.dbg.value(metadata !1004, i64 0, metadata !1805), !dbg !3396
+  br label %while.body, !dbg !3397
+
+while.body:                                       ; preds = %if.end5, %entry
+  %psz1.0 = phi i16* [ %str1, %entry ], [ %incdec.ptr, %if.end5 ]
+  %psz2.0 = phi i16* [ %str2, %entry ], [ %incdec.ptr6, %if.end5 ]
+  %curCount.0 = phi i32 [ 0, %entry ], [ %inc, %if.end5 ]
+  %0 = load i16* %psz1.0, align 2, !dbg !3398, !tbaa !2947
+  %1 = load i16* %psz2.0, align 2, !dbg !3398, !tbaa !2947
+  %cmp = icmp eq i16 %0, %1, !dbg !3398
+  br i1 %cmp, label %if.end, label %if.then, !dbg !3398
+
+if.then:                                          ; preds = %while.body
+  %conv = zext i16 %0 to i32, !dbg !3398
+  %conv1 = zext i16 %1 to i32, !dbg !3398
+  %sub = sub nsw i32 %conv, %conv1, !dbg !3400
+  br label %return, !dbg !3400
+
+if.end:                                           ; preds = %while.body
+  %tobool = icmp eq i16 %0, 0, !dbg !3401
+  br i1 %tobool, label %return, label %if.end5, !dbg !3401
+
+if.end5:                                          ; preds = %if.end
+  %incdec.ptr = getelementptr inbounds i16* %psz1.0, i64 1, !dbg !3402
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1803), !dbg !3402
+  %incdec.ptr6 = getelementptr inbounds i16* %psz2.0, i64 1, !dbg !3403
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr6}, i64 0, metadata !1804), !dbg !3403
+  %inc = add i32 %curCount.0, 1, !dbg !3404
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1805), !dbg !3404
+  %cmp7 = icmp eq i32 %inc, %maxChars, !dbg !3405
+  br i1 %cmp7, label %return, label %while.body, !dbg !3405
+
+return:                                           ; preds = %if.end5, %if.end, %if.then
+  %retval.0 = phi i32 [ %sub, %if.then ], [ 0, %if.end ], [ 0, %if.end5 ]
+  ret i32 %retval.0, !dbg !3406
+}

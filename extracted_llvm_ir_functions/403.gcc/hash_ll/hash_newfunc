@@ -1,14 +1,18 @@
 define %struct.hash_entry* @hash_newfunc(%struct.hash_entry* %entry1, %struct.hash_table* %table, i8* nocapture %p) #0 {
 entry:
-  %cmp = icmp eq %struct.hash_entry* %entry1, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.hash_entry* %entry1}, i64 0, metadata !122), !dbg !231
+  tail call void @llvm.dbg.value(metadata !{%struct.hash_table* %table}, i64 0, metadata !123), !dbg !232
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !124), !dbg !233
+  %cmp = icmp eq %struct.hash_entry* %entry1, null, !dbg !234
+  br i1 %cmp, label %if.then, label %if.end, !dbg !234
 
 if.then:                                          ; preds = %entry
-  %call = tail call i8* @hash_allocate(%struct.hash_table* %table, i32 24) #7
-  %0 = bitcast i8* %call to %struct.hash_entry*
-  br label %if.end
+  %call = tail call i8* @hash_allocate(%struct.hash_table* %table, i32 24) #8, !dbg !235
+  %0 = bitcast i8* %call to %struct.hash_entry*, !dbg !235
+  tail call void @llvm.dbg.value(metadata !{%struct.hash_entry* %0}, i64 0, metadata !122), !dbg !235
+  br label %if.end, !dbg !235
 
 if.end:                                           ; preds = %if.then, %entry
   %entry.addr.0 = phi %struct.hash_entry* [ %0, %if.then ], [ %entry1, %entry ]
-  ret %struct.hash_entry* %entry.addr.0
+  ret %struct.hash_entry* %entry.addr.0, !dbg !236
 }

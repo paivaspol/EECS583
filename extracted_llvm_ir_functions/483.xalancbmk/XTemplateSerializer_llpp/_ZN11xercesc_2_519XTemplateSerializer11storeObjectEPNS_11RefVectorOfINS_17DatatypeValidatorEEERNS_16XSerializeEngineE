@@ -1,0 +1,32 @@
+define void @_ZN11xercesc_2_519XTemplateSerializer11storeObjectEPNS_11RefVectorOfINS_17DatatypeValidatorEEERNS_16XSerializeEngineE(%"class.xercesc_2_5::RefVectorOf.21"* %objToStore, %"class.xercesc_2_5::XSerializeEngine"* %serEng) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefVectorOf.21"* %objToStore}, i64 0, metadata !10080), !dbg !15458
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializeEngine"* %serEng}, i64 0, metadata !10081), !dbg !15459
+  %0 = bitcast %"class.xercesc_2_5::RefVectorOf.21"* %objToStore to i8*, !dbg !15460
+  %call = tail call zeroext i1 @_ZN11xercesc_2_516XSerializeEngine17needToStoreObjectEPv(%"class.xercesc_2_5::XSerializeEngine"* %serEng, i8* %0) #12, !dbg !15460
+  br i1 %call, label %if.then, label %if.end, !dbg !15460
+
+if.then:                                          ; preds = %entry
+  %1 = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.21"* %objToStore, i64 0, i32 0, !dbg !15461
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.22"* %1}, i64 0, metadata !15462), !dbg !15463
+  %fCurCount.i = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.21"* %objToStore, i64 0, i32 0, i32 2, !dbg !15464
+  %2 = load i32* %fCurCount.i, align 4, !dbg !15464, !tbaa !14899
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !10082), !dbg !15461
+  %call2 = tail call %"class.xercesc_2_5::XSerializeEngine"* @_ZN11xercesc_2_516XSerializeEnginelsEi(%"class.xercesc_2_5::XSerializeEngine"* %serEng, i32 %2) #12, !dbg !15465
+  tail call void @llvm.dbg.value(metadata !1577, i64 0, metadata !10084), !dbg !15466
+  %cmp11 = icmp sgt i32 %2, 0, !dbg !15466
+  br i1 %cmp11, label %for.body, label %if.end, !dbg !15466
+
+for.body:                                         ; preds = %if.then, %for.body
+  %i.012 = phi i32 [ %inc, %for.body ], [ 0, %if.then ]
+  %call3 = tail call %"class.xercesc_2_5::DatatypeValidator"* @_ZN11xercesc_2_515BaseRefVectorOfINS_17DatatypeValidatorEE9elementAtEj(%"class.xercesc_2_5::BaseRefVectorOf.22"* %1, i32 %i.012) #12, !dbg !15467
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DatatypeValidator"* %call3}, i64 0, metadata !10086), !dbg !15467
+  tail call void @_ZN11xercesc_2_517DatatypeValidator7storeDVERNS_16XSerializeEngineEPS0_(%"class.xercesc_2_5::XSerializeEngine"* %serEng, %"class.xercesc_2_5::DatatypeValidator"* %call3) #12, !dbg !15468
+  %inc = add nsw i32 %i.012, 1, !dbg !15466
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !10084), !dbg !15466
+  %exitcond = icmp eq i32 %inc, %2, !dbg !15466
+  br i1 %exitcond, label %if.end, label %for.body, !dbg !15466
+
+if.end:                                           ; preds = %if.then, %for.body, %entry
+  ret void, !dbg !15469
+}

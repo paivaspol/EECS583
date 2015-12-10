@@ -1,358 +1,312 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/445.gobmk/src/utils/random.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.gg_rand_state = type { [25 x i32], i32 }
 
 @x = internal unnamed_addr global [25 x i32] zeroinitializer, align 16
 @k = internal unnamed_addr global i32 0, align 4
 @rand_initialized = internal unnamed_addr global i1 false
-@__func__.next_rand = private unnamed_addr constant [10 x i8] c"next_rand\00", align 1
-@.str = private unnamed_addr constant [70 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/445.gobmk/src/utils/random.c\00", align 1
-@.str1 = private unnamed_addr constant [17 x i8] c"rand_initialized\00", align 1
+@.str = private unnamed_addr constant [17 x i8] c"rand_initialized\00", align 1
+@.str1 = private unnamed_addr constant [58 x i8] c"../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c\00", align 1
+@__PRETTY_FUNCTION__.next_rand = private unnamed_addr constant [25 x i8] c"unsigned int next_rand()\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @gg_srand(i32 %seed) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %seed, i64 0, metadata !11, metadata !65), !dbg !66
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !12, metadata !65), !dbg !67
-  br label %1, !dbg !68
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %seed}, i64 0, metadata !10), !dbg !62
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !11), !dbg !63
+  br label %for.body, !dbg !63
 
-; <label>:1                                       ; preds = %1, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %.01 = phi i32 [ %seed, %0 ], [ %4, %1 ]
-  %2 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv, !dbg !70
-  store i32 %.01, i32* %2, align 4, !dbg !73, !tbaa !74
-  %3 = mul i32 %.01, 1313, !dbg !78
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !11, metadata !65), !dbg !66
-  %4 = add i32 %3, 88897, !dbg !79
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !11, metadata !65), !dbg !66
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !68
-  %exitcond = icmp eq i64 %indvars.iv.next, 25, !dbg !68
-  br i1 %exitcond, label %5, label %1, !dbg !68
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %seed.addr.05 = phi i32 [ %seed, %entry ], [ %add, %for.body ]
+  %arrayidx = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv, !dbg !65
+  store i32 %seed.addr.05, i32* %arrayidx, align 4, !dbg !65, !tbaa !67
+  %mul = mul i32 %seed.addr.05, 1313, !dbg !70
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !10), !dbg !70
+  %add = add i32 %mul, 88897, !dbg !71
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !10), !dbg !71
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !63
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !63
+  %exitcond = icmp eq i32 %lftr.wideiv, 25, !dbg !63
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !63
 
-; <label>:5                                       ; preds = %1
-  store i32 24, i32* @k, align 4, !dbg !80, !tbaa !74
+for.end:                                          ; preds = %for.body
+  store i32 24, i32* @k, align 4, !dbg !72, !tbaa !67
   store i1 true, i1* @rand_initialized, align 1
-  ret void, !dbg !81
+  ret void, !dbg !73
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @gg_rand() #0 {
-  %1 = tail call fastcc i32 @next_rand() #3, !dbg !82
-  %2 = and i32 %1, 2147483647, !dbg !83
-  ret i32 %2, !dbg !84
+entry:
+  %call = tail call fastcc i32 @next_rand() #3, !dbg !74
+  %and = and i32 %call, 2147483647, !dbg !74
+  ret i32 %and, !dbg !74
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define internal fastcc i32 @next_rand() #0 {
+entry:
   %.b = load i1* @rand_initialized, align 1
-  br i1 %.b, label %2, label %1, !dbg !85
+  br i1 %.b, label %if.end, label %cond.false, !dbg !75
 
-; <label>:1                                       ; preds = %0
-  tail call void @__assert_rtn(i8* getelementptr inbounds ([10 x i8]* @__func__.next_rand, i64 0, i64 0), i8* getelementptr inbounds ([70 x i8]* @.str, i64 0, i64 0), i32 90, i8* getelementptr inbounds ([17 x i8]* @.str1, i64 0, i64 0)) #4, !dbg !86
-  unreachable, !dbg !86
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([17 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([58 x i8]* @.str1, i64 0, i64 0), i32 90, i8* getelementptr inbounds ([25 x i8]* @__PRETTY_FUNCTION__.next_rand, i64 0, i64 0)) #4, !dbg !76
+  unreachable, !dbg !76
 
-; <label>:2                                       ; preds = %0
-  %3 = load i32* @k, align 4, !dbg !89, !tbaa !74
-  %4 = add nsw i32 %3, 1, !dbg !89
-  store i32 %4, i32* @k, align 4, !dbg !89, !tbaa !74
-  %5 = icmp eq i32 %4, 25, !dbg !91
-  br i1 %5, label %vector.body, label %30, !dbg !92
+if.end:                                           ; preds = %entry
+  %0 = load i32* @k, align 4, !dbg !78, !tbaa !67
+  %inc = add nsw i32 %0, 1, !dbg !78
+  store i32 %inc, i32* @k, align 4, !dbg !78, !tbaa !67
+  %cmp = icmp eq i32 %inc, 25, !dbg !78
+  br i1 %cmp, label %for.body.i, label %if.end3, !dbg !78
 
-vector.body:                                      ; preds = %2, %vector.body
-  %index = phi i64 [ %index.next, %vector.body ], [ 0, %2 ], !dbg !93
-  %6 = add i64 %index, 7, !dbg !95
-  %7 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %6, !dbg !95
-  %8 = bitcast i32* %7 to <2 x i32>*, !dbg !95
-  %wide.load = load <2 x i32>* %8, align 4, !dbg !95, !tbaa !74
-  %9 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %index, !dbg !99
-  %10 = bitcast i32* %9 to <2 x i32>*, !dbg !99
-  %wide.load1 = load <2 x i32>* %10, align 8, !dbg !99, !tbaa !74
-  %11 = lshr <2 x i32> %wide.load1, <i32 1, i32 1>, !dbg !100
-  %12 = xor <2 x i32> %11, %wide.load, !dbg !101
-  %13 = and <2 x i32> %wide.load1, <i32 1, i32 1>, !dbg !102
-  %14 = icmp ne <2 x i32> %13, zeroinitializer, !dbg !103
-  %15 = select <2 x i1> %14, <2 x i32> <i32 -1900031960, i32 -1900031960>, <2 x i32> zeroinitializer, !dbg !103
-  %16 = xor <2 x i32> %12, %15, !dbg !104
-  %17 = bitcast i32* %9 to <2 x i32>*, !dbg !105
-  store <2 x i32> %16, <2 x i32>* %17, align 8, !dbg !105, !tbaa !74
-  %index.next = add i64 %index, 2, !dbg !93
-  %18 = icmp eq i64 %index.next, 18, !dbg !93
-  br i1 %18, label %.lr.ph.i, label %vector.body, !dbg !93, !llvm.loop !106
+for.body.i:                                       ; preds = %if.end, %for.body.i
+  %indvars.iv48.i = phi i64 [ %indvars.iv.next49.i, %for.body.i ], [ 0, %if.end ]
+  %1 = add nsw i64 %indvars.iv48.i, 7, !dbg !79
+  %arrayidx.i = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %1, !dbg !79
+  %2 = load i32* %arrayidx.i, align 4, !dbg !79, !tbaa !67
+  %arrayidx2.i = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv48.i, !dbg !79
+  %3 = load i32* %arrayidx2.i, align 4, !dbg !79, !tbaa !67
+  %shr.i = lshr i32 %3, 1, !dbg !79
+  %xor.i = xor i32 %shr.i, %2, !dbg !79
+  %and.i = and i32 %3, 1, !dbg !79
+  %tobool.i = icmp ne i32 %and.i, 0, !dbg !79
+  %cond.i = select i1 %tobool.i, i32 -1900031960, i32 0, !dbg !79
+  %xor5.i = xor i32 %xor.i, %cond.i, !dbg !79
+  store i32 %xor5.i, i32* %arrayidx2.i, align 4, !dbg !79, !tbaa !67
+  %indvars.iv.next49.i = add i64 %indvars.iv48.i, 1, !dbg !83
+  tail call void @llvm.dbg.value(metadata !84, i64 0, metadata !85), !dbg !83
+  %lftr.wideiv11 = trunc i64 %indvars.iv.next49.i to i32, !dbg !83
+  %exitcond12 = icmp eq i32 %lftr.wideiv11, 18, !dbg !83
+  br i1 %exitcond12, label %for.body10.i, label %for.body.i, !dbg !83
 
-.lr.ph.i:                                         ; preds = %vector.body, %.lr.ph.i
-  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %.lr.ph.i ], [ 18, %vector.body ], !dbg !93
-  %19 = add nsw i64 %indvars.iv.i, -18, !dbg !109
-  %20 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %19, !dbg !112
-  %21 = load i32* %20, align 4, !dbg !112, !tbaa !74
-  %22 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv.i, !dbg !113
-  %23 = load i32* %22, align 4, !dbg !113, !tbaa !74
-  %24 = lshr i32 %23, 1, !dbg !114
-  %25 = xor i32 %24, %21, !dbg !115
-  %26 = and i32 %23, 1, !dbg !116
-  %27 = icmp ne i32 %26, 0, !dbg !117
-  %28 = select i1 %27, i32 -1900031960, i32 0, !dbg !117
-  %29 = xor i32 %25, %28, !dbg !118
-  store i32 %29, i32* %22, align 4, !dbg !119, !tbaa !74
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !120
-  %exitcond = icmp eq i64 %indvars.iv.next.i, 25, !dbg !120
-  br i1 %exitcond, label %iterate_tgfsr.exit, label %.lr.ph.i, !dbg !120
+for.body10.i:                                     ; preds = %for.body.i, %for.body10.i
+  %indvars.iv43.i = phi i64 [ %indvars.iv.next44.i, %for.body10.i ], [ 18, %for.body.i ], !dbg !83
+  %4 = add nsw i64 %indvars.iv43.i, -18, !dbg !86
+  %arrayidx13.i = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %4, !dbg !86
+  %5 = load i32* %arrayidx13.i, align 4, !dbg !86, !tbaa !67
+  %arrayidx15.i = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv43.i, !dbg !86
+  %6 = load i32* %arrayidx15.i, align 4, !dbg !86, !tbaa !67
+  %shr16.i = lshr i32 %6, 1, !dbg !86
+  %xor17.i = xor i32 %shr16.i, %5, !dbg !86
+  %and20.i = and i32 %6, 1, !dbg !86
+  %tobool21.i = icmp ne i32 %and20.i, 0, !dbg !86
+  %cond22.i = select i1 %tobool21.i, i32 -1900031960, i32 0, !dbg !86
+  %xor23.i = xor i32 %xor17.i, %cond22.i, !dbg !86
+  store i32 %xor23.i, i32* %arrayidx15.i, align 4, !dbg !86, !tbaa !67
+  %indvars.iv.next44.i = add i64 %indvars.iv43.i, 1, !dbg !88
+  %lftr.wideiv = trunc i64 %indvars.iv.next44.i to i32, !dbg !88
+  %exitcond = icmp eq i32 %lftr.wideiv, 25, !dbg !88
+  br i1 %exitcond, label %iterate_tgfsr.exit, label %for.body10.i, !dbg !88
 
-iterate_tgfsr.exit:                               ; preds = %.lr.ph.i
-  store i32 0, i32* @k, align 4, !dbg !121, !tbaa !74
-  br label %30, !dbg !122
+iterate_tgfsr.exit:                               ; preds = %for.body10.i
+  store i32 0, i32* @k, align 4, !dbg !89, !tbaa !67
+  br label %if.end3, !dbg !90
 
-; <label>:30                                      ; preds = %iterate_tgfsr.exit, %2
-  %31 = phi i32 [ 0, %iterate_tgfsr.exit ], [ %4, %2 ]
-  %32 = sext i32 %31 to i64, !dbg !123
-  %33 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %32, !dbg !123
-  %34 = load i32* %33, align 4, !dbg !123, !tbaa !74
-  %35 = shl i32 %34, 7, !dbg !124
-  %36 = and i32 %35, 727393536, !dbg !125
-  %37 = xor i32 %36, %34, !dbg !126
-  tail call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !43, metadata !65), !dbg !127
-  %38 = shl i32 %37, 15, !dbg !128
-  %39 = and i32 %38, -611647488, !dbg !129
-  %40 = xor i32 %39, %37, !dbg !130
-  tail call void @llvm.dbg.value(metadata i32 %40, i64 0, metadata !43, metadata !65), !dbg !127
-  ret i32 %40, !dbg !131
+if.end3:                                          ; preds = %iterate_tgfsr.exit, %if.end
+  %7 = phi i32 [ 0, %iterate_tgfsr.exit ], [ %inc, %if.end ]
+  %idxprom = sext i32 %7 to i64, !dbg !91
+  %arrayidx = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %idxprom, !dbg !91
+  %8 = load i32* %arrayidx, align 4, !dbg !91, !tbaa !67
+  %shl = shl i32 %8, 7, !dbg !91
+  %and = and i32 %shl, 727393536, !dbg !91
+  %xor = xor i32 %and, %8, !dbg !91
+  tail call void @llvm.dbg.value(metadata !{i32 %xor}, i64 0, metadata !44), !dbg !91
+  %shl6 = shl i32 %xor, 15, !dbg !92
+  %and7 = and i32 %shl6, -611647488, !dbg !92
+  %xor8 = xor i32 %and7, %xor, !dbg !92
+  tail call void @llvm.dbg.value(metadata !{i32 %xor8}, i64 0, metadata !44), !dbg !92
+  ret i32 %xor8, !dbg !93
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @gg_urand() #0 {
-  %1 = tail call fastcc i32 @next_rand() #3, !dbg !132
-  ret i32 %1, !dbg !133
+entry:
+  %call = tail call fastcc i32 @next_rand() #3, !dbg !94
+  ret i32 %call, !dbg !94
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define double @gg_drand() #0 {
-  %1 = tail call fastcc i32 @next_rand() #3, !dbg !134
-  %2 = uitofp i32 %1 to double, !dbg !134
-  %3 = fmul double %2, 0x3DEFFFFFFFFFFFFF, !dbg !135
-  ret double %3, !dbg !136
+entry:
+  %call = tail call fastcc i32 @next_rand() #3, !dbg !95
+  %conv = uitofp i32 %call to double, !dbg !95
+  %mul = fmul double %conv, 0x3DEFFFFFFFFFFFFF, !dbg !95
+  ret double %mul, !dbg !95
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @gg_get_rand_state(%struct.gg_rand_state* nocapture %state) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.gg_rand_state* %state, i64 0, metadata !35, metadata !65), !dbg !137
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !36, metadata !65), !dbg !138
-  br label %1, !dbg !139
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.gg_rand_state* %state}, i64 0, metadata !36), !dbg !96
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !37), !dbg !97
+  br label %for.body, !dbg !97
 
-; <label>:1                                       ; preds = %1, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv, !dbg !141
-  %3 = load i32* %2, align 4, !dbg !141, !tbaa !74
-  %4 = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 0, i64 %indvars.iv, !dbg !143
-  store i32 %3, i32* %4, align 4, !dbg !144, !tbaa !74
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !139
-  %exitcond = icmp eq i64 %indvars.iv.next, 25, !dbg !139
-  br i1 %exitcond, label %5, label %1, !dbg !139
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv, !dbg !99
+  %0 = load i32* %arrayidx, align 4, !dbg !99, !tbaa !67
+  %arrayidx2 = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 0, i64 %indvars.iv, !dbg !99
+  store i32 %0, i32* %arrayidx2, align 4, !dbg !99, !tbaa !67
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !97
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !97
+  %exitcond = icmp eq i32 %lftr.wideiv, 25, !dbg !97
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !97
 
-; <label>:5                                       ; preds = %1
-  %6 = load i32* @k, align 4, !dbg !145, !tbaa !74
-  %7 = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 1, !dbg !146
-  store i32 %6, i32* %7, align 4, !dbg !147, !tbaa !148
-  ret void, !dbg !150
+for.end:                                          ; preds = %for.body
+  %1 = load i32* @k, align 4, !dbg !100, !tbaa !67
+  %k = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 1, !dbg !100
+  store i32 %1, i32* %k, align 4, !dbg !100, !tbaa !67
+  ret void, !dbg !101
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @gg_set_rand_state(%struct.gg_rand_state* nocapture readonly %state) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.gg_rand_state* %state, i64 0, metadata !39, metadata !65), !dbg !151
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !40, metadata !65), !dbg !152
-  br label %1, !dbg !153
+; Function Attrs: nounwind optsize uwtable
+define void @gg_set_rand_state(%struct.gg_rand_state* nocapture %state) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.gg_rand_state* %state}, i64 0, metadata !40), !dbg !102
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !41), !dbg !103
+  br label %for.body, !dbg !103
 
-; <label>:1                                       ; preds = %1, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 0, i64 %indvars.iv, !dbg !155
-  %3 = load i32* %2, align 4, !dbg !155, !tbaa !74
-  %4 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv, !dbg !157
-  store i32 %3, i32* %4, align 4, !dbg !158, !tbaa !74
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !153
-  %exitcond = icmp eq i64 %indvars.iv.next, 25, !dbg !153
-  br i1 %exitcond, label %5, label %1, !dbg !153
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 0, i64 %indvars.iv, !dbg !105
+  %0 = load i32* %arrayidx, align 4, !dbg !105, !tbaa !67
+  %arrayidx2 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv, !dbg !105
+  store i32 %0, i32* %arrayidx2, align 4, !dbg !105, !tbaa !67
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !103
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !103
+  %exitcond = icmp eq i32 %lftr.wideiv, 25, !dbg !103
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !103
 
-; <label>:5                                       ; preds = %1
-  %6 = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 1, !dbg !159
-  %7 = load i32* %6, align 4, !dbg !159, !tbaa !148
-  store i32 %7, i32* @k, align 4, !dbg !160, !tbaa !74
-  ret void, !dbg !161
+for.end:                                          ; preds = %for.body
+  %k = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 1, !dbg !106
+  %1 = load i32* %k, align 4, !dbg !106, !tbaa !67
+  store i32 %1, i32* @k, align 4, !dbg !106, !tbaa !67
+  ret void, !dbg !107
 }
 
-; Function Attrs: noreturn optsize
-declare void @__assert_rtn(i8*, i8*, i32, i8*) #1
+; Function Attrs: noreturn nounwind optsize
+declare void @__assert_fail(i8*, i8*, i32, i8*) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
 attributes #3 = { optsize }
 attributes #4 = { noreturn nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!61, !62, !63}
-!llvm.ident = !{!64}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !5, globals: !49, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/445.gobmk/src/utils/random.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!5 = !{!6, !13, !15, !18, !22, !37, !41, !44}
-!6 = !DISubprogram(name: "gg_srand", scope: !1, file: !1, line: 118, type: !7, isLocal: false, isDefinition: true, scopeLine: 119, flags: DIFlagPrototyped, isOptimized: true, function: void (i32)* @gg_srand, variables: !10)
-!7 = !DISubroutineType(types: !8)
-!8 = !{null, !9}
-!9 = !DIBasicType(name: "unsigned int", size: 32, align: 32, encoding: DW_ATE_unsigned)
-!10 = !{!11, !12}
-!11 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "seed", arg: 1, scope: !6, file: !1, line: 118, type: !9)
-!12 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !6, file: !1, line: 120, type: !4)
-!13 = !DISubprogram(name: "gg_rand", scope: !1, file: !1, line: 138, type: !14, isLocal: false, isDefinition: true, scopeLine: 139, flags: DIFlagPrototyped, isOptimized: true, function: i32 ()* @gg_rand, variables: !2)
-!14 = !DISubroutineType(types: !3)
-!15 = !DISubprogram(name: "gg_urand", scope: !1, file: !1, line: 148, type: !16, isLocal: false, isDefinition: true, scopeLine: 149, flags: DIFlagPrototyped, isOptimized: true, function: i32 ()* @gg_urand, variables: !2)
-!16 = !DISubroutineType(types: !17)
-!17 = !{!9}
-!18 = !DISubprogram(name: "gg_drand", scope: !1, file: !1, line: 163, type: !19, isLocal: false, isDefinition: true, scopeLine: 164, flags: DIFlagPrototyped, isOptimized: true, function: double ()* @gg_drand, variables: !2)
-!19 = !DISubroutineType(types: !20)
-!20 = !{!21}
-!21 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!22 = !DISubprogram(name: "gg_get_rand_state", scope: !1, file: !1, line: 173, type: !23, isLocal: false, isDefinition: true, scopeLine: 174, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct.gg_rand_state*)* @gg_get_rand_state, variables: !34)
-!23 = !DISubroutineType(types: !24)
-!24 = !{null, !25}
-!25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64, align: 64)
-!26 = !DICompositeType(tag: DW_TAG_structure_type, name: "gg_rand_state", file: !27, line: 46, size: 832, align: 32, elements: !28)
-!27 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/445.gobmk/src/utils/random.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!28 = !{!29, !33}
-!29 = !DIDerivedType(tag: DW_TAG_member, name: "x", scope: !26, file: !27, line: 47, baseType: !30, size: 800, align: 32)
-!30 = !DICompositeType(tag: DW_TAG_array_type, baseType: !9, size: 800, align: 32, elements: !31)
-!31 = !{!32}
-!32 = !DISubrange(count: 25)
-!33 = !DIDerivedType(tag: DW_TAG_member, name: "k", scope: !26, file: !27, line: 48, baseType: !4, size: 32, align: 32, offset: 800)
-!34 = !{!35, !36}
-!35 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "state", arg: 1, scope: !22, file: !1, line: 173, type: !25)
-!36 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !22, file: !1, line: 175, type: !4)
-!37 = !DISubprogram(name: "gg_set_rand_state", scope: !1, file: !1, line: 186, type: !23, isLocal: false, isDefinition: true, scopeLine: 187, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct.gg_rand_state*)* @gg_set_rand_state, variables: !38)
-!38 = !{!39, !40}
-!39 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "state", arg: 1, scope: !37, file: !1, line: 186, type: !25)
-!40 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !37, file: !1, line: 188, type: !4)
-!41 = !DISubprogram(name: "next_rand", scope: !1, file: !1, line: 86, type: !16, isLocal: true, isDefinition: true, scopeLine: 87, flags: DIFlagPrototyped, isOptimized: true, function: i32 ()* @next_rand, variables: !42)
-!42 = !{!43}
-!43 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "y", scope: !41, file: !1, line: 88, type: !4)
-!44 = !DISubprogram(name: "iterate_tgfsr", scope: !1, file: !1, line: 72, type: !45, isLocal: true, isDefinition: true, scopeLine: 73, flags: DIFlagPrototyped, isOptimized: true, variables: !47)
-!45 = !DISubroutineType(types: !46)
-!46 = !{null}
-!47 = !{!48}
-!48 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !44, file: !1, line: 74, type: !4)
-!49 = !{!50, !51, !52, !53, !55, !57, !58, !59, !60}
-!50 = !DIGlobalVariable(name: "x", scope: !0, file: !1, line: 53, type: !30, isLocal: true, isDefinition: true, variable: [25 x i32]* @x)
-!51 = !DIGlobalVariable(name: "k", scope: !0, file: !1, line: 54, type: !4, isLocal: true, isDefinition: true, variable: i32* @k)
-!52 = !DIGlobalVariable(name: "rand_initialized", scope: !0, file: !1, line: 58, type: !4, isLocal: true, isDefinition: true)
-!53 = !DIGlobalVariable(name: "s", scope: !0, file: !1, line: 45, type: !54, isLocal: true, isDefinition: true, variable: i32 7)
-!54 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !4)
-!55 = !DIGlobalVariable(name: "b", scope: !0, file: !1, line: 48, type: !56, isLocal: true, isDefinition: true, variable: i32 727393536)
-!56 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !9)
-!57 = !DIGlobalVariable(name: "t", scope: !0, file: !1, line: 46, type: !54, isLocal: true, isDefinition: true, variable: i32 15)
-!58 = !DIGlobalVariable(name: "c", scope: !0, file: !1, line: 49, type: !56, isLocal: true, isDefinition: true, variable: i32 -611647488)
-!59 = !DIGlobalVariable(name: "m", scope: !0, file: !1, line: 44, type: !54, isLocal: true, isDefinition: true, variable: i32 7)
-!60 = !DIGlobalVariable(name: "a", scope: !0, file: !1, line: 47, type: !56, isLocal: true, isDefinition: true, variable: i32 -1900031960)
-!61 = !{i32 2, !"Dwarf Version", i32 2}
-!62 = !{i32 2, !"Debug Info Version", i32 700000003}
-!63 = !{i32 1, !"PIC Level", i32 2}
-!64 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!65 = !DIExpression()
-!66 = !DILocation(line: 118, column: 23, scope: !6)
-!67 = !DILocation(line: 120, column: 7, scope: !6)
-!68 = !DILocation(line: 121, column: 3, scope: !69)
-!69 = distinct !DILexicalBlock(scope: !6, file: !1, line: 121, column: 3)
-!70 = !DILocation(line: 125, column: 5, scope: !71)
-!71 = distinct !DILexicalBlock(scope: !72, file: !1, line: 121, column: 27)
-!72 = distinct !DILexicalBlock(scope: !69, file: !1, line: 121, column: 3)
-!73 = !DILocation(line: 125, column: 10, scope: !71)
-!74 = !{!75, !75, i64 0}
-!75 = !{!"int", !76, i64 0}
-!76 = !{!"omnipotent char", !77, i64 0}
-!77 = !{!"Simple C/C++ TBAA"}
-!78 = !DILocation(line: 126, column: 10, scope: !71)
-!79 = !DILocation(line: 127, column: 10, scope: !71)
-!80 = !DILocation(line: 129, column: 5, scope: !6)
-!81 = !DILocation(line: 131, column: 1, scope: !6)
-!82 = !DILocation(line: 140, column: 17, scope: !13)
-!83 = !DILocation(line: 140, column: 29, scope: !13)
-!84 = !DILocation(line: 140, column: 3, scope: !13)
-!85 = !DILocation(line: 89, column: 7, scope: !41)
-!86 = !DILocation(line: 90, column: 5, scope: !87)
-!87 = distinct !DILexicalBlock(scope: !88, file: !1, line: 89, column: 26)
-!88 = distinct !DILexicalBlock(scope: !41, file: !1, line: 89, column: 7)
-!89 = !DILocation(line: 93, column: 7, scope: !90)
-!90 = distinct !DILexicalBlock(scope: !41, file: !1, line: 93, column: 7)
-!91 = !DILocation(line: 93, column: 11, scope: !90)
-!92 = !DILocation(line: 93, column: 7, scope: !41)
-!93 = !DILocation(line: 94, column: 5, scope: !94)
-!94 = distinct !DILexicalBlock(scope: !90, file: !1, line: 93, column: 17)
-!95 = !DILocation(line: 76, column: 12, scope: !96, inlinedAt: !98)
-!96 = distinct !DILexicalBlock(scope: !97, file: !1, line: 75, column: 3)
-!97 = distinct !DILexicalBlock(scope: !44, file: !1, line: 75, column: 3)
-!98 = distinct !DILocation(line: 94, column: 5, scope: !94)
-!99 = !DILocation(line: 76, column: 25, scope: !96, inlinedAt: !98)
-!100 = !DILocation(line: 76, column: 30, scope: !96, inlinedAt: !98)
-!101 = !DILocation(line: 76, column: 21, scope: !96, inlinedAt: !98)
-!102 = !DILocation(line: 76, column: 47, scope: !96, inlinedAt: !98)
-!103 = !DILocation(line: 76, column: 41, scope: !96, inlinedAt: !98)
-!104 = !DILocation(line: 76, column: 37, scope: !96, inlinedAt: !98)
-!105 = !DILocation(line: 76, column: 10, scope: !96, inlinedAt: !98)
-!106 = distinct !{!106, !107, !108}
-!107 = !{!"llvm.loop.vectorize.width", i32 1}
-!108 = !{!"llvm.loop.interleave.count", i32 1}
-!109 = !DILocation(line: 78, column: 17, scope: !110, inlinedAt: !98)
-!110 = distinct !DILexicalBlock(scope: !111, file: !1, line: 77, column: 3)
-!111 = distinct !DILexicalBlock(scope: !44, file: !1, line: 77, column: 3)
-!112 = !DILocation(line: 78, column: 12, scope: !110, inlinedAt: !98)
-!113 = !DILocation(line: 78, column: 25, scope: !110, inlinedAt: !98)
-!114 = !DILocation(line: 78, column: 30, scope: !110, inlinedAt: !98)
-!115 = !DILocation(line: 78, column: 21, scope: !110, inlinedAt: !98)
-!116 = !DILocation(line: 78, column: 47, scope: !110, inlinedAt: !98)
-!117 = !DILocation(line: 78, column: 41, scope: !110, inlinedAt: !98)
-!118 = !DILocation(line: 78, column: 37, scope: !110, inlinedAt: !98)
-!119 = !DILocation(line: 78, column: 10, scope: !110, inlinedAt: !98)
-!120 = !DILocation(line: 77, column: 3, scope: !111, inlinedAt: !98)
-!121 = !DILocation(line: 95, column: 7, scope: !94)
-!122 = !DILocation(line: 96, column: 3, scope: !94)
-!123 = !DILocation(line: 97, column: 7, scope: !41)
-!124 = !DILocation(line: 97, column: 21, scope: !41)
-!125 = !DILocation(line: 97, column: 27, scope: !41)
-!126 = !DILocation(line: 97, column: 12, scope: !41)
-!127 = !DILocation(line: 88, column: 7, scope: !41)
-!128 = !DILocation(line: 98, column: 12, scope: !41)
-!129 = !DILocation(line: 98, column: 18, scope: !41)
-!130 = !DILocation(line: 98, column: 5, scope: !41)
-!131 = !DILocation(line: 102, column: 3, scope: !41)
-!132 = !DILocation(line: 150, column: 10, scope: !15)
-!133 = !DILocation(line: 150, column: 3, scope: !15)
-!134 = !DILocation(line: 165, column: 10, scope: !18)
-!135 = !DILocation(line: 165, column: 22, scope: !18)
-!136 = !DILocation(line: 165, column: 3, scope: !18)
-!137 = !DILocation(line: 173, column: 41, scope: !22)
-!138 = !DILocation(line: 175, column: 7, scope: !22)
-!139 = !DILocation(line: 176, column: 3, scope: !140)
-!140 = distinct !DILexicalBlock(scope: !22, file: !1, line: 176, column: 3)
-!141 = !DILocation(line: 177, column: 19, scope: !142)
-!142 = distinct !DILexicalBlock(scope: !140, file: !1, line: 176, column: 3)
-!143 = !DILocation(line: 177, column: 5, scope: !142)
-!144 = !DILocation(line: 177, column: 17, scope: !142)
-!145 = !DILocation(line: 178, column: 14, scope: !22)
-!146 = !DILocation(line: 178, column: 10, scope: !22)
-!147 = !DILocation(line: 178, column: 12, scope: !22)
-!148 = !{!149, !75, i64 100}
-!149 = !{!"gg_rand_state", !76, i64 0, !75, i64 100}
-!150 = !DILocation(line: 179, column: 1, scope: !22)
-!151 = !DILocation(line: 186, column: 41, scope: !37)
-!152 = !DILocation(line: 188, column: 7, scope: !37)
-!153 = !DILocation(line: 189, column: 3, scope: !154)
-!154 = distinct !DILexicalBlock(scope: !37, file: !1, line: 189, column: 3)
-!155 = !DILocation(line: 190, column: 12, scope: !156)
-!156 = distinct !DILexicalBlock(scope: !154, file: !1, line: 189, column: 3)
-!157 = !DILocation(line: 190, column: 5, scope: !156)
-!158 = !DILocation(line: 190, column: 10, scope: !156)
-!159 = !DILocation(line: 191, column: 14, scope: !37)
-!160 = !DILocation(line: 191, column: 5, scope: !37)
-!161 = !DILocation(line: 192, column: 1, scope: !37)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !50, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !13, metadata !16, metadata !19, metadata !23, metadata !38, metadata !42, metadata !45}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"gg_srand", metadata !"gg_srand", metadata !"", i32 118, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32)* @gg_srand, null, null, metadata !9, i32 119} ; [ DW_TAG_subprogram ] [line 118] [def] [scope 119] [gg_srand]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{null, metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"unsigned int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned int] [line 0, size 32, align 32, offset 0, enc DW_ATE_unsigned]
+!9 = metadata !{metadata !10, metadata !11}
+!10 = metadata !{i32 786689, metadata !4, metadata !"seed", metadata !5, i32 16777334, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [seed] [line 118]
+!11 = metadata !{i32 786688, metadata !4, metadata !"i", metadata !5, i32 120, metadata !12, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 120]
+!12 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!13 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"gg_rand", metadata !"gg_rand", metadata !"", i32 138, metadata !14, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 ()* @gg_rand, null, null, metadata !2, i32 139} ; [ DW_TAG_subprogram ] [line 138] [def] [scope 139] [gg_rand]
+!14 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !15, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!15 = metadata !{metadata !12}
+!16 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"gg_urand", metadata !"gg_urand", metadata !"", i32 148, metadata !17, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 ()* @gg_urand, null, null, metadata !2, i32 149} ; [ DW_TAG_subprogram ] [line 148] [def] [scope 149] [gg_urand]
+!17 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !18, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!18 = metadata !{metadata !8}
+!19 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"gg_drand", metadata !"gg_drand", metadata !"", i32 163, metadata !20, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, double ()* @gg_drand, null, null, metadata !2, i32 164} ; [ DW_TAG_subprogram ] [line 163] [def] [scope 164] [gg_drand]
+!20 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !21, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!21 = metadata !{metadata !22}
+!22 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!23 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"gg_get_rand_state", metadata !"gg_get_rand_state", metadata !"", i32 173, metadata !24, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct.gg_rand_state*)* @gg_get_rand_state, null, null, metadata !35, i32 174} ; [ DW_TAG_subprogram ] [line 173] [def] [scope 174] [gg_get_rand_state]
+!24 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !25, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!25 = metadata !{null, metadata !26}
+!26 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !27} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from gg_rand_state]
+!27 = metadata !{i32 786451, metadata !28, null, metadata !"gg_rand_state", i32 46, i64 832, i64 32, i32 0, i32 0, null, metadata !29, i32 0, null, null} ; [ DW_TAG_structure_type ] [gg_rand_state] [line 46, size 832, align 32, offset 0] [from ]
+!28 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!29 = metadata !{metadata !30, metadata !34}
+!30 = metadata !{i32 786445, metadata !28, metadata !27, metadata !"x", i32 47, i64 800, i64 32, i64 0, i32 0, metadata !31} ; [ DW_TAG_member ] [x] [line 47, size 800, align 32, offset 0] [from ]
+!31 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 800, i64 32, i32 0, i32 0, metadata !8, metadata !32, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 800, align 32, offset 0] [from unsigned int]
+!32 = metadata !{metadata !33}
+!33 = metadata !{i32 786465, i64 0, i64 25}       ; [ DW_TAG_subrange_type ] [0, 24]
+!34 = metadata !{i32 786445, metadata !28, metadata !27, metadata !"k", i32 48, i64 32, i64 32, i64 800, i32 0, metadata !12} ; [ DW_TAG_member ] [k] [line 48, size 32, align 32, offset 800] [from int]
+!35 = metadata !{metadata !36, metadata !37}
+!36 = metadata !{i32 786689, metadata !23, metadata !"state", metadata !5, i32 16777389, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [state] [line 173]
+!37 = metadata !{i32 786688, metadata !23, metadata !"i", metadata !5, i32 175, metadata !12, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 175]
+!38 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"gg_set_rand_state", metadata !"gg_set_rand_state", metadata !"", i32 186, metadata !24, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct.gg_rand_state*)* @gg_set_rand_state, null, null, metadata !39, i32 187} ; [ DW_TAG_subprogram ] [line 186] [def] [scope 187] [gg_set_rand_state]
+!39 = metadata !{metadata !40, metadata !41}
+!40 = metadata !{i32 786689, metadata !38, metadata !"state", metadata !5, i32 16777402, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [state] [line 186]
+!41 = metadata !{i32 786688, metadata !38, metadata !"i", metadata !5, i32 188, metadata !12, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 188]
+!42 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"next_rand", metadata !"next_rand", metadata !"", i32 86, metadata !17, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 ()* @next_rand, null, null, metadata !43, i32 87} ; [ DW_TAG_subprogram ] [line 86] [local] [def] [scope 87] [next_rand]
+!43 = metadata !{metadata !44}
+!44 = metadata !{i32 786688, metadata !42, metadata !"y", metadata !5, i32 88, metadata !12, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [y] [line 88]
+!45 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"iterate_tgfsr", metadata !"iterate_tgfsr", metadata !"", i32 72, metadata !46, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, null, metadata !48, i32 73} ; [ DW_TAG_subprogram ] [line 72] [local] [def] [scope 73] [iterate_tgfsr]
+!46 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !47, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!47 = metadata !{null}
+!48 = metadata !{metadata !49}
+!49 = metadata !{i32 786688, metadata !45, metadata !"i", metadata !5, i32 74, metadata !12, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 74]
+!50 = metadata !{metadata !51, metadata !52, metadata !53, metadata !55, metadata !57, metadata !58, metadata !59, metadata !59, metadata !60, metadata !59, metadata !60, metadata !61}
+!51 = metadata !{i32 786484, i32 0, null, metadata !"x", metadata !"x", metadata !"", metadata !5, i32 53, metadata !31, i32 1, i32 1, [25 x i32]* @x, null} ; [ DW_TAG_variable ] [x] [line 53] [local] [def]
+!52 = metadata !{i32 786484, i32 0, null, metadata !"k", metadata !"k", metadata !"", metadata !5, i32 54, metadata !12, i32 1, i32 1, i32* @k, null} ; [ DW_TAG_variable ] [k] [line 54] [local] [def]
+!53 = metadata !{i32 786484, i32 0, metadata !5, metadata !"s", metadata !"s", metadata !"s", metadata !5, i32 45, metadata !54, i32 1, i32 1, i32 7, null} ; [ DW_TAG_variable ] [s] [line 45] [local] [def]
+!54 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !12} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from int]
+!55 = metadata !{i32 786484, i32 0, metadata !5, metadata !"b", metadata !"b", metadata !"b", metadata !5, i32 48, metadata !56, i32 1, i32 1, i32 727393536, null} ; [ DW_TAG_variable ] [b] [line 48] [local] [def]
+!56 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !8} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from unsigned int]
+!57 = metadata !{i32 786484, i32 0, metadata !5, metadata !"t", metadata !"t", metadata !"t", metadata !5, i32 46, metadata !54, i32 1, i32 1, i32 15, null} ; [ DW_TAG_variable ] [t] [line 46] [local] [def]
+!58 = metadata !{i32 786484, i32 0, metadata !5, metadata !"c", metadata !"c", metadata !"c", metadata !5, i32 49, metadata !56, i32 1, i32 1, i32 -611647488, null} ; [ DW_TAG_variable ] [c] [line 49] [local] [def]
+!59 = metadata !{i32 786484, i32 0, metadata !5, metadata !"m", metadata !"m", metadata !"m", metadata !5, i32 44, metadata !54, i32 1, i32 1, i32 7, null} ; [ DW_TAG_variable ] [m] [line 44] [local] [def]
+!60 = metadata !{i32 786484, i32 0, metadata !5, metadata !"a", metadata !"a", metadata !"a", metadata !5, i32 47, metadata !56, i32 1, i32 1, i32 -1900031960, null} ; [ DW_TAG_variable ] [a] [line 47] [local] [def]
+!61 = metadata !{i32 786484, i32 0, null, metadata !"rand_initialized", metadata !"rand_initialized", metadata !"", metadata !5, i32 58, metadata !12, i32 1, i32 1, null, null}
+!62 = metadata !{i32 118, i32 0, metadata !4, null}
+!63 = metadata !{i32 121, i32 0, metadata !64, null}
+!64 = metadata !{i32 786443, metadata !1, metadata !4, i32 121, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c]
+!65 = metadata !{i32 125, i32 0, metadata !66, null}
+!66 = metadata !{i32 786443, metadata !1, metadata !64, i32 121, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c]
+!67 = metadata !{metadata !"int", metadata !68}
+!68 = metadata !{metadata !"omnipotent char", metadata !69}
+!69 = metadata !{metadata !"Simple C/C++ TBAA"}
+!70 = metadata !{i32 126, i32 0, metadata !66, null}
+!71 = metadata !{i32 127, i32 0, metadata !66, null}
+!72 = metadata !{i32 129, i32 0, metadata !4, null}
+!73 = metadata !{i32 131, i32 0, metadata !4, null}
+!74 = metadata !{i32 140, i32 0, metadata !13, null}
+!75 = metadata !{i32 89, i32 0, metadata !42, null}
+!76 = metadata !{i32 90, i32 0, metadata !77, null}
+!77 = metadata !{i32 786443, metadata !1, metadata !42, i32 89, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c]
+!78 = metadata !{i32 93, i32 0, metadata !42, null}
+!79 = metadata !{i32 76, i32 0, metadata !80, metadata !81}
+!80 = metadata !{i32 786443, metadata !1, metadata !45, i32 75, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c]
+!81 = metadata !{i32 94, i32 0, metadata !82, null}
+!82 = metadata !{i32 786443, metadata !1, metadata !42, i32 93, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c]
+!83 = metadata !{i32 75, i32 0, metadata !80, metadata !81}
+!84 = metadata !{i32 18}
+!85 = metadata !{i32 786688, metadata !45, metadata !"i", metadata !5, i32 74, metadata !12, i32 0, metadata !81} ; [ DW_TAG_auto_variable ] [i] [line 74]
+!86 = metadata !{i32 78, i32 0, metadata !87, metadata !81}
+!87 = metadata !{i32 786443, metadata !1, metadata !45, i32 77, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c]
+!88 = metadata !{i32 77, i32 0, metadata !87, metadata !81}
+!89 = metadata !{i32 95, i32 0, metadata !82, null}
+!90 = metadata !{i32 96, i32 0, metadata !82, null}
+!91 = metadata !{i32 97, i32 0, metadata !42, null}
+!92 = metadata !{i32 98, i32 0, metadata !42, null}
+!93 = metadata !{i32 102, i32 0, metadata !42, null}
+!94 = metadata !{i32 150, i32 0, metadata !16, null}
+!95 = metadata !{i32 165, i32 0, metadata !19, null}
+!96 = metadata !{i32 173, i32 0, metadata !23, null}
+!97 = metadata !{i32 176, i32 0, metadata !98, null}
+!98 = metadata !{i32 786443, metadata !1, metadata !23, i32 176, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c]
+!99 = metadata !{i32 177, i32 0, metadata !98, null}
+!100 = metadata !{i32 178, i32 0, metadata !23, null}
+!101 = metadata !{i32 179, i32 0, metadata !23, null}
+!102 = metadata !{i32 186, i32 0, metadata !38, null}
+!103 = metadata !{i32 189, i32 0, metadata !104, null}
+!104 = metadata !{i32 786443, metadata !1, metadata !38, i32 189, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/445.gobmk/src/utils/random.c]
+!105 = metadata !{i32 190, i32 0, metadata !104, null}
+!106 = metadata !{i32 191, i32 0, metadata !38, null}
+!107 = metadata !{i32 192, i32 0, metadata !38, null}

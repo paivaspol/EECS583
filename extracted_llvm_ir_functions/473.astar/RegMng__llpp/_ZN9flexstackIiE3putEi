@@ -1,27 +1,28 @@
 define linkonce_odr void @_ZN9flexstackIiE3putEi(%class.flexstack* nocapture %this, i32 %elem) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.flexstack* %this, i64 0, metadata !575, metadata !675), !dbg !1988
-  tail call void @llvm.dbg.value(metadata i32 %elem, i64 0, metadata !576, metadata !675), !dbg !1989
-  %1 = getelementptr inbounds %class.flexstack* %this, i64 0, i32 1, !dbg !1990
-  %2 = load i32* %1, align 4, !dbg !1990, !tbaa !751
-  %3 = getelementptr inbounds %class.flexstack* %this, i64 0, i32 2, !dbg !1992
-  %4 = load i32* %3, align 4, !dbg !1992, !tbaa !748
-  %5 = icmp eq i32 %2, %4, !dbg !1993
-  br i1 %5, label %6, label %7, !dbg !1994
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexstack* %this}, i64 0, metadata !678), !dbg !1498
+  tail call void @llvm.dbg.value(metadata !{i32 %elem}, i64 0, metadata !680), !dbg !1498
+  %elemqu = getelementptr inbounds %class.flexstack* %this, i64 0, i32 1, !dbg !1499
+  %0 = load i32* %elemqu, align 4, !dbg !1499, !tbaa !781
+  %maxelemqu = getelementptr inbounds %class.flexstack* %this, i64 0, i32 2, !dbg !1499
+  %1 = load i32* %maxelemqu, align 4, !dbg !1499, !tbaa !781
+  %cmp = icmp eq i32 %0, %1, !dbg !1499
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1499
 
-; <label>:6                                       ; preds = %0
-  tail call void @_ZN9flexstackIiE8doublingEv(%class.flexstack* %this) #9, !dbg !1995
-  %.pre = load i32* %1, align 4, !dbg !1996, !tbaa !751
-  br label %7, !dbg !1995
+if.then:                                          ; preds = %entry
+  tail call void @_ZN9flexstackIiE8doublingEv(%class.flexstack* %this) #7, !dbg !1499
+  %.pre = load i32* %elemqu, align 4, !dbg !1500, !tbaa !781
+  br label %if.end, !dbg !1499
 
-; <label>:7                                       ; preds = %6, %0
-  %8 = phi i32 [ %.pre, %6 ], [ %2, %0 ]
-  %9 = sext i32 %8 to i64, !dbg !1997
-  %10 = getelementptr inbounds %class.flexstack* %this, i64 0, i32 0, !dbg !1997
-  %11 = load i32** %10, align 8, !dbg !1997, !tbaa !755
-  %12 = getelementptr inbounds i32* %11, i64 %9, !dbg !1997
-  store i32 %elem, i32* %12, align 4, !dbg !1998, !tbaa !965
-  %13 = load i32* %1, align 4, !dbg !1999, !tbaa !751
-  %14 = add nsw i32 %13, 1, !dbg !1999
-  store i32 %14, i32* %1, align 4, !dbg !1999, !tbaa !751
-  ret void, !dbg !2000
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %idxprom = sext i32 %2 to i64, !dbg !1500
+  %ep = getelementptr inbounds %class.flexstack* %this, i64 0, i32 0, !dbg !1500
+  %3 = load i32** %ep, align 8, !dbg !1500, !tbaa !777
+  %arrayidx = getelementptr inbounds i32* %3, i64 %idxprom, !dbg !1500
+  store i32 %elem, i32* %arrayidx, align 4, !dbg !1500, !tbaa !781
+  %4 = load i32* %elemqu, align 4, !dbg !1501, !tbaa !781
+  %inc = add nsw i32 %4, 1, !dbg !1501
+  store i32 %inc, i32* %elemqu, align 4, !dbg !1501, !tbaa !781
+  ret void, !dbg !1502
 }

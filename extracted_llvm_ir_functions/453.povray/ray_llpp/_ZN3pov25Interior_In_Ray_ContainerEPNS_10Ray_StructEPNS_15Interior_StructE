@@ -1,30 +1,30 @@
-define i32 @_ZN3pov25Interior_In_Ray_ContainerEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* nocapture readonly %ray, %"struct.pov::Interior_Struct"* readnone %interior) #3 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %ray, i64 0, metadata !797, metadata !1095), !dbg !1166
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Interior_Struct"* %interior, i64 0, metadata !798, metadata !1095), !dbg !1167
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !800, metadata !1095), !dbg !1168
-  %1 = getelementptr inbounds %"struct.pov::Ray_Struct"* %ray, i64 0, i32 2, !dbg !1169
-  %2 = load i32* %1, align 4, !dbg !1169, !tbaa !1100
-  %3 = icmp sgt i32 %2, -1, !dbg !1171
-  br i1 %3, label %.lr.ph, label %.loopexit, !dbg !1172
+define i32 @_ZN3pov25Interior_In_Ray_ContainerEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* nocapture %ray, %"struct.pov::Interior_Struct"* %interior) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %ray}, i64 0, metadata !792), !dbg !900
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Interior_Struct"* %interior}, i64 0, metadata !793), !dbg !900
+  tail call void @llvm.dbg.value(metadata !901, i64 0, metadata !795), !dbg !902
+  %Index = getelementptr inbounds %"struct.pov::Ray_Struct"* %ray, i64 0, i32 2, !dbg !903
+  %0 = load i32* %Index, align 4, !dbg !903, !tbaa !867
+  %cmp = icmp sgt i32 %0, -1, !dbg !903
+  br i1 %cmp, label %for.body, label %if.end5, !dbg !903
 
-.lr.ph:                                           ; preds = %0, %7
-  %indvars.iv = phi i64 [ %indvars.iv.next, %7 ], [ 0, %0 ]
-  %4 = getelementptr inbounds %"struct.pov::Ray_Struct"* %ray, i64 0, i32 4, i64 %indvars.iv, !dbg !1173
-  %5 = load %"struct.pov::Interior_Struct"** %4, align 8, !dbg !1173, !tbaa !1127
-  %6 = icmp eq %"struct.pov::Interior_Struct"* %5, %interior, !dbg !1179
-  br i1 %6, label %..loopexit_crit_edge2, label %7, !dbg !1180
+for.cond:                                         ; preds = %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !904
+  %inc = add nsw i32 %i.011, 1, !dbg !904
+  %1 = trunc i64 %indvars.iv to i32, !dbg !904
+  %cmp2 = icmp slt i32 %1, %0, !dbg !904
+  br i1 %cmp2, label %for.body, label %if.end5, !dbg !904
 
-; <label>:7                                       ; preds = %.lr.ph
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !1181
-  %8 = sext i32 %2 to i64, !dbg !1182
-  %9 = icmp slt i64 %indvars.iv, %8, !dbg !1182
-  br i1 %9, label %.lr.ph, label %.loopexit, !dbg !1181
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %i.011 = phi i32 [ %inc, %for.cond ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds %"struct.pov::Ray_Struct"* %ray, i64 0, i32 4, i64 %indvars.iv, !dbg !907
+  %2 = load %"struct.pov::Interior_Struct"** %arrayidx, align 8, !dbg !907, !tbaa !881
+  %cmp3 = icmp eq %"struct.pov::Interior_Struct"* %2, %interior, !dbg !907
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !794), !dbg !904
+  br i1 %cmp3, label %if.end5, label %for.cond, !dbg !907
 
-..loopexit_crit_edge2:                            ; preds = %.lr.ph
-  %10 = trunc i64 %indvars.iv to i32, !dbg !1180
-  br label %.loopexit, !dbg !1180
-
-.loopexit:                                        ; preds = %7, %..loopexit_crit_edge2, %0
-  %found.0 = phi i32 [ -1, %0 ], [ %10, %..loopexit_crit_edge2 ], [ -1, %7 ]
-  ret i32 %found.0, !dbg !1183
+if.end5:                                          ; preds = %for.body, %for.cond, %entry
+  %found.0 = phi i32 [ -1, %entry ], [ %i.011, %for.body ], [ -1, %for.cond ]
+  ret i32 %found.0, !dbg !909
 }

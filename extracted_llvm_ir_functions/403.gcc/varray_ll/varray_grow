@@ -1,32 +1,39 @@
 define %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %va, i64 %n) #0 {
 entry:
-  %num_elements = getelementptr inbounds %struct.varray_head_tag* %va, i64 0, i32 0
-  %0 = load i64* %num_elements, align 8, !tbaa !0
-  %cmp = icmp eq i64 %0, %n
-  br i1 %cmp, label %if.end6, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.varray_head_tag* %va}, i64 0, metadata !592), !dbg !613
+  tail call void @llvm.dbg.value(metadata !{i64 %n}, i64 0, metadata !593), !dbg !614
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %va, i64 0, i32 0, !dbg !615
+  %0 = load i64* %num_elements, align 8, !dbg !615, !tbaa !605
+  tail call void @llvm.dbg.value(metadata !{i64 %0}, i64 0, metadata !594), !dbg !615
+  %cmp = icmp eq i64 %0, %n, !dbg !616
+  br i1 %cmp, label %if.end6, label %if.then, !dbg !616
 
 if.then:                                          ; preds = %entry
-  %element_size1 = getelementptr inbounds %struct.varray_head_tag* %va, i64 0, i32 2
-  %1 = load i64* %element_size1, align 8, !tbaa !0
-  %mul = mul i64 %1, %0
-  %mul2 = mul i64 %1, %n
-  %2 = bitcast %struct.varray_head_tag* %va to i8*
-  %add = add i64 %mul2, 32
-  %call = tail call i8* @xrealloc(i8* %2, i64 %add) #3
-  %3 = bitcast i8* %call to %struct.varray_head_tag*
-  %num_elements3 = bitcast i8* %call to i64*
-  store i64 %n, i64* %num_elements3, align 8, !tbaa !0
-  %cmp4 = icmp ult i64 %0, %n
-  br i1 %cmp4, label %if.then5, label %if.end6
+  %element_size1 = getelementptr inbounds %struct.varray_head_tag* %va, i64 0, i32 2, !dbg !617
+  %1 = load i64* %element_size1, align 8, !dbg !617, !tbaa !605
+  tail call void @llvm.dbg.value(metadata !{i64 %1}, i64 0, metadata !595), !dbg !617
+  %mul = mul i64 %1, %0, !dbg !618
+  tail call void @llvm.dbg.value(metadata !{i64 %mul}, i64 0, metadata !597), !dbg !618
+  %mul2 = mul i64 %1, %n, !dbg !619
+  tail call void @llvm.dbg.value(metadata !{i64 %mul2}, i64 0, metadata !598), !dbg !619
+  %2 = bitcast %struct.varray_head_tag* %va to i8*, !dbg !620
+  %add = add i64 %mul2, 32, !dbg !620
+  %call = tail call i8* @xrealloc(i8* %2, i64 %add) #4, !dbg !620
+  %3 = bitcast i8* %call to %struct.varray_head_tag*, !dbg !620
+  tail call void @llvm.dbg.value(metadata !{%struct.varray_head_tag* %3}, i64 0, metadata !592), !dbg !620
+  %num_elements3 = bitcast i8* %call to i64*, !dbg !621
+  store i64 %n, i64* %num_elements3, align 8, !dbg !621, !tbaa !605
+  %cmp4 = icmp ult i64 %0, %n, !dbg !622
+  br i1 %cmp4, label %if.then5, label %if.end6, !dbg !622
 
 if.then5:                                         ; preds = %if.then
-  %data.sum = add i64 %mul, 32
-  %arrayidx = getelementptr inbounds i8* %call, i64 %data.sum
-  %sub = sub i64 %mul2, %mul
-  tail call void @llvm.memset.p0i8.i64(i8* %arrayidx, i8 0, i64 %sub, i32 1, i1 false)
-  br label %if.end6
+  %data.sum = add i64 %mul, 32, !dbg !623
+  %arrayidx = getelementptr inbounds i8* %call, i64 %data.sum, !dbg !623
+  %sub = sub i64 %mul2, %mul, !dbg !623
+  tail call void @llvm.memset.p0i8.i64(i8* %arrayidx, i8 0, i64 %sub, i32 1, i1 false), !dbg !623
+  br label %if.end6, !dbg !623
 
 if.end6:                                          ; preds = %entry, %if.then, %if.then5
   %va.addr.0 = phi %struct.varray_head_tag* [ %3, %if.then5 ], [ %3, %if.then ], [ %va, %entry ]
-  ret %struct.varray_head_tag* %va.addr.0
+  ret %struct.varray_head_tag* %va.addr.0, !dbg !624
 }

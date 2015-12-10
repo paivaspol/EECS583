@@ -1,0 +1,37 @@
+define %"class.xercesc_2_5::DOMNode"* @_ZN11xercesc_2_517DOMTreeWalkerImpl13getParentNodeEPNS_7DOMNodeE(%"class.xercesc_2_5::DOMTreeWalkerImpl"* nocapture %this, %"class.xercesc_2_5::DOMNode"* %node) #3 align 2 {
+entry:
+  %fRoot = getelementptr inbounds %"class.xercesc_2_5::DOMTreeWalkerImpl"* %this, i64 0, i32 4, !dbg !624
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %if.end4, %entry
+  %node.tr = phi %"class.xercesc_2_5::DOMNode"* [ %node, %entry ], [ %call, %if.end4 ]
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMTreeWalkerImpl"* %this}, i64 0, metadata !507), !dbg !625
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMNode"* %node.tr}, i64 0, metadata !508), !dbg !625
+  %tobool = icmp eq %"class.xercesc_2_5::DOMNode"* %node.tr, null, !dbg !624
+  br i1 %tobool, label %return, label %lor.lhs.false, !dbg !624
+
+lor.lhs.false:                                    ; preds = %tailrecurse
+  %0 = load %"class.xercesc_2_5::DOMNode"** %fRoot, align 8, !dbg !624, !tbaa !584
+  %cmp = icmp eq %"class.xercesc_2_5::DOMNode"* %0, %node.tr, !dbg !624
+  br i1 %cmp, label %return, label %if.end, !dbg !624
+
+if.end:                                           ; preds = %lor.lhs.false
+  %1 = bitcast %"class.xercesc_2_5::DOMNode"* %node.tr to %"class.xercesc_2_5::DOMNode"* (%"class.xercesc_2_5::DOMNode"*)***, !dbg !626
+  %vtable = load %"class.xercesc_2_5::DOMNode"* (%"class.xercesc_2_5::DOMNode"*)*** %1, align 8, !dbg !626, !tbaa !580
+  %vfn = getelementptr inbounds %"class.xercesc_2_5::DOMNode"* (%"class.xercesc_2_5::DOMNode"*)** %vtable, i64 5, !dbg !626
+  %2 = load %"class.xercesc_2_5::DOMNode"* (%"class.xercesc_2_5::DOMNode"*)** %vfn, align 8, !dbg !626
+  %call = tail call %"class.xercesc_2_5::DOMNode"* %2(%"class.xercesc_2_5::DOMNode"* %node.tr) #10, !dbg !626
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMNode"* %call}, i64 0, metadata !509), !dbg !626
+  %tobool2 = icmp eq %"class.xercesc_2_5::DOMNode"* %call, null, !dbg !627
+  br i1 %tobool2, label %return, label %if.end4, !dbg !627
+
+if.end4:                                          ; preds = %if.end
+  %call5 = tail call signext i16 @_ZN11xercesc_2_517DOMTreeWalkerImpl10acceptNodeEPNS_7DOMNodeE(%"class.xercesc_2_5::DOMTreeWalkerImpl"* %this, %"class.xercesc_2_5::DOMNode"* %call) #10, !dbg !628
+  tail call void @llvm.dbg.value(metadata !{i16 %call5}, i64 0, metadata !510), !dbg !628
+  %cmp6 = icmp eq i16 %call5, 1, !dbg !629
+  br i1 %cmp6, label %return, label %tailrecurse, !dbg !629
+
+return:                                           ; preds = %if.end4, %if.end, %lor.lhs.false, %tailrecurse
+  %retval.0 = phi %"class.xercesc_2_5::DOMNode"* [ null, %tailrecurse ], [ null, %lor.lhs.false ], [ null, %if.end ], [ %call, %if.end4 ]
+  ret %"class.xercesc_2_5::DOMNode"* %retval.0, !dbg !630
+}

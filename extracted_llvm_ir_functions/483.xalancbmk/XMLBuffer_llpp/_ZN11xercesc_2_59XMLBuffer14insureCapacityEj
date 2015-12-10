@@ -1,0 +1,49 @@
+define void @_ZN11xercesc_2_59XMLBuffer14insureCapacityEj(%"class.xercesc_2_5::XMLBuffer"* nocapture %this, i32 %extraNeeded) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %this}, i64 0, metadata !270), !dbg !810
+  tail call void @llvm.dbg.value(metadata !{i32 %extraNeeded}, i64 0, metadata !271), !dbg !810
+  %fIndex = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %this, i64 0, i32 1, !dbg !811
+  %0 = load i32* %fIndex, align 4, !dbg !811, !tbaa !806
+  %add = add i32 %0, %extraNeeded, !dbg !811
+  %fCapacity = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %this, i64 0, i32 2, !dbg !811
+  %1 = load i32* %fCapacity, align 4, !dbg !811, !tbaa !806
+  %cmp = icmp ult i32 %add, %1, !dbg !811
+  br i1 %cmp, label %return, label %if.end, !dbg !811
+
+if.end:                                           ; preds = %entry
+  %mul = shl i32 %add, 1, !dbg !812
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !272), !dbg !812
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %this, i64 0, i32 3, !dbg !813
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !813, !tbaa !807
+  %3 = bitcast %"class.xercesc_2_5::MemoryManager"* %2 to i8* (%"class.xercesc_2_5::MemoryManager"*, i64)***, !dbg !813
+  %vtable = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)*** %3, align 8, !dbg !813, !tbaa !814
+  %vfn = getelementptr inbounds i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vtable, i64 2, !dbg !813
+  %4 = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vfn, align 8, !dbg !813
+  %add418 = or i32 %mul, 1, !dbg !813
+  %conv = zext i32 %add418 to i64, !dbg !813
+  %mul5 = shl nuw nsw i64 %conv, 1, !dbg !813
+  %call = tail call i8* %4(%"class.xercesc_2_5::MemoryManager"* %2, i64 %mul5) #3, !dbg !813
+  %5 = bitcast i8* %call to i16*, !dbg !813
+  tail call void @llvm.dbg.value(metadata !{i16* %5}, i64 0, metadata !273), !dbg !813
+  %fBuffer = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %this, i64 0, i32 4, !dbg !815
+  %6 = load i16** %fBuffer, align 8, !dbg !815, !tbaa !807
+  %7 = bitcast i16* %6 to i8*, !dbg !815
+  %8 = load i32* %fCapacity, align 4, !dbg !815, !tbaa !806
+  %conv7 = zext i32 %8 to i64, !dbg !815
+  %mul8 = shl nuw nsw i64 %conv7, 1, !dbg !815
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call, i8* %7, i64 %mul8, i32 2, i1 false), !dbg !815
+  %9 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !816, !tbaa !807
+  %10 = bitcast %"class.xercesc_2_5::MemoryManager"* %9 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !816
+  %vtable10 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %10, align 8, !dbg !816, !tbaa !814
+  %vfn11 = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable10, i64 3, !dbg !816
+  %11 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn11, align 8, !dbg !816
+  %12 = load i16** %fBuffer, align 8, !dbg !816, !tbaa !807
+  %13 = bitcast i16* %12 to i8*, !dbg !816
+  tail call void %11(%"class.xercesc_2_5::MemoryManager"* %9, i8* %13) #3, !dbg !816
+  store i16* %5, i16** %fBuffer, align 8, !dbg !817, !tbaa !807
+  store i32 %mul, i32* %fCapacity, align 4, !dbg !818, !tbaa !806
+  br label %return, !dbg !818
+
+return:                                           ; preds = %entry, %if.end
+  ret void, !dbg !818
+}

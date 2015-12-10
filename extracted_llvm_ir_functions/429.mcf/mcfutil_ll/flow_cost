@@ -1,123 +1,124 @@
-define double @flow_cost(%struct.network* nocapture readonly %net) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.network* %net, i64 0, metadata !105, metadata !141), !dbg !231
-  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !109, metadata !141), !dbg !232
-  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !110, metadata !141), !dbg !233
-  %1 = getelementptr inbounds %struct.network* %net, i64 0, i32 24, !dbg !234
-  %2 = load %struct.arc** %1, align 8, !dbg !234, !tbaa !167
-  %3 = getelementptr inbounds %struct.network* %net, i64 0, i32 23, !dbg !235
-  %4 = load %struct.arc** %3, align 8, !dbg !235, !tbaa !163
-  tail call void @llvm.dbg.value(metadata %struct.arc* %4, i64 0, metadata !106, metadata !141), !dbg !237
-  %5 = icmp eq %struct.arc* %4, %2, !dbg !238
-  br i1 %5, label %._crit_edge15, label %.lr.ph14, !dbg !240
+define double @flow_cost(%struct.network* nocapture %net) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.network* %net}, i64 0, metadata !105), !dbg !179
+  tail call void @llvm.dbg.value(metadata !157, i64 0, metadata !109), !dbg !180
+  tail call void @llvm.dbg.value(metadata !157, i64 0, metadata !110), !dbg !181
+  %stop_arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 24, !dbg !182
+  %0 = load %struct.arc** %stop_arcs, align 8, !dbg !182, !tbaa !139
+  %arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 23, !dbg !183
+  %1 = load %struct.arc** %arcs, align 8, !dbg !183, !tbaa !139
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %1}, i64 0, metadata !106), !dbg !183
+  %cmp76 = icmp eq %struct.arc* %1, %0, !dbg !183
+  br i1 %cmp76, label %for.end, label %for.body, !dbg !183
 
-.lr.ph14:                                         ; preds = %0, %.lr.ph14
-  %arc.012 = phi %struct.arc* [ %10, %.lr.ph14 ], [ %4, %0 ]
-  %6 = getelementptr inbounds %struct.arc* %arc.012, i64 0, i32 3, !dbg !241
-  %7 = load i32* %6, align 4, !dbg !241, !tbaa !244
-  %8 = icmp eq i32 %7, 2, !dbg !245
-  %9 = getelementptr inbounds %struct.arc* %arc.012, i64 0, i32 6, !dbg !246
-  %. = zext i1 %8 to i64, !dbg !247
-  store i64 %., i64* %9, align 8, !dbg !248, !tbaa !249
-  %10 = getelementptr inbounds %struct.arc* %arc.012, i64 1, !dbg !250
-  tail call void @llvm.dbg.value(metadata %struct.arc* %10, i64 0, metadata !106, metadata !141), !dbg !237
-  %11 = icmp eq %struct.arc* %10, %2, !dbg !238
-  br i1 %11, label %._crit_edge15, label %.lr.ph14, !dbg !240
+for.body:                                         ; preds = %entry, %for.body
+  %arc.077 = phi %struct.arc* [ %incdec.ptr, %for.body ], [ %1, %entry ]
+  %ident = getelementptr inbounds %struct.arc* %arc.077, i64 0, i32 3, !dbg !185
+  %2 = load i32* %ident, align 4, !dbg !185, !tbaa !167
+  %cmp1 = icmp eq i32 %2, 2, !dbg !185
+  %flow = getelementptr inbounds %struct.arc* %arc.077, i64 0, i32 6, !dbg !187
+  %. = zext i1 %cmp1 to i64, !dbg !187
+  store i64 %., i64* %flow, align 8, !dbg !187, !tbaa !160
+  %incdec.ptr = getelementptr inbounds %struct.arc* %arc.077, i64 1, !dbg !183
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %incdec.ptr}, i64 0, metadata !106), !dbg !183
+  %cmp = icmp eq %struct.arc* %incdec.ptr, %0, !dbg !183
+  br i1 %cmp, label %for.end, label %for.body, !dbg !183
 
-._crit_edge15:                                    ; preds = %.lr.ph14, %0
-  %12 = getelementptr inbounds %struct.network* %net, i64 0, i32 22, !dbg !251
-  %13 = load %struct.node** %12, align 8, !dbg !251, !tbaa !154
-  %14 = getelementptr inbounds %struct.network* %net, i64 0, i32 21, !dbg !252
-  %15 = load %struct.node** %14, align 8, !dbg !252, !tbaa !144
-  tail call void @llvm.dbg.value(metadata %struct.node* %15, i64 0, metadata !107, metadata !141), !dbg !254
-  %node.06 = getelementptr inbounds %struct.node* %15, i64 1, !dbg !255
-  %16 = icmp eq %struct.node* %node.06, %13, !dbg !256
-  br i1 %16, label %._crit_edge11, label %.lr.ph10, !dbg !258
+for.end:                                          ; preds = %for.body, %entry
+  %stop_nodes = getelementptr inbounds %struct.network* %net, i64 0, i32 22, !dbg !188
+  %3 = load %struct.node** %stop_nodes, align 8, !dbg !188, !tbaa !139
+  %nodes = getelementptr inbounds %struct.network* %net, i64 0, i32 21, !dbg !189
+  %4 = load %struct.node** %nodes, align 8, !dbg !189, !tbaa !139
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %4}, i64 0, metadata !107), !dbg !189
+  %node.072 = getelementptr inbounds %struct.node* %4, i64 1, !dbg !189
+  %cmp573 = icmp eq %struct.node* %node.072, %3, !dbg !189
+  br i1 %cmp573, label %for.end11, label %for.body6, !dbg !189
 
-.lr.ph10:                                         ; preds = %._crit_edge15, %.lr.ph10
-  %17 = phi %struct.node* [ %node.08, %.lr.ph10 ], [ %15, %._crit_edge15 ]
-  %node.08 = phi %struct.node* [ %node.0, %.lr.ph10 ], [ %node.06, %._crit_edge15 ]
-  %18 = getelementptr inbounds %struct.node* %17, i64 1, i32 10, !dbg !259
-  %19 = load i64* %18, align 8, !dbg !259, !tbaa !260
-  %20 = getelementptr inbounds %struct.node* %17, i64 1, i32 6, !dbg !261
-  %21 = load %struct.arc** %20, align 8, !dbg !261, !tbaa !262
-  %22 = getelementptr inbounds %struct.arc* %21, i64 0, i32 6, !dbg !263
-  store i64 %19, i64* %22, align 8, !dbg !264, !tbaa !249
-  %node.0 = getelementptr inbounds %struct.node* %17, i64 2, !dbg !255
-  %23 = icmp eq %struct.node* %node.0, %13, !dbg !256
-  br i1 %23, label %._crit_edge11, label %.lr.ph10, !dbg !258
+for.body6:                                        ; preds = %for.end, %for.body6
+  %node.075 = phi %struct.node* [ %node.0, %for.body6 ], [ %node.072, %for.end ]
+  %.pn74 = phi %struct.node* [ %node.075, %for.body6 ], [ %4, %for.end ]
+  %flow7 = getelementptr inbounds %struct.node* %.pn74, i64 1, i32 10, !dbg !191
+  %5 = load i64* %flow7, align 8, !dbg !191, !tbaa !160
+  %basic_arc = getelementptr inbounds %struct.node* %.pn74, i64 1, i32 6, !dbg !191
+  %6 = load %struct.arc** %basic_arc, align 8, !dbg !191, !tbaa !139
+  %flow8 = getelementptr inbounds %struct.arc* %6, i64 0, i32 6, !dbg !191
+  store i64 %5, i64* %flow8, align 8, !dbg !191, !tbaa !160
+  %node.0 = getelementptr inbounds %struct.node* %node.075, i64 1, !dbg !189
+  %cmp5 = icmp eq %struct.node* %node.0, %3, !dbg !189
+  br i1 %cmp5, label %for.end11, label %for.body6, !dbg !189
 
-._crit_edge11:                                    ; preds = %.lr.ph10, %._crit_edge15
-  tail call void @llvm.dbg.value(metadata %struct.arc* %4, i64 0, metadata !106, metadata !141), !dbg !237
-  %.pre = getelementptr inbounds %struct.network* %net, i64 0, i32 18, !dbg !265
-  br i1 %5, label %._crit_edge, label %.lr.ph, !dbg !266
+for.end11:                                        ; preds = %for.body6, %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %1}, i64 0, metadata !106), !dbg !192
+  %bigM36.pre = getelementptr inbounds %struct.network* %net, i64 0, i32 18, !dbg !194
+  br i1 %cmp76, label %for.end35, label %for.body16, !dbg !192
 
-.lr.ph:                                           ; preds = %._crit_edge11, %53
-  %operational_cost.04 = phi i64 [ %operational_cost.1, %53 ], [ 0, %._crit_edge11 ]
-  %fleet.03 = phi i64 [ %fleet.1, %53 ], [ 0, %._crit_edge11 ]
-  %arc.11 = phi %struct.arc* [ %54, %53 ], [ %4, %._crit_edge11 ]
-  %24 = getelementptr inbounds %struct.arc* %arc.11, i64 0, i32 6, !dbg !268
-  %25 = load i64* %24, align 8, !dbg !268, !tbaa !249
-  %26 = icmp eq i64 %25, 0, !dbg !272
-  br i1 %26, label %53, label %27, !dbg !273
+for.body16:                                       ; preds = %for.end11, %for.inc33
+  %operational_cost.070 = phi i64 [ %operational_cost.1, %for.inc33 ], [ 0, %for.end11 ]
+  %fleet.069 = phi i64 [ %fleet.1, %for.inc33 ], [ 0, %for.end11 ]
+  %arc.167 = phi %struct.arc* [ %incdec.ptr34, %for.inc33 ], [ %1, %for.end11 ]
+  %flow17 = getelementptr inbounds %struct.arc* %arc.167, i64 0, i32 6, !dbg !195
+  %7 = load i64* %flow17, align 8, !dbg !195, !tbaa !160
+  %tobool = icmp eq i64 %7, 0, !dbg !195
+  br i1 %tobool, label %for.inc33, label %if.then18, !dbg !195
 
-; <label>:27                                      ; preds = %.lr.ph
-  %28 = getelementptr inbounds %struct.arc* %arc.11, i64 0, i32 1, !dbg !274
-  %29 = load %struct.node** %28, align 8, !dbg !274, !tbaa !173
-  %30 = getelementptr inbounds %struct.node* %29, i64 0, i32 12, !dbg !277
-  %31 = load i32* %30, align 4, !dbg !277, !tbaa !278
-  %32 = icmp slt i32 %31, 0, !dbg !279
-  br i1 %32, label %33, label %41, !dbg !280
+if.then18:                                        ; preds = %for.body16
+  %tail = getelementptr inbounds %struct.arc* %arc.167, i64 0, i32 1, !dbg !197
+  %8 = load %struct.node** %tail, align 8, !dbg !197, !tbaa !139
+  %number = getelementptr inbounds %struct.node* %8, i64 0, i32 12, !dbg !197
+  %9 = load i32* %number, align 4, !dbg !197, !tbaa !167
+  %cmp19 = icmp slt i32 %9, 0, !dbg !197
+  br i1 %cmp19, label %land.lhs.true, label %if.then22, !dbg !197
 
-; <label>:33                                      ; preds = %27
-  %34 = getelementptr inbounds %struct.arc* %arc.11, i64 0, i32 2, !dbg !281
-  %35 = load %struct.node** %34, align 8, !dbg !281, !tbaa !184
-  %36 = getelementptr inbounds %struct.node* %35, i64 0, i32 12, !dbg !282
-  %37 = load i32* %36, align 4, !dbg !282, !tbaa !278
-  %38 = icmp sgt i32 %37, 0, !dbg !283
-  br i1 %38, label %53, label %.thread, !dbg !284
+land.lhs.true:                                    ; preds = %if.then18
+  %head = getelementptr inbounds %struct.arc* %arc.167, i64 0, i32 2, !dbg !197
+  %10 = load %struct.node** %head, align 8, !dbg !197, !tbaa !139
+  %number20 = getelementptr inbounds %struct.node* %10, i64 0, i32 12, !dbg !197
+  %11 = load i32* %number20, align 4, !dbg !197, !tbaa !167
+  %cmp21 = icmp sgt i32 %11, 0, !dbg !197
+  br i1 %cmp21, label %for.inc33, label %if.then22.thread, !dbg !197
 
-.thread:                                          ; preds = %33
-  %39 = getelementptr inbounds %struct.arc* %arc.11, i64 0, i32 0, !dbg !285
-  %40 = load i64* %39, align 8, !dbg !285, !tbaa !288
-  br label %50, !dbg !289
+if.then22.thread:                                 ; preds = %land.lhs.true
+  %cost2879 = getelementptr inbounds %struct.arc* %arc.167, i64 0, i32 0, !dbg !199
+  %12 = load i64* %cost2879, align 8, !dbg !199, !tbaa !160
+  br label %if.else27, !dbg !201
 
-; <label>:41                                      ; preds = %27
-  %42 = icmp eq i32 %31, 0, !dbg !290
-  %43 = getelementptr inbounds %struct.arc* %arc.11, i64 0, i32 0, !dbg !285
-  %44 = load i64* %43, align 8, !dbg !285, !tbaa !288
-  br i1 %42, label %45, label %50, !dbg !289
+if.then22:                                        ; preds = %if.then18
+  %tobool25 = icmp eq i32 %9, 0, !dbg !201
+  %cost28 = getelementptr inbounds %struct.arc* %arc.167, i64 0, i32 0, !dbg !199
+  %13 = load i64* %cost28, align 8, !dbg !199, !tbaa !160
+  br i1 %tobool25, label %if.then26, label %if.else27, !dbg !201
 
-; <label>:45                                      ; preds = %41
-  %46 = load i64* %.pre, align 8, !dbg !291, !tbaa !293
-  %47 = add i64 %44, %operational_cost.04, !dbg !294
-  %48 = sub i64 %47, %46, !dbg !295
-  tail call void @llvm.dbg.value(metadata i64 %48, i64 0, metadata !110, metadata !141), !dbg !233
-  %49 = add nsw i64 %fleet.03, 1, !dbg !296
-  tail call void @llvm.dbg.value(metadata i64 %49, i64 0, metadata !109, metadata !141), !dbg !232
-  br label %53, !dbg !297
+if.then26:                                        ; preds = %if.then22
+  %14 = load i64* %bigM36.pre, align 8, !dbg !202, !tbaa !160
+  %sub = add i64 %13, %operational_cost.070, !dbg !202
+  %add = sub i64 %sub, %14, !dbg !202
+  tail call void @llvm.dbg.value(metadata !{i64 %add}, i64 0, metadata !110), !dbg !202
+  %inc = add nsw i64 %fleet.069, 1, !dbg !204
+  tail call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !109), !dbg !204
+  br label %for.inc33, !dbg !205
 
-; <label>:50                                      ; preds = %.thread, %41
-  %51 = phi i64 [ %40, %.thread ], [ %44, %41 ]
-  %52 = add nsw i64 %51, %operational_cost.04, !dbg !298
-  tail call void @llvm.dbg.value(metadata i64 %52, i64 0, metadata !110, metadata !141), !dbg !233
-  br label %53
+if.else27:                                        ; preds = %if.then22.thread, %if.then22
+  %15 = phi i64 [ %12, %if.then22.thread ], [ %13, %if.then22 ]
+  %add29 = add nsw i64 %15, %operational_cost.070, !dbg !199
+  tail call void @llvm.dbg.value(metadata !{i64 %add29}, i64 0, metadata !110), !dbg !199
+  br label %for.inc33
 
-; <label>:53                                      ; preds = %.lr.ph, %45, %50, %33
-  %fleet.1 = phi i64 [ %fleet.03, %33 ], [ %fleet.03, %50 ], [ %49, %45 ], [ %fleet.03, %.lr.ph ]
-  %operational_cost.1 = phi i64 [ %operational_cost.04, %33 ], [ %52, %50 ], [ %48, %45 ], [ %operational_cost.04, %.lr.ph ]
-  %54 = getelementptr inbounds %struct.arc* %arc.11, i64 1, !dbg !299
-  tail call void @llvm.dbg.value(metadata %struct.arc* %54, i64 0, metadata !106, metadata !141), !dbg !237
-  %55 = icmp eq %struct.arc* %54, %2, !dbg !300
-  br i1 %55, label %._crit_edge, label %.lr.ph, !dbg !266
+for.inc33:                                        ; preds = %for.body16, %if.then26, %if.else27, %land.lhs.true
+  %fleet.1 = phi i64 [ %fleet.069, %land.lhs.true ], [ %fleet.069, %if.else27 ], [ %inc, %if.then26 ], [ %fleet.069, %for.body16 ]
+  %operational_cost.1 = phi i64 [ %operational_cost.070, %land.lhs.true ], [ %add29, %if.else27 ], [ %add, %if.then26 ], [ %operational_cost.070, %for.body16 ]
+  %incdec.ptr34 = getelementptr inbounds %struct.arc* %arc.167, i64 1, !dbg !192
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %incdec.ptr34}, i64 0, metadata !106), !dbg !192
+  %cmp15 = icmp eq %struct.arc* %incdec.ptr34, %0, !dbg !192
+  br i1 %cmp15, label %for.end35, label %for.body16, !dbg !192
 
-._crit_edge:                                      ; preds = %53, %._crit_edge11
-  %operational_cost.0.lcssa = phi i64 [ 0, %._crit_edge11 ], [ %operational_cost.1, %53 ]
-  %fleet.0.lcssa = phi i64 [ 0, %._crit_edge11 ], [ %fleet.1, %53 ]
-  %56 = sitofp i64 %fleet.0.lcssa to double, !dbg !301
-  %57 = load i64* %.pre, align 8, !dbg !265, !tbaa !293
-  %58 = sitofp i64 %57 to double, !dbg !302
-  %59 = fmul double %56, %58, !dbg !303
-  %60 = sitofp i64 %operational_cost.0.lcssa to double, !dbg !304
-  %61 = fadd double %60, %59, !dbg !305
-  ret double %61, !dbg !306
+for.end35:                                        ; preds = %for.end11, %for.inc33
+  %operational_cost.0.lcssa = phi i64 [ %operational_cost.1, %for.inc33 ], [ 0, %for.end11 ]
+  %fleet.0.lcssa = phi i64 [ %fleet.1, %for.inc33 ], [ 0, %for.end11 ]
+  %conv = sitofp i64 %fleet.0.lcssa to double, !dbg !194
+  %16 = load i64* %bigM36.pre, align 8, !dbg !194, !tbaa !160
+  %conv37 = sitofp i64 %16 to double, !dbg !194
+  %mul = fmul double %conv, %conv37, !dbg !194
+  %conv38 = sitofp i64 %operational_cost.0.lcssa to double, !dbg !194
+  %add39 = fadd double %conv38, %mul, !dbg !194
+  ret double %add39, !dbg !194
 }

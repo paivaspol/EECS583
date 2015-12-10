@@ -1,0 +1,57 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_8XSObjectEE7cleanupEv(%"class.xercesc_2_5::BaseRefVectorOf.30"* nocapture %this) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.30"* %this}, i64 0, metadata !6116), !dbg !6760
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.30"* %this, i64 0, i32 1, !dbg !6761
+  %0 = load i8* %fAdoptedElems, align 1, !dbg !6761, !tbaa !6452, !range !6453
+  %tobool = icmp eq i8 %0, 0, !dbg !6761
+  br i1 %tobool, label %if.end, label %for.cond.preheader, !dbg !6761
+
+for.cond.preheader:                               ; preds = %entry
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.30"* %this, i64 0, i32 2, !dbg !6762
+  %1 = load i32* %fCurCount, align 4, !dbg !6762, !tbaa !6398
+  %cmp7 = icmp eq i32 %1, 0, !dbg !6762
+  br i1 %cmp7, label %if.end, label %for.body.lr.ph, !dbg !6762
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.30"* %this, i64 0, i32 4, !dbg !6763
+  br label %for.body, !dbg !6762
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %2 = phi i32 [ %1, %for.body.lr.ph ], [ %7, %for.inc ]
+  %index.08 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %idxprom = zext i32 %index.08 to i64, !dbg !6763
+  %3 = load %"class.xercesc_2_5::XSObject"*** %fElemList, align 8, !dbg !6763, !tbaa !6188
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XSObject"** %3, i64 %idxprom, !dbg !6763
+  %4 = load %"class.xercesc_2_5::XSObject"** %arrayidx, align 8, !dbg !6763, !tbaa !6188
+  %isnull = icmp eq %"class.xercesc_2_5::XSObject"* %4, null, !dbg !6763
+  br i1 %isnull, label %for.inc, label %delete.notnull, !dbg !6763
+
+delete.notnull:                                   ; preds = %for.body
+  %5 = bitcast %"class.xercesc_2_5::XSObject"* %4 to void (%"class.xercesc_2_5::XSObject"*)***, !dbg !6763
+  %vtable = load void (%"class.xercesc_2_5::XSObject"*)*** %5, align 8, !dbg !6763, !tbaa !6192
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::XSObject"*)** %vtable, i64 1, !dbg !6763
+  %6 = load void (%"class.xercesc_2_5::XSObject"*)** %vfn, align 8, !dbg !6763
+  tail call void %6(%"class.xercesc_2_5::XSObject"* %4) #8, !dbg !6763
+  %.pre = load i32* %fCurCount, align 4, !dbg !6762, !tbaa !6398
+  br label %for.inc, !dbg !6763
+
+for.inc:                                          ; preds = %for.body, %delete.notnull
+  %7 = phi i32 [ %2, %for.body ], [ %.pre, %delete.notnull ], !dbg !6762
+  %inc = add i32 %index.08, 1, !dbg !6762
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !6118), !dbg !6762
+  %cmp = icmp ult i32 %inc, %7, !dbg !6762
+  br i1 %cmp, label %for.body, label %if.end, !dbg !6762
+
+if.end:                                           ; preds = %for.cond.preheader, %for.inc, %entry
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.30"* %this, i64 0, i32 5, !dbg !6764
+  %8 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !6764, !tbaa !6188
+  %9 = bitcast %"class.xercesc_2_5::MemoryManager"* %8 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !6764
+  %vtable2 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %9, align 8, !dbg !6764, !tbaa !6192
+  %vfn3 = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable2, i64 3, !dbg !6764
+  %10 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn3, align 8, !dbg !6764
+  %fElemList4 = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.30"* %this, i64 0, i32 4, !dbg !6764
+  %11 = load %"class.xercesc_2_5::XSObject"*** %fElemList4, align 8, !dbg !6764, !tbaa !6188
+  %12 = bitcast %"class.xercesc_2_5::XSObject"** %11 to i8*, !dbg !6764
+  tail call void %10(%"class.xercesc_2_5::MemoryManager"* %8, i8* %12) #8, !dbg !6764
+  ret void, !dbg !6765
+}

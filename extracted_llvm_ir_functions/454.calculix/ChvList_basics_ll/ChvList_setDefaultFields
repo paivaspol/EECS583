@@ -1,19 +1,20 @@
 define void @ChvList_setDefaultFields(%struct._ChvList* %chvlist) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ChvList* %chvlist, i64 0, metadata !67, metadata !82), !dbg !93
-  %1 = icmp eq %struct._ChvList* %chvlist, null, !dbg !94
-  br i1 %1, label %2, label %5, !dbg !96
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvList* %chvlist}, i64 0, metadata !67), !dbg !83
+  %cmp = icmp eq %struct._ChvList* %chvlist, null, !dbg !84
+  br i1 %cmp, label %if.then, label %if.end, !dbg !84
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !97, !tbaa !87
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([57 x i8]* @.str2, i64 0, i64 0), %struct._ChvList* null) #6, !dbg !99
-  tail call void @exit(i32 -1) #7, !dbg !100
-  unreachable, !dbg !100
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !85, !tbaa !78
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str2, i64 0, i64 0), %struct._ChvList* null) #6, !dbg !85
+  tail call void @exit(i32 -1) #7, !dbg !87
+  unreachable, !dbg !87
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0, !dbg !101
-  store i32 0, i32* %6, align 4, !dbg !102, !tbaa !103
-  %7 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1, !dbg !106
-  %8 = bitcast %struct._Chv*** %7 to i8*, !dbg !107
-  call void @llvm.memset.p0i8.i64(i8* %8, i8 0, i64 36, i32 8, i1 false), !dbg !108
-  ret void, !dbg !107
+if.end:                                           ; preds = %entry
+  %nlist = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0, !dbg !88
+  store i32 0, i32* %nlist, align 4, !dbg !88, !tbaa !89
+  %heads = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1, !dbg !90
+  %1 = bitcast %struct._Chv*** %heads to i8*, !dbg !91
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 36, i32 8, i1 false), !dbg !90
+  ret void, !dbg !91
 }

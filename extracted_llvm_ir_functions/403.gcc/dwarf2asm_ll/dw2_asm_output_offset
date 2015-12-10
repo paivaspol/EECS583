@@ -1,31 +1,35 @@
 define void @dw2_asm_output_offset(i32 %size, i8* %label, i8* %comment, ...) #0 {
 entry:
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %0 = load i32* @target_flags, align 4, !tbaa !4
-  %and = lshr i32 %0, 25
-  %1 = and i32 %and, 1
-  %2 = or i32 %1, 4
-  %call = call %struct.rtx_def* @gen_rtx_fmt_s(i32 68, i32 %2, i8* %label) #7
-  call void @dw2_assemble_integer(i32 %size, %struct.rtx_def* %call) #8
-  %3 = load i32* @flag_debug_asm, align 4, !tbaa !4
-  %tobool2 = icmp eq i32 %3, 0
-  %tobool3 = icmp eq i8* %comment, null
-  %or.cond = or i1 %tobool2, %tobool3
-  br i1 %or.cond, label %if.end, label %if.then
+  call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !933), !dbg !1185
+  call void @llvm.dbg.value(metadata !{i8* %label}, i64 0, metadata !934), !dbg !1185
+  call void @llvm.dbg.value(metadata !{i8* %comment}, i64 0, metadata !935), !dbg !1185
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !936), !dbg !1186
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !1186
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !1186
+  %0 = load i32* @target_flags, align 4, !dbg !1187, !tbaa !1165
+  %and = lshr i32 %0, 25, !dbg !1187
+  %1 = and i32 %and, 1, !dbg !1187
+  %2 = or i32 %1, 4, !dbg !1187
+  %call = call %struct.rtx_def* @gen_rtx_fmt_s(i32 68, i32 %2, i8* %label) #8, !dbg !1187
+  call void @dw2_assemble_integer(i32 %size, %struct.rtx_def* %call) #9, !dbg !1187
+  %3 = load i32* @flag_debug_asm, align 4, !dbg !1189, !tbaa !1165
+  %tobool2 = icmp eq i32 %3, 0, !dbg !1189
+  %tobool3 = icmp eq i8* %comment, null, !dbg !1189
+  %or.cond = or i1 %tobool2, %tobool3, !dbg !1189
+  br i1 %or.cond, label %if.end, label %if.then, !dbg !1189
 
 if.then:                                          ; preds = %entry
-  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
-  %4 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
-  %call4 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #7
-  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
-  %call6 = call i32 @vfprintf(%struct._IO_FILE* %5, i8* %comment, %struct.__va_list_tag* %arraydecay) #7
-  br label %if.end
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, !dbg !1186
+  %4 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !1190, !tbaa !1149
+  %call4 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #8, !dbg !1190
+  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !1192, !tbaa !1149
+  %call6 = call i32 @vfprintf(%struct._IO_FILE* %5, i8* %comment, %struct.__va_list_tag* %arraydecay) #8, !dbg !1192
+  br label %if.end, !dbg !1193
 
 if.end:                                           ; preds = %entry, %if.then
-  %6 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
-  %call7 = call i32 @fputc(i32 10, %struct._IO_FILE* %6) #7
-  call void @llvm.va_end(i8* %arraydecay1)
-  ret void
+  %6 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !1194, !tbaa !1149
+  %call7 = call i32 @fputc(i32 10, %struct._IO_FILE* %6) #8, !dbg !1194
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !1195
+  ret void, !dbg !1196
 }

@@ -1,87 +1,91 @@
 define void @unshare_all_rtl(%union.tree_node* nocapture %fndecl, %struct.rtx_def* %insn) #0 {
 entry:
-  %arguments = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 10
-  %decl.019 = load %union.tree_node** %arguments, align 8
-  %tobool20 = icmp eq %union.tree_node* %decl.019, null
-  br i1 %tobool20, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %fndecl}, i64 0, metadata !1569), !dbg !2995
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !1570), !dbg !2996
+  %arguments = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 10, !dbg !2997
+  %decl.019 = load %union.tree_node** %arguments, align 8, !dbg !2997
+  %tobool20 = icmp eq %union.tree_node* %decl.019, null, !dbg !2997
+  br i1 %tobool20, label %for.end, label %for.body, !dbg !2997
 
 for.body:                                         ; preds = %entry, %cond.end
   %decl.021 = phi %union.tree_node* [ %decl.0, %cond.end ], [ %decl.019, %entry ]
-  %rtl = getelementptr inbounds %union.tree_node* %decl.021, i64 0, i32 0, i32 17
-  %0 = load %struct.rtx_def** %rtl, align 8, !tbaa !4
-  %tobool3 = icmp eq %struct.rtx_def* %0, null
-  br i1 %tobool3, label %cond.false, label %cond.end
+  %rtl = getelementptr inbounds %union.tree_node* %decl.021, i64 0, i32 0, i32 17, !dbg !2999
+  %0 = load %struct.rtx_def** %rtl, align 8, !dbg !2999, !tbaa !2272
+  %tobool3 = icmp eq %struct.rtx_def* %0, null, !dbg !2999
+  br i1 %tobool3, label %cond.false, label %cond.end, !dbg !2999
 
 cond.false:                                       ; preds = %for.body
-  tail call void @make_decl_rtl(%union.tree_node* %decl.021, i8* null) #8
-  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !4
-  br label %cond.end
+  tail call void @make_decl_rtl(%union.tree_node* %decl.021, i8* null) #9, !dbg !2999
+  %1 = load %struct.rtx_def** %rtl, align 8, !dbg !2999, !tbaa !2272
+  br label %cond.end, !dbg !2999
 
 cond.end:                                         ; preds = %for.body, %cond.false
-  %cond = phi %struct.rtx_def* [ %1, %cond.false ], [ %0, %for.body ]
-  %call = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %cond) #9
-  store %struct.rtx_def* %call, %struct.rtx_def** %rtl, align 8, !tbaa !4
-  %chain = getelementptr inbounds %union.tree_node* %decl.021, i64 0, i32 0, i32 0, i32 0
-  %decl.0 = load %union.tree_node** %chain, align 8
-  %tobool = icmp eq %union.tree_node* %decl.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %cond = phi %struct.rtx_def* [ %1, %cond.false ], [ %0, %for.body ], !dbg !2999
+  %call = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %cond) #10, !dbg !2999
+  store %struct.rtx_def* %call, %struct.rtx_def** %rtl, align 8, !dbg !2999, !tbaa !2272
+  %chain = getelementptr inbounds %union.tree_node* %decl.021, i64 0, i32 0, i32 0, i32 0, !dbg !2997
+  %decl.0 = load %union.tree_node** %chain, align 8, !dbg !2997
+  %tobool = icmp eq %union.tree_node* %decl.0, null, !dbg !2997
+  br i1 %tobool, label %for.end, label %for.body, !dbg !2997
 
 for.end:                                          ; preds = %cond.end, %entry
-  %initial = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 12
-  %2 = load %union.tree_node** %initial, align 8, !tbaa !4
-  tail call fastcc void @unshare_all_decls(%union.tree_node* %2) #9
-  %tobool32.i = icmp eq %struct.rtx_def* %insn, null
-  br i1 %tobool32.i, label %unshare_all_rtl_1.exit, label %for.body.i
+  %initial = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 12, !dbg !3000
+  %2 = load %union.tree_node** %initial, align 8, !dbg !3000, !tbaa !2272
+  tail call fastcc void @unshare_all_decls(%union.tree_node* %2) #10, !dbg !3000
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !3001) #5, !dbg !3003
+  %tobool32.i = icmp eq %struct.rtx_def* %insn, null, !dbg !3004
+  br i1 %tobool32.i, label %unshare_all_rtl_1.exit, label %for.body.i, !dbg !3004
 
 for.body.i:                                       ; preds = %for.end, %for.inc.i
   %insn.addr.033.i = phi %struct.rtx_def* [ %11, %for.inc.i ], [ %insn, %for.end ]
-  %3 = bitcast %struct.rtx_def* %insn.addr.033.i to i32*
-  %bf.load.i = load i32* %3, align 8
-  %bf.clear.i = and i32 %bf.load.i, 65535
-  %idxprom31.i = zext i32 %bf.clear.i to i64
-  %arrayidx.i = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom31.i
-  %4 = load i8* %arrayidx.i, align 1, !tbaa !1
-  %cmp.i = icmp eq i8 %4, 105
-  br i1 %cmp.i, label %if.then.i, label %for.inc.i
+  %3 = bitcast %struct.rtx_def* %insn.addr.033.i to i32*, !dbg !3006
+  %bf.load.i = load i32* %3, align 8, !dbg !3006
+  %bf.clear.i = and i32 %bf.load.i, 65535, !dbg !3006
+  %idxprom31.i = zext i32 %bf.clear.i to i64, !dbg !3006
+  %arrayidx.i = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom31.i, !dbg !3006
+  %4 = load i8* %arrayidx.i, align 1, !dbg !3006, !tbaa !2264
+  %cmp.i = icmp eq i8 %4, 105, !dbg !3006
+  br i1 %cmp.i, label %if.then.i, label %for.inc.i, !dbg !3006
 
 if.then.i:                                        ; preds = %for.body.i
-  %arrayidx2.i = getelementptr inbounds %struct.rtx_def* %insn.addr.033.i, i64 0, i32 1, i64 3
-  %rtx.i = bitcast %union.rtunion_def* %arrayidx2.i to %struct.rtx_def**
-  %5 = load %struct.rtx_def** %rtx.i, align 8, !tbaa !4
-  %call.i = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %5) #8
-  %6 = getelementptr inbounds %union.rtunion_def* %arrayidx2.i, i64 0, i32 0
-  %call.c.i = ptrtoint %struct.rtx_def* %call.i to i64
-  store i64 %call.c.i, i64* %6, align 8, !tbaa !4
-  %arrayidx7.i = getelementptr inbounds %struct.rtx_def* %insn.addr.033.i, i64 0, i32 1, i64 6
-  %rtx8.i = bitcast %union.rtunion_def* %arrayidx7.i to %struct.rtx_def**
-  %7 = load %struct.rtx_def** %rtx8.i, align 8, !tbaa !4
-  %call9.i = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %7) #8
-  %8 = getelementptr inbounds %union.rtunion_def* %arrayidx7.i, i64 0, i32 0
-  %call9.c.i = ptrtoint %struct.rtx_def* %call9.i to i64
-  store i64 %call9.c.i, i64* %8, align 8, !tbaa !4
-  %arrayidx14.i = getelementptr inbounds %struct.rtx_def* %insn.addr.033.i, i64 0, i32 1, i64 5
-  %rtx15.i = bitcast %union.rtunion_def* %arrayidx14.i to %struct.rtx_def**
-  %9 = load %struct.rtx_def** %rtx15.i, align 8, !tbaa !4
-  %call16.i = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %9) #8
-  %10 = getelementptr inbounds %union.rtunion_def* %arrayidx14.i, i64 0, i32 0
-  %call16.c.i = ptrtoint %struct.rtx_def* %call16.i to i64
-  store i64 %call16.c.i, i64* %10, align 8, !tbaa !4
-  br label %for.inc.i
+  %arrayidx2.i = getelementptr inbounds %struct.rtx_def* %insn.addr.033.i, i64 0, i32 1, i64 3, !dbg !3007
+  %rtx.i = bitcast %union.rtunion_def* %arrayidx2.i to %struct.rtx_def**, !dbg !3007
+  %5 = load %struct.rtx_def** %rtx.i, align 8, !dbg !3007, !tbaa !2272
+  %call.i = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %5) #9, !dbg !3007
+  %6 = getelementptr inbounds %union.rtunion_def* %arrayidx2.i, i64 0, i32 0, !dbg !3007
+  %call.c.i = ptrtoint %struct.rtx_def* %call.i to i64, !dbg !3007
+  store i64 %call.c.i, i64* %6, align 8, !dbg !3007, !tbaa !2272
+  %arrayidx7.i = getelementptr inbounds %struct.rtx_def* %insn.addr.033.i, i64 0, i32 1, i64 6, !dbg !3009
+  %rtx8.i = bitcast %union.rtunion_def* %arrayidx7.i to %struct.rtx_def**, !dbg !3009
+  %7 = load %struct.rtx_def** %rtx8.i, align 8, !dbg !3009, !tbaa !2272
+  %call9.i = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %7) #9, !dbg !3009
+  %8 = getelementptr inbounds %union.rtunion_def* %arrayidx7.i, i64 0, i32 0, !dbg !3009
+  %call9.c.i = ptrtoint %struct.rtx_def* %call9.i to i64, !dbg !3009
+  store i64 %call9.c.i, i64* %8, align 8, !dbg !3009, !tbaa !2272
+  %arrayidx14.i = getelementptr inbounds %struct.rtx_def* %insn.addr.033.i, i64 0, i32 1, i64 5, !dbg !3010
+  %rtx15.i = bitcast %union.rtunion_def* %arrayidx14.i to %struct.rtx_def**, !dbg !3010
+  %9 = load %struct.rtx_def** %rtx15.i, align 8, !dbg !3010, !tbaa !2272
+  %call16.i = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %9) #9, !dbg !3010
+  %10 = getelementptr inbounds %union.rtunion_def* %arrayidx14.i, i64 0, i32 0, !dbg !3010
+  %call16.c.i = ptrtoint %struct.rtx_def* %call16.i to i64, !dbg !3010
+  store i64 %call16.c.i, i64* %10, align 8, !dbg !3010, !tbaa !2272
+  br label %for.inc.i, !dbg !3011
 
 for.inc.i:                                        ; preds = %if.then.i, %for.body.i
-  %arrayidx21.i = getelementptr inbounds %struct.rtx_def* %insn.addr.033.i, i64 0, i32 1, i64 2
-  %rtx22.i = bitcast %union.rtunion_def* %arrayidx21.i to %struct.rtx_def**
-  %11 = load %struct.rtx_def** %rtx22.i, align 8, !tbaa !4
-  %tobool.i = icmp eq %struct.rtx_def* %11, null
-  br i1 %tobool.i, label %unshare_all_rtl_1.exit, label %for.body.i
+  %arrayidx21.i = getelementptr inbounds %struct.rtx_def* %insn.addr.033.i, i64 0, i32 1, i64 2, !dbg !3004
+  %rtx22.i = bitcast %union.rtunion_def* %arrayidx21.i to %struct.rtx_def**, !dbg !3004
+  %11 = load %struct.rtx_def** %rtx22.i, align 8, !dbg !3004, !tbaa !2272
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %11}, i64 0, metadata !3001) #5, !dbg !3004
+  %tobool.i = icmp eq %struct.rtx_def* %11, null, !dbg !3004
+  br i1 %tobool.i, label %unshare_all_rtl_1.exit, label %for.body.i, !dbg !3004
 
 unshare_all_rtl_1.exit:                           ; preds = %for.inc.i, %for.end
-  %12 = load %struct.function** @cfun, align 8, !tbaa !4
-  %x_stack_slot_list = getelementptr inbounds %struct.function* %12, i64 0, i32 26
-  %13 = load %struct.rtx_def** %x_stack_slot_list, align 8, !tbaa !4
-  %call11 = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %13) #9
-  %14 = load %struct.function** @cfun, align 8, !tbaa !4
-  %x_stack_slot_list12 = getelementptr inbounds %struct.function* %14, i64 0, i32 26
-  store %struct.rtx_def* %call11, %struct.rtx_def** %x_stack_slot_list12, align 8, !tbaa !4
-  ret void
+  %12 = load %struct.function** @cfun, align 8, !dbg !3012, !tbaa !2272
+  %x_stack_slot_list = getelementptr inbounds %struct.function* %12, i64 0, i32 26, !dbg !3012
+  %13 = load %struct.rtx_def** %x_stack_slot_list, align 8, !dbg !3012, !tbaa !2272
+  %call11 = tail call %struct.rtx_def* @copy_rtx_if_shared(%struct.rtx_def* %13) #10, !dbg !3012
+  %14 = load %struct.function** @cfun, align 8, !dbg !3012, !tbaa !2272
+  %x_stack_slot_list12 = getelementptr inbounds %struct.function* %14, i64 0, i32 26, !dbg !3012
+  store %struct.rtx_def* %call11, %struct.rtx_def** %x_stack_slot_list12, align 8, !dbg !3012, !tbaa !2272
+  ret void, !dbg !3013
 }

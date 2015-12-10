@@ -1,245 +1,212 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 %struct._Ideq = type { i32, i32, i32, %struct._IV }
 %struct._IV = type { i32, i32, i32, i32* }
 
-@__stderrp = external global %struct.__sFILE*
+@stderr = external global %struct._IO_FILE*
 @.str = private unnamed_addr constant [49 x i8] c"\0A ALLOCATE failure : bytes %zd, line %d, file %s\00", align 1
-@.str1 = private unnamed_addr constant [89 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c\00", align 1
+@.str1 = private unnamed_addr constant [77 x i8] c"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c\00", align 1
 @.str2 = private unnamed_addr constant [57 x i8] c"\0A fatal error in Ideq_setDefaultFields(%p)\0A deq is NULL\0A\00", align 1
 @.str3 = private unnamed_addr constant [50 x i8] c"\0A fatal error in Ideq_clearData(%p)\0A deq is NULL\0A\00", align 1
 @.str4 = private unnamed_addr constant [45 x i8] c"\0A fatal error in Ideq_free(%p)\0A deq is NULL\0A\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define %struct._Ideq* @Ideq_new() #0 {
-  %1 = tail call i8* @malloc(i64 40) #5, !dbg !49
-  %2 = bitcast i8* %1 to %struct._Ideq*, !dbg !49
-  tail call void @llvm.dbg.value(metadata %struct._Ideq* %2, i64 0, metadata !33, metadata !53), !dbg !54
-  %3 = icmp eq i8* %1, null, !dbg !49
-  br i1 %3, label %4, label %7, !dbg !55
+entry:
+  %call = tail call noalias i8* @malloc(i64 40) #5, !dbg !40
+  %0 = bitcast i8* %call to %struct._Ideq*, !dbg !40
+  tail call void @llvm.dbg.value(metadata !{%struct._Ideq* %0}, i64 0, metadata !28), !dbg !40
+  %cmp = icmp eq i8* %call, null, !dbg !40
+  br i1 %cmp, label %if.then, label %if.end, !dbg !40
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !56, !tbaa !58
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 40, i32 19, i8* getelementptr inbounds ([89 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !56
-  tail call void @exit(i32 -1) #6, !dbg !56
-  unreachable, !dbg !56
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !42, !tbaa !44
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 40, i32 19, i8* getelementptr inbounds ([77 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !42
+  tail call void @exit(i32 -1) #6, !dbg !42
+  unreachable, !dbg !42
 
-; <label>:7                                       ; preds = %0
-  tail call void @Ideq_setDefaultFields(%struct._Ideq* %2) #7, !dbg !62
-  ret %struct._Ideq* %2, !dbg !63
+if.end:                                           ; preds = %entry
+  tail call void @Ideq_setDefaultFields(%struct._Ideq* %0) #7, !dbg !47
+  ret %struct._Ideq* %0, !dbg !48
 }
 
 ; Function Attrs: nounwind optsize
 declare noalias i8* @malloc(i64) #1
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #1
+declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #1
 
-; Function Attrs: noreturn optsize
+; Function Attrs: noreturn nounwind optsize
 declare void @exit(i32) #2
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @Ideq_setDefaultFields(%struct._Ideq* %deq) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Ideq* %deq, i64 0, metadata !38, metadata !53), !dbg !64
-  %1 = icmp eq %struct._Ideq* %deq, null, !dbg !65
-  br i1 %1, label %2, label %5, !dbg !67
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Ideq* %deq}, i64 0, metadata !33), !dbg !49
+  %cmp = icmp eq %struct._Ideq* %deq, null, !dbg !50
+  br i1 %cmp, label %if.then, label %if.end, !dbg !50
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !68, !tbaa !58
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([57 x i8]* @.str2, i64 0, i64 0), %struct._Ideq* null) #5, !dbg !70
-  tail call void @exit(i32 -1) #6, !dbg !71
-  unreachable, !dbg !71
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !51, !tbaa !44
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str2, i64 0, i64 0), %struct._Ideq* null) #5, !dbg !51
+  tail call void @exit(i32 -1) #6, !dbg !53
+  unreachable, !dbg !53
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 0, !dbg !72
-  store i32 0, i32* %6, align 4, !dbg !73, !tbaa !74
-  %7 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 1, !dbg !78
-  store i32 -1, i32* %7, align 4, !dbg !79, !tbaa !80
-  %8 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 2, !dbg !81
-  store i32 -1, i32* %8, align 4, !dbg !82, !tbaa !83
-  %9 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, !dbg !84
-  tail call void @IV_setDefaultFields(%struct._IV* %9) #5, !dbg !85
-  ret void, !dbg !86
+if.end:                                           ; preds = %entry
+  %maxsize = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 0, !dbg !54
+  store i32 0, i32* %maxsize, align 4, !dbg !54, !tbaa !55
+  %head = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 1, !dbg !56
+  store i32 -1, i32* %head, align 4, !dbg !56, !tbaa !55
+  %tail = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 2, !dbg !57
+  store i32 -1, i32* %tail, align 4, !dbg !57, !tbaa !55
+  %iv = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, !dbg !58
+  tail call void @IV_setDefaultFields(%struct._IV* %iv) #5, !dbg !58
+  ret void, !dbg !59
 }
 
 ; Function Attrs: optsize
 declare void @IV_setDefaultFields(%struct._IV*) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @Ideq_clearData(%struct._Ideq* %deq) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Ideq* %deq, i64 0, metadata !41, metadata !53), !dbg !87
-  %1 = icmp eq %struct._Ideq* %deq, null, !dbg !88
-  br i1 %1, label %2, label %5, !dbg !90
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Ideq* %deq}, i64 0, metadata !36), !dbg !60
+  %cmp = icmp eq %struct._Ideq* %deq, null, !dbg !61
+  br i1 %cmp, label %if.then, label %if.end, !dbg !61
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !91, !tbaa !58
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([50 x i8]* @.str3, i64 0, i64 0), %struct._Ideq* null) #5, !dbg !93
-  tail call void @exit(i32 -1) #6, !dbg !94
-  unreachable, !dbg !94
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !62, !tbaa !44
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str3, i64 0, i64 0), %struct._Ideq* null) #5, !dbg !62
+  tail call void @exit(i32 -1) #6, !dbg !64
+  unreachable, !dbg !64
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, !dbg !95
-  tail call void @IV_clearData(%struct._IV* %6) #5, !dbg !96
-  tail call void @Ideq_setDefaultFields(%struct._Ideq* %deq) #7, !dbg !97
-  ret void, !dbg !98
+if.end:                                           ; preds = %entry
+  %iv = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, !dbg !65
+  tail call void @IV_clearData(%struct._IV* %iv) #5, !dbg !65
+  tail call void @Ideq_setDefaultFields(%struct._Ideq* %deq) #7, !dbg !66
+  ret void, !dbg !67
 }
 
 ; Function Attrs: optsize
 declare void @IV_clearData(%struct._IV*) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @Ideq_free(%struct._Ideq* %deq) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Ideq* %deq, i64 0, metadata !44, metadata !53), !dbg !99
-  %1 = icmp eq %struct._Ideq* %deq, null, !dbg !100
-  br i1 %1, label %2, label %5, !dbg !102
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Ideq* %deq}, i64 0, metadata !39), !dbg !68
+  %cmp = icmp eq %struct._Ideq* %deq, null, !dbg !69
+  br i1 %cmp, label %if.then, label %if.end, !dbg !69
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !103, !tbaa !58
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([45 x i8]* @.str4, i64 0, i64 0), %struct._Ideq* null) #5, !dbg !105
-  tail call void @exit(i32 -1) #6, !dbg !106
-  unreachable, !dbg !106
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !70, !tbaa !44
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str4, i64 0, i64 0), %struct._Ideq* null) #5, !dbg !70
+  tail call void @exit(i32 -1) #6, !dbg !72
+  unreachable, !dbg !72
 
-; <label>:5                                       ; preds = %0
-  tail call void @Ideq_clearData(%struct._Ideq* %deq) #7, !dbg !107
-  %6 = bitcast %struct._Ideq* %deq to i8*, !dbg !108
-  tail call void @free(i8* %6) #7, !dbg !108
-  tail call void @llvm.dbg.value(metadata %struct._Ideq* null, i64 0, metadata !44, metadata !53), !dbg !99
-  ret void, !dbg !111
+if.end:                                           ; preds = %entry
+  tail call void @Ideq_clearData(%struct._Ideq* %deq) #7, !dbg !73
+  %1 = bitcast %struct._Ideq* %deq to i8*, !dbg !74
+  tail call void @free(i8* %1) #5, !dbg !74
+  tail call void @llvm.dbg.value(metadata !76, i64 0, metadata !39), !dbg !74
+  ret void, !dbg !77
 }
 
 ; Function Attrs: nounwind optsize
 declare void @free(i8* nocapture) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #4
+declare void @llvm.dbg.value(metadata, i64, metadata) #4
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #4 = { nounwind readnone }
 attributes #5 = { nounwind optsize }
 attributes #6 = { noreturn nounwind optsize }
 attributes #7 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!45, !46, !47}
-!llvm.ident = !{!48}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !26, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !22, !23, !24}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DICompositeType(tag: DW_TAG_structure_type, name: "_Ideq", file: !6, line: 20, size: 320, align: 64, elements: !7)
-!6 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/../Ideq.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!7 = !{!8, !10, !11, !12}
-!8 = !DIDerivedType(tag: DW_TAG_member, name: "maxsize", scope: !5, file: !6, line: 21, baseType: !9, size: 32, align: 32)
-!9 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!10 = !DIDerivedType(tag: DW_TAG_member, name: "head", scope: !5, file: !6, line: 22, baseType: !9, size: 32, align: 32, offset: 32)
-!11 = !DIDerivedType(tag: DW_TAG_member, name: "tail", scope: !5, file: !6, line: 23, baseType: !9, size: 32, align: 32, offset: 64)
-!12 = !DIDerivedType(tag: DW_TAG_member, name: "iv", scope: !5, file: !6, line: 24, baseType: !13, size: 192, align: 64, offset: 128)
-!13 = !DIDerivedType(tag: DW_TAG_typedef, name: "IV", file: !14, line: 20, baseType: !15)
-!14 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/../../IV/IV.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!15 = !DICompositeType(tag: DW_TAG_structure_type, name: "_IV", file: !14, line: 21, size: 192, align: 64, elements: !16)
-!16 = !{!17, !18, !19, !20}
-!17 = !DIDerivedType(tag: DW_TAG_member, name: "size", scope: !15, file: !14, line: 22, baseType: !9, size: 32, align: 32)
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "maxsize", scope: !15, file: !14, line: 23, baseType: !9, size: 32, align: 32, offset: 32)
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "owned", scope: !15, file: !14, line: 24, baseType: !9, size: 32, align: 32, offset: 64)
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "vec", scope: !15, file: !14, line: 25, baseType: !21, size: 64, align: 64, offset: 128)
-!21 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !9, size: 64, align: 64)
-!22 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!23 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!24 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !25, size: 64, align: 64)
-!25 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!26 = !{!27, !34, !39, !42}
-!27 = !DISubprogram(name: "Ideq_new", scope: !1, file: !1, line: 14, type: !28, isLocal: false, isDefinition: true, scopeLine: 16, flags: DIFlagPrototyped, isOptimized: true, function: %struct._Ideq* ()* @Ideq_new, variables: !32)
-!28 = !DISubroutineType(types: !29)
-!29 = !{!30}
-!30 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !31, size: 64, align: 64)
-!31 = !DIDerivedType(tag: DW_TAG_typedef, name: "Ideq", file: !6, line: 19, baseType: !5)
-!32 = !{!33}
-!33 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "deq", scope: !27, file: !1, line: 17, type: !30)
-!34 = !DISubprogram(name: "Ideq_setDefaultFields", scope: !1, file: !1, line: 34, type: !35, isLocal: false, isDefinition: true, scopeLine: 36, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._Ideq*)* @Ideq_setDefaultFields, variables: !37)
-!35 = !DISubroutineType(types: !36)
-!36 = !{null, !30}
-!37 = !{!38}
-!38 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "deq", arg: 1, scope: !34, file: !1, line: 35, type: !30)
-!39 = !DISubprogram(name: "Ideq_clearData", scope: !1, file: !1, line: 58, type: !35, isLocal: false, isDefinition: true, scopeLine: 60, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._Ideq*)* @Ideq_clearData, variables: !40)
-!40 = !{!41}
-!41 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "deq", arg: 1, scope: !39, file: !1, line: 59, type: !30)
-!42 = !DISubprogram(name: "Ideq_free", scope: !1, file: !1, line: 80, type: !35, isLocal: false, isDefinition: true, scopeLine: 82, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._Ideq*)* @Ideq_free, variables: !43)
-!43 = !{!44}
-!44 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "deq", arg: 1, scope: !42, file: !1, line: 81, type: !30)
-!45 = !{i32 2, !"Dwarf Version", i32 2}
-!46 = !{i32 2, !"Debug Info Version", i32 700000003}
-!47 = !{i32 1, !"PIC Level", i32 2}
-!48 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!49 = !DILocation(line: 19, column: 1, scope: !50)
-!50 = distinct !DILexicalBlock(scope: !51, file: !1, line: 19, column: 1)
-!51 = distinct !DILexicalBlock(scope: !52, file: !1, line: 19, column: 1)
-!52 = distinct !DILexicalBlock(scope: !27, file: !1, line: 19, column: 1)
-!53 = !DIExpression()
-!54 = !DILocation(line: 17, column: 9, scope: !27)
-!55 = !DILocation(line: 19, column: 1, scope: !51)
-!56 = !DILocation(line: 19, column: 1, scope: !57)
-!57 = distinct !DILexicalBlock(scope: !50, file: !1, line: 19, column: 1)
-!58 = !{!59, !59, i64 0}
-!59 = !{!"any pointer", !60, i64 0}
-!60 = !{!"omnipotent char", !61, i64 0}
-!61 = !{!"Simple C/C++ TBAA"}
-!62 = !DILocation(line: 21, column: 1, scope: !27)
-!63 = !DILocation(line: 23, column: 1, scope: !27)
-!64 = !DILocation(line: 35, column: 12, scope: !34)
-!65 = !DILocation(line: 37, column: 10, scope: !66)
-!66 = distinct !DILexicalBlock(scope: !34, file: !1, line: 37, column: 6)
-!67 = !DILocation(line: 37, column: 6, scope: !34)
-!68 = !DILocation(line: 38, column: 12, scope: !69)
-!69 = distinct !DILexicalBlock(scope: !66, file: !1, line: 37, column: 20)
-!70 = !DILocation(line: 38, column: 4, scope: !69)
-!71 = !DILocation(line: 40, column: 4, scope: !69)
-!72 = !DILocation(line: 42, column: 6, scope: !34)
-!73 = !DILocation(line: 42, column: 14, scope: !34)
-!74 = !{!75, !76, i64 0}
-!75 = !{!"_Ideq", !76, i64 0, !76, i64 4, !76, i64 8, !77, i64 16}
-!76 = !{!"int", !60, i64 0}
-!77 = !{!"_IV", !76, i64 0, !76, i64 4, !76, i64 8, !59, i64 16}
-!78 = !DILocation(line: 43, column: 6, scope: !34)
-!79 = !DILocation(line: 43, column: 14, scope: !34)
-!80 = !{!75, !76, i64 4}
-!81 = !DILocation(line: 44, column: 6, scope: !34)
-!82 = !DILocation(line: 44, column: 14, scope: !34)
-!83 = !{!75, !76, i64 8}
-!84 = !DILocation(line: 45, column: 27, scope: !34)
-!85 = !DILocation(line: 45, column: 1, scope: !34)
-!86 = !DILocation(line: 47, column: 1, scope: !34)
-!87 = !DILocation(line: 59, column: 12, scope: !39)
-!88 = !DILocation(line: 61, column: 10, scope: !89)
-!89 = distinct !DILexicalBlock(scope: !39, file: !1, line: 61, column: 6)
-!90 = !DILocation(line: 61, column: 6, scope: !39)
-!91 = !DILocation(line: 62, column: 12, scope: !92)
-!92 = distinct !DILexicalBlock(scope: !89, file: !1, line: 61, column: 20)
-!93 = !DILocation(line: 62, column: 4, scope: !92)
-!94 = !DILocation(line: 64, column: 4, scope: !92)
-!95 = !DILocation(line: 66, column: 20, scope: !39)
-!96 = !DILocation(line: 66, column: 1, scope: !39)
-!97 = !DILocation(line: 67, column: 1, scope: !39)
-!98 = !DILocation(line: 69, column: 1, scope: !39)
-!99 = !DILocation(line: 81, column: 12, scope: !42)
-!100 = !DILocation(line: 83, column: 10, scope: !101)
-!101 = distinct !DILexicalBlock(scope: !42, file: !1, line: 83, column: 6)
-!102 = !DILocation(line: 83, column: 6, scope: !42)
-!103 = !DILocation(line: 84, column: 12, scope: !104)
-!104 = distinct !DILexicalBlock(scope: !101, file: !1, line: 83, column: 20)
-!105 = !DILocation(line: 84, column: 4, scope: !104)
-!106 = !DILocation(line: 86, column: 4, scope: !104)
-!107 = !DILocation(line: 88, column: 1, scope: !42)
-!108 = !DILocation(line: 89, column: 1, scope: !109)
-!109 = distinct !DILexicalBlock(scope: !110, file: !1, line: 89, column: 1)
-!110 = distinct !DILexicalBlock(scope: !42, file: !1, line: 89, column: 1)
-!111 = !DILocation(line: 91, column: 1, scope: !42)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !29, metadata !34, metadata !37}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Ideq_new", metadata !"Ideq_new", metadata !"", i32 14, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct._Ideq* ()* @Ideq_new, null, null, metadata !27, i32 16} ; [ DW_TAG_subprogram ] [line 14] [def] [scope 16] [Ideq_new]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from Ideq]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"Ideq", i32 19, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [Ideq] [line 19, size 0, align 0, offset 0] [from _Ideq]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"_Ideq", i32 20, i64 320, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [_Ideq] [line 20, size 320, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/../Ideq.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13, metadata !15, metadata !16, metadata !17}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"maxsize", i32 21, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [maxsize] [line 21, size 32, align 32, offset 0] [from int]
+!14 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!15 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"head", i32 22, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [head] [line 22, size 32, align 32, offset 32] [from int]
+!16 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"tail", i32 23, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [tail] [line 23, size 32, align 32, offset 64] [from int]
+!17 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"iv", i32 24, i64 192, i64 64, i64 128, i32 0, metadata !18} ; [ DW_TAG_member ] [iv] [line 24, size 192, align 64, offset 128] [from IV]
+!18 = metadata !{i32 786454, metadata !11, null, metadata !"IV", i32 20, i64 0, i64 0, i64 0, i32 0, metadata !19} ; [ DW_TAG_typedef ] [IV] [line 20, size 0, align 0, offset 0] [from _IV]
+!19 = metadata !{i32 786451, metadata !20, null, metadata !"_IV", i32 21, i64 192, i64 64, i32 0, i32 0, null, metadata !21, i32 0, null, null} ; [ DW_TAG_structure_type ] [_IV] [line 21, size 192, align 64, offset 0] [from ]
+!20 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/../../IV/IV.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!21 = metadata !{metadata !22, metadata !23, metadata !24, metadata !25}
+!22 = metadata !{i32 786445, metadata !20, metadata !19, metadata !"size", i32 22, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [size] [line 22, size 32, align 32, offset 0] [from int]
+!23 = metadata !{i32 786445, metadata !20, metadata !19, metadata !"maxsize", i32 23, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [maxsize] [line 23, size 32, align 32, offset 32] [from int]
+!24 = metadata !{i32 786445, metadata !20, metadata !19, metadata !"owned", i32 24, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [owned] [line 24, size 32, align 32, offset 64] [from int]
+!25 = metadata !{i32 786445, metadata !20, metadata !19, metadata !"vec", i32 25, i64 64, i64 64, i64 128, i32 0, metadata !26} ; [ DW_TAG_member ] [vec] [line 25, size 64, align 64, offset 128] [from ]
+!26 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !14} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!27 = metadata !{metadata !28}
+!28 = metadata !{i32 786688, metadata !4, metadata !"deq", metadata !5, i32 17, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [deq] [line 17]
+!29 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Ideq_setDefaultFields", metadata !"Ideq_setDefaultFields", metadata !"", i32 34, metadata !30, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._Ideq*)* @Ideq_setDefaultFields, null, null, metadata !32, i32 36} ; [ DW_TAG_subprogram ] [line 34] [def] [scope 36] [Ideq_setDefaultFields]
+!30 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !31, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!31 = metadata !{null, metadata !8}
+!32 = metadata !{metadata !33}
+!33 = metadata !{i32 786689, metadata !29, metadata !"deq", metadata !5, i32 16777251, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [deq] [line 35]
+!34 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Ideq_clearData", metadata !"Ideq_clearData", metadata !"", i32 58, metadata !30, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._Ideq*)* @Ideq_clearData, null, null, metadata !35, i32 60} ; [ DW_TAG_subprogram ] [line 58] [def] [scope 60] [Ideq_clearData]
+!35 = metadata !{metadata !36}
+!36 = metadata !{i32 786689, metadata !34, metadata !"deq", metadata !5, i32 16777275, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [deq] [line 59]
+!37 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Ideq_free", metadata !"Ideq_free", metadata !"", i32 80, metadata !30, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._Ideq*)* @Ideq_free, null, null, metadata !38, i32 82} ; [ DW_TAG_subprogram ] [line 80] [def] [scope 82] [Ideq_free]
+!38 = metadata !{metadata !39}
+!39 = metadata !{i32 786689, metadata !37, metadata !"deq", metadata !5, i32 16777297, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [deq] [line 81]
+!40 = metadata !{i32 19, i32 0, metadata !41, null}
+!41 = metadata !{i32 786443, metadata !1, metadata !4, i32 19, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c]
+!42 = metadata !{i32 19, i32 0, metadata !43, null}
+!43 = metadata !{i32 786443, metadata !1, metadata !41, i32 19, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c]
+!44 = metadata !{metadata !"any pointer", metadata !45}
+!45 = metadata !{metadata !"omnipotent char", metadata !46}
+!46 = metadata !{metadata !"Simple C/C++ TBAA"}
+!47 = metadata !{i32 21, i32 0, metadata !4, null}
+!48 = metadata !{i32 23, i32 0, metadata !4, null}
+!49 = metadata !{i32 35, i32 0, metadata !29, null}
+!50 = metadata !{i32 37, i32 0, metadata !29, null}
+!51 = metadata !{i32 38, i32 0, metadata !52, null}
+!52 = metadata !{i32 786443, metadata !1, metadata !29, i32 37, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c]
+!53 = metadata !{i32 40, i32 0, metadata !52, null}
+!54 = metadata !{i32 42, i32 0, metadata !29, null}
+!55 = metadata !{metadata !"int", metadata !45}
+!56 = metadata !{i32 43, i32 0, metadata !29, null}
+!57 = metadata !{i32 44, i32 0, metadata !29, null}
+!58 = metadata !{i32 45, i32 0, metadata !29, null}
+!59 = metadata !{i32 47, i32 0, metadata !29, null}
+!60 = metadata !{i32 59, i32 0, metadata !34, null}
+!61 = metadata !{i32 61, i32 0, metadata !34, null}
+!62 = metadata !{i32 62, i32 0, metadata !63, null}
+!63 = metadata !{i32 786443, metadata !1, metadata !34, i32 61, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c]
+!64 = metadata !{i32 64, i32 0, metadata !63, null}
+!65 = metadata !{i32 66, i32 0, metadata !34, null}
+!66 = metadata !{i32 67, i32 0, metadata !34, null}
+!67 = metadata !{i32 69, i32 0, metadata !34, null}
+!68 = metadata !{i32 81, i32 0, metadata !37, null}
+!69 = metadata !{i32 83, i32 0, metadata !37, null}
+!70 = metadata !{i32 84, i32 0, metadata !71, null}
+!71 = metadata !{i32 786443, metadata !1, metadata !37, i32 83, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c]
+!72 = metadata !{i32 86, i32 0, metadata !71, null}
+!73 = metadata !{i32 88, i32 0, metadata !37, null}
+!74 = metadata !{i32 89, i32 0, metadata !75, null}
+!75 = metadata !{i32 786443, metadata !1, metadata !37, i32 89, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Ideq/src/Ideq_basics.c]
+!76 = metadata !{%struct._Ideq* null}
+!77 = metadata !{i32 91, i32 0, metadata !37, null}

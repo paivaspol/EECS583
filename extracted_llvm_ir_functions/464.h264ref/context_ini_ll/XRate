@@ -1,63 +1,64 @@
-define double @XRate(%struct.BiContextType* nocapture readonly %ctx, i32* nocapture readonly %model) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.BiContextType* %ctx, i64 0, metadata !120, metadata !728), !dbg !1106
-  tail call void @llvm.dbg.value(metadata i32* %model, i64 0, metadata !121, metadata !728), !dbg !1107
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !125, metadata !728), !dbg !1108
-  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1109, !tbaa !718
-  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 10, !dbg !1109
-  %3 = load i32* %2, align 4, !dbg !1109, !tbaa !1110
-  %4 = icmp slt i32 %3, 0, !dbg !1109
-  %. = select i1 %4, i32 0, i32 %3, !dbg !1109
-  tail call void @llvm.dbg.value(metadata i32 %., i64 0, metadata !126, metadata !728), !dbg !1111
-  %5 = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 2, !dbg !1112
-  %6 = load i64* %5, align 8, !dbg !1112, !tbaa !1113
-  %7 = uitofp i64 %6 to double, !dbg !1112
-  %8 = fmul double %7, 3.125000e-02, !dbg !1112
-  %9 = fcmp ogt double %8, 1.000000e+00, !dbg !1112
-  %10 = select i1 %9, double 1.000000e+00, double %8, !dbg !1112
-  tail call void @llvm.dbg.value(metadata double %10, i64 0, metadata !124, metadata !728), !dbg !1117
-  %11 = load i32* %model, align 4, !dbg !1118, !tbaa !738
-  %12 = mul nsw i32 %11, %., !dbg !1119
-  %13 = ashr i32 %12, 4, !dbg !1120
-  %14 = getelementptr inbounds i32* %model, i64 1, !dbg !1121
-  %15 = load i32* %14, align 4, !dbg !1121, !tbaa !738
-  %16 = add nsw i32 %13, %15, !dbg !1122
-  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !123, metadata !728), !dbg !1123
-  %17 = icmp slt i32 %16, 0, !dbg !1124
-  %18 = select i1 %17, i32 0, i32 %16, !dbg !1124
-  %19 = icmp slt i32 %18, 127, !dbg !1124
-  %.1 = select i1 %19, i32 %18, i32 127, !dbg !1124
-  tail call void @llvm.dbg.value(metadata i32 %.1, i64 0, metadata !123, metadata !728), !dbg !1123
-  %20 = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 1, !dbg !1125
-  %21 = load i8* %20, align 1, !dbg !1125, !tbaa !1126
-  %22 = icmp ne i8 %21, 0, !dbg !1127
-  %23 = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 0, !dbg !1128
-  %24 = load i16* %23, align 2, !dbg !1128, !tbaa !1129
-  %25 = zext i16 %24 to i32, !dbg !1130
-  %26 = add nuw nsw i32 %25, 64, !dbg !1131
-  %27 = sub nsw i32 63, %25, !dbg !1132
-  %28 = select i1 %22, i32 %26, i32 %27, !dbg !1127
-  tail call void @llvm.dbg.value(metadata i32 %28, i64 0, metadata !122, metadata !728), !dbg !1133
-  %29 = sext i32 %28 to i64, !dbg !1134
-  %30 = getelementptr inbounds [128 x double]* @probability, i64 0, i64 %29, !dbg !1134
-  %31 = load double* %30, align 8, !dbg !1134, !tbaa !828
-  %32 = fmul double %10, %31, !dbg !1135
-  %33 = sext i32 %.1 to i64, !dbg !1136
-  %34 = getelementptr inbounds [128 x double]* @entropy, i64 0, i64 %33, !dbg !1136
-  %35 = load double* %34, align 8, !dbg !1136, !tbaa !828
-  %36 = fmul double %32, %35, !dbg !1137
-  %37 = fsub double 0.000000e+00, %36, !dbg !1138
-  tail call void @llvm.dbg.value(metadata double %37, i64 0, metadata !125, metadata !728), !dbg !1108
-  %38 = sub nsw i32 127, %28, !dbg !1139
-  %39 = sext i32 %38 to i64, !dbg !1140
-  %40 = getelementptr inbounds [128 x double]* @probability, i64 0, i64 %39, !dbg !1140
-  %41 = load double* %40, align 8, !dbg !1140, !tbaa !828
-  %42 = fmul double %10, %41, !dbg !1141
-  %43 = sub nsw i32 127, %.1, !dbg !1142
-  %44 = sext i32 %43 to i64, !dbg !1143
-  %45 = getelementptr inbounds [128 x double]* @entropy, i64 0, i64 %44, !dbg !1143
-  %46 = load double* %45, align 8, !dbg !1143, !tbaa !828
-  %47 = fmul double %42, %46, !dbg !1144
-  %48 = fsub double %37, %47, !dbg !1145
-  tail call void @llvm.dbg.value(metadata double %48, i64 0, metadata !125, metadata !728), !dbg !1108
-  ret double %48, !dbg !1146
+define double @XRate(%struct.BiContextType* nocapture %ctx, i32* nocapture %model) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.BiContextType* %ctx}, i64 0, metadata !117), !dbg !909
+  tail call void @llvm.dbg.value(metadata !{i32* %model}, i64 0, metadata !118), !dbg !909
+  tail call void @llvm.dbg.value(metadata !910, i64 0, metadata !122), !dbg !911
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !912, !tbaa !708
+  %qp1 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 10, !dbg !912
+  %1 = load i32* %qp1, align 4, !dbg !912, !tbaa !711
+  %cmp = icmp slt i32 %1, 0, !dbg !912
+  %. = select i1 %cmp, i32 0, i32 %1, !dbg !912
+  tail call void @llvm.dbg.value(metadata !{i32 %.}, i64 0, metadata !123), !dbg !912
+  %count = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 2, !dbg !913
+  %2 = load i64* %count, align 8, !dbg !913, !tbaa !914
+  %conv = uitofp i64 %2 to double, !dbg !913
+  %div = fmul double %conv, 3.125000e-02, !dbg !913
+  %cmp3 = fcmp ogt double %div, 1.000000e+00, !dbg !913
+  %cond11 = select i1 %cmp3, double 1.000000e+00, double %div, !dbg !913
+  tail call void @llvm.dbg.value(metadata !{double %cond11}, i64 0, metadata !121), !dbg !913
+  %3 = load i32* %model, align 4, !dbg !915, !tbaa !711
+  %mul = mul nsw i32 %3, %., !dbg !915
+  %shr = ashr i32 %mul, 4, !dbg !915
+  %arrayidx12 = getelementptr inbounds i32* %model, i64 1, !dbg !915
+  %4 = load i32* %arrayidx12, align 4, !dbg !915, !tbaa !711
+  %add = add nsw i32 %shr, %4, !dbg !915
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !120), !dbg !915
+  %cmp13 = icmp slt i32 %add, 0, !dbg !916
+  %cond18 = select i1 %cmp13, i32 0, i32 %add, !dbg !916
+  %cmp19 = icmp slt i32 %cond18, 127, !dbg !916
+  %cond18. = select i1 %cmp19, i32 %cond18, i32 127, !dbg !916
+  tail call void @llvm.dbg.value(metadata !{i32 %cond18.}, i64 0, metadata !120), !dbg !916
+  %MPS = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 1, !dbg !917
+  %5 = load i8* %MPS, align 1, !dbg !917, !tbaa !709
+  %tobool = icmp ne i8 %5, 0, !dbg !917
+  %state = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 0, !dbg !917
+  %6 = load i16* %state, align 2, !dbg !917, !tbaa !918
+  %conv33 = zext i16 %6 to i32, !dbg !917
+  %add34 = add nsw i32 %conv33, 64, !dbg !917
+  %sub = sub nsw i32 63, %conv33, !dbg !917
+  %cond39 = select i1 %tobool, i32 %add34, i32 %sub, !dbg !917
+  tail call void @llvm.dbg.value(metadata !{i32 %cond39}, i64 0, metadata !119), !dbg !917
+  %idxprom = sext i32 %cond39 to i64, !dbg !919
+  %arrayidx40 = getelementptr inbounds [128 x double]* @probability, i64 0, i64 %idxprom, !dbg !919
+  %7 = load double* %arrayidx40, align 8, !dbg !919, !tbaa !757
+  %mul41 = fmul double %cond11, %7, !dbg !919
+  %idxprom42 = sext i32 %cond18. to i64, !dbg !919
+  %arrayidx43 = getelementptr inbounds [128 x double]* @entropy, i64 0, i64 %idxprom42, !dbg !919
+  %8 = load double* %arrayidx43, align 8, !dbg !919, !tbaa !757
+  %mul44 = fmul double %mul41, %8, !dbg !919
+  %sub45 = fsub double 0.000000e+00, %mul44, !dbg !919
+  tail call void @llvm.dbg.value(metadata !{double %sub45}, i64 0, metadata !122), !dbg !919
+  %sub46 = sub nsw i32 127, %cond39, !dbg !920
+  %idxprom47 = sext i32 %sub46 to i64, !dbg !920
+  %arrayidx48 = getelementptr inbounds [128 x double]* @probability, i64 0, i64 %idxprom47, !dbg !920
+  %9 = load double* %arrayidx48, align 8, !dbg !920, !tbaa !757
+  %mul49 = fmul double %cond11, %9, !dbg !920
+  %sub50 = sub nsw i32 127, %cond18., !dbg !920
+  %idxprom51 = sext i32 %sub50 to i64, !dbg !920
+  %arrayidx52 = getelementptr inbounds [128 x double]* @entropy, i64 0, i64 %idxprom51, !dbg !920
+  %10 = load double* %arrayidx52, align 8, !dbg !920, !tbaa !757
+  %mul53 = fmul double %mul49, %10, !dbg !920
+  %sub54 = fsub double %sub45, %mul53, !dbg !920
+  tail call void @llvm.dbg.value(metadata !{double %sub54}, i64 0, metadata !122), !dbg !920
+  ret double %sub54, !dbg !921
 }

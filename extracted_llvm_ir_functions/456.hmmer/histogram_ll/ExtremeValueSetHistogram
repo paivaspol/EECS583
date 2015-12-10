@@ -1,178 +1,189 @@
 define void @ExtremeValueSetHistogram(%struct.histogram_s* nocapture %h, float %mu, float %lambda, float %lowbound, float %highbound, i32 %ndegrees) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.histogram_s* %h, i64 0, metadata !208, metadata !372), !dbg !1004
-  tail call void @llvm.dbg.value(metadata float %mu, i64 0, metadata !209, metadata !372), !dbg !1005
-  tail call void @llvm.dbg.value(metadata float %lambda, i64 0, metadata !210, metadata !372), !dbg !1006
-  tail call void @llvm.dbg.value(metadata float %lowbound, i64 0, metadata !211, metadata !372), !dbg !1007
-  tail call void @llvm.dbg.value(metadata float %highbound, i64 0, metadata !212, metadata !372), !dbg !1008
-  tail call void @llvm.dbg.value(metadata i32 %ndegrees, i64 0, metadata !213, metadata !372), !dbg !1009
-  tail call void @llvm.dbg.value(metadata %struct.histogram_s* %h, i64 0, metadata !47, metadata !372) #4, !dbg !1010
-  %1 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7, !dbg !1012
-  %2 = load float** %1, align 8, !dbg !1012, !tbaa !417
-  %3 = icmp eq float* %2, null, !dbg !1013
-  br i1 %3, label %UnfitHistogram.exit, label %4, !dbg !1014
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.histogram_s* %h}, i64 0, metadata !200), !dbg !607
+  tail call void @llvm.dbg.value(metadata !{float %mu}, i64 0, metadata !201), !dbg !607
+  tail call void @llvm.dbg.value(metadata !{float %lambda}, i64 0, metadata !202), !dbg !607
+  tail call void @llvm.dbg.value(metadata !{float %lowbound}, i64 0, metadata !203), !dbg !608
+  tail call void @llvm.dbg.value(metadata !{float %highbound}, i64 0, metadata !204), !dbg !608
+  tail call void @llvm.dbg.value(metadata !{i32 %ndegrees}, i64 0, metadata !205), !dbg !608
+  tail call void @llvm.dbg.value(metadata !{%struct.histogram_s* %h}, i64 0, metadata !609) #4, !dbg !611
+  %expect.i = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7, !dbg !612
+  %0 = load float** %expect.i, align 8, !dbg !612, !tbaa !371
+  %cmp.i = icmp eq float* %0, null, !dbg !612
+  br i1 %cmp.i, label %UnfitHistogram.exit, label %if.then.i, !dbg !612
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast float* %2 to i8*, !dbg !1015
-  tail call void @free(i8* %5) #7, !dbg !1016
-  br label %UnfitHistogram.exit, !dbg !1016
+if.then.i:                                        ; preds = %entry
+  %1 = bitcast float* %0 to i8*, !dbg !612
+  tail call void @free(i8* %1) #5, !dbg !612
+  br label %UnfitHistogram.exit, !dbg !612
 
-UnfitHistogram.exit:                              ; preds = %0, %4
-  store float* null, float** %1, align 8, !dbg !1017, !tbaa !417
-  %6 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8, !dbg !1018
-  store i32 1, i32* %6, align 4, !dbg !1019, !tbaa !420
-  %7 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 1, !dbg !1020
-  store float %lambda, float* %7, align 4, !dbg !1021, !tbaa !687
-  %8 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 0, !dbg !1022
-  store float %mu, float* %8, align 4, !dbg !1023, !tbaa !687
-  %9 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 2, !dbg !1024
-  %10 = load i32* %9, align 4, !dbg !1024, !tbaa !393
-  %11 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 1, !dbg !1025
-  %12 = load i32* %11, align 4, !dbg !1025, !tbaa !384
-  %13 = sub nsw i32 %10, %12, !dbg !1026
-  %14 = add nsw i32 %13, 1, !dbg !1027
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !215, metadata !372), !dbg !1028
-  %15 = sext i32 %14 to i64, !dbg !1029
-  %16 = shl nsw i64 %15, 2, !dbg !1029
-  %17 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([67 x i8]* @.str, i64 0, i64 0), i32 696, i64 %16) #7, !dbg !1029
-  %18 = bitcast float** %1 to i8**, !dbg !1030
-  store i8* %17, i8** %18, align 8, !dbg !1030, !tbaa !417
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !216, metadata !372), !dbg !1031
-  %19 = icmp sgt i32 %13, -1, !dbg !1032
-  br i1 %19, label %.lr.ph8, label %25, !dbg !1035
+UnfitHistogram.exit:                              ; preds = %entry, %if.then.i
+  store float* null, float** %expect.i, align 8, !dbg !613, !tbaa !371
+  %fit_type.i = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8, !dbg !614
+  store i32 1, i32* %fit_type.i, align 4, !dbg !615, !tbaa !362
+  %arrayidx = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 1, !dbg !616
+  store float %lambda, float* %arrayidx, align 4, !dbg !616, !tbaa !490
+  %arrayidx2 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 0, !dbg !617
+  store float %mu, float* %arrayidx2, align 4, !dbg !617, !tbaa !490
+  %max = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 2, !dbg !618
+  %2 = load i32* %max, align 4, !dbg !618, !tbaa !362
+  %min = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 1, !dbg !618
+  %3 = load i32* %min, align 4, !dbg !618, !tbaa !362
+  %sub = sub nsw i32 %2, %3, !dbg !618
+  %add = add nsw i32 %sub, 1, !dbg !618
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !207), !dbg !618
+  %conv = sext i32 %add to i64, !dbg !619
+  %mul = shl nsw i64 %conv, 2, !dbg !619
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 696, i64 %mul) #5, !dbg !619
+  %4 = bitcast i8* %call to float*, !dbg !619
+  store float* %4, float** %expect.i, align 8, !dbg !619, !tbaa !371
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !208), !dbg !620
+  %cmp154 = icmp sgt i32 %sub, -1, !dbg !620
+  br i1 %cmp154, label %for.body.lr.ph, label %for.end, !dbg !620
 
-.lr.ph8:                                          ; preds = %UnfitHistogram.exit
-  %20 = add i32 %10, 1, !dbg !1035
-  %21 = sub i32 %20, %12, !dbg !1035
-  %22 = icmp sgt i32 %21, 1
-  %.op = add i32 %21, -1, !dbg !1035
-  %23 = zext i32 %.op to i64
-  %.op14 = shl nuw nsw i64 %23, 2, !dbg !1035
-  %.op14.op = add nuw nsw i64 %.op14, 4, !dbg !1035
-  %24 = select i1 %22, i64 %.op14.op, i64 4, !dbg !1035
-  call void @llvm.memset.p0i8.i64(i8* %17, i8 0, i64 %24, i32 4, i1 false), !dbg !1036
-  br label %25, !dbg !1035
+for.body.lr.ph:                                   ; preds = %UnfitHistogram.exit
+  %5 = add i32 %2, 1, !dbg !620
+  %6 = sub i32 %5, %3, !dbg !620
+  %7 = icmp sgt i32 %6, 1
+  %.op = add i32 %6, -1, !dbg !620
+  %8 = zext i32 %.op to i64
+  %.op158 = shl nuw nsw i64 %8, 2, !dbg !620
+  %.op158.op = add i64 %.op158, 4, !dbg !620
+  %9 = select i1 %7, i64 %.op158.op, i64 4, !dbg !620
+  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 %9, i32 4, i1 false), !dbg !622
+  br label %for.end, !dbg !620
 
-; <label>:25                                      ; preds = %.lr.ph8, %UnfitHistogram.exit
-  %26 = load i32* %11, align 4, !dbg !1037, !tbaa !384
-  tail call void @llvm.dbg.value(metadata i32 %26, i64 0, metadata !214, metadata !372), !dbg !1039
-  %27 = load i32* %9, align 4, !dbg !1040, !tbaa !393
-  %28 = icmp sgt i32 %26, %27, !dbg !1042
-  br i1 %28, label %._crit_edge6, label %.lr.ph5, !dbg !1043
+for.end:                                          ; preds = %for.body.lr.ph, %UnfitHistogram.exit
+  %10 = load i32* %min, align 4, !dbg !623, !tbaa !362
+  tail call void @llvm.dbg.value(metadata !{i32 %10}, i64 0, metadata !206), !dbg !623
+  %11 = load i32* %max, align 4, !dbg !623, !tbaa !362
+  %cmp9152 = icmp sgt i32 %10, %11, !dbg !623
+  br i1 %cmp9152, label %for.end35, label %for.body11.lr.ph, !dbg !623
 
-.lr.ph5:                                          ; preds = %25
-  %29 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 6, !dbg !1044
-  %30 = load i32* %29, align 4, !dbg !1044, !tbaa !396
-  %31 = sitofp i32 %30 to double, !dbg !1045
-  %32 = load float** %1, align 8, !dbg !1047, !tbaa !417
-  %33 = sext i32 %26 to i64
-  %34 = sext i32 %27 to i64, !dbg !1043
-  br label %35, !dbg !1043
+for.body11.lr.ph:                                 ; preds = %for.end
+  %total = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 6, !dbg !625
+  br label %for.body11, !dbg !623
 
-; <label>:35                                      ; preds = %35, %.lr.ph5
-  %indvars.iv10 = phi i64 [ %indvars.iv.next11, %35 ], [ %33, %.lr.ph5 ]
-  %36 = trunc i64 %indvars.iv10 to i32, !dbg !1048
-  %37 = sitofp i32 %36 to float, !dbg !1048
-  %38 = load float* %8, align 4, !dbg !1049, !tbaa !687
-  %39 = load float* %7, align 4, !dbg !1050, !tbaa !687
-  tail call void @llvm.dbg.value(metadata float %37, i64 0, metadata !273, metadata !372) #4, !dbg !1051
-  tail call void @llvm.dbg.value(metadata float %38, i64 0, metadata !274, metadata !372) #4, !dbg !1052
-  tail call void @llvm.dbg.value(metadata float %39, i64 0, metadata !275, metadata !372) #4, !dbg !1053
-  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !276, metadata !372) #4, !dbg !1054
-  %40 = tail call double @ExtremeValueP(float %37, float %38, float %39) #7, !dbg !1055
-  %41 = fmul double %31, %40, !dbg !1056
-  %indvars.iv.next11 = add nsw i64 %indvars.iv10, 1, !dbg !1043
-  %42 = trunc i64 %indvars.iv.next11 to i32, !dbg !1057
-  %43 = sitofp i32 %42 to float, !dbg !1057
-  tail call void @llvm.dbg.value(metadata float %43, i64 0, metadata !273, metadata !372) #4, !dbg !1058
-  tail call void @llvm.dbg.value(metadata float %38, i64 0, metadata !274, metadata !372) #4, !dbg !1060
-  tail call void @llvm.dbg.value(metadata float %39, i64 0, metadata !275, metadata !372) #4, !dbg !1061
-  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !276, metadata !372) #4, !dbg !1062
-  %44 = tail call double @ExtremeValueP(float %43, float %38, float %39) #7, !dbg !1063
-  %45 = fmul double %31, %44, !dbg !1064
-  %46 = fsub double %41, %45, !dbg !1065
-  %47 = fptrunc double %46 to float, !dbg !1066
-  %48 = sub nsw i64 %indvars.iv10, %33, !dbg !1067
-  %49 = getelementptr inbounds float* %32, i64 %48, !dbg !1068
-  store float %47, float* %49, align 4, !dbg !1069, !tbaa !687
-  %50 = icmp slt i64 %indvars.iv10, %34, !dbg !1042
-  br i1 %50, label %35, label %._crit_edge6, !dbg !1043
+for.body11:                                       ; preds = %for.body11, %for.body11.lr.ph
+  %sc.0153 = phi i32 [ %10, %for.body11.lr.ph ], [ %add18, %for.body11 ]
+  %conv12 = sitofp i32 %sc.0153 to float, !dbg !625
+  %12 = load float* %arrayidx2, align 4, !dbg !625, !tbaa !490
+  %13 = load float* %arrayidx, align 4, !dbg !625, !tbaa !490
+  %14 = load i32* %total, align 4, !dbg !625, !tbaa !362
+  tail call void @llvm.dbg.value(metadata !{float %conv12}, i64 0, metadata !626) #4, !dbg !627
+  tail call void @llvm.dbg.value(metadata !{float %12}, i64 0, metadata !628) #4, !dbg !627
+  tail call void @llvm.dbg.value(metadata !{float %13}, i64 0, metadata !629) #4, !dbg !627
+  tail call void @llvm.dbg.value(metadata !{i32 %14}, i64 0, metadata !630) #4, !dbg !627
+  %conv.i = sitofp i32 %14 to double, !dbg !631
+  %call.i = tail call double @ExtremeValueP(float %conv12, float %12, float %13) #5, !dbg !631
+  %mul.i = fmul double %conv.i, %call.i, !dbg !631
+  %add18 = add nsw i32 %sc.0153, 1, !dbg !632
+  %conv19 = sitofp i32 %add18 to float, !dbg !632
+  %15 = load float* %arrayidx2, align 4, !dbg !632, !tbaa !490
+  %16 = load float* %arrayidx, align 4, !dbg !632, !tbaa !490
+  %17 = load i32* %total, align 4, !dbg !632, !tbaa !362
+  tail call void @llvm.dbg.value(metadata !{float %conv19}, i64 0, metadata !633) #4, !dbg !634
+  tail call void @llvm.dbg.value(metadata !{float %15}, i64 0, metadata !635) #4, !dbg !634
+  tail call void @llvm.dbg.value(metadata !{float %16}, i64 0, metadata !636) #4, !dbg !634
+  tail call void @llvm.dbg.value(metadata !{i32 %17}, i64 0, metadata !637) #4, !dbg !634
+  %conv.i145 = sitofp i32 %17 to double, !dbg !638
+  %call.i146 = tail call double @ExtremeValueP(float %conv19, float %15, float %16) #5, !dbg !638
+  %mul.i147 = fmul double %conv.i145, %call.i146, !dbg !638
+  %sub26 = fsub double %mul.i, %mul.i147, !dbg !632
+  %conv27 = fptrunc double %sub26 to float, !dbg !632
+  %18 = load i32* %min, align 4, !dbg !632, !tbaa !362
+  %sub29 = sub nsw i32 %sc.0153, %18, !dbg !632
+  %idxprom30 = sext i32 %sub29 to i64, !dbg !632
+  %19 = load float** %expect.i, align 8, !dbg !632, !tbaa !371
+  %arrayidx32 = getelementptr inbounds float* %19, i64 %idxprom30, !dbg !632
+  store float %conv27, float* %arrayidx32, align 4, !dbg !632, !tbaa !490
+  tail call void @llvm.dbg.value(metadata !{i32 %add18}, i64 0, metadata !206), !dbg !623
+  %20 = load i32* %max, align 4, !dbg !623, !tbaa !362
+  %cmp9 = icmp slt i32 %sc.0153, %20, !dbg !623
+  br i1 %cmp9, label %for.body11, label %for.end35, !dbg !623
 
-._crit_edge6:                                     ; preds = %35, %25
-  %51 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 10, !dbg !1070
-  store float 0.000000e+00, float* %51, align 4, !dbg !1071, !tbaa !733
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !217, metadata !372), !dbg !1072
-  %52 = fptosi float %lowbound to i32, !dbg !1073
-  tail call void @llvm.dbg.value(metadata i32 %52, i64 0, metadata !214, metadata !372), !dbg !1039
-  %53 = sitofp i32 %52 to float, !dbg !1075
-  %54 = fcmp ugt float %53, %highbound, !dbg !1077
-  br i1 %54, label %._crit_edge, label %.lr.ph, !dbg !1078
+for.end35:                                        ; preds = %for.body11, %for.end
+  %21 = phi i32 [ %10, %for.end ], [ %18, %for.body11 ]
+  %chisq = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 10, !dbg !639
+  store float 0.000000e+00, float* %chisq, align 4, !dbg !639, !tbaa !490
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !209), !dbg !640
+  %conv36 = fptosi float %lowbound to i32, !dbg !641
+  tail call void @llvm.dbg.value(metadata !{i32 %conv36}, i64 0, metadata !206), !dbg !641
+  %conv38148 = sitofp i32 %conv36 to float, !dbg !641
+  %cmp39149 = fcmp ugt float %conv38148, %highbound, !dbg !641
+  br i1 %cmp39149, label %for.end79, label %for.body41.lr.ph, !dbg !641
 
-.lr.ph:                                           ; preds = %._crit_edge6
-  %55 = load float** %1, align 8, !dbg !1079, !tbaa !417
-  %56 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0, !dbg !1081
-  %57 = sext i32 %52 to i64
-  %58 = sext i32 %26 to i64, !dbg !1078
-  br label %59, !dbg !1078
+for.body41.lr.ph:                                 ; preds = %for.end35
+  %22 = load float** %expect.i, align 8, !dbg !643, !tbaa !371
+  %histogram = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0, !dbg !643
+  %23 = sext i32 %conv36 to i64
+  br label %for.body41, !dbg !641
 
-; <label>:59                                      ; preds = %.lr.ph, %77
-  %60 = phi float [ 0.000000e+00, %.lr.ph ], [ %78, %77 ]
-  %indvars.iv = phi i64 [ %57, %.lr.ph ], [ %indvars.iv.next, %77 ]
-  %nbins.01 = phi i32 [ 0, %.lr.ph ], [ %nbins.1, %77 ]
-  %61 = sub nsw i64 %indvars.iv, %58, !dbg !1082
-  %62 = getelementptr inbounds float* %55, i64 %61, !dbg !1083
-  %63 = load float* %62, align 4, !dbg !1083, !tbaa !687
-  %64 = fcmp ult float %63, 5.000000e+00, !dbg !1084
-  br i1 %64, label %77, label %65, !dbg !1085
+for.body41:                                       ; preds = %for.body41.lr.ph, %for.inc77
+  %24 = phi float [ 0.000000e+00, %for.body41.lr.ph ], [ %29, %for.inc77 ]
+  %indvars.iv = phi i64 [ %23, %for.body41.lr.ph ], [ %indvars.iv.next, %for.inc77 ]
+  %nbins.0150 = phi i32 [ 0, %for.body41.lr.ph ], [ %nbins.1, %for.inc77 ]
+  %25 = trunc i64 %indvars.iv to i32, !dbg !643
+  %sub43 = sub nsw i32 %25, %21, !dbg !643
+  %idxprom44 = sext i32 %sub43 to i64, !dbg !643
+  %arrayidx46 = getelementptr inbounds float* %22, i64 %idxprom44, !dbg !643
+  %26 = load float* %arrayidx46, align 4, !dbg !643, !tbaa !490
+  %cmp48 = fcmp ult float %26, 5.000000e+00, !dbg !643
+  br i1 %cmp48, label %for.inc77, label %land.lhs.true, !dbg !643
 
-; <label>:65                                      ; preds = %59
-  %66 = load i32** %56, align 8, !dbg !1081, !tbaa !408
-  %67 = getelementptr inbounds i32* %66, i64 %61, !dbg !1086
-  %68 = load i32* %67, align 4, !dbg !1086, !tbaa !504
-  %69 = icmp sgt i32 %68, 4, !dbg !1087
-  br i1 %69, label %70, label %77, !dbg !1088
+land.lhs.true:                                    ; preds = %for.body41
+  %27 = load i32** %histogram, align 8, !dbg !643, !tbaa !371
+  %arrayidx53 = getelementptr inbounds i32* %27, i64 %idxprom44, !dbg !643
+  %28 = load i32* %arrayidx53, align 4, !dbg !643, !tbaa !362
+  %cmp54 = icmp sgt i32 %28, 4, !dbg !643
+  br i1 %cmp54, label %if.then, label %for.inc77, !dbg !643
 
-; <label>:70                                      ; preds = %65
-  %71 = sitofp i32 %68 to float, !dbg !1089
-  %72 = fsub float %71, %63, !dbg !1091
-  tail call void @llvm.dbg.value(metadata float %72, i64 0, metadata !218, metadata !372), !dbg !1092
-  %73 = fmul float %72, %72, !dbg !1093
-  %74 = fdiv float %73, %63, !dbg !1094
-  %75 = fadd float %74, %60, !dbg !1095
-  store float %75, float* %51, align 4, !dbg !1095, !tbaa !733
-  %76 = add nsw i32 %nbins.01, 1, !dbg !1096
-  tail call void @llvm.dbg.value(metadata i32 %76, i64 0, metadata !217, metadata !372), !dbg !1072
-  br label %77, !dbg !1097
+if.then:                                          ; preds = %land.lhs.true
+  %conv61 = sitofp i32 %28 to float, !dbg !644
+  %sub67 = fsub float %conv61, %26, !dbg !644
+  tail call void @llvm.dbg.value(metadata !{float %sub67}, i64 0, metadata !210), !dbg !644
+  %mul68 = fmul float %sub67, %sub67, !dbg !646
+  %div = fdiv float %mul68, %26, !dbg !646
+  %add75 = fadd float %div, %24, !dbg !646
+  store float %add75, float* %chisq, align 4, !dbg !646, !tbaa !490
+  %inc76 = add nsw i32 %nbins.0150, 1, !dbg !647
+  tail call void @llvm.dbg.value(metadata !{i32 %inc76}, i64 0, metadata !209), !dbg !647
+  br label %for.inc77, !dbg !648
 
-; <label>:77                                      ; preds = %59, %65, %70
-  %78 = phi float [ %75, %70 ], [ %60, %65 ], [ %60, %59 ]
-  %nbins.1 = phi i32 [ %76, %70 ], [ %nbins.01, %65 ], [ %nbins.01, %59 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1078
-  %79 = trunc i64 %indvars.iv.next to i32, !dbg !1075
-  %80 = sitofp i32 %79 to float, !dbg !1075
-  %81 = fcmp ugt float %80, %highbound, !dbg !1077
-  br i1 %81, label %._crit_edge, label %59, !dbg !1078
+for.inc77:                                        ; preds = %for.body41, %land.lhs.true, %if.then
+  %29 = phi float [ %add75, %if.then ], [ %24, %land.lhs.true ], [ %24, %for.body41 ]
+  %nbins.1 = phi i32 [ %inc76, %if.then ], [ %nbins.0150, %land.lhs.true ], [ %nbins.0150, %for.body41 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !641
+  %30 = trunc i64 %indvars.iv.next to i32, !dbg !641
+  %conv38 = sitofp i32 %30 to float, !dbg !641
+  %cmp39 = fcmp ugt float %conv38, %highbound, !dbg !641
+  br i1 %cmp39, label %for.end79, label %for.body41, !dbg !641
 
-._crit_edge:                                      ; preds = %77, %._crit_edge6
-  %82 = phi float [ 0.000000e+00, %._crit_edge6 ], [ %78, %77 ]
-  %nbins.0.lcssa = phi i32 [ 0, %._crit_edge6 ], [ %nbins.1, %77 ]
-  %83 = add nsw i32 %ndegrees, 1, !dbg !1098
-  %84 = icmp sgt i32 %nbins.0.lcssa, %83, !dbg !1100
-  br i1 %84, label %85, label %94, !dbg !1101
+for.end79:                                        ; preds = %for.inc77, %for.end35
+  %31 = phi float [ 0.000000e+00, %for.end35 ], [ %29, %for.inc77 ]
+  %nbins.0.lcssa = phi i32 [ 0, %for.end35 ], [ %nbins.1, %for.inc77 ]
+  %add80 = add nsw i32 %ndegrees, 1, !dbg !649
+  %cmp81 = icmp sgt i32 %nbins.0.lcssa, %add80, !dbg !649
+  br i1 %cmp81, label %if.then83, label %if.else, !dbg !649
 
-; <label>:85                                      ; preds = %._crit_edge
-  %86 = xor i32 %ndegrees, -1, !dbg !1102
-  %87 = add i32 %nbins.0.lcssa, %86, !dbg !1103
-  %88 = sitofp i32 %87 to double, !dbg !1104
-  %89 = fmul double %88, 5.000000e-01, !dbg !1105
-  %90 = fpext float %82 to double, !dbg !1106
-  %91 = fmul double %90, 5.000000e-01, !dbg !1107
-  %92 = tail call double @IncompleteGamma(double %89, double %91) #7, !dbg !1108
-  %93 = fptrunc double %92 to float, !dbg !1109
-  br label %94, !dbg !1110
+if.then83:                                        ; preds = %for.end79
+  %sub84 = xor i32 %ndegrees, -1, !dbg !650
+  %sub85 = add i32 %nbins.0.lcssa, %sub84, !dbg !650
+  %conv86 = sitofp i32 %sub85 to double, !dbg !650
+  %div87 = fmul double %conv86, 5.000000e-01, !dbg !650
+  %conv89 = fpext float %31 to double, !dbg !650
+  %div90 = fmul double %conv89, 5.000000e-01, !dbg !650
+  %call91 = tail call double @IncompleteGamma(double %div87, double %div90) #5, !dbg !650
+  %conv92 = fptrunc double %call91 to float, !dbg !650
+  %chip = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 11, !dbg !650
+  store float %conv92, float* %chip, align 4, !dbg !650, !tbaa !490
+  br label %if.end94, !dbg !650
 
-; <label>:94                                      ; preds = %._crit_edge, %85
-  %.sink = phi float [ %93, %85 ], [ 0.000000e+00, %._crit_edge ]
-  %95 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 11, !dbg !1111
-  store float %.sink, float* %95, align 4
-  ret void, !dbg !1112
+if.else:                                          ; preds = %for.end79
+  %chip93 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 11, !dbg !651
+  store float 0.000000e+00, float* %chip93, align 4, !dbg !651, !tbaa !490
+  br label %if.end94
+
+if.end94:                                         ; preds = %if.else, %if.then83
+  ret void, !dbg !652
 }

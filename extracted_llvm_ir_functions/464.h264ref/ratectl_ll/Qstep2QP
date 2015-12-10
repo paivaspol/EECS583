@@ -1,80 +1,81 @@
 define i32 @Qstep2QP(double %Qstep) #6 {
-  tail call void @llvm.dbg.value(metadata double %Qstep, i64 0, metadata !158, metadata !1021), !dbg !2765
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !159, metadata !1021), !dbg !2766
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !160, metadata !1021), !dbg !2767
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !151, metadata !1021), !dbg !2768
-  tail call void @llvm.dbg.value(metadata double 6.250000e-01, i64 0, metadata !153, metadata !1021), !dbg !2771
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !152, metadata !1021), !dbg !2772
-  %1 = fcmp olt double %Qstep, 6.250000e-01, !dbg !2773
-  br i1 %1, label %21, label %.lr.ph.i, !dbg !2774
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %Qstep}, i64 0, metadata !154), !dbg !1561
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !155), !dbg !1562
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !156), !dbg !1562
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !1563), !dbg !1565
+  tail call void @llvm.dbg.value(metadata !1566, i64 0, metadata !1567), !dbg !1568
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !1569), !dbg !1570
+  %cmp = fcmp olt double %Qstep, 6.250000e-01, !dbg !1564
+  br i1 %cmp, label %return, label %for.body.i, !dbg !1564
 
-.lr.ph.i:                                         ; preds = %0, %.lr.ph.i
-  %Qstep.02.i = phi double [ %2, %.lr.ph.i ], [ 8.750000e-01, %0 ], !dbg !2775
-  %i.01.i = phi i32 [ %3, %.lr.ph.i ], [ 0, %0 ], !dbg !2775
-  %2 = fmul double %Qstep.02.i, 2.000000e+00, !dbg !2777
-  tail call void @llvm.dbg.value(metadata double %2, i64 0, metadata !153, metadata !1021), !dbg !2781
-  %3 = add nuw nsw i32 %i.01.i, 1, !dbg !2782
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !152, metadata !1021), !dbg !2783
-  %exitcond = icmp eq i32 %3, 8, !dbg !2784
-  br i1 %exitcond, label %QP2Qstep.exit, label %.lr.ph.i, !dbg !2784
+for.body.i:                                       ; preds = %entry, %for.body.i
+  %Qstep.05.i = phi double [ %mul.i, %for.body.i ], [ 8.750000e-01, %entry ]
+  %i.04.i = phi i32 [ %inc.i, %for.body.i ], [ 0, %entry ]
+  %mul.i = fmul double %Qstep.05.i, 2.000000e+00, !dbg !1572
+  tail call void @llvm.dbg.value(metadata !{double %mul.i}, i64 0, metadata !1574), !dbg !1572
+  %inc.i = add nsw i32 %i.04.i, 1, !dbg !1575
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !1576), !dbg !1575
+  %exitcond = icmp eq i32 %inc.i, 8, !dbg !1575
+  br i1 %exitcond, label %QP2Qstep.exit, label %for.body.i, !dbg !1575
 
-QP2Qstep.exit:                                    ; preds = %.lr.ph.i
-  %4 = fcmp olt double %2, %Qstep, !dbg !2785
-  br i1 %4, label %21, label %.preheader, !dbg !2786
+QP2Qstep.exit:                                    ; preds = %for.body.i
+  %cmp2 = fcmp olt double %mul.i, %Qstep, !dbg !1573
+  br i1 %cmp2, label %return, label %while.cond.preheader, !dbg !1573
 
-.preheader:                                       ; preds = %QP2Qstep.exit
-  tail call void @llvm.dbg.value(metadata i32 5, i64 0, metadata !151, metadata !1021), !dbg !2787
-  tail call void @llvm.dbg.value(metadata double 1.125000e+00, i64 0, metadata !153, metadata !1021), !dbg !2789
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !152, metadata !1021), !dbg !2790
-  %5 = fcmp ogt double %Qstep, 1.125000e+00, !dbg !2791
-  br i1 %5, label %.lr.ph, label %9, !dbg !2792
+while.cond.preheader:                             ; preds = %QP2Qstep.exit
+  tail call void @llvm.dbg.value(metadata !1577, i64 0, metadata !1578), !dbg !1580
+  tail call void @llvm.dbg.value(metadata !1581, i64 0, metadata !1582), !dbg !1583
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !1584), !dbg !1585
+  %cmp636 = fcmp ogt double %Qstep, 1.125000e+00, !dbg !1579
+  br i1 %cmp636, label %while.body, label %while.end, !dbg !1579
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %q_per.03 = phi i32 [ %7, %.lr.ph ], [ 0, %.preheader ]
-  %.02 = phi double [ %6, %.lr.ph ], [ %Qstep, %.preheader ]
-  %6 = fmul double %.02, 5.000000e-01, !dbg !2793
-  tail call void @llvm.dbg.value(metadata double %6, i64 0, metadata !158, metadata !1021), !dbg !2765
-  %7 = add nuw nsw i32 %q_per.03, 1, !dbg !2795
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !159, metadata !1021), !dbg !2766
-  tail call void @llvm.dbg.value(metadata i32 5, i64 0, metadata !151, metadata !1021), !dbg !2787
-  tail call void @llvm.dbg.value(metadata double 1.125000e+00, i64 0, metadata !153, metadata !1021), !dbg !2789
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !152, metadata !1021), !dbg !2790
-  %8 = fcmp ogt double %6, 1.125000e+00, !dbg !2791
-  br i1 %8, label %.lr.ph, label %._crit_edge, !dbg !2792
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %q_per.038 = phi i32 [ %add, %while.body ], [ 0, %while.cond.preheader ]
+  %Qstep.addr.037 = phi double [ %div, %while.body ], [ %Qstep, %while.cond.preheader ]
+  %div = fmul double %Qstep.addr.037, 5.000000e-01, !dbg !1586
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !154), !dbg !1586
+  %add = add nsw i32 %q_per.038, 1, !dbg !1588
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !155), !dbg !1588
+  tail call void @llvm.dbg.value(metadata !1577, i64 0, metadata !1578), !dbg !1580
+  tail call void @llvm.dbg.value(metadata !1581, i64 0, metadata !1582), !dbg !1583
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !1584), !dbg !1585
+  %cmp6 = fcmp ogt double %div, 1.125000e+00, !dbg !1579
+  br i1 %cmp6, label %while.body, label %while.cond.while.end_crit_edge, !dbg !1579
 
-._crit_edge:                                      ; preds = %.lr.ph
-  %phitmp = mul i32 %7, 6, !dbg !2792
-  br label %9, !dbg !2792
+while.cond.while.end_crit_edge:                   ; preds = %while.body
+  %phitmp = mul i32 %add, 6, !dbg !1579
+  br label %while.end, !dbg !1579
 
-; <label>:9                                       ; preds = %._crit_edge, %.preheader
-  %q_per.0.lcssa = phi i32 [ %phitmp, %._crit_edge ], [ 0, %.preheader ]
-  %.0.lcssa = phi double [ %6, %._crit_edge ], [ %Qstep, %.preheader ]
-  %10 = fcmp ugt double %.0.lcssa, 6.562500e-01, !dbg !2796
-  br i1 %10, label %11, label %19, !dbg !2798
+while.end:                                        ; preds = %while.cond.while.end_crit_edge, %while.cond.preheader
+  %q_per.0.lcssa = phi i32 [ %phitmp, %while.cond.while.end_crit_edge ], [ 0, %while.cond.preheader ]
+  %Qstep.addr.0.lcssa = phi double [ %div, %while.cond.while.end_crit_edge ], [ %Qstep, %while.cond.preheader ]
+  %cmp7 = fcmp ugt double %Qstep.addr.0.lcssa, 6.562500e-01, !dbg !1589
+  br i1 %cmp7, label %if.else9, label %if.end26, !dbg !1589
 
-; <label>:11                                      ; preds = %9
-  %12 = fcmp ugt double %.0.lcssa, 7.500000e-01, !dbg !2799
-  br i1 %12, label %13, label %19, !dbg !2801
+if.else9:                                         ; preds = %while.end
+  %cmp10 = fcmp ugt double %Qstep.addr.0.lcssa, 7.500000e-01, !dbg !1590
+  br i1 %cmp10, label %if.else12, label %if.end26, !dbg !1590
 
-; <label>:13                                      ; preds = %11
-  %14 = fcmp ugt double %.0.lcssa, 8.437500e-01, !dbg !2802
-  br i1 %14, label %15, label %19, !dbg !2804
+if.else12:                                        ; preds = %if.else9
+  %cmp13 = fcmp ugt double %Qstep.addr.0.lcssa, 8.437500e-01, !dbg !1591
+  br i1 %cmp13, label %if.else15, label %if.end26, !dbg !1591
 
-; <label>:15                                      ; preds = %13
-  %16 = fcmp ugt double %.0.lcssa, 9.375000e-01, !dbg !2805
-  br i1 %16, label %17, label %19, !dbg !2807
+if.else15:                                        ; preds = %if.else12
+  %cmp16 = fcmp ugt double %Qstep.addr.0.lcssa, 9.375000e-01, !dbg !1592
+  br i1 %cmp16, label %if.else18, label %if.end26, !dbg !1592
 
-; <label>:17                                      ; preds = %15
-  %18 = fcmp ugt double %.0.lcssa, 1.062500e+00, !dbg !2808
-  %. = select i1 %18, i32 5, i32 4
-  br label %19
+if.else18:                                        ; preds = %if.else15
+  %cmp19 = fcmp ugt double %Qstep.addr.0.lcssa, 1.062500e+00, !dbg !1593
+  %. = select i1 %cmp19, i32 5, i32 4
+  br label %if.end26
 
-; <label>:19                                      ; preds = %17, %15, %13, %11, %9
-  %q_rem.0 = phi i32 [ 0, %9 ], [ 1, %11 ], [ 2, %13 ], [ 3, %15 ], [ %., %17 ]
-  %20 = add nsw i32 %q_rem.0, %q_per.0.lcssa, !dbg !2810
-  br label %21, !dbg !2811
+if.end26:                                         ; preds = %if.else18, %if.else15, %if.else12, %if.else9, %while.end
+  %q_rem.0 = phi i32 [ 0, %while.end ], [ 1, %if.else9 ], [ 2, %if.else12 ], [ 3, %if.else15 ], [ %., %if.else18 ]
+  %add27 = add nsw i32 %q_rem.0, %q_per.0.lcssa, !dbg !1594
+  br label %return, !dbg !1594
 
-; <label>:21                                      ; preds = %QP2Qstep.exit, %0, %19
-  %.01 = phi i32 [ %20, %19 ], [ 0, %0 ], [ 51, %QP2Qstep.exit ]
-  ret i32 %.01, !dbg !2812
+return:                                           ; preds = %QP2Qstep.exit, %entry, %if.end26
+  %retval.0 = phi i32 [ %add27, %if.end26 ], [ 0, %entry ], [ 51, %QP2Qstep.exit ]
+  ret i32 %retval.0, !dbg !1595
 }

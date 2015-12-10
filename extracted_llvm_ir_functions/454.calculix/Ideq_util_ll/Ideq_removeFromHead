@@ -1,54 +1,55 @@
 define i32 @Ideq_removeFromHead(%struct._Ideq* %deq) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Ideq* %deq, i64 0, metadata !38, metadata !68), !dbg !110
-  %1 = icmp eq %struct._Ideq* %deq, null, !dbg !111
-  br i1 %1, label %2, label %5, !dbg !113
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Ideq* %deq}, i64 0, metadata !37), !dbg !83
+  %cmp = icmp eq %struct._Ideq* %deq, null, !dbg !84
+  br i1 %cmp, label %if.then, label %if.end, !dbg !84
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !114, !tbaa !75
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), %struct._Ideq* null) #4, !dbg !116
-  tail call void @exit(i32 -1) #5, !dbg !117
-  unreachable, !dbg !117
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !85, !tbaa !67
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), %struct._Ideq* null) #4, !dbg !85
+  tail call void @exit(i32 -1) #5, !dbg !87
+  unreachable, !dbg !87
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 1, !dbg !118
-  %7 = load i32* %6, align 4, !dbg !118, !tbaa !89
-  %8 = icmp eq i32 %7, -1, !dbg !120
-  br i1 %8, label %27, label %9, !dbg !121
+if.end:                                           ; preds = %entry
+  %head = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 1, !dbg !88
+  %1 = load i32* %head, align 4, !dbg !88, !tbaa !72
+  %cmp1 = icmp eq i32 %1, -1, !dbg !88
+  br i1 %cmp1, label %if.end19, label %if.else, !dbg !88
 
-; <label>:9                                       ; preds = %5
-  %10 = sext i32 %7 to i64, !dbg !122
-  %11 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, i32 3, !dbg !124
-  %12 = load i32** %11, align 8, !dbg !124, !tbaa !106
-  %13 = getelementptr inbounds i32* %12, i64 %10, !dbg !122
-  %14 = load i32* %13, align 4, !dbg !122, !tbaa !107
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !39, metadata !68), !dbg !125
-  %15 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 2, !dbg !126
-  %16 = load i32* %15, align 4, !dbg !126, !tbaa !83
-  %17 = icmp eq i32 %7, %16, !dbg !128
-  br i1 %17, label %18, label %19, !dbg !129
+if.else:                                          ; preds = %if.end
+  %idxprom = sext i32 %1 to i64, !dbg !89
+  %vec = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, i32 3, !dbg !89
+  %2 = load i32** %vec, align 8, !dbg !89, !tbaa !67
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !89
+  %3 = load i32* %arrayidx, align 4, !dbg !89, !tbaa !72
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !38), !dbg !89
+  %tail = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 2, !dbg !91
+  %4 = load i32* %tail, align 4, !dbg !91, !tbaa !72
+  %cmp5 = icmp eq i32 %1, %4, !dbg !91
+  br i1 %cmp5, label %if.then6, label %if.else9, !dbg !91
 
-; <label>:18                                      ; preds = %9
-  store i32 -1, i32* %15, align 4, !dbg !130, !tbaa !83
-  store i32 -1, i32* %6, align 4, !dbg !132, !tbaa !89
-  br label %27, !dbg !133
+if.then6:                                         ; preds = %if.else
+  store i32 -1, i32* %tail, align 4, !dbg !92, !tbaa !72
+  store i32 -1, i32* %head, align 4, !dbg !92, !tbaa !72
+  br label %if.end19, !dbg !94
 
-; <label>:19                                      ; preds = %9
-  %20 = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, i32 0, !dbg !134
-  %21 = load i32* %20, align 4, !dbg !134, !tbaa !136
-  %22 = add nsw i32 %21, -1, !dbg !137
-  %23 = icmp eq i32 %7, %22, !dbg !138
-  br i1 %23, label %24, label %25, !dbg !139
+if.else9:                                         ; preds = %if.else
+  %size = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, i32 0, !dbg !95
+  %5 = load i32* %size, align 4, !dbg !95, !tbaa !72
+  %sub = add nsw i32 %5, -1, !dbg !95
+  %cmp12 = icmp eq i32 %1, %sub, !dbg !95
+  br i1 %cmp12, label %if.then13, label %if.else15, !dbg !95
 
-; <label>:24                                      ; preds = %19
-  store i32 0, i32* %6, align 4, !dbg !140, !tbaa !89
-  br label %27, !dbg !142
+if.then13:                                        ; preds = %if.else9
+  store i32 0, i32* %head, align 4, !dbg !96, !tbaa !72
+  br label %if.end19, !dbg !98
 
-; <label>:25                                      ; preds = %19
-  %26 = add nsw i32 %7, 1, !dbg !143
-  store i32 %26, i32* %6, align 4, !dbg !143, !tbaa !89
-  br label %27
+if.else15:                                        ; preds = %if.else9
+  %inc = add nsw i32 %1, 1, !dbg !99
+  store i32 %inc, i32* %head, align 4, !dbg !99, !tbaa !72
+  br label %if.end19
 
-; <label>:27                                      ; preds = %5, %18, %25, %24
-  %val.0 = phi i32 [ %14, %18 ], [ %14, %24 ], [ %14, %25 ], [ -1, %5 ]
-  ret i32 %val.0, !dbg !145
+if.end19:                                         ; preds = %if.end, %if.then6, %if.else15, %if.then13
+  %val.0 = phi i32 [ %3, %if.then6 ], [ %3, %if.then13 ], [ %3, %if.else15 ], [ -1, %if.end ]
+  ret i32 %val.0, !dbg !101
 }

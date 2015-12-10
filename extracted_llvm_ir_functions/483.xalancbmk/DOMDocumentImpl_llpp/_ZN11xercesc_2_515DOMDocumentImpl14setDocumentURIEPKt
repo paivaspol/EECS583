@@ -1,0 +1,41 @@
+define void @_ZN11xercesc_2_515DOMDocumentImpl14setDocumentURIEPKt(%"class.xercesc_2_5::DOMDocumentImpl"* nocapture %this, i16* %documentURI) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMDocumentImpl"* %this}, i64 0, metadata !6257), !dbg !10142
+  tail call void @llvm.dbg.value(metadata !{i16* %documentURI}, i64 0, metadata !6258), !dbg !10142
+  %tobool = icmp eq i16* %documentURI, null, !dbg !10143
+  br i1 %tobool, label %if.else, label %land.lhs.true, !dbg !10143
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load i16* %documentURI, align 2, !dbg !10143, !tbaa !9273
+  %tobool2 = icmp eq i16 %0, 0, !dbg !10143
+  br i1 %tobool2, label %if.else, label %while.cond.i, !dbg !10143
+
+while.cond.i:                                     ; preds = %land.lhs.true, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %documentURI, %land.lhs.true ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !10144
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !10146, !tbaa !9273
+  %tobool.i = icmp eq i16 %1, 0, !dbg !10146
+  br i1 %tobool.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !10146
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !10147
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %documentURI to i64, !dbg !10147
+  %sub.ptr.sub.i = sub i64 18, %sub.ptr.rhs.cast.i, !dbg !10147
+  %sub.ptr.div7.i9 = add i64 %sub.ptr.sub.i, %sub.ptr.lhs.cast.i, !dbg !10145
+  %mul = and i64 %sub.ptr.div7.i9, 8589934590, !dbg !10145
+  %call3 = tail call i8* @_ZN11xercesc_2_515DOMDocumentImpl8allocateEm(%"class.xercesc_2_5::DOMDocumentImpl"* %this, i64 %mul) #10, !dbg !10145
+  %2 = bitcast i8* %call3 to i16*, !dbg !10145
+  tail call void @llvm.dbg.value(metadata !{i16* %2}, i64 0, metadata !6259), !dbg !10145
+  tail call void @_ZN11xercesc_2_59XMLString6fixURIEPKtPt(i16* %documentURI, i16* %2) #10, !dbg !10148
+  %fDocumentURI = getelementptr inbounds %"class.xercesc_2_5::DOMDocumentImpl"* %this, i64 0, i32 8, !dbg !10149
+  store i16* %2, i16** %fDocumentURI, align 8, !dbg !10149, !tbaa !9057
+  br label %if.end, !dbg !10150
+
+if.else:                                          ; preds = %land.lhs.true, %entry
+  %fDocumentURI4 = getelementptr inbounds %"class.xercesc_2_5::DOMDocumentImpl"* %this, i64 0, i32 8, !dbg !10151
+  store i16* null, i16** %fDocumentURI4, align 8, !dbg !10151, !tbaa !9057
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  ret void, !dbg !10152
+}

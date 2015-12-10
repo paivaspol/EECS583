@@ -1,32 +1,38 @@
 define internal fastcc i32 @reload_cse_simplify_set(%struct.rtx_def* %set, %struct.rtx_def* %insn) #0 {
 entry:
-  %fld = getelementptr inbounds %struct.rtx_def* %set, i64 0, i32 1
-  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %call = tail call i32 @true_regnum(%struct.rtx_def* %0) #7
-  %cmp = icmp slt i32 %call, 0
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %set}, i64 0, metadata !2170), !dbg !5943
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !2171), !dbg !5944
+  tail call void @llvm.dbg.value(metadata !1063, i64 0, metadata !2172), !dbg !5945
+  %fld = getelementptr inbounds %struct.rtx_def* %set, i64 0, i32 1, !dbg !5946
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**, !dbg !5946
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !5946, !tbaa !3248
+  %call = tail call i32 @true_regnum(%struct.rtx_def* %0) #8, !dbg !5946
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !2173), !dbg !5946
+  %cmp = icmp slt i32 %call, 0, !dbg !5947
+  br i1 %cmp, label %return, label %if.end, !dbg !5947
 
 if.end:                                           ; preds = %entry
-  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %set, i64 0, i32 1, i64 1
-  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx3, align 8, !tbaa !3
-  %call4 = tail call i32 @side_effects_p(%struct.rtx_def* %1) #7
-  %tobool = icmp eq i32 %call4, 0
-  br i1 %tobool, label %lor.lhs.false, label %return
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %set, i64 0, i32 1, i64 1, !dbg !5948
+  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**, !dbg !5948
+  %1 = load %struct.rtx_def** %rtx3, align 8, !dbg !5948, !tbaa !3248
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !2174), !dbg !5948
+  %call4 = tail call i32 @side_effects_p(%struct.rtx_def* %1) #8, !dbg !5949
+  %tobool = icmp eq i32 %call4, 0, !dbg !5949
+  br i1 %tobool, label %lor.lhs.false, label %return, !dbg !5949
 
 lor.lhs.false:                                    ; preds = %if.end
-  %call5 = tail call i32 @true_regnum(%struct.rtx_def* %1) #7
-  %cmp6 = icmp sgt i32 %call5, -1
-  br i1 %cmp6, label %return, label %if.end8
+  %call5 = tail call i32 @true_regnum(%struct.rtx_def* %1) #8, !dbg !5949
+  %cmp6 = icmp sgt i32 %call5, -1, !dbg !5949
+  br i1 %cmp6, label %return, label %if.end8, !dbg !5949
 
 if.end8:                                          ; preds = %lor.lhs.false
-  %idxprom = sext i32 %call to i64
-  %arrayidx9 = getelementptr inbounds [53 x i32]* @regclass_map, i64 0, i64 %idxprom
-  %2 = load i32* %arrayidx9, align 4, !tbaa !7
-  %3 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load = load i32* %3, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  %idxprom = sext i32 %call to i64, !dbg !5950
+  %arrayidx9 = getelementptr inbounds [53 x i32]* @regclass_map, i64 0, i64 %idxprom, !dbg !5950
+  %2 = load i32* %arrayidx9, align 4, !dbg !5950, !tbaa !3440
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !2175), !dbg !5950
+  %3 = bitcast %struct.rtx_def* %1 to i32*, !dbg !5951
+  %bf.load = load i32* %3, align 8, !dbg !5951
+  %bf.clear = and i32 %bf.load, 65535, !dbg !5951
   switch i32 %bf.clear, label %if.else61 [
     i32 66, label %if.then11
     i32 67, label %if.then46
@@ -38,60 +44,66 @@ if.end8:                                          ; preds = %lor.lhs.false
     i32 56, label %if.then46
     i32 140, label %if.then46
     i32 61, label %if.then52
-  ]
+  ], !dbg !5951
 
 if.then11:                                        ; preds = %if.end8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear13 = and i32 %bf.lshr, 255
-  %call14 = tail call i32 @ix86_memory_move_cost(i32 %bf.clear13, i32 %2, i32 1) #7
-  br label %if.end65
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !5952
+  %bf.clear13 = and i32 %bf.lshr, 255, !dbg !5952
+  %call14 = tail call i32 @ix86_memory_move_cost(i32 %bf.clear13, i32 %2, i32 1) #8, !dbg !5952
+  tail call void @llvm.dbg.value(metadata !{i32 %call14}, i64 0, metadata !2176), !dbg !5952
+  br label %if.end65, !dbg !5952
 
 if.then46:                                        ; preds = %if.end8, %if.end8, %if.end8, %if.end8, %if.end8, %if.end8, %if.end8, %if.end8
-  %call47 = tail call i32 @rtx_cost(%struct.rtx_def* %1, i32 47) #7
-  br label %if.end65
+  %call47 = tail call i32 @rtx_cost(%struct.rtx_def* %1, i32 47) #8, !dbg !5953
+  tail call void @llvm.dbg.value(metadata !{i32 %call47}, i64 0, metadata !2176), !dbg !5953
+  br label %if.end65, !dbg !5953
 
 if.then52:                                        ; preds = %if.end8
-  %bf.lshr54 = lshr i32 %bf.load, 16
-  %bf.clear55 = and i32 %bf.lshr54, 255
-  %arrayidx57 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx57 to i32*
-  %4 = load i32* %rtuint, align 4, !tbaa !0
-  %idxprom58 = zext i32 %4 to i64
-  %arrayidx59 = getelementptr inbounds [53 x i32]* @regclass_map, i64 0, i64 %idxprom58
-  %5 = load i32* %arrayidx59, align 4, !tbaa !7
-  %call60 = tail call i32 @ix86_register_move_cost(i32 %bf.clear55, i32 %5, i32 %2) #7
-  br label %if.end65
+  %bf.lshr54 = lshr i32 %bf.load, 16, !dbg !5954
+  %bf.clear55 = and i32 %bf.lshr54, 255, !dbg !5954
+  %arrayidx57 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0, !dbg !5954
+  %rtuint = bitcast %union.rtunion_def* %arrayidx57 to i32*, !dbg !5954
+  %4 = load i32* %rtuint, align 4, !dbg !5954, !tbaa !3224
+  %idxprom58 = zext i32 %4 to i64, !dbg !5954
+  %arrayidx59 = getelementptr inbounds [53 x i32]* @regclass_map, i64 0, i64 %idxprom58, !dbg !5954
+  %5 = load i32* %arrayidx59, align 4, !dbg !5954, !tbaa !3440
+  %call60 = tail call i32 @ix86_register_move_cost(i32 %bf.clear55, i32 %5, i32 %2) #8, !dbg !5954
+  tail call void @llvm.dbg.value(metadata !{i32 %call60}, i64 0, metadata !2176), !dbg !5954
+  br label %if.end65, !dbg !5954
 
 if.else61:                                        ; preds = %if.end8
-  %call62 = tail call i32 @rtx_cost(%struct.rtx_def* %1, i32 47) #7
+  %call62 = tail call i32 @rtx_cost(%struct.rtx_def* %1, i32 47) #8, !dbg !5955
+  tail call void @llvm.dbg.value(metadata !{i32 %call62}, i64 0, metadata !2176), !dbg !5955
   br label %if.end65
 
 if.end65:                                         ; preds = %if.then46, %if.else61, %if.then52, %if.then11
   %old_cost.0 = phi i32 [ %call14, %if.then11 ], [ %call47, %if.then46 ], [ %call60, %if.then52 ], [ %call62, %if.else61 ]
-  %6 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %7 = bitcast %struct.rtx_def* %6 to i32*
-  %bf.load69 = load i32* %7, align 8
-  %bf.lshr70 = lshr i32 %bf.load69, 16
-  %bf.clear71 = and i32 %bf.lshr70, 255
-  %call72 = tail call %struct.cselib_val_struct* @cselib_lookup(%struct.rtx_def* %1, i32 %bf.clear71, i32 0) #7
-  %tobool73 = icmp eq %struct.cselib_val_struct* %call72, null
-  br i1 %tobool73, label %return, label %if.end75
+  %6 = load %struct.rtx_def** %rtx, align 8, !dbg !5956, !tbaa !3248
+  %7 = bitcast %struct.rtx_def* %6 to i32*, !dbg !5956
+  %bf.load69 = load i32* %7, align 8, !dbg !5956
+  %bf.lshr70 = lshr i32 %bf.load69, 16, !dbg !5956
+  %bf.clear71 = and i32 %bf.lshr70, 255, !dbg !5956
+  %call72 = tail call %struct.cselib_val_struct* @cselib_lookup(%struct.rtx_def* %1, i32 %bf.clear71, i32 0) #8, !dbg !5956
+  tail call void @llvm.dbg.value(metadata !{%struct.cselib_val_struct* %call72}, i64 0, metadata !2177), !dbg !5956
+  %tobool73 = icmp eq %struct.cselib_val_struct* %call72, null, !dbg !5957
+  br i1 %tobool73, label %return, label %if.end75, !dbg !5957
 
 if.end75:                                         ; preds = %if.end65
-  %locs = getelementptr inbounds %struct.cselib_val_struct* %call72, i64 0, i32 2
-  %l.0192 = load %struct.elt_loc_list** %locs, align 8
-  %tobool76193 = icmp eq %struct.elt_loc_list* %l.0192, null
-  br i1 %tobool76193, label %return, label %for.body
+  %locs = getelementptr inbounds %struct.cselib_val_struct* %call72, i64 0, i32 2, !dbg !5958
+  %l.0192 = load %struct.elt_loc_list** %locs, align 8, !dbg !5958
+  %tobool76193 = icmp eq %struct.elt_loc_list* %l.0192, null, !dbg !5958
+  br i1 %tobool76193, label %return, label %for.body, !dbg !5958
 
 for.body:                                         ; preds = %if.end75, %for.inc
   %l.0198 = phi %struct.elt_loc_list* [ %l.0, %for.inc ], [ %l.0192, %if.end75 ]
   %did_change.0196 = phi i32 [ %did_change.1, %for.inc ], [ 0, %if.end75 ]
   %old_cost.1194 = phi i32 [ %old_cost.2, %for.inc ], [ %old_cost.0, %if.end75 ]
-  %loc = getelementptr inbounds %struct.elt_loc_list* %l.0198, i64 0, i32 1
-  %8 = load %struct.rtx_def** %loc, align 8, !tbaa !3
-  %9 = bitcast %struct.rtx_def* %8 to i32*
-  %bf.load77 = load i32* %9, align 8
-  %bf.clear78 = and i32 %bf.load77, 65535
+  %loc = getelementptr inbounds %struct.elt_loc_list* %l.0198, i64 0, i32 1, !dbg !5959
+  %8 = load %struct.rtx_def** %loc, align 8, !dbg !5959, !tbaa !3248
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %8}, i64 0, metadata !2179), !dbg !5959
+  %9 = bitcast %struct.rtx_def* %8 to i32*, !dbg !5960
+  %bf.load77 = load i32* %9, align 8, !dbg !5960
+  %bf.clear78 = and i32 %bf.load77, 65535, !dbg !5960
   switch i32 %bf.clear78, label %if.else112 [
     i32 67, label %land.lhs.true
     i32 68, label %land.lhs.true
@@ -101,76 +113,80 @@ for.body:                                         ; preds = %if.end75, %for.inc
     i32 134, label %land.lhs.true
     i32 56, label %land.lhs.true
     i32 140, label %land.lhs.true
-  ]
+  ], !dbg !5960
 
 land.lhs.true:                                    ; preds = %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body
-  %call108 = tail call i32 @references_value_p(%struct.rtx_def* %8, i32 0) #7
-  %tobool109 = icmp eq i32 %call108, 0
-  br i1 %tobool109, label %if.then110, label %land.lhs.true.if.else112_crit_edge
+  %call108 = tail call i32 @references_value_p(%struct.rtx_def* %8, i32 0) #8, !dbg !5960
+  %tobool109 = icmp eq i32 %call108, 0, !dbg !5960
+  br i1 %tobool109, label %if.then110, label %land.lhs.true.if.else112_crit_edge, !dbg !5960
 
 land.lhs.true.if.else112_crit_edge:               ; preds = %land.lhs.true
-  %bf.load113.pre = load i32* %9, align 8
-  br label %if.else112
+  %bf.load113.pre = load i32* %9, align 8, !dbg !5961
+  br label %if.else112, !dbg !5960
 
 if.then110:                                       ; preds = %land.lhs.true
-  %call111 = tail call i32 @rtx_cost(%struct.rtx_def* %8, i32 47) #7
-  br label %if.end128
+  %call111 = tail call i32 @rtx_cost(%struct.rtx_def* %8, i32 47) #8, !dbg !5962
+  tail call void @llvm.dbg.value(metadata !{i32 %call111}, i64 0, metadata !2182), !dbg !5962
+  br label %if.end128, !dbg !5964
 
 if.else112:                                       ; preds = %land.lhs.true.if.else112_crit_edge, %for.body
   %bf.load113 = phi i32 [ %bf.load113.pre, %land.lhs.true.if.else112_crit_edge ], [ %bf.load77, %for.body ]
-  %bf.clear114 = and i32 %bf.load113, 65535
-  %cmp115 = icmp eq i32 %bf.clear114, 61
-  br i1 %cmp115, label %if.then116, label %for.inc
+  %bf.clear114 = and i32 %bf.load113, 65535, !dbg !5961
+  %cmp115 = icmp eq i32 %bf.clear114, 61, !dbg !5961
+  br i1 %cmp115, label %if.then116, label %for.inc, !dbg !5961
 
 if.then116:                                       ; preds = %if.else112
-  %bf.lshr118 = lshr i32 %bf.load113, 16
-  %bf.clear119 = and i32 %bf.lshr118, 255
-  %arrayidx121 = getelementptr inbounds %struct.rtx_def* %8, i64 0, i32 1, i64 0
-  %rtuint122 = bitcast %union.rtunion_def* %arrayidx121 to i32*
-  %10 = load i32* %rtuint122, align 4, !tbaa !0
-  %idxprom123 = zext i32 %10 to i64
-  %arrayidx124 = getelementptr inbounds [53 x i32]* @regclass_map, i64 0, i64 %idxprom123
-  %11 = load i32* %arrayidx124, align 4, !tbaa !7
-  %call125 = tail call i32 @ix86_register_move_cost(i32 %bf.clear119, i32 %11, i32 %2) #7
+  %bf.lshr118 = lshr i32 %bf.load113, 16, !dbg !5965
+  %bf.clear119 = and i32 %bf.lshr118, 255, !dbg !5965
+  %arrayidx121 = getelementptr inbounds %struct.rtx_def* %8, i64 0, i32 1, i64 0, !dbg !5965
+  %rtuint122 = bitcast %union.rtunion_def* %arrayidx121 to i32*, !dbg !5965
+  %10 = load i32* %rtuint122, align 4, !dbg !5965, !tbaa !3224
+  %idxprom123 = zext i32 %10 to i64, !dbg !5965
+  %arrayidx124 = getelementptr inbounds [53 x i32]* @regclass_map, i64 0, i64 %idxprom123, !dbg !5965
+  %11 = load i32* %arrayidx124, align 4, !dbg !5965, !tbaa !3440
+  %call125 = tail call i32 @ix86_register_move_cost(i32 %bf.clear119, i32 %11, i32 %2) #8, !dbg !5965
+  tail call void @llvm.dbg.value(metadata !{i32 %call125}, i64 0, metadata !2182), !dbg !5965
   br label %if.end128
 
 if.end128:                                        ; preds = %if.then116, %if.then110
   %this_cost.0 = phi i32 [ %call125, %if.then116 ], [ %call111, %if.then110 ]
-  %cmp129 = icmp slt i32 %this_cost.0, %old_cost.1194
-  br i1 %cmp129, label %if.then143, label %lor.lhs.false130
+  %cmp129 = icmp slt i32 %this_cost.0, %old_cost.1194, !dbg !5967
+  br i1 %cmp129, label %if.then143, label %lor.lhs.false130, !dbg !5967
 
 lor.lhs.false130:                                 ; preds = %if.end128
-  %cmp131 = icmp eq i32 %this_cost.0, %old_cost.1194
-  br i1 %cmp131, label %land.lhs.true132, label %for.inc
+  %cmp131 = icmp eq i32 %this_cost.0, %old_cost.1194, !dbg !5967
+  br i1 %cmp131, label %land.lhs.true132, label %for.inc, !dbg !5967
 
 land.lhs.true132:                                 ; preds = %lor.lhs.false130
-  %bf.load133 = load i32* %9, align 8
-  %bf.clear134 = and i32 %bf.load133, 65535
-  %cmp135 = icmp eq i32 %bf.clear134, 61
-  br i1 %cmp135, label %land.lhs.true136, label %for.inc
+  %bf.load133 = load i32* %9, align 8, !dbg !5967
+  %bf.clear134 = and i32 %bf.load133, 65535, !dbg !5967
+  %cmp135 = icmp eq i32 %bf.clear134, 61, !dbg !5967
+  br i1 %cmp135, label %land.lhs.true136, label %for.inc, !dbg !5967
 
 land.lhs.true136:                                 ; preds = %land.lhs.true132
-  %12 = load %struct.rtx_def** %rtx3, align 8, !tbaa !3
-  %13 = bitcast %struct.rtx_def* %12 to i32*
-  %bf.load140 = load i32* %13, align 8
-  %bf.clear141 = and i32 %bf.load140, 65535
-  %cmp142 = icmp eq i32 %bf.clear141, 61
-  br i1 %cmp142, label %for.inc, label %if.then143
+  %12 = load %struct.rtx_def** %rtx3, align 8, !dbg !5967, !tbaa !3248
+  %13 = bitcast %struct.rtx_def* %12 to i32*, !dbg !5967
+  %bf.load140 = load i32* %13, align 8, !dbg !5967
+  %bf.clear141 = and i32 %bf.load140, 65535, !dbg !5967
+  %cmp142 = icmp eq i32 %bf.clear141, 61, !dbg !5967
+  br i1 %cmp142, label %for.inc, label %if.then143, !dbg !5967
 
 if.then143:                                       ; preds = %land.lhs.true136, %if.end128
-  %call147 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %8) #7
-  %call148 = tail call i32 @validate_change(%struct.rtx_def* %insn, %struct.rtx_def** %rtx3, %struct.rtx_def* %call147, i32 1) #7
-  br label %for.inc
+  %call147 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %8) #8, !dbg !5968
+  %call148 = tail call i32 @validate_change(%struct.rtx_def* %insn, %struct.rtx_def** %rtx3, %struct.rtx_def* %call147, i32 1) #8, !dbg !5968
+  tail call void @llvm.dbg.value(metadata !{i32 %this_cost.0}, i64 0, metadata !2176), !dbg !5970
+  tail call void @llvm.dbg.value(metadata !3603, i64 0, metadata !2172), !dbg !5970
+  br label %for.inc, !dbg !5971
 
 for.inc:                                          ; preds = %land.lhs.true136, %lor.lhs.false130, %land.lhs.true132, %if.then143, %if.else112
   %old_cost.2 = phi i32 [ %this_cost.0, %if.then143 ], [ %old_cost.1194, %land.lhs.true136 ], [ %old_cost.1194, %land.lhs.true132 ], [ %old_cost.1194, %lor.lhs.false130 ], [ %old_cost.1194, %if.else112 ]
   %did_change.1 = phi i32 [ 1, %if.then143 ], [ %did_change.0196, %land.lhs.true136 ], [ %did_change.0196, %land.lhs.true132 ], [ %did_change.0196, %lor.lhs.false130 ], [ %did_change.0196, %if.else112 ]
-  %next = getelementptr inbounds %struct.elt_loc_list* %l.0198, i64 0, i32 0
-  %l.0 = load %struct.elt_loc_list** %next, align 8
-  %tobool76 = icmp eq %struct.elt_loc_list* %l.0, null
-  br i1 %tobool76, label %return, label %for.body
+  %next = getelementptr inbounds %struct.elt_loc_list* %l.0198, i64 0, i32 0, !dbg !5958
+  %l.0 = load %struct.elt_loc_list** %next, align 8, !dbg !5958
+  %tobool76 = icmp eq %struct.elt_loc_list* %l.0, null, !dbg !5958
+  br i1 %tobool76, label %return, label %for.body, !dbg !5958
 
 return:                                           ; preds = %if.end75, %for.inc, %if.end65, %lor.lhs.false, %if.end, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ 0, %if.end ], [ 0, %lor.lhs.false ], [ 0, %if.end65 ], [ 0, %if.end75 ], [ %did_change.1, %for.inc ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !5972
 }

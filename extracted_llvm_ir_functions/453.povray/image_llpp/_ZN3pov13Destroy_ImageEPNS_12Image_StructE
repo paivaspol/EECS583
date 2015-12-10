@@ -1,289 +1,250 @@
 define void @_ZN3pov13Destroy_ImageEPNS_12Image_StructE(%"struct.pov::Image_Struct"* %Image) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Image_Struct"* %Image, i64 0, metadata !877, metadata !1399), !dbg !2718
-  %1 = icmp eq %"struct.pov::Image_Struct"* %Image, null, !dbg !2719
-  br i1 %1, label %140, label %2, !dbg !2721
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Image_Struct"* %Image}, i64 0, metadata !874), !dbg !1958
+  %cmp = icmp eq %"struct.pov::Image_Struct"* %Image, null, !dbg !1959
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !1959
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 0, !dbg !2722
-  %4 = load i32* %3, align 4, !dbg !2723, !tbaa !2680
-  %5 = add nsw i32 %4, -1, !dbg !2723
-  store i32 %5, i32* %3, align 4, !dbg !2723, !tbaa !2680
-  %6 = icmp sgt i32 %4, 1, !dbg !2724
-  br i1 %6, label %140, label %7, !dbg !2725
+lor.lhs.false:                                    ; preds = %entry
+  %References = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 0, !dbg !1959
+  %0 = load i32* %References, align 4, !dbg !1959, !tbaa !1223
+  %dec = add nsw i32 %0, -1, !dbg !1959
+  store i32 %dec, i32* %References, align 4, !dbg !1959, !tbaa !1223
+  %cmp1 = icmp sgt i32 %dec, 0, !dbg !1959
+  br i1 %cmp1, label %return, label %if.end, !dbg !1959
 
-; <label>:7                                       ; preds = %2
-  %8 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 16, !dbg !2726
-  %9 = load %"struct.pov::Image_Colour_Struct"** %8, align 8, !dbg !2726, !tbaa !2087
-  %10 = icmp eq %"struct.pov::Image_Colour_Struct"* %9, null, !dbg !2728
-  br i1 %10, label %33, label %11, !dbg !2729
+if.end:                                           ; preds = %lor.lhs.false
+  %Colour_Map = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 16, !dbg !1960
+  %1 = load %"struct.pov::Image_Colour_Struct"** %Colour_Map, align 8, !dbg !1960, !tbaa !1218
+  %cmp2 = icmp eq %"struct.pov::Image_Colour_Struct"* %1, null, !dbg !1960
+  br i1 %cmp2, label %if.else, label %if.then3, !dbg !1960
 
-; <label>:11                                      ; preds = %7
-  %12 = bitcast %"struct.pov::Image_Colour_Struct"* %9 to i8*, !dbg !2730
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %12, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1635) #7, !dbg !2730
-  store %"struct.pov::Image_Colour_Struct"* null, %"struct.pov::Image_Colour_Struct"** %8, align 8, !dbg !2733, !tbaa !2087
-  %13 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, !dbg !2734
-  %14 = bitcast %union.anon.2* %13 to i8***, !dbg !2736
-  %15 = load i8*** %14, align 8, !dbg !2736, !tbaa !1436
-  %16 = icmp eq i8** %15, null, !dbg !2737
-  br i1 %16, label %138, label %.preheader3, !dbg !2738
+if.then3:                                         ; preds = %if.end
+  %2 = bitcast %"struct.pov::Image_Colour_Struct"* %1 to i8*, !dbg !1961
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %2, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1635) #8, !dbg !1961
+  store %"struct.pov::Image_Colour_Struct"* null, %"struct.pov::Image_Colour_Struct"** %Colour_Map, align 8, !dbg !1964, !tbaa !1218
+  %data = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, !dbg !1965
+  %map_lines = bitcast %union.anon.2* %data to i8***, !dbg !1965
+  %3 = load i8*** %map_lines, align 8, !dbg !1965, !tbaa !1218
+  %cmp7 = icmp eq i8** %3, null, !dbg !1965
+  br i1 %cmp7, label %if.end184, label %for.cond.preheader, !dbg !1965
 
-.preheader3:                                      ; preds = %11
-  %17 = bitcast i8** %15 to i8*
-  %18 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !2739
-  %19 = load i32* %18, align 4, !dbg !2739, !tbaa !1686
-  %20 = icmp sgt i32 %19, 0, !dbg !2743
-  br i1 %20, label %.lr.ph12.preheader, label %.preheader3._crit_edge, !dbg !2744
+for.cond.preheader:                               ; preds = %if.then3
+  %iheight = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !1966
+  %4 = load i32* %iheight, align 4, !dbg !1966, !tbaa !1223
+  %cmp9267 = icmp sgt i32 %4, 0, !dbg !1966
+  br i1 %cmp9267, label %for.body, label %for.end, !dbg !1966
 
-.lr.ph12.preheader:                               ; preds = %.preheader3
-  %21 = load i8** %15, align 8, !dbg !2745, !tbaa !1436
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %21, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1643) #7, !dbg !2745
-  %22 = load i8*** %14, align 8, !dbg !2745, !tbaa !1436
-  store i8* null, i8** %22, align 8, !dbg !2745, !tbaa !1436
-  %23 = load i32* %18, align 4, !dbg !2739, !tbaa !1686
-  %24 = icmp sgt i32 %23, 1, !dbg !2743
-  br i1 %24, label %._crit_edge20, label %._crit_edge13, !dbg !2744
+for.body:                                         ; preds = %for.body, %for.cond.preheader
+  %5 = phi i8** [ %3, %for.cond.preheader ], [ %.pre281, %for.body ]
+  %indvars.iv273 = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next274, %for.body ]
+  %arrayidx = getelementptr inbounds i8** %5, i64 %indvars.iv273, !dbg !1969
+  %6 = load i8** %arrayidx, align 8, !dbg !1969, !tbaa !1218
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %6, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1643) #8, !dbg !1969
+  %7 = load i8*** %map_lines, align 8, !dbg !1969, !tbaa !1218
+  %arrayidx15 = getelementptr inbounds i8** %7, i64 %indvars.iv273, !dbg !1969
+  store i8* null, i8** %arrayidx15, align 8, !dbg !1969, !tbaa !1218
+  %indvars.iv.next274 = add i64 %indvars.iv273, 1, !dbg !1966
+  %8 = load i32* %iheight, align 4, !dbg !1966, !tbaa !1223
+  %9 = trunc i64 %indvars.iv.next274 to i32, !dbg !1966
+  %cmp9 = icmp slt i32 %9, %8, !dbg !1966
+  %.pre281 = load i8*** %map_lines, align 8, !dbg !1969, !tbaa !1218
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !1966
 
-._crit_edge20:                                    ; preds = %.lr.ph12.preheader, %._crit_edge20
-  %indvars.iv.next1942 = phi i64 [ %indvars.iv.next19, %._crit_edge20 ], [ 1, %.lr.ph12.preheader ]
-  %.pre = load i8*** %14, align 8, !dbg !2745, !tbaa !1436
-  %25 = getelementptr inbounds i8** %.pre, i64 %indvars.iv.next1942, !dbg !2745
-  %26 = load i8** %25, align 8, !dbg !2745, !tbaa !1436
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %26, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1643) #7, !dbg !2745
-  %27 = load i8*** %14, align 8, !dbg !2745, !tbaa !1436
-  %28 = getelementptr inbounds i8** %27, i64 %indvars.iv.next1942, !dbg !2745
-  store i8* null, i8** %28, align 8, !dbg !2745, !tbaa !1436
-  %indvars.iv.next19 = add nuw nsw i64 %indvars.iv.next1942, 1, !dbg !2744
-  %29 = load i32* %18, align 4, !dbg !2739, !tbaa !1686
-  %30 = sext i32 %29 to i64, !dbg !2743
-  %31 = icmp slt i64 %indvars.iv.next19, %30, !dbg !2743
-  br i1 %31, label %._crit_edge20, label %._crit_edge13, !dbg !2744
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %10 = phi i8** [ %3, %for.cond.preheader ], [ %.pre281, %for.body ]
+  %11 = bitcast i8** %10 to i8*, !dbg !1972
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %11, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1646) #8, !dbg !1972
+  %12 = getelementptr inbounds %union.anon.2* %data, i64 0, i32 0, !dbg !1974
+  store %"struct.pov::Image8_Line_Struct"* null, %"struct.pov::Image8_Line_Struct"** %12, align 8, !dbg !1974, !tbaa !1218
+  br label %if.end184, !dbg !1975
 
-._crit_edge13:                                    ; preds = %._crit_edge20, %.lr.ph12.preheader
-  %.phi.trans.insert = bitcast %union.anon.2* %13 to i8**
-  %.pre21 = load i8** %.phi.trans.insert, align 8, !dbg !2748, !tbaa !1436
-  br label %.preheader3._crit_edge, !dbg !2744
+if.else:                                          ; preds = %if.end
+  %Image_Type = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 3, !dbg !1976
+  %13 = load i32* %Image_Type, align 4, !dbg !1976, !tbaa !1223
+  %and = and i32 %13, 131072, !dbg !1976
+  %cmp23 = icmp eq i32 %and, 0, !dbg !1976
+  br i1 %cmp23, label %if.else117, label %if.then24, !dbg !1976
 
-.preheader3._crit_edge:                           ; preds = %.preheader3, %._crit_edge13
-  %32 = phi i8* [ %.pre21, %._crit_edge13 ], [ %17, %.preheader3 ]
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %32, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1646) #7, !dbg !2748
-  store i8** null, i8*** %14, align 8, !dbg !2750, !tbaa !1436
-  br label %138, !dbg !2751
+if.then24:                                        ; preds = %if.else
+  %and26 = and i32 %13, 262144, !dbg !1978
+  %cmp27 = icmp eq i32 %and26, 0, !dbg !1978
+  %data29 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, !dbg !1980
+  br i1 %cmp27, label %if.else54, label %if.then28, !dbg !1978
 
-; <label>:33                                      ; preds = %7
-  %34 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 3, !dbg !2752
-  %35 = load i32* %34, align 4, !dbg !2752, !tbaa !2477
-  %36 = and i32 %35, 131072, !dbg !2755
-  %37 = icmp eq i32 %36, 0, !dbg !2756
-  br i1 %37, label %103, label %38, !dbg !2757
+if.then28:                                        ; preds = %if.then24
+  %gray16_lines = bitcast %union.anon.2* %data29 to i16***, !dbg !1980
+  %14 = load i16*** %gray16_lines, align 8, !dbg !1980, !tbaa !1218
+  %cmp30 = icmp eq i16** %14, null, !dbg !1980
+  br i1 %cmp30, label %if.end184, label %for.cond32.preheader, !dbg !1980
 
-; <label>:38                                      ; preds = %33
-  %39 = and i32 %35, 262144, !dbg !2758
-  %40 = icmp eq i32 %39, 0, !dbg !2761
-  %41 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, !dbg !2762
-  br i1 %40, label %64, label %42, !dbg !2765
+for.cond32.preheader:                             ; preds = %if.then28
+  %iheight33 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !1982
+  %15 = load i32* %iheight33, align 4, !dbg !1982, !tbaa !1223
+  %cmp34265 = icmp sgt i32 %15, 0, !dbg !1982
+  br i1 %cmp34265, label %for.body35, label %for.end46, !dbg !1982
 
-; <label>:42                                      ; preds = %38
-  %43 = bitcast %union.anon.2* %41 to i16***, !dbg !2766
-  %44 = load i16*** %43, align 8, !dbg !2766, !tbaa !1436
-  %45 = icmp eq i16** %44, null, !dbg !2767
-  br i1 %45, label %138, label %.preheader2, !dbg !2768
+for.body35:                                       ; preds = %for.body35, %for.cond32.preheader
+  %16 = phi i16** [ %14, %for.cond32.preheader ], [ %.pre280, %for.body35 ]
+  %indvars.iv271 = phi i64 [ 0, %for.cond32.preheader ], [ %indvars.iv.next272, %for.body35 ]
+  %arrayidx39 = getelementptr inbounds i16** %16, i64 %indvars.iv271, !dbg !1985
+  %17 = load i16** %arrayidx39, align 8, !dbg !1985, !tbaa !1218
+  %18 = bitcast i16* %17 to i8*, !dbg !1985
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %18, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1661) #8, !dbg !1985
+  %19 = load i16*** %gray16_lines, align 8, !dbg !1985, !tbaa !1218
+  %arrayidx43 = getelementptr inbounds i16** %19, i64 %indvars.iv271, !dbg !1985
+  store i16* null, i16** %arrayidx43, align 8, !dbg !1985, !tbaa !1218
+  %indvars.iv.next272 = add i64 %indvars.iv271, 1, !dbg !1982
+  %20 = load i32* %iheight33, align 4, !dbg !1982, !tbaa !1223
+  %21 = trunc i64 %indvars.iv.next272 to i32, !dbg !1982
+  %cmp34 = icmp slt i32 %21, %20, !dbg !1982
+  %.pre280 = load i16*** %gray16_lines, align 8, !dbg !1985, !tbaa !1218
+  br i1 %cmp34, label %for.body35, label %for.end46, !dbg !1982
 
-.preheader2:                                      ; preds = %42
-  %46 = bitcast i16** %44 to i8*
-  %47 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !2769
-  %48 = load i32* %47, align 4, !dbg !2769, !tbaa !1686
-  %49 = icmp sgt i32 %48, 0, !dbg !2773
-  br i1 %49, label %.lr.ph9.preheader, label %.preheader2._crit_edge, !dbg !2774
+for.end46:                                        ; preds = %for.body35, %for.cond32.preheader
+  %22 = phi i16** [ %14, %for.cond32.preheader ], [ %.pre280, %for.body35 ]
+  %23 = bitcast i16** %22 to i8*, !dbg !1988
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %23, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1664) #8, !dbg !1988
+  %24 = getelementptr inbounds %union.anon.2* %data29, i64 0, i32 0, !dbg !1990
+  store %"struct.pov::Image8_Line_Struct"* null, %"struct.pov::Image8_Line_Struct"** %24, align 8, !dbg !1990, !tbaa !1218
+  br label %if.end184, !dbg !1991
 
-.lr.ph9.preheader:                                ; preds = %.preheader2
-  %50 = bitcast i16** %44 to i8**, !dbg !2775
-  %51 = load i8** %50, align 8, !dbg !2775, !tbaa !1436
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %51, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1661) #7, !dbg !2775
-  %52 = load i16*** %43, align 8, !dbg !2775, !tbaa !1436
-  store i16* null, i16** %52, align 8, !dbg !2775, !tbaa !1436
-  %53 = load i32* %47, align 4, !dbg !2769, !tbaa !1686
-  %54 = icmp sgt i32 %53, 1, !dbg !2773
-  br i1 %54, label %._crit_edge22, label %._crit_edge10, !dbg !2774
+if.else54:                                        ; preds = %if.then24
+  %rgb16_lines = bitcast %union.anon.2* %data29 to %"struct.pov::Image16_Line_Struct"**, !dbg !1992
+  %25 = load %"struct.pov::Image16_Line_Struct"** %rgb16_lines, align 8, !dbg !1992, !tbaa !1218
+  %cmp56 = icmp eq %"struct.pov::Image16_Line_Struct"* %25, null, !dbg !1992
+  br i1 %cmp56, label %if.end184, label %for.cond58.preheader, !dbg !1992
 
-._crit_edge22:                                    ; preds = %.lr.ph9.preheader, %._crit_edge22
-  %indvars.iv.next1741 = phi i64 [ %indvars.iv.next17, %._crit_edge22 ], [ 1, %.lr.ph9.preheader ]
-  %.pre23 = load i16*** %43, align 8, !dbg !2775, !tbaa !1436
-  %55 = getelementptr inbounds i16** %.pre23, i64 %indvars.iv.next1741, !dbg !2775
-  %56 = bitcast i16** %55 to i8**, !dbg !2775
-  %57 = load i8** %56, align 8, !dbg !2775, !tbaa !1436
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %57, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1661) #7, !dbg !2775
-  %58 = load i16*** %43, align 8, !dbg !2775, !tbaa !1436
-  %59 = getelementptr inbounds i16** %58, i64 %indvars.iv.next1741, !dbg !2775
-  store i16* null, i16** %59, align 8, !dbg !2775, !tbaa !1436
-  %indvars.iv.next17 = add nuw nsw i64 %indvars.iv.next1741, 1, !dbg !2774
-  %60 = load i32* %47, align 4, !dbg !2769, !tbaa !1686
-  %61 = sext i32 %60 to i64, !dbg !2773
-  %62 = icmp slt i64 %indvars.iv.next17, %61, !dbg !2773
-  br i1 %62, label %._crit_edge22, label %._crit_edge10, !dbg !2774
+for.cond58.preheader:                             ; preds = %if.else54
+  %iheight59 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !1993
+  %26 = load i32* %iheight59, align 4, !dbg !1993, !tbaa !1223
+  %cmp60263 = icmp sgt i32 %26, 0, !dbg !1993
+  br i1 %cmp60263, label %for.body61, label %for.end108, !dbg !1993
 
-._crit_edge10:                                    ; preds = %._crit_edge22, %.lr.ph9.preheader
-  %.phi.trans.insert24 = bitcast %union.anon.2* %41 to i8**
-  %.pre25 = load i8** %.phi.trans.insert24, align 8, !dbg !2778, !tbaa !1436
-  br label %.preheader2._crit_edge, !dbg !2774
+for.body61:                                       ; preds = %for.inc106, %for.cond58.preheader
+  %27 = phi %"struct.pov::Image16_Line_Struct"* [ %25, %for.cond58.preheader ], [ %.pre279, %for.inc106 ], !dbg !1996
+  %indvars.iv269 = phi i64 [ 0, %for.cond58.preheader ], [ %indvars.iv.next270, %for.inc106 ]
+  %red = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %27, i64 %indvars.iv269, i32 0, !dbg !1996
+  %28 = load i16** %red, align 8, !dbg !1996, !tbaa !1218
+  %29 = bitcast i16* %28 to i8*, !dbg !1996
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %29, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1673) #8, !dbg !1996
+  %30 = load %"struct.pov::Image16_Line_Struct"** %rgb16_lines, align 8, !dbg !1996, !tbaa !1218
+  %red70 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %30, i64 %indvars.iv269, i32 0, !dbg !1996
+  store i16* null, i16** %red70, align 8, !dbg !1996, !tbaa !1218
+  %31 = load %"struct.pov::Image16_Line_Struct"** %rgb16_lines, align 8, !dbg !1999, !tbaa !1218
+  %green = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %31, i64 %indvars.iv269, i32 1, !dbg !1999
+  %32 = load i16** %green, align 8, !dbg !1999, !tbaa !1218
+  %33 = bitcast i16* %32 to i8*, !dbg !1999
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %33, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1674) #8, !dbg !1999
+  %34 = load %"struct.pov::Image16_Line_Struct"** %rgb16_lines, align 8, !dbg !1999, !tbaa !1218
+  %green79 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %34, i64 %indvars.iv269, i32 1, !dbg !1999
+  store i16* null, i16** %green79, align 8, !dbg !1999, !tbaa !1218
+  %35 = load %"struct.pov::Image16_Line_Struct"** %rgb16_lines, align 8, !dbg !2001, !tbaa !1218
+  %blue = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %35, i64 %indvars.iv269, i32 2, !dbg !2001
+  %36 = load i16** %blue, align 8, !dbg !2001, !tbaa !1218
+  %37 = bitcast i16* %36 to i8*, !dbg !2001
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %37, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1675) #8, !dbg !2001
+  %38 = load %"struct.pov::Image16_Line_Struct"** %rgb16_lines, align 8, !dbg !2001, !tbaa !1218
+  %blue88 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %38, i64 %indvars.iv269, i32 2, !dbg !2001
+  store i16* null, i16** %blue88, align 8, !dbg !2001, !tbaa !1218
+  %39 = load %"struct.pov::Image16_Line_Struct"** %rgb16_lines, align 8, !dbg !2003, !tbaa !1218
+  %transm = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %39, i64 %indvars.iv269, i32 3, !dbg !2003
+  %40 = load i16** %transm, align 8, !dbg !2003, !tbaa !1218
+  %cmp93 = icmp eq i16* %40, null, !dbg !2003
+  br i1 %cmp93, label %for.inc106, label %if.then94, !dbg !2003
 
-.preheader2._crit_edge:                           ; preds = %.preheader2, %._crit_edge10
-  %63 = phi i8* [ %.pre25, %._crit_edge10 ], [ %46, %.preheader2 ]
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %63, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1664) #7, !dbg !2778
-  store i16** null, i16*** %43, align 8, !dbg !2780, !tbaa !1436
-  br label %138, !dbg !2781
+if.then94:                                        ; preds = %for.body61
+  %41 = bitcast i16* %40 to i8*, !dbg !2004
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %41, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1679) #8, !dbg !2004
+  %42 = load %"struct.pov::Image16_Line_Struct"** %rgb16_lines, align 8, !dbg !2004, !tbaa !1218
+  %transm104 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %42, i64 %indvars.iv269, i32 3, !dbg !2004
+  store i16* null, i16** %transm104, align 8, !dbg !2004, !tbaa !1218
+  br label %for.inc106, !dbg !2007
 
-; <label>:64                                      ; preds = %38
-  %65 = bitcast %union.anon.2* %41 to %"struct.pov::Image16_Line_Struct"**, !dbg !2782
-  %66 = load %"struct.pov::Image16_Line_Struct"** %65, align 8, !dbg !2782, !tbaa !1436
-  %67 = icmp eq %"struct.pov::Image16_Line_Struct"* %66, null, !dbg !2784
-  br i1 %67, label %138, label %.preheader1, !dbg !2785
+for.inc106:                                       ; preds = %for.body61, %if.then94
+  %indvars.iv.next270 = add i64 %indvars.iv269, 1, !dbg !1993
+  %43 = load i32* %iheight59, align 4, !dbg !1993, !tbaa !1223
+  %44 = trunc i64 %indvars.iv.next270 to i32, !dbg !1993
+  %cmp60 = icmp slt i32 %44, %43, !dbg !1993
+  %.pre279 = load %"struct.pov::Image16_Line_Struct"** %rgb16_lines, align 8, !dbg !1996, !tbaa !1218
+  br i1 %cmp60, label %for.body61, label %for.end108, !dbg !1993
 
-.preheader1:                                      ; preds = %64
-  %68 = bitcast %"struct.pov::Image16_Line_Struct"* %66 to i8*
-  %69 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !2786
-  %70 = load i32* %69, align 4, !dbg !2786, !tbaa !1686
-  %71 = icmp sgt i32 %70, 0, !dbg !2790
-  br i1 %71, label %.lr.ph6, label %.preheader1._crit_edge, !dbg !2791
+for.end108:                                       ; preds = %for.inc106, %for.cond58.preheader
+  %45 = phi %"struct.pov::Image16_Line_Struct"* [ %25, %for.cond58.preheader ], [ %.pre279, %for.inc106 ]
+  %46 = bitcast %"struct.pov::Image16_Line_Struct"* %45 to i8*, !dbg !2008
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %46, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1683) #8, !dbg !2008
+  %47 = getelementptr inbounds %union.anon.2* %data29, i64 0, i32 0, !dbg !2010
+  store %"struct.pov::Image8_Line_Struct"* null, %"struct.pov::Image8_Line_Struct"** %47, align 8, !dbg !2010, !tbaa !1218
+  br label %if.end184, !dbg !2011
 
-.lr.ph6:                                          ; preds = %.preheader1, %._crit_edge26
-  %72 = phi %"struct.pov::Image16_Line_Struct"* [ %.pre27, %._crit_edge26 ], [ %66, %.preheader1 ], !dbg !2792
-  %indvars.iv14 = phi i64 [ %indvars.iv.next15, %._crit_edge26 ], [ 0, %.preheader1 ]
-  %73 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %72, i64 %indvars.iv14, i32 0, !dbg !2792
-  %74 = bitcast i16** %73 to i8**, !dbg !2792
-  %75 = load i8** %74, align 8, !dbg !2792, !tbaa !2560
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %75, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1673) #7, !dbg !2792
-  %76 = load %"struct.pov::Image16_Line_Struct"** %65, align 8, !dbg !2792, !tbaa !1436
-  %77 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %76, i64 %indvars.iv14, i32 0, !dbg !2792
-  store i16* null, i16** %77, align 8, !dbg !2792, !tbaa !2560
-  %78 = load %"struct.pov::Image16_Line_Struct"** %65, align 8, !dbg !2795, !tbaa !1436
-  %79 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %78, i64 %indvars.iv14, i32 1, !dbg !2795
-  %80 = bitcast i16** %79 to i8**, !dbg !2795
-  %81 = load i8** %80, align 8, !dbg !2795, !tbaa !2561
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %81, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1674) #7, !dbg !2795
-  %82 = load %"struct.pov::Image16_Line_Struct"** %65, align 8, !dbg !2795, !tbaa !1436
-  %83 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %82, i64 %indvars.iv14, i32 1, !dbg !2795
-  store i16* null, i16** %83, align 8, !dbg !2795, !tbaa !2561
-  %84 = load %"struct.pov::Image16_Line_Struct"** %65, align 8, !dbg !2797, !tbaa !1436
-  %85 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %84, i64 %indvars.iv14, i32 2, !dbg !2797
-  %86 = bitcast i16** %85 to i8**, !dbg !2797
-  %87 = load i8** %86, align 8, !dbg !2797, !tbaa !2562
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %87, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1675) #7, !dbg !2797
-  %88 = load %"struct.pov::Image16_Line_Struct"** %65, align 8, !dbg !2797, !tbaa !1436
-  %89 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %88, i64 %indvars.iv14, i32 2, !dbg !2797
-  store i16* null, i16** %89, align 8, !dbg !2797, !tbaa !2562
-  %90 = load %"struct.pov::Image16_Line_Struct"** %65, align 8, !dbg !2799, !tbaa !1436
-  %91 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %90, i64 %indvars.iv14, i32 3, !dbg !2801
-  %92 = load i16** %91, align 8, !dbg !2801, !tbaa !2486
-  %93 = icmp eq i16* %92, null, !dbg !2802
-  br i1 %93, label %98, label %94, !dbg !2803
+if.else117:                                       ; preds = %if.else
+  %rgb8_lines = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, i32 0, !dbg !2012
+  %48 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !2012, !tbaa !1218
+  %cmp119 = icmp eq %"struct.pov::Image8_Line_Struct"* %48, null, !dbg !2012
+  br i1 %cmp119, label %if.end184, label %for.cond121.preheader, !dbg !2012
 
-; <label>:94                                      ; preds = %.lr.ph6
-  %95 = bitcast i16* %92 to i8*, !dbg !2804
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %95, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1679) #7, !dbg !2804
-  %96 = load %"struct.pov::Image16_Line_Struct"** %65, align 8, !dbg !2804, !tbaa !1436
-  %97 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %96, i64 %indvars.iv14, i32 3, !dbg !2804
-  store i16* null, i16** %97, align 8, !dbg !2804, !tbaa !2486
-  br label %98, !dbg !2807
+for.cond121.preheader:                            ; preds = %if.else117
+  %iheight122 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !2014
+  %49 = load i32* %iheight122, align 4, !dbg !2014, !tbaa !1223
+  %cmp123261 = icmp sgt i32 %49, 0, !dbg !2014
+  br i1 %cmp123261, label %for.body124, label %for.end175, !dbg !2014
 
-; <label>:98                                      ; preds = %.lr.ph6, %94
-  %indvars.iv.next15 = add nuw nsw i64 %indvars.iv14, 1, !dbg !2791
-  %99 = load i32* %69, align 4, !dbg !2786, !tbaa !1686
-  %100 = sext i32 %99 to i64, !dbg !2790
-  %101 = icmp slt i64 %indvars.iv.next15, %100, !dbg !2790
-  br i1 %101, label %._crit_edge26, label %._crit_edge7, !dbg !2791
+for.body124:                                      ; preds = %for.inc173, %for.cond121.preheader
+  %50 = phi %"struct.pov::Image8_Line_Struct"* [ %48, %for.cond121.preheader ], [ %.pre278, %for.inc173 ], !dbg !2017
+  %indvars.iv = phi i64 [ 0, %for.cond121.preheader ], [ %indvars.iv.next, %for.inc173 ]
+  %red129 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %50, i64 %indvars.iv, i32 0, !dbg !2017
+  %51 = load i8** %red129, align 8, !dbg !2017, !tbaa !1218
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %51, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1694) #8, !dbg !2017
+  %52 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !2017, !tbaa !1218
+  %red134 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %52, i64 %indvars.iv, i32 0, !dbg !2017
+  store i8* null, i8** %red134, align 8, !dbg !2017, !tbaa !1218
+  %53 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !2020, !tbaa !1218
+  %green139 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %53, i64 %indvars.iv, i32 1, !dbg !2020
+  %54 = load i8** %green139, align 8, !dbg !2020, !tbaa !1218
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %54, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1695) #8, !dbg !2020
+  %55 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !2020, !tbaa !1218
+  %green144 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %55, i64 %indvars.iv, i32 1, !dbg !2020
+  store i8* null, i8** %green144, align 8, !dbg !2020, !tbaa !1218
+  %56 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !2022, !tbaa !1218
+  %blue149 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %56, i64 %indvars.iv, i32 2, !dbg !2022
+  %57 = load i8** %blue149, align 8, !dbg !2022, !tbaa !1218
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %57, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1696) #8, !dbg !2022
+  %58 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !2022, !tbaa !1218
+  %blue154 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %58, i64 %indvars.iv, i32 2, !dbg !2022
+  store i8* null, i8** %blue154, align 8, !dbg !2022, !tbaa !1218
+  %59 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !2024, !tbaa !1218
+  %transm159 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %59, i64 %indvars.iv, i32 3, !dbg !2024
+  %60 = load i8** %transm159, align 8, !dbg !2024, !tbaa !1218
+  %cmp160 = icmp eq i8* %60, null, !dbg !2024
+  br i1 %cmp160, label %for.inc173, label %if.then161, !dbg !2024
 
-._crit_edge26:                                    ; preds = %98
-  %.pre27 = load %"struct.pov::Image16_Line_Struct"** %65, align 8, !dbg !2792, !tbaa !1436
-  br label %.lr.ph6, !dbg !2791
+if.then161:                                       ; preds = %for.body124
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %60, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1700) #8, !dbg !2025
+  %61 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !2025, !tbaa !1218
+  %transm171 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %61, i64 %indvars.iv, i32 3, !dbg !2025
+  store i8* null, i8** %transm171, align 8, !dbg !2025, !tbaa !1218
+  br label %for.inc173, !dbg !2028
 
-._crit_edge7:                                     ; preds = %98
-  %.phi.trans.insert28 = bitcast %union.anon.2* %41 to i8**
-  %.pre29 = load i8** %.phi.trans.insert28, align 8, !dbg !2808, !tbaa !1436
-  br label %.preheader1._crit_edge, !dbg !2791
+for.inc173:                                       ; preds = %for.body124, %if.then161
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2014
+  %62 = load i32* %iheight122, align 4, !dbg !2014, !tbaa !1223
+  %63 = trunc i64 %indvars.iv.next to i32, !dbg !2014
+  %cmp123 = icmp slt i32 %63, %62, !dbg !2014
+  %.pre278 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !2017, !tbaa !1218
+  br i1 %cmp123, label %for.body124, label %for.end175, !dbg !2014
 
-.preheader1._crit_edge:                           ; preds = %.preheader1, %._crit_edge7
-  %102 = phi i8* [ %.pre29, %._crit_edge7 ], [ %68, %.preheader1 ]
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %102, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1683) #7, !dbg !2808
-  store %"struct.pov::Image16_Line_Struct"* null, %"struct.pov::Image16_Line_Struct"** %65, align 8, !dbg !2810, !tbaa !1436
-  br label %138, !dbg !2811
+for.end175:                                       ; preds = %for.inc173, %for.cond121.preheader
+  %64 = phi %"struct.pov::Image8_Line_Struct"* [ %48, %for.cond121.preheader ], [ %.pre278, %for.inc173 ]
+  %65 = bitcast %"struct.pov::Image8_Line_Struct"* %64 to i8*, !dbg !2029
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %65, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1704) #8, !dbg !2029
+  store %"struct.pov::Image8_Line_Struct"* null, %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !2031, !tbaa !1218
+  br label %if.end184, !dbg !2032
 
-; <label>:103                                     ; preds = %33
-  %104 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, i32 0, !dbg !2812
-  %105 = load %"struct.pov::Image8_Line_Struct"** %104, align 8, !dbg !2812, !tbaa !1436
-  %106 = icmp eq %"struct.pov::Image8_Line_Struct"* %105, null, !dbg !2815
-  br i1 %106, label %138, label %.preheader, !dbg !2816
+if.end184:                                        ; preds = %if.then3, %if.then28, %if.else54, %if.else117, %for.end108, %for.end46, %for.end175, %for.end
+  %66 = bitcast %"struct.pov::Image_Struct"* %Image to i8*, !dbg !2033
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %66, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 1711) #8, !dbg !2033
+  tail call void @llvm.dbg.value(metadata !2035, i64 0, metadata !874), !dbg !2033
+  br label %return, !dbg !2036
 
-.preheader:                                       ; preds = %103
-  %107 = bitcast %"struct.pov::Image8_Line_Struct"* %105 to i8*
-  %108 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !2817
-  %109 = load i32* %108, align 4, !dbg !2817, !tbaa !1686
-  %110 = icmp sgt i32 %109, 0, !dbg !2821
-  br i1 %110, label %.lr.ph, label %.preheader._crit_edge, !dbg !2822
-
-.lr.ph:                                           ; preds = %.preheader, %._crit_edge30
-  %111 = phi %"struct.pov::Image8_Line_Struct"* [ %.pre31, %._crit_edge30 ], [ %105, %.preheader ], !dbg !2823
-  %indvars.iv = phi i64 [ %indvars.iv.next, %._crit_edge30 ], [ 0, %.preheader ]
-  %112 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %111, i64 %indvars.iv, i32 0, !dbg !2823
-  %113 = load i8** %112, align 8, !dbg !2823, !tbaa !2567
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %113, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1694) #7, !dbg !2823
-  %114 = load %"struct.pov::Image8_Line_Struct"** %104, align 8, !dbg !2823, !tbaa !1436
-  %115 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %114, i64 %indvars.iv, i32 0, !dbg !2823
-  store i8* null, i8** %115, align 8, !dbg !2823, !tbaa !2567
-  %116 = load %"struct.pov::Image8_Line_Struct"** %104, align 8, !dbg !2826, !tbaa !1436
-  %117 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %116, i64 %indvars.iv, i32 1, !dbg !2826
-  %118 = load i8** %117, align 8, !dbg !2826, !tbaa !2569
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %118, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1695) #7, !dbg !2826
-  %119 = load %"struct.pov::Image8_Line_Struct"** %104, align 8, !dbg !2826, !tbaa !1436
-  %120 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %119, i64 %indvars.iv, i32 1, !dbg !2826
-  store i8* null, i8** %120, align 8, !dbg !2826, !tbaa !2569
-  %121 = load %"struct.pov::Image8_Line_Struct"** %104, align 8, !dbg !2828, !tbaa !1436
-  %122 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %121, i64 %indvars.iv, i32 2, !dbg !2828
-  %123 = load i8** %122, align 8, !dbg !2828, !tbaa !2830
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %123, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1696) #7, !dbg !2828
-  %124 = load %"struct.pov::Image8_Line_Struct"** %104, align 8, !dbg !2828, !tbaa !1436
-  %125 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %124, i64 %indvars.iv, i32 2, !dbg !2828
-  store i8* null, i8** %125, align 8, !dbg !2828, !tbaa !2830
-  %126 = load %"struct.pov::Image8_Line_Struct"** %104, align 8, !dbg !2831, !tbaa !1436
-  %127 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %126, i64 %indvars.iv, i32 3, !dbg !2833
-  %128 = load i8** %127, align 8, !dbg !2833, !tbaa !2498
-  %129 = icmp eq i8* %128, null, !dbg !2834
-  br i1 %129, label %133, label %130, !dbg !2835
-
-; <label>:130                                     ; preds = %.lr.ph
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %128, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1700) #7, !dbg !2836
-  %131 = load %"struct.pov::Image8_Line_Struct"** %104, align 8, !dbg !2836, !tbaa !1436
-  %132 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %131, i64 %indvars.iv, i32 3, !dbg !2836
-  store i8* null, i8** %132, align 8, !dbg !2836, !tbaa !2498
-  br label %133, !dbg !2839
-
-; <label>:133                                     ; preds = %.lr.ph, %130
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2822
-  %134 = load i32* %108, align 4, !dbg !2817, !tbaa !1686
-  %135 = sext i32 %134 to i64, !dbg !2821
-  %136 = icmp slt i64 %indvars.iv.next, %135, !dbg !2821
-  br i1 %136, label %._crit_edge30, label %._crit_edge, !dbg !2822
-
-._crit_edge30:                                    ; preds = %133
-  %.pre31 = load %"struct.pov::Image8_Line_Struct"** %104, align 8, !dbg !2823, !tbaa !1436
-  br label %.lr.ph, !dbg !2822
-
-._crit_edge:                                      ; preds = %133
-  %.phi.trans.insert32 = bitcast %"struct.pov::Image8_Line_Struct"** %104 to i8**
-  %.pre33 = load i8** %.phi.trans.insert32, align 8, !dbg !2840, !tbaa !1436
-  br label %.preheader._crit_edge, !dbg !2822
-
-.preheader._crit_edge:                            ; preds = %.preheader, %._crit_edge
-  %137 = phi i8* [ %.pre33, %._crit_edge ], [ %107, %.preheader ]
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %137, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1704) #7, !dbg !2840
-  store %"struct.pov::Image8_Line_Struct"* null, %"struct.pov::Image8_Line_Struct"** %104, align 8, !dbg !2842, !tbaa !1436
-  br label %138, !dbg !2843
-
-; <label>:138                                     ; preds = %11, %42, %64, %103, %.preheader1._crit_edge, %.preheader2._crit_edge, %.preheader._crit_edge, %.preheader3._crit_edge
-  %139 = bitcast %"struct.pov::Image_Struct"* %Image to i8*, !dbg !2844
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %139, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 1711) #7, !dbg !2844
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Image_Struct"* null, i64 0, metadata !877, metadata !1399), !dbg !2718
-  br label %140, !dbg !2846
-
-; <label>:140                                     ; preds = %0, %2, %138
-  ret void, !dbg !2846
+return:                                           ; preds = %entry, %lor.lhs.false, %if.end184
+  ret void, !dbg !2036
 }

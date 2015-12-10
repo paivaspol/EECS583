@@ -2,26 +2,30 @@ define internal void @status_warning(i32* %status, i8* %msgid, ...) #0 {
 entry:
   %dc = alloca %struct.diagnostic_context, align 8
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %0 = bitcast %struct.diagnostic_context* %dc to i8*
-  call void @llvm.lifetime.start(i64 376, i8* %0) #3
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %tobool = icmp eq i32* %status, null
-  br i1 %tobool, label %if.else, label %if.then
+  call void @llvm.dbg.value(metadata !{i32* %status}, i64 0, metadata !745), !dbg !2150
+  call void @llvm.dbg.value(metadata !{i8* %msgid}, i64 0, metadata !746), !dbg !2150
+  %0 = bitcast %struct.diagnostic_context* %dc to i8*, !dbg !2151
+  call void @llvm.lifetime.start(i64 376, i8* %0) #4, !dbg !2151
+  call void @llvm.dbg.declare(metadata !{%struct.diagnostic_context* %dc}, metadata !747), !dbg !2151
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !893), !dbg !2152
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !2152
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !2152
+  %tobool = icmp eq i32* %status, null, !dbg !2153
+  br i1 %tobool, label %if.else, label %if.then, !dbg !2153
 
 if.then:                                          ; preds = %entry
-  store i32 1, i32* %status, align 4, !tbaa !0
-  br label %if.end
+  store i32 1, i32* %status, align 4, !dbg !2155, !tbaa !1246
+  br label %if.end, !dbg !2155
 
 if.else:                                          ; preds = %entry
-  %1 = load i8** @input_filename, align 8, !tbaa !3
-  %2 = load i32* @lineno, align 4, !tbaa !0
-  call void @set_diagnostic_context(%struct.diagnostic_context* %dc, i8* %msgid, [1 x %struct.__va_list_tag]* %ap, i8* %1, i32 %2, i32 1) #8
-  call void @report_diagnostic(%struct.diagnostic_context* %dc) #8
+  %1 = load i8** @input_filename, align 8, !dbg !2156, !tbaa !1263
+  %2 = load i32* @lineno, align 4, !dbg !2156, !tbaa !1246
+  call void @set_diagnostic_context(%struct.diagnostic_context* %dc, i8* %msgid, [1 x %struct.__va_list_tag]* %ap, i8* %1, i32 %2, i32 1) #9, !dbg !2156
+  call void @report_diagnostic(%struct.diagnostic_context* %dc) #9, !dbg !2158
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  call void @llvm.va_end(i8* %arraydecay1)
-  call void @llvm.lifetime.end(i64 376, i8* %0) #3
-  ret void
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !2159
+  call void @llvm.lifetime.end(i64 376, i8* %0) #4, !dbg !2160
+  ret void, !dbg !2160
 }

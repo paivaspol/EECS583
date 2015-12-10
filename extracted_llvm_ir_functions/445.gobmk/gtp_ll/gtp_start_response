@@ -1,29 +1,30 @@
 define void @gtp_start_response(i32 %status) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %status, i64 0, metadata !159, metadata !262), !dbg !434
-  %1 = icmp eq i32 %status, 0, !dbg !435
-  br i1 %1, label %2, label %3, !dbg !437
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %status}, i64 0, metadata !152), !dbg !351
+  %cmp = icmp eq i32 %status, 0, !dbg !352
+  br i1 %cmp, label %if.then, label %if.else, !dbg !352
 
-; <label>:2                                       ; preds = %0
-  tail call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([2 x i8]* @.str9, i64 0, i64 0)) #8, !dbg !438
-  br label %4, !dbg !438
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([2 x i8]* @.str9, i64 0, i64 0)) #8, !dbg !353
+  br label %if.end, !dbg !353
 
-; <label>:3                                       ; preds = %0
-  tail call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0)) #8, !dbg !439
-  br label %4
+if.else:                                          ; preds = %entry
+  tail call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0)) #8, !dbg !354
+  br label %if.end
 
-; <label>:4                                       ; preds = %3, %2
-  %5 = load i32* @current_id, align 4, !dbg !440, !tbaa !303
-  %6 = icmp slt i32 %5, 0, !dbg !442
-  br i1 %6, label %7, label %8, !dbg !443
+if.end:                                           ; preds = %if.else, %if.then
+  %0 = load i32* @current_id, align 4, !dbg !355, !tbaa !272
+  %cmp1 = icmp slt i32 %0, 0, !dbg !355
+  br i1 %cmp1, label %if.then2, label %if.else3, !dbg !355
 
-; <label>:7                                       ; preds = %4
-  tail call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([2 x i8]* @.str11, i64 0, i64 0)) #8, !dbg !444
-  br label %9, !dbg !444
+if.then2:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([2 x i8]* @.str11, i64 0, i64 0)) #8, !dbg !356
+  br label %if.end4, !dbg !356
 
-; <label>:8                                       ; preds = %4
-  tail call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([4 x i8]* @.str12, i64 0, i64 0), i32 %5) #8, !dbg !445
-  br label %9
+if.else3:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([4 x i8]* @.str12, i64 0, i64 0), i32 %0) #8, !dbg !357
+  br label %if.end4
 
-; <label>:9                                       ; preds = %8, %7
-  ret void, !dbg !446
+if.end4:                                          ; preds = %if.else3, %if.then2
+  ret void, !dbg !358
 }

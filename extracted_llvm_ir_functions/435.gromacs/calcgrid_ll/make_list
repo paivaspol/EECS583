@@ -1,95 +1,93 @@
-define internal fastcc void @make_list(i32 %start_fac) #4 {
-  tail call void @llvm.dbg.value(metadata i32 %start_fac, i64 0, metadata !110, metadata !135), !dbg !336
-  %1 = load i32* @ng, align 4, !dbg !337, !tbaa !198
-  %2 = load i32* @ng_max, align 4, !dbg !339, !tbaa !198
-  %3 = icmp slt i32 %1, %2, !dbg !340
-  br i1 %3, label %4, label %.loopexit, !dbg !341
+define internal fastcc void @make_list(i32 %start_fac) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %start_fac}, i64 0, metadata !44), !dbg !118
+  %0 = load i32* @ng, align 4, !dbg !119, !tbaa !70
+  %1 = load i32* @ng_max, align 4, !dbg !119, !tbaa !70
+  %cmp = icmp slt i32 %0, %1, !dbg !119
+  br i1 %cmp, label %if.then, label %if.end24, !dbg !119
 
-; <label>:4                                       ; preds = %0
-  %5 = load i32* @n_list, align 4, !dbg !342, !tbaa !198
-  %6 = load i32* @n_list_alloc, align 4, !dbg !345, !tbaa !198
-  %7 = icmp slt i32 %5, %6, !dbg !346
-  br i1 %7, label %._crit_edge, label %8, !dbg !347
+if.then:                                          ; preds = %entry
+  %2 = load i32* @n_list, align 4, !dbg !120, !tbaa !70
+  %3 = load i32* @n_list_alloc, align 4, !dbg !120, !tbaa !70
+  %cmp1 = icmp slt i32 %2, %3, !dbg !120
+  br i1 %cmp1, label %if.then.if.end_crit_edge, label %if.then2, !dbg !120
 
-._crit_edge:                                      ; preds = %4
-  %.pre3 = load i32** @list, align 8, !dbg !348, !tbaa !229
-  br label %14, !dbg !347
+if.then.if.end_crit_edge:                         ; preds = %if.then
+  %.pre35 = load i32** @list, align 8, !dbg !122, !tbaa !84
+  br label %if.end, !dbg !120
 
-; <label>:8                                       ; preds = %4
-  %9 = add nsw i32 %6, 100, !dbg !349
-  store i32 %9, i32* @n_list_alloc, align 4, !dbg !349, !tbaa !198
-  %10 = load i8** bitcast (i32** @list to i8**), align 8, !dbg !351, !tbaa !229
-  %11 = shl i32 %9, 2, !dbg !351
-  %12 = tail call i8* @save_realloc(i8* getelementptr inbounds ([5 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str11, i64 0, i64 0), i32 50, i8* %10, i32 %11) #8, !dbg !351
-  store i8* %12, i8** bitcast (i32** @list to i8**), align 8, !dbg !351, !tbaa !229
-  %.pre = load i32* @ng, align 4, !dbg !352, !tbaa !198
-  %.pre2 = load i32* @n_list, align 4, !dbg !353, !tbaa !198
-  %13 = bitcast i8* %12 to i32*
-  br label %14, !dbg !354
+if.then2:                                         ; preds = %if.then
+  %add = add nsw i32 %3, 100, !dbg !123
+  store i32 %add, i32* @n_list_alloc, align 4, !dbg !123, !tbaa !70
+  %4 = load i32** @list, align 8, !dbg !125, !tbaa !84
+  %5 = bitcast i32* %4 to i8*, !dbg !125
+  %mul = shl i32 %add, 2, !dbg !125
+  %call = tail call i8* @save_realloc(i8* getelementptr inbounds ([5 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str11, i64 0, i64 0), i32 50, i8* %5, i32 %mul) #6, !dbg !125
+  %6 = bitcast i8* %call to i32*, !dbg !125
+  store i32* %6, i32** @list, align 8, !dbg !125, !tbaa !84
+  %.pre = load i32* @ng, align 4, !dbg !122, !tbaa !70
+  %.pre34 = load i32* @n_list, align 4, !dbg !122, !tbaa !70
+  br label %if.end, !dbg !126
 
-; <label>:14                                      ; preds = %._crit_edge, %8
-  %15 = phi i32* [ %.pre3, %._crit_edge ], [ %13, %8 ]
-  %16 = phi i32 [ %5, %._crit_edge ], [ %.pre2, %8 ]
-  %17 = phi i32 [ %1, %._crit_edge ], [ %.pre, %8 ]
-  %18 = sext i32 %16 to i64, !dbg !348
-  %19 = getelementptr inbounds i32* %15, i64 %18, !dbg !348
-  store i32 %17, i32* %19, align 4, !dbg !355, !tbaa !198
-  %20 = load i32* @n_list, align 4, !dbg !356, !tbaa !198
-  %21 = add nsw i32 %20, 1, !dbg !356
-  store i32 %21, i32* @n_list, align 4, !dbg !356, !tbaa !198
-  tail call void @llvm.dbg.value(metadata i32 %start_fac, i64 0, metadata !111, metadata !135), !dbg !357
-  %22 = icmp slt i32 %start_fac, 6, !dbg !358
-  br i1 %22, label %.lr.ph, label %.loopexit, !dbg !361
+if.end:                                           ; preds = %if.then.if.end_crit_edge, %if.then2
+  %7 = phi i32* [ %.pre35, %if.then.if.end_crit_edge ], [ %6, %if.then2 ]
+  %8 = phi i32 [ %2, %if.then.if.end_crit_edge ], [ %.pre34, %if.then2 ]
+  %9 = phi i32 [ %0, %if.then.if.end_crit_edge ], [ %.pre, %if.then2 ]
+  %idxprom = sext i32 %8 to i64, !dbg !122
+  %arrayidx = getelementptr inbounds i32* %7, i64 %idxprom, !dbg !122
+  store i32 %9, i32* %arrayidx, align 4, !dbg !122, !tbaa !70
+  %10 = load i32* @n_list, align 4, !dbg !127, !tbaa !70
+  %inc = add nsw i32 %10, 1, !dbg !127
+  store i32 %inc, i32* @n_list, align 4, !dbg !127, !tbaa !70
+  tail call void @llvm.dbg.value(metadata !{i32 %start_fac}, i64 0, metadata !45), !dbg !128
+  %cmp432 = icmp slt i32 %start_fac, 6, !dbg !128
+  br i1 %cmp432, label %for.body.lr.ph, label %if.end24, !dbg !128
 
-.lr.ph:                                           ; preds = %14
-  %23 = sext i32 %start_fac to i64
-  br label %24, !dbg !361
+for.body.lr.ph:                                   ; preds = %if.end
+  %11 = sext i32 %start_fac to i64
+  br label %for.body, !dbg !128
 
-; <label>:24                                      ; preds = %47, %.lr.ph
-  %indvars.iv = phi i64 [ %23, %.lr.ph ], [ %indvars.iv.next, %47 ]
-  %25 = icmp slt i64 %indvars.iv, 4, !dbg !362
-  br i1 %25, label %33, label %26, !dbg !365
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ %11, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %12 = trunc i64 %indvars.iv to i32, !dbg !130
+  %cmp6 = icmp slt i32 %12, 4, !dbg !130
+  br i1 %cmp6, label %if.then11, label %lor.lhs.false, !dbg !130
 
-; <label>:26                                      ; preds = %24
-  %27 = load i64* bitcast (i32* getelementptr inbounds ([6 x i32]* @decomp, i64 0, i64 4) to i64*), align 16, !dbg !366
-  %28 = trunc i64 %27 to i32, !dbg !366
-  %29 = lshr i64 %27, 32
-  %30 = trunc i64 %29 to i32
-  %31 = sub i32 0, %30, !dbg !367
-  %32 = icmp eq i32 %28, %31, !dbg !367
-  br i1 %32, label %33, label %._crit_edge4, !dbg !368
+lor.lhs.false:                                    ; preds = %for.body
+  %13 = load i64* bitcast (i32* getelementptr inbounds ([6 x i32]* @decomp, i64 0, i64 4) to i64*), align 16, !dbg !130
+  %14 = trunc i64 %13 to i32, !dbg !130
+  %15 = lshr i64 %13, 32
+  %16 = trunc i64 %15 to i32
+  %add8 = sub i32 0, %16, !dbg !130
+  %cmp9 = icmp eq i32 %14, %add8, !dbg !130
+  br i1 %cmp9, label %if.then11, label %for.inc, !dbg !130
 
-._crit_edge4:                                     ; preds = %26
-  %.pre5 = trunc i64 %indvars.iv to i32, !dbg !361
-  br label %47, !dbg !368
+if.then11:                                        ; preds = %lor.lhs.false, %for.body
+  %arrayidx13 = getelementptr inbounds [6 x i32]* @factor, i64 0, i64 %indvars.iv, !dbg !132
+  %17 = load i32* %arrayidx13, align 4, !dbg !132, !tbaa !70
+  %18 = load i32* @ng, align 4, !dbg !132, !tbaa !70
+  %mul14 = mul nsw i32 %18, %17, !dbg !132
+  store i32 %mul14, i32* @ng, align 4, !dbg !132, !tbaa !70
+  %arrayidx16 = getelementptr inbounds [6 x i32]* @decomp, i64 0, i64 %indvars.iv, !dbg !134
+  %19 = load i32* %arrayidx16, align 4, !dbg !134, !tbaa !70
+  %inc17 = add nsw i32 %19, 1, !dbg !134
+  store i32 %inc17, i32* %arrayidx16, align 4, !dbg !134, !tbaa !70
+  tail call fastcc void @make_list(i32 %12) #7, !dbg !135
+  %20 = load i32* %arrayidx13, align 4, !dbg !136, !tbaa !70
+  %21 = load i32* @ng, align 4, !dbg !136, !tbaa !70
+  %div = sdiv i32 %21, %20, !dbg !136
+  store i32 %div, i32* @ng, align 4, !dbg !136, !tbaa !70
+  %22 = load i32* %arrayidx16, align 4, !dbg !137, !tbaa !70
+  %dec = add nsw i32 %22, -1, !dbg !137
+  store i32 %dec, i32* %arrayidx16, align 4, !dbg !137, !tbaa !70
+  br label %for.inc, !dbg !138
 
-; <label>:33                                      ; preds = %26, %24
-  %34 = getelementptr inbounds [6 x i32]* @factor, i64 0, i64 %indvars.iv, !dbg !369
-  %35 = load i32* %34, align 4, !dbg !369, !tbaa !198
-  %36 = load i32* @ng, align 4, !dbg !371, !tbaa !198
-  %37 = mul nsw i32 %36, %35, !dbg !371
-  store i32 %37, i32* @ng, align 4, !dbg !371, !tbaa !198
-  %38 = getelementptr inbounds [6 x i32]* @decomp, i64 0, i64 %indvars.iv, !dbg !372
-  %39 = load i32* %38, align 4, !dbg !373, !tbaa !198
-  %40 = add nsw i32 %39, 1, !dbg !373
-  store i32 %40, i32* %38, align 4, !dbg !373, !tbaa !198
-  %41 = trunc i64 %indvars.iv to i32, !dbg !374
-  tail call fastcc void @make_list(i32 %41) #9, !dbg !374
-  %42 = load i32* %34, align 4, !dbg !375, !tbaa !198
-  %43 = load i32* @ng, align 4, !dbg !376, !tbaa !198
-  %44 = sdiv i32 %43, %42, !dbg !376
-  store i32 %44, i32* @ng, align 4, !dbg !376, !tbaa !198
-  %45 = load i32* %38, align 4, !dbg !377, !tbaa !198
-  %46 = add nsw i32 %45, -1, !dbg !377
-  store i32 %46, i32* %38, align 4, !dbg !377, !tbaa !198
-  br label %47, !dbg !378
+for.inc:                                          ; preds = %lor.lhs.false, %if.then11
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !128
+  %23 = trunc i64 %indvars.iv.next to i32, !dbg !128
+  %cmp4 = icmp slt i32 %23, 6, !dbg !128
+  br i1 %cmp4, label %for.body, label %if.end24, !dbg !128
 
-; <label>:47                                      ; preds = %._crit_edge4, %33
-  %lftr.wideiv.pre-phi = phi i32 [ %.pre5, %._crit_edge4 ], [ %41, %33 ], !dbg !361
-  %indvars.iv.next = add nsw i64 %indvars.iv, 1, !dbg !361
-  %exitcond = icmp eq i32 %lftr.wideiv.pre-phi, 5, !dbg !361
-  br i1 %exitcond, label %.loopexit, label %24, !dbg !361
-
-.loopexit:                                        ; preds = %47, %14, %0
-  ret void, !dbg !379
+if.end24:                                         ; preds = %if.end, %for.inc, %entry
+  ret void, !dbg !139
 }

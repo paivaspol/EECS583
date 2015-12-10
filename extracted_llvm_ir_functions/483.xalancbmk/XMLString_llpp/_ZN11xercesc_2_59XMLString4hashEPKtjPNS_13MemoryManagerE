@@ -1,0 +1,62 @@
+define i32 @_ZN11xercesc_2_59XMLString4hashEPKtjPNS_13MemoryManagerE(i16* %tohash, i32 %hashModulus, %"class.xercesc_2_5::MemoryManager"* %manager) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %tohash}, i64 0, metadata !1847), !dbg !3553
+  tail call void @llvm.dbg.value(metadata !{i32 %hashModulus}, i64 0, metadata !1848), !dbg !3554
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !1849), !dbg !3555
+  %tobool = icmp eq i32 %hashModulus, 0, !dbg !3556
+  br i1 %tobool, label %if.then, label %if.end, !dbg !3556
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #3, !dbg !3557
+  %0 = bitcast i8* %exception to %"class.xercesc_2_5::IllegalArgumentException"*, !dbg !3557
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::IllegalArgumentException"* %0}, i64 0, metadata !3558), !dbg !3559
+  tail call void @llvm.dbg.value(metadata !2808, i64 0, metadata !3560), !dbg !3559
+  tail call void @llvm.dbg.value(metadata !3561, i64 0, metadata !3562), !dbg !3559
+  tail call void @llvm.dbg.value(metadata !2960, i64 0, metadata !3563), !dbg !3559
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !3564), !dbg !3559
+  invoke void @_ZN11xercesc_2_524IllegalArgumentExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::IllegalArgumentException"* %0, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 1097, i32 67, %"class.xercesc_2_5::MemoryManager"* %manager) #11
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_524IllegalArgumentExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::IllegalArgumentException"*)* @_ZN11xercesc_2_524IllegalArgumentExceptionD1Ev to i8*)) #12, !dbg !3557
+  unreachable, !dbg !3557
+
+lpad:                                             ; preds = %if.then
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3557
+  tail call void @__cxa_free_exception(i8* %exception) #3, !dbg !3557
+  resume { i8*, i32 } %1, !dbg !3557
+
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !1004, i64 0, metadata !1850), !dbg !3565
+  %tobool1 = icmp eq i16* %tohash, null, !dbg !3566
+  br i1 %tobool1, label %if.end6, label %while.cond.preheader, !dbg !3566
+
+while.cond.preheader:                             ; preds = %if.end
+  %2 = load i16* %tohash, align 2, !dbg !3567, !tbaa !2947
+  %tobool315 = icmp eq i16 %2, 0, !dbg !3567
+  br i1 %tobool315, label %if.end6, label %while.body, !dbg !3567
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %3 = phi i16 [ %4, %while.body ], [ %2, %while.cond.preheader ]
+  %hashVal.017 = phi i32 [ %add5, %while.body ], [ 0, %while.cond.preheader ]
+  %curCh.016 = phi i16* [ %incdec.ptr, %while.body ], [ %tohash, %while.cond.preheader ]
+  %shr = lshr i32 %hashVal.017, 24, !dbg !3568
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !1853), !dbg !3568
+  %mul = mul i32 %hashVal.017, 37, !dbg !3569
+  %conv = zext i16 %3 to i32, !dbg !3569
+  %add = add i32 %shr, %hashVal.017, !dbg !3569
+  %add4 = add i32 %add, %mul, !dbg !3569
+  %add5 = add i32 %add4, %conv, !dbg !3569
+  tail call void @llvm.dbg.value(metadata !{i32 %add5}, i64 0, metadata !1850), !dbg !3569
+  %incdec.ptr = getelementptr inbounds i16* %curCh.016, i64 1, !dbg !3570
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1851), !dbg !3570
+  %4 = load i16* %incdec.ptr, align 2, !dbg !3567, !tbaa !2947
+  %tobool3 = icmp eq i16 %4, 0, !dbg !3567
+  br i1 %tobool3, label %if.end6, label %while.body, !dbg !3567
+
+if.end6:                                          ; preds = %while.cond.preheader, %while.body, %if.end
+  %hashVal.1 = phi i32 [ 0, %if.end ], [ 0, %while.cond.preheader ], [ %add5, %while.body ]
+  %rem = urem i32 %hashVal.1, %hashModulus, !dbg !3571
+  ret i32 %rem, !dbg !3571
+}

@@ -1,25 +1,26 @@
-define void @_ZN3pov11UCS2_strcpyEPtS0_(i16* nocapture %s1, i16* nocapture readonly %s2) #6 {
-  tail call void @llvm.dbg.value(metadata i16* %s1, i64 0, metadata !801, metadata !1286), !dbg !2001
-  tail call void @llvm.dbg.value(metadata i16* %s2, i64 0, metadata !802, metadata !1286), !dbg !2002
-  %1 = load i16* %s2, align 2, !dbg !2003, !tbaa !1338
-  %2 = icmp eq i16 %1, 0, !dbg !2004
-  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !2005
+define void @_ZN3pov11UCS2_strcpyEPtS0_(i16* nocapture %s1, i16* nocapture %s2) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %s1}, i64 0, metadata !726), !dbg !1233
+  tail call void @llvm.dbg.value(metadata !{i16* %s2}, i64 0, metadata !727), !dbg !1233
+  %0 = load i16* %s2, align 2, !dbg !1234, !tbaa !868
+  %cmp6 = icmp eq i16 %0, 0, !dbg !1234
+  br i1 %cmp6, label %for.end, label %for.body, !dbg !1234
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %3 = phi i16 [ %6, %.lr.ph ], [ %1, %0 ]
-  %.03 = phi i16* [ %5, %.lr.ph ], [ %s2, %0 ]
-  %.012 = phi i16* [ %4, %.lr.ph ], [ %s1, %0 ]
-  store i16 %3, i16* %.012, align 2, !dbg !2006, !tbaa !1338
-  %4 = getelementptr inbounds i16* %.012, i64 1, !dbg !2007
-  tail call void @llvm.dbg.value(metadata i16* %4, i64 0, metadata !801, metadata !1286), !dbg !2001
-  %5 = getelementptr inbounds i16* %.03, i64 1, !dbg !2008
-  tail call void @llvm.dbg.value(metadata i16* %5, i64 0, metadata !802, metadata !1286), !dbg !2002
-  %6 = load i16* %5, align 2, !dbg !2003, !tbaa !1338
-  %7 = icmp eq i16 %6, 0, !dbg !2004
-  br i1 %7, label %._crit_edge, label %.lr.ph, !dbg !2005
+for.body:                                         ; preds = %entry, %for.body
+  %1 = phi i16 [ %2, %for.body ], [ %0, %entry ]
+  %s2.addr.08 = phi i16* [ %incdec.ptr1, %for.body ], [ %s2, %entry ]
+  %s1.addr.07 = phi i16* [ %incdec.ptr, %for.body ], [ %s1, %entry ]
+  store i16 %1, i16* %s1.addr.07, align 2, !dbg !1235, !tbaa !868
+  %incdec.ptr = getelementptr inbounds i16* %s1.addr.07, i64 1, !dbg !1234
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !726), !dbg !1234
+  %incdec.ptr1 = getelementptr inbounds i16* %s2.addr.08, i64 1, !dbg !1234
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr1}, i64 0, metadata !727), !dbg !1234
+  %2 = load i16* %incdec.ptr1, align 2, !dbg !1234, !tbaa !868
+  %cmp = icmp eq i16 %2, 0, !dbg !1234
+  br i1 %cmp, label %for.end, label %for.body, !dbg !1234
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  %.01.lcssa = phi i16* [ %s1, %0 ], [ %4, %.lr.ph ]
-  store i16 0, i16* %.01.lcssa, align 2, !dbg !2009, !tbaa !1338
-  ret void, !dbg !2010
+for.end:                                          ; preds = %for.body, %entry
+  %s1.addr.0.lcssa = phi i16* [ %s1, %entry ], [ %incdec.ptr, %for.body ]
+  store i16 0, i16* %s1.addr.0.lcssa, align 2, !dbg !1236, !tbaa !868
+  ret void, !dbg !1237
 }

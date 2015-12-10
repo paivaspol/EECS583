@@ -1,104 +1,106 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 %struct._DSTree = type { %struct._Tree*, %struct._IV* }
 %struct._Tree = type { i32, i32, i32*, i32*, i32* }
 %struct._IV = type { i32, i32, i32, i32* }
 
-@__stderrp = external global %struct.__sFILE*
+@stderr = external global %struct._IO_FILE*
 @.str = private unnamed_addr constant [49 x i8] c"\0A ALLOCATE failure : bytes %zd, line %d, file %s\00", align 1
-@.str1 = private unnamed_addr constant [93 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c\00", align 1
+@.str1 = private unnamed_addr constant [81 x i8] c"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c\00", align 1
 @.str2 = private unnamed_addr constant [62 x i8] c"\0A fatal error in DSTree_setDefaultFields(%p)\0A dstree is NULL\0A\00", align 1
 @.str3 = private unnamed_addr constant [55 x i8] c"\0A fatal error in DSTree_clearData(%p)\0A dstree is NULL\0A\00", align 1
 @.str4 = private unnamed_addr constant [50 x i8] c"\0A fatal error in DSTree_free(%p)\0A dstree is NULL\0A\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define %struct._DSTree* @DSTree_new() #0 {
-  %1 = tail call i8* @malloc(i64 16) #6, !dbg !58
-  %2 = bitcast i8* %1 to %struct._DSTree*, !dbg !58
-  tail call void @llvm.dbg.value(metadata %struct._DSTree* %2, i64 0, metadata !42, metadata !62), !dbg !63
-  %3 = icmp eq i8* %1, null, !dbg !58
-  br i1 %3, label %4, label %7, !dbg !64
+entry:
+  %call = tail call noalias i8* @malloc(i64 16) #6, !dbg !49
+  %0 = bitcast i8* %call to %struct._DSTree*, !dbg !49
+  tail call void @llvm.dbg.value(metadata !{%struct._DSTree* %0}, i64 0, metadata !37), !dbg !49
+  %cmp = icmp eq i8* %call, null, !dbg !49
+  br i1 %cmp, label %if.then, label %if.end, !dbg !49
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !65, !tbaa !67
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 16, i32 27, i8* getelementptr inbounds ([93 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !65
-  tail call void @exit(i32 -1) #7, !dbg !65
-  unreachable, !dbg !65
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !51, !tbaa !53
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 16, i32 27, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !51
+  tail call void @exit(i32 -1) #7, !dbg !51
+  unreachable, !dbg !51
 
-; <label>:7                                       ; preds = %0
-  tail call void @DSTree_setDefaultFields(%struct._DSTree* %2) #8, !dbg !71
-  ret %struct._DSTree* %2, !dbg !72
+if.end:                                           ; preds = %entry
+  tail call void @DSTree_setDefaultFields(%struct._DSTree* %0) #8, !dbg !56
+  ret %struct._DSTree* %0, !dbg !57
 }
 
 ; Function Attrs: nounwind optsize
 declare noalias i8* @malloc(i64) #1
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #1
+declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #1
 
-; Function Attrs: noreturn optsize
+; Function Attrs: noreturn nounwind optsize
 declare void @exit(i32) #2
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @DSTree_setDefaultFields(%struct._DSTree* %dstree) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DSTree* %dstree, i64 0, metadata !47, metadata !62), !dbg !73
-  %1 = icmp eq %struct._DSTree* %dstree, null, !dbg !74
-  br i1 %1, label %2, label %5, !dbg !76
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DSTree* %dstree}, i64 0, metadata !42), !dbg !58
+  %cmp = icmp eq %struct._DSTree* %dstree, null, !dbg !59
+  br i1 %cmp, label %if.then, label %if.end, !dbg !59
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !77, !tbaa !67
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([62 x i8]* @.str2, i64 0, i64 0), %struct._DSTree* null) #6, !dbg !79
-  tail call void @exit(i32 -1) #7, !dbg !80
-  unreachable, !dbg !80
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !60, !tbaa !53
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([62 x i8]* @.str2, i64 0, i64 0), %struct._DSTree* null) #6, !dbg !60
+  tail call void @exit(i32 -1) #7, !dbg !62
+  unreachable, !dbg !62
 
-; <label>:5                                       ; preds = %0
-  %6 = bitcast %struct._DSTree* %dstree to i8*, !dbg !81
-  call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 16, i32 8, i1 false), !dbg !82
-  ret void, !dbg !81
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct._DSTree* %dstree to i8*, !dbg !63
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 16, i32 8, i1 false), !dbg !64
+  ret void, !dbg !63
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @DSTree_clearData(%struct._DSTree* %dstree) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DSTree* %dstree, i64 0, metadata !50, metadata !62), !dbg !83
-  %1 = icmp eq %struct._DSTree* %dstree, null, !dbg !84
-  br i1 %1, label %2, label %5, !dbg !86
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DSTree* %dstree}, i64 0, metadata !45), !dbg !65
+  %cmp = icmp eq %struct._DSTree* %dstree, null, !dbg !66
+  br i1 %cmp, label %if.then, label %if.end, !dbg !66
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !87, !tbaa !67
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([55 x i8]* @.str3, i64 0, i64 0), %struct._DSTree* null) #6, !dbg !89
-  tail call void @exit(i32 -1) #7, !dbg !90
-  unreachable, !dbg !90
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !67, !tbaa !53
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str3, i64 0, i64 0), %struct._DSTree* null) #6, !dbg !67
+  tail call void @exit(i32 -1) #7, !dbg !69
+  unreachable, !dbg !69
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._DSTree* %dstree, i64 0, i32 0, !dbg !91
-  %7 = load %struct._Tree** %6, align 8, !dbg !91, !tbaa !93
-  %8 = icmp eq %struct._Tree* %7, null, !dbg !95
-  br i1 %8, label %11, label %9, !dbg !96
+if.end:                                           ; preds = %entry
+  %tree = getelementptr inbounds %struct._DSTree* %dstree, i64 0, i32 0, !dbg !70
+  %1 = load %struct._Tree** %tree, align 8, !dbg !70, !tbaa !53
+  %cmp1 = icmp eq %struct._Tree* %1, null, !dbg !70
+  br i1 %cmp1, label %if.end5, label %if.then2, !dbg !70
 
-; <label>:9                                       ; preds = %5
-  tail call void @Tree_clearData(%struct._Tree* %7) #6, !dbg !97
-  %10 = load %struct._Tree** %6, align 8, !dbg !99, !tbaa !93
-  tail call void @Tree_free(%struct._Tree* %10) #6, !dbg !100
-  br label %11, !dbg !101
+if.then2:                                         ; preds = %if.end
+  tail call void @Tree_clearData(%struct._Tree* %1) #6, !dbg !71
+  %2 = load %struct._Tree** %tree, align 8, !dbg !73, !tbaa !53
+  tail call void @Tree_free(%struct._Tree* %2) #6, !dbg !73
+  br label %if.end5, !dbg !74
 
-; <label>:11                                      ; preds = %5, %9
-  %12 = getelementptr inbounds %struct._DSTree* %dstree, i64 0, i32 1, !dbg !102
-  %13 = load %struct._IV** %12, align 8, !dbg !102, !tbaa !104
-  %14 = icmp eq %struct._IV* %13, null, !dbg !105
-  br i1 %14, label %16, label %15, !dbg !106
+if.end5:                                          ; preds = %if.end, %if.then2
+  %mapIV = getelementptr inbounds %struct._DSTree* %dstree, i64 0, i32 1, !dbg !75
+  %3 = load %struct._IV** %mapIV, align 8, !dbg !75, !tbaa !53
+  %cmp6 = icmp eq %struct._IV* %3, null, !dbg !75
+  br i1 %cmp6, label %if.end9, label %if.then7, !dbg !75
 
-; <label>:15                                      ; preds = %11
-  tail call void @IV_free(%struct._IV* %13) #6, !dbg !107
-  br label %16, !dbg !109
+if.then7:                                         ; preds = %if.end5
+  tail call void @IV_free(%struct._IV* %3) #6, !dbg !76
+  br label %if.end9, !dbg !78
 
-; <label>:16                                      ; preds = %11, %15
-  tail call void @DSTree_setDefaultFields(%struct._DSTree* %dstree) #8, !dbg !110
-  ret void, !dbg !111
+if.end9:                                          ; preds = %if.end5, %if.then7
+  tail call void @DSTree_setDefaultFields(%struct._DSTree* %dstree) #8, !dbg !79
+  ret void, !dbg !80
 }
 
 ; Function Attrs: optsize
@@ -110,39 +112,40 @@ declare void @Tree_free(%struct._Tree*) #3
 ; Function Attrs: optsize
 declare void @IV_free(%struct._IV*) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @DSTree_free(%struct._DSTree* %dstree) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DSTree* %dstree, i64 0, metadata !53, metadata !62), !dbg !112
-  %1 = icmp eq %struct._DSTree* %dstree, null, !dbg !113
-  br i1 %1, label %2, label %5, !dbg !115
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DSTree* %dstree}, i64 0, metadata !48), !dbg !81
+  %cmp = icmp eq %struct._DSTree* %dstree, null, !dbg !82
+  br i1 %cmp, label %if.then, label %if.end, !dbg !82
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !116, !tbaa !67
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), %struct._DSTree* null) #6, !dbg !118
-  tail call void @exit(i32 -1) #7, !dbg !119
-  unreachable, !dbg !119
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !83, !tbaa !53
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), %struct._DSTree* null) #6, !dbg !83
+  tail call void @exit(i32 -1) #7, !dbg !85
+  unreachable, !dbg !85
 
-; <label>:5                                       ; preds = %0
-  tail call void @DSTree_clearData(%struct._DSTree* %dstree) #8, !dbg !120
-  %6 = bitcast %struct._DSTree* %dstree to i8*, !dbg !121
-  tail call void @free(i8* %6) #8, !dbg !121
-  tail call void @llvm.dbg.value(metadata %struct._DSTree* null, i64 0, metadata !53, metadata !62), !dbg !112
-  ret void, !dbg !124
+if.end:                                           ; preds = %entry
+  tail call void @DSTree_clearData(%struct._DSTree* %dstree) #8, !dbg !86
+  %1 = bitcast %struct._DSTree* %dstree to i8*, !dbg !87
+  tail call void @free(i8* %1) #6, !dbg !87
+  tail call void @llvm.dbg.value(metadata !89, i64 0, metadata !48), !dbg !87
+  ret void, !dbg !90
 }
 
 ; Function Attrs: nounwind optsize
 declare void @free(i8* nocapture) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #4
+declare void @llvm.dbg.value(metadata, i64, metadata) #4
 
 ; Function Attrs: nounwind
 declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #5
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #4 = { nounwind readnone }
 attributes #5 = { nounwind }
 attributes #6 = { nounwind optsize }
@@ -150,131 +153,95 @@ attributes #7 = { noreturn nounwind optsize }
 attributes #8 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!54, !55, !56}
-!llvm.ident = !{!57}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !35, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !31, !32, !33}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DICompositeType(tag: DW_TAG_structure_type, name: "_DSTree", file: !6, line: 23, size: 128, align: 64, elements: !7)
-!6 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/../DSTree.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!7 = !{!8, !21}
-!8 = !DIDerivedType(tag: DW_TAG_member, name: "tree", scope: !5, file: !6, line: 24, baseType: !9, size: 64, align: 64)
-!9 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !10, size: 64, align: 64)
-!10 = !DIDerivedType(tag: DW_TAG_typedef, name: "Tree", file: !11, line: 15, baseType: !12)
-!11 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/../../Tree/Tree.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!12 = !DICompositeType(tag: DW_TAG_structure_type, name: "_Tree", file: !11, line: 16, size: 256, align: 64, elements: !13)
-!13 = !{!14, !16, !17, !19, !20}
-!14 = !DIDerivedType(tag: DW_TAG_member, name: "n", scope: !12, file: !11, line: 17, baseType: !15, size: 32, align: 32)
-!15 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!16 = !DIDerivedType(tag: DW_TAG_member, name: "root", scope: !12, file: !11, line: 18, baseType: !15, size: 32, align: 32, offset: 32)
-!17 = !DIDerivedType(tag: DW_TAG_member, name: "par", scope: !12, file: !11, line: 19, baseType: !18, size: 64, align: 64, offset: 64)
-!18 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !15, size: 64, align: 64)
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "fch", scope: !12, file: !11, line: 20, baseType: !18, size: 64, align: 64, offset: 128)
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "sib", scope: !12, file: !11, line: 21, baseType: !18, size: 64, align: 64, offset: 192)
-!21 = !DIDerivedType(tag: DW_TAG_member, name: "mapIV", scope: !5, file: !6, line: 25, baseType: !22, size: 64, align: 64, offset: 64)
-!22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !23, size: 64, align: 64)
-!23 = !DIDerivedType(tag: DW_TAG_typedef, name: "IV", file: !24, line: 20, baseType: !25)
-!24 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/../../IV/IV.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!25 = !DICompositeType(tag: DW_TAG_structure_type, name: "_IV", file: !24, line: 21, size: 192, align: 64, elements: !26)
-!26 = !{!27, !28, !29, !30}
-!27 = !DIDerivedType(tag: DW_TAG_member, name: "size", scope: !25, file: !24, line: 22, baseType: !15, size: 32, align: 32)
-!28 = !DIDerivedType(tag: DW_TAG_member, name: "maxsize", scope: !25, file: !24, line: 23, baseType: !15, size: 32, align: 32, offset: 32)
-!29 = !DIDerivedType(tag: DW_TAG_member, name: "owned", scope: !25, file: !24, line: 24, baseType: !15, size: 32, align: 32, offset: 64)
-!30 = !DIDerivedType(tag: DW_TAG_member, name: "vec", scope: !25, file: !24, line: 25, baseType: !18, size: 64, align: 64, offset: 128)
-!31 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!32 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!33 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !34, size: 64, align: 64)
-!34 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!35 = !{!36, !43, !48, !51}
-!36 = !DISubprogram(name: "DSTree_new", scope: !1, file: !1, line: 17, type: !37, isLocal: false, isDefinition: true, scopeLine: 19, flags: DIFlagPrototyped, isOptimized: true, function: %struct._DSTree* ()* @DSTree_new, variables: !41)
-!37 = !DISubroutineType(types: !38)
-!38 = !{!39}
-!39 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !40, size: 64, align: 64)
-!40 = !DIDerivedType(tag: DW_TAG_typedef, name: "DSTree", file: !6, line: 22, baseType: !5)
-!41 = !{!42}
-!42 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "dstree", scope: !36, file: !1, line: 20, type: !39)
-!43 = !DISubprogram(name: "DSTree_setDefaultFields", scope: !1, file: !1, line: 47, type: !44, isLocal: false, isDefinition: true, scopeLine: 49, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._DSTree*)* @DSTree_setDefaultFields, variables: !46)
-!44 = !DISubroutineType(types: !45)
-!45 = !{null, !39}
-!46 = !{!47}
-!47 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "dstree", arg: 1, scope: !43, file: !1, line: 48, type: !39)
-!48 = !DISubprogram(name: "DSTree_clearData", scope: !1, file: !1, line: 80, type: !44, isLocal: false, isDefinition: true, scopeLine: 82, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._DSTree*)* @DSTree_clearData, variables: !49)
-!49 = !{!50}
-!50 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "dstree", arg: 1, scope: !48, file: !1, line: 81, type: !39)
-!51 = !DISubprogram(name: "DSTree_free", scope: !1, file: !1, line: 119, type: !44, isLocal: false, isDefinition: true, scopeLine: 121, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._DSTree*)* @DSTree_free, variables: !52)
-!52 = !{!53}
-!53 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "dstree", arg: 1, scope: !51, file: !1, line: 120, type: !39)
-!54 = !{i32 2, !"Dwarf Version", i32 2}
-!55 = !{i32 2, !"Debug Info Version", i32 700000003}
-!56 = !{i32 1, !"PIC Level", i32 2}
-!57 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!58 = !DILocation(line: 27, column: 1, scope: !59)
-!59 = distinct !DILexicalBlock(scope: !60, file: !1, line: 27, column: 1)
-!60 = distinct !DILexicalBlock(scope: !61, file: !1, line: 27, column: 1)
-!61 = distinct !DILexicalBlock(scope: !36, file: !1, line: 27, column: 1)
-!62 = !DIExpression()
-!63 = !DILocation(line: 20, column: 11, scope: !36)
-!64 = !DILocation(line: 27, column: 1, scope: !60)
-!65 = !DILocation(line: 27, column: 1, scope: !66)
-!66 = distinct !DILexicalBlock(scope: !59, file: !1, line: 27, column: 1)
-!67 = !{!68, !68, i64 0}
-!68 = !{!"any pointer", !69, i64 0}
-!69 = !{!"omnipotent char", !70, i64 0}
-!70 = !{!"Simple C/C++ TBAA"}
-!71 = !DILocation(line: 29, column: 1, scope: !36)
-!72 = !DILocation(line: 36, column: 1, scope: !36)
-!73 = !DILocation(line: 48, column: 14, scope: !43)
-!74 = !DILocation(line: 56, column: 13, scope: !75)
-!75 = distinct !DILexicalBlock(scope: !43, file: !1, line: 56, column: 6)
-!76 = !DILocation(line: 56, column: 6, scope: !43)
-!77 = !DILocation(line: 57, column: 12, scope: !78)
-!78 = distinct !DILexicalBlock(scope: !75, file: !1, line: 56, column: 23)
-!79 = !DILocation(line: 57, column: 4, scope: !78)
-!80 = !DILocation(line: 59, column: 4, scope: !78)
-!81 = !DILocation(line: 69, column: 1, scope: !43)
-!82 = !DILocation(line: 62, column: 15, scope: !43)
-!83 = !DILocation(line: 81, column: 14, scope: !48)
-!84 = !DILocation(line: 88, column: 13, scope: !85)
-!85 = distinct !DILexicalBlock(scope: !48, file: !1, line: 88, column: 6)
-!86 = !DILocation(line: 88, column: 6, scope: !48)
-!87 = !DILocation(line: 89, column: 12, scope: !88)
-!88 = distinct !DILexicalBlock(scope: !85, file: !1, line: 88, column: 23)
-!89 = !DILocation(line: 89, column: 4, scope: !88)
-!90 = !DILocation(line: 91, column: 4, scope: !88)
-!91 = !DILocation(line: 94, column: 14, scope: !92)
-!92 = distinct !DILexicalBlock(scope: !48, file: !1, line: 94, column: 6)
-!93 = !{!94, !68, i64 0}
-!94 = !{!"_DSTree", !68, i64 0, !68, i64 8}
-!95 = !DILocation(line: 94, column: 19, scope: !92)
-!96 = !DILocation(line: 94, column: 6, scope: !48)
-!97 = !DILocation(line: 95, column: 4, scope: !98)
-!98 = distinct !DILexicalBlock(scope: !92, file: !1, line: 94, column: 29)
-!99 = !DILocation(line: 96, column: 22, scope: !98)
-!100 = !DILocation(line: 96, column: 4, scope: !98)
-!101 = !DILocation(line: 97, column: 1, scope: !98)
-!102 = !DILocation(line: 98, column: 14, scope: !103)
-!103 = distinct !DILexicalBlock(scope: !48, file: !1, line: 98, column: 6)
-!104 = !{!94, !68, i64 8}
-!105 = !DILocation(line: 98, column: 20, scope: !103)
-!106 = !DILocation(line: 98, column: 6, scope: !48)
-!107 = !DILocation(line: 99, column: 4, scope: !108)
-!108 = distinct !DILexicalBlock(scope: !103, file: !1, line: 98, column: 30)
-!109 = !DILocation(line: 100, column: 1, scope: !108)
-!110 = !DILocation(line: 101, column: 1, scope: !48)
-!111 = !DILocation(line: 108, column: 1, scope: !48)
-!112 = !DILocation(line: 120, column: 14, scope: !51)
-!113 = !DILocation(line: 127, column: 13, scope: !114)
-!114 = distinct !DILexicalBlock(scope: !51, file: !1, line: 127, column: 6)
-!115 = !DILocation(line: 127, column: 6, scope: !51)
-!116 = !DILocation(line: 128, column: 12, scope: !117)
-!117 = distinct !DILexicalBlock(scope: !114, file: !1, line: 127, column: 23)
-!118 = !DILocation(line: 128, column: 4, scope: !117)
-!119 = !DILocation(line: 130, column: 4, scope: !117)
-!120 = !DILocation(line: 133, column: 1, scope: !51)
-!121 = !DILocation(line: 134, column: 1, scope: !122)
-!122 = distinct !DILexicalBlock(scope: !123, file: !1, line: 134, column: 1)
-!123 = distinct !DILexicalBlock(scope: !51, file: !1, line: 134, column: 1)
-!124 = !DILocation(line: 141, column: 1, scope: !51)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !38, metadata !43, metadata !46}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DSTree_new", metadata !"DSTree_new", metadata !"", i32 17, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct._DSTree* ()* @DSTree_new, null, null, metadata !36, i32 19} ; [ DW_TAG_subprogram ] [line 17] [def] [scope 19] [DSTree_new]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from DSTree]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"DSTree", i32 22, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [DSTree] [line 22, size 0, align 0, offset 0] [from _DSTree]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"_DSTree", i32 23, i64 128, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [_DSTree] [line 23, size 128, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/../DSTree.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13, metadata !26}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"tree", i32 24, i64 64, i64 64, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [tree] [line 24, size 64, align 64, offset 0] [from ]
+!14 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !15} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from Tree]
+!15 = metadata !{i32 786454, metadata !11, null, metadata !"Tree", i32 15, i64 0, i64 0, i64 0, i32 0, metadata !16} ; [ DW_TAG_typedef ] [Tree] [line 15, size 0, align 0, offset 0] [from _Tree]
+!16 = metadata !{i32 786451, metadata !17, null, metadata !"_Tree", i32 16, i64 256, i64 64, i32 0, i32 0, null, metadata !18, i32 0, null, null} ; [ DW_TAG_structure_type ] [_Tree] [line 16, size 256, align 64, offset 0] [from ]
+!17 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/../../Tree/Tree.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!18 = metadata !{metadata !19, metadata !21, metadata !22, metadata !24, metadata !25}
+!19 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"n", i32 17, i64 32, i64 32, i64 0, i32 0, metadata !20} ; [ DW_TAG_member ] [n] [line 17, size 32, align 32, offset 0] [from int]
+!20 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!21 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"root", i32 18, i64 32, i64 32, i64 32, i32 0, metadata !20} ; [ DW_TAG_member ] [root] [line 18, size 32, align 32, offset 32] [from int]
+!22 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"par", i32 19, i64 64, i64 64, i64 64, i32 0, metadata !23} ; [ DW_TAG_member ] [par] [line 19, size 64, align 64, offset 64] [from ]
+!23 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !20} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!24 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"fch", i32 20, i64 64, i64 64, i64 128, i32 0, metadata !23} ; [ DW_TAG_member ] [fch] [line 20, size 64, align 64, offset 128] [from ]
+!25 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"sib", i32 21, i64 64, i64 64, i64 192, i32 0, metadata !23} ; [ DW_TAG_member ] [sib] [line 21, size 64, align 64, offset 192] [from ]
+!26 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"mapIV", i32 25, i64 64, i64 64, i64 64, i32 0, metadata !27} ; [ DW_TAG_member ] [mapIV] [line 25, size 64, align 64, offset 64] [from ]
+!27 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !28} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from IV]
+!28 = metadata !{i32 786454, metadata !11, null, metadata !"IV", i32 20, i64 0, i64 0, i64 0, i32 0, metadata !29} ; [ DW_TAG_typedef ] [IV] [line 20, size 0, align 0, offset 0] [from _IV]
+!29 = metadata !{i32 786451, metadata !30, null, metadata !"_IV", i32 21, i64 192, i64 64, i32 0, i32 0, null, metadata !31, i32 0, null, null} ; [ DW_TAG_structure_type ] [_IV] [line 21, size 192, align 64, offset 0] [from ]
+!30 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/../../IV/IV.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!31 = metadata !{metadata !32, metadata !33, metadata !34, metadata !35}
+!32 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"size", i32 22, i64 32, i64 32, i64 0, i32 0, metadata !20} ; [ DW_TAG_member ] [size] [line 22, size 32, align 32, offset 0] [from int]
+!33 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"maxsize", i32 23, i64 32, i64 32, i64 32, i32 0, metadata !20} ; [ DW_TAG_member ] [maxsize] [line 23, size 32, align 32, offset 32] [from int]
+!34 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"owned", i32 24, i64 32, i64 32, i64 64, i32 0, metadata !20} ; [ DW_TAG_member ] [owned] [line 24, size 32, align 32, offset 64] [from int]
+!35 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"vec", i32 25, i64 64, i64 64, i64 128, i32 0, metadata !23} ; [ DW_TAG_member ] [vec] [line 25, size 64, align 64, offset 128] [from ]
+!36 = metadata !{metadata !37}
+!37 = metadata !{i32 786688, metadata !4, metadata !"dstree", metadata !5, i32 20, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [dstree] [line 20]
+!38 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DSTree_setDefaultFields", metadata !"DSTree_setDefaultFields", metadata !"", i32 47, metadata !39, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._DSTree*)* @DSTree_setDefaultFields, null, null, metadata !41, i32 49} ; [ DW_TAG_subprogram ] [line 47] [def] [scope 49] [DSTree_setDefaultFields]
+!39 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !40, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!40 = metadata !{null, metadata !8}
+!41 = metadata !{metadata !42}
+!42 = metadata !{i32 786689, metadata !38, metadata !"dstree", metadata !5, i32 16777264, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [dstree] [line 48]
+!43 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DSTree_clearData", metadata !"DSTree_clearData", metadata !"", i32 80, metadata !39, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._DSTree*)* @DSTree_clearData, null, null, metadata !44, i32 82} ; [ DW_TAG_subprogram ] [line 80] [def] [scope 82] [DSTree_clearData]
+!44 = metadata !{metadata !45}
+!45 = metadata !{i32 786689, metadata !43, metadata !"dstree", metadata !5, i32 16777297, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [dstree] [line 81]
+!46 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DSTree_free", metadata !"DSTree_free", metadata !"", i32 119, metadata !39, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._DSTree*)* @DSTree_free, null, null, metadata !47, i32 121} ; [ DW_TAG_subprogram ] [line 119] [def] [scope 121] [DSTree_free]
+!47 = metadata !{metadata !48}
+!48 = metadata !{i32 786689, metadata !46, metadata !"dstree", metadata !5, i32 16777336, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [dstree] [line 120]
+!49 = metadata !{i32 27, i32 0, metadata !50, null}
+!50 = metadata !{i32 786443, metadata !1, metadata !4, i32 27, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c]
+!51 = metadata !{i32 27, i32 0, metadata !52, null}
+!52 = metadata !{i32 786443, metadata !1, metadata !50, i32 27, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c]
+!53 = metadata !{metadata !"any pointer", metadata !54}
+!54 = metadata !{metadata !"omnipotent char", metadata !55}
+!55 = metadata !{metadata !"Simple C/C++ TBAA"}
+!56 = metadata !{i32 29, i32 0, metadata !4, null}
+!57 = metadata !{i32 36, i32 0, metadata !4, null}
+!58 = metadata !{i32 48, i32 0, metadata !38, null}
+!59 = metadata !{i32 56, i32 0, metadata !38, null}
+!60 = metadata !{i32 57, i32 0, metadata !61, null}
+!61 = metadata !{i32 786443, metadata !1, metadata !38, i32 56, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c]
+!62 = metadata !{i32 59, i32 0, metadata !61, null}
+!63 = metadata !{i32 69, i32 0, metadata !38, null}
+!64 = metadata !{i32 62, i32 0, metadata !38, null}
+!65 = metadata !{i32 81, i32 0, metadata !43, null}
+!66 = metadata !{i32 88, i32 0, metadata !43, null}
+!67 = metadata !{i32 89, i32 0, metadata !68, null}
+!68 = metadata !{i32 786443, metadata !1, metadata !43, i32 88, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c]
+!69 = metadata !{i32 91, i32 0, metadata !68, null}
+!70 = metadata !{i32 94, i32 0, metadata !43, null}
+!71 = metadata !{i32 95, i32 0, metadata !72, null}
+!72 = metadata !{i32 786443, metadata !1, metadata !43, i32 94, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c]
+!73 = metadata !{i32 96, i32 0, metadata !72, null}
+!74 = metadata !{i32 97, i32 0, metadata !72, null}
+!75 = metadata !{i32 98, i32 0, metadata !43, null}
+!76 = metadata !{i32 99, i32 0, metadata !77, null}
+!77 = metadata !{i32 786443, metadata !1, metadata !43, i32 98, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c]
+!78 = metadata !{i32 100, i32 0, metadata !77, null}
+!79 = metadata !{i32 101, i32 0, metadata !43, null}
+!80 = metadata !{i32 108, i32 0, metadata !43, null}
+!81 = metadata !{i32 120, i32 0, metadata !46, null}
+!82 = metadata !{i32 127, i32 0, metadata !46, null}
+!83 = metadata !{i32 128, i32 0, metadata !84, null}
+!84 = metadata !{i32 786443, metadata !1, metadata !46, i32 127, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c]
+!85 = metadata !{i32 130, i32 0, metadata !84, null}
+!86 = metadata !{i32 133, i32 0, metadata !46, null}
+!87 = metadata !{i32 134, i32 0, metadata !88, null}
+!88 = metadata !{i32 786443, metadata !1, metadata !46, i32 134, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DSTree/src/DSTree_basics.c]
+!89 = metadata !{%struct._DSTree* null}
+!90 = metadata !{i32 141, i32 0, metadata !46, null}

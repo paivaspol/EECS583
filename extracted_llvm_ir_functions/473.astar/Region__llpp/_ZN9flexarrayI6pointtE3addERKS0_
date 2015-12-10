@@ -1,52 +1,31 @@
-define linkonce_odr void @_ZN9flexarrayI6pointtE3addERKS0_(%class.flexarray* nocapture %this, %struct.pointt* nocapture readonly dereferenceable(8) %e) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.flexarray* %this, i64 0, metadata !391, metadata !443), !dbg !538
-  tail call void @llvm.dbg.value(metadata %struct.pointt* %e, i64 0, metadata !393, metadata !443), !dbg !539
-  %1 = getelementptr inbounds %class.flexarray* %this, i64 0, i32 1, !dbg !540
-  %2 = load i32* %1, align 4, !dbg !540, !tbaa !542
-  %3 = getelementptr inbounds %class.flexarray* %this, i64 0, i32 2, !dbg !544
-  %4 = load i32* %3, align 4, !dbg !544, !tbaa !545
-  %5 = icmp eq i32 %2, %4, !dbg !546
-  br i1 %5, label %6, label %._crit_edge, !dbg !547
+define linkonce_odr void @_ZN9flexarrayI6pointtE3addERKS0_(%class.flexarray* nocapture %this, %struct.pointt* nocapture %e) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray* %this}, i64 0, metadata !479), !dbg !574
+  tail call void @llvm.dbg.value(metadata !{%struct.pointt* %e}, i64 0, metadata !480), !dbg !574
+  %elemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 1, !dbg !575
+  %0 = load i32* %elemqu, align 4, !dbg !575, !tbaa !535
+  %maxelemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 2, !dbg !575
+  %1 = load i32* %maxelemqu, align 4, !dbg !575, !tbaa !535
+  %cmp = icmp eq i32 %0, %1, !dbg !575
+  br i1 %cmp, label %if.then, label %if.end, !dbg !575
 
-._crit_edge:                                      ; preds = %0
-  %.phi.trans.insert = getelementptr inbounds %class.flexarray* %this, i64 0, i32 0
-  %.pre1 = load %struct.pointt** %.phi.trans.insert, align 8, !dbg !548, !tbaa !549
-  br label %16, !dbg !547
+if.then:                                          ; preds = %entry
+  tail call void @_ZN9flexarrayI6pointtE8doublingEb(%class.flexarray* %this, i1 zeroext true) #4, !dbg !575
+  %.pre = load i32* %elemqu, align 4, !dbg !576, !tbaa !535
+  br label %if.end, !dbg !575
 
-; <label>:6                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata %class.flexarray* %this, i64 0, metadata !396, metadata !443) #1, !dbg !550
-  tail call void @llvm.dbg.value(metadata i1 true, i64 0, metadata !397, metadata !443) #1, !dbg !552
-  %7 = shl i32 %2, 1, !dbg !553
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !399, metadata !443) #1, !dbg !554
-  %8 = shl i32 %2, 4, !dbg !555
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !405, metadata !443) #1, !dbg !556
-  tail call void @llvm.dbg.value(metadata i32 16, i64 0, metadata !406, metadata !443) #1, !dbg !558
-  %9 = sext i32 %8 to i64, !dbg !559
-  %10 = tail call i8* @malloc(i64 %9) #5, !dbg !560
-  %11 = bitcast %class.flexarray* %this to i8**, !dbg !561
-  %12 = load i8** %11, align 8, !dbg !561, !tbaa !549
-  %13 = sext i32 %2 to i64, !dbg !563
-  %14 = shl nsw i64 %13, 3, !dbg !564
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %12, i64 %14, i32 4, i1 false) #1, !dbg !565
-  tail call void @llvm.dbg.value(metadata i8* %12, i64 0, metadata !411, metadata !443) #1, !dbg !566
-  tail call void @free(i8* %12) #5, !dbg !568
-  store i8* %10, i8** %11, align 8, !dbg !569, !tbaa !549
-  store i32 %7, i32* %3, align 4, !dbg !570, !tbaa !545
-  %.pre = load i32* %1, align 4, !dbg !571, !tbaa !542
-  %15 = bitcast i8* %10 to %struct.pointt*
-  br label %16, !dbg !572
-
-; <label>:16                                      ; preds = %._crit_edge, %6
-  %17 = phi %struct.pointt* [ %15, %6 ], [ %.pre1, %._crit_edge ]
-  %18 = phi i32 [ %.pre, %6 ], [ %2, %._crit_edge ]
-  %19 = sext i32 %18 to i64, !dbg !548
-  %20 = getelementptr inbounds %struct.pointt* %17, i64 %19, !dbg !548
-  %21 = bitcast %struct.pointt* %e to i64*, !dbg !573
-  %22 = bitcast %struct.pointt* %20 to i64*, !dbg !573
-  %23 = load i64* %21, align 4, !dbg !573
-  store i64 %23, i64* %22, align 4, !dbg !573
-  %24 = load i32* %1, align 4, !dbg !574, !tbaa !542
-  %25 = add nsw i32 %24, 1, !dbg !574
-  store i32 %25, i32* %1, align 4, !dbg !574, !tbaa !542
-  ret void, !dbg !575
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %idxprom = sext i32 %2 to i64, !dbg !576
+  %ep = getelementptr inbounds %class.flexarray* %this, i64 0, i32 0, !dbg !576
+  %3 = load %struct.pointt** %ep, align 8, !dbg !576, !tbaa !526
+  %arrayidx = getelementptr inbounds %struct.pointt* %3, i64 %idxprom, !dbg !576
+  %4 = bitcast %struct.pointt* %e to i64*, !dbg !576
+  %5 = bitcast %struct.pointt* %arrayidx to i64*, !dbg !576
+  %6 = load i64* %4, align 4, !dbg !576
+  store i64 %6, i64* %5, align 4, !dbg !576
+  %7 = load i32* %elemqu, align 4, !dbg !577, !tbaa !535
+  %inc = add nsw i32 %7, 1, !dbg !577
+  store i32 %inc, i32* %elemqu, align 4, !dbg !577, !tbaa !535
+  ret void, !dbg !578
 }

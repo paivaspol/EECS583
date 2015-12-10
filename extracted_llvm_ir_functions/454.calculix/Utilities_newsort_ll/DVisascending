@@ -1,32 +1,33 @@
-define i32 @DVisascending(i32 %n, double* nocapture readonly %dvec) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !30, metadata !512), !dbg !553
-  tail call void @llvm.dbg.value(metadata double* %dvec, i64 0, metadata !31, metadata !512), !dbg !554
-  %1 = icmp slt i32 %n, 1, !dbg !555
-  br i1 %1, label %.loopexit, label %2, !dbg !556
+define i32 @DVisascending(i32 %n, double* nocapture %dvec) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !27), !dbg !522
+  tail call void @llvm.dbg.value(metadata !{double* %dvec}, i64 0, metadata !28), !dbg !523
+  %cmp = icmp slt i32 %n, 1, !dbg !524
+  br i1 %cmp, label %return, label %if.else, !dbg !524
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp eq i32 %n, 1, !dbg !557
-  br i1 %3, label %.loopexit, label %.lr.ph, !dbg !558
+if.else:                                          ; preds = %entry
+  %cmp1 = icmp eq i32 %n, 1, !dbg !525
+  br i1 %cmp1, label %return, label %for.body.lr.ph, !dbg !525
 
-.lr.ph:                                           ; preds = %2
-  %4 = sext i32 %n to i64, !dbg !559
-  %.pre = load double* %dvec, align 8, !dbg !561, !tbaa !565
-  br label %7, !dbg !559
+for.body.lr.ph:                                   ; preds = %if.else
+  %.pre = load double* %dvec, align 8, !dbg !526, !tbaa !529
+  br label %for.body, !dbg !530
 
-; <label>:5                                       ; preds = %7
-  %6 = icmp slt i64 %indvars.iv.next, %4, !dbg !567
-  br i1 %6, label %7, label %.loopexit, !dbg !559
+for.cond:                                         ; preds = %for.body
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !530
+  %cmp4 = icmp slt i32 %0, %n, !dbg !530
+  br i1 %cmp4, label %for.body, label %return, !dbg !530
 
-; <label>:7                                       ; preds = %.lr.ph, %5
-  %8 = phi double [ %.pre, %.lr.ph ], [ %10, %5 ], !dbg !568
-  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %5 ]
-  %9 = getelementptr inbounds double* %dvec, i64 %indvars.iv, !dbg !569
-  %10 = load double* %9, align 8, !dbg !569, !tbaa !565
-  %11 = fcmp ogt double %8, %10, !dbg !570
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !559
-  br i1 %11, label %.loopexit, label %5, !dbg !571
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %1 = phi double [ %.pre, %for.body.lr.ph ], [ %2, %for.cond ], !dbg !526
+  %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %arrayidx6 = getelementptr inbounds double* %dvec, i64 %indvars.iv, !dbg !526
+  %2 = load double* %arrayidx6, align 8, !dbg !526, !tbaa !529
+  %cmp7 = fcmp ogt double %1, %2, !dbg !526
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !530
+  br i1 %cmp7, label %return, label %for.cond, !dbg !526
 
-.loopexit:                                        ; preds = %7, %5, %2, %0
-  %.0 = phi i32 [ 0, %0 ], [ 1, %2 ], [ 1, %5 ], [ 0, %7 ]
-  ret i32 %.0, !dbg !572
+return:                                           ; preds = %for.body, %for.cond, %if.else, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %if.else ], [ 0, %for.body ], [ 1, %for.cond ]
+  ret i32 %retval.0, !dbg !531
 }

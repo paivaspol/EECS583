@@ -1,42 +1,44 @@
 define i32 @optimize_tail_recursion(%union.tree_node* %arguments, %struct.rtx_def* %last_insn) #0 {
 entry:
-  %0 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
-  %arguments1 = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 10
-  %1 = load %union.tree_node** %arguments1, align 8, !tbaa !0
-  %call = tail call fastcc i32 @tail_recursion_args(%union.tree_node* %arguments, %union.tree_node* %1) #9
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %arguments}, i64 0, metadata !1695), !dbg !3614
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %last_insn}, i64 0, metadata !1696), !dbg !3615
+  %0 = load %union.tree_node** @current_function_decl, align 8, !dbg !3616, !tbaa !2438
+  %arguments1 = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 10, !dbg !3616
+  %1 = load %union.tree_node** %arguments1, align 8, !dbg !3616, !tbaa !2438
+  %call = tail call fastcc i32 @tail_recursion_args(%union.tree_node* %arguments, %union.tree_node* %1) #10, !dbg !3616
+  %tobool = icmp eq i32 %call, 0, !dbg !3616
+  br i1 %tobool, label %return, label %if.then, !dbg !3616
 
 if.then:                                          ; preds = %entry
-  %2 = load %struct.function** @cfun, align 8, !tbaa !0
-  %x_tail_recursion_label = getelementptr inbounds %struct.function* %2, i64 0, i32 28
-  %3 = load %struct.rtx_def** %x_tail_recursion_label, align 8, !tbaa !0
-  %cmp = icmp eq %struct.rtx_def* %3, null
-  br i1 %cmp, label %if.then2, label %if.end
+  %2 = load %struct.function** @cfun, align 8, !dbg !3617, !tbaa !2438
+  %x_tail_recursion_label = getelementptr inbounds %struct.function* %2, i64 0, i32 28, !dbg !3617
+  %3 = load %struct.rtx_def** %x_tail_recursion_label, align 8, !dbg !3617, !tbaa !2438
+  %cmp = icmp eq %struct.rtx_def* %3, null, !dbg !3617
+  br i1 %cmp, label %if.then2, label %if.end, !dbg !3617
 
 if.then2:                                         ; preds = %if.then
-  %call3 = tail call %struct.rtx_def* @gen_label_rtx() #7
-  %4 = load %struct.function** @cfun, align 8, !tbaa !0
-  %x_tail_recursion_label4 = getelementptr inbounds %struct.function* %4, i64 0, i32 28
-  store %struct.rtx_def* %call3, %struct.rtx_def** %x_tail_recursion_label4, align 8, !tbaa !0
-  %5 = load %struct.function** @cfun, align 8, !tbaa !0
-  %x_tail_recursion_label5 = getelementptr inbounds %struct.function* %5, i64 0, i32 28
-  %6 = load %struct.rtx_def** %x_tail_recursion_label5, align 8, !tbaa !0
-  %x_tail_recursion_reentry = getelementptr inbounds %struct.function* %5, i64 0, i32 29
-  %7 = load %struct.rtx_def** %x_tail_recursion_reentry, align 8, !tbaa !0
-  %call6 = tail call %struct.rtx_def* @emit_label_after(%struct.rtx_def* %6, %struct.rtx_def* %7) #7
-  br label %if.end
+  %call3 = tail call %struct.rtx_def* @gen_label_rtx() #8, !dbg !3619
+  %4 = load %struct.function** @cfun, align 8, !dbg !3619, !tbaa !2438
+  %x_tail_recursion_label4 = getelementptr inbounds %struct.function* %4, i64 0, i32 28, !dbg !3619
+  store %struct.rtx_def* %call3, %struct.rtx_def** %x_tail_recursion_label4, align 8, !dbg !3619, !tbaa !2438
+  %5 = load %struct.function** @cfun, align 8, !dbg !3621, !tbaa !2438
+  %x_tail_recursion_label5 = getelementptr inbounds %struct.function* %5, i64 0, i32 28, !dbg !3621
+  %6 = load %struct.rtx_def** %x_tail_recursion_label5, align 8, !dbg !3621, !tbaa !2438
+  %x_tail_recursion_reentry = getelementptr inbounds %struct.function* %5, i64 0, i32 29, !dbg !3621
+  %7 = load %struct.rtx_def** %x_tail_recursion_reentry, align 8, !dbg !3621, !tbaa !2438
+  %call6 = tail call %struct.rtx_def* @emit_label_after(%struct.rtx_def* %6, %struct.rtx_def* %7) #8, !dbg !3621
+  br label %if.end, !dbg !3622
 
 if.end:                                           ; preds = %if.then2, %if.then
-  tail call void @emit_queue() #7
-  %8 = load %struct.function** @cfun, align 8, !tbaa !0
-  %x_tail_recursion_label7 = getelementptr inbounds %struct.function* %8, i64 0, i32 28
-  %9 = load %struct.rtx_def** %x_tail_recursion_label7, align 8, !tbaa !0
-  tail call fastcc void @expand_goto_internal(%union.tree_node* null, %struct.rtx_def* %9, %struct.rtx_def* %last_insn) #9
-  %call8 = tail call %struct.rtx_def* @emit_barrier() #7
-  br label %return
+  tail call void @emit_queue() #8, !dbg !3623
+  %8 = load %struct.function** @cfun, align 8, !dbg !3624, !tbaa !2438
+  %x_tail_recursion_label7 = getelementptr inbounds %struct.function* %8, i64 0, i32 28, !dbg !3624
+  %9 = load %struct.rtx_def** %x_tail_recursion_label7, align 8, !dbg !3624, !tbaa !2438
+  tail call fastcc void @expand_goto_internal(%union.tree_node* null, %struct.rtx_def* %9, %struct.rtx_def* %last_insn) #10, !dbg !3624
+  %call8 = tail call %struct.rtx_def* @emit_barrier() #8, !dbg !3625
+  br label %return, !dbg !3626
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3627
 }

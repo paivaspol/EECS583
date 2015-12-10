@@ -1,27 +1,28 @@
 define void @PatchInputNoFrames() #2 {
-  %1 = load %struct.InputParameters** @input, align 8, !dbg !2201, !tbaa !852
-  %2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 2, !dbg !2202
-  %3 = load i32* %2, align 4, !dbg !2202, !tbaa !1195
-  %4 = add nsw i32 %3, -1, !dbg !2203
-  %5 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 99, !dbg !2204
-  %6 = load i32* %5, align 4, !dbg !2204, !tbaa !1639
-  %7 = add nsw i32 %6, 1, !dbg !2205
-  %8 = mul nsw i32 %7, %4, !dbg !2206
-  %9 = add nsw i32 %8, 1, !dbg !2207
-  store i32 %9, i32* %2, align 4, !dbg !2208, !tbaa !1195
-  %10 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 100, !dbg !2209
-  %11 = load i32* %10, align 4, !dbg !2209, !tbaa !2211
-  %12 = icmp eq i32 %11, 0, !dbg !2212
-  br i1 %12, label %17, label %13, !dbg !2213
+entry:
+  %0 = load %struct.InputParameters** @input, align 8, !dbg !1465, !tbaa !833
+  %no_frames = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 2, !dbg !1465
+  %1 = load i32* %no_frames, align 4, !dbg !1465, !tbaa !848
+  %sub = add nsw i32 %1, -1, !dbg !1465
+  %NumFramesInELSubSeq = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 99, !dbg !1465
+  %2 = load i32* %NumFramesInELSubSeq, align 4, !dbg !1465, !tbaa !848
+  %add = add nsw i32 %2, 1, !dbg !1465
+  %mul = mul nsw i32 %add, %sub, !dbg !1465
+  %add1 = add nsw i32 %mul, 1, !dbg !1465
+  store i32 %add1, i32* %no_frames, align 4, !dbg !1465, !tbaa !848
+  %NumFrameIn2ndIGOP = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 100, !dbg !1466
+  %3 = load i32* %NumFrameIn2ndIGOP, align 4, !dbg !1466, !tbaa !848
+  %tobool = icmp eq i32 %3, 0, !dbg !1466
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1466
 
-; <label>:13                                      ; preds = %0
-  %14 = add nsw i32 %11, -1, !dbg !2214
-  %15 = mul nsw i32 %7, %14, !dbg !2215
-  %16 = add nsw i32 %15, 1, !dbg !2216
-  store i32 %16, i32* %10, align 4, !dbg !2217, !tbaa !2211
-  br label %17, !dbg !2218
+if.then:                                          ; preds = %entry
+  %sub4 = add nsw i32 %3, -1, !dbg !1467
+  %mul7 = mul nsw i32 %add, %sub4, !dbg !1467
+  %add8 = add nsw i32 %mul7, 1, !dbg !1467
+  store i32 %add8, i32* %NumFrameIn2ndIGOP, align 4, !dbg !1467, !tbaa !848
+  br label %if.end, !dbg !1467
 
-; <label>:17                                      ; preds = %0, %13
-  store i32 %9, i32* @FirstFrameIn2ndIGOP, align 4, !dbg !2219, !tbaa !885
-  ret void, !dbg !2220
+if.end:                                           ; preds = %entry, %if.then
+  store i32 %add1, i32* @FirstFrameIn2ndIGOP, align 4, !dbg !1468, !tbaa !848
+  ret void, !dbg !1469
 }

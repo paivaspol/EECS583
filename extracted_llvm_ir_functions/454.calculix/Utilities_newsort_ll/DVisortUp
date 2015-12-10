@@ -1,42 +1,40 @@
 define void @DVisortUp(i32 %n, double* nocapture %dvec) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !162, metadata !512), !dbg !857
-  tail call void @llvm.dbg.value(metadata double* %dvec, i64 0, metadata !163, metadata !512), !dbg !858
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !165, metadata !512), !dbg !859
-  %1 = icmp sgt i32 %n, 1, !dbg !860
-  br i1 %1, label %.preheader.lr.ph, label %._crit_edge, !dbg !863
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !155), !dbg !688
+  tail call void @llvm.dbg.value(metadata !{double* %dvec}, i64 0, metadata !156), !dbg !689
+  tail call void @llvm.dbg.value(metadata !543, i64 0, metadata !158), !dbg !690
+  %cmp35 = icmp sgt i32 %n, 1, !dbg !690
+  br i1 %cmp35, label %land.rhs.lr.ph, label %for.end18, !dbg !690
 
-.preheader.lr.ph:                                 ; preds = %0
-  %2 = add i32 %n, -1, !dbg !863
-  br label %.lr.ph, !dbg !863
+land.rhs.lr.ph:                                   ; preds = %for.inc17, %entry
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc17 ], [ 1, %entry ]
+  %arrayidx4.phi.trans.insert = getelementptr inbounds double* %dvec, i64 %indvars.iv
+  %.pre = load double* %arrayidx4.phi.trans.insert, align 8, !dbg !692, !tbaa !529
+  br label %land.rhs, !dbg !692
 
-.lr.ph:                                           ; preds = %.preheader.lr.ph, %.critedge
-  %indvars.iv = phi i64 [ 1, %.preheader.lr.ph ], [ %indvars.iv.next, %.critedge ]
-  %.phi.trans.insert = getelementptr inbounds double* %dvec, i64 %indvars.iv
-  %.pre = load double* %.phi.trans.insert, align 8, !dbg !864, !tbaa !565
-  br label %3, !dbg !868
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.body6
+  %indvars.iv37 = phi i64 [ %indvars.iv, %land.rhs.lr.ph ], [ %indvars.iv.next38, %for.body6 ], !dbg !690
+  %indvars.iv.next38 = add i64 %indvars.iv37, -1, !dbg !692
+  %arrayidx = getelementptr inbounds double* %dvec, i64 %indvars.iv.next38, !dbg !692
+  %0 = load double* %arrayidx, align 8, !dbg !692, !tbaa !529
+  %cmp5 = fcmp ogt double %0, %.pre, !dbg !692
+  br i1 %cmp5, label %for.body6, label %for.inc17
 
-; <label>:3                                       ; preds = %.lr.ph, %7
-  %indvars.iv4 = phi i64 [ %indvars.iv, %.lr.ph ], [ %indvars.iv.next5, %7 ]
-  %indvars.iv.next5 = add nsw i64 %indvars.iv4, -1, !dbg !868
-  %4 = getelementptr inbounds double* %dvec, i64 %indvars.iv.next5, !dbg !869
-  %5 = load double* %4, align 8, !dbg !869, !tbaa !565
-  %6 = fcmp ogt double %5, %.pre, !dbg !870
-  br i1 %6, label %7, label %.critedge, !dbg !871
+for.body6:                                        ; preds = %land.rhs
+  %arrayidx4 = getelementptr inbounds double* %dvec, i64 %indvars.iv37, !dbg !692
+  tail call void @llvm.dbg.value(metadata !{double %0}, i64 0, metadata !157), !dbg !695
+  store double %.pre, double* %arrayidx, align 8, !dbg !695, !tbaa !529
+  store double %0, double* %arrayidx4, align 8, !dbg !695, !tbaa !529
+  %1 = trunc i64 %indvars.iv.next38 to i32, !dbg !692
+  %cmp2 = icmp sgt i32 %1, 0, !dbg !692
+  br i1 %cmp2, label %land.rhs, label %for.inc17, !dbg !692
 
-; <label>:7                                       ; preds = %3
-  %8 = getelementptr inbounds double* %dvec, i64 %indvars.iv4, !dbg !864
-  tail call void @llvm.dbg.value(metadata double %5, i64 0, metadata !164, metadata !512), !dbg !872
-  store double %.pre, double* %4, align 8, !dbg !873, !tbaa !565
-  store double %5, double* %8, align 8, !dbg !873, !tbaa !565
-  %9 = icmp sgt i64 %indvars.iv4, 1, !dbg !876
-  br i1 %9, label %3, label %.critedge, !dbg !868
+for.inc17:                                        ; preds = %for.body6, %land.rhs
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !690
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !690
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !690
+  br i1 %exitcond, label %for.end18, label %land.rhs.lr.ph, !dbg !690
 
-.critedge:                                        ; preds = %7, %3
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !863
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !863
-  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !863
-  br i1 %exitcond, label %._crit_edge, label %.lr.ph, !dbg !863
-
-._crit_edge:                                      ; preds = %.critedge, %0
-  ret void, !dbg !877
+for.end18:                                        ; preds = %for.inc17, %entry
+  ret void, !dbg !698
 }

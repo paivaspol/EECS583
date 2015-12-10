@@ -1,49 +1,50 @@
-define i32 @DV_writeToFormattedFile(%struct._DV* %dv, %struct.__sFILE* %fp) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !114, metadata !152), !dbg !407
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !115, metadata !152), !dbg !408
-  %1 = icmp eq %struct._DV* %dv, null, !dbg !409
-  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !411
-  %or.cond = or i1 %1, %2, !dbg !412
-  %.pre = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !413
-  br i1 %or.cond, label %._crit_edge, label %3, !dbg !412
+define i32 @DV_writeToFormattedFile(%struct._DV* %dv, %struct._IO_FILE* %fp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !108), !dbg !290
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !109), !dbg !291
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !292
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null, !dbg !292
+  %or.cond = or i1 %cmp, %cmp1, !dbg !292
+  %size5.pre = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !293
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !292
 
-; <label>:3                                       ; preds = %0
-  %4 = load i32* %.pre, align 4, !dbg !415, !tbaa !373
-  %5 = icmp slt i32 %4, 1, !dbg !416
-  br i1 %5, label %._crit_edge, label %11, !dbg !417
+lor.lhs.false2:                                   ; preds = %entry
+  %0 = load i32* %size5.pre, align 4, !dbg !292, !tbaa !198
+  %cmp4 = icmp slt i32 %0, 1, !dbg !292
+  br i1 %cmp4, label %if.then, label %if.end, !dbg !292
 
-._crit_edge:                                      ; preds = %0, %3
-  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !418, !tbaa !161
-  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([60 x i8]* @.str17, i64 0, i64 0), %struct._DV* %dv, %struct.__sFILE* %fp) #6, !dbg !419
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !420, !tbaa !161
-  %9 = load i32* %.pre, align 4, !dbg !413, !tbaa !373
-  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([16 x i8]* @.str18, i64 0, i64 0), i32 %9) #6, !dbg !421
-  tail call void @exit(i32 -1) #8, !dbg !422
-  unreachable, !dbg !422
+if.then:                                          ; preds = %entry, %lor.lhs.false2
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !295, !tbaa !149
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([60 x i8]* @.str17, i64 0, i64 0), %struct._DV* %dv, %struct._IO_FILE* %fp) #6, !dbg !295
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !293, !tbaa !149
+  %3 = load i32* %size5.pre, align 4, !dbg !293, !tbaa !198
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([16 x i8]* @.str18, i64 0, i64 0), i32 %3) #6, !dbg !293
+  tail call void @exit(i32 -1) #9, !dbg !296
+  unreachable, !dbg !296
 
-; <label>:11                                      ; preds = %3
-  %12 = tail call i32 @DV_size(%struct._DV* %dv) #6, !dbg !423
-  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !117, metadata !152), !dbg !424
-  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str19, i64 0, i64 0), i32 %12) #6, !dbg !425
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !116, metadata !152), !dbg !426
-  %14 = icmp slt i32 %13, 0, !dbg !427
-  br i1 %14, label %15, label %18, !dbg !429
+if.end:                                           ; preds = %lor.lhs.false2
+  %call7 = tail call i32 @DV_size(%struct._DV* %dv) #6, !dbg !297
+  tail call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !111), !dbg !297
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str19, i64 0, i64 0), i32 %call7) #6, !dbg !298
+  tail call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !110), !dbg !298
+  %cmp9 = icmp slt i32 %call8, 0, !dbg !299
+  br i1 %cmp9, label %if.then10, label %if.end12, !dbg !299
 
-; <label>:15                                      ; preds = %11
-  %16 = load %struct.__sFILE** @__stderrp, align 8, !dbg !430, !tbaa !161
-  %17 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %16, i8* getelementptr inbounds ([85 x i8]* @.str20, i64 0, i64 0), %struct._DV* %dv, %struct.__sFILE* %fp, i32 %13) #6, !dbg !432
-  br label %22, !dbg !433
+if.then10:                                        ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !300, !tbaa !149
+  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([85 x i8]* @.str20, i64 0, i64 0), %struct._DV* %dv, %struct._IO_FILE* %fp, i32 %call8) #6, !dbg !300
+  br label %return, !dbg !302
 
-; <label>:18                                      ; preds = %11
-  %19 = icmp sgt i32 %12, 0, !dbg !434
-  br i1 %19, label %20, label %22, !dbg !436
+if.end12:                                         ; preds = %if.end
+  %cmp13 = icmp sgt i32 %call7, 0, !dbg !303
+  br i1 %cmp13, label %if.then14, label %return, !dbg !303
 
-; <label>:20                                      ; preds = %18
-  %21 = tail call double* @DV_entries(%struct._DV* %dv) #6, !dbg !437
-  tail call void @DVfprintf(%struct.__sFILE* %fp, i32 %12, double* %21) #6, !dbg !439
-  br label %22, !dbg !440
+if.then14:                                        ; preds = %if.end12
+  %call15 = tail call double* @DV_entries(%struct._DV* %dv) #6, !dbg !304
+  tail call void @DVfprintf(%struct._IO_FILE* %fp, i32 %call7, double* %call15) #6, !dbg !304
+  br label %return, !dbg !306
 
-; <label>:22                                      ; preds = %18, %20, %15
-  %.0 = phi i32 [ 0, %15 ], [ 1, %20 ], [ 1, %18 ]
-  ret i32 %.0, !dbg !441
+return:                                           ; preds = %if.end12, %if.then14, %if.then10
+  %retval.0 = phi i32 [ 0, %if.then10 ], [ 1, %if.then14 ], [ 1, %if.end12 ]
+  ret i32 %retval.0, !dbg !307
 }

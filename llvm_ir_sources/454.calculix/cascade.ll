@@ -1,6 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/cascade.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 @.str = private unnamed_addr constant [126 x i8] c"*ERROR in cascade: the DOF corresponding to \0A node %d in direction %d is detected on the \0A dependent side of a MPC and a SPC\0A\00", align 1
 @.str1 = private unnamed_addr constant [21 x i8] c"                    \00", align 1
@@ -16,1233 +16,991 @@ target triple = "x86_64-apple-macosx10.10.0"
 @str14 = private unnamed_addr constant [34 x i8] c"*INFO in cascade: linear MPCs and\00"
 @str15 = private unnamed_addr constant [44 x i8] c"       nonlinear MPCs depend on each other\0A\00"
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @cascade(i32* nocapture readonly %ipompc, double** nocapture %coefmpcp, i32** nocapture %nodempcp, i32* %nmpc, i32* nocapture %mpcfree, i32* nocapture readnone %nodeboun, i32* nocapture readnone %ndirboun, i32* %nboun, i32* %ikmpc, i32* nocapture readonly %ilmpc, i32* %ikboun, i32* nocapture readnone %ilboun, i32* nocapture %mpcend, i32* nocapture %mpcmult, i8* %labmpc, i32 %labmpcLen, i32* nocapture readnone %nk, i32* nocapture %memmpc_, i32* nocapture %icascade, i32* nocapture %maxlenmpc, i32* nocapture readonly %callfrommain) #0 {
+; Function Attrs: nounwind optsize uwtable
+define void @cascade(i32* nocapture %ipompc, double** nocapture %coefmpcp, i32** nocapture %nodempcp, i32* %nmpc, i32* nocapture %mpcfree, i32* nocapture %nodeboun, i32* nocapture %ndirboun, i32* %nboun, i32* %ikmpc, i32* nocapture %ilmpc, i32* %ikboun, i32* nocapture %ilboun, i32* nocapture %mpcend, i32* nocapture %mpcmult, i8* %labmpc, i32 %labmpcLen, i32* nocapture %nk, i32* nocapture %memmpc_, i32* nocapture %icascade, i32* nocapture %maxlenmpc, i32* nocapture %callfrommain) #0 {
+entry:
   %id = alloca i32, align 4
   %idof = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata i32* %ipompc, i64 0, metadata !17, metadata !78), !dbg !79
-  tail call void @llvm.dbg.value(metadata double** %coefmpcp, i64 0, metadata !18, metadata !78), !dbg !80
-  tail call void @llvm.dbg.value(metadata i32** %nodempcp, i64 0, metadata !19, metadata !78), !dbg !81
-  tail call void @llvm.dbg.value(metadata i32* %nmpc, i64 0, metadata !20, metadata !78), !dbg !82
-  tail call void @llvm.dbg.value(metadata i32* %mpcfree, i64 0, metadata !21, metadata !78), !dbg !83
-  tail call void @llvm.dbg.value(metadata i32* %nodeboun, i64 0, metadata !22, metadata !78), !dbg !84
-  tail call void @llvm.dbg.value(metadata i32* %ndirboun, i64 0, metadata !23, metadata !78), !dbg !85
-  tail call void @llvm.dbg.value(metadata i32* %nboun, i64 0, metadata !24, metadata !78), !dbg !86
-  tail call void @llvm.dbg.value(metadata i32* %ikmpc, i64 0, metadata !25, metadata !78), !dbg !87
-  tail call void @llvm.dbg.value(metadata i32* %ilmpc, i64 0, metadata !26, metadata !78), !dbg !88
-  tail call void @llvm.dbg.value(metadata i32* %ikboun, i64 0, metadata !27, metadata !78), !dbg !89
-  tail call void @llvm.dbg.value(metadata i32* %ilboun, i64 0, metadata !28, metadata !78), !dbg !90
-  tail call void @llvm.dbg.value(metadata i32* %mpcend, i64 0, metadata !29, metadata !78), !dbg !91
-  tail call void @llvm.dbg.value(metadata i32* %mpcmult, i64 0, metadata !30, metadata !78), !dbg !92
-  tail call void @llvm.dbg.value(metadata i8* %labmpc, i64 0, metadata !31, metadata !78), !dbg !93
-  tail call void @llvm.dbg.value(metadata i32 %labmpcLen, i64 0, metadata !32, metadata !78), !dbg !94
-  tail call void @llvm.dbg.value(metadata i32* %nk, i64 0, metadata !33, metadata !78), !dbg !95
-  tail call void @llvm.dbg.value(metadata i32* %memmpc_, i64 0, metadata !34, metadata !78), !dbg !96
-  tail call void @llvm.dbg.value(metadata i32* %icascade, i64 0, metadata !35, metadata !78), !dbg !97
-  tail call void @llvm.dbg.value(metadata i32* %maxlenmpc, i64 0, metadata !36, metadata !78), !dbg !98
-  tail call void @llvm.dbg.value(metadata i32* %callfrommain, i64 0, metadata !37, metadata !78), !dbg !99
-  tail call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !51, metadata !78), !dbg !100
-  tail call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !52, metadata !78), !dbg !101
-  tail call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !54, metadata !78), !dbg !102
-  tail call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !55, metadata !78), !dbg !103
-  tail call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !68, metadata !78), !dbg !104
-  tail call void @llvm.dbg.value(metadata double* null, i64 0, metadata !71, metadata !78), !dbg !105
-  tail call void @llvm.dbg.value(metadata double* null, i64 0, metadata !72, metadata !78), !dbg !106
-  %1 = load i32** %nodempcp, align 8, !dbg !107, !tbaa !108
-  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !54, metadata !78), !dbg !102
-  %2 = load double** %coefmpcp, align 8, !dbg !112, !tbaa !108
-  tail call void @llvm.dbg.value(metadata double* %2, i64 0, metadata !72, metadata !78), !dbg !106
-  %3 = load i32* %nmpc, align 4, !dbg !113, !tbaa !114
-  %4 = sext i32 %3 to i64, !dbg !113
-  %5 = tail call i8* @u_calloc(i64 %4, i64 4) #6, !dbg !113
-  %6 = bitcast i8* %5 to i32*, !dbg !113
-  tail call void @llvm.dbg.value(metadata i32* %6, i64 0, metadata !68, metadata !78), !dbg !104
-  store i32 0, i32* %icascade, align 4, !dbg !116, !tbaa !114
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !48, metadata !78), !dbg !117
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !38, metadata !78), !dbg !118
-  %7 = load i32* %nmpc, align 4, !dbg !119, !tbaa !114
-  %8 = icmp sgt i32 %7, 0, !dbg !122
-  br i1 %8, label %.lr.ph67, label %.outer16, !dbg !123
+  call void @llvm.dbg.value(metadata !{i32* %ipompc}, i64 0, metadata !17), !dbg !74
+  call void @llvm.dbg.value(metadata !{double** %coefmpcp}, i64 0, metadata !18), !dbg !74
+  call void @llvm.dbg.value(metadata !{i32** %nodempcp}, i64 0, metadata !19), !dbg !74
+  call void @llvm.dbg.value(metadata !{i32* %nmpc}, i64 0, metadata !20), !dbg !74
+  call void @llvm.dbg.value(metadata !{i32* %mpcfree}, i64 0, metadata !21), !dbg !75
+  call void @llvm.dbg.value(metadata !{i32* %nodeboun}, i64 0, metadata !22), !dbg !75
+  call void @llvm.dbg.value(metadata !{i32* %ndirboun}, i64 0, metadata !23), !dbg !75
+  call void @llvm.dbg.value(metadata !{i32* %nboun}, i64 0, metadata !24), !dbg !75
+  call void @llvm.dbg.value(metadata !{i32* %ikmpc}, i64 0, metadata !25), !dbg !75
+  call void @llvm.dbg.value(metadata !{i32* %ilmpc}, i64 0, metadata !26), !dbg !76
+  call void @llvm.dbg.value(metadata !{i32* %ikboun}, i64 0, metadata !27), !dbg !76
+  call void @llvm.dbg.value(metadata !{i32* %ilboun}, i64 0, metadata !28), !dbg !76
+  call void @llvm.dbg.value(metadata !{i32* %mpcend}, i64 0, metadata !29), !dbg !76
+  call void @llvm.dbg.value(metadata !{i32* %mpcmult}, i64 0, metadata !30), !dbg !76
+  call void @llvm.dbg.value(metadata !{i8* %labmpc}, i64 0, metadata !31), !dbg !77
+  call void @llvm.dbg.value(metadata !{i32 %labmpcLen}, i64 0, metadata !32), !dbg !77
+  call void @llvm.dbg.value(metadata !{i32* %nk}, i64 0, metadata !33), !dbg !77
+  call void @llvm.dbg.value(metadata !{i32* %memmpc_}, i64 0, metadata !34), !dbg !77
+  call void @llvm.dbg.value(metadata !{i32* %icascade}, i64 0, metadata !35), !dbg !77
+  call void @llvm.dbg.value(metadata !{i32* %maxlenmpc}, i64 0, metadata !36), !dbg !77
+  call void @llvm.dbg.value(metadata !{i32* %callfrommain}, i64 0, metadata !37), !dbg !78
+  call void @llvm.dbg.declare(metadata !{i32* %id}, metadata !41), !dbg !79
+  call void @llvm.dbg.declare(metadata !{i32* %idof}, metadata !42), !dbg !79
+  call void @llvm.dbg.value(metadata !80, i64 0, metadata !51), !dbg !81
+  call void @llvm.dbg.value(metadata !80, i64 0, metadata !52), !dbg !81
+  call void @llvm.dbg.value(metadata !80, i64 0, metadata !54), !dbg !81
+  call void @llvm.dbg.value(metadata !80, i64 0, metadata !55), !dbg !81
+  call void @llvm.dbg.value(metadata !80, i64 0, metadata !68), !dbg !81
+  call void @llvm.dbg.value(metadata !82, i64 0, metadata !71), !dbg !83
+  call void @llvm.dbg.value(metadata !82, i64 0, metadata !72), !dbg !83
+  %0 = load i32** %nodempcp, align 8, !dbg !84, !tbaa !85
+  call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !54), !dbg !84
+  %1 = load double** %coefmpcp, align 8, !dbg !88, !tbaa !85
+  call void @llvm.dbg.value(metadata !{double* %1}, i64 0, metadata !72), !dbg !88
+  %2 = load i32* %nmpc, align 4, !dbg !89, !tbaa !90
+  %conv = sext i32 %2 to i64, !dbg !89
+  %call = call i8* @u_calloc(i64 %conv, i64 4) #6, !dbg !89
+  %3 = bitcast i8* %call to i32*, !dbg !89
+  call void @llvm.dbg.value(metadata !{i32* %3}, i64 0, metadata !68), !dbg !89
+  store i32 0, i32* %icascade, align 4, !dbg !91, !tbaa !90
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !48), !dbg !92
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !38), !dbg !93
+  %4 = load i32* %nmpc, align 4, !dbg !93, !tbaa !90
+  %cmp723 = icmp sgt i32 %4, 0, !dbg !93
+  br i1 %cmp723, label %for.body, label %for.cond85.outer, !dbg !93
 
-.preheader17:                                     ; preds = %29
-  %9 = icmp sgt i32 %30, 0, !dbg !124
-  br i1 %9, label %.lr.ph64, label %.outer16, !dbg !127
+for.cond27.preheader:                             ; preds = %for.inc
+  %cmp28720 = icmp sgt i32 %9, 0, !dbg !95
+  br i1 %cmp28720, label %for.body30, label %for.cond85.outer, !dbg !95
 
-.lr.ph67:                                         ; preds = %0, %29
-  %indvars.iv105 = phi i64 [ %indvars.iv.next106, %29 ], [ 0, %0 ]
-  %10 = load i32* %nboun, align 4, !dbg !128, !tbaa !114
-  %11 = icmp sgt i32 %10, 0, !dbg !131
-  br i1 %11, label %12, label %.thread, !dbg !132
+for.body:                                         ; preds = %for.inc, %entry
+  %indvars.iv753 = phi i64 [ 0, %entry ], [ %indvars.iv.next754, %for.inc ]
+  %5 = load i32* %nboun, align 4, !dbg !97, !tbaa !90
+  %cmp2 = icmp sgt i32 %5, 0, !dbg !97
+  br i1 %cmp2, label %if.end, label %if.end.thread, !dbg !97
 
-.thread:                                          ; preds = %.lr.ph67
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !41, metadata !78), !dbg !133
-  store i32 0, i32* %id, align 4, !dbg !134, !tbaa !114
-  call void @llvm.dbg.value(metadata i32* %id, i64 0, metadata !41, metadata !78), !dbg !133
-  br label %29, !dbg !136
+if.end.thread:                                    ; preds = %for.body
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !41), !dbg !99
+  store i32 0, i32* %id, align 4, !dbg !99, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32* %id}, i64 0, metadata !41), !dbg !101
+  br label %for.inc, !dbg !101
 
-; <label>:12                                      ; preds = %.lr.ph67
-  %13 = getelementptr inbounds i32* %ikmpc, i64 %indvars.iv105, !dbg !137
-  call void @llvm.dbg.value(metadata i32* %id, i64 0, metadata !41, metadata !78), !dbg !133
-  call void @nident_(i32* %ikboun, i32* %13, i32* %nboun, i32* %id) #6, !dbg !137
-  %.pr = load i32* %id, align 4, !dbg !139, !tbaa !114
-  call void @llvm.dbg.value(metadata i32* %id, i64 0, metadata !41, metadata !78), !dbg !133
-  %14 = icmp sgt i32 %.pr, 0, !dbg !141
-  br i1 %14, label %15, label %29, !dbg !136
+if.end:                                           ; preds = %for.body
+  %arrayidx = getelementptr inbounds i32* %ikmpc, i64 %indvars.iv753, !dbg !102
+  call void @nident_(i32* %ikboun, i32* %arrayidx, i32* %nboun, i32* %id) #6, !dbg !102
+  call void @llvm.dbg.value(metadata !{i32* %id}, i64 0, metadata !41), !dbg !101
+  %.pr = load i32* %id, align 4, !dbg !101, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32* %id}, i64 0, metadata !41), !dbg !101
+  %cmp4 = icmp sgt i32 %.pr, 0, !dbg !101
+  br i1 %cmp4, label %if.then6, label %for.inc, !dbg !101
 
-; <label>:15                                      ; preds = %12
-  %16 = add nsw i32 %.pr, -1, !dbg !142
-  %17 = sext i32 %16 to i64, !dbg !145
-  %18 = getelementptr inbounds i32* %ikboun, i64 %17, !dbg !145
-  %19 = load i32* %18, align 4, !dbg !145, !tbaa !114
-  %20 = load i32* %13, align 4, !dbg !146, !tbaa !114
-  %21 = icmp eq i32 %19, %20, !dbg !147
-  br i1 %21, label %22, label %29, !dbg !148
+if.then6:                                         ; preds = %if.end
+  %sub = add nsw i32 %.pr, -1, !dbg !104
+  %idxprom7 = sext i32 %sub to i64, !dbg !104
+  %arrayidx8 = getelementptr inbounds i32* %ikboun, i64 %idxprom7, !dbg !104
+  %6 = load i32* %arrayidx8, align 4, !dbg !104, !tbaa !90
+  %7 = load i32* %arrayidx, align 4, !dbg !104, !tbaa !90
+  %cmp11 = icmp eq i32 %6, %7, !dbg !104
+  br i1 %cmp11, label %if.then13, label %for.inc, !dbg !104
 
-; <label>:22                                      ; preds = %15
-  %23 = add nsw i32 %19, -1, !dbg !149
-  %24 = sdiv i32 %23, 7, !dbg !151
-  %25 = add nsw i32 %24, 1, !dbg !152
-  %26 = mul i32 %24, -3, !dbg !153
-  %27 = add i32 %19, %26, !dbg !153
-  %28 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([126 x i8]* @.str, i64 0, i64 0), i32 %25, i32 %27) #6, !dbg !154
-  call void (...)* @stop_() #6, !dbg !155
-  br label %29, !dbg !156
+if.then13:                                        ; preds = %if.then6
+  %sub16 = add nsw i32 %6, -1, !dbg !106
+  %div = sdiv i32 %sub16, 7, !dbg !106
+  %add = add nsw i32 %div, 1, !dbg !106
+  %8 = mul i32 %div, -3, !dbg !106
+  %sub23 = add i32 %8, %6, !dbg !106
+  %call24 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([126 x i8]* @.str, i64 0, i64 0), i32 %add, i32 %sub23) #6, !dbg !106
+  call void (...)* @stop_() #6, !dbg !108
+  br label %for.inc, !dbg !109
 
-; <label>:29                                      ; preds = %.thread, %12, %22, %15
-  %indvars.iv.next106 = add nuw nsw i64 %indvars.iv105, 1, !dbg !123
-  %30 = load i32* %nmpc, align 4, !dbg !119, !tbaa !114
-  %31 = sext i32 %30 to i64, !dbg !122
-  %32 = icmp slt i64 %indvars.iv.next106, %31, !dbg !122
-  br i1 %32, label %.lr.ph67, label %.preheader17, !dbg !123
+for.inc:                                          ; preds = %if.then6, %if.end, %if.end.thread, %if.then13
+  %indvars.iv.next754 = add i64 %indvars.iv753, 1, !dbg !93
+  %9 = load i32* %nmpc, align 4, !dbg !93, !tbaa !90
+  %10 = trunc i64 %indvars.iv.next754 to i32, !dbg !93
+  %cmp = icmp slt i32 %10, %9, !dbg !93
+  br i1 %cmp, label %for.body, label %for.cond27.preheader, !dbg !93
 
-.lr.ph64:                                         ; preds = %.preheader17, %58
-  %indvars.iv103 = phi i64 [ %indvars.iv.next104, %58 ], [ 0, %.preheader17 ]
-  %33 = mul nsw i64 %indvars.iv103, 20, !dbg !157
-  %34 = getelementptr inbounds i8* %labmpc, i64 %33, !dbg !160
-  %35 = call i32 @strcmp1(i8* %34, i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !161
-  %36 = icmp eq i32 %35, 0, !dbg !162
-  br i1 %36, label %43, label %37, !dbg !163
+for.body30:                                       ; preds = %for.cond27.preheader, %for.inc82
+  %indvars.iv751 = phi i64 [ %indvars.iv.next752, %for.inc82 ], [ 0, %for.cond27.preheader ]
+  %sext755 = mul i64 %indvars.iv751, 85899345920, !dbg !110
+  %idxprom32 = ashr exact i64 %sext755, 32, !dbg !110
+  %arrayidx33 = getelementptr inbounds i8* %labmpc, i64 %idxprom32, !dbg !110
+  %call34 = call i32 @strcmp1(i8* %arrayidx33, i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !110
+  %cmp35 = icmp eq i32 %call34, 0, !dbg !110
+  br i1 %cmp35, label %if.then50, label %lor.lhs.false, !dbg !110
 
-; <label>:37                                      ; preds = %.lr.ph64
-  %38 = call i32 @strcmp1(i8* %34, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !164
-  %39 = icmp eq i32 %38, 0, !dbg !165
-  br i1 %39, label %43, label %40, !dbg !166
+lor.lhs.false:                                    ; preds = %for.body30
+  %call40 = call i32 @strcmp1(i8* %arrayidx33, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !112
+  %cmp41 = icmp eq i32 %call40, 0, !dbg !112
+  br i1 %cmp41, label %if.then50, label %lor.lhs.false43, !dbg !112
 
-; <label>:40                                      ; preds = %37
-  %41 = call i32 @strcmp1(i8* %34, i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0)) #6, !dbg !167
-  %42 = icmp eq i32 %41, 0, !dbg !168
-  br i1 %42, label %43, label %45, !dbg !169
+lor.lhs.false43:                                  ; preds = %lor.lhs.false
+  %call47 = call i32 @strcmp1(i8* %arrayidx33, i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0)) #6, !dbg !113
+  %cmp48 = icmp eq i32 %call47, 0, !dbg !113
+  br i1 %cmp48, label %if.then50, label %if.else53, !dbg !113
 
-; <label>:43                                      ; preds = %40, %37, %.lr.ph64
-  %44 = getelementptr inbounds i32* %6, i64 %indvars.iv103, !dbg !170
-  store i32 0, i32* %44, align 4, !dbg !171, !tbaa !114
-  br label %58, !dbg !170
+if.then50:                                        ; preds = %lor.lhs.false43, %lor.lhs.false, %for.body30
+  %arrayidx52 = getelementptr inbounds i32* %3, i64 %indvars.iv751, !dbg !113
+  store i32 0, i32* %arrayidx52, align 4, !dbg !113, !tbaa !90
+  br label %for.inc82, !dbg !113
 
-; <label>:45                                      ; preds = %40
-  %46 = call i32 @strcmp1(i8* %34, i8* getelementptr inbounds ([6 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !172
-  %47 = icmp eq i32 %46, 0, !dbg !174
-  br i1 %47, label %54, label %48, !dbg !175
+if.else53:                                        ; preds = %lor.lhs.false43
+  %call57 = call i32 @strcmp1(i8* %arrayidx33, i8* getelementptr inbounds ([6 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !114
+  %cmp58 = icmp eq i32 %call57, 0, !dbg !114
+  br i1 %cmp58, label %if.then74, label %lor.lhs.false60, !dbg !114
 
-; <label>:48                                      ; preds = %45
-  %49 = call i32 @strcmp1(i8* %34, i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0)) #6, !dbg !176
-  %50 = icmp eq i32 %49, 0, !dbg !177
-  br i1 %50, label %54, label %51, !dbg !178
+lor.lhs.false60:                                  ; preds = %if.else53
+  %call64 = call i32 @strcmp1(i8* %arrayidx33, i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0)) #6, !dbg !115
+  %cmp65 = icmp eq i32 %call64, 0, !dbg !115
+  br i1 %cmp65, label %if.then74, label %lor.lhs.false67, !dbg !115
 
-; <label>:51                                      ; preds = %48
-  %52 = call i32 @strcmp1(i8* %34, i8* getelementptr inbounds ([9 x i8]* @.str6, i64 0, i64 0)) #6, !dbg !179
-  %53 = icmp eq i32 %52, 0, !dbg !180
-  br i1 %53, label %54, label %56, !dbg !181
+lor.lhs.false67:                                  ; preds = %lor.lhs.false60
+  %call71 = call i32 @strcmp1(i8* %arrayidx33, i8* getelementptr inbounds ([9 x i8]* @.str6, i64 0, i64 0)) #6, !dbg !116
+  %cmp72 = icmp eq i32 %call71, 0, !dbg !116
+  br i1 %cmp72, label %if.then74, label %if.else77, !dbg !116
 
-; <label>:54                                      ; preds = %51, %48, %45
-  %55 = getelementptr inbounds i32* %6, i64 %indvars.iv103, !dbg !182
-  store i32 1, i32* %55, align 4, !dbg !183, !tbaa !114
-  br label %58, !dbg !182
+if.then74:                                        ; preds = %lor.lhs.false67, %lor.lhs.false60, %if.else53
+  %arrayidx76 = getelementptr inbounds i32* %3, i64 %indvars.iv751, !dbg !116
+  store i32 1, i32* %arrayidx76, align 4, !dbg !116, !tbaa !90
+  br label %for.inc82, !dbg !116
 
-; <label>:56                                      ; preds = %51
-  %57 = getelementptr inbounds i32* %6, i64 %indvars.iv103, !dbg !184
-  store i32 1, i32* %57, align 4, !dbg !186, !tbaa !114
-  store i32 1, i32* %icascade, align 4, !dbg !187, !tbaa !114
-  br label %58
+if.else77:                                        ; preds = %lor.lhs.false67
+  %arrayidx79 = getelementptr inbounds i32* %3, i64 %indvars.iv751, !dbg !117
+  store i32 1, i32* %arrayidx79, align 4, !dbg !117, !tbaa !90
+  store i32 1, i32* %icascade, align 4, !dbg !119, !tbaa !90
+  br label %for.inc82
 
-; <label>:58                                      ; preds = %43, %56, %54
-  %indvars.iv.next104 = add nuw nsw i64 %indvars.iv103, 1, !dbg !127
-  %59 = load i32* %nmpc, align 4, !dbg !188, !tbaa !114
-  %60 = sext i32 %59 to i64, !dbg !124
-  %61 = icmp slt i64 %indvars.iv.next104, %60, !dbg !124
-  br i1 %61, label %.lr.ph64, label %.outer16, !dbg !127
+for.inc82:                                        ; preds = %if.then50, %if.else77, %if.then74
+  %indvars.iv.next752 = add i64 %indvars.iv751, 1, !dbg !95
+  %11 = load i32* %nmpc, align 4, !dbg !95, !tbaa !90
+  %12 = trunc i64 %indvars.iv.next752 to i32, !dbg !95
+  %cmp28 = icmp slt i32 %12, %11, !dbg !95
+  br i1 %cmp28, label %for.body30, label %for.cond85.outer, !dbg !95
 
-; <label>:62                                      ; preds = %.outer16, %335
-  %ichange.0 = phi i32 [ 0, %335 ], [ %ichange.0.ph, %.outer16 ]
-  %i.2 = phi i32 [ 0, %335 ], [ %i.2.ph, %.outer16 ]
-  %63 = icmp slt i32 %i.2, %334, !dbg !189
-  br i1 %63, label %64, label %335, !dbg !193
+for.cond85:                                       ; preds = %for.cond85.outer, %for.end431
+  %ichange.0 = phi i32 [ 0, %for.end431 ], [ %ichange.0.ph, %for.cond85.outer ]
+  %i.2 = phi i32 [ 0, %for.end431 ], [ %i.2.ph, %for.cond85.outer ]
+  %cmp86 = icmp slt i32 %i.2, %72, !dbg !120
+  br i1 %cmp86, label %for.body88, label %for.end431, !dbg !120
 
-; <label>:64                                      ; preds = %62
-  %65 = sext i32 %i.2 to i64, !dbg !194
-  %66 = getelementptr inbounds i32* %6, i64 %65, !dbg !194
-  %67 = load i32* %66, align 4, !dbg !194, !tbaa !114
-  %68 = icmp eq i32 %67, 1, !dbg !197
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !58, metadata !78), !dbg !198
-  %69 = getelementptr inbounds i32* %ipompc, i64 %65, !dbg !199
-  %70 = load i32* %69, align 4, !dbg !199, !tbaa !114
-  %71 = mul nsw i32 %70, 3, !dbg !200
-  %72 = add nsw i32 %71, -1, !dbg !201
-  %73 = sext i32 %72 to i64, !dbg !202
-  %74 = getelementptr inbounds i32* %nodempc.1.ph, i64 %73, !dbg !202
-  %75 = load i32* %74, align 4, !dbg !202, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %75, i64 0, metadata !40, metadata !78), !dbg !203
-  %76 = icmp eq i32 %75, 0, !dbg !204
-  br i1 %76, label %.thread7, label %.outer13, !dbg !206
+for.body88:                                       ; preds = %for.cond85
+  %idxprom89 = sext i32 %i.2 to i64, !dbg !123
+  %arrayidx90 = getelementptr inbounds i32* %3, i64 %idxprom89, !dbg !123
+  %13 = load i32* %arrayidx90, align 4, !dbg !123, !tbaa !90
+  %cmp91 = icmp eq i32 %13, 1, !dbg !123
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !58), !dbg !125
+  %arrayidx97 = getelementptr inbounds i32* %ipompc, i64 %idxprom89, !dbg !126
+  %14 = load i32* %arrayidx97, align 4, !dbg !126, !tbaa !90
+  %mul98 = mul nsw i32 %14, 3, !dbg !126
+  %sub99 = add nsw i32 %mul98, -1, !dbg !126
+  %idxprom100 = sext i32 %sub99 to i64, !dbg !126
+  %arrayidx101 = getelementptr inbounds i32* %nodempc.1.ph, i64 %idxprom100, !dbg !126
+  %15 = load i32* %arrayidx101, align 4, !dbg !126, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %15}, i64 0, metadata !40), !dbg !126
+  %cmp102 = icmp eq i32 %15, 0, !dbg !127
+  br i1 %cmp102, label %for.inc429, label %do.body106.outer, !dbg !127
 
-.outer13:                                         ; preds = %64, %121
-  %idepend.2.ph = phi i32 [ %idepend.3, %121 ], [ %idepend.1.ph, %64 ]
-  %index.0.ph = phi i32 [ %122, %121 ], [ %75, %64 ]
-  br label %77
+do.body106.outer:                                 ; preds = %for.body88, %if.then153
+  %idepend.2.ph = phi i32 [ %idepend.3, %if.then153 ], [ %idepend.1.ph, %for.body88 ]
+  %index.0.ph = phi i32 [ %27, %if.then153 ], [ %15, %for.body88 ]
+  br label %do.body106
 
-; <label>:77                                      ; preds = %.outer13, %233
-  %index.0 = phi i32 [ %237, %233 ], [ %index.0.ph, %.outer13 ]
-  %78 = mul nsw i32 %index.0, 3, !dbg !207
-  %79 = add nsw i32 %78, -3, !dbg !209
-  %80 = sext i32 %79 to i64, !dbg !210
-  %81 = getelementptr inbounds i32* %nodempc.1.ph, i64 %80, !dbg !210
-  %82 = load i32* %81, align 4, !dbg !210, !tbaa !114
-  %83 = mul i32 %82, 7, !dbg !211
-  %84 = add i32 %83, -7, !dbg !211
-  %85 = add nsw i32 %78, -2, !dbg !212
-  %86 = sext i32 %85 to i64, !dbg !213
-  %87 = getelementptr inbounds i32* %nodempc.1.ph, i64 %86, !dbg !213
-  %88 = load i32* %87, align 4, !dbg !213, !tbaa !114
-  %89 = add nsw i32 %84, %88, !dbg !214
-  call void @llvm.dbg.value(metadata i32 %89, i64 0, metadata !42, metadata !78), !dbg !215
-  store i32 %89, i32* %idof, align 4, !dbg !216, !tbaa !114
-  call void @llvm.dbg.value(metadata i32* %id, i64 0, metadata !41, metadata !78), !dbg !133
-  call void @llvm.dbg.value(metadata i32* %idof, i64 0, metadata !42, metadata !78), !dbg !215
-  call void @nident_(i32* %ikmpc, i32* %idof, i32* %nmpc, i32* %id) #6, !dbg !217
-  call void @llvm.dbg.value(metadata i32* %id, i64 0, metadata !41, metadata !78), !dbg !133
-  %90 = load i32* %id, align 4, !dbg !218, !tbaa !114
-  %91 = icmp sgt i32 %90, 0, !dbg !220
-  br i1 %91, label %92, label %233, !dbg !221
+do.body106:                                       ; preds = %do.body106.outer, %if.else286
+  %index.0 = phi i32 [ %52, %if.else286 ], [ %index.0.ph, %do.body106.outer ]
+  %mul107 = mul nsw i32 %index.0, 3, !dbg !128
+  %sub108 = add nsw i32 %mul107, -3, !dbg !128
+  %idxprom109 = sext i32 %sub108 to i64, !dbg !128
+  %arrayidx110 = getelementptr inbounds i32* %nodempc.1.ph, i64 %idxprom109, !dbg !128
+  %16 = load i32* %arrayidx110, align 4, !dbg !128, !tbaa !90
+  %17 = mul i32 %16, 7, !dbg !128
+  %mul112 = add i32 %17, -7, !dbg !128
+  %sub114 = add nsw i32 %mul107, -2, !dbg !128
+  %idxprom115 = sext i32 %sub114 to i64, !dbg !128
+  %arrayidx116 = getelementptr inbounds i32* %nodempc.1.ph, i64 %idxprom115, !dbg !128
+  %18 = load i32* %arrayidx116, align 4, !dbg !128, !tbaa !90
+  %add117 = add nsw i32 %mul112, %18, !dbg !128
+  call void @llvm.dbg.value(metadata !{i32 %add117}, i64 0, metadata !42), !dbg !128
+  store i32 %add117, i32* %idof, align 4, !dbg !128, !tbaa !90
+  call void @nident_(i32* %ikmpc, i32* %idof, i32* %nmpc, i32* %id) #6, !dbg !130
+  call void @llvm.dbg.value(metadata !{i32* %id}, i64 0, metadata !41), !dbg !131
+  %19 = load i32* %id, align 4, !dbg !131, !tbaa !90
+  %cmp118 = icmp sgt i32 %19, 0, !dbg !131
+  br i1 %cmp118, label %land.lhs.true, label %if.else286, !dbg !131
 
-; <label>:92                                      ; preds = %77
-  %93 = add nsw i32 %90, -1, !dbg !222
-  %94 = sext i32 %93 to i64, !dbg !223
-  %95 = getelementptr inbounds i32* %ikmpc, i64 %94, !dbg !223
-  %96 = load i32* %95, align 4, !dbg !223, !tbaa !114
-  call void @llvm.dbg.value(metadata i32* %idof, i64 0, metadata !42, metadata !78), !dbg !215
-  %97 = load i32* %idof, align 4, !dbg !224, !tbaa !114
-  %98 = icmp eq i32 %96, %97, !dbg !225
-  br i1 %98, label %99, label %233, !dbg !226
+land.lhs.true:                                    ; preds = %do.body106
+  %sub120 = add nsw i32 %19, -1, !dbg !131
+  %idxprom121 = sext i32 %sub120 to i64, !dbg !131
+  %arrayidx122 = getelementptr inbounds i32* %ikmpc, i64 %idxprom121, !dbg !131
+  %20 = load i32* %arrayidx122, align 4, !dbg !131, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32* %idof}, i64 0, metadata !42), !dbg !131
+  %21 = load i32* %idof, align 4, !dbg !131, !tbaa !90
+  %cmp123 = icmp eq i32 %20, %21, !dbg !131
+  br i1 %cmp123, label %if.then125, label %if.else286, !dbg !131
 
-; <label>:99                                      ; preds = %92
-  %100 = add nsw i32 %78, -1, !dbg !227
-  %101 = sext i32 %100 to i64, !dbg !229
-  %102 = getelementptr inbounds i32* %nodempc.1.ph, i64 %101, !dbg !229
-  %103 = load i32* %102, align 4, !dbg !229, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %103, i64 0, metadata !60, metadata !78), !dbg !230
-  %104 = add nsw i32 %index.0, -1, !dbg !231
-  %105 = sext i32 %104 to i64, !dbg !232
-  %106 = getelementptr inbounds double* %coefmpc.1.ph, i64 %105, !dbg !232
-  %107 = load double* %106, align 8, !dbg !232, !tbaa !233
-  call void @llvm.dbg.value(metadata double %107, i64 0, metadata !70, metadata !78), !dbg !235
-  %108 = getelementptr inbounds i32* %ilmpc, i64 %94, !dbg !236
-  %109 = load i32* %108, align 4, !dbg !236, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %109, i64 0, metadata !62, metadata !78), !dbg !237
-  %110 = add nsw i32 %109, -1, !dbg !238
-  %111 = sext i32 %110 to i64, !dbg !240
-  %112 = getelementptr inbounds i32* %6, i64 %111, !dbg !240
-  %113 = load i32* %112, align 4, !dbg !240, !tbaa !114
-  %114 = icmp eq i32 %113, 1, !dbg !241
-  %or.cond = or i1 %68, %114, !dbg !242
-  br i1 %or.cond, label %115, label %124, !dbg !242
+if.then125:                                       ; preds = %land.lhs.true
+  %sub127 = add nsw i32 %mul107, -1, !dbg !132
+  %idxprom128 = sext i32 %sub127 to i64, !dbg !132
+  %arrayidx129 = getelementptr inbounds i32* %nodempc.1.ph, i64 %idxprom128, !dbg !132
+  %22 = load i32* %arrayidx129, align 4, !dbg !132, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %22}, i64 0, metadata !60), !dbg !132
+  %sub130 = add nsw i32 %index.0, -1, !dbg !134
+  %idxprom131 = sext i32 %sub130 to i64, !dbg !134
+  %arrayidx132 = getelementptr inbounds double* %coefmpc.1.ph, i64 %idxprom131, !dbg !134
+  %23 = load double* %arrayidx132, align 8, !dbg !134, !tbaa !135
+  call void @llvm.dbg.value(metadata !{double %23}, i64 0, metadata !70), !dbg !134
+  %arrayidx135 = getelementptr inbounds i32* %ilmpc, i64 %idxprom121, !dbg !136
+  %24 = load i32* %arrayidx135, align 4, !dbg !136, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %24}, i64 0, metadata !62), !dbg !136
+  %sub136 = add nsw i32 %24, -1, !dbg !137
+  %idxprom137 = sext i32 %sub136 to i64, !dbg !137
+  %arrayidx138 = getelementptr inbounds i32* %3, i64 %idxprom137, !dbg !137
+  %25 = load i32* %arrayidx138, align 4, !dbg !137, !tbaa !90
+  %cmp139 = icmp eq i32 %25, 1, !dbg !137
+  %or.cond = or i1 %cmp139, %cmp91, !dbg !137
+  br i1 %or.cond, label %if.then144, label %if.end164, !dbg !137
 
-; <label>:115                                     ; preds = %99
-  store i32 2, i32* %icascade, align 4, !dbg !243, !tbaa !114
-  %116 = icmp eq i32 %idepend.2.ph, 0, !dbg !245
-  br i1 %116, label %117, label %118, !dbg !247
+if.then144:                                       ; preds = %if.then125
+  store i32 2, i32* %icascade, align 4, !dbg !138, !tbaa !90
+  %cmp145 = icmp eq i32 %idepend.2.ph, 0, !dbg !140
+  br i1 %cmp145, label %if.then147, label %if.end150, !dbg !140
 
-; <label>:117                                     ; preds = %115
-  %puts3 = call i32 @puts(i8* getelementptr inbounds ([34 x i8]* @str14, i64 0, i64 0)), !dbg !248
-  %puts4 = call i32 @puts(i8* getelementptr inbounds ([44 x i8]* @str15, i64 0, i64 0)), !dbg !250
-  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !48, metadata !78), !dbg !117
-  br label %118, !dbg !251
+if.then147:                                       ; preds = %if.then144
+  %puts675 = call i32 @puts(i8* getelementptr inbounds ([34 x i8]* @str14, i64 0, i64 0)), !dbg !141
+  %puts676 = call i32 @puts(i8* getelementptr inbounds ([44 x i8]* @str15, i64 0, i64 0)), !dbg !143
+  call void @llvm.dbg.value(metadata !144, i64 0, metadata !48), !dbg !145
+  br label %if.end150, !dbg !145
 
-; <label>:118                                     ; preds = %117, %115
-  %idepend.3 = phi i32 [ 1, %117 ], [ %idepend.2.ph, %115 ]
-  %119 = load i32* %callfrommain, align 4, !dbg !252, !tbaa !114
-  %120 = icmp eq i32 %119, 1, !dbg !254
-  br i1 %120, label %121, label %124, !dbg !255
+if.end150:                                        ; preds = %if.then147, %if.then144
+  %idepend.3 = phi i32 [ 1, %if.then147 ], [ %idepend.2.ph, %if.then144 ]
+  %26 = load i32* %callfrommain, align 4, !dbg !146, !tbaa !90
+  %cmp151 = icmp eq i32 %26, 1, !dbg !146
+  br i1 %cmp151, label %if.then153, label %if.end164, !dbg !146
 
-; <label>:121                                     ; preds = %118
-  %122 = load i32* %102, align 4, !dbg !256, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %122, i64 0, metadata !40, metadata !78), !dbg !203
-  %123 = icmp eq i32 %122, 0, !dbg !258
-  br i1 %123, label %.thread7, label %.outer13, !dbg !260
+if.then153:                                       ; preds = %if.end150
+  %27 = load i32* %arrayidx129, align 4, !dbg !147, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %27}, i64 0, metadata !40), !dbg !147
+  %cmp158 = icmp eq i32 %27, 0, !dbg !149
+  br i1 %cmp158, label %for.inc429, label %do.body106.outer, !dbg !149
 
-; <label>:124                                     ; preds = %118, %99
-  %idepend.4 = phi i32 [ %idepend.2.ph, %99 ], [ %idepend.3, %118 ]
-  %125 = load i32* %87, align 4, !dbg !261, !tbaa !114
-  %126 = load i32* %81, align 4, !dbg !262, !tbaa !114
-  %127 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([49 x i8]* @.str9, i64 0, i64 0), i32 %125, i32 %126) #6, !dbg !263
-  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !59, metadata !78), !dbg !264
-  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !58, metadata !78), !dbg !198
-  %128 = mul nsw i32 %i.2, 20, !dbg !265
-  %129 = sext i32 %128 to i64, !dbg !267
-  %130 = getelementptr inbounds i8* %labmpc, i64 %129, !dbg !267
-  %131 = call i32 @strcmp1(i8* %130, i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !268
-  %132 = icmp eq i32 %131, 0, !dbg !269
-  br i1 %132, label %133, label %141, !dbg !270
+if.end164:                                        ; preds = %if.end150, %if.then125
+  %idepend.4 = phi i32 [ %idepend.2.ph, %if.then125 ], [ %idepend.3, %if.end150 ]
+  %28 = load i32* %arrayidx116, align 4, !dbg !150, !tbaa !90
+  %29 = load i32* %arrayidx110, align 4, !dbg !150, !tbaa !90
+  %call173 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([49 x i8]* @.str9, i64 0, i64 0), i32 %28, i32 %29) #6, !dbg !150
+  call void @llvm.dbg.value(metadata !144, i64 0, metadata !59), !dbg !151
+  call void @llvm.dbg.value(metadata !144, i64 0, metadata !58), !dbg !151
+  %mul174 = mul nsw i32 %i.2, 20, !dbg !152
+  %idxprom175 = sext i32 %mul174 to i64, !dbg !152
+  %arrayidx176 = getelementptr inbounds i8* %labmpc, i64 %idxprom175, !dbg !152
+  %call177 = call i32 @strcmp1(i8* %arrayidx176, i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !152
+  %cmp178 = icmp eq i32 %call177, 0, !dbg !152
+  br i1 %cmp178, label %land.lhs.true180, label %if.end193, !dbg !152
 
-; <label>:133                                     ; preds = %124
-  %134 = mul nsw i32 %110, 20, !dbg !271
-  %135 = sext i32 %134 to i64, !dbg !272
-  %136 = getelementptr inbounds i8* %labmpc, i64 %135, !dbg !272
-  %137 = call i32 @strcmp1(i8* %136, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !273
-  %138 = icmp eq i32 %137, 0, !dbg !274
-  br i1 %138, label %139, label %141, !dbg !275
+land.lhs.true180:                                 ; preds = %if.end164
+  %mul182 = mul nsw i32 %sub136, 20, !dbg !153
+  %idxprom183 = sext i32 %mul182 to i64, !dbg !153
+  %arrayidx184 = getelementptr inbounds i8* %labmpc, i64 %idxprom183, !dbg !153
+  %call185 = call i32 @strcmp1(i8* %arrayidx184, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !153
+  %cmp186 = icmp eq i32 %call185, 0, !dbg !153
+  br i1 %cmp186, label %if.then188, label %if.end193, !dbg !153
 
-; <label>:139                                     ; preds = %133
-  %140 = call i32 @strcpy1(i8* %130, i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i32 9) #6, !dbg !276
-  br label %141, !dbg !276
+if.then188:                                       ; preds = %land.lhs.true180
+  %call192 = call i32 @strcpy1(i8* %arrayidx176, i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i32 9) #6, !dbg !154
+  br label %if.end193, !dbg !154
 
-; <label>:141                                     ; preds = %139, %133, %124
-  %142 = getelementptr inbounds i32* %ipompc, i64 %111, !dbg !277
-  %143 = load i32* %142, align 4, !dbg !277, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %143, i64 0, metadata !63, metadata !78), !dbg !278
-  %144 = fsub double -0.000000e+00, %107, !dbg !279
-  %145 = add nsw i32 %143, -1, !dbg !280
-  %146 = sext i32 %145 to i64, !dbg !281
-  %147 = getelementptr inbounds double* %coefmpc.1.ph, i64 %146, !dbg !281
-  %148 = load double* %147, align 8, !dbg !281, !tbaa !233
-  %149 = fdiv double %144, %148, !dbg !282
-  call void @llvm.dbg.value(metadata double %149, i64 0, metadata !70, metadata !78), !dbg !235
-  %150 = mul nsw i32 %143, 3, !dbg !283
-  %151 = add nsw i32 %150, -1, !dbg !284
-  %152 = sext i32 %151 to i64, !dbg !285
-  %153 = getelementptr inbounds i32* %nodempc.1.ph, i64 %152, !dbg !285
-  %154 = load i32* %153, align 4, !dbg !285, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %154, i64 0, metadata !63, metadata !78), !dbg !278
-  br label %.outer10, !dbg !286
+if.end193:                                        ; preds = %if.then188, %land.lhs.true180, %if.end164
+  %arrayidx196 = getelementptr inbounds i32* %ipompc, i64 %idxprom137, !dbg !155
+  %30 = load i32* %arrayidx196, align 4, !dbg !155, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %30}, i64 0, metadata !63), !dbg !155
+  %sub197 = fsub double -0.000000e+00, %23, !dbg !156
+  %sub198 = add nsw i32 %30, -1, !dbg !156
+  %idxprom199 = sext i32 %sub198 to i64, !dbg !156
+  %arrayidx200 = getelementptr inbounds double* %coefmpc.1.ph, i64 %idxprom199, !dbg !156
+  %31 = load double* %arrayidx200, align 8, !dbg !156, !tbaa !135
+  %div201 = fdiv double %sub197, %31, !dbg !156
+  call void @llvm.dbg.value(metadata !{double %div201}, i64 0, metadata !70), !dbg !156
+  %mul202 = mul nsw i32 %30, 3, !dbg !157
+  %sub203 = add nsw i32 %mul202, -1, !dbg !157
+  %idxprom204 = sext i32 %sub203 to i64, !dbg !157
+  %arrayidx205 = getelementptr inbounds i32* %nodempc.1.ph, i64 %idxprom204, !dbg !157
+  %32 = load i32* %arrayidx205, align 4, !dbg !157, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %32}, i64 0, metadata !63), !dbg !157
+  br label %do.body206.outer, !dbg !158
 
-.outer10:                                         ; preds = %._crit_edge60, %141
-  %nodempc.2.ph = phi i32* [ %211, %._crit_edge60 ], [ %nodempc.1.ph, %141 ]
-  %index.1.ph = phi i32 [ %190, %._crit_edge60 ], [ %index.0, %141 ]
-  %indexnew.0.ph = phi i32 [ %183, %._crit_edge60 ], [ %154, %141 ]
-  %coefmpc.2.ph = phi double* [ %217, %._crit_edge60 ], [ %coefmpc.1.ph, %141 ]
-  br label %155
+do.body206.outer:                                 ; preds = %for.end275, %if.end193
+  %nodempc.2.ph = phi i32* [ %nodempc.1.ph, %if.end193 ], [ %44, %for.end275 ]
+  %index.1.ph = phi i32 [ %index.0, %if.end193 ], [ %38, %for.end275 ]
+  %indexnew.0.ph = phi i32 [ %32, %if.end193 ], [ %36, %for.end275 ]
+  %coefmpc.2.ph = phi double* [ %coefmpc.1.ph, %if.end193 ], [ %47, %for.end275 ]
+  br label %do.body206
 
-; <label>:155                                     ; preds = %.outer10, %185
-  %index.1 = phi i32 [ %190, %185 ], [ %index.1.ph, %.outer10 ]
-  %indexnew.0 = phi i32 [ %183, %185 ], [ %indexnew.0.ph, %.outer10 ]
-  %156 = add nsw i32 %indexnew.0, -1, !dbg !287
-  %157 = sext i32 %156 to i64, !dbg !289
-  %158 = getelementptr inbounds double* %coefmpc.2.ph, i64 %157, !dbg !289
-  %159 = load double* %158, align 8, !dbg !289, !tbaa !233
-  %160 = fmul double %149, %159, !dbg !290
-  %161 = add nsw i32 %index.1, -1, !dbg !291
-  %162 = sext i32 %161 to i64, !dbg !292
-  %163 = getelementptr inbounds double* %coefmpc.2.ph, i64 %162, !dbg !292
-  store double %160, double* %163, align 8, !dbg !293, !tbaa !233
-  %164 = mul nsw i32 %indexnew.0, 3, !dbg !294
-  %165 = add nsw i32 %164, -3, !dbg !295
-  %166 = sext i32 %165 to i64, !dbg !296
-  %167 = getelementptr inbounds i32* %nodempc.2.ph, i64 %166, !dbg !296
-  %168 = load i32* %167, align 4, !dbg !296, !tbaa !114
-  %169 = mul nsw i32 %index.1, 3, !dbg !297
-  %170 = add nsw i32 %169, -3, !dbg !298
-  %171 = sext i32 %170 to i64, !dbg !299
-  %172 = getelementptr inbounds i32* %nodempc.2.ph, i64 %171, !dbg !299
-  store i32 %168, i32* %172, align 4, !dbg !300, !tbaa !114
-  %173 = add nsw i32 %164, -2, !dbg !301
-  %174 = sext i32 %173 to i64, !dbg !302
-  %175 = getelementptr inbounds i32* %nodempc.2.ph, i64 %174, !dbg !302
-  %176 = load i32* %175, align 4, !dbg !302, !tbaa !114
-  %177 = add nsw i32 %169, -2, !dbg !303
-  %178 = sext i32 %177 to i64, !dbg !304
-  %179 = getelementptr inbounds i32* %nodempc.2.ph, i64 %178, !dbg !304
-  store i32 %176, i32* %179, align 4, !dbg !305, !tbaa !114
-  %180 = add nsw i32 %164, -1, !dbg !306
-  %181 = sext i32 %180 to i64, !dbg !307
-  %182 = getelementptr inbounds i32* %nodempc.2.ph, i64 %181, !dbg !307
-  %183 = load i32* %182, align 4, !dbg !307, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %183, i64 0, metadata !63, metadata !78), !dbg !278
-  %184 = icmp eq i32 %183, 0, !dbg !308
-  br i1 %184, label %239, label %185, !dbg !310
+do.body206:                                       ; preds = %do.body206.outer, %if.then236
+  %index.1 = phi i32 [ %38, %if.then236 ], [ %index.1.ph, %do.body206.outer ]
+  %indexnew.0 = phi i32 [ %36, %if.then236 ], [ %indexnew.0.ph, %do.body206.outer ]
+  %sub207 = add nsw i32 %indexnew.0, -1, !dbg !159
+  %idxprom208 = sext i32 %sub207 to i64, !dbg !159
+  %arrayidx209 = getelementptr inbounds double* %coefmpc.2.ph, i64 %idxprom208, !dbg !159
+  %33 = load double* %arrayidx209, align 8, !dbg !159, !tbaa !135
+  %mul210 = fmul double %div201, %33, !dbg !159
+  %sub211 = add nsw i32 %index.1, -1, !dbg !159
+  %idxprom212 = sext i32 %sub211 to i64, !dbg !159
+  %arrayidx213 = getelementptr inbounds double* %coefmpc.2.ph, i64 %idxprom212, !dbg !159
+  store double %mul210, double* %arrayidx213, align 8, !dbg !159, !tbaa !135
+  %mul214 = mul nsw i32 %indexnew.0, 3, !dbg !161
+  %sub215 = add nsw i32 %mul214, -3, !dbg !161
+  %idxprom216 = sext i32 %sub215 to i64, !dbg !161
+  %arrayidx217 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom216, !dbg !161
+  %34 = load i32* %arrayidx217, align 4, !dbg !161, !tbaa !90
+  %mul218 = mul nsw i32 %index.1, 3, !dbg !161
+  %sub219 = add nsw i32 %mul218, -3, !dbg !161
+  %idxprom220 = sext i32 %sub219 to i64, !dbg !161
+  %arrayidx221 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom220, !dbg !161
+  store i32 %34, i32* %arrayidx221, align 4, !dbg !161, !tbaa !90
+  %sub223 = add nsw i32 %mul214, -2, !dbg !162
+  %idxprom224 = sext i32 %sub223 to i64, !dbg !162
+  %arrayidx225 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom224, !dbg !162
+  %35 = load i32* %arrayidx225, align 4, !dbg !162, !tbaa !90
+  %sub227 = add nsw i32 %mul218, -2, !dbg !162
+  %idxprom228 = sext i32 %sub227 to i64, !dbg !162
+  %arrayidx229 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom228, !dbg !162
+  store i32 %35, i32* %arrayidx229, align 4, !dbg !162, !tbaa !90
+  %sub231 = add nsw i32 %mul214, -1, !dbg !163
+  %idxprom232 = sext i32 %sub231 to i64, !dbg !163
+  %arrayidx233 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom232, !dbg !163
+  %36 = load i32* %arrayidx233, align 4, !dbg !163, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %36}, i64 0, metadata !63), !dbg !163
+  %cmp234 = icmp eq i32 %36, 0, !dbg !164
+  br i1 %cmp234, label %if.end300, label %if.then236, !dbg !164
 
-; <label>:185                                     ; preds = %155
-  %186 = load i32* %mpcfree, align 4, !dbg !311, !tbaa !114
-  %187 = add nsw i32 %169, -1, !dbg !313
-  %188 = sext i32 %187 to i64, !dbg !314
-  %189 = getelementptr inbounds i32* %nodempc.2.ph, i64 %188, !dbg !314
-  store i32 %186, i32* %189, align 4, !dbg !315, !tbaa !114
-  %190 = load i32* %mpcfree, align 4, !dbg !316, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %190, i64 0, metadata !40, metadata !78), !dbg !203
-  %191 = mul nsw i32 %190, 3, !dbg !317
-  %192 = add nsw i32 %191, -1, !dbg !318
-  %193 = sext i32 %192 to i64, !dbg !319
-  %194 = getelementptr inbounds i32* %nodempc.2.ph, i64 %193, !dbg !319
-  %195 = load i32* %194, align 4, !dbg !319, !tbaa !114
-  store i32 %195, i32* %mpcfree, align 4, !dbg !320, !tbaa !114
-  %196 = icmp eq i32 %195, 0, !dbg !321
-  br i1 %196, label %197, label %155, !dbg !323
+if.then236:                                       ; preds = %do.body206
+  %37 = load i32* %mpcfree, align 4, !dbg !165, !tbaa !90
+  %sub238 = add nsw i32 %mul218, -1, !dbg !165
+  %idxprom239 = sext i32 %sub238 to i64, !dbg !165
+  %arrayidx240 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom239, !dbg !165
+  store i32 %37, i32* %arrayidx240, align 4, !dbg !165, !tbaa !90
+  %38 = load i32* %mpcfree, align 4, !dbg !167, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %38}, i64 0, metadata !40), !dbg !167
+  %mul241 = mul nsw i32 %38, 3, !dbg !168
+  %sub242 = add nsw i32 %mul241, -1, !dbg !168
+  %idxprom243 = sext i32 %sub242 to i64, !dbg !168
+  %arrayidx244 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom243, !dbg !168
+  %39 = load i32* %arrayidx244, align 4, !dbg !168, !tbaa !90
+  store i32 %39, i32* %mpcfree, align 4, !dbg !168, !tbaa !90
+  %cmp245 = icmp eq i32 %39, 0, !dbg !169
+  br i1 %cmp245, label %if.then247, label %do.body206, !dbg !169
 
-; <label>:197                                     ; preds = %185
-  %198 = load i32* %memmpc_, align 4, !dbg !324, !tbaa !114
-  %199 = add nsw i32 %198, 1, !dbg !326
-  store i32 %199, i32* %mpcfree, align 4, !dbg !327, !tbaa !114
-  store i32 %199, i32* %194, align 4, !dbg !328, !tbaa !114
-  %200 = load i32* %memmpc_, align 4, !dbg !329, !tbaa !114
-  %201 = sitofp i32 %200 to double, !dbg !329
-  %202 = fmul double %201, 1.100000e+00, !dbg !330
-  %203 = fptosi double %202 to i32, !dbg !331
-  store i32 %203, i32* %memmpc_, align 4, !dbg !332, !tbaa !114
-  %204 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([55 x i8]* @.str10, i64 0, i64 0), i32 %203) #6, !dbg !333
-  %205 = bitcast i32* %nodempc.2.ph to i8*, !dbg !334
-  %206 = load i32* %memmpc_, align 4, !dbg !334, !tbaa !114
-  %207 = mul nsw i32 %206, 3, !dbg !334
-  %208 = sext i32 %207 to i64, !dbg !334
-  %209 = shl nsw i64 %208, 2, !dbg !334
-  %210 = call i8* @realloc(i8* %205, i64 %209) #6, !dbg !334
-  %211 = bitcast i8* %210 to i32*, !dbg !334
-  call void @llvm.dbg.value(metadata i32* %211, i64 0, metadata !54, metadata !78), !dbg !102
-  %212 = bitcast double* %coefmpc.2.ph to i8*, !dbg !335
-  %213 = load i32* %memmpc_, align 4, !dbg !335, !tbaa !114
-  %214 = sext i32 %213 to i64, !dbg !335
-  %215 = shl nsw i64 %214, 3, !dbg !335
-  %216 = call i8* @realloc(i8* %212, i64 %215) #6, !dbg !335
-  %217 = bitcast i8* %216 to double*, !dbg !335
-  call void @llvm.dbg.value(metadata double* %217, i64 0, metadata !72, metadata !78), !dbg !106
-  %218 = load i32* %mpcfree, align 4, !dbg !336, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %218, i64 0, metadata !39, metadata !78), !dbg !338
-  %219 = load i32* %memmpc_, align 4, !dbg !339, !tbaa !114
-  %220 = icmp slt i32 %218, %219, !dbg !341
-  br i1 %220, label %.lr.ph59, label %._crit_edge60, !dbg !342
+if.then247:                                       ; preds = %if.then236
+  %40 = load i32* %memmpc_, align 4, !dbg !170, !tbaa !90
+  %add248 = add nsw i32 %40, 1, !dbg !170
+  store i32 %add248, i32* %mpcfree, align 4, !dbg !170, !tbaa !90
+  store i32 %add248, i32* %arrayidx244, align 4, !dbg !172, !tbaa !90
+  %41 = load i32* %memmpc_, align 4, !dbg !173, !tbaa !90
+  %conv253 = sitofp i32 %41 to double, !dbg !173
+  %mul254 = fmul double %conv253, 1.100000e+00, !dbg !173
+  %conv255 = fptosi double %mul254 to i32, !dbg !173
+  store i32 %conv255, i32* %memmpc_, align 4, !dbg !173, !tbaa !90
+  %call256 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([55 x i8]* @.str10, i64 0, i64 0), i32 %conv255) #6, !dbg !174
+  %42 = bitcast i32* %nodempc.2.ph to i8*, !dbg !175
+  %43 = load i32* %memmpc_, align 4, !dbg !175, !tbaa !90
+  %mul257 = mul nsw i32 %43, 3, !dbg !175
+  %conv258 = sext i32 %mul257 to i64, !dbg !175
+  %mul259 = shl nsw i64 %conv258, 2, !dbg !175
+  %call260 = call i8* @realloc(i8* %42, i64 %mul259) #6, !dbg !175
+  %44 = bitcast i8* %call260 to i32*, !dbg !175
+  call void @llvm.dbg.value(metadata !{i32* %44}, i64 0, metadata !54), !dbg !175
+  %45 = bitcast double* %coefmpc.2.ph to i8*, !dbg !176
+  %46 = load i32* %memmpc_, align 4, !dbg !176, !tbaa !90
+  %conv261 = sext i32 %46 to i64, !dbg !176
+  %mul262 = shl nsw i64 %conv261, 3, !dbg !176
+  %call263 = call i8* @realloc(i8* %45, i64 %mul262) #6, !dbg !176
+  %47 = bitcast i8* %call263 to double*, !dbg !176
+  call void @llvm.dbg.value(metadata !{double* %47}, i64 0, metadata !72), !dbg !176
+  %48 = load i32* %mpcfree, align 4, !dbg !177, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %48}, i64 0, metadata !39), !dbg !177
+  %49 = load i32* %memmpc_, align 4, !dbg !177, !tbaa !90
+  %cmp265693 = icmp slt i32 %48, %49, !dbg !177
+  br i1 %cmp265693, label %for.body267.lr.ph, label %for.end275, !dbg !177
 
-.lr.ph59:                                         ; preds = %197
-  %221 = sext i32 %218 to i64
-  %222 = sext i32 %219 to i64, !dbg !342
-  br label %223, !dbg !342
+for.body267.lr.ph:                                ; preds = %if.then247
+  %50 = sext i32 %48 to i64
+  br label %for.body267, !dbg !177
 
-; <label>:223                                     ; preds = %.lr.ph59, %223
-  %indvars.iv101 = phi i64 [ %221, %.lr.ph59 ], [ %indvars.iv.next102, %223 ]
-  %indvars.iv.next102 = add nsw i64 %indvars.iv101, 1, !dbg !342
-  %224 = mul nsw i64 %indvars.iv101, 3, !dbg !343
-  %225 = add nsw i64 %224, -1, !dbg !345
-  %226 = getelementptr inbounds i32* %211, i64 %225, !dbg !346
-  %227 = trunc i64 %indvars.iv.next102 to i32, !dbg !347
-  store i32 %227, i32* %226, align 4, !dbg !347, !tbaa !114
-  %228 = icmp slt i64 %indvars.iv.next102, %222, !dbg !341
-  br i1 %228, label %223, label %._crit_edge60, !dbg !342
+for.body267:                                      ; preds = %for.body267.lr.ph, %for.body267
+  %indvars.iv747 = phi i64 [ %50, %for.body267.lr.ph ], [ %indvars.iv.next748, %for.body267 ]
+  %indvars.iv.next748 = add i64 %indvars.iv747, 1, !dbg !177
+  %sub270 = mul i64 %indvars.iv747, 12884901888, !dbg !179
+  %sext = add i64 %sub270, -4294967296, !dbg !179
+  %idxprom271 = ashr exact i64 %sext, 32, !dbg !179
+  %arrayidx272 = getelementptr inbounds i32* %44, i64 %idxprom271, !dbg !179
+  %51 = trunc i64 %indvars.iv.next748 to i32, !dbg !179
+  store i32 %51, i32* %arrayidx272, align 4, !dbg !179, !tbaa !90
+  %cmp265 = icmp slt i32 %51, %49, !dbg !177
+  br i1 %cmp265, label %for.body267, label %for.end275, !dbg !177
 
-._crit_edge60:                                    ; preds = %223, %197
-  %229 = mul nsw i32 %219, 3, !dbg !348
-  %230 = add nsw i32 %229, -1, !dbg !349
-  %231 = sext i32 %230 to i64, !dbg !350
-  %232 = getelementptr inbounds i32* %211, i64 %231, !dbg !350
-  store i32 0, i32* %232, align 4, !dbg !351, !tbaa !114
-  br label %.outer10, !dbg !352
+for.end275:                                       ; preds = %for.body267, %if.then247
+  %mul276 = mul nsw i32 %49, 3, !dbg !181
+  %sub277 = add nsw i32 %mul276, -1, !dbg !181
+  %idxprom278 = sext i32 %sub277 to i64, !dbg !181
+  %arrayidx279 = getelementptr inbounds i32* %44, i64 %idxprom278, !dbg !181
+  store i32 0, i32* %arrayidx279, align 4, !dbg !181, !tbaa !90
+  br label %do.body206.outer, !dbg !182
 
-; <label>:233                                     ; preds = %92, %77
-  %234 = add nsw i32 %78, -1, !dbg !353
-  %235 = sext i32 %234 to i64, !dbg !355
-  %236 = getelementptr inbounds i32* %nodempc.1.ph, i64 %235, !dbg !355
-  %237 = load i32* %236, align 4, !dbg !355, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %237, i64 0, metadata !40, metadata !78), !dbg !203
-  %238 = icmp eq i32 %237, 0, !dbg !356
-  br i1 %238, label %.thread7, label %77, !dbg !358
+if.else286:                                       ; preds = %land.lhs.true, %do.body106
+  %sub288 = add nsw i32 %mul107, -1, !dbg !183
+  %idxprom289 = sext i32 %sub288 to i64, !dbg !183
+  %arrayidx290 = getelementptr inbounds i32* %nodempc.1.ph, i64 %idxprom289, !dbg !183
+  %52 = load i32* %arrayidx290, align 4, !dbg !183, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %52}, i64 0, metadata !40), !dbg !183
+  %cmp291 = icmp eq i32 %52, 0, !dbg !185
+  br i1 %cmp291, label %for.inc429, label %do.body106, !dbg !185
 
-; <label>:239                                     ; preds = %155
-  %240 = add nsw i32 %169, -1, !dbg !359
-  %241 = sext i32 %240 to i64, !dbg !361
-  %242 = getelementptr inbounds i32* %nodempc.2.ph, i64 %241, !dbg !361
-  store i32 %103, i32* %242, align 4, !dbg !362, !tbaa !114
-  %243 = load i32* %69, align 4, !dbg !363, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %243, i64 0, metadata !64, metadata !78), !dbg !364
-  br label %244, !dbg !365
+if.end300:                                        ; preds = %do.body206
+  %sub283 = add nsw i32 %mul218, -1, !dbg !186
+  %idxprom284 = sext i32 %sub283 to i64, !dbg !186
+  %arrayidx285 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom284, !dbg !186
+  store i32 %22, i32* %arrayidx285, align 4, !dbg !186, !tbaa !90
+  %53 = load i32* %arrayidx97, align 4, !dbg !188, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %53}, i64 0, metadata !64), !dbg !188
+  br label %do.body303, !dbg !189
 
-; <label>:244                                     ; preds = %.loopexit, %239
-  %index1.0 = phi i32 [ %243, %239 ], [ %299, %.loopexit ]
-  call void @llvm.dbg.value(metadata i32 %index1.0, i64 0, metadata !67, metadata !78), !dbg !366
-  %245 = mul nsw i32 %index1.0, 3, !dbg !367
-  %246 = add nsw i32 %245, -1, !dbg !369
-  %247 = sext i32 %246 to i64, !dbg !370
-  %248 = getelementptr inbounds i32* %nodempc.2.ph, i64 %247, !dbg !370
-  %249 = load i32* %248, align 4, !dbg !370, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %249, i64 0, metadata !65, metadata !78), !dbg !371
-  %250 = icmp eq i32 %249, 0, !dbg !372
-  br i1 %250, label %301, label %.preheader, !dbg !374
+do.body303:                                       ; preds = %do.end373, %if.end300
+  %index1.0 = phi i32 [ %53, %if.end300 ], [ %65, %do.end373 ]
+  call void @llvm.dbg.value(metadata !{i32 %index1.0}, i64 0, metadata !67), !dbg !190
+  %mul304 = mul nsw i32 %index1.0, 3, !dbg !192
+  %sub305 = add nsw i32 %mul304, -1, !dbg !192
+  %idxprom306 = sext i32 %sub305 to i64, !dbg !192
+  %arrayidx307 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom306, !dbg !192
+  %54 = load i32* %arrayidx307, align 4, !dbg !192, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %54}, i64 0, metadata !65), !dbg !192
+  %cmp308 = icmp eq i32 %54, 0, !dbg !193
+  br i1 %cmp308, label %do.end383, label %do.body312.preheader, !dbg !193
 
-.preheader:                                       ; preds = %244
-  %251 = add nsw i32 %245, -3, !dbg !375
-  %252 = sext i32 %251 to i64, !dbg !378
-  %253 = getelementptr inbounds i32* %nodempc.2.ph, i64 %252, !dbg !378
-  %254 = add nsw i32 %245, -2, !dbg !379
-  %255 = sext i32 %254 to i64, !dbg !380
-  %256 = getelementptr inbounds i32* %nodempc.2.ph, i64 %255, !dbg !380
-  %257 = add nsw i32 %index1.0, -1, !dbg !381
-  %258 = sext i32 %257 to i64, !dbg !383
-  %259 = getelementptr inbounds double* %coefmpc.2.ph, i64 %258, !dbg !383
-  br label %.outer, !dbg !375
+do.body312.preheader:                             ; preds = %do.body303
+  %sub314 = add nsw i32 %mul304, -3, !dbg !194
+  %idxprom315 = sext i32 %sub314 to i64, !dbg !194
+  %arrayidx316 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom315, !dbg !194
+  %sub325 = add nsw i32 %mul304, -2, !dbg !194
+  %idxprom326 = sext i32 %sub325 to i64, !dbg !194
+  %arrayidx327 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom326, !dbg !194
+  %sub338 = add nsw i32 %index1.0, -1, !dbg !196
+  %idxprom339 = sext i32 %sub338 to i64, !dbg !196
+  %arrayidx340 = getelementptr inbounds double* %coefmpc.2.ph, i64 %idxprom339, !dbg !196
+  br label %do.body312.outer, !dbg !194
 
-.outer:                                           ; preds = %.preheader, %293
-  %index2.0.ph = phi i32 [ %249, %.preheader ], [ %297, %293 ]
-  %index2old.0.ph = phi i32 [ %index1.0, %.preheader ], [ %index2.0, %293 ]
-  %260 = mul nsw i32 %index2old.0.ph, 3, !dbg !384
-  %261 = add nsw i32 %260, -1, !dbg !385
-  %262 = sext i32 %261 to i64, !dbg !386
-  %263 = getelementptr inbounds i32* %nodempc.2.ph, i64 %262, !dbg !386
-  br label %264
+do.body312.outer:                                 ; preds = %do.body312.preheader, %if.else362
+  %index2.0.ph = phi i32 [ %64, %if.else362 ], [ %54, %do.body312.preheader ]
+  %index2old.0.ph = phi i32 [ %index2.0, %if.else362 ], [ %index1.0, %do.body312.preheader ]
+  %mul346 = mul nsw i32 %index2old.0.ph, 3, !dbg !198
+  %sub347 = add nsw i32 %mul346, -1, !dbg !198
+  %idxprom348 = sext i32 %sub347 to i64, !dbg !198
+  %arrayidx349 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom348, !dbg !198
+  br label %do.body312
 
-; <label>:264                                     ; preds = %.outer, %279
-  %index2.0 = phi i32 [ %291, %279 ], [ %index2.0.ph, %.outer ]
-  %265 = load i32* %253, align 4, !dbg !378, !tbaa !114
-  %266 = mul nsw i32 %index2.0, 3, !dbg !387
-  %267 = add nsw i32 %266, -3, !dbg !388
-  %268 = sext i32 %267 to i64, !dbg !389
-  %269 = getelementptr inbounds i32* %nodempc.2.ph, i64 %268, !dbg !389
-  %270 = load i32* %269, align 4, !dbg !389, !tbaa !114
-  %271 = icmp eq i32 %265, %270, !dbg !390
-  br i1 %271, label %272, label %293, !dbg !391
+do.body312:                                       ; preds = %if.then334, %do.body312.outer
+  %index2.0 = phi i32 [ %index2.0.ph, %do.body312.outer ], [ %63, %if.then334 ]
+  %55 = load i32* %arrayidx316, align 4, !dbg !194, !tbaa !90
+  %mul317 = mul nsw i32 %index2.0, 3, !dbg !194
+  %sub318 = add nsw i32 %mul317, -3, !dbg !194
+  %idxprom319 = sext i32 %sub318 to i64, !dbg !194
+  %arrayidx320 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom319, !dbg !194
+  %56 = load i32* %arrayidx320, align 4, !dbg !194, !tbaa !90
+  %cmp321 = icmp eq i32 %55, %56, !dbg !194
+  br i1 %cmp321, label %land.lhs.true323, label %if.else362, !dbg !194
 
-; <label>:272                                     ; preds = %264
-  %273 = load i32* %256, align 4, !dbg !380, !tbaa !114
-  %274 = add nsw i32 %266, -2, !dbg !392
-  %275 = sext i32 %274 to i64, !dbg !393
-  %276 = getelementptr inbounds i32* %nodempc.2.ph, i64 %275, !dbg !393
-  %277 = load i32* %276, align 4, !dbg !393, !tbaa !114
-  %278 = icmp eq i32 %273, %277, !dbg !394
-  br i1 %278, label %279, label %293, !dbg !395
+land.lhs.true323:                                 ; preds = %do.body312
+  %57 = load i32* %arrayidx327, align 4, !dbg !194, !tbaa !90
+  %sub329 = add nsw i32 %mul317, -2, !dbg !194
+  %idxprom330 = sext i32 %sub329 to i64, !dbg !194
+  %arrayidx331 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom330, !dbg !194
+  %58 = load i32* %arrayidx331, align 4, !dbg !194, !tbaa !90
+  %cmp332 = icmp eq i32 %57, %58, !dbg !194
+  br i1 %cmp332, label %if.then334, label %if.else362, !dbg !194
 
-; <label>:279                                     ; preds = %272
-  %280 = add nsw i32 %index2.0, -1, !dbg !396
-  %281 = sext i32 %280 to i64, !dbg !397
-  %282 = getelementptr inbounds double* %coefmpc.2.ph, i64 %281, !dbg !397
-  %283 = load double* %282, align 8, !dbg !397, !tbaa !233
-  %284 = load double* %259, align 8, !dbg !398, !tbaa !233
-  %285 = fadd double %283, %284, !dbg !398
-  store double %285, double* %259, align 8, !dbg !398, !tbaa !233
-  %286 = add nsw i32 %266, -1, !dbg !399
-  %287 = sext i32 %286 to i64, !dbg !400
-  %288 = getelementptr inbounds i32* %nodempc.2.ph, i64 %287, !dbg !400
-  %289 = load i32* %288, align 4, !dbg !400, !tbaa !114
-  store i32 %289, i32* %263, align 4, !dbg !401, !tbaa !114
-  %290 = load i32* %mpcfree, align 4, !dbg !402, !tbaa !114
-  store i32 %290, i32* %288, align 4, !dbg !403, !tbaa !114
-  store i32 %index2.0, i32* %mpcfree, align 4, !dbg !404, !tbaa !114
-  %291 = load i32* %263, align 4, !dbg !405, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %291, i64 0, metadata !65, metadata !78), !dbg !371
-  %292 = icmp eq i32 %291, 0, !dbg !406
-  br i1 %292, label %.loopexit, label %264, !dbg !408
+if.then334:                                       ; preds = %land.lhs.true323
+  %sub335 = add nsw i32 %index2.0, -1, !dbg !196
+  %idxprom336 = sext i32 %sub335 to i64, !dbg !196
+  %arrayidx337 = getelementptr inbounds double* %coefmpc.2.ph, i64 %idxprom336, !dbg !196
+  %59 = load double* %arrayidx337, align 8, !dbg !196, !tbaa !135
+  %60 = load double* %arrayidx340, align 8, !dbg !196, !tbaa !135
+  %add341 = fadd double %59, %60, !dbg !196
+  store double %add341, double* %arrayidx340, align 8, !dbg !196, !tbaa !135
+  %sub343 = add nsw i32 %mul317, -1, !dbg !198
+  %idxprom344 = sext i32 %sub343 to i64, !dbg !198
+  %arrayidx345 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom344, !dbg !198
+  %61 = load i32* %arrayidx345, align 4, !dbg !198, !tbaa !90
+  store i32 %61, i32* %arrayidx349, align 4, !dbg !198, !tbaa !90
+  %62 = load i32* %mpcfree, align 4, !dbg !199, !tbaa !90
+  store i32 %62, i32* %arrayidx345, align 4, !dbg !199, !tbaa !90
+  store i32 %index2.0, i32* %mpcfree, align 4, !dbg !200, !tbaa !90
+  %63 = load i32* %arrayidx349, align 4, !dbg !201, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %63}, i64 0, metadata !65), !dbg !201
+  %cmp358 = icmp eq i32 %63, 0, !dbg !202
+  br i1 %cmp358, label %do.end373, label %do.body312, !dbg !202
 
-; <label>:293                                     ; preds = %272, %264
-  call void @llvm.dbg.value(metadata i32 %index2.0, i64 0, metadata !67, metadata !78), !dbg !366
-  %294 = add nsw i32 %266, -1, !dbg !409
-  %295 = sext i32 %294 to i64, !dbg !411
-  %296 = getelementptr inbounds i32* %nodempc.2.ph, i64 %295, !dbg !411
-  %297 = load i32* %296, align 4, !dbg !411, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %297, i64 0, metadata !65, metadata !78), !dbg !371
-  %298 = icmp eq i32 %297, 0, !dbg !412
-  br i1 %298, label %.loopexit, label %.outer, !dbg !414
+if.else362:                                       ; preds = %land.lhs.true323, %do.body312
+  call void @llvm.dbg.value(metadata !{i32 %index2.0}, i64 0, metadata !67), !dbg !203
+  %sub364 = add nsw i32 %mul317, -1, !dbg !205
+  %idxprom365 = sext i32 %sub364 to i64, !dbg !205
+  %arrayidx366 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom365, !dbg !205
+  %64 = load i32* %arrayidx366, align 4, !dbg !205, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %64}, i64 0, metadata !65), !dbg !205
+  %cmp367 = icmp eq i32 %64, 0, !dbg !206
+  br i1 %cmp367, label %do.end373, label %do.body312.outer, !dbg !206
 
-.loopexit:                                        ; preds = %293, %279
-  %299 = load i32* %248, align 4, !dbg !415, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %299, i64 0, metadata !64, metadata !78), !dbg !364
-  %300 = icmp eq i32 %299, 0, !dbg !416
-  br i1 %300, label %301, label %244, !dbg !418
+do.end373:                                        ; preds = %if.else362, %if.then334
+  %65 = load i32* %arrayidx307, align 4, !dbg !207, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %65}, i64 0, metadata !64), !dbg !207
+  %cmp378 = icmp eq i32 %65, 0, !dbg !208
+  br i1 %cmp378, label %do.end383, label %do.body303, !dbg !208
 
-; <label>:301                                     ; preds = %.loopexit, %244
-  %302 = load i32* %69, align 4, !dbg !419, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %302, i64 0, metadata !64, metadata !78), !dbg !364
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !66, metadata !78), !dbg !420
-  br label %303, !dbg !421
+do.end383:                                        ; preds = %do.end373, %do.body303
+  %66 = load i32* %arrayidx97, align 4, !dbg !209, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %66}, i64 0, metadata !64), !dbg !209
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !66), !dbg !210
+  br label %do.body386, !dbg !211
 
-; <label>:303                                     ; preds = %331, %301
-  %index1.1 = phi i32 [ %302, %301 ], [ %index1.2, %331 ]
-  %index1old.0 = phi i32 [ 0, %301 ], [ %index1old.1, %331 ]
-  %304 = add nsw i32 %index1.1, -1, !dbg !422
-  %305 = sext i32 %304 to i64, !dbg !425
-  %306 = getelementptr inbounds double* %coefmpc.2.ph, i64 %305, !dbg !425
-  %307 = load double* %306, align 8, !dbg !425, !tbaa !233
-  %308 = call double @fabs(double %307) #7, !dbg !426
-  %309 = fcmp olt double %308, 1.000000e-10, !dbg !427
-  br i1 %309, label %310, label %325, !dbg !428
+do.body386:                                       ; preds = %if.end422, %do.end383
+  %index1.1 = phi i32 [ %66, %do.end383 ], [ %index1.2, %if.end422 ]
+  %index1old.0 = phi i32 [ 0, %do.end383 ], [ %index1old.1, %if.end422 ]
+  %sub387 = add nsw i32 %index1.1, -1, !dbg !212
+  %idxprom388 = sext i32 %sub387 to i64, !dbg !212
+  %arrayidx389 = getelementptr inbounds double* %coefmpc.2.ph, i64 %idxprom388, !dbg !212
+  %67 = load double* %arrayidx389, align 8, !dbg !212, !tbaa !135
+  %call390 = call double @fabs(double %67) #7, !dbg !212
+  %cmp391 = fcmp olt double %call390, 1.000000e-10, !dbg !212
+  br i1 %cmp391, label %if.then393, label %if.else417, !dbg !212
 
-; <label>:310                                     ; preds = %303
-  %311 = icmp eq i32 %index1old.0, 0, !dbg !429
-  br i1 %311, label %312, label %313, !dbg !432
+if.then393:                                       ; preds = %do.body386
+  %cmp394 = icmp eq i32 %index1old.0, 0, !dbg !214
+  br i1 %cmp394, label %if.then396, label %if.else399, !dbg !214
 
-; <label>:312                                     ; preds = %310
-  %puts = call i32 @puts(i8* getelementptr inbounds ([43 x i8]* @str, i64 0, i64 0)), !dbg !433
-  %puts2 = call i32 @puts(i8* getelementptr inbounds ([37 x i8]* @str13, i64 0, i64 0)), !dbg !435
-  call void (...)* @stop_() #6, !dbg !436
-  br label %331, !dbg !437
+if.then396:                                       ; preds = %if.then393
+  %puts = call i32 @puts(i8* getelementptr inbounds ([43 x i8]* @str, i64 0, i64 0)), !dbg !216
+  %puts674 = call i32 @puts(i8* getelementptr inbounds ([37 x i8]* @str13, i64 0, i64 0)), !dbg !218
+  call void (...)* @stop_() #6, !dbg !219
+  br label %if.end422, !dbg !220
 
-; <label>:313                                     ; preds = %310
-  %314 = mul nsw i32 %index1.1, 3, !dbg !438
-  %315 = add nsw i32 %314, -1, !dbg !440
-  %316 = sext i32 %315 to i64, !dbg !441
-  %317 = getelementptr inbounds i32* %nodempc.2.ph, i64 %316, !dbg !441
-  %318 = load i32* %317, align 4, !dbg !441, !tbaa !114
-  %319 = mul nsw i32 %index1old.0, 3, !dbg !442
-  %320 = add nsw i32 %319, -1, !dbg !443
-  %321 = sext i32 %320 to i64, !dbg !444
-  %322 = getelementptr inbounds i32* %nodempc.2.ph, i64 %321, !dbg !444
-  store i32 %318, i32* %322, align 4, !dbg !445, !tbaa !114
-  %323 = load i32* %mpcfree, align 4, !dbg !446, !tbaa !114
-  store i32 %323, i32* %317, align 4, !dbg !447, !tbaa !114
-  store i32 %index1.1, i32* %mpcfree, align 4, !dbg !448, !tbaa !114
-  %324 = load i32* %322, align 4, !dbg !449, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %324, i64 0, metadata !64, metadata !78), !dbg !364
-  br label %331
+if.else399:                                       ; preds = %if.then393
+  %mul400 = mul nsw i32 %index1.1, 3, !dbg !221
+  %sub401 = add nsw i32 %mul400, -1, !dbg !221
+  %idxprom402 = sext i32 %sub401 to i64, !dbg !221
+  %arrayidx403 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom402, !dbg !221
+  %68 = load i32* %arrayidx403, align 4, !dbg !221, !tbaa !90
+  %mul404 = mul nsw i32 %index1old.0, 3, !dbg !221
+  %sub405 = add nsw i32 %mul404, -1, !dbg !221
+  %idxprom406 = sext i32 %sub405 to i64, !dbg !221
+  %arrayidx407 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom406, !dbg !221
+  store i32 %68, i32* %arrayidx407, align 4, !dbg !221, !tbaa !90
+  %69 = load i32* %mpcfree, align 4, !dbg !223, !tbaa !90
+  store i32 %69, i32* %arrayidx403, align 4, !dbg !223, !tbaa !90
+  store i32 %index1.1, i32* %mpcfree, align 4, !dbg !224, !tbaa !90
+  %70 = load i32* %arrayidx407, align 4, !dbg !225, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %70}, i64 0, metadata !64), !dbg !225
+  br label %if.end422
 
-; <label>:325                                     ; preds = %303
-  call void @llvm.dbg.value(metadata i32 %index1.1, i64 0, metadata !66, metadata !78), !dbg !420
-  %326 = mul nsw i32 %index1.1, 3, !dbg !450
-  %327 = add nsw i32 %326, -1, !dbg !452
-  %328 = sext i32 %327 to i64, !dbg !453
-  %329 = getelementptr inbounds i32* %nodempc.2.ph, i64 %328, !dbg !453
-  %330 = load i32* %329, align 4, !dbg !453, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %330, i64 0, metadata !64, metadata !78), !dbg !364
-  br label %331
+if.else417:                                       ; preds = %do.body386
+  call void @llvm.dbg.value(metadata !{i32 %index1.1}, i64 0, metadata !66), !dbg !226
+  %mul418 = mul nsw i32 %index1.1, 3, !dbg !228
+  %sub419 = add nsw i32 %mul418, -1, !dbg !228
+  %idxprom420 = sext i32 %sub419 to i64, !dbg !228
+  %arrayidx421 = getelementptr inbounds i32* %nodempc.2.ph, i64 %idxprom420, !dbg !228
+  %71 = load i32* %arrayidx421, align 4, !dbg !228, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %71}, i64 0, metadata !64), !dbg !228
+  br label %if.end422
 
-; <label>:331                                     ; preds = %312, %313, %325
-  %index1.2 = phi i32 [ %index1.1, %312 ], [ %324, %313 ], [ %330, %325 ]
-  %index1old.1 = phi i32 [ 0, %312 ], [ %index1old.0, %313 ], [ %index1.1, %325 ]
-  %332 = icmp eq i32 %index1.2, 0, !dbg !454
-  br i1 %332, label %.thread7, label %303, !dbg !456
+if.end422:                                        ; preds = %if.then396, %if.else399, %if.else417
+  %index1.2 = phi i32 [ %index1.1, %if.then396 ], [ %70, %if.else399 ], [ %71, %if.else417 ]
+  %index1old.1 = phi i32 [ 0, %if.then396 ], [ %index1old.0, %if.else399 ], [ %index1.1, %if.else417 ]
+  %cmp423 = icmp eq i32 %index1.2, 0, !dbg !229
+  br i1 %cmp423, label %for.inc429, label %do.body386, !dbg !229
 
-.thread7:                                         ; preds = %121, %331, %233, %64
-  %nodempc.4 = phi i32* [ %nodempc.1.ph, %64 ], [ %nodempc.1.ph, %233 ], [ %nodempc.2.ph, %331 ], [ %nodempc.1.ph, %121 ]
-  %idepend.6 = phi i32 [ %idepend.1.ph, %64 ], [ %idepend.2.ph, %233 ], [ %idepend.4, %331 ], [ %idepend.3, %121 ]
-  %ichange.2 = phi i32 [ %ichange.0, %64 ], [ %ichange.0, %233 ], [ 1, %331 ], [ %ichange.0, %121 ]
-  %coefmpc.4 = phi double* [ %coefmpc.1.ph, %64 ], [ %coefmpc.1.ph, %233 ], [ %coefmpc.2.ph, %331 ], [ %coefmpc.1.ph, %121 ]
-  %333 = add nsw i32 %i.2, 1, !dbg !457
-  call void @llvm.dbg.value(metadata i32 %333, i64 0, metadata !38, metadata !78), !dbg !118
-  %.pre = load i32* %nmpc, align 4, !dbg !458, !tbaa !114
-  br label %.outer16, !dbg !459
+for.inc429:                                       ; preds = %if.end422, %if.else286, %if.then153, %for.body88
+  %nodempc.4 = phi i32* [ %nodempc.1.ph, %for.body88 ], [ %nodempc.1.ph, %if.then153 ], [ %nodempc.1.ph, %if.else286 ], [ %nodempc.2.ph, %if.end422 ]
+  %idepend.6 = phi i32 [ %idepend.1.ph, %for.body88 ], [ %idepend.3, %if.then153 ], [ %idepend.2.ph, %if.else286 ], [ %idepend.4, %if.end422 ]
+  %ichange.2 = phi i32 [ %ichange.0, %for.body88 ], [ %ichange.0, %if.then153 ], [ %ichange.0, %if.else286 ], [ 1, %if.end422 ]
+  %coefmpc.4 = phi double* [ %coefmpc.1.ph, %for.body88 ], [ %coefmpc.1.ph, %if.then153 ], [ %coefmpc.1.ph, %if.else286 ], [ %coefmpc.2.ph, %if.end422 ]
+  %inc430 = add nsw i32 %i.2, 1, !dbg !120
+  call void @llvm.dbg.value(metadata !{i32 %inc430}, i64 0, metadata !38), !dbg !120
+  %.pre = load i32* %nmpc, align 4, !dbg !120, !tbaa !90
+  br label %for.cond85.outer, !dbg !120
 
-.outer16:                                         ; preds = %0, %.preheader17, %58, %.thread7
-  %334 = phi i32 [ %.pre, %.thread7 ], [ %7, %0 ], [ %30, %.preheader17 ], [ %59, %58 ], !dbg !458
-  %nodempc.1.ph = phi i32* [ %nodempc.4, %.thread7 ], [ %1, %0 ], [ %1, %.preheader17 ], [ %1, %58 ]
-  %idepend.1.ph = phi i32 [ %idepend.6, %.thread7 ], [ 0, %0 ], [ 0, %.preheader17 ], [ 0, %58 ]
-  %ichange.0.ph = phi i32 [ %ichange.2, %.thread7 ], [ 0, %0 ], [ 0, %.preheader17 ], [ 0, %58 ]
-  %i.2.ph = phi i32 [ %333, %.thread7 ], [ 0, %0 ], [ 0, %.preheader17 ], [ 0, %58 ]
-  %coefmpc.1.ph = phi double* [ %coefmpc.4, %.thread7 ], [ %2, %0 ], [ %2, %.preheader17 ], [ %2, %58 ]
-  br label %62
+for.cond85.outer:                                 ; preds = %entry, %for.cond27.preheader, %for.inc82, %for.inc429
+  %72 = phi i32 [ %.pre, %for.inc429 ], [ %9, %for.cond27.preheader ], [ %11, %for.inc82 ], [ %4, %entry ], !dbg !120
+  %nodempc.1.ph = phi i32* [ %nodempc.4, %for.inc429 ], [ %0, %for.cond27.preheader ], [ %0, %for.inc82 ], [ %0, %entry ]
+  %idepend.1.ph = phi i32 [ %idepend.6, %for.inc429 ], [ 0, %for.cond27.preheader ], [ 0, %for.inc82 ], [ 0, %entry ]
+  %ichange.0.ph = phi i32 [ %ichange.2, %for.inc429 ], [ 0, %for.cond27.preheader ], [ 0, %for.inc82 ], [ 0, %entry ]
+  %i.2.ph = phi i32 [ %inc430, %for.inc429 ], [ 0, %for.cond27.preheader ], [ 0, %for.inc82 ], [ 0, %entry ]
+  %coefmpc.1.ph = phi double* [ %coefmpc.4, %for.inc429 ], [ %1, %for.cond27.preheader ], [ %1, %for.inc82 ], [ %1, %entry ]
+  br label %for.cond85
 
-; <label>:335                                     ; preds = %62
-  %336 = icmp eq i32 %ichange.0, 0, !dbg !460
-  br i1 %336, label %337, label %62, !dbg !462
+for.end431:                                       ; preds = %for.cond85
+  %cmp432 = icmp eq i32 %ichange.0, 0, !dbg !230
+  br i1 %cmp432, label %do.end437, label %for.cond85, !dbg !230
 
-; <label>:337                                     ; preds = %335
-  store i32 0, i32* %mpcend, align 4, !dbg !463, !tbaa !114
-  store i32 0, i32* %mpcmult, align 4, !dbg !464, !tbaa !114
-  store i32 0, i32* %maxlenmpc, align 4, !dbg !465, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !38, metadata !78), !dbg !118
-  %338 = load i32* %nmpc, align 4, !dbg !466, !tbaa !114
-  %339 = icmp sgt i32 %338, 0, !dbg !469
-  br i1 %339, label %.lr.ph55, label %._crit_edge56, !dbg !470
+do.end437:                                        ; preds = %for.end431
+  store i32 0, i32* %mpcend, align 4, !dbg !231, !tbaa !90
+  store i32 0, i32* %mpcmult, align 4, !dbg !232, !tbaa !90
+  store i32 0, i32* %maxlenmpc, align 4, !dbg !233, !tbaa !90
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !38), !dbg !234
+  %73 = load i32* %nmpc, align 4, !dbg !234, !tbaa !90
+  %cmp439687 = icmp sgt i32 %73, 0, !dbg !234
+  br i1 %cmp439687, label %for.body441, label %for.end472, !dbg !234
 
-.lr.ph55:                                         ; preds = %337, %._crit_edge
-  %indvars.iv = phi i64 [ %indvars.iv.next, %._crit_edge ], [ 0, %337 ]
-  %340 = getelementptr inbounds i32* %ipompc, i64 %indvars.iv, !dbg !471
-  %341 = load i32* %340, align 4, !dbg !471, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %341, i64 0, metadata !40, metadata !78), !dbg !203
-  %342 = load i32* %mpcend, align 4, !dbg !473, !tbaa !114
-  %343 = icmp slt i32 %342, %341, !dbg !473
-  %.5 = select i1 %343, i32 %341, i32 %342, !dbg !473
-  store i32 %.5, i32* %mpcend, align 4, !dbg !474, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !43, metadata !78), !dbg !475
-  %344 = mul nsw i32 %341, 3, !dbg !476
-  %345 = add nsw i32 %344, -1, !dbg !478
-  %346 = sext i32 %345 to i64, !dbg !479
-  %347 = getelementptr inbounds i32* %nodempc.1.ph, i64 %346, !dbg !479
-  %348 = load i32* %347, align 4, !dbg !479, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %348, i64 0, metadata !40, metadata !78), !dbg !203
-  %349 = icmp eq i32 %348, 0, !dbg !480
-  br i1 %349, label %._crit_edge, label %.lr.ph, !dbg !482
+for.body441:                                      ; preds = %do.end437, %if.then452
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.then452 ], [ 0, %do.end437 ]
+  %arrayidx443 = getelementptr inbounds i32* %ipompc, i64 %indvars.iv, !dbg !236
+  %74 = load i32* %arrayidx443, align 4, !dbg !236, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %74}, i64 0, metadata !40), !dbg !236
+  %75 = load i32* %mpcend, align 4, !dbg !238, !tbaa !90
+  %cmp444 = icmp slt i32 %75, %74, !dbg !238
+  %.677 = select i1 %cmp444, i32 %74, i32 %75, !dbg !238
+  store i32 %.677, i32* %mpcend, align 4, !dbg !238, !tbaa !90
+  call void @llvm.dbg.value(metadata !144, i64 0, metadata !43), !dbg !239
+  %mul446681 = mul nsw i32 %74, 3, !dbg !240
+  %sub447682 = add nsw i32 %mul446681, -1, !dbg !240
+  %idxprom448683 = sext i32 %sub447682 to i64, !dbg !240
+  %arrayidx449684 = getelementptr inbounds i32* %nodempc.1.ph, i64 %idxprom448683, !dbg !240
+  %76 = load i32* %arrayidx449684, align 4, !dbg !240, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %76}, i64 0, metadata !40), !dbg !240
+  %cmp450685 = icmp eq i32 %76, 0, !dbg !242
+  br i1 %cmp450685, label %if.then452, label %if.end462, !dbg !242
 
-._crit_edge:                                      ; preds = %.lr.ph, %.lr.ph55
-  %nterm.0.lcssa = phi i32 [ 1, %.lr.ph55 ], [ %362, %.lr.ph ]
-  %350 = add nsw i32 %nterm.0.lcssa, -1, !dbg !483
-  %351 = mul nsw i32 %350, %nterm.0.lcssa, !dbg !485
-  %352 = load i32* %mpcmult, align 4, !dbg !486, !tbaa !114
-  %353 = add nsw i32 %352, %351, !dbg !486
-  store i32 %353, i32* %mpcmult, align 4, !dbg !486, !tbaa !114
-  %354 = load i32* %maxlenmpc, align 4, !dbg !487, !tbaa !114
-  %355 = icmp slt i32 %354, %nterm.0.lcssa, !dbg !487
-  %nterm.0. = select i1 %355, i32 %nterm.0.lcssa, i32 %354, !dbg !487
-  store i32 %nterm.0., i32* %maxlenmpc, align 4, !dbg !488, !tbaa !114
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !470
-  %356 = load i32* %nmpc, align 4, !dbg !466, !tbaa !114
-  %357 = sext i32 %356 to i64, !dbg !469
-  %358 = icmp slt i64 %indvars.iv.next, %357, !dbg !469
-  br i1 %358, label %.lr.ph55, label %._crit_edge56, !dbg !470
+if.then452:                                       ; preds = %if.end462, %for.body441
+  %nterm.0.lcssa = phi i32 [ 1, %for.body441 ], [ %inc469, %if.end462 ]
+  %sub453 = add nsw i32 %nterm.0.lcssa, -1, !dbg !243
+  %mul454 = mul nsw i32 %sub453, %nterm.0.lcssa, !dbg !243
+  %77 = load i32* %mpcmult, align 4, !dbg !243, !tbaa !90
+  %add455 = add nsw i32 %77, %mul454, !dbg !243
+  store i32 %add455, i32* %mpcmult, align 4, !dbg !243, !tbaa !90
+  %78 = load i32* %maxlenmpc, align 4, !dbg !245, !tbaa !90
+  %cmp456 = icmp slt i32 %78, %nterm.0.lcssa, !dbg !245
+  %nterm.0. = select i1 %cmp456, i32 %nterm.0.lcssa, i32 %78, !dbg !245
+  store i32 %nterm.0., i32* %maxlenmpc, align 4, !dbg !245, !tbaa !90
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !234
+  %79 = load i32* %nmpc, align 4, !dbg !234, !tbaa !90
+  %80 = trunc i64 %indvars.iv.next to i32, !dbg !234
+  %cmp439 = icmp slt i32 %80, %79, !dbg !234
+  br i1 %cmp439, label %for.body441, label %for.end472, !dbg !234
 
-.lr.ph:                                           ; preds = %.lr.ph55, %.lr.ph
-  %359 = phi i32 [ %.6, %.lr.ph ], [ %.5, %.lr.ph55 ], !dbg !489
-  %360 = phi i32 [ %367, %.lr.ph ], [ %348, %.lr.ph55 ]
-  %nterm.052 = phi i32 [ %362, %.lr.ph ], [ 1, %.lr.ph55 ]
-  %361 = icmp slt i32 %359, %360, !dbg !489
-  %.6 = select i1 %361, i32 %360, i32 %359, !dbg !489
-  store i32 %.6, i32* %mpcend, align 4, !dbg !490, !tbaa !114
-  %362 = add nuw nsw i32 %nterm.052, 1, !dbg !491
-  call void @llvm.dbg.value(metadata i32 %362, i64 0, metadata !43, metadata !78), !dbg !475
-  %363 = mul nsw i32 %360, 3, !dbg !476
-  %364 = add nsw i32 %363, -1, !dbg !478
-  %365 = sext i32 %364 to i64, !dbg !479
-  %366 = getelementptr inbounds i32* %nodempc.1.ph, i64 %365, !dbg !479
-  %367 = load i32* %366, align 4, !dbg !479, !tbaa !114
-  call void @llvm.dbg.value(metadata i32 %367, i64 0, metadata !40, metadata !78), !dbg !203
-  %368 = icmp eq i32 %367, 0, !dbg !480
-  br i1 %368, label %._crit_edge, label %.lr.ph, !dbg !482
+if.end462:                                        ; preds = %for.body441, %if.end462
+  %81 = phi i32 [ %.678, %if.end462 ], [ %.677, %for.body441 ], !dbg !246
+  %82 = phi i32 [ %83, %if.end462 ], [ %76, %for.body441 ]
+  %nterm.0686 = phi i32 [ %inc469, %if.end462 ], [ 1, %for.body441 ]
+  %cmp463 = icmp slt i32 %81, %82, !dbg !246
+  %.678 = select i1 %cmp463, i32 %82, i32 %81, !dbg !246
+  store i32 %.678, i32* %mpcend, align 4, !dbg !246, !tbaa !90
+  %inc469 = add nsw i32 %nterm.0686, 1, !dbg !247
+  call void @llvm.dbg.value(metadata !{i32 %inc469}, i64 0, metadata !43), !dbg !247
+  %mul446 = mul nsw i32 %82, 3, !dbg !240
+  %sub447 = add nsw i32 %mul446, -1, !dbg !240
+  %idxprom448 = sext i32 %sub447 to i64, !dbg !240
+  %arrayidx449 = getelementptr inbounds i32* %nodempc.1.ph, i64 %idxprom448, !dbg !240
+  %83 = load i32* %arrayidx449, align 4, !dbg !240, !tbaa !90
+  call void @llvm.dbg.value(metadata !{i32 %82}, i64 0, metadata !40), !dbg !240
+  %cmp450 = icmp eq i32 %83, 0, !dbg !242
+  br i1 %cmp450, label %if.then452, label %if.end462, !dbg !242
 
-._crit_edge56:                                    ; preds = %._crit_edge, %337
-  call void @free(i8* %5) #8, !dbg !492
-  store i32* %nodempc.1.ph, i32** %nodempcp, align 8, !dbg !493, !tbaa !108
-  store double* %coefmpc.1.ph, double** %coefmpcp, align 8, !dbg !494, !tbaa !108
-  ret void, !dbg !495
+for.end472:                                       ; preds = %if.then452, %do.end437
+  call void @free(i8* %call) #6, !dbg !248
+  store i32* %nodempc.1.ph, i32** %nodempcp, align 8, !dbg !249, !tbaa !85
+  store double* %coefmpc.1.ph, double** %coefmpcp, align 8, !dbg !250, !tbaa !85
+  ret void, !dbg !251
 }
 
-; Function Attrs: optsize
-declare i8* @u_calloc(i64, i64) #1
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.declare(metadata, metadata) #1
 
 ; Function Attrs: optsize
-declare void @nident_(i32*, i32*, i32*, i32*) #1
+declare i8* @u_calloc(i64, i64) #2
+
+; Function Attrs: optsize
+declare void @nident_(i32*, i32*, i32*, i32*) #2
 
 ; Function Attrs: nounwind optsize
-declare i32 @printf(i8* nocapture readonly, ...) #2
+declare i32 @printf(i8* nocapture, ...) #3
 
 ; Function Attrs: optsize
-declare void @stop_(...) #1
+declare void @stop_(...) #2
 
 ; Function Attrs: optsize
-declare i32 @strcmp1(i8*, i8*) #1
+declare i32 @strcmp1(i8*, i8*) #2
 
 ; Function Attrs: optsize
-declare i32 @strcpy1(i8*, i8*, i32) #1
+declare i32 @strcpy1(i8*, i8*, i32) #2
 
 ; Function Attrs: nounwind optsize
-declare noalias i8* @realloc(i8* nocapture, i64) #2
+declare noalias i8* @realloc(i8* nocapture, i64) #3
 
 ; Function Attrs: nounwind optsize readnone
-declare double @fabs(double) #3
+declare double @fabs(double) #4
 
 ; Function Attrs: nounwind optsize
-declare void @free(i8* nocapture) #2
+declare void @free(i8* nocapture) #3
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #4
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
 
 ; Function Attrs: nounwind
-declare i32 @puts(i8* nocapture readonly) #5
+declare i32 @puts(i8* nocapture) #5
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { nounwind readnone }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind readnone }
+attributes #2 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #5 = { nounwind }
 attributes #6 = { nounwind optsize }
 attributes #7 = { nounwind optsize readnone }
-attributes #8 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!74, !75, !76}
-!llvm.ident = !{!77}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !8, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/cascade.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !5, !6}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!6 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !7, size: 64, align: 64)
-!7 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!8 = !{!9}
-!9 = !DISubprogram(name: "cascade", scope: !1, file: !1, line: 27, type: !10, isLocal: false, isDefinition: true, scopeLine: 31, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, double**, i32**, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i8*, i32, i32*, i32*, i32*, i32*, i32*)* @cascade, variables: !16)
-!10 = !DISubroutineType(types: !11)
-!11 = !{null, !4, !12, !13, !4, !4, !4, !4, !4, !4, !4, !4, !4, !4, !4, !14, !5, !4, !4, !4, !4, !4}
-!12 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !6, size: 64, align: 64)
-!13 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !4, size: 64, align: 64)
-!14 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !15, size: 64, align: 64)
-!15 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!16 = !{!17, !18, !19, !20, !21, !22, !23, !24, !25, !26, !27, !28, !29, !30, !31, !32, !33, !34, !35, !36, !37, !38, !39, !40, !41, !42, !43, !44, !45, !46, !47, !48, !49, !50, !51, !52, !53, !54, !55, !56, !57, !58, !59, !60, !61, !62, !63, !64, !65, !66, !67, !68, !69, !70, !71, !72, !73}
-!17 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ipompc", arg: 1, scope: !9, file: !1, line: 27, type: !4)
-!18 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "coefmpcp", arg: 2, scope: !9, file: !1, line: 27, type: !12)
-!19 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "nodempcp", arg: 3, scope: !9, file: !1, line: 27, type: !13)
-!20 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "nmpc", arg: 4, scope: !9, file: !1, line: 27, type: !4)
-!21 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "mpcfree", arg: 5, scope: !9, file: !1, line: 28, type: !4)
-!22 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "nodeboun", arg: 6, scope: !9, file: !1, line: 28, type: !4)
-!23 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ndirboun", arg: 7, scope: !9, file: !1, line: 28, type: !4)
-!24 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "nboun", arg: 8, scope: !9, file: !1, line: 28, type: !4)
-!25 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ikmpc", arg: 9, scope: !9, file: !1, line: 28, type: !4)
-!26 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ilmpc", arg: 10, scope: !9, file: !1, line: 29, type: !4)
-!27 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ikboun", arg: 11, scope: !9, file: !1, line: 29, type: !4)
-!28 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ilboun", arg: 12, scope: !9, file: !1, line: 29, type: !4)
-!29 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "mpcend", arg: 13, scope: !9, file: !1, line: 29, type: !4)
-!30 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "mpcmult", arg: 14, scope: !9, file: !1, line: 29, type: !4)
-!31 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "labmpc", arg: 15, scope: !9, file: !1, line: 30, type: !14)
-!32 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "labmpcLen", arg: 16, scope: !9, file: !1, line: 30, type: !5)
-!33 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "nk", arg: 17, scope: !9, file: !1, line: 30, type: !4)
-!34 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "memmpc_", arg: 18, scope: !9, file: !1, line: 30, type: !4)
-!35 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "icascade", arg: 19, scope: !9, file: !1, line: 30, type: !4)
-!36 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "maxlenmpc", arg: 20, scope: !9, file: !1, line: 30, type: !4)
-!37 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "callfrommain", arg: 21, scope: !9, file: !1, line: 31, type: !4)
-!38 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !9, file: !1, line: 52, type: !5)
-!39 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "j", scope: !9, file: !1, line: 52, type: !5)
-!40 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "index", scope: !9, file: !1, line: 52, type: !5)
-!41 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "id", scope: !9, file: !1, line: 52, type: !5)
-!42 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "idof", scope: !9, file: !1, line: 52, type: !5)
-!43 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nterm", scope: !9, file: !1, line: 52, type: !5)
-!44 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "irow", scope: !9, file: !1, line: 52, type: !5)
-!45 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "icolumn", scope: !9, file: !1, line: 52, type: !5)
-!46 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "node", scope: !9, file: !1, line: 52, type: !5)
-!47 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "idir", scope: !9, file: !1, line: 52, type: !5)
-!48 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "idepend", scope: !9, file: !1, line: 52, type: !5)
-!49 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "irownl", scope: !9, file: !1, line: 53, type: !5)
-!50 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "icolnl", scope: !9, file: !1, line: 53, type: !5)
-!51 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "ipointer", scope: !9, file: !1, line: 53, type: !4)
-!52 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "icoef", scope: !9, file: !1, line: 53, type: !4)
-!53 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "ifree", scope: !9, file: !1, line: 53, type: !5)
-!54 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nodempc", scope: !9, file: !1, line: 53, type: !4)
-!55 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "indepdof", scope: !9, file: !1, line: 54, type: !4)
-!56 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nindep", scope: !9, file: !1, line: 54, type: !5)
-!57 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "ispooles", scope: !9, file: !1, line: 54, type: !5)
-!58 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "iexpand", scope: !9, file: !1, line: 54, type: !5)
-!59 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "ichange", scope: !9, file: !1, line: 54, type: !5)
-!60 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "indexold", scope: !9, file: !1, line: 54, type: !5)
-!61 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "ip1", scope: !9, file: !1, line: 54, type: !5)
-!62 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "mpc", scope: !9, file: !1, line: 55, type: !5)
-!63 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "indexnew", scope: !9, file: !1, line: 55, type: !5)
-!64 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "index1", scope: !9, file: !1, line: 55, type: !5)
-!65 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "index2", scope: !9, file: !1, line: 55, type: !5)
-!66 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "index1old", scope: !9, file: !1, line: 55, type: !5)
-!67 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "index2old", scope: !9, file: !1, line: 55, type: !5)
-!68 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "jmpc", scope: !9, file: !1, line: 55, type: !4)
-!69 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nl", scope: !9, file: !1, line: 55, type: !5)
-!70 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "coef", scope: !9, file: !1, line: 57, type: !7)
-!71 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "xcoef", scope: !9, file: !1, line: 57, type: !6)
-!72 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "coefmpc", scope: !9, file: !1, line: 57, type: !6)
-!73 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "b", scope: !9, file: !1, line: 57, type: !7)
-!74 = !{i32 2, !"Dwarf Version", i32 2}
-!75 = !{i32 2, !"Debug Info Version", i32 700000003}
-!76 = !{i32 1, !"PIC Level", i32 2}
-!77 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!78 = !DIExpression()
-!79 = !DILocation(line: 27, column: 19, scope: !9)
-!80 = !DILocation(line: 27, column: 36, scope: !9)
-!81 = !DILocation(line: 27, column: 52, scope: !9)
-!82 = !DILocation(line: 27, column: 67, scope: !9)
-!83 = !DILocation(line: 28, column: 9, scope: !9)
-!84 = !DILocation(line: 28, column: 23, scope: !9)
-!85 = !DILocation(line: 28, column: 38, scope: !9)
-!86 = !DILocation(line: 28, column: 52, scope: !9)
-!87 = !DILocation(line: 28, column: 63, scope: !9)
-!88 = !DILocation(line: 29, column: 9, scope: !9)
-!89 = !DILocation(line: 29, column: 21, scope: !9)
-!90 = !DILocation(line: 29, column: 34, scope: !9)
-!91 = !DILocation(line: 29, column: 47, scope: !9)
-!92 = !DILocation(line: 29, column: 60, scope: !9)
-!93 = !DILocation(line: 30, column: 10, scope: !9)
-!94 = !DILocation(line: 30, column: 22, scope: !9)
-!95 = !DILocation(line: 30, column: 38, scope: !9)
-!96 = !DILocation(line: 30, column: 47, scope: !9)
-!97 = !DILocation(line: 30, column: 61, scope: !9)
-!98 = !DILocation(line: 30, column: 76, scope: !9)
-!99 = !DILocation(line: 31, column: 9, scope: !9)
-!100 = !DILocation(line: 53, column: 24, scope: !9)
-!101 = !DILocation(line: 53, column: 39, scope: !9)
-!102 = !DILocation(line: 53, column: 57, scope: !9)
-!103 = !DILocation(line: 54, column: 3, scope: !9)
-!104 = !DILocation(line: 55, column: 57, scope: !9)
-!105 = !DILocation(line: 57, column: 18, scope: !9)
-!106 = !DILocation(line: 57, column: 30, scope: !9)
-!107 = !DILocation(line: 59, column: 13, scope: !9)
-!108 = !{!109, !109, i64 0}
-!109 = !{!"any pointer", !110, i64 0}
-!110 = !{!"omnipotent char", !111, i64 0}
-!111 = !{!"Simple C/C++ TBAA"}
-!112 = !DILocation(line: 60, column: 13, scope: !9)
-!113 = !DILocation(line: 62, column: 10, scope: !9)
-!114 = !{!115, !115, i64 0}
-!115 = !{!"int", !110, i64 0}
-!116 = !DILocation(line: 63, column: 14, scope: !9)
-!117 = !DILocation(line: 52, column: 56, scope: !9)
-!118 = !DILocation(line: 52, column: 9, scope: !9)
-!119 = !DILocation(line: 69, column: 15, scope: !120)
-!120 = distinct !DILexicalBlock(scope: !121, file: !1, line: 69, column: 5)
-!121 = distinct !DILexicalBlock(scope: !9, file: !1, line: 69, column: 5)
-!122 = !DILocation(line: 69, column: 14, scope: !120)
-!123 = !DILocation(line: 69, column: 5, scope: !121)
-!124 = !DILocation(line: 85, column: 14, scope: !125)
-!125 = distinct !DILexicalBlock(scope: !126, file: !1, line: 85, column: 5)
-!126 = distinct !DILexicalBlock(scope: !9, file: !1, line: 85, column: 5)
-!127 = !DILocation(line: 85, column: 5, scope: !126)
-!128 = !DILocation(line: 70, column: 5, scope: !129)
-!129 = distinct !DILexicalBlock(scope: !130, file: !1, line: 70, column: 5)
-!130 = distinct !DILexicalBlock(scope: !120, file: !1, line: 69, column: 25)
-!131 = !DILocation(line: 70, column: 11, scope: !129)
-!132 = !DILocation(line: 70, column: 5, scope: !130)
-!133 = !DILocation(line: 52, column: 19, scope: !9)
-!134 = !DILocation(line: 72, column: 9, scope: !135)
-!135 = distinct !DILexicalBlock(scope: !129, file: !1, line: 72, column: 6)
-!136 = !DILocation(line: 73, column: 5, scope: !130)
-!137 = !DILocation(line: 71, column: 6, scope: !138)
-!138 = distinct !DILexicalBlock(scope: !129, file: !1, line: 70, column: 14)
-!139 = !DILocation(line: 73, column: 5, scope: !140)
-!140 = distinct !DILexicalBlock(scope: !130, file: !1, line: 73, column: 5)
-!141 = !DILocation(line: 73, column: 7, scope: !140)
-!142 = !DILocation(line: 74, column: 18, scope: !143)
-!143 = distinct !DILexicalBlock(scope: !144, file: !1, line: 74, column: 9)
-!144 = distinct !DILexicalBlock(scope: !140, file: !1, line: 73, column: 10)
-!145 = !DILocation(line: 74, column: 9, scope: !143)
-!146 = !DILocation(line: 74, column: 23, scope: !143)
-!147 = !DILocation(line: 74, column: 21, scope: !143)
-!148 = !DILocation(line: 74, column: 9, scope: !144)
-!149 = !DILocation(line: 76, column: 19, scope: !150)
-!150 = distinct !DILexicalBlock(scope: !143, file: !1, line: 74, column: 32)
-!151 = !DILocation(line: 76, column: 22, scope: !150)
-!152 = !DILocation(line: 76, column: 24, scope: !150)
-!153 = !DILocation(line: 76, column: 35, scope: !150)
-!154 = !DILocation(line: 75, column: 3, scope: !150)
-!155 = !DILocation(line: 77, column: 3, scope: !150)
-!156 = !DILocation(line: 78, column: 6, scope: !150)
-!157 = !DILocation(line: 89, column: 24, scope: !158)
-!158 = distinct !DILexicalBlock(scope: !159, file: !1, line: 89, column: 5)
-!159 = distinct !DILexicalBlock(scope: !125, file: !1, line: 85, column: 25)
-!160 = !DILocation(line: 89, column: 15, scope: !158)
-!161 = !DILocation(line: 89, column: 6, scope: !158)
-!162 = !DILocation(line: 89, column: 51, scope: !158)
-!163 = !DILocation(line: 89, column: 56, scope: !158)
-!164 = !DILocation(line: 90, column: 6, scope: !158)
-!165 = !DILocation(line: 90, column: 37, scope: !158)
-!166 = !DILocation(line: 90, column: 42, scope: !158)
-!167 = !DILocation(line: 91, column: 6, scope: !158)
-!168 = !DILocation(line: 91, column: 40, scope: !158)
-!169 = !DILocation(line: 89, column: 5, scope: !159)
-!170 = !DILocation(line: 91, column: 46, scope: !158)
-!171 = !DILocation(line: 91, column: 53, scope: !158)
-!172 = !DILocation(line: 95, column: 11, scope: !173)
-!173 = distinct !DILexicalBlock(scope: !158, file: !1, line: 95, column: 10)
-!174 = !DILocation(line: 95, column: 41, scope: !173)
-!175 = !DILocation(line: 95, column: 46, scope: !173)
-!176 = !DILocation(line: 96, column: 6, scope: !173)
-!177 = !DILocation(line: 96, column: 36, scope: !173)
-!178 = !DILocation(line: 96, column: 41, scope: !173)
-!179 = !DILocation(line: 97, column: 6, scope: !173)
-!180 = !DILocation(line: 97, column: 39, scope: !173)
-!181 = !DILocation(line: 95, column: 10, scope: !158)
-!182 = !DILocation(line: 97, column: 45, scope: !173)
-!183 = !DILocation(line: 97, column: 52, scope: !173)
-!184 = !DILocation(line: 102, column: 6, scope: !185)
-!185 = distinct !DILexicalBlock(scope: !173, file: !1, line: 101, column: 6)
-!186 = !DILocation(line: 102, column: 13, scope: !185)
-!187 = !DILocation(line: 103, column: 15, scope: !185)
-!188 = !DILocation(line: 85, column: 15, scope: !125)
-!189 = !DILocation(line: 116, column: 18, scope: !190)
-!190 = distinct !DILexicalBlock(scope: !191, file: !1, line: 116, column: 9)
-!191 = distinct !DILexicalBlock(scope: !192, file: !1, line: 116, column: 9)
-!192 = distinct !DILexicalBlock(scope: !9, file: !1, line: 113, column: 7)
-!193 = !DILocation(line: 116, column: 9, scope: !191)
-!194 = !DILocation(line: 117, column: 9, scope: !195)
-!195 = distinct !DILexicalBlock(scope: !196, file: !1, line: 117, column: 9)
-!196 = distinct !DILexicalBlock(scope: !190, file: !1, line: 116, column: 29)
-!197 = !DILocation(line: 117, column: 16, scope: !195)
-!198 = !DILocation(line: 54, column: 33, scope: !9)
-!199 = !DILocation(line: 120, column: 22, scope: !196)
-!200 = !DILocation(line: 120, column: 21, scope: !196)
-!201 = !DILocation(line: 120, column: 31, scope: !196)
-!202 = !DILocation(line: 120, column: 12, scope: !196)
-!203 = !DILocation(line: 52, column: 13, scope: !9)
-!204 = !DILocation(line: 121, column: 14, scope: !205)
-!205 = distinct !DILexicalBlock(scope: !196, file: !1, line: 121, column: 9)
-!206 = !DILocation(line: 121, column: 9, scope: !196)
-!207 = !DILocation(line: 123, column: 18, scope: !208)
-!208 = distinct !DILexicalBlock(scope: !196, file: !1, line: 122, column: 8)
-!209 = !DILocation(line: 123, column: 24, scope: !208)
-!210 = !DILocation(line: 123, column: 9, scope: !208)
-!211 = !DILocation(line: 123, column: 30, scope: !208)
-!212 = !DILocation(line: 123, column: 48, scope: !208)
-!213 = !DILocation(line: 123, column: 33, scope: !208)
-!214 = !DILocation(line: 123, column: 32, scope: !208)
-!215 = !DILocation(line: 52, column: 22, scope: !9)
-!216 = !DILocation(line: 123, column: 7, scope: !208)
-!217 = !DILocation(line: 124, column: 3, scope: !208)
-!218 = !DILocation(line: 125, column: 7, scope: !219)
-!219 = distinct !DILexicalBlock(scope: !208, file: !1, line: 125, column: 6)
-!220 = !DILocation(line: 125, column: 9, scope: !219)
-!221 = !DILocation(line: 125, column: 12, scope: !219)
-!222 = !DILocation(line: 125, column: 23, scope: !219)
-!223 = !DILocation(line: 125, column: 15, scope: !219)
-!224 = !DILocation(line: 125, column: 28, scope: !219)
-!225 = !DILocation(line: 125, column: 26, scope: !219)
-!226 = !DILocation(line: 125, column: 6, scope: !208)
-!227 = !DILocation(line: 133, column: 31, scope: !228)
-!228 = distinct !DILexicalBlock(scope: !219, file: !1, line: 125, column: 34)
-!229 = !DILocation(line: 133, column: 16, scope: !228)
-!230 = !DILocation(line: 54, column: 49, scope: !9)
-!231 = !DILocation(line: 134, column: 25, scope: !228)
-!232 = !DILocation(line: 134, column: 12, scope: !228)
-!233 = !{!234, !234, i64 0}
-!234 = !{!"double", !110, i64 0}
-!235 = !DILocation(line: 57, column: 12, scope: !9)
-!236 = !DILocation(line: 135, column: 11, scope: !228)
-!237 = !DILocation(line: 55, column: 9, scope: !9)
-!238 = !DILocation(line: 141, column: 19, scope: !239)
-!239 = distinct !DILexicalBlock(scope: !228, file: !1, line: 141, column: 10)
-!240 = !DILocation(line: 141, column: 11, scope: !239)
-!241 = !DILocation(line: 141, column: 22, scope: !239)
-!242 = !DILocation(line: 141, column: 26, scope: !239)
-!243 = !DILocation(line: 142, column: 13, scope: !244)
-!244 = distinct !DILexicalBlock(scope: !239, file: !1, line: 141, column: 36)
-!245 = !DILocation(line: 143, column: 14, scope: !246)
-!246 = distinct !DILexicalBlock(scope: !244, file: !1, line: 143, column: 7)
-!247 = !DILocation(line: 143, column: 7, scope: !244)
-!248 = !DILocation(line: 144, column: 8, scope: !249)
-!249 = distinct !DILexicalBlock(scope: !246, file: !1, line: 143, column: 18)
-!250 = !DILocation(line: 145, column: 8, scope: !249)
-!251 = !DILocation(line: 146, column: 18, scope: !249)
-!252 = !DILocation(line: 148, column: 7, scope: !253)
-!253 = distinct !DILexicalBlock(scope: !244, file: !1, line: 148, column: 7)
-!254 = !DILocation(line: 148, column: 20, scope: !253)
-!255 = !DILocation(line: 148, column: 7, scope: !244)
-!256 = !DILocation(line: 149, column: 14, scope: !257)
-!257 = distinct !DILexicalBlock(scope: !253, file: !1, line: 148, column: 24)
-!258 = !DILocation(line: 150, column: 16, scope: !259)
-!259 = distinct !DILexicalBlock(scope: !257, file: !1, line: 150, column: 11)
-!260 = !DILocation(line: 150, column: 11, scope: !257)
-!261 = !DILocation(line: 159, column: 7, scope: !228)
-!262 = !DILocation(line: 159, column: 26, scope: !228)
-!263 = !DILocation(line: 158, column: 7, scope: !228)
-!264 = !DILocation(line: 54, column: 41, scope: !9)
-!265 = !DILocation(line: 162, column: 29, scope: !266)
-!266 = distinct !DILexicalBlock(scope: !228, file: !1, line: 162, column: 10)
-!267 = !DILocation(line: 162, column: 20, scope: !266)
-!268 = !DILocation(line: 162, column: 11, scope: !266)
-!269 = !DILocation(line: 162, column: 56, scope: !266)
-!270 = !DILocation(line: 162, column: 60, scope: !266)
-!271 = !DILocation(line: 163, column: 29, scope: !266)
-!272 = !DILocation(line: 163, column: 20, scope: !266)
-!273 = !DILocation(line: 163, column: 11, scope: !266)
-!274 = !DILocation(line: 163, column: 48, scope: !266)
-!275 = !DILocation(line: 162, column: 10, scope: !228)
-!276 = !DILocation(line: 164, column: 4, scope: !266)
-!277 = !DILocation(line: 165, column: 16, scope: !228)
-!278 = !DILocation(line: 55, column: 13, scope: !9)
-!279 = !DILocation(line: 166, column: 12, scope: !228)
-!280 = !DILocation(line: 166, column: 34, scope: !228)
-!281 = !DILocation(line: 166, column: 18, scope: !228)
-!282 = !DILocation(line: 166, column: 17, scope: !228)
-!283 = !DILocation(line: 167, column: 25, scope: !228)
-!284 = !DILocation(line: 167, column: 34, scope: !228)
-!285 = !DILocation(line: 167, column: 16, scope: !228)
-!286 = !DILocation(line: 168, column: 7, scope: !228)
-!287 = !DILocation(line: 169, column: 42, scope: !288)
-!288 = distinct !DILexicalBlock(scope: !228, file: !1, line: 168, column: 9)
-!289 = !DILocation(line: 169, column: 26, scope: !288)
-!290 = !DILocation(line: 169, column: 25, scope: !288)
-!291 = !DILocation(line: 169, column: 17, scope: !288)
-!292 = !DILocation(line: 169, column: 4, scope: !288)
-!293 = !DILocation(line: 169, column: 20, scope: !288)
-!294 = !DILocation(line: 170, column: 32, scope: !288)
-!295 = !DILocation(line: 170, column: 41, scope: !288)
-!296 = !DILocation(line: 170, column: 23, scope: !288)
-!297 = !DILocation(line: 170, column: 13, scope: !288)
-!298 = !DILocation(line: 170, column: 19, scope: !288)
-!299 = !DILocation(line: 170, column: 4, scope: !288)
-!300 = !DILocation(line: 170, column: 22, scope: !288)
-!301 = !DILocation(line: 171, column: 41, scope: !288)
-!302 = !DILocation(line: 171, column: 23, scope: !288)
-!303 = !DILocation(line: 171, column: 19, scope: !288)
-!304 = !DILocation(line: 171, column: 4, scope: !288)
-!305 = !DILocation(line: 171, column: 22, scope: !288)
-!306 = !DILocation(line: 172, column: 31, scope: !288)
-!307 = !DILocation(line: 172, column: 13, scope: !288)
-!308 = !DILocation(line: 173, column: 15, scope: !309)
-!309 = distinct !DILexicalBlock(scope: !288, file: !1, line: 173, column: 7)
-!310 = !DILocation(line: 173, column: 7, scope: !288)
-!311 = !DILocation(line: 174, column: 27, scope: !312)
-!312 = distinct !DILexicalBlock(scope: !309, file: !1, line: 173, column: 19)
-!313 = !DILocation(line: 174, column: 23, scope: !312)
-!314 = !DILocation(line: 174, column: 8, scope: !312)
-!315 = !DILocation(line: 174, column: 26, scope: !312)
-!316 = !DILocation(line: 175, column: 14, scope: !312)
-!317 = !DILocation(line: 176, column: 26, scope: !312)
-!318 = !DILocation(line: 176, column: 35, scope: !312)
-!319 = !DILocation(line: 176, column: 17, scope: !312)
-!320 = !DILocation(line: 176, column: 16, scope: !312)
-!321 = !DILocation(line: 177, column: 19, scope: !322)
-!322 = distinct !DILexicalBlock(scope: !312, file: !1, line: 177, column: 11)
-!323 = !DILocation(line: 177, column: 11, scope: !312)
-!324 = !DILocation(line: 178, column: 14, scope: !325)
-!325 = distinct !DILexicalBlock(scope: !322, file: !1, line: 177, column: 23)
-!326 = !DILocation(line: 178, column: 22, scope: !325)
-!327 = !DILocation(line: 178, column: 13, scope: !325)
-!328 = !DILocation(line: 179, column: 23, scope: !325)
-!329 = !DILocation(line: 180, column: 24, scope: !325)
-!330 = !DILocation(line: 180, column: 23, scope: !325)
-!331 = !DILocation(line: 180, column: 14, scope: !325)
-!332 = !DILocation(line: 180, column: 13, scope: !325)
-!333 = !DILocation(line: 181, column: 5, scope: !325)
-!334 = !DILocation(line: 182, column: 5, scope: !325)
-!335 = !DILocation(line: 183, column: 5, scope: !325)
-!336 = !DILocation(line: 184, column: 11, scope: !337)
-!337 = distinct !DILexicalBlock(scope: !325, file: !1, line: 184, column: 5)
-!338 = !DILocation(line: 52, column: 11, scope: !9)
-!339 = !DILocation(line: 184, column: 22, scope: !340)
-!340 = distinct !DILexicalBlock(scope: !337, file: !1, line: 184, column: 5)
-!341 = !DILocation(line: 184, column: 21, scope: !340)
-!342 = !DILocation(line: 184, column: 5, scope: !337)
-!343 = !DILocation(line: 185, column: 18, scope: !344)
-!344 = distinct !DILexicalBlock(scope: !340, file: !1, line: 184, column: 35)
-!345 = !DILocation(line: 185, column: 20, scope: !344)
-!346 = !DILocation(line: 185, column: 9, scope: !344)
-!347 = !DILocation(line: 185, column: 23, scope: !344)
-!348 = !DILocation(line: 187, column: 14, scope: !325)
-!349 = !DILocation(line: 187, column: 23, scope: !325)
-!350 = !DILocation(line: 187, column: 5, scope: !325)
-!351 = !DILocation(line: 187, column: 26, scope: !325)
-!352 = !DILocation(line: 188, column: 8, scope: !325)
-!353 = !DILocation(line: 199, column: 28, scope: !354)
-!354 = distinct !DILexicalBlock(scope: !219, file: !1, line: 198, column: 7)
-!355 = !DILocation(line: 199, column: 13, scope: !354)
-!356 = !DILocation(line: 200, column: 15, scope: !357)
-!357 = distinct !DILexicalBlock(scope: !354, file: !1, line: 200, column: 10)
-!358 = !DILocation(line: 200, column: 10, scope: !354)
-!359 = !DILocation(line: 192, column: 23, scope: !360)
-!360 = distinct !DILexicalBlock(scope: !309, file: !1, line: 191, column: 8)
-!361 = !DILocation(line: 192, column: 8, scope: !360)
-!362 = !DILocation(line: 192, column: 26, scope: !360)
-!363 = !DILocation(line: 209, column: 13, scope: !196)
-!364 = !DILocation(line: 55, column: 22, scope: !9)
-!365 = !DILocation(line: 210, column: 6, scope: !196)
-!366 = !DILocation(line: 55, column: 46, scope: !9)
-!367 = !DILocation(line: 212, column: 19, scope: !368)
-!368 = distinct !DILexicalBlock(scope: !196, file: !1, line: 210, column: 8)
-!369 = !DILocation(line: 212, column: 26, scope: !368)
-!370 = !DILocation(line: 212, column: 10, scope: !368)
-!371 = !DILocation(line: 55, column: 29, scope: !9)
-!372 = !DILocation(line: 213, column: 12, scope: !373)
-!373 = distinct !DILexicalBlock(scope: !368, file: !1, line: 213, column: 6)
-!374 = !DILocation(line: 213, column: 6, scope: !368)
-!375 = !DILocation(line: 215, column: 27, scope: !376)
-!376 = distinct !DILexicalBlock(scope: !377, file: !1, line: 215, column: 10)
-!377 = distinct !DILexicalBlock(scope: !368, file: !1, line: 214, column: 5)
-!378 = !DILocation(line: 215, column: 11, scope: !376)
-!379 = !DILocation(line: 216, column: 27, scope: !376)
-!380 = !DILocation(line: 216, column: 11, scope: !376)
-!381 = !DILocation(line: 217, column: 18, scope: !382)
-!382 = distinct !DILexicalBlock(scope: !376, file: !1, line: 216, column: 53)
-!383 = !DILocation(line: 217, column: 4, scope: !382)
-!384 = !DILocation(line: 218, column: 13, scope: !382)
-!385 = !DILocation(line: 218, column: 23, scope: !382)
-!386 = !DILocation(line: 218, column: 4, scope: !382)
-!387 = !DILocation(line: 215, column: 41, scope: !376)
-!388 = !DILocation(line: 215, column: 48, scope: !376)
-!389 = !DILocation(line: 215, column: 32, scope: !376)
-!390 = !DILocation(line: 215, column: 30, scope: !376)
-!391 = !DILocation(line: 215, column: 52, scope: !376)
-!392 = !DILocation(line: 216, column: 48, scope: !376)
-!393 = !DILocation(line: 216, column: 32, scope: !376)
-!394 = !DILocation(line: 216, column: 30, scope: !376)
-!395 = !DILocation(line: 215, column: 10, scope: !377)
-!396 = !DILocation(line: 217, column: 37, scope: !382)
-!397 = !DILocation(line: 217, column: 23, scope: !382)
-!398 = !DILocation(line: 217, column: 21, scope: !382)
-!399 = !DILocation(line: 218, column: 43, scope: !382)
-!400 = !DILocation(line: 218, column: 27, scope: !382)
-!401 = !DILocation(line: 218, column: 26, scope: !382)
-!402 = !DILocation(line: 219, column: 24, scope: !382)
-!403 = !DILocation(line: 219, column: 23, scope: !382)
-!404 = !DILocation(line: 220, column: 12, scope: !382)
-!405 = !DILocation(line: 221, column: 11, scope: !382)
-!406 = !DILocation(line: 222, column: 13, scope: !407)
-!407 = distinct !DILexicalBlock(scope: !382, file: !1, line: 222, column: 7)
-!408 = !DILocation(line: 222, column: 7, scope: !382)
-!409 = !DILocation(line: 226, column: 27, scope: !410)
-!410 = distinct !DILexicalBlock(scope: !376, file: !1, line: 224, column: 11)
-!411 = !DILocation(line: 226, column: 11, scope: !410)
-!412 = !DILocation(line: 227, column: 13, scope: !413)
-!413 = distinct !DILexicalBlock(scope: !410, file: !1, line: 227, column: 7)
-!414 = !DILocation(line: 227, column: 7, scope: !410)
-!415 = !DILocation(line: 230, column: 10, scope: !368)
-!416 = !DILocation(line: 231, column: 12, scope: !417)
-!417 = distinct !DILexicalBlock(scope: !368, file: !1, line: 231, column: 6)
-!418 = !DILocation(line: 231, column: 6, scope: !368)
-!419 = !DILocation(line: 237, column: 13, scope: !196)
-!420 = !DILocation(line: 55, column: 36, scope: !9)
-!421 = !DILocation(line: 239, column: 6, scope: !196)
-!422 = !DILocation(line: 240, column: 25, scope: !423)
-!423 = distinct !DILexicalBlock(scope: !424, file: !1, line: 240, column: 6)
-!424 = distinct !DILexicalBlock(scope: !196, file: !1, line: 239, column: 9)
-!425 = !DILocation(line: 240, column: 11, scope: !423)
-!426 = !DILocation(line: 240, column: 6, scope: !423)
-!427 = !DILocation(line: 240, column: 29, scope: !423)
-!428 = !DILocation(line: 240, column: 6, scope: !424)
-!429 = !DILocation(line: 241, column: 19, scope: !430)
-!430 = distinct !DILexicalBlock(scope: !431, file: !1, line: 241, column: 10)
-!431 = distinct !DILexicalBlock(scope: !423, file: !1, line: 240, column: 37)
-!432 = !DILocation(line: 241, column: 10, scope: !431)
-!433 = !DILocation(line: 242, column: 4, scope: !434)
-!434 = distinct !DILexicalBlock(scope: !430, file: !1, line: 241, column: 23)
-!435 = !DILocation(line: 243, column: 4, scope: !434)
-!436 = !DILocation(line: 244, column: 4, scope: !434)
-!437 = !DILocation(line: 245, column: 7, scope: !434)
-!438 = !DILocation(line: 247, column: 36, scope: !439)
-!439 = distinct !DILexicalBlock(scope: !430, file: !1, line: 246, column: 11)
-!440 = !DILocation(line: 247, column: 43, scope: !439)
-!441 = !DILocation(line: 247, column: 27, scope: !439)
-!442 = !DILocation(line: 247, column: 13, scope: !439)
-!443 = !DILocation(line: 247, column: 23, scope: !439)
-!444 = !DILocation(line: 247, column: 4, scope: !439)
-!445 = !DILocation(line: 247, column: 26, scope: !439)
-!446 = !DILocation(line: 248, column: 24, scope: !439)
-!447 = !DILocation(line: 248, column: 23, scope: !439)
-!448 = !DILocation(line: 249, column: 12, scope: !439)
-!449 = !DILocation(line: 250, column: 11, scope: !439)
-!450 = !DILocation(line: 255, column: 23, scope: !451)
-!451 = distinct !DILexicalBlock(scope: !423, file: !1, line: 253, column: 7)
-!452 = !DILocation(line: 255, column: 30, scope: !451)
-!453 = !DILocation(line: 255, column: 14, scope: !451)
-!454 = !DILocation(line: 257, column: 12, scope: !455)
-!455 = distinct !DILexicalBlock(scope: !424, file: !1, line: 257, column: 6)
-!456 = !DILocation(line: 257, column: 6, scope: !424)
-!457 = !DILocation(line: 116, column: 26, scope: !190)
-!458 = !DILocation(line: 116, column: 19, scope: !190)
-!459 = !DILocation(line: 116, column: 9, scope: !190)
-!460 = !DILocation(line: 260, column: 19, scope: !461)
-!461 = distinct !DILexicalBlock(scope: !192, file: !1, line: 260, column: 12)
-!462 = !DILocation(line: 260, column: 12, scope: !192)
-!463 = !DILocation(line: 266, column: 12, scope: !9)
-!464 = !DILocation(line: 267, column: 13, scope: !9)
-!465 = !DILocation(line: 268, column: 15, scope: !9)
-!466 = !DILocation(line: 270, column: 15, scope: !467)
-!467 = distinct !DILexicalBlock(scope: !468, file: !1, line: 270, column: 5)
-!468 = distinct !DILexicalBlock(scope: !9, file: !1, line: 270, column: 5)
-!469 = !DILocation(line: 270, column: 14, scope: !467)
-!470 = !DILocation(line: 270, column: 5, scope: !468)
-!471 = !DILocation(line: 271, column: 8, scope: !472)
-!472 = distinct !DILexicalBlock(scope: !467, file: !1, line: 270, column: 25)
-!473 = !DILocation(line: 272, column: 10, scope: !472)
-!474 = !DILocation(line: 272, column: 9, scope: !472)
-!475 = !DILocation(line: 52, column: 27, scope: !9)
-!476 = !DILocation(line: 277, column: 21, scope: !477)
-!477 = distinct !DILexicalBlock(scope: !472, file: !1, line: 274, column: 10)
-!478 = !DILocation(line: 277, column: 27, scope: !477)
-!479 = !DILocation(line: 277, column: 12, scope: !477)
-!480 = !DILocation(line: 278, column: 14, scope: !481)
-!481 = distinct !DILexicalBlock(scope: !477, file: !1, line: 278, column: 9)
-!482 = !DILocation(line: 278, column: 9, scope: !477)
-!483 = !DILocation(line: 279, column: 25, scope: !484)
-!484 = distinct !DILexicalBlock(scope: !481, file: !1, line: 278, column: 18)
-!485 = !DILocation(line: 279, column: 18, scope: !484)
-!486 = !DILocation(line: 279, column: 11, scope: !484)
-!487 = !DILocation(line: 280, column: 14, scope: !484)
-!488 = !DILocation(line: 280, column: 13, scope: !484)
-!489 = !DILocation(line: 283, column: 14, scope: !477)
-!490 = !DILocation(line: 283, column: 13, scope: !477)
-!491 = !DILocation(line: 284, column: 11, scope: !477)
-!492 = !DILocation(line: 288, column: 5, scope: !9)
-!493 = !DILocation(line: 291, column: 14, scope: !9)
-!494 = !DILocation(line: 292, column: 14, scope: !9)
-!495 = !DILocation(line: 299, column: 5, scope: !9)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"cascade", metadata !"cascade", metadata !"", i32 27, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, double**, i32**, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i32*, i8*, i32, i32*, i32*, i32*, i32*, i32*)* @cascade, null, null, metadata !16, i32 31} ; [ DW_TAG_subprogram ] [line 27] [def] [scope 31] [cascade]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{null, metadata !8, metadata !10, metadata !13, metadata !8, metadata !8, metadata !8, metadata !8, metadata !8, metadata !8, metadata !8, metadata !8, metadata !8, metadata !8, metadata !8, metadata !14, metadata !9, metadata !8, metadata !8, metadata !8, metadata !8, metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!9 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!10 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !11} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!11 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !12} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from double]
+!12 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!13 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !8} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!14 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !15} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!15 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!16 = metadata !{metadata !17, metadata !18, metadata !19, metadata !20, metadata !21, metadata !22, metadata !23, metadata !24, metadata !25, metadata !26, metadata !27, metadata !28, metadata !29, metadata !30, metadata !31, metadata !32, metadata !33, metadata !34, metadata !35, metadata !36, metadata !37, metadata !38, metadata !39, metadata !40, metadata !41, metadata !42, metadata !43, metadata !44, metadata !45, metadata !46, metadata !47, metadata !48, metadata !49, metadata !50, metadata !51, metadata !52, metadata !53, metadata !54, metadata !55, metadata !56, metadata !57, metadata !58, metadata !59, metadata !60, metadata !61, metadata !62, metadata !63, metadata !64, metadata !65, metadata !66, metadata !67, metadata !68, metadata !69, metadata !70, metadata !71, metadata !72, metadata !73}
+!17 = metadata !{i32 786689, metadata !4, metadata !"ipompc", metadata !5, i32 16777243, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ipompc] [line 27]
+!18 = metadata !{i32 786689, metadata !4, metadata !"coefmpcp", metadata !5, i32 33554459, metadata !10, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [coefmpcp] [line 27]
+!19 = metadata !{i32 786689, metadata !4, metadata !"nodempcp", metadata !5, i32 50331675, metadata !13, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [nodempcp] [line 27]
+!20 = metadata !{i32 786689, metadata !4, metadata !"nmpc", metadata !5, i32 67108891, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [nmpc] [line 27]
+!21 = metadata !{i32 786689, metadata !4, metadata !"mpcfree", metadata !5, i32 83886108, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mpcfree] [line 28]
+!22 = metadata !{i32 786689, metadata !4, metadata !"nodeboun", metadata !5, i32 100663324, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [nodeboun] [line 28]
+!23 = metadata !{i32 786689, metadata !4, metadata !"ndirboun", metadata !5, i32 117440540, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ndirboun] [line 28]
+!24 = metadata !{i32 786689, metadata !4, metadata !"nboun", metadata !5, i32 134217756, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [nboun] [line 28]
+!25 = metadata !{i32 786689, metadata !4, metadata !"ikmpc", metadata !5, i32 150994972, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ikmpc] [line 28]
+!26 = metadata !{i32 786689, metadata !4, metadata !"ilmpc", metadata !5, i32 167772189, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ilmpc] [line 29]
+!27 = metadata !{i32 786689, metadata !4, metadata !"ikboun", metadata !5, i32 184549405, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ikboun] [line 29]
+!28 = metadata !{i32 786689, metadata !4, metadata !"ilboun", metadata !5, i32 201326621, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ilboun] [line 29]
+!29 = metadata !{i32 786689, metadata !4, metadata !"mpcend", metadata !5, i32 218103837, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mpcend] [line 29]
+!30 = metadata !{i32 786689, metadata !4, metadata !"mpcmult", metadata !5, i32 234881053, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mpcmult] [line 29]
+!31 = metadata !{i32 786689, metadata !4, metadata !"labmpc", metadata !5, i32 251658270, metadata !14, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [labmpc] [line 30]
+!32 = metadata !{i32 786689, metadata !4, metadata !"labmpcLen", metadata !5, i32 268435486, metadata !9, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [labmpcLen] [line 30]
+!33 = metadata !{i32 786689, metadata !4, metadata !"nk", metadata !5, i32 285212702, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [nk] [line 30]
+!34 = metadata !{i32 786689, metadata !4, metadata !"memmpc_", metadata !5, i32 301989918, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [memmpc_] [line 30]
+!35 = metadata !{i32 786689, metadata !4, metadata !"icascade", metadata !5, i32 318767134, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [icascade] [line 30]
+!36 = metadata !{i32 786689, metadata !4, metadata !"maxlenmpc", metadata !5, i32 335544350, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [maxlenmpc] [line 30]
+!37 = metadata !{i32 786689, metadata !4, metadata !"callfrommain", metadata !5, i32 352321567, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [callfrommain] [line 31]
+!38 = metadata !{i32 786688, metadata !4, metadata !"i", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 52]
+!39 = metadata !{i32 786688, metadata !4, metadata !"j", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [j] [line 52]
+!40 = metadata !{i32 786688, metadata !4, metadata !"index", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [index] [line 52]
+!41 = metadata !{i32 786688, metadata !4, metadata !"id", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [id] [line 52]
+!42 = metadata !{i32 786688, metadata !4, metadata !"idof", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [idof] [line 52]
+!43 = metadata !{i32 786688, metadata !4, metadata !"nterm", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nterm] [line 52]
+!44 = metadata !{i32 786688, metadata !4, metadata !"irow", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [irow] [line 52]
+!45 = metadata !{i32 786688, metadata !4, metadata !"icolumn", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [icolumn] [line 52]
+!46 = metadata !{i32 786688, metadata !4, metadata !"node", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [node] [line 52]
+!47 = metadata !{i32 786688, metadata !4, metadata !"idir", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [idir] [line 52]
+!48 = metadata !{i32 786688, metadata !4, metadata !"idepend", metadata !5, i32 52, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [idepend] [line 52]
+!49 = metadata !{i32 786688, metadata !4, metadata !"irownl", metadata !5, i32 53, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [irownl] [line 53]
+!50 = metadata !{i32 786688, metadata !4, metadata !"icolnl", metadata !5, i32 53, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [icolnl] [line 53]
+!51 = metadata !{i32 786688, metadata !4, metadata !"ipointer", metadata !5, i32 53, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [ipointer] [line 53]
+!52 = metadata !{i32 786688, metadata !4, metadata !"icoef", metadata !5, i32 53, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [icoef] [line 53]
+!53 = metadata !{i32 786688, metadata !4, metadata !"ifree", metadata !5, i32 53, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [ifree] [line 53]
+!54 = metadata !{i32 786688, metadata !4, metadata !"nodempc", metadata !5, i32 53, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nodempc] [line 53]
+!55 = metadata !{i32 786688, metadata !4, metadata !"indepdof", metadata !5, i32 54, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [indepdof] [line 54]
+!56 = metadata !{i32 786688, metadata !4, metadata !"nindep", metadata !5, i32 54, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nindep] [line 54]
+!57 = metadata !{i32 786688, metadata !4, metadata !"ispooles", metadata !5, i32 54, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [ispooles] [line 54]
+!58 = metadata !{i32 786688, metadata !4, metadata !"iexpand", metadata !5, i32 54, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [iexpand] [line 54]
+!59 = metadata !{i32 786688, metadata !4, metadata !"ichange", metadata !5, i32 54, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [ichange] [line 54]
+!60 = metadata !{i32 786688, metadata !4, metadata !"indexold", metadata !5, i32 54, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [indexold] [line 54]
+!61 = metadata !{i32 786688, metadata !4, metadata !"ip1", metadata !5, i32 54, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [ip1] [line 54]
+!62 = metadata !{i32 786688, metadata !4, metadata !"mpc", metadata !5, i32 55, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [mpc] [line 55]
+!63 = metadata !{i32 786688, metadata !4, metadata !"indexnew", metadata !5, i32 55, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [indexnew] [line 55]
+!64 = metadata !{i32 786688, metadata !4, metadata !"index1", metadata !5, i32 55, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [index1] [line 55]
+!65 = metadata !{i32 786688, metadata !4, metadata !"index2", metadata !5, i32 55, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [index2] [line 55]
+!66 = metadata !{i32 786688, metadata !4, metadata !"index1old", metadata !5, i32 55, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [index1old] [line 55]
+!67 = metadata !{i32 786688, metadata !4, metadata !"index2old", metadata !5, i32 55, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [index2old] [line 55]
+!68 = metadata !{i32 786688, metadata !4, metadata !"jmpc", metadata !5, i32 55, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [jmpc] [line 55]
+!69 = metadata !{i32 786688, metadata !4, metadata !"nl", metadata !5, i32 55, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nl] [line 55]
+!70 = metadata !{i32 786688, metadata !4, metadata !"coef", metadata !5, i32 57, metadata !12, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [coef] [line 57]
+!71 = metadata !{i32 786688, metadata !4, metadata !"xcoef", metadata !5, i32 57, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [xcoef] [line 57]
+!72 = metadata !{i32 786688, metadata !4, metadata !"coefmpc", metadata !5, i32 57, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [coefmpc] [line 57]
+!73 = metadata !{i32 786688, metadata !4, metadata !"b", metadata !5, i32 57, metadata !12, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [b] [line 57]
+!74 = metadata !{i32 27, i32 0, metadata !4, null}
+!75 = metadata !{i32 28, i32 0, metadata !4, null}
+!76 = metadata !{i32 29, i32 0, metadata !4, null}
+!77 = metadata !{i32 30, i32 0, metadata !4, null}
+!78 = metadata !{i32 31, i32 0, metadata !4, null}
+!79 = metadata !{i32 52, i32 0, metadata !4, null}
+!80 = metadata !{i32* null}
+!81 = metadata !{i32 55, i32 0, metadata !4, null}
+!82 = metadata !{double* null}
+!83 = metadata !{i32 57, i32 0, metadata !4, null}
+!84 = metadata !{i32 59, i32 0, metadata !4, null}
+!85 = metadata !{metadata !"any pointer", metadata !86}
+!86 = metadata !{metadata !"omnipotent char", metadata !87}
+!87 = metadata !{metadata !"Simple C/C++ TBAA"}
+!88 = metadata !{i32 60, i32 0, metadata !4, null}
+!89 = metadata !{i32 62, i32 0, metadata !4, null}
+!90 = metadata !{metadata !"int", metadata !86}
+!91 = metadata !{i32 63, i32 0, metadata !4, null}
+!92 = metadata !{i32 64, i32 0, metadata !4, null}
+!93 = metadata !{i32 69, i32 0, metadata !94, null}
+!94 = metadata !{i32 786443, metadata !1, metadata !4, i32 69, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!95 = metadata !{i32 85, i32 0, metadata !96, null}
+!96 = metadata !{i32 786443, metadata !1, metadata !4, i32 85, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!97 = metadata !{i32 70, i32 0, metadata !98, null}
+!98 = metadata !{i32 786443, metadata !1, metadata !94, i32 69, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!99 = metadata !{i32 72, i32 0, metadata !100, null}
+!100 = metadata !{i32 786443, metadata !1, metadata !98, i32 72, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!101 = metadata !{i32 73, i32 0, metadata !98, null}
+!102 = metadata !{i32 71, i32 0, metadata !103, null}
+!103 = metadata !{i32 786443, metadata !1, metadata !98, i32 70, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!104 = metadata !{i32 74, i32 0, metadata !105, null}
+!105 = metadata !{i32 786443, metadata !1, metadata !98, i32 73, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!106 = metadata !{i32 75, i32 0, metadata !107, null}
+!107 = metadata !{i32 786443, metadata !1, metadata !105, i32 74, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!108 = metadata !{i32 77, i32 0, metadata !107, null}
+!109 = metadata !{i32 78, i32 0, metadata !107, null}
+!110 = metadata !{i32 89, i32 0, metadata !111, null}
+!111 = metadata !{i32 786443, metadata !1, metadata !96, i32 85, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!112 = metadata !{i32 90, i32 0, metadata !111, null}
+!113 = metadata !{i32 91, i32 0, metadata !111, null}
+!114 = metadata !{i32 95, i32 0, metadata !111, null}
+!115 = metadata !{i32 96, i32 0, metadata !111, null}
+!116 = metadata !{i32 97, i32 0, metadata !111, null}
+!117 = metadata !{i32 102, i32 0, metadata !118, null}
+!118 = metadata !{i32 786443, metadata !1, metadata !111, i32 101, i32 0, i32 8} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!119 = metadata !{i32 103, i32 0, metadata !118, null}
+!120 = metadata !{i32 116, i32 0, metadata !121, null}
+!121 = metadata !{i32 786443, metadata !1, metadata !122, i32 116, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!122 = metadata !{i32 786443, metadata !1, metadata !4, i32 113, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!123 = metadata !{i32 117, i32 0, metadata !124, null}
+!124 = metadata !{i32 786443, metadata !1, metadata !121, i32 116, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!125 = metadata !{i32 119, i32 0, metadata !124, null}
+!126 = metadata !{i32 120, i32 0, metadata !124, null}
+!127 = metadata !{i32 121, i32 0, metadata !124, null}
+!128 = metadata !{i32 123, i32 0, metadata !129, null}
+!129 = metadata !{i32 786443, metadata !1, metadata !124, i32 122, i32 0, i32 12} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!130 = metadata !{i32 124, i32 0, metadata !129, null}
+!131 = metadata !{i32 125, i32 0, metadata !129, null}
+!132 = metadata !{i32 133, i32 0, metadata !133, null}
+!133 = metadata !{i32 786443, metadata !1, metadata !129, i32 125, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!134 = metadata !{i32 134, i32 0, metadata !133, null}
+!135 = metadata !{metadata !"double", metadata !86}
+!136 = metadata !{i32 135, i32 0, metadata !133, null}
+!137 = metadata !{i32 141, i32 0, metadata !133, null}
+!138 = metadata !{i32 142, i32 0, metadata !139, null}
+!139 = metadata !{i32 786443, metadata !1, metadata !133, i32 141, i32 0, i32 14} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!140 = metadata !{i32 143, i32 0, metadata !139, null}
+!141 = metadata !{i32 144, i32 0, metadata !142, null}
+!142 = metadata !{i32 786443, metadata !1, metadata !139, i32 143, i32 0, i32 15} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!143 = metadata !{i32 145, i32 0, metadata !142, null}
+!144 = metadata !{i32 1}
+!145 = metadata !{i32 146, i32 0, metadata !142, null}
+!146 = metadata !{i32 148, i32 0, metadata !139, null}
+!147 = metadata !{i32 149, i32 0, metadata !148, null}
+!148 = metadata !{i32 786443, metadata !1, metadata !139, i32 148, i32 0, i32 16} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!149 = metadata !{i32 150, i32 0, metadata !148, null}
+!150 = metadata !{i32 158, i32 0, metadata !133, null}
+!151 = metadata !{i32 161, i32 0, metadata !133, null}
+!152 = metadata !{i32 162, i32 0, metadata !133, null}
+!153 = metadata !{i32 163, i32 0, metadata !133, null}
+!154 = metadata !{i32 164, i32 0, metadata !133, null}
+!155 = metadata !{i32 165, i32 0, metadata !133, null}
+!156 = metadata !{i32 166, i32 0, metadata !133, null}
+!157 = metadata !{i32 167, i32 0, metadata !133, null}
+!158 = metadata !{i32 168, i32 0, metadata !133, null}
+!159 = metadata !{i32 169, i32 0, metadata !160, null}
+!160 = metadata !{i32 786443, metadata !1, metadata !133, i32 168, i32 0, i32 17} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!161 = metadata !{i32 170, i32 0, metadata !160, null}
+!162 = metadata !{i32 171, i32 0, metadata !160, null}
+!163 = metadata !{i32 172, i32 0, metadata !160, null}
+!164 = metadata !{i32 173, i32 0, metadata !160, null}
+!165 = metadata !{i32 174, i32 0, metadata !166, null}
+!166 = metadata !{i32 786443, metadata !1, metadata !160, i32 173, i32 0, i32 18} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!167 = metadata !{i32 175, i32 0, metadata !166, null}
+!168 = metadata !{i32 176, i32 0, metadata !166, null}
+!169 = metadata !{i32 177, i32 0, metadata !166, null}
+!170 = metadata !{i32 178, i32 0, metadata !171, null}
+!171 = metadata !{i32 786443, metadata !1, metadata !166, i32 177, i32 0, i32 19} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!172 = metadata !{i32 179, i32 0, metadata !171, null}
+!173 = metadata !{i32 180, i32 0, metadata !171, null}
+!174 = metadata !{i32 181, i32 0, metadata !171, null}
+!175 = metadata !{i32 182, i32 0, metadata !171, null}
+!176 = metadata !{i32 183, i32 0, metadata !171, null}
+!177 = metadata !{i32 184, i32 0, metadata !178, null}
+!178 = metadata !{i32 786443, metadata !1, metadata !171, i32 184, i32 0, i32 20} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!179 = metadata !{i32 185, i32 0, metadata !180, null}
+!180 = metadata !{i32 786443, metadata !1, metadata !178, i32 184, i32 0, i32 21} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!181 = metadata !{i32 187, i32 0, metadata !171, null}
+!182 = metadata !{i32 188, i32 0, metadata !171, null}
+!183 = metadata !{i32 199, i32 0, metadata !184, null}
+!184 = metadata !{i32 786443, metadata !1, metadata !129, i32 198, i32 0, i32 23} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!185 = metadata !{i32 200, i32 0, metadata !184, null}
+!186 = metadata !{i32 192, i32 0, metadata !187, null}
+!187 = metadata !{i32 786443, metadata !1, metadata !160, i32 191, i32 0, i32 22} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!188 = metadata !{i32 209, i32 0, metadata !124, null}
+!189 = metadata !{i32 210, i32 0, metadata !124, null}
+!190 = metadata !{i32 211, i32 0, metadata !191, null}
+!191 = metadata !{i32 786443, metadata !1, metadata !124, i32 210, i32 0, i32 24} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!192 = metadata !{i32 212, i32 0, metadata !191, null}
+!193 = metadata !{i32 213, i32 0, metadata !191, null}
+!194 = metadata !{i32 215, i32 0, metadata !195, null}
+!195 = metadata !{i32 786443, metadata !1, metadata !191, i32 214, i32 0, i32 25} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!196 = metadata !{i32 217, i32 0, metadata !197, null}
+!197 = metadata !{i32 786443, metadata !1, metadata !195, i32 216, i32 0, i32 26} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!198 = metadata !{i32 218, i32 0, metadata !197, null}
+!199 = metadata !{i32 219, i32 0, metadata !197, null}
+!200 = metadata !{i32 220, i32 0, metadata !197, null}
+!201 = metadata !{i32 221, i32 0, metadata !197, null}
+!202 = metadata !{i32 222, i32 0, metadata !197, null}
+!203 = metadata !{i32 225, i32 0, metadata !204, null}
+!204 = metadata !{i32 786443, metadata !1, metadata !195, i32 224, i32 0, i32 27} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!205 = metadata !{i32 226, i32 0, metadata !204, null}
+!206 = metadata !{i32 227, i32 0, metadata !204, null}
+!207 = metadata !{i32 230, i32 0, metadata !191, null}
+!208 = metadata !{i32 231, i32 0, metadata !191, null}
+!209 = metadata !{i32 237, i32 0, metadata !124, null}
+!210 = metadata !{i32 238, i32 0, metadata !124, null}
+!211 = metadata !{i32 239, i32 0, metadata !124, null}
+!212 = metadata !{i32 240, i32 0, metadata !213, null}
+!213 = metadata !{i32 786443, metadata !1, metadata !124, i32 239, i32 0, i32 28} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!214 = metadata !{i32 241, i32 0, metadata !215, null}
+!215 = metadata !{i32 786443, metadata !1, metadata !213, i32 240, i32 0, i32 29} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!216 = metadata !{i32 242, i32 0, metadata !217, null}
+!217 = metadata !{i32 786443, metadata !1, metadata !215, i32 241, i32 0, i32 30} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!218 = metadata !{i32 243, i32 0, metadata !217, null}
+!219 = metadata !{i32 244, i32 0, metadata !217, null}
+!220 = metadata !{i32 245, i32 0, metadata !217, null}
+!221 = metadata !{i32 247, i32 0, metadata !222, null}
+!222 = metadata !{i32 786443, metadata !1, metadata !215, i32 246, i32 0, i32 31} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!223 = metadata !{i32 248, i32 0, metadata !222, null}
+!224 = metadata !{i32 249, i32 0, metadata !222, null}
+!225 = metadata !{i32 250, i32 0, metadata !222, null}
+!226 = metadata !{i32 254, i32 0, metadata !227, null}
+!227 = metadata !{i32 786443, metadata !1, metadata !213, i32 253, i32 0, i32 32} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!228 = metadata !{i32 255, i32 0, metadata !227, null}
+!229 = metadata !{i32 257, i32 0, metadata !213, null}
+!230 = metadata !{i32 260, i32 0, metadata !122, null}
+!231 = metadata !{i32 266, i32 0, metadata !4, null}
+!232 = metadata !{i32 267, i32 0, metadata !4, null}
+!233 = metadata !{i32 268, i32 0, metadata !4, null}
+!234 = metadata !{i32 270, i32 0, metadata !235, null}
+!235 = metadata !{i32 786443, metadata !1, metadata !4, i32 270, i32 0, i32 33} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!236 = metadata !{i32 271, i32 0, metadata !237, null}
+!237 = metadata !{i32 786443, metadata !1, metadata !235, i32 270, i32 0, i32 34} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!238 = metadata !{i32 272, i32 0, metadata !237, null}
+!239 = metadata !{i32 273, i32 0, metadata !237, null}
+!240 = metadata !{i32 277, i32 0, metadata !241, null}
+!241 = metadata !{i32 786443, metadata !1, metadata !237, i32 274, i32 0, i32 35} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!242 = metadata !{i32 278, i32 0, metadata !241, null}
+!243 = metadata !{i32 279, i32 0, metadata !244, null}
+!244 = metadata !{i32 786443, metadata !1, metadata !241, i32 278, i32 0, i32 36} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/cascade.c]
+!245 = metadata !{i32 280, i32 0, metadata !244, null}
+!246 = metadata !{i32 283, i32 0, metadata !241, null}
+!247 = metadata !{i32 284, i32 0, metadata !241, null}
+!248 = metadata !{i32 288, i32 0, metadata !4, null}
+!249 = metadata !{i32 291, i32 0, metadata !4, null}
+!250 = metadata !{i32 292, i32 0, metadata !4, null}
+!251 = metadata !{i32 299, i32 0, metadata !4, null}

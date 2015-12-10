@@ -1,21 +1,22 @@
-define internal void @_ZN3povL19Light_Source_NormalEPdPNS_13Object_StructEPNS_10istk_entryE(double* %Result, %"struct.pov::Object_Struct"* nocapture readonly %Object, %"struct.pov::istk_entry"* %Inter) #0 {
-  tail call void @llvm.dbg.value(metadata double* %Result, i64 0, metadata !823, metadata !1254), !dbg !1300
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !824, metadata !1254), !dbg !1301
-  tail call void @llvm.dbg.value(metadata %"struct.pov::istk_entry"* %Inter, i64 0, metadata !825, metadata !1254), !dbg !1302
-  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1303
-  %2 = bitcast %"struct.pov::Object_Struct"* %1 to %"struct.pov::Object_Struct"**, !dbg !1303
-  %3 = load %"struct.pov::Object_Struct"** %2, align 8, !dbg !1303, !tbaa !1260
-  %4 = icmp eq %"struct.pov::Object_Struct"* %3, null, !dbg !1305
-  br i1 %4, label %10, label %5, !dbg !1306
+define internal void @_ZN3povL19Light_Source_NormalEPdPNS_13Object_StructEPNS_10istk_entryE(double* %Result, %"struct.pov::Object_Struct"* nocapture %Object, %"struct.pov::istk_entry"* %Inter) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %Result}, i64 0, metadata !961), !dbg !1049
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !962), !dbg !1049
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %Inter}, i64 0, metadata !963), !dbg !1049
+  %Children = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1050
+  %0 = bitcast %"struct.pov::Object_Struct"* %Children to %"struct.pov::Object_Struct"**, !dbg !1050
+  %1 = load %"struct.pov::Object_Struct"** %0, align 8, !dbg !1050, !tbaa !1036
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %1, null, !dbg !1050
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1050
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %"struct.pov::Object_Struct"* %3, i64 0, i32 0, !dbg !1307
-  %7 = load %"struct.pov::Method_Struct"** %6, align 8, !dbg !1307, !tbaa !1282
-  %8 = getelementptr inbounds %"struct.pov::Method_Struct"* %7, i64 0, i32 2, !dbg !1307
-  %9 = load void (double*, %"struct.pov::Object_Struct"*, %"struct.pov::istk_entry"*)** %8, align 8, !dbg !1307, !tbaa !1309
-  tail call void %9(double* %Result, %"struct.pov::Object_Struct"* %3, %"struct.pov::istk_entry"* %Inter) #6, !dbg !1307
-  br label %10, !dbg !1310
+if.then:                                          ; preds = %entry
+  %Methods = getelementptr inbounds %"struct.pov::Object_Struct"* %1, i64 0, i32 0, !dbg !1052
+  %2 = load %"struct.pov::Method_Struct"** %Methods, align 8, !dbg !1052, !tbaa !1036
+  %Normal_Method = getelementptr inbounds %"struct.pov::Method_Struct"* %2, i64 0, i32 2, !dbg !1052
+  %3 = load void (double*, %"struct.pov::Object_Struct"*, %"struct.pov::istk_entry"*)** %Normal_Method, align 8, !dbg !1052, !tbaa !1036
+  tail call void %3(double* %Result, %"struct.pov::Object_Struct"* %1, %"struct.pov::istk_entry"* %Inter) #7, !dbg !1052
+  br label %if.end, !dbg !1054
 
-; <label>:10                                      ; preds = %0, %5
-  ret void, !dbg !1311
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !1055
 }

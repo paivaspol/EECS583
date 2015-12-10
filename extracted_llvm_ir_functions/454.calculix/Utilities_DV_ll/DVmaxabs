@@ -1,74 +1,73 @@
 define double @DVmaxabs(i32 %size, double* %y, i32* %ploc) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !276, metadata !696), !dbg !1182
-  tail call void @llvm.dbg.value(metadata double* %y, i64 0, metadata !277, metadata !696), !dbg !1183
-  tail call void @llvm.dbg.value(metadata i32* %ploc, i64 0, metadata !278, metadata !696), !dbg !1184
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !279, metadata !696), !dbg !1185
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !280, metadata !696), !dbg !1186
-  %1 = icmp sgt i32 %size, 0, !dbg !1187
-  br i1 %1, label %2, label %24, !dbg !1188
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !245), !dbg !924
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !246), !dbg !925
+  tail call void @llvm.dbg.value(metadata !{i32* %ploc}, i64 0, metadata !247), !dbg !926
+  tail call void @llvm.dbg.value(metadata !705, i64 0, metadata !248), !dbg !927
+  tail call void @llvm.dbg.value(metadata !903, i64 0, metadata !249), !dbg !928
+  %cmp = icmp sgt i32 %size, 0, !dbg !929
+  br i1 %cmp, label %if.then, label %if.end21, !dbg !929
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp eq double* %y, null, !dbg !1189
-  br i1 %3, label %4, label %7, !dbg !1190
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq double* %y, null, !dbg !930
+  br i1 %cmp1, label %if.then2, label %if.else, !dbg !930
 
-; <label>:4                                       ; preds = %2
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1191, !tbaa !709
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([71 x i8]* @.str21, i64 0, i64 0), i32 %size, double* null, i32* %ploc) #7, !dbg !1193
-  tail call void @exit(i32 -1) #8, !dbg !1194
-  unreachable, !dbg !1194
+if.then2:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !931, !tbaa !629
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([71 x i8]* @.str21, i64 0, i64 0), i32 %size, double* null, i32* %ploc) #6, !dbg !931
+  tail call void @exit(i32 -1) #7, !dbg !933
+  unreachable, !dbg !933
 
-; <label>:7                                       ; preds = %2
-  %8 = load double* %y, align 8, !dbg !1195, !tbaa !718
-  %9 = fcmp ult double %8, 0.000000e+00, !dbg !1196
-  br i1 %9, label %10, label %.preheader, !dbg !1197
+if.else:                                          ; preds = %if.then
+  %1 = load double* %y, align 8, !dbg !934, !tbaa !635
+  %cmp3 = fcmp ult double %1, 0.000000e+00, !dbg !934
+  br i1 %cmp3, label %cond.false, label %for.cond.preheader, !dbg !934
 
-; <label>:10                                      ; preds = %7
-  %11 = fsub double -0.000000e+00, %8, !dbg !1198
-  br label %.preheader, !dbg !1197
+cond.false:                                       ; preds = %if.else
+  %sub = fsub double -0.000000e+00, %1, !dbg !934
+  br label %for.cond.preheader, !dbg !934
 
-.preheader:                                       ; preds = %7, %10
-  %maxval.0.ph = phi double [ %11, %10 ], [ %8, %7 ]
-  %12 = icmp sgt i32 %size, 1, !dbg !1199
-  br i1 %12, label %.lr.ph, label %._crit_edge, !dbg !1202
+for.cond.preheader:                               ; preds = %if.else, %cond.false
+  %maxval.0.ph = phi double [ %sub, %cond.false ], [ %1, %if.else ]
+  %cmp638 = icmp sgt i32 %size, 1, !dbg !935
+  br i1 %cmp638, label %for.body, label %for.end, !dbg !935
 
-.lr.ph:                                           ; preds = %.preheader
-  %13 = add i32 %size, -1, !dbg !1202
-  br label %14, !dbg !1202
+for.body:                                         ; preds = %for.cond.preheader, %cond.end16
+  %indvars.iv = phi i64 [ %indvars.iv.next, %cond.end16 ], [ 1, %for.cond.preheader ]
+  %maxval.041 = phi double [ %maxval.1, %cond.end16 ], [ %maxval.0.ph, %for.cond.preheader ]
+  %loc.039 = phi i32 [ %loc.1, %cond.end16 ], [ 0, %for.cond.preheader ]
+  %arrayidx7 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !937
+  %2 = load double* %arrayidx7, align 8, !dbg !937, !tbaa !635
+  %cmp8 = fcmp ult double %2, 0.000000e+00, !dbg !937
+  br i1 %cmp8, label %cond.false12, label %cond.end16, !dbg !937
 
-; <label>:14                                      ; preds = %20, %.lr.ph
-  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %20 ]
-  %maxval.03 = phi double [ %maxval.0.ph, %.lr.ph ], [ %maxval.1, %20 ]
-  %loc.01 = phi i32 [ 0, %.lr.ph ], [ %loc.1, %20 ]
-  %15 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1203
-  %16 = load double* %15, align 8, !dbg !1203, !tbaa !718
-  %17 = fcmp ult double %16, 0.000000e+00, !dbg !1205
-  br i1 %17, label %18, label %20, !dbg !1206
+cond.false12:                                     ; preds = %for.body
+  %sub15 = fsub double -0.000000e+00, %2, !dbg !937
+  br label %cond.end16, !dbg !937
 
-; <label>:18                                      ; preds = %14
-  %19 = fsub double -0.000000e+00, %16, !dbg !1207
-  br label %20, !dbg !1206
+cond.end16:                                       ; preds = %for.body, %cond.false12
+  %cond17 = phi double [ %sub15, %cond.false12 ], [ %2, %for.body ], !dbg !937
+  tail call void @llvm.dbg.value(metadata !{double %cond17}, i64 0, metadata !253), !dbg !937
+  %cmp18 = fcmp olt double %maxval.041, %cond17, !dbg !939
+  tail call void @llvm.dbg.value(metadata !{double %cond17}, i64 0, metadata !248), !dbg !940
+  tail call void @llvm.dbg.value(metadata !918, i64 0, metadata !249), !dbg !942
+  %3 = trunc i64 %indvars.iv to i32, !dbg !939
+  %loc.1 = select i1 %cmp18, i32 %3, i32 %loc.039, !dbg !939
+  %maxval.1 = select i1 %cmp18, double %cond17, double %maxval.041, !dbg !939
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !935
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !935
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !935
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !935
 
-; <label>:20                                      ; preds = %14, %18
-  %21 = phi double [ %19, %18 ], [ %16, %14 ], !dbg !1206
-  tail call void @llvm.dbg.value(metadata double %21, i64 0, metadata !286, metadata !696), !dbg !1208
-  %22 = fcmp olt double %maxval.03, %21, !dbg !1209
-  tail call void @llvm.dbg.value(metadata double %21, i64 0, metadata !279, metadata !696), !dbg !1185
-  %23 = trunc i64 %indvars.iv to i32, !dbg !1211
-  %loc.1 = select i1 %22, i32 %23, i32 %loc.01, !dbg !1211
-  %maxval.1 = select i1 %22, double %21, double %maxval.03, !dbg !1211
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1202
-  %exitcond = icmp eq i32 %23, %13, !dbg !1202
-  br i1 %exitcond, label %._crit_edge, label %14, !dbg !1202
+for.end:                                          ; preds = %cond.end16, %for.cond.preheader
+  %maxval.0.lcssa = phi double [ %maxval.0.ph, %for.cond.preheader ], [ %maxval.1, %cond.end16 ]
+  %loc.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %loc.1, %cond.end16 ]
+  store i32 %loc.0.lcssa, i32* %ploc, align 4, !dbg !943, !tbaa !665
+  br label %if.end21, !dbg !944
 
-._crit_edge:                                      ; preds = %20, %.preheader
-  %maxval.0.lcssa = phi double [ %maxval.0.ph, %.preheader ], [ %maxval.1, %20 ]
-  %loc.0.lcssa = phi i32 [ 0, %.preheader ], [ %loc.1, %20 ]
-  store i32 %loc.0.lcssa, i32* %ploc, align 4, !dbg !1212, !tbaa !771
-  br label %24, !dbg !1213
-
-; <label>:24                                      ; preds = %._crit_edge, %0
-  %loc.2 = phi i32 [ %loc.0.lcssa, %._crit_edge ], [ -1, %0 ]
-  %maxval.2 = phi double [ %maxval.0.lcssa, %._crit_edge ], [ 0.000000e+00, %0 ]
-  store i32 %loc.2, i32* %ploc, align 4, !dbg !1214, !tbaa !771
-  ret double %maxval.2, !dbg !1215
+if.end21:                                         ; preds = %for.end, %entry
+  %loc.2 = phi i32 [ %loc.0.lcssa, %for.end ], [ -1, %entry ]
+  %maxval.2 = phi double [ %maxval.0.lcssa, %for.end ], [ 0.000000e+00, %entry ]
+  store i32 %loc.2, i32* %ploc, align 4, !dbg !945, !tbaa !665
+  ret double %maxval.2, !dbg !946
 }

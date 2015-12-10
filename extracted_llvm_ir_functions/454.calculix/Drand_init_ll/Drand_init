@@ -1,15 +1,16 @@
 define void @Drand_init(%struct._Drand* %drand) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !26, metadata !56), !dbg !57
-  %1 = icmp eq %struct._Drand* %drand, null, !dbg !58
-  br i1 %1, label %2, label %5, !dbg !60
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Drand* %drand}, i64 0, metadata !25), !dbg !51
+  %cmp = icmp eq %struct._Drand* %drand, null, !dbg !52
+  br i1 %cmp, label %if.then, label %if.end, !dbg !52
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !61, !tbaa !63
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), %struct._Drand* null) #6, !dbg !67
-  tail call void @exit(i32 -1) #7, !dbg !68
-  unreachable, !dbg !68
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !53, !tbaa !55
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), %struct._Drand* null) #5, !dbg !53
+  tail call void @exit(i32 -1) #6, !dbg !58
+  unreachable, !dbg !58
 
-; <label>:5                                       ; preds = %0
-  tail call void @Drand_setDefaultFields(%struct._Drand* %drand) #6, !dbg !69
-  ret void, !dbg !70
+if.end:                                           ; preds = %entry
+  tail call void @Drand_setDefaultFields(%struct._Drand* %drand) #5, !dbg !59
+  ret void, !dbg !60
 }

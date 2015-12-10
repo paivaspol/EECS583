@@ -1,45 +1,46 @@
 define void @Tree_clearData(%struct._Tree* %tree) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Tree* %tree, i64 0, metadata !34, metadata !46), !dbg !76
-  %1 = icmp eq %struct._Tree* %tree, null, !dbg !77
-  br i1 %1, label %2, label %5, !dbg !79
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Tree* %tree}, i64 0, metadata !29), !dbg !53
+  %cmp = icmp eq %struct._Tree* %tree, null, !dbg !54
+  br i1 %cmp, label %if.then, label %if.end, !dbg !54
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !80, !tbaa !51
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([51 x i8]* @.str3, i64 0, i64 0), %struct._Tree* null) #6, !dbg !82
-  tail call void @exit(i32 -1) #7, !dbg !83
-  unreachable, !dbg !83
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !55, !tbaa !37
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([51 x i8]* @.str3, i64 0, i64 0), %struct._Tree* null) #6, !dbg !55
+  tail call void @exit(i32 -1) #7, !dbg !57
+  unreachable, !dbg !57
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2, !dbg !84
-  %7 = load i32** %6, align 8, !dbg !84, !tbaa !86
-  %8 = icmp eq i32* %7, null, !dbg !87
-  br i1 %8, label %10, label %9, !dbg !88
+if.end:                                           ; preds = %entry
+  %par = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2, !dbg !58
+  %1 = load i32** %par, align 8, !dbg !58, !tbaa !37
+  %cmp1 = icmp eq i32* %1, null, !dbg !58
+  br i1 %cmp1, label %if.end4, label %if.then2, !dbg !58
 
-; <label>:9                                       ; preds = %5
-  tail call void @IVfree(i32* %7) #6, !dbg !89
-  br label %10, !dbg !91
+if.then2:                                         ; preds = %if.end
+  tail call void @IVfree(i32* %1) #6, !dbg !59
+  br label %if.end4, !dbg !61
 
-; <label>:10                                      ; preds = %5, %9
-  %11 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3, !dbg !92
-  %12 = load i32** %11, align 8, !dbg !92, !tbaa !94
-  %13 = icmp eq i32* %12, null, !dbg !95
-  br i1 %13, label %15, label %14, !dbg !96
+if.end4:                                          ; preds = %if.end, %if.then2
+  %fch = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3, !dbg !62
+  %2 = load i32** %fch, align 8, !dbg !62, !tbaa !37
+  %cmp5 = icmp eq i32* %2, null, !dbg !62
+  br i1 %cmp5, label %if.end8, label %if.then6, !dbg !62
 
-; <label>:14                                      ; preds = %10
-  tail call void @IVfree(i32* %12) #6, !dbg !97
-  br label %15, !dbg !99
+if.then6:                                         ; preds = %if.end4
+  tail call void @IVfree(i32* %2) #6, !dbg !63
+  br label %if.end8, !dbg !65
 
-; <label>:15                                      ; preds = %10, %14
-  %16 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4, !dbg !100
-  %17 = load i32** %16, align 8, !dbg !100, !tbaa !102
-  %18 = icmp eq i32* %17, null, !dbg !103
-  br i1 %18, label %20, label %19, !dbg !104
+if.end8:                                          ; preds = %if.end4, %if.then6
+  %sib = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4, !dbg !66
+  %3 = load i32** %sib, align 8, !dbg !66, !tbaa !37
+  %cmp9 = icmp eq i32* %3, null, !dbg !66
+  br i1 %cmp9, label %if.end12, label %if.then10, !dbg !66
 
-; <label>:19                                      ; preds = %15
-  tail call void @IVfree(i32* %17) #6, !dbg !105
-  br label %20, !dbg !107
+if.then10:                                        ; preds = %if.end8
+  tail call void @IVfree(i32* %3) #6, !dbg !67
+  br label %if.end12, !dbg !69
 
-; <label>:20                                      ; preds = %15, %19
-  tail call void @Tree_setDefaultFields(%struct._Tree* %tree) #8, !dbg !108
-  ret void, !dbg !109
+if.end12:                                         ; preds = %if.end8, %if.then10
+  tail call void @Tree_setDefaultFields(%struct._Tree* %tree) #8, !dbg !70
+  ret void, !dbg !71
 }

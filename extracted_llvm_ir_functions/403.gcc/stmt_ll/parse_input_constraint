@@ -1,26 +1,38 @@
 define internal fastcc zeroext i1 @parse_input_constraint(i8** nocapture %constraint_p, i32 %input_num, i32 %ninputs, i32 %noutputs, i32 %ninout, i8** nocapture %constraints, i8* nocapture %allows_mem, i8* nocapture %allows_reg) #0 {
 entry:
   %end = alloca i8*, align 8
-  %0 = load i8** %constraint_p, align 8, !tbaa !0
-  %call = call i64 @strlen(i8* %0) #10
-  store i8 0, i8* %allows_mem, align 1, !tbaa !5
-  store i8 0, i8* %allows_reg, align 1, !tbaa !5
-  %cmp288 = icmp eq i64 %call, 0
-  br i1 %cmp288, label %return, label %for.body.lr.ph
+  call void @llvm.dbg.value(metadata !{i8** %constraint_p}, i64 0, metadata !2257), !dbg !3148
+  call void @llvm.dbg.value(metadata !{i32 %input_num}, i64 0, metadata !2258), !dbg !3149
+  call void @llvm.dbg.value(metadata !{i32 %ninputs}, i64 0, metadata !2259), !dbg !3150
+  call void @llvm.dbg.value(metadata !{i32 %noutputs}, i64 0, metadata !2260), !dbg !3151
+  call void @llvm.dbg.value(metadata !{i32 %ninout}, i64 0, metadata !2261), !dbg !3152
+  call void @llvm.dbg.value(metadata !{i8** %constraints}, i64 0, metadata !2262), !dbg !3153
+  call void @llvm.dbg.value(metadata !{i8* %allows_mem}, i64 0, metadata !2263), !dbg !3154
+  call void @llvm.dbg.value(metadata !{i8* %allows_reg}, i64 0, metadata !2264), !dbg !3155
+  %0 = load i8** %constraint_p, align 8, !dbg !3156, !tbaa !2438
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !2265), !dbg !3156
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !2266), !dbg !3157
+  %call = call i64 @strlen(i8* %0) #11, !dbg !3158
+  call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !2267), !dbg !3158
+  store i8 0, i8* %allows_mem, align 1, !dbg !3159, !tbaa !2827
+  store i8 0, i8* %allows_reg, align 1, !dbg !3160, !tbaa !2827
+  call void @llvm.dbg.value(metadata !3161, i64 0, metadata !2268), !dbg !3162
+  %cmp288 = icmp eq i64 %call, 0, !dbg !3162
+  br i1 %cmp288, label %return, label %for.body.lr.ph, !dbg !3162
 
 for.body.lr.ph:                                   ; preds = %entry
-  %add = add nsw i32 %input_num, 1
-  %sub = sub nsw i32 %ninputs, %ninout
-  %conv16 = sext i32 %noutputs to i64
-  br label %for.body
+  %add = add nsw i32 %input_num, 1, !dbg !3163
+  %sub = sub nsw i32 %ninputs, %ninout, !dbg !3163
+  %conv16 = sext i32 %noutputs to i64, !dbg !3164
+  br label %for.body, !dbg !3162
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc
   %j.0291 = phi i64 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
   %c_len.0290 = phi i64 [ %call, %for.body.lr.ph ], [ %c_len.1, %for.inc ]
   %constraint.0289 = phi i8* [ %0, %for.body.lr.ph ], [ %constraint.1, %for.inc ]
-  %arrayidx = getelementptr inbounds i8* %constraint.0289, i64 %j.0291
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = sext i8 %1 to i32
+  %arrayidx = getelementptr inbounds i8* %constraint.0289, i64 %j.0291, !dbg !3165
+  %1 = load i8* %arrayidx, align 1, !dbg !3165, !tbaa !2439
+  %conv = sext i8 %1 to i32, !dbg !3165
   switch i32 %conv, label %sw.default [
     i32 43, label %sw.bb
     i32 61, label %sw.bb
@@ -65,91 +77,99 @@ for.body:                                         ; preds = %for.body.lr.ph, %fo
     i32 114, label %sw.bb38
     i32 103, label %sw.bb39
     i32 88, label %sw.bb39
-  ]
+  ], !dbg !3165
 
 sw.bb:                                            ; preds = %for.body, %for.body, %for.body
-  %cmp1 = icmp eq i8* %constraint.0289, %0
-  br i1 %cmp1, label %if.then, label %for.inc
+  %cmp1 = icmp eq i8* %constraint.0289, %0, !dbg !3166
+  br i1 %cmp1, label %if.then, label %for.inc, !dbg !3166
 
 if.then:                                          ; preds = %sw.bb
-  call void (i8*, ...)* @error(i8* getelementptr inbounds ([39 x i8]* @.str27, i64 0, i64 0), i32 %conv) #7
-  br label %return
+  call void (i8*, ...)* @error(i8* getelementptr inbounds ([39 x i8]* @.str27, i64 0, i64 0), i32 %conv) #8, !dbg !3167
+  br label %return, !dbg !3169
 
 sw.bb5:                                           ; preds = %for.body
-  %cmp6.not = icmp ne i8* %constraint.0289, %0
-  %cmp8.not = icmp ne i32 %add, %sub
-  %brmerge = or i1 %cmp6.not, %cmp8.not
-  br i1 %brmerge, label %for.inc, label %if.then10
+  %cmp6.not = icmp ne i8* %constraint.0289, %0, !dbg !3163
+  %cmp8.not = icmp ne i32 %add, %sub, !dbg !3163
+  %brmerge = or i1 %cmp6.not, %cmp8.not, !dbg !3163
+  br i1 %brmerge, label %for.inc, label %if.then10, !dbg !3163
 
 if.then10:                                        ; preds = %sw.bb5
-  call void (i8*, ...)* @error(i8* getelementptr inbounds ([39 x i8]* @.str4, i64 0, i64 0)) #7
-  br label %return
+  call void (i8*, ...)* @error(i8* getelementptr inbounds ([39 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !3170
+  br label %return, !dbg !3172
 
 sw.bb12:                                          ; preds = %for.body, %for.body, %for.body
-  store i8 1, i8* %allows_mem, align 1, !tbaa !5
-  br label %for.inc
+  store i8 1, i8* %allows_mem, align 1, !dbg !3173, !tbaa !2827
+  br label %for.inc, !dbg !3174
 
 sw.bb14:                                          ; preds = %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body
-  %call15 = call i64 @strtoul(i8* %arrayidx, i8** %end, i32 10) #7
-  %cmp17 = icmp ult i64 %call15, %conv16
-  br i1 %cmp17, label %if.end20, label %if.then19
+  call void @llvm.dbg.declare(metadata !{i8** %end}, metadata !2269), !dbg !3175
+  %call15 = call i64 @strtoul(i8* %arrayidx, i8** %end, i32 10) #8, !dbg !3176
+  call void @llvm.dbg.value(metadata !{i64 %call15}, i64 0, metadata !2273), !dbg !3176
+  %cmp17 = icmp ult i64 %call15, %conv16, !dbg !3164
+  br i1 %cmp17, label %if.end20, label %if.then19, !dbg !3164
 
 if.then19:                                        ; preds = %sw.bb14
-  call void (i8*, ...)* @error(i8* getelementptr inbounds ([54 x i8]* @.str28, i64 0, i64 0)) #7
-  br label %return
+  call void (i8*, ...)* @error(i8* getelementptr inbounds ([54 x i8]* @.str28, i64 0, i64 0)) #8, !dbg !3177
+  br label %return, !dbg !3179
 
 if.end20:                                         ; preds = %sw.bb14
-  %2 = load i8** %end, align 8, !tbaa !0
-  %3 = load i8* %2, align 1, !tbaa !1
-  %cmp22 = icmp eq i8 %3, 0
-  br i1 %cmp22, label %land.lhs.true24, label %if.else
+  call void @llvm.dbg.value(metadata !{i8** %end}, i64 0, metadata !2269), !dbg !3180
+  %2 = load i8** %end, align 8, !dbg !3180, !tbaa !2438
+  %3 = load i8* %2, align 1, !dbg !3180, !tbaa !2439
+  %cmp22 = icmp eq i8 %3, 0, !dbg !3180
+  br i1 %cmp22, label %land.lhs.true24, label %if.else, !dbg !3180
 
 land.lhs.true24:                                  ; preds = %if.end20
   switch i64 %j.0291, label %if.else [
     i64 0, label %if.then34
     i64 1, label %land.lhs.true29
-  ]
+  ], !dbg !3180
 
 land.lhs.true29:                                  ; preds = %land.lhs.true24
-  %4 = load i8* %constraint.0289, align 1, !tbaa !1
-  %cmp32 = icmp eq i8 %4, 37
-  br i1 %cmp32, label %if.then34, label %if.else
+  %4 = load i8* %constraint.0289, align 1, !dbg !3180, !tbaa !2439
+  %cmp32 = icmp eq i8 %4, 37, !dbg !3180
+  br i1 %cmp32, label %if.then34, label %if.else, !dbg !3180
 
 if.then34:                                        ; preds = %land.lhs.true24, %land.lhs.true29
-  %arrayidx35 = getelementptr inbounds i8** %constraints, i64 %call15
-  %5 = load i8** %arrayidx35, align 8, !tbaa !0
-  store i8* %5, i8** %constraint_p, align 8, !tbaa !0
-  %call36 = call i64 @strlen(i8* %5) #10
-  br label %for.inc
+  %arrayidx35 = getelementptr inbounds i8** %constraints, i64 %call15, !dbg !3181
+  %5 = load i8** %arrayidx35, align 8, !dbg !3181, !tbaa !2438
+  call void @llvm.dbg.value(metadata !{i8* %5}, i64 0, metadata !2265), !dbg !3181
+  store i8* %5, i8** %constraint_p, align 8, !dbg !3183, !tbaa !2438
+  %call36 = call i64 @strlen(i8* %5) #11, !dbg !3184
+  call void @llvm.dbg.value(metadata !{i64 %call36}, i64 0, metadata !2267), !dbg !3184
+  call void @llvm.dbg.value(metadata !3161, i64 0, metadata !2268), !dbg !3185
+  br label %for.inc, !dbg !3186
 
 if.else:                                          ; preds = %land.lhs.true24, %land.lhs.true29, %if.end20
-  %sub.ptr.lhs.cast = ptrtoint i8* %2 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %constraint.0289 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  br label %sw.bb38
+  call void @llvm.dbg.value(metadata !{i8** %end}, i64 0, metadata !2269), !dbg !3187
+  %sub.ptr.lhs.cast = ptrtoint i8* %2 to i64, !dbg !3187
+  %sub.ptr.rhs.cast = ptrtoint i8* %constraint.0289 to i64, !dbg !3187
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !3187
+  call void @llvm.dbg.value(metadata !{i64 %sub.ptr.sub}, i64 0, metadata !2268), !dbg !3187
+  br label %sw.bb38, !dbg !3188
 
 sw.bb38:                                          ; preds = %for.body, %for.body, %if.else
   %j.1 = phi i64 [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %sub.ptr.sub, %if.else ]
-  store i8 1, i8* %allows_reg, align 1, !tbaa !5
-  br label %for.inc
+  store i8 1, i8* %allows_reg, align 1, !dbg !3189, !tbaa !2827
+  br label %for.inc, !dbg !3190
 
 sw.bb39:                                          ; preds = %for.body, %for.body
-  store i8 1, i8* %allows_reg, align 1, !tbaa !5
-  store i8 1, i8* %allows_mem, align 1, !tbaa !5
-  br label %for.inc
+  store i8 1, i8* %allows_reg, align 1, !dbg !3191, !tbaa !2827
+  store i8 1, i8* %allows_mem, align 1, !dbg !3192, !tbaa !2827
+  br label %for.inc, !dbg !3193
 
 sw.default:                                       ; preds = %for.body
-  %and = and i32 %conv, 255
-  %idxprom278 = zext i32 %and to i64
-  %arrayidx42 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom278
-  %6 = load i16* %arrayidx42, align 2, !tbaa !6
-  %and44 = and i16 %6, 136
-  %tobool = icmp eq i16 %and44, 0
-  br i1 %tobool, label %if.then45, label %if.end48
+  %and = and i32 %conv, 255, !dbg !3194
+  %idxprom278 = zext i32 %and to i64, !dbg !3194
+  %arrayidx42 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom278, !dbg !3194
+  %6 = load i16* %arrayidx42, align 2, !dbg !3194, !tbaa !2870
+  %and44 = and i16 %6, 136, !dbg !3194
+  %tobool = icmp eq i16 %and44, 0, !dbg !3194
+  br i1 %tobool, label %if.then45, label %if.end48, !dbg !3194
 
 if.then45:                                        ; preds = %sw.default
-  call void (i8*, ...)* @error(i8* getelementptr inbounds ([39 x i8]* @.str29, i64 0, i64 0), i32 %conv) #7
-  br label %return
+  call void (i8*, ...)* @error(i8* getelementptr inbounds ([39 x i8]* @.str29, i64 0, i64 0), i32 %conv) #8, !dbg !3195
+  br label %return, !dbg !3197
 
 if.end48:                                         ; preds = %sw.default
   switch i8 %1, label %cond.false175 [
@@ -169,92 +189,93 @@ if.end48:                                         ; preds = %sw.default
     i8 121, label %cond.true158
     i8 65, label %cond.end210.thread
     i8 68, label %cond.end210.thread
-  ]
+  ], !dbg !3198
 
 cond.true77:                                      ; preds = %if.end48
-  %7 = load i32* @target_flags, align 4, !tbaa !4
-  %and78 = and i32 %7, 1
-  %tobool79 = icmp eq i32 %and78, 0
-  br i1 %tobool79, label %lor.rhs, label %cond.end210.thread
+  %7 = load i32* @target_flags, align 4, !dbg !3198, !tbaa !2561
+  %and78 = and i32 %7, 1, !dbg !3198
+  %tobool79 = icmp eq i32 %and78, 0, !dbg !3198
+  br i1 %tobool79, label %lor.rhs, label %cond.end210.thread, !dbg !3198
 
 lor.rhs:                                          ; preds = %cond.true77
-  %and80 = and i32 %7, 32
-  %tobool81 = icmp ne i32 %and80, 0
-  %phitmp280 = select i1 %tobool81, i32 15, i32 0
-  br label %cond.end210
+  %and80 = and i32 %7, 32, !dbg !3198
+  %tobool81 = icmp ne i32 %and80, 0, !dbg !3198
+  %phitmp280 = select i1 %tobool81, i32 15, i32 0, !dbg !3198
+  br label %cond.end210, !dbg !3198
 
 cond.true88:                                      ; preds = %if.end48
-  %8 = load i32* @target_flags, align 4, !tbaa !4
-  %and89 = and i32 %8, 1
-  %tobool90 = icmp eq i32 %and89, 0
-  br i1 %tobool90, label %lor.rhs91, label %cond.end210.thread
+  %8 = load i32* @target_flags, align 4, !dbg !3198, !tbaa !2561
+  %and89 = and i32 %8, 1, !dbg !3198
+  %tobool90 = icmp eq i32 %and89, 0, !dbg !3198
+  br i1 %tobool90, label %lor.rhs91, label %cond.end210.thread, !dbg !3198
 
 lor.rhs91:                                        ; preds = %cond.true88
-  %and92 = and i32 %8, 32
-  %tobool93 = icmp ne i32 %and92, 0
-  %phitmp279 = select i1 %tobool93, i32 13, i32 0
-  br label %cond.end210
+  %and92 = and i32 %8, 32, !dbg !3198
+  %tobool93 = icmp ne i32 %and92, 0, !dbg !3198
+  %phitmp279 = select i1 %tobool93, i32 13, i32 0, !dbg !3198
+  br label %cond.end210, !dbg !3198
 
 cond.true101:                                     ; preds = %if.end48
-  %9 = load i32* @target_flags, align 4, !tbaa !4
-  %and102 = and i32 %9, 1
-  %tobool103 = icmp eq i32 %and102, 0
-  br i1 %tobool103, label %lor.rhs104, label %cond.end210.thread
+  %9 = load i32* @target_flags, align 4, !dbg !3198, !tbaa !2561
+  %and102 = and i32 %9, 1, !dbg !3198
+  %tobool103 = icmp eq i32 %and102, 0, !dbg !3198
+  br i1 %tobool103, label %lor.rhs104, label %cond.end210.thread, !dbg !3198
 
 lor.rhs104:                                       ; preds = %cond.true101
-  %and105 = and i32 %9, 32
-  %tobool106 = icmp ne i32 %and105, 0
-  %phitmp = select i1 %tobool106, i32 14, i32 0
-  br label %cond.end210
+  %and105 = and i32 %9, 32, !dbg !3198
+  %tobool106 = icmp ne i32 %and105, 0, !dbg !3198
+  %phitmp = select i1 %tobool106, i32 14, i32 0, !dbg !3198
+  br label %cond.end210, !dbg !3198
 
 cond.true138:                                     ; preds = %if.end48
-  %10 = load i32* @target_flags, align 4, !tbaa !4
-  %and139 = and i32 %10, 327680
-  %cmp140 = icmp ne i32 %and139, 0
-  %cond142 = select i1 %cmp140, i32 16, i32 0
-  br label %cond.end210
+  %10 = load i32* @target_flags, align 4, !dbg !3198, !tbaa !2561
+  %and139 = and i32 %10, 327680, !dbg !3198
+  %cmp140 = icmp ne i32 %and139, 0, !dbg !3198
+  %cond142 = select i1 %cmp140, i32 16, i32 0, !dbg !3198
+  br label %cond.end210, !dbg !3198
 
 cond.true148:                                     ; preds = %if.end48
-  %11 = load i32* @target_flags, align 4, !tbaa !4
-  %and149 = lshr i32 %11, 14
-  %12 = and i32 %and149, 16
-  br label %cond.end210
+  %11 = load i32* @target_flags, align 4, !dbg !3198, !tbaa !2561
+  %and149 = lshr i32 %11, 14, !dbg !3198
+  %12 = and i32 %and149, 16, !dbg !3198
+  br label %cond.end210, !dbg !3198
 
 cond.true158:                                     ; preds = %if.end48
-  %13 = load i32* @target_flags, align 4, !tbaa !4
-  %and159 = and i32 %13, 16384
-  %cmp160 = icmp ne i32 %and159, 0
-  %cond162 = select i1 %cmp160, i32 17, i32 0
-  br label %cond.end210
+  %13 = load i32* @target_flags, align 4, !dbg !3198, !tbaa !2561
+  %and159 = and i32 %13, 16384, !dbg !3198
+  %cmp160 = icmp ne i32 %and159, 0, !dbg !3198
+  %cond162 = select i1 %cmp160, i32 17, i32 0, !dbg !3198
+  br label %cond.end210, !dbg !3198
 
 cond.false175:                                    ; preds = %if.end48
-  %cmp178 = icmp eq i8 %1, 83
-  %cond180 = select i1 %cmp178, i32 5, i32 0
-  br label %cond.end210
+  %cmp178 = icmp eq i8 %1, 83, !dbg !3198
+  %cond180 = select i1 %cmp178, i32 5, i32 0, !dbg !3198
+  br label %cond.end210, !dbg !3198
 
 cond.end210.thread:                               ; preds = %if.end48, %if.end48, %if.end48, %if.end48, %if.end48, %if.end48, %if.end48, %if.end48, %if.end48, %if.end48, %cond.true77, %cond.true88, %cond.true101
-  store i8 1, i8* %allows_reg, align 1, !tbaa !5
-  br label %for.inc
+  store i8 1, i8* %allows_reg, align 1, !dbg !3199, !tbaa !2827
+  br label %for.inc, !dbg !3198
 
 cond.end210:                                      ; preds = %lor.rhs104, %lor.rhs91, %lor.rhs, %cond.true138, %cond.true158, %cond.false175, %cond.true148
-  %cond211 = phi i32 [ %cond142, %cond.true138 ], [ %12, %cond.true148 ], [ %cond162, %cond.true158 ], [ %cond180, %cond.false175 ], [ %phitmp280, %lor.rhs ], [ %phitmp279, %lor.rhs91 ], [ %phitmp, %lor.rhs104 ]
-  %cmp212 = icmp eq i32 %cond211, 0
-  store i8 1, i8* %allows_reg, align 1, !tbaa !5
-  br i1 %cmp212, label %if.else215, label %for.inc
+  %cond211 = phi i32 [ %cond142, %cond.true138 ], [ %12, %cond.true148 ], [ %cond162, %cond.true158 ], [ %cond180, %cond.false175 ], [ %phitmp280, %lor.rhs ], [ %phitmp279, %lor.rhs91 ], [ %phitmp, %lor.rhs104 ], !dbg !3198
+  %cmp212 = icmp eq i32 %cond211, 0, !dbg !3198
+  store i8 1, i8* %allows_reg, align 1, !dbg !3199, !tbaa !2827
+  br i1 %cmp212, label %if.else215, label %for.inc, !dbg !3198
 
 if.else215:                                       ; preds = %cond.end210
-  store i8 1, i8* %allows_mem, align 1, !tbaa !5
+  store i8 1, i8* %allows_mem, align 1, !dbg !3200, !tbaa !2827
   br label %for.inc
 
 for.inc:                                          ; preds = %sw.bb5, %cond.end210.thread, %cond.end210, %sw.bb12, %if.then34, %sw.bb38, %sw.bb39, %sw.bb, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %if.else215
   %constraint.1 = phi i8* [ %constraint.0289, %cond.end210 ], [ %constraint.0289, %if.else215 ], [ %constraint.0289, %sw.bb39 ], [ %constraint.0289, %sw.bb38 ], [ %5, %if.then34 ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %for.body ], [ %constraint.0289, %sw.bb12 ], [ %constraint.0289, %sw.bb5 ], [ %constraint.0289, %sw.bb ], [ %constraint.0289, %cond.end210.thread ]
   %c_len.1 = phi i64 [ %c_len.0290, %cond.end210 ], [ %c_len.0290, %if.else215 ], [ %c_len.0290, %sw.bb39 ], [ %c_len.0290, %sw.bb38 ], [ %call36, %if.then34 ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %for.body ], [ %c_len.0290, %sw.bb12 ], [ %c_len.0290, %sw.bb5 ], [ %c_len.0290, %sw.bb ], [ %c_len.0290, %cond.end210.thread ]
   %j.2 = phi i64 [ %j.0291, %cond.end210 ], [ %j.0291, %if.else215 ], [ %j.0291, %sw.bb39 ], [ %j.1, %sw.bb38 ], [ 0, %if.then34 ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %for.body ], [ %j.0291, %sw.bb12 ], [ %j.0291, %sw.bb5 ], [ %j.0291, %sw.bb ], [ %j.0291, %cond.end210.thread ]
-  %inc = add i64 %j.2, 1
-  %cmp = icmp ult i64 %inc, %c_len.1
-  br i1 %cmp, label %for.body, label %return
+  %inc = add i64 %j.2, 1, !dbg !3162
+  call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !2268), !dbg !3162
+  %cmp = icmp ult i64 %inc, %c_len.1, !dbg !3162
+  br i1 %cmp, label %for.body, label %return, !dbg !3162
 
 return:                                           ; preds = %entry, %for.inc, %if.then45, %if.then19, %if.then10, %if.then
   %retval.0 = phi i1 [ false, %if.then45 ], [ false, %if.then19 ], [ false, %if.then10 ], [ false, %if.then ], [ true, %for.inc ], [ true, %entry ]
-  ret i1 %retval.0
+  ret i1 %retval.0, !dbg !3202
 }

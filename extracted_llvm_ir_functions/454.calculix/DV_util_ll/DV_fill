@@ -1,27 +1,28 @@
 define void @DV_fill(%struct._DV* %dv, double %value) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !83, metadata !102), !dbg !352
-  tail call void @llvm.dbg.value(metadata double %value, i64 0, metadata !84, metadata !102), !dbg !353
-  %1 = icmp eq %struct._DV* %dv, null, !dbg !354
-  br i1 %1, label %2, label %5, !dbg !356
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !82), !dbg !216
+  tail call void @llvm.dbg.value(metadata !{double %value}, i64 0, metadata !83), !dbg !217
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !218
+  br i1 %cmp, label %if.then, label %if.end, !dbg !218
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !357, !tbaa !110
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str13, i64 0, i64 0), %struct._DV* null, double %value) #5, !dbg !359
-  tail call void @exit(i32 -1) #6, !dbg !360
-  unreachable, !dbg !360
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !219, !tbaa !102
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str13, i64 0, i64 0), %struct._DV* null, double %value) #5, !dbg !219
+  tail call void @exit(i32 -1) #6, !dbg !221
+  unreachable, !dbg !221
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !361
-  %7 = load i32* %6, align 4, !dbg !361, !tbaa !126
-  %8 = icmp sgt i32 %7, 0, !dbg !363
-  br i1 %8, label %9, label %12, !dbg !364
+if.end:                                           ; preds = %entry
+  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !222
+  %1 = load i32* %size, align 4, !dbg !222, !tbaa !108
+  %cmp1 = icmp sgt i32 %1, 0, !dbg !222
+  br i1 %cmp1, label %if.then2, label %if.end4, !dbg !222
 
-; <label>:9                                       ; preds = %5
-  %10 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !365
-  %11 = load double** %10, align 8, !dbg !365, !tbaa !118
-  tail call void @DVfill(i32 %7, double* %11, double %value) #5, !dbg !367
-  br label %12, !dbg !368
+if.then2:                                         ; preds = %if.end
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !223
+  %2 = load double** %vec, align 8, !dbg !223, !tbaa !102
+  tail call void @DVfill(i32 %1, double* %2, double %value) #5, !dbg !223
+  br label %if.end4, !dbg !225
 
-; <label>:12                                      ; preds = %9, %5
-  ret void, !dbg !369
+if.end4:                                          ; preds = %if.then2, %if.end
+  ret void, !dbg !226
 }

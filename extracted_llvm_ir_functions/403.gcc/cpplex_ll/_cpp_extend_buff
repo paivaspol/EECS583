@@ -1,26 +1,32 @@
-define void @_cpp_extend_buff(%struct.cpp_reader* nocapture %pfile, %struct._cpp_buff** nocapture %pbuff, i64 %min_extra) #1 {
+define void @_cpp_extend_buff(%struct.cpp_reader* nocapture %pfile, %struct._cpp_buff** nocapture %pbuff, i64 %min_extra) #2 {
 entry:
-  %0 = load %struct._cpp_buff** %pbuff, align 8, !tbaa !0
-  %limit = getelementptr inbounds %struct._cpp_buff* %0, i64 0, i32 3
-  %1 = load i8** %limit, align 8, !tbaa !0
-  %cur = getelementptr inbounds %struct._cpp_buff* %0, i64 0, i32 2
-  %2 = load i8** %cur, align 8, !tbaa !0
-  %sub.ptr.lhs.cast = ptrtoint i8* %1 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %2 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %mul = shl i64 %sub.ptr.sub, 1
-  %add = add i64 %mul, %min_extra
-  %call = tail call %struct._cpp_buff* @_cpp_get_buff(%struct.cpp_reader* %pfile, i64 %add) #10
-  %base = getelementptr inbounds %struct._cpp_buff* %call, i64 0, i32 1
-  %3 = load i8** %base, align 8, !tbaa !0
-  %4 = load i8** %cur, align 8, !tbaa !0
-  %5 = load i8** %limit, align 8, !tbaa !0
-  %sub.ptr.lhs.cast4 = ptrtoint i8* %5 to i64
-  %sub.ptr.rhs.cast5 = ptrtoint i8* %4 to i64
-  %sub.ptr.sub6 = sub i64 %sub.ptr.lhs.cast4, %sub.ptr.rhs.cast5
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %3, i8* %4, i64 %sub.ptr.sub6, i32 1, i1 false)
-  %next = getelementptr inbounds %struct._cpp_buff* %call, i64 0, i32 0
-  store %struct._cpp_buff* %0, %struct._cpp_buff** %next, align 8, !tbaa !0
-  store %struct._cpp_buff* %call, %struct._cpp_buff** %pbuff, align 8, !tbaa !0
-  ret void
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !756), !dbg !2303
+  tail call void @llvm.dbg.value(metadata !{%struct._cpp_buff** %pbuff}, i64 0, metadata !757), !dbg !2304
+  tail call void @llvm.dbg.value(metadata !{i64 %min_extra}, i64 0, metadata !758), !dbg !2305
+  %0 = load %struct._cpp_buff** %pbuff, align 8, !dbg !2306, !tbaa !995
+  tail call void @llvm.dbg.value(metadata !{%struct._cpp_buff* %0}, i64 0, metadata !760), !dbg !2306
+  %limit = getelementptr inbounds %struct._cpp_buff* %0, i64 0, i32 3, !dbg !2307
+  %1 = load i8** %limit, align 8, !dbg !2307, !tbaa !995
+  %cur = getelementptr inbounds %struct._cpp_buff* %0, i64 0, i32 2, !dbg !2307
+  %2 = load i8** %cur, align 8, !dbg !2307, !tbaa !995
+  %sub.ptr.lhs.cast = ptrtoint i8* %1 to i64, !dbg !2307
+  %sub.ptr.rhs.cast = ptrtoint i8* %2 to i64, !dbg !2307
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !2307
+  %mul = shl i64 %sub.ptr.sub, 1, !dbg !2307
+  %add = add i64 %mul, %min_extra, !dbg !2307
+  tail call void @llvm.dbg.value(metadata !{i64 %add}, i64 0, metadata !761), !dbg !2307
+  %call = tail call %struct._cpp_buff* @_cpp_get_buff(%struct.cpp_reader* %pfile, i64 %add) #11, !dbg !2308
+  tail call void @llvm.dbg.value(metadata !{%struct._cpp_buff* %call}, i64 0, metadata !759), !dbg !2308
+  %base = getelementptr inbounds %struct._cpp_buff* %call, i64 0, i32 1, !dbg !2309
+  %3 = load i8** %base, align 8, !dbg !2309, !tbaa !995
+  %4 = load i8** %cur, align 8, !dbg !2309, !tbaa !995
+  %5 = load i8** %limit, align 8, !dbg !2309, !tbaa !995
+  %sub.ptr.lhs.cast4 = ptrtoint i8* %5 to i64, !dbg !2309
+  %sub.ptr.rhs.cast5 = ptrtoint i8* %4 to i64, !dbg !2309
+  %sub.ptr.sub6 = sub i64 %sub.ptr.lhs.cast4, %sub.ptr.rhs.cast5, !dbg !2309
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %3, i8* %4, i64 %sub.ptr.sub6, i32 1, i1 false), !dbg !2309
+  %next = getelementptr inbounds %struct._cpp_buff* %call, i64 0, i32 0, !dbg !2310
+  store %struct._cpp_buff* %0, %struct._cpp_buff** %next, align 8, !dbg !2310, !tbaa !995
+  store %struct._cpp_buff* %call, %struct._cpp_buff** %pbuff, align 8, !dbg !2311, !tbaa !995
+  ret void, !dbg !2312
 }

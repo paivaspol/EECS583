@@ -1,23 +1,25 @@
 define %struct.rtx_def* @emit_label_before(%struct.rtx_def* %label, %struct.rtx_def* %before) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %label, i64 0, i32 1, i64 0
-  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %0 = load i32* %rtint, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 0
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %label}, i64 0, metadata !1849), !dbg !3666
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %before}, i64 0, metadata !1850), !dbg !3666
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %label, i64 0, i32 1, i64 0, !dbg !3667
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !3667
+  %0 = load i32* %rtint, align 4, !dbg !3667, !tbaa !2263
+  %cmp = icmp eq i32 %0, 0, !dbg !3667
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3667
 
 if.then:                                          ; preds = %entry
-  %1 = load %struct.function** @cfun, align 8, !tbaa !4
-  %emit = getelementptr inbounds %struct.function* %1, i64 0, i32 3
-  %2 = load %struct.emit_status** %emit, align 8, !tbaa !4
-  %x_cur_insn_uid = getelementptr inbounds %struct.emit_status* %2, i64 0, i32 6
-  %3 = load i32* %x_cur_insn_uid, align 4, !tbaa !0
-  %inc = add nsw i32 %3, 1
-  store i32 %inc, i32* %x_cur_insn_uid, align 4, !tbaa !0
-  store i32 %3, i32* %rtint, align 4, !tbaa !0
-  tail call void @add_insn_before(%struct.rtx_def* %label, %struct.rtx_def* %before) #9
-  br label %if.end
+  %1 = load %struct.function** @cfun, align 8, !dbg !3668, !tbaa !2272
+  %emit = getelementptr inbounds %struct.function* %1, i64 0, i32 3, !dbg !3668
+  %2 = load %struct.emit_status** %emit, align 8, !dbg !3668, !tbaa !2272
+  %x_cur_insn_uid = getelementptr inbounds %struct.emit_status* %2, i64 0, i32 6, !dbg !3668
+  %3 = load i32* %x_cur_insn_uid, align 4, !dbg !3668, !tbaa !2263
+  %inc = add nsw i32 %3, 1, !dbg !3668
+  store i32 %inc, i32* %x_cur_insn_uid, align 4, !dbg !3668, !tbaa !2263
+  store i32 %3, i32* %rtint, align 4, !dbg !3668, !tbaa !2263
+  tail call void @add_insn_before(%struct.rtx_def* %label, %struct.rtx_def* %before) #10, !dbg !3670
+  br label %if.end, !dbg !3671
 
 if.end:                                           ; preds = %if.then, %entry
-  ret %struct.rtx_def* %label
+  ret %struct.rtx_def* %label, !dbg !3672
 }

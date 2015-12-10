@@ -1,44 +1,45 @@
-define i32 @CCTKi_ParameterAddRange(i8* %implementation, i8* %name, i8* %range_origin, i8* nocapture readonly %range, i8* nocapture readonly %range_description) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %implementation, i64 0, metadata !110, metadata !369), !dbg !975
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !111, metadata !369), !dbg !976
-  tail call void @llvm.dbg.value(metadata i8* %range_origin, i64 0, metadata !112, metadata !369), !dbg !977
-  tail call void @llvm.dbg.value(metadata i8* %range, i64 0, metadata !113, metadata !369), !dbg !978
-  tail call void @llvm.dbg.value(metadata i8* %range_description, i64 0, metadata !114, metadata !369), !dbg !979
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !115, metadata !369), !dbg !980
-  %1 = tail call %struct.T_SKTREE* @CCTK_ImpThornList(i8* %implementation) #8, !dbg !981
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %1, i64 0, metadata !117, metadata !369), !dbg !982
-  %2 = icmp eq %struct.T_SKTREE* %1, null, !dbg !983
-  br i1 %2, label %.loopexit, label %3, !dbg !985
+define i32 @CCTKi_ParameterAddRange(i8* %implementation, i8* %name, i8* %range_origin, i8* nocapture %range, i8* nocapture %range_description) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %implementation}, i64 0, metadata !82), !dbg !691
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !83), !dbg !692
+  tail call void @llvm.dbg.value(metadata !{i8* %range_origin}, i64 0, metadata !84), !dbg !693
+  tail call void @llvm.dbg.value(metadata !{i8* %range}, i64 0, metadata !85), !dbg !694
+  tail call void @llvm.dbg.value(metadata !{i8* %range_description}, i64 0, metadata !86), !dbg !695
+  tail call void @llvm.dbg.value(metadata !451, i64 0, metadata !87), !dbg !696
+  %call = tail call %struct.T_SKTREE* @CCTK_ImpThornList(i8* %implementation) #8, !dbg !697
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call}, i64 0, metadata !89), !dbg !697
+  %tobool = icmp eq %struct.T_SKTREE* %call, null, !dbg !698
+  br i1 %tobool, label %if.end8, label %if.then, !dbg !698
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %1) #8, !dbg !986
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %4, i64 0, metadata !130, metadata !369), !dbg !989
-  %5 = icmp eq %struct.T_SKTREE* %4, null, !dbg !990
-  br i1 %5, label %.loopexit, label %.lr.ph, !dbg !990
+if.then:                                          ; preds = %entry
+  %call2 = tail call %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %call) #8, !dbg !699
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call2}, i64 0, metadata !102), !dbg !699
+  %tobool313 = icmp eq %struct.T_SKTREE* %call2, null, !dbg !699
+  br i1 %tobool313, label %if.end8, label %for.body, !dbg !699
 
-.lr.ph:                                           ; preds = %3, %12
-  %node.01 = phi %struct.T_SKTREE* [ %14, %12 ], [ %4, %3 ]
-  %6 = getelementptr inbounds %struct.T_SKTREE* %node.01, i64 0, i32 4, !dbg !991
-  %7 = load i8** %6, align 8, !dbg !991, !tbaa !994
-  %8 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %7, i32 2) #7, !dbg !995
-  tail call void @llvm.dbg.value(metadata %struct.PARAM* %8, i64 0, metadata !116, metadata !369), !dbg !996
-  %9 = icmp eq %struct.PARAM* %8, null, !dbg !997
-  br i1 %9, label %12, label %10, !dbg !999
+for.body:                                         ; preds = %if.then, %for.inc
+  %node.014 = phi %struct.T_SKTREE* [ %1, %for.inc ], [ %call2, %if.then ]
+  %key = getelementptr inbounds %struct.T_SKTREE* %node.014, i64 0, i32 4, !dbg !702
+  %0 = load i8** %key, align 8, !dbg !702, !tbaa !386
+  %call4 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %0, i32 2) #7, !dbg !702
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM* %call4}, i64 0, metadata !88), !dbg !702
+  %tobool5 = icmp eq %struct.PARAM* %call4, null, !dbg !704
+  br i1 %tobool5, label %for.inc, label %if.then6, !dbg !704
 
-; <label>:10                                      ; preds = %.lr.ph
-  %11 = tail call fastcc i32 @ParameterExtend(%struct.PARAM* %8, i8* %range_origin, i8* %range, i8* %range_description) #7, !dbg !1000
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !115, metadata !369), !dbg !980
-  br label %12, !dbg !1002
+if.then6:                                         ; preds = %for.body
+  %call7 = tail call fastcc i32 @ParameterExtend(%struct.PARAM* %call4, i8* %range_origin, i8* %range, i8* %range_description) #7, !dbg !705
+  tail call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !87), !dbg !705
+  br label %for.inc, !dbg !707
 
-; <label>:12                                      ; preds = %.lr.ph, %10
-  %retval.1 = phi i32 [ %11, %10 ], [ -1, %.lr.ph ]
-  %13 = getelementptr inbounds %struct.T_SKTREE* %node.01, i64 0, i32 2, !dbg !1003
-  %14 = load %struct.T_SKTREE** %13, align 8, !dbg !1003, !tbaa !1004
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %14, i64 0, metadata !130, metadata !369), !dbg !989
-  %15 = icmp eq %struct.T_SKTREE* %14, null, !dbg !990
-  br i1 %15, label %.loopexit, label %.lr.ph, !dbg !990
+for.inc:                                          ; preds = %for.body, %if.then6
+  %retval1.1 = phi i32 [ %call7, %if.then6 ], [ -1, %for.body ]
+  %next = getelementptr inbounds %struct.T_SKTREE* %node.014, i64 0, i32 2, !dbg !699
+  %1 = load %struct.T_SKTREE** %next, align 8, !dbg !699, !tbaa !386
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %1}, i64 0, metadata !102), !dbg !699
+  %tobool3 = icmp eq %struct.T_SKTREE* %1, null, !dbg !699
+  br i1 %tobool3, label %if.end8, label %for.body, !dbg !699
 
-.loopexit:                                        ; preds = %12, %3, %0
-  %retval.2 = phi i32 [ -1, %0 ], [ -1, %3 ], [ %retval.1, %12 ]
-  ret i32 %retval.2, !dbg !1005
+if.end8:                                          ; preds = %if.then, %for.inc, %entry
+  %retval1.2 = phi i32 [ -1, %entry ], [ -1, %if.then ], [ %retval1.1, %for.inc ]
+  ret i32 %retval1.2, !dbg !708
 }

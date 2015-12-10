@@ -1,29 +1,30 @@
-define void @_ZN6soplex9SLUFactor10solve2leftERNS_6VectorES2_(%"class.soplex::SLUFactor"* %this, %"class.soplex::Vector"* nocapture readonly dereferenceable(16) %x, %"class.soplex::Vector"* nocapture readonly dereferenceable(16) %b) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SLUFactor"* %this, i64 0, metadata !2597, metadata !3893), !dbg !4383
-  tail call void @llvm.dbg.value(metadata %"class.soplex::Vector"* %x, i64 0, metadata !2598, metadata !3893), !dbg !4384
-  tail call void @llvm.dbg.value(metadata %"class.soplex::Vector"* %b, i64 0, metadata !2599, metadata !3893), !dbg !4385
-  tail call void @llvm.dbg.value(metadata %"class.soplex::Vector"* %x, i64 0, metadata !2756, metadata !3893) #7, !dbg !4386
-  %1 = getelementptr inbounds %"class.soplex::Vector"* %x, i64 0, i32 0, !dbg !4388
-  %2 = load i32* %1, align 4, !dbg !4388, !tbaa !4040
-  %3 = icmp eq i32 %2, 0, !dbg !4388
-  %.pre = getelementptr inbounds %"class.soplex::Vector"* %x, i64 0, i32 1, !dbg !4389
-  br i1 %3, label %_ZN6soplex6Vector5clearEv.exit, label %4, !dbg !4391
+define void @_ZN6soplex9SLUFactor10solve2leftERNS_6VectorES2_(%"class.soplex::SLUFactor"* %this, %"class.soplex::Vector"* nocapture %x, %"class.soplex::Vector"* nocapture %b) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SLUFactor"* %this}, i64 0, metadata !2543), !dbg !4409
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %x}, i64 0, metadata !2544), !dbg !4409
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %b}, i64 0, metadata !2545), !dbg !4409
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %x}, i64 0, metadata !4410) #1, !dbg !4412
+  %dimen.i = getelementptr inbounds %"class.soplex::Vector"* %x, i64 0, i32 0, !dbg !4413
+  %0 = load i32* %dimen.i, align 4, !dbg !4413, !tbaa !3996
+  %tobool.i = icmp eq i32 %0, 0, !dbg !4413
+  %val.i5.pre = getelementptr inbounds %"class.soplex::Vector"* %x, i64 0, i32 1, !dbg !4414
+  br i1 %tobool.i, label %_ZN6soplex6Vector5clearEv.exit, label %if.then.i, !dbg !4413
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast double** %.pre to i8**, !dbg !4392
-  %6 = load i8** %5, align 8, !dbg !4392, !tbaa !3901
-  %7 = sext i32 %2 to i64, !dbg !4393
-  %8 = shl nsw i64 %7, 3, !dbg !4394
-  tail call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 %8, i32 8, i1 false) #7, !dbg !4395
-  br label %_ZN6soplex6Vector5clearEv.exit, !dbg !4395
+if.then.i:                                        ; preds = %entry
+  %1 = load double** %val.i5.pre, align 8, !dbg !4416, !tbaa !3963
+  %2 = bitcast double* %1 to i8*, !dbg !4416
+  %conv.i = sext i32 %0 to i64, !dbg !4416
+  %mul.i = shl nsw i64 %conv.i, 3, !dbg !4416
+  tail call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 %mul.i, i32 8, i1 false) #1, !dbg !4416
+  br label %_ZN6soplex6Vector5clearEv.exit, !dbg !4416
 
-_ZN6soplex6Vector5clearEv.exit:                   ; preds = %0, %4
-  %9 = getelementptr inbounds %"class.soplex::SLUFactor"* %this, i64 0, i32 1, !dbg !4396
-  tail call void @llvm.dbg.value(metadata %"class.soplex::Vector"* %x, i64 0, metadata !2716, metadata !3893), !dbg !4397
-  %10 = load double** %.pre, align 8, !dbg !4389, !tbaa !3901
-  tail call void @llvm.dbg.value(metadata %"class.soplex::Vector"* %b, i64 0, metadata !2716, metadata !3893), !dbg !4398
-  %11 = getelementptr inbounds %"class.soplex::Vector"* %b, i64 0, i32 1, !dbg !4400
-  %12 = load double** %11, align 8, !dbg !4400, !tbaa !3901
-  tail call void @_ZN6soplex9CLUFactor9solveLeftEPdS1_(%"class.soplex::CLUFactor"* %9, double* %10, double* %12) #11, !dbg !4401
-  ret void, !dbg !4402
+_ZN6soplex6Vector5clearEv.exit:                   ; preds = %entry, %if.then.i
+  %add.ptr = getelementptr inbounds %"class.soplex::SLUFactor"* %this, i64 0, i32 1, !dbg !4415
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %x}, i64 0, metadata !4417), !dbg !4418
+  %3 = load double** %val.i5.pre, align 8, !dbg !4414, !tbaa !3963
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %b}, i64 0, metadata !4417), !dbg !4418
+  %val.i4 = getelementptr inbounds %"class.soplex::Vector"* %b, i64 0, i32 1, !dbg !4414
+  %4 = load double** %val.i4, align 8, !dbg !4414, !tbaa !3963
+  tail call void @_ZN6soplex9CLUFactor9solveLeftEPdS1_(%"class.soplex::CLUFactor"* %add.ptr, double* %3, double* %4) #12, !dbg !4415
+  ret void, !dbg !4419
 }

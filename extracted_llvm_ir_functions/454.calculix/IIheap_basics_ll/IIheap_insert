@@ -1,65 +1,66 @@
 define void @IIheap_insert(%struct._IIheap* %heap, i32 %key, i32 %value) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._IIheap* %heap, i64 0, metadata !55, metadata !170), !dbg !294
-  tail call void @llvm.dbg.value(metadata i32 %key, i64 0, metadata !56, metadata !170), !dbg !295
-  tail call void @llvm.dbg.value(metadata i32 %value, i64 0, metadata !57, metadata !170), !dbg !296
-  %1 = icmp eq %struct._IIheap* %heap, null, !dbg !297
-  %2 = icmp slt i32 %key, 0, !dbg !299
-  %or.cond = or i1 %1, %2, !dbg !300
-  br i1 %or.cond, label %7, label %3, !dbg !300
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IIheap* %heap}, i64 0, metadata !50), !dbg !227
+  tail call void @llvm.dbg.value(metadata !{i32 %key}, i64 0, metadata !51), !dbg !228
+  tail call void @llvm.dbg.value(metadata !{i32 %value}, i64 0, metadata !52), !dbg !229
+  %cmp = icmp eq %struct._IIheap* %heap, null, !dbg !230
+  %cmp1 = icmp slt i32 %key, 0, !dbg !230
+  %or.cond = or i1 %cmp, %cmp1, !dbg !230
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !230
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 1, !dbg !301
-  %5 = load i32* %4, align 4, !dbg !301, !tbaa !253
-  %6 = icmp sgt i32 %5, %key, !dbg !302
-  br i1 %6, label %10, label %7, !dbg !303
+lor.lhs.false2:                                   ; preds = %entry
+  %maxsize = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 1, !dbg !230
+  %0 = load i32* %maxsize, align 4, !dbg !230, !tbaa !207
+  %cmp3 = icmp sgt i32 %0, %key, !dbg !230
+  br i1 %cmp3, label %if.end, label %if.then, !dbg !230
 
-; <label>:7                                       ; preds = %3, %0
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !304, !tbaa !175
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([83 x i8]* @.str7, i64 0, i64 0), %struct._IIheap* %heap, i32 %key, i32 %value, i32 %key, i32 %value) #7, !dbg !306
-  tail call void @exit(i32 -1) #8, !dbg !307
-  unreachable, !dbg !307
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !231, !tbaa !158
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([83 x i8]* @.str7, i64 0, i64 0), %struct._IIheap* %heap, i32 %key, i32 %value, i32 %key, i32 %value) #7, !dbg !231
+  tail call void @exit(i32 -1) #8, !dbg !233
+  unreachable, !dbg !233
 
-; <label>:10                                      ; preds = %3
-  %11 = sext i32 %key to i64, !dbg !308
-  %12 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 2, !dbg !310
-  %13 = load i32** %12, align 8, !dbg !310, !tbaa !201
-  %14 = getelementptr inbounds i32* %13, i64 %11, !dbg !308
-  %15 = load i32* %14, align 4, !dbg !308, !tbaa !284
-  %16 = icmp eq i32 %15, -1, !dbg !311
-  br i1 %16, label %20, label %17, !dbg !312
+if.end:                                           ; preds = %lor.lhs.false2
+  %idxprom = sext i32 %key to i64, !dbg !234
+  %heapLoc = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 2, !dbg !234
+  %2 = load i32** %heapLoc, align 8, !dbg !234, !tbaa !158
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !234
+  %3 = load i32* %arrayidx, align 4, !dbg !234, !tbaa !207
+  %cmp4 = icmp eq i32 %3, -1, !dbg !234
+  br i1 %cmp4, label %if.end7, label %if.then5, !dbg !234
 
-; <label>:17                                      ; preds = %10
-  %18 = load %struct.__sFILE** @__stderrp, align 8, !dbg !313, !tbaa !175
-  %19 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %18, i8* getelementptr inbounds ([71 x i8]* @.str8, i64 0, i64 0), %struct._IIheap* %heap, i32 %key, i32 %value, i32 %key, i32 %value) #7, !dbg !315
-  tail call void @exit(i32 -1) #8, !dbg !316
-  unreachable, !dbg !316
+if.then5:                                         ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !235, !tbaa !158
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([71 x i8]* @.str8, i64 0, i64 0), %struct._IIheap* %heap, i32 %key, i32 %value, i32 %key, i32 %value) #7, !dbg !235
+  tail call void @exit(i32 -1) #8, !dbg !237
+  unreachable, !dbg !237
 
-; <label>:20                                      ; preds = %10
-  %21 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 0, !dbg !317
-  %22 = load i32* %21, align 4, !dbg !317, !tbaa !278
-  %23 = icmp eq i32 %22, %5, !dbg !319
-  br i1 %23, label %24, label %27, !dbg !320
+if.end7:                                          ; preds = %if.end
+  %size = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 0, !dbg !238
+  %5 = load i32* %size, align 4, !dbg !238, !tbaa !207
+  %cmp9 = icmp eq i32 %5, %0, !dbg !238
+  br i1 %cmp9, label %if.then10, label %if.end12, !dbg !238
 
-; <label>:24                                      ; preds = %20
-  %25 = load %struct.__sFILE** @__stderrp, align 8, !dbg !321, !tbaa !175
-  %26 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %25, i8* getelementptr inbounds ([56 x i8]* @.str9, i64 0, i64 0), %struct._IIheap* %heap, i32 %key, i32 %value) #7, !dbg !323
-  tail call void @exit(i32 -1) #8, !dbg !324
-  unreachable, !dbg !324
+if.then10:                                        ; preds = %if.end7
+  %6 = load %struct._IO_FILE** @stderr, align 8, !dbg !239, !tbaa !158
+  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([56 x i8]* @.str9, i64 0, i64 0), %struct._IIheap* %heap, i32 %key, i32 %value) #7, !dbg !239
+  tail call void @exit(i32 -1) #8, !dbg !241
+  unreachable, !dbg !241
 
-; <label>:27                                      ; preds = %20
-  %28 = add nsw i32 %22, 1, !dbg !325
-  store i32 %28, i32* %21, align 4, !dbg !325, !tbaa !278
-  tail call void @llvm.dbg.value(metadata i32 %22, i64 0, metadata !58, metadata !170), !dbg !326
-  store i32 %22, i32* %14, align 4, !dbg !327, !tbaa !284
-  %29 = sext i32 %22 to i64, !dbg !328
-  %30 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 3, !dbg !329
-  %31 = load i32** %30, align 8, !dbg !329, !tbaa !211
-  %32 = getelementptr inbounds i32* %31, i64 %29, !dbg !328
-  store i32 %key, i32* %32, align 4, !dbg !330, !tbaa !284
-  %33 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 4, !dbg !331
-  %34 = load i32** %33, align 8, !dbg !331, !tbaa !219
-  %35 = getelementptr inbounds i32* %34, i64 %29, !dbg !332
-  store i32 %value, i32* %35, align 4, !dbg !333, !tbaa !284
-  tail call fastcc void @IIheap_siftUp(%struct._IIheap* %heap, i32 %22) #9, !dbg !334
-  ret void, !dbg !335
+if.end12:                                         ; preds = %if.end7
+  %inc = add nsw i32 %5, 1, !dbg !242
+  store i32 %inc, i32* %size, align 4, !dbg !242, !tbaa !207
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !53), !dbg !242
+  store i32 %5, i32* %arrayidx, align 4, !dbg !242, !tbaa !207
+  %idxprom17 = sext i32 %5 to i64, !dbg !243
+  %keys = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 3, !dbg !243
+  %7 = load i32** %keys, align 8, !dbg !243, !tbaa !158
+  %arrayidx18 = getelementptr inbounds i32* %7, i64 %idxprom17, !dbg !243
+  store i32 %key, i32* %arrayidx18, align 4, !dbg !243, !tbaa !207
+  %values = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 4, !dbg !244
+  %8 = load i32** %values, align 8, !dbg !244, !tbaa !158
+  %arrayidx20 = getelementptr inbounds i32* %8, i64 %idxprom17, !dbg !244
+  store i32 %value, i32* %arrayidx20, align 4, !dbg !244, !tbaa !207
+  tail call fastcc void @IIheap_siftUp(%struct._IIheap* %heap, i32 %5) #9, !dbg !245
+  ret void, !dbg !246
 }

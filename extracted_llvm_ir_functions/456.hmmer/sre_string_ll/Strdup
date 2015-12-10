@@ -1,22 +1,22 @@
 define i8* @Strdup(i8* %s) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !13, metadata !225), !dbg !226
-  %1 = icmp eq i8* %s, null, !dbg !227
-  br i1 %1, label %10, label %2, !dbg !229
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !27), !dbg !211
+  %cmp = icmp eq i8* %s, null, !dbg !212
+  br i1 %cmp, label %return, label %if.end, !dbg !212
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i64 @strlen(i8* %s) #5, !dbg !230
-  %4 = add i64 %3, 1, !dbg !232
-  %5 = tail call i8* @malloc(i64 %4) #5, !dbg !233
-  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !14, metadata !225), !dbg !234
-  %6 = icmp eq i8* %5, null, !dbg !235
-  br i1 %6, label %10, label %7, !dbg !236
+if.end:                                           ; preds = %entry
+  %call = tail call i64 @strlen(i8* %s) #8, !dbg !213
+  %add = add i64 %call, 1, !dbg !213
+  %call1 = tail call noalias i8* @malloc(i64 %add) #9, !dbg !213
+  tail call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !28), !dbg !213
+  %cmp2 = icmp eq i8* %call1, null, !dbg !213
+  br i1 %cmp2, label %return, label %if.end4, !dbg !213
 
-; <label>:7                                       ; preds = %2
-  %8 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %5, i1 false), !dbg !237
-  %9 = tail call i8* @__strcpy_chk(i8* %5, i8* %s, i64 %8) #5, !dbg !237
-  br label %10, !dbg !238
+if.end4:                                          ; preds = %if.end
+  %call5 = tail call i8* @strcpy(i8* %call1, i8* %s) #9, !dbg !214
+  br label %return, !dbg !215
 
-; <label>:10                                      ; preds = %2, %0, %7
-  %.0 = phi i8* [ %5, %7 ], [ null, %0 ], [ null, %2 ]
-  ret i8* %.0, !dbg !239
+return:                                           ; preds = %if.end, %entry, %if.end4
+  %retval.0 = phi i8* [ %call1, %if.end4 ], [ null, %entry ], [ null, %if.end ]
+  ret i8* %retval.0, !dbg !216
 }

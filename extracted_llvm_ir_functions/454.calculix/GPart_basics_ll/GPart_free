@@ -1,18 +1,19 @@
 define void @GPart_free(%struct._GPart* %gpart) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._GPart* %gpart, i64 0, metadata !149, metadata !158), !dbg !216
-  %1 = icmp eq %struct._GPart* %gpart, null, !dbg !217
-  br i1 %1, label %2, label %5, !dbg !219
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._GPart* %gpart}, i64 0, metadata !143), !dbg !179
+  %cmp = icmp eq %struct._GPart* %gpart, null, !dbg !180
+  br i1 %cmp, label %if.then, label %if.end, !dbg !180
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !220, !tbaa !163
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str4, i64 0, i64 0), %struct._GPart* null) #6, !dbg !222
-  tail call void @exit(i32 -1) #7, !dbg !223
-  unreachable, !dbg !223
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !181, !tbaa !148
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str4, i64 0, i64 0), %struct._GPart* null) #6, !dbg !181
+  tail call void @exit(i32 -1) #7, !dbg !183
+  unreachable, !dbg !183
 
-; <label>:5                                       ; preds = %0
-  tail call void @GPart_clearData(%struct._GPart* %gpart) #8, !dbg !224
-  %6 = bitcast %struct._GPart* %gpart to i8*, !dbg !225
-  tail call void @free(i8* %6) #8, !dbg !225
-  tail call void @llvm.dbg.value(metadata %struct._GPart* null, i64 0, metadata !149, metadata !158), !dbg !216
-  ret void, !dbg !228
+if.end:                                           ; preds = %entry
+  tail call void @GPart_clearData(%struct._GPart* %gpart) #8, !dbg !184
+  %1 = bitcast %struct._GPart* %gpart to i8*, !dbg !185
+  tail call void @free(i8* %1) #6, !dbg !185
+  tail call void @llvm.dbg.value(metadata !187, i64 0, metadata !143), !dbg !185
+  ret void, !dbg !188
 }

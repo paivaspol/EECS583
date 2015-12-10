@@ -1,55 +1,57 @@
 define void @unsigned_conversion_warning(%union.tree_node* nocapture %result, %union.tree_node* %operand) #0 {
 entry:
-  %code = getelementptr inbounds %union.tree_node* %operand, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 25
-  br i1 %cmp, label %land.lhs.true, label %if.end28
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %result}, i64 0, metadata !1590), !dbg !2506
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %operand}, i64 0, metadata !1591), !dbg !2506
+  %code = getelementptr inbounds %union.tree_node* %operand, i64 0, i32 0, i32 0, i32 2, !dbg !2507
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !2507
+  %bf.load = load i32* %0, align 8, !dbg !2507
+  %bf.clear = and i32 %bf.load, 255, !dbg !2507
+  %cmp = icmp eq i32 %bf.clear, 25, !dbg !2507
+  br i1 %cmp, label %land.lhs.true, label %if.end28, !dbg !2507
 
 land.lhs.true:                                    ; preds = %entry
-  %type = getelementptr inbounds %union.tree_node* %result, i64 0, i32 0, i32 0, i32 1
-  %1 = load %union.tree_node** %type, align 8, !tbaa !3
-  %code3 = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2
-  %2 = bitcast [4 x i8]* %code3 to i32*
-  %bf.load4 = load i32* %2, align 8
-  %bf.clear5 = and i32 %bf.load4, 255
-  %cmp6 = icmp eq i32 %bf.clear5, 6
-  br i1 %cmp6, label %land.lhs.true7, label %if.end28
+  %type = getelementptr inbounds %union.tree_node* %result, i64 0, i32 0, i32 0, i32 1, !dbg !2507
+  %1 = load %union.tree_node** %type, align 8, !dbg !2507, !tbaa !2305
+  %code3 = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2, !dbg !2507
+  %2 = bitcast [4 x i8]* %code3 to i32*, !dbg !2507
+  %bf.load4 = load i32* %2, align 8, !dbg !2507
+  %bf.clear5 = and i32 %bf.load4, 255, !dbg !2507
+  %cmp6 = icmp eq i32 %bf.clear5, 6, !dbg !2507
+  br i1 %cmp6, label %land.lhs.true7, label %if.end28, !dbg !2507
 
 land.lhs.true7:                                   ; preds = %land.lhs.true
-  %bf.clear12 = and i32 %bf.load4, 8192
-  %tobool = icmp ne i32 %bf.clear12, 0
-  %3 = load i32* @skip_evaluation, align 4, !tbaa !0
-  %cmp14 = icmp eq i32 %3, 0
-  %or.cond = and i1 %tobool, %cmp14
-  br i1 %or.cond, label %land.lhs.true15, label %if.end28
+  %bf.clear12 = and i32 %bf.load4, 8192, !dbg !2507
+  %tobool = icmp ne i32 %bf.clear12, 0, !dbg !2507
+  %3 = load i32* @skip_evaluation, align 4, !dbg !2507, !tbaa !2299
+  %cmp14 = icmp eq i32 %3, 0, !dbg !2507
+  %or.cond = and i1 %tobool, %cmp14, !dbg !2507
+  br i1 %or.cond, label %land.lhs.true15, label %if.end28, !dbg !2507
 
 land.lhs.true15:                                  ; preds = %land.lhs.true7
-  %call = tail call i32 @int_fits_type_p(%union.tree_node* %operand, %union.tree_node* %1) #8
-  %tobool18 = icmp eq i32 %call, 0
-  br i1 %tobool18, label %if.then, label %if.end28
+  %call = tail call i32 @int_fits_type_p(%union.tree_node* %operand, %union.tree_node* %1) #9, !dbg !2508
+  %tobool18 = icmp eq i32 %call, 0, !dbg !2508
+  br i1 %tobool18, label %if.then, label %if.end28, !dbg !2508
 
 if.then:                                          ; preds = %land.lhs.true15
-  %4 = load %union.tree_node** %type, align 8, !tbaa !3
-  %call21 = tail call %union.tree_node* @signed_type(%union.tree_node* %4) #9
-  %call22 = tail call i32 @int_fits_type_p(%union.tree_node* %operand, %union.tree_node* %call21) #8
-  %tobool23 = icmp eq i32 %call22, 0
-  br i1 %tobool23, label %if.then24, label %if.else
+  %4 = load %union.tree_node** %type, align 8, !dbg !2509, !tbaa !2305
+  %call21 = tail call %union.tree_node* @signed_type(%union.tree_node* %4) #10, !dbg !2509
+  %call22 = tail call i32 @int_fits_type_p(%union.tree_node* %operand, %union.tree_node* %call21) #9, !dbg !2509
+  %tobool23 = icmp eq i32 %call22, 0, !dbg !2509
+  br i1 %tobool23, label %if.then24, label %if.else, !dbg !2509
 
 if.then24:                                        ; preds = %if.then
-  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([52 x i8]* @.str10, i64 0, i64 0)) #8
-  br label %if.end28
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([52 x i8]* @.str10, i64 0, i64 0)) #9, !dbg !2511
+  br label %if.end28, !dbg !2511
 
 if.else:                                          ; preds = %if.then
-  %5 = load i32* @warn_conversion, align 4, !tbaa !0
-  %tobool25 = icmp eq i32 %5, 0
-  br i1 %tobool25, label %if.end28, label %if.then26
+  %5 = load i32* @warn_conversion, align 4, !dbg !2512, !tbaa !2299
+  %tobool25 = icmp eq i32 %5, 0, !dbg !2512
+  br i1 %tobool25, label %if.end28, label %if.then26, !dbg !2512
 
 if.then26:                                        ; preds = %if.else
-  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([55 x i8]* @.str11, i64 0, i64 0)) #8
-  br label %if.end28
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([55 x i8]* @.str11, i64 0, i64 0)) #9, !dbg !2513
+  br label %if.end28, !dbg !2513
 
 if.end28:                                         ; preds = %if.else, %land.lhs.true15, %if.then24, %if.then26, %land.lhs.true7, %land.lhs.true, %entry
-  ret void
+  ret void, !dbg !2514
 }

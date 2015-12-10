@@ -1,51 +1,78 @@
-define internal fastcc void @calc_k(float* nocapture readonly %lll, i32 %ix, i32 %iy, i32 %iz, i32 %nx, i32 %ny, i32 %nz, float* nocapture %k) #4 {
-  tail call void @llvm.dbg.value(metadata float* %lll, i64 0, metadata !338, metadata !367), !dbg !648
-  tail call void @llvm.dbg.value(metadata i32 %ix, i64 0, metadata !339, metadata !367), !dbg !649
-  tail call void @llvm.dbg.value(metadata i32 %iy, i64 0, metadata !340, metadata !367), !dbg !650
-  tail call void @llvm.dbg.value(metadata i32 %iz, i64 0, metadata !341, metadata !367), !dbg !651
-  tail call void @llvm.dbg.value(metadata i32 %nx, i64 0, metadata !342, metadata !367), !dbg !652
-  tail call void @llvm.dbg.value(metadata i32 %ny, i64 0, metadata !343, metadata !367), !dbg !653
-  tail call void @llvm.dbg.value(metadata i32 %nz, i64 0, metadata !344, metadata !367), !dbg !654
-  tail call void @llvm.dbg.value(metadata float* %k, i64 0, metadata !345, metadata !367), !dbg !655
-  %1 = sdiv i32 %nx, 2, !dbg !656
-  %2 = icmp slt i32 %1, %ix, !dbg !656
-  br i1 %2, label %7, label %3, !dbg !656
+define internal fastcc void @calc_k(float* nocapture %lll, i32 %ix, i32 %iy, i32 %iz, i32 %nx, i32 %ny, i32 %nz, float* nocapture %k) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %lll}, i64 0, metadata !225), !dbg !305
+  tail call void @llvm.dbg.value(metadata !{i32 %ix}, i64 0, metadata !226), !dbg !305
+  tail call void @llvm.dbg.value(metadata !{i32 %iy}, i64 0, metadata !227), !dbg !305
+  tail call void @llvm.dbg.value(metadata !{i32 %iz}, i64 0, metadata !228), !dbg !305
+  tail call void @llvm.dbg.value(metadata !{i32 %nx}, i64 0, metadata !229), !dbg !305
+  tail call void @llvm.dbg.value(metadata !{i32 %ny}, i64 0, metadata !230), !dbg !305
+  tail call void @llvm.dbg.value(metadata !{i32 %nz}, i64 0, metadata !231), !dbg !305
+  tail call void @llvm.dbg.value(metadata !{float* %k}, i64 0, metadata !232), !dbg !305
+  %div = sdiv i32 %nx, 2, !dbg !306
+  %cmp = icmp slt i32 %div, %ix, !dbg !306
+  br i1 %cmp, label %cond.false, label %cond.true, !dbg !306
 
-; <label>:3                                       ; preds = %0
-  %4 = sitofp i32 %ix to float, !dbg !656
-  %5 = load float* %lll, align 4, !dbg !656, !tbaa !463
-  %6 = fmul float %4, %5, !dbg !656
-  br label %12, !dbg !656
+cond.true:                                        ; preds = %entry
+  %conv = sitofp i32 %ix to float, !dbg !306
+  %0 = load float* %lll, align 4, !dbg !306, !tbaa !259
+  %mul = fmul float %conv, %0, !dbg !306
+  br label %cond.end, !dbg !306
 
-; <label>:7                                       ; preds = %0
-  %8 = sub nsw i32 %ix, %nx, !dbg !656
-  %9 = sitofp i32 %8 to float, !dbg !656
-  %10 = load float* %lll, align 4, !dbg !656, !tbaa !463
-  %11 = fmul float %9, %10, !dbg !656
-  br label %12, !dbg !656
+cond.false:                                       ; preds = %entry
+  %sub = sub nsw i32 %ix, %nx, !dbg !306
+  %conv1 = sitofp i32 %sub to float, !dbg !306
+  %1 = load float* %lll, align 4, !dbg !306, !tbaa !259
+  %mul3 = fmul float %conv1, %1, !dbg !306
+  br label %cond.end, !dbg !306
 
-; <label>:12                                      ; preds = %7, %3
-  %13 = phi float [ %6, %3 ], [ %11, %7 ], !dbg !656
-  store float %13, float* %k, align 4, !dbg !657, !tbaa !463
-  %14 = sdiv i32 %ny, 2, !dbg !658
-  %15 = icmp slt i32 %14, %iy, !dbg !658
-  %16 = getelementptr inbounds float* %lll, i64 1
-  %17 = load float* %16, align 4
-  %18 = select i1 %15, i32 %ny, i32 0, !dbg !658
-  %.iy = sub nsw i32 %iy, %18, !dbg !658
-  %.pn = sitofp i32 %.iy to float, !dbg !658
-  %19 = fmul float %.pn, %17, !dbg !658
-  %20 = getelementptr inbounds float* %k, i64 1, !dbg !659
-  store float %19, float* %20, align 4, !dbg !660, !tbaa !463
-  %21 = sdiv i32 %nz, 2, !dbg !661
-  %22 = icmp slt i32 %21, %iz, !dbg !661
-  %23 = getelementptr inbounds float* %lll, i64 2
-  %24 = load float* %23, align 4
-  %25 = select i1 %22, i32 %nz, i32 0, !dbg !661
-  %.pn1.in = sub nsw i32 %iz, %25, !dbg !661
-  %.pn1 = sitofp i32 %.pn1.in to float, !dbg !661
-  %26 = fmul float %.pn1, %24, !dbg !661
-  %27 = getelementptr inbounds float* %k, i64 2, !dbg !662
-  store float %26, float* %27, align 4, !dbg !663, !tbaa !463
-  ret void, !dbg !664
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi float [ %mul, %cond.true ], [ %mul3, %cond.false ], !dbg !306
+  store float %cond, float* %k, align 4, !dbg !306, !tbaa !259
+  %div5 = sdiv i32 %ny, 2, !dbg !308
+  %cmp6 = icmp slt i32 %div5, %iy, !dbg !308
+  br i1 %cmp6, label %cond.false12, label %cond.true8, !dbg !308
+
+cond.true8:                                       ; preds = %cond.end
+  %conv9 = sitofp i32 %iy to float, !dbg !308
+  %arrayidx10 = getelementptr inbounds float* %lll, i64 1, !dbg !308
+  %2 = load float* %arrayidx10, align 4, !dbg !308, !tbaa !259
+  %mul11 = fmul float %conv9, %2, !dbg !308
+  br label %cond.end17, !dbg !308
+
+cond.false12:                                     ; preds = %cond.end
+  %sub13 = sub nsw i32 %iy, %ny, !dbg !308
+  %conv14 = sitofp i32 %sub13 to float, !dbg !308
+  %arrayidx15 = getelementptr inbounds float* %lll, i64 1, !dbg !308
+  %3 = load float* %arrayidx15, align 4, !dbg !308, !tbaa !259
+  %mul16 = fmul float %conv14, %3, !dbg !308
+  br label %cond.end17, !dbg !308
+
+cond.end17:                                       ; preds = %cond.false12, %cond.true8
+  %cond18 = phi float [ %mul11, %cond.true8 ], [ %mul16, %cond.false12 ], !dbg !308
+  %arrayidx19 = getelementptr inbounds float* %k, i64 1, !dbg !308
+  store float %cond18, float* %arrayidx19, align 4, !dbg !308, !tbaa !259
+  %div20 = sdiv i32 %nz, 2, !dbg !309
+  %cmp21 = icmp slt i32 %div20, %iz, !dbg !309
+  br i1 %cmp21, label %cond.false27, label %cond.true23, !dbg !309
+
+cond.true23:                                      ; preds = %cond.end17
+  %conv24 = sitofp i32 %iz to float, !dbg !309
+  %arrayidx25 = getelementptr inbounds float* %lll, i64 2, !dbg !309
+  %4 = load float* %arrayidx25, align 4, !dbg !309, !tbaa !259
+  %mul26 = fmul float %conv24, %4, !dbg !309
+  br label %cond.end32, !dbg !309
+
+cond.false27:                                     ; preds = %cond.end17
+  %sub28 = sub nsw i32 %iz, %nz, !dbg !309
+  %conv29 = sitofp i32 %sub28 to float, !dbg !309
+  %arrayidx30 = getelementptr inbounds float* %lll, i64 2, !dbg !309
+  %5 = load float* %arrayidx30, align 4, !dbg !309, !tbaa !259
+  %mul31 = fmul float %conv29, %5, !dbg !309
+  br label %cond.end32, !dbg !309
+
+cond.end32:                                       ; preds = %cond.false27, %cond.true23
+  %cond33 = phi float [ %mul26, %cond.true23 ], [ %mul31, %cond.false27 ], !dbg !309
+  %arrayidx34 = getelementptr inbounds float* %k, i64 2, !dbg !309
+  store float %cond33, float* %arrayidx34, align 4, !dbg !309, !tbaa !259
+  ret void, !dbg !310
 }

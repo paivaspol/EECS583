@@ -1,78 +1,79 @@
 define void @write_unpaired_field(%struct.frame_store* %fs, i32 %p_out) #2 {
-  tail call void @llvm.dbg.value(metadata %struct.frame_store* %fs, i64 0, metadata !188, metadata !724), !dbg !995
-  tail call void @llvm.dbg.value(metadata i32 %p_out, i64 0, metadata !189, metadata !724), !dbg !996
-  %1 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 0, !dbg !997
-  %2 = load i32* %1, align 4, !dbg !997, !tbaa !998
-  %3 = icmp sgt i32 %2, 2, !dbg !997
-  br i1 %3, label %4, label %5, !dbg !997, !prof !1000
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.frame_store* %fs}, i64 0, metadata !185), !dbg !810
+  tail call void @llvm.dbg.value(metadata !{i32 %p_out}, i64 0, metadata !186), !dbg !810
+  %is_used = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 0, !dbg !811
+  %0 = load i32* %is_used, align 4, !dbg !811, !tbaa !752
+  %cmp = icmp slt i32 %0, 3, !dbg !811
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !811
 
-; <label>:4                                       ; preds = %0
-  tail call void @__assert_rtn(i8* getelementptr inbounds ([21 x i8]* @__func__.write_unpaired_field, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str2, i64 0, i64 0), i32 332, i8* getelementptr inbounds ([14 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !997
-  unreachable, !dbg !997
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([14 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str3, i64 0, i64 0), i32 332, i8* getelementptr inbounds ([45 x i8]* @__PRETTY_FUNCTION__.write_unpaired_field, i64 0, i64 0)) #9, !dbg !811
+  unreachable, !dbg !811
 
-; <label>:5                                       ; preds = %0
-  %6 = and i32 %2, 1, !dbg !1001
-  %7 = icmp eq i32 %6, 0, !dbg !1001
-  br i1 %7, label %23, label %8, !dbg !1003
+cond.end:                                         ; preds = %entry
+  %and = and i32 %0, 1, !dbg !812
+  %tobool = icmp eq i32 %and, 0, !dbg !812
+  br i1 %tobool, label %if.end, label %if.then, !dbg !812
 
-; <label>:8                                       ; preds = %5
-  %9 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 11, !dbg !1004
-  %10 = load %struct.storable_picture** %9, align 8, !dbg !1004, !tbaa !1006
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %10, i64 0, metadata !190, metadata !724), !dbg !1007
-  %11 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 18, !dbg !1008
-  %12 = load i32* %11, align 4, !dbg !1008, !tbaa !840
-  %13 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 19, !dbg !1009
-  %14 = load i32* %13, align 4, !dbg !1009, !tbaa !842
-  %15 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 20, !dbg !1010
-  %16 = load i32* %15, align 4, !dbg !1010, !tbaa !866
-  %17 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 21, !dbg !1011
-  %18 = load i32* %17, align 4, !dbg !1011, !tbaa !868
-  %19 = tail call %struct.storable_picture* @alloc_storable_picture(i32 2, i32 %12, i32 %14, i32 %16, i32 %18) #6, !dbg !1012
-  %20 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 12, !dbg !1013
-  store %struct.storable_picture* %19, %struct.storable_picture** %20, align 8, !dbg !1014, !tbaa !1015
-  tail call void @clear_picture(%struct.storable_picture* %19) #7, !dbg !1016
-  tail call void @dpb_combine_field(%struct.frame_store* %fs) #6, !dbg !1017
-  %21 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 10, !dbg !1018
-  %22 = load %struct.storable_picture** %21, align 8, !dbg !1018, !tbaa !1019
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %22, i64 0, metadata !134, metadata !724) #9, !dbg !1020
-  tail call void @llvm.dbg.value(metadata i32 %p_out, i64 0, metadata !135, metadata !724) #9, !dbg !1022
-  tail call void @llvm.dbg.value(metadata i32 undef, i64 0, metadata !136, metadata !724) #9, !dbg !1023
-  tail call void @write_out_picture(%struct.storable_picture* %22, i32 %p_out) #6, !dbg !1024
-  %.pre = load i32* %1, align 4, !dbg !1025, !tbaa !998
-  br label %23, !dbg !1027
+if.then:                                          ; preds = %cond.end
+  %top_field = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 11, !dbg !813
+  %1 = load %struct.storable_picture** %top_field, align 8, !dbg !813, !tbaa !739
+  tail call void @llvm.dbg.value(metadata !{%struct.storable_picture* %1}, i64 0, metadata !187), !dbg !813
+  %size_x = getelementptr inbounds %struct.storable_picture* %1, i64 0, i32 18, !dbg !815
+  %2 = load i32* %size_x, align 4, !dbg !815, !tbaa !752
+  %size_y = getelementptr inbounds %struct.storable_picture* %1, i64 0, i32 19, !dbg !815
+  %3 = load i32* %size_y, align 4, !dbg !815, !tbaa !752
+  %size_x_cr = getelementptr inbounds %struct.storable_picture* %1, i64 0, i32 20, !dbg !815
+  %4 = load i32* %size_x_cr, align 4, !dbg !815, !tbaa !752
+  %size_y_cr = getelementptr inbounds %struct.storable_picture* %1, i64 0, i32 21, !dbg !815
+  %5 = load i32* %size_y_cr, align 4, !dbg !815, !tbaa !752
+  %call = tail call %struct.storable_picture* @alloc_storable_picture(i32 2, i32 %2, i32 %3, i32 %4, i32 %5) #8, !dbg !815
+  %bottom_field = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 12, !dbg !815
+  store %struct.storable_picture* %call, %struct.storable_picture** %bottom_field, align 8, !dbg !815, !tbaa !739
+  tail call void @clear_picture(%struct.storable_picture* %call) #7, !dbg !816
+  tail call void @dpb_combine_field(%struct.frame_store* %fs) #8, !dbg !817
+  %frame = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 10, !dbg !818
+  %6 = load %struct.storable_picture** %frame, align 8, !dbg !818, !tbaa !739
+  tail call void @llvm.dbg.value(metadata !{%struct.storable_picture* %6}, i64 0, metadata !819) #3, !dbg !820
+  tail call void @llvm.dbg.value(metadata !{i32 %p_out}, i64 0, metadata !821) #3, !dbg !820
+  tail call void @llvm.dbg.value(metadata !822, i64 0, metadata !823) #3, !dbg !820
+  tail call void @write_out_picture(%struct.storable_picture* %6, i32 %p_out) #8, !dbg !824
+  %.pre = load i32* %is_used, align 4, !dbg !825, !tbaa !752
+  br label %if.end, !dbg !826
 
-; <label>:23                                      ; preds = %5, %8
-  %24 = phi i32 [ %2, %5 ], [ %.pre, %8 ]
-  %25 = and i32 %24, 2, !dbg !1028
-  %26 = icmp eq i32 %25, 0, !dbg !1028
-  br i1 %26, label %42, label %27, !dbg !1029
+if.end:                                           ; preds = %cond.end, %if.then
+  %7 = phi i32 [ %0, %cond.end ], [ %.pre, %if.then ]
+  %and4 = and i32 %7, 2, !dbg !825
+  %tobool5 = icmp eq i32 %and4, 0, !dbg !825
+  br i1 %tobool5, label %if.end16, label %if.then6, !dbg !825
 
-; <label>:27                                      ; preds = %23
-  %28 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 12, !dbg !1030
-  %29 = load %struct.storable_picture** %28, align 8, !dbg !1030, !tbaa !1015
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %29, i64 0, metadata !190, metadata !724), !dbg !1007
-  %30 = getelementptr inbounds %struct.storable_picture* %29, i64 0, i32 18, !dbg !1032
-  %31 = load i32* %30, align 4, !dbg !1032, !tbaa !840
-  %32 = getelementptr inbounds %struct.storable_picture* %29, i64 0, i32 19, !dbg !1033
-  %33 = load i32* %32, align 4, !dbg !1033, !tbaa !842
-  %34 = getelementptr inbounds %struct.storable_picture* %29, i64 0, i32 20, !dbg !1034
-  %35 = load i32* %34, align 4, !dbg !1034, !tbaa !866
-  %36 = getelementptr inbounds %struct.storable_picture* %29, i64 0, i32 21, !dbg !1035
-  %37 = load i32* %36, align 4, !dbg !1035, !tbaa !868
-  %38 = tail call %struct.storable_picture* @alloc_storable_picture(i32 1, i32 %31, i32 %33, i32 %35, i32 %37) #6, !dbg !1036
-  %39 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 11, !dbg !1037
-  store %struct.storable_picture* %38, %struct.storable_picture** %39, align 8, !dbg !1038, !tbaa !1006
-  tail call void @clear_picture(%struct.storable_picture* %38) #7, !dbg !1039
-  tail call void @dpb_combine_field(%struct.frame_store* %fs) #6, !dbg !1040
-  %40 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 10, !dbg !1041
-  %41 = load %struct.storable_picture** %40, align 8, !dbg !1041, !tbaa !1019
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %41, i64 0, metadata !134, metadata !724) #9, !dbg !1042
-  tail call void @llvm.dbg.value(metadata i32 %p_out, i64 0, metadata !135, metadata !724) #9, !dbg !1044
-  tail call void @llvm.dbg.value(metadata i32 undef, i64 0, metadata !136, metadata !724) #9, !dbg !1045
-  tail call void @write_out_picture(%struct.storable_picture* %41, i32 %p_out) #6, !dbg !1046
-  br label %42, !dbg !1047
+if.then6:                                         ; preds = %if.end
+  %bottom_field7 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 12, !dbg !827
+  %8 = load %struct.storable_picture** %bottom_field7, align 8, !dbg !827, !tbaa !739
+  tail call void @llvm.dbg.value(metadata !{%struct.storable_picture* %8}, i64 0, metadata !187), !dbg !827
+  %size_x8 = getelementptr inbounds %struct.storable_picture* %8, i64 0, i32 18, !dbg !829
+  %9 = load i32* %size_x8, align 4, !dbg !829, !tbaa !752
+  %size_y9 = getelementptr inbounds %struct.storable_picture* %8, i64 0, i32 19, !dbg !829
+  %10 = load i32* %size_y9, align 4, !dbg !829, !tbaa !752
+  %size_x_cr10 = getelementptr inbounds %struct.storable_picture* %8, i64 0, i32 20, !dbg !829
+  %11 = load i32* %size_x_cr10, align 4, !dbg !829, !tbaa !752
+  %size_y_cr11 = getelementptr inbounds %struct.storable_picture* %8, i64 0, i32 21, !dbg !829
+  %12 = load i32* %size_y_cr11, align 4, !dbg !829, !tbaa !752
+  %call12 = tail call %struct.storable_picture* @alloc_storable_picture(i32 1, i32 %9, i32 %10, i32 %11, i32 %12) #8, !dbg !829
+  %top_field13 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 11, !dbg !829
+  store %struct.storable_picture* %call12, %struct.storable_picture** %top_field13, align 8, !dbg !829, !tbaa !739
+  tail call void @clear_picture(%struct.storable_picture* %call12) #7, !dbg !830
+  tail call void @dpb_combine_field(%struct.frame_store* %fs) #8, !dbg !831
+  %frame15 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 10, !dbg !832
+  %13 = load %struct.storable_picture** %frame15, align 8, !dbg !832, !tbaa !739
+  tail call void @llvm.dbg.value(metadata !{%struct.storable_picture* %13}, i64 0, metadata !833) #3, !dbg !834
+  tail call void @llvm.dbg.value(metadata !{i32 %p_out}, i64 0, metadata !835) #3, !dbg !834
+  tail call void @llvm.dbg.value(metadata !822, i64 0, metadata !836) #3, !dbg !834
+  tail call void @write_out_picture(%struct.storable_picture* %13, i32 %p_out) #8, !dbg !837
+  br label %if.end16, !dbg !838
 
-; <label>:42                                      ; preds = %23, %27
-  store i32 3, i32* %1, align 4, !dbg !1048, !tbaa !998
-  ret void, !dbg !1049
+if.end16:                                         ; preds = %if.end, %if.then6
+  store i32 3, i32* %is_used, align 4, !dbg !839, !tbaa !752
+  ret void, !dbg !840
 }

@@ -1,0 +1,41 @@
+define noalias i16* @_ZN11xercesc_2_59XMLString9replicateEPKt(i16* %toRep) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toRep}, i64 0, metadata !1645), !dbg !3098
+  tail call void @llvm.dbg.value(metadata !3038, i64 0, metadata !1646), !dbg !3099
+  %tobool = icmp eq i16* %toRep, null, !dbg !3100
+  br i1 %tobool, label %if.end, label %lor.lhs.false.i, !dbg !3100
+
+lor.lhs.false.i:                                  ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i16* %toRep}, i64 0, metadata !3101), !dbg !3103
+  %0 = load i16* %toRep, align 2, !dbg !3104, !tbaa !2947
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !3104
+  br i1 %cmp1.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !3104
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %toRep, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !3105
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !3106, !tbaa !2947
+  %tobool.i = icmp eq i16 %1, 0, !dbg !3106
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !3106
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !3107
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %toRep to i64, !dbg !3107
+  %sub.ptr.sub.i = sub i64 2, %sub.ptr.rhs.cast.i, !dbg !3107
+  %sub.ptr.div7.i9 = add i64 %sub.ptr.sub.i, %sub.ptr.lhs.cast.i, !dbg !3107
+  %phitmp8 = and i64 %sub.ptr.div7.i9, 8589934590, !dbg !3107
+  br label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, !dbg !3107
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %lor.lhs.false.i, %while.end.i
+  %retval.0.i = phi i64 [ %phitmp8, %while.end.i ], [ 2, %lor.lhs.false.i ]
+  %call1 = tail call noalias i8* @_Znam(i64 %retval.0.i) #11, !dbg !3108
+  %2 = bitcast i8* %call1 to i16*, !dbg !3108
+  tail call void @llvm.dbg.value(metadata !{i16* %2}, i64 0, metadata !1646), !dbg !3108
+  %3 = bitcast i16* %toRep to i8*, !dbg !3109
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call1, i8* %3, i64 %retval.0.i, i32 2, i1 false), !dbg !3109
+  br label %if.end, !dbg !3110
+
+if.end:                                           ; preds = %entry, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %ret.0 = phi i16* [ %2, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ], [ null, %entry ]
+  ret i16* %ret.0, !dbg !3111
+}

@@ -1,37 +1,34 @@
 define i32 @IVsum(i32 %size, i32* %y) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !298, metadata !380), !dbg !931
-  tail call void @llvm.dbg.value(metadata i32* %y, i64 0, metadata !299, metadata !380), !dbg !932
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !300, metadata !380), !dbg !933
-  %1 = icmp sgt i32 %size, 0, !dbg !934
-  br i1 %1, label %2, label %.loopexit, !dbg !935
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !263), !dbg !690
+  tail call void @llvm.dbg.value(metadata !{i32* %y}, i64 0, metadata !264), !dbg !691
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !265), !dbg !692
+  %cmp = icmp sgt i32 %size, 0, !dbg !693
+  br i1 %cmp, label %if.then, label %if.end4, !dbg !693
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp eq i32* %y, null, !dbg !936
-  br i1 %3, label %5, label %.lr.ph, !dbg !937
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq i32* %y, null, !dbg !694
+  br i1 %cmp1, label %if.then2, label %for.body, !dbg !694
 
-.lr.ph:                                           ; preds = %2
-  %4 = add i32 %size, -1, !dbg !938
-  br label %8, !dbg !938
+if.then2:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !695, !tbaa !341
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str23, i64 0, i64 0), i32 %size, i32* null) #7, !dbg !695
+  tail call void @exit(i32 -1) #8, !dbg !697
+  unreachable, !dbg !697
 
-; <label>:5                                       ; preds = %2
-  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !940, !tbaa !399
-  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([57 x i8]* @.str23, i64 0, i64 0), i32 %size, i32* null) #8, !dbg !942
-  tail call void @exit(i32 -1) #9, !dbg !943
-  unreachable, !dbg !943
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %sum.013 = phi i32 [ %add, %for.body ], [ 0, %if.then ]
+  %arrayidx = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !698
+  %1 = load i32* %arrayidx, align 4, !dbg !698, !tbaa !351
+  %add = add nsw i32 %1, %sum.013, !dbg !698
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !265), !dbg !698
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !701
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !701
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !701
+  br i1 %exitcond, label %if.end4, label %for.body, !dbg !701
 
-; <label>:8                                       ; preds = %8, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %8 ]
-  %sum.01 = phi i32 [ 0, %.lr.ph ], [ %11, %8 ]
-  %9 = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !944
-  %10 = load i32* %9, align 4, !dbg !944, !tbaa !414
-  %11 = add nsw i32 %10, %sum.01, !dbg !947
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !300, metadata !380), !dbg !933
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !938
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !938
-  %exitcond = icmp eq i32 %lftr.wideiv, %4, !dbg !938
-  br i1 %exitcond, label %.loopexit, label %8, !dbg !938
-
-.loopexit:                                        ; preds = %8, %0
-  %sum.1 = phi i32 [ 0, %0 ], [ %11, %8 ]
-  ret i32 %sum.1, !dbg !948
+if.end4:                                          ; preds = %for.body, %entry
+  %sum.1 = phi i32 [ 0, %entry ], [ %add, %for.body ]
+  ret i32 %sum.1, !dbg !702
 }

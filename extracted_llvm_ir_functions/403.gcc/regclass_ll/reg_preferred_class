@@ -1,17 +1,18 @@
-define i32 @reg_preferred_class(i32 %regno) #3 {
+define i32 @reg_preferred_class(i32 %regno) #4 {
 entry:
-  %0 = load %struct.reg_pref** @reg_pref, align 8, !tbaa !7
-  %cmp = icmp eq %struct.reg_pref* %0, null
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !496), !dbg !1239
+  %0 = load %struct.reg_pref** @reg_pref, align 8, !dbg !1240, !tbaa !1154
+  %cmp = icmp eq %struct.reg_pref* %0, null, !dbg !1240
+  br i1 %cmp, label %return, label %if.end, !dbg !1240
 
 if.end:                                           ; preds = %entry
-  %idxprom = sext i32 %regno to i64
-  %prefclass = getelementptr inbounds %struct.reg_pref* %0, i64 %idxprom, i32 0
-  %1 = load i8* %prefclass, align 1, !tbaa !1
-  %conv = sext i8 %1 to i32
-  br label %return
+  %idxprom = sext i32 %regno to i64, !dbg !1241
+  %prefclass = getelementptr inbounds %struct.reg_pref* %0, i64 %idxprom, i32 0, !dbg !1241
+  %1 = load i8* %prefclass, align 1, !dbg !1241, !tbaa !954
+  %conv = sext i8 %1 to i32, !dbg !1241
+  br label %return, !dbg !1241
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i32 [ %conv, %if.end ], [ 12, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1242
 }

@@ -1,168 +1,130 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/433.milc/src/rand_ahmat.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/433.milc/src/rand_ahmat.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.anti_hermitmat = type { %struct.complex, %struct.complex, %struct.complex, double, double, double, double }
 %struct.complex = type { double, double }
 %struct.double_prn = type { i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, double }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @random_anti_hermitian(%struct.anti_hermitmat* nocapture %mat_antihermit, %struct.double_prn* %prn_pt) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.anti_hermitmat* %mat_antihermit, i64 0, metadata !45, metadata !54), !dbg !55
-  tail call void @llvm.dbg.value(metadata %struct.double_prn* %prn_pt, i64 0, metadata !46, metadata !54), !dbg !56
-  tail call void @llvm.dbg.value(metadata double 0x3FE279A74590331C, i64 0, metadata !49, metadata !54), !dbg !57
-  %1 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !58
-  tail call void @llvm.dbg.value(metadata double %1, i64 0, metadata !47, metadata !54), !dbg !59
-  %2 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !60
-  tail call void @llvm.dbg.value(metadata double %2, i64 0, metadata !48, metadata !54), !dbg !61
-  %3 = fmul double %2, 0x3FE279A74590331C, !dbg !62
-  %4 = fadd double %1, %3, !dbg !63
-  %5 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 3, !dbg !64
-  store double %4, double* %5, align 8, !dbg !65, !tbaa !66
-  %6 = fsub double %3, %1, !dbg !72
-  %7 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 4, !dbg !73
-  store double %6, double* %7, align 8, !dbg !74, !tbaa !75
-  %8 = fmul double %2, 0xBFF279A74590331C, !dbg !76
-  %9 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 5, !dbg !77
-  store double %8, double* %9, align 8, !dbg !78, !tbaa !79
-  %10 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !80
-  %11 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 0, i32 0, !dbg !81
-  store double %10, double* %11, align 8, !dbg !82, !tbaa !83
-  %12 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !84
-  %13 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 1, i32 0, !dbg !85
-  store double %12, double* %13, align 8, !dbg !86, !tbaa !87
-  %14 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !88
-  %15 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 2, i32 0, !dbg !89
-  store double %14, double* %15, align 8, !dbg !90, !tbaa !91
-  %16 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !92
-  %17 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 0, i32 1, !dbg !93
-  store double %16, double* %17, align 8, !dbg !94, !tbaa !95
-  %18 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !96
-  %19 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 1, i32 1, !dbg !97
-  store double %18, double* %19, align 8, !dbg !98, !tbaa !99
-  %20 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !100
-  %21 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 2, i32 1, !dbg !101
-  store double %20, double* %21, align 8, !dbg !102, !tbaa !103
-  ret void, !dbg !104
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.anti_hermitmat* %mat_antihermit}, i64 0, metadata !45), !dbg !50
+  tail call void @llvm.dbg.value(metadata !{%struct.double_prn* %prn_pt}, i64 0, metadata !46), !dbg !50
+  tail call void @llvm.dbg.value(metadata !51, i64 0, metadata !49), !dbg !52
+  %call1 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !53
+  tail call void @llvm.dbg.value(metadata !{double %call1}, i64 0, metadata !47), !dbg !53
+  %call2 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !54
+  tail call void @llvm.dbg.value(metadata !{double %call2}, i64 0, metadata !48), !dbg !54
+  %mul = fmul double %call2, 0x3FE279A74590331C, !dbg !55
+  %add = fadd double %call1, %mul, !dbg !55
+  %m00im = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 3, !dbg !55
+  store double %add, double* %m00im, align 8, !dbg !55, !tbaa !56
+  %add4 = fsub double %mul, %call1, !dbg !59
+  %m11im = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 4, !dbg !59
+  store double %add4, double* %m11im, align 8, !dbg !59, !tbaa !56
+  %mul6 = fmul double %call2, 0xBFF279A74590331C, !dbg !60
+  %m22im = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 5, !dbg !60
+  store double %mul6, double* %m22im, align 8, !dbg !60, !tbaa !56
+  %call7 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !61
+  %real = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 0, i32 0, !dbg !61
+  store double %call7, double* %real, align 8, !dbg !61, !tbaa !56
+  %call8 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !62
+  %real9 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 1, i32 0, !dbg !62
+  store double %call8, double* %real9, align 8, !dbg !62, !tbaa !56
+  %call10 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !63
+  %real11 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 2, i32 0, !dbg !63
+  store double %call10, double* %real11, align 8, !dbg !63, !tbaa !56
+  %call12 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !64
+  %imag = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 0, i32 1, !dbg !64
+  store double %call12, double* %imag, align 8, !dbg !64, !tbaa !56
+  %call14 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !65
+  %imag16 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 1, i32 1, !dbg !65
+  store double %call14, double* %imag16, align 8, !dbg !65, !tbaa !56
+  %call17 = tail call double @gaussian_rand_no(%struct.double_prn* %prn_pt) #3, !dbg !66
+  %imag19 = getelementptr inbounds %struct.anti_hermitmat* %mat_antihermit, i64 0, i32 2, i32 1, !dbg !66
+  store double %call17, double* %imag19, align 8, !dbg !66, !tbaa !56
+  ret void, !dbg !67
 }
 
 ; Function Attrs: optsize
 declare double @gaussian_rand_no(%struct.double_prn*) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
 attributes #3 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!50, !51, !52}
-!llvm.ident = !{!53}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !5, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/433.milc/src/rand_ahmat.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!5 = !{!6}
-!6 = !DISubprogram(name: "random_anti_hermitian", scope: !1, file: !1, line: 14, type: !7, isLocal: false, isDefinition: true, scopeLine: 14, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct.anti_hermitmat*, %struct.double_prn*)* @random_anti_hermitian, variables: !44)
-!7 = !DISubroutineType(types: !8)
-!8 = !{null, !9, !27}
-!9 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !10, size: 64, align: 64)
-!10 = !DIDerivedType(tag: DW_TAG_typedef, name: "anti_hermitmat", file: !11, line: 17, baseType: !12)
-!11 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/433.milc/src/su3.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!12 = !DICompositeType(tag: DW_TAG_structure_type, file: !11, line: 16, size: 640, align: 64, elements: !13)
-!13 = !{!14, !21, !22, !23, !24, !25, !26}
-!14 = !DIDerivedType(tag: DW_TAG_member, name: "m01", scope: !12, file: !11, line: 17, baseType: !15, size: 128, align: 64)
-!15 = !DIDerivedType(tag: DW_TAG_typedef, name: "complex", file: !16, line: 76, baseType: !17)
-!16 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/433.milc/src/complex.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!17 = !DICompositeType(tag: DW_TAG_structure_type, file: !16, line: 73, size: 128, align: 64, elements: !18)
-!18 = !{!19, !20}
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "real", scope: !17, file: !16, line: 74, baseType: !4, size: 64, align: 64)
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "imag", scope: !17, file: !16, line: 75, baseType: !4, size: 64, align: 64, offset: 64)
-!21 = !DIDerivedType(tag: DW_TAG_member, name: "m02", scope: !12, file: !11, line: 17, baseType: !15, size: 128, align: 64, offset: 128)
-!22 = !DIDerivedType(tag: DW_TAG_member, name: "m12", scope: !12, file: !11, line: 17, baseType: !15, size: 128, align: 64, offset: 256)
-!23 = !DIDerivedType(tag: DW_TAG_member, name: "m00im", scope: !12, file: !11, line: 17, baseType: !4, size: 64, align: 64, offset: 384)
-!24 = !DIDerivedType(tag: DW_TAG_member, name: "m11im", scope: !12, file: !11, line: 17, baseType: !4, size: 64, align: 64, offset: 448)
-!25 = !DIDerivedType(tag: DW_TAG_member, name: "m22im", scope: !12, file: !11, line: 17, baseType: !4, size: 64, align: 64, offset: 512)
-!26 = !DIDerivedType(tag: DW_TAG_member, name: "space", scope: !12, file: !11, line: 17, baseType: !4, size: 64, align: 64, offset: 576)
-!27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64, align: 64)
-!28 = !DIDerivedType(tag: DW_TAG_typedef, name: "double_prn", file: !29, line: 11, baseType: !30)
-!29 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/433.milc/src/random.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!30 = !DICompositeType(tag: DW_TAG_structure_type, file: !29, line: 6, size: 704, align: 64, elements: !31)
-!31 = !{!32, !34, !35, !36, !37, !38, !39, !40, !41, !42, !43}
-!32 = !DIDerivedType(tag: DW_TAG_member, name: "r0", scope: !30, file: !29, line: 8, baseType: !33, size: 64, align: 64)
-!33 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!34 = !DIDerivedType(tag: DW_TAG_member, name: "r1", scope: !30, file: !29, line: 8, baseType: !33, size: 64, align: 64, offset: 64)
-!35 = !DIDerivedType(tag: DW_TAG_member, name: "r2", scope: !30, file: !29, line: 8, baseType: !33, size: 64, align: 64, offset: 128)
-!36 = !DIDerivedType(tag: DW_TAG_member, name: "r3", scope: !30, file: !29, line: 8, baseType: !33, size: 64, align: 64, offset: 192)
-!37 = !DIDerivedType(tag: DW_TAG_member, name: "r4", scope: !30, file: !29, line: 8, baseType: !33, size: 64, align: 64, offset: 256)
-!38 = !DIDerivedType(tag: DW_TAG_member, name: "r5", scope: !30, file: !29, line: 8, baseType: !33, size: 64, align: 64, offset: 320)
-!39 = !DIDerivedType(tag: DW_TAG_member, name: "r6", scope: !30, file: !29, line: 8, baseType: !33, size: 64, align: 64, offset: 384)
-!40 = !DIDerivedType(tag: DW_TAG_member, name: "multiplier", scope: !30, file: !29, line: 9, baseType: !33, size: 64, align: 64, offset: 448)
-!41 = !DIDerivedType(tag: DW_TAG_member, name: "addend", scope: !30, file: !29, line: 9, baseType: !33, size: 64, align: 64, offset: 512)
-!42 = !DIDerivedType(tag: DW_TAG_member, name: "ic_state", scope: !30, file: !29, line: 9, baseType: !33, size: 64, align: 64, offset: 576)
-!43 = !DIDerivedType(tag: DW_TAG_member, name: "scale", scope: !30, file: !29, line: 10, baseType: !4, size: 64, align: 64, offset: 640)
-!44 = !{!45, !46, !47, !48, !49}
-!45 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "mat_antihermit", arg: 1, scope: !6, file: !1, line: 14, type: !9)
-!46 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "prn_pt", arg: 2, scope: !6, file: !1, line: 14, type: !27)
-!47 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "r3", scope: !6, file: !1, line: 15, type: !4)
-!48 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "r8", scope: !6, file: !1, line: 15, type: !4)
-!49 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "sqrt_third", scope: !6, file: !1, line: 16, type: !4)
-!50 = !{i32 2, !"Dwarf Version", i32 2}
-!51 = !{i32 2, !"Debug Info Version", i32 700000003}
-!52 = !{i32 1, !"PIC Level", i32 2}
-!53 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!54 = !DIExpression()
-!55 = !DILocation(line: 14, column: 45, scope: !6)
-!56 = !DILocation(line: 14, column: 73, scope: !6)
-!57 = !DILocation(line: 16, column: 8, scope: !6)
-!58 = !DILocation(line: 19, column: 12, scope: !6)
-!59 = !DILocation(line: 15, column: 8, scope: !6)
-!60 = !DILocation(line: 20, column: 5, scope: !6)
-!61 = !DILocation(line: 15, column: 11, scope: !6)
-!62 = !DILocation(line: 21, column: 37, scope: !6)
-!63 = !DILocation(line: 21, column: 26, scope: !6)
-!64 = !DILocation(line: 21, column: 18, scope: !6)
-!65 = !DILocation(line: 21, column: 23, scope: !6)
-!66 = !{!67, !69, i64 48}
-!67 = !{!"", !68, i64 0, !68, i64 16, !68, i64 32, !69, i64 48, !69, i64 56, !69, i64 64, !69, i64 72}
-!68 = !{!"", !69, i64 0, !69, i64 8}
-!69 = !{!"double", !70, i64 0}
-!70 = !{!"omnipotent char", !71, i64 0}
-!71 = !{!"Simple C/C++ TBAA"}
-!72 = !DILocation(line: 22, column: 28, scope: !6)
-!73 = !DILocation(line: 22, column: 18, scope: !6)
-!74 = !DILocation(line: 22, column: 23, scope: !6)
-!75 = !{!67, !69, i64 56}
-!76 = !DILocation(line: 23, column: 40, scope: !6)
-!77 = !DILocation(line: 23, column: 18, scope: !6)
-!78 = !DILocation(line: 23, column: 23, scope: !6)
-!79 = !{!67, !69, i64 64}
-!80 = !DILocation(line: 24, column: 27, scope: !6)
-!81 = !DILocation(line: 24, column: 22, scope: !6)
-!82 = !DILocation(line: 24, column: 26, scope: !6)
-!83 = !{!67, !69, i64 0}
-!84 = !DILocation(line: 25, column: 27, scope: !6)
-!85 = !DILocation(line: 25, column: 22, scope: !6)
-!86 = !DILocation(line: 25, column: 26, scope: !6)
-!87 = !{!67, !69, i64 16}
-!88 = !DILocation(line: 26, column: 27, scope: !6)
-!89 = !DILocation(line: 26, column: 22, scope: !6)
-!90 = !DILocation(line: 26, column: 26, scope: !6)
-!91 = !{!67, !69, i64 32}
-!92 = !DILocation(line: 27, column: 27, scope: !6)
-!93 = !DILocation(line: 27, column: 22, scope: !6)
-!94 = !DILocation(line: 27, column: 26, scope: !6)
-!95 = !{!67, !69, i64 8}
-!96 = !DILocation(line: 28, column: 27, scope: !6)
-!97 = !DILocation(line: 28, column: 22, scope: !6)
-!98 = !DILocation(line: 28, column: 26, scope: !6)
-!99 = !{!67, !69, i64 24}
-!100 = !DILocation(line: 29, column: 27, scope: !6)
-!101 = !DILocation(line: 29, column: 22, scope: !6)
-!102 = !DILocation(line: 29, column: 26, scope: !6)
-!103 = !{!67, !69, i64 40}
-!104 = !DILocation(line: 31, column: 1, scope: !6)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/433.milc/src/rand_ahmat.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/433.milc/src/rand_ahmat.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"random_anti_hermitian", metadata !"random_anti_hermitian", metadata !"", i32 14, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct.anti_hermitmat*, %struct.double_prn*)* @random_anti_hermitian, null, null, metadata !44, i32 14} ; [ DW_TAG_subprogram ] [line 14] [def] [random_anti_hermitian]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/433.milc/src/rand_ahmat.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{null, metadata !8, metadata !27}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from anti_hermitmat]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"anti_hermitmat", i32 17, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [anti_hermitmat] [line 17, size 0, align 0, offset 0] [from ]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"", i32 16, i64 640, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 16, size 640, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/433.milc/src/su3.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13, metadata !21, metadata !22, metadata !23, metadata !24, metadata !25, metadata !26}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"m01", i32 17, i64 128, i64 64, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [m01] [line 17, size 128, align 64, offset 0] [from complex]
+!14 = metadata !{i32 786454, metadata !11, null, metadata !"complex", i32 76, i64 0, i64 0, i64 0, i32 0, metadata !15} ; [ DW_TAG_typedef ] [complex] [line 76, size 0, align 0, offset 0] [from ]
+!15 = metadata !{i32 786451, metadata !16, null, metadata !"", i32 73, i64 128, i64 64, i32 0, i32 0, null, metadata !17, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 73, size 128, align 64, offset 0] [from ]
+!16 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/433.milc/src/complex.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!17 = metadata !{metadata !18, metadata !20}
+!18 = metadata !{i32 786445, metadata !16, metadata !15, metadata !"real", i32 74, i64 64, i64 64, i64 0, i32 0, metadata !19} ; [ DW_TAG_member ] [real] [line 74, size 64, align 64, offset 0] [from double]
+!19 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!20 = metadata !{i32 786445, metadata !16, metadata !15, metadata !"imag", i32 75, i64 64, i64 64, i64 64, i32 0, metadata !19} ; [ DW_TAG_member ] [imag] [line 75, size 64, align 64, offset 64] [from double]
+!21 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"m02", i32 17, i64 128, i64 64, i64 128, i32 0, metadata !14} ; [ DW_TAG_member ] [m02] [line 17, size 128, align 64, offset 128] [from complex]
+!22 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"m12", i32 17, i64 128, i64 64, i64 256, i32 0, metadata !14} ; [ DW_TAG_member ] [m12] [line 17, size 128, align 64, offset 256] [from complex]
+!23 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"m00im", i32 17, i64 64, i64 64, i64 384, i32 0, metadata !19} ; [ DW_TAG_member ] [m00im] [line 17, size 64, align 64, offset 384] [from double]
+!24 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"m11im", i32 17, i64 64, i64 64, i64 448, i32 0, metadata !19} ; [ DW_TAG_member ] [m11im] [line 17, size 64, align 64, offset 448] [from double]
+!25 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"m22im", i32 17, i64 64, i64 64, i64 512, i32 0, metadata !19} ; [ DW_TAG_member ] [m22im] [line 17, size 64, align 64, offset 512] [from double]
+!26 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"space", i32 17, i64 64, i64 64, i64 576, i32 0, metadata !19} ; [ DW_TAG_member ] [space] [line 17, size 64, align 64, offset 576] [from double]
+!27 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !28} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from double_prn]
+!28 = metadata !{i32 786454, metadata !1, null, metadata !"double_prn", i32 11, i64 0, i64 0, i64 0, i32 0, metadata !29} ; [ DW_TAG_typedef ] [double_prn] [line 11, size 0, align 0, offset 0] [from ]
+!29 = metadata !{i32 786451, metadata !30, null, metadata !"", i32 6, i64 704, i64 64, i32 0, i32 0, null, metadata !31, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 6, size 704, align 64, offset 0] [from ]
+!30 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/433.milc/src/random.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!31 = metadata !{metadata !32, metadata !34, metadata !35, metadata !36, metadata !37, metadata !38, metadata !39, metadata !40, metadata !41, metadata !42, metadata !43}
+!32 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"r0", i32 8, i64 64, i64 64, i64 0, i32 0, metadata !33} ; [ DW_TAG_member ] [r0] [line 8, size 64, align 64, offset 0] [from long unsigned int]
+!33 = metadata !{i32 786468, null, null, metadata !"long unsigned int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [long unsigned int] [line 0, size 64, align 64, offset 0, enc DW_ATE_unsigned]
+!34 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"r1", i32 8, i64 64, i64 64, i64 64, i32 0, metadata !33} ; [ DW_TAG_member ] [r1] [line 8, size 64, align 64, offset 64] [from long unsigned int]
+!35 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"r2", i32 8, i64 64, i64 64, i64 128, i32 0, metadata !33} ; [ DW_TAG_member ] [r2] [line 8, size 64, align 64, offset 128] [from long unsigned int]
+!36 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"r3", i32 8, i64 64, i64 64, i64 192, i32 0, metadata !33} ; [ DW_TAG_member ] [r3] [line 8, size 64, align 64, offset 192] [from long unsigned int]
+!37 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"r4", i32 8, i64 64, i64 64, i64 256, i32 0, metadata !33} ; [ DW_TAG_member ] [r4] [line 8, size 64, align 64, offset 256] [from long unsigned int]
+!38 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"r5", i32 8, i64 64, i64 64, i64 320, i32 0, metadata !33} ; [ DW_TAG_member ] [r5] [line 8, size 64, align 64, offset 320] [from long unsigned int]
+!39 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"r6", i32 8, i64 64, i64 64, i64 384, i32 0, metadata !33} ; [ DW_TAG_member ] [r6] [line 8, size 64, align 64, offset 384] [from long unsigned int]
+!40 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"multiplier", i32 9, i64 64, i64 64, i64 448, i32 0, metadata !33} ; [ DW_TAG_member ] [multiplier] [line 9, size 64, align 64, offset 448] [from long unsigned int]
+!41 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"addend", i32 9, i64 64, i64 64, i64 512, i32 0, metadata !33} ; [ DW_TAG_member ] [addend] [line 9, size 64, align 64, offset 512] [from long unsigned int]
+!42 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"ic_state", i32 9, i64 64, i64 64, i64 576, i32 0, metadata !33} ; [ DW_TAG_member ] [ic_state] [line 9, size 64, align 64, offset 576] [from long unsigned int]
+!43 = metadata !{i32 786445, metadata !30, metadata !29, metadata !"scale", i32 10, i64 64, i64 64, i64 640, i32 0, metadata !19} ; [ DW_TAG_member ] [scale] [line 10, size 64, align 64, offset 640] [from double]
+!44 = metadata !{metadata !45, metadata !46, metadata !47, metadata !48, metadata !49}
+!45 = metadata !{i32 786689, metadata !4, metadata !"mat_antihermit", metadata !5, i32 16777230, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mat_antihermit] [line 14]
+!46 = metadata !{i32 786689, metadata !4, metadata !"prn_pt", metadata !5, i32 33554446, metadata !27, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [prn_pt] [line 14]
+!47 = metadata !{i32 786688, metadata !4, metadata !"r3", metadata !5, i32 15, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [r3] [line 15]
+!48 = metadata !{i32 786688, metadata !4, metadata !"r8", metadata !5, i32 15, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [r8] [line 15]
+!49 = metadata !{i32 786688, metadata !4, metadata !"sqrt_third", metadata !5, i32 16, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sqrt_third] [line 16]
+!50 = metadata !{i32 14, i32 0, metadata !4, null}
+!51 = metadata !{double 0x3FE279A74590331C}
+!52 = metadata !{i32 18, i32 0, metadata !4, null}
+!53 = metadata !{i32 19, i32 0, metadata !4, null}
+!54 = metadata !{i32 20, i32 0, metadata !4, null}
+!55 = metadata !{i32 21, i32 0, metadata !4, null}
+!56 = metadata !{metadata !"double", metadata !57}
+!57 = metadata !{metadata !"omnipotent char", metadata !58}
+!58 = metadata !{metadata !"Simple C/C++ TBAA"}
+!59 = metadata !{i32 22, i32 0, metadata !4, null}
+!60 = metadata !{i32 23, i32 0, metadata !4, null}
+!61 = metadata !{i32 24, i32 0, metadata !4, null}
+!62 = metadata !{i32 25, i32 0, metadata !4, null}
+!63 = metadata !{i32 26, i32 0, metadata !4, null}
+!64 = metadata !{i32 27, i32 0, metadata !4, null}
+!65 = metadata !{i32 28, i32 0, metadata !4, null}
+!66 = metadata !{i32 29, i32 0, metadata !4, null}
+!67 = metadata !{i32 31, i32 0, metadata !4, null}

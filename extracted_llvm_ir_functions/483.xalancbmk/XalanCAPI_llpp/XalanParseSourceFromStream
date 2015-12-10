@@ -1,0 +1,86 @@
+define i32 @XalanParseSourceFromStream(i8* %theXMLStream, i64 %theXMLStreamLength, i8* %theXalanHandle, i8** nocapture %thePSHandle) #2 {
+entry:
+  %theParsedSource = alloca %"class.xalanc_1_8::XalanParsedSource"*, align 8
+  %theInputStream = alloca %"class.std::istrstream", align 8
+  %ref.tmp = alloca %"class.xalanc_1_8::XSLTInputSource", align 8
+  call void @llvm.dbg.value(metadata !{i8* %theXMLStream}, i64 0, metadata !6130), !dbg !6601
+  call void @llvm.dbg.value(metadata !{i64 %theXMLStreamLength}, i64 0, metadata !6131), !dbg !6602
+  call void @llvm.dbg.value(metadata !{i8* %theXalanHandle}, i64 0, metadata !6132), !dbg !6603
+  call void @llvm.dbg.value(metadata !{i8** %thePSHandle}, i64 0, metadata !6133), !dbg !6604
+  call void @llvm.dbg.declare(metadata !{%"class.xalanc_1_8::XalanParsedSource"** %theParsedSource}, metadata !6134), !dbg !6605
+  call void @llvm.dbg.value(metadata !6585, i64 0, metadata !6134), !dbg !6605
+  store %"class.xalanc_1_8::XalanParsedSource"* null, %"class.xalanc_1_8::XalanParsedSource"** %theParsedSource, align 8, !dbg !6605, !tbaa !6369
+  %0 = bitcast %"class.std::istrstream"* %theInputStream to i8*, !dbg !6606
+  call void @llvm.lifetime.start(i64 368, i8* %0) #5, !dbg !6606
+  call void @llvm.dbg.declare(metadata !{%"class.std::istrstream"* %theInputStream}, metadata !6135), !dbg !6606
+  call void @_ZNSt10istrstreamC1EPKcl(%"class.std::istrstream"* %theInputStream, i8* %theXMLStream, i64 %theXMLStreamLength) #8, !dbg !6606
+  tail call void @llvm.dbg.value(metadata !{i8* %theXalanHandle}, i64 0, metadata !6607), !dbg !6609
+  %1 = bitcast %"class.std::istrstream"* %theInputStream to %"class.std::basic_istream"*, !dbg !6608
+  invoke void @_ZN10xalanc_1_815XSLTInputSourceC1EPSi(%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, %"class.std::basic_istream"* %1) #8
+          to label %invoke.cont1 unwind label %lpad, !dbg !6608
+
+invoke.cont1:                                     ; preds = %entry
+  %2 = bitcast i8* %theXalanHandle to %"class.xalanc_1_8::XalanTransformer"*, !dbg !6610
+  %call4 = invoke i32 @_ZN10xalanc_1_816XalanTransformer11parseSourceERKNS_15XSLTInputSourceERPKNS_17XalanParsedSourceEb(%"class.xalanc_1_8::XalanTransformer"* %2, %"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, %"class.xalanc_1_8::XalanParsedSource"** %theParsedSource, i1 zeroext false) #8
+          to label %invoke.cont3 unwind label %lpad2, !dbg !6608
+
+invoke.cont3:                                     ; preds = %invoke.cont1
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6611), !dbg !6612
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6613), !dbg !6615
+  %3 = getelementptr inbounds %"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, i64 0, i32 0, !dbg !6616
+  invoke void @_ZN11xercesc_2_511InputSourceD2Ev(%"class.xercesc_2_5::InputSource"* %3) #8
+          to label %invoke.cont5 unwind label %lpad
+
+invoke.cont5:                                     ; preds = %invoke.cont3
+  call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !6136), !dbg !6608
+  %cmp = icmp eq i32 %call4, 0, !dbg !6617
+  br i1 %cmp, label %if.then, label %if.end, !dbg !6617
+
+if.then:                                          ; preds = %invoke.cont5
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanParsedSource"** %theParsedSource}, i64 0, metadata !6134), !dbg !6618
+  %4 = load %"class.xalanc_1_8::XalanParsedSource"** %theParsedSource, align 8, !dbg !6618, !tbaa !6369
+  %5 = bitcast %"class.xalanc_1_8::XalanParsedSource"* %4 to i8*, !dbg !6618
+  store i8* %5, i8** %thePSHandle, align 8, !dbg !6618, !tbaa !6369
+  br label %if.end, !dbg !6620
+
+lpad:                                             ; preds = %invoke.cont3, %entry
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !6608
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !6608
+  %8 = extractvalue { i8*, i32 } %6, 1, !dbg !6608
+  br label %ehcleanup, !dbg !6608
+
+lpad2:                                            ; preds = %invoke.cont1
+  %9 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !6608
+  %10 = extractvalue { i8*, i32 } %9, 0, !dbg !6608
+  %11 = extractvalue { i8*, i32 } %9, 1, !dbg !6608
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6611), !dbg !6612
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6613), !dbg !6615
+  %12 = getelementptr inbounds %"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, i64 0, i32 0, !dbg !6616
+  invoke void @_ZN11xercesc_2_511InputSourceD2Ev(%"class.xercesc_2_5::InputSource"* %12) #8
+          to label %ehcleanup unwind label %terminate.lpad
+
+if.end:                                           ; preds = %if.then, %invoke.cont5
+  call void @_ZNSt10istrstreamD1Ev(%"class.std::istrstream"* %theInputStream) #8, !dbg !6621
+  call void @llvm.lifetime.end(i64 368, i8* %0) #5, !dbg !6621
+  ret i32 %call4, !dbg !6621
+
+ehcleanup:                                        ; preds = %lpad2, %lpad
+  %ehselector.slot.0 = phi i32 [ %8, %lpad ], [ %11, %lpad2 ]
+  %exn.slot.0 = phi i8* [ %7, %lpad ], [ %10, %lpad2 ]
+  invoke void @_ZNSt10istrstreamD1Ev(%"class.std::istrstream"* %theInputStream) #8
+          to label %eh.resume unwind label %terminate.lpad, !dbg !6621
+
+eh.resume:                                        ; preds = %ehcleanup
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !6621
+  %lpad.val8 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !6621
+  resume { i8*, i32 } %lpad.val8, !dbg !6621
+
+terminate.lpad:                                   ; preds = %lpad2, %ehcleanup
+  %13 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !6608
+  %14 = extractvalue { i8*, i32 } %13, 0, !dbg !6608
+  call void @__clang_call_terminate(i8* %14) #10, !dbg !6608
+  unreachable, !dbg !6608
+}

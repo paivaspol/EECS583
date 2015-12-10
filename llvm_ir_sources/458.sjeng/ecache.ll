@@ -1,6 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/458.sjeng/src/ecache.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/458.sjeng/src/ecache.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.ECacheType = type { i32, i32, i32 }
 
@@ -12,238 +12,200 @@ target triple = "x86_64-apple-macosx10.10.0"
 @ECacheHits = common global i32 0, align 4
 @str = private unnamed_addr constant [33 x i8] c"Out of memory allocating ECache.\00"
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @storeECache(i32 %score) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %score, i64 0, metadata !19, metadata !42), !dbg !43
-  %1 = load i32* @hash, align 4, !dbg !44, !tbaa !45
-  %2 = load i32* @ECacheSize, align 4, !dbg !49, !tbaa !45
-  %3 = urem i32 %1, %2, !dbg !50
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !20, metadata !42), !dbg !51
-  %4 = sext i32 %3 to i64, !dbg !52
-  %5 = load %struct.ECacheType** @ECache, align 8, !dbg !52, !tbaa !53
-  %6 = getelementptr inbounds %struct.ECacheType* %5, i64 %4, i32 0, !dbg !55
-  store i32 %1, i32* %6, align 4, !dbg !56, !tbaa !57
-  %7 = load i32* @hold_hash, align 4, !dbg !59, !tbaa !45
-  %8 = getelementptr inbounds %struct.ECacheType* %5, i64 %4, i32 1, !dbg !60
-  store i32 %7, i32* %8, align 4, !dbg !61, !tbaa !62
-  %9 = getelementptr inbounds %struct.ECacheType* %5, i64 %4, i32 2, !dbg !63
-  store i32 %score, i32* %9, align 4, !dbg !64, !tbaa !65
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %score}, i64 0, metadata !10), !dbg !37
+  %0 = load i32* @hash, align 4, !dbg !38, !tbaa !39
+  %1 = load i32* @ECacheSize, align 4, !dbg !38, !tbaa !39
+  %rem = urem i32 %0, %1, !dbg !38
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !11), !dbg !38
+  %idxprom = sext i32 %rem to i64, !dbg !42
+  %2 = load %struct.ECacheType** @ECache, align 8, !dbg !42, !tbaa !43
+  %stored_hash = getelementptr inbounds %struct.ECacheType* %2, i64 %idxprom, i32 0, !dbg !42
+  store i32 %0, i32* %stored_hash, align 4, !dbg !42, !tbaa !39
+  %3 = load i32* @hold_hash, align 4, !dbg !44, !tbaa !39
+  %hold_hash = getelementptr inbounds %struct.ECacheType* %2, i64 %idxprom, i32 1, !dbg !44
+  store i32 %3, i32* %hold_hash, align 4, !dbg !44, !tbaa !39
+  %score5 = getelementptr inbounds %struct.ECacheType* %2, i64 %idxprom, i32 2, !dbg !45
+  store i32 %score, i32* %score5, align 4, !dbg !45, !tbaa !39
+  ret void, !dbg !46
+}
+
+; Function Attrs: nounwind optsize uwtable
+define void @checkECache(i32* nocapture %score, i32* nocapture %in_cache) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %score}, i64 0, metadata !17), !dbg !47
+  tail call void @llvm.dbg.value(metadata !{i32* %in_cache}, i64 0, metadata !18), !dbg !47
+  %0 = load i32* @ECacheProbes, align 4, !dbg !48, !tbaa !39
+  %inc = add i32 %0, 1, !dbg !48
+  store i32 %inc, i32* @ECacheProbes, align 4, !dbg !48, !tbaa !39
+  %1 = load i32* @hash, align 4, !dbg !49, !tbaa !39
+  %2 = load i32* @ECacheSize, align 4, !dbg !49, !tbaa !39
+  %rem = urem i32 %1, %2, !dbg !49
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !19), !dbg !49
+  %idxprom = sext i32 %rem to i64, !dbg !50
+  %3 = load %struct.ECacheType** @ECache, align 8, !dbg !50, !tbaa !43
+  %stored_hash = getelementptr inbounds %struct.ECacheType* %3, i64 %idxprom, i32 0, !dbg !50
+  %4 = load i32* %stored_hash, align 4, !dbg !50, !tbaa !39
+  %cmp = icmp eq i32 %4, %1, !dbg !50
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !50
+
+land.lhs.true:                                    ; preds = %entry
+  %hold_hash = getelementptr inbounds %struct.ECacheType* %3, i64 %idxprom, i32 1, !dbg !50
+  %5 = load i32* %hold_hash, align 4, !dbg !50, !tbaa !39
+  %6 = load i32* @hold_hash, align 4, !dbg !50, !tbaa !39
+  %cmp3 = icmp eq i32 %5, %6, !dbg !50
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !50
+
+if.then:                                          ; preds = %land.lhs.true
+  %7 = load i32* @ECacheHits, align 4, !dbg !51, !tbaa !39
+  %inc4 = add i32 %7, 1, !dbg !51
+  store i32 %inc4, i32* @ECacheHits, align 4, !dbg !51, !tbaa !39
+  store i32 1, i32* %in_cache, align 4, !dbg !53, !tbaa !39
+  %score7 = getelementptr inbounds %struct.ECacheType* %3, i64 %idxprom, i32 2, !dbg !54
+  %8 = load i32* %score7, align 4, !dbg !54, !tbaa !39
+  store i32 %8, i32* %score, align 4, !dbg !54, !tbaa !39
+  br label %if.end, !dbg !55
+
+if.end:                                           ; preds = %if.then, %land.lhs.true, %entry
+  ret void, !dbg !56
+}
+
+; Function Attrs: nounwind optsize uwtable
+define void @reset_ecache() #0 {
+entry:
+  %0 = load %struct.ECacheType** @ECache, align 8, !dbg !57, !tbaa !43
+  %1 = bitcast %struct.ECacheType* %0 to i8*, !dbg !57
+  %2 = load i32* @ECacheSize, align 4, !dbg !57, !tbaa !39
+  %conv = sext i32 %2 to i64, !dbg !57
+  %mul = mul i64 %conv, 12, !dbg !57
+  tail call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 %mul, i32 4, i1 false), !dbg !57
+  ret void, !dbg !58
+}
+
+; Function Attrs: nounwind
+declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #1
+
+; Function Attrs: nounwind optsize uwtable
+define void @alloc_ecache() #0 {
+entry:
+  %0 = load i32* @ECacheSize, align 4, !dbg !59, !tbaa !39
+  %conv = sext i32 %0 to i64, !dbg !59
+  %mul = mul i64 %conv, 12, !dbg !59
+  %call = tail call noalias i8* @malloc(i64 %mul) #5, !dbg !59
+  %1 = bitcast i8* %call to %struct.ECacheType*, !dbg !59
+  store %struct.ECacheType* %1, %struct.ECacheType** @ECache, align 8, !dbg !59, !tbaa !43
+  %cmp = icmp eq i8* %call, null, !dbg !60
+  br i1 %cmp, label %if.then, label %if.end, !dbg !60
+
+if.then:                                          ; preds = %entry
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([33 x i8]* @str, i64 0, i64 0)), !dbg !61
+  tail call void @exit(i32 1) #6, !dbg !63
+  unreachable, !dbg !63
+
+if.end:                                           ; preds = %entry
+  ret void, !dbg !64
+}
+
+; Function Attrs: nounwind optsize
+declare noalias i8* @malloc(i64) #2
+
+; Function Attrs: noreturn nounwind optsize
+declare void @exit(i32) #3
+
+; Function Attrs: nounwind optsize uwtable
+define void @free_ecache() #0 {
+entry:
+  %0 = load %struct.ECacheType** @ECache, align 8, !dbg !65, !tbaa !43
+  %1 = bitcast %struct.ECacheType* %0 to i8*, !dbg !65
+  tail call void @free(i8* %1) #5, !dbg !65
   ret void, !dbg !66
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @checkECache(i32* nocapture %score, i32* nocapture %in_cache) #0 {
-  tail call void @llvm.dbg.value(metadata i32* %score, i64 0, metadata !26, metadata !42), !dbg !67
-  tail call void @llvm.dbg.value(metadata i32* %in_cache, i64 0, metadata !27, metadata !42), !dbg !68
-  %1 = load i32* @ECacheProbes, align 4, !dbg !69, !tbaa !45
-  %2 = add i32 %1, 1, !dbg !69
-  store i32 %2, i32* @ECacheProbes, align 4, !dbg !69, !tbaa !45
-  %3 = load i32* @hash, align 4, !dbg !70, !tbaa !45
-  %4 = load i32* @ECacheSize, align 4, !dbg !71, !tbaa !45
-  %5 = urem i32 %3, %4, !dbg !72
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !28, metadata !42), !dbg !73
-  %6 = sext i32 %5 to i64, !dbg !74
-  %7 = load %struct.ECacheType** @ECache, align 8, !dbg !74, !tbaa !53
-  %8 = getelementptr inbounds %struct.ECacheType* %7, i64 %6, i32 0, !dbg !76
-  %9 = load i32* %8, align 4, !dbg !76, !tbaa !57
-  %10 = icmp eq i32 %9, %3, !dbg !77
-  br i1 %10, label %11, label %21, !dbg !78
-
-; <label>:11                                      ; preds = %0
-  %12 = getelementptr inbounds %struct.ECacheType* %7, i64 %6, i32 1, !dbg !79
-  %13 = load i32* %12, align 4, !dbg !79, !tbaa !62
-  %14 = load i32* @hold_hash, align 4, !dbg !80, !tbaa !45
-  %15 = icmp eq i32 %13, %14, !dbg !81
-  br i1 %15, label %16, label %21, !dbg !82
-
-; <label>:16                                      ; preds = %11
-  %17 = load i32* @ECacheHits, align 4, !dbg !83, !tbaa !45
-  %18 = add i32 %17, 1, !dbg !83
-  store i32 %18, i32* @ECacheHits, align 4, !dbg !83, !tbaa !45
-  store i32 1, i32* %in_cache, align 4, !dbg !85, !tbaa !45
-  %19 = getelementptr inbounds %struct.ECacheType* %7, i64 %6, i32 2, !dbg !86
-  %20 = load i32* %19, align 4, !dbg !86, !tbaa !65
-  store i32 %20, i32* %score, align 4, !dbg !87, !tbaa !45
-  br label %21, !dbg !88
-
-; <label>:21                                      ; preds = %16, %11, %0
-  ret void, !dbg !89
-}
-
-; Function Attrs: nounwind optsize ssp uwtable
-define void @reset_ecache() #0 {
-  %1 = load i8** bitcast (%struct.ECacheType** @ECache to i8**), align 8, !dbg !90, !tbaa !53
-  %2 = load i32* @ECacheSize, align 4, !dbg !90, !tbaa !45
-  %3 = sext i32 %2 to i64, !dbg !90
-  %4 = mul nsw i64 %3, 12, !dbg !90
-  %5 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %1, i1 false), !dbg !90
-  %6 = tail call i8* @__memset_chk(i8* %1, i32 0, i64 %4, i64 %5) #5, !dbg !90
-  ret void, !dbg !91
-}
-
 ; Function Attrs: nounwind optsize
-declare i8* @__memset_chk(i8*, i32, i64, i64) #1
+declare void @free(i8* nocapture) #2
 
 ; Function Attrs: nounwind readnone
-declare i64 @llvm.objectsize.i64.p0i8(i8*, i1) #2
-
-; Function Attrs: nounwind optsize ssp uwtable
-define void @alloc_ecache() #0 {
-  %1 = load i32* @ECacheSize, align 4, !dbg !92, !tbaa !45
-  %2 = sext i32 %1 to i64, !dbg !92
-  %3 = mul nsw i64 %2, 12, !dbg !93
-  %4 = tail call i8* @malloc(i64 %3) #5, !dbg !94
-  store i8* %4, i8** bitcast (%struct.ECacheType** @ECache to i8**), align 8, !dbg !95, !tbaa !53
-  %5 = icmp eq i8* %4, null, !dbg !96
-  br i1 %5, label %6, label %7, !dbg !98
-
-; <label>:6                                       ; preds = %0
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([33 x i8]* @str, i64 0, i64 0)), !dbg !99
-  tail call void @exit(i32 1) #6, !dbg !101
-  unreachable, !dbg !101
-
-; <label>:7                                       ; preds = %0
-  ret void, !dbg !102
-}
-
-; Function Attrs: nounwind optsize
-declare noalias i8* @malloc(i64) #1
-
-; Function Attrs: noreturn optsize
-declare void @exit(i32) #3
-
-; Function Attrs: nounwind optsize ssp uwtable
-define void @free_ecache() #0 {
-  %1 = load i8** bitcast (%struct.ECacheType** @ECache to i8**), align 8, !dbg !103, !tbaa !53
-  tail call void @free(i8* %1) #7, !dbg !104
-  ret void, !dbg !105
-}
-
-; Function Attrs: nounwind optsize
-declare void @free(i8* nocapture) #1
-
-; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #4
 
 ; Function Attrs: nounwind
-declare i32 @puts(i8* nocapture readonly) #4
+declare i32 @puts(i8* nocapture) #1
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind readnone }
-attributes #3 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { nounwind }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind }
+attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind readnone }
 attributes #5 = { nounwind optsize }
 attributes #6 = { noreturn nounwind optsize }
-attributes #7 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!38, !39, !40}
-!llvm.ident = !{!41}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !14, globals: !34, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/458.sjeng/src/ecache.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !13}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DIDerivedType(tag: DW_TAG_typedef, name: "ECacheType", file: !1, line: 19, baseType: !6)
-!6 = !DICompositeType(tag: DW_TAG_structure_type, file: !1, line: 14, size: 96, align: 32, elements: !7)
-!7 = !{!8, !10, !11}
-!8 = !DIDerivedType(tag: DW_TAG_member, name: "stored_hash", scope: !6, file: !1, line: 16, baseType: !9, size: 32, align: 32)
-!9 = !DIBasicType(name: "unsigned int", size: 32, align: 32, encoding: DW_ATE_unsigned)
-!10 = !DIDerivedType(tag: DW_TAG_member, name: "hold_hash", scope: !6, file: !1, line: 17, baseType: !9, size: 32, align: 32, offset: 32)
-!11 = !DIDerivedType(tag: DW_TAG_member, name: "score", scope: !6, file: !1, line: 18, baseType: !12, size: 32, align: 32, offset: 64)
-!12 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!13 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!14 = !{!15, !21, !29, !32, !33}
-!15 = !DISubprogram(name: "storeECache", scope: !1, file: !1, line: 27, type: !16, isLocal: false, isDefinition: true, scopeLine: 28, flags: DIFlagPrototyped, isOptimized: true, function: void (i32)* @storeECache, variables: !18)
-!16 = !DISubroutineType(types: !17)
-!17 = !{null, !12}
-!18 = !{!19, !20}
-!19 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "score", arg: 1, scope: !15, file: !1, line: 27, type: !12)
-!20 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "ecindex", scope: !15, file: !1, line: 29, type: !12)
-!21 = !DISubprogram(name: "checkECache", scope: !1, file: !1, line: 38, type: !22, isLocal: false, isDefinition: true, scopeLine: 39, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i32*)* @checkECache, variables: !25)
-!22 = !DISubroutineType(types: !23)
-!23 = !{null, !24, !24}
-!24 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !12, size: 64, align: 64)
-!25 = !{!26, !27, !28}
-!26 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "score", arg: 1, scope: !21, file: !1, line: 38, type: !24)
-!27 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "in_cache", arg: 2, scope: !21, file: !1, line: 38, type: !24)
-!28 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "ecindex", scope: !21, file: !1, line: 40, type: !12)
-!29 = !DISubprogram(name: "reset_ecache", scope: !1, file: !1, line: 57, type: !30, isLocal: false, isDefinition: true, scopeLine: 58, flags: DIFlagPrototyped, isOptimized: true, function: void ()* @reset_ecache, variables: !2)
-!30 = !DISubroutineType(types: !31)
-!31 = !{null}
-!32 = !DISubprogram(name: "alloc_ecache", scope: !1, file: !1, line: 63, type: !30, isLocal: false, isDefinition: true, scopeLine: 64, flags: DIFlagPrototyped, isOptimized: true, function: void ()* @alloc_ecache, variables: !2)
-!33 = !DISubprogram(name: "free_ecache", scope: !1, file: !1, line: 79, type: !30, isLocal: false, isDefinition: true, scopeLine: 80, flags: DIFlagPrototyped, isOptimized: true, function: void ()* @free_ecache, variables: !2)
-!34 = !{!35, !36, !37}
-!35 = !DIGlobalVariable(name: "ECache", scope: !0, file: !1, line: 22, type: !4, isLocal: false, isDefinition: true, variable: %struct.ECacheType** @ECache)
-!36 = !DIGlobalVariable(name: "ECacheProbes", scope: !0, file: !1, line: 24, type: !9, isLocal: false, isDefinition: true, variable: i32* @ECacheProbes)
-!37 = !DIGlobalVariable(name: "ECacheHits", scope: !0, file: !1, line: 25, type: !9, isLocal: false, isDefinition: true, variable: i32* @ECacheHits)
-!38 = !{i32 2, !"Dwarf Version", i32 2}
-!39 = !{i32 2, !"Debug Info Version", i32 700000003}
-!40 = !{i32 1, !"PIC Level", i32 2}
-!41 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!42 = !DIExpression()
-!43 = !DILocation(line: 27, column: 22, scope: !15)
-!44 = !DILocation(line: 31, column: 13, scope: !15)
-!45 = !{!46, !46, i64 0}
-!46 = !{!"int", !47, i64 0}
-!47 = !{!"omnipotent char", !48, i64 0}
-!48 = !{!"Simple C/C++ TBAA"}
-!49 = !DILocation(line: 31, column: 20, scope: !15)
-!50 = !DILocation(line: 31, column: 18, scope: !15)
-!51 = !DILocation(line: 29, column: 7, scope: !15)
-!52 = !DILocation(line: 33, column: 3, scope: !15)
-!53 = !{!54, !54, i64 0}
-!54 = !{!"any pointer", !47, i64 0}
-!55 = !DILocation(line: 33, column: 19, scope: !15)
-!56 = !DILocation(line: 33, column: 31, scope: !15)
-!57 = !{!58, !46, i64 0}
-!58 = !{!"", !46, i64 0, !46, i64 4, !46, i64 8}
-!59 = !DILocation(line: 34, column: 31, scope: !15)
-!60 = !DILocation(line: 34, column: 19, scope: !15)
-!61 = !DILocation(line: 34, column: 29, scope: !15)
-!62 = !{!58, !46, i64 4}
-!63 = !DILocation(line: 35, column: 19, scope: !15)
-!64 = !DILocation(line: 35, column: 25, scope: !15)
-!65 = !{!58, !46, i64 8}
-!66 = !DILocation(line: 36, column: 1, scope: !15)
-!67 = !DILocation(line: 38, column: 23, scope: !21)
-!68 = !DILocation(line: 38, column: 35, scope: !21)
-!69 = !DILocation(line: 42, column: 15, scope: !21)
-!70 = !DILocation(line: 44, column: 13, scope: !21)
-!71 = !DILocation(line: 44, column: 20, scope: !21)
-!72 = !DILocation(line: 44, column: 18, scope: !21)
-!73 = !DILocation(line: 40, column: 7, scope: !21)
-!74 = !DILocation(line: 46, column: 6, scope: !75)
-!75 = distinct !DILexicalBlock(scope: !21, file: !1, line: 46, column: 6)
-!76 = !DILocation(line: 46, column: 22, scope: !75)
-!77 = !DILocation(line: 46, column: 34, scope: !75)
-!78 = !DILocation(line: 46, column: 42, scope: !75)
-!79 = !DILocation(line: 47, column: 20, scope: !75)
-!80 = !DILocation(line: 47, column: 33, scope: !75)
-!81 = !DILocation(line: 47, column: 30, scope: !75)
-!82 = !DILocation(line: 46, column: 6, scope: !21)
-!83 = !DILocation(line: 50, column: 17, scope: !84)
-!84 = distinct !DILexicalBlock(scope: !75, file: !1, line: 49, column: 5)
-!85 = !DILocation(line: 52, column: 17, scope: !84)
-!86 = !DILocation(line: 53, column: 32, scope: !84)
-!87 = !DILocation(line: 53, column: 14, scope: !84)
-!88 = !DILocation(line: 54, column: 5, scope: !84)
-!89 = !DILocation(line: 55, column: 1, scope: !21)
-!90 = !DILocation(line: 59, column: 3, scope: !29)
-!91 = !DILocation(line: 60, column: 3, scope: !29)
-!92 = !DILocation(line: 65, column: 51, scope: !32)
-!93 = !DILocation(line: 65, column: 50, scope: !32)
-!94 = !DILocation(line: 65, column: 25, scope: !32)
-!95 = !DILocation(line: 65, column: 10, scope: !32)
-!96 = !DILocation(line: 67, column: 14, scope: !97)
-!97 = distinct !DILexicalBlock(scope: !32, file: !1, line: 67, column: 7)
-!98 = !DILocation(line: 67, column: 7, scope: !32)
-!99 = !DILocation(line: 69, column: 5, scope: !100)
-!100 = distinct !DILexicalBlock(scope: !97, file: !1, line: 68, column: 3)
-!101 = !DILocation(line: 70, column: 5, scope: !100)
-!102 = !DILocation(line: 76, column: 4, scope: !32)
-!103 = !DILocation(line: 81, column: 8, scope: !33)
-!104 = !DILocation(line: 81, column: 3, scope: !33)
-!105 = !DILocation(line: 82, column: 3, scope: !33)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !25, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/458.sjeng/src/ecache.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/458.sjeng/src/ecache.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !12, metadata !20, metadata !23, metadata !24}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"storeECache", metadata !"storeECache", metadata !"", i32 27, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32)* @storeECache, null, null, metadata !9, i32 28} ; [ DW_TAG_subprogram ] [line 27] [def] [scope 28] [storeECache]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/458.sjeng/src/ecache.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{null, metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{metadata !10, metadata !11}
+!10 = metadata !{i32 786689, metadata !4, metadata !"score", metadata !5, i32 16777243, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [score] [line 27]
+!11 = metadata !{i32 786688, metadata !4, metadata !"ecindex", metadata !5, i32 29, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [ecindex] [line 29]
+!12 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"checkECache", metadata !"checkECache", metadata !"", i32 38, metadata !13, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i32*)* @checkECache, null, null, metadata !16, i32 39} ; [ DW_TAG_subprogram ] [line 38] [def] [scope 39] [checkECache]
+!13 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !14, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!14 = metadata !{null, metadata !15, metadata !15}
+!15 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !8} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!16 = metadata !{metadata !17, metadata !18, metadata !19}
+!17 = metadata !{i32 786689, metadata !12, metadata !"score", metadata !5, i32 16777254, metadata !15, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [score] [line 38]
+!18 = metadata !{i32 786689, metadata !12, metadata !"in_cache", metadata !5, i32 33554470, metadata !15, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [in_cache] [line 38]
+!19 = metadata !{i32 786688, metadata !12, metadata !"ecindex", metadata !5, i32 40, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [ecindex] [line 40]
+!20 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"reset_ecache", metadata !"reset_ecache", metadata !"", i32 57, metadata !21, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @reset_ecache, null, null, metadata !2, i32 58} ; [ DW_TAG_subprogram ] [line 57] [def] [scope 58] [reset_ecache]
+!21 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !22, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!22 = metadata !{null}
+!23 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"alloc_ecache", metadata !"alloc_ecache", metadata !"", i32 63, metadata !21, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @alloc_ecache, null, null, metadata !2, i32 64} ; [ DW_TAG_subprogram ] [line 63] [def] [scope 64] [alloc_ecache]
+!24 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"free_ecache", metadata !"free_ecache", metadata !"", i32 79, metadata !21, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @free_ecache, null, null, metadata !2, i32 80} ; [ DW_TAG_subprogram ] [line 79] [def] [scope 80] [free_ecache]
+!25 = metadata !{metadata !26, metadata !35, metadata !36}
+!26 = metadata !{i32 786484, i32 0, null, metadata !"ECache", metadata !"ECache", metadata !"", metadata !5, i32 22, metadata !27, i32 0, i32 1, %struct.ECacheType** @ECache, null} ; [ DW_TAG_variable ] [ECache] [line 22] [def]
+!27 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !28} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ECacheType]
+!28 = metadata !{i32 786454, metadata !1, null, metadata !"ECacheType", i32 19, i64 0, i64 0, i64 0, i32 0, metadata !29} ; [ DW_TAG_typedef ] [ECacheType] [line 19, size 0, align 0, offset 0] [from ]
+!29 = metadata !{i32 786451, metadata !1, null, metadata !"", i32 14, i64 96, i64 32, i32 0, i32 0, null, metadata !30, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 14, size 96, align 32, offset 0] [from ]
+!30 = metadata !{metadata !31, metadata !33, metadata !34}
+!31 = metadata !{i32 786445, metadata !1, metadata !29, metadata !"stored_hash", i32 16, i64 32, i64 32, i64 0, i32 0, metadata !32} ; [ DW_TAG_member ] [stored_hash] [line 16, size 32, align 32, offset 0] [from unsigned int]
+!32 = metadata !{i32 786468, null, null, metadata !"unsigned int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned int] [line 0, size 32, align 32, offset 0, enc DW_ATE_unsigned]
+!33 = metadata !{i32 786445, metadata !1, metadata !29, metadata !"hold_hash", i32 17, i64 32, i64 32, i64 32, i32 0, metadata !32} ; [ DW_TAG_member ] [hold_hash] [line 17, size 32, align 32, offset 32] [from unsigned int]
+!34 = metadata !{i32 786445, metadata !1, metadata !29, metadata !"score", i32 18, i64 32, i64 32, i64 64, i32 0, metadata !8} ; [ DW_TAG_member ] [score] [line 18, size 32, align 32, offset 64] [from int]
+!35 = metadata !{i32 786484, i32 0, null, metadata !"ECacheProbes", metadata !"ECacheProbes", metadata !"", metadata !5, i32 24, metadata !32, i32 0, i32 1, i32* @ECacheProbes, null} ; [ DW_TAG_variable ] [ECacheProbes] [line 24] [def]
+!36 = metadata !{i32 786484, i32 0, null, metadata !"ECacheHits", metadata !"ECacheHits", metadata !"", metadata !5, i32 25, metadata !32, i32 0, i32 1, i32* @ECacheHits, null} ; [ DW_TAG_variable ] [ECacheHits] [line 25] [def]
+!37 = metadata !{i32 27, i32 0, metadata !4, null}
+!38 = metadata !{i32 31, i32 0, metadata !4, null}
+!39 = metadata !{metadata !"int", metadata !40}
+!40 = metadata !{metadata !"omnipotent char", metadata !41}
+!41 = metadata !{metadata !"Simple C/C++ TBAA"}
+!42 = metadata !{i32 33, i32 0, metadata !4, null}
+!43 = metadata !{metadata !"any pointer", metadata !40}
+!44 = metadata !{i32 34, i32 0, metadata !4, null}
+!45 = metadata !{i32 35, i32 0, metadata !4, null}
+!46 = metadata !{i32 36, i32 0, metadata !4, null}
+!47 = metadata !{i32 38, i32 0, metadata !12, null}
+!48 = metadata !{i32 42, i32 0, metadata !12, null}
+!49 = metadata !{i32 44, i32 0, metadata !12, null}
+!50 = metadata !{i32 46, i32 0, metadata !12, null}
+!51 = metadata !{i32 50, i32 0, metadata !52, null}
+!52 = metadata !{i32 786443, metadata !1, metadata !12, i32 49, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/458.sjeng/src/ecache.c]
+!53 = metadata !{i32 52, i32 0, metadata !52, null}
+!54 = metadata !{i32 53, i32 0, metadata !52, null}
+!55 = metadata !{i32 54, i32 0, metadata !52, null}
+!56 = metadata !{i32 55, i32 0, metadata !12, null}
+!57 = metadata !{i32 59, i32 0, metadata !20, null}
+!58 = metadata !{i32 60, i32 0, metadata !20, null}
+!59 = metadata !{i32 65, i32 0, metadata !23, null}
+!60 = metadata !{i32 67, i32 0, metadata !23, null}
+!61 = metadata !{i32 69, i32 0, metadata !62, null}
+!62 = metadata !{i32 786443, metadata !1, metadata !23, i32 68, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/458.sjeng/src/ecache.c]
+!63 = metadata !{i32 70, i32 0, metadata !62, null}
+!64 = metadata !{i32 76, i32 0, metadata !23, null}
+!65 = metadata !{i32 81, i32 0, metadata !24, null}
+!66 = metadata !{i32 82, i32 0, metadata !24, null}

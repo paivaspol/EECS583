@@ -1,0 +1,28 @@
+define linkonce_odr signext i8 @_ZNKSt5ctypeIcE5widenEc(%"class.std::ctype"* %this, i8 signext %__c) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.std::ctype"* %this}, i64 0, metadata !8708), !dbg !9766
+  tail call void @llvm.dbg.value(metadata !{i8 %__c}, i64 0, metadata !8711), !dbg !9766
+  %_M_widen_ok = getelementptr inbounds %"class.std::ctype"* %this, i64 0, i32 6, !dbg !9767
+  %0 = load i8* %_M_widen_ok, align 1, !dbg !9767, !tbaa !8888
+  %tobool = icmp eq i8 %0, 0, !dbg !9767
+  br i1 %tobool, label %if.end, label %if.then, !dbg !9767
+
+if.then:                                          ; preds = %entry
+  %idxprom = zext i8 %__c to i64, !dbg !9769
+  %arrayidx = getelementptr inbounds %"class.std::ctype"* %this, i64 0, i32 7, i64 %idxprom, !dbg !9769
+  %1 = load i8* %arrayidx, align 1, !dbg !9769, !tbaa !8888
+  br label %return, !dbg !9769
+
+if.end:                                           ; preds = %entry
+  tail call void @_ZNKSt5ctypeIcE13_M_widen_initEv(%"class.std::ctype"* %this) #13, !dbg !9770
+  %2 = bitcast %"class.std::ctype"* %this to i8 (%"class.std::ctype"*, i8)***, !dbg !9771
+  %vtable = load i8 (%"class.std::ctype"*, i8)*** %2, align 8, !dbg !9771, !tbaa !8876
+  %vfn = getelementptr inbounds i8 (%"class.std::ctype"*, i8)** %vtable, i64 6, !dbg !9771
+  %3 = load i8 (%"class.std::ctype"*, i8)** %vfn, align 8, !dbg !9771
+  %call = tail call signext i8 %3(%"class.std::ctype"* %this, i8 signext %__c) #13, !dbg !9771
+  br label %return, !dbg !9771
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi i8 [ %1, %if.then ], [ %call, %if.end ]
+  ret i8 %retval.0, !dbg !9772
+}

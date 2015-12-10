@@ -1,18 +1,21 @@
 define void @split_all_insns_noflow() #0 {
 entry:
-  %call = tail call %struct.rtx_def* @get_insns() #6
-  %tobool4 = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool4, label %for.end, label %for.body
+  %call = tail call %struct.rtx_def* @get_insns() #7, !dbg !2115
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !912), !dbg !2115
+  %tobool4 = icmp eq %struct.rtx_def* %call, null, !dbg !2115
+  br i1 %tobool4, label %for.end, label %for.body, !dbg !2115
 
 for.body:                                         ; preds = %entry, %for.body
   %insn.05 = phi %struct.rtx_def* [ %0, %for.body ], [ %call, %entry ]
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.05, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %call1 = tail call fastcc %struct.rtx_def* @split_insn(%struct.rtx_def* %insn.05) #7
-  %tobool = icmp eq %struct.rtx_def* %0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.05, i64 0, i32 1, i64 2, !dbg !2117
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !2117
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !2117, !tbaa !1177
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !911), !dbg !2117
+  %call1 = tail call fastcc %struct.rtx_def* @split_insn(%struct.rtx_def* %insn.05) #8, !dbg !2119
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !912), !dbg !2115
+  %tobool = icmp eq %struct.rtx_def* %0, null, !dbg !2115
+  br i1 %tobool, label %for.end, label %for.body, !dbg !2115
 
 for.end:                                          ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !2120
 }

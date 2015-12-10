@@ -3,47 +3,57 @@ entry:
   %code = alloca i32, align 4
   %second_code = alloca i32, align 4
   %bypass_code = alloca i32, align 4
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  store i32 %bf.clear, i32* %code, align 4, !tbaa !8
-  %cmp = icmp eq i32 %mode, 0
-  br i1 %cmp, label %if.end, label %land.lhs.true
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2386), !dbg !6257
+  call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2387), !dbg !6258
+  call void @llvm.dbg.declare(metadata !{i32* %code}, metadata !2389), !dbg !6259
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !6259
+  %bf.load = load i32* %0, align 8, !dbg !6259
+  %bf.clear = and i32 %bf.load, 65535, !dbg !6259
+  call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !2389), !dbg !6259
+  store i32 %bf.clear, i32* %code, align 4, !dbg !6259, !tbaa !5195
+  %cmp = icmp eq i32 %mode, 0, !dbg !6260
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !6260
 
 land.lhs.true:                                    ; preds = %entry
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear2 = and i32 %bf.lshr, 255
-  %cmp3 = icmp eq i32 %bf.clear2, %mode
-  br i1 %cmp3, label %if.end, label %return
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !6260
+  %bf.clear2 = and i32 %bf.lshr, 255, !dbg !6260
+  %cmp3 = icmp eq i32 %bf.clear2, %mode, !dbg !6260
+  br i1 %cmp3, label %if.end, label %return, !dbg !6260
 
 if.end:                                           ; preds = %land.lhs.true, %entry
-  %idxprom71 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom71
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp4 = icmp eq i8 %1, 60
-  br i1 %cmp4, label %if.end7, label %return
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !2389), !dbg !6261
+  %idxprom71 = zext i32 %bf.clear to i64, !dbg !6261
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom71, !dbg !6261
+  %1 = load i8* %arrayidx, align 1, !dbg !6261, !tbaa !4348
+  %cmp4 = icmp eq i8 %1, 60, !dbg !6261
+  br i1 %cmp4, label %if.end7, label %return, !dbg !6261
 
 if.end7:                                          ; preds = %if.end
-  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx8 to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %3 = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load9 = load i32* %3, align 8
-  %bf.lshr10 = lshr i32 %bf.load9, 16
-  %bf.clear11 = and i32 %bf.lshr10, 255
-  %bf.clear11.off = add i32 %bf.clear11, -57
-  %4 = icmp ult i32 %bf.clear11.off, 2
-  br i1 %4, label %if.then16, label %if.end21
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, !dbg !6262
+  %rtx = bitcast %union.rtunion_def* %arrayidx8 to %struct.rtx_def**, !dbg !6262
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !6262, !tbaa !4365
+  %3 = bitcast %struct.rtx_def* %2 to i32*, !dbg !6262
+  %bf.load9 = load i32* %3, align 8, !dbg !6262
+  %bf.lshr10 = lshr i32 %bf.load9, 16, !dbg !6262
+  %bf.clear11 = and i32 %bf.lshr10, 255, !dbg !6262
+  call void @llvm.dbg.value(metadata !{i32 %bf.clear11}, i64 0, metadata !2388), !dbg !6262
+  %bf.clear11.off = add i32 %bf.clear11, -57, !dbg !6263
+  %4 = icmp ult i32 %bf.clear11.off, 2, !dbg !6263
+  br i1 %4, label %if.then16, label %if.end21, !dbg !6263
 
 if.then16:                                        ; preds = %if.end7
-  call fastcc void @ix86_fp_comparison_codes(i32 %bf.clear, i32* %bypass_code, i32* %code, i32* %second_code) #10
-  %5 = load i32* %bypass_code, align 4, !tbaa !8
-  %cmp17 = icmp eq i32 %5, 1
-  br i1 %cmp17, label %land.rhs, label %land.end
+  call void @llvm.dbg.declare(metadata !{i32* %second_code}, metadata !2390), !dbg !6264
+  call void @llvm.dbg.declare(metadata !{i32* %bypass_code}, metadata !2392), !dbg !6264
+  call fastcc void @ix86_fp_comparison_codes(i32 %bf.clear, i32* %bypass_code, i32* %code, i32* %second_code) #11, !dbg !6265
+  call void @llvm.dbg.value(metadata !{i32* %bypass_code}, i64 0, metadata !2392), !dbg !6266
+  %5 = load i32* %bypass_code, align 4, !dbg !6266, !tbaa !5195
+  %cmp17 = icmp eq i32 %5, 1, !dbg !6266
+  br i1 %cmp17, label %land.rhs, label %land.end, !dbg !6266
 
 land.rhs:                                         ; preds = %if.then16
-  %6 = load i32* %second_code, align 4, !tbaa !8
-  %cmp19 = icmp eq i32 %6, 1
+  call void @llvm.dbg.value(metadata !{i32* %second_code}, i64 0, metadata !2390), !dbg !6266
+  %6 = load i32* %second_code, align 4, !dbg !6266, !tbaa !5195
+  %cmp19 = icmp eq i32 %6, 1, !dbg !6266
   br label %land.end
 
 land.end:                                         ; preds = %land.rhs, %if.then16
@@ -65,35 +75,35 @@ if.end21:                                         ; preds = %if.end7
     i32 108, label %sw.bb36
     i32 105, label %sw.bb41
     i32 106, label %sw.bb41
-  ]
+  ], !dbg !6267
 
 sw.bb22:                                          ; preds = %if.end21, %if.end21
-  %8 = and i32 %bf.lshr10, 254
-  %9 = icmp eq i32 %8, 52
-  %cmp29 = icmp eq i32 %bf.clear11, 54
-  %or.cond53 = or i1 %9, %cmp29
-  %cmp32 = icmp eq i32 %bf.clear11, 55
-  %or.cond54 = or i1 %or.cond53, %cmp32
-  %. = zext i1 %or.cond54 to i32
-  br label %return
+  %8 = and i32 %bf.lshr10, 254, !dbg !6268
+  %9 = icmp eq i32 %8, 52, !dbg !6268
+  %cmp29 = icmp eq i32 %bf.clear11, 54, !dbg !6268
+  %or.cond53 = or i1 %9, %cmp29, !dbg !6268
+  %cmp32 = icmp eq i32 %bf.clear11, 55, !dbg !6268
+  %or.cond54 = or i1 %or.cond53, %cmp32, !dbg !6268
+  %. = zext i1 %or.cond54 to i32, !dbg !6270
+  br label %return, !dbg !6270
 
 sw.bb36:                                          ; preds = %if.end21, %if.end21, %if.end21, %if.end21, %if.end21, %if.end21
-  %cmp37 = icmp eq i32 %bf.clear11, 52
-  %.69 = zext i1 %cmp37 to i32
-  br label %return
+  %cmp37 = icmp eq i32 %bf.clear11, 52, !dbg !6271
+  %.69 = zext i1 %cmp37 to i32, !dbg !6272
+  br label %return, !dbg !6272
 
 sw.bb41:                                          ; preds = %if.end21, %if.end21
-  %10 = and i32 %bf.lshr10, 254
-  %11 = icmp eq i32 %10, 52
-  %cmp48 = icmp eq i32 %bf.clear11, 55
-  %or.cond56 = or i1 %11, %cmp48
-  %.70 = zext i1 %or.cond56 to i32
-  br label %return
+  %10 = and i32 %bf.lshr10, 254, !dbg !6273
+  %11 = icmp eq i32 %10, 52, !dbg !6273
+  %cmp48 = icmp eq i32 %bf.clear11, 55, !dbg !6273
+  %or.cond56 = or i1 %11, %cmp48, !dbg !6273
+  %.70 = zext i1 %or.cond56 to i32, !dbg !6274
+  br label %return, !dbg !6274
 
 sw.default:                                       ; preds = %if.end21
-  br label %return
+  br label %return, !dbg !6275
 
 return:                                           ; preds = %sw.bb41, %sw.bb36, %sw.bb22, %if.end21, %if.end21, %if.end, %land.lhs.true, %sw.default, %land.end
   %retval.0 = phi i32 [ %land.ext, %land.end ], [ 0, %sw.default ], [ 0, %land.lhs.true ], [ 0, %if.end ], [ 1, %if.end21 ], [ 1, %if.end21 ], [ %., %sw.bb22 ], [ %.69, %sw.bb36 ], [ %.70, %sw.bb41 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6276
 }

@@ -1,39 +1,40 @@
 define void @_Z28POVMS_Sys_QueueClose_DefaultP27POVMS_Sys_QueueNode_Default(%struct.POVMS_Sys_QueueNode_Default* %q) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.POVMS_Sys_QueueNode_Default* %q, i64 0, metadata !892, metadata !1201), !dbg !1311
-  tail call void @llvm.dbg.value(metadata %struct.POVMS_Sys_QueueNode_Default* %q, i64 0, metadata !893, metadata !1201), !dbg !1312
-  %1 = icmp eq %struct.POVMS_Sys_QueueNode_Default* %q, null, !dbg !1313
-  br i1 %1, label %15, label %2, !dbg !1314
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMS_Sys_QueueNode_Default* %q}, i64 0, metadata !855), !dbg !979
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMS_Sys_QueueNode_Default* %q}, i64 0, metadata !856), !dbg !980
+  %cmp = icmp eq %struct.POVMS_Sys_QueueNode_Default* %q, null, !dbg !981
+  br i1 %cmp, label %if.end4, label %if.then, !dbg !981
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.POVMS_Sys_QueueNode_Default* %q, i64 0, i32 1, !dbg !1315
-  %4 = load i32* %3, align 4, !dbg !1315, !tbaa !1316
-  %5 = icmp sgt i32 %4, 0, !dbg !1317
-  br i1 %5, label %6, label %.loopexit, !dbg !1318
+if.then:                                          ; preds = %entry
+  %entries = getelementptr inbounds %struct.POVMS_Sys_QueueNode_Default* %q, i64 0, i32 1, !dbg !982
+  %0 = load i32* %entries, align 4, !dbg !982, !tbaa !937
+  %cmp1 = icmp sgt i32 %0, 0, !dbg !982
+  br i1 %cmp1, label %if.then2, label %if.end, !dbg !982
 
-; <label>:6                                       ; preds = %2
-  %7 = getelementptr inbounds %struct.POVMS_Sys_QueueNode_Default* %q, i64 0, i32 2, !dbg !1319
-  %8 = load %struct.POVMS_Sys_QueueDataNode_Default** %7, align 8, !dbg !1319, !tbaa !1320
-  tail call void @llvm.dbg.value(metadata %struct.POVMS_Sys_QueueDataNode_Default* %8, i64 0, metadata !894, metadata !1201), !dbg !1321
-  tail call void @llvm.dbg.value(metadata %struct.POVMS_Sys_QueueDataNode_Default* null, i64 0, metadata !899, metadata !1201), !dbg !1322
-  %9 = icmp eq %struct.POVMS_Sys_QueueDataNode_Default* %8, null, !dbg !1323
-  br i1 %9, label %.loopexit, label %.lr.ph, !dbg !1324
+if.then2:                                         ; preds = %if.then
+  %first = getelementptr inbounds %struct.POVMS_Sys_QueueNode_Default* %q, i64 0, i32 2, !dbg !983
+  %1 = load %struct.POVMS_Sys_QueueDataNode_Default** %first, align 8, !dbg !983, !tbaa !917
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMS_Sys_QueueDataNode_Default* %1}, i64 0, metadata !857), !dbg !983
+  tail call void @llvm.dbg.value(metadata !984, i64 0, metadata !860), !dbg !985
+  %cmp310 = icmp eq %struct.POVMS_Sys_QueueDataNode_Default* %1, null, !dbg !986
+  br i1 %cmp310, label %if.end, label %while.body, !dbg !986
 
-.lr.ph:                                           ; preds = %6, %.lr.ph
-  %node.01 = phi %struct.POVMS_Sys_QueueDataNode_Default* [ %11, %.lr.ph ], [ %8, %6 ]
-  %10 = getelementptr inbounds %struct.POVMS_Sys_QueueDataNode_Default* %node.01, i64 0, i32 0, !dbg !1325
-  %11 = load %struct.POVMS_Sys_QueueDataNode_Default** %10, align 8, !dbg !1325, !tbaa !1327
-  tail call void @llvm.dbg.value(metadata %struct.POVMS_Sys_QueueDataNode_Default* %11, i64 0, metadata !899, metadata !1201), !dbg !1322
-  %12 = bitcast %struct.POVMS_Sys_QueueDataNode_Default* %node.01 to i8*, !dbg !1329
-  tail call void @free(i8* %12) #8, !dbg !1329
-  tail call void @llvm.dbg.value(metadata %struct.POVMS_Sys_QueueDataNode_Default* %11, i64 0, metadata !894, metadata !1201), !dbg !1321
-  %13 = icmp eq %struct.POVMS_Sys_QueueDataNode_Default* %11, null, !dbg !1323
-  br i1 %13, label %.loopexit, label %.lr.ph, !dbg !1324
+while.body:                                       ; preds = %if.then2, %while.body
+  %node.011 = phi %struct.POVMS_Sys_QueueDataNode_Default* [ %2, %while.body ], [ %1, %if.then2 ]
+  %next = getelementptr inbounds %struct.POVMS_Sys_QueueDataNode_Default* %node.011, i64 0, i32 0, !dbg !987
+  %2 = load %struct.POVMS_Sys_QueueDataNode_Default** %next, align 8, !dbg !987, !tbaa !917
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMS_Sys_QueueDataNode_Default* %2}, i64 0, metadata !860), !dbg !987
+  %3 = bitcast %struct.POVMS_Sys_QueueDataNode_Default* %node.011 to i8*, !dbg !989
+  tail call void @free(i8* %3) #9, !dbg !989
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMS_Sys_QueueDataNode_Default* %2}, i64 0, metadata !857), !dbg !990
+  %cmp3 = icmp eq %struct.POVMS_Sys_QueueDataNode_Default* %2, null, !dbg !986
+  br i1 %cmp3, label %if.end, label %while.body, !dbg !986
 
-.loopexit:                                        ; preds = %.lr.ph, %6, %2
-  %14 = bitcast %struct.POVMS_Sys_QueueNode_Default* %q to i8*, !dbg !1330
-  tail call void @free(i8* %14) #8, !dbg !1330
-  br label %15, !dbg !1331
+if.end:                                           ; preds = %if.then2, %while.body, %if.then
+  %4 = bitcast %struct.POVMS_Sys_QueueNode_Default* %q to i8*, !dbg !991
+  tail call void @free(i8* %4) #9, !dbg !991
+  br label %if.end4, !dbg !992
 
-; <label>:15                                      ; preds = %0, %.loopexit
-  ret void, !dbg !1332
+if.end4:                                          ; preds = %entry, %if.end
+  ret void, !dbg !993
 }

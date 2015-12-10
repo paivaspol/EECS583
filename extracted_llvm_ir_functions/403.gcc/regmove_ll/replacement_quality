@@ -1,39 +1,41 @@
-define internal fastcc i32 @replacement_quality(%struct.rtx_def* nocapture %reg) #4 {
+define internal fastcc i32 @replacement_quality(%struct.rtx_def* nocapture %reg) #5 {
 entry:
-  %0 = bitcast %struct.rtx_def* %reg to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 61
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg}, i64 0, metadata !834), !dbg !1664
+  %0 = bitcast %struct.rtx_def* %reg to i32*, !dbg !1665
+  %bf.load = load i32* %0, align 8, !dbg !1665
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1665
+  %cmp = icmp eq i32 %bf.clear, 61, !dbg !1665
+  br i1 %cmp, label %if.end, label %return, !dbg !1665
 
 if.end:                                           ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %1 = load i32* %rtuint, align 4, !tbaa !0
-  %idxprom = zext i32 %1 to i64
-  %2 = load %struct.varray_head_tag** @reg_n_info, align 8, !tbaa !4
-  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4
-  %reg1 = bitcast %union.varray_data_tag* %data to [1 x %struct.reg_info_def*]*
-  %arrayidx2 = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg1, i64 0, i64 %idxprom
-  %3 = load %struct.reg_info_def** %arrayidx2, align 8, !tbaa !4
-  %live_length = getelementptr inbounds %struct.reg_info_def* %3, i64 0, i32 7
-  %4 = load i32* %live_length, align 4, !tbaa !0
-  %cmp3 = icmp slt i32 %4, 0
-  br i1 %cmp3, label %return, label %if.end5
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0, !dbg !1666
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !1666
+  %1 = load i32* %rtuint, align 4, !dbg !1666, !tbaa !925
+  %idxprom = zext i32 %1 to i64, !dbg !1666
+  %2 = load %struct.varray_head_tag** @reg_n_info, align 8, !dbg !1666, !tbaa !935
+  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4, !dbg !1666
+  %reg1 = bitcast %union.varray_data_tag* %data to [1 x %struct.reg_info_def*]*, !dbg !1666
+  %arrayidx2 = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg1, i64 0, i64 %idxprom, !dbg !1666
+  %3 = load %struct.reg_info_def** %arrayidx2, align 8, !dbg !1666, !tbaa !935
+  %live_length = getelementptr inbounds %struct.reg_info_def* %3, i64 0, i32 7, !dbg !1666
+  %4 = load i32* %live_length, align 4, !dbg !1666, !tbaa !925
+  %cmp3 = icmp slt i32 %4, 0, !dbg !1666
+  br i1 %cmp3, label %return, label %if.end5, !dbg !1666
 
 if.end5:                                          ; preds = %if.end
-  %5 = load i32** @regno_src_regno, align 8, !tbaa !4
-  %arrayidx10 = getelementptr inbounds i32* %5, i64 %idxprom
-  %6 = load i32* %arrayidx10, align 4, !tbaa !0
-  %cmp11 = icmp slt i32 %6, 0
-  br i1 %cmp11, label %return, label %if.end13
+  %5 = load i32** @regno_src_regno, align 8, !dbg !1667, !tbaa !935
+  %arrayidx10 = getelementptr inbounds i32* %5, i64 %idxprom, !dbg !1667
+  %6 = load i32* %arrayidx10, align 4, !dbg !1667, !tbaa !925
+  tail call void @llvm.dbg.value(metadata !{i32 %6}, i64 0, metadata !835), !dbg !1667
+  %cmp11 = icmp slt i32 %6, 0, !dbg !1668
+  br i1 %cmp11, label %return, label %if.end13, !dbg !1668
 
 if.end13:                                         ; preds = %if.end5
-  %cmp14 = icmp slt i32 %6, 53
-  %. = select i1 %cmp14, i32 1, i32 2
-  br label %return
+  %cmp14 = icmp slt i32 %6, 53, !dbg !1669
+  %. = select i1 %cmp14, i32 1, i32 2, !dbg !1670
+  br label %return, !dbg !1670
 
 return:                                           ; preds = %if.end13, %if.end5, %if.end, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ 0, %if.end ], [ 3, %if.end5 ], [ %., %if.end13 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1671
 }

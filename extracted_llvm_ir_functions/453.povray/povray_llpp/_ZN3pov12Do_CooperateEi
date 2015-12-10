@@ -1,20 +1,21 @@
 define void @_ZN3pov12Do_CooperateEi(i32 %level) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %level, i64 0, metadata !1402, metadata !1951), !dbg !2256
-  %cond = icmp eq i32 %level, 1, !dbg !2257
-  br i1 %cond, label %.loopexit, label %.preheader1, !dbg !2257
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %level}, i64 0, metadata !1196), !dbg !1625
+  %cond = icmp eq i32 %level, 1, !dbg !1626
+  br i1 %cond, label %sw.epilog, label %while.cond, !dbg !1626
 
-.preheader1:                                      ; preds = %0, %.preheader1
-  %1 = load i8** @POVMS_Render_Context, align 8, !dbg !2258, !tbaa !1956
-  %2 = tail call i32 @_Z21POVMS_ProcessMessagesPvi(i8* %1, i32 0) #10, !dbg !2260
-  %3 = icmp eq i32 %2, 1, !dbg !2261
-  br i1 %3, label %.preheader1, label %.preheader, !dbg !2262
+while.cond:                                       ; preds = %entry, %while.cond
+  %0 = load i8** @POVMS_Render_Context, align 8, !dbg !1627, !tbaa !1456
+  %call = tail call i32 @_Z21POVMS_ProcessMessagesPvi(i8* %0, i32 0) #9, !dbg !1627
+  %cmp = icmp eq i32 %call, 1, !dbg !1627
+  br i1 %cmp, label %while.cond, label %while.cond2, !dbg !1627
 
-.preheader:                                       ; preds = %.preheader1, %.preheader
-  %4 = load i8** @POVMS_Output_Context, align 8, !dbg !2263, !tbaa !1956
-  %5 = tail call i32 @_Z21POVMS_ProcessMessagesPvi(i8* %4, i32 0) #10, !dbg !2264
-  %6 = icmp eq i32 %5, 1, !dbg !2265
-  br i1 %6, label %.preheader, label %.loopexit, !dbg !2266
+while.cond2:                                      ; preds = %while.cond, %while.cond2
+  %1 = load i8** @POVMS_Output_Context, align 8, !dbg !1629, !tbaa !1456
+  %call3 = tail call i32 @_Z21POVMS_ProcessMessagesPvi(i8* %1, i32 0) #9, !dbg !1629
+  %cmp4 = icmp eq i32 %call3, 1, !dbg !1629
+  br i1 %cmp4, label %while.cond2, label %sw.epilog, !dbg !1629
 
-.loopexit:                                        ; preds = %.preheader, %0
-  ret void, !dbg !2267
+sw.epilog:                                        ; preds = %while.cond2, %entry
+  ret void, !dbg !1630
 }

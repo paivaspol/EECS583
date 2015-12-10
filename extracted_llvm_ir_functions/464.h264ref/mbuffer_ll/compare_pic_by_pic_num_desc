@@ -1,23 +1,24 @@
-define internal i32 @compare_pic_by_pic_num_desc(i8* nocapture readonly %arg1, i8* nocapture readonly %arg2) #4 {
-  tail call void @llvm.dbg.value(metadata i8* %arg1, i64 0, metadata !855, metadata !1408), !dbg !2507
-  tail call void @llvm.dbg.value(metadata i8* %arg2, i64 0, metadata !856, metadata !1408), !dbg !2508
-  %1 = bitcast i8* %arg1 to %struct.storable_picture**, !dbg !2509
-  %2 = load %struct.storable_picture** %1, align 8, !dbg !2511, !tbaa !1389
-  %3 = getelementptr inbounds %struct.storable_picture* %2, i64 0, i32 11, !dbg !2512
-  %4 = load i32* %3, align 4, !dbg !2512, !tbaa !1948
-  %5 = bitcast i8* %arg2 to %struct.storable_picture**, !dbg !2513
-  %6 = load %struct.storable_picture** %5, align 8, !dbg !2514, !tbaa !1389
-  %7 = getelementptr inbounds %struct.storable_picture* %6, i64 0, i32 11, !dbg !2515
-  %8 = load i32* %7, align 4, !dbg !2515, !tbaa !1948
-  %9 = icmp slt i32 %4, %8, !dbg !2516
-  br i1 %9, label %12, label %10, !dbg !2517
+define internal i32 @compare_pic_by_pic_num_desc(i8* nocapture %arg1, i8* nocapture %arg2) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %arg1}, i64 0, metadata !1028), !dbg !1884
+  tail call void @llvm.dbg.value(metadata !{i8* %arg2}, i64 0, metadata !1029), !dbg !1884
+  %0 = bitcast i8* %arg1 to %struct.storable_picture**, !dbg !1885
+  %1 = load %struct.storable_picture** %0, align 8, !dbg !1885, !tbaa !1363
+  %pic_num = getelementptr inbounds %struct.storable_picture* %1, i64 0, i32 11, !dbg !1885
+  %2 = load i32* %pic_num, align 4, !dbg !1885, !tbaa !1366
+  %3 = bitcast i8* %arg2 to %struct.storable_picture**, !dbg !1885
+  %4 = load %struct.storable_picture** %3, align 8, !dbg !1885, !tbaa !1363
+  %pic_num1 = getelementptr inbounds %struct.storable_picture* %4, i64 0, i32 11, !dbg !1885
+  %5 = load i32* %pic_num1, align 4, !dbg !1885, !tbaa !1366
+  %cmp = icmp slt i32 %2, %5, !dbg !1885
+  br i1 %cmp, label %return, label %if.end, !dbg !1885
 
-; <label>:10                                      ; preds = %0
-  %11 = icmp sgt i32 %4, %8, !dbg !2518
-  %. = sext i1 %11 to i32, !dbg !2520
-  br label %12, !dbg !2520
+if.end:                                           ; preds = %entry
+  %cmp4 = icmp sgt i32 %2, %5, !dbg !1886
+  %. = sext i1 %cmp4 to i32, !dbg !1887
+  br label %return, !dbg !1887
 
-; <label>:12                                      ; preds = %10, %0
-  %.0 = phi i32 [ 1, %0 ], [ %., %10 ]
-  ret i32 %.0, !dbg !2521
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ %., %if.end ]
+  ret i32 %retval.0, !dbg !1888
 }

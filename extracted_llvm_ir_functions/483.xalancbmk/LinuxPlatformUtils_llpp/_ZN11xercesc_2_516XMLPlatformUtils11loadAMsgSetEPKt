@@ -1,0 +1,90 @@
+define %"class.xercesc_2_5::XMLMsgLoader"* @_ZN11xercesc_2_516XMLPlatformUtils11loadAMsgSetEPKt(i16* %msgDomain) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %msgDomain}, i64 0, metadata !1060), !dbg !1929
+  %call = invoke i8* @_ZN11xercesc_2_57XMemorynwEm(i64 16) #11
+          to label %invoke.cont unwind label %lpad, !dbg !1930
+
+invoke.cont:                                      ; preds = %entry
+  %0 = bitcast i8* %call to %"class.xercesc_2_5::InMemMsgLoader"*, !dbg !1930
+  invoke void @_ZN11xercesc_2_514InMemMsgLoaderC1EPKt(%"class.xercesc_2_5::InMemMsgLoader"* %0, i16* %msgDomain) #11
+          to label %invoke.cont2 unwind label %lpad1, !dbg !1930
+
+invoke.cont2:                                     ; preds = %invoke.cont
+  %1 = bitcast i8* %call to %"class.xercesc_2_5::XMLMsgLoader"*, !dbg !1930
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLMsgLoader"* %1}, i64 0, metadata !1062), !dbg !1930
+  br label %try.cont, !dbg !1932
+
+lpad:                                             ; preds = %entry
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_520OutOfMemoryExceptionE to i8*)
+          catch i8* null, !dbg !1930
+  %3 = extractvalue { i8*, i32 } %2, 0, !dbg !1930
+  %4 = extractvalue { i8*, i32 } %2, 1, !dbg !1930
+  br label %catch.dispatch, !dbg !1930
+
+lpad1:                                            ; preds = %invoke.cont
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_520OutOfMemoryExceptionE to i8*)
+          catch i8* null, !dbg !1930
+  %6 = extractvalue { i8*, i32 } %5, 0, !dbg !1930
+  %7 = extractvalue { i8*, i32 } %5, 1, !dbg !1930
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %call) #11
+          to label %catch.dispatch unwind label %terminate.lpad, !dbg !1930
+
+catch.dispatch:                                   ; preds = %lpad1, %lpad
+  %exn.slot.0 = phi i8* [ %6, %lpad1 ], [ %3, %lpad ]
+  %ehselector.slot.0 = phi i32 [ %7, %lpad1 ], [ %4, %lpad ]
+  %8 = tail call i32 @llvm.eh.typeid.for(i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_520OutOfMemoryExceptionE to i8*)) #8, !dbg !1932
+  %matches = icmp eq i32 %ehselector.slot.0, %8, !dbg !1932
+  %9 = tail call i8* @__cxa_begin_catch(i8* %exn.slot.0) #8, !dbg !1933
+  br i1 %matches, label %catch7, label %catch, !dbg !1932
+
+catch7:                                           ; preds = %catch.dispatch
+  invoke void @__cxa_rethrow() #12
+          to label %unreachable unwind label %lpad9, !dbg !1934
+
+catch:                                            ; preds = %catch.dispatch
+  invoke void @_ZN11xercesc_2_516XMLPlatformUtils5panicENS_12PanicHandler12PanicReasonsE(i32 4) #11
+          to label %invoke.cont5 unwind label %lpad4, !dbg !1936
+
+invoke.cont5:                                     ; preds = %catch
+  tail call void @__cxa_end_catch(), !dbg !1938
+  br label %try.cont, !dbg !1933
+
+lpad4:                                            ; preds = %catch
+  %10 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1936
+  %11 = extractvalue { i8*, i32 } %10, 0, !dbg !1936
+  %12 = extractvalue { i8*, i32 } %10, 1, !dbg !1936
+  invoke void @__cxa_end_catch()
+          to label %eh.resume unwind label %terminate.lpad, !dbg !1933
+
+lpad9:                                            ; preds = %catch7
+  %13 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1934
+  %14 = extractvalue { i8*, i32 } %13, 0, !dbg !1934
+  %15 = extractvalue { i8*, i32 } %13, 1, !dbg !1934
+  invoke void @__cxa_end_catch()
+          to label %eh.resume unwind label %terminate.lpad, !dbg !1939
+
+try.cont:                                         ; preds = %invoke.cont5, %invoke.cont2
+  %retVal.0 = phi %"class.xercesc_2_5::XMLMsgLoader"* [ %1, %invoke.cont2 ], [ undef, %invoke.cont5 ]
+  ret %"class.xercesc_2_5::XMLMsgLoader"* %retVal.0, !dbg !1940
+
+eh.resume:                                        ; preds = %lpad9, %lpad4
+  %exn.slot.1 = phi i8* [ %14, %lpad9 ], [ %11, %lpad4 ]
+  %ehselector.slot.1 = phi i32 [ %15, %lpad9 ], [ %12, %lpad4 ]
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.1, 0, !dbg !1933
+  %lpad.val13 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.1, 1, !dbg !1933
+  resume { i8*, i32 } %lpad.val13, !dbg !1933
+
+terminate.lpad:                                   ; preds = %lpad9, %lpad4, %lpad1
+  %16 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !1930
+  %17 = extractvalue { i8*, i32 } %16, 0, !dbg !1930
+  tail call void @__clang_call_terminate(i8* %17) #10, !dbg !1930
+  unreachable, !dbg !1930
+
+unreachable:                                      ; preds = %catch7
+  unreachable
+}

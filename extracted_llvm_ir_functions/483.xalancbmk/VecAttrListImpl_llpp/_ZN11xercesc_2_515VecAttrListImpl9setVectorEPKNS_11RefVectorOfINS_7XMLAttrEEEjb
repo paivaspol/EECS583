@@ -1,0 +1,33 @@
+define void @_ZN11xercesc_2_515VecAttrListImpl9setVectorEPKNS_11RefVectorOfINS_7XMLAttrEEEjb(%"class.xercesc_2_5::VecAttrListImpl"* nocapture %this, %"class.xercesc_2_5::RefVectorOf"* %srcVec, i32 %count, i1 zeroext %adopt) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::VecAttrListImpl"* %this}, i64 0, metadata !1316), !dbg !2209
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefVectorOf"* %srcVec}, i64 0, metadata !1317), !dbg !2209
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !1318), !dbg !2210
+  tail call void @llvm.dbg.value(metadata !{i1 %adopt}, i64 0, metadata !1319), !dbg !2211
+  %fAdopt = getelementptr inbounds %"class.xercesc_2_5::VecAttrListImpl"* %this, i64 0, i32 1, !dbg !2212
+  %0 = load i8* %fAdopt, align 1, !dbg !2212, !tbaa !2055, !range !2067
+  %tobool = icmp eq i8 %0, 0, !dbg !2212
+  %fVector5.pre = getelementptr inbounds %"class.xercesc_2_5::VecAttrListImpl"* %this, i64 0, i32 3, !dbg !2213
+  br i1 %tobool, label %if.end, label %if.then, !dbg !2212
+
+if.then:                                          ; preds = %entry
+  %1 = load %"class.xercesc_2_5::RefVectorOf"** %fVector5.pre, align 8, !dbg !2214, !tbaa !2058
+  %isnull = icmp eq %"class.xercesc_2_5::RefVectorOf"* %1, null, !dbg !2214
+  br i1 %isnull, label %if.end, label %delete.notnull, !dbg !2214
+
+delete.notnull:                                   ; preds = %if.then
+  %2 = bitcast %"class.xercesc_2_5::RefVectorOf"* %1 to void (%"class.xercesc_2_5::RefVectorOf"*)***, !dbg !2214
+  %vtable = load void (%"class.xercesc_2_5::RefVectorOf"*)*** %2, align 8, !dbg !2214, !tbaa !2053
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::RefVectorOf"*)** %vtable, i64 1, !dbg !2214
+  %3 = load void (%"class.xercesc_2_5::RefVectorOf"*)** %vfn, align 8, !dbg !2214
+  tail call void %3(%"class.xercesc_2_5::RefVectorOf"* %1) #8, !dbg !2214
+  br label %if.end, !dbg !2214
+
+if.end:                                           ; preds = %entry, %if.then, %delete.notnull
+  %frombool4 = zext i1 %adopt to i8, !dbg !2215
+  store i8 %frombool4, i8* %fAdopt, align 1, !dbg !2215, !tbaa !2055
+  %fCount = getelementptr inbounds %"class.xercesc_2_5::VecAttrListImpl"* %this, i64 0, i32 2, !dbg !2216
+  store i32 %count, i32* %fCount, align 4, !dbg !2216, !tbaa !2057
+  store %"class.xercesc_2_5::RefVectorOf"* %srcVec, %"class.xercesc_2_5::RefVectorOf"** %fVector5.pre, align 8, !dbg !2213, !tbaa !2058
+  ret void, !dbg !2217
+}

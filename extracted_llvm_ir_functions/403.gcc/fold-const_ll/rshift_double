@@ -1,79 +1,87 @@
 define void @rshift_double(i64 %l1, i64 %h1, i64 %count, i32 %prec, i64* nocapture %lv, i64* nocapture %hv, i32 %arith) #0 {
 entry:
-  %tobool = icmp eq i32 %arith, 0
-  %sub = ashr i64 %h1, 63
-  %.sub = select i1 %tobool, i64 0, i64 %sub
-  %cmp = icmp sgt i64 %count, 127
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i64 %l1}, i64 0, metadata !804), !dbg !1919
+  tail call void @llvm.dbg.value(metadata !{i64 %h1}, i64 0, metadata !805), !dbg !1920
+  tail call void @llvm.dbg.value(metadata !{i64 %count}, i64 0, metadata !806), !dbg !1920
+  tail call void @llvm.dbg.value(metadata !{i32 %prec}, i64 0, metadata !807), !dbg !1921
+  tail call void @llvm.dbg.value(metadata !{i64* %lv}, i64 0, metadata !808), !dbg !1922
+  tail call void @llvm.dbg.value(metadata !{i64* %hv}, i64 0, metadata !809), !dbg !1923
+  tail call void @llvm.dbg.value(metadata !{i32 %arith}, i64 0, metadata !810), !dbg !1924
+  %tobool = icmp eq i32 %arith, 0, !dbg !1925
+  %sub = ashr i64 %h1, 63, !dbg !1925
+  %.sub = select i1 %tobool, i64 0, i64 %sub, !dbg !1925
+  tail call void @llvm.dbg.value(metadata !{i64 %.sub}, i64 0, metadata !811), !dbg !1925
+  %cmp = icmp sgt i64 %count, 127, !dbg !1926
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1926
 
 if.then:                                          ; preds = %entry
-  store i64 0, i64* %hv, align 8, !tbaa !0
-  store i64 0, i64* %lv, align 8, !tbaa !0
-  br label %if.end11
+  store i64 0, i64* %hv, align 8, !dbg !1927, !tbaa !1700
+  store i64 0, i64* %lv, align 8, !dbg !1929, !tbaa !1700
+  br label %if.end11, !dbg !1930
 
 if.else:                                          ; preds = %entry
-  %cmp1 = icmp sgt i64 %count, 63
-  br i1 %cmp1, label %if.then2, label %if.else5
+  %cmp1 = icmp sgt i64 %count, 63, !dbg !1931
+  br i1 %cmp1, label %if.then2, label %if.else5, !dbg !1931
 
 if.then2:                                         ; preds = %if.else
-  store i64 0, i64* %hv, align 8, !tbaa !0
-  %sub3 = add nsw i64 %count, -64
-  %shr4 = lshr i64 %h1, %sub3
-  store i64 %shr4, i64* %lv, align 8, !tbaa !0
-  br label %if.end11
+  store i64 0, i64* %hv, align 8, !dbg !1932, !tbaa !1700
+  %sub3 = add nsw i64 %count, -64, !dbg !1934
+  %shr4 = lshr i64 %h1, %sub3, !dbg !1934
+  store i64 %shr4, i64* %lv, align 8, !dbg !1934, !tbaa !1700
+  br label %if.end11, !dbg !1935
 
 if.else5:                                         ; preds = %if.else
-  %shr6 = lshr i64 %h1, %count
-  store i64 %shr6, i64* %hv, align 8, !tbaa !0
-  %shr7 = lshr i64 %l1, %count
-  %sub9 = sub i64 63, %count
-  %shl = shl i64 %h1, %sub9
-  %shl10 = shl i64 %shl, 1
-  %or = or i64 %shl10, %shr7
-  store i64 %or, i64* %lv, align 8, !tbaa !0
+  %shr6 = lshr i64 %h1, %count, !dbg !1936
+  store i64 %shr6, i64* %hv, align 8, !dbg !1936, !tbaa !1700
+  %shr7 = lshr i64 %l1, %count, !dbg !1938
+  %sub9 = sub i64 63, %count, !dbg !1938
+  %shl = shl i64 %h1, %sub9, !dbg !1938
+  %shl10 = shl i64 %shl, 1, !dbg !1938
+  %or = or i64 %shl10, %shr7, !dbg !1938
+  store i64 %or, i64* %lv, align 8, !dbg !1938, !tbaa !1700
   br label %if.end11
 
 if.end11:                                         ; preds = %if.then2, %if.else5, %if.then
-  %conv = zext i32 %prec to i64
-  %cmp12 = icmp sgt i64 %conv, %count
-  br i1 %cmp12, label %if.else15, label %if.then14
+  %conv = zext i32 %prec to i64, !dbg !1939
+  %cmp12 = icmp sgt i64 %conv, %count, !dbg !1939
+  br i1 %cmp12, label %if.else15, label %if.then14, !dbg !1939
 
 if.then14:                                        ; preds = %if.end11
-  store i64 %.sub, i64* %hv, align 8, !tbaa !0
-  store i64 %.sub, i64* %lv, align 8, !tbaa !0
-  br label %if.end48
+  store i64 %.sub, i64* %hv, align 8, !dbg !1940, !tbaa !1700
+  store i64 %.sub, i64* %lv, align 8, !dbg !1942, !tbaa !1700
+  br label %if.end48, !dbg !1943
 
 if.else15:                                        ; preds = %if.end11
-  %sub17 = sub nsw i64 %conv, %count
-  %cmp18 = icmp sgt i64 %sub17, 127
-  br i1 %cmp18, label %if.end48, label %if.else21
+  %sub17 = sub nsw i64 %conv, %count, !dbg !1944
+  %cmp18 = icmp sgt i64 %sub17, 127, !dbg !1944
+  br i1 %cmp18, label %if.end48, label %if.else21, !dbg !1944
 
 if.else21:                                        ; preds = %if.else15
-  %cmp24 = icmp sgt i64 %sub17, 63
-  br i1 %cmp24, label %if.then26, label %if.else36
+  %cmp24 = icmp sgt i64 %sub17, 63, !dbg !1945
+  br i1 %cmp24, label %if.then26, label %if.else36, !dbg !1945
 
 if.then26:                                        ; preds = %if.else21
-  %sub29 = add nsw i64 %sub17, -64
-  %shl30 = shl i64 -1, %sub29
-  %neg = xor i64 %shl30, -1
-  %0 = load i64* %hv, align 8, !tbaa !0
-  %and = and i64 %0, %neg
-  %shl34 = shl i64 %.sub, %sub29
-  %or35 = or i64 %and, %shl34
-  store i64 %or35, i64* %hv, align 8, !tbaa !0
-  br label %if.end48
+  %sub29 = add nsw i64 %sub17, -64, !dbg !1946
+  %shl30 = shl i64 -1, %sub29, !dbg !1946
+  %neg = xor i64 %shl30, -1, !dbg !1946
+  %0 = load i64* %hv, align 8, !dbg !1946, !tbaa !1700
+  %and = and i64 %0, %neg, !dbg !1946
+  %shl34 = shl i64 %.sub, %sub29, !dbg !1948
+  %or35 = or i64 %and, %shl34, !dbg !1948
+  store i64 %or35, i64* %hv, align 8, !dbg !1948, !tbaa !1700
+  br label %if.end48, !dbg !1949
 
 if.else36:                                        ; preds = %if.else21
-  store i64 %.sub, i64* %hv, align 8, !tbaa !0
-  %shl39 = shl i64 -1, %sub17
-  %neg40 = xor i64 %shl39, -1
-  %1 = load i64* %lv, align 8, !tbaa !0
-  %and41 = and i64 %1, %neg40
-  %shl44 = shl i64 %.sub, %sub17
-  %or45 = or i64 %and41, %shl44
-  store i64 %or45, i64* %lv, align 8, !tbaa !0
+  store i64 %.sub, i64* %hv, align 8, !dbg !1950, !tbaa !1700
+  %shl39 = shl i64 -1, %sub17, !dbg !1952
+  %neg40 = xor i64 %shl39, -1, !dbg !1952
+  %1 = load i64* %lv, align 8, !dbg !1952, !tbaa !1700
+  %and41 = and i64 %1, %neg40, !dbg !1952
+  %shl44 = shl i64 %.sub, %sub17, !dbg !1953
+  %or45 = or i64 %and41, %shl44, !dbg !1953
+  store i64 %or45, i64* %lv, align 8, !dbg !1953, !tbaa !1700
   br label %if.end48
 
 if.end48:                                         ; preds = %if.else15, %if.else36, %if.then26, %if.then14
-  ret void
+  ret void, !dbg !1954
 }

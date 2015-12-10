@@ -1,18 +1,19 @@
 define void @UnfitHistogram(%struct.histogram_s* nocapture %h) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.histogram_s* %h, i64 0, metadata !47, metadata !372), !dbg !434
-  %1 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7, !dbg !435
-  %2 = load float** %1, align 8, !dbg !435, !tbaa !417
-  %3 = icmp eq float* %2, null, !dbg !437
-  br i1 %3, label %6, label %4, !dbg !438
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.histogram_s* %h}, i64 0, metadata !45), !dbg !382
+  %expect = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7, !dbg !383
+  %0 = load float** %expect, align 8, !dbg !383, !tbaa !371
+  %cmp = icmp eq float* %0, null, !dbg !383
+  br i1 %cmp, label %if.end, label %if.then, !dbg !383
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast float* %2 to i8*, !dbg !439
-  tail call void @free(i8* %5) #8, !dbg !440
-  br label %6, !dbg !440
+if.then:                                          ; preds = %entry
+  %1 = bitcast float* %0 to i8*, !dbg !383
+  tail call void @free(i8* %1) #5, !dbg !383
+  br label %if.end, !dbg !383
 
-; <label>:6                                       ; preds = %0, %4
-  store float* null, float** %1, align 8, !dbg !441, !tbaa !417
-  %7 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8, !dbg !442
-  store i32 0, i32* %7, align 4, !dbg !443, !tbaa !420
-  ret void, !dbg !444
+if.end:                                           ; preds = %entry, %if.then
+  store float* null, float** %expect, align 8, !dbg !384, !tbaa !371
+  %fit_type = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8, !dbg !385
+  store i32 0, i32* %fit_type, align 4, !dbg !385, !tbaa !362
+  ret void, !dbg !386
 }

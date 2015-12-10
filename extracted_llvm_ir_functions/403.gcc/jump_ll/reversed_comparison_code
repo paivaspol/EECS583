@@ -1,25 +1,27 @@
 define i32 @reversed_comparison_code(%struct.rtx_def* nocapture %comparison, %struct.rtx_def* %insn) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %comparison to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %idxprom11 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom11
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp = icmp eq i8 %1, 60
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %comparison}, i64 0, metadata !495), !dbg !1161
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !496), !dbg !1161
+  %0 = bitcast %struct.rtx_def* %comparison to i32*, !dbg !1162
+  %bf.load = load i32* %0, align 8, !dbg !1162
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1162
+  %idxprom11 = zext i32 %bf.clear to i64, !dbg !1162
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom11, !dbg !1162
+  %1 = load i8* %arrayidx, align 1, !dbg !1162, !tbaa !807
+  %cmp = icmp eq i8 %1, 60, !dbg !1162
+  br i1 %cmp, label %if.end, label %return, !dbg !1162
 
 if.end:                                           ; preds = %entry
-  %fld = getelementptr inbounds %struct.rtx_def* %comparison, i64 0, i32 1
-  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %comparison, i64 0, i32 1, i64 1
-  %rtx7 = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**
-  %3 = load %struct.rtx_def** %rtx7, align 8, !tbaa !3
-  %call = tail call i32 @reversed_comparison_code_parts(i32 %bf.clear, %struct.rtx_def* %2, %struct.rtx_def* %3, %struct.rtx_def* %insn) #8
-  br label %return
+  %fld = getelementptr inbounds %struct.rtx_def* %comparison, i64 0, i32 1, !dbg !1163
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**, !dbg !1163
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !1163, !tbaa !810
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %comparison, i64 0, i32 1, i64 1, !dbg !1163
+  %rtx7 = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**, !dbg !1163
+  %3 = load %struct.rtx_def** %rtx7, align 8, !dbg !1163, !tbaa !810
+  %call = tail call i32 @reversed_comparison_code_parts(i32 %bf.clear, %struct.rtx_def* %2, %struct.rtx_def* %3, %struct.rtx_def* %insn) #10, !dbg !1163
+  br label %return, !dbg !1163
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i32 [ %call, %if.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1164
 }

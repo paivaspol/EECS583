@@ -1,29 +1,30 @@
 define i32 @HMMFileRead(%struct.hmmfile_s* %hmmfp, %struct.plan7_s** %ret_hmm) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.hmmfile_s* %hmmfp, i64 0, metadata !219, metadata !464), !dbg !2770
-  tail call void @llvm.dbg.value(metadata %struct.plan7_s** %ret_hmm, i64 0, metadata !220, metadata !464), !dbg !2771
-  %1 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 5, !dbg !2772
-  %2 = load i32* %1, align 4, !dbg !2772, !tbaa !479
-  %3 = icmp eq i32 %2, 0, !dbg !2774
-  br i1 %3, label %13, label %4, !dbg !2775
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.hmmfile_s* %hmmfp}, i64 0, metadata !222), !dbg !1310
+  tail call void @llvm.dbg.value(metadata !{%struct.plan7_s** %ret_hmm}, i64 0, metadata !223), !dbg !1310
+  %is_seekable = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 5, !dbg !1311
+  %0 = load i32* %is_seekable, align 4, !dbg !1311, !tbaa !460
+  %tobool = icmp eq i32 %0, 0, !dbg !1311
+  br i1 %tobool, label %if.end2, label %if.then, !dbg !1311
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0, !dbg !2776
-  %6 = load %struct.__sFILE** %5, align 8, !dbg !2776, !tbaa !490
-  %7 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 6, !dbg !2778
-  %8 = load i32* %7, align 4, !dbg !2778, !tbaa !501
-  %9 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 7, !dbg !2779
-  %10 = tail call i32 @SSIGetFilePosition(%struct.__sFILE* %6, i32 %8, %struct.ssioffset_s* %9) #6, !dbg !2780
-  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !221, metadata !464), !dbg !2781
-  %11 = icmp eq i32 %10, 0, !dbg !2782
-  br i1 %11, label %13, label %12, !dbg !2784
+if.then:                                          ; preds = %entry
+  %f = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0, !dbg !1312
+  %1 = load %struct._IO_FILE** %f, align 8, !dbg !1312, !tbaa !465
+  %mode = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 6, !dbg !1312
+  %2 = load i32* %mode, align 4, !dbg !1312, !tbaa !460
+  %offset = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 7, !dbg !1312
+  %call = tail call i32 @SSIGetFilePosition(%struct._IO_FILE* %1, i32 %2, %struct.ssioffset_s* %offset) #7, !dbg !1312
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !224), !dbg !1312
+  %cmp = icmp eq i32 %call, 0, !dbg !1314
+  br i1 %cmp, label %if.end2, label %if.then1, !dbg !1314
 
-; <label>:12                                      ; preds = %4
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !2785
-  br label %13, !dbg !2785
+if.then1:                                         ; preds = %if.then
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !1314
+  br label %if.end2, !dbg !1314
 
-; <label>:13                                      ; preds = %4, %0, %12
-  %14 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 2, !dbg !2786
-  %15 = load i32 (%struct.hmmfile_s*, %struct.plan7_s**)** %14, align 8, !dbg !2786, !tbaa !556
-  %16 = tail call i32 %15(%struct.hmmfile_s* %hmmfp, %struct.plan7_s** %ret_hmm) #6, !dbg !2787
-  ret i32 %16, !dbg !2788
+if.end2:                                          ; preds = %if.then, %entry, %if.then1
+  %parser = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 2, !dbg !1315
+  %3 = load i32 (%struct.hmmfile_s*, %struct.plan7_s**)** %parser, align 8, !dbg !1315, !tbaa !465
+  %call3 = tail call i32 %3(%struct.hmmfile_s* %hmmfp, %struct.plan7_s** %ret_hmm) #7, !dbg !1315
+  ret i32 %call3, !dbg !1315
 }

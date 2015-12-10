@@ -1,134 +1,125 @@
-define i32 @GKIStoreKey(%struct.GKI* nocapture %hash, i8* %key) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.GKI* %hash, i64 0, metadata !42, metadata !93), !dbg !167
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !43, metadata !93), !dbg !168
-  %1 = tail call fastcc i32 @gki_hashvalue(%struct.GKI* %hash, i8* %key) #6, !dbg !169
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !44, metadata !93), !dbg !170
-  %2 = sext i32 %1 to i64, !dbg !171
-  %3 = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 0, !dbg !172
-  %4 = load %struct.gki_elem*** %3, align 8, !dbg !172, !tbaa !118
-  %5 = getelementptr inbounds %struct.gki_elem** %4, i64 %2, !dbg !171
-  %6 = bitcast %struct.gki_elem** %5 to i64*, !dbg !171
-  %7 = load i64* %6, align 8, !dbg !171, !tbaa !126
-  %8 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 189, i64 24) #7, !dbg !173
-  %9 = load %struct.gki_elem*** %3, align 8, !dbg !174, !tbaa !118
-  %10 = getelementptr inbounds %struct.gki_elem** %9, i64 %2, !dbg !175
-  %11 = bitcast %struct.gki_elem** %10 to i8**, !dbg !176
-  store i8* %8, i8** %11, align 8, !dbg !176, !tbaa !126
-  %12 = tail call i64 @strlen(i8* %key) #7, !dbg !177
-  %13 = add i64 %12, 1, !dbg !177
-  %14 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 190, i64 %13) #7, !dbg !177
-  %15 = load %struct.gki_elem*** %3, align 8, !dbg !178, !tbaa !118
-  %16 = getelementptr inbounds %struct.gki_elem** %15, i64 %2, !dbg !179
-  %17 = load %struct.gki_elem** %16, align 8, !dbg !179, !tbaa !126
-  %18 = getelementptr inbounds %struct.gki_elem* %17, i64 0, i32 0, !dbg !180
-  store i8* %14, i8** %18, align 8, !dbg !181, !tbaa !153
-  %19 = load %struct.gki_elem** %16, align 8, !dbg !182, !tbaa !126
-  %20 = getelementptr inbounds %struct.gki_elem* %19, i64 0, i32 0, !dbg !182
-  %21 = load i8** %20, align 8, !dbg !182, !tbaa !153
-  %22 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %21, i1 false), !dbg !182
-  %23 = tail call i8* @__strcpy_chk(i8* %21, i8* %key, i64 %22) #7, !dbg !182
-  %24 = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 3, !dbg !183
-  %25 = load i32* %24, align 4, !dbg !183, !tbaa !131
-  %26 = load %struct.gki_elem*** %3, align 8, !dbg !184, !tbaa !118
-  %27 = getelementptr inbounds %struct.gki_elem** %26, i64 %2, !dbg !185
-  %28 = load %struct.gki_elem** %27, align 8, !dbg !185, !tbaa !126
-  %29 = getelementptr inbounds %struct.gki_elem* %28, i64 0, i32 1, !dbg !186
-  store i32 %25, i32* %29, align 4, !dbg !187, !tbaa !188
-  %30 = getelementptr inbounds %struct.gki_elem* %28, i64 0, i32 2, !dbg !189
-  %31 = bitcast %struct.gki_elem** %30 to i64*, !dbg !190
-  store i64 %7, i64* %31, align 8, !dbg !190, !tbaa !149
-  %32 = add nsw i32 %25, 1, !dbg !191
-  store i32 %32, i32* %24, align 4, !dbg !191, !tbaa !131
-  %33 = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 2, !dbg !192
-  %34 = load i32* %33, align 4, !dbg !192, !tbaa !114
-  %35 = mul nsw i32 %34, 3, !dbg !194
-  %36 = icmp slt i32 %25, %35, !dbg !195
-  br i1 %36, label %81, label %37, !dbg !196
+define i32 @GKIStoreKey(%struct.GKI* nocapture %hash, i8* nocapture %key) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.GKI* %hash}, i64 0, metadata !40), !dbg !116
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !41), !dbg !116
+  %call = tail call fastcc i32 @gki_hashvalue(%struct.GKI* %hash, i8* %key) #6, !dbg !117
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !42), !dbg !117
+  %idxprom = sext i32 %call to i64, !dbg !118
+  %table = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 0, !dbg !118
+  %0 = load %struct.gki_elem*** %table, align 8, !dbg !118, !tbaa !98
+  %arrayidx = getelementptr inbounds %struct.gki_elem** %0, i64 %idxprom, !dbg !118
+  %1 = load %struct.gki_elem** %arrayidx, align 8, !dbg !118, !tbaa !98
+  tail call void @llvm.dbg.value(metadata !{%struct.gki_elem* %1}, i64 0, metadata !43), !dbg !118
+  %call1 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 189, i64 24) #7, !dbg !119
+  %2 = bitcast i8* %call1 to %struct.gki_elem*, !dbg !119
+  %3 = load %struct.gki_elem*** %table, align 8, !dbg !119, !tbaa !98
+  %arrayidx4 = getelementptr inbounds %struct.gki_elem** %3, i64 %idxprom, !dbg !119
+  store %struct.gki_elem* %2, %struct.gki_elem** %arrayidx4, align 8, !dbg !119, !tbaa !98
+  %call5 = tail call i64 @strlen(i8* %key) #8, !dbg !120
+  %add = add i64 %call5, 1, !dbg !120
+  %call6 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 190, i64 %add) #7, !dbg !120
+  %4 = load %struct.gki_elem*** %table, align 8, !dbg !120, !tbaa !98
+  %arrayidx9 = getelementptr inbounds %struct.gki_elem** %4, i64 %idxprom, !dbg !120
+  %5 = load %struct.gki_elem** %arrayidx9, align 8, !dbg !120, !tbaa !98
+  %key10 = getelementptr inbounds %struct.gki_elem* %5, i64 0, i32 0, !dbg !120
+  store i8* %call6, i8** %key10, align 8, !dbg !120, !tbaa !98
+  %6 = load %struct.gki_elem*** %table, align 8, !dbg !121, !tbaa !98
+  %arrayidx13 = getelementptr inbounds %struct.gki_elem** %6, i64 %idxprom, !dbg !121
+  %7 = load %struct.gki_elem** %arrayidx13, align 8, !dbg !121, !tbaa !98
+  %key14 = getelementptr inbounds %struct.gki_elem* %7, i64 0, i32 0, !dbg !121
+  %8 = load i8** %key14, align 8, !dbg !121, !tbaa !98
+  %call15 = tail call i8* @strcpy(i8* %8, i8* %key) #7, !dbg !121
+  %nkeys = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 3, !dbg !122
+  %9 = load i32* %nkeys, align 4, !dbg !122, !tbaa !93
+  %10 = load %struct.gki_elem*** %table, align 8, !dbg !122, !tbaa !98
+  %arrayidx18 = getelementptr inbounds %struct.gki_elem** %10, i64 %idxprom, !dbg !122
+  %11 = load %struct.gki_elem** %arrayidx18, align 8, !dbg !122, !tbaa !98
+  %idx = getelementptr inbounds %struct.gki_elem* %11, i64 0, i32 1, !dbg !122
+  store i32 %9, i32* %idx, align 4, !dbg !122, !tbaa !93
+  %nxt = getelementptr inbounds %struct.gki_elem* %11, i64 0, i32 2, !dbg !123
+  store %struct.gki_elem* %1, %struct.gki_elem** %nxt, align 8, !dbg !123, !tbaa !98
+  %12 = load i32* %nkeys, align 4, !dbg !124, !tbaa !93
+  %inc = add nsw i32 %12, 1, !dbg !124
+  store i32 %inc, i32* %nkeys, align 4, !dbg !124, !tbaa !93
+  %nhash = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 2, !dbg !125
+  %13 = load i32* %nhash, align 4, !dbg !125, !tbaa !93
+  %mul24 = mul nsw i32 %13, 3, !dbg !125
+  %cmp = icmp slt i32 %12, %mul24, !dbg !125
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !125
 
-; <label>:37                                      ; preds = %0
-  %38 = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 1, !dbg !197
-  %39 = load i32* %38, align 4, !dbg !197, !tbaa !104
-  %40 = icmp slt i32 %39, 3, !dbg !198
-  br i1 %40, label %41, label %81, !dbg !199
+land.lhs.true:                                    ; preds = %entry
+  %primelevel = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 1, !dbg !125
+  %14 = load i32* %primelevel, align 4, !dbg !125, !tbaa !93
+  %cmp25 = icmp slt i32 %14, 3, !dbg !125
+  br i1 %cmp25, label %if.end.i, label %if.end, !dbg !125
 
-; <label>:41                                      ; preds = %37
-  %42 = add nsw i32 %39, 1, !dbg !200
-  %43 = tail call fastcc %struct.GKI* @gki_alloc(i32 %42) #7, !dbg !202
-  tail call void @llvm.dbg.value(metadata %struct.GKI* %43, i64 0, metadata !78, metadata !93) #8, !dbg !203
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !79, metadata !93) #8, !dbg !204
-  %44 = load i32* %33, align 4, !dbg !205, !tbaa !114
-  %45 = icmp sgt i32 %44, 0, !dbg !208
-  br i1 %45, label %.lr.ph4.i, label %gki_upsize.exit, !dbg !209
+if.end.i:                                         ; preds = %land.lhs.true
+  %add.i = add nsw i32 %14, 1, !dbg !126
+  %call.i = tail call fastcc %struct.GKI* @gki_alloc(i32 %add.i) #7, !dbg !126
+  tail call void @llvm.dbg.value(metadata !{%struct.GKI* %call.i}, i64 0, metadata !128) #9, !dbg !126
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !129) #9, !dbg !130
+  %15 = load i32* %nhash, align 4, !dbg !130, !tbaa !93
+  %cmp23.i = icmp sgt i32 %15, 0, !dbg !130
+  %table6.i = getelementptr inbounds %struct.GKI* %call.i, i64 0, i32 0, !dbg !132
+  br i1 %cmp23.i, label %for.body.i, label %gki_upsize.exit, !dbg !130
 
-.lr.ph4.i:                                        ; preds = %41
-  %46 = getelementptr inbounds %struct.GKI* %43, i64 0, i32 0, !dbg !210
-  %47 = sext i32 %44 to i64
-  %48 = add nsw i64 %47, -1, !dbg !209
-  br label %49, !dbg !209
+for.body.i:                                       ; preds = %for.inc.i, %if.end.i
+  %indvars.iv.i = phi i64 [ 0, %if.end.i ], [ %indvars.iv.next.i, %for.inc.i ]
+  %16 = load %struct.gki_elem*** %table, align 8, !dbg !135, !tbaa !98
+  %arrayidx.i = getelementptr inbounds %struct.gki_elem** %16, i64 %indvars.iv.i, !dbg !135
+  %17 = load %struct.gki_elem** %arrayidx.i, align 8, !dbg !135, !tbaa !98
+  tail call void @llvm.dbg.value(metadata !{%struct.gki_elem* %17}, i64 0, metadata !136) #9, !dbg !135
+  %cmp31.i = icmp eq %struct.gki_elem* %17, null, !dbg !137
+  br i1 %cmp31.i, label %for.inc.i, label %while.body.i, !dbg !137
 
-; <label>:49                                      ; preds = %._crit_edge.i, %.lr.ph4.i
-  %indvars.iv.i = phi i64 [ 0, %.lr.ph4.i ], [ %indvars.iv.next.i, %._crit_edge.i ], !dbg !213
-  %50 = load %struct.gki_elem*** %3, align 8, !dbg !214, !tbaa !118
-  %51 = getelementptr inbounds %struct.gki_elem** %50, i64 %indvars.iv.i, !dbg !215
-  %52 = load %struct.gki_elem** %51, align 8, !dbg !215, !tbaa !126
-  tail call void @llvm.dbg.value(metadata %struct.gki_elem* %52, i64 0, metadata !80, metadata !93) #8, !dbg !216
-  %53 = icmp eq %struct.gki_elem* %52, null, !dbg !217
-  br i1 %53, label %._crit_edge.i, label %.lr.ph.i, !dbg !218
+while.body.i:                                     ; preds = %for.body.i, %while.body.i
+  %optr.02.i = phi %struct.gki_elem* [ %21, %while.body.i ], [ %17, %for.body.i ]
+  %key.i = getelementptr inbounds %struct.gki_elem* %optr.02.i, i64 0, i32 0, !dbg !138
+  %18 = load i8** %key.i, align 8, !dbg !138, !tbaa !98
+  %call4.i = tail call fastcc i32 @gki_hashvalue(%struct.GKI* %call.i, i8* %18) #7, !dbg !138
+  tail call void @llvm.dbg.value(metadata !{i32 %call4.i}, i64 0, metadata !139) #9, !dbg !138
+  %idxprom5.i = sext i32 %call4.i to i64, !dbg !132
+  %19 = load %struct.gki_elem*** %table6.i, align 8, !dbg !132, !tbaa !98
+  %arrayidx7.i = getelementptr inbounds %struct.gki_elem** %19, i64 %idxprom5.i, !dbg !132
+  %20 = load %struct.gki_elem** %arrayidx7.i, align 8, !dbg !132, !tbaa !98
+  tail call void @llvm.dbg.value(metadata !{%struct.gki_elem* %20}, i64 0, metadata !140) #9, !dbg !132
+  store %struct.gki_elem* %optr.02.i, %struct.gki_elem** %arrayidx7.i, align 8, !dbg !141, !tbaa !98
+  %nxt.i = getelementptr inbounds %struct.gki_elem* %optr.02.i, i64 0, i32 2, !dbg !142
+  %21 = load %struct.gki_elem** %nxt.i, align 8, !dbg !142, !tbaa !98
+  tail call void @llvm.dbg.value(metadata !{%struct.gki_elem* %21}, i64 0, metadata !136) #9, !dbg !142
+  %22 = load %struct.gki_elem*** %table6.i, align 8, !dbg !143, !tbaa !98
+  %arrayidx13.i = getelementptr inbounds %struct.gki_elem** %22, i64 %idxprom5.i, !dbg !143
+  %23 = load %struct.gki_elem** %arrayidx13.i, align 8, !dbg !143, !tbaa !98
+  %nxt14.i = getelementptr inbounds %struct.gki_elem* %23, i64 0, i32 2, !dbg !143
+  store %struct.gki_elem* %20, %struct.gki_elem** %nxt14.i, align 8, !dbg !143, !tbaa !98
+  %cmp3.i = icmp eq %struct.gki_elem* %21, null, !dbg !137
+  br i1 %cmp3.i, label %for.inc.i, label %while.body.i, !dbg !137
 
-.lr.ph.i:                                         ; preds = %49
-  %.pre.i = load %struct.gki_elem*** %46, align 8, !dbg !210, !tbaa !118
-  br label %54, !dbg !218
+for.inc.i:                                        ; preds = %while.body.i, %for.body.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !130
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32, !dbg !130
+  %exitcond = icmp eq i32 %lftr.wideiv, %15, !dbg !130
+  br i1 %exitcond, label %gki_upsize.exit, label %for.body.i, !dbg !130
 
-; <label>:54                                      ; preds = %54, %.lr.ph.i
-  %55 = phi %struct.gki_elem** [ %.pre.i, %.lr.ph.i ], [ %65, %54 ], !dbg !219
-  %optr.01.i = phi %struct.gki_elem* [ %52, %.lr.ph.i ], [ %64, %54 ], !dbg !213
-  %56 = getelementptr inbounds %struct.gki_elem* %optr.01.i, i64 0, i32 0, !dbg !219
-  %57 = load i8** %56, align 8, !dbg !219, !tbaa !153
-  %58 = tail call fastcc i32 @gki_hashvalue(%struct.GKI* %43, i8* %57) #7, !dbg !220
-  tail call void @llvm.dbg.value(metadata i32 %58, i64 0, metadata !82, metadata !93) #8, !dbg !221
-  %59 = sext i32 %58 to i64, !dbg !222
-  %60 = getelementptr inbounds %struct.gki_elem** %55, i64 %59, !dbg !222
-  %61 = bitcast %struct.gki_elem** %60 to i64*, !dbg !222
-  %62 = load i64* %61, align 8, !dbg !222, !tbaa !126
-  store %struct.gki_elem* %optr.01.i, %struct.gki_elem** %60, align 8, !dbg !223, !tbaa !126
-  %63 = getelementptr inbounds %struct.gki_elem* %optr.01.i, i64 0, i32 2, !dbg !224
-  %64 = load %struct.gki_elem** %63, align 8, !dbg !224, !tbaa !149
-  tail call void @llvm.dbg.value(metadata %struct.gki_elem* %64, i64 0, metadata !80, metadata !93) #8, !dbg !216
-  %65 = load %struct.gki_elem*** %46, align 8, !dbg !225, !tbaa !118
-  %66 = getelementptr inbounds %struct.gki_elem** %65, i64 %59, !dbg !226
-  %67 = load %struct.gki_elem** %66, align 8, !dbg !226, !tbaa !126
-  %68 = getelementptr inbounds %struct.gki_elem* %67, i64 0, i32 2, !dbg !227
-  %69 = bitcast %struct.gki_elem** %68 to i64*, !dbg !228
-  store i64 %62, i64* %69, align 8, !dbg !228, !tbaa !149
-  %70 = icmp eq %struct.gki_elem* %64, null, !dbg !217
-  br i1 %70, label %._crit_edge.i, label %54, !dbg !218
+gki_upsize.exit:                                  ; preds = %for.inc.i, %if.end.i
+  %24 = load %struct.gki_elem*** %table, align 8, !dbg !144, !tbaa !98
+  %25 = bitcast %struct.gki_elem** %24 to i8*, !dbg !144
+  tail call void @free(i8* %25) #7, !dbg !144
+  %primelevel16.i = getelementptr inbounds %struct.GKI* %call.i, i64 0, i32 1, !dbg !145
+  %26 = load i32* %primelevel16.i, align 4, !dbg !145, !tbaa !93
+  store i32 %26, i32* %primelevel, align 4, !dbg !145, !tbaa !93
+  %nhash18.i = getelementptr inbounds %struct.GKI* %call.i, i64 0, i32 2, !dbg !146
+  %27 = load i32* %nhash18.i, align 4, !dbg !146, !tbaa !93
+  store i32 %27, i32* %nhash, align 4, !dbg !146, !tbaa !93
+  %28 = load %struct.gki_elem*** %table6.i, align 8, !dbg !147, !tbaa !98
+  store %struct.gki_elem** %28, %struct.gki_elem*** %table, align 8, !dbg !147, !tbaa !98
+  %29 = bitcast %struct.GKI* %call.i to i8*, !dbg !148
+  tail call void @free(i8* %29) #7, !dbg !148
+  %.pre = load i32* %nkeys, align 4, !dbg !149, !tbaa !93
+  br label %if.end, !dbg !127
 
-._crit_edge.i:                                    ; preds = %54, %49
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !209
-  %exitcond = icmp eq i64 %indvars.iv.i, %48, !dbg !209
-  br i1 %exitcond, label %gki_upsize.exit, label %49, !dbg !209
-
-gki_upsize.exit:                                  ; preds = %._crit_edge.i, %41
-  %71 = bitcast %struct.GKI* %hash to i8**, !dbg !229
-  %72 = load i8** %71, align 8, !dbg !229, !tbaa !118
-  tail call void @free(i8* %72) #7, !dbg !230
-  %73 = getelementptr inbounds %struct.GKI* %43, i64 0, i32 1, !dbg !231
-  %74 = load i32* %73, align 4, !dbg !231, !tbaa !104
-  store i32 %74, i32* %38, align 4, !dbg !232, !tbaa !104
-  %75 = getelementptr inbounds %struct.GKI* %43, i64 0, i32 2, !dbg !233
-  %76 = load i32* %75, align 4, !dbg !233, !tbaa !114
-  store i32 %76, i32* %33, align 4, !dbg !234, !tbaa !114
-  %77 = bitcast %struct.GKI* %43 to i64*, !dbg !235
-  %78 = load i64* %77, align 8, !dbg !235, !tbaa !118
-  %79 = bitcast %struct.GKI* %hash to i64*, !dbg !236
-  store i64 %78, i64* %79, align 8, !dbg !236, !tbaa !118
-  %80 = bitcast %struct.GKI* %43 to i8*, !dbg !237
-  tail call void @free(i8* %80) #7, !dbg !238
-  %.pre = load i32* %24, align 4, !dbg !239, !tbaa !131
-  br label %81, !dbg !213
-
-; <label>:81                                      ; preds = %0, %gki_upsize.exit, %37
-  %82 = phi i32 [ %32, %0 ], [ %.pre, %gki_upsize.exit ], [ %32, %37 ]
-  %83 = add nsw i32 %82, -1, !dbg !240
-  ret i32 %83, !dbg !241
+if.end:                                           ; preds = %entry, %gki_upsize.exit, %land.lhs.true
+  %30 = phi i32 [ %inc, %entry ], [ %.pre, %gki_upsize.exit ], [ %inc, %land.lhs.true ]
+  %sub = add nsw i32 %30, -1, !dbg !149
+  ret i32 %sub, !dbg !149
 }

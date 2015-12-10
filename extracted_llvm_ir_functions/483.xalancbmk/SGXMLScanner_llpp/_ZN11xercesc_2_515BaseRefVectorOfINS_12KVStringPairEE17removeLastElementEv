@@ -1,0 +1,36 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_12KVStringPairEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf.18"* nocapture %this) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.18"* %this}, i64 0, metadata !16780), !dbg !25341
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.18"* %this, i64 0, i32 2, !dbg !25342
+  %0 = load i32* %fCurCount, align 4, !dbg !25342, !tbaa !18998
+  %tobool = icmp eq i32 %0, 0, !dbg !25342
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !25342
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !25343
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !25343, !tbaa !18998
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.18"* %this, i64 0, i32 1, !dbg !25344
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !25344, !tbaa !18995, !range !19323
+  %tobool3 = icmp eq i8 %1, 0, !dbg !25344
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !25344
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !25345
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.18"* %this, i64 0, i32 4, !dbg !25345
+  %2 = load %"class.xercesc_2_5::KVStringPair"*** %fElemList, align 8, !dbg !25345, !tbaa !18999
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::KVStringPair"** %2, i64 %idxprom, !dbg !25345
+  %3 = load %"class.xercesc_2_5::KVStringPair"** %arrayidx, align 8, !dbg !25345, !tbaa !18999
+  %isnull = icmp eq %"class.xercesc_2_5::KVStringPair"* %3, null, !dbg !25345
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !25345
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast %"class.xercesc_2_5::KVStringPair"* %3 to void (%"class.xercesc_2_5::KVStringPair"*)***, !dbg !25345
+  %vtable = load void (%"class.xercesc_2_5::KVStringPair"*)*** %4, align 8, !dbg !25345, !tbaa !18993
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::KVStringPair"*)** %vtable, i64 1, !dbg !25345
+  %5 = load void (%"class.xercesc_2_5::KVStringPair"*)** %vfn, align 8, !dbg !25345
+  tail call void %5(%"class.xercesc_2_5::KVStringPair"* %3) #11, !dbg !25345
+  br label %if.end6, !dbg !25345
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !25345
+}

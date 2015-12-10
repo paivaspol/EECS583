@@ -1,14 +1,15 @@
 define void @CloseAnnexbFile() #0 {
-  %1 = load %struct.__sFILE** @f, align 8, !dbg !657, !tbaa !600
-  %2 = tail call i32 @fclose(%struct.__sFILE* %1) #7, !dbg !659
-  %3 = icmp eq i32 %2, 0, !dbg !659
-  br i1 %3, label %5, label %4, !dbg !660
+entry:
+  %0 = load %struct._IO_FILE** @f, align 8, !dbg !609, !tbaa !583
+  %call = tail call i32 @fclose(%struct._IO_FILE* %0) #6, !dbg !609
+  %tobool = icmp eq i32 %call, 0, !dbg !609
+  br i1 %tobool, label %if.end, label %if.then, !dbg !609
 
-; <label>:4                                       ; preds = %0
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([55 x i8]* @str, i64 0, i64 0)), !dbg !661
-  tail call void @exit(i32 -1) #6, !dbg !663
-  unreachable, !dbg !663
+if.then:                                          ; preds = %entry
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([55 x i8]* @str, i64 0, i64 0)), !dbg !610
+  tail call void @exit(i32 -1) #5, !dbg !612
+  unreachable, !dbg !612
 
-; <label>:5                                       ; preds = %0
-  ret void, !dbg !664
+if.end:                                           ; preds = %entry
+  ret void, !dbg !613
 }

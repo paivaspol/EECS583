@@ -1,19 +1,20 @@
-define void @clear_buff(i32* nocapture %data, i32 %items) #3 {
-  tail call void @llvm.dbg.value(metadata i32* %data, i64 0, metadata !86, metadata !111), !dbg !153
-  tail call void @llvm.dbg.value(metadata i32 %items, i64 0, metadata !87, metadata !111), !dbg !154
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !88, metadata !111), !dbg !155
-  %1 = icmp sgt i32 %items, 0, !dbg !156
-  br i1 %1, label %.lr.ph, label %6, !dbg !159
+define void @clear_buff(i32* nocapture %data, i32 %items) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %data}, i64 0, metadata !16), !dbg !96
+  tail call void @llvm.dbg.value(metadata !{i32 %items}, i64 0, metadata !17), !dbg !96
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !18), !dbg !97
+  %cmp3 = icmp sgt i32 %items, 0, !dbg !97
+  br i1 %cmp3, label %for.body.lr.ph, label %for.end, !dbg !97
 
-.lr.ph:                                           ; preds = %0
-  %data2 = bitcast i32* %data to i8*
-  %2 = add i32 %items, -1, !dbg !159
-  %3 = zext i32 %2 to i64
-  %4 = shl nuw nsw i64 %3, 2, !dbg !159
-  %5 = add nuw nsw i64 %4, 4, !dbg !159
-  call void @llvm.memset.p0i8.i64(i8* %data2, i8 0, i64 %5, i32 4, i1 false), !dbg !160
-  br label %6, !dbg !159
+for.body.lr.ph:                                   ; preds = %entry
+  %data5 = bitcast i32* %data to i8*
+  %0 = add i32 %items, -1, !dbg !97
+  %1 = zext i32 %0 to i64
+  %2 = shl nuw nsw i64 %1, 2, !dbg !97
+  %3 = add i64 %2, 4, !dbg !97
+  call void @llvm.memset.p0i8.i64(i8* %data5, i8 0, i64 %3, i32 4, i1 false), !dbg !97
+  br label %for.end, !dbg !97
 
-; <label>:6                                       ; preds = %.lr.ph, %0
-  ret void, !dbg !161
+for.end:                                          ; preds = %for.body.lr.ph, %entry
+  ret void, !dbg !99
 }

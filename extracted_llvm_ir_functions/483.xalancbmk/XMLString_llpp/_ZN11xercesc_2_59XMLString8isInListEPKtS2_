@@ -1,0 +1,105 @@
+define zeroext i1 @_ZN11xercesc_2_59XMLString8isInListEPKtS2_(i16* %toFind, i16* nocapture %enumList) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toFind}, i64 0, metadata !2092), !dbg !4062
+  tail call void @llvm.dbg.value(metadata !{i16* %enumList}, i64 0, metadata !2093), !dbg !4062
+  tail call void @llvm.dbg.value(metadata !{i16* %enumList}, i64 0, metadata !2094), !dbg !4063
+  tail call void @llvm.dbg.value(metadata !{i16* %toFind}, i64 0, metadata !4064), !dbg !4066
+  %cmp.i = icmp eq i16* %toFind, null, !dbg !4067
+  br i1 %cmp.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %lor.lhs.false.i, !dbg !4067
+
+lor.lhs.false.i:                                  ; preds = %entry
+  %0 = load i16* %toFind, align 2, !dbg !4067, !tbaa !2947
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !4067
+  br i1 %cmp1.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !4067
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %toFind, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !4068
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !4069, !tbaa !2947
+  %tobool.i = icmp eq i16 %1, 0, !dbg !4069
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !4069
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !4070
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %toFind to i64, !dbg !4070
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !4070
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !4070
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !4070
+  br label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, !dbg !4070
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %entry, %lor.lhs.false.i, %while.end.i
+  %retval.0.i = phi i32 [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %entry ]
+  tail call void @llvm.dbg.value(metadata !{i32 %retval.0.i}, i64 0, metadata !2095), !dbg !4065
+  %2 = load i16* %enumList, align 2, !dbg !4071, !tbaa !2947
+  %tobool46 = icmp eq i16 %2, 0, !dbg !4071
+  br i1 %tobool46, label %return, label %for.cond.preheader.lr.ph, !dbg !4071
+
+for.cond.preheader.lr.ph:                         ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %cmp42 = icmp eq i32 %retval.0.i, 0, !dbg !4072
+  br label %for.cond.preheader, !dbg !4071
+
+for.cond.preheader:                               ; preds = %for.cond.preheader.lr.ph, %if.end24
+  %3 = phi i16 [ %2, %for.cond.preheader.lr.ph ], [ %8, %if.end24 ]
+  %listPtr.047 = phi i16* [ %enumList, %for.cond.preheader.lr.ph ], [ %incdec.ptr25, %if.end24 ]
+  br i1 %cmp42, label %for.end, label %for.body, !dbg !4072
+
+for.cond:                                         ; preds = %for.body
+  %cmp = icmp ult i32 %inc, %retval.0.i, !dbg !4072
+  br i1 %cmp, label %for.cond.for.body_crit_edge, label %for.end, !dbg !4072
+
+for.cond.for.body_crit_edge:                      ; preds = %for.cond
+  %idxprom.phi.trans.insert = zext i32 %inc to i64
+  %arrayidx.phi.trans.insert = getelementptr inbounds i16* %listPtr.047, i64 %idxprom.phi.trans.insert
+  %.pre52 = load i16* %arrayidx.phi.trans.insert, align 2, !dbg !4074, !tbaa !2947
+  br label %for.body, !dbg !4072
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond.for.body_crit_edge
+  %4 = phi i16 [ %.pre52, %for.cond.for.body_crit_edge ], [ %3, %for.cond.preheader ]
+  %testInd.043 = phi i32 [ %inc, %for.cond.for.body_crit_edge ], [ 0, %for.cond.preheader ]
+  %idxprom = zext i32 %testInd.043 to i64, !dbg !4074
+  %arrayidx2 = getelementptr inbounds i16* %toFind, i64 %idxprom, !dbg !4074
+  %5 = load i16* %arrayidx2, align 2, !dbg !4074, !tbaa !2947
+  %cmp4 = icmp eq i16 %4, %5, !dbg !4074
+  %inc = add i32 %testInd.043, 1, !dbg !4072
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !2096), !dbg !4072
+  br i1 %cmp4, label %for.cond, label %for.end, !dbg !4074
+
+for.end:                                          ; preds = %for.cond, %for.body, %for.cond.preheader
+  %testInd.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %testInd.043, %for.body ], [ %inc, %for.cond ]
+  %cmp5 = icmp eq i32 %testInd.0.lcssa, %retval.0.i, !dbg !4076
+  br i1 %cmp5, label %if.then6, label %while.cond17, !dbg !4076
+
+if.then6:                                         ; preds = %for.end
+  %idxprom7 = zext i32 %retval.0.i to i64, !dbg !4077
+  %arrayidx8 = getelementptr inbounds i16* %listPtr.047, i64 %idxprom7, !dbg !4077
+  %6 = load i16* %arrayidx8, align 2, !dbg !4077, !tbaa !2947
+  switch i16 %6, label %while.cond17 [
+    i16 32, label %return
+    i16 0, label %return
+  ], !dbg !4077
+
+while.cond17:                                     ; preds = %if.then6, %for.end, %while.body21
+  %7 = phi i16 [ %.pre, %while.body21 ], [ %3, %for.end ], [ %3, %if.then6 ]
+  %listPtr.1 = phi i16* [ %incdec.ptr, %while.body21 ], [ %listPtr.047, %for.end ], [ %listPtr.047, %if.then6 ]
+  switch i16 %7, label %while.body21 [
+    i16 0, label %return
+    i16 32, label %if.end24
+  ]
+
+while.body21:                                     ; preds = %while.cond17
+  %incdec.ptr = getelementptr inbounds i16* %listPtr.1, i64 1, !dbg !4079
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !2094), !dbg !4079
+  %.pre = load i16* %incdec.ptr, align 2, !dbg !4080, !tbaa !2947
+  br label %while.cond17, !dbg !4079
+
+if.end24:                                         ; preds = %while.cond17
+  %incdec.ptr25 = getelementptr inbounds i16* %listPtr.1, i64 1, !dbg !4081
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr25}, i64 0, metadata !2094), !dbg !4081
+  %8 = load i16* %incdec.ptr25, align 2, !dbg !4071, !tbaa !2947
+  %tobool = icmp eq i16 %8, 0, !dbg !4071
+  br i1 %tobool, label %return, label %for.cond.preheader, !dbg !4071
+
+return:                                           ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, %if.then6, %if.then6, %if.end24, %while.cond17
+  %retval.0 = phi i1 [ false, %while.cond17 ], [ false, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ], [ true, %if.then6 ], [ true, %if.then6 ], [ false, %if.end24 ]
+  ret i1 %retval.0, !dbg !4082
+}

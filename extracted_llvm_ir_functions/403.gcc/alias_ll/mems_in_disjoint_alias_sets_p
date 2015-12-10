@@ -1,33 +1,35 @@
 define internal fastcc i32 @mems_in_disjoint_alias_sets_p(%struct.rtx_def* nocapture %mem1, %struct.rtx_def* nocapture %mem2) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %mem1, i64 0, i32 1, i64 1
-  %rtmem = bitcast %union.rtunion_def* %arrayidx to %struct.mem_attrs**
-  %0 = load %struct.mem_attrs** %rtmem, align 8, !tbaa !0
-  %cmp = icmp eq %struct.mem_attrs* %0, null
-  br i1 %cmp, label %cond.end, label %cond.false
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %mem1}, i64 0, metadata !1525), !dbg !1889
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %mem2}, i64 0, metadata !1526), !dbg !1890
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %mem1, i64 0, i32 1, i64 1, !dbg !1891
+  %rtmem = bitcast %union.rtunion_def* %arrayidx to %struct.mem_attrs**, !dbg !1891
+  %0 = load %struct.mem_attrs** %rtmem, align 8, !dbg !1891, !tbaa !1579
+  %cmp = icmp eq %struct.mem_attrs* %0, null, !dbg !1891
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !1891
 
 cond.false:                                       ; preds = %entry
-  %alias = getelementptr inbounds %struct.mem_attrs* %0, i64 0, i32 0
-  %1 = load i64* %alias, align 8, !tbaa !3
-  br label %cond.end
+  %alias = getelementptr inbounds %struct.mem_attrs* %0, i64 0, i32 0, !dbg !1891
+  %1 = load i64* %alias, align 8, !dbg !1891, !tbaa !1584
+  br label %cond.end, !dbg !1891
 
 cond.end:                                         ; preds = %entry, %cond.false
-  %cond = phi i64 [ %1, %cond.false ], [ 0, %entry ]
-  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %mem2, i64 0, i32 1, i64 1
-  %rtmem6 = bitcast %union.rtunion_def* %arrayidx5 to %struct.mem_attrs**
-  %2 = load %struct.mem_attrs** %rtmem6, align 8, !tbaa !0
-  %cmp7 = icmp eq %struct.mem_attrs* %2, null
-  br i1 %cmp7, label %cond.end14, label %cond.false9
+  %cond = phi i64 [ %1, %cond.false ], [ 0, %entry ], !dbg !1891
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %mem2, i64 0, i32 1, i64 1, !dbg !1891
+  %rtmem6 = bitcast %union.rtunion_def* %arrayidx5 to %struct.mem_attrs**, !dbg !1891
+  %2 = load %struct.mem_attrs** %rtmem6, align 8, !dbg !1891, !tbaa !1579
+  %cmp7 = icmp eq %struct.mem_attrs* %2, null, !dbg !1891
+  br i1 %cmp7, label %cond.end14, label %cond.false9, !dbg !1891
 
 cond.false9:                                      ; preds = %cond.end
-  %alias13 = getelementptr inbounds %struct.mem_attrs* %2, i64 0, i32 0
-  %3 = load i64* %alias13, align 8, !tbaa !3
-  br label %cond.end14
+  %alias13 = getelementptr inbounds %struct.mem_attrs* %2, i64 0, i32 0, !dbg !1891
+  %3 = load i64* %alias13, align 8, !dbg !1891, !tbaa !1584
+  br label %cond.end14, !dbg !1891
 
 cond.end14:                                       ; preds = %cond.end, %cond.false9
-  %cond15 = phi i64 [ %3, %cond.false9 ], [ 0, %cond.end ]
-  %call = tail call i32 @alias_sets_conflict_p(i64 %cond, i64 %cond15) #8
-  %lnot = icmp eq i32 %call, 0
-  %lnot.ext = zext i1 %lnot to i32
-  ret i32 %lnot.ext
+  %cond15 = phi i64 [ %3, %cond.false9 ], [ 0, %cond.end ], !dbg !1891
+  %call = tail call i32 @alias_sets_conflict_p(i64 %cond, i64 %cond15) #9, !dbg !1891
+  %lnot = icmp eq i32 %call, 0, !dbg !1891
+  %lnot.ext = zext i1 %lnot to i32, !dbg !1891
+  ret i32 %lnot.ext, !dbg !1891
 }

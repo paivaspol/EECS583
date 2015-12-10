@@ -1,31 +1,33 @@
 define void @CloseSEIMessages() #0 {
-  tail call void @CloseSubseqChar() #9, !dbg !1007
-  tail call void @CloseSparePicture() #9, !dbg !1008
-  tail call void @CloseSceneInformation() #9, !dbg !1009
-  tail call void @ClosePanScanRectInfo() #9, !dbg !1010
-  tail call void @CloseUser_data_unregistered() #9, !dbg !1011
-  tail call void @CloseUser_data_registered_itu_t_t35() #9, !dbg !1012
-  tail call void @CloseRandomAccess() #9, !dbg !1013
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !73, metadata !931), !dbg !1014
-  br label %1, !dbg !1015
+entry:
+  tail call void @CloseSubseqChar() #9, !dbg !965
+  tail call void @CloseSparePicture() #9, !dbg !966
+  tail call void @CloseSceneInformation() #9, !dbg !967
+  tail call void @ClosePanScanRectInfo() #9, !dbg !968
+  tail call void @CloseUser_data_unregistered() #9, !dbg !969
+  tail call void @CloseUser_data_registered_itu_t_t35() #9, !dbg !970
+  tail call void @CloseRandomAccess() #9, !dbg !971
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !71), !dbg !972
+  br label %for.body, !dbg !972
 
-; <label>:1                                       ; preds = %6, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %6 ]
-  %2 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 3, !dbg !1017
-  %3 = load i8** %2, align 8, !dbg !1017, !tbaa !940
-  %4 = icmp eq i8* %3, null, !dbg !1021
-  br i1 %4, label %6, label %5, !dbg !1022
+for.body:                                         ; preds = %if.end6, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %if.end6 ]
+  %data = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 3, !dbg !974
+  %0 = load i8** %data, align 8, !dbg !974, !tbaa !926
+  %tobool = icmp eq i8* %0, null, !dbg !974
+  br i1 %tobool, label %if.end6, label %if.then2, !dbg !974
 
-; <label>:5                                       ; preds = %1
-  tail call void @free(i8* %3) #9, !dbg !1023
-  br label %6, !dbg !1023
+if.then2:                                         ; preds = %for.body
+  tail call void @free(i8* %0) #8, !dbg !974
+  br label %if.end6, !dbg !974
 
-; <label>:6                                       ; preds = %1, %5
-  store i8* null, i8** %2, align 8, !dbg !1024, !tbaa !940
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1015
-  %exitcond = icmp eq i64 %indvars.iv.next, 2, !dbg !1015
-  br i1 %exitcond, label %7, label %1, !dbg !1015
+if.end6:                                          ; preds = %for.body, %if.then2
+  store i8* null, i8** %data, align 8, !dbg !976, !tbaa !926
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !972
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !972
+  %exitcond = icmp eq i32 %lftr.wideiv, 2, !dbg !972
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !972
 
-; <label>:7                                       ; preds = %6
-  ret void, !dbg !1025
+for.end:                                          ; preds = %if.end6
+  ret void, !dbg !977
 }

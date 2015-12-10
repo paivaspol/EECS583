@@ -1,27 +1,28 @@
-define i32 @_ZN8pov_base13Has_ExtensionEPKc(i8* %name) #8 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !529, metadata !903), !dbg !1488
-  %1 = icmp eq i8* %name, null, !dbg !1489
-  br i1 %1, label %12, label %2, !dbg !1490
+define i32 @_ZN8pov_base13Has_ExtensionEPKc(i8* %name) #7 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !546), !dbg !939
+  %cmp = icmp eq i8* %name, null, !dbg !940
+  br i1 %cmp, label %if.end7, label %if.then, !dbg !940
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i8* @strrchr(i8* %name, i32 46) #12, !dbg !1491
-  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !530, metadata !903), !dbg !1492
-  %4 = icmp eq i8* %3, null, !dbg !1493
-  br i1 %4, label %12, label %5, !dbg !1495
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @strrchr(i8* %name, i32 46) #11, !dbg !941
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !547), !dbg !941
+  %cmp1 = icmp eq i8* %call, null, !dbg !942
+  br i1 %cmp1, label %if.end7, label %if.then2, !dbg !942
 
-; <label>:5                                       ; preds = %2
-  %6 = tail call i64 @strlen(i8* %name) #12, !dbg !1496
-  %7 = ptrtoint i8* %3 to i64, !dbg !1499
-  %8 = ptrtoint i8* %name to i64, !dbg !1499
-  %9 = sub i64 %8, %7, !dbg !1500
-  %10 = add i64 %9, %6, !dbg !1500
-  %11 = icmp ult i64 %10, 5, !dbg !1501
-  br i1 %11, label %13, label %12, !dbg !1502
+if.then2:                                         ; preds = %if.then
+  %call3 = tail call i64 @strlen(i8* %name) #11, !dbg !943
+  %sub.ptr.lhs.cast = ptrtoint i8* %call to i64, !dbg !943
+  %sub.ptr.rhs.cast = ptrtoint i8* %name to i64, !dbg !943
+  %sub.ptr.sub12 = sub i64 %sub.ptr.rhs.cast, %sub.ptr.lhs.cast, !dbg !943
+  %sub = add i64 %sub.ptr.sub12, %call3, !dbg !943
+  %cmp4 = icmp ult i64 %sub, 5, !dbg !943
+  br i1 %cmp4, label %return, label %if.end7, !dbg !943
 
-; <label>:12                                      ; preds = %2, %0, %5
-  br label %13, !dbg !1503
+if.end7:                                          ; preds = %if.then, %entry, %if.then2
+  br label %return, !dbg !945
 
-; <label>:13                                      ; preds = %5, %12
-  %.0 = phi i32 [ 0, %12 ], [ 1, %5 ]
-  ret i32 %.0, !dbg !1504
+return:                                           ; preds = %if.then2, %if.end7
+  %retval.0 = phi i32 [ 0, %if.end7 ], [ 1, %if.then2 ]
+  ret i32 %retval.0, !dbg !945
 }

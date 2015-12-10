@@ -1,52 +1,53 @@
-define void @_ZN3pov10plot_pixelEiiPf(i32 %x, i32 %y, float* nocapture readonly %Colour) #0 {
+define void @_ZN3pov10plot_pixelEiiPf(i32 %x, i32 %y, float* nocapture %Colour) #0 {
+entry:
   %Red = alloca i8, align 1
   %Green = alloca i8, align 1
   %Blue = alloca i8, align 1
   %Alpha = alloca i8, align 1
   %grey = alloca double, align 8
   %c = alloca [5 x float], align 16
-  tail call void @llvm.dbg.value(metadata i32 %x, i64 0, metadata !249, metadata !860), !dbg !1438
-  tail call void @llvm.dbg.value(metadata i32 %y, i64 0, metadata !250, metadata !860), !dbg !1439
-  tail call void @llvm.dbg.value(metadata float* %Colour, i64 0, metadata !251, metadata !860), !dbg !1440
-  tail call void @llvm.dbg.declare(metadata [5 x float]* %c, metadata !257, metadata !860), !dbg !1441
-  %1 = getelementptr inbounds [5 x float]* %c, i64 0, i64 0, !dbg !1442
-  call fastcc void @_ZN3povL23Compensate_For_Alpha_AAEPfS0_(float* %1, float* %Colour) #9, !dbg !1443
-  %2 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !1444, !tbaa !885
-  %3 = and i32 %2, 1, !dbg !1446
-  %4 = icmp eq i32 %3, 0, !dbg !1446
-  br i1 %4, label %20, label %5, !dbg !1447
+  call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !150), !dbg !645
+  call void @llvm.dbg.value(metadata !{i32 %y}, i64 0, metadata !151), !dbg !645
+  call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !152), !dbg !645
+  call void @llvm.dbg.declare(metadata !{i8* %Red}, metadata !153), !dbg !646
+  call void @llvm.dbg.declare(metadata !{i8* %Green}, metadata !154), !dbg !646
+  call void @llvm.dbg.declare(metadata !{i8* %Blue}, metadata !155), !dbg !646
+  call void @llvm.dbg.declare(metadata !{i8* %Alpha}, metadata !156), !dbg !646
+  call void @llvm.dbg.declare(metadata !{double* %grey}, metadata !157), !dbg !647
+  call void @llvm.dbg.declare(metadata !{[5 x float]* %c}, metadata !158), !dbg !648
+  %arraydecay = getelementptr inbounds [5 x float]* %c, i64 0, i64 0, !dbg !649
+  call fastcc void @_ZN3povL23Compensate_For_Alpha_AAEPfS0_(float* %arraydecay, float* %Colour) #7, !dbg !649
+  %0 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !650, !tbaa !358
+  %and = and i32 %0, 1, !dbg !650
+  %tobool = icmp eq i32 %and, 0, !dbg !650
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !650
 
-; <label>:5                                       ; preds = %0
-  %6 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !1448, !tbaa !947
-  %7 = add nsw i32 %6, -1, !dbg !1449
-  %8 = icmp ne i32 %7, %y, !dbg !1450
-  %9 = load i32* @_ZN3pov15Display_StartedE, align 4
-  %10 = icmp ne i32 %9, 0, !dbg !1451
-  %or.cond = and i1 %8, %10, !dbg !1452
-  br i1 %or.cond, label %11, label %20, !dbg !1452
+land.lhs.true:                                    ; preds = %entry
+  %1 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !650, !tbaa !358
+  %sub = add nsw i32 %1, -1, !dbg !650
+  %cmp = icmp ne i32 %sub, %y, !dbg !650
+  %2 = load i32* @_ZN3pov15Display_StartedE, align 4, !dbg !650, !tbaa !358
+  %tobool2 = icmp ne i32 %2, 0, !dbg !650
+  %or.cond = and i1 %cmp, %tobool2, !dbg !650
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !650
 
-; <label>:11                                      ; preds = %5
-  tail call void @llvm.dbg.value(metadata i8* %Red, i64 0, metadata !252, metadata !860), !dbg !1453
-  tail call void @llvm.dbg.value(metadata i8* %Green, i64 0, metadata !253, metadata !860), !dbg !1454
-  tail call void @llvm.dbg.value(metadata i8* %Blue, i64 0, metadata !254, metadata !860), !dbg !1455
-  tail call void @llvm.dbg.value(metadata i8* %Alpha, i64 0, metadata !255, metadata !860), !dbg !1456
-  tail call void @llvm.dbg.value(metadata double* %grey, i64 0, metadata !256, metadata !860), !dbg !1457
-  call void @_ZN3pov14extract_colorsEPfPhS1_S1_S1_Pd(float* %1, i8* %Red, i8* %Green, i8* %Blue, i8* %Alpha, double* %grey) #9, !dbg !1458
-  call void @llvm.dbg.value(metadata i8* %Red, i64 0, metadata !252, metadata !860), !dbg !1453
-  %12 = load i8* %Red, align 1, !dbg !1460, !tbaa !864
-  %13 = zext i8 %12 to i32, !dbg !1460
-  call void @llvm.dbg.value(metadata i8* %Green, i64 0, metadata !253, metadata !860), !dbg !1454
-  %14 = load i8* %Green, align 1, !dbg !1460, !tbaa !864
-  %15 = zext i8 %14 to i32, !dbg !1460
-  call void @llvm.dbg.value(metadata i8* %Blue, i64 0, metadata !254, metadata !860), !dbg !1455
-  %16 = load i8* %Blue, align 1, !dbg !1460, !tbaa !864
-  %17 = zext i8 %16 to i32, !dbg !1460
-  call void @llvm.dbg.value(metadata i8* %Alpha, i64 0, metadata !255, metadata !860), !dbg !1456
-  %18 = load i8* %Alpha, align 1, !dbg !1460, !tbaa !864
-  %19 = zext i8 %18 to i32, !dbg !1460
-  call void @_ZN3pov20POV_Std_Display_PlotEiijjjj(i32 %x, i32 %y, i32 %13, i32 %15, i32 %17, i32 %19) #9, !dbg !1460
-  br label %20, !dbg !1461
+if.then:                                          ; preds = %land.lhs.true
+  call void @_ZN3pov14extract_colorsEPfPhS1_S1_S1_Pd(float* %arraydecay, i8* %Red, i8* %Green, i8* %Blue, i8* %Alpha, double* %grey) #7, !dbg !651
+  call void @llvm.dbg.value(metadata !{i8* %Red}, i64 0, metadata !153), !dbg !653
+  %3 = load i8* %Red, align 1, !dbg !653, !tbaa !350
+  %conv4 = zext i8 %3 to i32, !dbg !653
+  call void @llvm.dbg.value(metadata !{i8* %Green}, i64 0, metadata !154), !dbg !653
+  %4 = load i8* %Green, align 1, !dbg !653, !tbaa !350
+  %conv5 = zext i8 %4 to i32, !dbg !653
+  call void @llvm.dbg.value(metadata !{i8* %Blue}, i64 0, metadata !155), !dbg !653
+  %5 = load i8* %Blue, align 1, !dbg !653, !tbaa !350
+  %conv6 = zext i8 %5 to i32, !dbg !653
+  call void @llvm.dbg.value(metadata !{i8* %Alpha}, i64 0, metadata !156), !dbg !653
+  %6 = load i8* %Alpha, align 1, !dbg !653, !tbaa !350
+  %conv7 = zext i8 %6 to i32, !dbg !653
+  call void @_ZN3pov20POV_Std_Display_PlotEiijjjj(i32 %x, i32 %y, i32 %conv4, i32 %conv5, i32 %conv6, i32 %conv7) #7, !dbg !653
+  br label %if.end, !dbg !654
 
-; <label>:20                                      ; preds = %0, %11, %5
-  ret void, !dbg !1462
+if.end:                                           ; preds = %entry, %if.then, %land.lhs.true
+  ret void, !dbg !655
 }

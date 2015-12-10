@@ -1,132 +1,161 @@
 define void @cpp_register_pragma(%struct.cpp_reader* %pfile, i8* %space, i8* %name, void (%struct.cpp_reader*)* %handler) #0 {
 entry:
-  %pragmas = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 34
-  %tobool = icmp eq void (%struct.cpp_reader*)* %handler, null
-  br i1 %tobool, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !603), !dbg !1143
+  tail call void @llvm.dbg.value(metadata !{i8* %space}, i64 0, metadata !604), !dbg !1144
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !605), !dbg !1145
+  tail call void @llvm.dbg.value(metadata !{void (%struct.cpp_reader*)* %handler}, i64 0, metadata !606), !dbg !1146
+  %pragmas = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 34, !dbg !1147
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry** %pragmas}, i64 0, metadata !607), !dbg !1147
+  %tobool = icmp eq void (%struct.cpp_reader*)* %handler, null, !dbg !1148
+  br i1 %tobool, label %if.then, label %if.end, !dbg !1148
 
 if.then:                                          ; preds = %entry
-  tail call void @abort() #10
-  unreachable
+  tail call void @abort() #11, !dbg !1149
+  unreachable, !dbg !1149
 
 if.end:                                           ; preds = %entry
-  %tobool2 = icmp ne i8* %space, null
-  br i1 %tobool2, label %if.then3, label %if.end14
+  %tobool2 = icmp ne i8* %space, null, !dbg !1150
+  br i1 %tobool2, label %if.then3, label %if.end14, !dbg !1150
 
 if.then3:                                         ; preds = %if.end
-  %call = tail call i64 @strlen(i8* %space) #11
-  %conv = trunc i64 %call to i32
-  %call4 = tail call %struct.cpp_hashnode* @cpp_lookup(%struct.cpp_reader* %pfile, i8* %space, i32 %conv) #8
-  %0 = load %struct.pragma_entry** %pragmas, align 8, !tbaa !3
-  %tobool4.i = icmp eq %struct.pragma_entry* %0, null
-  br i1 %tobool4.i, label %if.then7, label %land.rhs.i
+  %call = tail call i64 @strlen(i8* %space) #12, !dbg !1151
+  %conv = trunc i64 %call to i32, !dbg !1151
+  %call4 = tail call %struct.cpp_hashnode* @cpp_lookup(%struct.cpp_reader* %pfile, i8* %space, i32 %conv) #9, !dbg !1151
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %call4}, i64 0, metadata !610), !dbg !1151
+  %0 = load %struct.pragma_entry** %pragmas, align 8, !dbg !1153, !tbaa !1070
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry* %0}, i64 0, metadata !1154), !dbg !1155
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %call4}, i64 0, metadata !1156), !dbg !1157
+  %tobool4.i = icmp eq %struct.pragma_entry* %0, null, !dbg !1158
+  br i1 %tobool4.i, label %if.then7, label %land.rhs.i, !dbg !1158
 
 land.rhs.i:                                       ; preds = %if.then3, %while.body.i
   %chain.addr.05.i = phi %struct.pragma_entry* [ %2, %while.body.i ], [ %0, %if.then3 ]
-  %pragma1.i = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i, i64 0, i32 1
-  %1 = load %struct.cpp_hashnode** %pragma1.i, align 8, !tbaa !3
-  %cmp.i = icmp eq %struct.cpp_hashnode* %1, %call4
+  %pragma1.i = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i, i64 0, i32 1, !dbg !1158
+  %1 = load %struct.cpp_hashnode** %pragma1.i, align 8, !dbg !1158, !tbaa !1070
+  %cmp.i = icmp eq %struct.cpp_hashnode* %1, %call4, !dbg !1158
   br i1 %cmp.i, label %if.else, label %while.body.i
 
 while.body.i:                                     ; preds = %land.rhs.i
-  %next.i = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i, i64 0, i32 0
-  %2 = load %struct.pragma_entry** %next.i, align 8, !tbaa !3
-  %tobool.i = icmp eq %struct.pragma_entry* %2, null
-  br i1 %tobool.i, label %if.then7, label %land.rhs.i
+  %next.i = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i, i64 0, i32 0, !dbg !1159
+  %2 = load %struct.pragma_entry** %next.i, align 8, !dbg !1159, !tbaa !1070
+  tail call void @llvm.dbg.value(metadata !1160, i64 0, metadata !1154), !dbg !1159
+  %tobool.i = icmp eq %struct.pragma_entry* %2, null, !dbg !1158
+  br i1 %tobool.i, label %if.then7, label %land.rhs.i, !dbg !1158
 
 if.then7:                                         ; preds = %while.body.i, %if.then3
-  %call.i = tail call i8* @_cpp_aligned_alloc(%struct.cpp_reader* %pfile, i64 32) #8
-  %3 = bitcast i8* %call.i to %struct.pragma_entry*
-  %pragma1.i58 = getelementptr inbounds i8* %call.i, i64 8
-  %4 = bitcast i8* %pragma1.i58 to %struct.cpp_hashnode**
-  store %struct.cpp_hashnode* %call4, %struct.cpp_hashnode** %4, align 8, !tbaa !3
-  %is_nspace.i = getelementptr inbounds i8* %call.i, i64 16
-  %5 = bitcast i8* %is_nspace.i to i32*
-  store i32 1, i32* %5, align 4, !tbaa !2
-  %u4.i = getelementptr inbounds i8* %call.i, i64 24
-  %space.i = bitcast i8* %u4.i to %struct.pragma_entry**
-  store %struct.pragma_entry* null, %struct.pragma_entry** %space.i, align 8, !tbaa !3
-  %6 = load %struct.pragma_entry** %pragmas, align 8, !tbaa !3
-  %next.i59 = bitcast i8* %call.i to %struct.pragma_entry**
-  store %struct.pragma_entry* %6, %struct.pragma_entry** %next.i59, align 8, !tbaa !3
-  store %struct.pragma_entry* %3, %struct.pragma_entry** %pragmas, align 8, !tbaa !3
-  br label %if.end12
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry* %chain.addr.05.i}, i64 0, metadata !609), !dbg !1153
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !1161) #5, !dbg !1163
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry** %pragmas}, i64 0, metadata !1164) #5, !dbg !1165
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %call4}, i64 0, metadata !1166) #5, !dbg !1167
+  tail call void @llvm.dbg.value(metadata !1168, i64 0, metadata !1169) #5, !dbg !1170
+  %call.i = tail call i8* @_cpp_aligned_alloc(%struct.cpp_reader* %pfile, i64 32) #9, !dbg !1171
+  %3 = bitcast i8* %call.i to %struct.pragma_entry*, !dbg !1171
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry* %3}, i64 0, metadata !1172) #5, !dbg !1171
+  %pragma1.i58 = getelementptr inbounds i8* %call.i, i64 8, !dbg !1173
+  %4 = bitcast i8* %pragma1.i58 to %struct.cpp_hashnode**, !dbg !1173
+  store %struct.cpp_hashnode* %call4, %struct.cpp_hashnode** %4, align 8, !dbg !1173, !tbaa !1070
+  %is_nspace.i = getelementptr inbounds i8* %call.i, i64 16, !dbg !1174
+  %5 = bitcast i8* %is_nspace.i to i32*, !dbg !1174
+  store i32 1, i32* %5, align 4, !dbg !1176, !tbaa !1065
+  %u4.i = getelementptr inbounds i8* %call.i, i64 24, !dbg !1178
+  %space.i = bitcast i8* %u4.i to %struct.pragma_entry**, !dbg !1178
+  store %struct.pragma_entry* null, %struct.pragma_entry** %space.i, align 8, !dbg !1178, !tbaa !1070
+  %6 = load %struct.pragma_entry** %pragmas, align 8, !dbg !1179, !tbaa !1070
+  %next.i59 = bitcast i8* %call.i to %struct.pragma_entry**, !dbg !1179
+  store %struct.pragma_entry* %6, %struct.pragma_entry** %next.i59, align 8, !dbg !1179, !tbaa !1070
+  store %struct.pragma_entry* %3, %struct.pragma_entry** %pragmas, align 8, !dbg !1180, !tbaa !1070
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry* %3}, i64 0, metadata !609), !dbg !1162
+  br label %if.end12, !dbg !1162
 
 if.else:                                          ; preds = %land.rhs.i
-  %is_nspace = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i, i64 0, i32 2
-  %7 = load i32* %is_nspace, align 4, !tbaa !2
-  %tobool9 = icmp eq i32 %7, 0
-  br i1 %tobool9, label %clash, label %if.end12
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry* %chain.addr.05.i}, i64 0, metadata !609), !dbg !1153
+  %is_nspace = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i, i64 0, i32 2, !dbg !1181
+  %7 = load i32* %is_nspace, align 4, !dbg !1181, !tbaa !1065
+  %tobool9 = icmp eq i32 %7, 0, !dbg !1181
+  br i1 %tobool9, label %clash, label %if.end12, !dbg !1181
 
 if.end12:                                         ; preds = %if.else, %if.then7
   %entry1.0 = phi %struct.pragma_entry* [ %chain.addr.05.i, %if.else ], [ %3, %if.then7 ]
-  %u = getelementptr inbounds %struct.pragma_entry* %entry1.0, i64 0, i32 3
-  %space13 = bitcast %union.anon.1* %u to %struct.pragma_entry**
-  br label %if.end14
+  %u = getelementptr inbounds %struct.pragma_entry* %entry1.0, i64 0, i32 3, !dbg !1182
+  %space13 = bitcast %union.anon.1* %u to %struct.pragma_entry**, !dbg !1182
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry** %space13}, i64 0, metadata !607), !dbg !1182
+  br label %if.end14, !dbg !1183
 
 if.end14:                                         ; preds = %if.end12, %if.end
   %chain.0 = phi %struct.pragma_entry** [ %space13, %if.end12 ], [ %pragmas, %if.end ]
-  %call15 = tail call i64 @strlen(i8* %name) #11
-  %conv16 = trunc i64 %call15 to i32
-  %call17 = tail call %struct.cpp_hashnode* @cpp_lookup(%struct.cpp_reader* %pfile, i8* %name, i32 %conv16) #8
-  %8 = load %struct.pragma_entry** %chain.0, align 8, !tbaa !3
-  %tobool4.i60 = icmp eq %struct.pragma_entry* %8, null
-  br i1 %tobool4.i60, label %insert_pragma_entry.exit, label %land.rhs.i64
+  %call15 = tail call i64 @strlen(i8* %name) #12, !dbg !1184
+  %conv16 = trunc i64 %call15 to i32, !dbg !1184
+  %call17 = tail call %struct.cpp_hashnode* @cpp_lookup(%struct.cpp_reader* %pfile, i8* %name, i32 %conv16) #9, !dbg !1184
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %call17}, i64 0, metadata !610), !dbg !1184
+  %8 = load %struct.pragma_entry** %chain.0, align 8, !dbg !1185, !tbaa !1070
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry* %8}, i64 0, metadata !1186), !dbg !1187
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %call17}, i64 0, metadata !1188), !dbg !1189
+  %tobool4.i60 = icmp eq %struct.pragma_entry* %8, null, !dbg !1190
+  br i1 %tobool4.i60, label %insert_pragma_entry.exit, label %land.rhs.i64, !dbg !1190
 
 land.rhs.i64:                                     ; preds = %if.end14, %while.body.i67
   %chain.addr.05.i61 = phi %struct.pragma_entry* [ %10, %while.body.i67 ], [ %8, %if.end14 ]
-  %pragma1.i62 = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i61, i64 0, i32 1
-  %9 = load %struct.cpp_hashnode** %pragma1.i62, align 8, !tbaa !3
-  %cmp.i63 = icmp eq %struct.cpp_hashnode* %9, %call17
+  %pragma1.i62 = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i61, i64 0, i32 1, !dbg !1190
+  %9 = load %struct.cpp_hashnode** %pragma1.i62, align 8, !dbg !1190, !tbaa !1070
+  %cmp.i63 = icmp eq %struct.cpp_hashnode* %9, %call17, !dbg !1190
   br i1 %cmp.i63, label %if.then20, label %while.body.i67
 
 while.body.i67:                                   ; preds = %land.rhs.i64
-  %next.i65 = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i61, i64 0, i32 0
-  %10 = load %struct.pragma_entry** %next.i65, align 8, !tbaa !3
-  %tobool.i66 = icmp eq %struct.pragma_entry* %10, null
-  br i1 %tobool.i66, label %insert_pragma_entry.exit, label %land.rhs.i64
+  %next.i65 = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i61, i64 0, i32 0, !dbg !1191
+  %10 = load %struct.pragma_entry** %next.i65, align 8, !dbg !1191, !tbaa !1070
+  tail call void @llvm.dbg.value(metadata !1160, i64 0, metadata !1186), !dbg !1191
+  %tobool.i66 = icmp eq %struct.pragma_entry* %10, null, !dbg !1190
+  br i1 %tobool.i66, label %insert_pragma_entry.exit, label %land.rhs.i64, !dbg !1190
 
 if.then20:                                        ; preds = %land.rhs.i64
-  %is_nspace21 = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i61, i64 0, i32 2
-  %11 = load i32* %is_nspace21, align 4, !tbaa !2
-  %tobool22 = icmp eq i32 %11, 0
-  br i1 %tobool22, label %if.else24, label %clash
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry* %chain.addr.05.i61}, i64 0, metadata !609), !dbg !1185
+  %is_nspace21 = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i61, i64 0, i32 2, !dbg !1192
+  %11 = load i32* %is_nspace21, align 4, !dbg !1192, !tbaa !1065
+  %tobool22 = icmp eq i32 %11, 0, !dbg !1192
+  br i1 %tobool22, label %if.else24, label %clash, !dbg !1192
 
 clash:                                            ; preds = %if.else, %if.then20
   %node.0 = phi %struct.cpp_hashnode* [ %call17, %if.then20 ], [ %call4, %if.else ]
-  %str = getelementptr inbounds %struct.cpp_hashnode* %node.0, i64 0, i32 0, i32 1
-  %12 = load i8** %str, align 8, !tbaa !3
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_ice(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([57 x i8]* @.str2, i64 0, i64 0), i8* %12) #8
-  br label %if.end32
+  %str = getelementptr inbounds %struct.cpp_hashnode* %node.0, i64 0, i32 0, i32 1, !dbg !1194
+  %12 = load i8** %str, align 8, !dbg !1194, !tbaa !1070
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_ice(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([57 x i8]* @.str2, i64 0, i64 0), i8* %12) #9, !dbg !1194
+  br label %if.end32, !dbg !1194
 
 if.else24:                                        ; preds = %if.then20
-  br i1 %tobool2, label %if.then26, label %if.else27
+  br i1 %tobool2, label %if.then26, label %if.else27, !dbg !1195
 
 if.then26:                                        ; preds = %if.else24
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_ice(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([36 x i8]* @.str3, i64 0, i64 0), i8* %space, i8* %name) #8
-  br label %if.end32
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_ice(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([36 x i8]* @.str3, i64 0, i64 0), i8* %space, i8* %name) #9, !dbg !1196
+  br label %if.end32, !dbg !1196
 
 if.else27:                                        ; preds = %if.else24
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_ice(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([33 x i8]* @.str4, i64 0, i64 0), i8* %name) #8
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_ice(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([33 x i8]* @.str4, i64 0, i64 0), i8* %name) #9, !dbg !1197
   br label %if.end32
 
 insert_pragma_entry.exit:                         ; preds = %while.body.i67, %if.end14
-  %call.i70 = tail call i8* @_cpp_aligned_alloc(%struct.cpp_reader* %pfile, i64 32) #8
-  %13 = bitcast i8* %call.i70 to %struct.pragma_entry*
-  %pragma1.i71 = getelementptr inbounds i8* %call.i70, i64 8
-  %14 = bitcast i8* %pragma1.i71 to %struct.cpp_hashnode**
-  store %struct.cpp_hashnode* %call17, %struct.cpp_hashnode** %14, align 8, !tbaa !3
-  %is_nspace.i73 = getelementptr inbounds i8* %call.i70, i64 16
-  %15 = bitcast i8* %is_nspace.i73 to i32*
-  store i32 0, i32* %15, align 4, !tbaa !2
-  %u.i = getelementptr inbounds i8* %call.i70, i64 24
-  %handler2.i = bitcast i8* %u.i to void (%struct.cpp_reader*)**
-  store void (%struct.cpp_reader*)* %handler, void (%struct.cpp_reader*)** %handler2.i, align 8, !tbaa !3
-  %16 = load %struct.pragma_entry** %chain.0, align 8, !tbaa !3
-  %next.i76 = bitcast i8* %call.i70 to %struct.pragma_entry**
-  store %struct.pragma_entry* %16, %struct.pragma_entry** %next.i76, align 8, !tbaa !3
-  store %struct.pragma_entry* %13, %struct.pragma_entry** %chain.0, align 8, !tbaa !3
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry* %chain.addr.05.i61}, i64 0, metadata !609), !dbg !1185
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !1198) #5, !dbg !1200
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry** %chain.0}, i64 0, metadata !1201) #5, !dbg !1202
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %call17}, i64 0, metadata !1203) #5, !dbg !1204
+  tail call void @llvm.dbg.value(metadata !{void (%struct.cpp_reader*)* %handler}, i64 0, metadata !1205) #5, !dbg !1206
+  %call.i70 = tail call i8* @_cpp_aligned_alloc(%struct.cpp_reader* %pfile, i64 32) #9, !dbg !1207
+  %13 = bitcast i8* %call.i70 to %struct.pragma_entry*, !dbg !1207
+  tail call void @llvm.dbg.value(metadata !{%struct.pragma_entry* %13}, i64 0, metadata !1208) #5, !dbg !1207
+  %pragma1.i71 = getelementptr inbounds i8* %call.i70, i64 8, !dbg !1209
+  %14 = bitcast i8* %pragma1.i71 to %struct.cpp_hashnode**, !dbg !1209
+  store %struct.cpp_hashnode* %call17, %struct.cpp_hashnode** %14, align 8, !dbg !1209, !tbaa !1070
+  %is_nspace.i73 = getelementptr inbounds i8* %call.i70, i64 16, !dbg !1210
+  %15 = bitcast i8* %is_nspace.i73 to i32*, !dbg !1210
+  store i32 0, i32* %15, align 4, !dbg !1210, !tbaa !1065
+  %u.i = getelementptr inbounds i8* %call.i70, i64 24, !dbg !1211
+  %handler2.i = bitcast i8* %u.i to void (%struct.cpp_reader*)**, !dbg !1211
+  store void (%struct.cpp_reader*)* %handler, void (%struct.cpp_reader*)** %handler2.i, align 8, !dbg !1211, !tbaa !1070
+  %16 = load %struct.pragma_entry** %chain.0, align 8, !dbg !1212, !tbaa !1070
+  %next.i76 = bitcast i8* %call.i70 to %struct.pragma_entry**, !dbg !1212
+  store %struct.pragma_entry* %16, %struct.pragma_entry** %next.i76, align 8, !dbg !1212, !tbaa !1070
+  store %struct.pragma_entry* %13, %struct.pragma_entry** %chain.0, align 8, !dbg !1213, !tbaa !1070
   br label %if.end32
 
 if.end32:                                         ; preds = %clash, %if.else27, %if.then26, %insert_pragma_entry.exit
-  ret void
+  ret void, !dbg !1214
 }

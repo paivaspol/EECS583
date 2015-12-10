@@ -1,21 +1,25 @@
 define i32 @get_mode_alignment(i32 %mode) #4 {
 entry:
-  %idxprom = sext i32 %mode to i64
-  %0 = add i64 %idxprom, -19
-  %cmp = icmp ult i64 %0, 6
-  %1 = add i64 %idxprom, -25
-  %cmp3 = icmp ult i64 %1, 6
-  %or.cond = or i1 %cmp, %cmp3
-  %mode_unit_size.pn = select i1 %or.cond, [59 x i8]* @mode_unit_size, [59 x i8]* @mode_size
-  %alignment.0.in.in = getelementptr inbounds [59 x i8]* %mode_unit_size.pn, i64 0, i64 %idxprom
-  %alignment.0.in = load i8* %alignment.0.in.in, align 1
-  %alignment.0 = zext i8 %alignment.0.in to i32
-  %sub = sub i32 0, %alignment.0
-  %and = and i32 %alignment.0, %sub
-  %mul = shl nuw nsw i32 %and, 3
-  %cmp9 = icmp eq i32 %and, 0
-  %cond = select i1 %cmp9, i32 1, i32 %mul
-  %cmp11 = icmp ugt i32 %cond, 128
-  %.cond = select i1 %cmp11, i32 128, i32 %cond
-  ret i32 %.cond
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !349), !dbg !485
+  %idxprom = sext i32 %mode to i64, !dbg !486
+  %0 = add i64 %idxprom, -19, !dbg !486
+  %cmp = icmp ult i64 %0, 6, !dbg !486
+  %1 = add i64 %idxprom, -25, !dbg !486
+  %cmp3 = icmp ult i64 %1, 6, !dbg !486
+  %or.cond = or i1 %cmp, %cmp3, !dbg !486
+  %mode_unit_size.pn = select i1 %or.cond, [59 x i8]* @mode_unit_size, [59 x i8]* @mode_size, !dbg !486
+  %alignment.0.in.in = getelementptr inbounds [59 x i8]* %mode_unit_size.pn, i64 0, i64 %idxprom, !dbg !487
+  %alignment.0.in = load i8* %alignment.0.in.in, align 1, !dbg !487
+  %alignment.0 = zext i8 %alignment.0.in to i32, !dbg !487
+  %sub = sub i32 0, %alignment.0, !dbg !488
+  %and = and i32 %alignment.0, %sub, !dbg !488
+  tail call void @llvm.dbg.value(metadata !{i32 %and}, i64 0, metadata !350), !dbg !488
+  %mul = shl nuw nsw i32 %and, 3, !dbg !489
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !350), !dbg !489
+  %cmp9 = icmp eq i32 %and, 0, !dbg !490
+  %cond = select i1 %cmp9, i32 1, i32 %mul, !dbg !490
+  %cmp11 = icmp ugt i32 %cond, 128, !dbg !490
+  %.cond = select i1 %cmp11, i32 128, i32 %cond, !dbg !490
+  tail call void @llvm.dbg.value(metadata !{i32 %.cond}, i64 0, metadata !350), !dbg !490
+  ret i32 %.cond, !dbg !491
 }

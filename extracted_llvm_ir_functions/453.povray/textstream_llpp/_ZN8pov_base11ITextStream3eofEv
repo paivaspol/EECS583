@@ -1,36 +1,35 @@
-define zeroext i1 @_ZN8pov_base11ITextStream3eofEv(%"class.pov_base::ITextStream"* nocapture readonly %this) #7 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::ITextStream"* %this, i64 0, metadata !435, metadata !1049), !dbg !1297
-  %1 = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 9, !dbg !1298
-  %2 = load i32* %1, align 4, !dbg !1298, !tbaa !1091
-  %3 = icmp eq i32 %2, -1, !dbg !1300
-  br i1 %3, label %4, label %_ZN8pov_base6IOBase3eofEv.exit, !dbg !1301
+define zeroext i1 @_ZN8pov_base11ITextStream3eofEv(%"class.pov_base::ITextStream"* nocapture %this) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::ITextStream"* %this}, i64 0, metadata !374), !dbg !700
+  %ungetbuffer = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 9, !dbg !701
+  %0 = load i32* %ungetbuffer, align 4, !dbg !701, !tbaa !587
+  %cmp = icmp eq i32 %0, -1, !dbg !701
+  br i1 %cmp, label %if.end, label %return, !dbg !701
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 3, !dbg !1302
-  %6 = load i64* %5, align 8, !dbg !1302, !tbaa !1113
-  %7 = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 4, !dbg !1304
-  %8 = load i64* %7, align 8, !dbg !1304, !tbaa !1115
-  %9 = icmp ult i64 %6, %8, !dbg !1305
-  br i1 %9, label %10, label %_ZN8pov_base6IOBase3eofEv.exit, !dbg !1306
+if.end:                                           ; preds = %entry
+  %bufferoffset = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 3, !dbg !702
+  %1 = load i64* %bufferoffset, align 8, !dbg !702, !tbaa !601
+  %maxbufferoffset = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 4, !dbg !702
+  %2 = load i64* %maxbufferoffset, align 8, !dbg !702, !tbaa !601
+  %cmp2 = icmp ult i64 %1, %2, !dbg !702
+  br i1 %cmp2, label %if.end4, label %return, !dbg !702
 
-; <label>:10                                      ; preds = %4
-  %11 = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 1, !dbg !1307
-  %12 = bitcast %"class.pov_base::IStream"** %11 to %"class.pov_base::IOBase"**, !dbg !1307
-  %13 = load %"class.pov_base::IOBase"** %12, align 8, !dbg !1307, !tbaa !1068
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::IOBase"* %13, i64 0, metadata !505, metadata !1049) #9, !dbg !1308
-  %14 = getelementptr inbounds %"class.pov_base::IOBase"* %13, i64 0, i32 1, !dbg !1310
-  %15 = load i8* %14, align 1, !dbg !1310, !tbaa !1146, !range !1147
-  %16 = icmp eq i8 %15, 0, !dbg !1310
-  br i1 %16, label %17, label %_ZN8pov_base6IOBase3eofEv.exit, !dbg !1310
+if.end4:                                          ; preds = %if.end
+  %stream = getelementptr inbounds %"class.pov_base::ITextStream"* %this, i64 0, i32 1, !dbg !703
+  %3 = load %"class.pov_base::IStream"** %stream, align 8, !dbg !703, !tbaa !590
+  %fail.i = getelementptr inbounds %"class.pov_base::IStream"* %3, i64 0, i32 0, i32 1, !dbg !704
+  %4 = load i8* %fail.i, align 1, !dbg !704, !tbaa !625, !range !626
+  %tobool.i = icmp eq i8 %4, 0, !dbg !704
+  br i1 %tobool.i, label %cond.false.i, label %return, !dbg !704
 
-; <label>:17                                      ; preds = %10
-  %18 = getelementptr inbounds %"class.pov_base::IOBase"* %13, i64 0, i32 2, !dbg !1311
-  %19 = load %struct.__sFILE** %18, align 8, !dbg !1311, !tbaa !1100
-  %20 = tail call i32 @feof(%struct.__sFILE* %19) #13, !dbg !1312
-  %21 = icmp ne i32 %20, 0, !dbg !1313
-  br label %_ZN8pov_base6IOBase3eofEv.exit, !dbg !1310
+cond.false.i:                                     ; preds = %if.end4
+  %f.i = getelementptr inbounds %"class.pov_base::IStream"* %3, i64 0, i32 0, i32 2, !dbg !704
+  %5 = load %struct._IO_FILE** %f.i, align 8, !dbg !704, !tbaa !590
+  %call.i = tail call i32 @feof(%struct._IO_FILE* %5) #11, !dbg !704
+  %cmp.i = icmp ne i32 %call.i, 0, !dbg !704
+  br label %return, !dbg !704
 
-_ZN8pov_base6IOBase3eofEv.exit:                   ; preds = %17, %10, %4, %0
-  %.0 = phi i1 [ false, %0 ], [ true, %4 ], [ %21, %17 ], [ true, %10 ]
-  ret i1 %.0, !dbg !1314
+return:                                           ; preds = %cond.false.i, %if.end4, %if.end, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ true, %if.end ], [ %cmp.i, %cond.false.i ], [ true, %if.end4 ]
+  ret i1 %retval.0, !dbg !705
 }

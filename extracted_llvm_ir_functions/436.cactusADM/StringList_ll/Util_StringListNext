@@ -1,41 +1,38 @@
 define i8* @Util_StringListNext(%struct.uStringList* nocapture %this, i32 %flag) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.uStringList* %this, i64 0, metadata !47, metadata !63), !dbg !168
-  tail call void @llvm.dbg.value(metadata i32 %flag, i64 0, metadata !48, metadata !63), !dbg !169
-  %1 = icmp eq i32 %flag, 0, !dbg !170
-  br i1 %1, label %._crit_edge, label %2, !dbg !172
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.uStringList* %this}, i64 0, metadata !47), !dbg !113
+  tail call void @llvm.dbg.value(metadata !{i32 %flag}, i64 0, metadata !48), !dbg !113
+  %tobool = icmp eq i32 %flag, 0, !dbg !114
+  br i1 %tobool, label %entry.if.end_crit_edge, label %if.then, !dbg !114
 
-._crit_edge:                                      ; preds = %0
-  %.phi.trans.insert = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3
-  %.pre = load %struct.iInternalStringList** %.phi.trans.insert, align 8, !dbg !173, !tbaa !85
-  br label %9, !dbg !172
+entry.if.end_crit_edge:                           ; preds = %entry
+  %current2.phi.trans.insert = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3
+  %.pre = load %struct.iInternalStringList** %current2.phi.trans.insert, align 8, !dbg !115, !tbaa !64
+  br label %if.end, !dbg !114
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 2, !dbg !175
-  %4 = bitcast %struct.iInternalStringList** %3 to i64*, !dbg !175
-  %5 = load i64* %4, align 8, !dbg !175, !tbaa !101
-  %6 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3, !dbg !177
-  %7 = bitcast %struct.iInternalStringList** %6 to i64*, !dbg !178
-  store i64 %5, i64* %7, align 8, !dbg !178, !tbaa !85
-  %8 = inttoptr i64 %5 to %struct.iInternalStringList*
-  br label %9, !dbg !179
+if.then:                                          ; preds = %entry
+  %head = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 2, !dbg !116
+  %0 = load %struct.iInternalStringList** %head, align 8, !dbg !116, !tbaa !64
+  %current = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3, !dbg !116
+  store %struct.iInternalStringList* %0, %struct.iInternalStringList** %current, align 8, !dbg !116, !tbaa !64
+  br label %if.end, !dbg !118
 
-; <label>:9                                       ; preds = %._crit_edge, %2
-  %.pre-phi = phi %struct.iInternalStringList** [ %.phi.trans.insert, %._crit_edge ], [ %6, %2 ], !dbg !173
-  %10 = phi %struct.iInternalStringList* [ %.pre, %._crit_edge ], [ %8, %2 ]
-  %11 = icmp eq %struct.iInternalStringList* %10, null, !dbg !180
-  br i1 %11, label %18, label %12, !dbg !181
+if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
+  %1 = phi %struct.iInternalStringList* [ %.pre, %entry.if.end_crit_edge ], [ %0, %if.then ]
+  %tobool3 = icmp eq %struct.iInternalStringList* %1, null, !dbg !115
+  br i1 %tobool3, label %if.end8, label %if.then4, !dbg !115
 
-; <label>:12                                      ; preds = %9
-  %13 = getelementptr inbounds %struct.iInternalStringList* %10, i64 0, i32 1, !dbg !182
-  %14 = load i8** %13, align 8, !dbg !182, !tbaa !106
-  tail call void @llvm.dbg.value(metadata i8* %14, i64 0, metadata !49, metadata !63), !dbg !184
-  %15 = bitcast %struct.iInternalStringList* %10 to i64*, !dbg !185
-  %16 = load i64* %15, align 8, !dbg !185, !tbaa !110
-  %17 = bitcast %struct.iInternalStringList** %.pre-phi to i64*, !dbg !186
-  store i64 %16, i64* %17, align 8, !dbg !186, !tbaa !85
-  br label %18, !dbg !187
+if.then4:                                         ; preds = %if.end
+  %current2 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3, !dbg !115
+  %string = getelementptr inbounds %struct.iInternalStringList* %1, i64 0, i32 1, !dbg !119
+  %2 = load i8** %string, align 8, !dbg !119, !tbaa !64
+  tail call void @llvm.dbg.value(metadata !{i8* %2}, i64 0, metadata !49), !dbg !119
+  %next = getelementptr inbounds %struct.iInternalStringList* %1, i64 0, i32 0, !dbg !121
+  %3 = load %struct.iInternalStringList** %next, align 8, !dbg !121, !tbaa !64
+  store %struct.iInternalStringList* %3, %struct.iInternalStringList** %current2, align 8, !dbg !121, !tbaa !64
+  br label %if.end8, !dbg !122
 
-; <label>:18                                      ; preds = %9, %12
-  %retval.0 = phi i8* [ %14, %12 ], [ null, %9 ]
-  ret i8* %retval.0, !dbg !188
+if.end8:                                          ; preds = %if.end, %if.then4
+  %retval1.0 = phi i8* [ %2, %if.then4 ], [ null, %if.end ]
+  ret i8* %retval1.0, !dbg !123
 }

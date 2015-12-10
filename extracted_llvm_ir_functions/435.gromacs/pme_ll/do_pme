@@ -1,213 +1,209 @@
-define float @do_pme(%struct.__sFILE* nocapture readnone %logfile, i32 %bVerbose, %struct.t_inputrec* nocapture readonly %ir, [3 x float]* nocapture readonly %x, [3 x float]* nocapture %f, float* nocapture readonly %charge, [3 x float]* nocapture readonly %box, %struct.t_commrec* %cr, %struct.t_nsborder* nocapture readonly %nsb, %struct.t_nrnb* nocapture %nrnb, [3 x float]* nocapture %vir, float %ewaldcoeff, i32 %bGatherOnly) #1 {
+define float @do_pme(%struct._IO_FILE* nocapture %logfile, i32 %bVerbose, %struct.t_inputrec* nocapture %ir, [3 x float]* nocapture %x, [3 x float]* nocapture %f, float* nocapture %charge, [3 x float]* nocapture %box, %struct.t_commrec* %cr, %struct.t_nsborder* nocapture %nsb, %struct.t_nrnb* nocapture %nrnb, [3 x float]* nocapture %vir, float %ewaldcoeff, i32 %bGatherOnly) #0 {
+entry:
   %nx = alloca i32, align 4
   %ny = alloca i32, align 4
   %nz = alloca i32, align 4
   %la12 = alloca i32, align 4
   %la2 = alloca i32, align 4
   %ptr = alloca float*, align 8
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %logfile, i64 0, metadata !730, metadata !785), !dbg !1908
-  tail call void @llvm.dbg.value(metadata i32 %bVerbose, i64 0, metadata !731, metadata !785), !dbg !1909
-  tail call void @llvm.dbg.value(metadata %struct.t_inputrec* %ir, i64 0, metadata !732, metadata !785), !dbg !1910
-  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !733, metadata !785), !dbg !1911
-  tail call void @llvm.dbg.value(metadata [3 x float]* %f, i64 0, metadata !734, metadata !785), !dbg !1912
-  tail call void @llvm.dbg.value(metadata float* %charge, i64 0, metadata !735, metadata !785), !dbg !1913
-  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !736, metadata !785), !dbg !1914
-  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !737, metadata !785), !dbg !1915
-  tail call void @llvm.dbg.value(metadata %struct.t_nsborder* %nsb, i64 0, metadata !738, metadata !785), !dbg !1916
-  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %nrnb, i64 0, metadata !739, metadata !785), !dbg !1917
-  tail call void @llvm.dbg.value(metadata [3 x float]* %vir, i64 0, metadata !740, metadata !785), !dbg !1918
-  tail call void @llvm.dbg.value(metadata float %ewaldcoeff, i64 0, metadata !741, metadata !785), !dbg !1919
-  tail call void @llvm.dbg.value(metadata i32 %bGatherOnly, i64 0, metadata !742, metadata !785), !dbg !1920
-  %1 = load %struct.t_fftgrid** @grid, align 8, !dbg !1921, !tbaa !803
-  tail call void @llvm.dbg.value(metadata i32* %nx, i64 0, metadata !746, metadata !785), !dbg !1922
-  tail call void @llvm.dbg.value(metadata i32* %ny, i64 0, metadata !747, metadata !785), !dbg !1923
-  tail call void @llvm.dbg.value(metadata i32* %nz, i64 0, metadata !748, metadata !785), !dbg !1924
-  tail call void @llvm.dbg.value(metadata i32* %la12, i64 0, metadata !749, metadata !785), !dbg !1925
-  tail call void @llvm.dbg.value(metadata i32* %la2, i64 0, metadata !750, metadata !785), !dbg !1926
-  tail call void @llvm.dbg.value(metadata float** %ptr, i64 0, metadata !751, metadata !785), !dbg !1927
-  call void @unpack_fftgrid(%struct.t_fftgrid* %1, i32* %nx, i32* %ny, i32* %nz, i32* %la2, i32* %la12, i32 1, float** %ptr) #7, !dbg !1928
-  %2 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0, !dbg !1929
-  %3 = load i32* %2, align 4, !dbg !1929, !tbaa !1930
-  %4 = sext i32 %3 to i64, !dbg !1929
-  %5 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %4, !dbg !1929
-  %6 = load i32* %5, align 4, !dbg !1929, !tbaa !943
-  %7 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 20, !dbg !1932
-  %8 = load i32* %7, align 4, !dbg !1932, !tbaa !1933
-  %9 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %4, !dbg !1936
-  %10 = load i32* %9, align 4, !dbg !1936, !tbaa !943
-  %11 = sext i32 %10 to i64, !dbg !1937
-  %12 = getelementptr inbounds [3 x float]* %x, i64 %11, !dbg !1937
-  %13 = getelementptr inbounds float* %charge, i64 %11, !dbg !1938
-  %14 = call %struct.t_fftgrid* @spread_on_grid(%struct.__sFILE* undef, i32 %6, i32 %8, [3 x float]* %12, float* %13, [3 x float]* %box, i32 %bGatherOnly) #9, !dbg !1939
-  %15 = icmp eq i32 %bGatherOnly, 0, !dbg !1940
-  br i1 %15, label %16, label %._crit_edge, !dbg !1942
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %logfile}, i64 0, metadata !719), !dbg !1194
+  call void @llvm.dbg.value(metadata !{i32 %bVerbose}, i64 0, metadata !720), !dbg !1194
+  call void @llvm.dbg.value(metadata !{%struct.t_inputrec* %ir}, i64 0, metadata !721), !dbg !1195
+  call void @llvm.dbg.value(metadata !{[3 x float]* %x}, i64 0, metadata !722), !dbg !1195
+  call void @llvm.dbg.value(metadata !{[3 x float]* %f}, i64 0, metadata !723), !dbg !1196
+  call void @llvm.dbg.value(metadata !{float* %charge}, i64 0, metadata !724), !dbg !1196
+  call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !725), !dbg !1197
+  call void @llvm.dbg.value(metadata !{%struct.t_commrec* %cr}, i64 0, metadata !726), !dbg !1197
+  call void @llvm.dbg.value(metadata !{%struct.t_nsborder* %nsb}, i64 0, metadata !727), !dbg !1198
+  call void @llvm.dbg.value(metadata !{%struct.t_nrnb* %nrnb}, i64 0, metadata !728), !dbg !1198
+  call void @llvm.dbg.value(metadata !{[3 x float]* %vir}, i64 0, metadata !729), !dbg !1199
+  call void @llvm.dbg.value(metadata !{float %ewaldcoeff}, i64 0, metadata !730), !dbg !1199
+  call void @llvm.dbg.value(metadata !{i32 %bGatherOnly}, i64 0, metadata !731), !dbg !1200
+  call void @llvm.dbg.declare(metadata !{i32* %nx}, metadata !735), !dbg !1201
+  call void @llvm.dbg.declare(metadata !{i32* %ny}, metadata !736), !dbg !1201
+  call void @llvm.dbg.declare(metadata !{i32* %nz}, metadata !737), !dbg !1201
+  call void @llvm.dbg.declare(metadata !{i32* %la12}, metadata !738), !dbg !1201
+  call void @llvm.dbg.declare(metadata !{i32* %la2}, metadata !739), !dbg !1201
+  call void @llvm.dbg.declare(metadata !{float** %ptr}, metadata !740), !dbg !1202
+  %0 = load %struct.t_fftgrid** @grid, align 8, !dbg !1203, !tbaa !773
+  call void @unpack_fftgrid(%struct.t_fftgrid* %0, i32* %nx, i32* %ny, i32* %nz, i32* %la2, i32* %la12, i32 1, float** %ptr) #5, !dbg !1203
+  %nodeid = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0, !dbg !1204
+  %1 = load i32* %nodeid, align 4, !dbg !1204, !tbaa !815
+  %idxprom = sext i32 %1 to i64, !dbg !1204
+  %arrayidx = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom, !dbg !1204
+  %2 = load i32* %arrayidx, align 4, !dbg !1204, !tbaa !815
+  %pme_order = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 20, !dbg !1204
+  %3 = load i32* %pme_order, align 4, !dbg !1204, !tbaa !815
+  %arrayidx3 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %idxprom, !dbg !1204
+  %4 = load i32* %arrayidx3, align 4, !dbg !1204, !tbaa !815
+  %idx.ext = sext i32 %4 to i64, !dbg !1204
+  %add.ptr = getelementptr inbounds [3 x float]* %x, i64 %idx.ext, !dbg !1204
+  %add.ptr9 = getelementptr inbounds float* %charge, i64 %idx.ext, !dbg !1204
+  %call = call %struct.t_fftgrid* @spread_on_grid(%struct._IO_FILE* undef, i32 %2, i32 %3, [3 x float]* %add.ptr, float* %add.ptr9, [3 x float]* %box, i32 %bGatherOnly) #7, !dbg !1204
+  %tobool = icmp eq i32 %bGatherOnly, 0, !dbg !1205
+  br i1 %tobool, label %if.then, label %if.end57, !dbg !1205
 
-._crit_edge:                                      ; preds = %0
-  %.pre1 = load %struct.t_fftgrid** @grid, align 8, !dbg !1943, !tbaa !803
-  br label %110, !dbg !1942
+if.then:                                          ; preds = %entry
+  %5 = load i32* %pme_order, align 4, !dbg !1206, !tbaa !815
+  %mul = mul nsw i32 %5, %5, !dbg !1206
+  %mul13 = mul nsw i32 %mul, %5, !dbg !1206
+  %6 = load i32* %nodeid, align 4, !dbg !1206, !tbaa !815
+  %idxprom15 = sext i32 %6 to i64, !dbg !1206
+  %arrayidx17 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom15, !dbg !1206
+  %7 = load i32* %arrayidx17, align 4, !dbg !1206, !tbaa !815
+  %mul18 = mul nsw i32 %mul13, %7, !dbg !1206
+  %conv = sitofp i32 %mul18 to double, !dbg !1206
+  %arrayidx19 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 81, !dbg !1206
+  %8 = load double* %arrayidx19, align 8, !dbg !1206, !tbaa !1208
+  %add = fadd double %8, %conv, !dbg !1206
+  store double %add, double* %arrayidx19, align 8, !dbg !1206, !tbaa !1208
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1, !dbg !1209
+  %9 = load i32* %nnodes, align 4, !dbg !1209, !tbaa !815
+  %cmp = icmp sgt i32 %9, 1, !dbg !1209
+  br i1 %cmp, label %if.then23, label %lor.lhs.false, !dbg !1209
 
-; <label>:16                                      ; preds = %0
-  %17 = load i32* %7, align 4, !dbg !1944, !tbaa !1933
-  %18 = mul nsw i32 %17, %17, !dbg !1944
-  %19 = mul nsw i32 %18, %17, !dbg !1944
-  %20 = load i32* %2, align 4, !dbg !1944, !tbaa !1930
-  %21 = sext i32 %20 to i64, !dbg !1944
-  %22 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %21, !dbg !1944
-  %23 = load i32* %22, align 4, !dbg !1944, !tbaa !943
-  %24 = mul nsw i32 %19, %23, !dbg !1944
-  %25 = sitofp i32 %24 to double, !dbg !1944
-  %26 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 81, !dbg !1944
-  %27 = load double* %26, align 8, !dbg !1944, !tbaa !1946
-  %28 = fadd double %27, %25, !dbg !1944
-  store double %28, double* %26, align 8, !dbg !1944, !tbaa !1946
-  %29 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1, !dbg !1948
-  %30 = load i32* %29, align 4, !dbg !1948, !tbaa !1087
-  %31 = icmp sgt i32 %30, 1, !dbg !1948
-  br i1 %31, label %36, label %32, !dbg !1948
+lor.lhs.false:                                    ; preds = %if.then
+  %nthreads = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5, !dbg !1209
+  %10 = load i32* %nthreads, align 4, !dbg !1209, !tbaa !815
+  %cmp21 = icmp sgt i32 %10, 1, !dbg !1209
+  br i1 %cmp21, label %if.then23, label %if.end, !dbg !1209
 
-; <label>:32                                      ; preds = %16
-  %33 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5, !dbg !1948
-  %34 = load i32* %33, align 4, !dbg !1948, !tbaa !1089
-  %35 = icmp sgt i32 %34, 1, !dbg !1948
-  br i1 %35, label %36, label %37, !dbg !1950
+if.then23:                                        ; preds = %lor.lhs.false, %if.then
+  call void @llvm.dbg.value(metadata !1210, i64 0, metadata !1211) #4, !dbg !1213
+  call void @llvm.dbg.value(metadata !1214, i64 0, metadata !1215) #4, !dbg !1213
+  call void @llvm.dbg.value(metadata !1216, i64 0, metadata !1217) #4, !dbg !1213
+  call void @llvm.dbg.value(metadata !1218, i64 0, metadata !1219) #4, !dbg !1213
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([48 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !1220
+  br label %if.end, !dbg !1212
 
-; <label>:36                                      ; preds = %32, %16
-  call void @llvm.dbg.value(metadata %struct.t_commrec* undef, i64 0, metadata !273, metadata !785) #6, !dbg !1951
-  call void @llvm.dbg.value(metadata %struct.t_nsborder* undef, i64 0, metadata !274, metadata !785) #6, !dbg !1953
-  call void @llvm.dbg.value(metadata %struct.t_fftgrid* undef, i64 0, metadata !275, metadata !785) #6, !dbg !1954
-  call void @llvm.dbg.value(metadata i32 undef, i64 0, metadata !276, metadata !785) #6, !dbg !1955
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([48 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !1956
-  br label %37, !dbg !1957
+if.end:                                           ; preds = %if.then23, %lor.lhs.false
+  %11 = load %struct.t_fftgrid** @grid, align 8, !dbg !1221, !tbaa !773
+  call void @gmxfft3D(%struct.t_fftgrid* %11, i32 -1, %struct.t_commrec* %cr) #5, !dbg !1221
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !1222), !dbg !1224
+  %arrayidx1.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 0, !dbg !1225
+  %12 = load float* %arrayidx1.i, align 4, !dbg !1225, !tbaa !780
+  %arrayidx3.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 1, !dbg !1225
+  %13 = load float* %arrayidx3.i, align 4, !dbg !1225, !tbaa !780
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 2, !dbg !1225
+  %14 = load float* %arrayidx5.i, align 4, !dbg !1225, !tbaa !780
+  %mul.i = fmul float %13, %14, !dbg !1225
+  %arrayidx7.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 1, !dbg !1225
+  %15 = load float* %arrayidx7.i, align 4, !dbg !1225, !tbaa !780
+  %arrayidx9.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 2, !dbg !1225
+  %16 = load float* %arrayidx9.i, align 4, !dbg !1225, !tbaa !780
+  %mul10.i = fmul float %15, %16, !dbg !1225
+  %sub.i = fsub float %mul.i, %mul10.i, !dbg !1225
+  %mul11.i = fmul float %12, %sub.i, !dbg !1225
+  %arrayidx13.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 0, !dbg !1225
+  %17 = load float* %arrayidx13.i, align 4, !dbg !1225, !tbaa !780
+  %arrayidx15.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 1, !dbg !1225
+  %18 = load float* %arrayidx15.i, align 4, !dbg !1225, !tbaa !780
+  %mul18.i = fmul float %14, %18, !dbg !1225
+  %arrayidx22.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 2, !dbg !1225
+  %19 = load float* %arrayidx22.i, align 4, !dbg !1225, !tbaa !780
+  %mul23.i = fmul float %15, %19, !dbg !1225
+  %sub24.i = fsub float %mul18.i, %mul23.i, !dbg !1225
+  %mul25.i = fmul float %17, %sub24.i, !dbg !1225
+  %sub26.i = fsub float %mul11.i, %mul25.i, !dbg !1225
+  %arrayidx28.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 0, !dbg !1225
+  %20 = load float* %arrayidx28.i, align 4, !dbg !1225, !tbaa !780
+  %mul33.i = fmul float %16, %18, !dbg !1225
+  %mul38.i = fmul float %13, %19, !dbg !1225
+  %sub39.i = fsub float %mul33.i, %mul38.i, !dbg !1225
+  %mul40.i = fmul float %20, %sub39.i, !dbg !1225
+  %add.i = fadd float %mul40.i, %sub26.i, !dbg !1225
+  call void @llvm.dbg.value(metadata !{float %add.i}, i64 0, metadata !741), !dbg !1223
+  %21 = load %struct.t_fftgrid** @grid, align 8, !dbg !1227, !tbaa !773
+  %call25 = call float @solve_pme(%struct.t_fftgrid* %21, float %ewaldcoeff, float %add.i, float** getelementptr inbounds ([3 x float*]* @bsp_mod, i64 0, i64 0), [3 x float]* getelementptr inbounds ([3 x [3 x float]]* @recipbox, i64 0, i64 0), [3 x float]* %vir, %struct.t_commrec* %cr) #7, !dbg !1227
+  store float %call25, float* @do_pme.energy, align 4, !dbg !1227, !tbaa !780
+  call void @llvm.dbg.value(metadata !{i32* %nx}, i64 0, metadata !735), !dbg !1228
+  %22 = load i32* %nx, align 4, !dbg !1228, !tbaa !815
+  call void @llvm.dbg.value(metadata !{i32* %ny}, i64 0, metadata !736), !dbg !1228
+  %23 = load i32* %ny, align 4, !dbg !1228, !tbaa !815
+  %mul26 = mul nsw i32 %23, %22, !dbg !1228
+  call void @llvm.dbg.value(metadata !{i32* %nz}, i64 0, metadata !737), !dbg !1228
+  %24 = load i32* %nz, align 4, !dbg !1228, !tbaa !815
+  %mul27 = mul nsw i32 %mul26, %24, !dbg !1228
+  %conv28 = sitofp i32 %mul27 to double, !dbg !1228
+  %mul29 = fmul double %conv28, 5.000000e-01, !dbg !1228
+  %arrayidx31 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 86, !dbg !1228
+  %25 = load double* %arrayidx31, align 8, !dbg !1228, !tbaa !1208
+  %add32 = fadd double %25, %mul29, !dbg !1228
+  store double %add32, double* %arrayidx31, align 8, !dbg !1228, !tbaa !1208
+  %26 = load %struct.t_fftgrid** @grid, align 8, !dbg !1229, !tbaa !773
+  call void @gmxfft3D(%struct.t_fftgrid* %26, i32 1, %struct.t_commrec* %cr) #5, !dbg !1229
+  %27 = load i32* %nnodes, align 4, !dbg !1230, !tbaa !815
+  %cmp34 = icmp sgt i32 %27, 1, !dbg !1230
+  br i1 %cmp34, label %if.then40, label %lor.lhs.false36, !dbg !1230
 
-; <label>:37                                      ; preds = %36, %32
-  %38 = load %struct.t_fftgrid** @grid, align 8, !dbg !1958, !tbaa !803
-  call void @gmxfft3D(%struct.t_fftgrid* %38, i32 -1, %struct.t_commrec* %cr) #7, !dbg !1959
-  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !758, metadata !785), !dbg !1960
-  %39 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0, !dbg !1962
-  %40 = load float* %39, align 4, !dbg !1962, !tbaa !814
-  %41 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1, !dbg !1963
-  %42 = load float* %41, align 4, !dbg !1963, !tbaa !814
-  %43 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2, !dbg !1964
-  %44 = load float* %43, align 4, !dbg !1964, !tbaa !814
-  %45 = fmul float %42, %44, !dbg !1965
-  %46 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1, !dbg !1966
-  %47 = load float* %46, align 4, !dbg !1966, !tbaa !814
-  %48 = getelementptr inbounds [3 x float]* %box, i64 1, i64 2, !dbg !1967
-  %49 = load float* %48, align 4, !dbg !1967, !tbaa !814
-  %50 = fmul float %47, %49, !dbg !1968
-  %51 = fsub float %45, %50, !dbg !1969
-  %52 = fmul float %40, %51, !dbg !1970
-  %53 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0, !dbg !1971
-  %54 = load float* %53, align 4, !dbg !1971, !tbaa !814
-  %55 = getelementptr inbounds [3 x float]* %box, i64 0, i64 1, !dbg !1972
-  %56 = load float* %55, align 4, !dbg !1972, !tbaa !814
-  %57 = fmul float %44, %56, !dbg !1973
-  %58 = getelementptr inbounds [3 x float]* %box, i64 0, i64 2, !dbg !1974
-  %59 = load float* %58, align 4, !dbg !1974, !tbaa !814
-  %60 = fmul float %47, %59, !dbg !1975
-  %61 = fsub float %57, %60, !dbg !1976
-  %62 = fmul float %54, %61, !dbg !1977
-  %63 = fsub float %52, %62, !dbg !1978
-  %64 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0, !dbg !1979
-  %65 = load float* %64, align 4, !dbg !1979, !tbaa !814
-  %66 = fmul float %49, %56, !dbg !1980
-  %67 = fmul float %42, %59, !dbg !1981
-  %68 = fsub float %66, %67, !dbg !1982
-  %69 = fmul float %65, %68, !dbg !1983
-  %70 = fadd float %69, %63, !dbg !1984
-  call void @llvm.dbg.value(metadata float %70, i64 0, metadata !752, metadata !785), !dbg !1985
-  %71 = load %struct.t_fftgrid** @grid, align 8, !dbg !1986, !tbaa !803
-  %72 = call float @solve_pme(%struct.t_fftgrid* %71, float %ewaldcoeff, float %70, float** getelementptr inbounds ([3 x float*]* @bsp_mod, i64 0, i64 0), [3 x float]* getelementptr inbounds ([3 x [3 x float]]* @recipbox, i64 0, i64 0), [3 x float]* %vir, %struct.t_commrec* %cr) #9, !dbg !1987
-  store float %72, float* @do_pme.energy, align 4, !dbg !1988, !tbaa !814
-  call void @llvm.dbg.value(metadata i32* %nx, i64 0, metadata !746, metadata !785), !dbg !1922
-  %73 = load i32* %nx, align 4, !dbg !1989, !tbaa !943
-  call void @llvm.dbg.value(metadata i32* %ny, i64 0, metadata !747, metadata !785), !dbg !1923
-  %74 = load i32* %ny, align 4, !dbg !1989, !tbaa !943
-  %75 = mul nsw i32 %74, %73, !dbg !1989
-  call void @llvm.dbg.value(metadata i32* %nz, i64 0, metadata !748, metadata !785), !dbg !1924
-  %76 = load i32* %nz, align 4, !dbg !1989, !tbaa !943
-  %77 = mul nsw i32 %75, %76, !dbg !1989
-  %78 = sitofp i32 %77 to double, !dbg !1989
-  %79 = fmul double %78, 5.000000e-01, !dbg !1989
-  %80 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 86, !dbg !1989
-  %81 = load double* %80, align 8, !dbg !1989, !tbaa !1946
-  %82 = fadd double %81, %79, !dbg !1989
-  store double %82, double* %80, align 8, !dbg !1989, !tbaa !1946
-  %83 = load %struct.t_fftgrid** @grid, align 8, !dbg !1990, !tbaa !803
-  call void @gmxfft3D(%struct.t_fftgrid* %83, i32 1, %struct.t_commrec* %cr) #7, !dbg !1991
-  %84 = load i32* %29, align 4, !dbg !1992, !tbaa !1087
-  %85 = icmp sgt i32 %84, 1, !dbg !1992
-  br i1 %85, label %90, label %86, !dbg !1992
+lor.lhs.false36:                                  ; preds = %if.end
+  %nthreads37 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5, !dbg !1230
+  %28 = load i32* %nthreads37, align 4, !dbg !1230, !tbaa !815
+  %cmp38 = icmp sgt i32 %28, 1, !dbg !1230
+  br i1 %cmp38, label %if.then40, label %if.end41, !dbg !1230
 
-; <label>:86                                      ; preds = %37
-  %87 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5, !dbg !1992
-  %88 = load i32* %87, align 4, !dbg !1992, !tbaa !1089
-  %89 = icmp sgt i32 %88, 1, !dbg !1992
-  br i1 %89, label %90, label %91, !dbg !1994
+if.then40:                                        ; preds = %lor.lhs.false36, %if.end
+  call void @llvm.dbg.value(metadata !1210, i64 0, metadata !1231) #4, !dbg !1233
+  call void @llvm.dbg.value(metadata !1214, i64 0, metadata !1234) #4, !dbg !1233
+  call void @llvm.dbg.value(metadata !1216, i64 0, metadata !1235) #4, !dbg !1233
+  call void @llvm.dbg.value(metadata !1218, i64 0, metadata !1236) #4, !dbg !1233
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([48 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !1237
+  br label %if.end41, !dbg !1232
 
-; <label>:90                                      ; preds = %86, %37
-  call void @llvm.dbg.value(metadata %struct.t_commrec* undef, i64 0, metadata !273, metadata !785) #6, !dbg !1995
-  call void @llvm.dbg.value(metadata %struct.t_nsborder* undef, i64 0, metadata !274, metadata !785) #6, !dbg !1997
-  call void @llvm.dbg.value(metadata %struct.t_fftgrid* undef, i64 0, metadata !275, metadata !785) #6, !dbg !1998
-  call void @llvm.dbg.value(metadata i32 undef, i64 0, metadata !276, metadata !785) #6, !dbg !1999
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([48 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !2000
-  %.pre = load i32* %29, align 4, !dbg !2001, !tbaa !1087
-  br label %91, !dbg !2002
+if.end41:                                         ; preds = %if.then40, %lor.lhs.false36
+  %29 = load %struct.t_fftgrid** @grid, align 8, !dbg !1238, !tbaa !773
+  %nxyz = getelementptr inbounds %struct.t_fftgrid* %29, i64 0, i32 11, !dbg !1238
+  %30 = load i32* %nxyz, align 4, !dbg !1238, !tbaa !815
+  call void @llvm.dbg.value(metadata !{i32 %30}, i64 0, metadata !733), !dbg !1238
+  %conv42 = sitofp i32 %30 to double, !dbg !1239
+  %conv43 = sitofp i32 %30 to float, !dbg !1239
+  %conv44 = fpext float %conv43 to double, !dbg !1239
+  %call45 = call double @log(double %conv44) #5, !dbg !1239
+  %mul46 = fmul double %conv42, %call45, !dbg !1239
+  %31 = load i32* %nnodes, align 4, !dbg !1239, !tbaa !815
+  %conv48 = sitofp i32 %31 to double, !dbg !1239
+  %mul50 = fmul double %conv48, 0x3FE62E42FEFA39EF, !dbg !1239
+  %div = fdiv double %mul46, %mul50, !dbg !1239
+  %conv51 = fptosi double %div to i32, !dbg !1239
+  call void @llvm.dbg.value(metadata !{i32 %conv51}, i64 0, metadata !734), !dbg !1239
+  %mul52 = shl nsw i32 %conv51, 1, !dbg !1240
+  %conv53 = sitofp i32 %mul52 to double, !dbg !1240
+  %arrayidx55 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 84, !dbg !1240
+  %32 = load double* %arrayidx55, align 8, !dbg !1240, !tbaa !1208
+  %add56 = fadd double %32, %conv53, !dbg !1240
+  store double %add56, double* %arrayidx55, align 8, !dbg !1240, !tbaa !1208
+  br label %if.end57, !dbg !1241
 
-; <label>:91                                      ; preds = %90, %86
-  %92 = phi i32 [ %.pre, %90 ], [ %84, %86 ]
-  %93 = load %struct.t_fftgrid** @grid, align 8, !dbg !2003, !tbaa !803
-  %94 = getelementptr inbounds %struct.t_fftgrid* %93, i64 0, i32 11, !dbg !2004
-  %95 = load i32* %94, align 4, !dbg !2004, !tbaa !2005
-  call void @llvm.dbg.value(metadata i32 %95, i64 0, metadata !744, metadata !785), !dbg !2007
-  %96 = sitofp i32 %95 to double, !dbg !2008
-  %97 = sitofp i32 %95 to float, !dbg !2009
-  %98 = fpext float %97 to double, !dbg !2009
-  %99 = call double @log(double %98) #8, !dbg !2010
-  %100 = fmul double %96, %99, !dbg !2011
-  %101 = sitofp i32 %92 to double, !dbg !2012
-  %102 = fmul double %101, 0x3FE62E42FEFA39EF, !dbg !2013
-  %103 = fdiv double %100, %102, !dbg !2014
-  %104 = fptosi double %103 to i32, !dbg !2008
-  call void @llvm.dbg.value(metadata i32 %104, i64 0, metadata !745, metadata !785), !dbg !2015
-  %105 = shl nsw i32 %104, 1, !dbg !2016
-  %106 = sitofp i32 %105 to double, !dbg !2016
-  %107 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 84, !dbg !2016
-  %108 = load double* %107, align 8, !dbg !2016, !tbaa !1946
-  %109 = fadd double %108, %106, !dbg !2016
-  store double %109, double* %107, align 8, !dbg !2016, !tbaa !1946
-  br label %110, !dbg !2017
-
-; <label>:110                                     ; preds = %._crit_edge, %91
-  %111 = phi %struct.t_fftgrid* [ %.pre1, %._crit_edge ], [ %93, %91 ]
-  %112 = load [3 x i32]** @idx, align 8, !dbg !2018, !tbaa !803
-  %113 = load i32* %2, align 4, !dbg !2019, !tbaa !1930
-  %114 = sext i32 %113 to i64, !dbg !2019
-  %115 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %114, !dbg !2019
-  %116 = load i32* %115, align 4, !dbg !2019, !tbaa !943
-  %117 = sext i32 %116 to i64, !dbg !2020
-  %118 = getelementptr inbounds [3 x float]* %f, i64 %117, !dbg !2020
-  %119 = getelementptr inbounds float* %charge, i64 %117, !dbg !2021
-  %120 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %114, !dbg !2022
-  %121 = load i32* %120, align 4, !dbg !2022, !tbaa !943
-  %122 = load i32* %7, align 4, !dbg !2023, !tbaa !1933
-  %123 = load i32** @nnx, align 8, !dbg !2024, !tbaa !803
-  %124 = load i32** @nny, align 8, !dbg !2025, !tbaa !803
-  %125 = load i32** @nnz, align 8, !dbg !2026, !tbaa !803
-  call void @gather_f_bsplines(%struct.t_fftgrid* %111, [3 x float]* getelementptr inbounds ([3 x [3 x float]]* @recipbox, i64 0, i64 0), [3 x i32]* %112, [3 x float]* %118, float* %119, float** getelementptr inbounds ([3 x float*]* @theta, i64 0, i64 0), float** getelementptr inbounds ([3 x float*]* @dtheta, i64 0, i64 0), i32 %121, i32 %122, i32* %123, i32* %124, i32* %125) #9, !dbg !2027
-  %126 = load i32* %7, align 4, !dbg !2028, !tbaa !1933
-  %127 = mul nsw i32 %126, %126, !dbg !2028
-  %128 = mul nsw i32 %127, %126, !dbg !2028
-  %129 = load i32* %2, align 4, !dbg !2028, !tbaa !1930
-  %130 = sext i32 %129 to i64, !dbg !2028
-  %131 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %130, !dbg !2028
-  %132 = load i32* %131, align 4, !dbg !2028, !tbaa !943
-  %133 = mul nsw i32 %128, %132, !dbg !2028
-  %134 = sitofp i32 %133 to double, !dbg !2028
-  %135 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 83, !dbg !2028
-  %136 = load double* %135, align 8, !dbg !2028, !tbaa !1946
-  %137 = fadd double %136, %134, !dbg !2028
-  store double %137, double* %135, align 8, !dbg !2028, !tbaa !1946
-  %138 = load float* @do_pme.energy, align 4, !dbg !2029, !tbaa !814
-  ret float %138, !dbg !2030
+if.end57:                                         ; preds = %entry, %if.end41
+  %33 = load %struct.t_fftgrid** @grid, align 8, !dbg !1242, !tbaa !773
+  %34 = load [3 x i32]** @idx, align 8, !dbg !1242, !tbaa !773
+  %35 = load i32* %nodeid, align 4, !dbg !1242, !tbaa !815
+  %idxprom59 = sext i32 %35 to i64, !dbg !1242
+  %arrayidx61 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %idxprom59, !dbg !1242
+  %36 = load i32* %arrayidx61, align 4, !dbg !1242, !tbaa !815
+  %idx.ext62 = sext i32 %36 to i64, !dbg !1242
+  %add.ptr63 = getelementptr inbounds [3 x float]* %f, i64 %idx.ext62, !dbg !1242
+  %add.ptr69 = getelementptr inbounds float* %charge, i64 %idx.ext62, !dbg !1242
+  %arrayidx73 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom59, !dbg !1242
+  %37 = load i32* %arrayidx73, align 4, !dbg !1242, !tbaa !815
+  %38 = load i32* %pme_order, align 4, !dbg !1242, !tbaa !815
+  %39 = load i32** @nnx, align 8, !dbg !1242, !tbaa !773
+  %40 = load i32** @nny, align 8, !dbg !1242, !tbaa !773
+  %41 = load i32** @nnz, align 8, !dbg !1242, !tbaa !773
+  call void @gather_f_bsplines(%struct.t_fftgrid* %33, [3 x float]* getelementptr inbounds ([3 x [3 x float]]* @recipbox, i64 0, i64 0), [3 x i32]* %34, [3 x float]* %add.ptr63, float* %add.ptr69, float** getelementptr inbounds ([3 x float*]* @theta, i64 0, i64 0), float** getelementptr inbounds ([3 x float*]* @dtheta, i64 0, i64 0), i32 %37, i32 %38, i32* %39, i32* %40, i32* %41) #7, !dbg !1242
+  %42 = load i32* %pme_order, align 4, !dbg !1243, !tbaa !815
+  %mul77 = mul nsw i32 %42, %42, !dbg !1243
+  %mul79 = mul nsw i32 %mul77, %42, !dbg !1243
+  %43 = load i32* %nodeid, align 4, !dbg !1243, !tbaa !815
+  %idxprom81 = sext i32 %43 to i64, !dbg !1243
+  %arrayidx83 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom81, !dbg !1243
+  %44 = load i32* %arrayidx83, align 4, !dbg !1243, !tbaa !815
+  %mul84 = mul nsw i32 %mul79, %44, !dbg !1243
+  %conv85 = sitofp i32 %mul84 to double, !dbg !1243
+  %arrayidx87 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 83, !dbg !1243
+  %45 = load double* %arrayidx87, align 8, !dbg !1243, !tbaa !1208
+  %add88 = fadd double %45, %conv85, !dbg !1243
+  store double %add88, double* %arrayidx87, align 8, !dbg !1243, !tbaa !1208
+  %46 = load float* @do_pme.energy, align 4, !dbg !1244, !tbaa !780
+  ret float %46, !dbg !1244
 }

@@ -1,107 +1,110 @@
-define %struct.cpp_token* @_cpp_lex_token(%struct.cpp_reader* %pfile) #1 {
+define %struct.cpp_token* @_cpp_lex_token(%struct.cpp_reader* %pfile) #2 {
 entry:
-  %mi_valid = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 14
-  %cur_token = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 15
-  %cur_run = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 17
-  %lookaheads = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 18
-  %in_directive = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 0
-  %skipping40 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 1
-  %parsing_args = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 8
-  %line_change = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 35, i32 0
-  br label %for.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !536), !dbg !1039
+  %mi_valid = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 14, !dbg !1040
+  %cur_token = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 15, !dbg !1043
+  %cur_run = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 17, !dbg !1043
+  %lookaheads = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 18, !dbg !1044
+  %in_directive = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 0, !dbg !1045
+  %skipping40 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 1, !dbg !1046
+  %parsing_args = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 8, !dbg !1047
+  %line_change = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 35, i32 0, !dbg !1049
+  br label %for.cond, !dbg !1050
 
 for.cond:                                         ; preds = %land.lhs.true15, %lor.lhs.false, %entry
-  %0 = load %struct.cpp_token** %cur_token, align 8, !tbaa !0
-  %1 = load %struct.tokenrun** %cur_run, align 8, !tbaa !0
-  %limit = getelementptr inbounds %struct.tokenrun* %1, i64 0, i32 3
-  %2 = load %struct.cpp_token** %limit, align 8, !tbaa !0
-  %cmp = icmp eq %struct.cpp_token* %0, %2
-  br i1 %cmp, label %if.then, label %if.end
+  %0 = load %struct.cpp_token** %cur_token, align 8, !dbg !1043, !tbaa !995
+  %1 = load %struct.tokenrun** %cur_run, align 8, !dbg !1043, !tbaa !995
+  %limit = getelementptr inbounds %struct.tokenrun* %1, i64 0, i32 3, !dbg !1043
+  %2 = load %struct.cpp_token** %limit, align 8, !dbg !1043, !tbaa !995
+  %cmp = icmp eq %struct.cpp_token* %0, %2, !dbg !1043
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1043
 
 if.then:                                          ; preds = %for.cond
-  %call = tail call fastcc %struct.tokenrun* @next_tokenrun(%struct.tokenrun* %1) #10
-  store %struct.tokenrun* %call, %struct.tokenrun** %cur_run, align 8, !tbaa !0
-  %base = getelementptr inbounds %struct.tokenrun* %call, i64 0, i32 2
-  %3 = load %struct.cpp_token** %base, align 8, !tbaa !0
-  store %struct.cpp_token* %3, %struct.cpp_token** %cur_token, align 8, !tbaa !0
-  br label %if.end
+  %call = tail call fastcc %struct.tokenrun* @next_tokenrun(%struct.tokenrun* %1) #11, !dbg !1051
+  store %struct.tokenrun* %call, %struct.tokenrun** %cur_run, align 8, !dbg !1051, !tbaa !995
+  %base = getelementptr inbounds %struct.tokenrun* %call, i64 0, i32 2, !dbg !1053
+  %3 = load %struct.cpp_token** %base, align 8, !dbg !1053, !tbaa !995
+  store %struct.cpp_token* %3, %struct.cpp_token** %cur_token, align 8, !dbg !1053, !tbaa !995
+  br label %if.end, !dbg !1054
 
 if.end:                                           ; preds = %for.cond, %if.then
   %4 = phi %struct.cpp_token* [ %3, %if.then ], [ %0, %for.cond ]
-  %5 = load i32* %lookaheads, align 4, !tbaa !3
-  %tobool = icmp eq i32 %5, 0
-  br i1 %tobool, label %if.else, label %if.then5
+  %5 = load i32* %lookaheads, align 4, !dbg !1044, !tbaa !1019
+  %tobool = icmp eq i32 %5, 0, !dbg !1044
+  br i1 %tobool, label %if.else, label %if.then5, !dbg !1044
 
 if.then5:                                         ; preds = %if.end
-  %dec = add i32 %5, -1
-  store i32 %dec, i32* %lookaheads, align 4, !tbaa !3
-  %incdec.ptr = getelementptr inbounds %struct.cpp_token* %4, i64 1
-  store %struct.cpp_token* %incdec.ptr, %struct.cpp_token** %cur_token, align 8, !tbaa !0
-  br label %if.end9
+  %dec = add i32 %5, -1, !dbg !1055
+  store i32 %dec, i32* %lookaheads, align 4, !dbg !1055, !tbaa !1019
+  %incdec.ptr = getelementptr inbounds %struct.cpp_token* %4, i64 1, !dbg !1057
+  store %struct.cpp_token* %incdec.ptr, %struct.cpp_token** %cur_token, align 8, !dbg !1057, !tbaa !995
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_token* %4}, i64 0, metadata !537), !dbg !1057
+  br label %if.end9, !dbg !1058
 
 if.else:                                          ; preds = %if.end
-  %call8 = tail call %struct.cpp_token* @_cpp_lex_direct(%struct.cpp_reader* %pfile) #10
+  %call8 = tail call %struct.cpp_token* @_cpp_lex_direct(%struct.cpp_reader* %pfile) #11, !dbg !1059
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_token* %call8}, i64 0, metadata !537), !dbg !1059
   br label %if.end9
 
 if.end9:                                          ; preds = %if.else, %if.then5
   %result.0 = phi %struct.cpp_token* [ %4, %if.then5 ], [ %call8, %if.else ]
-  %flags = getelementptr inbounds %struct.cpp_token* %result.0, i64 0, i32 3
-  %6 = load i8* %flags, align 1, !tbaa !1
-  %conv = zext i8 %6 to i32
-  %and = and i32 %conv, 64
-  %tobool10 = icmp eq i32 %and, 0
-  br i1 %tobool10, label %if.end34, label %if.then11
+  %flags = getelementptr inbounds %struct.cpp_token* %result.0, i64 0, i32 3, !dbg !1060
+  %6 = load i8* %flags, align 1, !dbg !1060, !tbaa !996
+  %conv = zext i8 %6 to i32, !dbg !1060
+  %and = and i32 %conv, 64, !dbg !1060
+  %tobool10 = icmp eq i32 %and, 0, !dbg !1060
+  br i1 %tobool10, label %if.end34, label %if.then11, !dbg !1060
 
 if.then11:                                        ; preds = %if.end9
-  %type = getelementptr inbounds %struct.cpp_token* %result.0, i64 0, i32 2
-  %bf.load = load i8* %type, align 2
-  %cmp12 = icmp eq i8 %bf.load, 40
-  br i1 %cmp12, label %land.lhs.true, label %if.end22
+  %type = getelementptr inbounds %struct.cpp_token* %result.0, i64 0, i32 2, !dbg !1047
+  %bf.load = load i8* %type, align 2, !dbg !1047
+  %cmp12 = icmp eq i8 %bf.load, 40, !dbg !1047
+  br i1 %cmp12, label %land.lhs.true, label %if.end22, !dbg !1047
 
 land.lhs.true:                                    ; preds = %if.then11
-  %7 = load i8* %parsing_args, align 1, !tbaa !1
-  %tobool14 = icmp eq i8 %7, 0
-  br i1 %tobool14, label %land.lhs.true15, label %if.end22
+  %7 = load i8* %parsing_args, align 1, !dbg !1047, !tbaa !996
+  %tobool14 = icmp eq i8 %7, 0, !dbg !1047
+  br i1 %tobool14, label %land.lhs.true15, label %if.end22, !dbg !1047
 
 land.lhs.true15:                                  ; preds = %land.lhs.true
-  %and18 = and i32 %conv, 1
-  %call19 = tail call i32 @_cpp_handle_directive(%struct.cpp_reader* %pfile, i32 %and18) #9
-  %tobool20 = icmp eq i32 %call19, 0
-  br i1 %tobool20, label %if.end22, label %for.cond
+  %and18 = and i32 %conv, 1, !dbg !1061
+  %call19 = tail call i32 @_cpp_handle_directive(%struct.cpp_reader* %pfile, i32 %and18) #10, !dbg !1061
+  %tobool20 = icmp eq i32 %call19, 0, !dbg !1061
+  br i1 %tobool20, label %if.end22, label %for.cond, !dbg !1061
 
 if.end22:                                         ; preds = %land.lhs.true15, %land.lhs.true, %if.then11
-  %8 = load void (%struct.cpp_reader*, %struct.cpp_token*, i32)** %line_change, align 8, !tbaa !0
-  %tobool23 = icmp eq void (%struct.cpp_reader*, %struct.cpp_token*, i32)* %8, null
-  br i1 %tobool23, label %if.end34, label %land.lhs.true24
+  %8 = load void (%struct.cpp_reader*, %struct.cpp_token*, i32)** %line_change, align 8, !dbg !1049, !tbaa !995
+  %tobool23 = icmp eq void (%struct.cpp_reader*, %struct.cpp_token*, i32)* %8, null, !dbg !1049
+  br i1 %tobool23, label %if.end34, label %land.lhs.true24, !dbg !1049
 
 land.lhs.true24:                                  ; preds = %if.end22
-  %9 = load i8* %skipping40, align 1, !tbaa !1
-  %tobool26 = icmp eq i8 %9, 0
-  br i1 %tobool26, label %if.then27, label %if.end34
+  %9 = load i8* %skipping40, align 1, !dbg !1049, !tbaa !996
+  %tobool26 = icmp eq i8 %9, 0, !dbg !1049
+  br i1 %tobool26, label %if.then27, label %if.end34, !dbg !1049
 
 if.then27:                                        ; preds = %land.lhs.true24
-  %10 = load i8* %parsing_args, align 1, !tbaa !1
-  %conv32 = zext i8 %10 to i32
-  tail call void %8(%struct.cpp_reader* %pfile, %struct.cpp_token* %result.0, i32 %conv32) #9
-  br label %if.end34
+  %10 = load i8* %parsing_args, align 1, !dbg !1062, !tbaa !996
+  %conv32 = zext i8 %10 to i32, !dbg !1062
+  tail call void %8(%struct.cpp_reader* %pfile, %struct.cpp_token* %result.0, i32 %conv32) #10, !dbg !1062
+  br label %if.end34, !dbg !1062
 
 if.end34:                                         ; preds = %land.lhs.true24, %if.end22, %if.end9, %if.then27
-  %11 = load i8* %in_directive, align 1, !tbaa !1
-  %tobool36 = icmp eq i8 %11, 0
-  br i1 %tobool36, label %if.end38, label %for.end
+  %11 = load i8* %in_directive, align 1, !dbg !1045, !tbaa !996
+  %tobool36 = icmp eq i8 %11, 0, !dbg !1045
+  br i1 %tobool36, label %if.end38, label %for.end, !dbg !1045
 
 if.end38:                                         ; preds = %if.end34
-  store i8 0, i8* %mi_valid, align 1, !tbaa !5
-  %12 = load i8* %skipping40, align 1, !tbaa !1
-  %tobool41 = icmp eq i8 %12, 0
-  br i1 %tobool41, label %for.end, label %lor.lhs.false
+  store i8 0, i8* %mi_valid, align 1, !dbg !1040, !tbaa !1063
+  %12 = load i8* %skipping40, align 1, !dbg !1046, !tbaa !996
+  %tobool41 = icmp eq i8 %12, 0, !dbg !1046
+  br i1 %tobool41, label %for.end, label %lor.lhs.false, !dbg !1046
 
 lor.lhs.false:                                    ; preds = %if.end38
-  %type42 = getelementptr inbounds %struct.cpp_token* %result.0, i64 0, i32 2
-  %bf.load43 = load i8* %type42, align 2
-  %cmp45 = icmp eq i8 %bf.load43, 67
-  br i1 %cmp45, label %for.end, label %for.cond
+  %type42 = getelementptr inbounds %struct.cpp_token* %result.0, i64 0, i32 2, !dbg !1046
+  %bf.load43 = load i8* %type42, align 2, !dbg !1046
+  %cmp45 = icmp eq i8 %bf.load43, 67, !dbg !1046
+  br i1 %cmp45, label %for.end, label %for.cond, !dbg !1046
 
 for.end:                                          ; preds = %if.end38, %if.end34, %lor.lhs.false
-  ret %struct.cpp_token* %result.0
+  ret %struct.cpp_token* %result.0, !dbg !1064
 }

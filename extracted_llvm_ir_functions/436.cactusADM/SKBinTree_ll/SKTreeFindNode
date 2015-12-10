@@ -1,39 +1,40 @@
-define %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* readonly %root, i8* readonly %key) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %root, i64 0, metadata !79, metadata !109), !dbg !330
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !80, metadata !109), !dbg !331
-  %1 = icmp eq %struct.T_SKTREE* %root, null, !dbg !332
-  br i1 %1, label %tailrecurse._crit_edge, label %.lr.ph, !dbg !334
+define %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %root, i8* %key) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %root}, i64 0, metadata !79), !dbg !198
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !80), !dbg !198
+  %tobool16 = icmp eq %struct.T_SKTREE* %root, null, !dbg !199
+  br i1 %tobool16, label %if.end10, label %if.then, !dbg !199
 
-.lr.ph:                                           ; preds = %0, %tailrecurse.backedge
-  %root.tr1 = phi %struct.T_SKTREE* [ %root.tr.be, %tailrecurse.backedge ], [ %root, %0 ]
-  %2 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 4, !dbg !335
-  %3 = load i8** %2, align 8, !dbg !335, !tbaa !140
-  %4 = tail call i32 @STR_cmpi(i8* %key, i8* %3) #9, !dbg !335
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !81, metadata !109), !dbg !338
-  %5 = icmp slt i32 %4, 0, !dbg !339
-  br i1 %5, label %6, label %8, !dbg !340
+if.then:                                          ; preds = %entry, %tailrecurse.backedge
+  %root.tr17 = phi %struct.T_SKTREE* [ %root.tr.be, %tailrecurse.backedge ], [ %root, %entry ]
+  %key1 = getelementptr inbounds %struct.T_SKTREE* %root.tr17, i64 0, i32 4, !dbg !200
+  %0 = load i8** %key1, align 8, !dbg !200, !tbaa !117
+  %call = tail call i32 @STR_cmpi(i8* %key, i8* %0) #10, !dbg !200
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !81), !dbg !200
+  %cmp = icmp slt i32 %call, 0, !dbg !200
+  br i1 %cmp, label %if.then2, label %if.else, !dbg !200
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 0, !dbg !341
-  br label %tailrecurse.backedge, !dbg !343
+if.then2:                                         ; preds = %if.then
+  %left = getelementptr inbounds %struct.T_SKTREE* %root.tr17, i64 0, i32 0, !dbg !202
+  br label %tailrecurse.backedge, !dbg !202
 
-; <label>:8                                       ; preds = %.lr.ph
-  %9 = icmp sgt i32 %4, 0, !dbg !344
-  br i1 %9, label %10, label %tailrecurse._crit_edge, !dbg !346
+if.else:                                          ; preds = %if.then
+  %cmp4 = icmp sgt i32 %call, 0, !dbg !204
+  br i1 %cmp4, label %if.then5, label %if.end10, !dbg !204
 
-; <label>:10                                      ; preds = %8
-  %11 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 1, !dbg !347
-  br label %tailrecurse.backedge, !dbg !349
+if.then5:                                         ; preds = %if.else
+  %right = getelementptr inbounds %struct.T_SKTREE* %root.tr17, i64 0, i32 1, !dbg !205
+  br label %tailrecurse.backedge, !dbg !205
 
-tailrecurse.backedge:                             ; preds = %10, %6
-  %root.tr.be.in = phi %struct.T_SKTREE** [ %11, %10 ], [ %7, %6 ]
-  %root.tr.be = load %struct.T_SKTREE** %root.tr.be.in, align 8, !dbg !347
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %root.tr.be, i64 0, metadata !79, metadata !109), !dbg !330
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !80, metadata !109), !dbg !331
-  %12 = icmp eq %struct.T_SKTREE* %root.tr.be, null, !dbg !332
-  br i1 %12, label %tailrecurse._crit_edge, label %.lr.ph, !dbg !334
+tailrecurse.backedge:                             ; preds = %if.then5, %if.then2
+  %root.tr.be.in = phi %struct.T_SKTREE** [ %right, %if.then5 ], [ %left, %if.then2 ]
+  %root.tr.be = load %struct.T_SKTREE** %root.tr.be.in, align 8, !dbg !205
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %root.tr17}, i64 0, metadata !79), !dbg !198
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !80), !dbg !198
+  %tobool = icmp eq %struct.T_SKTREE* %root.tr.be, null, !dbg !199
+  br i1 %tobool, label %if.end10, label %if.then, !dbg !199
 
-tailrecurse._crit_edge:                           ; preds = %8, %tailrecurse.backedge, %0
-  %node.0 = phi %struct.T_SKTREE* [ null, %0 ], [ %root.tr1, %8 ], [ null, %tailrecurse.backedge ]
-  ret %struct.T_SKTREE* %node.0, !dbg !350
+if.end10:                                         ; preds = %tailrecurse.backedge, %if.else, %entry
+  %node.0 = phi %struct.T_SKTREE* [ null, %entry ], [ %root.tr17, %if.else ], [ null, %tailrecurse.backedge ]
+  ret %struct.T_SKTREE* %node.0, !dbg !207
 }

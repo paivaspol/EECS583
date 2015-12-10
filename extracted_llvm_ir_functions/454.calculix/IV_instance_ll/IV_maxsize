@@ -1,16 +1,17 @@
 define i32 @IV_maxsize(%struct._IV* %iv) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._IV* %iv, i64 0, metadata !27, metadata !61), !dbg !90
-  %1 = icmp eq %struct._IV* %iv, null, !dbg !91
-  br i1 %1, label %2, label %5, !dbg !93
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !26), !dbg !71
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !72
+  br i1 %cmp, label %if.then, label %if.end, !dbg !72
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !94, !tbaa !68
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str2, i64 0, i64 0), %struct._IV* null) #5, !dbg !96
-  tail call void @exit(i32 -1) #6, !dbg !97
-  unreachable, !dbg !97
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !73, !tbaa !59
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str2, i64 0, i64 0), %struct._IV* null) #5, !dbg !73
+  tail call void @exit(i32 -1) #6, !dbg !75
+  unreachable, !dbg !75
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 1, !dbg !98
-  %7 = load i32* %6, align 4, !dbg !98, !tbaa !99
-  ret i32 %7, !dbg !100
+if.end:                                           ; preds = %entry
+  %maxsize = getelementptr inbounds %struct._IV* %iv, i64 0, i32 1, !dbg !76
+  %1 = load i32* %maxsize, align 4, !dbg !76, !tbaa !64
+  ret i32 %1, !dbg !76
 }

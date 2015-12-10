@@ -1,30 +1,31 @@
-define noalias i8* @save_calloc(i8* %name, i8* %file, i32 %line, i32 %nelem, i32 %elsize) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !34, metadata !74), !dbg !103
-  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !35, metadata !74), !dbg !104
-  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !36, metadata !74), !dbg !105
-  tail call void @llvm.dbg.value(metadata i32 %nelem, i64 0, metadata !37, metadata !74), !dbg !106
-  tail call void @llvm.dbg.value(metadata i32 %elsize, i64 0, metadata !38, metadata !74), !dbg !107
-  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !39, metadata !74), !dbg !108
-  %1 = icmp eq i32 %nelem, 0, !dbg !109
-  %2 = icmp eq i32 %elsize, 0, !dbg !111
-  %or.cond = or i1 %1, %2, !dbg !112
-  br i1 %or.cond, label %11, label %3, !dbg !112
+define noalias i8* @save_calloc(i8* %name, i8* %file, i32 %line, i32 %nelem, i32 %elsize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !23), !dbg !71
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !24), !dbg !71
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !25), !dbg !71
+  tail call void @llvm.dbg.value(metadata !{i32 %nelem}, i64 0, metadata !26), !dbg !72
+  tail call void @llvm.dbg.value(metadata !{i32 %elsize}, i64 0, metadata !27), !dbg !72
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !28), !dbg !73
+  %cmp = icmp eq i32 %nelem, 0, !dbg !74
+  %cmp1 = icmp eq i32 %elsize, 0, !dbg !74
+  %or.cond = or i1 %cmp, %cmp1, !dbg !74
+  br i1 %or.cond, label %if.end7, label %if.else, !dbg !74
 
-; <label>:3                                       ; preds = %0
-  %4 = zext i32 %nelem to i64, !dbg !113
-  %5 = zext i32 %elsize to i64, !dbg !116
-  %6 = tail call i8* @calloc(i64 %4, i64 %5) #6, !dbg !117
-  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !39, metadata !74), !dbg !108
-  %7 = icmp eq i8* %6, null, !dbg !118
-  br i1 %7, label %8, label %11, !dbg !119
+if.else:                                          ; preds = %entry
+  %conv = zext i32 %nelem to i64, !dbg !75
+  %conv2 = zext i32 %elsize to i64, !dbg !75
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 %conv2) #7, !dbg !75
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !28), !dbg !75
+  %cmp3 = icmp eq i8* %call, null, !dbg !75
+  br i1 %cmp3, label %if.then5, label %if.end7, !dbg !75
 
-; <label>:8                                       ; preds = %3
-  %9 = tail call i32* @__error() #6, !dbg !120
-  %10 = load i32* %9, align 4, !dbg !120, !tbaa !96
-  tail call void (i32, i8*, ...)* @fatal_error(i32 %10, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i8* %name, i32 %nelem, i32 %elsize, i8* %file, i32 %line) #6, !dbg !121
-  br label %11, !dbg !121
+if.then5:                                         ; preds = %if.else
+  %call6 = tail call i32* @__errno_location() #8, !dbg !77
+  %0 = load i32* %call6, align 4, !dbg !77, !tbaa !66
+  tail call void (i32, i8*, ...)* @fatal_error(i32 %0, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i8* %name, i32 %nelem, i32 %elsize, i8* %file, i32 %line) #7, !dbg !77
+  br label %if.end7, !dbg !77
 
-; <label>:11                                      ; preds = %0, %3, %8
-  %p.0 = phi i8* [ null, %8 ], [ %6, %3 ], [ null, %0 ]
-  ret i8* %p.0, !dbg !122
+if.end7:                                          ; preds = %entry, %if.else, %if.then5
+  %p.0 = phi i8* [ null, %if.then5 ], [ %call, %if.else ], [ null, %entry ]
+  ret i8* %p.0, !dbg !78
 }

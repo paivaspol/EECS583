@@ -1,22 +1,23 @@
 define void @mark_temp_addr_taken(%struct.rtx_def* %x) #0 {
 entry:
-  %cmp = icmp eq %struct.rtx_def* %x, null
-  br i1 %cmp, label %if.end61, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1406), !dbg !3090
+  %cmp = icmp eq %struct.rtx_def* %x, null, !dbg !3091
+  br i1 %cmp, label %if.end61, label %if.end, !dbg !3091
 
 if.end:                                           ; preds = %entry
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp1 = icmp eq i32 %bf.clear, 66
-  br i1 %cmp1, label %lor.lhs.false, label %if.end61
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !3092
+  %bf.load = load i32* %0, align 8, !dbg !3092
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3092
+  %cmp1 = icmp eq i32 %bf.clear, 66, !dbg !3092
+  br i1 %cmp1, label %lor.lhs.false, label %if.end61, !dbg !3092
 
 lor.lhs.false:                                    ; preds = %if.end
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load2 = load i32* %2, align 8
-  %bf.clear3 = and i32 %bf.load2, 65535
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !3092
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3092
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !3092, !tbaa !2729
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !3092
+  %bf.load2 = load i32* %2, align 8, !dbg !3092
+  %bf.clear3 = and i32 %bf.load2, 65535, !dbg !3092
   switch i32 %bf.clear3, label %if.end55 [
     i32 67, label %if.end61
     i32 68, label %if.end61
@@ -26,18 +27,19 @@ lor.lhs.false:                                    ; preds = %if.end
     i32 134, label %if.end61
     i32 56, label %if.end61
     i32 140, label %if.end61
-  ]
+  ], !dbg !3092
 
 if.end55:                                         ; preds = %lor.lhs.false
-  %call = tail call fastcc %struct.temp_slot* @find_temp_slot_from_address(%struct.rtx_def* %1) #9
-  %cmp59 = icmp eq %struct.temp_slot* %call, null
-  br i1 %cmp59, label %if.end61, label %if.then60
+  %call = tail call fastcc %struct.temp_slot* @find_temp_slot_from_address(%struct.rtx_def* %1) #10, !dbg !3093
+  tail call void @llvm.dbg.value(metadata !{%struct.temp_slot* %call}, i64 0, metadata !1407), !dbg !3093
+  %cmp59 = icmp eq %struct.temp_slot* %call, null, !dbg !3094
+  br i1 %cmp59, label %if.end61, label %if.then60, !dbg !3094
 
 if.then60:                                        ; preds = %if.end55
-  %addr_taken = getelementptr inbounds %struct.temp_slot* %call, i64 0, i32 8
-  store i8 1, i8* %addr_taken, align 1, !tbaa !1
-  br label %if.end61
+  %addr_taken = getelementptr inbounds %struct.temp_slot* %call, i64 0, i32 8, !dbg !3095
+  store i8 1, i8* %addr_taken, align 1, !dbg !3095, !tbaa !2730
+  br label %if.end61, !dbg !3095
 
 if.end61:                                         ; preds = %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %if.end55, %if.end, %entry, %if.then60
-  ret void
+  ret void, !dbg !3095
 }

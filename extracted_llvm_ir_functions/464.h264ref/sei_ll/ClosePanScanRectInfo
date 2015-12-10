@@ -1,17 +1,19 @@
 define void @ClosePanScanRectInfo() #0 {
-  %1 = load %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !dbg !2148, !tbaa !2048
-  %2 = icmp eq %struct.Bitstream* %1, null, !dbg !2150
-  br i1 %2, label %7, label %3, !dbg !2151
+entry:
+  %0 = load %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !dbg !1529, !tbaa !926
+  %tobool = icmp eq %struct.Bitstream* %0, null, !dbg !1529
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1529
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct.Bitstream* %1, i64 0, i32 9, !dbg !2152
-  %5 = load i8** %4, align 8, !dbg !2152, !tbaa !1130
-  tail call void @free(i8* %5) #9, !dbg !2154
-  %6 = load i8** bitcast (%struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5) to i8**), align 8, !dbg !2155, !tbaa !2048
-  tail call void @free(i8* %6) #9, !dbg !2156
-  br label %7, !dbg !2157
+if.then:                                          ; preds = %entry
+  %streamBuffer = getelementptr inbounds %struct.Bitstream* %0, i64 0, i32 9, !dbg !1530
+  %1 = load i8** %streamBuffer, align 8, !dbg !1530, !tbaa !926
+  tail call void @free(i8* %1) #8, !dbg !1530
+  %2 = load %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !dbg !1532, !tbaa !926
+  %3 = bitcast %struct.Bitstream* %2 to i8*, !dbg !1532
+  tail call void @free(i8* %3) #8, !dbg !1532
+  br label %if.end, !dbg !1533
 
-; <label>:7                                       ; preds = %0, %3
-  store %struct.Bitstream* null, %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !dbg !2158, !tbaa !2048
-  ret void, !dbg !2159
+if.end:                                           ; preds = %entry, %if.then
+  store %struct.Bitstream* null, %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !dbg !1534, !tbaa !926
+  ret void, !dbg !1535
 }

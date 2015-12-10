@@ -1,99 +1,34 @@
-define linkonce_odr void @_ZN6soplex9DataArrayINS_5SPxIdEEC2Eiid(%"class.soplex::DataArray.4"* nocapture %this, i32 %p_size, i32 %p_max, double %p_fac) unnamed_addr #0 align 2 {
-  %1 = alloca %"class.std::__1::locale", align 8
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.4"* %this, i64 0, metadata !6293, metadata !7116), !dbg !9854
-  tail call void @llvm.dbg.value(metadata i32 %p_size, i64 0, metadata !6294, metadata !7116), !dbg !9855
-  tail call void @llvm.dbg.value(metadata i32 %p_max, i64 0, metadata !6295, metadata !7116), !dbg !9856
-  tail call void @llvm.dbg.value(metadata double %p_fac, i64 0, metadata !6296, metadata !7116), !dbg !9857
-  %2 = getelementptr inbounds %"class.soplex::DataArray.4"* %this, i64 0, i32 2, !dbg !9858
-  store %"class.soplex::SPxId"* null, %"class.soplex::SPxId"** %2, align 8, !dbg !9858, !tbaa !7653
-  %3 = getelementptr inbounds %"class.soplex::DataArray.4"* %this, i64 0, i32 3, !dbg !9859
-  store double %p_fac, double* %3, align 8, !dbg !9859, !tbaa !9860
-  %4 = icmp slt i32 %p_size, 0, !dbg !9861
-  %5 = select i1 %4, i32 0, i32 %p_size, !dbg !9863
-  %6 = getelementptr inbounds %"class.soplex::DataArray.4"* %this, i64 0, i32 0, !dbg !9864
-  store i32 %5, i32* %6, align 4, !dbg !9865, !tbaa !7650
-  %7 = icmp slt i32 %5, %p_max, !dbg !9866
-  br i1 %7, label %10, label %8, !dbg !9868
+define linkonce_odr void @_ZN6soplex9DataArrayINS_5SPxIdEEC2Eiid(%"class.soplex::DataArray.4"* nocapture %this, i32 %p_size, i32 %p_max, double %p_fac) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.4"* %this}, i64 0, metadata !7264), !dbg !9259
+  tail call void @llvm.dbg.value(metadata !{i32 %p_size}, i64 0, metadata !7265), !dbg !9259
+  tail call void @llvm.dbg.value(metadata !{i32 %p_max}, i64 0, metadata !7266), !dbg !9259
+  tail call void @llvm.dbg.value(metadata !{double %p_fac}, i64 0, metadata !7267), !dbg !9259
+  %data = getelementptr inbounds %"class.soplex::DataArray.4"* %this, i64 0, i32 2, !dbg !9260
+  store %"class.soplex::SPxId"* null, %"class.soplex::SPxId"** %data, align 8, !dbg !9260, !tbaa !7986
+  %memFactor = getelementptr inbounds %"class.soplex::DataArray.4"* %this, i64 0, i32 3, !dbg !9260
+  store double %p_fac, double* %memFactor, align 8, !dbg !9260, !tbaa !7990
+  %cmp = icmp slt i32 %p_size, 0, !dbg !9261
+  %cond = select i1 %cmp, i32 0, i32 %p_size, !dbg !9261
+  %thesize = getelementptr inbounds %"class.soplex::DataArray.4"* %this, i64 0, i32 0, !dbg !9261
+  store i32 %cond, i32* %thesize, align 4, !dbg !9261, !tbaa !7989
+  %cmp3 = icmp slt i32 %cond, %p_max, !dbg !9263
+  br i1 %cmp3, label %if.then, label %if.else, !dbg !9263
 
-; <label>:8                                       ; preds = %0
-  %9 = icmp eq i32 %5, 0, !dbg !9869
-  %. = select i1 %9, i32 1, i32 %5, !dbg !9870
-  br label %10
+if.then:                                          ; preds = %entry
+  %themax = getelementptr inbounds %"class.soplex::DataArray.4"* %this, i64 0, i32 1, !dbg !9264
+  store i32 %p_max, i32* %themax, align 4, !dbg !9264, !tbaa !7989
+  br label %if.end, !dbg !9264
 
-; <label>:10                                      ; preds = %0, %8
-  %p_max.sink = phi i32 [ %., %8 ], [ %p_max, %0 ]
-  %11 = getelementptr inbounds %"class.soplex::DataArray.4"* %this, i64 0, i32 1, !dbg !9871
-  store i32 %p_max.sink, i32* %11, align 4
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxId"** %2, i64 0, metadata !6301, metadata !7116), !dbg !9872
-  tail call void @llvm.dbg.value(metadata i32 %p_max.sink, i64 0, metadata !6302, metadata !7116), !dbg !9874
-  %12 = icmp eq i32 %p_max.sink, 0, !dbg !9875
-  %13 = sext i32 %p_max.sink to i64, !dbg !9877
-  %.op.i = shl nsw i64 %13, 2, !dbg !9878
-  %14 = select i1 %12, i64 4, i64 %.op.i, !dbg !9878
-  %15 = tail call i8* @malloc(i64 %14) #12, !dbg !9879
-  %16 = bitcast %"class.soplex::SPxId"** %2 to i8**, !dbg !9880
-  store i8* %15, i8** %16, align 8, !dbg !9880, !tbaa !7458
-  %17 = icmp eq i8* %15, null, !dbg !9881
-  br i1 %17, label %18, label %_ZN6soplex9spx_allocIPNS_5SPxIdEEEvRT_i.exit, !dbg !9883
+if.else:                                          ; preds = %entry
+  %cmp5 = icmp eq i32 %cond, 0, !dbg !9265
+  %.cond = select i1 %cmp5, i32 1, i32 %cond, !dbg !9265
+  %themax11 = getelementptr inbounds %"class.soplex::DataArray.4"* %this, i64 0, i32 1, !dbg !9265
+  store i32 %.cond, i32* %themax11, align 4, !dbg !9265, !tbaa !7989
+  br label %if.end
 
-; <label>:18                                      ; preds = %10
-  tail call void @llvm.dbg.value(metadata %"class.std::__1::basic_ostream"* @_ZNSt3__14cerrE, i64 0, metadata !5660, metadata !7116), !dbg !9884
-  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([22 x i8]* @.str, i64 0, i64 0), i64 0, metadata !5661, metadata !7116), !dbg !9887
-  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([22 x i8]* @.str, i64 0, i64 0), i64 0, metadata !5853, metadata !7116) #3, !dbg !9888
-  %19 = tail call dereferenceable(160) %"class.std::__1::basic_ostream"* @_ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_m(%"class.std::__1::basic_ostream"* dereferenceable(160) @_ZNSt3__14cerrE, i8* getelementptr inbounds ([22 x i8]* @.str, i64 0, i64 0), i64 21) #12, !dbg !9890
-  tail call void @llvm.dbg.value(metadata %"class.std::__1::basic_ostream"* %19, i64 0, metadata !5856, metadata !7116), !dbg !9891
-  tail call void @llvm.dbg.value(metadata %"class.std::__1::basic_ostream"* %19, i64 0, metadata !5860, metadata !7116), !dbg !9893
-  %20 = bitcast %"class.std::__1::basic_ostream"* %19 to i8**, !dbg !9895
-  %21 = load i8** %20, align 8, !dbg !9895, !tbaa !7427
-  %22 = getelementptr i8* %21, i64 -24, !dbg !9895
-  %23 = bitcast i8* %22 to i64*, !dbg !9895
-  %24 = load i64* %23, align 8, !dbg !9895
-  %25 = bitcast %"class.std::__1::basic_ostream"* %19 to i8*, !dbg !9895
-  %26 = getelementptr inbounds i8* %25, i64 %24, !dbg !9895
-  %27 = bitcast %"class.std::__1::locale"* %1 to i8*, !dbg !9896
-  call void @llvm.lifetime.start(i64 8, i8* %27), !dbg !9896
-  tail call void @llvm.dbg.value(metadata i8 10, i64 0, metadata !5824, metadata !7116), !dbg !9898
-  %28 = bitcast i8* %26 to %"class.std::__1::ios_base"*, !dbg !9899
-  call void @_ZNKSt3__18ios_base6getlocEv(%"class.std::__1::locale"* sret %1, %"class.std::__1::ios_base"* %28) #12, !dbg !9899
-  call void @llvm.dbg.value(metadata %"class.std::__1::locale"* %1, i64 0, metadata !5832, metadata !7116), !dbg !9900
-  %29 = invoke %"class.std::__1::locale::facet"* @_ZNKSt3__16locale9use_facetERNS0_2idE(%"class.std::__1::locale"* %1, %"class.std::__1::locale::id"* dereferenceable(16) @_ZNSt3__15ctypeIcE2idE) #12
-          to label %30 unwind label %37, !dbg !9902
-
-; <label>:30                                      ; preds = %18
-  %31 = bitcast %"class.std::__1::locale::facet"* %29 to %"class.std::__1::ctype"*, !dbg !9903
-  call void @llvm.dbg.value(metadata %"class.std::__1::ctype"* %31, i64 0, metadata !5835, metadata !7116), !dbg !9904
-  call void @llvm.dbg.value(metadata i8 10, i64 0, metadata !5837, metadata !7116), !dbg !9906
-  %32 = bitcast %"class.std::__1::locale::facet"* %29 to i8 (%"class.std::__1::ctype"*, i8)***, !dbg !9907
-  %33 = load i8 (%"class.std::__1::ctype"*, i8)*** %32, align 8, !dbg !9907, !tbaa !7427
-  %34 = getelementptr inbounds i8 (%"class.std::__1::ctype"*, i8)** %33, i64 7, !dbg !9907
-  %35 = load i8 (%"class.std::__1::ctype"*, i8)** %34, align 8, !dbg !9907
-  %36 = invoke signext i8 %35(%"class.std::__1::ctype"* %31, i8 signext 10) #12
-          to label %_ZNKSt3__19basic_iosIcNS_11char_traitsIcEEE5widenEc.exit.i unwind label %37, !dbg !9907
-
-; <label>:37                                      ; preds = %30, %18
-  %38 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !9908
-  invoke void @_ZNSt3__16localeD1Ev(%"class.std::__1::locale"* %1) #12
-          to label %39 unwind label %40, !dbg !9909
-
-; <label>:39                                      ; preds = %37
-  resume { i8*, i32 } %38, !dbg !9909
-
-; <label>:40                                      ; preds = %37
-  %41 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          catch i8* null, !dbg !9909
-  %42 = extractvalue { i8*, i32 } %41, 0, !dbg !9909
-  call void @__clang_call_terminate(i8* %42) #15, !dbg !9909
-  unreachable, !dbg !9909
-
-_ZNKSt3__19basic_iosIcNS_11char_traitsIcEEE5widenEc.exit.i: ; preds = %30
-  call void @_ZNSt3__16localeD1Ev(%"class.std::__1::locale"* %1) #12, !dbg !9909
-  call void @llvm.lifetime.end(i64 8, i8* %27), !dbg !9909
-  %43 = call dereferenceable(160) %"class.std::__1::basic_ostream"* @_ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE3putEc(%"class.std::__1::basic_ostream"* %19, i8 signext %36) #12, !dbg !9910
-  %44 = call dereferenceable(160) %"class.std::__1::basic_ostream"* @_ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE5flushEv(%"class.std::__1::basic_ostream"* %19) #12, !dbg !9911
-  call void @abort() #17, !dbg !9912
-  unreachable, !dbg !9912
-
-_ZN6soplex9spx_allocIPNS_5SPxIdEEEvRT_i.exit:     ; preds = %10
-  ret void, !dbg !9913
+if.end:                                           ; preds = %if.else, %if.then
+  %0 = phi i32 [ %.cond, %if.else ], [ %p_max, %if.then ]
+  tail call void @_ZN6soplex9spx_allocIPNS_5SPxIdEEEvRT_i(%"class.soplex::SPxId"** %data, i32 %0) #11, !dbg !9266
+  ret void, !dbg !9267
 }

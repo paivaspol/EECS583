@@ -1,62 +1,67 @@
 define void @timevar_pop(i32 %timevar) #0 {
 entry:
   %now = alloca %struct.timevar_time_def, align 4
-  %0 = load %struct.timevar_stack_def** @stack, align 8, !tbaa !3
-  %1 = load i32* @time_report, align 4, !tbaa !0
-  %tobool = icmp eq i32 %1, 0
-  br i1 %tobool, label %return, label %if.end
+  call void @llvm.dbg.value(metadata !{i32 %timevar}, i64 0, metadata !92), !dbg !310
+  call void @llvm.dbg.declare(metadata !{%struct.timevar_time_def* %now}, metadata !93), !dbg !311
+  %0 = load %struct.timevar_stack_def** @stack, align 8, !dbg !312, !tbaa !225
+  call void @llvm.dbg.value(metadata !{%struct.timevar_stack_def* %0}, i64 0, metadata !94), !dbg !312
+  %1 = load i32* @time_report, align 4, !dbg !313, !tbaa !218
+  %tobool = icmp eq i32 %1, 0, !dbg !313
+  br i1 %tobool, label %return, label %if.end, !dbg !313
 
 if.end:                                           ; preds = %entry
-  %idxprom = zext i32 %timevar to i64
-  %arrayidx = getelementptr inbounds [45 x %struct.timevar_def]* @timevars, i64 0, i64 %idxprom
-  %timevar1 = getelementptr inbounds %struct.timevar_stack_def* %0, i64 0, i32 0
-  %2 = load %struct.timevar_def** %timevar1, align 8, !tbaa !3
-  %cmp = icmp eq %struct.timevar_def* %arrayidx, %2
-  br i1 %cmp, label %if.end3, label %if.then2
+  %idxprom = zext i32 %timevar to i64, !dbg !314
+  %arrayidx = getelementptr inbounds [45 x %struct.timevar_def]* @timevars, i64 0, i64 %idxprom, !dbg !314
+  %timevar1 = getelementptr inbounds %struct.timevar_stack_def* %0, i64 0, i32 0, !dbg !314
+  %2 = load %struct.timevar_def** %timevar1, align 8, !dbg !314, !tbaa !225
+  %cmp = icmp eq %struct.timevar_def* %arrayidx, %2, !dbg !314
+  br i1 %cmp, label %if.end3, label %if.then2, !dbg !314
 
 if.then2:                                         ; preds = %if.end
-  call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str45, i64 0, i64 0), i32 320, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.timevar_pop, i64 0, i64 0)) #5
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str45, i64 0, i64 0), i32 320, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.timevar_pop, i64 0, i64 0)) #6, !dbg !315
+  unreachable, !dbg !315
 
 if.end3:                                          ; preds = %if.end
-  call fastcc void @get_time(%struct.timevar_time_def* %now) #6
-  %3 = load %struct.timevar_def** %timevar1, align 8, !tbaa !3
-  %user.i = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 0
-  %4 = load float* %user.i, align 4, !tbaa !4
-  %5 = load float* getelementptr inbounds (%struct.timevar_time_def* @start_time, i64 0, i32 0), align 4, !tbaa !4
-  %sub.i = fsub float %4, %5
-  %user2.i = getelementptr inbounds %struct.timevar_def* %3, i64 0, i32 0, i32 0
-  %6 = load float* %user2.i, align 4, !tbaa !4
-  %add.i = fadd float %6, %sub.i
-  store float %add.i, float* %user2.i, align 4, !tbaa !4
-  %sys.i = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 1
-  %7 = load float* %sys.i, align 4, !tbaa !4
-  %8 = load float* getelementptr inbounds (%struct.timevar_time_def* @start_time, i64 0, i32 1), align 4, !tbaa !4
-  %sub4.i = fsub float %7, %8
-  %sys5.i = getelementptr inbounds %struct.timevar_def* %3, i64 0, i32 0, i32 1
-  %9 = load float* %sys5.i, align 4, !tbaa !4
-  %add6.i = fadd float %9, %sub4.i
-  store float %add6.i, float* %sys5.i, align 4, !tbaa !4
-  %wall.i = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 2
-  %10 = load float* %wall.i, align 4, !tbaa !4
-  %11 = load float* getelementptr inbounds (%struct.timevar_time_def* @start_time, i64 0, i32 2), align 4, !tbaa !4
-  %sub8.i = fsub float %10, %11
-  %wall9.i = getelementptr inbounds %struct.timevar_def* %3, i64 0, i32 0, i32 2
-  %12 = load float* %wall9.i, align 4, !tbaa !4
-  %add10.i = fadd float %12, %sub8.i
-  store float %add10.i, float* %wall9.i, align 4, !tbaa !4
-  %13 = bitcast %struct.timevar_time_def* %now to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.timevar_time_def* @start_time to i8*), i8* %13, i64 12, i32 4, i1 false), !tbaa.struct !5
-  %14 = load %struct.timevar_stack_def** @stack, align 8, !tbaa !3
-  %next = getelementptr inbounds %struct.timevar_stack_def* %14, i64 0, i32 1
-  %15 = load %struct.timevar_stack_def** %next, align 8, !tbaa !3
-  store %struct.timevar_stack_def* %15, %struct.timevar_stack_def** @stack, align 8, !tbaa !3
-  %16 = load %struct.timevar_stack_def** @unused_stack_instances, align 8, !tbaa !3
-  %next5 = getelementptr inbounds %struct.timevar_stack_def* %0, i64 0, i32 1
-  store %struct.timevar_stack_def* %16, %struct.timevar_stack_def** %next5, align 8, !tbaa !3
-  store %struct.timevar_stack_def* %0, %struct.timevar_stack_def** @unused_stack_instances, align 8, !tbaa !3
-  br label %return
+  call fastcc void @get_time(%struct.timevar_time_def* %now) #7, !dbg !316
+  %3 = load %struct.timevar_def** %timevar1, align 8, !dbg !317, !tbaa !225
+  tail call void @llvm.dbg.value(metadata !283, i64 0, metadata !318), !dbg !319
+  tail call void @llvm.dbg.value(metadata !{%struct.timevar_time_def* %now}, i64 0, metadata !320), !dbg !321
+  %user.i = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 0, !dbg !322
+  %4 = load float* %user.i, align 4, !dbg !322, !tbaa !272
+  %5 = load float* getelementptr inbounds (%struct.timevar_time_def* @start_time, i64 0, i32 0), align 4, !dbg !322, !tbaa !272
+  %sub.i = fsub float %4, %5, !dbg !322
+  %user2.i = getelementptr inbounds %struct.timevar_def* %3, i64 0, i32 0, i32 0, !dbg !322
+  %6 = load float* %user2.i, align 4, !dbg !322, !tbaa !272
+  %add.i = fadd float %6, %sub.i, !dbg !322
+  store float %add.i, float* %user2.i, align 4, !dbg !322, !tbaa !272
+  %sys.i = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 1, !dbg !323
+  %7 = load float* %sys.i, align 4, !dbg !323, !tbaa !272
+  %8 = load float* getelementptr inbounds (%struct.timevar_time_def* @start_time, i64 0, i32 1), align 4, !dbg !323, !tbaa !272
+  %sub4.i = fsub float %7, %8, !dbg !323
+  %sys5.i = getelementptr inbounds %struct.timevar_def* %3, i64 0, i32 0, i32 1, !dbg !323
+  %9 = load float* %sys5.i, align 4, !dbg !323, !tbaa !272
+  %add6.i = fadd float %9, %sub4.i, !dbg !323
+  store float %add6.i, float* %sys5.i, align 4, !dbg !323, !tbaa !272
+  %wall.i = getelementptr inbounds %struct.timevar_time_def* %now, i64 0, i32 2, !dbg !324
+  %10 = load float* %wall.i, align 4, !dbg !324, !tbaa !272
+  %11 = load float* getelementptr inbounds (%struct.timevar_time_def* @start_time, i64 0, i32 2), align 4, !dbg !324, !tbaa !272
+  %sub8.i = fsub float %10, %11, !dbg !324
+  %wall9.i = getelementptr inbounds %struct.timevar_def* %3, i64 0, i32 0, i32 2, !dbg !324
+  %12 = load float* %wall9.i, align 4, !dbg !324, !tbaa !272
+  %add10.i = fadd float %12, %sub8.i, !dbg !324
+  store float %add10.i, float* %wall9.i, align 4, !dbg !324, !tbaa !272
+  %13 = bitcast %struct.timevar_time_def* %now to i8*, !dbg !325
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.timevar_time_def* @start_time to i8*), i8* %13, i64 12, i32 4, i1 false), !dbg !325, !tbaa.struct !292
+  %14 = load %struct.timevar_stack_def** @stack, align 8, !dbg !326, !tbaa !225
+  %next = getelementptr inbounds %struct.timevar_stack_def* %14, i64 0, i32 1, !dbg !326
+  %15 = load %struct.timevar_stack_def** %next, align 8, !dbg !326, !tbaa !225
+  store %struct.timevar_stack_def* %15, %struct.timevar_stack_def** @stack, align 8, !dbg !326, !tbaa !225
+  %16 = load %struct.timevar_stack_def** @unused_stack_instances, align 8, !dbg !327, !tbaa !225
+  %next5 = getelementptr inbounds %struct.timevar_stack_def* %0, i64 0, i32 1, !dbg !327
+  store %struct.timevar_stack_def* %16, %struct.timevar_stack_def** %next5, align 8, !dbg !327, !tbaa !225
+  store %struct.timevar_stack_def* %0, %struct.timevar_stack_def** @unused_stack_instances, align 8, !dbg !328, !tbaa !225
+  br label %return, !dbg !328
 
 return:                                           ; preds = %entry, %if.end3
-  ret void
+  ret void, !dbg !328
 }

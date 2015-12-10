@@ -1,86 +1,87 @@
-define void @DenseMtx_setComplexEntry(%struct._DenseMtx* readonly %mtx, i32 %irow, i32 %jcol, double %real, double %imag) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !109, metadata !132), !dbg !434
-  tail call void @llvm.dbg.value(metadata i32 %irow, i64 0, metadata !110, metadata !132), !dbg !435
-  tail call void @llvm.dbg.value(metadata i32 %jcol, i64 0, metadata !111, metadata !132), !dbg !436
-  tail call void @llvm.dbg.value(metadata double %real, i64 0, metadata !112, metadata !132), !dbg !437
-  tail call void @llvm.dbg.value(metadata double %imag, i64 0, metadata !113, metadata !132), !dbg !438
-  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !439
-  br i1 %1, label %2, label %5, !dbg !441
+define void @DenseMtx_setComplexEntry(%struct._DenseMtx* %mtx, i32 %irow, i32 %jcol, double %real, double %imag) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DenseMtx* %mtx}, i64 0, metadata !111), !dbg !282
+  tail call void @llvm.dbg.value(metadata !{i32 %irow}, i64 0, metadata !112), !dbg !283
+  tail call void @llvm.dbg.value(metadata !{i32 %jcol}, i64 0, metadata !113), !dbg !284
+  tail call void @llvm.dbg.value(metadata !{double %real}, i64 0, metadata !114), !dbg !285
+  tail call void @llvm.dbg.value(metadata !{double %imag}, i64 0, metadata !115), !dbg !286
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null, !dbg !287
+  br i1 %cmp, label %if.then, label %if.end, !dbg !287
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !442, !tbaa !139
-  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([58 x i8]* @.str24, i64 0, i64 0), i64 57, i64 1, %struct.__sFILE* %3), !dbg !444
-  tail call void @exit(i32 -1) #7, !dbg !445
-  unreachable, !dbg !445
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !288, !tbaa !134
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([58 x i8]* @.str24, i64 0, i64 0), i64 57, i64 1, %struct._IO_FILE* %0), !dbg !288
+  tail call void @exit(i32 -1) #7, !dbg !290
+  unreachable, !dbg !290
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0, !dbg !446
-  %7 = load i32* %6, align 4, !dbg !446, !tbaa !277
-  %8 = icmp eq i32 %7, 2, !dbg !448
-  br i1 %8, label %12, label %9, !dbg !449
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0, !dbg !291
+  %2 = load i32* %type, align 4, !dbg !291, !tbaa !139
+  %cmp1 = icmp eq i32 %2, 2, !dbg !291
+  br i1 %cmp1, label %if.end4, label %if.then2, !dbg !291
 
-; <label>:9                                       ; preds = %5
-  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !450, !tbaa !139
-  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([79 x i8]* @.str25, i64 0, i64 0), i64 78, i64 1, %struct.__sFILE* %10), !dbg !452
-  tail call void @exit(i32 -1) #7, !dbg !453
-  unreachable, !dbg !453
+if.then2:                                         ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !292, !tbaa !134
+  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([79 x i8]* @.str25, i64 0, i64 0), i64 78, i64 1, %struct._IO_FILE* %3), !dbg !292
+  tail call void @exit(i32 -1) #7, !dbg !294
+  unreachable, !dbg !294
 
-; <label>:12                                      ; preds = %5
-  %13 = icmp sgt i32 %irow, -1, !dbg !454
-  %.phi.trans.insert2 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
-  %.pre3 = load i32* %.phi.trans.insert2, align 4, !dbg !456, !tbaa !175
-  %14 = icmp sgt i32 %.pre3, %irow, !dbg !458
-  %or.cond = and i1 %13, %14, !dbg !459
-  br i1 %or.cond, label %17, label %._crit_edge1, !dbg !459
+if.end4:                                          ; preds = %if.end
+  %cmp5 = icmp sgt i32 %irow, -1, !dbg !295
+  %nrow8.phi.trans.insert = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
+  %.pre = load i32* %nrow8.phi.trans.insert, align 4, !dbg !296, !tbaa !139
+  %cmp6 = icmp sgt i32 %.pre, %irow, !dbg !295
+  %or.cond = and i1 %cmp5, %cmp6, !dbg !295
+  br i1 %or.cond, label %if.end10, label %if.then7, !dbg !295
 
-._crit_edge1:                                     ; preds = %12
-  %15 = load %struct.__sFILE** @__stderrp, align 8, !dbg !460, !tbaa !139
-  %16 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %15, i8* getelementptr inbounds ([78 x i8]* @.str26, i64 0, i64 0), i32 %irow, i32 %.pre3) #6, !dbg !461
-  tail call void @exit(i32 -1) #7, !dbg !462
-  unreachable, !dbg !462
+if.then7:                                         ; preds = %if.end4
+  %5 = load %struct._IO_FILE** @stderr, align 8, !dbg !296, !tbaa !134
+  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([78 x i8]* @.str26, i64 0, i64 0), i32 %irow, i32 %.pre) #6, !dbg !296
+  tail call void @exit(i32 -1) #7, !dbg !298
+  unreachable, !dbg !298
 
-; <label>:17                                      ; preds = %12
-  %18 = icmp sgt i32 %jcol, -1, !dbg !463
-  %.phi.trans.insert = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4
-  %.pre = load i32* %.phi.trans.insert, align 4, !dbg !465, !tbaa !179
-  %19 = icmp sgt i32 %.pre, %jcol, !dbg !467
-  %or.cond5 = and i1 %18, %19, !dbg !468
-  br i1 %or.cond5, label %22, label %._crit_edge, !dbg !468
+if.end10:                                         ; preds = %if.end4
+  %cmp11 = icmp sgt i32 %jcol, -1, !dbg !299
+  %ncol15.phi.trans.insert = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4
+  %.pre47 = load i32* %ncol15.phi.trans.insert, align 4, !dbg !300, !tbaa !139
+  %cmp13 = icmp sgt i32 %.pre47, %jcol, !dbg !299
+  %or.cond48 = and i1 %cmp11, %cmp13, !dbg !299
+  br i1 %or.cond48, label %if.end17, label %if.then14, !dbg !299
 
-._crit_edge:                                      ; preds = %17
-  %20 = load %struct.__sFILE** @__stderrp, align 8, !dbg !469, !tbaa !139
-  %21 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %20, i8* getelementptr inbounds ([78 x i8]* @.str27, i64 0, i64 0), i32 %jcol, i32 %.pre) #6, !dbg !470
-  tail call void @exit(i32 -1) #7, !dbg !471
-  unreachable, !dbg !471
+if.then14:                                        ; preds = %if.end10
+  %6 = load %struct._IO_FILE** @stderr, align 8, !dbg !300, !tbaa !134
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([78 x i8]* @.str27, i64 0, i64 0), i32 %jcol, i32 %.pre47) #6, !dbg !300
+  tail call void @exit(i32 -1) #7, !dbg !302
+  unreachable, !dbg !302
 
-; <label>:22                                      ; preds = %17
-  %23 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9, !dbg !472
-  %24 = load double** %23, align 8, !dbg !472, !tbaa !249
-  %25 = icmp eq double* %24, null, !dbg !474
-  br i1 %25, label %26, label %29, !dbg !475
+if.end17:                                         ; preds = %if.end10
+  %entries = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9, !dbg !303
+  %7 = load double** %entries, align 8, !dbg !303, !tbaa !134
+  %cmp18 = icmp eq double* %7, null, !dbg !303
+  br i1 %cmp18, label %if.then19, label %if.end21, !dbg !303
 
-; <label>:26                                      ; preds = %22
-  %27 = load %struct.__sFILE** @__stderrp, align 8, !dbg !476, !tbaa !139
-  %28 = tail call i64 @fwrite(i8* getelementptr inbounds ([68 x i8]* @.str28, i64 0, i64 0), i64 67, i64 1, %struct.__sFILE* %27), !dbg !478
-  tail call void @exit(i32 -1) #7, !dbg !479
-  unreachable, !dbg !479
+if.then19:                                        ; preds = %if.end17
+  %8 = load %struct._IO_FILE** @stderr, align 8, !dbg !304, !tbaa !134
+  %9 = tail call i64 @fwrite(i8* getelementptr inbounds ([68 x i8]* @.str28, i64 0, i64 0), i64 67, i64 1, %struct._IO_FILE* %8), !dbg !304
+  tail call void @exit(i32 -1) #7, !dbg !306
+  unreachable, !dbg !306
 
-; <label>:29                                      ; preds = %22
-  %30 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 5, !dbg !480
-  %31 = load i32* %30, align 4, !dbg !480, !tbaa !191
-  %32 = mul nsw i32 %31, %irow, !dbg !481
-  %33 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 6, !dbg !482
-  %34 = load i32* %33, align 4, !dbg !482, !tbaa !202
-  %35 = mul nsw i32 %34, %jcol, !dbg !483
-  %36 = add nsw i32 %35, %32, !dbg !484
-  %37 = shl nsw i32 %36, 1, !dbg !485
-  tail call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !114, metadata !132), !dbg !486
-  %38 = sext i32 %37 to i64, !dbg !487
-  %39 = getelementptr inbounds double* %24, i64 %38, !dbg !487
-  store double %real, double* %39, align 8, !dbg !488, !tbaa !316
-  %40 = or i32 %37, 1, !dbg !489
-  %41 = sext i32 %40 to i64, !dbg !490
-  %42 = getelementptr inbounds double* %24, i64 %41, !dbg !490
-  store double %imag, double* %42, align 8, !dbg !491, !tbaa !316
-  ret void, !dbg !492
+if.end21:                                         ; preds = %if.end17
+  %inc1 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 5, !dbg !307
+  %10 = load i32* %inc1, align 4, !dbg !307, !tbaa !139
+  %mul = mul nsw i32 %10, %irow, !dbg !307
+  %inc2 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 6, !dbg !307
+  %11 = load i32* %inc2, align 4, !dbg !307, !tbaa !139
+  %mul22 = mul nsw i32 %11, %jcol, !dbg !307
+  %add = add nsw i32 %mul22, %mul, !dbg !307
+  %mul23 = shl nsw i32 %add, 1, !dbg !307
+  tail call void @llvm.dbg.value(metadata !{i32 %mul23}, i64 0, metadata !116), !dbg !307
+  %idxprom = sext i32 %mul23 to i64, !dbg !308
+  %arrayidx = getelementptr inbounds double* %7, i64 %idxprom, !dbg !308
+  store double %real, double* %arrayidx, align 8, !dbg !308, !tbaa !225
+  %add2546 = or i32 %mul23, 1, !dbg !309
+  %idxprom26 = sext i32 %add2546 to i64, !dbg !309
+  %arrayidx28 = getelementptr inbounds double* %7, i64 %idxprom26, !dbg !309
+  store double %imag, double* %arrayidx28, align 8, !dbg !309, !tbaa !225
+  ret void, !dbg !310
 }

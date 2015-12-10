@@ -1,43 +1,44 @@
-define void @_ZN3pov16POVFPU_ExceptionEjPKc(i32 %fn, i8* %msg) #2 {
-  tail call void @llvm.dbg.value(metadata i32 %fn, i64 0, metadata !558, metadata !1171), !dbg !1547
-  tail call void @llvm.dbg.value(metadata i8* %msg, i64 0, metadata !559, metadata !1171), !dbg !1548
-  %1 = zext i32 %fn to i64, !dbg !1549
-  %2 = load %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !1549, !tbaa !1183
-  %3 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %2, i64 %1, i32 0, i32 8, !dbg !1551
-  %4 = load i8** %3, align 8, !dbg !1551, !tbaa !1552
-  %5 = icmp eq i8* %4, null, !dbg !1553
-  %6 = icmp ne i8* %msg, null, !dbg !1554
-  %7 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %2, i64 %1, i32 0, i32 9, !dbg !1557
-  %8 = load i8** %7, align 8, !dbg !1557, !tbaa !1558
-  %9 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %2, i64 %1, i32 0, i32 10, i32 1, !dbg !1559
-  %10 = load i32* %9, align 4, !dbg !1559, !tbaa !1560
-  %11 = sext i32 %10 to i64, !dbg !1561
-  %12 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %2, i64 %1, i32 0, i32 10, i32 0, !dbg !1562
-  %13 = load i64* %12, align 8, !dbg !1562, !tbaa !1563
-  br i1 %5, label %19, label %14, !dbg !1564
+define void @_ZN3pov16POVFPU_ExceptionEjPKc(i32 %fn, i8* %msg) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %fn}, i64 0, metadata !302), !dbg !685
+  tail call void @llvm.dbg.value(metadata !{i8* %msg}, i64 0, metadata !303), !dbg !685
+  %idxprom = zext i32 %fn to i64, !dbg !686
+  %0 = load %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !686, !tbaa !493
+  %name = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %0, i64 %idxprom, i32 0, i32 8, !dbg !686
+  %1 = load i8** %name, align 8, !dbg !686, !tbaa !493
+  %cmp = icmp eq i8* %1, null, !dbg !686
+  %cmp2 = icmp ne i8* %msg, null, !dbg !687
+  %filename = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %0, i64 %idxprom, i32 0, i32 9, !dbg !689
+  %2 = load i8** %filename, align 8, !dbg !689, !tbaa !493
+  %lineno = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %0, i64 %idxprom, i32 0, i32 10, i32 1, !dbg !689
+  %3 = load i32* %lineno, align 4, !dbg !689, !tbaa !498
+  %conv = sext i32 %3 to i64, !dbg !689
+  %offset = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %0, i64 %idxprom, i32 0, i32 10, i32 0, !dbg !689
+  %4 = load i64* %offset, align 8, !dbg !689, !tbaa !637
+  br i1 %cmp, label %if.else38, label %if.then, !dbg !686
 
-; <label>:14                                      ; preds = %0
-  br i1 %6, label %15, label %17, !dbg !1565
+if.then:                                          ; preds = %entry
+  br i1 %cmp2, label %if.then3, label %if.else, !dbg !687
 
-; <label>:15                                      ; preds = %14
-  %16 = tail call i32 (i8*, i64, i64, i8*, ...)* @_ZN3pov7ErrorAtEPKclmS1_z(i8* %8, i64 %11, i64 %13, i8* getelementptr inbounds ([44 x i8]* @.str59, i64 0, i64 0), i8* %4, i8* %msg) #8, !dbg !1566
-  br label %24, !dbg !1566
+if.then3:                                         ; preds = %if.then
+  %call = tail call i32 (i8*, i64, i64, i8*, ...)* @_ZN3pov7ErrorAtEPKclmS1_z(i8* %2, i64 %conv, i64 %4, i8* getelementptr inbounds ([44 x i8]* @.str59, i64 0, i64 0), i8* %1, i8* %msg) #9, !dbg !689
+  br label %if.end75, !dbg !689
 
-; <label>:17                                      ; preds = %14
-  %18 = tail call i32 (i8*, i64, i64, i8*, ...)* @_ZN3pov7ErrorAtEPKclmS1_z(i8* %8, i64 %11, i64 %13, i8* getelementptr inbounds ([194 x i8]* @.str60, i64 0, i64 0), i8* %4) #8, !dbg !1567
-  br label %24
+if.else:                                          ; preds = %if.then
+  %call37 = tail call i32 (i8*, i64, i64, i8*, ...)* @_ZN3pov7ErrorAtEPKclmS1_z(i8* %2, i64 %conv, i64 %4, i8* getelementptr inbounds ([194 x i8]* @.str60, i64 0, i64 0), i8* %1) #9, !dbg !690
+  br label %if.end75
 
-; <label>:19                                      ; preds = %0
-  br i1 %6, label %20, label %22, !dbg !1568
+if.else38:                                        ; preds = %entry
+  br i1 %cmp2, label %if.then40, label %if.else57, !dbg !691
 
-; <label>:20                                      ; preds = %19
-  %21 = tail call i32 (i8*, i64, i64, i8*, ...)* @_ZN3pov7ErrorAtEPKclmS1_z(i8* %8, i64 %11, i64 %13, i8* getelementptr inbounds ([39 x i8]* @.str61, i64 0, i64 0), i8* %msg) #8, !dbg !1570
-  br label %24, !dbg !1570
+if.then40:                                        ; preds = %if.else38
+  %call56 = tail call i32 (i8*, i64, i64, i8*, ...)* @_ZN3pov7ErrorAtEPKclmS1_z(i8* %2, i64 %conv, i64 %4, i8* getelementptr inbounds ([39 x i8]* @.str61, i64 0, i64 0), i8* %msg) #9, !dbg !693
+  br label %if.end75, !dbg !693
 
-; <label>:22                                      ; preds = %19
-  %23 = tail call i32 (i8*, i64, i64, i8*, ...)* @_ZN3pov7ErrorAtEPKclmS1_z(i8* %8, i64 %11, i64 %13, i8* getelementptr inbounds ([197 x i8]* @.str62, i64 0, i64 0)) #8, !dbg !1572
-  br label %24
+if.else57:                                        ; preds = %if.else38
+  %call73 = tail call i32 (i8*, i64, i64, i8*, ...)* @_ZN3pov7ErrorAtEPKclmS1_z(i8* %2, i64 %conv, i64 %4, i8* getelementptr inbounds ([197 x i8]* @.str62, i64 0, i64 0)) #9, !dbg !694
+  br label %if.end75
 
-; <label>:24                                      ; preds = %20, %22, %15, %17
-  ret void, !dbg !1573
+if.end75:                                         ; preds = %if.then40, %if.else57, %if.then3, %if.else
+  ret void, !dbg !695
 }

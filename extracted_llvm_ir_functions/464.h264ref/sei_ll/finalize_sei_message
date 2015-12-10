@@ -1,18 +1,19 @@
 define void @finalize_sei_message(i32 %id) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %id, i64 0, metadata !98, metadata !931), !dbg !1094
-  %1 = sext i32 %id to i64, !dbg !1095
-  %2 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %1, i32 1, !dbg !1096
-  %3 = load i32* %2, align 4, !dbg !1096, !tbaa !957
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !99, metadata !931), !dbg !1097
-  %4 = sext i32 %3 to i64, !dbg !1098
-  %5 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %1, i32 3, !dbg !1099
-  %6 = load i8** %5, align 8, !dbg !1099, !tbaa !940
-  %7 = getelementptr inbounds i8* %6, i64 %4, !dbg !1098
-  store i8 -128, i8* %7, align 1, !dbg !1100, !tbaa !977
-  %8 = load i32* %2, align 4, !dbg !1101, !tbaa !957
-  %9 = add nsw i32 %8, 1, !dbg !1101
-  store i32 %9, i32* %2, align 4, !dbg !1101, !tbaa !957
-  %10 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %1, i32 0, !dbg !1102
-  store i32 1, i32* %10, align 8, !dbg !1103, !tbaa !960
-  ret void, !dbg !1104
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %id}, i64 0, metadata !94), !dbg !1003
+  %idxprom = sext i32 %id to i64, !dbg !1004
+  %payloadSize = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %idxprom, i32 1, !dbg !1004
+  %0 = load i32* %payloadSize, align 4, !dbg !1004, !tbaa !937
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !95), !dbg !1004
+  %idxprom1 = sext i32 %0 to i64, !dbg !1005
+  %data = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %idxprom, i32 3, !dbg !1005
+  %1 = load i8** %data, align 8, !dbg !1005, !tbaa !926
+  %arrayidx4 = getelementptr inbounds i8* %1, i64 %idxprom1, !dbg !1005
+  store i8 -128, i8* %arrayidx4, align 1, !dbg !1005, !tbaa !927
+  %2 = load i32* %payloadSize, align 4, !dbg !1006, !tbaa !937
+  %inc = add nsw i32 %2, 1, !dbg !1006
+  store i32 %inc, i32* %payloadSize, align 4, !dbg !1006, !tbaa !937
+  %available = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %idxprom, i32 0, !dbg !1007
+  store i32 1, i32* %available, align 8, !dbg !1007, !tbaa !927
+  ret void, !dbg !1008
 }

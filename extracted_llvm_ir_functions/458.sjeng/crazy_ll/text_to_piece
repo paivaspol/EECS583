@@ -1,46 +1,47 @@
-define i32 @text_to_piece(i8 signext %txt, i32 %who) #4 {
-  tail call void @llvm.dbg.value(metadata i8 %txt, i64 0, metadata !18, metadata !77), !dbg !243
-  tail call void @llvm.dbg.value(metadata i32 %who, i64 0, metadata !19, metadata !77), !dbg !244
-  %1 = sext i8 %txt to i32, !dbg !245
-  switch i32 %1, label %17 [
-    i32 112, label %2
-    i32 80, label %2
-    i32 98, label %5
-    i32 66, label %5
-    i32 110, label %8
-    i32 78, label %8
-    i32 114, label %11
-    i32 82, label %11
-    i32 113, label %14
-    i32 81, label %14
-  ], !dbg !246
+define i32 @text_to_piece(i8 signext %txt, i32 %who) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8 %txt}, i64 0, metadata !19), !dbg !182
+  tail call void @llvm.dbg.value(metadata !{i32 %who}, i64 0, metadata !20), !dbg !182
+  %conv = sext i8 %txt to i32, !dbg !183
+  switch i32 %conv, label %return [
+    i32 112, label %sw.bb
+    i32 80, label %sw.bb
+    i32 98, label %sw.bb2
+    i32 66, label %sw.bb2
+    i32 110, label %sw.bb6
+    i32 78, label %sw.bb6
+    i32 114, label %sw.bb10
+    i32 82, label %sw.bb10
+    i32 113, label %sw.bb14
+    i32 81, label %sw.bb14
+  ], !dbg !183
 
-; <label>:2                                       ; preds = %0, %0
-  %3 = icmp eq i32 %who, 0, !dbg !247
-  %4 = select i1 %3, i32 1, i32 2, !dbg !249
-  br label %17, !dbg !250
+sw.bb:                                            ; preds = %entry, %entry
+  %cmp = icmp eq i32 %who, 0, !dbg !184
+  %cond = select i1 %cmp, i32 1, i32 2, !dbg !184
+  br label %return, !dbg !184
 
-; <label>:5                                       ; preds = %0, %0
-  %6 = icmp eq i32 %who, 0, !dbg !251
-  %7 = select i1 %6, i32 11, i32 12, !dbg !252
-  br label %17, !dbg !253
+sw.bb2:                                           ; preds = %entry, %entry
+  %cmp3 = icmp eq i32 %who, 0, !dbg !186
+  %cond5 = select i1 %cmp3, i32 11, i32 12, !dbg !186
+  br label %return, !dbg !186
 
-; <label>:8                                       ; preds = %0, %0
-  %9 = icmp eq i32 %who, 0, !dbg !254
-  %10 = select i1 %9, i32 3, i32 4, !dbg !255
-  br label %17, !dbg !256
+sw.bb6:                                           ; preds = %entry, %entry
+  %cmp7 = icmp eq i32 %who, 0, !dbg !187
+  %cond9 = select i1 %cmp7, i32 3, i32 4, !dbg !187
+  br label %return, !dbg !187
 
-; <label>:11                                      ; preds = %0, %0
-  %12 = icmp eq i32 %who, 0, !dbg !257
-  %13 = select i1 %12, i32 7, i32 8, !dbg !258
-  br label %17, !dbg !259
+sw.bb10:                                          ; preds = %entry, %entry
+  %cmp11 = icmp eq i32 %who, 0, !dbg !188
+  %cond13 = select i1 %cmp11, i32 7, i32 8, !dbg !188
+  br label %return, !dbg !188
 
-; <label>:14                                      ; preds = %0, %0
-  %15 = icmp eq i32 %who, 0, !dbg !260
-  %16 = select i1 %15, i32 9, i32 10, !dbg !261
-  br label %17, !dbg !262
+sw.bb14:                                          ; preds = %entry, %entry
+  %cmp15 = icmp eq i32 %who, 0, !dbg !189
+  %cond17 = select i1 %cmp15, i32 9, i32 10, !dbg !189
+  br label %return, !dbg !189
 
-; <label>:17                                      ; preds = %0, %14, %11, %8, %5, %2
-  %.0 = phi i32 [ %16, %14 ], [ %13, %11 ], [ %10, %8 ], [ %7, %5 ], [ %4, %2 ], [ 13, %0 ]
-  ret i32 %.0, !dbg !263
+return:                                           ; preds = %entry, %sw.bb14, %sw.bb10, %sw.bb6, %sw.bb2, %sw.bb
+  %retval.0 = phi i32 [ %cond17, %sw.bb14 ], [ %cond13, %sw.bb10 ], [ %cond9, %sw.bb6 ], [ %cond5, %sw.bb2 ], [ %cond, %sw.bb ], [ 13, %entry ]
+  ret i32 %retval.0, !dbg !190
 }

@@ -1,328 +1,278 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct._Network = type { i32, i32, i32, %struct._Arc**, %struct._Arc**, %struct._ArcChunk*, i32, %struct.__sFILE* }
+%struct._Network = type { i32, i32, i32, %struct._Arc**, %struct._Arc**, %struct._ArcChunk*, i32, %struct._IO_FILE* }
 %struct._Arc = type { i32, i32, i32, i32, %struct._Arc*, %struct._Arc* }
 %struct._ArcChunk = type { i32, i32, %struct._Arc*, %struct._ArcChunk* }
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 
 @.str = private unnamed_addr constant [19 x i8] c"\0A in list for %d :\00", align 1
 @.str1 = private unnamed_addr constant [12 x i8] c" <%d,%d,%d>\00", align 1
 @.str2 = private unnamed_addr constant [20 x i8] c"\0A out list for %d :\00", align 1
 @.str3 = private unnamed_addr constant [50 x i8] c"\0A\0A Network : %d nodes, %d arcs, %d arc traversals\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @Network_writeForHumanEye(%struct._Network* nocapture readonly %network, %struct.__sFILE* nocapture %fp) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Network* %network, i64 0, metadata !105, metadata !120), !dbg !121
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !106, metadata !120), !dbg !122
-  tail call void @llvm.dbg.value(metadata %struct._Network* %network, i64 0, metadata !114, metadata !120) #3, !dbg !123
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !115, metadata !120) #3, !dbg !125
-  %1 = getelementptr inbounds %struct._Network* %network, i64 0, i32 0, !dbg !126
-  %2 = load i32* %1, align 4, !dbg !126, !tbaa !127
-  %3 = getelementptr inbounds %struct._Network* %network, i64 0, i32 1, !dbg !133
-  %4 = load i32* %3, align 4, !dbg !133, !tbaa !134
-  %5 = getelementptr inbounds %struct._Network* %network, i64 0, i32 2, !dbg !135
-  %6 = load i32* %5, align 4, !dbg !135, !tbaa !136
-  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([50 x i8]* @.str3, i64 0, i64 0), i32 %2, i32 %4, i32 %6) #4, !dbg !137
-  %8 = load i32* %1, align 4, !dbg !138, !tbaa !127
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !111, metadata !120), !dbg !139
-  %9 = getelementptr inbounds %struct._Network* %network, i64 0, i32 3, !dbg !140
-  %10 = load %struct._Arc*** %9, align 8, !dbg !140, !tbaa !141
-  tail call void @llvm.dbg.value(metadata %struct._Arc** %10, i64 0, metadata !108, metadata !120), !dbg !142
-  %11 = getelementptr inbounds %struct._Network* %network, i64 0, i32 4, !dbg !143
-  %12 = load %struct._Arc*** %11, align 8, !dbg !143, !tbaa !144
-  tail call void @llvm.dbg.value(metadata %struct._Arc** %12, i64 0, metadata !109, metadata !120), !dbg !145
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !110, metadata !120), !dbg !146
-  %13 = icmp sgt i32 %8, 0, !dbg !147
-  br i1 %13, label %.lr.ph10, label %._crit_edge11, !dbg !150
+; Function Attrs: nounwind optsize uwtable
+define void @Network_writeForHumanEye(%struct._Network* nocapture %network, %struct._IO_FILE* nocapture %fp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Network* %network}, i64 0, metadata !99), !dbg !110
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !100), !dbg !111
+  tail call void @llvm.dbg.value(metadata !{%struct._Network* %network}, i64 0, metadata !112) #3, !dbg !114
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !115) #3, !dbg !116
+  %nnode.i = getelementptr inbounds %struct._Network* %network, i64 0, i32 0, !dbg !117
+  %0 = load i32* %nnode.i, align 4, !dbg !117, !tbaa !118
+  %narc.i = getelementptr inbounds %struct._Network* %network, i64 0, i32 1, !dbg !117
+  %1 = load i32* %narc.i, align 4, !dbg !117, !tbaa !118
+  %ntrav.i = getelementptr inbounds %struct._Network* %network, i64 0, i32 2, !dbg !117
+  %2 = load i32* %ntrav.i, align 4, !dbg !117, !tbaa !118
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([50 x i8]* @.str3, i64 0, i64 0), i32 %0, i32 %1, i32 %2) #4, !dbg !117
+  %3 = load i32* %nnode.i, align 4, !dbg !121, !tbaa !118
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !105), !dbg !121
+  %inheads2 = getelementptr inbounds %struct._Network* %network, i64 0, i32 3, !dbg !122
+  %4 = load %struct._Arc*** %inheads2, align 8, !dbg !122, !tbaa !123
+  tail call void @llvm.dbg.value(metadata !{%struct._Arc** %4}, i64 0, metadata !102), !dbg !122
+  %outheads3 = getelementptr inbounds %struct._Network* %network, i64 0, i32 4, !dbg !124
+  %5 = load %struct._Arc*** %outheads3, align 8, !dbg !124, !tbaa !123
+  tail call void @llvm.dbg.value(metadata !{%struct._Arc** %5}, i64 0, metadata !103), !dbg !124
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !104), !dbg !125
+  %cmp55 = icmp sgt i32 %3, 0, !dbg !125
+  br i1 %cmp55, label %for.body, label %for.end24, !dbg !125
 
-.lr.ph10:                                         ; preds = %0
-  %14 = add i32 %8, -1, !dbg !150
-  br label %15, !dbg !150
+for.body:                                         ; preds = %entry, %for.inc23
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc23 ], [ 0, %entry ]
+  %6 = trunc i64 %indvars.iv to i32, !dbg !127
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), i32 %6) #4, !dbg !127
+  %call4 = tail call i32 @fflush(%struct._IO_FILE* %fp) #4, !dbg !129
+  %arrayidx = getelementptr inbounds %struct._Arc** %4, i64 %indvars.iv, !dbg !130
+  %arc.049 = load %struct._Arc** %arrayidx, align 8, !dbg !130
+  %cmp650 = icmp eq %struct._Arc* %arc.049, null, !dbg !130
+  br i1 %cmp650, label %for.end, label %for.body7, !dbg !130
 
-; <label>:15                                      ; preds = %._crit_edge7, %.lr.ph10
-  %indvars.iv = phi i64 [ 0, %.lr.ph10 ], [ %indvars.iv.next, %._crit_edge7 ]
-  %16 = trunc i64 %indvars.iv to i32, !dbg !151
-  %17 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), i32 %16) #4, !dbg !151
-  %18 = tail call i32 @fflush(%struct.__sFILE* %fp) #4, !dbg !153
-  %19 = getelementptr inbounds %struct._Arc** %10, i64 %indvars.iv, !dbg !154
-  %arc.01 = load %struct._Arc** %19, align 8, !dbg !154
-  %20 = icmp eq %struct._Arc* %arc.01, null, !dbg !156
-  br i1 %20, label %._crit_edge, label %.lr.ph, !dbg !158
+for.body7:                                        ; preds = %for.body, %for.body7
+  %arc.051 = phi %struct._Arc* [ %arc.0, %for.body7 ], [ %arc.049, %for.body ]
+  %first = getelementptr inbounds %struct._Arc* %arc.051, i64 0, i32 0, !dbg !132
+  %7 = load i32* %first, align 4, !dbg !132, !tbaa !118
+  %flow = getelementptr inbounds %struct._Arc* %arc.051, i64 0, i32 3, !dbg !132
+  %8 = load i32* %flow, align 4, !dbg !132, !tbaa !118
+  %capacity = getelementptr inbounds %struct._Arc* %arc.051, i64 0, i32 2, !dbg !132
+  %9 = load i32* %capacity, align 4, !dbg !132, !tbaa !118
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i32 %7, i32 %8, i32 %9) #4, !dbg !132
+  %call9 = tail call i32 @fflush(%struct._IO_FILE* %fp) #4, !dbg !134
+  %nextIn = getelementptr inbounds %struct._Arc* %arc.051, i64 0, i32 5, !dbg !130
+  %arc.0 = load %struct._Arc** %nextIn, align 8, !dbg !130
+  %cmp6 = icmp eq %struct._Arc* %arc.0, null, !dbg !130
+  br i1 %cmp6, label %for.end, label %for.body7, !dbg !130
 
-.lr.ph:                                           ; preds = %15, %.lr.ph
-  %arc.02 = phi %struct._Arc* [ %arc.0, %.lr.ph ], [ %arc.01, %15 ]
-  %21 = getelementptr inbounds %struct._Arc* %arc.02, i64 0, i32 0, !dbg !159
-  %22 = load i32* %21, align 4, !dbg !159, !tbaa !161
-  %23 = getelementptr inbounds %struct._Arc* %arc.02, i64 0, i32 3, !dbg !163
-  %24 = load i32* %23, align 4, !dbg !163, !tbaa !164
-  %25 = getelementptr inbounds %struct._Arc* %arc.02, i64 0, i32 2, !dbg !165
-  %26 = load i32* %25, align 4, !dbg !165, !tbaa !166
-  %27 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i32 %22, i32 %24, i32 %26) #4, !dbg !167
-  %28 = tail call i32 @fflush(%struct.__sFILE* %fp) #4, !dbg !168
-  %29 = getelementptr inbounds %struct._Arc* %arc.02, i64 0, i32 5, !dbg !169
-  %arc.0 = load %struct._Arc** %29, align 8, !dbg !154
-  %30 = icmp eq %struct._Arc* %arc.0, null, !dbg !156
-  br i1 %30, label %._crit_edge, label %.lr.ph, !dbg !158
+for.end:                                          ; preds = %for.body7, %for.body
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([20 x i8]* @.str2, i64 0, i64 0), i32 %6) #4, !dbg !135
+  %call11 = tail call i32 @fflush(%struct._IO_FILE* %fp) #4, !dbg !136
+  %arrayidx13 = getelementptr inbounds %struct._Arc** %5, i64 %indvars.iv, !dbg !137
+  %arc.152 = load %struct._Arc** %arrayidx13, align 8, !dbg !137
+  %cmp1553 = icmp eq %struct._Arc* %arc.152, null, !dbg !137
+  br i1 %cmp1553, label %for.inc23, label %for.body16, !dbg !137
 
-._crit_edge:                                      ; preds = %.lr.ph, %15
-  %31 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([20 x i8]* @.str2, i64 0, i64 0), i32 %16) #4, !dbg !170
-  %32 = tail call i32 @fflush(%struct.__sFILE* %fp) #4, !dbg !171
-  %33 = getelementptr inbounds %struct._Arc** %12, i64 %indvars.iv, !dbg !172
-  %arc.13 = load %struct._Arc** %33, align 8, !dbg !172
-  %34 = icmp eq %struct._Arc* %arc.13, null, !dbg !174
-  br i1 %34, label %._crit_edge7, label %.lr.ph6, !dbg !176
+for.body16:                                       ; preds = %for.end, %for.body16
+  %arc.154 = phi %struct._Arc* [ %arc.1, %for.body16 ], [ %arc.152, %for.end ]
+  %second = getelementptr inbounds %struct._Arc* %arc.154, i64 0, i32 1, !dbg !139
+  %10 = load i32* %second, align 4, !dbg !139, !tbaa !118
+  %flow17 = getelementptr inbounds %struct._Arc* %arc.154, i64 0, i32 3, !dbg !139
+  %11 = load i32* %flow17, align 4, !dbg !139, !tbaa !118
+  %capacity18 = getelementptr inbounds %struct._Arc* %arc.154, i64 0, i32 2, !dbg !139
+  %12 = load i32* %capacity18, align 4, !dbg !139, !tbaa !118
+  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i32 %10, i32 %11, i32 %12) #4, !dbg !139
+  %call20 = tail call i32 @fflush(%struct._IO_FILE* %fp) #4, !dbg !141
+  %nextOut = getelementptr inbounds %struct._Arc* %arc.154, i64 0, i32 4, !dbg !137
+  %arc.1 = load %struct._Arc** %nextOut, align 8, !dbg !137
+  %cmp15 = icmp eq %struct._Arc* %arc.1, null, !dbg !137
+  br i1 %cmp15, label %for.inc23, label %for.body16, !dbg !137
 
-.lr.ph6:                                          ; preds = %._crit_edge, %.lr.ph6
-  %arc.14 = phi %struct._Arc* [ %arc.1, %.lr.ph6 ], [ %arc.13, %._crit_edge ]
-  %35 = getelementptr inbounds %struct._Arc* %arc.14, i64 0, i32 1, !dbg !177
-  %36 = load i32* %35, align 4, !dbg !177, !tbaa !179
-  %37 = getelementptr inbounds %struct._Arc* %arc.14, i64 0, i32 3, !dbg !180
-  %38 = load i32* %37, align 4, !dbg !180, !tbaa !164
-  %39 = getelementptr inbounds %struct._Arc* %arc.14, i64 0, i32 2, !dbg !181
-  %40 = load i32* %39, align 4, !dbg !181, !tbaa !166
-  %41 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i32 %36, i32 %38, i32 %40) #4, !dbg !182
-  %42 = tail call i32 @fflush(%struct.__sFILE* %fp) #4, !dbg !183
-  %43 = getelementptr inbounds %struct._Arc* %arc.14, i64 0, i32 4, !dbg !184
-  %arc.1 = load %struct._Arc** %43, align 8, !dbg !172
-  %44 = icmp eq %struct._Arc* %arc.1, null, !dbg !174
-  br i1 %44, label %._crit_edge7, label %.lr.ph6, !dbg !176
+for.inc23:                                        ; preds = %for.body16, %for.end
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !125
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !125
+  %exitcond = icmp eq i32 %lftr.wideiv, %3, !dbg !125
+  br i1 %exitcond, label %for.end24, label %for.body, !dbg !125
 
-._crit_edge7:                                     ; preds = %.lr.ph6, %._crit_edge
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !150
-  %exitcond = icmp eq i32 %16, %14, !dbg !150
-  br i1 %exitcond, label %._crit_edge11, label %15, !dbg !150
-
-._crit_edge11:                                    ; preds = %._crit_edge7, %0
-  ret void, !dbg !185
+for.end24:                                        ; preds = %for.inc23, %entry
+  ret void, !dbg !142
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @Network_writeStats(%struct._Network* nocapture readonly %network, %struct.__sFILE* nocapture %fp) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Network* %network, i64 0, metadata !114, metadata !120), !dbg !186
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !115, metadata !120), !dbg !187
-  %1 = getelementptr inbounds %struct._Network* %network, i64 0, i32 0, !dbg !188
-  %2 = load i32* %1, align 4, !dbg !188, !tbaa !127
-  %3 = getelementptr inbounds %struct._Network* %network, i64 0, i32 1, !dbg !189
-  %4 = load i32* %3, align 4, !dbg !189, !tbaa !134
-  %5 = getelementptr inbounds %struct._Network* %network, i64 0, i32 2, !dbg !190
-  %6 = load i32* %5, align 4, !dbg !190, !tbaa !136
-  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([50 x i8]* @.str3, i64 0, i64 0), i32 %2, i32 %4, i32 %6) #4, !dbg !191
-  ret void, !dbg !192
+; Function Attrs: nounwind optsize uwtable
+define void @Network_writeStats(%struct._Network* nocapture %network, %struct._IO_FILE* nocapture %fp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Network* %network}, i64 0, metadata !108), !dbg !143
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !109), !dbg !144
+  %nnode = getelementptr inbounds %struct._Network* %network, i64 0, i32 0, !dbg !145
+  %0 = load i32* %nnode, align 4, !dbg !145, !tbaa !118
+  %narc = getelementptr inbounds %struct._Network* %network, i64 0, i32 1, !dbg !145
+  %1 = load i32* %narc, align 4, !dbg !145, !tbaa !118
+  %ntrav = getelementptr inbounds %struct._Network* %network, i64 0, i32 2, !dbg !145
+  %2 = load i32* %ntrav, align 4, !dbg !145, !tbaa !118
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([50 x i8]* @.str3, i64 0, i64 0), i32 %0, i32 %1, i32 %2) #4, !dbg !145
+  ret void, !dbg !146
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #1
+declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #1
 
 ; Function Attrs: nounwind optsize
-declare i32 @fflush(%struct.__sFILE* nocapture) #1
+declare i32 @fflush(%struct._IO_FILE* nocapture) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
 attributes #3 = { nounwind }
 attributes #4 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!116, !117, !118}
-!llvm.ident = !{!119}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !5, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!5 = !{!6, !112}
-!6 = !DISubprogram(name: "Network_writeForHumanEye", scope: !1, file: !1, line: 14, type: !7, isLocal: false, isDefinition: true, scopeLine: 17, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._Network*, %struct.__sFILE*)* @Network_writeForHumanEye, variables: !104)
-!7 = !DISubroutineType(types: !8)
-!8 = !{null, !9, !42}
-!9 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !10, size: 64, align: 64)
-!10 = !DIDerivedType(tag: DW_TAG_typedef, name: "Network", file: !11, line: 12, baseType: !12)
-!11 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/../Network.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!12 = !DICompositeType(tag: DW_TAG_structure_type, name: "_Network", file: !11, line: 34, size: 448, align: 64, elements: !13)
-!13 = !{!14, !16, !17, !18, !30, !31, !40, !41}
-!14 = !DIDerivedType(tag: DW_TAG_member, name: "nnode", scope: !12, file: !11, line: 35, baseType: !15, size: 32, align: 32)
-!15 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!16 = !DIDerivedType(tag: DW_TAG_member, name: "narc", scope: !12, file: !11, line: 36, baseType: !15, size: 32, align: 32, offset: 32)
-!17 = !DIDerivedType(tag: DW_TAG_member, name: "ntrav", scope: !12, file: !11, line: 37, baseType: !15, size: 32, align: 32, offset: 64)
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "inheads", scope: !12, file: !11, line: 38, baseType: !19, size: 64, align: 64, offset: 128)
-!19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64, align: 64)
-!20 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !21, size: 64, align: 64)
-!21 = !DIDerivedType(tag: DW_TAG_typedef, name: "Arc", file: !11, line: 13, baseType: !22)
-!22 = !DICompositeType(tag: DW_TAG_structure_type, name: "_Arc", file: !11, line: 53, size: 256, align: 64, elements: !23)
-!23 = !{!24, !25, !26, !27, !28, !29}
-!24 = !DIDerivedType(tag: DW_TAG_member, name: "first", scope: !22, file: !11, line: 54, baseType: !15, size: 32, align: 32)
-!25 = !DIDerivedType(tag: DW_TAG_member, name: "second", scope: !22, file: !11, line: 55, baseType: !15, size: 32, align: 32, offset: 32)
-!26 = !DIDerivedType(tag: DW_TAG_member, name: "capacity", scope: !22, file: !11, line: 56, baseType: !15, size: 32, align: 32, offset: 64)
-!27 = !DIDerivedType(tag: DW_TAG_member, name: "flow", scope: !22, file: !11, line: 57, baseType: !15, size: 32, align: 32, offset: 96)
-!28 = !DIDerivedType(tag: DW_TAG_member, name: "nextOut", scope: !22, file: !11, line: 58, baseType: !20, size: 64, align: 64, offset: 128)
-!29 = !DIDerivedType(tag: DW_TAG_member, name: "nextIn", scope: !22, file: !11, line: 59, baseType: !20, size: 64, align: 64, offset: 192)
-!30 = !DIDerivedType(tag: DW_TAG_member, name: "outheads", scope: !12, file: !11, line: 39, baseType: !19, size: 64, align: 64, offset: 192)
-!31 = !DIDerivedType(tag: DW_TAG_member, name: "chunk", scope: !12, file: !11, line: 40, baseType: !32, size: 64, align: 64, offset: 256)
-!32 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !33, size: 64, align: 64)
-!33 = !DIDerivedType(tag: DW_TAG_typedef, name: "ArcChunk", file: !11, line: 14, baseType: !34)
-!34 = !DICompositeType(tag: DW_TAG_structure_type, name: "_ArcChunk", file: !11, line: 74, size: 192, align: 64, elements: !35)
-!35 = !{!36, !37, !38, !39}
-!36 = !DIDerivedType(tag: DW_TAG_member, name: "size", scope: !34, file: !11, line: 75, baseType: !15, size: 32, align: 32)
-!37 = !DIDerivedType(tag: DW_TAG_member, name: "inuse", scope: !34, file: !11, line: 76, baseType: !15, size: 32, align: 32, offset: 32)
-!38 = !DIDerivedType(tag: DW_TAG_member, name: "base", scope: !34, file: !11, line: 77, baseType: !20, size: 64, align: 64, offset: 64)
-!39 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !34, file: !11, line: 78, baseType: !32, size: 64, align: 64, offset: 128)
-!40 = !DIDerivedType(tag: DW_TAG_member, name: "msglvl", scope: !12, file: !11, line: 41, baseType: !15, size: 32, align: 32, offset: 320)
-!41 = !DIDerivedType(tag: DW_TAG_member, name: "msgFile", scope: !12, file: !11, line: 42, baseType: !42, size: 64, align: 64, offset: 384)
-!42 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !43, size: 64, align: 64)
-!43 = !DIDerivedType(tag: DW_TAG_typedef, name: "FILE", file: !44, line: 153, baseType: !45)
-!44 = !DIFile(filename: "/usr/include/stdio.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!45 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sFILE", file: !44, line: 122, size: 1216, align: 64, elements: !46)
-!46 = !{!47, !50, !51, !52, !54, !55, !60, !61, !62, !66, !72, !82, !88, !89, !92, !93, !97, !101, !102, !103}
-!47 = !DIDerivedType(tag: DW_TAG_member, name: "_p", scope: !45, file: !44, line: 123, baseType: !48, size: 64, align: 64)
-!48 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !49, size: 64, align: 64)
-!49 = !DIBasicType(name: "unsigned char", size: 8, align: 8, encoding: DW_ATE_unsigned_char)
-!50 = !DIDerivedType(tag: DW_TAG_member, name: "_r", scope: !45, file: !44, line: 124, baseType: !15, size: 32, align: 32, offset: 64)
-!51 = !DIDerivedType(tag: DW_TAG_member, name: "_w", scope: !45, file: !44, line: 125, baseType: !15, size: 32, align: 32, offset: 96)
-!52 = !DIDerivedType(tag: DW_TAG_member, name: "_flags", scope: !45, file: !44, line: 126, baseType: !53, size: 16, align: 16, offset: 128)
-!53 = !DIBasicType(name: "short", size: 16, align: 16, encoding: DW_ATE_signed)
-!54 = !DIDerivedType(tag: DW_TAG_member, name: "_file", scope: !45, file: !44, line: 127, baseType: !53, size: 16, align: 16, offset: 144)
-!55 = !DIDerivedType(tag: DW_TAG_member, name: "_bf", scope: !45, file: !44, line: 128, baseType: !56, size: 128, align: 64, offset: 192)
-!56 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sbuf", file: !44, line: 88, size: 128, align: 64, elements: !57)
-!57 = !{!58, !59}
-!58 = !DIDerivedType(tag: DW_TAG_member, name: "_base", scope: !56, file: !44, line: 89, baseType: !48, size: 64, align: 64)
-!59 = !DIDerivedType(tag: DW_TAG_member, name: "_size", scope: !56, file: !44, line: 90, baseType: !15, size: 32, align: 32, offset: 64)
-!60 = !DIDerivedType(tag: DW_TAG_member, name: "_lbfsize", scope: !45, file: !44, line: 129, baseType: !15, size: 32, align: 32, offset: 320)
-!61 = !DIDerivedType(tag: DW_TAG_member, name: "_cookie", scope: !45, file: !44, line: 132, baseType: !4, size: 64, align: 64, offset: 384)
-!62 = !DIDerivedType(tag: DW_TAG_member, name: "_close", scope: !45, file: !44, line: 133, baseType: !63, size: 64, align: 64, offset: 448)
-!63 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !64, size: 64, align: 64)
-!64 = !DISubroutineType(types: !65)
-!65 = !{!15, !4}
-!66 = !DIDerivedType(tag: DW_TAG_member, name: "_read", scope: !45, file: !44, line: 134, baseType: !67, size: 64, align: 64, offset: 512)
-!67 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !68, size: 64, align: 64)
-!68 = !DISubroutineType(types: !69)
-!69 = !{!15, !4, !70, !15}
-!70 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !71, size: 64, align: 64)
-!71 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!72 = !DIDerivedType(tag: DW_TAG_member, name: "_seek", scope: !45, file: !44, line: 135, baseType: !73, size: 64, align: 64, offset: 576)
-!73 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !74, size: 64, align: 64)
-!74 = !DISubroutineType(types: !75)
-!75 = !{!76, !4, !76, !15}
-!76 = !DIDerivedType(tag: DW_TAG_typedef, name: "fpos_t", file: !44, line: 77, baseType: !77)
-!77 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_off_t", file: !78, line: 71, baseType: !79)
-!78 = !DIFile(filename: "/usr/include/sys/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!79 = !DIDerivedType(tag: DW_TAG_typedef, name: "__int64_t", file: !80, line: 46, baseType: !81)
-!80 = !DIFile(filename: "/usr/include/i386/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!81 = !DIBasicType(name: "long long int", size: 64, align: 64, encoding: DW_ATE_signed)
-!82 = !DIDerivedType(tag: DW_TAG_member, name: "_write", scope: !45, file: !44, line: 136, baseType: !83, size: 64, align: 64, offset: 640)
-!83 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !84, size: 64, align: 64)
-!84 = !DISubroutineType(types: !85)
-!85 = !{!15, !4, !86, !15}
-!86 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !87, size: 64, align: 64)
-!87 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !71)
-!88 = !DIDerivedType(tag: DW_TAG_member, name: "_ub", scope: !45, file: !44, line: 139, baseType: !56, size: 128, align: 64, offset: 704)
-!89 = !DIDerivedType(tag: DW_TAG_member, name: "_extra", scope: !45, file: !44, line: 140, baseType: !90, size: 64, align: 64, offset: 832)
-!90 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !91, size: 64, align: 64)
-!91 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sFILEX", file: !44, line: 94, flags: DIFlagFwdDecl)
-!92 = !DIDerivedType(tag: DW_TAG_member, name: "_ur", scope: !45, file: !44, line: 141, baseType: !15, size: 32, align: 32, offset: 896)
-!93 = !DIDerivedType(tag: DW_TAG_member, name: "_ubuf", scope: !45, file: !44, line: 144, baseType: !94, size: 24, align: 8, offset: 928)
-!94 = !DICompositeType(tag: DW_TAG_array_type, baseType: !49, size: 24, align: 8, elements: !95)
-!95 = !{!96}
-!96 = !DISubrange(count: 3)
-!97 = !DIDerivedType(tag: DW_TAG_member, name: "_nbuf", scope: !45, file: !44, line: 145, baseType: !98, size: 8, align: 8, offset: 952)
-!98 = !DICompositeType(tag: DW_TAG_array_type, baseType: !49, size: 8, align: 8, elements: !99)
-!99 = !{!100}
-!100 = !DISubrange(count: 1)
-!101 = !DIDerivedType(tag: DW_TAG_member, name: "_lb", scope: !45, file: !44, line: 148, baseType: !56, size: 128, align: 64, offset: 960)
-!102 = !DIDerivedType(tag: DW_TAG_member, name: "_blksize", scope: !45, file: !44, line: 151, baseType: !15, size: 32, align: 32, offset: 1088)
-!103 = !DIDerivedType(tag: DW_TAG_member, name: "_offset", scope: !45, file: !44, line: 152, baseType: !76, size: 64, align: 64, offset: 1152)
-!104 = !{!105, !106, !107, !108, !109, !110, !111}
-!105 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "network", arg: 1, scope: !6, file: !1, line: 15, type: !9)
-!106 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "fp", arg: 2, scope: !6, file: !1, line: 16, type: !42)
-!107 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "arc", scope: !6, file: !1, line: 18, type: !20)
-!108 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "inheads", scope: !6, file: !1, line: 19, type: !19)
-!109 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "outheads", scope: !6, file: !1, line: 19, type: !19)
-!110 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "jnode", scope: !6, file: !1, line: 20, type: !15)
-!111 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nnode", scope: !6, file: !1, line: 20, type: !15)
-!112 = !DISubprogram(name: "Network_writeStats", scope: !1, file: !1, line: 53, type: !7, isLocal: false, isDefinition: true, scopeLine: 56, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._Network*, %struct.__sFILE*)* @Network_writeStats, variables: !113)
-!113 = !{!114, !115}
-!114 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "network", arg: 1, scope: !112, file: !1, line: 54, type: !9)
-!115 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "fp", arg: 2, scope: !112, file: !1, line: 55, type: !42)
-!116 = !{i32 2, !"Dwarf Version", i32 2}
-!117 = !{i32 2, !"Debug Info Version", i32 700000003}
-!118 = !{i32 1, !"PIC Level", i32 2}
-!119 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!120 = !DIExpression()
-!121 = !DILocation(line: 15, column: 15, scope: !6)
-!122 = !DILocation(line: 16, column: 15, scope: !6)
-!123 = !DILocation(line: 54, column: 15, scope: !112, inlinedAt: !124)
-!124 = distinct !DILocation(line: 22, column: 1, scope: !6)
-!125 = !DILocation(line: 55, column: 15, scope: !112, inlinedAt: !124)
-!126 = !DILocation(line: 58, column: 18, scope: !112, inlinedAt: !124)
-!127 = !{!128, !129, i64 0}
-!128 = !{!"_Network", !129, i64 0, !129, i64 4, !129, i64 8, !132, i64 16, !132, i64 24, !132, i64 32, !129, i64 40, !132, i64 48}
-!129 = !{!"int", !130, i64 0}
-!130 = !{!"omnipotent char", !131, i64 0}
-!131 = !{!"Simple C/C++ TBAA"}
-!132 = !{!"any pointer", !130, i64 0}
-!133 = !DILocation(line: 58, column: 34, scope: !112, inlinedAt: !124)
-!134 = !{!128, !129, i64 4}
-!135 = !DILocation(line: 58, column: 49, scope: !112, inlinedAt: !124)
-!136 = !{!128, !129, i64 8}
-!137 = !DILocation(line: 57, column: 1, scope: !112, inlinedAt: !124)
-!138 = !DILocation(line: 23, column: 21, scope: !6)
-!139 = !DILocation(line: 20, column: 14, scope: !6)
-!140 = !DILocation(line: 24, column: 21, scope: !6)
-!141 = !{!128, !132, i64 16}
-!142 = !DILocation(line: 19, column: 9, scope: !6)
-!143 = !DILocation(line: 25, column: 21, scope: !6)
-!144 = !{!128, !132, i64 24}
-!145 = !DILocation(line: 19, column: 20, scope: !6)
-!146 = !DILocation(line: 20, column: 7, scope: !6)
-!147 = !DILocation(line: 26, column: 25, scope: !148)
-!148 = distinct !DILexicalBlock(scope: !149, file: !1, line: 26, column: 1)
-!149 = distinct !DILexicalBlock(scope: !6, file: !1, line: 26, column: 1)
-!150 = !DILocation(line: 26, column: 1, scope: !149)
-!151 = !DILocation(line: 27, column: 4, scope: !152)
-!152 = distinct !DILexicalBlock(scope: !148, file: !1, line: 26, column: 45)
-!153 = !DILocation(line: 28, column: 4, scope: !152)
-!154 = !DILocation(line: 29, column: 16, scope: !155)
-!155 = distinct !DILexicalBlock(scope: !152, file: !1, line: 29, column: 4)
-!156 = !DILocation(line: 29, column: 37, scope: !157)
-!157 = distinct !DILexicalBlock(scope: !155, file: !1, line: 29, column: 4)
-!158 = !DILocation(line: 29, column: 4, scope: !155)
-!159 = !DILocation(line: 31, column: 20, scope: !160)
-!160 = distinct !DILexicalBlock(scope: !157, file: !1, line: 29, column: 67)
-!161 = !{!162, !129, i64 0}
-!162 = !{!"_Arc", !129, i64 0, !129, i64 4, !129, i64 8, !129, i64 12, !132, i64 16, !132, i64 24}
-!163 = !DILocation(line: 31, column: 32, scope: !160)
-!164 = !{!162, !129, i64 12}
-!165 = !DILocation(line: 31, column: 43, scope: !160)
-!166 = !{!162, !129, i64 8}
-!167 = !DILocation(line: 30, column: 7, scope: !160)
-!168 = !DILocation(line: 32, column: 7, scope: !160)
-!169 = !DILocation(line: 29, column: 58, scope: !157)
-!170 = !DILocation(line: 34, column: 4, scope: !152)
-!171 = !DILocation(line: 35, column: 4, scope: !152)
-!172 = !DILocation(line: 36, column: 16, scope: !173)
-!173 = distinct !DILexicalBlock(scope: !152, file: !1, line: 36, column: 4)
-!174 = !DILocation(line: 36, column: 38, scope: !175)
-!175 = distinct !DILexicalBlock(scope: !173, file: !1, line: 36, column: 4)
-!176 = !DILocation(line: 36, column: 4, scope: !173)
-!177 = !DILocation(line: 38, column: 20, scope: !178)
-!178 = distinct !DILexicalBlock(scope: !175, file: !1, line: 36, column: 69)
-!179 = !{!162, !129, i64 4}
-!180 = !DILocation(line: 38, column: 33, scope: !178)
-!181 = !DILocation(line: 38, column: 44, scope: !178)
-!182 = !DILocation(line: 37, column: 7, scope: !178)
-!183 = !DILocation(line: 39, column: 7, scope: !178)
-!184 = !DILocation(line: 36, column: 59, scope: !175)
-!185 = !DILocation(line: 42, column: 1, scope: !6)
-!186 = !DILocation(line: 54, column: 15, scope: !112)
-!187 = !DILocation(line: 55, column: 15, scope: !112)
-!188 = !DILocation(line: 58, column: 18, scope: !112)
-!189 = !DILocation(line: 58, column: 34, scope: !112)
-!190 = !DILocation(line: 58, column: 49, scope: !112)
-!191 = !DILocation(line: 57, column: 1, scope: !112)
-!192 = !DILocation(line: 60, column: 1, scope: !112)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !106}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Network_writeForHumanEye", metadata !"Network_writeForHumanEye", metadata !"", i32 14, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._Network*, %struct._IO_FILE*)* @Network_writeForHumanEye, null, null, metadata !98, i32 17} ; [ DW_TAG_subprogram ] [line 14] [def] [scope 17] [Network_writeForHumanEye]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{null, metadata !8, metadata !41}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from Network]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"Network", i32 12, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [Network] [line 12, size 0, align 0, offset 0] [from _Network]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"_Network", i32 34, i64 448, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [_Network] [line 34, size 448, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/../Network.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13, metadata !15, metadata !16, metadata !17, metadata !29, metadata !30, metadata !39, metadata !40}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"nnode", i32 35, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [nnode] [line 35, size 32, align 32, offset 0] [from int]
+!14 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!15 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"narc", i32 36, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [narc] [line 36, size 32, align 32, offset 32] [from int]
+!16 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"ntrav", i32 37, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [ntrav] [line 37, size 32, align 32, offset 64] [from int]
+!17 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"inheads", i32 38, i64 64, i64 64, i64 128, i32 0, metadata !18} ; [ DW_TAG_member ] [inheads] [line 38, size 64, align 64, offset 128] [from ]
+!18 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !19} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!19 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !20} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from Arc]
+!20 = metadata !{i32 786454, metadata !11, null, metadata !"Arc", i32 13, i64 0, i64 0, i64 0, i32 0, metadata !21} ; [ DW_TAG_typedef ] [Arc] [line 13, size 0, align 0, offset 0] [from _Arc]
+!21 = metadata !{i32 786451, metadata !11, null, metadata !"_Arc", i32 53, i64 256, i64 64, i32 0, i32 0, null, metadata !22, i32 0, null, null} ; [ DW_TAG_structure_type ] [_Arc] [line 53, size 256, align 64, offset 0] [from ]
+!22 = metadata !{metadata !23, metadata !24, metadata !25, metadata !26, metadata !27, metadata !28}
+!23 = metadata !{i32 786445, metadata !11, metadata !21, metadata !"first", i32 54, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [first] [line 54, size 32, align 32, offset 0] [from int]
+!24 = metadata !{i32 786445, metadata !11, metadata !21, metadata !"second", i32 55, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [second] [line 55, size 32, align 32, offset 32] [from int]
+!25 = metadata !{i32 786445, metadata !11, metadata !21, metadata !"capacity", i32 56, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [capacity] [line 56, size 32, align 32, offset 64] [from int]
+!26 = metadata !{i32 786445, metadata !11, metadata !21, metadata !"flow", i32 57, i64 32, i64 32, i64 96, i32 0, metadata !14} ; [ DW_TAG_member ] [flow] [line 57, size 32, align 32, offset 96] [from int]
+!27 = metadata !{i32 786445, metadata !11, metadata !21, metadata !"nextOut", i32 58, i64 64, i64 64, i64 128, i32 0, metadata !19} ; [ DW_TAG_member ] [nextOut] [line 58, size 64, align 64, offset 128] [from ]
+!28 = metadata !{i32 786445, metadata !11, metadata !21, metadata !"nextIn", i32 59, i64 64, i64 64, i64 192, i32 0, metadata !19} ; [ DW_TAG_member ] [nextIn] [line 59, size 64, align 64, offset 192] [from ]
+!29 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"outheads", i32 39, i64 64, i64 64, i64 192, i32 0, metadata !18} ; [ DW_TAG_member ] [outheads] [line 39, size 64, align 64, offset 192] [from ]
+!30 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"chunk", i32 40, i64 64, i64 64, i64 256, i32 0, metadata !31} ; [ DW_TAG_member ] [chunk] [line 40, size 64, align 64, offset 256] [from ]
+!31 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !32} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ArcChunk]
+!32 = metadata !{i32 786454, metadata !11, null, metadata !"ArcChunk", i32 14, i64 0, i64 0, i64 0, i32 0, metadata !33} ; [ DW_TAG_typedef ] [ArcChunk] [line 14, size 0, align 0, offset 0] [from _ArcChunk]
+!33 = metadata !{i32 786451, metadata !11, null, metadata !"_ArcChunk", i32 74, i64 192, i64 64, i32 0, i32 0, null, metadata !34, i32 0, null, null} ; [ DW_TAG_structure_type ] [_ArcChunk] [line 74, size 192, align 64, offset 0] [from ]
+!34 = metadata !{metadata !35, metadata !36, metadata !37, metadata !38}
+!35 = metadata !{i32 786445, metadata !11, metadata !33, metadata !"size", i32 75, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [size] [line 75, size 32, align 32, offset 0] [from int]
+!36 = metadata !{i32 786445, metadata !11, metadata !33, metadata !"inuse", i32 76, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [inuse] [line 76, size 32, align 32, offset 32] [from int]
+!37 = metadata !{i32 786445, metadata !11, metadata !33, metadata !"base", i32 77, i64 64, i64 64, i64 64, i32 0, metadata !19} ; [ DW_TAG_member ] [base] [line 77, size 64, align 64, offset 64] [from ]
+!38 = metadata !{i32 786445, metadata !11, metadata !33, metadata !"next", i32 78, i64 64, i64 64, i64 128, i32 0, metadata !31} ; [ DW_TAG_member ] [next] [line 78, size 64, align 64, offset 128] [from ]
+!39 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"msglvl", i32 41, i64 32, i64 32, i64 320, i32 0, metadata !14} ; [ DW_TAG_member ] [msglvl] [line 41, size 32, align 32, offset 320] [from int]
+!40 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"msgFile", i32 42, i64 64, i64 64, i64 384, i32 0, metadata !41} ; [ DW_TAG_member ] [msgFile] [line 42, size 64, align 64, offset 384] [from ]
+!41 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !42} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from FILE]
+!42 = metadata !{i32 786454, metadata !11, null, metadata !"FILE", i32 48, i64 0, i64 0, i64 0, i32 0, metadata !43} ; [ DW_TAG_typedef ] [FILE] [line 48, size 0, align 0, offset 0] [from _IO_FILE]
+!43 = metadata !{i32 786451, metadata !44, null, metadata !"_IO_FILE", i32 245, i64 1728, i64 64, i32 0, i32 0, null, metadata !45, i32 0, null, null} ; [ DW_TAG_structure_type ] [_IO_FILE] [line 245, size 1728, align 64, offset 0] [from ]
+!44 = metadata !{metadata !"/usr/include/libio.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!45 = metadata !{metadata !46, metadata !47, metadata !50, metadata !51, metadata !52, metadata !53, metadata !54, metadata !55, metadata !56, metadata !57, metadata !58, metadata !59, metadata !60, metadata !68, metadata !69, metadata !70, metadata !71, metadata !74, metadata !76, metadata !78, metadata !82, metadata !84, metadata !86, metadata !87, metadata !88, metadata !89, metadata !90, metadata !93, metadata !94}
+!46 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_flags", i32 246, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [_flags] [line 246, size 32, align 32, offset 0] [from int]
+!47 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_read_ptr", i32 251, i64 64, i64 64, i64 64, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_read_ptr] [line 251, size 64, align 64, offset 64] [from ]
+!48 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !49} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!49 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!50 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_read_end", i32 252, i64 64, i64 64, i64 128, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_read_end] [line 252, size 64, align 64, offset 128] [from ]
+!51 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_read_base", i32 253, i64 64, i64 64, i64 192, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_read_base] [line 253, size 64, align 64, offset 192] [from ]
+!52 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_write_base", i32 254, i64 64, i64 64, i64 256, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_write_base] [line 254, size 64, align 64, offset 256] [from ]
+!53 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_write_ptr", i32 255, i64 64, i64 64, i64 320, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_write_ptr] [line 255, size 64, align 64, offset 320] [from ]
+!54 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_write_end", i32 256, i64 64, i64 64, i64 384, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_write_end] [line 256, size 64, align 64, offset 384] [from ]
+!55 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_buf_base", i32 257, i64 64, i64 64, i64 448, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_buf_base] [line 257, size 64, align 64, offset 448] [from ]
+!56 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_buf_end", i32 258, i64 64, i64 64, i64 512, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_buf_end] [line 258, size 64, align 64, offset 512] [from ]
+!57 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_save_base", i32 260, i64 64, i64 64, i64 576, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_save_base] [line 260, size 64, align 64, offset 576] [from ]
+!58 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_backup_base", i32 261, i64 64, i64 64, i64 640, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_backup_base] [line 261, size 64, align 64, offset 640] [from ]
+!59 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_IO_save_end", i32 262, i64 64, i64 64, i64 704, i32 0, metadata !48} ; [ DW_TAG_member ] [_IO_save_end] [line 262, size 64, align 64, offset 704] [from ]
+!60 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_markers", i32 264, i64 64, i64 64, i64 768, i32 0, metadata !61} ; [ DW_TAG_member ] [_markers] [line 264, size 64, align 64, offset 768] [from ]
+!61 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !62} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from _IO_marker]
+!62 = metadata !{i32 786451, metadata !44, null, metadata !"_IO_marker", i32 160, i64 192, i64 64, i32 0, i32 0, null, metadata !63, i32 0, null, null} ; [ DW_TAG_structure_type ] [_IO_marker] [line 160, size 192, align 64, offset 0] [from ]
+!63 = metadata !{metadata !64, metadata !65, metadata !67}
+!64 = metadata !{i32 786445, metadata !44, metadata !62, metadata !"_next", i32 161, i64 64, i64 64, i64 0, i32 0, metadata !61} ; [ DW_TAG_member ] [_next] [line 161, size 64, align 64, offset 0] [from ]
+!65 = metadata !{i32 786445, metadata !44, metadata !62, metadata !"_sbuf", i32 162, i64 64, i64 64, i64 64, i32 0, metadata !66} ; [ DW_TAG_member ] [_sbuf] [line 162, size 64, align 64, offset 64] [from ]
+!66 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !43} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from _IO_FILE]
+!67 = metadata !{i32 786445, metadata !44, metadata !62, metadata !"_pos", i32 166, i64 32, i64 32, i64 128, i32 0, metadata !14} ; [ DW_TAG_member ] [_pos] [line 166, size 32, align 32, offset 128] [from int]
+!68 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_chain", i32 266, i64 64, i64 64, i64 832, i32 0, metadata !66} ; [ DW_TAG_member ] [_chain] [line 266, size 64, align 64, offset 832] [from ]
+!69 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_fileno", i32 268, i64 32, i64 32, i64 896, i32 0, metadata !14} ; [ DW_TAG_member ] [_fileno] [line 268, size 32, align 32, offset 896] [from int]
+!70 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_flags2", i32 272, i64 32, i64 32, i64 928, i32 0, metadata !14} ; [ DW_TAG_member ] [_flags2] [line 272, size 32, align 32, offset 928] [from int]
+!71 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_old_offset", i32 274, i64 64, i64 64, i64 960, i32 0, metadata !72} ; [ DW_TAG_member ] [_old_offset] [line 274, size 64, align 64, offset 960] [from __off_t]
+!72 = metadata !{i32 786454, metadata !44, null, metadata !"__off_t", i32 131, i64 0, i64 0, i64 0, i32 0, metadata !73} ; [ DW_TAG_typedef ] [__off_t] [line 131, size 0, align 0, offset 0] [from long int]
+!73 = metadata !{i32 786468, null, null, metadata !"long int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [long int] [line 0, size 64, align 64, offset 0, enc DW_ATE_signed]
+!74 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_cur_column", i32 278, i64 16, i64 16, i64 1024, i32 0, metadata !75} ; [ DW_TAG_member ] [_cur_column] [line 278, size 16, align 16, offset 1024] [from unsigned short]
+!75 = metadata !{i32 786468, null, null, metadata !"unsigned short", i32 0, i64 16, i64 16, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned short] [line 0, size 16, align 16, offset 0, enc DW_ATE_unsigned]
+!76 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_vtable_offset", i32 279, i64 8, i64 8, i64 1040, i32 0, metadata !77} ; [ DW_TAG_member ] [_vtable_offset] [line 279, size 8, align 8, offset 1040] [from signed char]
+!77 = metadata !{i32 786468, null, null, metadata !"signed char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [signed char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!78 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_shortbuf", i32 280, i64 8, i64 8, i64 1048, i32 0, metadata !79} ; [ DW_TAG_member ] [_shortbuf] [line 280, size 8, align 8, offset 1048] [from ]
+!79 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 8, i64 8, i32 0, i32 0, metadata !49, metadata !80, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 8, align 8, offset 0] [from char]
+!80 = metadata !{metadata !81}
+!81 = metadata !{i32 786465, i64 0, i64 1}        ; [ DW_TAG_subrange_type ] [0, 0]
+!82 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_lock", i32 284, i64 64, i64 64, i64 1088, i32 0, metadata !83} ; [ DW_TAG_member ] [_lock] [line 284, size 64, align 64, offset 1088] [from ]
+!83 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!84 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_offset", i32 293, i64 64, i64 64, i64 1152, i32 0, metadata !85} ; [ DW_TAG_member ] [_offset] [line 293, size 64, align 64, offset 1152] [from __off64_t]
+!85 = metadata !{i32 786454, metadata !44, null, metadata !"__off64_t", i32 132, i64 0, i64 0, i64 0, i32 0, metadata !73} ; [ DW_TAG_typedef ] [__off64_t] [line 132, size 0, align 0, offset 0] [from long int]
+!86 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"__pad1", i32 302, i64 64, i64 64, i64 1216, i32 0, metadata !83} ; [ DW_TAG_member ] [__pad1] [line 302, size 64, align 64, offset 1216] [from ]
+!87 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"__pad2", i32 303, i64 64, i64 64, i64 1280, i32 0, metadata !83} ; [ DW_TAG_member ] [__pad2] [line 303, size 64, align 64, offset 1280] [from ]
+!88 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"__pad3", i32 304, i64 64, i64 64, i64 1344, i32 0, metadata !83} ; [ DW_TAG_member ] [__pad3] [line 304, size 64, align 64, offset 1344] [from ]
+!89 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"__pad4", i32 305, i64 64, i64 64, i64 1408, i32 0, metadata !83} ; [ DW_TAG_member ] [__pad4] [line 305, size 64, align 64, offset 1408] [from ]
+!90 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"__pad5", i32 306, i64 64, i64 64, i64 1472, i32 0, metadata !91} ; [ DW_TAG_member ] [__pad5] [line 306, size 64, align 64, offset 1472] [from size_t]
+!91 = metadata !{i32 786454, metadata !44, null, metadata !"size_t", i32 42, i64 0, i64 0, i64 0, i32 0, metadata !92} ; [ DW_TAG_typedef ] [size_t] [line 42, size 0, align 0, offset 0] [from long unsigned int]
+!92 = metadata !{i32 786468, null, null, metadata !"long unsigned int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [long unsigned int] [line 0, size 64, align 64, offset 0, enc DW_ATE_unsigned]
+!93 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_mode", i32 308, i64 32, i64 32, i64 1536, i32 0, metadata !14} ; [ DW_TAG_member ] [_mode] [line 308, size 32, align 32, offset 1536] [from int]
+!94 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"_unused2", i32 310, i64 160, i64 8, i64 1568, i32 0, metadata !95} ; [ DW_TAG_member ] [_unused2] [line 310, size 160, align 8, offset 1568] [from ]
+!95 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 160, i64 8, i32 0, i32 0, metadata !49, metadata !96, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 160, align 8, offset 0] [from char]
+!96 = metadata !{metadata !97}
+!97 = metadata !{i32 786465, i64 0, i64 20}       ; [ DW_TAG_subrange_type ] [0, 19]
+!98 = metadata !{metadata !99, metadata !100, metadata !101, metadata !102, metadata !103, metadata !104, metadata !105}
+!99 = metadata !{i32 786689, metadata !4, metadata !"network", metadata !5, i32 16777231, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [network] [line 15]
+!100 = metadata !{i32 786689, metadata !4, metadata !"fp", metadata !5, i32 33554448, metadata !41, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [fp] [line 16]
+!101 = metadata !{i32 786688, metadata !4, metadata !"arc", metadata !5, i32 18, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [arc] [line 18]
+!102 = metadata !{i32 786688, metadata !4, metadata !"inheads", metadata !5, i32 19, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [inheads] [line 19]
+!103 = metadata !{i32 786688, metadata !4, metadata !"outheads", metadata !5, i32 19, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [outheads] [line 19]
+!104 = metadata !{i32 786688, metadata !4, metadata !"jnode", metadata !5, i32 20, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [jnode] [line 20]
+!105 = metadata !{i32 786688, metadata !4, metadata !"nnode", metadata !5, i32 20, metadata !14, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nnode] [line 20]
+!106 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"Network_writeStats", metadata !"Network_writeStats", metadata !"", i32 53, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._Network*, %struct._IO_FILE*)* @Network_writeStats, null, null, metadata !107, i32 56} ; [ DW_TAG_subprogram ] [line 53] [def] [scope 56] [Network_writeStats]
+!107 = metadata !{metadata !108, metadata !109}
+!108 = metadata !{i32 786689, metadata !106, metadata !"network", metadata !5, i32 16777270, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [network] [line 54]
+!109 = metadata !{i32 786689, metadata !106, metadata !"fp", metadata !5, i32 33554487, metadata !41, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [fp] [line 55]
+!110 = metadata !{i32 15, i32 0, metadata !4, null}
+!111 = metadata !{i32 16, i32 0, metadata !4, null}
+!112 = metadata !{i32 786689, metadata !106, metadata !"network", metadata !5, i32 16777270, metadata !8, i32 0, metadata !113} ; [ DW_TAG_arg_variable ] [network] [line 54]
+!113 = metadata !{i32 22, i32 0, metadata !4, null}
+!114 = metadata !{i32 54, i32 0, metadata !106, metadata !113}
+!115 = metadata !{i32 786689, metadata !106, metadata !"fp", metadata !5, i32 33554487, metadata !41, i32 0, metadata !113} ; [ DW_TAG_arg_variable ] [fp] [line 55]
+!116 = metadata !{i32 55, i32 0, metadata !106, metadata !113}
+!117 = metadata !{i32 57, i32 0, metadata !106, metadata !113}
+!118 = metadata !{metadata !"int", metadata !119}
+!119 = metadata !{metadata !"omnipotent char", metadata !120}
+!120 = metadata !{metadata !"Simple C/C++ TBAA"}
+!121 = metadata !{i32 23, i32 0, metadata !4, null}
+!122 = metadata !{i32 24, i32 0, metadata !4, null}
+!123 = metadata !{metadata !"any pointer", metadata !119}
+!124 = metadata !{i32 25, i32 0, metadata !4, null}
+!125 = metadata !{i32 26, i32 0, metadata !126, null}
+!126 = metadata !{i32 786443, metadata !1, metadata !4, i32 26, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c]
+!127 = metadata !{i32 27, i32 0, metadata !128, null}
+!128 = metadata !{i32 786443, metadata !1, metadata !126, i32 26, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c]
+!129 = metadata !{i32 28, i32 0, metadata !128, null}
+!130 = metadata !{i32 29, i32 0, metadata !131, null}
+!131 = metadata !{i32 786443, metadata !1, metadata !128, i32 29, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c]
+!132 = metadata !{i32 30, i32 0, metadata !133, null}
+!133 = metadata !{i32 786443, metadata !1, metadata !131, i32 29, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c]
+!134 = metadata !{i32 32, i32 0, metadata !133, null}
+!135 = metadata !{i32 34, i32 0, metadata !128, null}
+!136 = metadata !{i32 35, i32 0, metadata !128, null}
+!137 = metadata !{i32 36, i32 0, metadata !138, null}
+!138 = metadata !{i32 786443, metadata !1, metadata !128, i32 36, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c]
+!139 = metadata !{i32 37, i32 0, metadata !140, null}
+!140 = metadata !{i32 786443, metadata !1, metadata !138, i32 36, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/Network/src/Network_IO.c]
+!141 = metadata !{i32 39, i32 0, metadata !140, null}
+!142 = metadata !{i32 42, i32 0, metadata !4, null}
+!143 = metadata !{i32 54, i32 0, metadata !106, null}
+!144 = metadata !{i32 55, i32 0, metadata !106, null}
+!145 = metadata !{i32 57, i32 0, metadata !106, null}
+!146 = metadata !{i32 60, i32 0, metadata !106, null}

@@ -1,0 +1,38 @@
+define void @_ZN11xercesc_2_519BinFileOutputStreamD2Ev(%"class.xercesc_2_5::BinFileOutputStream"* %this) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BinFileOutputStream"* %this}, i64 0, metadata !223), !dbg !345
+  %0 = getelementptr inbounds %"class.xercesc_2_5::BinFileOutputStream"* %this, i64 0, i32 0, i32 0, !dbg !346
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([6 x i8*]* @_ZTVN11xercesc_2_519BinFileOutputStreamE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !346, !tbaa !347
+  %fSource = getelementptr inbounds %"class.xercesc_2_5::BinFileOutputStream"* %this, i64 0, i32 1, !dbg !349
+  %1 = load i8** %fSource, align 8, !dbg !349, !tbaa !351
+  %tobool = icmp eq i8* %1, null, !dbg !349
+  br i1 %tobool, label %if.end, label %if.then, !dbg !349
+
+if.then:                                          ; preds = %entry
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::BinFileOutputStream"* %this, i64 0, i32 2, !dbg !353
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !353, !tbaa !351
+  invoke void @_ZN11xercesc_2_516XMLPlatformUtils9closeFileEPvPNS_13MemoryManagerE(i8* %1, %"class.xercesc_2_5::MemoryManager"* %2) #5
+          to label %if.end unwind label %lpad, !dbg !353
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !353
+  %4 = getelementptr inbounds %"class.xercesc_2_5::BinFileOutputStream"* %this, i64 0, i32 0, !dbg !354
+  invoke void @_ZN11xercesc_2_515BinOutputStreamD2Ev(%"class.xercesc_2_5::BinOutputStream"* %4) #5
+          to label %eh.resume unwind label %terminate.lpad, !dbg !354
+
+if.end:                                           ; preds = %entry, %if.then
+  %5 = getelementptr inbounds %"class.xercesc_2_5::BinFileOutputStream"* %this, i64 0, i32 0, !dbg !355
+  tail call void @_ZN11xercesc_2_515BinOutputStreamD2Ev(%"class.xercesc_2_5::BinOutputStream"* %5) #5, !dbg !355
+  ret void, !dbg !354
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %3, !dbg !354
+
+terminate.lpad:                                   ; preds = %lpad
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !354
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !354
+  tail call void @__clang_call_terminate(i8* %7) #6, !dbg !354
+  unreachable, !dbg !354
+}

@@ -1,21 +1,22 @@
 define i32* @ETree_bndwghts(%struct._ETree* %etree) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ETree* %etree, i64 0, metadata !78, metadata !117), !dbg !249
-  %1 = icmp eq %struct._ETree* %etree, null, !dbg !250
-  br i1 %1, label %6, label %2, !dbg !252
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !77), !dbg !176
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !177
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !177
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4, !dbg !253
-  %4 = load %struct._IV** %3, align 8, !dbg !253, !tbaa !247
-  %5 = icmp eq %struct._IV* %4, null, !dbg !254
-  br i1 %5, label %6, label %9, !dbg !255
+lor.lhs.false:                                    ; preds = %entry
+  %bndwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4, !dbg !177
+  %0 = load %struct._IV** %bndwghtsIV, align 8, !dbg !177, !tbaa !116
+  %cmp1 = icmp eq %struct._IV* %0, null, !dbg !177
+  br i1 %cmp1, label %if.then, label %if.end, !dbg !177
 
-; <label>:6                                       ; preds = %2, %0
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !256, !tbaa !124
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([48 x i8]* @.str10, i64 0, i64 0), %struct._ETree* %etree) #5, !dbg !258
-  tail call void @exit(i32 -1) #6, !dbg !259
-  unreachable, !dbg !259
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !178, !tbaa !116
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([48 x i8]* @.str10, i64 0, i64 0), %struct._ETree* %etree) #5, !dbg !178
+  tail call void @exit(i32 -1) #6, !dbg !180
+  unreachable, !dbg !180
 
-; <label>:9                                       ; preds = %2
-  %10 = tail call i32* @IV_entries(%struct._IV* %4) #5, !dbg !260
-  ret i32* %10, !dbg !261
+if.end:                                           ; preds = %lor.lhs.false
+  %call3 = tail call i32* @IV_entries(%struct._IV* %0) #5, !dbg !181
+  ret i32* %call3, !dbg !181
 }

@@ -2,18 +2,26 @@ define %union.tree_node* @make_pointer_declarator(%union.tree_node* %type_quals_
 entry:
   %quals = alloca %union.tree_node*, align 8
   %attrs = alloca %union.tree_node*, align 8
-  call void @split_specs_attrs(%union.tree_node* %type_quals_attrs, %union.tree_node** %quals, %union.tree_node** %attrs) #6
-  %0 = load %union.tree_node** %attrs, align 8, !tbaa !4
-  %cmp = icmp eq %union.tree_node* %0, null
-  br i1 %cmp, label %if.end, label %if.then
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %type_quals_attrs}, i64 0, metadata !1037), !dbg !3085
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %target}, i64 0, metadata !1038), !dbg !3085
+  call void @llvm.dbg.declare(metadata !{%union.tree_node** %quals}, metadata !1039), !dbg !3086
+  call void @llvm.dbg.declare(metadata !{%union.tree_node** %attrs}, metadata !1040), !dbg !3086
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %target}, i64 0, metadata !1041), !dbg !3087
+  call void @split_specs_attrs(%union.tree_node* %type_quals_attrs, %union.tree_node** %quals, %union.tree_node** %attrs) #7, !dbg !3088
+  call void @llvm.dbg.value(metadata !{%union.tree_node** %attrs}, i64 0, metadata !1040), !dbg !3089
+  %0 = load %union.tree_node** %attrs, align 8, !dbg !3089, !tbaa !1204
+  %cmp = icmp eq %union.tree_node* %0, null, !dbg !3089
+  br i1 %cmp, label %if.end, label %if.then, !dbg !3089
 
 if.then:                                          ; preds = %entry
-  %call = call %union.tree_node* @tree_cons(%union.tree_node* %0, %union.tree_node* %target, %union.tree_node* null) #6
-  br label %if.end
+  %call = call %union.tree_node* @tree_cons(%union.tree_node* %0, %union.tree_node* %target, %union.tree_node* null) #7, !dbg !3090
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1041), !dbg !3090
+  br label %if.end, !dbg !3090
 
 if.end:                                           ; preds = %entry, %if.then
   %itarget.0 = phi %union.tree_node* [ %call, %if.then ], [ %target, %entry ]
-  %1 = load %union.tree_node** %quals, align 8, !tbaa !4
-  %call1 = call %union.tree_node* @build1(i32 41, %union.tree_node* %1, %union.tree_node* %itarget.0) #6
-  ret %union.tree_node* %call1
+  call void @llvm.dbg.value(metadata !{%union.tree_node** %quals}, i64 0, metadata !1039), !dbg !3091
+  %1 = load %union.tree_node** %quals, align 8, !dbg !3091, !tbaa !1204
+  %call1 = call %union.tree_node* @build1(i32 41, %union.tree_node* %1, %union.tree_node* %itarget.0) #7, !dbg !3091
+  ret %union.tree_node* %call1, !dbg !3091
 }

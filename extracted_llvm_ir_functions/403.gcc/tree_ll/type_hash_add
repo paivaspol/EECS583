@@ -1,14 +1,17 @@
 define void @type_hash_add(i32 %hashcode, %union.tree_node* %type) #0 {
 entry:
-  %call = tail call i8* @ggc_alloc(i64 16) #9
-  %conv = zext i32 %hashcode to i64
-  %hash = bitcast i8* %call to i64*
-  store i64 %conv, i64* %hash, align 8, !tbaa !3
-  %type1 = getelementptr inbounds i8* %call, i64 8
-  %0 = bitcast i8* %type1 to %union.tree_node**
-  store %union.tree_node* %type, %union.tree_node** %0, align 8, !tbaa !0
-  %1 = load %struct.htab** @type_hash_table, align 8, !tbaa !0
-  %call2 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %1, i8* %call, i32 %hashcode, i32 1) #9
-  store i8* %call, i8** %call2, align 8, !tbaa !0
-  ret void
+  tail call void @llvm.dbg.value(metadata !{i32 %hashcode}, i64 0, metadata !1423), !dbg !3105
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1424), !dbg !3106
+  %call = tail call i8* @ggc_alloc(i64 16) #10, !dbg !3107
+  %conv = zext i32 %hashcode to i64, !dbg !3108
+  %hash = bitcast i8* %call to i64*, !dbg !3108
+  store i64 %conv, i64* %hash, align 8, !dbg !3108, !tbaa !1927
+  %type1 = getelementptr inbounds i8* %call, i64 8, !dbg !3109
+  %0 = bitcast i8* %type1 to %union.tree_node**, !dbg !3109
+  store %union.tree_node* %type, %union.tree_node** %0, align 8, !dbg !3109, !tbaa !1913
+  %1 = load %struct.htab** @type_hash_table, align 8, !dbg !3110, !tbaa !1913
+  %call2 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %1, i8* %call, i32 %hashcode, i32 1) #10, !dbg !3110
+  tail call void @llvm.dbg.value(metadata !{i8** %call2}, i64 0, metadata !1426), !dbg !3110
+  store i8* %call, i8** %call2, align 8, !dbg !3111, !tbaa !1913
+  ret void, !dbg !3112
 }

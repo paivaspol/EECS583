@@ -1,21 +1,22 @@
 define internal void @_ZN3povL13Transform_BoxEPNS_13Object_StructEPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Transform_Struct"* %Trans) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !1081, metadata !1445), !dbg !2021
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1082, metadata !1445), !dbg !2022
-  %1 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Box_Struct"*, !dbg !2023
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Box_Struct"* %1, i64 0, metadata !1083, metadata !1445), !dbg !2024
-  %2 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !2025
-  %3 = load %"struct.pov::Transform_Struct"** %2, align 8, !dbg !2025, !tbaa !1460
-  %4 = icmp eq %"struct.pov::Transform_Struct"* %3, null, !dbg !2027
-  br i1 %4, label %5, label %7, !dbg !2028
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1047), !dbg !1596
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1048), !dbg !1596
+  %0 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Box_Struct"*, !dbg !1597
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Box_Struct"* %0}, i64 0, metadata !1049), !dbg !1597
+  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !1598
+  %2 = load %"struct.pov::Transform_Struct"** %1, align 8, !dbg !1598, !tbaa !1241
+  %cmp = icmp eq %"struct.pov::Transform_Struct"* %2, null, !dbg !1598
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1598
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #6, !dbg !2029
-  store %"struct.pov::Transform_Struct"* %6, %"struct.pov::Transform_Struct"** %2, align 8, !dbg !2031, !tbaa !1460
-  br label %7, !dbg !2032
+if.then:                                          ; preds = %entry
+  %call = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #7, !dbg !1599
+  store %"struct.pov::Transform_Struct"* %call, %"struct.pov::Transform_Struct"** %1, align 8, !dbg !1599, !tbaa !1241
+  br label %if.end, !dbg !1601
 
-; <label>:7                                       ; preds = %5, %0
-  %8 = phi %"struct.pov::Transform_Struct"* [ %6, %5 ], [ %3, %0 ]
-  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %8, %"struct.pov::Transform_Struct"* %Trans) #6, !dbg !2033
-  tail call void @_ZN3pov16Compute_Box_BBoxEPNS_10Box_StructE(%"struct.pov::Box_Struct"* %1) #6, !dbg !2034
-  ret void, !dbg !2035
+if.end:                                           ; preds = %if.then, %entry
+  %3 = phi %"struct.pov::Transform_Struct"* [ %call, %if.then ], [ %2, %entry ]
+  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %3, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !1602
+  tail call void @_ZN3pov16Compute_Box_BBoxEPNS_10Box_StructE(%"struct.pov::Box_Struct"* %0) #7, !dbg !1603
+  ret void, !dbg !1604
 }

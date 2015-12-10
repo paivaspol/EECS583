@@ -1,12 +1,11 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.cGH = type { i32, i32, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double, double*, double*, i32*, i32*, i32, i32*, double, i8***, i8**, %struct.cGHGroupData* }
 %struct.cGHGroupData = type { i8, i8 }
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 %struct.PARAM_PROPS = type { i8*, i8*, i32, i8*, i8*, i32, %struct.RANGE*, i32, i32 }
 %struct.RANGE = type { %struct.RANGE*, %struct.RANGE*, i8*, i8*, i32, i8* }
 
@@ -16,7 +15,7 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str2 = private unnamed_addr constant [3 x i8] c"un\00", align 1
 @CCTK_Exit = external global i32 (%struct.cGH*, i32)*
 @.str3 = private unnamed_addr constant [58 x i8] c"\0AParameters of thorn '%s' providing implementation '%s':\0A\00", align 1
-@__stderrp = external global %struct.__sFILE*
+@stderr = external global %struct._IO_FILE*
 @.str4 = private unnamed_addr constant [29 x i8] c"Unknown verbosity option %s\0A\00", align 1
 @.str6 = private unnamed_addr constant [3 x i8] c"::\00", align 1
 @paramchecking = internal unnamed_addr global i1 false
@@ -25,11 +24,11 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str7 = private unnamed_addr constant [7 x i8] c"strict\00", align 1
 @.str8 = private unnamed_addr constant [7 x i8] c"normal\00", align 1
 @.str9 = private unnamed_addr constant [8 x i8] c"relaxed\00", align 1
-@.str10 = private unnamed_addr constant [80 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c\00", align 1
+@.str10 = private unnamed_addr constant [68 x i8] c"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c\00", align 1
 @.str11 = private unnamed_addr constant [7 x i8] c"Cactus\00", align 1
 @.str12 = private unnamed_addr constant [100 x i8] c"CCTKi_CommandLineParameterLevel: Parameter checking level '%s' not recognized, defaulting to normal\00", align 1
 @redirectsubs = internal unnamed_addr global i1 false
-@__stdoutp = external global %struct.__sFILE*
+@stdout = external global %struct._IO_FILE*
 @.str14 = private unnamed_addr constant [6 x i8] c"  %s\0A\00", align 1
 @.str16 = private unnamed_addr constant [39 x i8] c"%s: Version %s.  Compiled on %s at %s\0A\00", align 1
 @.str17 = private unnamed_addr constant [1033 x i8] c"-h, -help                           : gets this help.\0A-O, -describe-all-parameters        : describes all the parameters.\0A-o, -describe-parameter <paramname> : describe the given parameter.\0A-x, -test-parameters [nprocs]       : does a quick test of the parameter file\0A                                      pretending to be on nprocs processors, \0A                                      or 1 if not given.\0A-W, -warning-level <n>              : Sets the warning level to n.\0A-E, -error-level <n>                : Sets the error level to n.\0A-r, -redirect-stdout                : Redirects standard output to files.\0A-T, -list-thorns                    : Lists the compiled-in thorns.\0A-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\0A    -parameter-level <level>        : Sets the amount of parameter checking, \0A                                      level can be script, normal, relaxed.\0A-v, -version                        : Prints the version.\0A-i, -ignore-next                    : Ignores the next argument.\0A\00", align 1
@@ -40,151 +39,151 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str22 = private unnamed_addr constant [16 x i8] c"CCTK_Proc%d.out\00", align 1
 @.str23 = private unnamed_addr constant [10 x i8] c"/dev/null\00", align 1
 @.str24 = private unnamed_addr constant [2 x i8] c"w\00", align 1
-@.str25 = private unnamed_addr constant [86 x i8] c"$Header: /cactus/Cactus/src/main/CommandLine.c,v 1.47 2002/01/06 12:24:41 allen Exp $\00", align 1
-@.str26 = private unnamed_addr constant [20 x i8] c"Parameter:   %s::%s\00", align 1
-@.str27 = private unnamed_addr constant [9 x i8] c", %s::%s\00", align 1
-@.str29 = private unnamed_addr constant [19 x i8] c"Description: \22%s\22\0A\00", align 1
-@.str30 = private unnamed_addr constant [17 x i8] c"Type:        %s\0A\00", align 1
-@cctk_parameter_type_names = internal unnamed_addr constant [6 x i8*] [i8* getelementptr inbounds ([8 x i8]* @.str36, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8]* @.str37, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8]* @.str38, i32 0, i32 0), i8* getelementptr inbounds ([8 x i8]* @.str39, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8]* @.str40, i32 0, i32 0), i8* getelementptr inbounds ([8 x i8]* @.str41, i32 0, i32 0)], align 16
-@.str31 = private unnamed_addr constant [17 x i8] c"Default:     %s\0A\00", align 1
-@.str32 = private unnamed_addr constant [17 x i8] c"Scope:       %s\0A\00", align 1
-@cctk_parameter_scopes = internal unnamed_addr constant [5 x i8*] [i8* getelementptr inbounds ([7 x i8]* @.str42, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8]* @.str43, i32 0, i32 0), i8* getelementptr inbounds ([8 x i8]* @.str44, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8]* @.str45, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8]* @.str46, i32 0, i32 0)], align 16
-@.str33 = private unnamed_addr constant [17 x i8] c"  Range:     %s\0A\00", align 1
-@.str34 = private unnamed_addr constant [21 x i8] c"    Origin:      %s\0A\00", align 1
-@.str35 = private unnamed_addr constant [21 x i8] c"    Description: %s\0A\00", align 1
-@.str36 = private unnamed_addr constant [8 x i8] c"KEYWORD\00", align 1
-@.str37 = private unnamed_addr constant [7 x i8] c"STRING\00", align 1
-@.str38 = private unnamed_addr constant [9 x i8] c"SENTENCE\00", align 1
-@.str39 = private unnamed_addr constant [8 x i8] c"INTEGER\00", align 1
-@.str40 = private unnamed_addr constant [5 x i8] c"REAL\00", align 1
-@.str41 = private unnamed_addr constant [8 x i8] c"BOOLEAN\00", align 1
-@.str42 = private unnamed_addr constant [7 x i8] c"GLOBAL\00", align 1
-@.str43 = private unnamed_addr constant [11 x i8] c"RESTRICTED\00", align 1
-@.str44 = private unnamed_addr constant [8 x i8] c"PRIVATE\00", align 1
-@.str45 = private unnamed_addr constant [11 x i8] c"NOT GLOBAL\00", align 1
-@.str46 = private unnamed_addr constant [4 x i8] c"ANY\00", align 1
+@.str25 = private unnamed_addr constant [20 x i8] c"Parameter:   %s::%s\00", align 1
+@.str26 = private unnamed_addr constant [9 x i8] c", %s::%s\00", align 1
+@.str28 = private unnamed_addr constant [19 x i8] c"Description: \22%s\22\0A\00", align 1
+@.str29 = private unnamed_addr constant [17 x i8] c"Type:        %s\0A\00", align 1
+@cctk_parameter_type_names = internal unnamed_addr constant [6 x i8*] [i8* getelementptr inbounds ([8 x i8]* @.str40, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8]* @.str41, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8]* @.str42, i32 0, i32 0), i8* getelementptr inbounds ([8 x i8]* @.str43, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8]* @.str44, i32 0, i32 0), i8* getelementptr inbounds ([8 x i8]* @.str45, i32 0, i32 0)], align 16
+@.str30 = private unnamed_addr constant [17 x i8] c"Default:     %s\0A\00", align 1
+@.str31 = private unnamed_addr constant [17 x i8] c"Scope:       %s\0A\00", align 1
+@cctk_parameter_scopes = internal unnamed_addr constant [5 x i8*] [i8* getelementptr inbounds ([7 x i8]* @.str35, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8]* @.str36, i32 0, i32 0), i8* getelementptr inbounds ([8 x i8]* @.str37, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8]* @.str38, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8]* @.str39, i32 0, i32 0)], align 16
+@.str32 = private unnamed_addr constant [17 x i8] c"  Range:     %s\0A\00", align 1
+@.str33 = private unnamed_addr constant [21 x i8] c"    Origin:      %s\0A\00", align 1
+@.str34 = private unnamed_addr constant [21 x i8] c"    Description: %s\0A\00", align 1
+@.str35 = private unnamed_addr constant [7 x i8] c"GLOBAL\00", align 1
+@.str36 = private unnamed_addr constant [11 x i8] c"RESTRICTED\00", align 1
+@.str37 = private unnamed_addr constant [8 x i8] c"PRIVATE\00", align 1
+@.str38 = private unnamed_addr constant [11 x i8] c"NOT GLOBAL\00", align 1
+@.str39 = private unnamed_addr constant [4 x i8] c"ANY\00", align 1
+@.str40 = private unnamed_addr constant [8 x i8] c"KEYWORD\00", align 1
+@.str41 = private unnamed_addr constant [7 x i8] c"STRING\00", align 1
+@.str42 = private unnamed_addr constant [9 x i8] c"SENTENCE\00", align 1
+@.str43 = private unnamed_addr constant [8 x i8] c"INTEGER\00", align 1
+@.str44 = private unnamed_addr constant [5 x i8] c"REAL\00", align 1
+@.str45 = private unnamed_addr constant [8 x i8] c"BOOLEAN\00", align 1
+@.str46 = private unnamed_addr constant [86 x i8] c"$Header: /cactus/Cactus/src/main/CommandLine.c,v 1.47 2002/01/06 12:24:41 allen Exp $\00", align 1
 @str = private unnamed_addr constant [45 x i8] c"\0A---------------Compiled Thorns-------------\00"
 @str47 = private unnamed_addr constant [45 x i8] c"-------------------------------------------\0A\00"
 
-; Function Attrs: nounwind optsize readnone ssp uwtable
+; Function Attrs: nounwind optsize readnone uwtable
 define i8* @CCTKi_version_main_CommandLine_c() #0 {
-  ret i8* getelementptr inbounds ([86 x i8]* @.str25, i64 0, i64 0), !dbg !129
+entry:
+  ret i8* getelementptr inbounds ([86 x i8]* @.str46, i64 0, i64 0), !dbg !125
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineTestThornCompiled(i8* %argument) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !16, metadata !130), !dbg !131
-  %1 = tail call i32 @CCTK_IsThornCompiled(i8* %argument) #6, !dbg !132
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !17, metadata !130), !dbg !133
-  %2 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !134, !tbaa !136
-  %3 = tail call i32 %2(%struct.cGH* null) #6, !dbg !134
-  %4 = icmp eq i32 %3, 0, !dbg !140
-  br i1 %4, label %5, label %9, !dbg !141
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !15), !dbg !126
+  %call = tail call i32 @CCTK_IsThornCompiled(i8* %argument) #6, !dbg !127
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !16), !dbg !127
+  %0 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !128, !tbaa !129
+  %call1 = tail call i32 %0(%struct.cGH* null) #6, !dbg !128
+  %cmp = icmp eq i32 %call1, 0, !dbg !128
+  br i1 %cmp, label %if.then, label %if.end, !dbg !128
 
-; <label>:5                                       ; preds = %0
-  %6 = icmp ne i32 %1, 0, !dbg !142
-  %7 = select i1 %6, i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0), !dbg !142
-  %8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([25 x i8]* @.str, i64 0, i64 0), i8* %argument, i8* %7) #6, !dbg !144
-  br label %9, !dbg !145
+if.then:                                          ; preds = %entry
+  %tobool = icmp ne i32 %call, 0, !dbg !132
+  %cond = select i1 %tobool, i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0), !dbg !132
+  %call2 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([25 x i8]* @.str, i64 0, i64 0), i8* %argument, i8* %cond) #6, !dbg !132
+  br label %if.end, !dbg !134
 
-; <label>:9                                       ; preds = %5, %0
-  %10 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !146, !tbaa !136
-  %11 = tail call i32 %10(%struct.cGH* null, i32 %1) #6, !dbg !146
-  ret void, !dbg !147
+if.end:                                           ; preds = %if.then, %entry
+  %1 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !135, !tbaa !129
+  %call3 = tail call i32 %1(%struct.cGH* null, i32 %call) #6, !dbg !135
+  ret void, !dbg !136
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.declare(metadata, metadata, metadata) #2
+declare void @llvm.dbg.declare(metadata, metadata) #2
 
 ; Function Attrs: optsize
 declare i32 @CCTK_IsThornCompiled(i8*) #3
 
 ; Function Attrs: nounwind optsize
-declare i32 @printf(i8* nocapture readonly, ...) #4
+declare i32 @printf(i8* nocapture, ...) #4
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineDescribeAllParameters(i8* %argument) #1 {
+entry:
   %param = alloca i8*, align 8
   %properties = alloca %struct.PARAM_PROPS*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !21, metadata !130), !dbg !148
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !149, !tbaa !136
-  %2 = tail call i32 %1(%struct.cGH* null) #6, !dbg !149
-  %3 = icmp eq i32 %2, 0, !dbg !151
-  br i1 %3, label %4, label %.loopexit, !dbg !152
+  call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !20), !dbg !137
+  call void @llvm.dbg.declare(metadata !{i8** %param}, metadata !24), !dbg !138
+  call void @llvm.dbg.declare(metadata !{%struct.PARAM_PROPS** %properties}, metadata !27), !dbg !139
+  %0 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !140, !tbaa !129
+  %call = call i32 %0(%struct.cGH* null) #6, !dbg !140
+  %cmp = icmp eq i32 %call, 0, !dbg !140
+  br i1 %cmp, label %if.then, label %if.end12, !dbg !140
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @CCTK_NumCompiledThorns() #6, !dbg !153
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !23, metadata !130), !dbg !155
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !24, metadata !130), !dbg !156
-  %6 = icmp sgt i32 %5, 0, !dbg !157
-  br i1 %6, label %.lr.ph3, label %.loopexit, !dbg !160
+if.then:                                          ; preds = %entry
+  %call1 = call i32 @CCTK_NumCompiledThorns() #6, !dbg !141
+  call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !22), !dbg !141
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !23), !dbg !143
+  %cmp222 = icmp sgt i32 %call1, 0, !dbg !143
+  br i1 %cmp222, label %for.body.lr.ph, label %if.end12, !dbg !143
 
-.lr.ph3:                                          ; preds = %4
-  %7 = icmp eq i8* %argument, null, !dbg !161
-  %8 = add i32 %5, -1, !dbg !160
-  br label %9, !dbg !160
+for.body.lr.ph:                                   ; preds = %if.then
+  %tobool = icmp eq i8* %argument, null, !dbg !145
+  br label %for.body, !dbg !143
 
-; <label>:9                                       ; preds = %._crit_edge, %.lr.ph3
-  %thorn.01 = phi i32 [ 0, %.lr.ph3 ], [ %30, %._crit_edge ]
-  %10 = call i8* @CCTK_CompiledThorn(i32 %thorn.01) #6, !dbg !165
-  call void @llvm.dbg.value(metadata i8* %10, i64 0, metadata !27, metadata !130), !dbg !166
-  %11 = call i8* @CCTK_ThornImplementation(i8* %10) #6, !dbg !167
-  %12 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([58 x i8]* @.str3, i64 0, i64 0), i8* %10, i8* %11) #6, !dbg !168
-  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !22, metadata !130), !dbg !169
-  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !25, metadata !130), !dbg !170
-  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS** %properties, i64 0, metadata !28, metadata !130), !dbg !171
-  %13 = call i32 @CCTK_ParameterWalk(i32 1, i8* %10, i8** %param, %struct.PARAM_PROPS** %properties) #6, !dbg !172
-  %14 = icmp eq i32 %13, 0, !dbg !173
-  br i1 %14, label %.lr.ph, label %._crit_edge, !dbg !174
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %thorn.023 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %call3 = call i8* @CCTK_CompiledThorn(i32 %thorn.023) #6, !dbg !148
+  call void @llvm.dbg.value(metadata !{i8* %call3}, i64 0, metadata !26), !dbg !148
+  %call4 = call i8* @CCTK_ThornImplementation(i8* %call3) #6, !dbg !149
+  %call5 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([58 x i8]* @.str3, i64 0, i64 0), i8* %call3, i8* %call4) #6, !dbg !149
+  call void @llvm.dbg.value(metadata !150, i64 0, metadata !21), !dbg !151
+  %call620 = call i32 @CCTK_ParameterWalk(i32 1, i8* %call3, i8** %param, %struct.PARAM_PROPS** %properties) #6, !dbg !152
+  %cmp721 = icmp eq i32 %call620, 0, !dbg !152
+  br i1 %cmp721, label %while.body, label %for.inc, !dbg !152
 
-.lr.ph:                                           ; preds = %9, %26
-  br i1 %7, label %24, label %15, !dbg !175
+while.body:                                       ; preds = %for.body, %if.end
+  br i1 %tobool, label %if.else, label %if.then8, !dbg !145
 
-; <label>:15                                      ; preds = %.lr.ph
-  %16 = load i8* %argument, align 1, !dbg !176, !tbaa !178
-  %cond = icmp eq i8 %16, 118, !dbg !179
-  br i1 %cond, label %17, label %19, !dbg !179
+if.then8:                                         ; preds = %while.body
+  %1 = load i8* %argument, align 1, !dbg !153, !tbaa !130
+  %cond = icmp eq i8 %1, 118, !dbg !153
+  br i1 %cond, label %sw.bb, label %sw.default, !dbg !153
 
-; <label>:17                                      ; preds = %15
-  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS** %properties, i64 0, metadata !28, metadata !130), !dbg !171
-  %18 = load %struct.PARAM_PROPS** %properties, align 8, !dbg !180, !tbaa !136
-  call fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* %18) #7, !dbg !182
-  br label %26, !dbg !183
+sw.bb:                                            ; preds = %if.then8
+  call void @llvm.dbg.value(metadata !{%struct.PARAM_PROPS** %properties}, i64 0, metadata !27), !dbg !155
+  %2 = load %struct.PARAM_PROPS** %properties, align 8, !dbg !155, !tbaa !129
+  call fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* %2) #7, !dbg !155
+  br label %if.end, !dbg !157
 
-; <label>:19                                      ; preds = %15
-  %20 = load %struct.__sFILE** @__stderrp, align 8, !dbg !184, !tbaa !136
-  %21 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %20, i8* getelementptr inbounds ([29 x i8]* @.str4, i64 0, i64 0), i8* %argument) #6, !dbg !185
-  %22 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !186, !tbaa !136
-  %23 = call i32 %22(%struct.cGH* null, i32 2) #6, !dbg !186
-  br label %26, !dbg !187
+sw.default:                                       ; preds = %if.then8
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !158, !tbaa !129
+  %call9 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([29 x i8]* @.str4, i64 0, i64 0), i8* %argument) #6, !dbg !158
+  %4 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !159, !tbaa !129
+  %call10 = call i32 %4(%struct.cGH* null, i32 2) #6, !dbg !159
+  br label %if.end, !dbg !160
 
-; <label>:24                                      ; preds = %.lr.ph
-  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !25, metadata !130), !dbg !170
-  %25 = load i8** %param, align 8, !dbg !188, !tbaa !136
-  %puts = call i32 @puts(i8* %25), !dbg !190
-  br label %26
+if.else:                                          ; preds = %while.body
+  call void @llvm.dbg.value(metadata !{i8** %param}, i64 0, metadata !24), !dbg !161
+  %5 = load i8** %param, align 8, !dbg !161, !tbaa !129
+  %puts = call i32 @puts(i8* %5), !dbg !161
+  br label %if.end
 
-; <label>:26                                      ; preds = %17, %19, %24
-  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !25, metadata !130), !dbg !170
-  %27 = load i8** %param, align 8, !dbg !191, !tbaa !136
-  call void @free(i8* %27) #7, !dbg !192
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !22, metadata !130), !dbg !169
-  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !25, metadata !130), !dbg !170
-  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS** %properties, i64 0, metadata !28, metadata !130), !dbg !171
-  %28 = call i32 @CCTK_ParameterWalk(i32 0, i8* %10, i8** %param, %struct.PARAM_PROPS** %properties) #6, !dbg !172
-  %29 = icmp eq i32 %28, 0, !dbg !173
-  br i1 %29, label %.lr.ph, label %._crit_edge, !dbg !174
+if.end:                                           ; preds = %sw.bb, %sw.default, %if.else
+  call void @llvm.dbg.value(metadata !{i8** %param}, i64 0, metadata !24), !dbg !163
+  %6 = load i8** %param, align 8, !dbg !163, !tbaa !129
+  call void @free(i8* %6) #6, !dbg !163
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !21), !dbg !164
+  %call6 = call i32 @CCTK_ParameterWalk(i32 0, i8* %call3, i8** %param, %struct.PARAM_PROPS** %properties) #6, !dbg !152
+  %cmp7 = icmp eq i32 %call6, 0, !dbg !152
+  br i1 %cmp7, label %while.body, label %for.inc, !dbg !152
 
-._crit_edge:                                      ; preds = %26, %9
-  %30 = add nuw nsw i32 %thorn.01, 1, !dbg !193
-  call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !24, metadata !130), !dbg !156
-  %exitcond = icmp eq i32 %thorn.01, %8, !dbg !160
-  br i1 %exitcond, label %.loopexit, label %9, !dbg !160
+for.inc:                                          ; preds = %if.end, %for.body
+  %inc = add nsw i32 %thorn.023, 1, !dbg !143
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !23), !dbg !143
+  %exitcond = icmp eq i32 %inc, %call1, !dbg !143
+  br i1 %exitcond, label %if.end12, label %for.body, !dbg !143
 
-.loopexit:                                        ; preds = %._crit_edge, %4, %0
-  %31 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !194, !tbaa !136
-  %32 = call i32 %31(%struct.cGH* null, i32 0) #6, !dbg !194
-  ret void, !dbg !195
+if.end12:                                         ; preds = %if.then, %for.inc, %entry
+  %7 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !165, !tbaa !129
+  %call13 = call i32 %7(%struct.cGH* null, i32 0) #6, !dbg !165
+  ret void, !dbg !166
 }
 
 ; Function Attrs: optsize
@@ -199,144 +198,146 @@ declare i8* @CCTK_ThornImplementation(i8*) #3
 ; Function Attrs: optsize
 declare i32 @CCTK_ParameterWalk(i32, i8*, i8**, %struct.PARAM_PROPS**) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
-define internal fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* readonly %properties) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.PARAM_PROPS* %properties, i64 0, metadata !109, metadata !130), !dbg !196
-  %1 = icmp eq %struct.PARAM_PROPS* %properties, null, !dbg !197
-  br i1 %1, label %.loopexit, label %2, !dbg !199
+; Function Attrs: nounwind optsize uwtable
+define internal fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* %properties) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM_PROPS* %properties}, i64 0, metadata !108), !dbg !167
+  %tobool = icmp eq %struct.PARAM_PROPS* %properties, null, !dbg !168
+  br i1 %tobool, label %if.end22, label %if.then, !dbg !168
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 1, !dbg !200
-  %4 = load i8** %3, align 8, !dbg !200, !tbaa !202
-  %5 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 0, !dbg !205
-  %6 = load i8** %5, align 8, !dbg !205, !tbaa !206
-  %7 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([20 x i8]* @.str26, i64 0, i64 0), i8* %4, i8* %6) #6, !dbg !207
-  %8 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 2, !dbg !208
-  %9 = load i32* %8, align 4, !dbg !208, !tbaa !210
-  %10 = icmp eq i32 %9, 3, !dbg !211
-  br i1 %10, label %16, label %11, !dbg !212
+if.then:                                          ; preds = %entry
+  %thorn = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 1, !dbg !169
+  %0 = load i8** %thorn, align 8, !dbg !169, !tbaa !129
+  %name = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 0, !dbg !169
+  %1 = load i8** %name, align 8, !dbg !169, !tbaa !129
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([20 x i8]* @.str25, i64 0, i64 0), i8* %0, i8* %1) #6, !dbg !169
+  %scope = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 2, !dbg !171
+  %2 = load i32* %scope, align 4, !dbg !171, !tbaa !172
+  %cmp = icmp eq i32 %2, 3, !dbg !171
+  br i1 %cmp, label %if.end, label %if.then1, !dbg !171
 
-; <label>:11                                      ; preds = %2
-  %12 = load i8** %3, align 8, !dbg !213, !tbaa !202
-  %13 = tail call i8* @CCTK_ThornImplementation(i8* %12) #6, !dbg !215
-  %14 = load i8** %5, align 8, !dbg !216, !tbaa !206
-  %15 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([9 x i8]* @.str27, i64 0, i64 0), i8* %13, i8* %14) #6, !dbg !217
-  br label %16, !dbg !218
+if.then1:                                         ; preds = %if.then
+  %3 = load i8** %thorn, align 8, !dbg !173, !tbaa !129
+  %call3 = tail call i8* @CCTK_ThornImplementation(i8* %3) #6, !dbg !173
+  %4 = load i8** %name, align 8, !dbg !173, !tbaa !129
+  %call5 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([9 x i8]* @.str26, i64 0, i64 0), i8* %call3, i8* %4) #6, !dbg !173
+  br label %if.end, !dbg !175
 
-; <label>:16                                      ; preds = %2, %11
-  %putchar = tail call i32 @putchar(i32 10) #5, !dbg !219
-  %17 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 3, !dbg !220
-  %18 = load i8** %17, align 8, !dbg !220, !tbaa !221
-  %19 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str29, i64 0, i64 0), i8* %18) #6, !dbg !222
-  %20 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 5, !dbg !223
-  %21 = load i32* %20, align 4, !dbg !223, !tbaa !224
-  %22 = add nsw i32 %21, -1, !dbg !225
-  %23 = sext i32 %22 to i64, !dbg !226
-  %24 = getelementptr inbounds [6 x i8*]* @cctk_parameter_type_names, i64 0, i64 %23, !dbg !226
-  %25 = load i8** %24, align 8, !dbg !226, !tbaa !136
-  %26 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str30, i64 0, i64 0), i8* %25) #6, !dbg !227
-  %27 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 4, !dbg !228
-  %28 = load i8** %27, align 8, !dbg !228, !tbaa !229
-  %29 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str31, i64 0, i64 0), i8* %28) #6, !dbg !230
-  %30 = load i32* %8, align 4, !dbg !231, !tbaa !210
-  %31 = add nsw i32 %30, -1, !dbg !232
-  %32 = sext i32 %31 to i64, !dbg !233
-  %33 = getelementptr inbounds [5 x i8*]* @cctk_parameter_scopes, i64 0, i64 %32, !dbg !233
-  %34 = load i8** %33, align 8, !dbg !233, !tbaa !136
-  %35 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str32, i64 0, i64 0), i8* %34) #6, !dbg !234
-  %36 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 6, !dbg !235
-  %range.01 = load %struct.RANGE** %36, align 8, !dbg !235
-  %37 = icmp eq %struct.RANGE* %range.01, null, !dbg !237
-  br i1 %37, label %.loopexit, label %.lr.ph, !dbg !237
+if.end:                                           ; preds = %if.then, %if.then1
+  %putchar = tail call i32 @putchar(i32 10) #5, !dbg !176
+  %description = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 3, !dbg !177
+  %5 = load i8** %description, align 8, !dbg !177, !tbaa !129
+  %call7 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str28, i64 0, i64 0), i8* %5) #6, !dbg !177
+  %type = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 5, !dbg !178
+  %6 = load i32* %type, align 4, !dbg !178, !tbaa !172
+  %sub = add nsw i32 %6, -1, !dbg !178
+  %idxprom = sext i32 %sub to i64, !dbg !178
+  %arrayidx = getelementptr inbounds [6 x i8*]* @cctk_parameter_type_names, i64 0, i64 %idxprom, !dbg !178
+  %7 = load i8** %arrayidx, align 8, !dbg !178, !tbaa !129
+  %call8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str29, i64 0, i64 0), i8* %7) #6, !dbg !178
+  %defval = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 4, !dbg !179
+  %8 = load i8** %defval, align 8, !dbg !179, !tbaa !129
+  %call9 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str30, i64 0, i64 0), i8* %8) #6, !dbg !179
+  %9 = load i32* %scope, align 4, !dbg !180, !tbaa !172
+  %sub11 = add nsw i32 %9, -1, !dbg !180
+  %idxprom12 = sext i32 %sub11 to i64, !dbg !180
+  %arrayidx13 = getelementptr inbounds [5 x i8*]* @cctk_parameter_scopes, i64 0, i64 %idxprom12, !dbg !180
+  %10 = load i8** %arrayidx13, align 8, !dbg !180, !tbaa !129
+  %call14 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str31, i64 0, i64 0), i8* %10) #6, !dbg !180
+  %range15 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 6, !dbg !181
+  %range.037 = load %struct.RANGE** %range15, align 8, !dbg !181
+  %tobool1638 = icmp eq %struct.RANGE* %range.037, null, !dbg !181
+  br i1 %tobool1638, label %if.end22, label %for.body, !dbg !181
 
-.lr.ph:                                           ; preds = %16, %.lr.ph
-  %range.02 = phi %struct.RANGE* [ %range.0, %.lr.ph ], [ %range.01, %16 ]
-  %38 = getelementptr inbounds %struct.RANGE* %range.02, i64 0, i32 2, !dbg !238
-  %39 = load i8** %38, align 8, !dbg !238, !tbaa !241
-  %40 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str33, i64 0, i64 0), i8* %39) #6, !dbg !243
-  %41 = getelementptr inbounds %struct.RANGE* %range.02, i64 0, i32 3, !dbg !244
-  %42 = load i8** %41, align 8, !dbg !244, !tbaa !245
-  %43 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str34, i64 0, i64 0), i8* %42) #6, !dbg !246
-  %44 = getelementptr inbounds %struct.RANGE* %range.02, i64 0, i32 5, !dbg !247
-  %45 = load i8** %44, align 8, !dbg !247, !tbaa !248
-  %46 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str35, i64 0, i64 0), i8* %45) #6, !dbg !249
-  %47 = getelementptr inbounds %struct.RANGE* %range.02, i64 0, i32 1, !dbg !250
-  %range.0 = load %struct.RANGE** %47, align 8, !dbg !235
-  %48 = icmp eq %struct.RANGE* %range.0, null, !dbg !237
-  br i1 %48, label %.loopexit, label %.lr.ph, !dbg !237
+for.body:                                         ; preds = %if.end, %for.body
+  %range.039 = phi %struct.RANGE* [ %range.0, %for.body ], [ %range.037, %if.end ]
+  %range17 = getelementptr inbounds %struct.RANGE* %range.039, i64 0, i32 2, !dbg !183
+  %11 = load i8** %range17, align 8, !dbg !183, !tbaa !129
+  %call18 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str32, i64 0, i64 0), i8* %11) #6, !dbg !183
+  %origin = getelementptr inbounds %struct.RANGE* %range.039, i64 0, i32 3, !dbg !185
+  %12 = load i8** %origin, align 8, !dbg !185, !tbaa !129
+  %call19 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str33, i64 0, i64 0), i8* %12) #6, !dbg !185
+  %description20 = getelementptr inbounds %struct.RANGE* %range.039, i64 0, i32 5, !dbg !186
+  %13 = load i8** %description20, align 8, !dbg !186, !tbaa !129
+  %call21 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str34, i64 0, i64 0), i8* %13) #6, !dbg !186
+  %next = getelementptr inbounds %struct.RANGE* %range.039, i64 0, i32 1, !dbg !181
+  %range.0 = load %struct.RANGE** %next, align 8, !dbg !181
+  %tobool16 = icmp eq %struct.RANGE* %range.0, null, !dbg !181
+  br i1 %tobool16, label %if.end22, label %for.body, !dbg !181
 
-.loopexit:                                        ; preds = %.lr.ph, %16, %0
-  ret void, !dbg !251
+if.end22:                                         ; preds = %if.end, %for.body, %entry
+  ret void, !dbg !187
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #4
+declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #4
 
 ; Function Attrs: nounwind optsize
 declare void @free(i8* nocapture) #4
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineDescribeParameter(i8* %argument) #1 {
+entry:
   %thorn = alloca i8*, align 8
   %param = alloca i8*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !57, metadata !130), !dbg !252
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !253, !tbaa !136
-  %2 = tail call i32 %1(%struct.cGH* null) #6, !dbg !253
-  %3 = icmp eq i32 %2, 0, !dbg !255
-  br i1 %3, label %4, label %23, !dbg !256
+  call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !56), !dbg !188
+  call void @llvm.dbg.declare(metadata !{i8** %thorn}, metadata !57), !dbg !189
+  call void @llvm.dbg.declare(metadata !{i8** %param}, metadata !58), !dbg !189
+  %0 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !190, !tbaa !129
+  %call = call i32 %0(%struct.cGH* null) #6, !dbg !190
+  %cmp = icmp eq i32 %call, 0, !dbg !190
+  br i1 %cmp, label %if.then, label %if.end10, !dbg !190
 
-; <label>:4                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !58, metadata !130), !dbg !257
-  tail call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !59, metadata !130), !dbg !258
-  %5 = call i32 @Util_SplitString(i8** %thorn, i8** %param, i8* %argument, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #6, !dbg !259
-  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !59, metadata !130), !dbg !258
-  %6 = load i8** %param, align 8, !dbg !261, !tbaa !136
-  %7 = icmp eq i8* %6, null, !dbg !261
-  br i1 %7, label %8, label %10, !dbg !263
+if.then:                                          ; preds = %entry
+  %call1 = call i32 @Util_SplitString(i8** %thorn, i8** %param, i8* %argument, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #6, !dbg !191
+  call void @llvm.dbg.value(metadata !{i8** %param}, i64 0, metadata !58), !dbg !193
+  %1 = load i8** %param, align 8, !dbg !193, !tbaa !129
+  %tobool = icmp eq i8* %1, null, !dbg !193
+  br i1 %tobool, label %if.then2, label %if.else, !dbg !193
 
-; <label>:8                                       ; preds = %4
-  %9 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %argument, i8* null) #6, !dbg !264
-  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS* %9, i64 0, metadata !61, metadata !130), !dbg !266
-  br label %22, !dbg !267
+if.then2:                                         ; preds = %if.then
+  %call3 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %argument, i8* null) #6, !dbg !194
+  call void @llvm.dbg.value(metadata !{%struct.PARAM_PROPS* %call3}, i64 0, metadata !60), !dbg !194
+  br label %if.end9, !dbg !196
 
-; <label>:10                                      ; preds = %4
-  call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !58, metadata !130), !dbg !257
-  %11 = load i8** %thorn, align 8, !dbg !268, !tbaa !136
-  %12 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %6, i8* %11) #6, !dbg !270
-  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS* %12, i64 0, metadata !61, metadata !130), !dbg !266
-  %13 = icmp eq %struct.PARAM_PROPS* %12, null, !dbg !271
-  br i1 %13, label %14, label %19, !dbg !273
+if.else:                                          ; preds = %if.then
+  call void @llvm.dbg.value(metadata !{i8** %thorn}, i64 0, metadata !57), !dbg !197
+  %2 = load i8** %thorn, align 8, !dbg !197, !tbaa !129
+  %call4 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %1, i8* %2) #6, !dbg !197
+  call void @llvm.dbg.value(metadata !{%struct.PARAM_PROPS* %call4}, i64 0, metadata !60), !dbg !197
+  %tobool5 = icmp eq %struct.PARAM_PROPS* %call4, null, !dbg !199
+  br i1 %tobool5, label %if.then6, label %if.end, !dbg !199
 
-; <label>:14                                      ; preds = %10
-  call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !58, metadata !130), !dbg !257
-  %15 = load i8** %thorn, align 8, !dbg !274, !tbaa !136
-  %16 = call i8* @CCTK_ImplementationThorn(i8* %15) #6, !dbg !276
-  call void @llvm.dbg.value(metadata i8* %16, i64 0, metadata !60, metadata !130), !dbg !277
-  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !59, metadata !130), !dbg !258
-  %17 = load i8** %param, align 8, !dbg !278, !tbaa !136
-  %18 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %17, i8* %16) #6, !dbg !279
-  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS* %18, i64 0, metadata !61, metadata !130), !dbg !266
-  br label %19, !dbg !280
+if.then6:                                         ; preds = %if.else
+  call void @llvm.dbg.value(metadata !{i8** %thorn}, i64 0, metadata !57), !dbg !200
+  %3 = load i8** %thorn, align 8, !dbg !200, !tbaa !129
+  %call7 = call i8* @CCTK_ImplementationThorn(i8* %3) #6, !dbg !200
+  call void @llvm.dbg.value(metadata !{i8* %call7}, i64 0, metadata !59), !dbg !200
+  call void @llvm.dbg.value(metadata !{i8** %param}, i64 0, metadata !58), !dbg !202
+  %4 = load i8** %param, align 8, !dbg !202, !tbaa !129
+  %call8 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %4, i8* %call7) #6, !dbg !202
+  call void @llvm.dbg.value(metadata !{%struct.PARAM_PROPS* %call8}, i64 0, metadata !60), !dbg !202
+  br label %if.end, !dbg !203
 
-; <label>:19                                      ; preds = %10, %14
-  %properties.0 = phi %struct.PARAM_PROPS* [ %12, %10 ], [ %18, %14 ]
-  call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !58, metadata !130), !dbg !257
-  %20 = load i8** %thorn, align 8, !dbg !281, !tbaa !136
-  call void @free(i8* %20) #7, !dbg !282
-  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !59, metadata !130), !dbg !258
-  %21 = load i8** %param, align 8, !dbg !283, !tbaa !136
-  call void @free(i8* %21) #7, !dbg !284
-  br label %22
+if.end:                                           ; preds = %if.else, %if.then6
+  %properties.0 = phi %struct.PARAM_PROPS* [ %call4, %if.else ], [ %call8, %if.then6 ]
+  call void @llvm.dbg.value(metadata !{i8** %thorn}, i64 0, metadata !57), !dbg !204
+  %5 = load i8** %thorn, align 8, !dbg !204, !tbaa !129
+  call void @free(i8* %5) #6, !dbg !204
+  call void @llvm.dbg.value(metadata !{i8** %param}, i64 0, metadata !58), !dbg !205
+  %6 = load i8** %param, align 8, !dbg !205, !tbaa !129
+  call void @free(i8* %6) #6, !dbg !205
+  br label %if.end9
 
-; <label>:22                                      ; preds = %19, %8
-  %properties.1 = phi %struct.PARAM_PROPS* [ %properties.0, %19 ], [ %9, %8 ]
-  call fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* %properties.1) #7, !dbg !285
-  br label %23, !dbg !286
+if.end9:                                          ; preds = %if.end, %if.then2
+  %properties.1 = phi %struct.PARAM_PROPS* [ %properties.0, %if.end ], [ %call3, %if.then2 ]
+  call fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* %properties.1) #7, !dbg !206
+  br label %if.end10, !dbg !207
 
-; <label>:23                                      ; preds = %22, %0
-  %24 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !287, !tbaa !136
-  %25 = call i32 %24(%struct.cGH* null, i32 0) #6, !dbg !287
-  ret void, !dbg !288
+if.end10:                                         ; preds = %if.end9, %entry
+  %7 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !208, !tbaa !129
+  %call11 = call i32 %7(%struct.cGH* null, i32 0) #6, !dbg !208
+  ret void, !dbg !209
 }
 
 ; Function Attrs: optsize
@@ -348,158 +349,163 @@ declare %struct.PARAM_PROPS* @CCTK_ParameterData(i8*, i8*) #3
 ; Function Attrs: optsize
 declare i8* @CCTK_ImplementationThorn(i8*) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineTestParameters(i8* %argument) #1 {
+entry:
   %endptr = alloca i8*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !64, metadata !130), !dbg !289
-  %1 = icmp eq i8* %argument, null, !dbg !290
-  br i1 %1, label %11, label %2, !dbg !292
+  call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !63), !dbg !210
+  call void @llvm.dbg.declare(metadata !{i8** %endptr}, metadata !65), !dbg !211
+  %cmp = icmp eq i8* %argument, null, !dbg !212
+  br i1 %cmp, label %if.end5, label %if.else, !dbg !212
 
-; <label>:2                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !66, metadata !130), !dbg !293
-  %3 = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #6, !dbg !294
-  %4 = trunc i64 %3 to i32, !dbg !294
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !65, metadata !130), !dbg !296
-  tail call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !66, metadata !130), !dbg !293
-  %5 = load i8** %endptr, align 8, !dbg !297, !tbaa !136
-  %6 = icmp eq i8* %5, null, !dbg !297
-  br i1 %6, label %10, label %7, !dbg !299
+if.else:                                          ; preds = %entry
+  %call = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #6, !dbg !213
+  %conv = trunc i64 %call to i32, !dbg !213
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !64), !dbg !213
+  call void @llvm.dbg.value(metadata !{i8** %endptr}, i64 0, metadata !65), !dbg !215
+  %0 = load i8** %endptr, align 8, !dbg !215, !tbaa !129
+  %tobool = icmp eq i8* %0, null, !dbg !215
+  br i1 %tobool, label %if.then4, label %land.lhs.true, !dbg !215
 
-; <label>:7                                       ; preds = %2
-  %8 = load i8* %5, align 1, !dbg !300, !tbaa !178
-  %9 = icmp eq i8 %8, 0, !dbg !301
-  br i1 %9, label %11, label %10, !dbg !302
+land.lhs.true:                                    ; preds = %if.else
+  %1 = load i8* %0, align 1, !dbg !215, !tbaa !130
+  %cmp2 = icmp eq i8 %1, 0, !dbg !215
+  br i1 %cmp2, label %if.end5, label %if.then4, !dbg !215
 
-; <label>:10                                      ; preds = %2, %7
-  tail call void @CCTKi_CommandLineUsage() #7, !dbg !303
-  br label %11, !dbg !305
+if.then4:                                         ; preds = %if.else, %land.lhs.true
+  call void @CCTKi_CommandLineUsage() #7, !dbg !216
+  br label %if.end5, !dbg !218
 
-; <label>:11                                      ; preds = %0, %7, %10
-  %nprocs.0 = phi i32 [ %4, %7 ], [ %4, %10 ], [ 1, %0 ]
+if.end5:                                          ; preds = %entry, %land.lhs.true, %if.then4
+  %nprocs.0 = phi i32 [ %conv, %land.lhs.true ], [ %conv, %if.then4 ], [ 1, %entry ]
   store i1 true, i1* @paramchecking, align 1
-  store i32 1, i32* @cctki_paramchecking, align 4, !dbg !306, !tbaa !307
-  store i32 %nprocs.0, i32* @cctki_paramcheck_nprocs, align 4, !dbg !308, !tbaa !307
-  ret void, !dbg !309
+  store i32 1, i32* @cctki_paramchecking, align 4, !dbg !219, !tbaa !172
+  store i32 %nprocs.0, i32* @cctki_paramcheck_nprocs, align 4, !dbg !220, !tbaa !172
+  ret void, !dbg !221
 }
 
 ; Function Attrs: nounwind optsize
-declare i64 @strtol(i8* readonly, i8** nocapture, i32) #4
+declare i64 @strtol(i8*, i8** nocapture, i32) #4
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineUsage() #1 {
+entry:
   %argv = alloca i8**, align 8
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !310, !tbaa !136
-  %2 = tail call i32 %1(%struct.cGH* null) #6, !dbg !310
-  %3 = icmp eq i32 %2, 0, !dbg !312
-  br i1 %3, label %4, label %9, !dbg !313
+  call void @llvm.dbg.declare(metadata !{i8*** %argv}, metadata !96), !dbg !222
+  %0 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !223, !tbaa !129
+  %call = call i32 %0(%struct.cGH* null) #6, !dbg !223
+  %cmp = icmp eq i32 %call, 0, !dbg !223
+  br i1 %cmp, label %if.then, label %if.end, !dbg !223
 
-; <label>:4                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i8*** %argv, i64 0, metadata !97, metadata !130), !dbg !314
-  %5 = call i32 @CCTK_CommandLine(i8*** %argv) #6, !dbg !315
-  call void @llvm.dbg.value(metadata i8*** %argv, i64 0, metadata !97, metadata !130), !dbg !314
-  %6 = load i8*** %argv, align 8, !dbg !317, !tbaa !136
-  %7 = load i8** %6, align 8, !dbg !317, !tbaa !136
-  %8 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str19, i64 0, i64 0), i8* %7, i8* getelementptr inbounds ([127 x i8]* @.str20, i64 0, i64 0)) #6, !dbg !318
-  br label %9, !dbg !319
+if.then:                                          ; preds = %entry
+  %call1 = call i32 @CCTK_CommandLine(i8*** %argv) #6, !dbg !224
+  call void @llvm.dbg.value(metadata !{i8*** %argv}, i64 0, metadata !96), !dbg !226
+  %1 = load i8*** %argv, align 8, !dbg !226, !tbaa !129
+  %2 = load i8** %1, align 8, !dbg !226, !tbaa !129
+  %call2 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str19, i64 0, i64 0), i8* %2, i8* getelementptr inbounds ([127 x i8]* @.str20, i64 0, i64 0)) #6, !dbg !226
+  br label %if.end, !dbg !227
 
-; <label>:9                                       ; preds = %4, %0
-  %10 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !320, !tbaa !136
-  %11 = call i32 %10(%struct.cGH* null, i32 1) #6, !dbg !320
-  ret void, !dbg !321
+if.end:                                           ; preds = %if.then, %entry
+  %3 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !228, !tbaa !129
+  %call3 = call i32 %3(%struct.cGH* null, i32 1) #6, !dbg !228
+  ret void, !dbg !229
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineWarningLevel(i8* %argument) #1 {
+entry:
   %endptr = alloca i8*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !69, metadata !130), !dbg !322
-  tail call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !70, metadata !130), !dbg !323
-  %1 = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #6, !dbg !324
-  tail call void @llvm.dbg.value(metadata i64 %1, i64 0, metadata !71, metadata !130), !dbg !325
-  tail call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !70, metadata !130), !dbg !323
-  %2 = load i8** %endptr, align 8, !dbg !326, !tbaa !136
-  %3 = icmp eq i8* %2, null, !dbg !326
-  br i1 %3, label %10, label %4, !dbg !328
+  call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !68), !dbg !230
+  call void @llvm.dbg.declare(metadata !{i8** %endptr}, metadata !69), !dbg !231
+  %call = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #6, !dbg !232
+  call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !70), !dbg !232
+  call void @llvm.dbg.value(metadata !{i8** %endptr}, i64 0, metadata !69), !dbg !233
+  %0 = load i8** %endptr, align 8, !dbg !233, !tbaa !129
+  %tobool = icmp eq i8* %0, null, !dbg !233
+  br i1 %tobool, label %if.else, label %land.lhs.true, !dbg !233
 
-; <label>:4                                       ; preds = %0
-  %5 = load i8* %2, align 1, !dbg !329, !tbaa !178
-  %6 = icmp eq i8 %5, 0, !dbg !330
-  br i1 %6, label %7, label %10, !dbg !331
+land.lhs.true:                                    ; preds = %entry
+  %1 = load i8* %0, align 1, !dbg !233, !tbaa !130
+  %cmp = icmp eq i8 %1, 0, !dbg !233
+  br i1 %cmp, label %if.then, label %if.else, !dbg !233
 
-; <label>:7                                       ; preds = %4
-  %8 = trunc i64 %1 to i32, !dbg !332
-  %9 = tail call i32 @CCTKi_SetWarnLevel(i32 %8) #6, !dbg !334
-  br label %11, !dbg !335
+if.then:                                          ; preds = %land.lhs.true
+  %conv2 = trunc i64 %call to i32, !dbg !234
+  %call3 = call i32 @CCTKi_SetWarnLevel(i32 %conv2) #6, !dbg !234
+  br label %if.end, !dbg !236
 
-; <label>:10                                      ; preds = %0, %4
-  tail call void @CCTKi_CommandLineUsage() #7, !dbg !336
-  br label %11
+if.else:                                          ; preds = %entry, %land.lhs.true
+  call void @CCTKi_CommandLineUsage() #7, !dbg !237
+  br label %if.end
 
-; <label>:11                                      ; preds = %10, %7
-  ret void, !dbg !338
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !239
 }
 
 ; Function Attrs: optsize
 declare i32 @CCTKi_SetWarnLevel(i32) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineErrorLevel(i8* %argument) #1 {
+entry:
   %endptr = alloca i8*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !75, metadata !130), !dbg !339
-  tail call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !76, metadata !130), !dbg !340
-  %1 = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #6, !dbg !341
-  tail call void @llvm.dbg.value(metadata i64 %1, i64 0, metadata !77, metadata !130), !dbg !342
-  tail call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !76, metadata !130), !dbg !340
-  %2 = load i8** %endptr, align 8, !dbg !343, !tbaa !136
-  %3 = icmp eq i8* %2, null, !dbg !343
-  br i1 %3, label %10, label %4, !dbg !345
+  call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !74), !dbg !240
+  call void @llvm.dbg.declare(metadata !{i8** %endptr}, metadata !75), !dbg !241
+  %call = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #6, !dbg !242
+  call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !76), !dbg !242
+  call void @llvm.dbg.value(metadata !{i8** %endptr}, i64 0, metadata !75), !dbg !243
+  %0 = load i8** %endptr, align 8, !dbg !243, !tbaa !129
+  %tobool = icmp eq i8* %0, null, !dbg !243
+  br i1 %tobool, label %if.else, label %land.lhs.true, !dbg !243
 
-; <label>:4                                       ; preds = %0
-  %5 = load i8* %2, align 1, !dbg !346, !tbaa !178
-  %6 = icmp eq i8 %5, 0, !dbg !347
-  br i1 %6, label %7, label %10, !dbg !348
+land.lhs.true:                                    ; preds = %entry
+  %1 = load i8* %0, align 1, !dbg !243, !tbaa !130
+  %cmp = icmp eq i8 %1, 0, !dbg !243
+  br i1 %cmp, label %if.then, label %if.else, !dbg !243
 
-; <label>:7                                       ; preds = %4
-  %8 = trunc i64 %1 to i32, !dbg !349
-  %9 = tail call i32 @CCTKi_SetErrorLevel(i32 %8) #6, !dbg !351
-  br label %11, !dbg !352
+if.then:                                          ; preds = %land.lhs.true
+  %conv2 = trunc i64 %call to i32, !dbg !244
+  %call3 = call i32 @CCTKi_SetErrorLevel(i32 %conv2) #6, !dbg !244
+  br label %if.end, !dbg !246
 
-; <label>:10                                      ; preds = %0, %4
-  tail call void @CCTKi_CommandLineUsage() #7, !dbg !353
-  br label %11
+if.else:                                          ; preds = %entry, %land.lhs.true
+  call void @CCTKi_CommandLineUsage() #7, !dbg !247
+  br label %if.end
 
-; <label>:11                                      ; preds = %10, %7
-  ret void, !dbg !355
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !249
 }
 
 ; Function Attrs: optsize
 declare i32 @CCTKi_SetErrorLevel(i32) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineParameterLevel(i8* %argument) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !80, metadata !130), !dbg !356
-  %1 = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0)) #6, !dbg !357
-  %2 = icmp eq i32 %1, 0, !dbg !357
-  br i1 %2, label %3, label %11, !dbg !359
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !79), !dbg !250
+  %call = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0)) #6, !dbg !251
+  %tobool = icmp eq i32 %call, 0, !dbg !251
+  br i1 %tobool, label %if.else, label %if.end11, !dbg !251
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([7 x i8]* @.str8, i64 0, i64 0)) #6, !dbg !360
-  %5 = icmp eq i32 %4, 0, !dbg !360
-  br i1 %5, label %6, label %11, !dbg !362
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([7 x i8]* @.str8, i64 0, i64 0)) #6, !dbg !252
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !252
+  br i1 %tobool2, label %if.else4, label %if.end11, !dbg !252
 
-; <label>:6                                       ; preds = %3
-  %7 = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([8 x i8]* @.str9, i64 0, i64 0)) #6, !dbg !363
-  %8 = icmp eq i32 %7, 0, !dbg !363
-  br i1 %8, label %9, label %11, !dbg !365
+if.else4:                                         ; preds = %if.else
+  %call5 = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([8 x i8]* @.str9, i64 0, i64 0)) #6, !dbg !253
+  %tobool6 = icmp eq i32 %call5, 0, !dbg !253
+  br i1 %tobool6, label %if.else8, label %if.end11, !dbg !253
 
-; <label>:9                                       ; preds = %6
-  %10 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 374, i8* getelementptr inbounds ([80 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([100 x i8]* @.str12, i64 0, i64 0), i8* %argument) #6, !dbg !366
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !81, metadata !130), !dbg !368
-  br label %11
+if.else8:                                         ; preds = %if.else4
+  %call9 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 374, i8* getelementptr inbounds ([68 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([100 x i8]* @.str12, i64 0, i64 0), i8* %argument) #6, !dbg !254
+  tail call void @llvm.dbg.value(metadata !150, i64 0, metadata !80), !dbg !256
+  br label %if.end11
 
-; <label>:11                                      ; preds = %6, %3, %0, %9
-  %parameterlevel.0 = phi i32 [ 1, %9 ], [ 0, %0 ], [ 1, %3 ], [ 2, %6 ]
-  %12 = tail call i32 @CCTKi_SetParameterLevel(i32 %parameterlevel.0) #6, !dbg !369
-  ret void, !dbg !370
+if.end11:                                         ; preds = %if.else4, %if.else, %entry, %if.else8
+  %parameterlevel.0 = phi i32 [ 1, %if.else8 ], [ 0, %entry ], [ 1, %if.else ], [ 2, %if.else4 ]
+  %call12 = tail call i32 @CCTKi_SetParameterLevel(i32 %parameterlevel.0) #6, !dbg !257
+  ret void, !dbg !258
 }
 
 ; Function Attrs: optsize
@@ -511,60 +517,63 @@ declare i32 @CCTK_VWarn(i32, i32, i8*, i8*, i8*, ...) #3
 ; Function Attrs: optsize
 declare i32 @CCTKi_SetParameterLevel(i32) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineRedirectStdout() #1 {
+entry:
   store i1 true, i1* @redirectsubs, align 1
-  ret void, !dbg !371
+  ret void, !dbg !259
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineListThorns() #1 {
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !372, !tbaa !136
-  %2 = tail call i32 %1(%struct.cGH* null) #6, !dbg !372
-  %3 = icmp eq i32 %2, 0, !dbg !374
-  br i1 %3, label %4, label %7, !dbg !375
+entry:
+  %0 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !260, !tbaa !129
+  %call = tail call i32 %0(%struct.cGH* null) #6, !dbg !260
+  %cmp = icmp eq i32 %call, 0, !dbg !260
+  br i1 %cmp, label %if.then, label %if.end, !dbg !260
 
-; <label>:4                                       ; preds = %0
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([45 x i8]* @str, i64 0, i64 0)), !dbg !376
-  %5 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !378, !tbaa !136
-  %6 = tail call i32 @CCTKi_PrintThorns(%struct.__sFILE* %5, i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i32 0) #6, !dbg !379
-  %puts1 = tail call i32 @puts(i8* getelementptr inbounds ([45 x i8]* @str47, i64 0, i64 0)), !dbg !380
-  br label %7, !dbg !381
+if.then:                                          ; preds = %entry
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([45 x i8]* @str, i64 0, i64 0)), !dbg !261
+  %1 = load %struct._IO_FILE** @stdout, align 8, !dbg !263, !tbaa !129
+  %call2 = tail call i32 @CCTKi_PrintThorns(%struct._IO_FILE* %1, i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i32 0) #6, !dbg !263
+  %puts5 = tail call i32 @puts(i8* getelementptr inbounds ([45 x i8]* @str47, i64 0, i64 0)), !dbg !264
+  br label %if.end, !dbg !265
 
-; <label>:7                                       ; preds = %4, %0
-  %8 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !382, !tbaa !136
-  %9 = tail call i32 %8(%struct.cGH* null, i32 1) #6, !dbg !382
-  ret void, !dbg !383
+if.end:                                           ; preds = %if.then, %entry
+  %2 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !266, !tbaa !129
+  %call4 = tail call i32 %2(%struct.cGH* null, i32 1) #6, !dbg !266
+  ret void, !dbg !267
 }
 
 ; Function Attrs: optsize
-declare i32 @CCTKi_PrintThorns(%struct.__sFILE*, i8*, i32) #3
+declare i32 @CCTKi_PrintThorns(%struct._IO_FILE*, i8*, i32) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineVersion() #1 {
+entry:
   %argv = alloca i8**, align 8
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !384, !tbaa !136
-  %2 = tail call i32 %1(%struct.cGH* null) #6, !dbg !384
-  %3 = icmp eq i32 %2, 0, !dbg !386
-  br i1 %3, label %4, label %12, !dbg !387
+  call void @llvm.dbg.declare(metadata !{i8*** %argv}, metadata !87), !dbg !268
+  %0 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !269, !tbaa !129
+  %call = call i32 %0(%struct.cGH* null) #6, !dbg !269
+  %cmp = icmp eq i32 %call, 0, !dbg !269
+  br i1 %cmp, label %if.then, label %if.end, !dbg !269
 
-; <label>:4                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i8*** %argv, i64 0, metadata !88, metadata !130), !dbg !388
-  %5 = call i32 @CCTK_CommandLine(i8*** %argv) #6, !dbg !389
-  %6 = call i8* @CCTK_FullVersion() #6, !dbg !391
-  call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !90, metadata !130), !dbg !392
-  call void @llvm.dbg.value(metadata i8*** %argv, i64 0, metadata !88, metadata !130), !dbg !388
-  %7 = load i8*** %argv, align 8, !dbg !393, !tbaa !136
-  %8 = load i8** %7, align 8, !dbg !393, !tbaa !136
-  %9 = call i8* @CCTK_CompileDate() #6, !dbg !394
-  %10 = call i8* @CCTK_CompileTime() #6, !dbg !395
-  %11 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([39 x i8]* @.str16, i64 0, i64 0), i8* %8, i8* %6, i8* %9, i8* %10) #6, !dbg !396
-  br label %12, !dbg !397
+if.then:                                          ; preds = %entry
+  %call1 = call i32 @CCTK_CommandLine(i8*** %argv) #6, !dbg !270
+  %call2 = call i8* @CCTK_FullVersion() #6, !dbg !272
+  call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !89), !dbg !272
+  call void @llvm.dbg.value(metadata !{i8*** %argv}, i64 0, metadata !87), !dbg !273
+  %1 = load i8*** %argv, align 8, !dbg !273, !tbaa !129
+  %2 = load i8** %1, align 8, !dbg !273, !tbaa !129
+  %call3 = call i8* @CCTK_CompileDate() #6, !dbg !274
+  %call4 = call i8* @CCTK_CompileTime() #6, !dbg !274
+  %call5 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([39 x i8]* @.str16, i64 0, i64 0), i8* %2, i8* %call2, i8* %call3, i8* %call4) #6, !dbg !274
+  br label %if.end, !dbg !275
 
-; <label>:12                                      ; preds = %4, %0
-  %13 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !398, !tbaa !136
-  %14 = call i32 %13(%struct.cGH* null, i32 1) #6, !dbg !398
-  ret void, !dbg !399
+if.end:                                           ; preds = %if.then, %entry
+  %3 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !276, !tbaa !129
+  %call6 = call i32 %3(%struct.cGH* null, i32 1) #6, !dbg !276
+  ret void, !dbg !277
 }
 
 ; Function Attrs: optsize
@@ -579,552 +588,421 @@ declare i8* @CCTK_CompileDate() #3
 ; Function Attrs: optsize
 declare i8* @CCTK_CompileTime() #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineHelp() #1 {
+entry:
   %argv = alloca i8**, align 8
-  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !94, metadata !130), !dbg !400
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !401, !tbaa !136
-  %2 = tail call i32 %1(%struct.cGH* null) #6, !dbg !401
-  %3 = icmp eq i32 %2, 0, !dbg !403
-  br i1 %3, label %4, label %15, !dbg !404
+  call void @llvm.dbg.declare(metadata !{i8*** %argv}, metadata !92), !dbg !278
+  call void @llvm.dbg.value(metadata !279, i64 0, metadata !93), !dbg !280
+  %0 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !281, !tbaa !129
+  %call = call i32 %0(%struct.cGH* null) #6, !dbg !281
+  %cmp = icmp eq i32 %call, 0, !dbg !281
+  br i1 %cmp, label %if.then, label %if.end, !dbg !281
 
-; <label>:4                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i8*** %argv, i64 0, metadata !93, metadata !130), !dbg !405
-  %5 = call i32 @CCTK_CommandLine(i8*** %argv) #6, !dbg !406
-  call void @llvm.dbg.value(metadata i8*** %argv, i64 0, metadata !93, metadata !130), !dbg !405
-  %6 = load i8*** %argv, align 8, !dbg !408, !tbaa !136
-  %7 = load i8** %6, align 8, !dbg !408, !tbaa !136
-  %8 = call i8* @CCTK_CompileDate() #6, !dbg !409
-  %9 = call i8* @CCTK_CompileTime() #6, !dbg !410
-  %10 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([26 x i8]* @.str18, i64 0, i64 0), i8* %7, i8* %8, i8* %9) #6, !dbg !411
-  call void @llvm.dbg.value(metadata i8*** %argv, i64 0, metadata !93, metadata !130), !dbg !405
-  %11 = load i8*** %argv, align 8, !dbg !412, !tbaa !136
-  %12 = load i8** %11, align 8, !dbg !412, !tbaa !136
-  %13 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str19, i64 0, i64 0), i8* %12, i8* getelementptr inbounds ([127 x i8]* @.str20, i64 0, i64 0)) #6, !dbg !413
-  %14 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([1033 x i8]* @.str17, i64 0, i64 0)) #6, !dbg !414
-  br label %15, !dbg !415
+if.then:                                          ; preds = %entry
+  %call1 = call i32 @CCTK_CommandLine(i8*** %argv) #6, !dbg !282
+  call void @llvm.dbg.value(metadata !{i8*** %argv}, i64 0, metadata !92), !dbg !284
+  %1 = load i8*** %argv, align 8, !dbg !284, !tbaa !129
+  %2 = load i8** %1, align 8, !dbg !284, !tbaa !129
+  %call2 = call i8* @CCTK_CompileDate() #6, !dbg !285
+  %call3 = call i8* @CCTK_CompileTime() #6, !dbg !285
+  %call4 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([26 x i8]* @.str18, i64 0, i64 0), i8* %2, i8* %call2, i8* %call3) #6, !dbg !285
+  call void @llvm.dbg.value(metadata !{i8*** %argv}, i64 0, metadata !92), !dbg !286
+  %3 = load i8*** %argv, align 8, !dbg !286, !tbaa !129
+  %4 = load i8** %3, align 8, !dbg !286, !tbaa !129
+  %call6 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str19, i64 0, i64 0), i8* %4, i8* getelementptr inbounds ([127 x i8]* @.str20, i64 0, i64 0)) #6, !dbg !286
+  %call7 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([1033 x i8]* @.str17, i64 0, i64 0)) #6, !dbg !287
+  br label %if.end, !dbg !288
 
-; <label>:15                                      ; preds = %4, %0
-  %16 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !416, !tbaa !136
-  %17 = call i32 %16(%struct.cGH* null, i32 1) #6, !dbg !416
-  ret void, !dbg !417
+if.end:                                           ; preds = %if.then, %entry
+  %5 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !289, !tbaa !129
+  %call8 = call i32 %5(%struct.cGH* null, i32 1) #6, !dbg !289
+  ret void, !dbg !290
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @CCTKi_CommandLineFinished() #1 {
+entry:
   %fname = alloca [256 x i8], align 16
-  %1 = getelementptr inbounds [256 x i8]* %fname, i64 0, i64 0, !dbg !418
-  call void @llvm.lifetime.start(i64 256, i8* %1) #5, !dbg !418
-  tail call void @llvm.dbg.declare(metadata [256 x i8]* %fname, metadata !101, metadata !130), !dbg !419
+  %0 = getelementptr inbounds [256 x i8]* %fname, i64 0, i64 0, !dbg !291
+  call void @llvm.lifetime.start(i64 256, i8* %0) #5, !dbg !291
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %fname}, metadata !100), !dbg !291
   %.b = load i1* @paramchecking, align 1
-  br i1 %.b, label %3, label %2, !dbg !420
+  br i1 %.b, label %if.end, label %if.then, !dbg !292
 
-; <label>:2                                       ; preds = %0
-  store i32 0, i32* @cctki_paramchecking, align 4, !dbg !421, !tbaa !307
-  br label %3, !dbg !424
+if.then:                                          ; preds = %entry
+  store i32 0, i32* @cctki_paramchecking, align 4, !dbg !293, !tbaa !172
+  br label %if.end, !dbg !295
 
-; <label>:3                                       ; preds = %2, %0
-  %4 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !425, !tbaa !136
-  %5 = tail call i32 %4(%struct.cGH* null) #6, !dbg !425
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !100, metadata !130), !dbg !426
-  %6 = icmp eq i32 %5, 0, !dbg !427
-  br i1 %6, label %15, label %7, !dbg !429
+if.end:                                           ; preds = %if.then, %entry
+  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !296, !tbaa !129
+  %call = call i32 %1(%struct.cGH* null) #6, !dbg !296
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !99), !dbg !296
+  %tobool1 = icmp eq i32 %call, 0, !dbg !297
+  br i1 %tobool1, label %if.end11, label %if.then2, !dbg !297
 
-; <label>:7                                       ; preds = %3
-  %.b1 = load i1* @redirectsubs, align 1
-  br i1 %.b1, label %8, label %10, !dbg !430
+if.then2:                                         ; preds = %if.end
+  %.b13 = load i1* @redirectsubs, align 1
+  br i1 %.b13, label %if.then4, label %if.else, !dbg !298
 
-; <label>:8                                       ; preds = %7
-  %9 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([16 x i8]* @.str22, i64 0, i64 0), i32 %5) #6, !dbg !432
-  br label %12, !dbg !435
+if.then4:                                         ; preds = %if.then2
+  %call5 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([16 x i8]* @.str22, i64 0, i64 0), i32 %call) #6, !dbg !300
+  br label %if.end8, !dbg !302
 
-; <label>:10                                      ; preds = %7
-  %11 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([10 x i8]* @.str23, i64 0, i64 0)) #6, !dbg !436
-  br label %12
+if.else:                                          ; preds = %if.then2
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* getelementptr inbounds ([10 x i8]* @.str23, i64 0, i64 0), i64 10, i32 1, i1 false), !dbg !303
+  br label %if.end8
 
-; <label>:12                                      ; preds = %10, %8
-  %13 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !438, !tbaa !136
-  %14 = call %struct.__sFILE* @"\01_freopen"(i8* %1, i8* getelementptr inbounds ([2 x i8]* @.str24, i64 0, i64 0), %struct.__sFILE* %13) #6, !dbg !439
-  br label %15, !dbg !440
+if.end8:                                          ; preds = %if.else, %if.then4
+  %2 = load %struct._IO_FILE** @stdout, align 8, !dbg !305, !tbaa !129
+  %call10 = call %struct._IO_FILE* @freopen(i8* %0, i8* getelementptr inbounds ([2 x i8]* @.str24, i64 0, i64 0), %struct._IO_FILE* %2) #6, !dbg !305
+  br label %if.end11, !dbg !306
 
-; <label>:15                                      ; preds = %3, %12
-  call void @llvm.lifetime.end(i64 256, i8* %1) #5, !dbg !441
-  ret void, !dbg !441
+if.end11:                                         ; preds = %if.end, %if.end8
+  call void @llvm.lifetime.end(i64 256, i8* %0) #5, !dbg !307
+  ret void, !dbg !307
 }
 
 ; Function Attrs: nounwind
 declare void @llvm.lifetime.start(i64, i8* nocapture) #5
 
-; Function Attrs: optsize
-declare i32 @__sprintf_chk(i8*, i32, i64, i8*, ...) #3
+; Function Attrs: nounwind optsize
+declare i32 @sprintf(i8* nocapture, i8* nocapture, ...) #4
 
 ; Function Attrs: optsize
-declare %struct.__sFILE* @"\01_freopen"(i8*, i8*, %struct.__sFILE*) #3
+declare %struct._IO_FILE* @freopen(i8*, i8*, %struct._IO_FILE*) #3
 
 ; Function Attrs: nounwind
 declare void @llvm.lifetime.end(i64, i8* nocapture) #5
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
 ; Function Attrs: nounwind
-declare i32 @puts(i8* nocapture readonly) #5
+declare i32 @puts(i8* nocapture) #5
 
 ; Function Attrs: nounwind
 declare i32 @putchar(i32) #5
 
-attributes #0 = { nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+; Function Attrs: nounwind
+declare void @llvm.memcpy.p0i8.p0i8.i64(i8* nocapture, i8* nocapture, i64, i32, i1) #5
+
+attributes #0 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
-attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #5 = { nounwind }
 attributes #6 = { nounwind optsize }
 attributes #7 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!125, !126, !127}
-!llvm.ident = !{!128}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !5, globals: !111, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!5 = !{!6, !12, !19, !55, !62, !67, !73, !78, !82, !85, !86, !91, !95, !98, !105}
-!6 = !DISubprogram(name: "CCTKi_version_main_CommandLine_c", scope: !1, file: !1, line: 40, type: !7, isLocal: false, isDefinition: true, scopeLine: 40, flags: DIFlagPrototyped, isOptimized: true, function: i8* ()* @CCTKi_version_main_CommandLine_c, variables: !2)
-!7 = !DISubroutineType(types: !8)
-!8 = !{!9}
-!9 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !10, size: 64, align: 64)
-!10 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !11)
-!11 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!12 = !DISubprogram(name: "CCTKi_CommandLineTestThornCompiled", scope: !1, file: !1, line: 99, type: !13, isLocal: false, isDefinition: true, scopeLine: 100, flags: DIFlagPrototyped, isOptimized: true, function: void (i8*)* @CCTKi_CommandLineTestThornCompiled, variables: !15)
-!13 = !DISubroutineType(types: !14)
-!14 = !{null, !9}
-!15 = !{!16, !17}
-!16 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "argument", arg: 1, scope: !12, file: !1, line: 99, type: !9)
-!17 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "retval", scope: !12, file: !1, line: 101, type: !18)
-!18 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!19 = !DISubprogram(name: "CCTKi_CommandLineDescribeAllParameters", scope: !1, file: !1, line: 132, type: !13, isLocal: false, isDefinition: true, scopeLine: 133, flags: DIFlagPrototyped, isOptimized: true, function: void (i8*)* @CCTKi_CommandLineDescribeAllParameters, variables: !20)
-!20 = !{!21, !22, !23, !24, !25, !27, !28}
-!21 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "argument", arg: 1, scope: !19, file: !1, line: 132, type: !9)
-!22 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "first", scope: !19, file: !1, line: 134, type: !18)
-!23 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "n_thorns", scope: !19, file: !1, line: 134, type: !18)
-!24 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "thorn", scope: !19, file: !1, line: 134, type: !18)
-!25 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "param", scope: !19, file: !1, line: 135, type: !26)
-!26 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !11, size: 64, align: 64)
-!27 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "thornname", scope: !19, file: !1, line: 136, type: !9)
-!28 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "properties", scope: !19, file: !1, line: 137, type: !29)
-!29 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !30, size: 64, align: 64)
-!30 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !31)
-!31 = !DIDerivedType(tag: DW_TAG_typedef, name: "cParamData", file: !32, line: 112, baseType: !33)
-!32 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/cctk_Parameter.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!33 = !DICompositeType(tag: DW_TAG_structure_type, name: "PARAM_PROPS", file: !32, line: 97, size: 512, align: 64, elements: !34)
-!34 = !{!35, !36, !37, !38, !39, !40, !41, !53, !54}
-!35 = !DIDerivedType(tag: DW_TAG_member, name: "name", scope: !33, file: !32, line: 99, baseType: !26, size: 64, align: 64)
-!36 = !DIDerivedType(tag: DW_TAG_member, name: "thorn", scope: !33, file: !32, line: 100, baseType: !26, size: 64, align: 64, offset: 64)
-!37 = !DIDerivedType(tag: DW_TAG_member, name: "scope", scope: !33, file: !32, line: 101, baseType: !18, size: 32, align: 32, offset: 128)
-!38 = !DIDerivedType(tag: DW_TAG_member, name: "description", scope: !33, file: !32, line: 103, baseType: !26, size: 64, align: 64, offset: 192)
-!39 = !DIDerivedType(tag: DW_TAG_member, name: "defval", scope: !33, file: !32, line: 104, baseType: !26, size: 64, align: 64, offset: 256)
-!40 = !DIDerivedType(tag: DW_TAG_member, name: "type", scope: !33, file: !32, line: 106, baseType: !18, size: 32, align: 32, offset: 320)
-!41 = !DIDerivedType(tag: DW_TAG_member, name: "range", scope: !33, file: !32, line: 107, baseType: !42, size: 64, align: 64, offset: 384)
-!42 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !43, size: 64, align: 64)
-!43 = !DIDerivedType(tag: DW_TAG_typedef, name: "t_range", file: !32, line: 82, baseType: !44)
-!44 = !DICompositeType(tag: DW_TAG_structure_type, name: "RANGE", file: !32, line: 74, size: 384, align: 64, elements: !45)
-!45 = !{!46, !48, !49, !50, !51, !52}
-!46 = !DIDerivedType(tag: DW_TAG_member, name: "last", scope: !44, file: !32, line: 76, baseType: !47, size: 64, align: 64)
-!47 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !44, size: 64, align: 64)
-!48 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !44, file: !32, line: 77, baseType: !47, size: 64, align: 64, offset: 64)
-!49 = !DIDerivedType(tag: DW_TAG_member, name: "range", scope: !44, file: !32, line: 78, baseType: !26, size: 64, align: 64, offset: 128)
-!50 = !DIDerivedType(tag: DW_TAG_member, name: "origin", scope: !44, file: !32, line: 79, baseType: !26, size: 64, align: 64, offset: 192)
-!51 = !DIDerivedType(tag: DW_TAG_member, name: "active", scope: !44, file: !32, line: 80, baseType: !18, size: 32, align: 32, offset: 256)
-!52 = !DIDerivedType(tag: DW_TAG_member, name: "description", scope: !44, file: !32, line: 81, baseType: !26, size: 64, align: 64, offset: 320)
-!53 = !DIDerivedType(tag: DW_TAG_member, name: "n_set", scope: !33, file: !32, line: 109, baseType: !18, size: 32, align: 32, offset: 448)
-!54 = !DIDerivedType(tag: DW_TAG_member, name: "steerable", scope: !33, file: !32, line: 110, baseType: !18, size: 32, align: 32, offset: 480)
-!55 = !DISubprogram(name: "CCTKi_CommandLineDescribeParameter", scope: !1, file: !1, line: 198, type: !13, isLocal: false, isDefinition: true, scopeLine: 199, flags: DIFlagPrototyped, isOptimized: true, function: void (i8*)* @CCTKi_CommandLineDescribeParameter, variables: !56)
-!56 = !{!57, !58, !59, !60, !61}
-!57 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "argument", arg: 1, scope: !55, file: !1, line: 198, type: !9)
-!58 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "thorn", scope: !55, file: !1, line: 200, type: !26)
-!59 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "param", scope: !55, file: !1, line: 200, type: !26)
-!60 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cthorn", scope: !55, file: !1, line: 201, type: !9)
-!61 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "properties", scope: !55, file: !1, line: 202, type: !29)
-!62 = !DISubprogram(name: "CCTKi_CommandLineTestParameters", scope: !1, file: !1, line: 248, type: !13, isLocal: false, isDefinition: true, scopeLine: 249, flags: DIFlagPrototyped, isOptimized: true, function: void (i8*)* @CCTKi_CommandLineTestParameters, variables: !63)
-!63 = !{!64, !65, !66}
-!64 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "argument", arg: 1, scope: !62, file: !1, line: 248, type: !9)
-!65 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nprocs", scope: !62, file: !1, line: 250, type: !18)
-!66 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "endptr", scope: !62, file: !1, line: 251, type: !26)
-!67 = !DISubprogram(name: "CCTKi_CommandLineWarningLevel", scope: !1, file: !1, line: 289, type: !13, isLocal: false, isDefinition: true, scopeLine: 290, flags: DIFlagPrototyped, isOptimized: true, function: void (i8*)* @CCTKi_CommandLineWarningLevel, variables: !68)
-!68 = !{!69, !70, !71}
-!69 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "argument", arg: 1, scope: !67, file: !1, line: 289, type: !9)
-!70 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "endptr", scope: !67, file: !1, line: 291, type: !26)
-!71 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "warninglevel", scope: !67, file: !1, line: 292, type: !72)
-!72 = !DIBasicType(name: "long int", size: 64, align: 64, encoding: DW_ATE_signed)
-!73 = !DISubprogram(name: "CCTKi_CommandLineErrorLevel", scope: !1, file: !1, line: 322, type: !13, isLocal: false, isDefinition: true, scopeLine: 323, flags: DIFlagPrototyped, isOptimized: true, function: void (i8*)* @CCTKi_CommandLineErrorLevel, variables: !74)
-!74 = !{!75, !76, !77}
-!75 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "argument", arg: 1, scope: !73, file: !1, line: 322, type: !9)
-!76 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "endptr", scope: !73, file: !1, line: 324, type: !26)
-!77 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "errorlevel", scope: !73, file: !1, line: 325, type: !72)
-!78 = !DISubprogram(name: "CCTKi_CommandLineParameterLevel", scope: !1, file: !1, line: 355, type: !13, isLocal: false, isDefinition: true, scopeLine: 356, flags: DIFlagPrototyped, isOptimized: true, function: void (i8*)* @CCTKi_CommandLineParameterLevel, variables: !79)
-!79 = !{!80, !81}
-!80 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "argument", arg: 1, scope: !78, file: !1, line: 355, type: !9)
-!81 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "parameterlevel", scope: !78, file: !1, line: 357, type: !18)
-!82 = !DISubprogram(name: "CCTKi_CommandLineRedirectStdout", scope: !1, file: !1, line: 392, type: !83, isLocal: false, isDefinition: true, scopeLine: 393, flags: DIFlagPrototyped, isOptimized: true, function: void ()* @CCTKi_CommandLineRedirectStdout, variables: !2)
-!83 = !DISubroutineType(types: !84)
-!84 = !{null}
-!85 = !DISubprogram(name: "CCTKi_CommandLineListThorns", scope: !1, file: !1, line: 408, type: !83, isLocal: false, isDefinition: true, scopeLine: 409, flags: DIFlagPrototyped, isOptimized: true, function: void ()* @CCTKi_CommandLineListThorns, variables: !2)
-!86 = !DISubprogram(name: "CCTKi_CommandLineVersion", scope: !1, file: !1, line: 432, type: !83, isLocal: false, isDefinition: true, scopeLine: 433, flags: DIFlagPrototyped, isOptimized: true, function: void ()* @CCTKi_CommandLineVersion, variables: !87)
-!87 = !{!88, !90}
-!88 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "argv", scope: !86, file: !1, line: 434, type: !89)
-!89 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64, align: 64)
-!90 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "version", scope: !86, file: !1, line: 435, type: !9)
-!91 = !DISubprogram(name: "CCTKi_CommandLineHelp", scope: !1, file: !1, line: 462, type: !83, isLocal: false, isDefinition: true, scopeLine: 463, flags: DIFlagPrototyped, isOptimized: true, function: void ()* @CCTKi_CommandLineHelp, variables: !92)
-!92 = !{!93, !94}
-!93 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "argv", scope: !91, file: !1, line: 464, type: !89)
-!94 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "commandline_options_description", scope: !91, file: !1, line: 465, type: !9)
-!95 = !DISubprogram(name: "CCTKi_CommandLineUsage", scope: !1, file: !1, line: 506, type: !83, isLocal: false, isDefinition: true, scopeLine: 507, flags: DIFlagPrototyped, isOptimized: true, function: void ()* @CCTKi_CommandLineUsage, variables: !96)
-!96 = !{!97}
-!97 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "argv", scope: !95, file: !1, line: 508, type: !89)
-!98 = !DISubprogram(name: "CCTKi_CommandLineFinished", scope: !1, file: !1, line: 531, type: !83, isLocal: false, isDefinition: true, scopeLine: 532, flags: DIFlagPrototyped, isOptimized: true, function: void ()* @CCTKi_CommandLineFinished, variables: !99)
-!99 = !{!100, !101}
-!100 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "myproc", scope: !98, file: !1, line: 533, type: !18)
-!101 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "fname", scope: !98, file: !1, line: 534, type: !102)
-!102 = !DICompositeType(tag: DW_TAG_array_type, baseType: !11, size: 2048, align: 8, elements: !103)
-!103 = !{!104}
-!104 = !DISubrange(count: 256)
-!105 = !DISubprogram(name: "CommandLinePrintParameter", scope: !1, file: !1, line: 579, type: !106, isLocal: true, isDefinition: true, scopeLine: 580, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct.PARAM_PROPS*)* @CommandLinePrintParameter, variables: !108)
-!106 = !DISubroutineType(types: !107)
-!107 = !{null, !29}
-!108 = !{!109, !110}
-!109 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "properties", arg: 1, scope: !105, file: !1, line: 579, type: !29)
-!110 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "range", scope: !105, file: !1, line: 581, type: !42)
-!111 = !{!112, !113, !114, !115, !116, !117, !121}
-!112 = !DIGlobalVariable(name: "cctki_paramchecking", scope: !0, file: !1, line: 67, type: !18, isLocal: false, isDefinition: true, variable: i32* @cctki_paramchecking)
-!113 = !DIGlobalVariable(name: "cctki_paramcheck_nprocs", scope: !0, file: !1, line: 68, type: !18, isLocal: false, isDefinition: true, variable: i32* @cctki_paramcheck_nprocs)
-!114 = !DIGlobalVariable(name: "rcsid", scope: !0, file: !1, line: 38, type: !9, isLocal: true, isDefinition: true)
-!115 = !DIGlobalVariable(name: "paramchecking", scope: !0, file: !1, line: 61, type: !18, isLocal: true, isDefinition: true)
-!116 = !DIGlobalVariable(name: "redirectsubs", scope: !0, file: !1, line: 60, type: !18, isLocal: true, isDefinition: true)
-!117 = !DIGlobalVariable(name: "cctk_parameter_type_names", scope: !0, file: !32, line: 54, type: !118, isLocal: true, isDefinition: true, variable: [6 x i8*]* @cctk_parameter_type_names)
-!118 = !DICompositeType(tag: DW_TAG_array_type, baseType: !9, size: 384, align: 64, elements: !119)
-!119 = !{!120}
-!120 = !DISubrange(count: 6)
-!121 = !DIGlobalVariable(name: "cctk_parameter_scopes", scope: !0, file: !32, line: 36, type: !122, isLocal: true, isDefinition: true, variable: [5 x i8*]* @cctk_parameter_scopes)
-!122 = !DICompositeType(tag: DW_TAG_array_type, baseType: !9, size: 320, align: 64, elements: !123)
-!123 = !{!124}
-!124 = !DISubrange(count: 5)
-!125 = !{i32 2, !"Dwarf Version", i32 2}
-!126 = !{i32 2, !"Debug Info Version", i32 700000003}
-!127 = !{i32 1, !"PIC Level", i32 2}
-!128 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!129 = !DILocation(line: 40, column: 1, scope: !6)
-!130 = !DIExpression()
-!131 = !DILocation(line: 99, column: 54, scope: !12)
-!132 = !DILocation(line: 104, column: 12, scope: !12)
-!133 = !DILocation(line: 101, column: 7, scope: !12)
-!134 = !DILocation(line: 105, column: 7, scope: !135)
-!135 = distinct !DILexicalBlock(scope: !12, file: !1, line: 105, column: 7)
-!136 = !{!137, !137, i64 0}
-!137 = !{!"any pointer", !138, i64 0}
-!138 = !{!"omnipotent char", !139, i64 0}
-!139 = !{!"Simple C/C++ TBAA"}
-!140 = !DILocation(line: 105, column: 26, scope: !135)
-!141 = !DILocation(line: 105, column: 7, scope: !12)
-!142 = !DILocation(line: 107, column: 52, scope: !143)
-!143 = distinct !DILexicalBlock(scope: !135, file: !1, line: 106, column: 3)
-!144 = !DILocation(line: 107, column: 5, scope: !143)
-!145 = !DILocation(line: 108, column: 3, scope: !143)
-!146 = !DILocation(line: 110, column: 3, scope: !12)
-!147 = !DILocation(line: 111, column: 1, scope: !12)
-!148 = !DILocation(line: 132, column: 58, scope: !19)
-!149 = !DILocation(line: 140, column: 7, scope: !150)
-!150 = distinct !DILexicalBlock(scope: !19, file: !1, line: 140, column: 7)
-!151 = !DILocation(line: 140, column: 26, scope: !150)
-!152 = !DILocation(line: 140, column: 7, scope: !19)
-!153 = !DILocation(line: 142, column: 16, scope: !154)
-!154 = distinct !DILexicalBlock(scope: !150, file: !1, line: 141, column: 3)
-!155 = !DILocation(line: 134, column: 14, scope: !19)
-!156 = !DILocation(line: 134, column: 24, scope: !19)
-!157 = !DILocation(line: 144, column: 27, scope: !158)
-!158 = distinct !DILexicalBlock(scope: !159, file: !1, line: 144, column: 5)
-!159 = distinct !DILexicalBlock(scope: !154, file: !1, line: 144, column: 5)
-!160 = !DILocation(line: 144, column: 5, scope: !159)
-!161 = !DILocation(line: 153, column: 13, scope: !162)
-!162 = distinct !DILexicalBlock(scope: !163, file: !1, line: 153, column: 13)
-!163 = distinct !DILexicalBlock(scope: !164, file: !1, line: 152, column: 7)
-!164 = distinct !DILexicalBlock(scope: !158, file: !1, line: 145, column: 5)
-!165 = !DILocation(line: 146, column: 19, scope: !164)
-!166 = !DILocation(line: 136, column: 15, scope: !19)
-!167 = !DILocation(line: 148, column: 26, scope: !164)
-!168 = !DILocation(line: 147, column: 7, scope: !164)
-!169 = !DILocation(line: 134, column: 7, scope: !19)
-!170 = !DILocation(line: 135, column: 9, scope: !19)
-!171 = !DILocation(line: 137, column: 21, scope: !19)
-!172 = !DILocation(line: 151, column: 14, scope: !164)
-!173 = !DILocation(line: 151, column: 73, scope: !164)
-!174 = !DILocation(line: 151, column: 7, scope: !164)
-!175 = !DILocation(line: 153, column: 13, scope: !163)
-!176 = !DILocation(line: 155, column: 19, scope: !177)
-!177 = distinct !DILexicalBlock(scope: !162, file: !1, line: 154, column: 9)
-!178 = !{!138, !138, i64 0}
-!179 = !DILocation(line: 155, column: 11, scope: !177)
-!180 = !DILocation(line: 158, column: 42, scope: !181)
-!181 = distinct !DILexicalBlock(scope: !177, file: !1, line: 156, column: 11)
-!182 = !DILocation(line: 158, column: 15, scope: !181)
-!183 = !DILocation(line: 159, column: 15, scope: !181)
-!184 = !DILocation(line: 161, column: 24, scope: !181)
-!185 = !DILocation(line: 161, column: 15, scope: !181)
-!186 = !DILocation(line: 162, column: 15, scope: !181)
-!187 = !DILocation(line: 163, column: 11, scope: !181)
-!188 = !DILocation(line: 167, column: 27, scope: !189)
-!189 = distinct !DILexicalBlock(scope: !162, file: !1, line: 166, column: 9)
-!190 = !DILocation(line: 167, column: 11, scope: !189)
-!191 = !DILocation(line: 170, column: 15, scope: !163)
-!192 = !DILocation(line: 170, column: 9, scope: !163)
-!193 = !DILocation(line: 144, column: 44, scope: !158)
-!194 = !DILocation(line: 176, column: 3, scope: !19)
-!195 = !DILocation(line: 177, column: 1, scope: !19)
-!196 = !DILocation(line: 579, column: 58, scope: !105)
-!197 = !DILocation(line: 584, column: 7, scope: !198)
-!198 = distinct !DILexicalBlock(scope: !105, file: !1, line: 584, column: 7)
-!199 = !DILocation(line: 584, column: 7, scope: !105)
-!200 = !DILocation(line: 586, column: 48, scope: !201)
-!201 = distinct !DILexicalBlock(scope: !198, file: !1, line: 585, column: 3)
-!202 = !{!203, !137, i64 8}
-!203 = !{!"PARAM_PROPS", !137, i64 0, !137, i64 8, !204, i64 16, !137, i64 24, !137, i64 32, !204, i64 40, !137, i64 48, !204, i64 56, !204, i64 60}
-!204 = !{!"int", !138, i64 0}
-!205 = !DILocation(line: 586, column: 67, scope: !201)
-!206 = !{!203, !137, i64 0}
-!207 = !DILocation(line: 586, column: 5, scope: !201)
-!208 = !DILocation(line: 587, column: 21, scope: !209)
-!209 = distinct !DILexicalBlock(scope: !201, file: !1, line: 587, column: 9)
-!210 = !{!203, !204, i64 16}
-!211 = !DILocation(line: 587, column: 27, scope: !209)
-!212 = !DILocation(line: 587, column: 9, scope: !201)
-!213 = !DILocation(line: 589, column: 65, scope: !214)
-!214 = distinct !DILexicalBlock(scope: !209, file: !1, line: 588, column: 5)
-!215 = !DILocation(line: 589, column: 27, scope: !214)
-!216 = !DILocation(line: 590, column: 39, scope: !214)
-!217 = !DILocation(line: 589, column: 7, scope: !214)
-!218 = !DILocation(line: 591, column: 5, scope: !214)
-!219 = !DILocation(line: 592, column: 5, scope: !201)
-!220 = !DILocation(line: 593, column: 50, scope: !201)
-!221 = !{!203, !137, i64 24}
-!222 = !DILocation(line: 593, column: 5, scope: !201)
-!223 = !DILocation(line: 594, column: 72, scope: !201)
-!224 = !{!203, !204, i64 40}
-!225 = !DILocation(line: 594, column: 76, scope: !201)
-!226 = !DILocation(line: 594, column: 34, scope: !201)
-!227 = !DILocation(line: 594, column: 5, scope: !201)
-!228 = !DILocation(line: 595, column: 46, scope: !201)
-!229 = !{!203, !137, i64 32}
-!230 = !DILocation(line: 595, column: 5, scope: !201)
-!231 = !DILocation(line: 596, column: 68, scope: !201)
-!232 = !DILocation(line: 596, column: 73, scope: !201)
-!233 = !DILocation(line: 596, column: 34, scope: !201)
-!234 = !DILocation(line: 596, column: 5, scope: !201)
-!235 = !DILocation(line: 598, column: 30, scope: !236)
-!236 = distinct !DILexicalBlock(scope: !201, file: !1, line: 598, column: 5)
-!237 = !DILocation(line: 598, column: 5, scope: !236)
-!238 = !DILocation(line: 600, column: 43, scope: !239)
-!239 = distinct !DILexicalBlock(scope: !240, file: !1, line: 599, column: 5)
-!240 = distinct !DILexicalBlock(scope: !236, file: !1, line: 598, column: 5)
-!241 = !{!242, !137, i64 16}
-!242 = !{!"RANGE", !137, i64 0, !137, i64 8, !137, i64 16, !137, i64 24, !204, i64 32, !137, i64 40}
-!243 = !DILocation(line: 600, column: 7, scope: !239)
-!244 = !DILocation(line: 601, column: 47, scope: !239)
-!245 = !{!242, !137, i64 24}
-!246 = !DILocation(line: 601, column: 7, scope: !239)
-!247 = !DILocation(line: 602, column: 47, scope: !239)
-!248 = !{!242, !137, i64 40}
-!249 = !DILocation(line: 602, column: 7, scope: !239)
-!250 = !DILocation(line: 598, column: 59, scope: !240)
-!251 = !DILocation(line: 605, column: 1, scope: !105)
-!252 = !DILocation(line: 198, column: 54, scope: !55)
-!253 = !DILocation(line: 205, column: 7, scope: !254)
-!254 = distinct !DILexicalBlock(scope: !55, file: !1, line: 205, column: 7)
-!255 = !DILocation(line: 205, column: 26, scope: !254)
-!256 = !DILocation(line: 205, column: 7, scope: !55)
-!257 = !DILocation(line: 200, column: 9, scope: !55)
-!258 = !DILocation(line: 200, column: 17, scope: !55)
-!259 = !DILocation(line: 207, column: 5, scope: !260)
-!260 = distinct !DILexicalBlock(scope: !254, file: !1, line: 206, column: 3)
-!261 = !DILocation(line: 209, column: 11, scope: !262)
-!262 = distinct !DILexicalBlock(scope: !260, file: !1, line: 209, column: 9)
-!263 = !DILocation(line: 209, column: 9, scope: !260)
-!264 = !DILocation(line: 211, column: 20, scope: !265)
-!265 = distinct !DILexicalBlock(scope: !262, file: !1, line: 210, column: 5)
-!266 = !DILocation(line: 202, column: 21, scope: !55)
-!267 = !DILocation(line: 212, column: 5, scope: !265)
-!268 = !DILocation(line: 215, column: 47, scope: !269)
-!269 = distinct !DILexicalBlock(scope: !262, file: !1, line: 214, column: 5)
-!270 = !DILocation(line: 215, column: 20, scope: !269)
-!271 = !DILocation(line: 216, column: 13, scope: !272)
-!272 = distinct !DILexicalBlock(scope: !269, file: !1, line: 216, column: 11)
-!273 = !DILocation(line: 216, column: 11, scope: !269)
-!274 = !DILocation(line: 218, column: 44, scope: !275)
-!275 = distinct !DILexicalBlock(scope: !272, file: !1, line: 217, column: 7)
-!276 = !DILocation(line: 218, column: 18, scope: !275)
-!277 = !DILocation(line: 201, column: 15, scope: !55)
-!278 = !DILocation(line: 219, column: 42, scope: !275)
-!279 = !DILocation(line: 219, column: 22, scope: !275)
-!280 = !DILocation(line: 220, column: 7, scope: !275)
-!281 = !DILocation(line: 222, column: 13, scope: !269)
-!282 = !DILocation(line: 222, column: 7, scope: !269)
-!283 = !DILocation(line: 223, column: 13, scope: !269)
-!284 = !DILocation(line: 223, column: 7, scope: !269)
-!285 = !DILocation(line: 226, column: 5, scope: !260)
-!286 = !DILocation(line: 227, column: 3, scope: !260)
-!287 = !DILocation(line: 229, column: 3, scope: !55)
-!288 = !DILocation(line: 230, column: 1, scope: !55)
-!289 = !DILocation(line: 248, column: 51, scope: !62)
-!290 = !DILocation(line: 254, column: 16, scope: !291)
-!291 = distinct !DILexicalBlock(scope: !62, file: !1, line: 254, column: 7)
-!292 = !DILocation(line: 254, column: 7, scope: !62)
-!293 = !DILocation(line: 251, column: 9, scope: !62)
-!294 = !DILocation(line: 260, column: 14, scope: !295)
-!295 = distinct !DILexicalBlock(scope: !291, file: !1, line: 259, column: 3)
-!296 = !DILocation(line: 250, column: 7, scope: !62)
-!297 = !DILocation(line: 261, column: 12, scope: !298)
-!298 = distinct !DILexicalBlock(scope: !295, file: !1, line: 261, column: 9)
-!299 = !DILocation(line: 261, column: 19, scope: !298)
-!300 = !DILocation(line: 261, column: 22, scope: !298)
-!301 = !DILocation(line: 261, column: 30, scope: !298)
-!302 = !DILocation(line: 261, column: 9, scope: !295)
-!303 = !DILocation(line: 263, column: 7, scope: !304)
-!304 = distinct !DILexicalBlock(scope: !298, file: !1, line: 262, column: 5)
-!305 = !DILocation(line: 264, column: 5, scope: !304)
-!306 = !DILocation(line: 268, column: 23, scope: !62)
-!307 = !{!204, !204, i64 0}
-!308 = !DILocation(line: 269, column: 27, scope: !62)
-!309 = !DILocation(line: 270, column: 1, scope: !62)
-!310 = !DILocation(line: 511, column: 7, scope: !311)
-!311 = distinct !DILexicalBlock(scope: !95, file: !1, line: 511, column: 7)
-!312 = !DILocation(line: 511, column: 26, scope: !311)
-!313 = !DILocation(line: 511, column: 7, scope: !95)
-!314 = !DILocation(line: 508, column: 10, scope: !95)
-!315 = !DILocation(line: 513, column: 5, scope: !316)
-!316 = distinct !DILexicalBlock(scope: !311, file: !1, line: 512, column: 3)
-!317 = !DILocation(line: 515, column: 31, scope: !316)
-!318 = !DILocation(line: 515, column: 5, scope: !316)
-!319 = !DILocation(line: 516, column: 3, scope: !316)
-!320 = !DILocation(line: 518, column: 3, scope: !95)
-!321 = !DILocation(line: 519, column: 1, scope: !95)
-!322 = !DILocation(line: 289, column: 49, scope: !67)
-!323 = !DILocation(line: 291, column: 9, scope: !67)
-!324 = !DILocation(line: 295, column: 18, scope: !67)
-!325 = !DILocation(line: 292, column: 12, scope: !67)
-!326 = !DILocation(line: 296, column: 7, scope: !327)
-!327 = distinct !DILexicalBlock(scope: !67, file: !1, line: 296, column: 7)
-!328 = !DILocation(line: 296, column: 14, scope: !327)
-!329 = !DILocation(line: 296, column: 17, scope: !327)
-!330 = !DILocation(line: 296, column: 25, scope: !327)
-!331 = !DILocation(line: 296, column: 7, scope: !67)
-!332 = !DILocation(line: 298, column: 25, scope: !333)
-!333 = distinct !DILexicalBlock(scope: !327, file: !1, line: 297, column: 3)
-!334 = !DILocation(line: 298, column: 5, scope: !333)
-!335 = !DILocation(line: 299, column: 3, scope: !333)
-!336 = !DILocation(line: 302, column: 5, scope: !337)
-!337 = distinct !DILexicalBlock(scope: !327, file: !1, line: 301, column: 3)
-!338 = !DILocation(line: 304, column: 1, scope: !67)
-!339 = !DILocation(line: 322, column: 47, scope: !73)
-!340 = !DILocation(line: 324, column: 9, scope: !73)
-!341 = !DILocation(line: 328, column: 16, scope: !73)
-!342 = !DILocation(line: 325, column: 12, scope: !73)
-!343 = !DILocation(line: 329, column: 7, scope: !344)
-!344 = distinct !DILexicalBlock(scope: !73, file: !1, line: 329, column: 7)
-!345 = !DILocation(line: 329, column: 14, scope: !344)
-!346 = !DILocation(line: 329, column: 17, scope: !344)
-!347 = !DILocation(line: 329, column: 25, scope: !344)
-!348 = !DILocation(line: 329, column: 7, scope: !73)
-!349 = !DILocation(line: 331, column: 26, scope: !350)
-!350 = distinct !DILexicalBlock(scope: !344, file: !1, line: 330, column: 3)
-!351 = !DILocation(line: 331, column: 5, scope: !350)
-!352 = !DILocation(line: 332, column: 3, scope: !350)
-!353 = !DILocation(line: 335, column: 5, scope: !354)
-!354 = distinct !DILexicalBlock(scope: !344, file: !1, line: 334, column: 3)
-!355 = !DILocation(line: 337, column: 1, scope: !73)
-!356 = !DILocation(line: 355, column: 51, scope: !78)
-!357 = !DILocation(line: 360, column: 7, scope: !358)
-!358 = distinct !DILexicalBlock(scope: !78, file: !1, line: 360, column: 7)
-!359 = !DILocation(line: 360, column: 7, scope: !78)
-!360 = !DILocation(line: 364, column: 12, scope: !361)
-!361 = distinct !DILexicalBlock(scope: !358, file: !1, line: 364, column: 12)
-!362 = !DILocation(line: 364, column: 12, scope: !358)
-!363 = !DILocation(line: 368, column: 12, scope: !364)
-!364 = distinct !DILexicalBlock(scope: !361, file: !1, line: 368, column: 12)
-!365 = !DILocation(line: 368, column: 12, scope: !361)
-!366 = !DILocation(line: 374, column: 5, scope: !367)
-!367 = distinct !DILexicalBlock(scope: !364, file: !1, line: 373, column: 3)
-!368 = !DILocation(line: 357, column: 7, scope: !78)
-!369 = !DILocation(line: 380, column: 3, scope: !78)
-!370 = !DILocation(line: 381, column: 1, scope: !78)
-!371 = !DILocation(line: 396, column: 1, scope: !82)
-!372 = !DILocation(line: 410, column: 7, scope: !373)
-!373 = distinct !DILexicalBlock(scope: !85, file: !1, line: 410, column: 7)
-!374 = !DILocation(line: 410, column: 26, scope: !373)
-!375 = !DILocation(line: 410, column: 7, scope: !85)
-!376 = !DILocation(line: 412, column: 5, scope: !377)
-!377 = distinct !DILexicalBlock(scope: !373, file: !1, line: 411, column: 3)
-!378 = !DILocation(line: 413, column: 24, scope: !377)
-!379 = !DILocation(line: 413, column: 5, scope: !377)
-!380 = !DILocation(line: 414, column: 5, scope: !377)
-!381 = !DILocation(line: 415, column: 3, scope: !377)
-!382 = !DILocation(line: 417, column: 3, scope: !85)
-!383 = !DILocation(line: 418, column: 1, scope: !85)
-!384 = !DILocation(line: 438, column: 7, scope: !385)
-!385 = distinct !DILexicalBlock(scope: !86, file: !1, line: 438, column: 7)
-!386 = !DILocation(line: 438, column: 26, scope: !385)
-!387 = !DILocation(line: 438, column: 7, scope: !86)
-!388 = !DILocation(line: 434, column: 10, scope: !86)
-!389 = !DILocation(line: 440, column: 5, scope: !390)
-!390 = distinct !DILexicalBlock(scope: !385, file: !1, line: 439, column: 3)
-!391 = !DILocation(line: 441, column: 15, scope: !390)
-!392 = !DILocation(line: 435, column: 15, scope: !86)
-!393 = !DILocation(line: 443, column: 56, scope: !390)
-!394 = !DILocation(line: 444, column: 13, scope: !390)
-!395 = !DILocation(line: 444, column: 34, scope: !390)
-!396 = !DILocation(line: 443, column: 5, scope: !390)
-!397 = !DILocation(line: 445, column: 3, scope: !390)
-!398 = !DILocation(line: 447, column: 3, scope: !86)
-!399 = !DILocation(line: 448, column: 1, scope: !86)
-!400 = !DILocation(line: 465, column: 15, scope: !91)
-!401 = !DILocation(line: 483, column: 7, scope: !402)
-!402 = distinct !DILexicalBlock(scope: !91, file: !1, line: 483, column: 7)
-!403 = !DILocation(line: 483, column: 26, scope: !402)
-!404 = !DILocation(line: 483, column: 7, scope: !91)
-!405 = !DILocation(line: 464, column: 10, scope: !91)
-!406 = !DILocation(line: 485, column: 5, scope: !407)
-!407 = distinct !DILexicalBlock(scope: !402, file: !1, line: 484, column: 3)
-!408 = !DILocation(line: 488, column: 13, scope: !407)
-!409 = !DILocation(line: 488, column: 22, scope: !407)
-!410 = !DILocation(line: 488, column: 42, scope: !407)
-!411 = !DILocation(line: 487, column: 5, scope: !407)
-!412 = !DILocation(line: 489, column: 31, scope: !407)
-!413 = !DILocation(line: 489, column: 5, scope: !407)
-!414 = !DILocation(line: 490, column: 5, scope: !407)
-!415 = !DILocation(line: 491, column: 3, scope: !407)
-!416 = !DILocation(line: 493, column: 3, scope: !91)
-!417 = !DILocation(line: 494, column: 1, scope: !91)
-!418 = !DILocation(line: 534, column: 3, scope: !98)
-!419 = !DILocation(line: 534, column: 8, scope: !98)
-!420 = !DILocation(line: 538, column: 7, scope: !98)
-!421 = !DILocation(line: 540, column: 25, scope: !422)
-!422 = distinct !DILexicalBlock(scope: !423, file: !1, line: 539, column: 3)
-!423 = distinct !DILexicalBlock(scope: !98, file: !1, line: 538, column: 7)
-!424 = !DILocation(line: 541, column: 3, scope: !422)
-!425 = !DILocation(line: 544, column: 12, scope: !98)
-!426 = !DILocation(line: 533, column: 7, scope: !98)
-!427 = !DILocation(line: 545, column: 7, scope: !428)
-!428 = distinct !DILexicalBlock(scope: !98, file: !1, line: 545, column: 7)
-!429 = !DILocation(line: 545, column: 7, scope: !98)
-!430 = !DILocation(line: 547, column: 9, scope: !431)
-!431 = distinct !DILexicalBlock(scope: !428, file: !1, line: 546, column: 3)
-!432 = !DILocation(line: 549, column: 7, scope: !433)
-!433 = distinct !DILexicalBlock(scope: !434, file: !1, line: 548, column: 5)
-!434 = distinct !DILexicalBlock(scope: !431, file: !1, line: 547, column: 9)
-!435 = !DILocation(line: 550, column: 5, scope: !433)
-!436 = !DILocation(line: 553, column: 7, scope: !437)
-!437 = distinct !DILexicalBlock(scope: !434, file: !1, line: 552, column: 5)
-!438 = !DILocation(line: 555, column: 26, scope: !431)
-!439 = !DILocation(line: 555, column: 5, scope: !431)
-!440 = !DILocation(line: 556, column: 3, scope: !431)
-!441 = !DILocation(line: 557, column: 1, scope: !98)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !110, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !11, metadata !18, metadata !54, metadata !61, metadata !66, metadata !72, metadata !77, metadata !81, metadata !84, metadata !85, metadata !90, metadata !94, metadata !97, metadata !104}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_version_main_CommandLine_c", metadata !"CCTKi_version_main_CommandLine_c", metadata !"", i32 40, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* ()* @CCTKi_version_main_CommandLine_c, null, null, metadata !2, i32 40} ; [ DW_TAG_subprogram ] [line 40] [def] [CCTKi_version_main_CommandLine_c]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!9 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!10 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!11 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineTestThornCompiled", metadata !"CCTKi_CommandLineTestThornCompiled", metadata !"", i32 99, metadata !12, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i8*)* @CCTKi_CommandLineTestThornCompiled, null, null, metadata !14, i32 100} ; [ DW_TAG_subprogram ] [line 99] [def] [scope 100] [CCTKi_CommandLineTestThornCompiled]
+!12 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !13, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!13 = metadata !{null, metadata !8}
+!14 = metadata !{metadata !15, metadata !16}
+!15 = metadata !{i32 786689, metadata !11, metadata !"argument", metadata !5, i32 16777315, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [argument] [line 99]
+!16 = metadata !{i32 786688, metadata !11, metadata !"retval", metadata !5, i32 101, metadata !17, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [retval] [line 101]
+!17 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!18 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineDescribeAllParameters", metadata !"CCTKi_CommandLineDescribeAllParameters", metadata !"", i32 132, metadata !12, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i8*)* @CCTKi_CommandLineDescribeAllParameters, null, null, metadata !19, i32 133} ; [ DW_TAG_subprogram ] [line 132] [def] [scope 133] [CCTKi_CommandLineDescribeAllParameters]
+!19 = metadata !{metadata !20, metadata !21, metadata !22, metadata !23, metadata !24, metadata !26, metadata !27}
+!20 = metadata !{i32 786689, metadata !18, metadata !"argument", metadata !5, i32 16777348, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [argument] [line 132]
+!21 = metadata !{i32 786688, metadata !18, metadata !"first", metadata !5, i32 134, metadata !17, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [first] [line 134]
+!22 = metadata !{i32 786688, metadata !18, metadata !"n_thorns", metadata !5, i32 134, metadata !17, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [n_thorns] [line 134]
+!23 = metadata !{i32 786688, metadata !18, metadata !"thorn", metadata !5, i32 134, metadata !17, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [thorn] [line 134]
+!24 = metadata !{i32 786688, metadata !18, metadata !"param", metadata !5, i32 135, metadata !25, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [param] [line 135]
+!25 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !10} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!26 = metadata !{i32 786688, metadata !18, metadata !"thornname", metadata !5, i32 136, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [thornname] [line 136]
+!27 = metadata !{i32 786688, metadata !18, metadata !"properties", metadata !5, i32 137, metadata !28, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [properties] [line 137]
+!28 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !29} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!29 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !30} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from cParamData]
+!30 = metadata !{i32 786454, metadata !1, null, metadata !"cParamData", i32 112, i64 0, i64 0, i64 0, i32 0, metadata !31} ; [ DW_TAG_typedef ] [cParamData] [line 112, size 0, align 0, offset 0] [from PARAM_PROPS]
+!31 = metadata !{i32 786451, metadata !32, null, metadata !"PARAM_PROPS", i32 97, i64 512, i64 64, i32 0, i32 0, null, metadata !33, i32 0, null, null} ; [ DW_TAG_structure_type ] [PARAM_PROPS] [line 97, size 512, align 64, offset 0] [from ]
+!32 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/cctk_Parameter.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!33 = metadata !{metadata !34, metadata !35, metadata !36, metadata !37, metadata !38, metadata !39, metadata !40, metadata !52, metadata !53}
+!34 = metadata !{i32 786445, metadata !32, metadata !31, metadata !"name", i32 99, i64 64, i64 64, i64 0, i32 0, metadata !25} ; [ DW_TAG_member ] [name] [line 99, size 64, align 64, offset 0] [from ]
+!35 = metadata !{i32 786445, metadata !32, metadata !31, metadata !"thorn", i32 100, i64 64, i64 64, i64 64, i32 0, metadata !25} ; [ DW_TAG_member ] [thorn] [line 100, size 64, align 64, offset 64] [from ]
+!36 = metadata !{i32 786445, metadata !32, metadata !31, metadata !"scope", i32 101, i64 32, i64 32, i64 128, i32 0, metadata !17} ; [ DW_TAG_member ] [scope] [line 101, size 32, align 32, offset 128] [from int]
+!37 = metadata !{i32 786445, metadata !32, metadata !31, metadata !"description", i32 103, i64 64, i64 64, i64 192, i32 0, metadata !25} ; [ DW_TAG_member ] [description] [line 103, size 64, align 64, offset 192] [from ]
+!38 = metadata !{i32 786445, metadata !32, metadata !31, metadata !"defval", i32 104, i64 64, i64 64, i64 256, i32 0, metadata !25} ; [ DW_TAG_member ] [defval] [line 104, size 64, align 64, offset 256] [from ]
+!39 = metadata !{i32 786445, metadata !32, metadata !31, metadata !"type", i32 106, i64 32, i64 32, i64 320, i32 0, metadata !17} ; [ DW_TAG_member ] [type] [line 106, size 32, align 32, offset 320] [from int]
+!40 = metadata !{i32 786445, metadata !32, metadata !31, metadata !"range", i32 107, i64 64, i64 64, i64 384, i32 0, metadata !41} ; [ DW_TAG_member ] [range] [line 107, size 64, align 64, offset 384] [from ]
+!41 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !42} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from t_range]
+!42 = metadata !{i32 786454, metadata !32, null, metadata !"t_range", i32 82, i64 0, i64 0, i64 0, i32 0, metadata !43} ; [ DW_TAG_typedef ] [t_range] [line 82, size 0, align 0, offset 0] [from RANGE]
+!43 = metadata !{i32 786451, metadata !32, null, metadata !"RANGE", i32 74, i64 384, i64 64, i32 0, i32 0, null, metadata !44, i32 0, null, null} ; [ DW_TAG_structure_type ] [RANGE] [line 74, size 384, align 64, offset 0] [from ]
+!44 = metadata !{metadata !45, metadata !47, metadata !48, metadata !49, metadata !50, metadata !51}
+!45 = metadata !{i32 786445, metadata !32, metadata !43, metadata !"last", i32 76, i64 64, i64 64, i64 0, i32 0, metadata !46} ; [ DW_TAG_member ] [last] [line 76, size 64, align 64, offset 0] [from ]
+!46 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !43} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from RANGE]
+!47 = metadata !{i32 786445, metadata !32, metadata !43, metadata !"next", i32 77, i64 64, i64 64, i64 64, i32 0, metadata !46} ; [ DW_TAG_member ] [next] [line 77, size 64, align 64, offset 64] [from ]
+!48 = metadata !{i32 786445, metadata !32, metadata !43, metadata !"range", i32 78, i64 64, i64 64, i64 128, i32 0, metadata !25} ; [ DW_TAG_member ] [range] [line 78, size 64, align 64, offset 128] [from ]
+!49 = metadata !{i32 786445, metadata !32, metadata !43, metadata !"origin", i32 79, i64 64, i64 64, i64 192, i32 0, metadata !25} ; [ DW_TAG_member ] [origin] [line 79, size 64, align 64, offset 192] [from ]
+!50 = metadata !{i32 786445, metadata !32, metadata !43, metadata !"active", i32 80, i64 32, i64 32, i64 256, i32 0, metadata !17} ; [ DW_TAG_member ] [active] [line 80, size 32, align 32, offset 256] [from int]
+!51 = metadata !{i32 786445, metadata !32, metadata !43, metadata !"description", i32 81, i64 64, i64 64, i64 320, i32 0, metadata !25} ; [ DW_TAG_member ] [description] [line 81, size 64, align 64, offset 320] [from ]
+!52 = metadata !{i32 786445, metadata !32, metadata !31, metadata !"n_set", i32 109, i64 32, i64 32, i64 448, i32 0, metadata !17} ; [ DW_TAG_member ] [n_set] [line 109, size 32, align 32, offset 448] [from int]
+!53 = metadata !{i32 786445, metadata !32, metadata !31, metadata !"steerable", i32 110, i64 32, i64 32, i64 480, i32 0, metadata !17} ; [ DW_TAG_member ] [steerable] [line 110, size 32, align 32, offset 480] [from int]
+!54 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineDescribeParameter", metadata !"CCTKi_CommandLineDescribeParameter", metadata !"", i32 198, metadata !12, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i8*)* @CCTKi_CommandLineDescribeParameter, null, null, metadata !55, i32 199} ; [ DW_TAG_subprogram ] [line 198] [def] [scope 199] [CCTKi_CommandLineDescribeParameter]
+!55 = metadata !{metadata !56, metadata !57, metadata !58, metadata !59, metadata !60}
+!56 = metadata !{i32 786689, metadata !54, metadata !"argument", metadata !5, i32 16777414, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [argument] [line 198]
+!57 = metadata !{i32 786688, metadata !54, metadata !"thorn", metadata !5, i32 200, metadata !25, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [thorn] [line 200]
+!58 = metadata !{i32 786688, metadata !54, metadata !"param", metadata !5, i32 200, metadata !25, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [param] [line 200]
+!59 = metadata !{i32 786688, metadata !54, metadata !"cthorn", metadata !5, i32 201, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cthorn] [line 201]
+!60 = metadata !{i32 786688, metadata !54, metadata !"properties", metadata !5, i32 202, metadata !28, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [properties] [line 202]
+!61 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineTestParameters", metadata !"CCTKi_CommandLineTestParameters", metadata !"", i32 248, metadata !12, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i8*)* @CCTKi_CommandLineTestParameters, null, null, metadata !62, i32 249} ; [ DW_TAG_subprogram ] [line 248] [def] [scope 249] [CCTKi_CommandLineTestParameters]
+!62 = metadata !{metadata !63, metadata !64, metadata !65}
+!63 = metadata !{i32 786689, metadata !61, metadata !"argument", metadata !5, i32 16777464, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [argument] [line 248]
+!64 = metadata !{i32 786688, metadata !61, metadata !"nprocs", metadata !5, i32 250, metadata !17, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nprocs] [line 250]
+!65 = metadata !{i32 786688, metadata !61, metadata !"endptr", metadata !5, i32 251, metadata !25, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [endptr] [line 251]
+!66 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineWarningLevel", metadata !"CCTKi_CommandLineWarningLevel", metadata !"", i32 289, metadata !12, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i8*)* @CCTKi_CommandLineWarningLevel, null, null, metadata !67, i32 290} ; [ DW_TAG_subprogram ] [line 289] [def] [scope 290] [CCTKi_CommandLineWarningLevel]
+!67 = metadata !{metadata !68, metadata !69, metadata !70}
+!68 = metadata !{i32 786689, metadata !66, metadata !"argument", metadata !5, i32 16777505, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [argument] [line 289]
+!69 = metadata !{i32 786688, metadata !66, metadata !"endptr", metadata !5, i32 291, metadata !25, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [endptr] [line 291]
+!70 = metadata !{i32 786688, metadata !66, metadata !"warninglevel", metadata !5, i32 292, metadata !71, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [warninglevel] [line 292]
+!71 = metadata !{i32 786468, null, null, metadata !"long int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [long int] [line 0, size 64, align 64, offset 0, enc DW_ATE_signed]
+!72 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineErrorLevel", metadata !"CCTKi_CommandLineErrorLevel", metadata !"", i32 322, metadata !12, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i8*)* @CCTKi_CommandLineErrorLevel, null, null, metadata !73, i32 323} ; [ DW_TAG_subprogram ] [line 322] [def] [scope 323] [CCTKi_CommandLineErrorLevel]
+!73 = metadata !{metadata !74, metadata !75, metadata !76}
+!74 = metadata !{i32 786689, metadata !72, metadata !"argument", metadata !5, i32 16777538, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [argument] [line 322]
+!75 = metadata !{i32 786688, metadata !72, metadata !"endptr", metadata !5, i32 324, metadata !25, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [endptr] [line 324]
+!76 = metadata !{i32 786688, metadata !72, metadata !"errorlevel", metadata !5, i32 325, metadata !71, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [errorlevel] [line 325]
+!77 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineParameterLevel", metadata !"CCTKi_CommandLineParameterLevel", metadata !"", i32 355, metadata !12, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i8*)* @CCTKi_CommandLineParameterLevel, null, null, metadata !78, i32 356} ; [ DW_TAG_subprogram ] [line 355] [def] [scope 356] [CCTKi_CommandLineParameterLevel]
+!78 = metadata !{metadata !79, metadata !80}
+!79 = metadata !{i32 786689, metadata !77, metadata !"argument", metadata !5, i32 16777571, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [argument] [line 355]
+!80 = metadata !{i32 786688, metadata !77, metadata !"parameterlevel", metadata !5, i32 357, metadata !17, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [parameterlevel] [line 357]
+!81 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineRedirectStdout", metadata !"CCTKi_CommandLineRedirectStdout", metadata !"", i32 392, metadata !82, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @CCTKi_CommandLineRedirectStdout, null, null, metadata !2, i32 393} ; [ DW_TAG_subprogram ] [line 392] [def] [scope 393] [CCTKi_CommandLineRedirectStdout]
+!82 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !83, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!83 = metadata !{null}
+!84 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineListThorns", metadata !"CCTKi_CommandLineListThorns", metadata !"", i32 408, metadata !82, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @CCTKi_CommandLineListThorns, null, null, metadata !2, i32 409} ; [ DW_TAG_subprogram ] [line 408] [def] [scope 409] [CCTKi_CommandLineListThorns]
+!85 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineVersion", metadata !"CCTKi_CommandLineVersion", metadata !"", i32 432, metadata !82, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @CCTKi_CommandLineVersion, null, null, metadata !86, i32 433} ; [ DW_TAG_subprogram ] [line 432] [def] [scope 433] [CCTKi_CommandLineVersion]
+!86 = metadata !{metadata !87, metadata !89}
+!87 = metadata !{i32 786688, metadata !85, metadata !"argv", metadata !5, i32 434, metadata !88, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [argv] [line 434]
+!88 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !25} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!89 = metadata !{i32 786688, metadata !85, metadata !"version", metadata !5, i32 435, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [version] [line 435]
+!90 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineHelp", metadata !"CCTKi_CommandLineHelp", metadata !"", i32 462, metadata !82, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @CCTKi_CommandLineHelp, null, null, metadata !91, i32 463} ; [ DW_TAG_subprogram ] [line 462] [def] [scope 463] [CCTKi_CommandLineHelp]
+!91 = metadata !{metadata !92, metadata !93}
+!92 = metadata !{i32 786688, metadata !90, metadata !"argv", metadata !5, i32 464, metadata !88, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [argv] [line 464]
+!93 = metadata !{i32 786688, metadata !90, metadata !"commandline_options_description", metadata !5, i32 465, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [commandline_options_description] [line 465]
+!94 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineUsage", metadata !"CCTKi_CommandLineUsage", metadata !"", i32 506, metadata !82, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @CCTKi_CommandLineUsage, null, null, metadata !95, i32 507} ; [ DW_TAG_subprogram ] [line 506] [def] [scope 507] [CCTKi_CommandLineUsage]
+!95 = metadata !{metadata !96}
+!96 = metadata !{i32 786688, metadata !94, metadata !"argv", metadata !5, i32 508, metadata !88, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [argv] [line 508]
+!97 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_CommandLineFinished", metadata !"CCTKi_CommandLineFinished", metadata !"", i32 531, metadata !82, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @CCTKi_CommandLineFinished, null, null, metadata !98, i32 532} ; [ DW_TAG_subprogram ] [line 531] [def] [scope 532] [CCTKi_CommandLineFinished]
+!98 = metadata !{metadata !99, metadata !100}
+!99 = metadata !{i32 786688, metadata !97, metadata !"myproc", metadata !5, i32 533, metadata !17, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [myproc] [line 533]
+!100 = metadata !{i32 786688, metadata !97, metadata !"fname", metadata !5, i32 534, metadata !101, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [fname] [line 534]
+!101 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 2048, i64 8, i32 0, i32 0, metadata !10, metadata !102, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 2048, align 8, offset 0] [from char]
+!102 = metadata !{metadata !103}
+!103 = metadata !{i32 786465, i64 0, i64 256}     ; [ DW_TAG_subrange_type ] [0, 255]
+!104 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CommandLinePrintParameter", metadata !"CommandLinePrintParameter", metadata !"", i32 579, metadata !105, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct.PARAM_PROPS*)* @CommandLinePrintParameter, null, null, metadata !107, i32 580} ; [ DW_TAG_subprogram ] [line 579] [local] [def] [scope 580] [CommandLinePrintParameter]
+!105 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !106, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!106 = metadata !{null, metadata !28}
+!107 = metadata !{metadata !108, metadata !109}
+!108 = metadata !{i32 786689, metadata !104, metadata !"properties", metadata !5, i32 16777795, metadata !28, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [properties] [line 579]
+!109 = metadata !{i32 786688, metadata !104, metadata !"range", metadata !5, i32 581, metadata !41, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [range] [line 581]
+!110 = metadata !{metadata !111, metadata !112, metadata !113, metadata !118, metadata !122, metadata !123, metadata !124}
+!111 = metadata !{i32 786484, i32 0, null, metadata !"cctki_paramchecking", metadata !"cctki_paramchecking", metadata !"", metadata !5, i32 67, metadata !17, i32 0, i32 1, i32* @cctki_paramchecking, null} ; [ DW_TAG_variable ] [cctki_paramchecking] [line 67] [def]
+!112 = metadata !{i32 786484, i32 0, null, metadata !"cctki_paramcheck_nprocs", metadata !"cctki_paramcheck_nprocs", metadata !"", metadata !5, i32 68, metadata !17, i32 0, i32 1, i32* @cctki_paramcheck_nprocs, null} ; [ DW_TAG_variable ] [cctki_paramcheck_nprocs] [line 68] [def]
+!113 = metadata !{i32 786484, i32 0, null, metadata !"cctk_parameter_scopes", metadata !"cctk_parameter_scopes", metadata !"", metadata !114, i32 36, metadata !115, i32 1, i32 1, [5 x i8*]* @cctk_parameter_scopes, null} ; [ DW_TAG_variable ] [cctk_parameter_scopes] [line 36] [local] [def]
+!114 = metadata !{i32 786473, metadata !32}       ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/cctk_Parameter.h]
+!115 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 320, i64 64, i32 0, i32 0, metadata !8, metadata !116, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 320, align 64, offset 0] [from ]
+!116 = metadata !{metadata !117}
+!117 = metadata !{i32 786465, i64 0, i64 5}       ; [ DW_TAG_subrange_type ] [0, 4]
+!118 = metadata !{i32 786484, i32 0, null, metadata !"cctk_parameter_type_names", metadata !"cctk_parameter_type_names", metadata !"", metadata !114, i32 54, metadata !119, i32 1, i32 1, [6 x i8*]* @cctk_parameter_type_names, null} ; [ DW_TAG_variable ] [cctk_parameter_type_names] [line 54] [local] [def]
+!119 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 384, i64 64, i32 0, i32 0, metadata !8, metadata !120, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 384, align 64, offset 0] [from ]
+!120 = metadata !{metadata !121}
+!121 = metadata !{i32 786465, i64 0, i64 6}       ; [ DW_TAG_subrange_type ] [0, 5]
+!122 = metadata !{i32 786484, i32 0, null, metadata !"redirectsubs", metadata !"redirectsubs", metadata !"", metadata !5, i32 60, metadata !17, i32 1, i32 1, null, null}
+!123 = metadata !{i32 786484, i32 0, null, metadata !"paramchecking", metadata !"paramchecking", metadata !"", metadata !5, i32 61, metadata !17, i32 1, i32 1, null, null}
+!124 = metadata !{i32 786484, i32 0, null, metadata !"rcsid", metadata !"rcsid", metadata !"", metadata !5, i32 38, metadata !8, i32 1, i32 1, null, null}
+!125 = metadata !{i32 40, i32 0, metadata !4, null}
+!126 = metadata !{i32 99, i32 0, metadata !11, null}
+!127 = metadata !{i32 104, i32 0, metadata !11, null}
+!128 = metadata !{i32 105, i32 0, metadata !11, null}
+!129 = metadata !{metadata !"any pointer", metadata !130}
+!130 = metadata !{metadata !"omnipotent char", metadata !131}
+!131 = metadata !{metadata !"Simple C/C++ TBAA"}
+!132 = metadata !{i32 107, i32 0, metadata !133, null}
+!133 = metadata !{i32 786443, metadata !1, metadata !11, i32 106, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!134 = metadata !{i32 108, i32 0, metadata !133, null}
+!135 = metadata !{i32 110, i32 0, metadata !11, null}
+!136 = metadata !{i32 111, i32 0, metadata !11, null}
+!137 = metadata !{i32 132, i32 0, metadata !18, null}
+!138 = metadata !{i32 135, i32 0, metadata !18, null}
+!139 = metadata !{i32 137, i32 0, metadata !18, null}
+!140 = metadata !{i32 140, i32 0, metadata !18, null}
+!141 = metadata !{i32 142, i32 0, metadata !142, null}
+!142 = metadata !{i32 786443, metadata !1, metadata !18, i32 141, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!143 = metadata !{i32 144, i32 0, metadata !144, null}
+!144 = metadata !{i32 786443, metadata !1, metadata !142, i32 144, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!145 = metadata !{i32 153, i32 0, metadata !146, null}
+!146 = metadata !{i32 786443, metadata !1, metadata !147, i32 152, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!147 = metadata !{i32 786443, metadata !1, metadata !144, i32 145, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!148 = metadata !{i32 146, i32 0, metadata !147, null}
+!149 = metadata !{i32 148, i32 0, metadata !147, null}
+!150 = metadata !{i32 1}
+!151 = metadata !{i32 150, i32 0, metadata !147, null}
+!152 = metadata !{i32 151, i32 0, metadata !147, null}
+!153 = metadata !{i32 155, i32 0, metadata !154, null}
+!154 = metadata !{i32 786443, metadata !1, metadata !146, i32 154, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!155 = metadata !{i32 158, i32 0, metadata !156, null}
+!156 = metadata !{i32 786443, metadata !1, metadata !154, i32 156, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!157 = metadata !{i32 159, i32 0, metadata !156, null}
+!158 = metadata !{i32 161, i32 0, metadata !156, null}
+!159 = metadata !{i32 162, i32 0, metadata !156, null}
+!160 = metadata !{i32 163, i32 0, metadata !156, null}
+!161 = metadata !{i32 167, i32 0, metadata !162, null}
+!162 = metadata !{i32 786443, metadata !1, metadata !146, i32 166, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!163 = metadata !{i32 170, i32 0, metadata !146, null}
+!164 = metadata !{i32 171, i32 0, metadata !146, null}
+!165 = metadata !{i32 176, i32 0, metadata !18, null}
+!166 = metadata !{i32 177, i32 0, metadata !18, null}
+!167 = metadata !{i32 579, i32 0, metadata !104, null}
+!168 = metadata !{i32 584, i32 0, metadata !104, null}
+!169 = metadata !{i32 586, i32 0, metadata !170, null}
+!170 = metadata !{i32 786443, metadata !1, metadata !104, i32 585, i32 0, i32 31} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!171 = metadata !{i32 587, i32 0, metadata !170, null}
+!172 = metadata !{metadata !"int", metadata !130}
+!173 = metadata !{i32 589, i32 0, metadata !174, null}
+!174 = metadata !{i32 786443, metadata !1, metadata !170, i32 588, i32 0, i32 32} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!175 = metadata !{i32 591, i32 0, metadata !174, null}
+!176 = metadata !{i32 592, i32 0, metadata !170, null}
+!177 = metadata !{i32 593, i32 0, metadata !170, null}
+!178 = metadata !{i32 594, i32 0, metadata !170, null}
+!179 = metadata !{i32 595, i32 0, metadata !170, null}
+!180 = metadata !{i32 596, i32 0, metadata !170, null}
+!181 = metadata !{i32 598, i32 0, metadata !182, null}
+!182 = metadata !{i32 786443, metadata !1, metadata !170, i32 598, i32 0, i32 33} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!183 = metadata !{i32 600, i32 0, metadata !184, null}
+!184 = metadata !{i32 786443, metadata !1, metadata !182, i32 599, i32 0, i32 34} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!185 = metadata !{i32 601, i32 0, metadata !184, null}
+!186 = metadata !{i32 602, i32 0, metadata !184, null}
+!187 = metadata !{i32 605, i32 0, metadata !104, null}
+!188 = metadata !{i32 198, i32 0, metadata !54, null}
+!189 = metadata !{i32 200, i32 0, metadata !54, null}
+!190 = metadata !{i32 205, i32 0, metadata !54, null}
+!191 = metadata !{i32 207, i32 0, metadata !192, null}
+!192 = metadata !{i32 786443, metadata !1, metadata !54, i32 206, i32 0, i32 8} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!193 = metadata !{i32 209, i32 0, metadata !192, null}
+!194 = metadata !{i32 211, i32 0, metadata !195, null}
+!195 = metadata !{i32 786443, metadata !1, metadata !192, i32 210, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!196 = metadata !{i32 212, i32 0, metadata !195, null}
+!197 = metadata !{i32 215, i32 0, metadata !198, null}
+!198 = metadata !{i32 786443, metadata !1, metadata !192, i32 214, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!199 = metadata !{i32 216, i32 0, metadata !198, null}
+!200 = metadata !{i32 218, i32 0, metadata !201, null}
+!201 = metadata !{i32 786443, metadata !1, metadata !198, i32 217, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!202 = metadata !{i32 219, i32 0, metadata !201, null}
+!203 = metadata !{i32 220, i32 0, metadata !201, null}
+!204 = metadata !{i32 222, i32 0, metadata !198, null}
+!205 = metadata !{i32 223, i32 0, metadata !198, null}
+!206 = metadata !{i32 226, i32 0, metadata !192, null}
+!207 = metadata !{i32 227, i32 0, metadata !192, null}
+!208 = metadata !{i32 229, i32 0, metadata !54, null}
+!209 = metadata !{i32 230, i32 0, metadata !54, null}
+!210 = metadata !{i32 248, i32 0, metadata !61, null}
+!211 = metadata !{i32 251, i32 0, metadata !61, null}
+!212 = metadata !{i32 254, i32 0, metadata !61, null}
+!213 = metadata !{i32 260, i32 0, metadata !214, null}
+!214 = metadata !{i32 786443, metadata !1, metadata !61, i32 259, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!215 = metadata !{i32 261, i32 0, metadata !214, null}
+!216 = metadata !{i32 263, i32 0, metadata !217, null}
+!217 = metadata !{i32 786443, metadata !1, metadata !214, i32 262, i32 0, i32 14} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!218 = metadata !{i32 264, i32 0, metadata !217, null}
+!219 = metadata !{i32 268, i32 0, metadata !61, null}
+!220 = metadata !{i32 269, i32 0, metadata !61, null}
+!221 = metadata !{i32 270, i32 0, metadata !61, null}
+!222 = metadata !{i32 508, i32 0, metadata !94, null}
+!223 = metadata !{i32 511, i32 0, metadata !94, null}
+!224 = metadata !{i32 513, i32 0, metadata !225, null}
+!225 = metadata !{i32 786443, metadata !1, metadata !94, i32 512, i32 0, i32 26} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!226 = metadata !{i32 515, i32 0, metadata !225, null}
+!227 = metadata !{i32 516, i32 0, metadata !225, null}
+!228 = metadata !{i32 518, i32 0, metadata !94, null}
+!229 = metadata !{i32 519, i32 0, metadata !94, null}
+!230 = metadata !{i32 289, i32 0, metadata !66, null}
+!231 = metadata !{i32 291, i32 0, metadata !66, null}
+!232 = metadata !{i32 295, i32 0, metadata !66, null}
+!233 = metadata !{i32 296, i32 0, metadata !66, null}
+!234 = metadata !{i32 298, i32 0, metadata !235, null}
+!235 = metadata !{i32 786443, metadata !1, metadata !66, i32 297, i32 0, i32 15} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!236 = metadata !{i32 299, i32 0, metadata !235, null}
+!237 = metadata !{i32 302, i32 0, metadata !238, null}
+!238 = metadata !{i32 786443, metadata !1, metadata !66, i32 301, i32 0, i32 16} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!239 = metadata !{i32 304, i32 0, metadata !66, null}
+!240 = metadata !{i32 322, i32 0, metadata !72, null}
+!241 = metadata !{i32 324, i32 0, metadata !72, null}
+!242 = metadata !{i32 328, i32 0, metadata !72, null}
+!243 = metadata !{i32 329, i32 0, metadata !72, null}
+!244 = metadata !{i32 331, i32 0, metadata !245, null}
+!245 = metadata !{i32 786443, metadata !1, metadata !72, i32 330, i32 0, i32 17} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!246 = metadata !{i32 332, i32 0, metadata !245, null}
+!247 = metadata !{i32 335, i32 0, metadata !248, null}
+!248 = metadata !{i32 786443, metadata !1, metadata !72, i32 334, i32 0, i32 18} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!249 = metadata !{i32 337, i32 0, metadata !72, null}
+!250 = metadata !{i32 355, i32 0, metadata !77, null}
+!251 = metadata !{i32 360, i32 0, metadata !77, null}
+!252 = metadata !{i32 364, i32 0, metadata !77, null}
+!253 = metadata !{i32 368, i32 0, metadata !77, null}
+!254 = metadata !{i32 374, i32 0, metadata !255, null}
+!255 = metadata !{i32 786443, metadata !1, metadata !77, i32 373, i32 0, i32 22} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!256 = metadata !{i32 377, i32 0, metadata !255, null}
+!257 = metadata !{i32 380, i32 0, metadata !77, null}
+!258 = metadata !{i32 381, i32 0, metadata !77, null}
+!259 = metadata !{i32 396, i32 0, metadata !81, null}
+!260 = metadata !{i32 410, i32 0, metadata !84, null}
+!261 = metadata !{i32 412, i32 0, metadata !262, null}
+!262 = metadata !{i32 786443, metadata !1, metadata !84, i32 411, i32 0, i32 23} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!263 = metadata !{i32 413, i32 0, metadata !262, null}
+!264 = metadata !{i32 414, i32 0, metadata !262, null}
+!265 = metadata !{i32 415, i32 0, metadata !262, null}
+!266 = metadata !{i32 417, i32 0, metadata !84, null}
+!267 = metadata !{i32 418, i32 0, metadata !84, null}
+!268 = metadata !{i32 434, i32 0, metadata !85, null}
+!269 = metadata !{i32 438, i32 0, metadata !85, null}
+!270 = metadata !{i32 440, i32 0, metadata !271, null}
+!271 = metadata !{i32 786443, metadata !1, metadata !85, i32 439, i32 0, i32 24} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!272 = metadata !{i32 441, i32 0, metadata !271, null}
+!273 = metadata !{i32 443, i32 0, metadata !271, null}
+!274 = metadata !{i32 444, i32 0, metadata !271, null}
+!275 = metadata !{i32 445, i32 0, metadata !271, null}
+!276 = metadata !{i32 447, i32 0, metadata !85, null}
+!277 = metadata !{i32 448, i32 0, metadata !85, null}
+!278 = metadata !{i32 464, i32 0, metadata !90, null}
+!279 = metadata !{null}
+!280 = metadata !{i32 480, i32 0, metadata !90, null}
+!281 = metadata !{i32 483, i32 0, metadata !90, null}
+!282 = metadata !{i32 485, i32 0, metadata !283, null}
+!283 = metadata !{i32 786443, metadata !1, metadata !90, i32 484, i32 0, i32 25} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!284 = metadata !{i32 487, i32 0, metadata !283, null}
+!285 = metadata !{i32 488, i32 0, metadata !283, null}
+!286 = metadata !{i32 489, i32 0, metadata !283, null}
+!287 = metadata !{i32 490, i32 0, metadata !283, null}
+!288 = metadata !{i32 491, i32 0, metadata !283, null}
+!289 = metadata !{i32 493, i32 0, metadata !90, null}
+!290 = metadata !{i32 494, i32 0, metadata !90, null}
+!291 = metadata !{i32 534, i32 0, metadata !97, null}
+!292 = metadata !{i32 538, i32 0, metadata !97, null}
+!293 = metadata !{i32 540, i32 0, metadata !294, null}
+!294 = metadata !{i32 786443, metadata !1, metadata !97, i32 539, i32 0, i32 27} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!295 = metadata !{i32 541, i32 0, metadata !294, null}
+!296 = metadata !{i32 544, i32 0, metadata !97, null}
+!297 = metadata !{i32 545, i32 0, metadata !97, null}
+!298 = metadata !{i32 547, i32 0, metadata !299, null}
+!299 = metadata !{i32 786443, metadata !1, metadata !97, i32 546, i32 0, i32 28} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!300 = metadata !{i32 549, i32 0, metadata !301, null}
+!301 = metadata !{i32 786443, metadata !1, metadata !299, i32 548, i32 0, i32 29} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!302 = metadata !{i32 550, i32 0, metadata !301, null}
+!303 = metadata !{i32 553, i32 0, metadata !304, null}
+!304 = metadata !{i32 786443, metadata !1, metadata !299, i32 552, i32 0, i32 30} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CommandLine.c]
+!305 = metadata !{i32 555, i32 0, metadata !299, null}
+!306 = metadata !{i32 556, i32 0, metadata !299, null}
+!307 = metadata !{i32 557, i32 0, metadata !97, null}

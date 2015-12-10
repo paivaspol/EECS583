@@ -1,90 +1,96 @@
-define internal fastcc %struct.cselib_val_struct* @cselib_lookup_mem(%struct.rtx_def* %x, i32 %create) #1 {
+define internal fastcc %struct.cselib_val_struct* @cselib_lookup_mem(%struct.rtx_def* %x, i32 %create) #2 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %bf.clear3 = and i32 %bf.load, 134217728
-  %tobool = icmp ne i32 %bf.clear3, 0
-  %cmp = icmp eq i32 %bf.clear, 51
-  %or.cond53 = or i1 %tobool, %cmp
-  br i1 %or.cond53, label %return, label %lor.lhs.false4
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !767), !dbg !1028
+  tail call void @llvm.dbg.value(metadata !{i32 %create}, i64 0, metadata !768), !dbg !1029
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !1030
+  %bf.load = load i32* %0, align 8, !dbg !1030
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !1030
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !1030
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !769), !dbg !1030
+  %bf.clear3 = and i32 %bf.load, 134217728, !dbg !1031
+  %tobool = icmp ne i32 %bf.clear3, 0, !dbg !1031
+  %cmp = icmp eq i32 %bf.clear, 51, !dbg !1031
+  %or.cond53 = or i1 %tobool, %cmp, !dbg !1031
+  br i1 %or.cond53, label %return, label %lor.lhs.false4, !dbg !1031
 
 lor.lhs.false4:                                   ; preds = %entry
-  %idxprom52 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom52
-  %1 = load i32* %arrayidx, align 4, !tbaa !5
+  %idxprom52 = zext i32 %bf.clear to i64, !dbg !1031
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom52, !dbg !1031
+  %1 = load i32* %arrayidx, align 4, !dbg !1031, !tbaa !966
   switch i32 %1, label %lor.lhs.false10 [
     i32 2, label %land.lhs.true
     i32 6, label %land.lhs.true
-  ]
+  ], !dbg !1031
 
 lor.lhs.false10:                                  ; preds = %lor.lhs.false4
-  %cmp13 = icmp eq i32 %1, 8
-  %2 = load i32* @flag_float_store, align 4, !tbaa !3
-  %tobool14 = icmp ne i32 %2, 0
-  %or.cond = and i1 %cmp13, %tobool14
-  br i1 %or.cond, label %return, label %if.end
+  %cmp13 = icmp eq i32 %1, 8, !dbg !1031
+  %2 = load i32* @flag_float_store, align 4, !dbg !1031, !tbaa !907
+  %tobool14 = icmp ne i32 %2, 0, !dbg !1031
+  %or.cond = and i1 %cmp13, %tobool14, !dbg !1031
+  br i1 %or.cond, label %return, label %if.end, !dbg !1031
 
 land.lhs.true:                                    ; preds = %lor.lhs.false4, %lor.lhs.false4
-  %.old = load i32* @flag_float_store, align 4, !tbaa !3
-  %tobool14.old = icmp eq i32 %.old, 0
-  br i1 %tobool14.old, label %if.end, label %return
+  %.old = load i32* @flag_float_store, align 4, !dbg !1031, !tbaa !907
+  %tobool14.old = icmp eq i32 %.old, 0, !dbg !1031
+  br i1 %tobool14.old, label %if.end, label %return, !dbg !1031
 
 if.end:                                           ; preds = %land.lhs.true, %lor.lhs.false10
-  %arrayidx15 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx15 to %struct.rtx_def**
-  %3 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %call = tail call %struct.cselib_val_struct* @cselib_lookup(%struct.rtx_def* %3, i32 %bf.clear, i32 %create) #7
-  %tobool16 = icmp eq %struct.cselib_val_struct* %call, null
-  br i1 %tobool16, label %return, label %if.end18
+  %arrayidx15 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !1032
+  %rtx = bitcast %union.rtunion_def* %arrayidx15 to %struct.rtx_def**, !dbg !1032
+  %3 = load %struct.rtx_def** %rtx, align 8, !dbg !1032, !tbaa !897
+  %call = tail call %struct.cselib_val_struct* @cselib_lookup(%struct.rtx_def* %3, i32 %bf.clear, i32 %create) #8, !dbg !1032
+  tail call void @llvm.dbg.value(metadata !{%struct.cselib_val_struct* %call}, i64 0, metadata !771), !dbg !1032
+  %tobool16 = icmp eq %struct.cselib_val_struct* %call, null, !dbg !1033
+  br i1 %tobool16, label %return, label %if.end18, !dbg !1033
 
 if.end18:                                         ; preds = %if.end
-  %addr_list = getelementptr inbounds %struct.cselib_val_struct* %call, i64 0, i32 3
-  %l.054 = load %struct.elt_list** %addr_list, align 8
-  %tobool1955 = icmp eq %struct.elt_list* %l.054, null
-  br i1 %tobool1955, label %for.end, label %for.body
+  %addr_list = getelementptr inbounds %struct.cselib_val_struct* %call, i64 0, i32 3, !dbg !1034
+  %l.054 = load %struct.elt_list** %addr_list, align 8, !dbg !1034
+  %tobool1955 = icmp eq %struct.elt_list* %l.054, null, !dbg !1034
+  br i1 %tobool1955, label %for.end, label %for.body, !dbg !1034
 
 for.cond:                                         ; preds = %for.body
-  %next = getelementptr inbounds %struct.elt_list* %l.056, i64 0, i32 0
-  %l.0 = load %struct.elt_list** %next, align 8
-  %tobool19 = icmp eq %struct.elt_list* %l.0, null
-  br i1 %tobool19, label %for.end, label %for.body
+  %next = getelementptr inbounds %struct.elt_list* %l.056, i64 0, i32 0, !dbg !1034
+  %l.0 = load %struct.elt_list** %next, align 8, !dbg !1034
+  %tobool19 = icmp eq %struct.elt_list* %l.0, null, !dbg !1034
+  br i1 %tobool19, label %for.end, label %for.body, !dbg !1034
 
 for.body:                                         ; preds = %if.end18, %for.cond
   %l.056 = phi %struct.elt_list* [ %l.0, %for.cond ], [ %l.054, %if.end18 ]
-  %elt = getelementptr inbounds %struct.elt_list* %l.056, i64 0, i32 1
-  %4 = load %struct.cselib_val_struct** %elt, align 8, !tbaa !0
-  %val_rtx = getelementptr inbounds %struct.cselib_val_struct* %4, i64 0, i32 1, i32 0
-  %5 = load %struct.rtx_def** %val_rtx, align 8, !tbaa !0
-  %6 = bitcast %struct.rtx_def* %5 to i32*
-  %bf.load20 = load i32* %6, align 8
-  %bf.lshr21 = lshr i32 %bf.load20, 16
-  %bf.clear22 = and i32 %bf.lshr21, 255
-  %cmp23 = icmp eq i32 %bf.clear22, %bf.clear
-  br i1 %cmp23, label %return, label %for.cond
+  %elt = getelementptr inbounds %struct.elt_list* %l.056, i64 0, i32 1, !dbg !1036
+  %4 = load %struct.cselib_val_struct** %elt, align 8, !dbg !1036, !tbaa !897
+  %val_rtx = getelementptr inbounds %struct.cselib_val_struct* %4, i64 0, i32 1, i32 0, !dbg !1036
+  %5 = load %struct.rtx_def** %val_rtx, align 8, !dbg !1036, !tbaa !897
+  %6 = bitcast %struct.rtx_def* %5 to i32*, !dbg !1036
+  %bf.load20 = load i32* %6, align 8, !dbg !1036
+  %bf.lshr21 = lshr i32 %bf.load20, 16, !dbg !1036
+  %bf.clear22 = and i32 %bf.lshr21, 255, !dbg !1036
+  %cmp23 = icmp eq i32 %bf.clear22, %bf.clear, !dbg !1036
+  br i1 %cmp23, label %return, label %for.cond, !dbg !1036
 
 for.end:                                          ; preds = %for.cond, %if.end18
-  %tobool27 = icmp eq i32 %create, 0
-  br i1 %tobool27, label %return, label %if.end29
+  %tobool27 = icmp eq i32 %create, 0, !dbg !1037
+  br i1 %tobool27, label %return, label %if.end29, !dbg !1037
 
 if.end29:                                         ; preds = %for.end
-  %7 = load i32* @next_unknown_value, align 4, !tbaa !3
-  %inc = add i32 %7, 1
-  store i32 %inc, i32* @next_unknown_value, align 4, !tbaa !3
-  %call30 = tail call fastcc %struct.cselib_val_struct* @new_cselib_val(i32 %inc, i32 %bf.clear) #7
-  tail call fastcc void @add_mem_for_addr(%struct.cselib_val_struct* %call, %struct.cselib_val_struct* %call30, %struct.rtx_def* %x) #7
-  %8 = load %struct.htab** @hash_table, align 8, !tbaa !0
-  %call31 = tail call fastcc %struct.rtx_def* @wrap_constant(i32 %bf.clear, %struct.rtx_def* %x) #7
-  %9 = getelementptr inbounds %struct.rtx_def* %call31, i64 0, i32 0, i64 0
-  %value = getelementptr inbounds %struct.cselib_val_struct* %call30, i64 0, i32 0
-  %10 = load i32* %value, align 4, !tbaa !3
-  %call32 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %8, i8* %9, i32 %10, i32 1) #10
-  %11 = bitcast %struct.cselib_val_struct* %call30 to i8*
-  store i8* %11, i8** %call32, align 8, !tbaa !0
-  br label %return
+  %7 = load i32* @next_unknown_value, align 4, !dbg !1038, !tbaa !907
+  %inc = add i32 %7, 1, !dbg !1038
+  store i32 %inc, i32* @next_unknown_value, align 4, !dbg !1038, !tbaa !907
+  %call30 = tail call fastcc %struct.cselib_val_struct* @new_cselib_val(i32 %inc, i32 %bf.clear) #8, !dbg !1038
+  tail call void @llvm.dbg.value(metadata !{%struct.cselib_val_struct* %call30}, i64 0, metadata !772), !dbg !1038
+  tail call fastcc void @add_mem_for_addr(%struct.cselib_val_struct* %call, %struct.cselib_val_struct* %call30, %struct.rtx_def* %x) #8, !dbg !1039
+  %8 = load %struct.htab** @hash_table, align 8, !dbg !1040, !tbaa !897
+  %call31 = tail call fastcc %struct.rtx_def* @wrap_constant(i32 %bf.clear, %struct.rtx_def* %x) #8, !dbg !1040
+  %9 = getelementptr inbounds %struct.rtx_def* %call31, i64 0, i32 0, i64 0, !dbg !1040
+  %value = getelementptr inbounds %struct.cselib_val_struct* %call30, i64 0, i32 0, !dbg !1040
+  %10 = load i32* %value, align 4, !dbg !1040, !tbaa !907
+  %call32 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %8, i8* %9, i32 %10, i32 1) #11, !dbg !1040
+  tail call void @llvm.dbg.value(metadata !{i8** %call32}, i64 0, metadata !770), !dbg !1040
+  %11 = bitcast %struct.cselib_val_struct* %call30 to i8*, !dbg !1041
+  store i8* %11, i8** %call32, align 8, !dbg !1041, !tbaa !897
+  br label %return, !dbg !1042
 
 return:                                           ; preds = %for.body, %for.end, %if.end, %lor.lhs.false10, %land.lhs.true, %entry, %if.end29
   %retval.0 = phi %struct.cselib_val_struct* [ %call30, %if.end29 ], [ null, %entry ], [ null, %land.lhs.true ], [ null, %lor.lhs.false10 ], [ null, %if.end ], [ null, %for.end ], [ %4, %for.body ]
-  ret %struct.cselib_val_struct* %retval.0
+  ret %struct.cselib_val_struct* %retval.0, !dbg !1043
 }

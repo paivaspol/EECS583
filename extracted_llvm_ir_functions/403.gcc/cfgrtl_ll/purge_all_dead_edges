@@ -1,72 +1,78 @@
 define zeroext i1 @purge_all_dead_edges(i32 %update_life_p) #0 {
 entry:
-  %tobool = icmp ne i32 %update_life_p, 0
-  br i1 %tobool, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %update_life_p}, i64 0, metadata !1341), !dbg !2412
+  tail call void @llvm.dbg.value(metadata !1010, i64 0, metadata !1343), !dbg !2413
+  tail call void @llvm.dbg.value(metadata !2414, i64 0, metadata !1344), !dbg !2415
+  %tobool = icmp ne i32 %update_life_p, 0, !dbg !2416
+  br i1 %tobool, label %if.then, label %if.end, !dbg !2416
 
 if.then:                                          ; preds = %entry
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %call = tail call %struct.simple_bitmap_def* @sbitmap_alloc(i32 %0) #5
-  tail call void @sbitmap_zero(%struct.simple_bitmap_def* %call) #5
-  br label %if.end
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !2417, !tbaa !1533
+  %call = tail call %struct.simple_bitmap_def* @sbitmap_alloc(i32 %0) #6, !dbg !2417
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def* %call}, i64 0, metadata !1344), !dbg !2417
+  tail call void @sbitmap_zero(%struct.simple_bitmap_def* %call) #6, !dbg !2419
+  br label %if.end, !dbg !2420
 
 if.end:                                           ; preds = %if.then, %entry
   %blocks.0 = phi %struct.simple_bitmap_def* [ %call, %if.then ], [ null, %entry ]
-  %1 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %cmp34 = icmp sgt i32 %1, 0
-  br i1 %cmp34, label %for.body, label %if.end15
+  tail call void @llvm.dbg.value(metadata !1010, i64 0, metadata !1342), !dbg !2421
+  %1 = load i32* @n_basic_blocks, align 4, !dbg !2421, !tbaa !1533
+  %cmp34 = icmp sgt i32 %1, 0, !dbg !2421
+  br i1 %cmp34, label %for.body, label %if.end15, !dbg !2421
 
 for.body:                                         ; preds = %if.end, %for.inc
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.end ]
   %purged.035 = phi i32 [ %or, %for.inc ], [ 0, %if.end ]
-  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
-  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4
-  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv
-  %3 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
-  %call1 = tail call zeroext i1 @purge_dead_edges(%struct.basic_block_def* %3) #7
-  %conv = zext i1 %call1 to i32
-  %or = or i32 %conv, %purged.035
-  %brmerge.demorgan = and i1 %call1, %tobool
-  br i1 %brmerge.demorgan, label %if.then6, label %for.inc
+  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !2422, !tbaa !1516
+  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4, !dbg !2422
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !2422
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv, !dbg !2422
+  %3 = load %struct.basic_block_def** %arrayidx, align 8, !dbg !2422, !tbaa !1516
+  %call1 = tail call zeroext i1 @purge_dead_edges(%struct.basic_block_def* %3) #8, !dbg !2422
+  %conv = zext i1 %call1 to i32, !dbg !2423
+  %or = or i32 %conv, %purged.035, !dbg !2423
+  tail call void @llvm.dbg.value(metadata !{i32 %or}, i64 0, metadata !1343), !dbg !2423
+  %brmerge.demorgan = and i1 %call1, %tobool, !dbg !2424
+  br i1 %brmerge.demorgan, label %if.then6, label %for.inc, !dbg !2424
 
 if.then6:                                         ; preds = %for.body
-  %rem = and i64 %indvars.iv, 63
-  %shl = shl i64 1, %rem
-  %div = lshr i64 %indvars.iv, 6
-  %idxprom7 = and i64 %div, 67108863
-  %arrayidx8 = getelementptr inbounds %struct.simple_bitmap_def* %blocks.0, i64 0, i32 3, i64 %idxprom7
-  %4 = load i64* %arrayidx8, align 8, !tbaa !4
-  %or9 = or i64 %4, %shl
-  store i64 %or9, i64* %arrayidx8, align 8, !tbaa !4
-  br label %for.inc
+  %rem = and i64 %indvars.iv, 63, !dbg !2425
+  %shl = shl i64 1, %rem, !dbg !2425
+  %div = lshr i64 %indvars.iv, 6, !dbg !2425
+  %idxprom7 = and i64 %div, 67108863, !dbg !2425
+  %arrayidx8 = getelementptr inbounds %struct.simple_bitmap_def* %blocks.0, i64 0, i32 3, i64 %idxprom7, !dbg !2425
+  %4 = load i64* %arrayidx8, align 8, !dbg !2425, !tbaa !1669
+  %or9 = or i64 %4, %shl, !dbg !2425
+  store i64 %or9, i64* %arrayidx8, align 8, !dbg !2425, !tbaa !1669
+  br label %for.inc, !dbg !2425
 
 for.inc:                                          ; preds = %for.body, %if.then6
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %5 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %6 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %6, %5
-  br i1 %cmp, label %for.body, label %for.end
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2421
+  %5 = load i32* @n_basic_blocks, align 4, !dbg !2421, !tbaa !1533
+  %6 = trunc i64 %indvars.iv.next to i32, !dbg !2421
+  %cmp = icmp slt i32 %6, %5, !dbg !2421
+  br i1 %cmp, label %for.body, label %for.end, !dbg !2421
 
 for.end:                                          ; preds = %for.inc
-  %tobool.not33 = xor i1 %tobool, true
-  %tobool13 = icmp eq i32 %or, 0
-  %or.cond = or i1 %tobool13, %tobool.not33
-  br i1 %or.cond, label %if.end15, label %if.then14
+  %tobool.not33 = xor i1 %tobool, true, !dbg !2426
+  %tobool13 = icmp eq i32 %or, 0, !dbg !2426
+  %or.cond = or i1 %tobool13, %tobool.not33, !dbg !2426
+  br i1 %or.cond, label %if.end15, label %if.then14, !dbg !2426
 
 if.then14:                                        ; preds = %for.end
-  tail call void @update_life_info(%struct.simple_bitmap_def* %blocks.0, i32 1, i32 25) #5
-  br label %if.end15
+  tail call void @update_life_info(%struct.simple_bitmap_def* %blocks.0, i32 1, i32 25) #6, !dbg !2427
+  br label %if.end15, !dbg !2427
 
 if.end15:                                         ; preds = %if.end, %for.end, %if.then14
   %purged.0.lcssa40 = phi i32 [ %or, %for.end ], [ %or, %if.then14 ], [ 0, %if.end ]
-  br i1 %tobool, label %if.then17, label %if.end18
+  br i1 %tobool, label %if.then17, label %if.end18, !dbg !2428
 
 if.then17:                                        ; preds = %if.end15
-  %7 = bitcast %struct.simple_bitmap_def* %blocks.0 to i8*
-  tail call void @free(i8* %7) #5
-  br label %if.end18
+  %7 = bitcast %struct.simple_bitmap_def* %blocks.0 to i8*, !dbg !2429
+  tail call void @free(i8* %7) #6, !dbg !2429
+  br label %if.end18, !dbg !2429
 
 if.end18:                                         ; preds = %if.then17, %if.end15
-  %tobool19 = icmp ne i32 %purged.0.lcssa40, 0
-  ret i1 %tobool19
+  %tobool19 = icmp ne i32 %purged.0.lcssa40, 0, !dbg !2430
+  ret i1 %tobool19, !dbg !2430
 }

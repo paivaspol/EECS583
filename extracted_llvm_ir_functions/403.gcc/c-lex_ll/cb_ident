@@ -1,21 +1,25 @@
 define internal void @cb_ident(%struct.cpp_reader* nocapture %pfile, i32 %line, %struct.cpp_string* nocapture %str) #0 {
 entry:
-  %0 = load i32* @flag_no_ident, align 4, !tbaa !3
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !1219), !dbg !1319
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !1220), !dbg !1320
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_string* %str}, i64 0, metadata !1221), !dbg !1321
+  %0 = load i32* @flag_no_ident, align 4, !dbg !1322, !tbaa !1278
+  %tobool = icmp eq i32 %0, 0, !dbg !1322
+  br i1 %tobool, label %if.then, label %if.end, !dbg !1322
 
 if.then:                                          ; preds = %entry
-  %text = getelementptr inbounds %struct.cpp_string* %str, i64 0, i32 1
-  %1 = load i8** %text, align 8, !tbaa !0
-  %len = getelementptr inbounds %struct.cpp_string* %str, i64 0, i32 0
-  %2 = load i32* %len, align 4, !tbaa !3
-  %call = tail call fastcc %union.tree_node* @lex_string(i8* %1, i32 %2, i32 0) #8
-  %3 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
-  %pointer = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 4
-  %4 = load %union.tree_node** %pointer, align 8
-  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([8 x i8]* @.str54, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str55, i64 0, i64 0), %union.tree_node* %4) #7
-  br label %if.end
+  %text = getelementptr inbounds %struct.cpp_string* %str, i64 0, i32 1, !dbg !1323
+  %1 = load i8** %text, align 8, !dbg !1323, !tbaa !1273
+  %len = getelementptr inbounds %struct.cpp_string* %str, i64 0, i32 0, !dbg !1323
+  %2 = load i32* %len, align 4, !dbg !1323, !tbaa !1278
+  %call = tail call fastcc %union.tree_node* @lex_string(i8* %1, i32 %2, i32 0) #9, !dbg !1323
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1222), !dbg !1323
+  %3 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !1324, !tbaa !1273
+  %pointer = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 4, !dbg !1324
+  %4 = load %union.tree_node** %pointer, align 8, !dbg !1324
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([8 x i8]* @.str54, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str55, i64 0, i64 0), %union.tree_node* %4) #8, !dbg !1324
+  br label %if.end, !dbg !1325
 
 if.end:                                           ; preds = %entry, %if.then
-  ret void
+  ret void, !dbg !1326
 }

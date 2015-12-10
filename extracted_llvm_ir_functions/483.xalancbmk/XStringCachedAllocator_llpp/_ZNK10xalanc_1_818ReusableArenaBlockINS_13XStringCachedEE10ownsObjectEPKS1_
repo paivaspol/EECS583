@@ -1,0 +1,47 @@
+define linkonce_odr zeroext i1 @_ZNK10xalanc_1_818ReusableArenaBlockINS_13XStringCachedEE10ownsObjectEPKS1_(%"class.xalanc_1_8::ReusableArenaBlock"* %this, %"class.xalanc_1_8::XStringCached"* %theObject) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !4703), !dbg !5896
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringCached"* %theObject}, i64 0, metadata !4704), !dbg !5896
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringCached"* %theObject}, i64 0, metadata !5897), !dbg !5899
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringCached"* %theObject}, i64 0, metadata !5900), !dbg !5902
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringCached"* %theObject}, i64 0, metadata !5903), !dbg !5905
+  %m_objectBlock.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 4, !dbg !5904
+  %0 = load %"class.xalanc_1_8::XStringCached"** %m_objectBlock.i, align 8, !dbg !5904, !tbaa !5094
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringCached"* %0}, i64 0, metadata !5906), !dbg !5905
+  tail call void @llvm.dbg.value(metadata !5907, i64 0, metadata !5908), !dbg !5905
+  %cmp.i.i = icmp ugt %"class.xalanc_1_8::XStringCached"* %0, %theObject, !dbg !5909
+  br i1 %cmp.i.i, label %land.end, label %land.lhs.true.i, !dbg !5904
+
+land.lhs.true.i:                                  ; preds = %entry
+  %m_objectCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 2, !dbg !5901
+  %1 = load i64* %m_objectCount.i, align 8, !dbg !5901, !tbaa !5080
+  %add.ptr.i = getelementptr inbounds %"class.xalanc_1_8::XStringCached"* %0, i64 %1, !dbg !5901
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringCached"* %add.ptr.i}, i64 0, metadata !5911), !dbg !5902
+  tail call void @llvm.dbg.value(metadata !5907, i64 0, metadata !5912), !dbg !5902
+  %cmp.i7.i = icmp ugt %"class.xalanc_1_8::XStringCached"* %add.ptr.i, %theObject, !dbg !5913
+  br i1 %cmp.i7.i, label %land.rhs, label %land.end, !dbg !5901
+
+land.rhs:                                         ; preds = %land.lhs.true.i
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !5914), !dbg !5915
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringCached"* %theObject}, i64 0, metadata !5916), !dbg !5915
+  %m_freeBlockCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 2, !dbg !5917
+  %2 = load i64* %m_freeBlockCount.i, align 8, !dbg !5917, !tbaa !5080
+  %cmp.i = icmp eq i64 %2, 0, !dbg !5917
+  br i1 %cmp.i, label %land.end, label %if.else.i4, !dbg !5917
+
+if.else.i4:                                       ; preds = %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringCached"* %theObject}, i64 0, metadata !5918), !dbg !5920
+  %sub.ptr.lhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XStringCached"* %theObject to i64, !dbg !5921
+  %sub.ptr.rhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XStringCached"* %0 to i64, !dbg !5921
+  %sub.ptr.sub.i.i = sub i64 %sub.ptr.lhs.cast.i.i, %sub.ptr.rhs.cast.i.i, !dbg !5921
+  %sub.ptr.div.i.i = sdiv exact i64 %sub.ptr.sub.i.i, 72, !dbg !5921
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.div.i.i}, i64 0, metadata !5922), !dbg !5919
+  %m_freeList.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 1, !dbg !5923
+  %call2.i = tail call zeroext i1 @_ZNK10xalanc_1_811XalanBitmap5isSetEm(%"class.xalanc_1_8::XalanBitmap"* %m_freeList.i, i64 %sub.ptr.div.i.i) #10, !dbg !5923
+  %phitmp = xor i1 %call2.i, true, !dbg !5923
+  br label %land.end, !dbg !5923
+
+land.end:                                         ; preds = %if.else.i4, %land.rhs, %land.lhs.true.i, %entry
+  %3 = phi i1 [ false, %entry ], [ false, %land.lhs.true.i ], [ %phitmp, %if.else.i4 ], [ true, %land.rhs ]
+  ret i1 %3, !dbg !5924
+}

@@ -1,16 +1,17 @@
 define i32 @FrontMtx_neqns(%struct._FrontMtx* %frontmtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !183, metadata !284), !dbg !302
-  %1 = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !303
-  br i1 %1, label %2, label %5, !dbg !305
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !187), !dbg !294
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !295
+  br i1 %cmp, label %if.then, label %if.end, !dbg !295
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !306, !tbaa !291
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([48 x i8]* @.str1, i64 0, i64 0), %struct._FrontMtx* null) #6, !dbg !308
-  tail call void @exit(i32 -1) #7, !dbg !309
-  unreachable, !dbg !309
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !296, !tbaa !288
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str1, i64 0, i64 0), %struct._FrontMtx* null) #6, !dbg !296
+  tail call void @exit(i32 -1) #7, !dbg !298
+  unreachable, !dbg !298
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 1, !dbg !310
-  %7 = load i32* %6, align 4, !dbg !310, !tbaa !311
-  ret i32 %7, !dbg !312
+if.end:                                           ; preds = %entry
+  %neqns = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 1, !dbg !299
+  %1 = load i32* %neqns, align 4, !dbg !299, !tbaa !293
+  ret i32 %1, !dbg !299
 }

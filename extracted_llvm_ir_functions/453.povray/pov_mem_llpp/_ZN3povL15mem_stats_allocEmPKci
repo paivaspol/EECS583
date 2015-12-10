@@ -1,38 +1,39 @@
 define internal fastcc void @_ZN3povL15mem_stats_allocEmPKci(i64 %nbytes) #0 {
-  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !368, metadata !689), !dbg !748
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !369, metadata !689), !dbg !749
-  %1 = load i64* @_ZN3povL9mem_statsE.0, align 8, !dbg !750, !tbaa !680
-  %2 = trunc i64 %1 to i32, !dbg !752
-  %3 = icmp slt i32 %2, 0, !dbg !753
-  %4 = icmp ugt i64 %1, %nbytes, !dbg !754
-  %or.cond = or i1 %4, %3, !dbg !755
-  br i1 %or.cond, label %5, label %6, !dbg !755
+entry:
+  tail call void @llvm.dbg.value(metadata !511, i64 0, metadata !371), !dbg !512
+  tail call void @llvm.dbg.value(metadata !52, i64 0, metadata !372), !dbg !512
+  %0 = load i64* @_ZN3povL9mem_statsE.0, align 8, !dbg !513, !tbaa !465
+  %conv = trunc i64 %0 to i32, !dbg !513
+  %cmp = icmp slt i32 %conv, 0, !dbg !513
+  %cmp1 = icmp ugt i64 %0, %nbytes, !dbg !513
+  %or.cond = or i1 %cmp, %cmp1, !dbg !513
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !513
 
-; <label>:5                                       ; preds = %0
-  store i64 %nbytes, i64* @_ZN3povL9mem_statsE.0, align 8, !dbg !756, !tbaa !680
-  br label %6, !dbg !758
+if.then:                                          ; preds = %entry
+  store i64 %nbytes, i64* @_ZN3povL9mem_statsE.0, align 8, !dbg !514, !tbaa !465
+  br label %if.end, !dbg !516
 
-; <label>:6                                       ; preds = %0, %5
-  %7 = load i64* @_ZN3povL9mem_statsE.1, align 8, !dbg !759, !tbaa !683
-  %8 = icmp ult i64 %7, %nbytes, !dbg !761
-  br i1 %8, label %9, label %10, !dbg !762
+if.end:                                           ; preds = %entry, %if.then
+  %1 = load i64* @_ZN3povL9mem_statsE.1, align 8, !dbg !517, !tbaa !465
+  %cmp2 = icmp ult i64 %1, %nbytes, !dbg !517
+  br i1 %cmp2, label %if.then3, label %if.end4, !dbg !517
 
-; <label>:9                                       ; preds = %6
-  store i64 %nbytes, i64* @_ZN3povL9mem_statsE.1, align 8, !dbg !763, !tbaa !683
-  br label %10, !dbg !765
+if.then3:                                         ; preds = %if.end
+  store i64 %nbytes, i64* @_ZN3povL9mem_statsE.1, align 8, !dbg !518, !tbaa !465
+  br label %if.end4, !dbg !520
 
-; <label>:10                                      ; preds = %9, %6
-  %11 = load i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !766, !tbaa !685
-  %12 = add i64 %11, %nbytes, !dbg !766
-  store i64 %12, i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !766, !tbaa !685
-  %13 = load i64* @_ZN3povL9mem_statsE.3, align 8, !dbg !767, !tbaa !687
-  %14 = icmp ugt i64 %12, %13, !dbg !769
-  br i1 %14, label %15, label %16, !dbg !770
+if.end4:                                          ; preds = %if.then3, %if.end
+  %2 = load i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !521, !tbaa !465
+  %add = add i64 %2, %nbytes, !dbg !521
+  store i64 %add, i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !521, !tbaa !465
+  %3 = load i64* @_ZN3povL9mem_statsE.3, align 8, !dbg !522, !tbaa !465
+  %cmp5 = icmp ugt i64 %add, %3, !dbg !522
+  br i1 %cmp5, label %if.then6, label %if.end7, !dbg !522
 
-; <label>:15                                      ; preds = %10
-  store i64 %12, i64* @_ZN3povL9mem_statsE.3, align 8, !dbg !771, !tbaa !687
-  br label %16, !dbg !773
+if.then6:                                         ; preds = %if.end4
+  store i64 %add, i64* @_ZN3povL9mem_statsE.3, align 8, !dbg !523, !tbaa !465
+  br label %if.end7, !dbg !525
 
-; <label>:16                                      ; preds = %15, %10
-  ret void, !dbg !774
+if.end7:                                          ; preds = %if.then6, %if.end4
+  ret void, !dbg !526
 }

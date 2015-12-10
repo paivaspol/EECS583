@@ -1,33 +1,35 @@
 define internal i32 @CCTKi_ScheduleCallFunction(i8* %function, %struct.t_attribute* %attribute, %struct.t_sched_data* nocapture %data) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %function, i64 0, metadata !310, metadata !498), !dbg !1588
-  tail call void @llvm.dbg.value(metadata %struct.t_attribute* %attribute, i64 0, metadata !311, metadata !498), !dbg !1589
-  tail call void @llvm.dbg.value(metadata %struct.t_sched_data* %data, i64 0, metadata !312, metadata !498), !dbg !1590
-  %1 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 8, !dbg !1591
-  %2 = load i32* %1, align 4, !dbg !1591, !tbaa !776
-  %3 = icmp sgt i32 %2, -1, !dbg !1593
-  br i1 %3, label %4, label %6, !dbg !1594
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %function}, i64 0, metadata !470), !dbg !1258
+  tail call void @llvm.dbg.value(metadata !{%struct.t_attribute* %attribute}, i64 0, metadata !471), !dbg !1259
+  tail call void @llvm.dbg.value(metadata !{%struct.t_sched_data* %data}, i64 0, metadata !472), !dbg !1260
+  %timer_handle = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 8, !dbg !1261
+  %0 = load i32* %timer_handle, align 4, !dbg !1261, !tbaa !592
+  %cmp = icmp sgt i32 %0, -1, !dbg !1261
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1261
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @CCTK_TimerStartI(i32 %2) #8, !dbg !1595
-  br label %6, !dbg !1597
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @CCTK_TimerStartI(i32 %0) #8, !dbg !1262
+  br label %if.end, !dbg !1264
 
-; <label>:6                                       ; preds = %4, %0
-  %7 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 6, !dbg !1598
-  %8 = load i32 (i8*, %struct.cFunctionData*, i8*)** %7, align 8, !dbg !1598, !tbaa !966
-  %9 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 3, !dbg !1599
-  %10 = bitcast %struct.t_sched_data* %data to i8**, !dbg !1600
-  %11 = load i8** %10, align 8, !dbg !1600, !tbaa !961
-  %12 = tail call i32 %8(i8* %function, %struct.cFunctionData* %9, i8* %11) #8, !dbg !1601
-  %13 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 5, !dbg !1602
-  store i32 %12, i32* %13, align 4, !dbg !1603, !tbaa !1604
-  %14 = load i32* %1, align 4, !dbg !1605, !tbaa !776
-  %15 = icmp sgt i32 %14, -1, !dbg !1607
-  br i1 %15, label %16, label %18, !dbg !1608
+if.end:                                           ; preds = %if.then, %entry
+  %CallFunction = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 6, !dbg !1265
+  %1 = load i32 (i8*, %struct.cFunctionData*, i8*)** %CallFunction, align 8, !dbg !1265, !tbaa !504
+  %FunctionData = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 3, !dbg !1265
+  %GH = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 0, !dbg !1265
+  %2 = load %struct.cGH** %GH, align 8, !dbg !1265, !tbaa !504
+  %3 = bitcast %struct.cGH* %2 to i8*, !dbg !1265
+  %call2 = tail call i32 %1(i8* %function, %struct.cFunctionData* %FunctionData, i8* %3) #8, !dbg !1265
+  %synchronised = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 5, !dbg !1265
+  store i32 %call2, i32* %synchronised, align 4, !dbg !1265, !tbaa !592
+  %4 = load i32* %timer_handle, align 4, !dbg !1266, !tbaa !592
+  %cmp4 = icmp sgt i32 %4, -1, !dbg !1266
+  br i1 %cmp4, label %if.then5, label %if.end8, !dbg !1266
 
-; <label>:16                                      ; preds = %6
-  %17 = tail call i32 @CCTK_TimerStopI(i32 %14) #8, !dbg !1609
-  br label %18, !dbg !1611
+if.then5:                                         ; preds = %if.end
+  %call7 = tail call i32 @CCTK_TimerStopI(i32 %4) #8, !dbg !1267
+  br label %if.end8, !dbg !1269
 
-; <label>:18                                      ; preds = %16, %6
-  ret i32 1, !dbg !1612
+if.end8:                                          ; preds = %if.then5, %if.end
+  ret i32 1, !dbg !1270
 }

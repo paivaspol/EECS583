@@ -37,7 +37,7 @@ def parse_file(input_filename, out_filename, sources_path, buckets):
                 elif words[0].endswith('.cc'):
                     this_path = words[0].replace(".cc", "_llc")
                 elif words[0].endswith('.cpp'):
-                    this_path = words[0].replace(".cpp", "_llc")
+                    this_path = words[0].replace(".cpp", "_llpp")
                 else:
                     this_path = words[0].replace('.c', '_ll')
                 found = False

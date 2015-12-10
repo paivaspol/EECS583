@@ -1,40 +1,42 @@
 define i32 @flow_loop_outside_edge_p(%struct.loop* nocapture %loop, %struct.edge_def* nocapture %e) #0 {
 entry:
-  %dest = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 3
-  %0 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
-  %header = getelementptr inbounds %struct.loop* %loop, i64 0, i32 1
-  %1 = load %struct.basic_block_def** %header, align 8, !tbaa !0
-  %cmp = icmp eq %struct.basic_block_def* %0, %1
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !414), !dbg !932
+  tail call void @llvm.dbg.value(metadata !{%struct.edge_def* %e}, i64 0, metadata !415), !dbg !933
+  %dest = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 3, !dbg !934
+  %0 = load %struct.basic_block_def** %dest, align 8, !dbg !934, !tbaa !563
+  %header = getelementptr inbounds %struct.loop* %loop, i64 0, i32 1, !dbg !934
+  %1 = load %struct.basic_block_def** %header, align 8, !dbg !934, !tbaa !563
+  %cmp = icmp eq %struct.basic_block_def* %0, %1, !dbg !934
+  br i1 %cmp, label %if.end, label %if.then, !dbg !934
 
 if.then:                                          ; preds = %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str17, i64 0, i64 0), i32 832, i8* getelementptr inbounds ([25 x i8]* @__FUNCTION__.flow_loop_outside_edge_p, i64 0, i64 0)) #7
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str17, i64 0, i64 0), i32 832, i8* getelementptr inbounds ([25 x i8]* @__FUNCTION__.flow_loop_outside_edge_p, i64 0, i64 0)) #8, !dbg !935
+  unreachable, !dbg !935
 
 if.end:                                           ; preds = %entry
-  %src = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 2
-  %2 = load %struct.basic_block_def** %src, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct.basic_block_def* %2, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0)
-  br i1 %cmp1, label %lor.end, label %lor.rhs
+  %src = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 2, !dbg !936
+  %2 = load %struct.basic_block_def** %src, align 8, !dbg !936, !tbaa !563
+  %cmp1 = icmp eq %struct.basic_block_def* %2, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0), !dbg !936
+  br i1 %cmp1, label %lor.end, label %lor.rhs, !dbg !936
 
 lor.rhs:                                          ; preds = %if.end
-  %index = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 11
-  %3 = load i32* %index, align 4, !tbaa !3
-  %div = lshr i32 %3, 6
-  %idxprom = zext i32 %div to i64
-  %nodes = getelementptr inbounds %struct.loop* %loop, i64 0, i32 8
-  %4 = load %struct.simple_bitmap_def** %nodes, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %4, i64 0, i32 3, i64 %idxprom
-  %5 = load i64* %arrayidx, align 8, !tbaa !4
-  %rem = and i32 %3, 63
-  %sh_prom = zext i32 %rem to i64
-  %6 = shl i64 1, %sh_prom
-  %and9 = and i64 %6, %5
-  %lnot = icmp eq i64 %and9, 0
-  br label %lor.end
+  %index = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 11, !dbg !936
+  %3 = load i32* %index, align 4, !dbg !936, !tbaa !568
+  %div = lshr i32 %3, 6, !dbg !936
+  %idxprom = zext i32 %div to i64, !dbg !936
+  %nodes = getelementptr inbounds %struct.loop* %loop, i64 0, i32 8, !dbg !936
+  %4 = load %struct.simple_bitmap_def** %nodes, align 8, !dbg !936, !tbaa !563
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %4, i64 0, i32 3, i64 %idxprom, !dbg !936
+  %5 = load i64* %arrayidx, align 8, !dbg !936, !tbaa !680
+  %rem = and i32 %3, 63, !dbg !936
+  %sh_prom = zext i32 %rem to i64, !dbg !936
+  %6 = shl i64 1, %sh_prom, !dbg !936
+  %and9 = and i64 %6, %5, !dbg !936
+  %lnot = icmp eq i64 %and9, 0, !dbg !936
+  br label %lor.end, !dbg !936
 
 lor.end:                                          ; preds = %lor.rhs, %if.end
   %7 = phi i1 [ true, %if.end ], [ %lnot, %lor.rhs ]
-  %lor.ext = zext i1 %7 to i32
-  ret i32 %lor.ext
+  %lor.ext = zext i1 %7 to i32, !dbg !936
+  ret i32 %lor.ext, !dbg !936
 }

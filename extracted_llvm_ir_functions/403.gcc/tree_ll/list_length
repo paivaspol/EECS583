@@ -1,18 +1,23 @@
-define i32 @list_length(%union.tree_node* %t) #3 {
+define i32 @list_length(%union.tree_node* %t) #4 {
 entry:
-  %tobool2 = icmp eq %union.tree_node* %t, null
-  br i1 %tobool2, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %t}, i64 0, metadata !1096), !dbg !2290
+  tail call void @llvm.dbg.value(metadata !429, i64 0, metadata !1098), !dbg !2291
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %t}, i64 0, metadata !1097), !dbg !2292
+  %tobool2 = icmp eq %union.tree_node* %t, null, !dbg !2292
+  br i1 %tobool2, label %for.end, label %for.body, !dbg !2292
 
 for.body:                                         ; preds = %entry, %for.body
   %len.04 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
   %tail.03 = phi %union.tree_node* [ %0, %for.body ], [ %t, %entry ]
-  %inc = add nsw i32 %len.04, 1
-  %chain = getelementptr inbounds %union.tree_node* %tail.03, i64 0, i32 0, i32 0, i32 0
-  %0 = load %union.tree_node** %chain, align 8, !tbaa !0
-  %tobool = icmp eq %union.tree_node* %0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %inc = add nsw i32 %len.04, 1, !dbg !2294
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1098), !dbg !2294
+  %chain = getelementptr inbounds %union.tree_node* %tail.03, i64 0, i32 0, i32 0, i32 0, !dbg !2292
+  %0 = load %union.tree_node** %chain, align 8, !dbg !2292, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %0}, i64 0, metadata !1097), !dbg !2292
+  %tobool = icmp eq %union.tree_node* %0, null, !dbg !2292
+  br i1 %tobool, label %for.end, label %for.body, !dbg !2292
 
 for.end:                                          ; preds = %for.body, %entry
   %len.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %for.body ]
-  ret i32 %len.0.lcssa
+  ret i32 %len.0.lcssa, !dbg !2295
 }

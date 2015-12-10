@@ -1,31 +1,32 @@
 define i32 @PUGH_EnableGroupComm(%struct.cGH* %GH, i8* %groupname) #1 {
+entry:
   %pgroup = alloca %struct.cGroup, align 4
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !175, metadata !274), !dbg !321
-  tail call void @llvm.dbg.value(metadata i8* %groupname, i64 0, metadata !176, metadata !274), !dbg !322
-  %1 = tail call i32 @CCTK_GroupIndex(i8* %groupname) #5, !dbg !323
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !177, metadata !274), !dbg !324
-  tail call void @llvm.dbg.value(metadata %struct.cGroup* %pgroup, i64 0, metadata !178, metadata !274), !dbg !325
-  %2 = call i32 @CCTK_GroupData(i32 %1, %struct.cGroup* %pgroup) #5, !dbg !326
-  %3 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 0, !dbg !327
-  %4 = load i32* %3, align 4, !dbg !327, !tbaa !291
-  switch i32 %4, label %8 [
-    i32 1, label %10
-    i32 2, label %5
-    i32 3, label %5
-  ], !dbg !329
+  call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !72), !dbg !297
+  call void @llvm.dbg.value(metadata !{i8* %groupname}, i64 0, metadata !73), !dbg !297
+  call void @llvm.dbg.declare(metadata !{%struct.cGroup* %pgroup}, metadata !75), !dbg !298
+  %call = call i32 @CCTK_GroupIndex(i8* %groupname) #6, !dbg !299
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !74), !dbg !299
+  %call1 = call i32 @CCTK_GroupData(i32 %call, %struct.cGroup* %pgroup) #6, !dbg !300
+  %grouptype = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 0, !dbg !301
+  %0 = load i32* %grouptype, align 4, !dbg !301, !tbaa !280
+  switch i32 %0, label %if.else10 [
+    i32 1, label %if.end12
+    i32 2, label %if.then6
+    i32 3, label %if.then6
+  ], !dbg !301
 
-; <label>:5                                       ; preds = %0, %0
-  %6 = call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #5, !dbg !330
-  %7 = call i32 @CCTK_FirstVarIndexI(i32 %1) #5, !dbg !333
-  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !179, metadata !274), !dbg !334
-  br label %10, !dbg !335
+if.then6:                                         ; preds = %entry, %entry
+  %call7 = call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #6, !dbg !302
+  %call8 = call i32 @CCTK_FirstVarIndexI(i32 %call) #6, !dbg !304
+  call void @llvm.dbg.value(metadata !305, i64 0, metadata !76), !dbg !304
+  br label %if.end12, !dbg !306
 
-; <label>:8                                       ; preds = %0
-  %9 = call i32 @CCTK_Warn(i32 1, i32 169, i8* getelementptr inbounds ([71 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str5, i64 0, i64 0)) #5, !dbg !336
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !179, metadata !274), !dbg !334
-  br label %10
+if.else10:                                        ; preds = %entry
+  %call11 = call i32 @CCTK_Warn(i32 1, i32 169, i8* getelementptr inbounds ([59 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str5, i64 0, i64 0)) #6, !dbg !307
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !76), !dbg !309
+  br label %if.end12
 
-; <label>:10                                      ; preds = %0, %5, %8
-  %rc.0 = phi i32 [ 1, %5 ], [ 0, %8 ], [ 1, %0 ]
-  ret i32 %rc.0, !dbg !338
+if.end12:                                         ; preds = %entry, %if.then6, %if.else10
+  %rc.0 = phi i32 [ 1, %if.then6 ], [ 0, %if.else10 ], [ 1, %entry ]
+  ret i32 %rc.0, !dbg !310
 }

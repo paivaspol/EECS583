@@ -1,48 +1,50 @@
-define float @get_mass(i8* %resnm, i8* %atomnm) #4 {
+define float @get_mass(i8* %resnm, i8* %atomnm) #0 {
+entry:
   %m = alloca float, align 4
-  tail call void @llvm.dbg.value(metadata i8* %resnm, i64 0, metadata !88, metadata !203), !dbg !242
-  tail call void @llvm.dbg.value(metadata i8* %atomnm, i64 0, metadata !89, metadata !203), !dbg !243
-  %1 = load %struct.t_prop** @get_mass.mass, align 8, !dbg !244, !tbaa !246
-  %2 = icmp eq %struct.t_prop* %1, null, !dbg !244
-  br i1 %2, label %3, label %11, !dbg !247
+  call void @llvm.dbg.value(metadata !{i8* %resnm}, i64 0, metadata !29), !dbg !184
+  call void @llvm.dbg.value(metadata !{i8* %atomnm}, i64 0, metadata !30), !dbg !184
+  call void @llvm.dbg.declare(metadata !{float* %m}, metadata !31), !dbg !185
+  %0 = load %struct.t_prop** @get_mass.mass, align 8, !dbg !186, !tbaa !187
+  %tobool = icmp eq %struct.t_prop* %0, null, !dbg !186
+  br i1 %tobool, label %if.then, label %if.end4, !dbg !186
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !248, !tbaa !246
-  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([131 x i8]* @.str, i64 0, i64 0), i64 130, i64 1, %struct.__sFILE* %4), !dbg !250
-  %6 = tail call fastcc i32 @read_props(i8* getelementptr inbounds ([13 x i8]* @.str1, i64 0, i64 0), %struct.t_prop** @get_mass.mass, i32* @get_mass.maxmass) #10, !dbg !251
-  store i32 %6, i32* @get_mass.nmass, align 4, !dbg !252, !tbaa !253
-  %7 = load %struct.__sFILE** @debug, align 8, !dbg !254, !tbaa !246
-  %8 = icmp eq %struct.__sFILE* %7, null, !dbg !254
-  br i1 %8, label %11, label %9, !dbg !256
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !190, !tbaa !187
+  %2 = call i64 @fwrite(i8* getelementptr inbounds ([131 x i8]* @.str, i64 0, i64 0), i64 130, i64 1, %struct._IO_FILE* %1), !dbg !190
+  %call1 = call fastcc i32 @read_props(i8* getelementptr inbounds ([13 x i8]* @.str1, i64 0, i64 0), %struct.t_prop** @get_mass.mass, i32* @get_mass.maxmass) #8, !dbg !192
+  store i32 %call1, i32* @get_mass.nmass, align 4, !dbg !192, !tbaa !193
+  %3 = load %struct._IO_FILE** @debug, align 8, !dbg !194, !tbaa !187
+  %tobool2 = icmp eq %struct._IO_FILE* %3, null, !dbg !194
+  br i1 %tobool2, label %if.end4, label %if.then3, !dbg !194
 
-; <label>:9                                       ; preds = %3
-  %10 = load %struct.t_prop** @get_mass.mass, align 8, !dbg !257, !tbaa !246
-  tail call fastcc void @write_props(%struct.__sFILE* %7, i32 %6, %struct.t_prop* %10) #10, !dbg !258
-  br label %11, !dbg !258
+if.then3:                                         ; preds = %if.then
+  %4 = load %struct.t_prop** @get_mass.mass, align 8, !dbg !195, !tbaa !187
+  call fastcc void @write_props(%struct._IO_FILE* %3, i32 %call1, %struct.t_prop* %4) #8, !dbg !195
+  br label %if.end4, !dbg !195
 
-; <label>:11                                      ; preds = %3, %0, %9
-  %12 = load i32* @get_mass.nmass, align 4, !dbg !259, !tbaa !253
-  %13 = load %struct.t_prop** @get_mass.mass, align 8, !dbg !261, !tbaa !246
-  tail call void @llvm.dbg.value(metadata float* %m, i64 0, metadata !90, metadata !203), !dbg !262
-  %14 = call fastcc i32 @get_prop(float* %m, i8* %resnm, i8* %atomnm, i32 %12, %struct.t_prop* %13) #10, !dbg !263
-  %15 = icmp eq i32 %14, 0, !dbg !263
-  br i1 %15, label %16, label %._crit_edge, !dbg !264
+if.end4:                                          ; preds = %if.then, %entry, %if.then3
+  %5 = load i32* @get_mass.nmass, align 4, !dbg !196, !tbaa !193
+  %6 = load %struct.t_prop** @get_mass.mass, align 8, !dbg !196, !tbaa !187
+  %call5 = call fastcc i32 @get_prop(float* %m, i8* %resnm, i8* %atomnm, i32 %5, %struct.t_prop* %6) #8, !dbg !196
+  %tobool6 = icmp eq i32 %call5, 0, !dbg !196
+  br i1 %tobool6, label %if.then7, label %if.end4.if.end9_crit_edge, !dbg !196
 
-._crit_edge:                                      ; preds = %11
-  %.pre = load float* %m, align 4, !dbg !265, !tbaa !266
-  br label %19, !dbg !264
+if.end4.if.end9_crit_edge:                        ; preds = %if.end4
+  call void @llvm.dbg.value(metadata !{float* %m}, i64 0, metadata !31), !dbg !197
+  %.pre = load float* %m, align 4, !dbg !197, !tbaa !198
+  br label %if.end9, !dbg !196
 
-; <label>:16                                      ; preds = %11
-  tail call void @llvm.dbg.value(metadata float 0x402805A1C0000000, i64 0, metadata !90, metadata !203), !dbg !262
-  store float 0x402805A1C0000000, float* %m, align 4, !dbg !268, !tbaa !266
-  tail call fastcc void @add_prop(float 0x402805A1C0000000, i8* %resnm, i8* %atomnm, i32* @get_mass.nmass, %struct.t_prop** @get_mass.mass, i32* @get_mass.maxmass) #10, !dbg !270
-  %17 = load %struct.__sFILE** @__stderrp, align 8, !dbg !271, !tbaa !246
-  tail call void @llvm.dbg.value(metadata float* %m, i64 0, metadata !90, metadata !203), !dbg !262
-  %18 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %17, i8* getelementptr inbounds ([30 x i8]* @.str2, i64 0, i64 0), i8* %resnm, i8* %atomnm, double 0x402805A1C0000000) #9, !dbg !272
-  br label %19, !dbg !273
+if.then7:                                         ; preds = %if.end4
+  call void @llvm.dbg.value(metadata !199, i64 0, metadata !31), !dbg !200
+  store float 0x402805A1C0000000, float* %m, align 4, !dbg !200, !tbaa !198
+  call fastcc void @add_prop(float 0x402805A1C0000000, i8* %resnm, i8* %atomnm, i32* @get_mass.nmass, %struct.t_prop** @get_mass.mass, i32* @get_mass.maxmass) #8, !dbg !202
+  %7 = load %struct._IO_FILE** @stderr, align 8, !dbg !203, !tbaa !187
+  call void @llvm.dbg.value(metadata !{float* %m}, i64 0, metadata !31), !dbg !203
+  %call8 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([30 x i8]* @.str2, i64 0, i64 0), i8* %resnm, i8* %atomnm, double 0x402805A1C0000000) #9, !dbg !203
+  br label %if.end9, !dbg !204
 
-; <label>:19                                      ; preds = %._crit_edge, %16
-  %20 = phi float [ %.pre, %._crit_edge ], [ 0x402805A1C0000000, %16 ]
-  tail call void @llvm.dbg.value(metadata float* %m, i64 0, metadata !90, metadata !203), !dbg !262
-  ret float %20, !dbg !274
+if.end9:                                          ; preds = %if.end4.if.end9_crit_edge, %if.then7
+  %8 = phi float [ %.pre, %if.end4.if.end9_crit_edge ], [ 0x402805A1C0000000, %if.then7 ]
+  call void @llvm.dbg.value(metadata !{float* %m}, i64 0, metadata !31), !dbg !197
+  ret float %8, !dbg !197
 }

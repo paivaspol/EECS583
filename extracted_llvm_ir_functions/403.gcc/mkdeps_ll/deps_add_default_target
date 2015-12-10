@@ -1,40 +1,46 @@
 define void @deps_add_default_target(%struct.deps* nocapture %d, i8* %tgt) #0 {
 entry:
-  %ntargets = getelementptr inbounds %struct.deps* %d, i64 0, i32 1
-  %0 = load i32* %ntargets, align 4, !tbaa !3
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.end, label %if.end12
+  call void @llvm.dbg.value(metadata !{%struct.deps* %d}, i64 0, metadata !42), !dbg !199
+  call void @llvm.dbg.value(metadata !{i8* %tgt}, i64 0, metadata !43), !dbg !200
+  %ntargets = getelementptr inbounds %struct.deps* %d, i64 0, i32 1, !dbg !201
+  %0 = load i32* %ntargets, align 4, !dbg !201, !tbaa !148
+  %tobool = icmp eq i32 %0, 0, !dbg !201
+  br i1 %tobool, label %if.end, label %if.end12, !dbg !201
 
 if.end:                                           ; preds = %entry
-  %1 = load i8* %tgt, align 1, !tbaa !1
-  %cmp = icmp eq i8 %1, 0
-  br i1 %cmp, label %if.then2, label %if.else
+  %1 = load i8* %tgt, align 1, !dbg !202, !tbaa !143
+  %cmp = icmp eq i8 %1, 0, !dbg !202
+  br i1 %cmp, label %if.then2, label %if.else, !dbg !202
 
 if.then2:                                         ; preds = %if.end
-  call void @deps_add_target(%struct.deps* %d, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0), i32 1) #6
-  br label %if.end12
+  call void @deps_add_target(%struct.deps* %d, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0), i32 1) #7, !dbg !203
+  br label %if.end12, !dbg !203
 
 if.else:                                          ; preds = %if.end
-  %call = call i8* @lbasename(i8* %tgt) #5
-  %call3 = call i64 @strlen(i8* %call) #7
-  %add4 = add i64 %call3, 3
-  %2 = alloca i8, i64 %add4, align 1
-  %call5 = call i8* @strcpy(i8* %2, i8* %call) #5
-  %call6 = call i8* @strrchr(i8* %2, i32 46) #7
-  %tobool7 = icmp eq i8* %call6, null
-  br i1 %tobool7, label %if.then8, label %if.end10
+  %call = call i8* @lbasename(i8* %tgt) #6, !dbg !204
+  call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !44), !dbg !204
+  %call3 = call i64 @strlen(i8* %call) #8, !dbg !205
+  %add4 = add i64 %call3, 3, !dbg !205
+  %2 = alloca i8, i64 %add4, align 1, !dbg !205
+  call void @llvm.dbg.value(metadata !{i8* %2}, i64 0, metadata !46), !dbg !205
+  %call5 = call i8* @strcpy(i8* %2, i8* %call) #6, !dbg !206
+  %call6 = call i8* @strrchr(i8* %2, i32 46) #8, !dbg !207
+  call void @llvm.dbg.value(metadata !{i8* %call6}, i64 0, metadata !48), !dbg !207
+  %tobool7 = icmp eq i8* %call6, null, !dbg !208
+  br i1 %tobool7, label %if.then8, label %if.end10, !dbg !208
 
 if.then8:                                         ; preds = %if.else
-  %call9 = call i64 @strlen(i8* %2) #7
-  %add.ptr = getelementptr inbounds i8* %2, i64 %call9
-  br label %if.end10
+  %call9 = call i64 @strlen(i8* %2) #8, !dbg !209
+  %add.ptr = getelementptr inbounds i8* %2, i64 %call9, !dbg !209
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !48), !dbg !209
+  br label %if.end10, !dbg !209
 
 if.end10:                                         ; preds = %if.else, %if.then8
   %suffix.0 = phi i8* [ %call6, %if.else ], [ %add.ptr, %if.then8 ]
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %suffix.0, i8* getelementptr inbounds ([3 x i8]* @.str1, i64 0, i64 0), i64 3, i32 1, i1 false)
-  call void @deps_add_target(%struct.deps* %d, i8* %2, i32 1) #6
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %suffix.0, i8* getelementptr inbounds ([3 x i8]* @.str1, i64 0, i64 0), i64 3, i32 1, i1 false), !dbg !210
+  call void @deps_add_target(%struct.deps* %d, i8* %2, i32 1) #7, !dbg !211
   br label %if.end12
 
 if.end12:                                         ; preds = %entry, %if.end10, %if.then2
-  ret void
+  ret void, !dbg !212
 }

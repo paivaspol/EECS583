@@ -1,39 +1,40 @@
-define internal fastcc i32 @Imedian3(i32 %i, i32 %j, i32 %k, i32* nocapture readonly %a) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %i, i64 0, metadata !486, metadata !512), !dbg !2615
-  tail call void @llvm.dbg.value(metadata i32 %j, i64 0, metadata !487, metadata !512), !dbg !2616
-  tail call void @llvm.dbg.value(metadata i32 %k, i64 0, metadata !488, metadata !512), !dbg !2617
-  tail call void @llvm.dbg.value(metadata i32* %a, i64 0, metadata !489, metadata !512), !dbg !2618
-  %1 = sext i32 %i to i64, !dbg !2619
-  %2 = getelementptr inbounds i32* %a, i64 %1, !dbg !2619
-  %3 = load i32* %2, align 4, !dbg !2619, !tbaa !525
-  %4 = sext i32 %j to i64, !dbg !2620
-  %5 = getelementptr inbounds i32* %a, i64 %4, !dbg !2620
-  %6 = load i32* %5, align 4, !dbg !2620, !tbaa !525
-  %7 = icmp slt i32 %3, %6, !dbg !2621
-  %8 = sext i32 %k to i64, !dbg !2622
-  %9 = getelementptr inbounds i32* %a, i64 %8, !dbg !2622
-  %10 = load i32* %9, align 4, !dbg !2622, !tbaa !525
-  br i1 %7, label %11, label %15, !dbg !2623
+define internal fastcc i32 @Imedian3(i32 %i, i32 %j, i32 %k, i32* nocapture %a) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !497), !dbg !1740
+  tail call void @llvm.dbg.value(metadata !{i32 %j}, i64 0, metadata !498), !dbg !1741
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !499), !dbg !1742
+  tail call void @llvm.dbg.value(metadata !{i32* %a}, i64 0, metadata !500), !dbg !1743
+  %idxprom = sext i32 %i to i64, !dbg !1744
+  %arrayidx = getelementptr inbounds i32* %a, i64 %idxprom, !dbg !1744
+  %0 = load i32* %arrayidx, align 4, !dbg !1744, !tbaa !508
+  %idxprom1 = sext i32 %j to i64, !dbg !1744
+  %arrayidx2 = getelementptr inbounds i32* %a, i64 %idxprom1, !dbg !1744
+  %1 = load i32* %arrayidx2, align 4, !dbg !1744, !tbaa !508
+  %cmp = icmp slt i32 %0, %1, !dbg !1744
+  %idxprom5 = sext i32 %k to i64, !dbg !1745
+  %arrayidx6 = getelementptr inbounds i32* %a, i64 %idxprom5, !dbg !1745
+  %2 = load i32* %arrayidx6, align 4, !dbg !1745, !tbaa !508
+  br i1 %cmp, label %if.then, label %if.else16, !dbg !1744
 
-; <label>:11                                      ; preds = %0
-  %12 = icmp slt i32 %6, %10, !dbg !2624
-  br i1 %12, label %19, label %13, !dbg !2625
+if.then:                                          ; preds = %entry
+  %cmp7 = icmp slt i32 %1, %2, !dbg !1745
+  br i1 %cmp7, label %return, label %if.else, !dbg !1745
 
-; <label>:13                                      ; preds = %11
-  %14 = icmp slt i32 %3, %10, !dbg !2626
-  %k.i = select i1 %14, i32 %k, i32 %i, !dbg !2627
-  br label %19, !dbg !2627
+if.else:                                          ; preds = %if.then
+  %cmp13 = icmp slt i32 %0, %2, !dbg !1747
+  %k.i = select i1 %cmp13, i32 %k, i32 %i, !dbg !1748
+  br label %return, !dbg !1748
 
-; <label>:15                                      ; preds = %0
-  %16 = icmp slt i32 %3, %10, !dbg !2628
-  br i1 %16, label %19, label %17, !dbg !2629
+if.else16:                                        ; preds = %entry
+  %cmp21 = icmp slt i32 %0, %2, !dbg !1750
+  br i1 %cmp21, label %return, label %if.else23, !dbg !1750
 
-; <label>:17                                      ; preds = %15
-  %18 = icmp slt i32 %6, %10, !dbg !2630
-  %k.j = select i1 %18, i32 %k, i32 %j, !dbg !2631
-  br label %19, !dbg !2631
+if.else23:                                        ; preds = %if.else16
+  %cmp28 = icmp slt i32 %1, %2, !dbg !1752
+  %k.j = select i1 %cmp28, i32 %k, i32 %j, !dbg !1753
+  br label %return, !dbg !1753
 
-; <label>:19                                      ; preds = %17, %15, %13, %11
-  %.0 = phi i32 [ %j, %11 ], [ %k.i, %13 ], [ %i, %15 ], [ %k.j, %17 ]
-  ret i32 %.0, !dbg !2632
+return:                                           ; preds = %if.else23, %if.else16, %if.else, %if.then
+  %retval.0 = phi i32 [ %j, %if.then ], [ %k.i, %if.else ], [ %i, %if.else16 ], [ %k.j, %if.else23 ]
+  ret i32 %retval.0, !dbg !1755
 }

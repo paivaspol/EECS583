@@ -1,990 +1,938 @@
-define i32 @getopt_internal(i32 %argc, i8** %argv, i8* readonly %optstring, %struct.gg_option* readonly %longopts, i32* %longind, i32 %long_only) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %argc, i64 0, metadata !34, metadata !114), !dbg !115
-  tail call void @llvm.dbg.value(metadata i8** %argv, i64 0, metadata !35, metadata !114), !dbg !116
-  tail call void @llvm.dbg.value(metadata i8* %optstring, i64 0, metadata !36, metadata !114), !dbg !117
-  tail call void @llvm.dbg.value(metadata %struct.gg_option* %longopts, i64 0, metadata !37, metadata !114), !dbg !118
-  tail call void @llvm.dbg.value(metadata i32* %longind, i64 0, metadata !38, metadata !114), !dbg !119
-  tail call void @llvm.dbg.value(metadata i32 %long_only, i64 0, metadata !39, metadata !114), !dbg !120
-  store i8* null, i8** @gg_optarg, align 8, !dbg !121, !tbaa !122
-  %1 = load i32* @gg_optind, align 4, !dbg !126, !tbaa !128
-  %2 = icmp ne i32 %1, 0, !dbg !130
-  %3 = load i32* @__getopt_initialized, align 4
-  %4 = icmp ne i32 %3, 0, !dbg !131
-  %or.cond = and i1 %2, %4, !dbg !132
-  br i1 %or.cond, label %20, label %5, !dbg !132
-
-; <label>:5                                       ; preds = %0
-  %6 = icmp eq i32 %1, 0, !dbg !133
-  br i1 %6, label %7, label %8, !dbg !136
-
-; <label>:7                                       ; preds = %5
-  store i32 1, i32* @gg_optind, align 4, !dbg !137, !tbaa !128
-  br label %8, !dbg !138
-
-; <label>:8                                       ; preds = %7, %5
-  %9 = phi i32 [ 1, %7 ], [ %1, %5 ]
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !72, metadata !114) #5, !dbg !139
-  tail call void @llvm.dbg.value(metadata i8** null, i64 0, metadata !73, metadata !114) #5, !dbg !141
-  store i32 %9, i32* @last_nonopt, align 4, !dbg !142, !tbaa !128
-  store i32 %9, i32* @first_nonopt, align 4, !dbg !143, !tbaa !128
-  store i8* null, i8** @nextchar, align 8, !dbg !144, !tbaa !122
-  %10 = tail call i8* (i8*, ...)* bitcast (i8* (...)* @getenv to i8* (i8*, ...)*)(i8* getelementptr inbounds ([16 x i8]* @.str13, i64 0, i64 0)) #6, !dbg !145
-  store i8* %10, i8** @posixly_correct, align 8, !dbg !146, !tbaa !122
-  %11 = load i8* %optstring, align 1, !dbg !147, !tbaa !149
-  switch i8 %11, label %16 [
-    i8 45, label %12
-    i8 43, label %14
-  ], !dbg !150
-
-; <label>:12                                      ; preds = %8
-  store i32 2, i32* @ordering, align 4, !dbg !151, !tbaa !149
-  %13 = getelementptr inbounds i8* %optstring, i64 1, !dbg !153
-  tail call void @llvm.dbg.value(metadata i8* %13, i64 0, metadata !74, metadata !114) #5, !dbg !154
-  br label %_getopt_initialize.exit, !dbg !155
-
-; <label>:14                                      ; preds = %8
-  store i32 0, i32* @ordering, align 4, !dbg !156, !tbaa !149
-  %15 = getelementptr inbounds i8* %optstring, i64 1, !dbg !159
-  tail call void @llvm.dbg.value(metadata i8* %15, i64 0, metadata !74, metadata !114) #5, !dbg !154
-  br label %_getopt_initialize.exit, !dbg !160
-
-; <label>:16                                      ; preds = %8
-  %17 = icmp eq i8* %10, null, !dbg !161
-  br i1 %17, label %19, label %18, !dbg !163
-
-; <label>:18                                      ; preds = %16
-  store i32 0, i32* @ordering, align 4, !dbg !164, !tbaa !149
-  br label %_getopt_initialize.exit, !dbg !165
-
-; <label>:19                                      ; preds = %16
-  store i32 1, i32* @ordering, align 4, !dbg !166, !tbaa !149
-  br label %_getopt_initialize.exit, !dbg !167
-
-_getopt_initialize.exit:                          ; preds = %12, %14, %18, %19
-  %.0.i = phi i8* [ %13, %12 ], [ %15, %14 ], [ %optstring, %18 ], [ %optstring, %19 ], !dbg !167
-  tail call void @llvm.dbg.value(metadata i8* %.0.i, i64 0, metadata !36, metadata !114), !dbg !117
-  store i32 1, i32* @__getopt_initialized, align 4, !dbg !168, !tbaa !128
-  br label %20, !dbg !169
-
-; <label>:20                                      ; preds = %0, %_getopt_initialize.exit
-  %.014 = phi i8* [ %optstring, %0 ], [ %.0.i, %_getopt_initialize.exit ]
-  %21 = load i8** @nextchar, align 8, !dbg !170, !tbaa !122
-  %22 = icmp eq i8* %21, null, !dbg !172
-  br i1 %22, label %26, label %23, !dbg !173
-
-; <label>:23                                      ; preds = %20
-  %24 = load i8* %21, align 1, !dbg !174, !tbaa !149
-  %25 = icmp eq i8 %24, 0, !dbg !175
-  br i1 %25, label %26, label %105, !dbg !176
-
-; <label>:26                                      ; preds = %23, %20
-  %27 = load i32* @last_nonopt, align 4, !dbg !177, !tbaa !128
-  %28 = load i32* @gg_optind, align 4, !dbg !180, !tbaa !128
-  %29 = icmp sgt i32 %27, %28, !dbg !181
-  br i1 %29, label %30, label %31, !dbg !182
-
-; <label>:30                                      ; preds = %26
-  store i32 %28, i32* @last_nonopt, align 4, !dbg !183, !tbaa !128
-  br label %31, !dbg !184
-
-; <label>:31                                      ; preds = %30, %26
-  %32 = phi i32 [ %28, %30 ], [ %27, %26 ]
-  %33 = load i32* @first_nonopt, align 4, !dbg !185, !tbaa !128
-  %34 = icmp sgt i32 %33, %28, !dbg !187
-  br i1 %34, label %35, label %36, !dbg !188
-
-; <label>:35                                      ; preds = %31
-  store i32 %28, i32* @first_nonopt, align 4, !dbg !189, !tbaa !128
-  br label %36, !dbg !190
-
-; <label>:36                                      ; preds = %35, %31
-  %37 = phi i32 [ %28, %35 ], [ %33, %31 ]
-  %38 = load i32* @ordering, align 4, !dbg !191, !tbaa !149
-  %39 = icmp eq i32 %38, 1, !dbg !193
-  br i1 %39, label %40, label %61, !dbg !194
-
-; <label>:40                                      ; preds = %36
-  %41 = icmp eq i32 %37, %32, !dbg !195
-  %42 = icmp eq i32 %32, %28, !dbg !198
-  %or.cond16 = or i1 %41, %42, !dbg !199
-  br i1 %or.cond16, label %44, label %43, !dbg !199
-
-; <label>:43                                      ; preds = %40
-  tail call fastcc void @exchange(i8** %argv) #7, !dbg !200
-  %.pre = load i32* @gg_optind, align 4, !dbg !201, !tbaa !128
-  br label %.preheader, !dbg !200
-
-; <label>:44                                      ; preds = %40
-  br i1 %42, label %.preheader, label %45, !dbg !202
-
-; <label>:45                                      ; preds = %44
-  store i32 %28, i32* @first_nonopt, align 4, !dbg !203, !tbaa !128
-  br label %.preheader, !dbg !205
-
-.preheader:                                       ; preds = %45, %43, %44
-  %46 = phi i32 [ %28, %45 ], [ %.pre, %43 ], [ %28, %44 ]
-  %47 = icmp slt i32 %46, %argc, !dbg !206
-  br i1 %47, label %.lr.ph67, label %.thread30, !dbg !207
-
-.lr.ph67:                                         ; preds = %.preheader, %.thread
-  %48 = phi i32 [ %58, %.thread ], [ %46, %.preheader ]
-  %49 = sext i32 %48 to i64, !dbg !208
-  %50 = getelementptr inbounds i8** %argv, i64 %49, !dbg !208
-  %51 = load i8** %50, align 8, !dbg !208, !tbaa !122
-  %52 = load i8* %51, align 1, !dbg !208, !tbaa !149
-  %53 = icmp eq i8 %52, 45, !dbg !208
-  br i1 %53, label %54, label %.thread, !dbg !208
-
-; <label>:54                                      ; preds = %.lr.ph67
-  %55 = getelementptr inbounds i8* %51, i64 1, !dbg !208
-  %56 = load i8* %55, align 1, !dbg !208, !tbaa !149
-  %57 = icmp eq i8 %56, 0, !dbg !208
-  br i1 %57, label %.thread, label %.thread30, !dbg !209
-
-.thread:                                          ; preds = %.lr.ph67, %54
-  %58 = add nsw i32 %48, 1, !dbg !210
-  store i32 %58, i32* @gg_optind, align 4, !dbg !210, !tbaa !128
-  %59 = icmp slt i32 %58, %argc, !dbg !206
-  br i1 %59, label %.lr.ph67, label %.thread30, !dbg !207
-
-.thread30:                                        ; preds = %54, %.thread, %.preheader
-  %60 = phi i32 [ %46, %.preheader ], [ %48, %54 ], [ %58, %.thread ]
-  store i32 %60, i32* @last_nonopt, align 4, !dbg !211, !tbaa !128
-  br label %61, !dbg !212
-
-; <label>:61                                      ; preds = %.thread30, %36
-  %62 = phi i32 [ %60, %.thread30 ], [ %32, %36 ]
-  %63 = phi i32 [ %60, %.thread30 ], [ %28, %36 ]
-  %64 = icmp eq i32 %63, %argc, !dbg !213
-  br i1 %64, label %.thread82, label %65, !dbg !215
-
-; <label>:65                                      ; preds = %61
-  %66 = sext i32 %63 to i64, !dbg !216
-  %67 = getelementptr inbounds i8** %argv, i64 %66, !dbg !216
-  %68 = load i8** %67, align 8, !dbg !216, !tbaa !122
-  %69 = tail call i32 @strcmp(i8* %68, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0)) #6, !dbg !217
-  %70 = icmp eq i32 %69, 0, !dbg !217
-  br i1 %70, label %71, label %80, !dbg !218
-
-; <label>:71                                      ; preds = %65
-  %72 = add nsw i32 %63, 1, !dbg !219
-  store i32 %72, i32* @gg_optind, align 4, !dbg !219, !tbaa !128
-  %73 = load i32* @first_nonopt, align 4, !dbg !221, !tbaa !128
-  %74 = icmp eq i32 %73, %62, !dbg !223
-  %75 = icmp eq i32 %62, %72, !dbg !224
-  %or.cond17 = or i1 %74, %75, !dbg !225
-  br i1 %or.cond17, label %77, label %76, !dbg !225
-
-; <label>:76                                      ; preds = %71
-  tail call fastcc void @exchange(i8** %argv) #7, !dbg !226
-  br label %79, !dbg !226
-
-; <label>:77                                      ; preds = %71
-  br i1 %74, label %78, label %79, !dbg !227
-
-; <label>:78                                      ; preds = %77
-  store i32 %72, i32* @first_nonopt, align 4, !dbg !228, !tbaa !128
-  br label %79, !dbg !230
-
-; <label>:79                                      ; preds = %77, %78, %76
-  store i32 %argc, i32* @last_nonopt, align 4, !dbg !231, !tbaa !128
-  store i32 %argc, i32* @gg_optind, align 4, !dbg !232, !tbaa !128
-  br label %.thread82, !dbg !233
-
-; <label>:80                                      ; preds = %65
-  %81 = icmp eq i32 %63, %argc, !dbg !234
-  br i1 %81, label %.thread82, label %86, !dbg !236
-
-.thread82:                                        ; preds = %79, %61, %80
-  %82 = phi i32 [ %62, %80 ], [ %argc, %79 ], [ %62, %61 ]
-  %83 = load i32* @first_nonopt, align 4, !dbg !237, !tbaa !128
-  %84 = icmp eq i32 %83, %82, !dbg !240
-  br i1 %84, label %479, label %85, !dbg !241
-
-; <label>:85                                      ; preds = %.thread82
-  store i32 %83, i32* @gg_optind, align 4, !dbg !242, !tbaa !128
-  br label %479, !dbg !243
-
-; <label>:86                                      ; preds = %80
-  %87 = sext i32 %63 to i64, !dbg !244
-  %88 = getelementptr inbounds i8** %argv, i64 %87, !dbg !244
-  %89 = load i8** %88, align 8, !dbg !244, !tbaa !122
-  %90 = load i8* %89, align 1, !dbg !244, !tbaa !149
-  %91 = icmp eq i8 %90, 45, !dbg !244
-  %92 = ptrtoint i8* %89 to i64
-  br i1 %91, label %93, label %97, !dbg !244
-
-; <label>:93                                      ; preds = %86
-  %94 = getelementptr inbounds i8* %89, i64 1, !dbg !244
-  %95 = load i8* %94, align 1, !dbg !244, !tbaa !149
-  %96 = icmp eq i8 %95, 0, !dbg !244
-  br i1 %96, label %97, label %102, !dbg !246
-
-; <label>:97                                      ; preds = %86, %93
-  %98 = load i32* @ordering, align 4, !dbg !247, !tbaa !149
-  %99 = icmp eq i32 %98, 0, !dbg !250
-  br i1 %99, label %479, label %100, !dbg !251
-
-; <label>:100                                     ; preds = %97
-  %101 = add nsw i32 %63, 1, !dbg !252
-  store i32 %101, i32* @gg_optind, align 4, !dbg !252, !tbaa !128
-  store i64 %92, i64* bitcast (i8** @gg_optarg to i64*), align 8, !dbg !253, !tbaa !122
-  br label %479, !dbg !254
-
-; <label>:102                                     ; preds = %93
-  %103 = icmp eq i8 %95, 45, !dbg !255
-  %not. = icmp ne %struct.gg_option* %longopts, null, !dbg !256
-  %. = and i1 %not., %103, !dbg !256
-  %.sum = select i1 %., i64 2, i64 1, !dbg !257
-  %104 = getelementptr inbounds i8* %89, i64 %.sum, !dbg !257
-  store i8* %104, i8** @nextchar, align 8, !dbg !258, !tbaa !122
-  br label %105, !dbg !259
-
-; <label>:105                                     ; preds = %102, %23
-  %106 = phi i8* [ %104, %102 ], [ %21, %23 ]
-  %107 = icmp eq %struct.gg_option* %longopts, null, !dbg !260
-  br i1 %107, label %268, label %108, !dbg !261
-
-; <label>:108                                     ; preds = %105
-  %109 = load i32* @gg_optind, align 4, !dbg !262, !tbaa !128
-  %110 = sext i32 %109 to i64, !dbg !263
-  %111 = getelementptr inbounds i8** %argv, i64 %110, !dbg !263
-  %112 = load i8** %111, align 8, !dbg !263, !tbaa !122
-  %113 = getelementptr inbounds i8* %112, i64 1, !dbg !263
-  %114 = load i8* %113, align 1, !dbg !263, !tbaa !149
-  %115 = icmp eq i8 %114, 45, !dbg !264
-  br i1 %115, label %my_index.exit.thread, label %116, !dbg !265
-
-; <label>:116                                     ; preds = %108
-  %117 = icmp eq i32 %long_only, 0, !dbg !266
-  br i1 %117, label %268, label %118, !dbg !267
-
-; <label>:118                                     ; preds = %116
-  %119 = getelementptr inbounds i8* %112, i64 2, !dbg !268
-  %120 = load i8* %119, align 1, !dbg !268, !tbaa !149
-  %121 = icmp eq i8 %120, 0, !dbg !268
-  br i1 %121, label %122, label %my_index.exit.thread, !dbg !269
-
-; <label>:122                                     ; preds = %118
-  tail call void @llvm.dbg.value(metadata i8* %.014, i64 0, metadata !96, metadata !114), !dbg !270
-  %123 = load i8* %.014, align 1, !dbg !272, !tbaa !149
-  %124 = icmp eq i8 %123, 0, !dbg !273
-  br i1 %124, label %my_index.exit.thread, label %.lr.ph.i, !dbg !273
-
-.lr.ph.i:                                         ; preds = %122, %127
-  %125 = phi i8 [ %129, %127 ], [ %123, %122 ], !dbg !274
-  %.012.i = phi i8* [ %128, %127 ], [ %.014, %122 ], !dbg !274
-  %126 = icmp eq i8 %125, %114, !dbg !275
-  br i1 %126, label %my_index.exit, label %127, !dbg !278
-
-; <label>:127                                     ; preds = %.lr.ph.i
-  %128 = getelementptr inbounds i8* %.012.i, i64 1, !dbg !279
-  tail call void @llvm.dbg.value(metadata i8* %128, i64 0, metadata !96, metadata !114), !dbg !270
-  %129 = load i8* %128, align 1, !dbg !272, !tbaa !149
-  %130 = icmp eq i8 %129, 0, !dbg !273
-  br i1 %130, label %my_index.exit.thread, label %.lr.ph.i, !dbg !273
-
-my_index.exit:                                    ; preds = %.lr.ph.i
-  %131 = icmp eq i8* %.012.i, null, !dbg !274
-  br i1 %131, label %my_index.exit.thread, label %268, !dbg !280
-
-my_index.exit.thread:                             ; preds = %108, %118, %my_index.exit, %122, %127, %140
-  %nameend.0 = phi i8* [ %141, %140 ], [ %106, %127 ], [ %106, %122 ], [ %106, %my_index.exit ], [ %106, %118 ], [ %106, %108 ]
-  %132 = load i8* %nameend.0, align 1, !dbg !281, !tbaa !149
-  switch i8 %132, label %140 [
-    i8 0, label %.critedge.preheader
-    i8 61, label %.critedge.preheader
-  ], !dbg !284
-
-.critedge.preheader:                              ; preds = %my_index.exit.thread, %my_index.exit.thread
-  %133 = getelementptr inbounds %struct.gg_option* %longopts, i64 0, i32 0, !dbg !285
-  %134 = load i8** %133, align 8, !dbg !285, !tbaa !288
-  %135 = icmp eq i8* %134, null, !dbg !290
-  br i1 %135, label %.thread31.thread, label %.lr.ph63, !dbg !290
-
-.lr.ph63:                                         ; preds = %.critedge.preheader
-  %136 = ptrtoint i8* %nameend.0 to i64, !dbg !291
-  %137 = ptrtoint i8* %106 to i64, !dbg !291
-  %138 = sub i64 %136, %137, !dbg !291
-  %139 = trunc i64 %138 to i32, !dbg !293
-  br label %142, !dbg !290
-
-; <label>:140                                     ; preds = %my_index.exit.thread
-  %141 = getelementptr inbounds i8* %nameend.0, i64 1, !dbg !296
-  tail call void @llvm.dbg.value(metadata i8* %141, i64 0, metadata !40, metadata !114), !dbg !297
-  br label %my_index.exit.thread, !dbg !298
-
-; <label>:142                                     ; preds = %.lr.ph63, %.critedge
-  %143 = phi i8* [ %134, %.lr.ph63 ], [ %155, %.critedge ]
-  %option_index.062 = phi i32 [ 0, %.lr.ph63 ], [ %153, %.critedge ]
-  %indfound.061 = phi i32 [ -1, %.lr.ph63 ], [ %indfound.1, %.critedge ]
-  %ambig.060 = phi i32 [ 0, %.lr.ph63 ], [ %ambig.1, %.critedge ]
-  %pfound.059 = phi %struct.gg_option* [ null, %.lr.ph63 ], [ %pfound.1, %.critedge ]
-  %p.058 = phi %struct.gg_option* [ %longopts, %.lr.ph63 ], [ %152, %.critedge ]
-  %144 = tail call i32 @strncmp(i8* %143, i8* %106, i64 %138) #6, !dbg !299
-  %145 = icmp eq i32 %144, 0, !dbg !299
-  br i1 %145, label %146, label %.critedge, !dbg !300
-
-; <label>:146                                     ; preds = %142
-  %147 = tail call i64 @strlen(i8* %143) #6, !dbg !301
-  %148 = trunc i64 %147 to i32, !dbg !302
-  %149 = icmp eq i32 %139, %148, !dbg !303
-  br i1 %149, label %.thread31, label %150, !dbg !304
-
-; <label>:150                                     ; preds = %146
-  %151 = icmp eq %struct.gg_option* %pfound.059, null, !dbg !305
-  %p.0.pfound.0 = select i1 %151, %struct.gg_option* %p.058, %struct.gg_option* %pfound.059, !dbg !307
-  %ambig.0. = select i1 %151, i32 %ambig.060, i32 1, !dbg !307
-  %option_index.0.indfound.0 = select i1 %151, i32 %option_index.062, i32 %indfound.061, !dbg !307
-  br label %.critedge, !dbg !307
-
-.critedge:                                        ; preds = %150, %142
-  %pfound.1 = phi %struct.gg_option* [ %pfound.059, %142 ], [ %p.0.pfound.0, %150 ]
-  %ambig.1 = phi i32 [ %ambig.060, %142 ], [ %ambig.0., %150 ]
-  %indfound.1 = phi i32 [ %indfound.061, %142 ], [ %option_index.0.indfound.0, %150 ]
-  %152 = getelementptr inbounds %struct.gg_option* %p.058, i64 1, !dbg !309
-  tail call void @llvm.dbg.value(metadata %struct.gg_option* %152, i64 0, metadata !43, metadata !114), !dbg !310
-  %153 = add nuw nsw i32 %option_index.062, 1, !dbg !311
-  tail call void @llvm.dbg.value(metadata i32 %153, i64 0, metadata !48, metadata !114), !dbg !312
-  %154 = getelementptr inbounds %struct.gg_option* %152, i64 0, i32 0, !dbg !285
-  %155 = load i8** %154, align 8, !dbg !285, !tbaa !288
-  %156 = icmp eq i8* %155, null, !dbg !290
-  br i1 %156, label %.critedge._crit_edge, label %142, !dbg !290
-
-.critedge._crit_edge:                             ; preds = %.critedge
-  %157 = icmp eq i32 %ambig.1, 0, !dbg !313
-  br i1 %157, label %.thread31, label %158, !dbg !315
-
-; <label>:158                                     ; preds = %.critedge._crit_edge
-  %159 = load i32* @gg_opterr, align 4, !dbg !316, !tbaa !128
-  %160 = icmp eq i32 %159, 0, !dbg !316
-  br i1 %160, label %165, label %161, !dbg !319
-
-; <label>:161                                     ; preds = %158
-  %162 = load %struct.__sFILE** @__stderrp, align 8, !dbg !320, !tbaa !122
-  %163 = load i8** %argv, align 8, !dbg !321, !tbaa !122
-  %164 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %162, i8* getelementptr inbounds ([30 x i8]* @.str1, i64 0, i64 0), i8* %163, i8* %112) #6, !dbg !322
-  %.pre74 = load i8** @nextchar, align 8, !dbg !323, !tbaa !122
-  %.pre75 = load i32* @gg_optind, align 4, !dbg !324, !tbaa !128
-  br label %165, !dbg !322
-
-; <label>:165                                     ; preds = %158, %161
-  %166 = phi i32 [ %109, %158 ], [ %.pre75, %161 ]
-  %167 = phi i8* [ %106, %158 ], [ %.pre74, %161 ]
-  %168 = tail call i64 @strlen(i8* %167) #6, !dbg !325
-  %169 = getelementptr inbounds i8* %167, i64 %168, !dbg !326
-  store i8* %169, i8** @nextchar, align 8, !dbg !326, !tbaa !122
-  %170 = add nsw i32 %166, 1, !dbg !324
-  store i32 %170, i32* @gg_optind, align 4, !dbg !324, !tbaa !128
-  store i32 0, i32* @gg_optopt, align 4, !dbg !327, !tbaa !128
-  br label %479, !dbg !328
-
-.thread31:                                        ; preds = %146, %.critedge._crit_edge
-  %indfound.234 = phi i32 [ %indfound.1, %.critedge._crit_edge ], [ %option_index.062, %146 ]
-  %pfound.233 = phi %struct.gg_option* [ %pfound.1, %.critedge._crit_edge ], [ %p.058, %146 ]
-  %171 = icmp eq %struct.gg_option* %pfound.233, null, !dbg !329
-  br i1 %171, label %.thread31.thread, label %172, !dbg !331
-
-; <label>:172                                     ; preds = %.thread31
-  tail call void @llvm.dbg.value(metadata i32 %indfound.1, i64 0, metadata !48, metadata !114), !dbg !312
-  %173 = add nsw i32 %109, 1, !dbg !332
-  store i32 %173, i32* @gg_optind, align 4, !dbg !332, !tbaa !128
-  %174 = load i8* %nameend.0, align 1, !dbg !334, !tbaa !149
-  %175 = icmp eq i8 %174, 0, !dbg !334
-  %176 = getelementptr inbounds %struct.gg_option* %pfound.233, i64 0, i32 1, !dbg !336
-  %177 = load i32* %176, align 4, !dbg !336, !tbaa !339
-  br i1 %175, label %204, label %178, !dbg !340
-
-; <label>:178                                     ; preds = %172
-  %179 = icmp eq i32 %177, 0, !dbg !341
-  br i1 %179, label %182, label %180, !dbg !342
-
-; <label>:180                                     ; preds = %178
-  %181 = getelementptr inbounds i8* %nameend.0, i64 1, !dbg !343
-  store i8* %181, i8** @gg_optarg, align 8, !dbg !344, !tbaa !122
-  br label %230, !dbg !345
-
-; <label>:182                                     ; preds = %178
-  %183 = load i32* @gg_opterr, align 4, !dbg !346, !tbaa !128
-  %184 = icmp eq i32 %183, 0, !dbg !346
-  br i1 %184, label %198, label %185, !dbg !349
-
-; <label>:185                                     ; preds = %182
-  %186 = load i8* %113, align 1, !dbg !350, !tbaa !149
-  %187 = icmp eq i8 %186, 45, !dbg !353
-  %188 = load %struct.__sFILE** @__stderrp, align 8, !dbg !354, !tbaa !122
-  %189 = load i8** %argv, align 8, !dbg !355, !tbaa !122
-  %190 = getelementptr inbounds %struct.gg_option* %pfound.233, i64 0, i32 0
-  %191 = load i8** %190, align 8
-  br i1 %187, label %192, label %194, !dbg !356
-
-; <label>:192                                     ; preds = %185
-  %193 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %188, i8* getelementptr inbounds ([45 x i8]* @.str2, i64 0, i64 0), i8* %189, i8* %191) #6, !dbg !357
-  br label %198, !dbg !357
-
-; <label>:194                                     ; preds = %185
-  %195 = load i8* %112, align 1, !dbg !358, !tbaa !149
-  %196 = sext i8 %195 to i32, !dbg !358
-  %197 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %188, i8* getelementptr inbounds ([45 x i8]* @.str3, i64 0, i64 0), i8* %189, i32 %196, i8* %191) #6, !dbg !359
-  br label %198
-
-; <label>:198                                     ; preds = %182, %192, %194
-  %199 = load i8** @nextchar, align 8, !dbg !360, !tbaa !122
-  %200 = tail call i64 @strlen(i8* %199) #6, !dbg !361
-  %201 = getelementptr inbounds i8* %199, i64 %200, !dbg !362
-  store i8* %201, i8** @nextchar, align 8, !dbg !362, !tbaa !122
-  %202 = getelementptr inbounds %struct.gg_option* %pfound.233, i64 0, i32 3, !dbg !363
-  %203 = load i32* %202, align 4, !dbg !363, !tbaa !364
-  store i32 %203, i32* @gg_optopt, align 4, !dbg !365, !tbaa !128
-  br label %479, !dbg !366
-
-; <label>:204                                     ; preds = %172
-  %205 = icmp eq i32 %177, 1, !dbg !367
-  br i1 %205, label %206, label %230, !dbg !369
-
-; <label>:206                                     ; preds = %204
-  %207 = icmp slt i32 %173, %argc, !dbg !370
-  br i1 %207, label %208, label %214, !dbg !373
-
-; <label>:208                                     ; preds = %206
-  %209 = add nsw i32 %109, 2, !dbg !374
-  store i32 %209, i32* @gg_optind, align 4, !dbg !374, !tbaa !128
-  %210 = sext i32 %173 to i64, !dbg !375
-  %211 = getelementptr inbounds i8** %argv, i64 %210, !dbg !375
-  %212 = bitcast i8** %211 to i64*, !dbg !375
-  %213 = load i64* %212, align 8, !dbg !375, !tbaa !122
-  store i64 %213, i64* bitcast (i8** @gg_optarg to i64*), align 8, !dbg !376, !tbaa !122
-  br label %230, !dbg !377
-
-; <label>:214                                     ; preds = %206
-  %215 = load i32* @gg_opterr, align 4, !dbg !378, !tbaa !128
-  %216 = icmp eq i32 %215, 0, !dbg !378
-  br i1 %216, label %221, label %217, !dbg !381
-
-; <label>:217                                     ; preds = %214
-  %218 = load %struct.__sFILE** @__stderrp, align 8, !dbg !382, !tbaa !122
-  %219 = load i8** %argv, align 8, !dbg !383, !tbaa !122
-  %220 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %218, i8* getelementptr inbounds ([38 x i8]* @.str4, i64 0, i64 0), i8* %219, i8* %112) #6, !dbg !384
-  %.pre76 = load i8** @nextchar, align 8, !dbg !385, !tbaa !122
-  br label %221, !dbg !384
-
-; <label>:221                                     ; preds = %214, %217
-  %222 = phi i8* [ %106, %214 ], [ %.pre76, %217 ]
-  %223 = tail call i64 @strlen(i8* %222) #6, !dbg !386
-  %224 = getelementptr inbounds i8* %222, i64 %223, !dbg !387
-  store i8* %224, i8** @nextchar, align 8, !dbg !387, !tbaa !122
-  %225 = getelementptr inbounds %struct.gg_option* %pfound.233, i64 0, i32 3, !dbg !388
-  %226 = load i32* %225, align 4, !dbg !388, !tbaa !364
-  store i32 %226, i32* @gg_optopt, align 4, !dbg !389, !tbaa !128
-  %227 = load i8* %.014, align 1, !dbg !390, !tbaa !149
-  %228 = icmp eq i8 %227, 58, !dbg !391
-  %229 = select i1 %228, i32 58, i32 63, !dbg !390
-  br label %479, !dbg !392
-
-; <label>:230                                     ; preds = %204, %208, %180
-  %231 = tail call i64 @strlen(i8* %106) #6, !dbg !393
-  %232 = getelementptr inbounds i8* %106, i64 %231, !dbg !394
-  store i8* %232, i8** @nextchar, align 8, !dbg !394, !tbaa !122
-  %233 = icmp eq i32* %longind, null, !dbg !395
-  br i1 %233, label %235, label %234, !dbg !397
-
-; <label>:234                                     ; preds = %230
-  store i32 %indfound.234, i32* %longind, align 4, !dbg !398, !tbaa !128
-  br label %235, !dbg !399
-
-; <label>:235                                     ; preds = %230, %234
-  %236 = getelementptr inbounds %struct.gg_option* %pfound.233, i64 0, i32 2, !dbg !400
-  %237 = load i32** %236, align 8, !dbg !400, !tbaa !402
-  %238 = icmp eq i32* %237, null, !dbg !403
-  %239 = getelementptr inbounds %struct.gg_option* %pfound.233, i64 0, i32 3, !dbg !404
-  %240 = load i32* %239, align 4, !dbg !404, !tbaa !364
-  br i1 %238, label %479, label %241, !dbg !406
-
-; <label>:241                                     ; preds = %235
-  store i32 %240, i32* %237, align 4, !dbg !407, !tbaa !128
-  br label %479, !dbg !408
-
-.thread31.thread:                                 ; preds = %.critedge.preheader, %.thread31
-  %242 = icmp eq i32 %long_only, 0, !dbg !409
-  %brmerge = or i1 %242, %115, !dbg !411
-  br i1 %brmerge, label %my_index.exit29.thread, label %243, !dbg !411
-
-; <label>:243                                     ; preds = %.thread31.thread
-  %244 = load i8* %106, align 1, !dbg !412, !tbaa !149
-  tail call void @llvm.dbg.value(metadata i8* %.014, i64 0, metadata !96, metadata !114), !dbg !413
-  %245 = load i8* %.014, align 1, !dbg !415, !tbaa !149
-  %246 = icmp eq i8 %245, 0, !dbg !416
-  br i1 %246, label %my_index.exit29.thread, label %.lr.ph.i27, !dbg !416
-
-.lr.ph.i27:                                       ; preds = %243, %249
-  %247 = phi i8 [ %251, %249 ], [ %245, %243 ], !dbg !417
-  %.012.i26 = phi i8* [ %250, %249 ], [ %.014, %243 ], !dbg !417
-  %248 = icmp eq i8 %247, %244, !dbg !418
-  br i1 %248, label %my_index.exit29, label %249, !dbg !419
-
-; <label>:249                                     ; preds = %.lr.ph.i27
-  %250 = getelementptr inbounds i8* %.012.i26, i64 1, !dbg !420
-  tail call void @llvm.dbg.value(metadata i8* %250, i64 0, metadata !96, metadata !114), !dbg !413
-  %251 = load i8* %250, align 1, !dbg !415, !tbaa !149
-  %252 = icmp eq i8 %251, 0, !dbg !416
-  br i1 %252, label %my_index.exit29.thread, label %.lr.ph.i27, !dbg !416
-
-my_index.exit29:                                  ; preds = %.lr.ph.i27
-  %253 = icmp eq i8* %.012.i26, null, !dbg !421
-  br i1 %253, label %my_index.exit29.thread, label %268, !dbg !422
-
-my_index.exit29.thread:                           ; preds = %249, %.thread31.thread, %243, %my_index.exit29
-  %254 = load i32* @gg_opterr, align 4, !dbg !423, !tbaa !128
-  %255 = icmp eq i32 %254, 0, !dbg !423
-  br i1 %255, label %265, label %256, !dbg !426
-
-; <label>:256                                     ; preds = %my_index.exit29.thread
-  %257 = load %struct.__sFILE** @__stderrp, align 8, !dbg !427, !tbaa !122
-  %258 = load i8** %argv, align 8, !dbg !430, !tbaa !122
-  br i1 %115, label %259, label %261, !dbg !431
-
-; <label>:259                                     ; preds = %256
-  %260 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %257, i8* getelementptr inbounds ([32 x i8]* @.str5, i64 0, i64 0), i8* %258, i8* %106) #6, !dbg !432
-  br label %265, !dbg !432
-
-; <label>:261                                     ; preds = %256
-  %262 = load i8* %112, align 1, !dbg !433, !tbaa !149
-  %263 = sext i8 %262 to i32, !dbg !433
-  %264 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %257, i8* getelementptr inbounds ([32 x i8]* @.str6, i64 0, i64 0), i8* %258, i32 %263, i8* %106) #6, !dbg !434
-  br label %265
-
-; <label>:265                                     ; preds = %my_index.exit29.thread, %259, %261
-  store i8* getelementptr inbounds ([1 x i8]* @.str7, i64 0, i64 0), i8** @nextchar, align 8, !dbg !435, !tbaa !122
-  %266 = load i32* @gg_optind, align 4, !dbg !436, !tbaa !128
-  %267 = add nsw i32 %266, 1, !dbg !436
-  store i32 %267, i32* @gg_optind, align 4, !dbg !436, !tbaa !128
-  store i32 0, i32* @gg_optopt, align 4, !dbg !437, !tbaa !128
-  br label %479, !dbg !438
-
-; <label>:268                                     ; preds = %my_index.exit, %116, %105, %my_index.exit29
-  %269 = getelementptr inbounds i8* %106, i64 1, !dbg !439
-  store i8* %269, i8** @nextchar, align 8, !dbg !439, !tbaa !122
-  %270 = load i8* %106, align 1, !dbg !440, !tbaa !149
-  tail call void @llvm.dbg.value(metadata i8 %270, i64 0, metadata !49, metadata !114), !dbg !441
-  %271 = sext i8 %270 to i32, !dbg !442
-  tail call void @llvm.dbg.value(metadata i8* %.014, i64 0, metadata !96, metadata !114), !dbg !443
-  tail call void @llvm.dbg.value(metadata i32 %271, i64 0, metadata !97, metadata !114), !dbg !445
-  %272 = load i8* %.014, align 1, !dbg !446, !tbaa !149
-  %273 = icmp eq i8 %272, 0, !dbg !447
-  br i1 %273, label %my_index.exit25, label %.lr.ph.i23, !dbg !447
-
-.lr.ph.i23:                                       ; preds = %268, %276
-  %274 = phi i8 [ %278, %276 ], [ %272, %268 ], !dbg !448
-  %.012.i22 = phi i8* [ %277, %276 ], [ %.014, %268 ], !dbg !448
-  %275 = icmp eq i8 %274, %270, !dbg !449
-  br i1 %275, label %my_index.exit25, label %276, !dbg !450
-
-; <label>:276                                     ; preds = %.lr.ph.i23
-  %277 = getelementptr inbounds i8* %.012.i22, i64 1, !dbg !451
-  tail call void @llvm.dbg.value(metadata i8* %277, i64 0, metadata !96, metadata !114), !dbg !443
-  %278 = load i8* %277, align 1, !dbg !446, !tbaa !149
-  %279 = icmp eq i8 %278, 0, !dbg !447
-  br i1 %279, label %my_index.exit25, label %.lr.ph.i23, !dbg !447
-
-my_index.exit25:                                  ; preds = %.lr.ph.i23, %276, %268
-  %.0.i24 = phi i8* [ null, %268 ], [ null, %276 ], [ %.012.i22, %.lr.ph.i23 ], !dbg !448
-  tail call void @llvm.dbg.value(metadata i8* %.0.i24, i64 0, metadata !51, metadata !114), !dbg !452
-  %280 = load i8* %269, align 1, !dbg !453, !tbaa !149
-  %281 = icmp eq i8 %280, 0, !dbg !455
-  br i1 %281, label %282, label %285, !dbg !456
-
-; <label>:282                                     ; preds = %my_index.exit25
-  %283 = load i32* @gg_optind, align 4, !dbg !457, !tbaa !128
-  %284 = add nsw i32 %283, 1, !dbg !457
-  store i32 %284, i32* @gg_optind, align 4, !dbg !457, !tbaa !128
-  br label %285, !dbg !457
-
-; <label>:285                                     ; preds = %282, %my_index.exit25
-  %286 = icmp eq i8* %.0.i24, null, !dbg !458
-  %287 = icmp eq i8 %270, 58, !dbg !460
-  %or.cond18 = or i1 %287, %286, !dbg !461
-  br i1 %or.cond18, label %288, label %301, !dbg !461
-
-; <label>:288                                     ; preds = %285
-  %289 = load i32* @gg_opterr, align 4, !dbg !462, !tbaa !128
-  %290 = icmp eq i32 %289, 0, !dbg !462
-  br i1 %290, label %300, label %291, !dbg !465
-
-; <label>:291                                     ; preds = %288
-  %292 = load i8** @posixly_correct, align 8, !dbg !466, !tbaa !122
-  %293 = icmp eq i8* %292, null, !dbg !466
-  %294 = load %struct.__sFILE** @__stderrp, align 8, !dbg !469, !tbaa !122
-  %295 = load i8** %argv, align 8, !dbg !470, !tbaa !122
-  br i1 %293, label %298, label %296, !dbg !471
-
-; <label>:296                                     ; preds = %291
-  %297 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %294, i8* getelementptr inbounds ([26 x i8]* @.str8, i64 0, i64 0), i8* %295, i32 %271) #6, !dbg !472
-  br label %300, !dbg !472
-
-; <label>:298                                     ; preds = %291
-  %299 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %294, i8* getelementptr inbounds ([26 x i8]* @.str9, i64 0, i64 0), i8* %295, i32 %271) #6, !dbg !473
-  br label %300
-
-; <label>:300                                     ; preds = %288, %296, %298
-  store i32 %271, i32* @gg_optopt, align 4, !dbg !474, !tbaa !128
-  br label %479, !dbg !475
-
-; <label>:301                                     ; preds = %285
-  %302 = load i8* %.0.i24, align 1, !dbg !476, !tbaa !149
-  %303 = icmp eq i8 %302, 87, !dbg !477
-  %304 = getelementptr inbounds i8* %.0.i24, i64 1, !dbg !478
-  %305 = load i8* %304, align 1, !dbg !478, !tbaa !149
-  %306 = icmp eq i8 %305, 59, !dbg !479
-  %or.cond83 = and i1 %303, %306, !dbg !480
-  br i1 %or.cond83, label %307, label %._crit_edge, !dbg !480
-
-; <label>:307                                     ; preds = %301
-  tail call void @llvm.dbg.value(metadata %struct.gg_option* null, i64 0, metadata !56, metadata !114), !dbg !481
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !57, metadata !114), !dbg !482
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !58, metadata !114), !dbg !483
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !59, metadata !114), !dbg !484
-  %308 = load i8* %269, align 1, !dbg !485, !tbaa !149
-  %309 = icmp eq i8 %308, 0, !dbg !487
-  br i1 %309, label %313, label %310, !dbg !488
-
-; <label>:310                                     ; preds = %307
-  store i8* %269, i8** @gg_optarg, align 8, !dbg !489, !tbaa !122
-  %311 = load i32* @gg_optind, align 4, !dbg !491, !tbaa !128
-  %312 = add nsw i32 %311, 1, !dbg !491
-  store i32 %312, i32* @gg_optind, align 4, !dbg !491, !tbaa !128
-  br label %333, !dbg !492
-
-; <label>:313                                     ; preds = %307
-  %314 = load i32* @gg_optind, align 4, !dbg !493, !tbaa !128
-  %315 = icmp eq i32 %314, %argc, !dbg !495
-  br i1 %315, label %316, label %326, !dbg !496
-
-; <label>:316                                     ; preds = %313
-  %317 = load i32* @gg_opterr, align 4, !dbg !497, !tbaa !128
-  %318 = icmp eq i32 %317, 0, !dbg !497
-  br i1 %318, label %323, label %319, !dbg !500
-
-; <label>:319                                     ; preds = %316
-  %320 = load %struct.__sFILE** @__stderrp, align 8, !dbg !501, !tbaa !122
-  %321 = load i8** %argv, align 8, !dbg !503, !tbaa !122
-  %322 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %320, i8* getelementptr inbounds ([39 x i8]* @.str10, i64 0, i64 0), i8* %321, i32 %271) #6, !dbg !504
-  br label %323, !dbg !505
-
-; <label>:323                                     ; preds = %316, %319
-  store i32 %271, i32* @gg_optopt, align 4, !dbg !506, !tbaa !128
-  %324 = load i8* %.014, align 1, !dbg !507, !tbaa !149
-  %325 = icmp eq i8 %324, 58, !dbg !509
-  %.19 = select i1 %325, i32 58, i32 63, !dbg !510
-  br label %479, !dbg !511
-
-; <label>:326                                     ; preds = %313
-  %327 = add nsw i32 %314, 1, !dbg !512
-  store i32 %327, i32* @gg_optind, align 4, !dbg !512, !tbaa !128
-  %328 = sext i32 %314 to i64, !dbg !513
-  %329 = getelementptr inbounds i8** %argv, i64 %328, !dbg !513
-  %330 = bitcast i8** %329 to i64*, !dbg !513
-  %331 = load i64* %330, align 8, !dbg !513, !tbaa !122
-  store i64 %331, i64* bitcast (i8** @gg_optarg to i64*), align 8, !dbg !514, !tbaa !122
-  %332 = inttoptr i64 %331 to i8*
-  br label %333
-
-; <label>:333                                     ; preds = %326, %310
-  %334 = phi i32 [ %327, %326 ], [ %312, %310 ]
-  %335 = phi i8* [ %332, %326 ], [ %269, %310 ]
-  tail call void @llvm.dbg.value(metadata i8* %335, i64 0, metadata !52, metadata !114), !dbg !515
-  store i8* %335, i8** @nextchar, align 8, !dbg !516, !tbaa !122
-  br label %336, !dbg !518
-
-; <label>:336                                     ; preds = %345, %333
-  %nameend1.0 = phi i8* [ %335, %333 ], [ %346, %345 ]
-  %337 = load i8* %nameend1.0, align 1, !dbg !519, !tbaa !149
-  switch i8 %337, label %345 [
-    i8 0, label %.critedge11.preheader
-    i8 61, label %.critedge11.preheader
-  ], !dbg !521
-
-.critedge11.preheader:                            ; preds = %336, %336
-  %338 = getelementptr inbounds %struct.gg_option* %longopts, i64 0, i32 0, !dbg !522
-  %339 = load i8** %338, align 8, !dbg !522, !tbaa !288
-  %340 = icmp eq i8* %339, null, !dbg !525
-  br i1 %340, label %.thread35.thread, label %.lr.ph, !dbg !525
-
-.lr.ph:                                           ; preds = %.critedge11.preheader
-  %341 = ptrtoint i8* %nameend1.0 to i64, !dbg !526
-  %342 = ptrtoint i8* %335 to i64, !dbg !526
-  %343 = sub i64 %341, %342, !dbg !526
-  %344 = and i64 %343, 4294967295, !dbg !528
-  br label %347, !dbg !525
-
-; <label>:345                                     ; preds = %336
-  %346 = getelementptr inbounds i8* %nameend1.0, i64 1, !dbg !531
-  tail call void @llvm.dbg.value(metadata i8* %346, i64 0, metadata !52, metadata !114), !dbg !515
-  br label %336, !dbg !532
-
-; <label>:347                                     ; preds = %.lr.ph, %.critedge11
-  %348 = phi i8* [ %339, %.lr.ph ], [ %359, %.critedge11 ]
-  %option_index7.055 = phi i32 [ 0, %.lr.ph ], [ %357, %.critedge11 ]
-  %indfound6.054 = phi i32 [ 0, %.lr.ph ], [ %indfound6.1, %.critedge11 ]
-  %ambig5.053 = phi i32 [ 0, %.lr.ph ], [ %ambig5.1, %.critedge11 ]
-  %pfound3.052 = phi %struct.gg_option* [ null, %.lr.ph ], [ %pfound3.1, %.critedge11 ]
-  %p2.051 = phi %struct.gg_option* [ %longopts, %.lr.ph ], [ %356, %.critedge11 ]
-  %349 = tail call i32 @strncmp(i8* %348, i8* %335, i64 %343) #6, !dbg !533
-  %350 = icmp eq i32 %349, 0, !dbg !533
-  br i1 %350, label %351, label %.critedge11, !dbg !534
-
-; <label>:351                                     ; preds = %347
-  %352 = tail call i64 @strlen(i8* %348) #6, !dbg !535
-  %353 = icmp eq i64 %344, %352, !dbg !536
-  br i1 %353, label %.thread35, label %354, !dbg !537
-
-; <label>:354                                     ; preds = %351
-  %355 = icmp eq %struct.gg_option* %pfound3.052, null, !dbg !538
-  %p2.0.pfound3.0 = select i1 %355, %struct.gg_option* %p2.051, %struct.gg_option* %pfound3.052, !dbg !540
-  %ambig5.0. = select i1 %355, i32 %ambig5.053, i32 1, !dbg !540
-  %option_index7.0.indfound6.0 = select i1 %355, i32 %option_index7.055, i32 %indfound6.054, !dbg !540
-  br label %.critedge11, !dbg !540
-
-.critedge11:                                      ; preds = %354, %347
-  %pfound3.1 = phi %struct.gg_option* [ %pfound3.052, %347 ], [ %p2.0.pfound3.0, %354 ]
-  %ambig5.1 = phi i32 [ %ambig5.053, %347 ], [ %ambig5.0., %354 ]
-  %indfound6.1 = phi i32 [ %indfound6.054, %347 ], [ %option_index7.0.indfound6.0, %354 ]
-  %356 = getelementptr inbounds %struct.gg_option* %p2.051, i64 1, !dbg !542
-  tail call void @llvm.dbg.value(metadata %struct.gg_option* %356, i64 0, metadata !55, metadata !114), !dbg !543
-  %357 = add nuw nsw i32 %option_index7.055, 1, !dbg !544
-  tail call void @llvm.dbg.value(metadata i32 %357, i64 0, metadata !60, metadata !114), !dbg !545
-  %358 = getelementptr inbounds %struct.gg_option* %356, i64 0, i32 0, !dbg !522
-  %359 = load i8** %358, align 8, !dbg !522, !tbaa !288
-  %360 = icmp eq i8* %359, null, !dbg !525
-  br i1 %360, label %.critedge11._crit_edge, label %347, !dbg !525
-
-.critedge11._crit_edge:                           ; preds = %.critedge11
-  %361 = icmp eq i32 %ambig5.1, 0, !dbg !546
-  br i1 %361, label %.thread35, label %362, !dbg !548
-
-; <label>:362                                     ; preds = %.critedge11._crit_edge
-  %363 = load i32* @gg_opterr, align 4, !dbg !549, !tbaa !128
-  %364 = icmp eq i32 %363, 0, !dbg !549
-  br i1 %364, label %372, label %365, !dbg !552
-
-; <label>:365                                     ; preds = %362
-  %366 = load %struct.__sFILE** @__stderrp, align 8, !dbg !553, !tbaa !122
-  %367 = load i8** %argv, align 8, !dbg !554, !tbaa !122
-  %368 = sext i32 %334 to i64, !dbg !555
-  %369 = getelementptr inbounds i8** %argv, i64 %368, !dbg !555
-  %370 = load i8** %369, align 8, !dbg !555, !tbaa !122
-  %371 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %366, i8* getelementptr inbounds ([33 x i8]* @.str11, i64 0, i64 0), i8* %367, i8* %370) #6, !dbg !556
-  %.pre78 = load i8** @nextchar, align 8, !dbg !557, !tbaa !122
-  %.pre79 = load i32* @gg_optind, align 4, !dbg !558, !tbaa !128
-  br label %372, !dbg !556
-
-; <label>:372                                     ; preds = %362, %365
-  %373 = phi i32 [ %334, %362 ], [ %.pre79, %365 ]
-  %374 = phi i8* [ %335, %362 ], [ %.pre78, %365 ]
-  %375 = tail call i64 @strlen(i8* %374) #6, !dbg !559
-  %376 = getelementptr inbounds i8* %374, i64 %375, !dbg !560
-  store i8* %376, i8** @nextchar, align 8, !dbg !560, !tbaa !122
-  %377 = add nsw i32 %373, 1, !dbg !558
-  store i32 %377, i32* @gg_optind, align 4, !dbg !558, !tbaa !128
-  br label %479, !dbg !561
-
-.thread35:                                        ; preds = %351, %.critedge11._crit_edge
-  %indfound6.238 = phi i32 [ %indfound6.1, %.critedge11._crit_edge ], [ %option_index7.055, %351 ]
-  %pfound3.237 = phi %struct.gg_option* [ %pfound3.1, %.critedge11._crit_edge ], [ %p2.051, %351 ]
-  %378 = icmp eq %struct.gg_option* %pfound3.237, null, !dbg !562
-  br i1 %378, label %.thread35.thread, label %379, !dbg !564
-
-; <label>:379                                     ; preds = %.thread35
-  tail call void @llvm.dbg.value(metadata i32 %indfound6.1, i64 0, metadata !60, metadata !114), !dbg !545
-  %380 = icmp eq i8 %337, 0, !dbg !565
-  %381 = getelementptr inbounds %struct.gg_option* %pfound3.237, i64 0, i32 1, !dbg !568
-  %382 = load i32* %381, align 4, !dbg !568, !tbaa !339
-  br i1 %380, label %400, label %383, !dbg !571
-
-; <label>:383                                     ; preds = %379
-  %384 = icmp eq i32 %382, 0, !dbg !572
-  br i1 %384, label %387, label %385, !dbg !573
-
-; <label>:385                                     ; preds = %383
-  %386 = getelementptr inbounds i8* %nameend1.0, i64 1, !dbg !574
-  store i8* %386, i8** @gg_optarg, align 8, !dbg !575, !tbaa !122
-  br label %428, !dbg !576
-
-; <label>:387                                     ; preds = %383
-  %388 = load i32* @gg_opterr, align 4, !dbg !577, !tbaa !128
-  %389 = icmp eq i32 %388, 0, !dbg !577
-  br i1 %389, label %396, label %390, !dbg !580
-
-; <label>:390                                     ; preds = %387
-  %391 = load %struct.__sFILE** @__stderrp, align 8, !dbg !581, !tbaa !122
-  %392 = load i8** %argv, align 8, !dbg !582, !tbaa !122
-  %393 = getelementptr inbounds %struct.gg_option* %pfound3.237, i64 0, i32 0, !dbg !583
-  %394 = load i8** %393, align 8, !dbg !583, !tbaa !288
-  %395 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %391, i8* getelementptr inbounds ([46 x i8]* @.str12, i64 0, i64 0), i8* %392, i8* %394) #6, !dbg !584
-  %.pre80 = load i8** @nextchar, align 8, !dbg !585, !tbaa !122
-  br label %396, !dbg !584
-
-; <label>:396                                     ; preds = %387, %390
-  %397 = phi i8* [ %335, %387 ], [ %.pre80, %390 ]
-  %398 = tail call i64 @strlen(i8* %397) #6, !dbg !586
-  %399 = getelementptr inbounds i8* %397, i64 %398, !dbg !587
-  store i8* %399, i8** @nextchar, align 8, !dbg !587, !tbaa !122
-  br label %479, !dbg !588
-
-; <label>:400                                     ; preds = %379
-  %401 = icmp eq i32 %382, 1, !dbg !589
-  br i1 %401, label %402, label %428, !dbg !591
-
-; <label>:402                                     ; preds = %400
-  %403 = icmp slt i32 %334, %argc, !dbg !592
-  br i1 %403, label %404, label %410, !dbg !595
-
-; <label>:404                                     ; preds = %402
-  %405 = add nsw i32 %334, 1, !dbg !596
-  store i32 %405, i32* @gg_optind, align 4, !dbg !596, !tbaa !128
-  %406 = sext i32 %334 to i64, !dbg !597
-  %407 = getelementptr inbounds i8** %argv, i64 %406, !dbg !597
-  %408 = bitcast i8** %407 to i64*, !dbg !597
-  %409 = load i64* %408, align 8, !dbg !597, !tbaa !122
-  store i64 %409, i64* bitcast (i8** @gg_optarg to i64*), align 8, !dbg !598, !tbaa !122
-  br label %428, !dbg !599
-
-; <label>:410                                     ; preds = %402
-  %411 = load i32* @gg_opterr, align 4, !dbg !600, !tbaa !128
-  %412 = icmp eq i32 %411, 0, !dbg !600
-  br i1 %412, label %421, label %413, !dbg !603
-
-; <label>:413                                     ; preds = %410
-  %414 = load %struct.__sFILE** @__stderrp, align 8, !dbg !604, !tbaa !122
-  %415 = load i8** %argv, align 8, !dbg !605, !tbaa !122
-  %416 = add nsw i32 %334, -1, !dbg !606
-  %417 = sext i32 %416 to i64, !dbg !607
-  %418 = getelementptr inbounds i8** %argv, i64 %417, !dbg !607
-  %419 = load i8** %418, align 8, !dbg !607, !tbaa !122
-  %420 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %414, i8* getelementptr inbounds ([38 x i8]* @.str4, i64 0, i64 0), i8* %415, i8* %419) #6, !dbg !608
-  %.pre81 = load i8** @nextchar, align 8, !dbg !609, !tbaa !122
-  br label %421, !dbg !608
-
-; <label>:421                                     ; preds = %410, %413
-  %422 = phi i8* [ %335, %410 ], [ %.pre81, %413 ]
-  %423 = tail call i64 @strlen(i8* %422) #6, !dbg !610
-  %424 = getelementptr inbounds i8* %422, i64 %423, !dbg !611
-  store i8* %424, i8** @nextchar, align 8, !dbg !611, !tbaa !122
-  %425 = load i8* %.014, align 1, !dbg !612, !tbaa !149
-  %426 = icmp eq i8 %425, 58, !dbg !613
-  %427 = select i1 %426, i32 58, i32 63, !dbg !612
-  br label %479, !dbg !614
-
-; <label>:428                                     ; preds = %400, %404, %385
-  %429 = tail call i64 @strlen(i8* %335) #6, !dbg !615
-  %430 = getelementptr inbounds i8* %335, i64 %429, !dbg !616
-  store i8* %430, i8** @nextchar, align 8, !dbg !616, !tbaa !122
-  %431 = icmp eq i32* %longind, null, !dbg !617
-  br i1 %431, label %433, label %432, !dbg !619
-
-; <label>:432                                     ; preds = %428
-  store i32 %indfound6.238, i32* %longind, align 4, !dbg !620, !tbaa !128
-  br label %433, !dbg !621
-
-; <label>:433                                     ; preds = %428, %432
-  %434 = getelementptr inbounds %struct.gg_option* %pfound3.237, i64 0, i32 2, !dbg !622
-  %435 = load i32** %434, align 8, !dbg !622, !tbaa !402
-  %436 = icmp eq i32* %435, null, !dbg !624
-  %437 = getelementptr inbounds %struct.gg_option* %pfound3.237, i64 0, i32 3, !dbg !625
-  %438 = load i32* %437, align 4, !dbg !625, !tbaa !364
-  br i1 %436, label %479, label %439, !dbg !627
-
-; <label>:439                                     ; preds = %433
-  store i32 %438, i32* %435, align 4, !dbg !628, !tbaa !128
-  br label %479, !dbg !629
-
-.thread35.thread:                                 ; preds = %.critedge11.preheader, %.thread35
-  store i8* null, i8** @nextchar, align 8, !dbg !630, !tbaa !122
-  br label %479, !dbg !631
-
-._crit_edge:                                      ; preds = %301
-  %440 = icmp eq i8 %305, 58, !dbg !632
-  br i1 %440, label %441, label %477, !dbg !634
-
-; <label>:441                                     ; preds = %._crit_edge
-  %442 = getelementptr inbounds i8* %.0.i24, i64 2, !dbg !635
-  %443 = load i8* %442, align 1, !dbg !635, !tbaa !149
-  %444 = icmp eq i8 %443, 58, !dbg !638
-  %445 = load i8* %269, align 1, !dbg !639, !tbaa !149
-  %446 = icmp ne i8 %445, 0, !dbg !642
-  br i1 %444, label %447, label %453, !dbg !643
-
-; <label>:447                                     ; preds = %441
-  br i1 %446, label %448, label %451, !dbg !644
-
-; <label>:448                                     ; preds = %447
-  store i8* %269, i8** @gg_optarg, align 8, !dbg !645, !tbaa !122
-  %449 = load i32* @gg_optind, align 4, !dbg !647, !tbaa !128
-  %450 = add nsw i32 %449, 1, !dbg !647
-  store i32 %450, i32* @gg_optind, align 4, !dbg !647, !tbaa !128
-  br label %452, !dbg !648
-
-; <label>:451                                     ; preds = %447
-  store i8* null, i8** @gg_optarg, align 8, !dbg !649, !tbaa !122
-  br label %452
-
-; <label>:452                                     ; preds = %451, %448
-  store i8* null, i8** @nextchar, align 8, !dbg !650, !tbaa !122
-  br label %477, !dbg !651
-
-; <label>:453                                     ; preds = %441
-  br i1 %446, label %454, label %457, !dbg !652
-
-; <label>:454                                     ; preds = %453
-  store i8* %269, i8** @gg_optarg, align 8, !dbg !654, !tbaa !122
-  %455 = load i32* @gg_optind, align 4, !dbg !657, !tbaa !128
-  %456 = add nsw i32 %455, 1, !dbg !657
-  store i32 %456, i32* @gg_optind, align 4, !dbg !657, !tbaa !128
-  br label %476, !dbg !658
-
-; <label>:457                                     ; preds = %453
-  %458 = load i32* @gg_optind, align 4, !dbg !659, !tbaa !128
-  %459 = icmp eq i32 %458, %argc, !dbg !661
-  br i1 %459, label %460, label %470, !dbg !662
-
-; <label>:460                                     ; preds = %457
-  %461 = load i32* @gg_opterr, align 4, !dbg !663, !tbaa !128
-  %462 = icmp eq i32 %461, 0, !dbg !663
-  br i1 %462, label %467, label %463, !dbg !666
-
-; <label>:463                                     ; preds = %460
-  %464 = load %struct.__sFILE** @__stderrp, align 8, !dbg !667, !tbaa !122
-  %465 = load i8** %argv, align 8, !dbg !669, !tbaa !122
-  %466 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %464, i8* getelementptr inbounds ([39 x i8]* @.str10, i64 0, i64 0), i8* %465, i32 %271) #6, !dbg !670
-  br label %467, !dbg !671
-
-; <label>:467                                     ; preds = %460, %463
-  store i32 %271, i32* @gg_optopt, align 4, !dbg !672, !tbaa !128
-  %468 = load i8* %.014, align 1, !dbg !673, !tbaa !149
-  %469 = icmp eq i8 %468, 58, !dbg !675
-  %.20 = select i1 %469, i8 58, i8 63, !dbg !676
-  br label %476, !dbg !676
-
-; <label>:470                                     ; preds = %457
-  %471 = add nsw i32 %458, 1, !dbg !677
-  store i32 %471, i32* @gg_optind, align 4, !dbg !677, !tbaa !128
-  %472 = sext i32 %458 to i64, !dbg !678
-  %473 = getelementptr inbounds i8** %argv, i64 %472, !dbg !678
-  %474 = bitcast i8** %473 to i64*, !dbg !678
-  %475 = load i64* %474, align 8, !dbg !678, !tbaa !122
-  store i64 %475, i64* bitcast (i8** @gg_optarg to i64*), align 8, !dbg !679, !tbaa !122
-  br label %476
-
-; <label>:476                                     ; preds = %467, %470, %454
-  %c.1 = phi i8 [ %270, %454 ], [ %270, %470 ], [ %.20, %467 ]
-  store i8* null, i8** @nextchar, align 8, !dbg !680, !tbaa !122
-  br label %477
-
-; <label>:477                                     ; preds = %452, %476, %._crit_edge
-  %c.2 = phi i8 [ %270, %452 ], [ %c.1, %476 ], [ %270, %._crit_edge ]
-  %478 = sext i8 %c.2 to i32, !dbg !681
-  br label %479, !dbg !682
-
-; <label>:479                                     ; preds = %433, %235, %97, %85, %.thread82, %477, %.thread35.thread, %439, %421, %396, %372, %323, %300, %265, %241, %221, %198, %165, %100
-  %.0 = phi i32 [ 1, %100 ], [ 0, %241 ], [ 63, %198 ], [ %229, %221 ], [ 63, %265 ], [ 63, %300 ], [ 0, %439 ], [ 63, %396 ], [ %427, %421 ], [ 87, %.thread35.thread ], [ 63, %372 ], [ %.19, %323 ], [ %478, %477 ], [ 63, %165 ], [ -1, %.thread82 ], [ -1, %85 ], [ -1, %97 ], [ %240, %235 ], [ %438, %433 ]
-  ret i32 %.0, !dbg !683
+define i32 @getopt_internal(i32 %argc, i8** %argv, i8* %optstring, %struct.gg_option* %longopts, i32* %longind, i32 %long_only) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %argc}, i64 0, metadata !32), !dbg !99
+  tail call void @llvm.dbg.value(metadata !{i8** %argv}, i64 0, metadata !33), !dbg !100
+  tail call void @llvm.dbg.value(metadata !{i8* %optstring}, i64 0, metadata !34), !dbg !101
+  tail call void @llvm.dbg.value(metadata !{%struct.gg_option* %longopts}, i64 0, metadata !35), !dbg !102
+  tail call void @llvm.dbg.value(metadata !{i32* %longind}, i64 0, metadata !36), !dbg !103
+  tail call void @llvm.dbg.value(metadata !{i32 %long_only}, i64 0, metadata !37), !dbg !104
+  store i8* null, i8** @gg_optarg, align 8, !dbg !105, !tbaa !106
+  %0 = load i32* @gg_optind, align 4, !dbg !109, !tbaa !110
+  %cmp = icmp ne i32 %0, 0, !dbg !109
+  %1 = load i32* @__getopt_initialized, align 4, !dbg !109, !tbaa !110
+  %tobool = icmp ne i32 %1, 0, !dbg !109
+  %or.cond = and i1 %cmp, %tobool, !dbg !109
+  br i1 %or.cond, label %if.end3, label %if.then, !dbg !109
+
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq i32 %0, 0, !dbg !111
+  br i1 %cmp1, label %if.then2, label %if.end, !dbg !111
+
+if.then2:                                         ; preds = %if.then
+  store i32 1, i32* @gg_optind, align 4, !dbg !113, !tbaa !110
+  br label %if.end, !dbg !113
+
+if.end:                                           ; preds = %if.then2, %if.then
+  %2 = phi i32 [ 1, %if.then2 ], [ %0, %if.then ]
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !114) #4, !dbg !116
+  tail call void @llvm.dbg.value(metadata !117, i64 0, metadata !118) #4, !dbg !119
+  store i32 %2, i32* @last_nonopt, align 4, !dbg !120, !tbaa !110
+  store i32 %2, i32* @first_nonopt, align 4, !dbg !120, !tbaa !110
+  store i8* null, i8** @nextchar, align 8, !dbg !121, !tbaa !106
+  %call.i = tail call i8* @getenv(i8* getelementptr inbounds ([16 x i8]* @.str13, i64 0, i64 0)) #5, !dbg !122
+  store i8* %call.i, i8** @posixly_correct, align 8, !dbg !122, !tbaa !106
+  %3 = load i8* %optstring, align 1, !dbg !123, !tbaa !107
+  switch i8 %3, label %if.else8.i [
+    i8 45, label %if.then.i
+    i8 43, label %if.then6.i
+  ], !dbg !123
+
+if.then.i:                                        ; preds = %if.end
+  store i32 2, i32* @ordering, align 4, !dbg !124, !tbaa !126
+  %incdec.ptr.i = getelementptr inbounds i8* %optstring, i64 1, !dbg !127
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i}, i64 0, metadata !128) #4, !dbg !127
+  br label %if.end3.thread, !dbg !129
+
+if.then6.i:                                       ; preds = %if.end
+  store i32 0, i32* @ordering, align 4, !dbg !130, !tbaa !126
+  %incdec.ptr7.i = getelementptr inbounds i8* %optstring, i64 1, !dbg !132
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr7.i}, i64 0, metadata !128) #4, !dbg !132
+  br label %if.end3.thread, !dbg !133
+
+if.else8.i:                                       ; preds = %if.end
+  %cmp9.i = icmp eq i8* %call.i, null, !dbg !134
+  br i1 %cmp9.i, label %if.else12.i, label %if.then11.i, !dbg !134
+
+if.then11.i:                                      ; preds = %if.else8.i
+  store i32 0, i32* @ordering, align 4, !dbg !135, !tbaa !126
+  br label %if.end3.thread, !dbg !135
+
+if.else12.i:                                      ; preds = %if.else8.i
+  store i32 1, i32* @ordering, align 4, !dbg !136, !tbaa !126
+  br label %if.end3.thread
+
+if.end3.thread:                                   ; preds = %if.else12.i, %if.then11.i, %if.then6.i, %if.then.i
+  %optstring.addr.0.i = phi i8* [ %incdec.ptr.i, %if.then.i ], [ %incdec.ptr7.i, %if.then6.i ], [ %optstring, %if.then11.i ], [ %optstring, %if.else12.i ]
+  tail call void @llvm.dbg.value(metadata !{i8* %optstring.addr.0.i}, i64 0, metadata !34), !dbg !115
+  store i32 1, i32* @__getopt_initialized, align 4, !dbg !137, !tbaa !110
+  br label %if.then8, !dbg !138
+
+if.end3:                                          ; preds = %entry
+  %.pre728 = load i8** @nextchar, align 8, !dbg !138, !tbaa !106
+  %cmp4 = icmp eq i8* %.pre728, null, !dbg !138
+  br i1 %cmp4, label %if.then8, label %lor.lhs.false5, !dbg !138
+
+lor.lhs.false5:                                   ; preds = %if.end3
+  %4 = load i8* %.pre728, align 1, !dbg !138, !tbaa !107
+  %cmp6 = icmp eq i8 %4, 0, !dbg !138
+  br i1 %cmp6, label %if.then8, label %if.end108, !dbg !138
+
+if.then8:                                         ; preds = %lor.lhs.false5, %if.end3, %if.end3.thread
+  %optstring.addr.0732 = phi i8* [ %optstring.addr.0.i, %if.end3.thread ], [ %optstring, %if.end3 ], [ %optstring, %lor.lhs.false5 ]
+  %5 = phi i32 [ %2, %if.end3.thread ], [ %0, %if.end3 ], [ %0, %lor.lhs.false5 ]
+  %6 = load i32* @last_nonopt, align 4, !dbg !139, !tbaa !110
+  %cmp9 = icmp sgt i32 %6, %5, !dbg !139
+  br i1 %cmp9, label %if.then11, label %if.end12, !dbg !139
+
+if.then11:                                        ; preds = %if.then8
+  store i32 %5, i32* @last_nonopt, align 4, !dbg !141, !tbaa !110
+  br label %if.end12, !dbg !141
+
+if.end12:                                         ; preds = %if.then8, %if.then11
+  %7 = phi i32 [ %5, %if.then11 ], [ %6, %if.then8 ]
+  %8 = load i32* @first_nonopt, align 4, !dbg !142, !tbaa !110
+  %cmp13 = icmp sgt i32 %8, %5, !dbg !142
+  br i1 %cmp13, label %if.then15, label %if.end16, !dbg !142
+
+if.then15:                                        ; preds = %if.end12
+  store i32 %5, i32* @first_nonopt, align 4, !dbg !143, !tbaa !110
+  br label %if.end16, !dbg !143
+
+if.end16:                                         ; preds = %if.end12, %if.then15
+  %9 = phi i32 [ %5, %if.then15 ], [ %8, %if.end12 ]
+  %10 = load i32* @ordering, align 4, !dbg !144, !tbaa !126
+  %cmp17 = icmp eq i32 %10, 1, !dbg !144
+  br i1 %cmp17, label %if.then19, label %if.end42, !dbg !144
+
+if.then19:                                        ; preds = %if.end16
+  %cmp20 = icmp eq i32 %9, %7, !dbg !145
+  %cmp22 = icmp eq i32 %7, %5, !dbg !145
+  %or.cond670 = or i1 %cmp20, %cmp22, !dbg !145
+  br i1 %or.cond670, label %if.else, label %if.then24, !dbg !145
+
+if.then24:                                        ; preds = %if.then19
+  tail call fastcc void @exchange(i8** %argv) #6, !dbg !147
+  %.pre = load i32* @gg_optind, align 4, !dbg !148, !tbaa !110
+  br label %while.cond.preheader, !dbg !147
+
+if.else:                                          ; preds = %if.then19
+  br i1 %cmp22, label %while.cond.preheader, label %if.then27, !dbg !149
+
+if.then27:                                        ; preds = %if.else
+  store i32 %5, i32* @first_nonopt, align 4, !dbg !150, !tbaa !110
+  br label %while.cond.preheader, !dbg !150
+
+while.cond.preheader:                             ; preds = %if.then27, %if.then24, %if.else
+  %11 = phi i32 [ %5, %if.then27 ], [ %.pre, %if.then24 ], [ %5, %if.else ]
+  %cmp30716 = icmp slt i32 %11, %argc, !dbg !148
+  br i1 %cmp30716, label %land.rhs, label %while.end, !dbg !148
+
+land.rhs:                                         ; preds = %while.cond.preheader, %while.body
+  %12 = phi i32 [ %inc, %while.body ], [ %11, %while.cond.preheader ]
+  %idxprom = sext i32 %12 to i64, !dbg !148
+  %arrayidx = getelementptr inbounds i8** %argv, i64 %idxprom, !dbg !148
+  %13 = load i8** %arrayidx, align 8, !dbg !148, !tbaa !106
+  %14 = load i8* %13, align 1, !dbg !148, !tbaa !107
+  %cmp34 = icmp eq i8 %14, 45, !dbg !148
+  br i1 %cmp34, label %land.end, label %while.body, !dbg !148
+
+land.end:                                         ; preds = %land.rhs
+  %arrayidx38 = getelementptr inbounds i8* %13, i64 1, !dbg !148
+  %15 = load i8* %arrayidx38, align 1, !dbg !148, !tbaa !107
+  %cmp40 = icmp eq i8 %15, 0, !dbg !148
+  br i1 %cmp40, label %while.body, label %while.end
+
+while.body:                                       ; preds = %land.rhs, %land.end
+  %inc = add nsw i32 %12, 1, !dbg !151
+  store i32 %inc, i32* @gg_optind, align 4, !dbg !151, !tbaa !110
+  %cmp30 = icmp slt i32 %inc, %argc, !dbg !148
+  br i1 %cmp30, label %land.rhs, label %while.end, !dbg !148
+
+while.end:                                        ; preds = %land.end, %while.cond.preheader, %while.body
+  %16 = phi i32 [ %11, %while.cond.preheader ], [ %inc, %while.body ], [ %12, %land.end ]
+  store i32 %16, i32* @last_nonopt, align 4, !dbg !152, !tbaa !110
+  br label %if.end42, !dbg !153
+
+if.end42:                                         ; preds = %while.end, %if.end16
+  %17 = phi i32 [ %16, %while.end ], [ %7, %if.end16 ]
+  %18 = phi i32 [ %16, %while.end ], [ %5, %if.end16 ]
+  %cmp43 = icmp eq i32 %18, %argc, !dbg !154
+  br i1 %cmp43, label %if.then67, label %land.lhs.true45, !dbg !154
+
+land.lhs.true45:                                  ; preds = %if.end42
+  %idxprom46 = sext i32 %18 to i64, !dbg !154
+  %arrayidx47 = getelementptr inbounds i8** %argv, i64 %idxprom46, !dbg !154
+  %19 = load i8** %arrayidx47, align 8, !dbg !154, !tbaa !106
+  %call48 = tail call i32 @strcmp(i8* %19, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0)) #7, !dbg !154
+  %tobool49 = icmp eq i32 %call48, 0, !dbg !154
+  br i1 %tobool49, label %if.then50, label %if.end64, !dbg !154
+
+if.then50:                                        ; preds = %land.lhs.true45
+  %inc51 = add nsw i32 %18, 1, !dbg !155
+  store i32 %inc51, i32* @gg_optind, align 4, !dbg !155, !tbaa !110
+  %20 = load i32* @first_nonopt, align 4, !dbg !157, !tbaa !110
+  %cmp52 = icmp eq i32 %20, %17, !dbg !157
+  %cmp55 = icmp eq i32 %17, %inc51, !dbg !157
+  %or.cond671 = or i1 %cmp52, %cmp55, !dbg !157
+  br i1 %or.cond671, label %if.else58, label %if.then57, !dbg !157
+
+if.then57:                                        ; preds = %if.then50
+  tail call fastcc void @exchange(i8** %argv) #6, !dbg !158
+  br label %if.end63, !dbg !158
+
+if.else58:                                        ; preds = %if.then50
+  br i1 %cmp52, label %if.then61, label %if.end63, !dbg !159
+
+if.then61:                                        ; preds = %if.else58
+  store i32 %inc51, i32* @first_nonopt, align 4, !dbg !160, !tbaa !110
+  br label %if.end63, !dbg !160
+
+if.end63:                                         ; preds = %if.else58, %if.then61, %if.then57
+  store i32 %argc, i32* @last_nonopt, align 4, !dbg !161, !tbaa !110
+  store i32 %argc, i32* @gg_optind, align 4, !dbg !162, !tbaa !110
+  br label %if.then67, !dbg !163
+
+if.end64:                                         ; preds = %land.lhs.true45
+  %cmp65 = icmp eq i32 %18, %argc, !dbg !164
+  br i1 %cmp65, label %if.then67, label %if.end72, !dbg !164
+
+if.then67:                                        ; preds = %if.end63, %if.end42, %if.end64
+  %21 = phi i32 [ %17, %if.end64 ], [ %17, %if.end42 ], [ %argc, %if.end63 ]
+  %22 = load i32* @first_nonopt, align 4, !dbg !165, !tbaa !110
+  %cmp68 = icmp eq i32 %22, %21, !dbg !165
+  br i1 %cmp68, label %return, label %if.then70, !dbg !165
+
+if.then70:                                        ; preds = %if.then67
+  store i32 %22, i32* @gg_optind, align 4, !dbg !167, !tbaa !110
+  br label %return, !dbg !167
+
+if.end72:                                         ; preds = %if.end64
+  %idxprom73 = sext i32 %18 to i64, !dbg !168
+  %arrayidx74 = getelementptr inbounds i8** %argv, i64 %idxprom73, !dbg !168
+  %23 = load i8** %arrayidx74, align 8, !dbg !168, !tbaa !106
+  %24 = load i8* %23, align 1, !dbg !168, !tbaa !107
+  %cmp77 = icmp eq i8 %24, 45, !dbg !168
+  br i1 %cmp77, label %lor.lhs.false79, label %if.then86, !dbg !168
+
+lor.lhs.false79:                                  ; preds = %if.end72
+  %arrayidx82 = getelementptr inbounds i8* %23, i64 1, !dbg !168
+  %25 = load i8* %arrayidx82, align 1, !dbg !168, !tbaa !107
+  %cmp84 = icmp eq i8 %25, 0, !dbg !168
+  br i1 %cmp84, label %if.then86, label %if.end94, !dbg !168
+
+if.then86:                                        ; preds = %lor.lhs.false79, %if.end72
+  %26 = load i32* @ordering, align 4, !dbg !169, !tbaa !126
+  %cmp87 = icmp eq i32 %26, 0, !dbg !169
+  br i1 %cmp87, label %return, label %if.end90, !dbg !169
+
+if.end90:                                         ; preds = %if.then86
+  %inc91 = add nsw i32 %18, 1, !dbg !171
+  store i32 %inc91, i32* @gg_optind, align 4, !dbg !171, !tbaa !110
+  store i8* %23, i8** @gg_optarg, align 8, !dbg !171, !tbaa !106
+  br label %return, !dbg !172
+
+if.end94:                                         ; preds = %lor.lhs.false79
+  %cmp97 = icmp eq %struct.gg_option* %longopts, null, !dbg !173
+  br i1 %cmp97, label %land.end106, label %land.rhs99, !dbg !173
+
+land.rhs99:                                       ; preds = %if.end94
+  %cmp104 = icmp eq i8 %25, 45, !dbg !173
+  %phitmp = select i1 %cmp104, i64 2, i64 1
+  br label %land.end106
+
+land.end106:                                      ; preds = %if.end94, %land.rhs99
+  %27 = phi i64 [ 1, %if.end94 ], [ %phitmp, %land.rhs99 ]
+  %add.ptr107 = getelementptr inbounds i8* %23, i64 %27
+  store i8* %add.ptr107, i8** @nextchar, align 8, !tbaa !106
+  br label %if.end108, !dbg !174
+
+if.end108:                                        ; preds = %land.end106, %lor.lhs.false5
+  %optstring.addr.0731 = phi i8* [ %optstring.addr.0732, %land.end106 ], [ %optstring, %lor.lhs.false5 ]
+  %28 = phi i32 [ %18, %land.end106 ], [ %0, %lor.lhs.false5 ]
+  %29 = phi i8* [ %add.ptr107, %land.end106 ], [ %.pre728, %lor.lhs.false5 ]
+  %cmp109 = icmp eq %struct.gg_option* %longopts, null, !dbg !175
+  br i1 %cmp109, label %if.end301, label %land.lhs.true111, !dbg !175
+
+land.lhs.true111:                                 ; preds = %if.end108
+  %idxprom112 = sext i32 %28 to i64, !dbg !175
+  %arrayidx113 = getelementptr inbounds i8** %argv, i64 %idxprom112, !dbg !175
+  %30 = load i8** %arrayidx113, align 8, !dbg !175, !tbaa !106
+  %arrayidx114 = getelementptr inbounds i8* %30, i64 1, !dbg !175
+  %31 = load i8* %arrayidx114, align 1, !dbg !175, !tbaa !107
+  %conv115 = sext i8 %31 to i32, !dbg !175
+  %cmp116 = icmp eq i8 %31, 45, !dbg !175
+  br i1 %cmp116, label %for.cond, label %lor.lhs.false118, !dbg !175
+
+lor.lhs.false118:                                 ; preds = %land.lhs.true111
+  %tobool119 = icmp eq i32 %long_only, 0, !dbg !175
+  br i1 %tobool119, label %if.end301, label %land.lhs.true120, !dbg !175
+
+land.lhs.true120:                                 ; preds = %lor.lhs.false118
+  %arrayidx123 = getelementptr inbounds i8* %30, i64 2, !dbg !175
+  %32 = load i8* %arrayidx123, align 1, !dbg !175, !tbaa !107
+  %tobool125 = icmp eq i8 %32, 0, !dbg !175
+  br i1 %tobool125, label %lor.lhs.false126, label %for.cond, !dbg !175
+
+lor.lhs.false126:                                 ; preds = %land.lhs.true120
+  %call131 = tail call i8* @strchr(i8* %optstring.addr.0731, i32 %conv115) #7, !dbg !176
+  %tobool132 = icmp eq i8* %call131, null, !dbg !176
+  br i1 %tobool132, label %for.cond, label %if.end301, !dbg !176
+
+for.cond:                                         ; preds = %land.lhs.true111, %land.lhs.true120, %lor.lhs.false126, %for.inc
+  %nameend.0 = phi i8* [ %incdec.ptr, %for.inc ], [ %29, %lor.lhs.false126 ], [ %29, %land.lhs.true120 ], [ %29, %land.lhs.true111 ]
+  %33 = load i8* %nameend.0, align 1, !dbg !177, !tbaa !107
+  switch i8 %33, label %for.inc [
+    i8 0, label %for.cond142.preheader
+    i8 61, label %for.cond142.preheader
+  ], !dbg !177
+
+for.cond142.preheader:                            ; preds = %for.cond, %for.cond
+  %name706 = getelementptr inbounds %struct.gg_option* %longopts, i64 0, i32 0, !dbg !179
+  %34 = load i8** %name706, align 8, !dbg !179, !tbaa !106
+  %tobool143707 = icmp eq i8* %34, null, !dbg !179
+  br i1 %tobool143707, label %if.end264, label %for.body144.lr.ph, !dbg !179
+
+for.body144.lr.ph:                                ; preds = %for.cond142.preheader
+  %sub.ptr.lhs.cast = ptrtoint i8* %nameend.0 to i64, !dbg !181
+  %sub.ptr.rhs.cast = ptrtoint i8* %29 to i64, !dbg !181
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !181
+  %conv152 = trunc i64 %sub.ptr.sub to i32, !dbg !182
+  br label %for.body144, !dbg !179
+
+for.inc:                                          ; preds = %for.cond
+  %incdec.ptr = getelementptr inbounds i8* %nameend.0, i64 1, !dbg !177
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !38), !dbg !177
+  br label %for.cond, !dbg !177
+
+for.body144:                                      ; preds = %for.body144.lr.ph, %for.inc167
+  %35 = phi i8* [ %34, %for.body144.lr.ph ], [ %36, %for.inc167 ]
+  %option_index.0712 = phi i32 [ 0, %for.body144.lr.ph ], [ %inc169, %for.inc167 ]
+  %indfound.0711 = phi i32 [ -1, %for.body144.lr.ph ], [ %indfound.1, %for.inc167 ]
+  %ambig.0710 = phi i32 [ 0, %for.body144.lr.ph ], [ %ambig.1, %for.inc167 ]
+  %pfound.0709 = phi %struct.gg_option* [ null, %for.body144.lr.ph ], [ %pfound.1, %for.inc167 ]
+  %p.0708 = phi %struct.gg_option* [ %longopts, %for.body144.lr.ph ], [ %incdec.ptr168, %for.inc167 ]
+  %call146 = tail call i32 @strncmp(i8* %35, i8* %29, i64 %sub.ptr.sub) #7, !dbg !181
+  %tobool147 = icmp eq i32 %call146, 0, !dbg !181
+  br i1 %tobool147, label %if.then148, label %for.inc167, !dbg !181
+
+if.then148:                                       ; preds = %for.body144
+  %call154 = tail call i64 @strlen(i8* %35) #7, !dbg !184
+  %conv155 = trunc i64 %call154 to i32, !dbg !184
+  %cmp156 = icmp eq i32 %conv152, %conv155, !dbg !184
+  br i1 %cmp156, label %if.end185, label %if.else159, !dbg !184
+
+if.else159:                                       ; preds = %if.then148
+  %cmp160 = icmp eq %struct.gg_option* %pfound.0709, null, !dbg !185
+  %p.0.pfound.0 = select i1 %cmp160, %struct.gg_option* %p.0708, %struct.gg_option* %pfound.0709, !dbg !186
+  %ambig.0. = select i1 %cmp160, i32 %ambig.0710, i32 1, !dbg !186
+  %option_index.0.indfound.0 = select i1 %cmp160, i32 %option_index.0712, i32 %indfound.0711, !dbg !186
+  br label %for.inc167, !dbg !186
+
+for.inc167:                                       ; preds = %if.else159, %for.body144
+  %pfound.1 = phi %struct.gg_option* [ %pfound.0709, %for.body144 ], [ %p.0.pfound.0, %if.else159 ]
+  %ambig.1 = phi i32 [ %ambig.0710, %for.body144 ], [ %ambig.0., %if.else159 ]
+  %indfound.1 = phi i32 [ %indfound.0711, %for.body144 ], [ %option_index.0.indfound.0, %if.else159 ]
+  %incdec.ptr168 = getelementptr inbounds %struct.gg_option* %p.0708, i64 1, !dbg !179
+  tail call void @llvm.dbg.value(metadata !{%struct.gg_option* %incdec.ptr168}, i64 0, metadata !40), !dbg !179
+  %inc169 = add nsw i32 %option_index.0712, 1, !dbg !179
+  tail call void @llvm.dbg.value(metadata !{i32 %inc169}, i64 0, metadata !45), !dbg !179
+  %name = getelementptr inbounds %struct.gg_option* %incdec.ptr168, i64 0, i32 0, !dbg !179
+  %36 = load i8** %name, align 8, !dbg !179, !tbaa !106
+  %tobool143 = icmp eq i8* %36, null, !dbg !179
+  br i1 %tobool143, label %for.end170, label %for.body144, !dbg !179
+
+for.end170:                                       ; preds = %for.inc167
+  %tobool171 = icmp eq i32 %ambig.1, 0, !dbg !188
+  br i1 %tobool171, label %if.end185, label %if.then174, !dbg !188
+
+if.then174:                                       ; preds = %for.end170
+  %37 = load i32* @gg_opterr, align 4, !dbg !189, !tbaa !110
+  %tobool175 = icmp eq i32 %37, 0, !dbg !189
+  br i1 %tobool175, label %if.end181, label %if.then176, !dbg !189
+
+if.then176:                                       ; preds = %if.then174
+  %38 = load %struct._IO_FILE** @stderr, align 8, !dbg !191, !tbaa !106
+  %39 = load i8** %argv, align 8, !dbg !191, !tbaa !106
+  %call180 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %38, i8* getelementptr inbounds ([30 x i8]* @.str1, i64 0, i64 0), i8* %39, i8* %30) #5, !dbg !191
+  %.pre725 = load i8** @nextchar, align 8, !dbg !192, !tbaa !106
+  %.pre726 = load i32* @gg_optind, align 4, !dbg !193, !tbaa !110
+  br label %if.end181, !dbg !191
+
+if.end181:                                        ; preds = %if.then174, %if.then176
+  %40 = phi i32 [ %28, %if.then174 ], [ %.pre726, %if.then176 ]
+  %41 = phi i8* [ %29, %if.then174 ], [ %.pre725, %if.then176 ]
+  %call182 = tail call i64 @strlen(i8* %41) #7, !dbg !192
+  %add.ptr183 = getelementptr inbounds i8* %41, i64 %call182, !dbg !192
+  store i8* %add.ptr183, i8** @nextchar, align 8, !dbg !192, !tbaa !106
+  %inc184 = add nsw i32 %40, 1, !dbg !193
+  store i32 %inc184, i32* @gg_optind, align 4, !dbg !193, !tbaa !110
+  store i32 0, i32* @gg_optopt, align 4, !dbg !194, !tbaa !110
+  br label %return, !dbg !195
+
+if.end185:                                        ; preds = %if.then148, %for.end170
+  %indfound.2681 = phi i32 [ %indfound.1, %for.end170 ], [ %option_index.0712, %if.then148 ]
+  %pfound.2680 = phi %struct.gg_option* [ %pfound.1, %for.end170 ], [ %p.0708, %if.then148 ]
+  %cmp186 = icmp eq %struct.gg_option* %pfound.2680, null, !dbg !196
+  br i1 %cmp186, label %if.end264, label %if.then188, !dbg !196
+
+if.then188:                                       ; preds = %if.end185
+  tail call void @llvm.dbg.value(metadata !{i32 %indfound.2681}, i64 0, metadata !45), !dbg !197
+  %inc189 = add nsw i32 %28, 1, !dbg !199
+  store i32 %inc189, i32* @gg_optind, align 4, !dbg !199, !tbaa !110
+  %42 = load i8* %nameend.0, align 1, !dbg !200, !tbaa !107
+  %tobool190 = icmp eq i8 %42, 0, !dbg !200
+  %has_arg = getelementptr inbounds %struct.gg_option* %pfound.2680, i64 0, i32 1, !dbg !201
+  %43 = load i32* %has_arg, align 4, !dbg !201, !tbaa !110
+  br i1 %tobool190, label %if.else222, label %if.then191, !dbg !200
+
+if.then191:                                       ; preds = %if.then188
+  %tobool192 = icmp eq i32 %43, 0, !dbg !201
+  br i1 %tobool192, label %if.else195, label %if.then193, !dbg !201
+
+if.then193:                                       ; preds = %if.then191
+  %add.ptr194 = getelementptr inbounds i8* %nameend.0, i64 1, !dbg !203
+  store i8* %add.ptr194, i8** @gg_optarg, align 8, !dbg !203, !tbaa !106
+  br label %if.end251, !dbg !204
+
+if.else195:                                       ; preds = %if.then191
+  %44 = load i32* @gg_opterr, align 4, !dbg !205, !tbaa !110
+  %tobool196 = icmp eq i32 %44, 0, !dbg !205
+  br i1 %tobool196, label %if.end218, label %if.then197, !dbg !205
+
+if.then197:                                       ; preds = %if.else195
+  %45 = load i8* %arrayidx114, align 1, !dbg !207, !tbaa !107
+  %cmp202 = icmp eq i8 %45, 45, !dbg !207
+  %46 = load %struct._IO_FILE** @stderr, align 8, !dbg !209, !tbaa !106
+  %47 = load i8** %argv, align 8, !dbg !209, !tbaa !106
+  br i1 %cmp202, label %if.then204, label %if.else208, !dbg !207
+
+if.then204:                                       ; preds = %if.then197
+  %name206 = getelementptr inbounds %struct.gg_option* %pfound.2680, i64 0, i32 0, !dbg !209
+  %48 = load i8** %name206, align 8, !dbg !209, !tbaa !106
+  %call207 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %46, i8* getelementptr inbounds ([45 x i8]* @.str2, i64 0, i64 0), i8* %47, i8* %48) #5, !dbg !209
+  br label %if.end218, !dbg !209
+
+if.else208:                                       ; preds = %if.then197
+  %49 = load i8* %30, align 1, !dbg !210, !tbaa !107
+  %conv214 = sext i8 %49 to i32, !dbg !210
+  %name215 = getelementptr inbounds %struct.gg_option* %pfound.2680, i64 0, i32 0, !dbg !210
+  %50 = load i8** %name215, align 8, !dbg !210, !tbaa !106
+  %call216 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %46, i8* getelementptr inbounds ([45 x i8]* @.str3, i64 0, i64 0), i8* %47, i32 %conv214, i8* %50) #5, !dbg !210
+  br label %if.end218
+
+if.end218:                                        ; preds = %if.else195, %if.then204, %if.else208
+  %51 = load i8** @nextchar, align 8, !dbg !211, !tbaa !106
+  %call219 = tail call i64 @strlen(i8* %51) #7, !dbg !211
+  %add.ptr220 = getelementptr inbounds i8* %51, i64 %call219, !dbg !211
+  store i8* %add.ptr220, i8** @nextchar, align 8, !dbg !211, !tbaa !106
+  %val = getelementptr inbounds %struct.gg_option* %pfound.2680, i64 0, i32 3, !dbg !212
+  %52 = load i32* %val, align 4, !dbg !212, !tbaa !110
+  store i32 %52, i32* @gg_optopt, align 4, !dbg !212, !tbaa !110
+  br label %return, !dbg !213
+
+if.else222:                                       ; preds = %if.then188
+  %cmp224 = icmp eq i32 %43, 1, !dbg !214
+  br i1 %cmp224, label %if.then226, label %if.end251, !dbg !214
+
+if.then226:                                       ; preds = %if.else222
+  %cmp227 = icmp slt i32 %inc189, %argc, !dbg !215
+  br i1 %cmp227, label %if.then229, label %if.else233, !dbg !215
+
+if.then229:                                       ; preds = %if.then226
+  %inc230 = add nsw i32 %28, 2, !dbg !217
+  store i32 %inc230, i32* @gg_optind, align 4, !dbg !217, !tbaa !110
+  %idxprom231 = sext i32 %inc189 to i64, !dbg !217
+  %arrayidx232 = getelementptr inbounds i8** %argv, i64 %idxprom231, !dbg !217
+  %53 = load i8** %arrayidx232, align 8, !dbg !217, !tbaa !106
+  store i8* %53, i8** @gg_optarg, align 8, !dbg !217, !tbaa !106
+  br label %if.end251, !dbg !218
+
+if.else233:                                       ; preds = %if.then226
+  %54 = load i32* @gg_opterr, align 4, !dbg !219, !tbaa !110
+  %tobool234 = icmp eq i32 %54, 0, !dbg !219
+  br i1 %tobool234, label %if.end241, label %if.then235, !dbg !219
+
+if.then235:                                       ; preds = %if.else233
+  %55 = load %struct._IO_FILE** @stderr, align 8, !dbg !221, !tbaa !106
+  %56 = load i8** %argv, align 8, !dbg !221, !tbaa !106
+  %call240 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %55, i8* getelementptr inbounds ([38 x i8]* @.str4, i64 0, i64 0), i8* %56, i8* %30) #5, !dbg !221
+  %.pre727 = load i8** @nextchar, align 8, !dbg !222, !tbaa !106
+  br label %if.end241, !dbg !221
+
+if.end241:                                        ; preds = %if.else233, %if.then235
+  %57 = phi i8* [ %29, %if.else233 ], [ %.pre727, %if.then235 ]
+  %call242 = tail call i64 @strlen(i8* %57) #7, !dbg !222
+  %add.ptr243 = getelementptr inbounds i8* %57, i64 %call242, !dbg !222
+  store i8* %add.ptr243, i8** @nextchar, align 8, !dbg !222, !tbaa !106
+  %val244 = getelementptr inbounds %struct.gg_option* %pfound.2680, i64 0, i32 3, !dbg !223
+  %58 = load i32* %val244, align 4, !dbg !223, !tbaa !110
+  store i32 %58, i32* @gg_optopt, align 4, !dbg !223, !tbaa !110
+  %59 = load i8* %optstring.addr.0731, align 1, !dbg !224, !tbaa !107
+  %cmp247 = icmp eq i8 %59, 58, !dbg !224
+  %cond = select i1 %cmp247, i32 58, i32 63, !dbg !224
+  br label %return, !dbg !224
+
+if.end251:                                        ; preds = %if.else222, %if.then229, %if.then193
+  %call252 = tail call i64 @strlen(i8* %29) #7, !dbg !225
+  %add.ptr253 = getelementptr inbounds i8* %29, i64 %call252, !dbg !225
+  store i8* %add.ptr253, i8** @nextchar, align 8, !dbg !225, !tbaa !106
+  %cmp254 = icmp eq i32* %longind, null, !dbg !226
+  br i1 %cmp254, label %if.end257, label %if.then256, !dbg !226
+
+if.then256:                                       ; preds = %if.end251
+  store i32 %indfound.2681, i32* %longind, align 4, !dbg !227, !tbaa !110
+  br label %if.end257, !dbg !227
+
+if.end257:                                        ; preds = %if.end251, %if.then256
+  %flag = getelementptr inbounds %struct.gg_option* %pfound.2680, i64 0, i32 2, !dbg !228
+  %60 = load i32** %flag, align 8, !dbg !228, !tbaa !106
+  %tobool258 = icmp eq i32* %60, null, !dbg !228
+  %val260 = getelementptr inbounds %struct.gg_option* %pfound.2680, i64 0, i32 3, !dbg !229
+  %61 = load i32* %val260, align 4, !dbg !229, !tbaa !110
+  br i1 %tobool258, label %return, label %if.then259, !dbg !228
+
+if.then259:                                       ; preds = %if.end257
+  store i32 %61, i32* %60, align 4, !dbg !229, !tbaa !110
+  br label %return, !dbg !231
+
+if.end264:                                        ; preds = %for.cond142.preheader, %if.end185
+  %tobool265 = icmp eq i32 %long_only, 0, !dbg !232
+  %brmerge = or i1 %tobool265, %cmp116, !dbg !232
+  %.mux = select i1 %tobool265, i8 %31, i8 45, !dbg !232
+  br i1 %brmerge, label %if.then278, label %lor.lhs.false273, !dbg !232
+
+lor.lhs.false273:                                 ; preds = %if.end264
+  %62 = load i8* %29, align 1, !dbg !233, !tbaa !107
+  %conv274 = sext i8 %62 to i32, !dbg !233
+  %call275 = tail call i8* @strchr(i8* %optstring.addr.0731, i32 %conv274) #7, !dbg !233
+  %cmp276 = icmp eq i8* %call275, null, !dbg !233
+  br i1 %cmp276, label %if.then278, label %if.end301, !dbg !233
+
+if.then278:                                       ; preds = %if.end264, %lor.lhs.false273
+  %63 = phi i8 [ %.mux, %if.end264 ], [ %31, %lor.lhs.false273 ]
+  %64 = load i32* @gg_opterr, align 4, !dbg !234, !tbaa !110
+  %tobool279 = icmp eq i32 %64, 0, !dbg !234
+  br i1 %tobool279, label %if.end298, label %if.then280, !dbg !234
+
+if.then280:                                       ; preds = %if.then278
+  %cmp285 = icmp eq i8 %63, 45, !dbg !236
+  %65 = load %struct._IO_FILE** @stderr, align 8, !dbg !238, !tbaa !106
+  %66 = load i8** %argv, align 8, !dbg !238, !tbaa !106
+  br i1 %cmp285, label %if.then287, label %if.else290, !dbg !236
+
+if.then287:                                       ; preds = %if.then280
+  %call289 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %65, i8* getelementptr inbounds ([32 x i8]* @.str5, i64 0, i64 0), i8* %66, i8* %29) #5, !dbg !238
+  br label %if.end298, !dbg !238
+
+if.else290:                                       ; preds = %if.then280
+  %67 = load i8* %30, align 1, !dbg !239, !tbaa !107
+  %conv295 = sext i8 %67 to i32, !dbg !239
+  %call296 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %65, i8* getelementptr inbounds ([32 x i8]* @.str6, i64 0, i64 0), i8* %66, i32 %conv295, i8* %29) #5, !dbg !239
+  br label %if.end298
+
+if.end298:                                        ; preds = %if.then278, %if.then287, %if.else290
+  store i8* getelementptr inbounds ([1 x i8]* @.str7, i64 0, i64 0), i8** @nextchar, align 8, !dbg !240, !tbaa !106
+  %68 = load i32* @gg_optind, align 4, !dbg !241, !tbaa !110
+  %inc299 = add nsw i32 %68, 1, !dbg !241
+  store i32 %inc299, i32* @gg_optind, align 4, !dbg !241, !tbaa !110
+  store i32 0, i32* @gg_optopt, align 4, !dbg !242, !tbaa !110
+  br label %return, !dbg !243
+
+if.end301:                                        ; preds = %lor.lhs.false126, %lor.lhs.false118, %if.end108, %lor.lhs.false273
+  %incdec.ptr302 = getelementptr inbounds i8* %29, i64 1, !dbg !244
+  store i8* %incdec.ptr302, i8** @nextchar, align 8, !dbg !244, !tbaa !106
+  %69 = load i8* %29, align 1, !dbg !244, !tbaa !107
+  tail call void @llvm.dbg.value(metadata !{i8 %69}, i64 0, metadata !46), !dbg !244
+  %conv303 = sext i8 %69 to i32, !dbg !245
+  %call304 = tail call i8* @strchr(i8* %optstring.addr.0731, i32 %conv303) #7, !dbg !245
+  tail call void @llvm.dbg.value(metadata !{i8* %call304}, i64 0, metadata !48), !dbg !245
+  %70 = load i8* %incdec.ptr302, align 1, !dbg !246, !tbaa !107
+  %cmp306 = icmp eq i8 %70, 0, !dbg !246
+  br i1 %cmp306, label %if.then308, label %if.end310, !dbg !246
+
+if.then308:                                       ; preds = %if.end301
+  %inc309 = add nsw i32 %28, 1, !dbg !247
+  store i32 %inc309, i32* @gg_optind, align 4, !dbg !247, !tbaa !110
+  br label %if.end310, !dbg !247
+
+if.end310:                                        ; preds = %if.then308, %if.end301
+  %71 = phi i32 [ %inc309, %if.then308 ], [ %28, %if.end301 ]
+  %cmp311 = icmp eq i8* %call304, null, !dbg !248
+  %cmp315 = icmp eq i8 %69, 58, !dbg !248
+  %or.cond673 = or i1 %cmp311, %cmp315, !dbg !248
+  br i1 %or.cond673, label %if.then317, label %if.end332, !dbg !248
+
+if.then317:                                       ; preds = %if.end310
+  %72 = load i32* @gg_opterr, align 4, !dbg !249, !tbaa !110
+  %tobool318 = icmp eq i32 %72, 0, !dbg !249
+  br i1 %tobool318, label %if.end330, label %if.then319, !dbg !249
+
+if.then319:                                       ; preds = %if.then317
+  %73 = load i8** @posixly_correct, align 8, !dbg !251, !tbaa !106
+  %tobool320 = icmp eq i8* %73, null, !dbg !251
+  %74 = load %struct._IO_FILE** @stderr, align 8, !dbg !253, !tbaa !106
+  %75 = load i8** %argv, align 8, !dbg !253, !tbaa !106
+  br i1 %tobool320, label %if.else325, label %if.then321, !dbg !251
+
+if.then321:                                       ; preds = %if.then319
+  %call324 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %74, i8* getelementptr inbounds ([26 x i8]* @.str8, i64 0, i64 0), i8* %75, i32 %conv303) #5, !dbg !253
+  br label %if.end330, !dbg !253
+
+if.else325:                                       ; preds = %if.then319
+  %call328 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %74, i8* getelementptr inbounds ([26 x i8]* @.str9, i64 0, i64 0), i8* %75, i32 %conv303) #5, !dbg !254
+  br label %if.end330
+
+if.end330:                                        ; preds = %if.then317, %if.then321, %if.else325
+  store i32 %conv303, i32* @gg_optopt, align 4, !dbg !255, !tbaa !110
+  br label %return, !dbg !256
+
+if.end332:                                        ; preds = %if.end310
+  %76 = load i8* %call304, align 1, !dbg !257, !tbaa !107
+  %cmp335 = icmp eq i8 %76, 87, !dbg !257
+  %arrayidx338 = getelementptr inbounds i8* %call304, i64 1, !dbg !257
+  %77 = load i8* %arrayidx338, align 1, !dbg !257, !tbaa !107
+  %cmp340 = icmp eq i8 %77, 59, !dbg !257
+  %or.cond740 = and i1 %cmp335, %cmp340, !dbg !257
+  br i1 %or.cond740, label %if.then342, label %if.end504, !dbg !257
+
+if.then342:                                       ; preds = %if.end332
+  tail call void @llvm.dbg.value(metadata !258, i64 0, metadata !52), !dbg !259
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !53), !dbg !260
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !54), !dbg !261
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !55), !dbg !262
+  %78 = load i8* %incdec.ptr302, align 1, !dbg !263, !tbaa !107
+  %cmp351 = icmp eq i8 %78, 0, !dbg !263
+  br i1 %cmp351, label %if.else355, label %if.then353, !dbg !263
+
+if.then353:                                       ; preds = %if.then342
+  store i8* %incdec.ptr302, i8** @gg_optarg, align 8, !dbg !264, !tbaa !106
+  %inc354 = add nsw i32 %71, 1, !dbg !266
+  store i32 %inc354, i32* @gg_optind, align 4, !dbg !266, !tbaa !110
+  br label %if.end379, !dbg !267
+
+if.else355:                                       ; preds = %if.then342
+  %cmp356 = icmp eq i32 %71, %argc, !dbg !268
+  br i1 %cmp356, label %if.then358, label %if.else374, !dbg !268
+
+if.then358:                                       ; preds = %if.else355
+  %79 = load i32* @gg_opterr, align 4, !dbg !269, !tbaa !110
+  %tobool359 = icmp eq i32 %79, 0, !dbg !269
+  br i1 %tobool359, label %if.end364, label %if.then360, !dbg !269
+
+if.then360:                                       ; preds = %if.then358
+  %80 = load %struct._IO_FILE** @stderr, align 8, !dbg !271, !tbaa !106
+  %81 = load i8** %argv, align 8, !dbg !271, !tbaa !106
+  %call363 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %80, i8* getelementptr inbounds ([39 x i8]* @.str10, i64 0, i64 0), i8* %81, i32 %conv303) #5, !dbg !271
+  br label %if.end364, !dbg !273
+
+if.end364:                                        ; preds = %if.then358, %if.then360
+  store i32 %conv303, i32* @gg_optopt, align 4, !dbg !274, !tbaa !110
+  %82 = load i8* %optstring.addr.0731, align 1, !dbg !275, !tbaa !107
+  %cmp368 = icmp eq i8 %82, 58, !dbg !275
+  %. = select i1 %cmp368, i32 58, i32 63, !dbg !276
+  br label %return, !dbg !277
+
+if.else374:                                       ; preds = %if.else355
+  %inc375 = add nsw i32 %71, 1, !dbg !278
+  store i32 %inc375, i32* @gg_optind, align 4, !dbg !278, !tbaa !110
+  %idxprom376 = sext i32 %71 to i64, !dbg !278
+  %arrayidx377 = getelementptr inbounds i8** %argv, i64 %idxprom376, !dbg !278
+  %83 = load i8** %arrayidx377, align 8, !dbg !278, !tbaa !106
+  store i8* %83, i8** @gg_optarg, align 8, !dbg !278, !tbaa !106
+  br label %if.end379
+
+if.end379:                                        ; preds = %if.else374, %if.then353
+  %84 = phi i32 [ %inc375, %if.else374 ], [ %inc354, %if.then353 ]
+  %85 = phi i8* [ %83, %if.else374 ], [ %incdec.ptr302, %if.then353 ]
+  tail call void @llvm.dbg.value(metadata !{i8* %85}, i64 0, metadata !49), !dbg !279
+  store i8* %85, i8** @nextchar, align 8, !dbg !279, !tbaa !106
+  br label %for.cond380, !dbg !279
+
+for.cond380:                                      ; preds = %for.inc390, %if.end379
+  %nameend343.0 = phi i8* [ %85, %if.end379 ], [ %incdec.ptr391, %for.inc390 ]
+  %86 = load i8* %nameend343.0, align 1, !dbg !279, !tbaa !107
+  switch i8 %86, label %for.inc390 [
+    i8 0, label %for.cond393.preheader
+    i8 61, label %for.cond393.preheader
+  ], !dbg !279
+
+for.cond393.preheader:                            ; preds = %for.cond380, %for.cond380
+  %name394692 = getelementptr inbounds %struct.gg_option* %longopts, i64 0, i32 0, !dbg !281
+  %87 = load i8** %name394692, align 8, !dbg !281, !tbaa !106
+  %tobool395693 = icmp eq i8* %87, null, !dbg !281
+  br i1 %tobool395693, label %if.end503, label %for.body396.lr.ph, !dbg !281
+
+for.body396.lr.ph:                                ; preds = %for.cond393.preheader
+  %sub.ptr.lhs.cast398 = ptrtoint i8* %nameend343.0 to i64, !dbg !283
+  %sub.ptr.rhs.cast399 = ptrtoint i8* %85 to i64, !dbg !283
+  %sub.ptr.sub400 = sub i64 %sub.ptr.lhs.cast398, %sub.ptr.rhs.cast399, !dbg !283
+  %conv408 = and i64 %sub.ptr.sub400, 4294967295, !dbg !284
+  br label %for.body396, !dbg !281
+
+for.inc390:                                       ; preds = %for.cond380
+  %incdec.ptr391 = getelementptr inbounds i8* %nameend343.0, i64 1, !dbg !279
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr391}, i64 0, metadata !49), !dbg !279
+  br label %for.cond380, !dbg !279
+
+for.body396:                                      ; preds = %for.body396.lr.ph, %for.inc422
+  %88 = phi i8* [ %87, %for.body396.lr.ph ], [ %89, %for.inc422 ]
+  %option_index349.0698 = phi i32 [ 0, %for.body396.lr.ph ], [ %inc424, %for.inc422 ]
+  %indfound348.0697 = phi i32 [ 0, %for.body396.lr.ph ], [ %indfound348.1, %for.inc422 ]
+  %ambig347.0696 = phi i32 [ 0, %for.body396.lr.ph ], [ %ambig347.1, %for.inc422 ]
+  %pfound345.0695 = phi %struct.gg_option* [ null, %for.body396.lr.ph ], [ %pfound345.1, %for.inc422 ]
+  %p344.0694 = phi %struct.gg_option* [ %longopts, %for.body396.lr.ph ], [ %incdec.ptr423, %for.inc422 ]
+  %call401 = tail call i32 @strncmp(i8* %88, i8* %85, i64 %sub.ptr.sub400) #7, !dbg !283
+  %tobool402 = icmp eq i32 %call401, 0, !dbg !283
+  br i1 %tobool402, label %if.then403, label %for.inc422, !dbg !283
+
+if.then403:                                       ; preds = %for.body396
+  %call410 = tail call i64 @strlen(i8* %88) #7, !dbg !284
+  %cmp411 = icmp eq i64 %conv408, %call410, !dbg !284
+  br i1 %cmp411, label %if.end440, label %if.else414, !dbg !284
+
+if.else414:                                       ; preds = %if.then403
+  %cmp415 = icmp eq %struct.gg_option* %pfound345.0695, null, !dbg !286
+  %p344.0.pfound345.0 = select i1 %cmp415, %struct.gg_option* %p344.0694, %struct.gg_option* %pfound345.0695, !dbg !287
+  %ambig347.0. = select i1 %cmp415, i32 %ambig347.0696, i32 1, !dbg !287
+  %option_index349.0.indfound348.0 = select i1 %cmp415, i32 %option_index349.0698, i32 %indfound348.0697, !dbg !287
+  br label %for.inc422, !dbg !287
+
+for.inc422:                                       ; preds = %if.else414, %for.body396
+  %pfound345.1 = phi %struct.gg_option* [ %pfound345.0695, %for.body396 ], [ %p344.0.pfound345.0, %if.else414 ]
+  %ambig347.1 = phi i32 [ %ambig347.0696, %for.body396 ], [ %ambig347.0., %if.else414 ]
+  %indfound348.1 = phi i32 [ %indfound348.0697, %for.body396 ], [ %option_index349.0.indfound348.0, %if.else414 ]
+  %incdec.ptr423 = getelementptr inbounds %struct.gg_option* %p344.0694, i64 1, !dbg !281
+  tail call void @llvm.dbg.value(metadata !{%struct.gg_option* %incdec.ptr423}, i64 0, metadata !51), !dbg !281
+  %inc424 = add nsw i32 %option_index349.0698, 1, !dbg !281
+  tail call void @llvm.dbg.value(metadata !{i32 %inc424}, i64 0, metadata !56), !dbg !281
+  %name394 = getelementptr inbounds %struct.gg_option* %incdec.ptr423, i64 0, i32 0, !dbg !281
+  %89 = load i8** %name394, align 8, !dbg !281, !tbaa !106
+  %tobool395 = icmp eq i8* %89, null, !dbg !281
+  br i1 %tobool395, label %for.end425, label %for.body396, !dbg !281
+
+for.end425:                                       ; preds = %for.inc422
+  %tobool426 = icmp eq i32 %ambig347.1, 0, !dbg !289
+  br i1 %tobool426, label %if.end440, label %if.then429, !dbg !289
+
+if.then429:                                       ; preds = %for.end425
+  %90 = load i32* @gg_opterr, align 4, !dbg !290, !tbaa !110
+  %tobool430 = icmp eq i32 %90, 0, !dbg !290
+  br i1 %tobool430, label %if.end436, label %if.then431, !dbg !290
+
+if.then431:                                       ; preds = %if.then429
+  %91 = load %struct._IO_FILE** @stderr, align 8, !dbg !292, !tbaa !106
+  %92 = load i8** %argv, align 8, !dbg !292, !tbaa !106
+  %idxprom433 = sext i32 %84 to i64, !dbg !292
+  %arrayidx434 = getelementptr inbounds i8** %argv, i64 %idxprom433, !dbg !292
+  %93 = load i8** %arrayidx434, align 8, !dbg !292, !tbaa !106
+  %call435 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %91, i8* getelementptr inbounds ([33 x i8]* @.str11, i64 0, i64 0), i8* %92, i8* %93) #5, !dbg !292
+  %.pre721 = load i8** @nextchar, align 8, !dbg !293, !tbaa !106
+  %.pre722 = load i32* @gg_optind, align 4, !dbg !294, !tbaa !110
+  br label %if.end436, !dbg !292
+
+if.end436:                                        ; preds = %if.then429, %if.then431
+  %94 = phi i32 [ %84, %if.then429 ], [ %.pre722, %if.then431 ]
+  %95 = phi i8* [ %85, %if.then429 ], [ %.pre721, %if.then431 ]
+  %call437 = tail call i64 @strlen(i8* %95) #7, !dbg !293
+  %add.ptr438 = getelementptr inbounds i8* %95, i64 %call437, !dbg !293
+  store i8* %add.ptr438, i8** @nextchar, align 8, !dbg !293, !tbaa !106
+  %inc439 = add nsw i32 %94, 1, !dbg !294
+  store i32 %inc439, i32* @gg_optind, align 4, !dbg !294, !tbaa !110
+  br label %return, !dbg !295
+
+if.end440:                                        ; preds = %if.then403, %for.end425
+  %indfound348.2686 = phi i32 [ %indfound348.1, %for.end425 ], [ %option_index349.0698, %if.then403 ]
+  %pfound345.2685 = phi %struct.gg_option* [ %pfound345.1, %for.end425 ], [ %p344.0694, %if.then403 ]
+  %cmp441 = icmp eq %struct.gg_option* %pfound345.2685, null, !dbg !296
+  br i1 %cmp441, label %if.end503, label %if.then443, !dbg !296
+
+if.then443:                                       ; preds = %if.end440
+  tail call void @llvm.dbg.value(metadata !{i32 %indfound348.2686}, i64 0, metadata !56), !dbg !297
+  %tobool444 = icmp eq i8 %86, 0, !dbg !299
+  %has_arg446 = getelementptr inbounds %struct.gg_option* %pfound345.2685, i64 0, i32 1, !dbg !300
+  %96 = load i32* %has_arg446, align 4, !dbg !300, !tbaa !110
+  br i1 %tobool444, label %if.else460, label %if.then445, !dbg !299
+
+if.then445:                                       ; preds = %if.then443
+  %tobool447 = icmp eq i32 %96, 0, !dbg !300
+  br i1 %tobool447, label %if.else450, label %if.then448, !dbg !300
+
+if.then448:                                       ; preds = %if.then445
+  %add.ptr449 = getelementptr inbounds i8* %nameend343.0, i64 1, !dbg !302
+  store i8* %add.ptr449, i8** @gg_optarg, align 8, !dbg !302, !tbaa !106
+  br label %if.end489, !dbg !303
+
+if.else450:                                       ; preds = %if.then445
+  %97 = load i32* @gg_opterr, align 4, !dbg !304, !tbaa !110
+  %tobool451 = icmp eq i32 %97, 0, !dbg !304
+  br i1 %tobool451, label %if.end456, label %if.then452, !dbg !304
+
+if.then452:                                       ; preds = %if.else450
+  %98 = load %struct._IO_FILE** @stderr, align 8, !dbg !306, !tbaa !106
+  %99 = load i8** %argv, align 8, !dbg !306, !tbaa !106
+  %name454 = getelementptr inbounds %struct.gg_option* %pfound345.2685, i64 0, i32 0, !dbg !306
+  %100 = load i8** %name454, align 8, !dbg !306, !tbaa !106
+  %call455 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %98, i8* getelementptr inbounds ([46 x i8]* @.str12, i64 0, i64 0), i8* %99, i8* %100) #5, !dbg !306
+  %.pre724 = load i8** @nextchar, align 8, !dbg !307, !tbaa !106
+  br label %if.end456, !dbg !306
+
+if.end456:                                        ; preds = %if.else450, %if.then452
+  %101 = phi i8* [ %85, %if.else450 ], [ %.pre724, %if.then452 ]
+  %call457 = tail call i64 @strlen(i8* %101) #7, !dbg !307
+  %add.ptr458 = getelementptr inbounds i8* %101, i64 %call457, !dbg !307
+  store i8* %add.ptr458, i8** @nextchar, align 8, !dbg !307, !tbaa !106
+  br label %return, !dbg !308
+
+if.else460:                                       ; preds = %if.then443
+  %cmp462 = icmp eq i32 %96, 1, !dbg !309
+  br i1 %cmp462, label %if.then464, label %if.end489, !dbg !309
+
+if.then464:                                       ; preds = %if.else460
+  %cmp465 = icmp slt i32 %84, %argc, !dbg !310
+  br i1 %cmp465, label %if.then467, label %if.else471, !dbg !310
+
+if.then467:                                       ; preds = %if.then464
+  %inc468 = add nsw i32 %84, 1, !dbg !312
+  store i32 %inc468, i32* @gg_optind, align 4, !dbg !312, !tbaa !110
+  %idxprom469 = sext i32 %84 to i64, !dbg !312
+  %arrayidx470 = getelementptr inbounds i8** %argv, i64 %idxprom469, !dbg !312
+  %102 = load i8** %arrayidx470, align 8, !dbg !312, !tbaa !106
+  store i8* %102, i8** @gg_optarg, align 8, !dbg !312, !tbaa !106
+  br label %if.end489, !dbg !313
+
+if.else471:                                       ; preds = %if.then464
+  %103 = load i32* @gg_opterr, align 4, !dbg !314, !tbaa !110
+  %tobool472 = icmp eq i32 %103, 0, !dbg !314
+  br i1 %tobool472, label %if.end479, label %if.then473, !dbg !314
+
+if.then473:                                       ; preds = %if.else471
+  %104 = load %struct._IO_FILE** @stderr, align 8, !dbg !316, !tbaa !106
+  %105 = load i8** %argv, align 8, !dbg !316, !tbaa !106
+  %sub475 = add nsw i32 %84, -1, !dbg !316
+  %idxprom476 = sext i32 %sub475 to i64, !dbg !316
+  %arrayidx477 = getelementptr inbounds i8** %argv, i64 %idxprom476, !dbg !316
+  %106 = load i8** %arrayidx477, align 8, !dbg !316, !tbaa !106
+  %call478 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %104, i8* getelementptr inbounds ([38 x i8]* @.str4, i64 0, i64 0), i8* %105, i8* %106) #5, !dbg !316
+  %.pre723 = load i8** @nextchar, align 8, !dbg !317, !tbaa !106
+  br label %if.end479, !dbg !316
+
+if.end479:                                        ; preds = %if.else471, %if.then473
+  %107 = phi i8* [ %85, %if.else471 ], [ %.pre723, %if.then473 ]
+  %call480 = tail call i64 @strlen(i8* %107) #7, !dbg !317
+  %add.ptr481 = getelementptr inbounds i8* %107, i64 %call480, !dbg !317
+  store i8* %add.ptr481, i8** @nextchar, align 8, !dbg !317, !tbaa !106
+  %108 = load i8* %optstring.addr.0731, align 1, !dbg !318, !tbaa !107
+  %cmp484 = icmp eq i8 %108, 58, !dbg !318
+  %cond486 = select i1 %cmp484, i32 58, i32 63, !dbg !318
+  br label %return, !dbg !318
+
+if.end489:                                        ; preds = %if.else460, %if.then467, %if.then448
+  %call490 = tail call i64 @strlen(i8* %85) #7, !dbg !319
+  %add.ptr491 = getelementptr inbounds i8* %85, i64 %call490, !dbg !319
+  store i8* %add.ptr491, i8** @nextchar, align 8, !dbg !319, !tbaa !106
+  %cmp492 = icmp eq i32* %longind, null, !dbg !320
+  br i1 %cmp492, label %if.end495, label %if.then494, !dbg !320
+
+if.then494:                                       ; preds = %if.end489
+  store i32 %indfound348.2686, i32* %longind, align 4, !dbg !321, !tbaa !110
+  br label %if.end495, !dbg !321
+
+if.end495:                                        ; preds = %if.end489, %if.then494
+  %flag496 = getelementptr inbounds %struct.gg_option* %pfound345.2685, i64 0, i32 2, !dbg !322
+  %109 = load i32** %flag496, align 8, !dbg !322, !tbaa !106
+  %tobool497 = icmp eq i32* %109, null, !dbg !322
+  %val499 = getelementptr inbounds %struct.gg_option* %pfound345.2685, i64 0, i32 3, !dbg !323
+  %110 = load i32* %val499, align 4, !dbg !323, !tbaa !110
+  br i1 %tobool497, label %return, label %if.then498, !dbg !322
+
+if.then498:                                       ; preds = %if.end495
+  store i32 %110, i32* %109, align 4, !dbg !323, !tbaa !110
+  br label %return, !dbg !325
+
+if.end503:                                        ; preds = %for.cond393.preheader, %if.end440
+  store i8* null, i8** @nextchar, align 8, !dbg !326, !tbaa !106
+  br label %return, !dbg !327
+
+if.end504:                                        ; preds = %if.end332
+  %cmp507 = icmp eq i8 %77, 58, !dbg !328
+  br i1 %cmp507, label %if.then509, label %if.end553, !dbg !328
+
+if.then509:                                       ; preds = %if.end504
+  %arrayidx510 = getelementptr inbounds i8* %call304, i64 2, !dbg !329
+  %111 = load i8* %arrayidx510, align 1, !dbg !329, !tbaa !107
+  %cmp512 = icmp eq i8 %111, 58, !dbg !329
+  %112 = load i8* %incdec.ptr302, align 1, !dbg !331, !tbaa !107
+  %cmp516 = icmp ne i8 %112, 0, !dbg !331
+  br i1 %cmp512, label %if.then514, label %if.else522, !dbg !329
+
+if.then514:                                       ; preds = %if.then509
+  br i1 %cmp516, label %if.then518, label %if.else520, !dbg !331
+
+if.then518:                                       ; preds = %if.then514
+  store i8* %incdec.ptr302, i8** @gg_optarg, align 8, !dbg !333, !tbaa !106
+  %inc519 = add nsw i32 %71, 1, !dbg !335
+  store i32 %inc519, i32* @gg_optind, align 4, !dbg !335, !tbaa !110
+  br label %if.end521, !dbg !336
+
+if.else520:                                       ; preds = %if.then514
+  store i8* null, i8** @gg_optarg, align 8, !dbg !337, !tbaa !106
+  br label %if.end521
+
+if.end521:                                        ; preds = %if.else520, %if.then518
+  store i8* null, i8** @nextchar, align 8, !dbg !338, !tbaa !106
+  br label %if.end553, !dbg !339
+
+if.else522:                                       ; preds = %if.then509
+  br i1 %cmp516, label %if.then526, label %if.else528, !dbg !340
+
+if.then526:                                       ; preds = %if.else522
+  store i8* %incdec.ptr302, i8** @gg_optarg, align 8, !dbg !342, !tbaa !106
+  %inc527 = add nsw i32 %71, 1, !dbg !344
+  store i32 %inc527, i32* @gg_optind, align 4, !dbg !344, !tbaa !110
+  br label %if.end551, !dbg !345
+
+if.else528:                                       ; preds = %if.else522
+  %cmp529 = icmp eq i32 %71, %argc, !dbg !346
+  br i1 %cmp529, label %if.then531, label %if.else546, !dbg !346
+
+if.then531:                                       ; preds = %if.else528
+  %113 = load i32* @gg_opterr, align 4, !dbg !347, !tbaa !110
+  %tobool532 = icmp eq i32 %113, 0, !dbg !347
+  br i1 %tobool532, label %if.end537, label %if.then533, !dbg !347
+
+if.then533:                                       ; preds = %if.then531
+  %114 = load %struct._IO_FILE** @stderr, align 8, !dbg !349, !tbaa !106
+  %115 = load i8** %argv, align 8, !dbg !349, !tbaa !106
+  %call536 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %114, i8* getelementptr inbounds ([39 x i8]* @.str10, i64 0, i64 0), i8* %115, i32 %conv303) #5, !dbg !349
+  br label %if.end537, !dbg !351
+
+if.end537:                                        ; preds = %if.then531, %if.then533
+  store i32 %conv303, i32* @gg_optopt, align 4, !dbg !352, !tbaa !110
+  %116 = load i8* %optstring.addr.0731, align 1, !dbg !353, !tbaa !107
+  %cmp541 = icmp eq i8 %116, 58, !dbg !353
+  %.675 = select i1 %cmp541, i8 58, i8 63, !dbg !354
+  br label %if.end551, !dbg !354
+
+if.else546:                                       ; preds = %if.else528
+  %inc547 = add nsw i32 %71, 1, !dbg !355
+  store i32 %inc547, i32* @gg_optind, align 4, !dbg !355, !tbaa !110
+  %idxprom548 = sext i32 %71 to i64, !dbg !355
+  %arrayidx549 = getelementptr inbounds i8** %argv, i64 %idxprom548, !dbg !355
+  %117 = load i8** %arrayidx549, align 8, !dbg !355, !tbaa !106
+  store i8* %117, i8** @gg_optarg, align 8, !dbg !355, !tbaa !106
+  br label %if.end551
+
+if.end551:                                        ; preds = %if.end537, %if.else546, %if.then526
+  %c.1 = phi i8 [ %69, %if.then526 ], [ %69, %if.else546 ], [ %.675, %if.end537 ]
+  store i8* null, i8** @nextchar, align 8, !dbg !356, !tbaa !106
+  br label %if.end553
+
+if.end553:                                        ; preds = %if.end521, %if.end551, %if.end504
+  %c.2 = phi i8 [ %69, %if.end521 ], [ %c.1, %if.end551 ], [ %69, %if.end504 ]
+  %conv554 = sext i8 %c.2 to i32, !dbg !357
+  br label %return, !dbg !357
+
+return:                                           ; preds = %if.end495, %if.end257, %if.then86, %if.then70, %if.then67, %if.end553, %if.end503, %if.then498, %if.end479, %if.end456, %if.end436, %if.end364, %if.end330, %if.end298, %if.then259, %if.end241, %if.end218, %if.end181, %if.end90
+  %retval.0 = phi i32 [ 1, %if.end90 ], [ 0, %if.then259 ], [ 63, %if.end218 ], [ %cond, %if.end241 ], [ 63, %if.end298 ], [ 63, %if.end330 ], [ 0, %if.then498 ], [ 63, %if.end456 ], [ %cond486, %if.end479 ], [ 87, %if.end503 ], [ 63, %if.end436 ], [ %., %if.end364 ], [ %conv554, %if.end553 ], [ 63, %if.end181 ], [ -1, %if.then67 ], [ -1, %if.then70 ], [ -1, %if.then86 ], [ %61, %if.end257 ], [ %110, %if.end495 ]
+  ret i32 %retval.0, !dbg !358
 }

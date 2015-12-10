@@ -1,37 +1,34 @@
 define void @IVcopy(i32 %size, i32* %y, i32* %x) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !35, metadata !380), !dbg !474
-  tail call void @llvm.dbg.value(metadata i32* %y, i64 0, metadata !36, metadata !380), !dbg !475
-  tail call void @llvm.dbg.value(metadata i32* %x, i64 0, metadata !37, metadata !380), !dbg !476
-  %1 = icmp sgt i32 %size, 0, !dbg !477
-  br i1 %1, label %2, label %.loopexit, !dbg !478
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !31), !dbg !379
+  tail call void @llvm.dbg.value(metadata !{i32* %y}, i64 0, metadata !32), !dbg !380
+  tail call void @llvm.dbg.value(metadata !{i32* %x}, i64 0, metadata !33), !dbg !381
+  %cmp = icmp sgt i32 %size, 0, !dbg !382
+  br i1 %cmp, label %if.then, label %if.end7, !dbg !382
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp eq i32* %y, null, !dbg !479
-  %4 = icmp eq i32* %x, null, !dbg !480
-  %or.cond = or i1 %3, %4, !dbg !481
-  br i1 %or.cond, label %6, label %.lr.ph, !dbg !481
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq i32* %y, null, !dbg !383
+  %cmp2 = icmp eq i32* %x, null, !dbg !383
+  %or.cond = or i1 %cmp1, %cmp2, !dbg !383
+  br i1 %or.cond, label %if.then3, label %for.body, !dbg !383
 
-.lr.ph:                                           ; preds = %2
-  %5 = add i32 %size, -1, !dbg !482
-  br label %9, !dbg !482
+if.then3:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !384, !tbaa !341
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 %size, i32* %y, i32* %x) #7, !dbg !384
+  tail call void @exit(i32 -1) #8, !dbg !386
+  unreachable, !dbg !386
 
-; <label>:6                                       ; preds = %2
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !484, !tbaa !399
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 %size, i32* %y, i32* %x) #8, !dbg !486
-  tail call void @exit(i32 -1) #9, !dbg !487
-  unreachable, !dbg !487
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %arrayidx = getelementptr inbounds i32* %x, i64 %indvars.iv, !dbg !387
+  %1 = load i32* %arrayidx, align 4, !dbg !387, !tbaa !351
+  %arrayidx6 = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !387
+  store i32 %1, i32* %arrayidx6, align 4, !dbg !387, !tbaa !351
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !390
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !390
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !390
+  br i1 %exitcond, label %if.end7, label %for.body, !dbg !390
 
-; <label>:9                                       ; preds = %9, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %10 = getelementptr inbounds i32* %x, i64 %indvars.iv, !dbg !488
-  %11 = load i32* %10, align 4, !dbg !488, !tbaa !414
-  %12 = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !491
-  store i32 %11, i32* %12, align 4, !dbg !492, !tbaa !414
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !482
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !482
-  %exitcond = icmp eq i32 %lftr.wideiv, %5, !dbg !482
-  br i1 %exitcond, label %.loopexit, label %9, !dbg !482
-
-.loopexit:                                        ; preds = %9, %0
-  ret void, !dbg !493
+if.end7:                                          ; preds = %for.body, %entry
+  ret void, !dbg !391
 }

@@ -1,14 +1,15 @@
-define i32 @Util_snprintf(i8* %str, i64 %count, i8* readonly %fmt, ...) #0 {
+define i32 @Util_snprintf(i8* %str, i64 %count, i8* nocapture %fmt, ...) #0 {
+entry:
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  tail call void @llvm.dbg.value(metadata i8* %str, i64 0, metadata !38, metadata !187), !dbg !783
-  tail call void @llvm.dbg.value(metadata i64 %count, i64 0, metadata !39, metadata !187), !dbg !784
-  tail call void @llvm.dbg.value(metadata i8* %fmt, i64 0, metadata !40, metadata !187), !dbg !785
-  tail call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metadata !41, metadata !187), !dbg !786
-  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, !dbg !787
-  %2 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !787
-  call void @llvm.va_start(i8* %2), !dbg !787
-  %3 = call i32 @Util_vsnprintf(i8* %str, i64 %count, i8* %fmt, %struct.__va_list_tag* %1) #4, !dbg !788
-  call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !48, metadata !187), !dbg !789
-  call void @llvm.va_end(i8* %2), !dbg !790
-  ret i32 %3, !dbg !791
+  call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !50), !dbg !585
+  call void @llvm.dbg.value(metadata !{i64 %count}, i64 0, metadata !51), !dbg !585
+  call void @llvm.dbg.value(metadata !{i8* %fmt}, i64 0, metadata !52), !dbg !585
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !53), !dbg !586
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, !dbg !587
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !587
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !587
+  %call = call i32 @Util_vsnprintf(i8* %str, i64 %count, i8* %fmt, %struct.__va_list_tag* %arraydecay) #6, !dbg !588
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !59), !dbg !588
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !589
+  ret i32 %call, !dbg !590
 }

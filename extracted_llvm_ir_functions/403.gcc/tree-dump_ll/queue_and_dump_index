@@ -1,45 +1,54 @@
 define void @queue_and_dump_index(%struct.dump_info* nocapture %di, i8* %field, %union.tree_node* %t, i32 %flags) #0 {
 entry:
-  %tobool = icmp eq %union.tree_node* %t, null
-  br i1 %tobool, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !657), !dbg !838
+  tail call void @llvm.dbg.value(metadata !{i8* %field}, i64 0, metadata !658), !dbg !839
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %t}, i64 0, metadata !659), !dbg !840
+  tail call void @llvm.dbg.value(metadata !{i32 %flags}, i64 0, metadata !660), !dbg !841
+  %tobool = icmp eq %union.tree_node* %t, null, !dbg !842
+  br i1 %tobool, label %return, label %if.end, !dbg !842
 
 if.end:                                           ; preds = %entry
-  %nodes = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 8
-  %0 = load %struct.splay_tree_s** %nodes, align 8, !tbaa !0
-  %1 = ptrtoint %union.tree_node* %t to i64
-  %call = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %0, i64 %1) #7
-  %tobool1 = icmp eq %struct.splay_tree_node_s* %call, null
-  br i1 %tobool1, label %if.else, label %if.then2
+  %nodes = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 8, !dbg !843
+  %0 = load %struct.splay_tree_s** %nodes, align 8, !dbg !843, !tbaa !844
+  %1 = ptrtoint %union.tree_node* %t to i64, !dbg !843
+  %call = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %0, i64 %1) #8, !dbg !843
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %call}, i64 0, metadata !662), !dbg !843
+  %tobool1 = icmp eq %struct.splay_tree_node_s* %call, null, !dbg !847
+  br i1 %tobool1, label %if.else, label %if.then2, !dbg !847
 
 if.then2:                                         ; preds = %if.end
-  %value = getelementptr inbounds %struct.splay_tree_node_s* %call, i64 0, i32 1
-  %2 = load i64* %value, align 8, !tbaa !3
-  %3 = inttoptr i64 %2 to %struct.dump_node_info*
-  %index3 = getelementptr inbounds %struct.dump_node_info* %3, i64 0, i32 0
-  %4 = load i32* %index3, align 4, !tbaa !4
-  br label %if.end5
+  %value = getelementptr inbounds %struct.splay_tree_node_s* %call, i64 0, i32 1, !dbg !848
+  %2 = load i64* %value, align 8, !dbg !848, !tbaa !849
+  %3 = inttoptr i64 %2 to %struct.dump_node_info*, !dbg !848
+  %index3 = getelementptr inbounds %struct.dump_node_info* %3, i64 0, i32 0, !dbg !848
+  %4 = load i32* %index3, align 4, !dbg !848, !tbaa !850
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !661), !dbg !848
+  br label %if.end5, !dbg !848
 
 if.else:                                          ; preds = %if.end
-  %call4 = tail call fastcc i32 @queue(%struct.dump_info* %di, %union.tree_node* %t, i32 %flags) #8
+  %call4 = tail call fastcc i32 @queue(%struct.dump_info* %di, %union.tree_node* %t, i32 %flags) #9, !dbg !851
+  tail call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !661), !dbg !851
   br label %if.end5
 
 if.end5:                                          ; preds = %if.else, %if.then2
   %index.0 = phi i32 [ %4, %if.then2 ], [ %call4, %if.else ]
-  tail call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8
-  %stream = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 0
-  %5 = load %struct._IO_FILE** %stream, align 8, !tbaa !0
-  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([7 x i8]* @.str, i64 0, i64 0), i8* %field) #7
-  %column = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 4
-  %6 = load i32* %column, align 4, !tbaa !4
-  %add = add i32 %6, 6
-  store i32 %add, i32* %column, align 4, !tbaa !4
-  %7 = load %struct._IO_FILE** %stream, align 8, !tbaa !0
-  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([7 x i8]* @.str106, i64 0, i64 0), i32 %index.0) #7
-  %8 = load i32* %column, align 4, !tbaa !4
-  %add.i = add i32 %8, 8
-  store i32 %add.i, i32* %column, align 4, !tbaa !4
-  br label %return
+  tail call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #9, !dbg !852
+  %stream = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 0, !dbg !853
+  %5 = load %struct._IO_FILE** %stream, align 8, !dbg !853, !tbaa !844
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([7 x i8]* @.str, i64 0, i64 0), i8* %field) #8, !dbg !853
+  %column = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 4, !dbg !854
+  %6 = load i32* %column, align 4, !dbg !854, !tbaa !850
+  %add = add i32 %6, 6, !dbg !854
+  store i32 %add, i32* %column, align 4, !dbg !854, !tbaa !850
+  tail call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !855) #6, !dbg !857
+  tail call void @llvm.dbg.value(metadata !{i32 %index.0}, i64 0, metadata !858) #6, !dbg !859
+  %7 = load %struct._IO_FILE** %stream, align 8, !dbg !860, !tbaa !844
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([7 x i8]* @.str106, i64 0, i64 0), i32 %index.0) #8, !dbg !860
+  %8 = load i32* %column, align 4, !dbg !861, !tbaa !850
+  %add.i = add i32 %8, 8, !dbg !861
+  store i32 %add.i, i32* %column, align 4, !dbg !861, !tbaa !850
+  br label %return, !dbg !856
 
 return:                                           ; preds = %entry, %if.end5
-  ret void
+  ret void, !dbg !856
 }

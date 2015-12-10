@@ -1,56 +1,57 @@
 define i32 @Tree_preOTnext(%struct._Tree* %tree, i32 %v) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Tree* %tree, i64 0, metadata !35, metadata !98), !dbg !172
-  tail call void @llvm.dbg.value(metadata i32 %v, i64 0, metadata !36, metadata !98), !dbg !173
-  %1 = icmp eq %struct._Tree* %tree, null, !dbg !174
-  br i1 %1, label %6, label %2, !dbg !176
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Tree* %tree}, i64 0, metadata !34), !dbg !124
+  tail call void @llvm.dbg.value(metadata !{i32 %v}, i64 0, metadata !35), !dbg !125
+  %cmp = icmp eq %struct._Tree* %tree, null, !dbg !126
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !126
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !177
-  %4 = load i32* %3, align 4, !dbg !177, !tbaa !104
-  %notlhs = icmp sgt i32 %4, 0, !dbg !178
-  %notrhs = icmp sgt i32 %v, -1, !dbg !178
-  %or.cond.not = and i1 %notrhs, %notlhs, !dbg !178
-  %5 = icmp sgt i32 %4, %v, !dbg !179
-  %or.cond2 = and i1 %5, %or.cond.not, !dbg !178
-  br i1 %or.cond2, label %9, label %6, !dbg !178
+lor.lhs.false:                                    ; preds = %entry
+  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !126
+  %0 = load i32* %n, align 4, !dbg !126, !tbaa !95
+  %notlhs = icmp sgt i32 %0, 0, !dbg !126
+  %notrhs = icmp sgt i32 %v, -1, !dbg !126
+  %or.cond.not = and i1 %notrhs, %notlhs, !dbg !126
+  %cmp6 = icmp sgt i32 %0, %v, !dbg !126
+  %or.cond41 = and i1 %or.cond.not, %cmp6, !dbg !126
+  br i1 %or.cond41, label %if.end, label %if.then, !dbg !126
 
-; <label>:6                                       ; preds = %2, %0
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !180, !tbaa !114
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([51 x i8]* @.str3, i64 0, i64 0), %struct._Tree* %tree, i32 %v) #5, !dbg !182
-  tail call void @exit(i32 -1) #6, !dbg !183
-  unreachable, !dbg !183
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !127, !tbaa !100
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([51 x i8]* @.str3, i64 0, i64 0), %struct._Tree* %tree, i32 %v) #5, !dbg !127
+  tail call void @exit(i32 -1) #6, !dbg !129
+  unreachable, !dbg !129
 
-; <label>:9                                       ; preds = %2
-  %10 = sext i32 %v to i64, !dbg !184
-  %11 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3, !dbg !186
-  %12 = load i32** %11, align 8, !dbg !186, !tbaa !125
-  %13 = getelementptr inbounds i32* %12, i64 %10, !dbg !184
-  %14 = load i32* %13, align 4, !dbg !184, !tbaa !127
-  %15 = icmp eq i32 %14, -1, !dbg !187
-  br i1 %15, label %.preheader, label %.critedge, !dbg !188
+if.end:                                           ; preds = %lor.lhs.false
+  %idxprom = sext i32 %v to i64, !dbg !130
+  %fch = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3, !dbg !130
+  %2 = load i32** %fch, align 8, !dbg !130, !tbaa !100
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !130
+  %3 = load i32* %arrayidx, align 4, !dbg !130, !tbaa !95
+  %cmp7 = icmp eq i32 %3, -1, !dbg !130
+  br i1 %cmp7, label %while.cond.preheader, label %if.end24, !dbg !130
 
-.preheader:                                       ; preds = %9
-  %16 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2, !dbg !189
-  %17 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4, !dbg !191
-  %18 = load i32** %17, align 8, !dbg !191, !tbaa !146
-  br label %19, !dbg !192
+while.cond.preheader:                             ; preds = %if.end
+  %par = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2, !dbg !131
+  %sib = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4, !dbg !131
+  %4 = load i32** %sib, align 8, !dbg !131, !tbaa !100
+  br label %while.cond, !dbg !131
 
-; <label>:19                                      ; preds = %.preheader, %24
-  %.0 = phi i32 [ %27, %24 ], [ %v, %.preheader ]
-  %20 = sext i32 %.0 to i64, !dbg !192
-  %21 = getelementptr inbounds i32* %18, i64 %20, !dbg !192
-  %22 = load i32* %21, align 4, !dbg !192, !tbaa !127
-  %23 = icmp eq i32 %22, -1, !dbg !193
-  br i1 %23, label %24, label %.critedge, !dbg !194
+while.cond:                                       ; preds = %while.cond.preheader, %land.rhs
+  %v.addr.0 = phi i32 [ %7, %land.rhs ], [ %v, %while.cond.preheader ]
+  %idxprom12 = sext i32 %v.addr.0 to i64, !dbg !131
+  %arrayidx13 = getelementptr inbounds i32* %4, i64 %idxprom12, !dbg !131
+  %5 = load i32* %arrayidx13, align 4, !dbg !131, !tbaa !95
+  %cmp14 = icmp eq i32 %5, -1, !dbg !131
+  br i1 %cmp14, label %land.rhs, label %if.end24, !dbg !131
 
-; <label>:24                                      ; preds = %19
-  %25 = load i32** %16, align 8, !dbg !189, !tbaa !156
-  %26 = getelementptr inbounds i32* %25, i64 %20, !dbg !195
-  %27 = load i32* %26, align 4, !dbg !195, !tbaa !127
-  %28 = icmp eq i32 %27, -1, !dbg !196
-  br i1 %28, label %.critedge, label %19, !dbg !197
+land.rhs:                                         ; preds = %while.cond
+  %6 = load i32** %par, align 8, !dbg !131, !tbaa !100
+  %arrayidx16 = getelementptr inbounds i32* %6, i64 %idxprom12, !dbg !131
+  %7 = load i32* %arrayidx16, align 4, !dbg !131, !tbaa !95
+  %cmp17 = icmp eq i32 %7, -1, !dbg !131
+  br i1 %cmp17, label %if.end24, label %while.cond
 
-.critedge:                                        ; preds = %19, %24, %9
-  %.1 = phi i32 [ %14, %9 ], [ %22, %19 ], [ -1, %24 ]
-  ret i32 %.1, !dbg !198
+if.end24:                                         ; preds = %while.cond, %land.rhs, %if.end
+  %v.addr.1 = phi i32 [ %3, %if.end ], [ -1, %land.rhs ], [ %5, %while.cond ]
+  ret i32 %v.addr.1, !dbg !133
 }

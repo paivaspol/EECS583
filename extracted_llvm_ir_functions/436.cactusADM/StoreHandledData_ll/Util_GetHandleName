@@ -1,33 +1,34 @@
-define i8* @Util_GetHandleName(%struct.cHandledData* readonly %storage, i32 %handle) #5 {
-  tail call void @llvm.dbg.value(metadata %struct.cHandledData* %storage, i64 0, metadata !68, metadata !83), !dbg !294
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !69, metadata !83), !dbg !295
-  %1 = icmp ne %struct.cHandledData* %storage, null, !dbg !296
-  %2 = icmp sgt i32 %handle, -1, !dbg !298
-  %or.cond = and i1 %1, %2, !dbg !301
-  br i1 %or.cond, label %3, label %17, !dbg !301
+define i8* @Util_GetHandleName(%struct.cHandledData* %storage, i32 %handle) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cHandledData* %storage}, i64 0, metadata !68), !dbg !163
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !69), !dbg !163
+  %tobool = icmp ne %struct.cHandledData* %storage, null, !dbg !164
+  %cmp = icmp sgt i32 %handle, -1, !dbg !165
+  %or.cond = and i1 %tobool, %cmp, !dbg !164
+  br i1 %or.cond, label %land.lhs.true, label %if.end10, !dbg !164
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 1, !dbg !302
-  %5 = load i32* %4, align 4, !dbg !302, !tbaa !109
-  %6 = icmp ugt i32 %5, %handle, !dbg !303
-  br i1 %6, label %7, label %17, !dbg !304
+land.lhs.true:                                    ; preds = %entry
+  %array_size = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 1, !dbg !165
+  %0 = load i32* %array_size, align 4, !dbg !165, !tbaa !91
+  %cmp1 = icmp ugt i32 %0, %handle, !dbg !165
+  br i1 %cmp1, label %land.lhs.true2, label %if.end10, !dbg !165
 
-; <label>:7                                       ; preds = %3
-  %8 = sext i32 %handle to i64, !dbg !305
-  %9 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 0, !dbg !306
-  %10 = load %struct.cHandleStorage** %9, align 8, !dbg !306, !tbaa !104
-  %11 = getelementptr inbounds %struct.cHandleStorage* %10, i64 %8, i32 0, !dbg !307
-  %12 = load i32* %11, align 4, !dbg !307, !tbaa !140
-  %13 = icmp eq i32 %12, 1, !dbg !308
-  br i1 %13, label %14, label %17, !dbg !309
+land.lhs.true2:                                   ; preds = %land.lhs.true
+  %idxprom = sext i32 %handle to i64, !dbg !165
+  %array = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 0, !dbg !165
+  %1 = load %struct.cHandleStorage** %array, align 8, !dbg !165, !tbaa !81
+  %in_use = getelementptr inbounds %struct.cHandleStorage* %1, i64 %idxprom, i32 0, !dbg !165
+  %2 = load i32* %in_use, align 4, !dbg !165, !tbaa !91
+  %cmp3 = icmp eq i32 %2, 1, !dbg !165
+  br i1 %cmp3, label %if.then4, label %if.end10, !dbg !165
 
-; <label>:14                                      ; preds = %7
-  %15 = getelementptr inbounds %struct.cHandleStorage* %10, i64 %8, i32 1, !dbg !310
-  %16 = load i8** %15, align 8, !dbg !310, !tbaa !154
-  tail call void @llvm.dbg.value(metadata i8* %16, i64 0, metadata !70, metadata !83), !dbg !312
-  br label %17, !dbg !313
+if.then4:                                         ; preds = %land.lhs.true2
+  %name8 = getelementptr inbounds %struct.cHandleStorage* %1, i64 %idxprom, i32 1, !dbg !167
+  %3 = load i8** %name8, align 8, !dbg !167, !tbaa !81
+  tail call void @llvm.dbg.value(metadata !{i8* %3}, i64 0, metadata !70), !dbg !167
+  br label %if.end10, !dbg !169
 
-; <label>:17                                      ; preds = %0, %3, %7, %14
-  %name.0 = phi i8* [ %16, %14 ], [ null, %7 ], [ null, %3 ], [ null, %0 ]
-  ret i8* %name.0, !dbg !314
+if.end10:                                         ; preds = %entry, %land.lhs.true, %land.lhs.true2, %if.then4
+  %name.0 = phi i8* [ %3, %if.then4 ], [ null, %land.lhs.true2 ], [ null, %land.lhs.true ], [ null, %entry ]
+  ret i8* %name.0, !dbg !170
 }

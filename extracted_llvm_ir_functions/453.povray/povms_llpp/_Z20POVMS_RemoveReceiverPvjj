@@ -1,56 +1,57 @@
 define i32 @_Z20POVMS_RemoveReceiverPvjj(i8* %contextref, i32 %hclass, i32 %hid) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %contextref, i64 0, metadata !216, metadata !1201), !dbg !1447
-  tail call void @llvm.dbg.value(metadata i32 %hclass, i64 0, metadata !217, metadata !1201), !dbg !1448
-  tail call void @llvm.dbg.value(metadata i32 %hid, i64 0, metadata !218, metadata !1201), !dbg !1449
-  %1 = bitcast i8* %contextref to %struct.POVMSContextData*, !dbg !1450
-  tail call void @llvm.dbg.value(metadata %struct.POVMSContextData* %1, i64 0, metadata !219, metadata !1201), !dbg !1451
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !220, metadata !1201), !dbg !1452
-  %2 = icmp eq i8* %contextref, null, !dbg !1453
-  br i1 %2, label %22, label %3, !dbg !1455
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %contextref}, i64 0, metadata !178), !dbg !1049
+  tail call void @llvm.dbg.value(metadata !{i32 %hclass}, i64 0, metadata !179), !dbg !1049
+  tail call void @llvm.dbg.value(metadata !{i32 %hid}, i64 0, metadata !180), !dbg !1049
+  %0 = bitcast i8* %contextref to %struct.POVMSContextData*, !dbg !1050
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSContextData* %0}, i64 0, metadata !181), !dbg !1050
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !182), !dbg !1051
+  %cmp = icmp eq i8* %contextref, null, !dbg !1052
+  br i1 %cmp, label %return, label %if.end, !dbg !1052
 
-; <label>:3                                       ; preds = %0
-  %4 = bitcast i8* %contextref to i32*, !dbg !1456
-  %5 = load i32* %4, align 4, !dbg !1456, !tbaa !1255
-  %6 = icmp eq i32 %5, 0, !dbg !1458
-  br i1 %6, label %22, label %7, !dbg !1459
+if.end:                                           ; preds = %entry
+  %valid = bitcast i8* %contextref to i32*, !dbg !1053
+  %1 = load i32* %valid, align 4, !dbg !1053, !tbaa !937
+  %cmp1 = icmp eq i32 %1, 0, !dbg !1053
+  br i1 %cmp1, label %return, label %if.then5, !dbg !1053
 
-; <label>:7                                       ; preds = %3
-  tail call void @llvm.dbg.value(metadata %struct.POVMSContextData* %1, i64 0, metadata !298, metadata !1201), !dbg !1460
-  tail call void @llvm.dbg.value(metadata i32 %hclass, i64 0, metadata !299, metadata !1201), !dbg !1463
-  tail call void @llvm.dbg.value(metadata i32 %hid, i64 0, metadata !300, metadata !1201), !dbg !1464
-  tail call void @llvm.dbg.value(metadata %struct.POVMSReceiveHandlerNode* null, i64 0, metadata !301, metadata !1201), !dbg !1465
-  %8 = getelementptr inbounds i8* %contextref, i64 8, !dbg !1466
-  %9 = bitcast i8* %8 to %struct.POVMSReceiveHandlerNode**, !dbg !1466
-  %thn.01.i = load %struct.POVMSReceiveHandlerNode** %9, align 8, !dbg !1466
-  %10 = icmp eq %struct.POVMSReceiveHandlerNode* %thn.01.i, null, !dbg !1468
-  br i1 %10, label %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit, label %.lr.ph.i, !dbg !1470
+if.then5:                                         ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSContextData* %0}, i64 0, metadata !1054), !dbg !1056
+  tail call void @llvm.dbg.value(metadata !{i32 %hclass}, i64 0, metadata !1057), !dbg !1056
+  tail call void @llvm.dbg.value(metadata !{i32 %hid}, i64 0, metadata !1058), !dbg !1056
+  tail call void @llvm.dbg.value(metadata !1016, i64 0, metadata !1059), !dbg !1060
+  %receivehandlerroot.i = getelementptr inbounds i8* %contextref, i64 8, !dbg !1061
+  %2 = bitcast i8* %receivehandlerroot.i to %struct.POVMSReceiveHandlerNode**, !dbg !1061
+  %thn.07.i = load %struct.POVMSReceiveHandlerNode** %2, align 8, !dbg !1061
+  %cmp8.i = icmp eq %struct.POVMSReceiveHandlerNode* %thn.07.i, null, !dbg !1061
+  br i1 %cmp8.i, label %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit, label %for.body.i, !dbg !1061
 
-.lr.ph.i:                                         ; preds = %7, %18
-  %thn.02.i = phi %struct.POVMSReceiveHandlerNode* [ %thn.0.i, %18 ], [ %thn.01.i, %7 ], !dbg !1471
-  %11 = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.02.i, i64 0, i32 2, !dbg !1472
-  %12 = load i32* %11, align 4, !dbg !1472, !tbaa !1404
-  %13 = icmp eq i32 %12, %hclass, !dbg !1475
-  br i1 %13, label %14, label %18, !dbg !1476
+for.body.i:                                       ; preds = %if.then5, %for.inc.i
+  %thn.09.i = phi %struct.POVMSReceiveHandlerNode* [ %thn.0.i, %for.inc.i ], [ %thn.07.i, %if.then5 ]
+  %handledclass.i = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.09.i, i64 0, i32 2, !dbg !1063
+  %3 = load i32* %handledclass.i, align 4, !dbg !1063, !tbaa !937
+  %cmp1.i = icmp eq i32 %3, %hclass, !dbg !1063
+  br i1 %cmp1.i, label %land.lhs.true.i, label %for.inc.i, !dbg !1063
 
-; <label>:14                                      ; preds = %.lr.ph.i
-  %15 = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.02.i, i64 0, i32 3, !dbg !1477
-  %16 = load i32* %15, align 4, !dbg !1477, !tbaa !1407
-  %17 = icmp eq i32 %16, %hid, !dbg !1478
-  br i1 %17, label %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit, label %18, !dbg !1479
+land.lhs.true.i:                                  ; preds = %for.body.i
+  %handledid.i = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.09.i, i64 0, i32 3, !dbg !1063
+  %4 = load i32* %handledid.i, align 4, !dbg !1063, !tbaa !937
+  %cmp2.i = icmp eq i32 %4, %hid, !dbg !1063
+  br i1 %cmp2.i, label %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit, label %for.inc.i, !dbg !1063
 
-; <label>:18                                      ; preds = %14, %.lr.ph.i
-  %19 = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.02.i, i64 0, i32 1, !dbg !1480
-  %thn.0.i = load %struct.POVMSReceiveHandlerNode** %19, align 8, !dbg !1466
-  %20 = icmp eq %struct.POVMSReceiveHandlerNode* %thn.0.i, null, !dbg !1468
-  br i1 %20, label %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit, label %.lr.ph.i, !dbg !1470
+for.inc.i:                                        ; preds = %land.lhs.true.i, %for.body.i
+  %next.i = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.09.i, i64 0, i32 1, !dbg !1061
+  %thn.0.i = load %struct.POVMSReceiveHandlerNode** %next.i, align 8, !dbg !1061
+  %cmp.i = icmp eq %struct.POVMSReceiveHandlerNode* %thn.0.i, null, !dbg !1061
+  br i1 %cmp.i, label %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit, label %for.body.i, !dbg !1061
 
-_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit: ; preds = %14, %18, %7
-  %thn.0.lcssa.i = phi %struct.POVMSReceiveHandlerNode* [ null, %7 ], [ null, %18 ], [ %thn.02.i, %14 ], !dbg !1471
-  %21 = tail call i32 @_Z30POVMS_RemoveReceiveHandlerNodeP16POVMSContextDataP23POVMSReceiveHandlerNode(%struct.POVMSContextData* %1, %struct.POVMSReceiveHandlerNode* %thn.0.lcssa.i) #8, !dbg !1481
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !220, metadata !1201), !dbg !1452
-  br label %22, !dbg !1482
+_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit: ; preds = %land.lhs.true.i, %for.inc.i, %if.then5
+  %thn.0.lcssa.i = phi %struct.POVMSReceiveHandlerNode* [ null, %if.then5 ], [ %thn.09.i, %land.lhs.true.i ], [ null, %for.inc.i ]
+  %call6 = tail call i32 @_Z30POVMS_RemoveReceiveHandlerNodeP16POVMSContextDataP23POVMSReceiveHandlerNode(%struct.POVMSContextData* %0, %struct.POVMSReceiveHandlerNode* %thn.0.lcssa.i) #8, !dbg !1055
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !182), !dbg !1055
+  br label %return, !dbg !1065
 
-; <label>:22                                      ; preds = %3, %0, %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit
-  %.0 = phi i32 [ 0, %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit ], [ -1, %0 ], [ -21, %3 ]
-  ret i32 %.0, !dbg !1483
+return:                                           ; preds = %if.end, %entry, %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit
+  %retval.0 = phi i32 [ 0, %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit ], [ -1, %entry ], [ -21, %if.end ]
+  ret i32 %retval.0, !dbg !1066
 }

@@ -1,19 +1,24 @@
 define void @move_block_to_reg(i32 %regno, %struct.rtx_def* %x, i32 %nregs, i32 %mode) #0 {
 entry:
-  %0 = icmp sgt i32 %nregs, 0
-  br i1 %0, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !2014), !dbg !4935
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !2015), !dbg !4936
+  tail call void @llvm.dbg.value(metadata !{i32 %nregs}, i64 0, metadata !2016), !dbg !4937
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2017), !dbg !4938
+  %0 = icmp sgt i32 %nregs, 0, !dbg !4939
+  br i1 %0, label %for.body, label %for.end, !dbg !4939
 
 for.body:                                         ; preds = %entry, %for.body
   %i.042 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
-  %1 = load i32* @word_mode, align 4, !tbaa !6
-  %add = add nsw i32 %i.042, %regno
-  %call33 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %1, i32 %add) #8
-  %call34 = tail call %struct.rtx_def* @operand_subword_force(%struct.rtx_def* %x, i32 %i.042, i32 %mode) #8
-  %call35 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call33, %struct.rtx_def* %call34) #10
-  %inc = add nsw i32 %i.042, 1
-  %exitcond = icmp eq i32 %inc, %nregs
-  br i1 %exitcond, label %for.end, label %for.body
+  %1 = load i32* @word_mode, align 4, !dbg !4940, !tbaa !3359
+  %add = add nsw i32 %i.042, %regno, !dbg !4940
+  %call33 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %1, i32 %add) #9, !dbg !4940
+  %call34 = tail call %struct.rtx_def* @operand_subword_force(%struct.rtx_def* %x, i32 %i.042, i32 %mode) #9, !dbg !4942
+  %call35 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call33, %struct.rtx_def* %call34) #11, !dbg !4942
+  %inc = add nsw i32 %i.042, 1, !dbg !4943
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !2018), !dbg !4943
+  %exitcond = icmp eq i32 %inc, %nregs, !dbg !4943
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !4943
 
 for.end:                                          ; preds = %entry, %for.body
-  ret void
+  ret void, !dbg !4944
 }

@@ -1,89 +1,95 @@
 define void @find_sub_basic_blocks(%struct.basic_block_def* %bb) #0 {
 entry:
-  %index = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11
-  %0 = load i32* %index, align 4, !tbaa !3
-  %1 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %sub = add nsw i32 %1, -1
-  %cmp = icmp eq i32 %0, %sub
-  br i1 %cmp, label %cond.end, label %cond.false
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %bb}, i64 0, metadata !1066), !dbg !1487
+  %index = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11, !dbg !1488
+  %0 = load i32* %index, align 4, !dbg !1488, !tbaa !1211
+  %1 = load i32* @n_basic_blocks, align 4, !dbg !1488, !tbaa !1211
+  %sub = add nsw i32 %1, -1, !dbg !1488
+  %cmp = icmp eq i32 %0, %sub, !dbg !1488
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !1488
 
 cond.false:                                       ; preds = %entry
-  %add = add nsw i32 %0, 1
-  %idxprom = sext i32 %add to i64
-  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
-  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4
-  %bb2 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb2, i64 0, i64 %idxprom
-  %3 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
-  br label %cond.end
+  %add = add nsw i32 %0, 1, !dbg !1488
+  %idxprom = sext i32 %add to i64, !dbg !1488
+  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !1488, !tbaa !1204
+  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4, !dbg !1488
+  %bb2 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !1488
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb2, i64 0, i64 %idxprom, !dbg !1488
+  %3 = load %struct.basic_block_def** %arrayidx, align 8, !dbg !1488, !tbaa !1204
+  br label %cond.end, !dbg !1488
 
 cond.end:                                         ; preds = %entry, %cond.false
-  %cond = phi %struct.basic_block_def* [ %3, %cond.false ], [ null, %entry ]
-  tail call fastcc void @find_bb_boundaries(%struct.basic_block_def* %bb) #6
-  %tobool = icmp eq %struct.basic_block_def* %cond, null
-  %index5 = getelementptr inbounds %struct.basic_block_def* %cond, i64 0, i32 11
-  %cond8.in = select i1 %tobool, i32* @n_basic_blocks, i32* %index5
-  %cond8 = load i32* %cond8.in, align 4
-  %sub9 = add nsw i32 %cond8, -1
-  tail call fastcc void @make_edges(%struct.rtx_def* null, i32 %0, i32 %sub9, i32 1) #6
-  %cmp1050 = icmp sgt i32 %0, %sub9
-  br i1 %cmp1050, label %for.end27, label %for.body.lr.ph
+  %cond = phi %struct.basic_block_def* [ %3, %cond.false ], [ null, %entry ], !dbg !1488
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %cond}, i64 0, metadata !1070), !dbg !1488
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !1068), !dbg !1489
+  tail call fastcc void @find_bb_boundaries(%struct.basic_block_def* %bb) #8, !dbg !1490
+  %tobool = icmp eq %struct.basic_block_def* %cond, null, !dbg !1491
+  %index5 = getelementptr inbounds %struct.basic_block_def* %cond, i64 0, i32 11, !dbg !1491
+  %cond8.in = select i1 %tobool, i32* @n_basic_blocks, i32* %index5, !dbg !1491
+  %cond8 = load i32* %cond8.in, align 4, !dbg !1491
+  %sub9 = add nsw i32 %cond8, -1, !dbg !1491
+  tail call void @llvm.dbg.value(metadata !{i32 %sub9}, i64 0, metadata !1069), !dbg !1491
+  tail call fastcc void @make_edges(%struct.rtx_def* null, i32 %0, i32 %sub9, i32 1) #8, !dbg !1492
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !1067), !dbg !1493
+  %cmp1050 = icmp sgt i32 %0, %sub9, !dbg !1493
+  br i1 %cmp1050, label %for.end27, label %for.body.lr.ph, !dbg !1493
 
 for.body.lr.ph:                                   ; preds = %cond.end
   %4 = sext i32 %0 to i64
-  br label %for.body
+  br label %for.body, !dbg !1493
 
 for.body:                                         ; preds = %if.end, %for.body.lr.ph
   %indvars.iv = phi i64 [ %indvars.iv.next, %if.end ], [ %4, %for.body.lr.ph ]
-  %5 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
-  %data12 = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 4
-  %bb13 = bitcast %union.varray_data_tag* %data12 to [1 x %struct.basic_block_def*]*
-  %arrayidx14 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb13, i64 0, i64 %indvars.iv
-  %6 = load %struct.basic_block_def** %arrayidx14, align 8, !tbaa !0
-  %7 = trunc i64 %indvars.iv to i32
-  %cmp15 = icmp eq i32 %7, %0
-  br i1 %cmp15, label %if.end, label %if.then
+  %5 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !1494, !tbaa !1204
+  %data12 = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 4, !dbg !1494
+  %bb13 = bitcast %union.varray_data_tag* %data12 to [1 x %struct.basic_block_def*]*, !dbg !1494
+  %arrayidx14 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb13, i64 0, i64 %indvars.iv, !dbg !1494
+  %6 = load %struct.basic_block_def** %arrayidx14, align 8, !dbg !1494, !tbaa !1204
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %6}, i64 0, metadata !1074), !dbg !1494
+  %7 = trunc i64 %indvars.iv to i32, !dbg !1495
+  %cmp15 = icmp eq i32 %7, %0, !dbg !1495
+  br i1 %cmp15, label %if.end, label %if.then, !dbg !1495
 
 if.then:                                          ; preds = %for.body
-  %count = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 13
-  store i64 0, i64* %count, align 8, !tbaa !4
-  %frequency = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 14
-  store i32 0, i32* %frequency, align 4, !tbaa !3
-  %pred = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 4
-  %e.047 = load %struct.edge_def** %pred, align 8
-  %tobool1748 = icmp eq %struct.edge_def* %e.047, null
-  br i1 %tobool1748, label %if.end, label %for.body18
+  %count = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 13, !dbg !1496
+  store i64 0, i64* %count, align 8, !dbg !1496, !tbaa !1338
+  %frequency = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 14, !dbg !1498
+  store i32 0, i32* %frequency, align 4, !dbg !1498, !tbaa !1211
+  %pred = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 4, !dbg !1499
+  %e.047 = load %struct.edge_def** %pred, align 8, !dbg !1499
+  %tobool1748 = icmp eq %struct.edge_def* %e.047, null, !dbg !1499
+  br i1 %tobool1748, label %if.end, label %for.body18, !dbg !1499
 
 for.body18:                                       ; preds = %if.then, %for.body18
-  %8 = phi i32 [ %add25, %for.body18 ], [ 0, %if.then ]
-  %9 = phi i64 [ %add21, %for.body18 ], [ 0, %if.then ]
+  %8 = phi i32 [ %add25, %for.body18 ], [ 0, %if.then ], !dbg !1501
+  %9 = phi i64 [ %add21, %for.body18 ], [ 0, %if.then ], !dbg !1501
   %e.049 = phi %struct.edge_def* [ %e.0, %for.body18 ], [ %e.047, %if.then ]
-  %count19 = getelementptr inbounds %struct.edge_def* %e.049, i64 0, i32 8
-  %10 = load i64* %count19, align 8, !tbaa !4
-  %add21 = add nsw i64 %9, %10
-  store i64 %add21, i64* %count, align 8, !tbaa !4
-  %src = getelementptr inbounds %struct.edge_def* %e.049, i64 0, i32 2
-  %11 = load %struct.basic_block_def** %src, align 8, !tbaa !0
-  %frequency22 = getelementptr inbounds %struct.basic_block_def* %11, i64 0, i32 14
-  %12 = load i32* %frequency22, align 4, !tbaa !3
-  %probability = getelementptr inbounds %struct.edge_def* %e.049, i64 0, i32 7
-  %13 = load i32* %probability, align 4, !tbaa !3
-  %mul = mul nsw i32 %13, %12
-  %add23 = add nsw i32 %mul, 5000
-  %div = sdiv i32 %add23, 10000
-  %add25 = add nsw i32 %8, %div
-  store i32 %add25, i32* %frequency, align 4, !tbaa !3
-  %pred_next = getelementptr inbounds %struct.edge_def* %e.049, i64 0, i32 0
-  %e.0 = load %struct.edge_def** %pred_next, align 8
-  %tobool17 = icmp eq %struct.edge_def* %e.0, null
-  br i1 %tobool17, label %if.end, label %for.body18
+  %count19 = getelementptr inbounds %struct.edge_def* %e.049, i64 0, i32 8, !dbg !1501
+  %10 = load i64* %count19, align 8, !dbg !1501, !tbaa !1338
+  %add21 = add nsw i64 %9, %10, !dbg !1501
+  store i64 %add21, i64* %count, align 8, !dbg !1501, !tbaa !1338
+  %src = getelementptr inbounds %struct.edge_def* %e.049, i64 0, i32 2, !dbg !1503
+  %11 = load %struct.basic_block_def** %src, align 8, !dbg !1503, !tbaa !1204
+  %frequency22 = getelementptr inbounds %struct.basic_block_def* %11, i64 0, i32 14, !dbg !1503
+  %12 = load i32* %frequency22, align 4, !dbg !1503, !tbaa !1211
+  %probability = getelementptr inbounds %struct.edge_def* %e.049, i64 0, i32 7, !dbg !1503
+  %13 = load i32* %probability, align 4, !dbg !1503, !tbaa !1211
+  %mul = mul nsw i32 %13, %12, !dbg !1503
+  %add23 = add nsw i32 %mul, 5000, !dbg !1503
+  %div = sdiv i32 %add23, 10000, !dbg !1503
+  %add25 = add nsw i32 %8, %div, !dbg !1503
+  store i32 %add25, i32* %frequency, align 4, !dbg !1503, !tbaa !1211
+  %pred_next = getelementptr inbounds %struct.edge_def* %e.049, i64 0, i32 0, !dbg !1499
+  %e.0 = load %struct.edge_def** %pred_next, align 8, !dbg !1499
+  %tobool17 = icmp eq %struct.edge_def* %e.0, null, !dbg !1499
+  br i1 %tobool17, label %if.end, label %for.body18, !dbg !1499
 
 if.end:                                           ; preds = %if.then, %for.body18, %for.body
-  tail call fastcc void @compute_outgoing_frequencies(%struct.basic_block_def* %6) #6
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %cmp10 = icmp slt i32 %7, %sub9
-  br i1 %cmp10, label %for.body, label %for.end27
+  tail call fastcc void @compute_outgoing_frequencies(%struct.basic_block_def* %6) #8, !dbg !1504
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1493
+  %cmp10 = icmp slt i32 %7, %sub9, !dbg !1493
+  br i1 %cmp10, label %for.body, label %for.end27, !dbg !1493
 
 for.end27:                                        ; preds = %if.end, %cond.end
-  ret void
+  ret void, !dbg !1505
 }

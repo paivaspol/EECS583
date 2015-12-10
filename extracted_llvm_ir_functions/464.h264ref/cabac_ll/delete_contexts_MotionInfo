@@ -1,13 +1,14 @@
 define void @delete_contexts_MotionInfo(%struct.MotionInfoContexts* %enco_ctx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.MotionInfoContexts* %enco_ctx, i64 0, metadata !212, metadata !1011), !dbg !1056
-  %1 = icmp eq %struct.MotionInfoContexts* %enco_ctx, null, !dbg !1057
-  br i1 %1, label %4, label %2, !dbg !1059
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.MotionInfoContexts* %enco_ctx}, i64 0, metadata !208), !dbg !1008
+  %cmp = icmp eq %struct.MotionInfoContexts* %enco_ctx, null, !dbg !1009
+  br i1 %cmp, label %return, label %if.end, !dbg !1009
 
-; <label>:2                                       ; preds = %0
-  %3 = bitcast %struct.MotionInfoContexts* %enco_ctx to i8*, !dbg !1060
-  tail call void @free(i8* %3) #7, !dbg !1061
-  br label %4, !dbg !1062
+if.end:                                           ; preds = %entry
+  %0 = bitcast %struct.MotionInfoContexts* %enco_ctx to i8*, !dbg !1010
+  tail call void @free(i8* %0) #6, !dbg !1010
+  br label %return, !dbg !1011
 
-; <label>:4                                       ; preds = %0, %2
-  ret void, !dbg !1063
+return:                                           ; preds = %entry, %if.end
+  ret void, !dbg !1011
 }

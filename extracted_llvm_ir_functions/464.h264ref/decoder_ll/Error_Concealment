@@ -1,58 +1,59 @@
-define void @Error_Concealment(i16** nocapture readonly %inY, i8** nocapture readonly %s_map, i16*** nocapture readonly %refY) #0 {
-  tail call void @llvm.dbg.value(metadata i16** %inY, i64 0, metadata !214, metadata !762), !dbg !1359
-  tail call void @llvm.dbg.value(metadata i8** %s_map, i64 0, metadata !215, metadata !762), !dbg !1360
-  tail call void @llvm.dbg.value(metadata i16*** %refY, i64 0, metadata !216, metadata !762), !dbg !1361
-  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1362, !tbaa !769
-  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 15, !dbg !1363
-  %3 = load i32* %2, align 4, !dbg !1363, !tbaa !1038
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !219, metadata !762), !dbg !1364
-  %4 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 13, !dbg !1365
-  %5 = load i32* %4, align 4, !dbg !1365, !tbaa !1034
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !220, metadata !762), !dbg !1366
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !217, metadata !762), !dbg !1367
-  %6 = icmp sgt i32 %3, 15, !dbg !1368
-  br i1 %6, label %.preheader.lr.ph, label %._crit_edge3, !dbg !1371
+define void @Error_Concealment(i16** nocapture %inY, i8** nocapture %s_map, i16*** nocapture %refY) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16** %inY}, i64 0, metadata !218), !dbg !1006
+  tail call void @llvm.dbg.value(metadata !{i8** %s_map}, i64 0, metadata !219), !dbg !1006
+  tail call void @llvm.dbg.value(metadata !{i16*** %refY}, i64 0, metadata !220), !dbg !1006
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1007, !tbaa !758
+  %height = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 15, !dbg !1007
+  %1 = load i32* %height, align 4, !dbg !1007, !tbaa !761
+  %div = sdiv i32 %1, 16, !dbg !1007
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !223), !dbg !1007
+  %width = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 13, !dbg !1008
+  %2 = load i32* %width, align 4, !dbg !1008, !tbaa !761
+  %div1 = sdiv i32 %2, 16, !dbg !1008
+  tail call void @llvm.dbg.value(metadata !{i32 %div1}, i64 0, metadata !224), !dbg !1008
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !221), !dbg !1009
+  %cmp19 = icmp sgt i32 %1, 15, !dbg !1009
+  br i1 %cmp19, label %for.cond2.preheader.lr.ph, label %for.end9, !dbg !1009
 
-.preheader.lr.ph:                                 ; preds = %0
-  %7 = sdiv i32 %5, 16, !dbg !1372
-  %8 = sdiv i32 %3, 16, !dbg !1373
-  %9 = icmp sgt i32 %5, 15, !dbg !1374
-  %10 = sext i32 %7 to i64, !dbg !1371
-  %11 = sext i32 %8 to i64, !dbg !1371
-  br label %.preheader, !dbg !1371
+for.cond2.preheader.lr.ph:                        ; preds = %entry
+  %cmp317 = icmp sgt i32 %2, 15, !dbg !1011
+  br label %for.cond2.preheader, !dbg !1009
 
-.preheader:                                       ; preds = %.preheader.lr.ph, %._crit_edge
-  %indvars.iv4 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next5, %._crit_edge ]
-  br i1 %9, label %.lr.ph, label %._crit_edge, !dbg !1377
+for.cond2.preheader:                              ; preds = %for.cond2.preheader.lr.ph, %for.inc7
+  %indvars.iv21 = phi i64 [ 0, %for.cond2.preheader.lr.ph ], [ %indvars.iv.next22, %for.inc7 ]
+  br i1 %cmp317, label %for.body4.lr.ph, label %for.inc7, !dbg !1011
 
-.lr.ph:                                           ; preds = %.preheader
-  %12 = getelementptr inbounds i8** %s_map, i64 %indvars.iv4, !dbg !1378
-  br label %13, !dbg !1377
+for.body4.lr.ph:                                  ; preds = %for.cond2.preheader
+  %arrayidx = getelementptr inbounds i8** %s_map, i64 %indvars.iv21, !dbg !1013
+  br label %for.body4, !dbg !1011
 
-; <label>:13                                      ; preds = %.lr.ph, %21
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %21 ]
-  %14 = load i8** %12, align 8, !dbg !1378, !tbaa !769
-  %15 = getelementptr inbounds i8* %14, i64 %indvars.iv, !dbg !1378
-  %16 = load i8* %15, align 1, !dbg !1378, !tbaa !1346
-  %17 = icmp eq i8 %16, 0, !dbg !1378
-  br i1 %17, label %21, label %18, !dbg !1381
+for.body4:                                        ; preds = %for.inc, %for.body4.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body4.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %3 = load i8** %arrayidx, align 8, !dbg !1013, !tbaa !758
+  %arrayidx6 = getelementptr inbounds i8* %3, i64 %indvars.iv, !dbg !1013
+  %4 = load i8* %arrayidx6, align 1, !dbg !1013, !tbaa !759
+  %tobool = icmp eq i8 %4, 0, !dbg !1013
+  br i1 %tobool, label %for.inc, label %if.then, !dbg !1013
 
-; <label>:18                                      ; preds = %13
-  %19 = trunc i64 %indvars.iv to i32, !dbg !1382
-  %20 = trunc i64 %indvars.iv4 to i32, !dbg !1382
-  tail call void @Conceal_Error(i16** %inY, i32 %20, i32 %19, i16*** %refY, i8** %s_map) #7, !dbg !1382
-  br label %21, !dbg !1382
+if.then:                                          ; preds = %for.body4
+  %5 = trunc i64 %indvars.iv to i32, !dbg !1013
+  %6 = trunc i64 %indvars.iv21 to i32, !dbg !1013
+  tail call void @Conceal_Error(i16** %inY, i32 %6, i32 %5, i16*** %refY, i8** %s_map) #6, !dbg !1013
+  br label %for.inc, !dbg !1013
 
-; <label>:21                                      ; preds = %13, %18
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1377
-  %22 = icmp slt i64 %indvars.iv.next, %10, !dbg !1374
-  br i1 %22, label %13, label %._crit_edge, !dbg !1377
+for.inc:                                          ; preds = %for.body4, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1011
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !1011
+  %cmp3 = icmp slt i32 %7, %div1, !dbg !1011
+  br i1 %cmp3, label %for.body4, label %for.inc7, !dbg !1011
 
-._crit_edge:                                      ; preds = %21, %.preheader
-  %indvars.iv.next5 = add nuw nsw i64 %indvars.iv4, 1, !dbg !1371
-  %23 = icmp slt i64 %indvars.iv.next5, %11, !dbg !1368
-  br i1 %23, label %.preheader, label %._crit_edge3, !dbg !1371
+for.inc7:                                         ; preds = %for.inc, %for.cond2.preheader
+  %indvars.iv.next22 = add i64 %indvars.iv21, 1, !dbg !1009
+  %8 = trunc i64 %indvars.iv.next22 to i32, !dbg !1009
+  %cmp = icmp slt i32 %8, %div, !dbg !1009
+  br i1 %cmp, label %for.cond2.preheader, label %for.end9, !dbg !1009
 
-._crit_edge3:                                     ; preds = %._crit_edge, %0
-  ret void, !dbg !1383
+for.end9:                                         ; preds = %for.inc7, %entry
+  ret void, !dbg !1015
 }

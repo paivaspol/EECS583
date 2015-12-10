@@ -1,140 +1,141 @@
-define void @_ZN6soplex5SPxLP14removeRowRangeEiiPi(%"class.soplex::SPxLP"* %this, i32 %start, i32 %end, i32* %perm) unnamed_addr #0 align 2 {
+define void @_ZN6soplex5SPxLP14removeRowRangeEiiPi(%"class.soplex::SPxLP"* %this, i32 %start, i32 %end, i32* %perm) unnamed_addr #2 align 2 {
+entry:
   %p = alloca %"class.soplex::DataArray.0", align 8
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxLP"* %this, i64 0, metadata !4186, metadata !6064), !dbg !8105
-  tail call void @llvm.dbg.value(metadata i32 %start, i64 0, metadata !4187, metadata !6064), !dbg !8106
-  tail call void @llvm.dbg.value(metadata i32 %end, i64 0, metadata !4188, metadata !6064), !dbg !8107
-  tail call void @llvm.dbg.value(metadata i32* %perm, i64 0, metadata !4189, metadata !6064), !dbg !8108
-  %1 = icmp eq i32* %perm, null, !dbg !8109
-  br i1 %1, label %4, label %.preheader3, !dbg !8110
+  call void @llvm.dbg.value(metadata !{%"class.soplex::SPxLP"* %this}, i64 0, metadata !5356), !dbg !8163
+  call void @llvm.dbg.value(metadata !{i32 %start}, i64 0, metadata !5357), !dbg !8163
+  call void @llvm.dbg.value(metadata !{i32 %end}, i64 0, metadata !5358), !dbg !8163
+  call void @llvm.dbg.value(metadata !{i32* %perm}, i64 0, metadata !5359), !dbg !8163
+  %cmp = icmp eq i32* %perm, null, !dbg !8164
+  br i1 %cmp, label %if.then, label %for.cond.preheader, !dbg !8164
 
-.preheader3:                                      ; preds = %0
-  %2 = icmp sgt i32 %start, 0, !dbg !8111
-  br i1 %2, label %.lr.ph10, label %.preheader2, !dbg !8114
+for.cond.preheader:                               ; preds = %entry
+  %cmp1162 = icmp sgt i32 %start, 0, !dbg !8165
+  br i1 %cmp1162, label %for.body, label %for.cond12.preheader, !dbg !8165
 
-.lr.ph10:                                         ; preds = %.preheader3
-  %3 = add i32 %start, -1, !dbg !8114
-  br label %30, !dbg !8114
+if.then:                                          ; preds = %entry
+  %sub = sub i32 %end, %start, !dbg !8167
+  %add = add nsw i32 %sub, 1, !dbg !8167
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !5360), !dbg !8167
+  call void @llvm.dbg.declare(metadata !{%"class.soplex::DataArray.0"* %p}, metadata !5362), !dbg !8168
+  call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.0"* %p}, i64 0, metadata !8169), !dbg !8170
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !8171), !dbg !8170
+  call void @llvm.dbg.value(metadata !5012, i64 0, metadata !8172), !dbg !8170
+  call void @llvm.dbg.value(metadata !6952, i64 0, metadata !8173), !dbg !8170
+  call void @_ZN6soplex9DataArrayIiEC2Eiid(%"class.soplex::DataArray.0"* %p, i32 %add, i32 0, double 1.200000e+00) #12, !dbg !8174
+  call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !5360), !dbg !8175
+  %cmp256 = icmp sgt i32 %sub, -1, !dbg !8175
+  %data.i = getelementptr inbounds %"class.soplex::DataArray.0"* %p, i64 0, i32 2, !dbg !8176
+  %0 = load i32** %data.i, align 8, !dbg !8176, !tbaa !6336
+  br i1 %cmp256, label %while.body.lr.ph, label %while.end, !dbg !8175
 
-; <label>:4                                       ; preds = %0
-  %5 = sub i32 %end, %start, !dbg !8115
-  %6 = add nsw i32 %5, 1, !dbg !8116
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !4190, metadata !6064), !dbg !8117
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !4193, metadata !6064), !dbg !8118
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !5002, metadata !6064), !dbg !8119
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !5004, metadata !6064), !dbg !8121
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !5005, metadata !6064), !dbg !8122
-  tail call void @llvm.dbg.value(metadata double 1.200000e+00, i64 0, metadata !5006, metadata !6064), !dbg !8123
-  call void @_ZN6soplex9DataArrayIiEC2Eiid(%"class.soplex::DataArray.0"* %p, i32 %6, i32 0, double 1.200000e+00) #11, !dbg !8124
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !4190, metadata !6064), !dbg !8117
-  %7 = icmp sgt i32 %5, -1, !dbg !8125
-  %8 = getelementptr inbounds %"class.soplex::DataArray.0"* %p, i64 0, i32 2, !dbg !8126
-  %9 = load i32** %8, align 8, !dbg !8126, !tbaa !6679
-  br i1 %7, label %.lr.ph, label %._crit_edge, !dbg !8128
+while.body.lr.ph:                                 ; preds = %if.then
+  %1 = sext i32 %sub to i64
+  %2 = zext i32 %start to i64, !dbg !8175
+  br label %while.body, !dbg !8175
 
-.lr.ph:                                           ; preds = %4
-  %10 = sext i32 %5 to i64
-  %11 = zext i32 %start to i64, !dbg !8128
-  br label %12, !dbg !8128
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %indvars.iv = phi i64 [ %1, %while.body.lr.ph ], [ %indvars.iv.next, %while.body ]
+  %3 = add nsw i64 %indvars.iv, %2, !dbg !8177
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.0"* %p}, i64 0, metadata !8178), !dbg !8179
+  tail call void @llvm.dbg.value(metadata !6407, i64 0, metadata !8180), !dbg !8179
+  %arrayidx.i = getelementptr inbounds i32* %0, i64 %indvars.iv, !dbg !8176
+  %4 = trunc i64 %3 to i32, !dbg !8177
+  store i32 %4, i32* %arrayidx.i, align 4, !dbg !8177, !tbaa !6627
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !8175
+  call void @llvm.dbg.value(metadata !6407, i64 0, metadata !5360), !dbg !8175
+  %5 = trunc i64 %indvars.iv to i32, !dbg !8175
+  %cmp2 = icmp sgt i32 %5, 0, !dbg !8175
+  br i1 %cmp2, label %while.body, label %while.end, !dbg !8175
 
-; <label>:12                                      ; preds = %.lr.ph, %12
-  %indvars.iv = phi i64 [ %10, %.lr.ph ], [ %indvars.iv.next, %12 ]
-  %13 = add i64 %indvars.iv, %11, !dbg !8129
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !4193, metadata !6064), !dbg !8118
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !5244, metadata !6064), !dbg !8130
-  %14 = getelementptr inbounds i32* %9, i64 %indvars.iv, !dbg !8126
-  %15 = trunc i64 %13 to i32, !dbg !8131
-  store i32 %15, i32* %14, align 4, !dbg !8131, !tbaa !6326
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !8128
-  %16 = icmp sgt i64 %indvars.iv, 0, !dbg !8125
-  br i1 %16, label %12, label %._crit_edge, !dbg !8128
+while.end:                                        ; preds = %if.then, %while.body
+  %6 = bitcast %"class.soplex::SPxLP"* %this to void (%"class.soplex::SPxLP"*, i32*, i32, i32*)***, !dbg !8181
+  %vtable = load void (%"class.soplex::SPxLP"*, i32*, i32, i32*)*** %6, align 8, !dbg !8181, !tbaa !6768
+  %vfn = getelementptr inbounds void (%"class.soplex::SPxLP"*, i32*, i32, i32*)** %vtable, i64 12, !dbg !8181
+  %7 = load void (%"class.soplex::SPxLP"*, i32*, i32, i32*)** %vfn, align 8, !dbg !8181
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.0"* %p}, i64 0, metadata !8182), !dbg !8183
+  invoke void %7(%"class.soplex::SPxLP"* %this, i32* %0, i32 %add, i32* null) #12
+          to label %invoke.cont8 unwind label %eh.resume, !dbg !8181
 
-._crit_edge:                                      ; preds = %12, %4
-  %17 = bitcast i32* %9 to i8*
-  %18 = bitcast %"class.soplex::SPxLP"* %this to void (%"class.soplex::SPxLP"*, i32*, i32, i32*)***, !dbg !8132
-  %19 = load void (%"class.soplex::SPxLP"*, i32*, i32, i32*)*** %18, align 8, !dbg !8132, !tbaa !6478
-  %20 = getelementptr inbounds void (%"class.soplex::SPxLP"*, i32*, i32, i32*)** %19, i64 12, !dbg !8132
-  %21 = load void (%"class.soplex::SPxLP"*, i32*, i32, i32*)** %20, align 8, !dbg !8132
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !4193, metadata !6064), !dbg !8118
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !5241, metadata !6064), !dbg !8133
-  invoke void %21(%"class.soplex::SPxLP"* %this, i32* %9, i32 %6, i32* null) #11
-          to label %22 unwind label %48, !dbg !8132
+invoke.cont8:                                     ; preds = %while.end
+  %data.i54 = getelementptr inbounds %"class.soplex::DataArray.0"* %p, i64 0, i32 2, !dbg !8184
+  call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.0"* %p}, i64 0, metadata !8185) #1, !dbg !8187
+  call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.0"* %p}, i64 0, metadata !8188) #1, !dbg !8190
+  call void @llvm.dbg.value(metadata !{i32** %data.i54}, i64 0, metadata !8191) #1, !dbg !8193
+  %8 = bitcast i32* %0 to i8*, !dbg !8194
+  call void @free(i8* %8) #14, !dbg !8194
+  store i32* null, i32** %data.i54, align 8, !dbg !8195, !tbaa !6336
+  br label %return
 
-; <label>:22                                      ; preds = %._crit_edge
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !4193, metadata !6064), !dbg !8118
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !5230, metadata !6064) #4, !dbg !8135
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !5233, metadata !6064) #4, !dbg !8137
-  tail call void @llvm.dbg.value(metadata i32** %8, i64 0, metadata !5238, metadata !6064) #4, !dbg !8139
-  tail call void @free(i8* %17) #13, !dbg !8141
-  store i32* null, i32** %8, align 8, !dbg !8142, !tbaa !6835
-  br label %47
+for.cond12.preheader:                             ; preds = %for.body, %for.cond.preheader
+  %i10.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %start, %for.body ]
+  %cmp1360 = icmp sgt i32 %i10.0.lcssa, %end, !dbg !8196
+  br i1 %cmp1360, label %for.cond20.preheader, label %for.body14.lr.ph, !dbg !8196
 
-.preheader2:                                      ; preds = %30, %.preheader3
-  %i1.0.lcssa = phi i32 [ 0, %.preheader3 ], [ %start, %30 ]
-  %23 = icmp sgt i32 %i1.0.lcssa, %end, !dbg !8143
-  br i1 %23, label %.preheader, label %.lr.ph8, !dbg !8146
+for.body14.lr.ph:                                 ; preds = %for.cond12.preheader
+  %9 = sext i32 %i10.0.lcssa to i64
+  %scevgep = getelementptr i32* %perm, i64 %9
+  %scevgep70 = bitcast i32* %scevgep to i8*
+  %10 = sub i32 %end, %i10.0.lcssa, !dbg !8196
+  %11 = zext i32 %10 to i64
+  %12 = shl nuw nsw i64 %11, 2, !dbg !8196
+  %13 = add i64 %12, 4, !dbg !8196
+  call void @llvm.memset.p0i8.i64(i8* %scevgep70, i8 -1, i64 %13, i32 4, i1 false), !dbg !8198
+  %14 = add i32 %end, 1, !dbg !8196
+  br label %for.cond20.preheader, !dbg !8196
 
-.lr.ph8:                                          ; preds = %.preheader2
-  %24 = sext i32 %i1.0.lcssa to i64
-  %25 = sub i32 %end, %i1.0.lcssa, !dbg !8146
-  %26 = zext i32 %25 to i64
-  %scevgep = getelementptr i32* %perm, i64 %24
-  %scevgep17 = bitcast i32* %scevgep to i8*
-  %27 = shl nuw nsw i64 %26, 2, !dbg !8146
-  %28 = add nuw nsw i64 %27, 4, !dbg !8146
-  call void @llvm.memset.p0i8.i64(i8* %scevgep17, i8 -1, i64 %28, i32 4, i1 false), !dbg !8147
-  %29 = add i32 %end, 1, !dbg !8146
-  br label %.preheader, !dbg !8146
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv72 = phi i64 [ %indvars.iv.next73, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds i32* %perm, i64 %indvars.iv72, !dbg !8199
+  %15 = trunc i64 %indvars.iv72 to i32, !dbg !8199
+  store i32 %15, i32* %arrayidx, align 4, !dbg !8199, !tbaa !6627
+  %indvars.iv.next73 = add i64 %indvars.iv72, 1, !dbg !8165
+  call void @llvm.dbg.value(metadata !{i32 %start}, i64 0, metadata !5363), !dbg !8165
+  %lftr.wideiv = trunc i64 %indvars.iv.next73 to i32, !dbg !8165
+  %exitcond = icmp eq i32 %lftr.wideiv, %start, !dbg !8165
+  br i1 %exitcond, label %for.cond12.preheader, label %for.body, !dbg !8165
 
-; <label>:30                                      ; preds = %30, %.lr.ph10
-  %indvars.iv19 = phi i64 [ 0, %.lr.ph10 ], [ %indvars.iv.next20, %30 ]
-  %31 = getelementptr inbounds i32* %perm, i64 %indvars.iv19, !dbg !8148
-  %32 = trunc i64 %indvars.iv19 to i32, !dbg !8149
-  store i32 %32, i32* %31, align 4, !dbg !8149, !tbaa !6326
-  %indvars.iv.next20 = add nuw nsw i64 %indvars.iv19, 1, !dbg !8114
-  %exitcond = icmp eq i32 %32, %3, !dbg !8114
-  br i1 %exitcond, label %.preheader2, label %30, !dbg !8114
+for.cond20.preheader:                             ; preds = %for.body14.lr.ph, %for.cond12.preheader
+  %i10.1.lcssa = phi i32 [ %14, %for.body14.lr.ph ], [ %i10.0.lcssa, %for.cond12.preheader ]
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxLP"* %this}, i64 0, metadata !8200), !dbg !8203
+  %thenum.i.i.i.i = getelementptr inbounds %"class.soplex::SPxLP"* %this, i64 0, i32 1, i32 0, i32 1, i32 4, !dbg !8204
+  %16 = load i32* %thenum.i.i.i.i, align 4, !dbg !8204, !tbaa !6627
+  %cmp2258 = icmp slt i32 %i10.1.lcssa, %16, !dbg !8201
+  br i1 %cmp2258, label %for.body23.lr.ph, label %for.end28, !dbg !8201
 
-.preheader:                                       ; preds = %.lr.ph8, %.preheader2
-  %i1.1.lcssa = phi i32 [ %29, %.lr.ph8 ], [ %i1.0.lcssa, %.preheader2 ]
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxLP"* %this, i64 0, metadata !4500, metadata !6064), !dbg !8150
-  %33 = getelementptr inbounds %"class.soplex::SPxLP"* %this, i64 0, i32 1, i32 0, i32 1, i32 4, !dbg !8154
-  %34 = load i32* %33, align 4, !dbg !8154, !tbaa !6324
-  %35 = icmp slt i32 %i1.1.lcssa, %34, !dbg !8158
-  br i1 %35, label %.lr.ph5, label %._crit_edge6, !dbg !8159
+for.body23.lr.ph:                                 ; preds = %for.cond20.preheader
+  %17 = sext i32 %i10.1.lcssa to i64
+  br label %for.body23, !dbg !8201
 
-.lr.ph5:                                          ; preds = %.preheader
-  %36 = sext i32 %i1.1.lcssa to i64
-  br label %37, !dbg !8159
+for.body23:                                       ; preds = %for.body23.lr.ph, %for.body23
+  %indvars.iv66 = phi i64 [ %17, %for.body23.lr.ph ], [ %indvars.iv.next67, %for.body23 ]
+  %arrayidx25 = getelementptr inbounds i32* %perm, i64 %indvars.iv66, !dbg !8208
+  %18 = trunc i64 %indvars.iv66 to i32, !dbg !8208
+  store i32 %18, i32* %arrayidx25, align 4, !dbg !8208, !tbaa !6627
+  %indvars.iv.next67 = add i64 %indvars.iv66, 1, !dbg !8201
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxLP"* %this}, i64 0, metadata !8200), !dbg !8203
+  %19 = load i32* %thenum.i.i.i.i, align 4, !dbg !8204, !tbaa !6627
+  %20 = trunc i64 %indvars.iv.next67 to i32, !dbg !8201
+  %cmp22 = icmp slt i32 %20, %19, !dbg !8201
+  br i1 %cmp22, label %for.body23, label %for.end28, !dbg !8201
 
-; <label>:37                                      ; preds = %.lr.ph5, %37
-  %indvars.iv13 = phi i64 [ %36, %.lr.ph5 ], [ %indvars.iv.next14, %37 ]
-  %38 = getelementptr inbounds i32* %perm, i64 %indvars.iv13, !dbg !8160
-  %39 = trunc i64 %indvars.iv13 to i32, !dbg !8161
-  store i32 %39, i32* %38, align 4, !dbg !8161, !tbaa !6326
-  %indvars.iv.next14 = add nsw i64 %indvars.iv13, 1, !dbg !8159
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxLP"* %this, i64 0, metadata !4500, metadata !6064), !dbg !8150
-  %40 = load i32* %33, align 4, !dbg !8154, !tbaa !6324
-  %41 = sext i32 %40 to i64, !dbg !8158
-  %42 = icmp slt i64 %indvars.iv.next14, %41, !dbg !8158
-  br i1 %42, label %37, label %._crit_edge6, !dbg !8159
+for.end28:                                        ; preds = %for.body23, %for.cond20.preheader
+  %21 = bitcast %"class.soplex::SPxLP"* %this to void (%"class.soplex::SPxLP"*, i32*)***, !dbg !8209
+  %vtable29 = load void (%"class.soplex::SPxLP"*, i32*)*** %21, align 8, !dbg !8209, !tbaa !6768
+  %vfn30 = getelementptr inbounds void (%"class.soplex::SPxLP"*, i32*)** %vtable29, i64 10, !dbg !8209
+  %22 = load void (%"class.soplex::SPxLP"*, i32*)** %vfn30, align 8, !dbg !8209
+  call void %22(%"class.soplex::SPxLP"* %this, i32* %perm) #12, !dbg !8209
+  br label %return, !dbg !8209
 
-._crit_edge6:                                     ; preds = %37, %.preheader
-  %43 = bitcast %"class.soplex::SPxLP"* %this to void (%"class.soplex::SPxLP"*, i32*)***, !dbg !8162
-  %44 = load void (%"class.soplex::SPxLP"*, i32*)*** %43, align 8, !dbg !8162, !tbaa !6478
-  %45 = getelementptr inbounds void (%"class.soplex::SPxLP"*, i32*)** %44, i64 10, !dbg !8162
-  %46 = load void (%"class.soplex::SPxLP"*, i32*)** %45, align 8, !dbg !8162
-  tail call void %46(%"class.soplex::SPxLP"* %this, i32* %perm) #11, !dbg !8162
-  br label %47, !dbg !8163
+return:                                           ; preds = %for.end28, %invoke.cont8
+  ret void, !dbg !8209
 
-; <label>:47                                      ; preds = %._crit_edge6, %22
-  ret void, !dbg !8163
-
-; <label>:48                                      ; preds = %._crit_edge
-  %49 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !8164
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !5230, metadata !6064) #4, !dbg !8165
-  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray.0"* %p, i64 0, metadata !5233, metadata !6064) #4, !dbg !8167
-  tail call void @llvm.dbg.value(metadata i32** %8, i64 0, metadata !5238, metadata !6064) #4, !dbg !8169
-  tail call void @free(i8* %17) #13, !dbg !8171
-  resume { i8*, i32 } %49, !dbg !8172
+eh.resume:                                        ; preds = %while.end
+  %23 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !8177
+  call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.0"* %p}, i64 0, metadata !8210) #1, !dbg !8212
+  call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.0"* %p}, i64 0, metadata !8213) #1, !dbg !8215
+  call void @llvm.dbg.value(metadata !{i32** %data.i54}, i64 0, metadata !8216) #1, !dbg !8218
+  %24 = bitcast i32* %0 to i8*, !dbg !8219
+  call void @free(i8* %24) #14, !dbg !8219
+  resume { i8*, i32 } %23, !dbg !8211
 }

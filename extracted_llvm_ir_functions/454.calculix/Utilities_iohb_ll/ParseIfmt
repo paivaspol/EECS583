@@ -1,35 +1,36 @@
 define internal fastcc void @ParseIfmt(i8* %format, i32* nocapture %pperline, i32* nocapture %pwidth) #0 {
-  tail call fastcc void @upcase(i8* %format) #9, !dbg !1043
-  %1 = tail call i8* @strchr(i8* %format, i32 40) #8, !dbg !1044
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !523, metadata !563), !dbg !1046
-  %2 = icmp eq i8* %1, null, !dbg !1047
-  br i1 %2, label %14, label %3, !dbg !1048
+entry:
+  tail call fastcc void @upcase(i8* %format) #10, !dbg !757
+  %call2 = tail call i8* @strchr(i8* %format, i32 40) #12, !dbg !758
+  tail call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !550), !dbg !758
+  %cmp = icmp eq i8* %call2, null, !dbg !758
+  br i1 %cmp, label %return, label %if.end, !dbg !758
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i8* @strchr(i8* %format, i32 73) #8, !dbg !1049
-  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !522, metadata !563), !dbg !1051
-  %5 = icmp eq i8* %4, null, !dbg !1052
-  br i1 %5, label %14, label %6, !dbg !1053
+if.end:                                           ; preds = %entry
+  %call3 = tail call i8* @strchr(i8* %format, i32 73) #12, !dbg !759
+  tail call void @llvm.dbg.value(metadata !{i8* %call3}, i64 0, metadata !549), !dbg !759
+  %cmp4 = icmp eq i8* %call3, null, !dbg !759
+  br i1 %cmp4, label %return, label %if.end6, !dbg !759
 
-; <label>:6                                       ; preds = %3
-  %7 = tail call i8* @strchr(i8* %format, i32 41) #8, !dbg !1054
-  tail call void @llvm.dbg.value(metadata i8* %7, i64 0, metadata !524, metadata !563), !dbg !1056
-  %8 = icmp eq i8* %7, null, !dbg !1057
-  br i1 %8, label %14, label %9, !dbg !1058
+if.end6:                                          ; preds = %if.end
+  %call7 = tail call i8* @strchr(i8* %format, i32 41) #12, !dbg !760
+  tail call void @llvm.dbg.value(metadata !{i8* %call7}, i64 0, metadata !551), !dbg !760
+  %cmp8 = icmp eq i8* %call7, null, !dbg !760
+  br i1 %cmp8, label %return, label %if.end10, !dbg !760
 
-; <label>:9                                       ; preds = %6
-  store i8 0, i8* %4, align 1, !dbg !1059, !tbaa !615
-  %10 = getelementptr inbounds i8* %1, i64 1, !dbg !1060
-  %11 = tail call i32 @atoi(i8* %10) #8, !dbg !1061
-  store i32 %11, i32* %pperline, align 4, !dbg !1062, !tbaa !617
-  store i8 73, i8* %4, align 1, !dbg !1063, !tbaa !615
-  store i8 0, i8* %7, align 1, !dbg !1064, !tbaa !615
-  %12 = getelementptr inbounds i8* %4, i64 1, !dbg !1065
-  %13 = tail call i32 @atoi(i8* %12) #8, !dbg !1066
-  store i32 %13, i32* %pwidth, align 4, !dbg !1067, !tbaa !617
-  store i8 41, i8* %7, align 1, !dbg !1068, !tbaa !615
-  br label %14, !dbg !1069
+if.end10:                                         ; preds = %if.end6
+  store i8 0, i8* %call3, align 1, !dbg !761, !tbaa !564
+  %add.ptr = getelementptr inbounds i8* %call2, i64 1, !dbg !762
+  %call11 = tail call i32 @atoi(i8* %add.ptr) #12, !dbg !762
+  store i32 %call11, i32* %pperline, align 4, !dbg !762, !tbaa !572
+  store i8 73, i8* %call3, align 1, !dbg !763, !tbaa !564
+  store i8 0, i8* %call7, align 1, !dbg !764, !tbaa !564
+  %add.ptr12 = getelementptr inbounds i8* %call3, i64 1, !dbg !765
+  %call13 = tail call i32 @atoi(i8* %add.ptr12) #12, !dbg !765
+  store i32 %call13, i32* %pwidth, align 4, !dbg !765, !tbaa !572
+  store i8 41, i8* %call7, align 1, !dbg !766, !tbaa !564
+  br label %return, !dbg !767
 
-; <label>:14                                      ; preds = %6, %3, %0, %9
+return:                                           ; preds = %if.end6, %if.end, %entry, %if.end10
   ret void
 }

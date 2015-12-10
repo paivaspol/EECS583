@@ -1,58 +1,61 @@
 define void @InitSubseqInfo(i32 %currLayer) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %currLayer, i64 0, metadata !222, metadata !931), !dbg !1548
-  store i32 1, i32* @seiHasSubseqInfo, align 4, !dbg !1549, !tbaa !977
-  %1 = sext i32 %currLayer to i64, !dbg !1550
-  %2 = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %1, i32 0, !dbg !1551
-  store i32 %currLayer, i32* %2, align 16, !dbg !1552, !tbaa !1553
-  %3 = load i16* @InitSubseqInfo.id, align 2, !dbg !1555, !tbaa !989
-  %4 = add i16 %3, 1, !dbg !1555
-  store i16 %4, i16* @InitSubseqInfo.id, align 2, !dbg !1555, !tbaa !989
-  %5 = zext i16 %3 to i32, !dbg !1556
-  %6 = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %1, i32 1, !dbg !1557
-  store i32 %5, i32* %6, align 4, !dbg !1558, !tbaa !1559
-  %7 = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %1, i32 2, !dbg !1560
-  store i32 0, i32* %7, align 8, !dbg !1561, !tbaa !1562
-  %8 = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %1, i32 3, !dbg !1563
-  store i32 -1, i32* %8, align 4, !dbg !1564, !tbaa !1565
-  %9 = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %1, i32 4, !dbg !1566
-  store i32 0, i32* %9, align 16, !dbg !1567, !tbaa !1568
-  %10 = tail call i8* @malloc(i64 48) #8, !dbg !1569
-  %11 = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %1, i32 5, !dbg !1570
-  %12 = bitcast %struct.Bitstream** %11 to i8**, !dbg !1571
-  store i8* %10, i8** %12, align 8, !dbg !1571, !tbaa !1572
-  %13 = icmp eq i8* %10, null, !dbg !1573
-  %14 = bitcast i8* %10 to %struct.Bitstream*
-  br i1 %13, label %15, label %16, !dbg !1575
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %currLayer}, i64 0, metadata !218), !dbg !1233
+  store i32 1, i32* @seiHasSubseqInfo, align 4, !dbg !1234, !tbaa !927
+  %idxprom = sext i32 %currLayer to i64, !dbg !1235
+  %subseq_layer_num = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %idxprom, i32 0, !dbg !1235
+  store i32 %currLayer, i32* %subseq_layer_num, align 16, !dbg !1235, !tbaa !937
+  %0 = load i16* @InitSubseqInfo.id, align 2, !dbg !1236, !tbaa !951
+  %inc = add i16 %0, 1, !dbg !1236
+  store i16 %inc, i16* @InitSubseqInfo.id, align 2, !dbg !1236, !tbaa !951
+  %conv = zext i16 %0 to i32, !dbg !1236
+  %subseq_id = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %idxprom, i32 1, !dbg !1236
+  store i32 %conv, i32* %subseq_id, align 4, !dbg !1236, !tbaa !937
+  %last_picture_flag = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %idxprom, i32 2, !dbg !1237
+  store i32 0, i32* %last_picture_flag, align 8, !dbg !1237, !tbaa !937
+  %stored_frame_cnt = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %idxprom, i32 3, !dbg !1238
+  store i32 -1, i32* %stored_frame_cnt, align 4, !dbg !1238, !tbaa !937
+  %payloadSize = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %idxprom, i32 4, !dbg !1239
+  store i32 0, i32* %payloadSize, align 16, !dbg !1239, !tbaa !937
+  %call = tail call noalias i8* @malloc(i64 48) #8, !dbg !1240
+  %1 = bitcast i8* %call to %struct.Bitstream*, !dbg !1240
+  %data = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %idxprom, i32 5, !dbg !1240
+  store %struct.Bitstream* %1, %struct.Bitstream** %data, align 8, !dbg !1240, !tbaa !926
+  %cmp = icmp eq i8* %call, null, !dbg !1241
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1241
 
-; <label>:15                                      ; preds = %0
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([46 x i8]* @.str7, i64 0, i64 0)) #8, !dbg !1576
-  %.pre = load %struct.Bitstream** %11, align 8, !dbg !1577, !tbaa !1572
-  br label %16, !dbg !1576
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([46 x i8]* @.str7, i64 0, i64 0)) #8, !dbg !1241
+  %.pre = load %struct.Bitstream** %data, align 8, !dbg !1242, !tbaa !926
+  br label %if.end, !dbg !1241
 
-; <label>:16                                      ; preds = %15, %0
-  %17 = phi %struct.Bitstream* [ %.pre, %15 ], [ %14, %0 ]
-  %18 = tail call i8* @malloc(i64 65496) #8, !dbg !1578
-  %19 = getelementptr inbounds %struct.Bitstream* %17, i64 0, i32 9, !dbg !1579
-  store i8* %18, i8** %19, align 8, !dbg !1580, !tbaa !1130
-  %20 = icmp eq i8* %18, null, !dbg !1581
-  br i1 %20, label %21, label %22, !dbg !1583
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi %struct.Bitstream* [ %.pre, %if.then ], [ %1, %entry ]
+  %call15 = tail call noalias i8* @malloc(i64 65496) #8, !dbg !1242
+  %streamBuffer = getelementptr inbounds %struct.Bitstream* %2, i64 0, i32 9, !dbg !1242
+  store i8* %call15, i8** %streamBuffer, align 8, !dbg !1242, !tbaa !926
+  %3 = load %struct.Bitstream** %data, align 8, !dbg !1243, !tbaa !926
+  %streamBuffer22 = getelementptr inbounds %struct.Bitstream* %3, i64 0, i32 9, !dbg !1243
+  %4 = load i8** %streamBuffer22, align 8, !dbg !1243, !tbaa !926
+  %cmp23 = icmp eq i8* %4, null, !dbg !1243
+  br i1 %cmp23, label %if.then25, label %if.end26, !dbg !1243
 
-; <label>:21                                      ; preds = %16
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([60 x i8]* @.str8, i64 0, i64 0)) #8, !dbg !1584
-  %.pre1 = load %struct.Bitstream** %11, align 8, !dbg !1585, !tbaa !1572
-  br label %22, !dbg !1584
+if.then25:                                        ; preds = %if.end
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([60 x i8]* @.str8, i64 0, i64 0)) #8, !dbg !1243
+  %.pre53 = load %struct.Bitstream** %data, align 8, !dbg !1244, !tbaa !926
+  br label %if.end26, !dbg !1243
 
-; <label>:22                                      ; preds = %21, %16
-  %23 = phi %struct.Bitstream* [ %.pre1, %21 ], [ %17, %16 ]
-  %24 = getelementptr inbounds %struct.Bitstream* %23, i64 0, i32 1, !dbg !1586
-  store i32 8, i32* %24, align 4, !dbg !1587, !tbaa !1138
-  %25 = getelementptr inbounds %struct.Bitstream* %23, i64 0, i32 0, !dbg !1588
-  store i32 0, i32* %25, align 4, !dbg !1589, !tbaa !1111
-  %26 = getelementptr inbounds %struct.Bitstream* %23, i64 0, i32 2, !dbg !1590
-  store i8 0, i8* %26, align 1, !dbg !1591, !tbaa !1128
-  %27 = getelementptr inbounds %struct.Bitstream* %23, i64 0, i32 9, !dbg !1592
-  %28 = load i8** %27, align 8, !dbg !1592, !tbaa !1130
-  %29 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %28, i1 false), !dbg !1592
-  %30 = tail call i8* @__memset_chk(i8* %28, i32 0, i64 65496, i64 %29) #8, !dbg !1592
-  ret void, !dbg !1593
+if.end26:                                         ; preds = %if.then25, %if.end
+  %5 = phi %struct.Bitstream* [ %.pre53, %if.then25 ], [ %3, %if.end ]
+  %bits_to_go = getelementptr inbounds %struct.Bitstream* %5, i64 0, i32 1, !dbg !1244
+  store i32 8, i32* %bits_to_go, align 4, !dbg !1244, !tbaa !937
+  %byte_pos = getelementptr inbounds %struct.Bitstream* %5, i64 0, i32 0, !dbg !1245
+  store i32 0, i32* %byte_pos, align 4, !dbg !1245, !tbaa !937
+  %byte_buf = getelementptr inbounds %struct.Bitstream* %5, i64 0, i32 2, !dbg !1246
+  store i8 0, i8* %byte_buf, align 1, !dbg !1246, !tbaa !927
+  %6 = load %struct.Bitstream** %data, align 8, !dbg !1247, !tbaa !926
+  %streamBuffer39 = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 9, !dbg !1247
+  %7 = load i8** %streamBuffer39, align 8, !dbg !1247, !tbaa !926
+  tail call void @llvm.memset.p0i8.i64(i8* %7, i8 0, i64 65496, i32 1, i1 false), !dbg !1247
+  ret void, !dbg !1248
 }

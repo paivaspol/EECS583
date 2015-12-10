@@ -1,39 +1,41 @@
 define i32 @Util_DeleteHandle(%struct.cHandledData* nocapture %storage, i32 %handle) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cHandledData* %storage, i64 0, metadata !44, metadata !83), !dbg !204
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !45, metadata !83), !dbg !205
-  %1 = icmp sgt i32 %handle, -1, !dbg !206
-  br i1 %1, label %2, label %20, !dbg !208
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cHandledData* %storage}, i64 0, metadata !44), !dbg !121
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !45), !dbg !121
+  %cmp = icmp sgt i32 %handle, -1, !dbg !122
+  br i1 %cmp, label %land.lhs.true, label %if.end15, !dbg !122
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 1, !dbg !209
-  %4 = load i32* %3, align 4, !dbg !209, !tbaa !109
-  %5 = icmp ugt i32 %4, %handle, !dbg !210
-  br i1 %5, label %6, label %20, !dbg !211
+land.lhs.true:                                    ; preds = %entry
+  %array_size = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 1, !dbg !122
+  %0 = load i32* %array_size, align 4, !dbg !122, !tbaa !91
+  %cmp1 = icmp ugt i32 %0, %handle, !dbg !122
+  br i1 %cmp1, label %if.then, label %if.end15, !dbg !122
 
-; <label>:6                                       ; preds = %2
-  %7 = sext i32 %handle to i64, !dbg !212
-  %8 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 0, !dbg !214
-  %9 = load %struct.cHandleStorage** %8, align 8, !dbg !214, !tbaa !104
-  %10 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 0, !dbg !215
-  store i32 0, i32* %10, align 4, !dbg !216, !tbaa !140
-  %11 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 2, !dbg !217
-  store i8* null, i8** %11, align 8, !dbg !218, !tbaa !144
-  %12 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 1, !dbg !219
-  %13 = load i8** %12, align 8, !dbg !219, !tbaa !154
-  tail call void @free(i8* %13) #7, !dbg !220
-  %14 = load %struct.cHandleStorage** %8, align 8, !dbg !221, !tbaa !104
-  %15 = getelementptr inbounds %struct.cHandleStorage* %14, i64 %7, i32 1, !dbg !222
-  store i8* null, i8** %15, align 8, !dbg !223, !tbaa !154
-  %16 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 2, !dbg !224
-  %17 = load i32* %16, align 4, !dbg !224, !tbaa !112
-  %18 = icmp ugt i32 %17, %handle, !dbg !226
-  br i1 %18, label %19, label %20, !dbg !227
+if.then:                                          ; preds = %land.lhs.true
+  %idxprom = sext i32 %handle to i64, !dbg !123
+  %array = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 0, !dbg !123
+  %1 = load %struct.cHandleStorage** %array, align 8, !dbg !123, !tbaa !81
+  %in_use = getelementptr inbounds %struct.cHandleStorage* %1, i64 %idxprom, i32 0, !dbg !123
+  store i32 0, i32* %in_use, align 4, !dbg !123, !tbaa !91
+  %data = getelementptr inbounds %struct.cHandleStorage* %1, i64 %idxprom, i32 2, !dbg !125
+  store i8* null, i8** %data, align 8, !dbg !125, !tbaa !81
+  %2 = load %struct.cHandleStorage** %array, align 8, !dbg !126, !tbaa !81
+  %name = getelementptr inbounds %struct.cHandleStorage* %2, i64 %idxprom, i32 1, !dbg !126
+  %3 = load i8** %name, align 8, !dbg !126, !tbaa !81
+  tail call void @free(i8* %3) #7, !dbg !126
+  %4 = load %struct.cHandleStorage** %array, align 8, !dbg !127, !tbaa !81
+  %name11 = getelementptr inbounds %struct.cHandleStorage* %4, i64 %idxprom, i32 1, !dbg !127
+  store i8* null, i8** %name11, align 8, !dbg !127, !tbaa !81
+  %first_unused = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 2, !dbg !128
+  %5 = load i32* %first_unused, align 4, !dbg !128, !tbaa !91
+  %cmp12 = icmp ugt i32 %5, %handle, !dbg !128
+  br i1 %cmp12, label %if.then13, label %if.end15, !dbg !128
 
-; <label>:19                                      ; preds = %6
-  store i32 %handle, i32* %16, align 4, !dbg !228, !tbaa !112
-  br label %20, !dbg !230
+if.then13:                                        ; preds = %if.then
+  store i32 %handle, i32* %first_unused, align 4, !dbg !129, !tbaa !91
+  br label %if.end15, !dbg !131
 
-; <label>:20                                      ; preds = %0, %2, %6, %19
-  %return_code.0 = phi i32 [ 0, %19 ], [ 0, %6 ], [ 1, %2 ], [ 1, %0 ]
-  ret i32 %return_code.0, !dbg !231
+if.end15:                                         ; preds = %entry, %land.lhs.true, %if.then, %if.then13
+  %return_code.0 = phi i32 [ 0, %if.then13 ], [ 0, %if.then ], [ 1, %land.lhs.true ], [ 1, %entry ]
+  ret i32 %return_code.0, !dbg !132
 }

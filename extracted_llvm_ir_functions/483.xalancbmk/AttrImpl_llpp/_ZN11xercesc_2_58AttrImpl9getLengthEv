@@ -1,0 +1,31 @@
+define i32 @_ZN11xercesc_2_58AttrImpl9getLengthEv(%"class.xercesc_2_5::AttrImpl"* nocapture %this) unnamed_addr #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::AttrImpl"* %this}, i64 0, metadata !3397), !dbg !3983
+  %flags.i = getelementptr inbounds %"class.xercesc_2_5::AttrImpl"* %this, i64 0, i32 0, i32 2, !dbg !3984
+  %0 = load i16* %flags.i, align 2, !dbg !3984, !tbaa !3718
+  %1 = load i16* @_ZN11xercesc_2_58NodeImpl9HASSTRINGE, align 2, !dbg !3984, !tbaa !3718
+  %and3.i = and i16 %1, %0, !dbg !3984
+  %cmp.i = icmp eq i16 %and3.i, 0, !dbg !3984
+  br i1 %cmp.i, label %if.end, label %return, !dbg !3985
+
+if.end:                                           ; preds = %entry
+  %child = getelementptr inbounds %"class.xercesc_2_5::AttrImpl"* %this, i64 0, i32 2, i32 0, !dbg !3986
+  tail call void @llvm.dbg.value(metadata !3251, i64 0, metadata !3399), !dbg !3987
+  %node.03 = load %"class.xercesc_2_5::ChildNode"** %child, align 8, !dbg !3986
+  %cmp4 = icmp eq %"class.xercesc_2_5::ChildNode"* %node.03, null, !dbg !3988
+  br i1 %cmp4, label %return, label %while.body, !dbg !3988
+
+while.body:                                       ; preds = %if.end, %while.body
+  %node.06 = phi %"class.xercesc_2_5::ChildNode"* [ %node.0, %while.body ], [ %node.03, %if.end ]
+  %length.05 = phi i32 [ %inc, %while.body ], [ 0, %if.end ]
+  %inc = add nsw i32 %length.05, 1, !dbg !3989
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !3399), !dbg !3989
+  %nextSibling = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %node.06, i64 0, i32 2, !dbg !3991
+  %node.0 = load %"class.xercesc_2_5::ChildNode"** %nextSibling, align 8, !dbg !3986
+  %cmp = icmp eq %"class.xercesc_2_5::ChildNode"* %node.0, null, !dbg !3988
+  br i1 %cmp, label %return, label %while.body, !dbg !3988
+
+return:                                           ; preds = %if.end, %while.body, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ 0, %if.end ], [ %inc, %while.body ]
+  ret i32 %retval.0, !dbg !3992
+}

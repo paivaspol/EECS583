@@ -1,18 +1,21 @@
 define void @sbitmap_vector_ones(%struct.simple_bitmap_def** nocapture %bmap, i32 %n_vecs) #0 {
 entry:
-  %cmp3 = icmp eq i32 %n_vecs, 0
-  br i1 %cmp3, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def** %bmap}, i64 0, metadata !149), !dbg !607
+  tail call void @llvm.dbg.value(metadata !{i32 %n_vecs}, i64 0, metadata !150), !dbg !608
+  tail call void @llvm.dbg.value(metadata !66, i64 0, metadata !151), !dbg !609
+  %cmp3 = icmp eq i32 %n_vecs, 0, !dbg !609
+  br i1 %cmp3, label %for.end, label %for.body, !dbg !609
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def** %bmap, i64 %indvars.iv
-  %0 = load %struct.simple_bitmap_def** %arrayidx, align 8, !tbaa !3
-  tail call void @sbitmap_ones(%struct.simple_bitmap_def* %0) #8
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n_vecs
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def** %bmap, i64 %indvars.iv, !dbg !611
+  %0 = load %struct.simple_bitmap_def** %arrayidx, align 8, !dbg !611, !tbaa !578
+  tail call void @sbitmap_ones(%struct.simple_bitmap_def* %0) #9, !dbg !611
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !609
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !609
+  %exitcond = icmp eq i32 %lftr.wideiv, %n_vecs, !dbg !609
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !609
 
 for.end:                                          ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !612
 }

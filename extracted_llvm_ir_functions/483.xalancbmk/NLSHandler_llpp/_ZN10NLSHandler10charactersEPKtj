@@ -1,0 +1,28 @@
+define void @_ZN10NLSHandler10charactersEPKtj(%class.NLSHandler* %this, i16* %chars, i32 %length) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.NLSHandler* %this}, i64 0, metadata !876), !dbg !1347
+  tail call void @llvm.dbg.value(metadata !{i16* %chars}, i64 0, metadata !877), !dbg !1347
+  tail call void @llvm.dbg.value(metadata !{i32 %length}, i64 0, metadata !878), !dbg !1348
+  %m_startCollectingCharacters = getelementptr inbounds %class.NLSHandler* %this, i64 0, i32 0, i32 0, i32 3, !dbg !1349
+  %0 = load i8* %m_startCollectingCharacters, align 1, !dbg !1349, !tbaa !1333, !range !1337
+  %tobool = icmp eq i8 %0, 0, !dbg !1349
+  br i1 %tobool, label %if.end5, label %if.then, !dbg !1349
+
+if.then:                                          ; preds = %entry
+  %m_bCreateUnicode = getelementptr inbounds %class.NLSHandler* %this, i64 0, i32 2, !dbg !1350
+  %1 = load i8* %m_bCreateUnicode, align 1, !dbg !1350, !tbaa !1333, !range !1337
+  %tobool2 = icmp eq i8 %1, 0, !dbg !1350
+  %m_fStream = getelementptr inbounds %class.NLSHandler* %this, i64 0, i32 0, i32 1, !dbg !1352
+  br i1 %tobool2, label %if.else, label %if.then3, !dbg !1350
+
+if.then3:                                         ; preds = %if.then
+  tail call void @_ZN21XalanFileOutputStream5writeEPKtj(%class.XalanFileOutputStream* %m_fStream, i16* %chars, i32 %length) #7, !dbg !1352
+  br label %if.end5, !dbg !1354
+
+if.else:                                          ; preds = %if.then
+  tail call void @_ZN21XalanFileOutputStream12writeAsASCIIEPKtj(%class.XalanFileOutputStream* %m_fStream, i16* %chars, i32 %length) #7, !dbg !1355
+  br label %if.end5
+
+if.end5:                                          ; preds = %entry, %if.then3, %if.else
+  ret void, !dbg !1357
+}

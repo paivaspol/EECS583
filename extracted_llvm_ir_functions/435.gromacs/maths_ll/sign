@@ -1,15 +1,16 @@
-define float @sign(float %x, float %y) #4 {
-  tail call void @llvm.dbg.value(metadata float %x, i64 0, metadata !213, metadata !333), !dbg !505
-  tail call void @llvm.dbg.value(metadata float %y, i64 0, metadata !214, metadata !333), !dbg !506
-  %1 = fcmp olt float %y, 0.000000e+00, !dbg !507
-  %fabsf = tail call float @fabsf(float %x) #5, !dbg !509
-  br i1 %1, label %2, label %4, !dbg !510
+define float @sign(float %x, float %y) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %x}, i64 0, metadata !20), !dbg !142
+  tail call void @llvm.dbg.value(metadata !{float %y}, i64 0, metadata !21), !dbg !142
+  %cmp = fcmp olt float %y, 0.000000e+00, !dbg !143
+  %fabsf = tail call float @fabsf(float %x) #4, !dbg !144
+  br i1 %cmp, label %if.then, label %return, !dbg !143
 
-; <label>:2                                       ; preds = %0
-  %3 = fsub float -0.000000e+00, %fabsf, !dbg !511
-  br label %4, !dbg !512
+if.then:                                          ; preds = %entry
+  %conv1 = fsub float -0.000000e+00, %fabsf, !dbg !144
+  br label %return, !dbg !144
 
-; <label>:4                                       ; preds = %0, %2
-  %.0 = phi float [ %3, %2 ], [ %fabsf, %0 ]
-  ret float %.0, !dbg !513
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi float [ %conv1, %if.then ], [ %fabsf, %entry ]
+  ret float %retval.0, !dbg !145
 }

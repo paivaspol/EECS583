@@ -1,0 +1,61 @@
+define linkonce_odr void @_ZN11xercesc_2_513ValueVectorOfIbE15removeElementAtEj(%"class.xercesc_2_5::ValueVectorOf.58"* nocapture %this, i32 %removeAt) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ValueVectorOf.58"* %this}, i64 0, metadata !16872), !dbg !25393
+  tail call void @llvm.dbg.value(metadata !{i32 %removeAt}, i64 0, metadata !16873), !dbg !25393
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::ValueVectorOf.58"* %this, i64 0, i32 1, !dbg !25394
+  %0 = load i32* %fCurCount, align 4, !dbg !25394, !tbaa !18998
+  %cmp = icmp ugt i32 %0, %removeAt, !dbg !25394
+  br i1 %cmp, label %if.end, label %if.then, !dbg !25394
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #6, !dbg !25395
+  %1 = bitcast i8* %exception to %"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*, !dbg !25395
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::ValueVectorOf.58"* %this, i64 0, i32 4, !dbg !25395
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !25395, !tbaa !18999
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %1}, i64 0, metadata !25396), !dbg !25397
+  tail call void @llvm.dbg.value(metadata !24978, i64 0, metadata !25398), !dbg !25397
+  tail call void @llvm.dbg.value(metadata !25399, i64 0, metadata !25400), !dbg !25397
+  tail call void @llvm.dbg.value(metadata !21276, i64 0, metadata !25401), !dbg !25397
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %2}, i64 0, metadata !25402), !dbg !25397
+  invoke void @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %1, i8* getelementptr inbounds ([76 x i8]* @.str2, i64 0, i64 0), i32 243, i32 109, %"class.xercesc_2_5::MemoryManager"* %2) #11
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_530ArrayIndexOutOfBoundsExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*)* @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionD1Ev to i8*)) #12, !dbg !25395
+  unreachable, !dbg !25395
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !25395
+  tail call void @__cxa_free_exception(i8* %exception) #6, !dbg !25395
+  resume { i8*, i32 } %3, !dbg !25395
+
+if.end:                                           ; preds = %entry
+  %sub = add i32 %0, -1, !dbg !25403
+  %4 = icmp ugt i32 %sub, %removeAt, !dbg !25403
+  br i1 %4, label %for.body.lr.ph, label %return, !dbg !25403
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::ValueVectorOf.58"* %this, i64 0, i32 3, !dbg !25404
+  %5 = load i8** %fElemList, align 8, !dbg !25404, !tbaa !18999
+  %6 = zext i32 %removeAt to i64
+  br label %for.body, !dbg !25405
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %6, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %index.023 = phi i32 [ %removeAt, %for.body.lr.ph ], [ %add, %for.body ]
+  %add = add i32 %index.023, 1, !dbg !25404
+  %idxprom = zext i32 %add to i64, !dbg !25404
+  %arrayidx = getelementptr inbounds i8* %5, i64 %idxprom, !dbg !25404
+  %7 = load i8* %arrayidx, align 1, !dbg !25404, !tbaa !18995, !range !19323
+  %arrayidx12 = getelementptr inbounds i8* %5, i64 %indvars.iv, !dbg !25404
+  store i8 %7, i8* %arrayidx12, align 1, !dbg !25404, !tbaa !18995
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !16874), !dbg !25405
+  %cmp9 = icmp ult i32 %add, %sub, !dbg !25405
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !25405
+  br i1 %cmp9, label %for.body, label %return, !dbg !25405
+
+return:                                           ; preds = %if.end, %for.body
+  store i32 %sub, i32* %fCurCount, align 4, !dbg !25406, !tbaa !18998
+  ret void, !dbg !25408
+}

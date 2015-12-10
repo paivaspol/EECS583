@@ -1,41 +1,42 @@
-define void @MAIN_stopClock(%struct.MAIN_Time* nocapture %time, %struct.MAIN_Param* nocapture readonly %param) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.MAIN_Time* %time, i64 0, metadata !159, metadata !183), !dbg !397
-  tail call void @llvm.dbg.value(metadata %struct.MAIN_Param* %param, i64 0, metadata !160, metadata !183), !dbg !398
-  %1 = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 4, !dbg !399
-  %2 = tail call i64 @times(%struct.tms* %1) #8, !dbg !400
-  %3 = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 2, !dbg !401
-  store i64 %2, i64* %3, align 8, !dbg !402, !tbaa !403
-  %4 = getelementptr inbounds %struct.tms* %1, i64 0, i32 0, !dbg !404
-  %5 = load i64* %4, align 8, !dbg !404, !tbaa !405
-  %6 = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 3, i32 0, !dbg !406
-  %7 = load i64* %6, align 8, !dbg !406, !tbaa !407
-  %8 = sub i64 %5, %7, !dbg !408
-  %9 = uitofp i64 %8 to double, !dbg !409
-  %10 = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 0, !dbg !410
-  %11 = load double* %10, align 8, !dbg !410, !tbaa !216
-  %12 = fmul double %11, %9, !dbg !411
-  %13 = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 4, i32 1, !dbg !412
-  %14 = load i64* %13, align 8, !dbg !412, !tbaa !413
-  %15 = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 3, i32 1, !dbg !414
-  %16 = load i64* %15, align 8, !dbg !414, !tbaa !415
-  %17 = sub i64 %14, %16, !dbg !416
-  %18 = uitofp i64 %17 to double, !dbg !417
-  %19 = fmul double %11, %18, !dbg !418
-  %20 = add i64 %14, %8, !dbg !419
-  %21 = sub i64 %20, %16, !dbg !420
-  %22 = uitofp i64 %21 to double, !dbg !421
-  %23 = fmul double %11, %22, !dbg !422
-  %24 = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 1, !dbg !423
-  %25 = load i64* %24, align 8, !dbg !423, !tbaa !225
-  %26 = sub i64 %2, %25, !dbg !424
-  %27 = uitofp i64 %26 to double, !dbg !425
-  %28 = fmul double %11, %27, !dbg !426
-  %29 = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 0, !dbg !427
-  %30 = load i32* %29, align 4, !dbg !427, !tbaa !192
-  %31 = sitofp i32 %30 to double, !dbg !428
-  %32 = fmul double %31, 0x3FF4CCCCCCCCCCCC, !dbg !429
-  %33 = fdiv double %32, %27, !dbg !430
-  %34 = fdiv double %33, %11, !dbg !431
-  %35 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([76 x i8]* @.str7, i64 0, i64 0), double %12, double %19, double %23, double %28, double %34) #8, !dbg !432
-  ret void, !dbg !433
+define void @MAIN_stopClock(%struct.MAIN_Time* nocapture %time, %struct.MAIN_Param* nocapture %param) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.MAIN_Time* %time}, i64 0, metadata !347), !dbg !458
+  tail call void @llvm.dbg.value(metadata !{%struct.MAIN_Param* %param}, i64 0, metadata !348), !dbg !458
+  %timeStop = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 4, !dbg !459
+  %call = tail call i64 @times(%struct.tms* %timeStop) #8, !dbg !459
+  %tickStop = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 2, !dbg !459
+  store i64 %call, i64* %tickStop, align 8, !dbg !459, !tbaa !383
+  %tms_utime = getelementptr inbounds %struct.tms* %timeStop, i64 0, i32 0, !dbg !460
+  %0 = load i64* %tms_utime, align 8, !dbg !460, !tbaa !383
+  %tms_utime2 = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 3, i32 0, !dbg !460
+  %1 = load i64* %tms_utime2, align 8, !dbg !460, !tbaa !383
+  %sub = sub nsw i64 %0, %1, !dbg !460
+  %conv = sitofp i64 %sub to double, !dbg !460
+  %timeScale = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 0, !dbg !460
+  %2 = load double* %timeScale, align 8, !dbg !460, !tbaa !381
+  %mul = fmul double %2, %conv, !dbg !460
+  %tms_stime = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 4, i32 1, !dbg !460
+  %3 = load i64* %tms_stime, align 8, !dbg !460, !tbaa !383
+  %tms_stime5 = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 3, i32 1, !dbg !460
+  %4 = load i64* %tms_stime5, align 8, !dbg !460, !tbaa !383
+  %sub6 = sub nsw i64 %3, %4, !dbg !460
+  %conv7 = sitofp i64 %sub6 to double, !dbg !460
+  %mul9 = fmul double %2, %conv7, !dbg !460
+  %add = add nsw i64 %3, %sub, !dbg !460
+  %sub19 = sub i64 %add, %4, !dbg !460
+  %conv20 = sitofp i64 %sub19 to double, !dbg !460
+  %mul22 = fmul double %2, %conv20, !dbg !460
+  %tickStart = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 1, !dbg !460
+  %5 = load i64* %tickStart, align 8, !dbg !460, !tbaa !383
+  %sub24 = sub nsw i64 %call, %5, !dbg !460
+  %conv25 = sitofp i64 %sub24 to double, !dbg !460
+  %mul27 = fmul double %2, %conv25, !dbg !460
+  %nTimeSteps = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 0, !dbg !460
+  %6 = load i32* %nTimeSteps, align 4, !dbg !460, !tbaa !372
+  %conv28 = sitofp i32 %6 to double, !dbg !460
+  %mul29 = fmul double %conv28, 0x3FF4CCCCCCCCCCCC, !dbg !460
+  %div = fdiv double %mul29, %conv25, !dbg !460
+  %div35 = fdiv double %div, %2, !dbg !460
+  %call36 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([76 x i8]* @.str7, i64 0, i64 0), double %mul, double %mul9, double %mul22, double %mul27, double %div35) #8, !dbg !460
+  ret void, !dbg !461
 }

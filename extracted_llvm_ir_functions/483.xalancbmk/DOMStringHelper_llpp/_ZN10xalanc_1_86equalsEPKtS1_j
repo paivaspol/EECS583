@@ -1,0 +1,48 @@
+define zeroext i1 @_ZN10xalanc_1_86equalsEPKtS1_j(i16* %theLHS, i16* nocapture %theRHS, i32 %theLength) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %theLHS}, i64 0, metadata !4373), !dbg !7895
+  tail call void @llvm.dbg.value(metadata !{i16* %theRHS}, i64 0, metadata !4374), !dbg !7896
+  tail call void @llvm.dbg.value(metadata !{i32 %theLength}, i64 0, metadata !4375), !dbg !7897
+  tail call void @llvm.dbg.value(metadata !{i16* %theLHS}, i64 0, metadata !7898), !dbg !7900
+  tail call void @llvm.dbg.value(metadata !{i16* %theRHS}, i64 0, metadata !7901), !dbg !7902
+  tail call void @llvm.dbg.value(metadata !{i32 %theLength}, i64 0, metadata !7903), !dbg !7904
+  %cmp.i = icmp eq i32 %theLength, 0, !dbg !7905
+  br i1 %cmp.i, label %_ZN10xalanc_1_88doEqualsItjNS_17IdentityTransformIttEEEEbPKT_S5_T0_T1_.exit, label %if.else.i, !dbg !7905
+
+if.else.i:                                        ; preds = %entry
+  %idx.ext.i = zext i32 %theLength to i64, !dbg !7906
+  %add.ptr.i = getelementptr inbounds i16* %theLHS, i64 %idx.ext.i, !dbg !7906
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr.i}, i64 0, metadata !7907), !dbg !7906
+  %0 = load i16* %theLHS, align 2, !dbg !7908, !tbaa !6609
+  tail call void @llvm.dbg.value(metadata !7814, i64 0, metadata !7909), !dbg !7910
+  tail call void @llvm.dbg.value(metadata !{i16 %0}, i64 0, metadata !7911), !dbg !7910
+  %1 = load i16* %theRHS, align 2, !dbg !7908, !tbaa !6609
+  tail call void @llvm.dbg.value(metadata !7814, i64 0, metadata !7909), !dbg !7910
+  tail call void @llvm.dbg.value(metadata !{i16 %1}, i64 0, metadata !7911), !dbg !7910
+  %cmp313.i = icmp eq i16 %0, %1, !dbg !7908
+  br i1 %cmp313.i, label %while.body.i, label %_ZN10xalanc_1_88doEqualsItjNS_17IdentityTransformIttEEEEbPKT_S5_T0_T1_.exit, !dbg !7908
+
+while.cond.i:                                     ; preds = %while.body.i
+  %2 = load i16* %incdec.ptr.i, align 2, !dbg !7908, !tbaa !6609
+  tail call void @llvm.dbg.value(metadata !7814, i64 0, metadata !7909), !dbg !7910
+  tail call void @llvm.dbg.value(metadata !{i16 %2}, i64 0, metadata !7911), !dbg !7910
+  %3 = load i16* %incdec.ptr7.i, align 2, !dbg !7908, !tbaa !6609
+  tail call void @llvm.dbg.value(metadata !7814, i64 0, metadata !7909), !dbg !7910
+  tail call void @llvm.dbg.value(metadata !{i16 %3}, i64 0, metadata !7911), !dbg !7910
+  %cmp3.i = icmp eq i16 %2, %3, !dbg !7908
+  br i1 %cmp3.i, label %while.body.i, label %_ZN10xalanc_1_88doEqualsItjNS_17IdentityTransformIttEEEEbPKT_S5_T0_T1_.exit, !dbg !7908
+
+while.body.i:                                     ; preds = %if.else.i, %while.cond.i
+  %theLHS.addr.015.i = phi i16* [ %incdec.ptr.i, %while.cond.i ], [ %theLHS, %if.else.i ]
+  %theRHS.addr.014.i = phi i16* [ %incdec.ptr7.i, %while.cond.i ], [ %theRHS, %if.else.i ]
+  %incdec.ptr.i = getelementptr inbounds i16* %theLHS.addr.015.i, i64 1, !dbg !7912
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr.i}, i64 0, metadata !7898), !dbg !7912
+  %cmp4.i = icmp eq i16* %incdec.ptr.i, %add.ptr.i, !dbg !7914
+  %incdec.ptr7.i = getelementptr inbounds i16* %theRHS.addr.014.i, i64 1, !dbg !7915
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr7.i}, i64 0, metadata !7901), !dbg !7915
+  br i1 %cmp4.i, label %_ZN10xalanc_1_88doEqualsItjNS_17IdentityTransformIttEEEEbPKT_S5_T0_T1_.exit, label %while.cond.i, !dbg !7914
+
+_ZN10xalanc_1_88doEqualsItjNS_17IdentityTransformIttEEEEbPKT_S5_T0_T1_.exit: ; preds = %while.cond.i, %while.body.i, %entry, %if.else.i
+  %retval.0.i = phi i1 [ true, %entry ], [ false, %if.else.i ], [ false, %while.cond.i ], [ true, %while.body.i ]
+  ret i1 %retval.0.i, !dbg !7899
+}

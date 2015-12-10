@@ -1,32 +1,29 @@
-define void @free_rgrid(float*** %grid, i32 %nx, i32 %ny) #4 {
-  tail call void @llvm.dbg.value(metadata float*** %grid, i64 0, metadata !295, metadata !432), !dbg !756
-  tail call void @llvm.dbg.value(metadata i32 %nx, i64 0, metadata !296, metadata !432), !dbg !757
-  tail call void @llvm.dbg.value(metadata i32 %ny, i64 0, metadata !297, metadata !432), !dbg !758
-  %1 = bitcast float*** %grid to i8***, !dbg !759
-  %2 = load i8*** %1, align 8, !dbg !759, !tbaa !723
-  %3 = load i8** %2, align 8, !dbg !759, !tbaa !723
-  tail call void @save_free(i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 271, i8* %3) #7, !dbg !759
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !298, metadata !432), !dbg !760
-  %4 = icmp sgt i32 %nx, 0, !dbg !761
-  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !764
+define void @free_rgrid(float*** %grid, i32 %nx, i32 %ny) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float*** %grid}, i64 0, metadata !160), !dbg !370
+  tail call void @llvm.dbg.value(metadata !{i32 %nx}, i64 0, metadata !161), !dbg !370
+  tail call void @llvm.dbg.value(metadata !{i32 %ny}, i64 0, metadata !162), !dbg !370
+  %0 = load float*** %grid, align 8, !dbg !371, !tbaa !314
+  %1 = load float** %0, align 8, !dbg !371, !tbaa !314
+  %2 = bitcast float* %1 to i8*, !dbg !371
+  tail call void @save_free(i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 271, i8* %2) #5, !dbg !371
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !163), !dbg !372
+  %cmp7 = icmp sgt i32 %nx, 0, !dbg !372
+  br i1 %cmp7, label %for.body, label %for.end, !dbg !372
 
-.lr.ph:                                           ; preds = %0
-  %5 = add i32 %nx, -1, !dbg !764
-  br label %6, !dbg !764
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx2 = getelementptr inbounds float*** %grid, i64 %indvars.iv, !dbg !374
+  %3 = load float*** %arrayidx2, align 8, !dbg !374, !tbaa !314
+  %4 = bitcast float** %3 to i8*, !dbg !374
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 273, i8* %4) #5, !dbg !374
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !372
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !372
+  %exitcond = icmp eq i32 %lftr.wideiv, %nx, !dbg !372
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !372
 
-; <label>:6                                       ; preds = %6, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %6 ]
-  %7 = getelementptr inbounds float*** %grid, i64 %indvars.iv, !dbg !765
-  %8 = bitcast float*** %7 to i8**, !dbg !765
-  %9 = load i8** %8, align 8, !dbg !765, !tbaa !723
-  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 273, i8* %9) #7, !dbg !765
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !764
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !764
-  %exitcond = icmp eq i32 %lftr.wideiv, %5, !dbg !764
-  br i1 %exitcond, label %._crit_edge, label %6, !dbg !764
-
-._crit_edge:                                      ; preds = %6, %0
-  %10 = bitcast float*** %grid to i8*, !dbg !767
-  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 275, i8* %10) #7, !dbg !767
-  ret void, !dbg !768
+for.end:                                          ; preds = %for.body, %entry
+  %5 = bitcast float*** %grid to i8*, !dbg !376
+  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 275, i8* %5) #5, !dbg !376
+  ret void, !dbg !377
 }

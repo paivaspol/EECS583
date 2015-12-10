@@ -1,18 +1,19 @@
 define void @Ideq_free(%struct._Ideq* %deq) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Ideq* %deq, i64 0, metadata !44, metadata !53), !dbg !99
-  %1 = icmp eq %struct._Ideq* %deq, null, !dbg !100
-  br i1 %1, label %2, label %5, !dbg !102
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Ideq* %deq}, i64 0, metadata !39), !dbg !68
+  %cmp = icmp eq %struct._Ideq* %deq, null, !dbg !69
+  br i1 %cmp, label %if.then, label %if.end, !dbg !69
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !103, !tbaa !58
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([45 x i8]* @.str4, i64 0, i64 0), %struct._Ideq* null) #5, !dbg !105
-  tail call void @exit(i32 -1) #6, !dbg !106
-  unreachable, !dbg !106
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !70, !tbaa !44
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str4, i64 0, i64 0), %struct._Ideq* null) #5, !dbg !70
+  tail call void @exit(i32 -1) #6, !dbg !72
+  unreachable, !dbg !72
 
-; <label>:5                                       ; preds = %0
-  tail call void @Ideq_clearData(%struct._Ideq* %deq) #7, !dbg !107
-  %6 = bitcast %struct._Ideq* %deq to i8*, !dbg !108
-  tail call void @free(i8* %6) #7, !dbg !108
-  tail call void @llvm.dbg.value(metadata %struct._Ideq* null, i64 0, metadata !44, metadata !53), !dbg !99
-  ret void, !dbg !111
+if.end:                                           ; preds = %entry
+  tail call void @Ideq_clearData(%struct._Ideq* %deq) #7, !dbg !73
+  %1 = bitcast %struct._Ideq* %deq to i8*, !dbg !74
+  tail call void @free(i8* %1) #5, !dbg !74
+  tail call void @llvm.dbg.value(metadata !76, i64 0, metadata !39), !dbg !74
+  ret void, !dbg !77
 }

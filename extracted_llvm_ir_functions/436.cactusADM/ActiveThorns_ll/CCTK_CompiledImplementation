@@ -1,35 +1,36 @@
 define i8* @CCTK_CompiledImplementation(i32 %tindex) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %tindex, i64 0, metadata !258, metadata !358), !dbg !862
-  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !261, metadata !358), !dbg !863
-  %1 = load %struct.T_SKTREE** @implist, align 8, !dbg !864, !tbaa !381
-  %2 = tail call %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %1) #8, !dbg !866
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %2, i64 0, metadata !260, metadata !358), !dbg !867
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !259, metadata !358), !dbg !868
-  %3 = icmp eq %struct.T_SKTREE* %2, null, !dbg !869
-  br i1 %3, label %.loopexit, label %.lr.ph, !dbg !869
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %tindex}, i64 0, metadata !254), !dbg !654
+  tail call void @llvm.dbg.value(metadata !351, i64 0, metadata !257), !dbg !655
+  %0 = load %struct.T_SKTREE** @implist, align 8, !dbg !656, !tbaa !357
+  %call = tail call %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %0) #9, !dbg !656
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call}, i64 0, metadata !256), !dbg !656
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !255), !dbg !656
+  %tobool4 = icmp eq %struct.T_SKTREE* %call, null, !dbg !656
+  br i1 %tobool4, label %for.end, label %for.body, !dbg !656
 
-.lr.ph:                                           ; preds = %0, %8
-  %node.03 = phi %struct.T_SKTREE* [ %10, %8 ], [ %2, %0 ]
-  %i.02 = phi i32 [ %11, %8 ], [ 0, %0 ]
-  %4 = icmp eq i32 %i.02, %tindex, !dbg !870
-  br i1 %4, label %5, label %8, !dbg !874
+for.body:                                         ; preds = %entry, %for.inc
+  %node.06 = phi %struct.T_SKTREE* [ %2, %for.inc ], [ %call, %entry ]
+  %i.05 = phi i32 [ %inc, %for.inc ], [ 0, %entry ]
+  %cmp = icmp eq i32 %i.05, %tindex, !dbg !658
+  br i1 %cmp, label %if.then, label %for.inc, !dbg !658
 
-; <label>:5                                       ; preds = %.lr.ph
-  %6 = getelementptr inbounds %struct.T_SKTREE* %node.03, i64 0, i32 4, !dbg !875
-  %7 = load i8** %6, align 8, !dbg !875, !tbaa !673
-  tail call void @llvm.dbg.value(metadata i8* %7, i64 0, metadata !261, metadata !358), !dbg !863
-  br label %.loopexit, !dbg !877
+if.then:                                          ; preds = %for.body
+  %key = getelementptr inbounds %struct.T_SKTREE* %node.06, i64 0, i32 4, !dbg !660
+  %1 = load i8** %key, align 8, !dbg !660, !tbaa !357
+  tail call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !257), !dbg !660
+  br label %for.end, !dbg !662
 
-; <label>:8                                       ; preds = %.lr.ph
-  %9 = getelementptr inbounds %struct.T_SKTREE* %node.03, i64 0, i32 2, !dbg !878
-  %10 = load %struct.T_SKTREE** %9, align 8, !dbg !878, !tbaa !778
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %10, i64 0, metadata !260, metadata !358), !dbg !867
-  %11 = add nuw nsw i32 %i.02, 1, !dbg !879
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !259, metadata !358), !dbg !868
-  %12 = icmp eq %struct.T_SKTREE* %10, null, !dbg !869
-  br i1 %12, label %.loopexit, label %.lr.ph, !dbg !869
+for.inc:                                          ; preds = %for.body
+  %next = getelementptr inbounds %struct.T_SKTREE* %node.06, i64 0, i32 2, !dbg !663
+  %2 = load %struct.T_SKTREE** %next, align 8, !dbg !663, !tbaa !357
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %2}, i64 0, metadata !256), !dbg !663
+  %inc = add nsw i32 %i.05, 1, !dbg !663
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !255), !dbg !663
+  %tobool = icmp eq %struct.T_SKTREE* %2, null, !dbg !656
+  br i1 %tobool, label %for.end, label %for.body, !dbg !656
 
-.loopexit:                                        ; preds = %8, %0, %5
-  %ret_val.0 = phi i8* [ %7, %5 ], [ null, %0 ], [ null, %8 ]
-  ret i8* %ret_val.0, !dbg !880
+for.end:                                          ; preds = %entry, %for.inc, %if.then
+  %ret_val.0 = phi i8* [ %1, %if.then ], [ null, %for.inc ], [ null, %entry ]
+  ret i8* %ret_val.0, !dbg !664
 }

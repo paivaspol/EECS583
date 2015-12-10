@@ -1,0 +1,59 @@
+define linkonce_odr i32 @_ZNK11xercesc_2_515DFAContentModel12getNextStateEjj(%"class.xercesc_2_5::DFAContentModel"* nocapture %this, i32 %currentState, i32 %elementIndex) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DFAContentModel"* %this}, i64 0, metadata !3081), !dbg !5328
+  tail call void @llvm.dbg.value(metadata !{i32 %currentState}, i64 0, metadata !3083), !dbg !5328
+  tail call void @llvm.dbg.value(metadata !{i32 %elementIndex}, i64 0, metadata !3084), !dbg !5329
+  %0 = load i32* @_ZN11xercesc_2_515XMLContentModel13gInvalidTransE, align 4, !dbg !5330, !tbaa !4244
+  %cmp = icmp eq i32 %0, %currentState, !dbg !5330
+  br i1 %cmp, label %return, label %if.end, !dbg !5330
+
+if.end:                                           ; preds = %entry
+  %fTransTableSize = getelementptr inbounds %"class.xercesc_2_5::DFAContentModel"* %this, i64 0, i32 13, !dbg !5332
+  %1 = load i32* %fTransTableSize, align 4, !dbg !5332, !tbaa !4244
+  %cmp2 = icmp ugt i32 %1, %currentState, !dbg !5332
+  br i1 %cmp2, label %lor.lhs.false, label %if.then4, !dbg !5332
+
+lor.lhs.false:                                    ; preds = %if.end
+  %fElemMapSize = getelementptr inbounds %"class.xercesc_2_5::DFAContentModel"* %this, i64 0, i32 3, !dbg !5332
+  %2 = load i32* %fElemMapSize, align 4, !dbg !5332, !tbaa !4244
+  %cmp3 = icmp ugt i32 %2, %elementIndex, !dbg !5332
+  br i1 %cmp3, label %if.end5, label %if.then4, !dbg !5332
+
+if.then4:                                         ; preds = %lor.lhs.false, %if.end
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #10, !dbg !5333
+  %3 = bitcast i8* %exception to %"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*, !dbg !5333
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::DFAContentModel"* %this, i64 0, i32 17, !dbg !5333
+  %4 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !5333, !tbaa !4129
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %3}, i64 0, metadata !5335), !dbg !5336
+  tail call void @llvm.dbg.value(metadata !5337, i64 0, metadata !5338), !dbg !5336
+  tail call void @llvm.dbg.value(metadata !5339, i64 0, metadata !5340), !dbg !5336
+  tail call void @llvm.dbg.value(metadata !5341, i64 0, metadata !5342), !dbg !5336
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %4}, i64 0, metadata !5343), !dbg !5336
+  invoke void @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %3, i8* getelementptr inbounds ([93 x i8]* @.str2, i64 0, i64 0), i32 348, i32 6, %"class.xercesc_2_5::MemoryManager"* %4) #12
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then4
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_530ArrayIndexOutOfBoundsExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*)* @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionD1Ev to i8*)) #13, !dbg !5333
+  unreachable, !dbg !5333
+
+lpad:                                             ; preds = %if.then4
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !5333
+  tail call void @__cxa_free_exception(i8* %exception) #10, !dbg !5333
+  resume { i8*, i32 } %5, !dbg !5333
+
+if.end5:                                          ; preds = %lor.lhs.false
+  %idxprom = zext i32 %elementIndex to i64, !dbg !5344
+  %idxprom6 = zext i32 %currentState to i64, !dbg !5344
+  %fTransTable = getelementptr inbounds %"class.xercesc_2_5::DFAContentModel"* %this, i64 0, i32 12, !dbg !5344
+  %6 = load i32*** %fTransTable, align 8, !dbg !5344, !tbaa !4129
+  %arrayidx = getelementptr inbounds i32** %6, i64 %idxprom6, !dbg !5344
+  %7 = load i32** %arrayidx, align 8, !dbg !5344, !tbaa !4129
+  %arrayidx7 = getelementptr inbounds i32* %7, i64 %idxprom, !dbg !5344
+  %8 = load i32* %arrayidx7, align 4, !dbg !5344, !tbaa !4244
+  br label %return, !dbg !5344
+
+return:                                           ; preds = %entry, %if.end5
+  %retval.0 = phi i32 [ %8, %if.end5 ], [ %currentState, %entry ]
+  ret i32 %retval.0, !dbg !5345
+}

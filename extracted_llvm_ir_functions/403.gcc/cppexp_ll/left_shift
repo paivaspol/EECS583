@@ -1,44 +1,51 @@
 define internal fastcc i64 @left_shift(%struct.cpp_reader* %pfile, i64 %a, i32 %unsignedp, i64 %b) #0 {
 entry:
-  %cmp = icmp ugt i64 %b, 63
-  %tobool = icmp ne i32 %unsignedp, 0
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !558), !dbg !1068
+  tail call void @llvm.dbg.value(metadata !{i64 %a}, i64 0, metadata !559), !dbg !1069
+  tail call void @llvm.dbg.value(metadata !{i32 %unsignedp}, i64 0, metadata !560), !dbg !1070
+  tail call void @llvm.dbg.value(metadata !{i64 %b}, i64 0, metadata !561), !dbg !1071
+  %cmp = icmp ugt i64 %b, 63, !dbg !1072
+  %tobool = icmp ne i32 %unsignedp, 0, !dbg !1073
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1072
 
 if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq i64 %a, 0
-  %or.cond = or i1 %tobool, %cmp1
-  br i1 %or.cond, label %return, label %if.then2
+  %cmp1 = icmp eq i64 %a, 0, !dbg !1073
+  %or.cond = or i1 %tobool, %cmp1, !dbg !1073
+  br i1 %or.cond, label %return, label %if.then2, !dbg !1073
 
 if.then2:                                         ; preds = %if.then
-  %pedantic.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 42
-  %0 = load i8* %pedantic.i, align 1, !tbaa !1
-  %tobool.i = icmp eq i8 %0, 0
-  br i1 %tobool.i, label %return, label %if.then.i
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !1075) #2, !dbg !1077
+  %pedantic.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 42, !dbg !1078
+  %0 = load i8* %pedantic.i, align 1, !dbg !1078, !tbaa !652
+  %tobool.i = icmp eq i8 %0, 0, !dbg !1078
+  br i1 %tobool.i, label %return, label %if.then.i, !dbg !1078
 
 if.then.i:                                        ; preds = %if.then2
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_pedwarn(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([44 x i8]* @.str15, i64 0, i64 0)) #5
-  br label %return
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_pedwarn(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([44 x i8]* @.str15, i64 0, i64 0)) #6, !dbg !1079
+  br label %return, !dbg !1079
 
 if.else:                                          ; preds = %entry
-  %shl = shl i64 %a, %b
-  br i1 %tobool, label %return, label %if.else5
+  %shl = shl i64 %a, %b, !dbg !1080
+  br i1 %tobool, label %return, label %if.else5, !dbg !1081
 
 if.else5:                                         ; preds = %if.else
-  %shr = ashr i64 %shl, %b
-  %cmp7 = icmp eq i64 %shr, %a
-  br i1 %cmp7, label %return, label %if.then8
+  tail call void @llvm.dbg.value(metadata !{i64 %shl}, i64 0, metadata !562), !dbg !1082
+  %shr = ashr i64 %shl, %b, !dbg !1083
+  %cmp7 = icmp eq i64 %shr, %a, !dbg !1083
+  br i1 %cmp7, label %return, label %if.then8, !dbg !1083
 
 if.then8:                                         ; preds = %if.else5
-  %pedantic.i16 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 42
-  %1 = load i8* %pedantic.i16, align 1, !tbaa !1
-  %tobool.i17 = icmp eq i8 %1, 0
-  br i1 %tobool.i17, label %return, label %if.then.i18
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !1084) #2, !dbg !1086
+  %pedantic.i16 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 42, !dbg !1087
+  %1 = load i8* %pedantic.i16, align 1, !dbg !1087, !tbaa !652
+  %tobool.i17 = icmp eq i8 %1, 0, !dbg !1087
+  br i1 %tobool.i17, label %return, label %if.then.i18, !dbg !1087
 
 if.then.i18:                                      ; preds = %if.then8
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_pedwarn(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([44 x i8]* @.str15, i64 0, i64 0)) #5
-  br label %return
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_pedwarn(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([44 x i8]* @.str15, i64 0, i64 0)) #6, !dbg !1088
+  br label %return, !dbg !1088
 
 return:                                           ; preds = %if.then.i18, %if.then8, %if.then.i, %if.then2, %if.else5, %if.else, %if.then
   %retval.0 = phi i64 [ 0, %if.then ], [ %shl, %if.else ], [ %shl, %if.else5 ], [ 0, %if.then2 ], [ 0, %if.then.i ], [ %shl, %if.then8 ], [ %shl, %if.then.i18 ]
-  ret i64 %retval.0
+  ret i64 %retval.0, !dbg !1089
 }

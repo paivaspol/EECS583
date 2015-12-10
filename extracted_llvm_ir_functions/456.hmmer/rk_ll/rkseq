@@ -1,95 +1,96 @@
-define i32 @rkseq(i64 %hashprobe, i8* nocapture readonly %sequence) #4 {
-  tail call void @llvm.dbg.value(metadata i64 %hashprobe, i64 0, metadata !27, metadata !37), !dbg !74
-  tail call void @llvm.dbg.value(metadata i8* %sequence, i64 0, metadata !28, metadata !37), !dbg !75
-  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !31, metadata !37), !dbg !76
-  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !32, metadata !37), !dbg !77
-  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !29, metadata !37), !dbg !78
-  br label %5, !dbg !79
+define i32 @rkseq(i64 %hashprobe, i8* nocapture %sequence) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i64 %hashprobe}, i64 0, metadata !26), !dbg !51
+  tail call void @llvm.dbg.value(metadata !{i8* %sequence}, i64 0, metadata !27), !dbg !52
+  tail call void @llvm.dbg.value(metadata !33, i64 0, metadata !30), !dbg !53
+  tail call void @llvm.dbg.value(metadata !33, i64 0, metadata !31), !dbg !54
+  tail call void @llvm.dbg.value(metadata !33, i64 0, metadata !28), !dbg !55
+  br label %for.body, !dbg !55
 
-.preheader2:                                      ; preds = %5, %9
-  %target.0.lcssa = phi i64 [ %target.013, %5 ], [ %12, %9 ]
-  %1 = getelementptr inbounds i8* %sequence, i64 15, !dbg !81
-  %2 = load i8* %1, align 1, !dbg !82, !tbaa !63
-  %3 = icmp eq i8 %2, 0, !dbg !83
-  br i1 %3, label %.preheader, label %.lr.ph, !dbg !84
+while.cond.preheader:                             ; preds = %for.body, %if.end
+  %target.0.lcssa = phi i64 [ %target.075, %for.body ], [ %or, %if.end ]
+  %add.ptr768 = getelementptr inbounds i8* %sequence, i64 15, !dbg !57
+  %0 = load i8* %add.ptr768, align 1, !dbg !57, !tbaa !45
+  %cmp969 = icmp eq i8 %0, 0, !dbg !57
+  br i1 %cmp969, label %for.body25, label %while.body.lr.ph, !dbg !57
 
-.lr.ph:                                           ; preds = %.preheader2
-  %4 = getelementptr inbounds i8* %sequence, i64 16, !dbg !85
-  br label %15, !dbg !84
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %add.ptr667 = getelementptr inbounds i8* %sequence, i64 16, !dbg !57
+  br label %while.body, !dbg !57
 
-; <label>:5                                       ; preds = %0, %9
-  %target.013 = phi i64 [ 0, %0 ], [ %12, %9 ]
-  %i.012 = phi i64 [ 0, %0 ], [ %13, %9 ]
-  %6 = getelementptr inbounds i8* %sequence, i64 %i.012, !dbg !86
-  %7 = load i8* %6, align 1, !dbg !90, !tbaa !63
-  %8 = icmp eq i8 %7, 0, !dbg !91
-  br i1 %8, label %.preheader2, label %9, !dbg !92
+for.body:                                         ; preds = %entry, %if.end
+  %target.075 = phi i64 [ 0, %entry ], [ %or, %if.end ]
+  %i.074 = phi i64 [ 0, %entry ], [ %inc, %if.end ]
+  %add.ptr = getelementptr inbounds i8* %sequence, i64 %i.074, !dbg !58
+  %1 = load i8* %add.ptr, align 1, !dbg !58, !tbaa !45
+  %cmp1 = icmp eq i8 %1, 0, !dbg !58
+  br i1 %cmp1, label %while.cond.preheader, label %if.end, !dbg !58
 
-; <label>:9                                       ; preds = %5
-  %10 = shl i64 %target.013, 4, !dbg !93
-  tail call void @llvm.dbg.value(metadata i64 %10, i64 0, metadata !32, metadata !37), !dbg !77
-  %11 = sext i8 %7 to i64, !dbg !94
-  %12 = or i64 %11, %10, !dbg !95
-  tail call void @llvm.dbg.value(metadata i64 %12, i64 0, metadata !32, metadata !37), !dbg !77
-  %13 = add nuw nsw i64 %i.012, 1, !dbg !96
-  tail call void @llvm.dbg.value(metadata i64 %13, i64 0, metadata !29, metadata !37), !dbg !78
-  %14 = icmp ult i64 %13, 16, !dbg !97
-  br i1 %14, label %5, label %.preheader2, !dbg !79
+if.end:                                           ; preds = %for.body
+  %shl = shl i64 %target.075, 4, !dbg !60
+  tail call void @llvm.dbg.value(metadata !{i64 %shl}, i64 0, metadata !31), !dbg !60
+  %conv4 = sext i8 %1 to i64, !dbg !61
+  %or = or i64 %conv4, %shl, !dbg !61
+  tail call void @llvm.dbg.value(metadata !{i64 %or}, i64 0, metadata !31), !dbg !61
+  %inc = add nsw i64 %i.074, 1, !dbg !55
+  tail call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !28), !dbg !55
+  %cmp = icmp ult i64 %inc, 16, !dbg !55
+  br i1 %cmp, label %for.body, label %while.cond.preheader, !dbg !55
 
-; <label>:15                                      ; preds = %.lr.ph, %21
-  %16 = phi i8* [ %4, %.lr.ph ], [ %27, %21 ]
-  %target.110 = phi i64 [ %target.0.lcssa, %.lr.ph ], [ %25, %21 ]
-  %pos.09 = phi i64 [ 0, %.lr.ph ], [ %26, %21 ]
-  %17 = and i64 %target.110, %hashprobe, !dbg !98
-  %18 = icmp eq i64 %17, %target.110, !dbg !101
-  br i1 %18, label %19, label %21, !dbg !102
+while.body:                                       ; preds = %while.body.lr.ph, %if.end15
+  %add.ptr672 = phi i8* [ %add.ptr667, %while.body.lr.ph ], [ %add.ptr6, %if.end15 ]
+  %target.171 = phi i64 [ %target.0.lcssa, %while.body.lr.ph ], [ %or20, %if.end15 ]
+  %pos.070 = phi i64 [ 0, %while.body.lr.ph ], [ %inc21, %if.end15 ]
+  %and = and i64 %target.171, %hashprobe, !dbg !62
+  %cmp11 = icmp eq i64 %and, %target.171, !dbg !62
+  br i1 %cmp11, label %if.then13, label %if.end15, !dbg !62
 
-; <label>:19                                      ; preds = %15
-  %20 = trunc i64 %pos.09 to i32, !dbg !103
-  br label %.loopexit, !dbg !104
+if.then13:                                        ; preds = %while.body
+  %conv14 = trunc i64 %pos.070 to i32, !dbg !64
+  br label %return, !dbg !64
 
-; <label>:21                                      ; preds = %15
-  %22 = shl i64 %target.110, 4, !dbg !105
-  tail call void @llvm.dbg.value(metadata i64 %22, i64 0, metadata !32, metadata !37), !dbg !77
-  %23 = load i8* %16, align 1, !dbg !106, !tbaa !63
-  %24 = sext i8 %23 to i64, !dbg !107
-  %25 = or i64 %24, %22, !dbg !108
-  tail call void @llvm.dbg.value(metadata i64 %25, i64 0, metadata !32, metadata !37), !dbg !77
-  %26 = add nuw nsw i64 %pos.09, 1, !dbg !109
-  tail call void @llvm.dbg.value(metadata i64 %26, i64 0, metadata !31, metadata !37), !dbg !76
-  %.sum = add i64 %pos.09, 17, !dbg !85
-  %27 = getelementptr inbounds i8* %sequence, i64 %.sum, !dbg !85
-  %.sum1 = add i64 %pos.09, 16, !dbg !81
-  %28 = getelementptr inbounds i8* %sequence, i64 %.sum1, !dbg !81
-  %29 = load i8* %28, align 1, !dbg !82, !tbaa !63
-  %30 = icmp eq i8 %29, 0, !dbg !83
-  br i1 %30, label %.preheader, label %15, !dbg !84
+if.end15:                                         ; preds = %while.body
+  %shl16 = shl i64 %target.171, 4, !dbg !65
+  tail call void @llvm.dbg.value(metadata !{i64 %shl16}, i64 0, metadata !31), !dbg !65
+  %2 = load i8* %add.ptr672, align 1, !dbg !66, !tbaa !45
+  %conv19 = sext i8 %2 to i64, !dbg !66
+  %or20 = or i64 %conv19, %shl16, !dbg !66
+  tail call void @llvm.dbg.value(metadata !{i64 %or20}, i64 0, metadata !31), !dbg !66
+  %inc21 = add nsw i64 %pos.070, 1, !dbg !67
+  tail call void @llvm.dbg.value(metadata !{i64 %inc21}, i64 0, metadata !30), !dbg !67
+  %add.ptr5.sum = add i64 %pos.070, 17, !dbg !57
+  %add.ptr6 = getelementptr inbounds i8* %sequence, i64 %add.ptr5.sum, !dbg !57
+  %add.ptr6.sum = add i64 %pos.070, 16, !dbg !57
+  %add.ptr7 = getelementptr inbounds i8* %sequence, i64 %add.ptr6.sum, !dbg !57
+  %3 = load i8* %add.ptr7, align 1, !dbg !57, !tbaa !45
+  %cmp9 = icmp eq i8 %3, 0, !dbg !57
+  br i1 %cmp9, label %for.body25, label %while.body, !dbg !57
 
-.preheader:                                       ; preds = %.preheader2, %21, %36
-  %target.28 = phi i64 [ %37, %36 ], [ %target.0.lcssa, %.preheader2 ], [ %25, %21 ]
-  %pos.17 = phi i64 [ %38, %36 ], [ 0, %.preheader2 ], [ %26, %21 ]
-  %i.16 = phi i64 [ %39, %36 ], [ 0, %.preheader2 ], [ 0, %21 ]
-  %31 = or i64 %target.28, 15, !dbg !110
-  tail call void @llvm.dbg.value(metadata i64 %31, i64 0, metadata !32, metadata !37), !dbg !77
-  %32 = and i64 %31, %hashprobe, !dbg !114
-  %33 = icmp eq i64 %32, %31, !dbg !116
-  br i1 %33, label %34, label %36, !dbg !117
+for.body25:                                       ; preds = %while.cond.preheader, %if.end15, %if.end32
+  %target.264 = phi i64 [ %shl33, %if.end32 ], [ %target.0.lcssa, %while.cond.preheader ], [ %or20, %if.end15 ]
+  %pos.163 = phi i64 [ %inc34, %if.end32 ], [ 0, %while.cond.preheader ], [ %inc21, %if.end15 ]
+  %i.162 = phi i64 [ %inc36, %if.end32 ], [ 0, %while.cond.preheader ], [ 0, %if.end15 ]
+  %or26 = or i64 %target.264, 15, !dbg !68
+  tail call void @llvm.dbg.value(metadata !{i64 %or26}, i64 0, metadata !31), !dbg !68
+  %and27 = and i64 %or26, %hashprobe, !dbg !71
+  %cmp28 = icmp eq i64 %and27, %or26, !dbg !71
+  br i1 %cmp28, label %if.then30, label %if.end32, !dbg !71
 
-; <label>:34                                      ; preds = %.preheader
-  %35 = trunc i64 %pos.17 to i32, !dbg !118
-  br label %.loopexit, !dbg !119
+if.then30:                                        ; preds = %for.body25
+  %conv31 = trunc i64 %pos.163 to i32, !dbg !72
+  br label %return, !dbg !72
 
-; <label>:36                                      ; preds = %.preheader
-  %37 = shl i64 %31, 4, !dbg !120
-  tail call void @llvm.dbg.value(metadata i64 %37, i64 0, metadata !32, metadata !37), !dbg !77
-  %38 = add nsw i64 %pos.17, 1, !dbg !121
-  tail call void @llvm.dbg.value(metadata i64 %38, i64 0, metadata !31, metadata !37), !dbg !76
-  %39 = add nuw nsw i64 %i.16, 1, !dbg !122
-  tail call void @llvm.dbg.value(metadata i64 %39, i64 0, metadata !29, metadata !37), !dbg !78
-  %40 = icmp ult i64 %39, 16, !dbg !123
-  br i1 %40, label %.preheader, label %.loopexit, !dbg !124
+if.end32:                                         ; preds = %for.body25
+  %shl33 = shl i64 %or26, 4, !dbg !73
+  tail call void @llvm.dbg.value(metadata !{i64 %shl33}, i64 0, metadata !31), !dbg !73
+  %inc34 = add nsw i64 %pos.163, 1, !dbg !74
+  tail call void @llvm.dbg.value(metadata !{i64 %inc34}, i64 0, metadata !30), !dbg !74
+  %inc36 = add nsw i64 %i.162, 1, !dbg !75
+  tail call void @llvm.dbg.value(metadata !{i64 %inc36}, i64 0, metadata !28), !dbg !75
+  %cmp23 = icmp ult i64 %inc36, 16, !dbg !75
+  br i1 %cmp23, label %for.body25, label %return, !dbg !75
 
-.loopexit:                                        ; preds = %36, %34, %19
-  %.0 = phi i32 [ %20, %19 ], [ %35, %34 ], [ -1, %36 ]
-  ret i32 %.0, !dbg !125
+return:                                           ; preds = %if.end32, %if.then30, %if.then13
+  %retval.0 = phi i32 [ %conv14, %if.then13 ], [ %conv31, %if.then30 ], [ -1, %if.end32 ]
+  ret i32 %retval.0, !dbg !76
 }

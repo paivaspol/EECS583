@@ -1,75 +1,72 @@
-define i32 @_ZN6soplex9CLUFactor17solveRight4updateEPdPidS1_S1_S2_S2_(%"class.soplex::CLUFactor"* nocapture readonly %this, double* nocapture %vec, i32* nocapture %nonz, double %eps, double* nocapture %rhs, double* %forest, i32* nocapture %forestNum, i32* nocapture %forestIdx) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::CLUFactor"* %this, i64 0, metadata !1050, metadata !2134), !dbg !2847
-  tail call void @llvm.dbg.value(metadata double* %vec, i64 0, metadata !1051, metadata !2134), !dbg !2848
-  tail call void @llvm.dbg.value(metadata i32* %nonz, i64 0, metadata !1052, metadata !2134), !dbg !2849
-  tail call void @llvm.dbg.value(metadata double %eps, i64 0, metadata !1053, metadata !2134), !dbg !2850
-  tail call void @llvm.dbg.value(metadata double* %rhs, i64 0, metadata !1054, metadata !2134), !dbg !2851
-  tail call void @llvm.dbg.value(metadata double* %forest, i64 0, metadata !1055, metadata !2134), !dbg !2852
-  tail call void @llvm.dbg.value(metadata i32* %forestNum, i64 0, metadata !1056, metadata !2134), !dbg !2853
-  tail call void @llvm.dbg.value(metadata i32* %forestIdx, i64 0, metadata !1057, metadata !2134), !dbg !2854
-  tail call void @_ZN6soplex9CLUFactor11solveLrightEPd(%"class.soplex::CLUFactor"* %this, double* %rhs) #5, !dbg !2855
-  %1 = icmp eq double* %forest, null, !dbg !2856
-  br i1 %1, label %17, label %2, !dbg !2857
+define i32 @_ZN6soplex9CLUFactor17solveRight4updateEPdPidS1_S1_S2_S2_(%"class.soplex::CLUFactor"* nocapture %this, double* nocapture %vec, i32* nocapture %nonz, double %eps, double* nocapture %rhs, double* %forest, i32* nocapture %forestNum, i32* nocapture %forestIdx) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::CLUFactor"* %this}, i64 0, metadata !2475), !dbg !3035
+  tail call void @llvm.dbg.value(metadata !{double* %vec}, i64 0, metadata !2476), !dbg !3035
+  tail call void @llvm.dbg.value(metadata !{i32* %nonz}, i64 0, metadata !2477), !dbg !3035
+  tail call void @llvm.dbg.value(metadata !{double %eps}, i64 0, metadata !2478), !dbg !3035
+  tail call void @llvm.dbg.value(metadata !{double* %rhs}, i64 0, metadata !2479), !dbg !3036
+  tail call void @llvm.dbg.value(metadata !{double* %forest}, i64 0, metadata !2480), !dbg !3036
+  tail call void @llvm.dbg.value(metadata !{i32* %forestNum}, i64 0, metadata !2481), !dbg !3036
+  tail call void @llvm.dbg.value(metadata !{i32* %forestIdx}, i64 0, metadata !2482), !dbg !3036
+  tail call void @_ZN6soplex9CLUFactor11solveLrightEPd(%"class.soplex::CLUFactor"* %this, double* %rhs) #6, !dbg !3037
+  %tobool = icmp eq double* %forest, null, !dbg !3038
+  br i1 %tobool, label %if.end, label %if.then, !dbg !3038
 
-; <label>:2                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata double* %rhs, i64 0, metadata !1058, metadata !2134), !dbg !2858
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1061, metadata !2134), !dbg !2859
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1062, metadata !2134), !dbg !2860
-  %3 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 1, !dbg !2861
-  %4 = load i32* %3, align 4, !dbg !2861, !tbaa !2139
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !1063, metadata !2134), !dbg !2862
-  tail call void @llvm.dbg.value(metadata i32* %forestIdx, i64 0, metadata !1064, metadata !2134), !dbg !2863
-  %5 = icmp sgt i32 %4, 0, !dbg !2864
-  br i1 %5, label %.lr.ph, label %._crit_edge, !dbg !2867
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{double* %rhs}, i64 0, metadata !2483), !dbg !3039
+  tail call void @llvm.dbg.value(metadata !1902, i64 0, metadata !2485), !dbg !3040
+  tail call void @llvm.dbg.value(metadata !1902, i64 0, metadata !2486), !dbg !3041
+  %thedim = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 1, !dbg !3042
+  %0 = load i32* %thedim, align 4, !dbg !3042, !tbaa !2749
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !2487), !dbg !3042
+  tail call void @llvm.dbg.value(metadata !{i32* %forestIdx}, i64 0, metadata !2488), !dbg !3043
+  %cmp14 = icmp sgt i32 %0, 0, !dbg !3044
+  br i1 %cmp14, label %for.body, label %for.end, !dbg !3044
 
-.lr.ph:                                           ; preds = %2
-  %6 = add i32 %4, -1, !dbg !2867
-  br label %7, !dbg !2867
+for.body:                                         ; preds = %if.then, %for.body
+  %forest.addr.018 = phi double* [ %incdec.ptr2, %for.body ], [ %forest, %if.then ]
+  %i.017 = phi i32 [ %inc, %for.body ], [ 0, %if.then ]
+  %n.016 = phi i32 [ %add, %for.body ], [ 0, %if.then ]
+  %r.015 = phi double* [ %incdec.ptr, %for.body ], [ %rhs, %if.then ]
+  %inc = add nsw i32 %i.017, 1, !dbg !3046
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !2486), !dbg !3046
+  %idxprom = sext i32 %n.016 to i64, !dbg !3046
+  %arrayidx = getelementptr inbounds i32* %forestIdx, i64 %idxprom, !dbg !3046
+  store i32 %i.017, i32* %arrayidx, align 4, !dbg !3046, !tbaa !2749
+  %incdec.ptr = getelementptr inbounds double* %r.015, i64 1, !dbg !3048
+  tail call void @llvm.dbg.value(metadata !{double* %incdec.ptr}, i64 0, metadata !2483), !dbg !3048
+  %1 = load double* %r.015, align 8, !dbg !3048, !tbaa !2758
+  %incdec.ptr2 = getelementptr inbounds double* %forest.addr.018, i64 1, !dbg !3048
+  tail call void @llvm.dbg.value(metadata !{double* %incdec.ptr2}, i64 0, metadata !2480), !dbg !3048
+  store double %1, double* %forest.addr.018, align 8, !dbg !3048, !tbaa !2758
+  %cmp3 = fcmp une double %1, 0.000000e+00, !dbg !3048
+  %conv = zext i1 %cmp3 to i32, !dbg !3048
+  %add = add nsw i32 %conv, %n.016, !dbg !3048
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !2485), !dbg !3048
+  %exitcond = icmp eq i32 %inc, %0, !dbg !3044
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !3044
 
-; <label>:7                                       ; preds = %7, %.lr.ph
-  %.015 = phi double* [ %forest, %.lr.ph ], [ %13, %7 ]
-  %i.04 = phi i32 [ 0, %.lr.ph ], [ %8, %7 ]
-  %n.03 = phi i32 [ 0, %.lr.ph ], [ %16, %7 ]
-  %r.02 = phi double* [ %rhs, %.lr.ph ], [ %11, %7 ]
-  %8 = add nuw nsw i32 %i.04, 1, !dbg !2868
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !1062, metadata !2134), !dbg !2860
-  %9 = sext i32 %n.03 to i64, !dbg !2870
-  %10 = getelementptr inbounds i32* %forestIdx, i64 %9, !dbg !2870
-  store i32 %i.04, i32* %10, align 4, !dbg !2871, !tbaa !2169
-  %11 = getelementptr inbounds double* %r.02, i64 1, !dbg !2872
-  tail call void @llvm.dbg.value(metadata double* %11, i64 0, metadata !1058, metadata !2134), !dbg !2858
-  %12 = load double* %r.02, align 8, !dbg !2873, !tbaa !2173
-  %13 = getelementptr inbounds double* %.015, i64 1, !dbg !2874
-  tail call void @llvm.dbg.value(metadata double* %13, i64 0, metadata !1055, metadata !2134), !dbg !2852
-  store double %12, double* %.015, align 8, !dbg !2875, !tbaa !2173
-  %14 = fcmp une double %12, 0.000000e+00, !dbg !2876
-  %15 = zext i1 %14 to i32, !dbg !2877
-  %16 = add nsw i32 %15, %n.03, !dbg !2878
-  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !1061, metadata !2134), !dbg !2859
-  %exitcond = icmp eq i32 %i.04, %6, !dbg !2867
-  br i1 %exitcond, label %._crit_edge, label %7, !dbg !2867
+for.end:                                          ; preds = %for.body, %if.then
+  %n.0.lcssa = phi i32 [ 0, %if.then ], [ %add, %for.body ]
+  store i32 %n.0.lcssa, i32* %forestNum, align 4, !dbg !3049, !tbaa !2749
+  br label %if.end, !dbg !3050
 
-._crit_edge:                                      ; preds = %7, %2
-  %n.0.lcssa = phi i32 [ 0, %2 ], [ %16, %7 ]
-  store i32 %n.0.lcssa, i32* %forestNum, align 4, !dbg !2879, !tbaa !2169
-  br label %17, !dbg !2880
+if.end:                                           ; preds = %entry, %for.end
+  %updateType = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 8, !dbg !3051
+  %2 = load i32* %updateType, align 4, !dbg !3051, !tbaa !2749
+  %tobool4 = icmp eq i32 %2, 0, !dbg !3051
+  br i1 %tobool4, label %if.then5, label %if.else, !dbg !3051
 
-; <label>:17                                      ; preds = %0, %._crit_edge
-  %18 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 8, !dbg !2881
-  %19 = load i32* %18, align 4, !dbg !2881, !tbaa !2541
-  %20 = icmp eq i32 %19, 0, !dbg !2883
-  br i1 %20, label %21, label %22, !dbg !2884
+if.then5:                                         ; preds = %if.end
+  tail call void @_ZN6soplex9CLUFactor11solveUrightEPdS1_(%"class.soplex::CLUFactor"* %this, double* %vec, double* %rhs) #6, !dbg !3052
+  tail call void @_ZN6soplex9CLUFactor16solveUpdateRightEPd(%"class.soplex::CLUFactor"* %this, double* %vec) #6, !dbg !3054
+  br label %return, !dbg !3055
 
-; <label>:21                                      ; preds = %17
-  tail call void @_ZN6soplex9CLUFactor11solveUrightEPdS1_(%"class.soplex::CLUFactor"* %this, double* %vec, double* %rhs) #5, !dbg !2885
-  tail call void @_ZN6soplex9CLUFactor16solveUpdateRightEPd(%"class.soplex::CLUFactor"* %this, double* %vec) #5, !dbg !2887
-  br label %24, !dbg !2888
+if.else:                                          ; preds = %if.end
+  %call = tail call i32 @_ZN6soplex9CLUFactor14solveUrightEpsEPdPidS1_(%"class.soplex::CLUFactor"* %this, double* %vec, i32* %nonz, double %eps, double* %rhs) #6, !dbg !3056
+  br label %return, !dbg !3056
 
-; <label>:22                                      ; preds = %17
-  %23 = tail call i32 @_ZN6soplex9CLUFactor14solveUrightEpsEPdPidS1_(%"class.soplex::CLUFactor"* %this, double* %vec, i32* %nonz, double %eps, double* %rhs) #5, !dbg !2889
-  br label %24, !dbg !2890
-
-; <label>:24                                      ; preds = %22, %21
-  %.0 = phi i32 [ %23, %22 ], [ 0, %21 ]
-  ret i32 %.0, !dbg !2891
+return:                                           ; preds = %if.else, %if.then5
+  %retval.0 = phi i32 [ %call, %if.else ], [ 0, %if.then5 ]
+  ret i32 %retval.0, !dbg !3057
 }

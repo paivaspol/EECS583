@@ -1,180 +1,184 @@
-define void @print_perf(%struct.__sFILE* %out, double %nodetime, double %realtime, float %runtime, %struct.t_nrnb* nocapture readonly %nrnb, i32 %nprocs) #3 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %out, i64 0, metadata !268, metadata !340), !dbg !431
-  tail call void @llvm.dbg.value(metadata double %nodetime, i64 0, metadata !269, metadata !340), !dbg !432
-  tail call void @llvm.dbg.value(metadata double %realtime, i64 0, metadata !270, metadata !340), !dbg !433
-  tail call void @llvm.dbg.value(metadata float %runtime, i64 0, metadata !271, metadata !340), !dbg !434
-  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %nrnb, i64 0, metadata !272, metadata !340), !dbg !435
-  tail call void @llvm.dbg.value(metadata i32 %nprocs, i64 0, metadata !273, metadata !340), !dbg !436
-  %1 = fcmp olt double %nodetime, 1.200000e-38, !dbg !437
-  br i1 %1, label %2, label %.preheader2, !dbg !439
+define void @print_perf(%struct._IO_FILE* %out, double %nodetime, double %realtime, float %runtime, %struct.t_nrnb* nocapture %nrnb, i32 %nprocs) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %out}, i64 0, metadata !250), !dbg !346
+  tail call void @llvm.dbg.value(metadata !{double %nodetime}, i64 0, metadata !251), !dbg !346
+  tail call void @llvm.dbg.value(metadata !{double %realtime}, i64 0, metadata !252), !dbg !346
+  tail call void @llvm.dbg.value(metadata !{float %runtime}, i64 0, metadata !253), !dbg !346
+  tail call void @llvm.dbg.value(metadata !{%struct.t_nrnb* %nrnb}, i64 0, metadata !254), !dbg !347
+  tail call void @llvm.dbg.value(metadata !{i32 %nprocs}, i64 0, metadata !255), !dbg !347
+  %cmp = fcmp olt double %nodetime, 1.200000e-38, !dbg !348
+  br i1 %cmp, label %if.then, label %for.body, !dbg !348
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([38 x i8]* @.str1, i64 0, i64 0), i64 37, i64 1, %struct.__sFILE* %out), !dbg !440
-  br label %.preheader2, !dbg !442
+if.then:                                          ; preds = %entry
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([38 x i8]* @.str1, i64 0, i64 0), i64 37, i64 1, %struct._IO_FILE* %out), !dbg !349
+  br label %for.body, !dbg !351
 
-.preheader2:                                      ; preds = %0, %2, %21
-  %indvars.iv15 = phi i64 [ %indvars.iv.next16, %21 ], [ 0, %2 ], [ 0, %0 ]
-  %nbfs.08 = phi double [ %nbfs.1, %21 ], [ 0.000000e+00, %2 ], [ 0.000000e+00, %0 ]
-  %4 = getelementptr inbounds [129 x %struct.t_nrnb_data]* @nbdata, i64 0, i64 %indvars.iv15, i32 0, !dbg !443
-  %5 = load i8** %4, align 16, !dbg !443, !tbaa !417
-  %6 = tail call i8* @strstr(i8* %5, i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0)) #10, !dbg !448
-  %7 = icmp eq i8* %6, null, !dbg !449
-  br i1 %7, label %12, label %8, !dbg !450
+for.body:                                         ; preds = %entry, %if.then, %for.inc
+  %indvars.iv201 = phi i64 [ %indvars.iv.next202, %for.inc ], [ 0, %if.then ], [ 0, %entry ]
+  %nbfs.0195 = phi double [ %nbfs.1, %for.inc ], [ 0.000000e+00, %if.then ], [ 0.000000e+00, %entry ]
+  %name = getelementptr inbounds [129 x %struct.t_nrnb_data]* bitcast (<{ { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] } }>* @nbdata to [129 x %struct.t_nrnb_data]*), i64 0, i64 %indvars.iv201, i32 0, !dbg !352
+  %1 = load i8** %name, align 16, !dbg !352, !tbaa !341
+  %call2 = tail call i8* @strstr(i8* %1, i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0)) #9, !dbg !352
+  %cmp3 = icmp eq i8* %call2, null, !dbg !352
+  br i1 %cmp3, label %if.else, label %if.then4, !dbg !352
 
-; <label>:8                                       ; preds = %.preheader2
-  %9 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 %indvars.iv15, !dbg !451
-  %10 = load double* %9, align 8, !dbg !451, !tbaa !392
-  %11 = fmul double %10, 9.000000e-06, !dbg !452
-  br label %21, !dbg !453
+if.then4:                                         ; preds = %for.body
+  %arrayidx6 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 %indvars.iv201, !dbg !355
+  %2 = load double* %arrayidx6, align 8, !dbg !355, !tbaa !328
+  %mul = fmul double %2, 9.000000e-06, !dbg !355
+  br label %for.inc, !dbg !355
 
-; <label>:12                                      ; preds = %.preheader2
-  %13 = tail call i8* @strstr(i8* %5, i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0)) #10, !dbg !454
-  %14 = icmp eq i8* %13, null, !dbg !456
-  %15 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 %indvars.iv15, !dbg !457
-  %16 = load double* %15, align 8, !dbg !457, !tbaa !392
-  br i1 %14, label %19, label %17, !dbg !458
+if.else:                                          ; preds = %for.body
+  %call10 = tail call i8* @strstr(i8* %1, i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0)) #9, !dbg !356
+  %cmp11 = icmp eq i8* %call10, null, !dbg !356
+  %arrayidx15 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 %indvars.iv201, !dbg !357
+  %3 = load double* %arrayidx15, align 8, !dbg !357, !tbaa !328
+  br i1 %cmp11, label %if.else18, label %if.then12, !dbg !356
 
-; <label>:17                                      ; preds = %12
-  %18 = fmul double %16, 3.000000e-06, !dbg !459
-  br label %21, !dbg !460
+if.then12:                                        ; preds = %if.else
+  %mul16 = fmul double %3, 3.000000e-06, !dbg !357
+  br label %for.inc, !dbg !357
 
-; <label>:19                                      ; preds = %12
-  %20 = fmul double %16, 1.000000e-06, !dbg !461
-  br label %21
+if.else18:                                        ; preds = %if.else
+  %mul22 = fmul double %3, 1.000000e-06, !dbg !358
+  br label %for.inc
 
-; <label>:21                                      ; preds = %8, %19, %17
-  %.pn = phi double [ %11, %8 ], [ %18, %17 ], [ %20, %19 ]
-  %nbfs.1 = fadd double %nbfs.08, %.pn, !dbg !462
-  %indvars.iv.next16 = add nuw nsw i64 %indvars.iv15, 1, !dbg !463
-  %exitcond17 = icmp eq i64 %indvars.iv.next16, 78, !dbg !463
-  br i1 %exitcond17, label %.preheader, label %.preheader2, !dbg !463
+for.inc:                                          ; preds = %if.then4, %if.else18, %if.then12
+  %mul.pn = phi double [ %mul, %if.then4 ], [ %mul16, %if.then12 ], [ %mul22, %if.else18 ]
+  %nbfs.1 = fadd double %nbfs.0195, %mul.pn, !dbg !355
+  %indvars.iv.next202 = add i64 %indvars.iv201, 1, !dbg !359
+  %lftr.wideiv203 = trunc i64 %indvars.iv.next202 to i32, !dbg !359
+  %exitcond204 = icmp eq i32 %lftr.wideiv203, 78, !dbg !359
+  br i1 %exitcond204, label %for.body28, label %for.body, !dbg !359
 
-.preheader:                                       ; preds = %21, %.preheader
-  %indvars.iv12 = phi i64 [ %indvars.iv.next13, %.preheader ], [ 0, %21 ]
-  %tflop.07 = phi double [ %29, %.preheader ], [ 0.000000e+00, %21 ]
-  %22 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 %indvars.iv12, !dbg !464
-  %23 = load double* %22, align 8, !dbg !464, !tbaa !392
-  %24 = fmul double %23, 1.000000e-06, !dbg !467
-  %25 = getelementptr inbounds [129 x %struct.t_nrnb_data]* @nbdata, i64 0, i64 %indvars.iv12, i32 1, !dbg !468
-  %26 = load i32* %25, align 8, !dbg !468, !tbaa !469
-  %27 = sitofp i32 %26 to double, !dbg !470
-  %28 = fmul double %24, %27, !dbg !471
-  %29 = fadd double %tflop.07, %28, !dbg !472
-  tail call void @llvm.dbg.value(metadata double %29, i64 0, metadata !280, metadata !340), !dbg !473
-  %indvars.iv.next13 = add nuw nsw i64 %indvars.iv12, 1, !dbg !474
-  %exitcond14 = icmp eq i64 %indvars.iv.next13, 129, !dbg !474
-  br i1 %exitcond14, label %30, label %.preheader, !dbg !474
+for.body28:                                       ; preds = %for.inc, %for.body28
+  %indvars.iv197 = phi i64 [ %indvars.iv.next198, %for.body28 ], [ 0, %for.inc ]
+  %tflop.0194 = phi double [ %add36, %for.body28 ], [ 0.000000e+00, %for.inc ]
+  %arrayidx31 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 %indvars.iv197, !dbg !360
+  %4 = load double* %arrayidx31, align 8, !dbg !360, !tbaa !328
+  %mul32 = fmul double %4, 1.000000e-06, !dbg !360
+  %flop = getelementptr inbounds [129 x %struct.t_nrnb_data]* bitcast (<{ { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] } }>* @nbdata to [129 x %struct.t_nrnb_data]*), i64 0, i64 %indvars.iv197, i32 1, !dbg !360
+  %5 = load i32* %flop, align 8, !dbg !360, !tbaa !362
+  %conv = sitofp i32 %5 to double, !dbg !360
+  %mul35 = fmul double %mul32, %conv, !dbg !360
+  %add36 = fadd double %tflop.0194, %mul35, !dbg !360
+  tail call void @llvm.dbg.value(metadata !{double %add36}, i64 0, metadata !262), !dbg !360
+  %indvars.iv.next198 = add i64 %indvars.iv197, 1, !dbg !363
+  %lftr.wideiv199 = trunc i64 %indvars.iv.next198 to i32, !dbg !363
+  %exitcond200 = icmp eq i32 %lftr.wideiv199, 129, !dbg !363
+  br i1 %exitcond200, label %for.end39, label %for.body28, !dbg !363
 
-; <label>:30                                      ; preds = %.preheader
-  %31 = fcmp olt double %29, 1.200000e-38, !dbg !475
-  br i1 %31, label %32, label %34, !dbg !477
+for.end39:                                        ; preds = %for.body28
+  %cmp40 = fcmp olt double %add36, 1.200000e-38, !dbg !364
+  br i1 %cmp40, label %if.then42, label %if.end44, !dbg !364
 
-; <label>:32                                      ; preds = %30
-  %33 = tail call i64 @fwrite(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0), i64 26, i64 1, %struct.__sFILE* %out), !dbg !478
-  br label %93, !dbg !480
+if.then42:                                        ; preds = %for.end39
+  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0), i64 26, i64 1, %struct._IO_FILE* %out), !dbg !365
+  br label %if.end128, !dbg !367
 
-; <label>:34                                      ; preds = %30
-  %35 = tail call i64 @fwrite(i8* getelementptr inbounds ([46 x i8]* @.str5, i64 0, i64 0), i64 45, i64 1, %struct.__sFILE* %out), !dbg !481
-  %36 = icmp sgt i32 %nprocs, 1, !dbg !482
-  br i1 %36, label %37, label %39, !dbg !484
+if.end44:                                         ; preds = %for.end39
+  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([46 x i8]* @.str5, i64 0, i64 0), i64 45, i64 1, %struct._IO_FILE* %out), !dbg !368
+  %cmp46 = icmp sgt i32 %nprocs, 1, !dbg !369
+  br i1 %cmp46, label %if.then48, label %if.end50, !dbg !369
 
-; <label>:37                                      ; preds = %34
-  tail call void @llvm.dbg.value(metadata double %realtime, i64 0, metadata !269, metadata !340), !dbg !432
-  %38 = tail call i64 @fwrite(i8* getelementptr inbounds ([44 x i8]* @.str6, i64 0, i64 0), i64 43, i64 1, %struct.__sFILE* %out), !dbg !485
-  br label %39, !dbg !487
+if.then48:                                        ; preds = %if.end44
+  tail call void @llvm.dbg.value(metadata !{double %realtime}, i64 0, metadata !251), !dbg !370
+  %8 = tail call i64 @fwrite(i8* getelementptr inbounds ([44 x i8]* @.str6, i64 0, i64 0), i64 43, i64 1, %struct._IO_FILE* %out), !dbg !372
+  br label %if.end50, !dbg !373
 
-; <label>:39                                      ; preds = %37, %34
-  %.0 = phi double [ %realtime, %37 ], [ %nodetime, %34 ]
-  %40 = tail call i64 @fwrite(i8* getelementptr inbounds ([53 x i8]* @.str7, i64 0, i64 0), i64 52, i64 1, %struct.__sFILE* %out), !dbg !488
-  %41 = tail call i64 @fwrite(i8* getelementptr inbounds ([69 x i8]* @.str8, i64 0, i64 0), i64 68, i64 1, %struct.__sFILE* %out), !dbg !489
-  %42 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([23 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str13, i64 0, i64 0)) #10, !dbg !490
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !279, metadata !340), !dbg !491
-  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !278, metadata !340), !dbg !492
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !274, metadata !340), !dbg !493
-  br label %43, !dbg !494
+if.end50:                                         ; preds = %if.then48, %if.end44
+  %nodetime.addr.0 = phi double [ %realtime, %if.then48 ], [ %nodetime, %if.end44 ]
+  %9 = tail call i64 @fwrite(i8* getelementptr inbounds ([53 x i8]* @.str7, i64 0, i64 0), i64 52, i64 1, %struct._IO_FILE* %out), !dbg !374
+  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([69 x i8]* @.str8, i64 0, i64 0), i64 68, i64 1, %struct._IO_FILE* %out), !dbg !375
+  %call53 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([23 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str13, i64 0, i64 0)) #8, !dbg !376
+  tail call void @llvm.dbg.value(metadata !377, i64 0, metadata !261), !dbg !378
+  tail call void @llvm.dbg.value(metadata !377, i64 0, metadata !260), !dbg !379
+  tail call void @llvm.dbg.value(metadata !137, i64 0, metadata !256), !dbg !380
+  br label %for.body57, !dbg !380
 
-; <label>:43                                      ; preds = %62, %39
-  %indvars.iv = phi i64 [ 0, %39 ], [ %indvars.iv.next, %62 ]
-  %mflop.05 = phi double [ 0.000000e+00, %39 ], [ %51, %62 ]
-  %tfrac.04 = phi double [ 0.000000e+00, %39 ], [ %55, %62 ]
-  %44 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 %indvars.iv, !dbg !496
-  %45 = load double* %44, align 8, !dbg !496, !tbaa !392
-  %46 = fmul double %45, 1.000000e-06, !dbg !499
-  tail call void @llvm.dbg.value(metadata double %46, i64 0, metadata !276, metadata !340), !dbg !500
-  %47 = getelementptr inbounds [129 x %struct.t_nrnb_data]* @nbdata, i64 0, i64 %indvars.iv, i32 1, !dbg !501
-  %48 = load i32* %47, align 8, !dbg !501, !tbaa !469
-  %49 = sitofp i32 %48 to double, !dbg !502
-  %50 = fmul double %46, %49, !dbg !503
-  %51 = fadd double %mflop.05, %50, !dbg !504
-  tail call void @llvm.dbg.value(metadata double %51, i64 0, metadata !279, metadata !340), !dbg !491
-  %52 = fmul double %46, 1.000000e+02, !dbg !505
-  %53 = fmul double %52, %49, !dbg !506
-  %54 = fdiv double %53, %29, !dbg !507
-  tail call void @llvm.dbg.value(metadata double %54, i64 0, metadata !277, metadata !340), !dbg !508
-  %55 = fadd double %tfrac.04, %54, !dbg !509
-  tail call void @llvm.dbg.value(metadata double %55, i64 0, metadata !278, metadata !340), !dbg !492
-  %56 = tail call double @fabs(double %46) #11, !dbg !510
-  %57 = fcmp ogt double %56, 1.200000e-38, !dbg !512
-  br i1 %57, label %58, label %62, !dbg !513
+for.body57:                                       ; preds = %for.inc89, %if.end50
+  %indvars.iv = phi i64 [ 0, %if.end50 ], [ %indvars.iv.next, %for.inc89 ]
+  %mflop.0192 = phi double [ 0.000000e+00, %if.end50 ], [ %add67, %for.inc89 ]
+  %tfrac.0191 = phi double [ 0.000000e+00, %if.end50 ], [ %add74, %for.inc89 ]
+  %arrayidx60 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 %indvars.iv, !dbg !382
+  %11 = load double* %arrayidx60, align 8, !dbg !382, !tbaa !328
+  %mul61 = fmul double %11, 1.000000e-06, !dbg !382
+  tail call void @llvm.dbg.value(metadata !{double %mul61}, i64 0, metadata !258), !dbg !382
+  %flop64 = getelementptr inbounds [129 x %struct.t_nrnb_data]* bitcast (<{ { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] } }>* @nbdata to [129 x %struct.t_nrnb_data]*), i64 0, i64 %indvars.iv, i32 1, !dbg !384
+  %12 = load i32* %flop64, align 8, !dbg !384, !tbaa !362
+  %conv65 = sitofp i32 %12 to double, !dbg !384
+  %mul66 = fmul double %mul61, %conv65, !dbg !384
+  %add67 = fadd double %mflop.0192, %mul66, !dbg !384
+  tail call void @llvm.dbg.value(metadata !{double %add67}, i64 0, metadata !261), !dbg !384
+  %mul68 = fmul double %mul61, 1.000000e+02, !dbg !385
+  %mul73 = fmul double %mul68, %conv65, !dbg !385
+  %div = fdiv double %mul73, %add36, !dbg !385
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !259), !dbg !385
+  %add74 = fadd double %tfrac.0191, %div, !dbg !386
+  tail call void @llvm.dbg.value(metadata !{double %add74}, i64 0, metadata !260), !dbg !386
+  %call75 = tail call double @fabs(double %mul61) #10, !dbg !387
+  %cmp76 = fcmp ogt double %call75, 1.200000e-38, !dbg !387
+  br i1 %cmp76, label %if.then78, label %for.inc89, !dbg !387
 
-; <label>:58                                      ; preds = %43
-  %59 = getelementptr inbounds [129 x %struct.t_nrnb_data]* @nbdata, i64 0, i64 %indvars.iv, i32 0, !dbg !514
-  %60 = load i8** %59, align 16, !dbg !514, !tbaa !417
-  %61 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([29 x i8]* @.str14, i64 0, i64 0), i8* %60, double %46, double %50, double %54) #10, !dbg !515
-  br label %62, !dbg !515
+if.then78:                                        ; preds = %for.body57
+  %name81 = getelementptr inbounds [129 x %struct.t_nrnb_data]* bitcast (<{ { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] } }>* @nbdata to [129 x %struct.t_nrnb_data]*), i64 0, i64 %indvars.iv, i32 0, !dbg !388
+  %13 = load i8** %name81, align 16, !dbg !388, !tbaa !341
+  %call87 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([29 x i8]* @.str14, i64 0, i64 0), i8* %13, double %mul61, double %mul66, double %div) #8, !dbg !388
+  br label %for.inc89, !dbg !388
 
-; <label>:62                                      ; preds = %43, %58
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !494
-  %exitcond = icmp eq i64 %indvars.iv.next, 129, !dbg !494
-  br i1 %exitcond, label %63, label %43, !dbg !494
+for.inc89:                                        ; preds = %for.body57, %if.then78
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !380
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !380
+  %exitcond = icmp eq i32 %lftr.wideiv, 129, !dbg !380
+  br i1 %exitcond, label %for.end91, label %for.body57, !dbg !380
 
-; <label>:63                                      ; preds = %62
-  %64 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([28 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str17, i64 0, i64 0), double %51, double %55) #10, !dbg !516
-  %65 = fcmp ogt double %.0, 0.000000e+00, !dbg !517
-  %66 = fcmp ogt double %realtime, 0.000000e+00, !dbg !519
-  %or.cond = and i1 %66, %65, !dbg !520
-  br i1 %or.cond, label %67, label %93, !dbg !520
+for.end91:                                        ; preds = %for.inc89
+  %call92 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([28 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str17, i64 0, i64 0), double %add67, double %add74) #8, !dbg !389
+  %cmp93 = fcmp ogt double %nodetime.addr.0, 0.000000e+00, !dbg !390
+  %cmp95 = fcmp ogt double %realtime, 0.000000e+00, !dbg !390
+  %or.cond = and i1 %cmp93, %cmp95, !dbg !390
+  br i1 %or.cond, label %if.then97, label %if.end128, !dbg !390
 
-; <label>:67                                      ; preds = %63
-  %68 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([20 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0)) #10, !dbg !521
-  %69 = fmul double %.0, 1.000000e+02, !dbg !523
-  %70 = fdiv double %69, %realtime, !dbg !524
-  %71 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([26 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str23, i64 0, i64 0), double %.0, double %realtime, double %70) #10, !dbg !525
-  %72 = fcmp ogt double %.0, 6.000000e+01, !dbg !526
-  br i1 %72, label %73, label %75, !dbg !528
+if.then97:                                        ; preds = %for.end91
+  %call98 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([20 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0)) #8, !dbg !391
+  %mul99 = fmul double %nodetime.addr.0, 1.000000e+02, !dbg !393
+  %div100 = fdiv double %mul99, %realtime, !dbg !393
+  %call101 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([26 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str23, i64 0, i64 0), double %nodetime.addr.0, double %realtime, double %div100) #8, !dbg !393
+  %cmp102 = fcmp ogt double %nodetime.addr.0, 6.000000e+01, !dbg !394
+  br i1 %cmp102, label %if.then104, label %if.end106, !dbg !394
 
-; <label>:73                                      ; preds = %67
-  %74 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([10 x i8]* @.str24, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str17, i64 0, i64 0)) #10, !dbg !529
-  tail call void @pr_difftime(%struct.__sFILE* %out, double %.0) #10, !dbg !531
-  br label %75, !dbg !532
+if.then104:                                       ; preds = %if.then97
+  %call105 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([10 x i8]* @.str24, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str17, i64 0, i64 0)) #8, !dbg !395
+  tail call void @pr_difftime(%struct._IO_FILE* %out, double %nodetime.addr.0) #8, !dbg !397
+  br label %if.end106, !dbg !398
 
-; <label>:75                                      ; preds = %73, %67
-  %76 = fcmp ogt float %runtime, 0.000000e+00, !dbg !533
-  br i1 %76, label %77, label %93, !dbg !535
+if.end106:                                        ; preds = %if.then104, %if.then97
+  %cmp107 = fcmp ogt float %runtime, 0.000000e+00, !dbg !399
+  br i1 %cmp107, label %if.then109, label %if.end128, !dbg !399
 
-; <label>:77                                      ; preds = %75
-  %78 = fdiv double %51, %.0, !dbg !536
-  tail call void @llvm.dbg.value(metadata double %78, i64 0, metadata !279, metadata !340), !dbg !491
-  %79 = fcmp ogt double %78, 1.000000e+03, !dbg !538
-  %80 = select i1 %79, i8* getelementptr inbounds ([9 x i8]* @.str27, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str28, i64 0, i64 0), !dbg !539
-  %81 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([26 x i8]* @.str25, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str26, i64 0, i64 0), i8* %80, i8* getelementptr inbounds ([15 x i8]* @.str29, i64 0, i64 0), i8* getelementptr inbounds ([15 x i8]* @.str30, i64 0, i64 0)) #10, !dbg !540
-  %82 = fdiv double %nbfs.1, %.0, !dbg !541
-  br i1 %79, label %83, label %85, !dbg !542
+if.then109:                                       ; preds = %if.end106
+  %div110 = fdiv double %add67, %nodetime.addr.0, !dbg !400
+  tail call void @llvm.dbg.value(metadata !{double %div110}, i64 0, metadata !261), !dbg !400
+  %cmp111 = fcmp ogt double %div110, 1.000000e+03, !dbg !402
+  %cond = select i1 %cmp111, i8* getelementptr inbounds ([9 x i8]* @.str27, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str28, i64 0, i64 0), !dbg !402
+  %call113 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([26 x i8]* @.str25, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str26, i64 0, i64 0), i8* %cond, i8* getelementptr inbounds ([15 x i8]* @.str29, i64 0, i64 0), i8* getelementptr inbounds ([15 x i8]* @.str30, i64 0, i64 0)) #8, !dbg !402
+  %div114 = fdiv double %nbfs.1, %nodetime.addr.0, !dbg !403
+  br i1 %cmp111, label %cond.true, label %cond.end, !dbg !403
 
-; <label>:83                                      ; preds = %77
-  %84 = fdiv double %78, 1.000000e+03, !dbg !543
-  br label %85, !dbg !542
+cond.true:                                        ; preds = %if.then109
+  %div117 = fdiv double %div110, 1.000000e+03, !dbg !403
+  br label %cond.end, !dbg !403
 
-; <label>:85                                      ; preds = %77, %83
-  %86 = phi double [ %84, %83 ], [ %78, %77 ], !dbg !542
-  %87 = fmul float %runtime, 3.600000e+03, !dbg !544
-  %88 = fpext float %87 to double, !dbg !545
-  %89 = fdiv double %88, %.0, !dbg !546
-  %90 = fmul double %.0, 1.000000e+03, !dbg !547
-  %91 = fdiv double %90, %88, !dbg !548
-  %92 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([34 x i8]* @.str31, i64 0, i64 0), i8* getelementptr inbounds ([13 x i8]* @.str32, i64 0, i64 0), double %82, double %86, double %89, double %91) #10, !dbg !549
-  br label %93, !dbg !550
+cond.end:                                         ; preds = %if.then109, %cond.true
+  %cond118 = phi double [ %div117, %cond.true ], [ %div110, %if.then109 ], !dbg !403
+  %mul119 = fmul float %runtime, 3.600000e+03, !dbg !403
+  %conv120 = fpext float %mul119 to double, !dbg !403
+  %div121 = fdiv double %conv120, %nodetime.addr.0, !dbg !403
+  %mul122 = fmul double %nodetime.addr.0, 1.000000e+03, !dbg !403
+  %div125 = fdiv double %mul122, %conv120, !dbg !403
+  %call126 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([34 x i8]* @.str31, i64 0, i64 0), i8* getelementptr inbounds ([13 x i8]* @.str32, i64 0, i64 0), double %div114, double %cond118, double %div121, double %div125) #8, !dbg !403
+  br label %if.end128, !dbg !404
 
-; <label>:93                                      ; preds = %75, %85, %32, %63
-  ret void, !dbg !551
+if.end128:                                        ; preds = %if.end106, %cond.end, %if.then42, %for.end91
+  ret void, !dbg !405
 }

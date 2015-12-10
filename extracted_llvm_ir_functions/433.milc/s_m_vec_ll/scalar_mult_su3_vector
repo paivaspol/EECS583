@@ -1,25 +1,28 @@
-define void @scalar_mult_su3_vector(%struct.su3_vector* nocapture readonly %a, double %s, %struct.su3_vector* nocapture %c) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.su3_vector* %a, i64 0, metadata !24, metadata !33), !dbg !34
-  tail call void @llvm.dbg.value(metadata double %s, i64 0, metadata !25, metadata !33), !dbg !35
-  tail call void @llvm.dbg.value(metadata %struct.su3_vector* %c, i64 0, metadata !26, metadata !33), !dbg !36
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !27, metadata !33), !dbg !37
-  %1 = insertelement <2 x double> undef, double %s, i32 0, !dbg !38
-  %2 = insertelement <2 x double> %1, double %s, i32 1, !dbg !38
-  br label %3, !dbg !42
+define void @scalar_mult_su3_vector(%struct.su3_vector* nocapture %a, double %s, %struct.su3_vector* nocapture %c) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.su3_vector* %a}, i64 0, metadata !25), !dbg !30
+  tail call void @llvm.dbg.value(metadata !{double %s}, i64 0, metadata !26), !dbg !30
+  tail call void @llvm.dbg.value(metadata !{%struct.su3_vector* %c}, i64 0, metadata !27), !dbg !30
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !28), !dbg !31
+  br label %for.body, !dbg !31
 
-; <label>:3                                       ; preds = %3, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds %struct.su3_vector* %a, i64 0, i32 0, i64 %indvars.iv, i32 0, !dbg !43
-  %5 = getelementptr inbounds %struct.su3_vector* %c, i64 0, i32 0, i64 %indvars.iv, i32 0, !dbg !44
-  %6 = bitcast double* %4 to <2 x double>*, !dbg !43
-  %7 = load <2 x double>* %6, align 8, !dbg !43, !tbaa !45
-  %8 = fmul <2 x double> %2, %7, !dbg !38
-  %9 = bitcast double* %5 to <2 x double>*, !dbg !49
-  store <2 x double> %8, <2 x double>* %9, align 8, !dbg !49, !tbaa !45
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !42
-  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !42
-  br i1 %exitcond, label %10, label %3, !dbg !42
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %real = getelementptr inbounds %struct.su3_vector* %a, i64 0, i32 0, i64 %indvars.iv, i32 0, !dbg !33
+  %0 = load double* %real, align 8, !dbg !33, !tbaa !35
+  %mul = fmul double %0, %s, !dbg !33
+  %real5 = getelementptr inbounds %struct.su3_vector* %c, i64 0, i32 0, i64 %indvars.iv, i32 0, !dbg !33
+  store double %mul, double* %real5, align 8, !dbg !33, !tbaa !35
+  %imag = getelementptr inbounds %struct.su3_vector* %a, i64 0, i32 0, i64 %indvars.iv, i32 1, !dbg !38
+  %1 = load double* %imag, align 8, !dbg !38, !tbaa !35
+  %mul9 = fmul double %1, %s, !dbg !38
+  %imag13 = getelementptr inbounds %struct.su3_vector* %c, i64 0, i32 0, i64 %indvars.iv, i32 1, !dbg !38
+  store double %mul9, double* %imag13, align 8, !dbg !38, !tbaa !35
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !31
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !31
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !31
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !31
 
-; <label>:10                                      ; preds = %3
-  ret void, !dbg !50
+for.end:                                          ; preds = %for.body
+  ret void, !dbg !39
 }

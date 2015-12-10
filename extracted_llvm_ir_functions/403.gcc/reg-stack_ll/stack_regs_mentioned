@@ -1,64 +1,70 @@
 define i32 @stack_regs_mentioned(%struct.rtx_def* nocapture %insn) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %insn to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %idxprom36 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom36
-  %1 = load i8* %arrayidx, align 1, !tbaa !0
-  %cmp = icmp eq i8 %1, 105
-  %2 = load %struct.varray_head_tag** @stack_regs_mentioned_data, align 8, !tbaa !2
-  %tobool = icmp ne %struct.varray_head_tag* %2, null
-  %or.cond = and i1 %cmp, %tobool
-  br i1 %or.cond, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !973), !dbg !1559
+  %0 = bitcast %struct.rtx_def* %insn to i32*, !dbg !1560
+  %bf.load = load i32* %0, align 8, !dbg !1560
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1560
+  %idxprom36 = zext i32 %bf.clear to i64, !dbg !1560
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom36, !dbg !1560
+  %1 = load i8* %arrayidx, align 1, !dbg !1560, !tbaa !1561
+  %cmp = icmp eq i8 %1, 105, !dbg !1560
+  %2 = load %struct.varray_head_tag** @stack_regs_mentioned_data, align 8, !dbg !1560, !tbaa !1563
+  %tobool = icmp ne %struct.varray_head_tag* %2, null, !dbg !1560
+  %or.cond = and i1 %cmp, %tobool, !dbg !1560
+  br i1 %or.cond, label %if.end, label %return, !dbg !1560
 
 if.end:                                           ; preds = %entry
-  %fld = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1
-  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*
-  %3 = load i32* %rtint, align 4, !tbaa !3
-  %num_elements = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 0
-  %4 = load i64* %num_elements, align 8, !tbaa !4
-  %conv3 = trunc i64 %4 to i32
-  %cmp4 = icmp ult i32 %3, %conv3
-  br i1 %cmp4, label %if.end8, label %if.then6
+  %fld = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, !dbg !1564
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*, !dbg !1564
+  %3 = load i32* %rtint, align 4, !dbg !1564, !tbaa !1565
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !974), !dbg !1564
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 0, !dbg !1566
+  %4 = load i64* %num_elements, align 8, !dbg !1566, !tbaa !1567
+  %conv3 = trunc i64 %4 to i32, !dbg !1566
+  tail call void @llvm.dbg.value(metadata !{i32 %conv3}, i64 0, metadata !975), !dbg !1566
+  %cmp4 = icmp ult i32 %3, %conv3, !dbg !1568
+  br i1 %cmp4, label %if.end8, label %if.then6, !dbg !1568
 
 if.then6:                                         ; preds = %if.end
-  %div = udiv i32 %3, 20
-  %add = add i32 %div, %3
-  %conv7 = zext i32 %add to i64
-  %call = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %2, i64 %conv7) #6
-  store %struct.varray_head_tag* %call, %struct.varray_head_tag** @stack_regs_mentioned_data, align 8, !tbaa !2
-  br label %if.end8
+  %div = udiv i32 %3, 20, !dbg !1569
+  %add = add i32 %div, %3, !dbg !1569
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !975), !dbg !1569
+  %conv7 = zext i32 %add to i64, !dbg !1571
+  %call = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %2, i64 %conv7) #7, !dbg !1571
+  store %struct.varray_head_tag* %call, %struct.varray_head_tag** @stack_regs_mentioned_data, align 8, !dbg !1571, !tbaa !1563
+  br label %if.end8, !dbg !1572
 
 if.end8:                                          ; preds = %if.end, %if.then6
   %5 = phi %struct.varray_head_tag* [ %2, %if.end ], [ %call, %if.then6 ]
-  %idxprom9 = zext i32 %3 to i64
-  %data = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 4
-  %c = bitcast %union.varray_data_tag* %data to [1 x i8]*
-  %arrayidx10 = getelementptr inbounds [1 x i8]* %c, i64 0, i64 %idxprom9
-  %6 = load i8* %arrayidx10, align 1, !tbaa !0
-  %conv11 = sext i8 %6 to i32
-  %cmp12 = icmp eq i8 %6, 0
-  br i1 %cmp12, label %if.then14, label %if.end24
+  %idxprom9 = zext i32 %3 to i64, !dbg !1573
+  %data = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 4, !dbg !1573
+  %c = bitcast %union.varray_data_tag* %data to [1 x i8]*, !dbg !1573
+  %arrayidx10 = getelementptr inbounds [1 x i8]* %c, i64 0, i64 %idxprom9, !dbg !1573
+  %6 = load i8* %arrayidx10, align 1, !dbg !1573, !tbaa !1561
+  %conv11 = sext i8 %6 to i32, !dbg !1573
+  tail call void @llvm.dbg.value(metadata !{i32 %conv11}, i64 0, metadata !976), !dbg !1573
+  %cmp12 = icmp eq i8 %6, 0, !dbg !1574
+  br i1 %cmp12, label %if.then14, label %if.end24, !dbg !1574
 
 if.then14:                                        ; preds = %if.end8
-  %arrayidx16 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
-  %rtx = bitcast %union.rtunion_def* %arrayidx16 to %struct.rtx_def**
-  %7 = load %struct.rtx_def** %rtx, align 8, !tbaa !2
-  %call17 = tail call fastcc i32 @stack_regs_mentioned_p(%struct.rtx_def* %7) #7
-  %tobool18 = icmp ne i32 %call17, 0
-  %cond = select i1 %tobool18, i32 1, i32 2
-  %conv19 = trunc i32 %cond to i8
-  store i8 %conv19, i8* %arrayidx10, align 1, !tbaa !0
-  br label %if.end24
+  %arrayidx16 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3, !dbg !1575
+  %rtx = bitcast %union.rtunion_def* %arrayidx16 to %struct.rtx_def**, !dbg !1575
+  %7 = load %struct.rtx_def** %rtx, align 8, !dbg !1575, !tbaa !1563
+  %call17 = tail call fastcc i32 @stack_regs_mentioned_p(%struct.rtx_def* %7) #8, !dbg !1575
+  %tobool18 = icmp ne i32 %call17, 0, !dbg !1575
+  %cond = select i1 %tobool18, i32 1, i32 2, !dbg !1575
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !976), !dbg !1575
+  %conv19 = trunc i32 %cond to i8, !dbg !1577
+  store i8 %conv19, i8* %arrayidx10, align 1, !dbg !1577, !tbaa !1561
+  br label %if.end24, !dbg !1578
 
 if.end24:                                         ; preds = %if.then14, %if.end8
   %test.0 = phi i32 [ %cond, %if.then14 ], [ %conv11, %if.end8 ]
-  %cmp25 = icmp eq i32 %test.0, 1
-  %conv26 = zext i1 %cmp25 to i32
-  br label %return
+  %cmp25 = icmp eq i32 %test.0, 1, !dbg !1579
+  %conv26 = zext i1 %cmp25 to i32, !dbg !1579
+  br label %return, !dbg !1579
 
 return:                                           ; preds = %entry, %if.end24
   %retval.0 = phi i32 [ %conv26, %if.end24 ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1580
 }

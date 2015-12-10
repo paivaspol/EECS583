@@ -1,13 +1,17 @@
 define internal void @note_inherently_necessary_set(%struct.rtx_def* nocapture %dest, %struct.rtx_def* nocapture %set, i8* nocapture %data) #0 {
 entry:
-  %0 = bitcast i8* %data to i32*
-  br label %while.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %dest}, i64 0, metadata !615), !dbg !872
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %set}, i64 0, metadata !616), !dbg !873
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !617), !dbg !874
+  %0 = bitcast i8* %data to i32*, !dbg !875
+  tail call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !618), !dbg !875
+  br label %while.cond, !dbg !876
 
 while.cond:                                       ; preds = %while.body, %entry
   %dest.addr.0 = phi %struct.rtx_def* [ %dest, %entry ], [ %2, %while.body ]
-  %1 = bitcast %struct.rtx_def* %dest.addr.0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  %1 = bitcast %struct.rtx_def* %dest.addr.0 to i32*, !dbg !876
+  %bf.load = load i32* %1, align 8, !dbg !876
+  %bf.clear = and i32 %bf.load, 65535, !dbg !876
   switch i32 %bf.clear, label %if.end [
     i32 63, label %while.body
     i32 64, label %while.body
@@ -16,18 +20,19 @@ while.cond:                                       ; preds = %while.body, %entry
     i32 66, label %if.then
     i32 42, label %if.then
     i32 43, label %if.then
-  ]
+  ], !dbg !876
 
 while.body:                                       ; preds = %while.cond, %while.cond, %while.cond, %while.cond
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest.addr.0, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  br label %while.cond
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest.addr.0, i64 0, i32 1, i64 0, !dbg !877
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !877
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !877, !tbaa !669
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !615), !dbg !877
+  br label %while.cond, !dbg !877
 
 if.then:                                          ; preds = %while.cond, %while.cond, %while.cond
-  store i32 1, i32* %0, align 4, !tbaa !3
-  br label %if.end
+  store i32 1, i32* %0, align 4, !dbg !878, !tbaa !674
+  br label %if.end, !dbg !878
 
 if.end:                                           ; preds = %while.cond, %if.then
-  ret void
+  ret void, !dbg !879
 }

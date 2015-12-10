@@ -1,43 +1,46 @@
 define i32 @non_q_regs_operand(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
 entry:
-  %cmp = icmp eq i32 %mode, 0
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2377), !dbg !6242
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2378), !dbg !6243
+  %cmp = icmp eq i32 %mode, 0, !dbg !6244
   %.phi.trans.insert25 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load2.pre = load i32* %.phi.trans.insert25, align 8
-  br i1 %cmp, label %if.end, label %land.lhs.true
+  %bf.load2.pre = load i32* %.phi.trans.insert25, align 8, !dbg !6245
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !6244
 
 land.lhs.true:                                    ; preds = %entry
-  %bf.lshr = lshr i32 %bf.load2.pre, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %cmp1 = icmp eq i32 %bf.clear, %mode
-  br i1 %cmp1, label %if.end, label %return
+  %bf.lshr = lshr i32 %bf.load2.pre, 16, !dbg !6244
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !6244
+  %cmp1 = icmp eq i32 %bf.clear, %mode, !dbg !6244
+  br i1 %cmp1, label %if.end, label %return, !dbg !6244
 
 if.end:                                           ; preds = %entry, %land.lhs.true
-  %bf.clear3 = and i32 %bf.load2.pre, 65535
-  %cmp4 = icmp eq i32 %bf.clear3, 63
-  br i1 %cmp4, label %if.then5, label %if.end6
+  %bf.clear3 = and i32 %bf.load2.pre, 65535, !dbg !6245
+  %cmp4 = icmp eq i32 %bf.clear3, 63, !dbg !6245
+  br i1 %cmp4, label %if.then5, label %if.end6, !dbg !6245
 
 if.then5:                                         ; preds = %if.end
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, !dbg !6246
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !6246
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !6246, !tbaa !4365
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !2377), !dbg !6246
   %.phi.trans.insert = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load7.pre = load i32* %.phi.trans.insert, align 8
-  br label %if.end6
+  %bf.load7.pre = load i32* %.phi.trans.insert, align 8, !dbg !6247
+  br label %if.end6, !dbg !6246
 
 if.end6:                                          ; preds = %if.then5, %if.end
   %bf.load7 = phi i32 [ %bf.load7.pre, %if.then5 ], [ %bf.load2.pre, %if.end ]
   %op.addr.0 = phi %struct.rtx_def* [ %0, %if.then5 ], [ %op, %if.end ]
-  %bf.clear8 = and i32 %bf.load7, 65535
-  %cmp9 = icmp eq i32 %bf.clear8, 61
-  br i1 %cmp9, label %land.lhs.true10, label %land.end
+  %bf.clear8 = and i32 %bf.load7, 65535, !dbg !6247
+  %cmp9 = icmp eq i32 %bf.clear8, 61, !dbg !6247
+  br i1 %cmp9, label %land.lhs.true10, label %land.end, !dbg !6247
 
 land.lhs.true10:                                  ; preds = %if.end6
-  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %op.addr.0, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx12 to i32*
-  %1 = load i32* %rtuint, align 4, !tbaa !0
-  %.off = add i32 %1, -4
-  %2 = icmp ult i32 %.off, 49
-  br label %land.end
+  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %op.addr.0, i64 0, i32 1, i64 0, !dbg !6247
+  %rtuint = bitcast %union.rtunion_def* %arrayidx12 to i32*, !dbg !6247
+  %1 = load i32* %rtuint, align 4, !dbg !6247, !tbaa !4347
+  %.off = add i32 %1, -4, !dbg !6247
+  %2 = icmp ult i32 %.off, 49, !dbg !6247
+  br label %land.end, !dbg !6247
 
 land.end:                                         ; preds = %land.lhs.true10, %if.end6
   %3 = phi i1 [ false, %if.end6 ], [ %2, %land.lhs.true10 ]
@@ -46,5 +49,5 @@ land.end:                                         ; preds = %land.lhs.true10, %i
 
 return:                                           ; preds = %land.lhs.true, %land.end
   %retval.0 = phi i32 [ %land.ext, %land.end ], [ 0, %land.lhs.true ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6248
 }

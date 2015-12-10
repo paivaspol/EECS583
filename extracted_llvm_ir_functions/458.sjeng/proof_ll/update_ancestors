@@ -1,43 +1,44 @@
 define void @update_ancestors(%struct.node* %node) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.node* %node, i64 0, metadata !118, metadata !211), !dbg !1042
-  tail call void @llvm.dbg.value(metadata %struct.node* %node, i64 0, metadata !119, metadata !211), !dbg !1043
-  tail call void @llvm.dbg.value(metadata %struct.node* %node, i64 0, metadata !120, metadata !211), !dbg !1044
-  %1 = icmp eq %struct.node* %node, null, !dbg !1045
-  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !1046
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %node}, i64 0, metadata !114), !dbg !641
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %node}, i64 0, metadata !115), !dbg !642
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %node}, i64 0, metadata !116), !dbg !643
+  %cmp16 = icmp eq %struct.node* %node, null, !dbg !644
+  br i1 %cmp16, label %while.end, label %while.body, !dbg !644
 
-.lr.ph:                                           ; preds = %0, %7
-  %tnode.01 = phi %struct.node* [ %9, %7 ], [ %node, %0 ]
-  tail call void @set_proof_and_disproof_numbers(%struct.node* %tnode.01) #5, !dbg !1047
-  tail call void @llvm.dbg.value(metadata %struct.node* %9, i64 0, metadata !120, metadata !211), !dbg !1044
-  %2 = getelementptr inbounds %struct.node* %tnode.01, i64 0, i32 8, i32 1, !dbg !1049
-  %3 = load i32* %2, align 4, !dbg !1049, !tbaa !1051
-  %4 = icmp eq i32 %3, 0, !dbg !1052
-  br i1 %4, label %7, label %5, !dbg !1053
+while.body:                                       ; preds = %entry, %if.end
+  %tnode.017 = phi %struct.node* [ %1, %if.end ], [ %node, %entry ]
+  tail call void @set_proof_and_disproof_numbers(%struct.node* %tnode.017) #6, !dbg !645
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %tnode.017}, i64 0, metadata !116), !dbg !647
+  %target = getelementptr inbounds %struct.node* %tnode.017, i64 0, i32 8, i32 1, !dbg !648
+  %0 = load i32* %target, align 4, !dbg !648, !tbaa !205
+  %cmp1 = icmp eq i32 %0, 0, !dbg !648
+  br i1 %cmp1, label %if.end, label %if.then, !dbg !648
 
-; <label>:5                                       ; preds = %.lr.ph
-  %6 = getelementptr inbounds %struct.node* %tnode.01, i64 0, i32 8, !dbg !1054
-  tail call void @unmake(%struct.move_s* %6, i32 0) #6, !dbg !1055
-  br label %7, !dbg !1057
+if.then:                                          ; preds = %while.body
+  %move = getelementptr inbounds %struct.node* %tnode.017, i64 0, i32 8, !dbg !648
+  tail call void @unmake(%struct.move_s* %move, i32 0) #7, !dbg !649
+  br label %if.end, !dbg !651
 
-; <label>:7                                       ; preds = %.lr.ph, %5
-  %8 = getelementptr inbounds %struct.node* %tnode.01, i64 0, i32 7, !dbg !1058
-  %9 = load %struct.node** %8, align 8, !dbg !1058, !tbaa !990
-  tail call void @llvm.dbg.value(metadata %struct.node* %9, i64 0, metadata !119, metadata !211), !dbg !1043
-  %10 = icmp eq %struct.node* %9, null, !dbg !1045
-  br i1 %10, label %._crit_edge, label %.lr.ph, !dbg !1046
+if.end:                                           ; preds = %while.body, %if.then
+  %parent = getelementptr inbounds %struct.node* %tnode.017, i64 0, i32 7, !dbg !652
+  %1 = load %struct.node** %parent, align 8, !dbg !652, !tbaa !210
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %1}, i64 0, metadata !115), !dbg !652
+  %cmp = icmp eq %struct.node* %1, null, !dbg !644
+  br i1 %cmp, label %while.end, label %while.body, !dbg !644
 
-._crit_edge:                                      ; preds = %7, %0
-  %prevnode.0.lcssa = phi %struct.node* [ null, %0 ], [ %tnode.01, %7 ]
-  %11 = getelementptr inbounds %struct.node* %prevnode.0.lcssa, i64 0, i32 8, i32 1, !dbg !1059
-  %12 = load i32* %11, align 4, !dbg !1059, !tbaa !1051
-  %13 = icmp eq i32 %12, 0, !dbg !1061
-  br i1 %13, label %16, label %14, !dbg !1062
+while.end:                                        ; preds = %if.end, %entry
+  %prevnode.0.lcssa = phi %struct.node* [ null, %entry ], [ %tnode.017, %if.end ]
+  %target4 = getelementptr inbounds %struct.node* %prevnode.0.lcssa, i64 0, i32 8, i32 1, !dbg !653
+  %2 = load i32* %target4, align 4, !dbg !653, !tbaa !205
+  %cmp5 = icmp eq i32 %2, 0, !dbg !653
+  br i1 %cmp5, label %if.end8, label %if.then6, !dbg !653
 
-; <label>:14                                      ; preds = %._crit_edge
-  %15 = getelementptr inbounds %struct.node* %prevnode.0.lcssa, i64 0, i32 8, !dbg !1063
-  tail call void @make(%struct.move_s* %15, i32 0) #6, !dbg !1064
-  br label %16, !dbg !1066
+if.then6:                                         ; preds = %while.end
+  %move3 = getelementptr inbounds %struct.node* %prevnode.0.lcssa, i64 0, i32 8, !dbg !653
+  tail call void @make(%struct.move_s* %move3, i32 0) #7, !dbg !654
+  br label %if.end8, !dbg !656
 
-; <label>:16                                      ; preds = %._crit_edge, %14
-  ret void, !dbg !1067
+if.end8:                                          ; preds = %while.end, %if.then6
+  ret void, !dbg !657
 }

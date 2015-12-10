@@ -1,45 +1,46 @@
-define internal fastcc i32 @_ZL10get_numberRPKcRi(i8** nocapture dereferenceable(8) %str, i32* nocapture dereferenceable(4) %number) #0 {
-  tail call void @llvm.dbg.value(metadata i8** %str, i64 0, metadata !66, metadata !246), !dbg !359
-  tail call void @llvm.dbg.value(metadata i32* %number, i64 0, metadata !67, metadata !246), !dbg !360
-  %.pre = load i8** %str, align 8, !dbg !361, !tbaa !300
-  br label %1, !dbg !362
+define internal fastcc i32 @_ZL10get_numberRPKcRi(i8** nocapture %str, i32* nocapture %number) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8** %str}, i64 0, metadata !46), !dbg !100
+  tail call void @llvm.dbg.value(metadata !{i32* %number}, i64 0, metadata !47), !dbg !100
+  %.pre = load i8** %str, align 8, !dbg !101, !tbaa !56
+  br label %while.cond, !dbg !101
 
-; <label>:1                                       ; preds = %4, %0
-  %2 = phi i8* [ %5, %4 ], [ %.pre, %0 ]
-  %3 = load i8* %2, align 1, !dbg !363, !tbaa !297
-  switch i8 %3, label %6 [
-    i8 32, label %4
-    i8 9, label %4
-  ], !dbg !362
+while.cond:                                       ; preds = %while.body, %entry
+  %0 = phi i8* [ %incdec.ptr, %while.body ], [ %.pre, %entry ]
+  %1 = load i8* %0, align 1, !dbg !101, !tbaa !57
+  switch i8 %1, label %while.end [
+    i8 32, label %while.body
+    i8 9, label %while.body
+  ], !dbg !101
 
-; <label>:4                                       ; preds = %1, %1
-  %5 = getelementptr inbounds i8* %2, i64 1, !dbg !364
-  store i8* %5, i8** %str, align 8, !dbg !364, !tbaa !300
-  br label %1, !dbg !362
+while.body:                                       ; preds = %while.cond, %while.cond
+  %incdec.ptr = getelementptr inbounds i8* %0, i64 1, !dbg !101
+  store i8* %incdec.ptr, i8** %str, align 8, !dbg !101, !tbaa !56
+  br label %while.cond, !dbg !101
 
-; <label>:6                                       ; preds = %1
-  %.off = add i8 %3, -48, !dbg !365
-  %7 = icmp ugt i8 %.off, 9, !dbg !365
-  br i1 %7, label %.critedge, label %8, !dbg !365
+while.end:                                        ; preds = %while.cond
+  %.off = add i8 %1, -48, !dbg !102
+  %2 = icmp ugt i8 %.off, 9, !dbg !102
+  br i1 %2, label %return, label %if.else, !dbg !102
 
-; <label>:8                                       ; preds = %6
-  %9 = tail call i32 @atoi(i8* %2) #3, !dbg !367
-  store i32 %9, i32* %number, align 4, !dbg !369, !tbaa !370
-  %10 = load i8* %2, align 1, !dbg !371, !tbaa !297
-  %.off24 = add i8 %10, -48, !dbg !372
-  %11 = icmp ult i8 %.off24, 10, !dbg !372
-  br i1 %11, label %.lr.ph, label %.critedge, !dbg !372
+if.else:                                          ; preds = %while.end
+  %call = tail call i32 @atoi(i8* %0) #4, !dbg !103
+  store i32 %call, i32* %number, align 4, !dbg !103, !tbaa !60
+  %3 = load i8* %0, align 1, !dbg !105, !tbaa !57
+  %.off2324 = add i8 %3, -48, !dbg !105
+  %4 = icmp ult i8 %.off2324, 10, !dbg !105
+  br i1 %4, label %while.body12, label %return, !dbg !105
 
-.lr.ph:                                           ; preds = %8, %.lr.ph
-  %12 = phi i8* [ %13, %.lr.ph ], [ %2, %8 ]
-  %13 = getelementptr inbounds i8* %12, i64 1, !dbg !373
-  store i8* %13, i8** %str, align 8, !dbg !373, !tbaa !300
-  %14 = load i8* %13, align 1, !dbg !371, !tbaa !297
-  %.off2 = add i8 %14, -48, !dbg !372
-  %15 = icmp ult i8 %.off2, 10, !dbg !372
-  br i1 %15, label %.lr.ph, label %.critedge, !dbg !372
+while.body12:                                     ; preds = %if.else, %while.body12
+  %5 = phi i8* [ %incdec.ptr13, %while.body12 ], [ %0, %if.else ]
+  %incdec.ptr13 = getelementptr inbounds i8* %5, i64 1, !dbg !105
+  store i8* %incdec.ptr13, i8** %str, align 8, !dbg !105, !tbaa !56
+  %6 = load i8* %incdec.ptr13, align 1, !dbg !105, !tbaa !57
+  %.off23 = add i8 %6, -48, !dbg !105
+  %7 = icmp ult i8 %.off23, 10, !dbg !105
+  br i1 %7, label %while.body12, label %return, !dbg !105
 
-.critedge:                                        ; preds = %.lr.ph, %8, %6
-  %.0 = phi i32 [ 0, %6 ], [ 1, %8 ], [ 1, %.lr.ph ]
-  ret i32 %.0, !dbg !374
+return:                                           ; preds = %if.else, %while.body12, %while.end
+  %retval.0 = phi i32 [ 0, %while.end ], [ 1, %while.body12 ], [ 1, %if.else ]
+  ret i32 %retval.0, !dbg !106
 }

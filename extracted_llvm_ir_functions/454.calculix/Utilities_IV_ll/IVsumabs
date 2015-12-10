@@ -1,18 +1,19 @@
 define i32 @IVsumabs(i32 %size, i32* %y) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !308, metadata !380), !dbg !949
-  tail call void @llvm.dbg.value(metadata i32* %y, i64 0, metadata !309, metadata !380), !dbg !950
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !310, metadata !380), !dbg !951
-  %1 = icmp sgt i32 %size, 0, !dbg !952
-  %2 = icmp eq i32* %y, null, !dbg !953
-  %or.cond = and i1 %1, %2, !dbg !954
-  br i1 %or.cond, label %3, label %.preheader, !dbg !954
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !271), !dbg !703
+  tail call void @llvm.dbg.value(metadata !{i32* %y}, i64 0, metadata !272), !dbg !704
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !273), !dbg !705
+  %cmp = icmp sgt i32 %size, 0, !dbg !706
+  %cmp1 = icmp eq i32* %y, null, !dbg !707
+  %or.cond = and i1 %cmp, %cmp1, !dbg !706
+  br i1 %or.cond, label %if.then2, label %if.end10, !dbg !706
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !955, !tbaa !399
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([60 x i8]* @.str24, i64 0, i64 0), i32 %size, i32* null) #8, !dbg !957
-  tail call void @exit(i32 -1) #9, !dbg !958
-  unreachable, !dbg !958
+if.then2:                                         ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !708, !tbaa !341
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str24, i64 0, i64 0), i32 %size, i32* null) #7, !dbg !708
+  tail call void @exit(i32 -1) #8, !dbg !710
+  unreachable, !dbg !710
 
-.preheader:                                       ; preds = %0
-  ret i32 0, !dbg !959
+if.end10:                                         ; preds = %entry
+  ret i32 0, !dbg !711
 }

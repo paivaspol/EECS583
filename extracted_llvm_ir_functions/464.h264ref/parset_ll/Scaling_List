@@ -1,96 +1,96 @@
-define i32 @Scaling_List(i16* nocapture readonly %scalingListinput, i16* nocapture %scalingList, i32 %sizeOfScalingList, i16* nocapture %UseDefaultScalingMatrix, %struct.datapartition* %partition) #0 {
-  tail call void @llvm.dbg.value(metadata i16* %scalingListinput, i64 0, metadata !311, metadata !699), !dbg !1647
-  tail call void @llvm.dbg.value(metadata i16* %scalingList, i64 0, metadata !312, metadata !699), !dbg !1648
-  tail call void @llvm.dbg.value(metadata i32 %sizeOfScalingList, i64 0, metadata !313, metadata !699), !dbg !1649
-  tail call void @llvm.dbg.value(metadata i16* %UseDefaultScalingMatrix, i64 0, metadata !314, metadata !699), !dbg !1650
-  tail call void @llvm.dbg.value(metadata %struct.datapartition* %partition, i64 0, metadata !315, metadata !699), !dbg !1651
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !318, metadata !699), !dbg !1652
-  tail call void @llvm.dbg.value(metadata i32 8, i64 0, metadata !320, metadata !699), !dbg !1653
-  tail call void @llvm.dbg.value(metadata i32 8, i64 0, metadata !321, metadata !699), !dbg !1654
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !316, metadata !699), !dbg !1655
-  %1 = icmp sgt i32 %sizeOfScalingList, 0, !dbg !1656
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !1659
+define i32 @Scaling_List(i16* nocapture %scalingListinput, i16* nocapture %scalingList, i32 %sizeOfScalingList, i16* nocapture %UseDefaultScalingMatrix, %struct.datapartition* %partition) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %scalingListinput}, i64 0, metadata !309), !dbg !1061
+  tail call void @llvm.dbg.value(metadata !{i16* %scalingList}, i64 0, metadata !310), !dbg !1061
+  tail call void @llvm.dbg.value(metadata !{i32 %sizeOfScalingList}, i64 0, metadata !311), !dbg !1061
+  tail call void @llvm.dbg.value(metadata !{i16* %UseDefaultScalingMatrix}, i64 0, metadata !312), !dbg !1061
+  tail call void @llvm.dbg.value(metadata !{%struct.datapartition* %partition}, i64 0, metadata !313), !dbg !1061
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !316), !dbg !1062
+  tail call void @llvm.dbg.value(metadata !1063, i64 0, metadata !318), !dbg !1064
+  tail call void @llvm.dbg.value(metadata !1063, i64 0, metadata !319), !dbg !1065
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !314), !dbg !1066
+  %cmp59 = icmp sgt i32 %sizeOfScalingList, 0, !dbg !1066
+  br i1 %cmp59, label %for.body.lr.ph, label %for.end, !dbg !1066
 
-.lr.ph:                                           ; preds = %0
-  %2 = icmp eq i32 %sizeOfScalingList, 16, !dbg !1660
-  %3 = add i32 %sizeOfScalingList, -1, !dbg !1659
-  br label %4, !dbg !1659
+for.body.lr.ph:                                   ; preds = %entry
+  %cmp1 = icmp eq i32 %sizeOfScalingList, 16, !dbg !1068
+  br label %for.body, !dbg !1066
 
-; <label>:4                                       ; preds = %._crit_edge6, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %._crit_edge6 ]
-  %nextScale.05 = phi i32 [ 8, %.lr.ph ], [ %nextScale.1, %._crit_edge6 ]
-  %lastScale.04 = phi i32 [ 8, %.lr.ph ], [ %33, %._crit_edge6 ]
-  %len.03 = phi i32 [ 0, %.lr.ph ], [ %len.1, %._crit_edge6 ]
-  br i1 %2, label %5, label %7, !dbg !1662
+for.body:                                         ; preds = %if.end28, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %if.end28 ]
+  %nextScale.063 = phi i32 [ 8, %for.body.lr.ph ], [ %nextScale.1, %if.end28 ]
+  %lastScale.062 = phi i32 [ 8, %for.body.lr.ph ], [ %cond34, %if.end28 ]
+  %len.061 = phi i32 [ 0, %for.body.lr.ph ], [ %len.1, %if.end28 ]
+  br i1 %cmp1, label %cond.true, label %cond.false, !dbg !1068
 
-; <label>:5                                       ; preds = %4
-  %6 = getelementptr inbounds [16 x i8]* @ZZ_SCAN, i64 0, i64 %indvars.iv, !dbg !1663
-  br label %9, !dbg !1662
+cond.true:                                        ; preds = %for.body
+  %arrayidx = getelementptr inbounds [16 x i8]* @ZZ_SCAN, i64 0, i64 %indvars.iv, !dbg !1068
+  br label %cond.end, !dbg !1068
 
-; <label>:7                                       ; preds = %4
-  %8 = getelementptr inbounds [64 x i8]* @ZZ_SCAN8, i64 0, i64 %indvars.iv, !dbg !1664
-  br label %9, !dbg !1662
+cond.false:                                       ; preds = %for.body
+  %arrayidx3 = getelementptr inbounds [64 x i8]* @ZZ_SCAN8, i64 0, i64 %indvars.iv, !dbg !1068
+  br label %cond.end, !dbg !1068
 
-; <label>:9                                       ; preds = %7, %5
-  %.sink.in = phi i8* [ %6, %5 ], [ %8, %7 ]
-  %.sink = load i8* %.sink.in, align 1, !dbg !1663
-  %10 = icmp eq i32 %nextScale.05, 0, !dbg !1665
-  %.pre = zext i8 %.sink to i64, !dbg !1667
-  br i1 %10, label %._crit_edge6, label %11, !dbg !1668
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %.sink.in = phi i8* [ %arrayidx, %cond.true ], [ %arrayidx3, %cond.false ]
+  %.sink = load i8* %.sink.in, align 1, !dbg !1068
+  %cmp5 = icmp eq i32 %nextScale.063, 0, !dbg !1070
+  %idxprom36.pre = zext i8 %.sink to i64, !dbg !1071
+  br i1 %cmp5, label %if.end28, label %if.then, !dbg !1070
 
-; <label>:11                                      ; preds = %9
-  %12 = getelementptr inbounds i16* %scalingListinput, i64 %.pre, !dbg !1669
-  %13 = load i16* %12, align 2, !dbg !1669, !tbaa !1671
-  %14 = sext i16 %13 to i32, !dbg !1669
-  %15 = sub nsw i32 %14, %lastScale.04, !dbg !1673
-  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !319, metadata !699), !dbg !1674
-  %16 = icmp sgt i32 %15, 127, !dbg !1675
-  br i1 %16, label %17, label %19, !dbg !1677
+if.then:                                          ; preds = %cond.end
+  %arrayidx8 = getelementptr inbounds i16* %scalingListinput, i64 %idxprom36.pre, !dbg !1072
+  %0 = load i16* %arrayidx8, align 2, !dbg !1072, !tbaa !1074
+  %conv9 = sext i16 %0 to i32, !dbg !1072
+  %sub = sub nsw i32 %conv9, %lastScale.062, !dbg !1072
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !317), !dbg !1072
+  %cmp10 = icmp sgt i32 %sub, 127, !dbg !1075
+  br i1 %cmp10, label %if.then12, label %if.else, !dbg !1075
 
-; <label>:17                                      ; preds = %11
-  %18 = add nsw i32 %15, -256, !dbg !1678
-  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !319, metadata !699), !dbg !1674
-  br label %22, !dbg !1679
+if.then12:                                        ; preds = %if.then
+  %sub13 = add nsw i32 %sub, -256, !dbg !1076
+  tail call void @llvm.dbg.value(metadata !{i32 %sub13}, i64 0, metadata !317), !dbg !1076
+  br label %if.end17, !dbg !1076
 
-; <label>:19                                      ; preds = %11
-  %20 = icmp slt i32 %15, -128, !dbg !1680
-  %21 = add nsw i32 %15, 256, !dbg !1682
-  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !319, metadata !699), !dbg !1674
-  %. = select i1 %20, i32 %21, i32 %15, !dbg !1683
-  br label %22, !dbg !1683
+if.else:                                          ; preds = %if.then
+  %cmp14 = icmp slt i32 %sub, -128, !dbg !1077
+  %add = add nsw i32 %sub, 256, !dbg !1078
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !317), !dbg !1078
+  %add.sub = select i1 %cmp14, i32 %add, i32 %sub, !dbg !1077
+  br label %if.end17, !dbg !1077
 
-; <label>:22                                      ; preds = %19, %17
-  %delta_scale.0 = phi i32 [ %18, %17 ], [ %., %19 ]
-  %23 = tail call i32 @se_v(i8* getelementptr inbounds ([17 x i8]* @.str6, i64 0, i64 0), i32 %delta_scale.0, %struct.datapartition* %partition) #6, !dbg !1684
-  %24 = add nsw i32 %23, %len.03, !dbg !1685
-  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !318, metadata !699), !dbg !1652
-  %25 = load i16* %12, align 2, !dbg !1686, !tbaa !1671
-  %26 = sext i16 %25 to i32, !dbg !1686
-  tail call void @llvm.dbg.value(metadata i32 %26, i64 0, metadata !321, metadata !699), !dbg !1654
-  %27 = icmp eq i8 %.sink, 0, !dbg !1687
-  %28 = icmp eq i16 %25, 0, !dbg !1688
-  %.1 = and i1 %27, %28, !dbg !1689
-  %29 = zext i1 %.1 to i16, !dbg !1689
-  %30 = load i16* %UseDefaultScalingMatrix, align 2, !dbg !1690, !tbaa !1671
-  %31 = or i16 %29, %30, !dbg !1690
-  store i16 %31, i16* %UseDefaultScalingMatrix, align 2, !dbg !1690, !tbaa !1671
-  br label %._crit_edge6, !dbg !1691
+if.end17:                                         ; preds = %if.else, %if.then12
+  %delta_scale.0 = phi i32 [ %sub13, %if.then12 ], [ %add.sub, %if.else ]
+  %call = tail call i32 @se_v(i8* getelementptr inbounds ([17 x i8]* @.str6, i64 0, i64 0), i32 %delta_scale.0, %struct.datapartition* %partition) #6, !dbg !1079
+  %add18 = add nsw i32 %call, %len.061, !dbg !1079
+  tail call void @llvm.dbg.value(metadata !{i32 %add18}, i64 0, metadata !316), !dbg !1079
+  %1 = load i16* %arrayidx8, align 2, !dbg !1080, !tbaa !1074
+  %conv21 = sext i16 %1 to i32, !dbg !1080
+  tail call void @llvm.dbg.value(metadata !{i32 %conv21}, i64 0, metadata !319), !dbg !1080
+  %cmp22 = icmp eq i8 %.sink, 0, !dbg !1081
+  %cmp24 = icmp eq i16 %1, 0, !dbg !1081
+  %cmp24. = and i1 %cmp22, %cmp24, !dbg !1081
+  %land.ext = zext i1 %cmp24. to i16
+  %2 = load i16* %UseDefaultScalingMatrix, align 2, !tbaa !1074
+  %or = or i16 %land.ext, %2
+  store i16 %or, i16* %UseDefaultScalingMatrix, align 2, !tbaa !1074
+  br label %if.end28, !dbg !1082
 
-._crit_edge6:                                     ; preds = %9, %22
-  %len.1 = phi i32 [ %24, %22 ], [ %len.03, %9 ]
-  %nextScale.1 = phi i32 [ %26, %22 ], [ 0, %9 ]
-  %32 = icmp eq i32 %nextScale.1, 0, !dbg !1692
-  %33 = select i1 %32, i32 %lastScale.04, i32 %nextScale.1, !dbg !1693
-  %34 = trunc i32 %33 to i16, !dbg !1693
-  %35 = getelementptr inbounds i16* %scalingList, i64 %.pre, !dbg !1667
-  store i16 %34, i16* %35, align 2, !dbg !1694, !tbaa !1671
-  tail call void @llvm.dbg.value(metadata i32 %33, i64 0, metadata !320, metadata !699), !dbg !1653
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1659
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1659
-  %exitcond = icmp eq i32 %lftr.wideiv, %3, !dbg !1659
-  br i1 %exitcond, label %._crit_edge, label %4, !dbg !1659
+if.end28:                                         ; preds = %cond.end, %if.end17
+  %len.1 = phi i32 [ %add18, %if.end17 ], [ %len.061, %cond.end ]
+  %nextScale.1 = phi i32 [ %conv21, %if.end17 ], [ 0, %cond.end ]
+  %cmp29 = icmp eq i32 %nextScale.1, 0, !dbg !1071
+  %cond34 = select i1 %cmp29, i32 %lastScale.062, i32 %nextScale.1, !dbg !1071
+  %conv35 = trunc i32 %cond34 to i16, !dbg !1071
+  %arrayidx37 = getelementptr inbounds i16* %scalingList, i64 %idxprom36.pre, !dbg !1071
+  store i16 %conv35, i16* %arrayidx37, align 2, !dbg !1071, !tbaa !1074
+  tail call void @llvm.dbg.value(metadata !{i32 %cond34}, i64 0, metadata !318), !dbg !1083
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1066
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1066
+  %exitcond = icmp eq i32 %lftr.wideiv, %sizeOfScalingList, !dbg !1066
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1066
 
-._crit_edge:                                      ; preds = %._crit_edge6, %0
-  %len.0.lcssa = phi i32 [ 0, %0 ], [ %len.1, %._crit_edge6 ]
-  ret i32 %len.0.lcssa, !dbg !1695
+for.end:                                          ; preds = %if.end28, %entry
+  %len.0.lcssa = phi i32 [ 0, %entry ], [ %len.1, %if.end28 ]
+  ret i32 %len.0.lcssa, !dbg !1084
 }

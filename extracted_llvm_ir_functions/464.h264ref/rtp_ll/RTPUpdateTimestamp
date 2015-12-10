@@ -1,25 +1,26 @@
 define void @RTPUpdateTimestamp(i32 %tr) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %tr, i64 0, metadata !130, metadata !628), !dbg !801
-  %1 = load i32* @RTPUpdateTimestamp.oldtr, align 4, !dbg !802, !tbaa !690
-  %2 = icmp eq i32 %1, -1, !dbg !804
-  br i1 %2, label %10, label %3, !dbg !805
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %tr}, i64 0, metadata !125), !dbg !682
+  %0 = load i32* @RTPUpdateTimestamp.oldtr, align 4, !dbg !683, !tbaa !620
+  %cmp = icmp eq i32 %0, -1, !dbg !683
+  br i1 %cmp, label %return, label %if.end, !dbg !683
 
-; <label>:3                                       ; preds = %0
-  %4 = sub nsw i32 %tr, %1, !dbg !806
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !131, metadata !628), !dbg !807
-  %5 = icmp slt i32 %4, -10, !dbg !808
-  %6 = add nsw i32 %4, 256, !dbg !810
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !131, metadata !628), !dbg !807
-  %. = select i1 %5, i32 %6, i32 %4, !dbg !811
-  %7 = mul nsw i32 %., 1000, !dbg !812
-  %8 = load i32* @CurrentRTPTimestamp, align 4, !dbg !813, !tbaa !690
-  %9 = add nsw i32 %8, %7, !dbg !813
-  br label %10, !dbg !814
+if.end:                                           ; preds = %entry
+  %sub = sub nsw i32 %tr, %0, !dbg !684
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !126), !dbg !684
+  %cmp1 = icmp slt i32 %sub, -10, !dbg !685
+  %add = add nsw i32 %sub, 256, !dbg !686
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !126), !dbg !686
+  %add.sub = select i1 %cmp1, i32 %add, i32 %sub, !dbg !685
+  %mul = mul nsw i32 %add.sub, 1000, !dbg !687
+  %1 = load i32* @CurrentRTPTimestamp, align 4, !dbg !687, !tbaa !620
+  %add4 = add nsw i32 %1, %mul, !dbg !687
+  br label %return, !dbg !688
 
-; <label>:10                                      ; preds = %0, %3
-  %storemerge1 = phi i32 [ %9, %3 ], [ 0, %0 ]
-  %storemerge = phi i32 [ %tr, %3 ], [ 0, %0 ]
-  store i32 %storemerge1, i32* @CurrentRTPTimestamp, align 4, !dbg !813, !tbaa !690
-  store i32 %storemerge, i32* @RTPUpdateTimestamp.oldtr, align 4, !dbg !815, !tbaa !690
-  ret void, !dbg !814
+return:                                           ; preds = %entry, %if.end
+  %storemerge8 = phi i32 [ %add4, %if.end ], [ 0, %entry ]
+  %storemerge = phi i32 [ %tr, %if.end ], [ 0, %entry ]
+  store i32 %storemerge8, i32* @CurrentRTPTimestamp, align 4, !dbg !687, !tbaa !620
+  store i32 %storemerge, i32* @RTPUpdateTimestamp.oldtr, align 4, !dbg !689, !tbaa !620
+  ret void, !dbg !688
 }

@@ -1,42 +1,43 @@
 define void @IIheap_root(%struct._IIheap* %heap, i32* %pkey, i32* %pvalue) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._IIheap* %heap, i64 0, metadata !48, metadata !170), !dbg !264
-  tail call void @llvm.dbg.value(metadata i32* %pkey, i64 0, metadata !49, metadata !170), !dbg !265
-  tail call void @llvm.dbg.value(metadata i32* %pvalue, i64 0, metadata !50, metadata !170), !dbg !266
-  %1 = icmp eq %struct._IIheap* %heap, null, !dbg !267
-  %2 = icmp eq i32* %pkey, null, !dbg !269
-  %or.cond = or i1 %1, %2, !dbg !270
-  %3 = icmp eq i32* %pvalue, null, !dbg !271
-  %or.cond3 = or i1 %or.cond, %3, !dbg !270
-  br i1 %or.cond3, label %4, label %7, !dbg !270
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IIheap* %heap}, i64 0, metadata !43), !dbg !212
+  tail call void @llvm.dbg.value(metadata !{i32* %pkey}, i64 0, metadata !44), !dbg !213
+  tail call void @llvm.dbg.value(metadata !{i32* %pvalue}, i64 0, metadata !45), !dbg !214
+  %cmp = icmp eq %struct._IIheap* %heap, null, !dbg !215
+  %cmp1 = icmp eq i32* %pkey, null, !dbg !215
+  %or.cond = or i1 %cmp, %cmp1, !dbg !215
+  %cmp3 = icmp eq i32* %pvalue, null, !dbg !215
+  %or.cond18 = or i1 %or.cond, %cmp3, !dbg !215
+  br i1 %or.cond18, label %if.then, label %if.end, !dbg !215
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !272, !tbaa !175
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([80 x i8]* @.str6, i64 0, i64 0), %struct._IIheap* %heap, i32* %pkey, i32* %pvalue) #7, !dbg !274
-  tail call void @exit(i32 -1) #8, !dbg !275
-  unreachable, !dbg !275
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !216, !tbaa !158
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([80 x i8]* @.str6, i64 0, i64 0), %struct._IIheap* %heap, i32* %pkey, i32* %pvalue) #7, !dbg !216
+  tail call void @exit(i32 -1) #8, !dbg !218
+  unreachable, !dbg !218
 
-; <label>:7                                       ; preds = %0
-  %8 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 0, !dbg !276
-  %9 = load i32* %8, align 4, !dbg !276, !tbaa !278
-  %10 = icmp sgt i32 %9, 0, !dbg !279
-  br i1 %10, label %11, label %18, !dbg !280
+if.end:                                           ; preds = %entry
+  %size = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 0, !dbg !219
+  %1 = load i32* %size, align 4, !dbg !219, !tbaa !207
+  %cmp4 = icmp sgt i32 %1, 0, !dbg !219
+  br i1 %cmp4, label %if.then5, label %if.else, !dbg !219
 
-; <label>:11                                      ; preds = %7
-  %12 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 3, !dbg !281
-  %13 = load i32** %12, align 8, !dbg !281, !tbaa !211
-  %14 = load i32* %13, align 4, !dbg !283, !tbaa !284
-  store i32 %14, i32* %pkey, align 4, !dbg !285, !tbaa !284
-  %15 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 4, !dbg !286
-  %16 = load i32** %15, align 8, !dbg !286, !tbaa !219
-  %17 = load i32* %16, align 4, !dbg !287, !tbaa !284
-  store i32 %17, i32* %pvalue, align 4, !dbg !288, !tbaa !284
-  br label %19, !dbg !289
+if.then5:                                         ; preds = %if.end
+  %keys = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 3, !dbg !220
+  %2 = load i32** %keys, align 8, !dbg !220, !tbaa !158
+  %3 = load i32* %2, align 4, !dbg !220, !tbaa !207
+  store i32 %3, i32* %pkey, align 4, !dbg !220, !tbaa !207
+  %values = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 4, !dbg !222
+  %4 = load i32** %values, align 8, !dbg !222, !tbaa !158
+  %5 = load i32* %4, align 4, !dbg !222, !tbaa !207
+  store i32 %5, i32* %pvalue, align 4, !dbg !222, !tbaa !207
+  br label %if.end7, !dbg !223
 
-; <label>:18                                      ; preds = %7
-  store i32 -1, i32* %pvalue, align 4, !dbg !290, !tbaa !284
-  store i32 -1, i32* %pkey, align 4, !dbg !292, !tbaa !284
-  br label %19
+if.else:                                          ; preds = %if.end
+  store i32 -1, i32* %pvalue, align 4, !dbg !224, !tbaa !207
+  store i32 -1, i32* %pkey, align 4, !dbg !224, !tbaa !207
+  br label %if.end7
 
-; <label>:19                                      ; preds = %18, %11
-  ret void, !dbg !293
+if.end7:                                          ; preds = %if.else, %if.then5
+  ret void, !dbg !226
 }

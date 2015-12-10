@@ -1,0 +1,51 @@
+define void @_ZNK11xercesc_2_511XMLDateTime17searchMiliSecondsERPtS2_(%"class.xercesc_2_5::XMLDateTime"* nocapture %this, i16** nocapture %miliStartPtr, i16** nocapture %miliEndPtr) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLDateTime"* %this}, i64 0, metadata !1519), !dbg !3975
+  tail call void @llvm.dbg.value(metadata !{i16** %miliStartPtr}, i64 0, metadata !1520), !dbg !3975
+  tail call void @llvm.dbg.value(metadata !{i16** %miliEndPtr}, i64 0, metadata !1521), !dbg !3975
+  store i16* null, i16** %miliEndPtr, align 8, !dbg !3976, !tbaa !2446
+  store i16* null, i16** %miliStartPtr, align 8, !dbg !3976, !tbaa !2446
+  %fBuffer = getelementptr inbounds %"class.xercesc_2_5::XMLDateTime"* %this, i64 0, i32 6, !dbg !3977
+  %0 = load i16** %fBuffer, align 8, !dbg !3977, !tbaa !2446
+  %call = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* %0, i16 zeroext 46) #9, !dbg !3977
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1522), !dbg !3977
+  %cmp = icmp eq i32 %call, -1, !dbg !3978
+  br i1 %cmp, label %return, label %if.end, !dbg !3978
+
+if.end:                                           ; preds = %entry
+  %1 = load i16** %fBuffer, align 8, !dbg !3979, !tbaa !2446
+  %idx.ext = sext i32 %call to i64, !dbg !3979
+  %add.ptr.sum = add i64 %idx.ext, 1, !dbg !3979
+  %add.ptr3 = getelementptr inbounds i16* %1, i64 %add.ptr.sum, !dbg !3979
+  store i16* %add.ptr3, i16** %miliStartPtr, align 8, !dbg !3979, !tbaa !2446
+  br label %while.cond, !dbg !3980
+
+while.cond:                                       ; preds = %while.cond, %if.end
+  %storemerge = phi i16* [ %add.ptr3, %if.end ], [ %incdec.ptr, %while.cond ]
+  %2 = load i16* %storemerge, align 2, !dbg !3980, !tbaa !2552
+  %.off = add i16 %2, -48, !dbg !3980
+  %3 = icmp ugt i16 %.off, 9, !dbg !3980
+  %incdec.ptr = getelementptr inbounds i16* %storemerge, i64 1, !dbg !3981
+  br i1 %3, label %while.cond9.preheader, label %while.cond, !dbg !3980
+
+while.cond9.preheader:                            ; preds = %while.cond
+  store i16* %storemerge, i16** %miliEndPtr, align 8, !dbg !3981, !tbaa !2446
+  %add.ptr1027 = getelementptr inbounds i16* %storemerge, i64 -1, !dbg !3983
+  %4 = load i16* %add.ptr1027, align 2, !dbg !3983, !tbaa !2552
+  %cmp1228 = icmp eq i16 %4, 48, !dbg !3983
+  br i1 %cmp1228, label %while.body13, label %return, !dbg !3983
+
+while.body13:                                     ; preds = %while.cond9.preheader, %while.body13
+  %add.ptr1029 = phi i16* [ %add.ptr10, %while.body13 ], [ %add.ptr1027, %while.cond9.preheader ]
+  %add.ptr10 = getelementptr inbounds i16* %add.ptr1029, i64 -1, !dbg !3983
+  %5 = load i16* %add.ptr10, align 2, !dbg !3983, !tbaa !2552
+  %cmp12 = icmp eq i16 %5, 48, !dbg !3983
+  br i1 %cmp12, label %while.body13, label %while.cond9.return.loopexit_crit_edge, !dbg !3983
+
+while.cond9.return.loopexit_crit_edge:            ; preds = %while.body13
+  store i16* %add.ptr1029, i16** %miliEndPtr, align 8, !dbg !3983, !tbaa !2446
+  br label %return, !dbg !3983
+
+return:                                           ; preds = %while.cond9.preheader, %while.cond9.return.loopexit_crit_edge, %entry
+  ret void, !dbg !3984
+}

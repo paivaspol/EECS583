@@ -1,50 +1,51 @@
 define i32 @CCTKi_TriggerAction(i8* %GH, i32 %variable) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %GH, i64 0, metadata !192, metadata !237), !dbg !485
-  tail call void @llvm.dbg.value(metadata i32 %variable, i64 0, metadata !193, metadata !237), !dbg !486
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !195, metadata !237), !dbg !487
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !194, metadata !237), !dbg !488
-  %1 = load i32* @num_methods, align 4, !dbg !489, !tbaa !278
-  %2 = icmp sgt i32 %1, 0, !dbg !492
-  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !493
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %GH}, i64 0, metadata !192), !dbg !378
+  tail call void @llvm.dbg.value(metadata !{i32 %variable}, i64 0, metadata !193), !dbg !378
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !195), !dbg !379
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !194), !dbg !380
+  %0 = load i32* @num_methods, align 4, !dbg !380, !tbaa !251
+  %cmp12 = icmp sgt i32 %0, 0, !dbg !380
+  br i1 %cmp12, label %for.body.lr.ph, label %for.end, !dbg !380
 
-.lr.ph:                                           ; preds = %0
-  %3 = bitcast i8* %GH to %struct.cGH*, !dbg !494
-  br label %4, !dbg !493
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = bitcast i8* %GH to %struct.cGH*, !dbg !382
+  br label %for.body, !dbg !380
 
-; <label>:4                                       ; preds = %.lr.ph, %20
-  %handle.02 = phi i32 [ 0, %.lr.ph ], [ %21, %20 ]
-  %nmethods.01 = phi i32 [ 0, %.lr.ph ], [ %nmethods.1, %20 ]
-  %5 = load %struct.cHandledData** @IOMethods, align 8, !dbg !497, !tbaa !241
-  %6 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %5, i32 %handle.02) #6, !dbg !498
-  %7 = icmp eq i8* %6, null, !dbg !499
-  br i1 %7, label %20, label %8, !dbg !500
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %handle.014 = phi i32 [ 0, %for.body.lr.ph ], [ %inc4, %for.inc ]
+  %nmethods.013 = phi i32 [ 0, %for.body.lr.ph ], [ %nmethods.1, %for.inc ]
+  %2 = load %struct.cHandledData** @IOMethods, align 8, !dbg !384, !tbaa !235
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %2, i32 %handle.014) #6, !dbg !384
+  %tobool = icmp eq i8* %call, null, !dbg !382
+  br i1 %tobool, label %for.inc, label %land.lhs.true, !dbg !382
 
-; <label>:8                                       ; preds = %4
-  %9 = getelementptr inbounds i8* %6, i64 40, !dbg !501
-  %10 = bitcast i8* %9 to i32 (%struct.cGH*, i32)**, !dbg !501
-  %11 = load i32 (%struct.cGH*, i32)** %10, align 8, !dbg !501, !tbaa !276
-  %12 = tail call i32 %11(%struct.cGH* %3, i32 %variable) #6, !dbg !502
-  %13 = icmp eq i32 %12, 0, !dbg !502
-  br i1 %13, label %20, label %14, !dbg !503
+land.lhs.true:                                    ; preds = %for.body
+  %TimeToOutput = getelementptr inbounds i8* %call, i64 40, !dbg !382
+  %3 = bitcast i8* %TimeToOutput to i32 (%struct.cGH*, i32)**, !dbg !382
+  %4 = load i32 (%struct.cGH*, i32)** %3, align 8, !dbg !382, !tbaa !235
+  %call1 = tail call i32 %4(%struct.cGH* %1, i32 %variable) #6, !dbg !382
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !382
+  br i1 %tobool2, label %for.inc, label %if.then, !dbg !382
 
-; <label>:14                                      ; preds = %8
-  %15 = getelementptr inbounds i8* %6, i64 32, !dbg !504
-  %16 = bitcast i8* %15 to i32 (%struct.cGH*, i32)**, !dbg !504
-  %17 = load i32 (%struct.cGH*, i32)** %16, align 8, !dbg !504, !tbaa !273
-  %18 = tail call i32 %17(%struct.cGH* %3, i32 %variable) #6, !dbg !506
-  %19 = add nsw i32 %nmethods.01, 1, !dbg !507
-  tail call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !195, metadata !237), !dbg !487
-  br label %20, !dbg !508
+if.then:                                          ; preds = %land.lhs.true
+  %TriggerOutput = getelementptr inbounds i8* %call, i64 32, !dbg !385
+  %5 = bitcast i8* %TriggerOutput to i32 (%struct.cGH*, i32)**, !dbg !385
+  %6 = load i32 (%struct.cGH*, i32)** %5, align 8, !dbg !385, !tbaa !235
+  %call3 = tail call i32 %6(%struct.cGH* %1, i32 %variable) #6, !dbg !385
+  %inc = add nsw i32 %nmethods.013, 1, !dbg !387
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !195), !dbg !387
+  br label %for.inc, !dbg !388
 
-; <label>:20                                      ; preds = %8, %4, %14
-  %nmethods.1 = phi i32 [ %19, %14 ], [ %nmethods.01, %8 ], [ %nmethods.01, %4 ]
-  %21 = add nuw nsw i32 %handle.02, 1, !dbg !509
-  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !194, metadata !237), !dbg !488
-  %22 = load i32* @num_methods, align 4, !dbg !489, !tbaa !278
-  %23 = icmp slt i32 %21, %22, !dbg !492
-  br i1 %23, label %4, label %._crit_edge, !dbg !493
+for.inc:                                          ; preds = %land.lhs.true, %for.body, %if.then
+  %nmethods.1 = phi i32 [ %inc, %if.then ], [ %nmethods.013, %land.lhs.true ], [ %nmethods.013, %for.body ]
+  %inc4 = add nsw i32 %handle.014, 1, !dbg !380
+  tail call void @llvm.dbg.value(metadata !{i32 %inc4}, i64 0, metadata !194), !dbg !380
+  %7 = load i32* @num_methods, align 4, !dbg !380, !tbaa !251
+  %cmp = icmp slt i32 %inc4, %7, !dbg !380
+  br i1 %cmp, label %for.body, label %for.end, !dbg !380
 
-._crit_edge:                                      ; preds = %20, %0
-  %nmethods.0.lcssa = phi i32 [ 0, %0 ], [ %nmethods.1, %20 ]
-  ret i32 %nmethods.0.lcssa, !dbg !510
+for.end:                                          ; preds = %for.inc, %entry
+  %nmethods.0.lcssa = phi i32 [ 0, %entry ], [ %nmethods.1, %for.inc ]
+  ret i32 %nmethods.0.lcssa, !dbg !389
 }

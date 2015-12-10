@@ -1,31 +1,32 @@
 define void @getNeighbour(i32 %curr_mb_nr, i32 %xN, i32 %yN, i32 %luma, %struct.pix_pos* nocapture %pix) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %curr_mb_nr, i64 0, metadata !144, metadata !700), !dbg !1408
-  tail call void @llvm.dbg.value(metadata i32 %xN, i64 0, metadata !145, metadata !700), !dbg !1409
-  tail call void @llvm.dbg.value(metadata i32 %yN, i64 0, metadata !146, metadata !700), !dbg !1410
-  tail call void @llvm.dbg.value(metadata i32 %luma, i64 0, metadata !147, metadata !700), !dbg !1411
-  tail call void @llvm.dbg.value(metadata %struct.pix_pos* %pix, i64 0, metadata !148, metadata !700), !dbg !1412
-  %1 = icmp slt i32 %curr_mb_nr, 0, !dbg !1413
-  br i1 %1, label %2, label %3, !dbg !1415
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %curr_mb_nr}, i64 0, metadata !144), !dbg !1007
+  tail call void @llvm.dbg.value(metadata !{i32 %xN}, i64 0, metadata !145), !dbg !1007
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !146), !dbg !1007
+  tail call void @llvm.dbg.value(metadata !{i32 %luma}, i64 0, metadata !147), !dbg !1007
+  tail call void @llvm.dbg.value(metadata !{%struct.pix_pos* %pix}, i64 0, metadata !148), !dbg !1007
+  %cmp = icmp slt i32 %curr_mb_nr, 0, !dbg !1008
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1008
 
-; <label>:2                                       ; preds = %0
-  tail call void @error(i8* getelementptr inbounds ([40 x i8]* @.str2, i64 0, i64 0), i32 100) #8, !dbg !1416
-  br label %3, !dbg !1416
+if.then:                                          ; preds = %entry
+  tail call void @error(i8* getelementptr inbounds ([40 x i8]* @.str2, i64 0, i64 0), i32 100) #8, !dbg !1009
+  br label %if.end, !dbg !1009
 
-; <label>:3                                       ; preds = %2, %0
-  %4 = load %struct.ImageParameters** @img, align 8, !dbg !1417, !tbaa !707
-  %5 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 90, !dbg !1419
-  %6 = load i32* %5, align 4, !dbg !1419, !tbaa !752
-  %7 = icmp eq i32 %6, 0, !dbg !1417
-  br i1 %7, label %9, label %8, !dbg !1420
+if.end:                                           ; preds = %if.then, %entry
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1010, !tbaa !691
+  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 90, !dbg !1010
+  %1 = load i32* %MbaffFrameFlag, align 4, !dbg !1010, !tbaa !694
+  %tobool = icmp eq i32 %1, 0, !dbg !1010
+  br i1 %tobool, label %if.else, label %if.then1, !dbg !1010
 
-; <label>:8                                       ; preds = %3
-  tail call void @getAffNeighbour(i32 %curr_mb_nr, i32 %xN, i32 %yN, i32 %luma, %struct.pix_pos* %pix) #6, !dbg !1421
-  br label %10, !dbg !1421
+if.then1:                                         ; preds = %if.end
+  tail call void @getAffNeighbour(i32 %curr_mb_nr, i32 %xN, i32 %yN, i32 %luma, %struct.pix_pos* %pix) #6, !dbg !1011
+  br label %if.end2, !dbg !1011
 
-; <label>:9                                       ; preds = %3
-  tail call void @getNonAffNeighbour(i32 %curr_mb_nr, i32 %xN, i32 %yN, i32 %luma, %struct.pix_pos* %pix) #6, !dbg !1422
-  br label %10
+if.else:                                          ; preds = %if.end
+  tail call void @getNonAffNeighbour(i32 %curr_mb_nr, i32 %xN, i32 %yN, i32 %luma, %struct.pix_pos* %pix) #6, !dbg !1012
+  br label %if.end2
 
-; <label>:10                                      ; preds = %9, %8
-  ret void, !dbg !1423
+if.end2:                                          ; preds = %if.else, %if.then1
+  ret void, !dbg !1013
 }

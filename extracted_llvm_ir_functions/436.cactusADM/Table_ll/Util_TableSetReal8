@@ -1,15 +1,16 @@
 define i32 @Util_TableSetReal8(i32 %handle, double %value, i8* %key) #1 {
-  %1 = alloca double, align 8
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !225, metadata !608), !dbg !1263
-  tail call void @llvm.dbg.value(metadata double %value, i64 0, metadata !226, metadata !608), !dbg !1264
-  store double %value, double* %1, align 8, !tbaa !992
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !227, metadata !608), !dbg !1265
-  tail call void @llvm.dbg.value(metadata double* %1, i64 0, metadata !226, metadata !608), !dbg !1264
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !297, metadata !608) #8, !dbg !1266
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !298, metadata !608) #8, !dbg !1268
-  tail call void @llvm.dbg.value(metadata double* %1, i64 0, metadata !299, metadata !608) #8, !dbg !1269
-  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !300, metadata !608) #8, !dbg !1270
-  %2 = bitcast double* %1 to i8*, !dbg !1271
-  %3 = call fastcc i32 @internal_set(i32 %handle, i32 8, i32 1, i8* %2, i8* %key) #10, !dbg !1272
-  ret i32 %3, !dbg !1273
+entry:
+  %value.addr = alloca double, align 8
+  call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !209), !dbg !993
+  call void @llvm.dbg.value(metadata !{double %value}, i64 0, metadata !210), !dbg !993
+  store double %value, double* %value.addr, align 8, !tbaa !808
+  call void @llvm.dbg.declare(metadata !{double* %value.addr}, metadata !210), !dbg !993
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !211), !dbg !993
+  call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !994) #8, !dbg !996
+  call void @llvm.dbg.value(metadata !792, i64 0, metadata !997) #8, !dbg !998
+  call void @llvm.dbg.value(metadata !{double* %value.addr}, i64 0, metadata !999) #8, !dbg !998
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !1000) #8, !dbg !1001
+  %0 = bitcast double* %value.addr to i8*, !dbg !1002
+  %call.i = call fastcc i32 @internal_set(i32 %handle, i32 8, i32 1, i8* %0, i8* %key) #10, !dbg !1002
+  ret i32 %call.i, !dbg !995
 }

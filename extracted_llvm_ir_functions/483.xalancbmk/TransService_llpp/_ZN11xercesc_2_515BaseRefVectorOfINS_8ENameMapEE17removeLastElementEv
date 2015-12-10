@@ -1,0 +1,36 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_8ENameMapEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf"* nocapture %this) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf"* %this}, i64 0, metadata !2935), !dbg !4697
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 2, !dbg !4698
+  %0 = load i32* %fCurCount, align 4, !dbg !4698, !tbaa !3600
+  %tobool = icmp eq i32 %0, 0, !dbg !4698
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !4698
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !4699
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !4699, !tbaa !3600
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 1, !dbg !4700
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !4700, !tbaa !3608, !range !3609
+  %tobool3 = icmp eq i8 %1, 0, !dbg !4700
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !4700
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !4701
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 4, !dbg !4701
+  %2 = load %"class.xercesc_2_5::ENameMap"*** %fElemList, align 8, !dbg !4701, !tbaa !3498
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::ENameMap"** %2, i64 %idxprom, !dbg !4701
+  %3 = load %"class.xercesc_2_5::ENameMap"** %arrayidx, align 8, !dbg !4701, !tbaa !3498
+  %isnull = icmp eq %"class.xercesc_2_5::ENameMap"* %3, null, !dbg !4701
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !4701
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast %"class.xercesc_2_5::ENameMap"* %3 to void (%"class.xercesc_2_5::ENameMap"*)***, !dbg !4701
+  %vtable = load void (%"class.xercesc_2_5::ENameMap"*)*** %4, align 8, !dbg !4701, !tbaa !3506
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::ENameMap"*)** %vtable, i64 1, !dbg !4701
+  %5 = load void (%"class.xercesc_2_5::ENameMap"*)** %vfn, align 8, !dbg !4701
+  tail call void %5(%"class.xercesc_2_5::ENameMap"* %3) #9, !dbg !4701
+  br label %if.end6, !dbg !4701
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !4701
+}

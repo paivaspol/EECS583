@@ -1,38 +1,40 @@
 define void @rest_of_type_compilation(%union.tree_node* nocapture %type, i32 %toplev) #0 {
 entry:
-  tail call void @timevar_push(i32 43) #11
-  %0 = load i32* @write_symbols, align 4, !tbaa !5
-  %1 = and i32 %0, -5
-  %2 = icmp eq i32 %1, 1
-  br i1 %2, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1418), !dbg !2290
+  tail call void @llvm.dbg.value(metadata !{i32 %toplev}, i64 0, metadata !1419), !dbg !2291
+  tail call void @timevar_push(i32 43) #12, !dbg !2292
+  %0 = load i32* @write_symbols, align 4, !dbg !2293, !tbaa !2236
+  %1 = and i32 %0, -5, !dbg !2293
+  %2 = icmp eq i32 %1, 1, !dbg !2293
+  br i1 %2, label %if.then, label %if.end, !dbg !2293
 
 if.then:                                          ; preds = %entry
-  %chain = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 0
-  %3 = load %union.tree_node** %chain, align 8, !tbaa !4
-  %lnot = icmp eq i32 %toplev, 0
-  %lnot.ext = zext i1 %lnot to i32
-  %call = tail call i32 @dbxout_symbol(%union.tree_node* %3, i32 %lnot.ext) #11
-  %.pr = load i32* @write_symbols, align 4, !tbaa !5
-  br label %if.end
+  %chain = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 0, !dbg !2294
+  %3 = load %union.tree_node** %chain, align 8, !dbg !2294, !tbaa !2171
+  %lnot = icmp eq i32 %toplev, 0, !dbg !2294
+  %lnot.ext = zext i1 %lnot to i32, !dbg !2294
+  %call = tail call i32 @dbxout_symbol(%union.tree_node* %3, i32 %lnot.ext) #12, !dbg !2294
+  %.pr = load i32* @write_symbols, align 4, !dbg !2295, !tbaa !2236
+  br label %if.end, !dbg !2294
 
 if.end:                                           ; preds = %entry, %if.then
-  %4 = phi i32 [ %0, %entry ], [ %.pr, %if.then ]
+  %4 = phi i32 [ %0, %entry ], [ %.pr, %if.then ], !dbg !2295
   switch i32 %4, label %if.end9 [
     i32 7, label %land.lhs.true
     i32 4, label %land.lhs.true
-  ]
+  ], !dbg !2295
 
 land.lhs.true:                                    ; preds = %if.end, %if.end
-  %tobool5 = icmp eq i32 %toplev, 0
-  br i1 %tobool5, label %if.end9, label %if.then6
+  %tobool5 = icmp eq i32 %toplev, 0, !dbg !2295
+  br i1 %tobool5, label %if.end9, label %if.then6, !dbg !2295
 
 if.then6:                                         ; preds = %land.lhs.true
-  %chain8 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 0
-  %5 = load %union.tree_node** %chain8, align 8, !tbaa !4
-  tail call void @dwarf2out_decl(%union.tree_node* %5) #11
-  br label %if.end9
+  %chain8 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 0, !dbg !2296
+  %5 = load %union.tree_node** %chain8, align 8, !dbg !2296, !tbaa !2171
+  tail call void @dwarf2out_decl(%union.tree_node* %5) #12, !dbg !2296
+  br label %if.end9, !dbg !2296
 
 if.end9:                                          ; preds = %if.end, %land.lhs.true, %if.then6
-  tail call void @timevar_pop(i32 43) #11
-  ret void
+  tail call void @timevar_pop(i32 43) #12, !dbg !2297
+  ret void, !dbg !2298
 }

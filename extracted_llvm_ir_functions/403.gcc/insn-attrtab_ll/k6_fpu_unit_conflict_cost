@@ -1,17 +1,20 @@
 define internal i32 @k6_fpu_unit_conflict_cost(%struct.rtx_def* %executing_insn, %struct.rtx_def* nocapture %candidate_insn) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %executing_insn, i64 0, i32 1, i64 4
-  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %0 = load i32* %rtint, align 4, !tbaa !0
-  %cmp = icmp sgt i32 %0, -1
-  br i1 %cmp, label %cond.end, label %cond.false
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %executing_insn}, i64 0, metadata !668), !dbg !7734
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %candidate_insn}, i64 0, metadata !669), !dbg !7735
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %executing_insn}, i64 0, metadata !670), !dbg !7736
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %executing_insn, i64 0, i32 1, i64 4, !dbg !7737
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !7737
+  %0 = load i32* %rtint, align 4, !dbg !7737, !tbaa !822
+  %cmp = icmp sgt i32 %0, -1, !dbg !7737
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !7737
 
 cond.false:                                       ; preds = %entry
-  %call = tail call i32 @recog_memoized_1(%struct.rtx_def* %executing_insn) #3
-  br label %cond.end
+  %call = tail call i32 @recog_memoized_1(%struct.rtx_def* %executing_insn) #4, !dbg !7737
+  br label %cond.end, !dbg !7737
 
 cond.end:                                         ; preds = %entry, %cond.false
-  %cond = phi i32 [ %call, %cond.false ], [ %0, %entry ]
+  %cond = phi i32 [ %call, %cond.false ], [ %0, %entry ], !dbg !7737
   switch i32 %cond, label %sw.bb141 [
     i32 558, label %sw.bb
     i32 556, label %sw.bb
@@ -101,204 +104,205 @@ cond.end:                                         ; preds = %entry, %cond.false
     i32 20, label %return
     i32 19, label %return
     i32 -1, label %sw.bb127
-  ]
+  ], !dbg !7737
 
 sw.bb:                                            ; preds = %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end
-  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %call4 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #5
-  %cmp5 = icmp eq i32 %call4, 22
-  br i1 %cmp5, label %return, label %if.else
+  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7738
+  %call4 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #6, !dbg !7740
+  %cmp5 = icmp eq i32 %call4, 22, !dbg !7740
+  br i1 %cmp5, label %return, label %if.else, !dbg !7740
 
 if.else:                                          ; preds = %sw.bb
-  %1 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call6 = tail call i32 @mult_operator(%struct.rtx_def* %1, i32 18) #3
-  %tobool = icmp eq i32 %call6, 0
+  %1 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7741, !tbaa !827
+  %call6 = tail call i32 @mult_operator(%struct.rtx_def* %1, i32 18) #4, !dbg !7741
+  %tobool = icmp eq i32 %call6, 0, !dbg !7741
   %. = select i1 %tobool, i32 2, i32 1
   br label %sw.epilog
 
 sw.bb10:                                          ; preds = %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end
-  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %call11 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #5
-  %cmp12 = icmp eq i32 %call11, 22
-  br i1 %cmp12, label %return, label %if.else14
+  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7742
+  %call11 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #6, !dbg !7743
+  %cmp12 = icmp eq i32 %call11, 22, !dbg !7743
+  br i1 %cmp12, label %return, label %if.else14, !dbg !7743
 
 if.else14:                                        ; preds = %sw.bb10
-  %2 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call15 = tail call i32 @mult_operator(%struct.rtx_def* %2, i32 17) #3
-  %tobool16 = icmp eq i32 %call15, 0
+  %2 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7744, !tbaa !827
+  %call15 = tail call i32 @mult_operator(%struct.rtx_def* %2, i32 17) #4, !dbg !7744
+  %tobool16 = icmp eq i32 %call15, 0, !dbg !7744
   %.169 = select i1 %tobool16, i32 2, i32 1
   br label %sw.epilog
 
 sw.bb21:                                          ; preds = %cond.end
-  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %call22 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #5
-  %cmp23 = icmp eq i32 %call22, 22
-  br i1 %cmp23, label %return, label %if.else25
+  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7745
+  %call22 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #6, !dbg !7746
+  %cmp23 = icmp eq i32 %call22, 22, !dbg !7746
+  br i1 %cmp23, label %return, label %if.else25, !dbg !7746
 
 if.else25:                                        ; preds = %sw.bb21
-  %3 = load i32* @which_alternative, align 4, !tbaa !0
-  %cmp26 = icmp eq i32 %3, 2
-  br i1 %cmp26, label %sw.bb141, label %land.lhs.true
+  %3 = load i32* @which_alternative, align 4, !dbg !7747, !tbaa !822
+  %cmp26 = icmp eq i32 %3, 2, !dbg !7747
+  br i1 %cmp26, label %sw.bb141, label %land.lhs.true, !dbg !7747
 
 land.lhs.true:                                    ; preds = %if.else25
-  %4 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call27 = tail call i32 @mult_operator(%struct.rtx_def* %4, i32 16) #3
-  %tobool28 = icmp eq i32 %call27, 0
-  br i1 %tobool28, label %sw.bb141, label %return
+  %4 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7747, !tbaa !827
+  %call27 = tail call i32 @mult_operator(%struct.rtx_def* %4, i32 16) #4, !dbg !7747
+  %tobool28 = icmp eq i32 %call27, 0, !dbg !7747
+  br i1 %tobool28, label %sw.bb141, label %return, !dbg !7747
 
 sw.bb33:                                          ; preds = %cond.end, %cond.end, %cond.end, %cond.end, %cond.end
-  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %call34 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #5
-  %cmp35 = icmp eq i32 %call34, 22
-  br i1 %cmp35, label %return, label %if.else37
+  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7748
+  %call34 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #6, !dbg !7749
+  %cmp35 = icmp eq i32 %call34, 22, !dbg !7749
+  br i1 %cmp35, label %return, label %if.else37, !dbg !7749
 
 if.else37:                                        ; preds = %sw.bb33
-  %5 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call38 = tail call i32 @mult_operator(%struct.rtx_def* %5, i32 16) #3
-  %tobool39 = icmp eq i32 %call38, 0
+  %5 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7750, !tbaa !827
+  %call38 = tail call i32 @mult_operator(%struct.rtx_def* %5, i32 16) #4, !dbg !7750
+  %tobool39 = icmp eq i32 %call38, 0, !dbg !7750
   %.170 = select i1 %tobool39, i32 2, i32 1
   br label %sw.epilog
 
 sw.bb44:                                          ; preds = %cond.end
-  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %call45 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #5
-  %cmp46 = icmp eq i32 %call45, 22
-  br i1 %cmp46, label %return, label %if.else48
+  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7751
+  %call45 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #6, !dbg !7752
+  %cmp46 = icmp eq i32 %call45, 22, !dbg !7752
+  br i1 %cmp46, label %return, label %if.else48, !dbg !7752
 
 if.else48:                                        ; preds = %sw.bb44
-  %6 = load i32* @which_alternative, align 4, !tbaa !0
-  %cmp49 = icmp eq i32 %6, 2
-  br i1 %cmp49, label %sw.bb141, label %land.lhs.true50
+  %6 = load i32* @which_alternative, align 4, !dbg !7753, !tbaa !822
+  %cmp49 = icmp eq i32 %6, 2, !dbg !7753
+  br i1 %cmp49, label %sw.bb141, label %land.lhs.true50, !dbg !7753
 
 land.lhs.true50:                                  ; preds = %if.else48
-  %7 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call51 = tail call i32 @mult_operator(%struct.rtx_def* %7, i32 15) #3
-  %tobool52 = icmp eq i32 %call51, 0
-  br i1 %tobool52, label %sw.bb141, label %return
+  %7 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7753, !tbaa !827
+  %call51 = tail call i32 @mult_operator(%struct.rtx_def* %7, i32 15) #4, !dbg !7753
+  %tobool52 = icmp eq i32 %call51, 0, !dbg !7753
+  br i1 %tobool52, label %sw.bb141, label %return, !dbg !7753
 
 sw.bb57:                                          ; preds = %cond.end, %cond.end, %cond.end
-  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %call58 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #5
-  %cmp59 = icmp eq i32 %call58, 22
-  br i1 %cmp59, label %return, label %if.else61
+  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7754
+  %call58 = tail call i32 @get_attr_type(%struct.rtx_def* %executing_insn) #6, !dbg !7755
+  %cmp59 = icmp eq i32 %call58, 22, !dbg !7755
+  br i1 %cmp59, label %return, label %if.else61, !dbg !7755
 
 if.else61:                                        ; preds = %sw.bb57
-  %8 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call62 = tail call i32 @mult_operator(%struct.rtx_def* %8, i32 15) #3
-  %tobool63 = icmp eq i32 %call62, 0
+  %8 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7756, !tbaa !827
+  %call62 = tail call i32 @mult_operator(%struct.rtx_def* %8, i32 15) #4, !dbg !7756
+  %tobool63 = icmp eq i32 %call62, 0, !dbg !7756
   %.171 = select i1 %tobool63, i32 2, i32 1
   br label %sw.epilog
 
 sw.bb68:                                          ; preds = %cond.end
-  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %9 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call69 = tail call i32 @mult_operator(%struct.rtx_def* %9, i32 18) #3
-  %not.tobool70 = icmp ne i32 %call69, 0
-  %.172 = zext i1 %not.tobool70 to i32
-  br label %sw.epilog
+  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7757
+  %9 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7758, !tbaa !827
+  %call69 = tail call i32 @mult_operator(%struct.rtx_def* %9, i32 18) #4, !dbg !7758
+  %not.tobool70 = icmp ne i32 %call69, 0, !dbg !7759
+  %.172 = zext i1 %not.tobool70 to i32, !dbg !7759
+  br label %sw.epilog, !dbg !7759
 
 sw.bb74:                                          ; preds = %cond.end
-  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %10 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call75 = tail call i32 @mult_operator(%struct.rtx_def* %10, i32 17) #3
-  %not.tobool76 = icmp ne i32 %call75, 0
-  %.173 = zext i1 %not.tobool76 to i32
-  br label %sw.epilog
+  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7761
+  %10 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7762, !tbaa !827
+  %call75 = tail call i32 @mult_operator(%struct.rtx_def* %10, i32 17) #4, !dbg !7762
+  %not.tobool76 = icmp ne i32 %call75, 0, !dbg !7763
+  %.173 = zext i1 %not.tobool76 to i32, !dbg !7763
+  br label %sw.epilog, !dbg !7763
 
 sw.bb80:                                          ; preds = %cond.end, %cond.end
-  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %11 = load i32* @which_alternative, align 4, !tbaa !0
-  %cmp81 = icmp eq i32 %11, 0
-  br i1 %cmp81, label %land.lhs.true82, label %sw.bb141
+  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7765
+  %11 = load i32* @which_alternative, align 4, !dbg !7766, !tbaa !822
+  %cmp81 = icmp eq i32 %11, 0, !dbg !7766
+  br i1 %cmp81, label %land.lhs.true82, label %sw.bb141, !dbg !7766
 
 land.lhs.true82:                                  ; preds = %sw.bb80
-  %12 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call83 = tail call i32 @mult_operator(%struct.rtx_def* %12, i32 15) #3
-  %tobool84 = icmp eq i32 %call83, 0
-  br i1 %tobool84, label %return, label %if.else86
+  %12 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7766, !tbaa !827
+  %call83 = tail call i32 @mult_operator(%struct.rtx_def* %12, i32 15) #4, !dbg !7766
+  %tobool84 = icmp eq i32 %call83, 0, !dbg !7766
+  br i1 %tobool84, label %return, label %if.else86, !dbg !7766
 
 if.else86:                                        ; preds = %land.lhs.true82
-  %.pr = load i32* @which_alternative, align 4, !tbaa !0
-  %cmp87 = icmp eq i32 %.pr, 0
-  br i1 %cmp87, label %land.lhs.true88, label %sw.bb141
+  %.pr = load i32* @which_alternative, align 4, !dbg !7767, !tbaa !822
+  %cmp87 = icmp eq i32 %.pr, 0, !dbg !7767
+  br i1 %cmp87, label %land.lhs.true88, label %sw.bb141, !dbg !7767
 
 land.lhs.true88:                                  ; preds = %if.else86
-  %13 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call89 = tail call i32 @mult_operator(%struct.rtx_def* %13, i32 15) #3
-  %tobool90 = icmp eq i32 %call89, 0
-  br i1 %tobool90, label %sw.bb141, label %return
+  %13 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7767, !tbaa !827
+  %call89 = tail call i32 @mult_operator(%struct.rtx_def* %13, i32 15) #4, !dbg !7767
+  %tobool90 = icmp eq i32 %call89, 0, !dbg !7767
+  br i1 %tobool90, label %sw.bb141, label %return, !dbg !7767
 
 sw.bb95:                                          ; preds = %cond.end, %cond.end
-  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %14 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !tbaa !3
-  %call96 = tail call i32 @mult_operator(%struct.rtx_def* %14, i32 15) #3
-  %not.tobool97 = icmp ne i32 %call96, 0
-  %.174 = zext i1 %not.tobool97 to i32
-  br label %sw.epilog
+  tail call void @extract_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7768
+  %14 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 0, i64 3), align 8, !dbg !7769, !tbaa !827
+  %call96 = tail call i32 @mult_operator(%struct.rtx_def* %14, i32 15) #4, !dbg !7769
+  %not.tobool97 = icmp ne i32 %call96, 0, !dbg !7770
+  %.174 = zext i1 %not.tobool97 to i32, !dbg !7770
+  br label %sw.epilog, !dbg !7770
 
 sw.bb101:                                         ; preds = %cond.end
-  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %15 = load i32* @which_alternative, align 4, !tbaa !0
-  %cmp102 = icmp eq i32 %15, 1
-  %.175 = select i1 %cmp102, i32 0, i32 2
-  br label %sw.epilog
+  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7772
+  %15 = load i32* @which_alternative, align 4, !dbg !7773, !tbaa !822
+  %cmp102 = icmp eq i32 %15, 1, !dbg !7773
+  %.175 = select i1 %cmp102, i32 0, i32 2, !dbg !7774
+  br label %sw.epilog, !dbg !7774
 
 sw.bb106:                                         ; preds = %cond.end
-  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %16 = load i32* @which_alternative, align 4, !tbaa !0
-  %17 = icmp ult i32 %16, 2
-  %.176 = select i1 %17, i32 0, i32 2
-  br label %sw.epilog
+  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7776
+  %16 = load i32* @which_alternative, align 4, !dbg !7777, !tbaa !822
+  %17 = icmp ult i32 %16, 2, !dbg !7777
+  %.176 = select i1 %17, i32 0, i32 2, !dbg !7778
+  br label %sw.epilog, !dbg !7778
 
 sw.bb112:                                         ; preds = %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end
-  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %18 = load i32* @which_alternative, align 4, !tbaa !0
-  %19 = icmp ult i32 %18, 3
-  %.177 = select i1 %19, i32 0, i32 2
-  br label %sw.epilog
+  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7780
+  %18 = load i32* @which_alternative, align 4, !dbg !7781, !tbaa !822
+  %19 = icmp ult i32 %18, 3, !dbg !7781
+  %.177 = select i1 %19, i32 0, i32 2, !dbg !7782
+  br label %sw.epilog, !dbg !7782
 
 sw.bb121:                                         ; preds = %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end
-  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #3
-  %20 = load i32* @which_alternative, align 4, !tbaa !0
-  %cmp122 = icmp eq i32 %20, 0
-  %.178 = select i1 %cmp122, i32 0, i32 2
-  br label %sw.epilog
+  tail call void @extract_constrain_insn_cached(%struct.rtx_def* %executing_insn) #4, !dbg !7784
+  %20 = load i32* @which_alternative, align 4, !dbg !7785, !tbaa !822
+  %cmp122 = icmp eq i32 %20, 0, !dbg !7785
+  %.178 = select i1 %cmp122, i32 0, i32 2, !dbg !7786
+  br label %sw.epilog, !dbg !7786
 
 sw.bb127:                                         ; preds = %cond.end
-  %arrayidx129 = getelementptr inbounds %struct.rtx_def* %executing_insn, i64 0, i32 1, i64 3
-  %rtx = bitcast %union.rtunion_def* %arrayidx129 to %struct.rtx_def**
-  %21 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %22 = bitcast %struct.rtx_def* %21 to i32*
-  %bf.load = load i32* %22, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp130 = icmp eq i32 %bf.clear, 40
-  br i1 %cmp130, label %sw.bb141, label %land.lhs.true131
+  %arrayidx129 = getelementptr inbounds %struct.rtx_def* %executing_insn, i64 0, i32 1, i64 3, !dbg !7788
+  %rtx = bitcast %union.rtunion_def* %arrayidx129 to %struct.rtx_def**, !dbg !7788
+  %21 = load %struct.rtx_def** %rtx, align 8, !dbg !7788, !tbaa !827
+  %22 = bitcast %struct.rtx_def* %21 to i32*, !dbg !7788
+  %bf.load = load i32* %22, align 8, !dbg !7788
+  %bf.clear = and i32 %bf.load, 65535, !dbg !7788
+  %cmp130 = icmp eq i32 %bf.clear, 40, !dbg !7788
+  br i1 %cmp130, label %sw.bb141, label %land.lhs.true131, !dbg !7788
 
 land.lhs.true131:                                 ; preds = %sw.bb127
-  %call135 = tail call i32 @asm_noperands(%struct.rtx_def* %21) #3
-  %cmp136 = icmp slt i32 %call135, 0
-  br i1 %cmp136, label %if.then137, label %sw.bb141
+  %call135 = tail call i32 @asm_noperands(%struct.rtx_def* %21) #4, !dbg !7789
+  %cmp136 = icmp slt i32 %call135, 0, !dbg !7789
+  br i1 %cmp136, label %if.then137, label %sw.bb141, !dbg !7789
 
 if.then137:                                       ; preds = %land.lhs.true131
-  tail call void @_fatal_insn_not_found(%struct.rtx_def* %executing_insn, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 24966, i8* getelementptr inbounds ([26 x i8]* @__FUNCTION__.k6_fpu_unit_conflict_cost, i64 0, i64 0)) #4
-  unreachable
+  tail call void @_fatal_insn_not_found(%struct.rtx_def* %executing_insn, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 24966, i8* getelementptr inbounds ([26 x i8]* @__FUNCTION__.k6_fpu_unit_conflict_cost, i64 0, i64 0)) #5, !dbg !7790
+  unreachable, !dbg !7790
 
 sw.epilog:                                        ; preds = %sw.bb121, %sw.bb112, %sw.bb106, %sw.bb101, %sw.bb95, %sw.bb74, %sw.bb68, %if.else61, %if.else37, %if.else14, %if.else
   %casenum.0 = phi i32 [ %., %if.else ], [ %.169, %if.else14 ], [ %.170, %if.else37 ], [ %.171, %if.else61 ], [ %.172, %sw.bb68 ], [ %.173, %sw.bb74 ], [ %.174, %sw.bb95 ], [ %.175, %sw.bb101 ], [ %.176, %sw.bb106 ], [ %.177, %sw.bb112 ], [ %.178, %sw.bb121 ]
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %candidate_insn}, i64 0, metadata !670), !dbg !7791
   switch i32 %casenum.0, label %sw.default142 [
     i32 0, label %return
     i32 1, label %return
     i32 2, label %sw.bb141
-  ]
+  ], !dbg !7792
 
 sw.bb141:                                         ; preds = %cond.end, %land.lhs.true131, %sw.bb127, %if.else86, %land.lhs.true88, %sw.bb80, %if.else48, %land.lhs.true50, %if.else25, %land.lhs.true, %sw.epilog
-  br label %return
+  br label %return, !dbg !7793
 
 sw.default142:                                    ; preds = %sw.epilog
-  tail call void @fancy_abort(i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 24986, i8* getelementptr inbounds ([26 x i8]* @__FUNCTION__.k6_fpu_unit_conflict_cost, i64 0, i64 0)) #4
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 24986, i8* getelementptr inbounds ([26 x i8]* @__FUNCTION__.k6_fpu_unit_conflict_cost, i64 0, i64 0)) #5, !dbg !7795
+  unreachable, !dbg !7795
 
 return:                                           ; preds = %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %land.lhs.true88, %land.lhs.true82, %sw.bb57, %land.lhs.true50, %sw.bb44, %sw.bb33, %land.lhs.true, %sw.bb21, %sw.bb10, %sw.bb, %sw.epilog, %sw.epilog, %sw.bb141
   %retval.0 = phi i32 [ 56, %sw.bb141 ], [ 2, %sw.epilog ], [ 2, %sw.epilog ], [ 2, %sw.bb ], [ 2, %sw.bb10 ], [ 2, %sw.bb21 ], [ 2, %land.lhs.true ], [ 2, %sw.bb33 ], [ 2, %sw.bb44 ], [ 2, %land.lhs.true50 ], [ 2, %sw.bb57 ], [ 2, %land.lhs.true82 ], [ 2, %land.lhs.true88 ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ], [ 2, %cond.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !7796
 }

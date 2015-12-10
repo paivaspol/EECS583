@@ -1,1219 +1,1233 @@
-define void @store_picture_in_dpb(%struct.storable_picture* %p) #1 {
+define void @store_picture_in_dpb(%struct.storable_picture* %p) #2 {
+entry:
   %poc = alloca i32, align 4
   %pos = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !234, metadata !1408), !dbg !3281
-  %1 = icmp eq %struct.storable_picture* %p, null, !dbg !3282
-  br i1 %1, label %2, label %3, !dbg !3282, !prof !3283
-
-; <label>:2                                       ; preds = %0
-  tail call void @__assert_rtn(i8* getelementptr inbounds ([21 x i8]* @__func__.store_picture_in_dpb, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str13, i64 0, i64 0), i32 2187, i8* getelementptr inbounds ([8 x i8]* @.str14, i64 0, i64 0)) #10, !dbg !3282
-  unreachable, !dbg !3282
-
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.ImageParameters** @img, align 8, !dbg !3284, !tbaa !1389
-  %5 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 113, !dbg !3285
-  %6 = load i32* %5, align 4, !dbg !3285, !tbaa !3286
-  %7 = icmp ne i32 %6, 0, !dbg !3287
-  %8 = zext i1 %7 to i32, !dbg !3287
-  %9 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 15, !dbg !3288
-  store i32 %8, i32* %9, align 4, !dbg !3289, !tbaa !1881
-  %10 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 145, !dbg !3290
-  store i32 0, i32* %10, align 4, !dbg !3291, !tbaa !1539
-  %11 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 7, !dbg !3292
-  %12 = load i32* %11, align 4, !dbg !3292, !tbaa !2844
-  %13 = icmp eq i32 %12, 2, !dbg !3293
-  %14 = zext i1 %13 to i32, !dbg !3293
-  %15 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 144, !dbg !3294
-  store i32 %14, i32* %15, align 4, !dbg !3295, !tbaa !3296
-  %16 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 49, !dbg !3297
-  %17 = load %struct.Picture** %16, align 8, !dbg !3297, !tbaa !3299
-  %18 = getelementptr inbounds %struct.Picture* %17, i64 0, i32 1, !dbg !3300
-  %19 = load i32* %18, align 4, !dbg !3300, !tbaa !3301
-  %20 = icmp eq i32 %19, 0, !dbg !3303
-  br i1 %20, label %59, label %21, !dbg !3304
-
-; <label>:21                                      ; preds = %3
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !934, metadata !1408) #7, !dbg !3305
-  %22 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 115, !dbg !3307
-  %23 = load i32* %22, align 4, !dbg !3307, !tbaa !3309
-  %24 = icmp eq i32 %23, 0, !dbg !3310
-  br i1 %24, label %49, label %.preheader2.i, !dbg !3311
-
-.preheader2.i:                                    ; preds = %21
-  %25 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !3312, !tbaa !1459
-  %26 = icmp eq i32 %25, 0, !dbg !3316
-  br i1 %26, label %.preheader1.i, label %.lr.ph7.i, !dbg !3317
-
-.preheader1.i:                                    ; preds = %.lr.ph7.i, %.preheader2.i
-  %27 = load i64* bitcast (i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5) to i64*), align 8, !dbg !3318
-  %28 = trunc i64 %27 to i32, !dbg !3318
-  %29 = icmp eq i32 %28, 0, !dbg !3321
-  %30 = lshr i64 %27, 32, !dbg !3322
-  br i1 %29, label %.preheader.i, label %.lr.ph5.i, !dbg !3323
-
-.lr.ph5.i:                                        ; preds = %.preheader1.i
-  %31 = and i64 %27, 4294967295
-  %32 = add nsw i64 %31, -1, !dbg !3323
-  br label %43, !dbg !3323
-
-.lr.ph7.i:                                        ; preds = %.preheader2.i, %.lr.ph7.i
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph7.i ], [ 0, %.preheader2.i ]
-  %33 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !3324, !tbaa !1469
-  %34 = getelementptr inbounds %struct.frame_store** %33, i64 %indvars.iv, !dbg !3326
-  %35 = load %struct.frame_store** %34, align 8, !dbg !3326, !tbaa !1389
-  tail call void @free_frame_store(%struct.frame_store* %35) #8, !dbg !3327
-  %36 = tail call %struct.frame_store* @alloc_frame_store() #8, !dbg !3328
-  %37 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !3329, !tbaa !1469
-  %38 = getelementptr inbounds %struct.frame_store** %37, i64 %indvars.iv, !dbg !3330
-  store %struct.frame_store* %36, %struct.frame_store** %38, align 8, !dbg !3331, !tbaa !1389
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !3317
-  %39 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !3312, !tbaa !1459
-  %40 = zext i32 %39 to i64, !dbg !3316
-  %41 = icmp ult i64 %indvars.iv.next, %40, !dbg !3316
-  br i1 %41, label %.lr.ph7.i, label %.preheader1.i, !dbg !3317
-
-.preheader.i:                                     ; preds = %43, %.preheader1.i
-  %42 = icmp eq i64 %30, 0, !dbg !3332
-  br i1 %42, label %._crit_edge.i, label %.lr.ph.i, !dbg !3335
-
-; <label>:43                                      ; preds = %43, %.lr.ph5.i
-  %indvars.iv8.i = phi i64 [ 0, %.lr.ph5.i ], [ %indvars.iv.next9.i, %43 ], !dbg !3322
-  %44 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !3336, !tbaa !1478
-  %45 = getelementptr inbounds %struct.frame_store** %44, i64 %indvars.iv8.i, !dbg !3338
-  store %struct.frame_store* null, %struct.frame_store** %45, align 8, !dbg !3339, !tbaa !1389
-  %indvars.iv.next9.i = add nuw nsw i64 %indvars.iv8.i, 1, !dbg !3323
-  %exitcond = icmp eq i64 %indvars.iv8.i, %32, !dbg !3323
-  br i1 %exitcond, label %.preheader.i, label %43, !dbg !3323
-
-.lr.ph.i:                                         ; preds = %.preheader.i, %.lr.ph.i
-  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %.lr.ph.i ], [ 0, %.preheader.i ], !dbg !3322
-  %46 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 2), align 8, !dbg !3340, !tbaa !1487
-  %47 = getelementptr inbounds %struct.frame_store** %46, i64 %indvars.iv.i, !dbg !3342
-  store %struct.frame_store* null, %struct.frame_store** %47, align 8, !dbg !3343, !tbaa !1389
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !3335
-  %48 = icmp ult i64 %indvars.iv.next.i, %30, !dbg !3332
-  br i1 %48, label %.lr.ph.i, label %._crit_edge.i, !dbg !3335
-
-._crit_edge.i:                                    ; preds = %.lr.ph.i, %.preheader.i
-  store i32 0, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !3344, !tbaa !1459
-  br label %50, !dbg !3345
-
-; <label>:49                                      ; preds = %21
-  tail call void @flush_dpb() #8, !dbg !3346
-  br label %50, !dbg !3322
-
-; <label>:50                                      ; preds = %49, %._crit_edge.i
-  store %struct.frame_store* null, %struct.frame_store** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 10), align 8, !dbg !3348, !tbaa !1461
-  tail call void @update_ref_list() #8, !dbg !3349
-  tail call void @update_ltref_list() #8, !dbg !3350
-  store i32 -2147483648, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 7), align 8, !dbg !3351, !tbaa !1535
-  %51 = load %struct.ImageParameters** @img, align 8, !dbg !3352, !tbaa !1389
-  %52 = getelementptr inbounds %struct.ImageParameters* %51, i64 0, i32 116, !dbg !3354
-  %53 = load i32* %52, align 4, !dbg !3354, !tbaa !3355
-  %54 = icmp eq i32 %53, 0, !dbg !3352
-  br i1 %54, label %57, label %55, !dbg !3356
-
-; <label>:55                                      ; preds = %50
-  store i32 0, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 8), align 4, !dbg !3357, !tbaa !3205
-  %56 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 13, !dbg !3359
-  store i32 0, i32* %56, align 4, !dbg !3360, !tbaa !2065
-  br label %idr_memory_management.exit, !dbg !3361
-
-; <label>:57                                      ; preds = %50
-  store i32 -1, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 8), align 4, !dbg !3362, !tbaa !3205
-  br label %idr_memory_management.exit, !dbg !3322
-
-idr_memory_management.exit:                       ; preds = %55, %57
-  %.sink.i = phi i32 [ 0, %57 ], [ 1, %55 ], !dbg !3322
-  %58 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 14, !dbg !3364
-  store i32 %.sink.i, i32* %58, align 4, !dbg !3322
-  br label %adaptive_memory_management.exit, !dbg !3322
-
-; <label>:59                                      ; preds = %3
-  br i1 %7, label %60, label %adaptive_memory_management.exit, !dbg !3365
-
-; <label>:60                                      ; preds = %59
-  %61 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 114, !dbg !3368
-  %62 = load i32* %61, align 4, !dbg !3368, !tbaa !3369
-  %63 = icmp eq i32 %62, 0, !dbg !3370
-  br i1 %63, label %adaptive_memory_management.exit, label %.preheader.i2, !dbg !3371
-
-.preheader.i2:                                    ; preds = %60
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !938, metadata !1408) #7, !dbg !3372
-  store i32 0, i32* %10, align 4, !dbg !3374, !tbaa !1539
-  %64 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 117, !dbg !3375
-  %65 = load %struct.DecRefPicMarking_s** %64, align 8, !dbg !3375, !tbaa !3376
-  %66 = icmp eq %struct.DecRefPicMarking_s* %65, null, !dbg !3377
-  br i1 %66, label %adaptive_memory_management.exit, label %.lr.ph.i3, !dbg !3377
-
-.lr.ph.i3:                                        ; preds = %.preheader.i2
-  %67 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 0, !dbg !3378
-  %68 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 10, !dbg !3384
-  %69 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 14, !dbg !3385
-  %70 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 13, !dbg !3387
-  %71 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 11, !dbg !3388
-  br label %72, !dbg !3377
-
-; <label>:72                                      ; preds = %443, %.lr.ph.i3
-  %73 = phi %struct.DecRefPicMarking_s* [ %65, %.lr.ph.i3 ], [ %453, %443 ], !dbg !3391
-  %74 = getelementptr inbounds %struct.DecRefPicMarking_s* %73, i64 0, i32 0, !dbg !3392
-  %75 = load i32* %74, align 4, !dbg !3392, !tbaa !3393
-  switch i32 %75, label %442 [
-    i32 0, label %76
-    i32 1, label %81
-    i32 2, label %162
-    i32 3, label %245
-    i32 4, label %420
-    i32 5, label %423
-    i32 6, label %434
-  ], !dbg !3395
-
-; <label>:76                                      ; preds = %72
-  %77 = getelementptr inbounds %struct.DecRefPicMarking_s* %73, i64 0, i32 5, !dbg !3396
-  %78 = load %struct.DecRefPicMarking_s** %77, align 8, !dbg !3396, !tbaa !3398
-  %79 = icmp eq %struct.DecRefPicMarking_s* %78, null, !dbg !3399
-  br i1 %79, label %443, label %80, !dbg !3400
-
-; <label>:80                                      ; preds = %76
-  tail call void @error(i8* getelementptr inbounds ([69 x i8]* @.str28, i64 0, i64 0), i32 500) #8, !dbg !3401
-  br label %443, !dbg !3403
-
-; <label>:81                                      ; preds = %72
-  %82 = getelementptr inbounds %struct.DecRefPicMarking_s* %73, i64 0, i32 1, !dbg !3404
-  %83 = load i32* %82, align 4, !dbg !3404, !tbaa !3405
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !944, metadata !1408) #7, !dbg !3406
-  tail call void @llvm.dbg.value(metadata i32 %83, i64 0, metadata !945, metadata !1408) #7, !dbg !3407
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !952, metadata !1408) #7, !dbg !3408
-  tail call void @llvm.dbg.value(metadata i32 %83, i64 0, metadata !953, metadata !1408) #7, !dbg !3409
-  %84 = load i32* %67, align 4, !dbg !3378, !tbaa !1723
-  %85 = icmp eq i32 %84, 0, !dbg !3410
-  %86 = load i32* %68, align 4, !dbg !3384, !tbaa !3411
-  br i1 %85, label %get_pic_num_x.exit.i.i, label %87, !dbg !3412
-
-; <label>:87                                      ; preds = %81
-  %88 = shl i32 %86, 1, !dbg !3413
-  %89 = or i32 %88, 1, !dbg !3414
-  tail call void @llvm.dbg.value(metadata i32 %89, i64 0, metadata !954, metadata !1408) #7, !dbg !3415
-  br label %get_pic_num_x.exit.i.i, !dbg !3416
-
-get_pic_num_x.exit.i.i:                           ; preds = %87, %81
-  %currPicNum.0.i.i.i = phi i32 [ %89, %87 ], [ %86, %81 ], !dbg !3416
-  %.neg.i.i.i = xor i32 %83, -1, !dbg !3417
-  %90 = add i32 %currPicNum.0.i.i.i, %.neg.i.i.i, !dbg !3418
-  tail call void @llvm.dbg.value(metadata i32 %90, i64 0, metadata !946, metadata !1408) #7, !dbg !3419
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !947, metadata !1408) #7, !dbg !3420
-  %91 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !3421, !tbaa !1463
-  %92 = icmp eq i32 %91, 0, !dbg !3424
-  br i1 %92, label %mm_unmark_short_term_for_reference.exit.i, label %.lr.ph.i.i, !dbg !3425
-
-.lr.ph.i.i:                                       ; preds = %get_pic_num_x.exit.i.i
-  %93 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !3426, !tbaa !1478
-  %94 = zext i32 %91 to i64, !dbg !3425
-  br label %95, !dbg !3425
-
-; <label>:95                                      ; preds = %160, %.lr.ph.i.i
-  %indvars.iv.i.i = phi i64 [ 0, %.lr.ph.i.i ], [ %indvars.iv.next.i.i, %160 ], !dbg !3431
-  %96 = getelementptr inbounds %struct.frame_store** %93, i64 %indvars.iv.i.i, !dbg !3432
-  %97 = load %struct.frame_store** %96, align 8, !dbg !3432, !tbaa !1389
-  %98 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 1, !dbg !3433
-  %99 = load i32* %98, align 4, !dbg !3433, !tbaa !1973
-  br i1 %85, label %100, label %113, !dbg !3434
-
-; <label>:100                                     ; preds = %95
-  %101 = icmp eq i32 %99, 3, !dbg !3435
-  br i1 %101, label %102, label %160, !dbg !3436
-
-; <label>:102                                     ; preds = %100
-  %103 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 2, !dbg !3437
-  %104 = load i32* %103, align 4, !dbg !3437, !tbaa !2134
-  %105 = icmp eq i32 %104, 0, !dbg !3438
-  br i1 %105, label %106, label %160, !dbg !3439
-
-; <label>:106                                     ; preds = %102
-  %107 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 10, !dbg !3440
-  %108 = load %struct.storable_picture** %107, align 8, !dbg !3440, !tbaa !1601
-  %109 = getelementptr inbounds %struct.storable_picture* %108, i64 0, i32 11, !dbg !3443
-  %110 = load i32* %109, align 4, !dbg !3443, !tbaa !1948
-  %111 = icmp eq i32 %110, %90, !dbg !3444
-  br i1 %111, label %112, label %160, !dbg !3445
-
-; <label>:112                                     ; preds = %106
-  tail call fastcc void @unmark_for_reference(%struct.frame_store* %97) #8, !dbg !3446
-  br label %mm_unmark_short_term_for_reference.exit.i, !dbg !3448
-
-; <label>:113                                     ; preds = %95
-  %114 = and i32 %99, 1, !dbg !3449
-  %115 = icmp eq i32 %114, 0, !dbg !3449
-  br i1 %115, label %137, label %116, !dbg !3452
-
-; <label>:116                                     ; preds = %113
-  %117 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 2, !dbg !3453
-  %118 = load i32* %117, align 4, !dbg !3453, !tbaa !2134
-  %119 = and i32 %118, 1, !dbg !3454
-  %120 = icmp eq i32 %119, 0, !dbg !3454
-  br i1 %120, label %121, label %137, !dbg !3455
-
-; <label>:121                                     ; preds = %116
-  %122 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 11, !dbg !3456
-  %123 = load %struct.storable_picture** %122, align 8, !dbg !3456, !tbaa !1611
-  %124 = getelementptr inbounds %struct.storable_picture* %123, i64 0, i32 11, !dbg !3459
-  %125 = load i32* %124, align 4, !dbg !3459, !tbaa !1948
-  %126 = icmp eq i32 %125, %90, !dbg !3460
-  br i1 %126, label %127, label %137, !dbg !3461
-
-; <label>:127                                     ; preds = %121
-  %128 = getelementptr inbounds %struct.storable_picture* %123, i64 0, i32 15, !dbg !3462
-  store i32 0, i32* %128, align 4, !dbg !3464, !tbaa !1881
-  %129 = and i32 %99, 2, !dbg !3465
-  store i32 %129, i32* %98, align 4, !dbg !3465, !tbaa !1973
-  %130 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 0, !dbg !3466
-  %131 = load i32* %130, align 4, !dbg !3466, !tbaa !1925
-  %132 = icmp eq i32 %131, 3, !dbg !3468
-  br i1 %132, label %133, label %mm_unmark_short_term_for_reference.exit.i, !dbg !3469
-
-; <label>:133                                     ; preds = %127
-  %134 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 10, !dbg !3470
-  %135 = load %struct.storable_picture** %134, align 8, !dbg !3470, !tbaa !1601
-  %136 = getelementptr inbounds %struct.storable_picture* %135, i64 0, i32 15, !dbg !3472
-  store i32 0, i32* %136, align 4, !dbg !3473, !tbaa !1881
-  br label %mm_unmark_short_term_for_reference.exit.i, !dbg !3474
-
-; <label>:137                                     ; preds = %121, %116, %113
-  %138 = and i32 %99, 2, !dbg !3475
-  %139 = icmp eq i32 %138, 0, !dbg !3475
-  br i1 %139, label %160, label %140, !dbg !3477
-
-; <label>:140                                     ; preds = %137
-  %141 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 2, !dbg !3478
-  %142 = load i32* %141, align 4, !dbg !3478, !tbaa !2134
-  %143 = and i32 %142, 2, !dbg !3479
-  %144 = icmp eq i32 %143, 0, !dbg !3479
-  br i1 %144, label %145, label %160, !dbg !3480
-
-; <label>:145                                     ; preds = %140
-  %146 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 12, !dbg !3481
-  %147 = load %struct.storable_picture** %146, align 8, !dbg !3481, !tbaa !1620
-  %148 = getelementptr inbounds %struct.storable_picture* %147, i64 0, i32 11, !dbg !3484
-  %149 = load i32* %148, align 4, !dbg !3484, !tbaa !1948
-  %150 = icmp eq i32 %149, %90, !dbg !3485
-  br i1 %150, label %151, label %160, !dbg !3486
-
-; <label>:151                                     ; preds = %145
-  %152 = getelementptr inbounds %struct.storable_picture* %147, i64 0, i32 15, !dbg !3487
-  store i32 0, i32* %152, align 4, !dbg !3489, !tbaa !1881
-  store i32 %114, i32* %98, align 4, !dbg !3490, !tbaa !1973
-  %153 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 0, !dbg !3491
-  %154 = load i32* %153, align 4, !dbg !3491, !tbaa !1925
-  %155 = icmp eq i32 %154, 3, !dbg !3493
-  br i1 %155, label %156, label %mm_unmark_short_term_for_reference.exit.i, !dbg !3494
-
-; <label>:156                                     ; preds = %151
-  %157 = getelementptr inbounds %struct.frame_store* %97, i64 0, i32 10, !dbg !3495
-  %158 = load %struct.storable_picture** %157, align 8, !dbg !3495, !tbaa !1601
-  %159 = getelementptr inbounds %struct.storable_picture* %158, i64 0, i32 15, !dbg !3497
-  store i32 0, i32* %159, align 4, !dbg !3498, !tbaa !1881
-  br label %mm_unmark_short_term_for_reference.exit.i, !dbg !3499
-
-; <label>:160                                     ; preds = %145, %140, %137, %106, %102, %100
-  %indvars.iv.next.i.i = add nuw nsw i64 %indvars.iv.i.i, 1, !dbg !3425
-  %161 = icmp ult i64 %indvars.iv.next.i.i, %94, !dbg !3424
-  br i1 %161, label %95, label %mm_unmark_short_term_for_reference.exit.i, !dbg !3425
-
-mm_unmark_short_term_for_reference.exit.i:        ; preds = %160, %156, %151, %133, %127, %112, %get_pic_num_x.exit.i.i
-  tail call void @update_ref_list() #8, !dbg !3500
-  br label %443, !dbg !3501
-
-; <label>:162                                     ; preds = %72
-  %163 = getelementptr inbounds %struct.DecRefPicMarking_s* %73, i64 0, i32 2, !dbg !3502
-  %164 = load i32* %163, align 4, !dbg !3502, !tbaa !3503
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !957, metadata !1408) #7, !dbg !3504
-  tail call void @llvm.dbg.value(metadata i32 %164, i64 0, metadata !958, metadata !1408) #7, !dbg !3506
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !959, metadata !1408) #7, !dbg !3507
-  %165 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 6), align 4, !dbg !3508, !tbaa !1465
-  %166 = icmp eq i32 %165, 0, !dbg !3511
-  br i1 %166, label %mm_unmark_long_term_for_reference.exit.i, label %.lr.ph.i1.i, !dbg !3512
-
-.lr.ph.i1.i:                                      ; preds = %162, %241
-  %indvars.iv96.i = phi i64 [ %indvars.iv.next97.i, %241 ], [ 0, %162 ], !dbg !3391
-  %167 = phi i32 [ %242, %241 ], [ %165, %162 ], !dbg !3513
-  %168 = load i32* %67, align 4, !dbg !3514, !tbaa !1723
-  %169 = icmp eq i32 %168, 0, !dbg !3517
-  %170 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 2), align 8, !dbg !3518, !tbaa !1487
-  %171 = getelementptr inbounds %struct.frame_store** %170, i64 %indvars.iv96.i, !dbg !3521
-  %172 = load %struct.frame_store** %171, align 8, !dbg !3521, !tbaa !1389
-  %173 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 1, !dbg !3522
-  %174 = load i32* %173, align 4, !dbg !3522, !tbaa !1973
-  br i1 %169, label %175, label %188, !dbg !3523
-
-; <label>:175                                     ; preds = %.lr.ph.i1.i
-  %176 = icmp eq i32 %174, 3, !dbg !3524
-  br i1 %176, label %177, label %241, !dbg !3525
-
-; <label>:177                                     ; preds = %175
-  %178 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 2, !dbg !3526
-  %179 = load i32* %178, align 4, !dbg !3526, !tbaa !2134
-  %180 = icmp eq i32 %179, 3, !dbg !3527
-  br i1 %180, label %181, label %241, !dbg !3528
-
-; <label>:181                                     ; preds = %177
-  %182 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 10, !dbg !3529
-  %183 = load %struct.storable_picture** %182, align 8, !dbg !3529, !tbaa !1601
-  %184 = getelementptr inbounds %struct.storable_picture* %183, i64 0, i32 12, !dbg !3532
-  %185 = load i32* %184, align 4, !dbg !3532, !tbaa !2068
-  %186 = icmp eq i32 %185, %164, !dbg !3533
-  br i1 %186, label %187, label %241, !dbg !3534
-
-; <label>:187                                     ; preds = %181
-  tail call fastcc void @unmark_for_long_term_reference(%struct.frame_store* %172) #8, !dbg !3535
-  %.pre.i.i = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 6), align 4, !dbg !3508, !tbaa !1465
-  br label %241, !dbg !3537
-
-; <label>:188                                     ; preds = %.lr.ph.i1.i
-  %189 = and i32 %174, 1, !dbg !3538
-  %190 = icmp eq i32 %189, 0, !dbg !3538
-  br i1 %190, label %215, label %191, !dbg !3541
-
-; <label>:191                                     ; preds = %188
-  %192 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 2, !dbg !3542
-  %193 = load i32* %192, align 4, !dbg !3542, !tbaa !2134
-  %194 = and i32 %193, 1, !dbg !3543
-  %195 = icmp eq i32 %194, 0, !dbg !3543
-  br i1 %195, label %215, label %196, !dbg !3544
-
-; <label>:196                                     ; preds = %191
-  %197 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 11, !dbg !3545
-  %198 = load %struct.storable_picture** %197, align 8, !dbg !3545, !tbaa !1611
-  %199 = getelementptr inbounds %struct.storable_picture* %198, i64 0, i32 12, !dbg !3548
-  %200 = load i32* %199, align 4, !dbg !3548, !tbaa !2068
-  %201 = icmp eq i32 %200, %164, !dbg !3549
-  br i1 %201, label %202, label %215, !dbg !3550
-
-; <label>:202                                     ; preds = %196
-  %203 = getelementptr inbounds %struct.storable_picture* %198, i64 0, i32 15, !dbg !3551
-  store i32 0, i32* %203, align 4, !dbg !3553, !tbaa !1881
-  %204 = getelementptr inbounds %struct.storable_picture* %198, i64 0, i32 14, !dbg !3554
-  store i32 0, i32* %204, align 4, !dbg !3555, !tbaa !1885
-  %205 = and i32 %174, 2, !dbg !3556
-  store i32 %205, i32* %173, align 4, !dbg !3556, !tbaa !1973
-  %206 = and i32 %193, 2, !dbg !3557
-  store i32 %206, i32* %192, align 4, !dbg !3557, !tbaa !2134
-  %207 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 0, !dbg !3558
-  %208 = load i32* %207, align 4, !dbg !3558, !tbaa !1925
-  %209 = icmp eq i32 %208, 3, !dbg !3560
-  br i1 %209, label %210, label %mm_unmark_long_term_for_reference.exit.i, !dbg !3561
-
-; <label>:210                                     ; preds = %202
-  %211 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 10, !dbg !3562
-  %212 = load %struct.storable_picture** %211, align 8, !dbg !3562, !tbaa !1601
-  %213 = getelementptr inbounds %struct.storable_picture* %212, i64 0, i32 15, !dbg !3564
-  store i32 0, i32* %213, align 4, !dbg !3565, !tbaa !1881
-  %214 = getelementptr inbounds %struct.storable_picture* %212, i64 0, i32 14, !dbg !3566
-  store i32 0, i32* %214, align 4, !dbg !3567, !tbaa !1885
-  br label %mm_unmark_long_term_for_reference.exit.i, !dbg !3568
-
-; <label>:215                                     ; preds = %196, %191, %188
-  %216 = and i32 %174, 2, !dbg !3569
-  %217 = icmp eq i32 %216, 0, !dbg !3569
-  br i1 %217, label %241, label %218, !dbg !3571
-
-; <label>:218                                     ; preds = %215
-  %219 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 2, !dbg !3572
-  %220 = load i32* %219, align 4, !dbg !3572, !tbaa !2134
-  %221 = and i32 %220, 2, !dbg !3573
-  %222 = icmp eq i32 %221, 0, !dbg !3573
-  br i1 %222, label %241, label %223, !dbg !3574
-
-; <label>:223                                     ; preds = %218
-  %224 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 12, !dbg !3575
-  %225 = load %struct.storable_picture** %224, align 8, !dbg !3575, !tbaa !1620
-  %226 = getelementptr inbounds %struct.storable_picture* %225, i64 0, i32 12, !dbg !3578
-  %227 = load i32* %226, align 4, !dbg !3578, !tbaa !2068
-  %228 = icmp eq i32 %227, %164, !dbg !3579
-  br i1 %228, label %229, label %241, !dbg !3580
-
-; <label>:229                                     ; preds = %223
-  %230 = getelementptr inbounds %struct.storable_picture* %225, i64 0, i32 15, !dbg !3581
-  store i32 0, i32* %230, align 4, !dbg !3583, !tbaa !1881
-  %231 = getelementptr inbounds %struct.storable_picture* %225, i64 0, i32 14, !dbg !3584
-  store i32 0, i32* %231, align 4, !dbg !3585, !tbaa !1885
-  store i32 %189, i32* %173, align 4, !dbg !3586, !tbaa !1973
-  %232 = and i32 %220, 1, !dbg !3587
-  store i32 %232, i32* %219, align 4, !dbg !3587, !tbaa !2134
-  %233 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 0, !dbg !3588
-  %234 = load i32* %233, align 4, !dbg !3588, !tbaa !1925
-  %235 = icmp eq i32 %234, 3, !dbg !3590
-  br i1 %235, label %236, label %mm_unmark_long_term_for_reference.exit.i, !dbg !3591
-
-; <label>:236                                     ; preds = %229
-  %237 = getelementptr inbounds %struct.frame_store* %172, i64 0, i32 10, !dbg !3592
-  %238 = load %struct.storable_picture** %237, align 8, !dbg !3592, !tbaa !1601
-  %239 = getelementptr inbounds %struct.storable_picture* %238, i64 0, i32 15, !dbg !3594
-  store i32 0, i32* %239, align 4, !dbg !3595, !tbaa !1881
-  %240 = getelementptr inbounds %struct.storable_picture* %238, i64 0, i32 14, !dbg !3596
-  store i32 0, i32* %240, align 4, !dbg !3597, !tbaa !1885
-  br label %mm_unmark_long_term_for_reference.exit.i, !dbg !3598
-
-; <label>:241                                     ; preds = %223, %218, %215, %187, %181, %177, %175
-  %242 = phi i32 [ %167, %218 ], [ %167, %215 ], [ %167, %181 ], [ %.pre.i.i, %187 ], [ %167, %177 ], [ %167, %175 ], [ %167, %223 ], !dbg !3599
-  %indvars.iv.next97.i = add nuw nsw i64 %indvars.iv96.i, 1, !dbg !3512
-  %243 = zext i32 %242 to i64, !dbg !3511
-  %244 = icmp ult i64 %indvars.iv.next97.i, %243, !dbg !3511
-  br i1 %244, label %.lr.ph.i1.i, label %mm_unmark_long_term_for_reference.exit.i, !dbg !3512
-
-mm_unmark_long_term_for_reference.exit.i:         ; preds = %241, %236, %229, %210, %202, %162
-  tail call void @update_ltref_list() #8, !dbg !3600
-  br label %443, !dbg !3601
-
-; <label>:245                                     ; preds = %72
-  %246 = getelementptr inbounds %struct.DecRefPicMarking_s* %73, i64 0, i32 1, !dbg !3602
-  %247 = load i32* %246, align 4, !dbg !3602, !tbaa !3405
-  %248 = getelementptr inbounds %struct.DecRefPicMarking_s* %73, i64 0, i32 3, !dbg !3603
-  %249 = load i32* %248, align 4, !dbg !3603, !tbaa !3604
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !964, metadata !1408) #7, !dbg !3605
-  tail call void @llvm.dbg.value(metadata i32 %247, i64 0, metadata !965, metadata !1408) #7, !dbg !3607
-  tail call void @llvm.dbg.value(metadata i32 %249, i64 0, metadata !966, metadata !1408) #7, !dbg !3608
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !952, metadata !1408) #7, !dbg !3609
-  tail call void @llvm.dbg.value(metadata i32 %247, i64 0, metadata !953, metadata !1408) #7, !dbg !3611
-  %250 = load i32* %67, align 4, !dbg !3612, !tbaa !1723
-  %251 = icmp eq i32 %250, 0, !dbg !3613
-  %252 = load i32* %68, align 4, !dbg !3614, !tbaa !3411
-  br i1 %251, label %260, label %.preheader.i.i, !dbg !3615
-
-.preheader.i.i:                                   ; preds = %245
-  %253 = shl i32 %252, 1, !dbg !3616
-  %254 = or i32 %253, 1, !dbg !3617
-  tail call void @llvm.dbg.value(metadata i32 %254, i64 0, metadata !954, metadata !1408) #7, !dbg !3618
-  %.neg.i.i2.i = xor i32 %247, -1, !dbg !3619
-  %255 = add i32 %254, %.neg.i.i2.i, !dbg !3620
-  tail call void @llvm.dbg.value(metadata i32 %255, i64 0, metadata !967, metadata !1408) #7, !dbg !3621
-  %256 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !3622, !tbaa !1463
-  %257 = icmp eq i32 %256, 0, !dbg !3625
-  br i1 %257, label %._crit_edge.i.i, label %.lr.ph.i3.i, !dbg !3626
-
-.lr.ph.i3.i:                                      ; preds = %.preheader.i.i
-  %258 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !3627, !tbaa !1478
-  %259 = zext i32 %256 to i64, !dbg !3626
-  br label %262, !dbg !3626
-
-; <label>:260                                     ; preds = %245
-  %.neg.i1.i.i = xor i32 %247, -1, !dbg !3619
-  %261 = add i32 %252, %.neg.i1.i.i, !dbg !3620
-  tail call void @llvm.dbg.value(metadata i32 %255, i64 0, metadata !967, metadata !1408) #7, !dbg !3621
-  tail call fastcc void @unmark_long_term_frame_for_reference_by_frame_idx(i32 %249) #8, !dbg !3630
-  br label %286, !dbg !3632
-
-; <label>:262                                     ; preds = %284, %.lr.ph.i3.i
-  %indvars.iv.i4.i = phi i64 [ 0, %.lr.ph.i3.i ], [ %indvars.iv.next.i5.i, %284 ], !dbg !3633
-  %263 = getelementptr inbounds %struct.frame_store** %258, i64 %indvars.iv.i4.i, !dbg !3634
-  %264 = load %struct.frame_store** %263, align 8, !dbg !3634, !tbaa !1389
-  %265 = getelementptr inbounds %struct.frame_store* %264, i64 0, i32 1, !dbg !3635
-  %266 = load i32* %265, align 4, !dbg !3635, !tbaa !1973
-  %267 = and i32 %266, 1, !dbg !3636
-  %268 = icmp eq i32 %267, 0, !dbg !3636
-  br i1 %268, label %275, label %269, !dbg !3637
-
-; <label>:269                                     ; preds = %262
-  %270 = getelementptr inbounds %struct.frame_store* %264, i64 0, i32 11, !dbg !3638
-  %271 = load %struct.storable_picture** %270, align 8, !dbg !3638, !tbaa !1611
-  %272 = getelementptr inbounds %struct.storable_picture* %271, i64 0, i32 11, !dbg !3641
-  %273 = load i32* %272, align 4, !dbg !3641, !tbaa !1948
-  %274 = icmp eq i32 %273, %255, !dbg !3642
-  br i1 %274, label %.thread.i.i, label %275, !dbg !3643
-
-; <label>:275                                     ; preds = %269, %262
-  %276 = and i32 %266, 2, !dbg !3644
-  %277 = icmp eq i32 %276, 0, !dbg !3644
-  br i1 %277, label %284, label %278, !dbg !3646
-
-; <label>:278                                     ; preds = %275
-  %279 = getelementptr inbounds %struct.frame_store* %264, i64 0, i32 12, !dbg !3647
-  %280 = load %struct.storable_picture** %279, align 8, !dbg !3647, !tbaa !1620
-  %281 = getelementptr inbounds %struct.storable_picture* %280, i64 0, i32 11, !dbg !3650
-  %282 = load i32* %281, align 4, !dbg !3650, !tbaa !1948
-  %283 = icmp eq i32 %282, %255, !dbg !3651
-  br i1 %283, label %.thread.i.i, label %284, !dbg !3652
-
-; <label>:284                                     ; preds = %278, %275
-  %indvars.iv.next.i5.i = add nuw nsw i64 %indvars.iv.i4.i, 1, !dbg !3626
-  %285 = icmp ult i64 %indvars.iv.next.i5.i, %259, !dbg !3625
-  br i1 %285, label %262, label %._crit_edge.i.i, !dbg !3626
-
-._crit_edge.i.i:                                  ; preds = %284, %.preheader.i.i
-  tail call void @error(i8* getelementptr inbounds ([38 x i8]* @.str30, i64 0, i64 0), i32 200) #8, !dbg !3653
-  br label %.thread.i.i, !dbg !3656
-
-.thread.i.i:                                      ; preds = %278, %269, %._crit_edge.i.i
-  %structure.02.i.i = phi i32 [ 0, %._crit_edge.i.i ], [ 2, %278 ], [ 1, %269 ], !dbg !3633
-  tail call fastcc void @unmark_long_term_field_for_reference_by_frame_idx(i32 %structure.02.i.i, i32 %249, i32 0, i32 0, i32 %255) #8, !dbg !3657
-  br label %286, !dbg !3633
-
-; <label>:286                                     ; preds = %.thread.i.i, %260
-  %287 = phi i32 [ %255, %.thread.i.i ], [ %261, %260 ], !dbg !3633
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !989, metadata !1408) #7, !dbg !3658
-  tail call void @llvm.dbg.value(metadata i32 %249, i64 0, metadata !990, metadata !1408) #7, !dbg !3660
-  tail call void @llvm.dbg.value(metadata i32 %255, i64 0, metadata !991, metadata !1408) #7, !dbg !3661
-  %288 = load i32* %67, align 4, !dbg !3662, !tbaa !1723
-  switch i32 %288, label %326 [
-    i32 0, label %.preheader.i.i.i
-    i32 1, label %327
-  ], !dbg !3664
-
-.preheader.i.i.i:                                 ; preds = %286
-  %289 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !3665, !tbaa !1463
-  %290 = icmp eq i32 %289, 0, !dbg !3669
-  br i1 %290, label %._crit_edge13.i.i.i, label %.lr.ph12.i.i.i, !dbg !3670
-
-.lr.ph12.i.i.i:                                   ; preds = %.preheader.i.i.i
-  %291 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !3671, !tbaa !1478
-  %292 = zext i32 %289 to i64, !dbg !3670
-  br label %293, !dbg !3670
-
-; <label>:293                                     ; preds = %324, %.lr.ph12.i.i.i
-  %indvars.iv25.i.i.i = phi i64 [ 0, %.lr.ph12.i.i.i ], [ %indvars.iv.next26.i.i.i, %324 ], !dbg !3674
-  %294 = getelementptr inbounds %struct.frame_store** %291, i64 %indvars.iv25.i.i.i, !dbg !3675
-  %295 = load %struct.frame_store** %294, align 8, !dbg !3675, !tbaa !1389
-  %296 = getelementptr inbounds %struct.frame_store* %295, i64 0, i32 1, !dbg !3676
-  %297 = load i32* %296, align 4, !dbg !3676, !tbaa !1973
-  %298 = icmp eq i32 %297, 3, !dbg !3677
-  br i1 %298, label %299, label %324, !dbg !3678
-
-; <label>:299                                     ; preds = %293
-  %300 = getelementptr inbounds %struct.frame_store* %295, i64 0, i32 10, !dbg !3679
-  %301 = load %struct.storable_picture** %300, align 8, !dbg !3679, !tbaa !1601
-  %302 = getelementptr inbounds %struct.storable_picture* %301, i64 0, i32 14, !dbg !3682
-  %303 = load i32* %302, align 4, !dbg !3682, !tbaa !1885
-  %304 = icmp eq i32 %303, 0, !dbg !3683
-  br i1 %304, label %305, label %324, !dbg !3684
-
-; <label>:305                                     ; preds = %299
-  %306 = getelementptr inbounds %struct.storable_picture* %301, i64 0, i32 11, !dbg !3685
-  %307 = load i32* %306, align 4, !dbg !3685, !tbaa !1948
-  %308 = icmp eq i32 %307, %287, !dbg !3686
-  br i1 %308, label %309, label %324, !dbg !3687
-
-; <label>:309                                     ; preds = %305
-  %310 = getelementptr inbounds %struct.frame_store* %295, i64 0, i32 12, !dbg !3688
-  %311 = load %struct.storable_picture** %310, align 8, !dbg !3688, !tbaa !1620
-  %312 = getelementptr inbounds %struct.storable_picture* %311, i64 0, i32 13, !dbg !3690
-  store i32 %249, i32* %312, align 4, !dbg !3691, !tbaa !2065
-  %313 = getelementptr inbounds %struct.frame_store* %295, i64 0, i32 11, !dbg !3692
-  %314 = load %struct.storable_picture** %313, align 8, !dbg !3692, !tbaa !1611
-  %315 = getelementptr inbounds %struct.storable_picture* %314, i64 0, i32 13, !dbg !3693
-  store i32 %249, i32* %315, align 4, !dbg !3694, !tbaa !2065
-  %316 = getelementptr inbounds %struct.storable_picture* %301, i64 0, i32 13, !dbg !3695
-  store i32 %249, i32* %316, align 4, !dbg !3696, !tbaa !2065
-  %317 = getelementptr inbounds %struct.frame_store* %295, i64 0, i32 7, !dbg !3697
-  store i32 %249, i32* %317, align 4, !dbg !3698, !tbaa !2681
-  %318 = getelementptr inbounds %struct.storable_picture* %311, i64 0, i32 12, !dbg !3699
-  store i32 %249, i32* %318, align 4, !dbg !3700, !tbaa !2068
-  %319 = getelementptr inbounds %struct.storable_picture* %314, i64 0, i32 12, !dbg !3701
-  store i32 %249, i32* %319, align 4, !dbg !3702, !tbaa !2068
-  %320 = getelementptr inbounds %struct.storable_picture* %301, i64 0, i32 12, !dbg !3703
-  store i32 %249, i32* %320, align 4, !dbg !3704, !tbaa !2068
-  %321 = getelementptr inbounds %struct.storable_picture* %311, i64 0, i32 14, !dbg !3705
-  store i32 1, i32* %321, align 4, !dbg !3706, !tbaa !1885
-  %322 = getelementptr inbounds %struct.storable_picture* %314, i64 0, i32 14, !dbg !3707
-  store i32 1, i32* %322, align 4, !dbg !3708, !tbaa !1885
-  store i32 1, i32* %302, align 4, !dbg !3709, !tbaa !1885
-  %323 = getelementptr inbounds %struct.frame_store* %295, i64 0, i32 2, !dbg !3710
-  store i32 3, i32* %323, align 4, !dbg !3711, !tbaa !2134
-  br label %mm_assign_long_term_frame_idx.exit.i, !dbg !3712
-
-; <label>:324                                     ; preds = %305, %299, %293
-  %indvars.iv.next26.i.i.i = add nuw nsw i64 %indvars.iv25.i.i.i, 1, !dbg !3670
-  %325 = icmp ult i64 %indvars.iv.next26.i.i.i, %292, !dbg !3669
-  br i1 %325, label %293, label %._crit_edge13.i.i.i, !dbg !3670
-
-._crit_edge13.i.i.i:                              ; preds = %324, %.preheader.i.i.i
-  %puts3.i.i.i = tail call i32 @puts(i8* getelementptr inbounds ([57 x i8]* @str43, i64 0, i64 0)) #7, !dbg !3713
-  br label %mm_assign_long_term_frame_idx.exit.i, !dbg !3714
-
-; <label>:326                                     ; preds = %286
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !993, metadata !1408) #7, !dbg !3715
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !994, metadata !1408) #7, !dbg !3716
-  br label %327, !dbg !3674
-
-; <label>:327                                     ; preds = %326, %286
-  %add_top.0.i.i.i = phi i32 [ 0, %326 ], [ 1, %286 ], !dbg !3674
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !992, metadata !1408) #7, !dbg !3717
-  %328 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !3718, !tbaa !1463
-  %329 = icmp eq i32 %328, 0, !dbg !3722
-  br i1 %329, label %._crit_edge.i.i.i, label %.lr.ph.i.i.i, !dbg !3723
-
-.lr.ph.i.i.i:                                     ; preds = %327
-  %330 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !3724, !tbaa !1478
-  %331 = zext i32 %328 to i64, !dbg !3723
-  br label %332, !dbg !3723
-
-; <label>:332                                     ; preds = %418, %.lr.ph.i.i.i
-  %indvars.iv.i.i.i = phi i64 [ 0, %.lr.ph.i.i.i ], [ %indvars.iv.next.i.i.i, %418 ], !dbg !3674
-  %333 = getelementptr inbounds %struct.frame_store** %330, i64 %indvars.iv.i.i.i, !dbg !3727
-  %334 = load %struct.frame_store** %333, align 8, !dbg !3727, !tbaa !1389
-  %335 = getelementptr inbounds %struct.frame_store* %334, i64 0, i32 1, !dbg !3728
-  %336 = load i32* %335, align 4, !dbg !3728, !tbaa !1973
-  %337 = and i32 %336, 1, !dbg !3729
-  %338 = icmp eq i32 %337, 0, !dbg !3729
-  br i1 %338, label %377, label %339, !dbg !3730
-
-; <label>:339                                     ; preds = %332
-  %340 = getelementptr inbounds %struct.frame_store* %334, i64 0, i32 11, !dbg !3731
-  %341 = load %struct.storable_picture** %340, align 8, !dbg !3731, !tbaa !1611
-  %342 = getelementptr inbounds %struct.storable_picture* %341, i64 0, i32 14, !dbg !3734
-  %343 = load i32* %342, align 4, !dbg !3734, !tbaa !1885
-  %344 = icmp eq i32 %343, 0, !dbg !3735
-  br i1 %344, label %345, label %377, !dbg !3736
-
-; <label>:345                                     ; preds = %339
-  %346 = getelementptr inbounds %struct.storable_picture* %341, i64 0, i32 11, !dbg !3737
-  %347 = load i32* %346, align 4, !dbg !3737, !tbaa !1948
-  %348 = icmp eq i32 %347, %287, !dbg !3738
-  br i1 %348, label %349, label %377, !dbg !3739
-
-; <label>:349                                     ; preds = %345
-  %350 = getelementptr inbounds %struct.frame_store* %334, i64 0, i32 2, !dbg !3740
-  %351 = load i32* %350, align 4, !dbg !3740, !tbaa !2134
-  %352 = icmp eq i32 %351, 0, !dbg !3743
-  br i1 %352, label %358, label %353, !dbg !3744
-
-; <label>:353                                     ; preds = %349
-  %354 = getelementptr inbounds %struct.frame_store* %334, i64 0, i32 7, !dbg !3745
-  %355 = load i32* %354, align 4, !dbg !3745, !tbaa !2681
-  %356 = icmp eq i32 %355, %249, !dbg !3746
-  br i1 %356, label %358, label %357, !dbg !3747
-
-; <label>:357                                     ; preds = %353
-  %puts2.i.i.i = tail call i32 @puts(i8* getelementptr inbounds ([66 x i8]* @str42, i64 0, i64 0)) #7, !dbg !3748
-  %.pre.i.i.i = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !3750, !tbaa !1478
-  %.phi.trans.insert.i.i.i = getelementptr inbounds %struct.frame_store** %.pre.i.i.i, i64 %indvars.iv.i.i.i, !dbg !3674
-  %.pre27.i.i.i = load %struct.frame_store** %.phi.trans.insert.i.i.i, align 8, !dbg !3751, !tbaa !1389
-  %.phi.trans.insert28.i.i.i = getelementptr inbounds %struct.frame_store* %.pre27.i.i.i, i64 0, i32 11, !dbg !3674
-  %.pre29.i.i.i = load %struct.storable_picture** %.phi.trans.insert28.i.i.i, align 8, !dbg !3752, !tbaa !1611
-  %.phi.trans.insert30.i.i.i = getelementptr inbounds %struct.frame_store* %.pre27.i.i.i, i64 0, i32 2, !dbg !3674
-  %.pre31.i.i.i = load i32* %.phi.trans.insert30.i.i.i, align 4, !dbg !3753, !tbaa !2134
-  br label %358, !dbg !3754
-
-; <label>:358                                     ; preds = %357, %353, %349
-  %359 = phi i32 [ %351, %353 ], [ 0, %349 ], [ %.pre31.i.i.i, %357 ], !dbg !3674
-  %360 = phi %struct.storable_picture* [ %341, %353 ], [ %341, %349 ], [ %.pre29.i.i.i, %357 ], !dbg !3674
-  %361 = phi %struct.frame_store* [ %334, %353 ], [ %334, %349 ], [ %.pre27.i.i.i, %357 ], !dbg !3674
-  %362 = getelementptr inbounds %struct.storable_picture* %360, i64 0, i32 13, !dbg !3755
-  store i32 %249, i32* %362, align 4, !dbg !3756, !tbaa !2065
-  %363 = getelementptr inbounds %struct.frame_store* %361, i64 0, i32 7, !dbg !3757
-  store i32 %249, i32* %363, align 4, !dbg !3758, !tbaa !2681
-  %364 = shl nsw i32 %249, 1, !dbg !3759
-  %365 = or i32 %add_top.0.i.i.i, %364, !dbg !3760
-  %366 = getelementptr inbounds %struct.storable_picture* %360, i64 0, i32 12, !dbg !3761
-  store i32 %365, i32* %366, align 4, !dbg !3762, !tbaa !2068
-  %367 = getelementptr inbounds %struct.storable_picture* %360, i64 0, i32 14, !dbg !3763
-  store i32 1, i32* %367, align 4, !dbg !3764, !tbaa !1885
-  %368 = getelementptr inbounds %struct.frame_store* %361, i64 0, i32 2, !dbg !3765
-  %369 = or i32 %359, 1, !dbg !3753
-  store i32 %369, i32* %368, align 4, !dbg !3753, !tbaa !2134
-  %370 = icmp eq i32 %369, 3, !dbg !3766
-  br i1 %370, label %371, label %mm_assign_long_term_frame_idx.exit.i, !dbg !3768
-
-; <label>:371                                     ; preds = %358
-  %372 = getelementptr inbounds %struct.frame_store* %361, i64 0, i32 10, !dbg !3769
-  %373 = load %struct.storable_picture** %372, align 8, !dbg !3769, !tbaa !1601
-  %374 = getelementptr inbounds %struct.storable_picture* %373, i64 0, i32 14, !dbg !3771
-  store i32 1, i32* %374, align 4, !dbg !3772, !tbaa !1885
-  %375 = getelementptr inbounds %struct.storable_picture* %373, i64 0, i32 12, !dbg !3773
-  store i32 %249, i32* %375, align 4, !dbg !3774, !tbaa !2068
-  %376 = getelementptr inbounds %struct.storable_picture* %373, i64 0, i32 13, !dbg !3775
-  store i32 %249, i32* %376, align 4, !dbg !3776, !tbaa !2065
-  br label %mm_assign_long_term_frame_idx.exit.i, !dbg !3777
-
-; <label>:377                                     ; preds = %345, %339, %332
-  %378 = and i32 %336, 2, !dbg !3778
-  %379 = icmp eq i32 %378, 0, !dbg !3778
-  br i1 %379, label %418, label %380, !dbg !3780
-
-; <label>:380                                     ; preds = %377
-  %381 = getelementptr inbounds %struct.frame_store* %334, i64 0, i32 12, !dbg !3781
-  %382 = load %struct.storable_picture** %381, align 8, !dbg !3781, !tbaa !1620
-  %383 = getelementptr inbounds %struct.storable_picture* %382, i64 0, i32 14, !dbg !3784
-  %384 = load i32* %383, align 4, !dbg !3784, !tbaa !1885
-  %385 = icmp eq i32 %384, 0, !dbg !3785
-  br i1 %385, label %386, label %418, !dbg !3786
-
-; <label>:386                                     ; preds = %380
-  %387 = getelementptr inbounds %struct.storable_picture* %382, i64 0, i32 11, !dbg !3787
-  %388 = load i32* %387, align 4, !dbg !3787, !tbaa !1948
-  %389 = icmp eq i32 %388, %287, !dbg !3788
-  br i1 %389, label %390, label %418, !dbg !3789
-
-; <label>:390                                     ; preds = %386
-  %391 = getelementptr inbounds %struct.frame_store* %334, i64 0, i32 2, !dbg !3790
-  %392 = load i32* %391, align 4, !dbg !3790, !tbaa !2134
-  %393 = icmp eq i32 %392, 0, !dbg !3793
-  br i1 %393, label %399, label %394, !dbg !3794
-
-; <label>:394                                     ; preds = %390
-  %395 = getelementptr inbounds %struct.frame_store* %334, i64 0, i32 7, !dbg !3795
-  %396 = load i32* %395, align 4, !dbg !3795, !tbaa !2681
-  %397 = icmp eq i32 %396, %249, !dbg !3796
-  br i1 %397, label %399, label %398, !dbg !3797
-
-; <label>:398                                     ; preds = %394
-  %puts1.i.i.i = tail call i32 @puts(i8* getelementptr inbounds ([66 x i8]* @str42, i64 0, i64 0)) #7, !dbg !3798
-  %.pre32.i.i.i = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !3800, !tbaa !1478
-  %.phi.trans.insert33.i.i.i = getelementptr inbounds %struct.frame_store** %.pre32.i.i.i, i64 %indvars.iv.i.i.i, !dbg !3674
-  %.pre34.i.i.i = load %struct.frame_store** %.phi.trans.insert33.i.i.i, align 8, !dbg !3801, !tbaa !1389
-  %.phi.trans.insert35.i.i.i = getelementptr inbounds %struct.frame_store* %.pre34.i.i.i, i64 0, i32 12, !dbg !3674
-  %.pre36.i.i.i = load %struct.storable_picture** %.phi.trans.insert35.i.i.i, align 8, !dbg !3802, !tbaa !1620
-  %.phi.trans.insert37.i.i.i = getelementptr inbounds %struct.frame_store* %.pre34.i.i.i, i64 0, i32 2, !dbg !3674
-  %.pre38.i.i.i = load i32* %.phi.trans.insert37.i.i.i, align 4, !dbg !3803, !tbaa !2134
-  br label %399, !dbg !3804
-
-; <label>:399                                     ; preds = %398, %394, %390
-  %400 = phi i32 [ %392, %394 ], [ 0, %390 ], [ %.pre38.i.i.i, %398 ], !dbg !3674
-  %401 = phi %struct.storable_picture* [ %382, %394 ], [ %382, %390 ], [ %.pre36.i.i.i, %398 ], !dbg !3674
-  %402 = phi %struct.frame_store* [ %334, %394 ], [ %334, %390 ], [ %.pre34.i.i.i, %398 ], !dbg !3674
-  %403 = getelementptr inbounds %struct.storable_picture* %401, i64 0, i32 13, !dbg !3805
-  store i32 %249, i32* %403, align 4, !dbg !3806, !tbaa !2065
-  %404 = getelementptr inbounds %struct.frame_store* %402, i64 0, i32 7, !dbg !3807
-  store i32 %249, i32* %404, align 4, !dbg !3808, !tbaa !2681
-  %405 = shl nsw i32 %249, 1, !dbg !3809
-  %406 = or i32 %add_top.0.i.i.i, %405, !dbg !3810
-  %407 = getelementptr inbounds %struct.storable_picture* %401, i64 0, i32 12, !dbg !3811
-  store i32 %406, i32* %407, align 4, !dbg !3812, !tbaa !2068
-  %408 = getelementptr inbounds %struct.storable_picture* %401, i64 0, i32 14, !dbg !3813
-  store i32 1, i32* %408, align 4, !dbg !3814, !tbaa !1885
-  %409 = getelementptr inbounds %struct.frame_store* %402, i64 0, i32 2, !dbg !3815
-  %410 = or i32 %400, 2, !dbg !3803
-  store i32 %410, i32* %409, align 4, !dbg !3803, !tbaa !2134
-  %411 = icmp eq i32 %410, 3, !dbg !3816
-  br i1 %411, label %412, label %mm_assign_long_term_frame_idx.exit.i, !dbg !3818
-
-; <label>:412                                     ; preds = %399
-  %413 = getelementptr inbounds %struct.frame_store* %402, i64 0, i32 10, !dbg !3819
-  %414 = load %struct.storable_picture** %413, align 8, !dbg !3819, !tbaa !1601
-  %415 = getelementptr inbounds %struct.storable_picture* %414, i64 0, i32 14, !dbg !3821
-  store i32 1, i32* %415, align 4, !dbg !3822, !tbaa !1885
-  %416 = getelementptr inbounds %struct.storable_picture* %414, i64 0, i32 12, !dbg !3823
-  store i32 %249, i32* %416, align 4, !dbg !3824, !tbaa !2068
-  %417 = getelementptr inbounds %struct.storable_picture* %414, i64 0, i32 13, !dbg !3825
-  store i32 %249, i32* %417, align 4, !dbg !3826, !tbaa !2065
-  br label %mm_assign_long_term_frame_idx.exit.i, !dbg !3827
-
-; <label>:418                                     ; preds = %386, %380, %377
-  %indvars.iv.next.i.i.i = add nuw nsw i64 %indvars.iv.i.i.i, 1, !dbg !3723
-  %419 = icmp ult i64 %indvars.iv.next.i.i.i, %331, !dbg !3722
-  br i1 %419, label %332, label %._crit_edge.i.i.i, !dbg !3723
-
-._crit_edge.i.i.i:                                ; preds = %418, %327
-  %puts.i.i.i = tail call i32 @puts(i8* getelementptr inbounds ([57 x i8]* @str, i64 0, i64 0)) #7, !dbg !3828
-  br label %mm_assign_long_term_frame_idx.exit.i, !dbg !3674
-
-mm_assign_long_term_frame_idx.exit.i:             ; preds = %._crit_edge.i.i.i, %412, %399, %371, %358, %._crit_edge13.i.i.i, %309
-  tail call void @update_ref_list() #8, !dbg !3829
-  tail call void @update_ltref_list() #8, !dbg !3830
-  br label %443, !dbg !3831
-
-; <label>:420                                     ; preds = %72
-  %421 = getelementptr inbounds %struct.DecRefPicMarking_s* %73, i64 0, i32 4, !dbg !3832
-  %422 = load i32* %421, align 4, !dbg !3832, !tbaa !3833
-  tail call void @mm_update_max_long_term_frame_idx(i32 %422) #8, !dbg !3834
-  tail call void @update_ltref_list() #8, !dbg !3835
-  br label %443, !dbg !3836
-
-; <label>:423                                     ; preds = %72
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !997, metadata !1408) #7, !dbg !3837
-  %424 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !3839, !tbaa !1463
-  %425 = icmp eq i32 %424, 0, !dbg !3842
-  br i1 %425, label %mm_unmark_all_short_term_for_reference.exit.i, label %.lr.ph.i6.i, !dbg !3843
-
-.lr.ph.i6.i:                                      ; preds = %423, %.lr.ph.i6.i
-  %indvars.iv.i4 = phi i64 [ %indvars.iv.next.i5, %.lr.ph.i6.i ], [ 0, %423 ], !dbg !3391
-  %426 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !3844, !tbaa !1478
-  %427 = getelementptr inbounds %struct.frame_store** %426, i64 %indvars.iv.i4, !dbg !3846
-  %428 = load %struct.frame_store** %427, align 8, !dbg !3846, !tbaa !1389
-  tail call fastcc void @unmark_for_reference(%struct.frame_store* %428) #8, !dbg !3847
-  %indvars.iv.next.i5 = add nuw nsw i64 %indvars.iv.i4, 1, !dbg !3843
-  %429 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !3839, !tbaa !1463
-  %430 = zext i32 %429 to i64, !dbg !3842
-  %431 = icmp ult i64 %indvars.iv.next.i5, %430, !dbg !3842
-  br i1 %431, label %.lr.ph.i6.i, label %mm_unmark_all_short_term_for_reference.exit.i, !dbg !3843
-
-mm_unmark_all_short_term_for_reference.exit.i:    ; preds = %.lr.ph.i6.i, %423
-  tail call void @update_ref_list() #8, !dbg !3848
-  tail call void @mm_update_max_long_term_frame_idx(i32 0) #8, !dbg !3849
-  %432 = load %struct.ImageParameters** @img, align 8, !dbg !3851, !tbaa !1389
-  %433 = getelementptr inbounds %struct.ImageParameters* %432, i64 0, i32 145, !dbg !3852
-  store i32 1, i32* %433, align 4, !dbg !3853, !tbaa !1539
-  br label %443, !dbg !3854
-
-; <label>:434                                     ; preds = %72
-  %435 = getelementptr inbounds %struct.DecRefPicMarking_s* %73, i64 0, i32 3, !dbg !3855
-  %436 = load i32* %435, align 4, !dbg !3855, !tbaa !3604
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !1002, metadata !1408) #7, !dbg !3856
-  tail call void @llvm.dbg.value(metadata i32 %436, i64 0, metadata !1003, metadata !1408) #7, !dbg !3857
-  %437 = load i32* %67, align 4, !dbg !3858, !tbaa !1723
-  %438 = icmp eq i32 %437, 0, !dbg !3859
-  br i1 %438, label %439, label %440, !dbg !3860
-
-; <label>:439                                     ; preds = %434
-  tail call fastcc void @unmark_long_term_frame_for_reference_by_frame_idx(i32 %436) #8, !dbg !3861
-  br label %mm_mark_current_picture_long_term.exit.i, !dbg !3863
-
-; <label>:440                                     ; preds = %434
-  %441 = load i32* %71, align 4, !dbg !3388, !tbaa !1948
-  tail call fastcc void @unmark_long_term_field_for_reference_by_frame_idx(i32 %437, i32 %436, i32 1, i32 %441, i32 0) #8, !dbg !3864
-  br label %mm_mark_current_picture_long_term.exit.i, !dbg !3865
-
-mm_mark_current_picture_long_term.exit.i:         ; preds = %440, %439
-  store i32 1, i32* %69, align 4, !dbg !3866, !tbaa !1885
-  store i32 %436, i32* %70, align 4, !dbg !3867, !tbaa !2065
-  br label %443, !dbg !3868
-
-; <label>:442                                     ; preds = %72
-  tail call void @error(i8* getelementptr inbounds ([54 x i8]* @.str29, i64 0, i64 0), i32 500) #8, !dbg !3869
-  br label %443, !dbg !3870
-
-; <label>:443                                     ; preds = %442, %mm_mark_current_picture_long_term.exit.i, %mm_unmark_all_short_term_for_reference.exit.i, %420, %mm_assign_long_term_frame_idx.exit.i, %mm_unmark_long_term_for_reference.exit.i, %mm_unmark_short_term_for_reference.exit.i, %80, %76
-  %444 = getelementptr inbounds %struct.DecRefPicMarking_s* %73, i64 0, i32 5, !dbg !3871
-  %445 = bitcast %struct.DecRefPicMarking_s** %444 to i64*, !dbg !3871
-  %446 = load i64* %445, align 8, !dbg !3871, !tbaa !3398
-  %447 = load %struct.ImageParameters** @img, align 8, !dbg !3872, !tbaa !1389
-  %448 = getelementptr inbounds %struct.ImageParameters* %447, i64 0, i32 117, !dbg !3873
-  %449 = bitcast %struct.DecRefPicMarking_s** %448 to i64*, !dbg !3874
-  store i64 %446, i64* %449, align 8, !dbg !3874, !tbaa !3376
-  %450 = bitcast %struct.DecRefPicMarking_s* %73 to i8*, !dbg !3875
-  tail call void @free(i8* %450) #8, !dbg !3876
-  %451 = load %struct.ImageParameters** @img, align 8, !dbg !3877, !tbaa !1389
-  %452 = getelementptr inbounds %struct.ImageParameters* %451, i64 0, i32 117, !dbg !3375
-  %453 = load %struct.DecRefPicMarking_s** %452, align 8, !dbg !3375, !tbaa !3376
-  %454 = icmp eq %struct.DecRefPicMarking_s* %453, null, !dbg !3377
-  br i1 %454, label %455, label %72, !dbg !3377
-
-; <label>:455                                     ; preds = %443
-  %.phi.trans.insert.i = getelementptr inbounds %struct.ImageParameters* %451, i64 0, i32 145, !dbg !3391
-  %.pre.i = load i32* %.phi.trans.insert.i, align 4, !dbg !3878, !tbaa !1539
-  %phitmp.i = icmp eq i32 %.pre.i, 0, !dbg !3377
-  br i1 %phitmp.i, label %adaptive_memory_management.exit, label %456, !dbg !3880
-
-; <label>:456                                     ; preds = %455
-  store i32 0, i32* %68, align 4, !dbg !3881, !tbaa !3411
-  store i32 0, i32* %71, align 4, !dbg !3883, !tbaa !1948
-  %457 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 1, !dbg !3884
-  store i32 0, i32* %457, align 4, !dbg !3885, !tbaa !2195
-  %458 = getelementptr inbounds %struct.ImageParameters* %451, i64 0, i32 104, !dbg !3886
-  store i32 0, i32* %458, align 4, !dbg !3887, !tbaa !2357
-  %459 = load i32* %67, align 4, !dbg !3888, !tbaa !1723
-  switch i32 %459, label %466 [
-    i32 1, label %460
-    i32 2, label %462
-    i32 0, label %464
-  ], !dbg !3889
-
-; <label>:460                                     ; preds = %456
-  %461 = getelementptr inbounds %struct.ImageParameters* %451, i64 0, i32 101, !dbg !3890
-  store i32 0, i32* %461, align 4, !dbg !3893, !tbaa !3894
-  br label %466, !dbg !3895
-
-; <label>:462                                     ; preds = %456
-  %463 = getelementptr inbounds %struct.ImageParameters* %451, i64 0, i32 102, !dbg !3896
-  store i32 0, i32* %463, align 4, !dbg !3898, !tbaa !3899
-  br label %466, !dbg !3900
-
-; <label>:464                                     ; preds = %456
-  %465 = getelementptr inbounds %struct.ImageParameters* %451, i64 0, i32 103, !dbg !3901
-  store i32 0, i32* %465, align 4, !dbg !3903, !tbaa !2193
-  br label %466, !dbg !3904
-
-; <label>:466                                     ; preds = %464, %462, %460, %456
-  tail call void @flush_dpb() #8, !dbg !3905
-  br label %adaptive_memory_management.exit, !dbg !3906
-
-adaptive_memory_management.exit:                  ; preds = %59, %466, %455, %.preheader.i2, %60, %idr_memory_management.exit
-  %467 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 0, !dbg !3907
-  %468 = load i32* %467, align 4, !dbg !3907, !tbaa !1723
-  %469 = icmp eq i32 %468, 1, !dbg !3909
-  br i1 %469, label %474, label %470, !dbg !3910
-
-; <label>:470                                     ; preds = %adaptive_memory_management.exit
-  %471 = icmp eq i32 %468, 2, !dbg !3911
-  %472 = load %struct.frame_store** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 10), align 8
-  %473 = icmp ne %struct.frame_store* %472, null, !dbg !3912
-  %or.cond = and i1 %471, %473, !dbg !3915
-  br i1 %or.cond, label %475, label %thread-pre-split.thread, !dbg !3915
-
-; <label>:474                                     ; preds = %adaptive_memory_management.exit
-  %.old = load %struct.frame_store** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 10), align 8, !dbg !3916, !tbaa !1461
-  %.old1 = icmp eq %struct.frame_store* %.old, null, !dbg !3912
-  br i1 %.old1, label %thread-pre-split.thread, label %475, !dbg !3917
-
-; <label>:475                                     ; preds = %474, %470
-  %476 = phi %struct.frame_store* [ %.old, %474 ], [ %472, %470 ]
-  %477 = getelementptr inbounds %struct.frame_store* %476, i64 0, i32 5, !dbg !3918
-  %478 = load i32* %477, align 4, !dbg !3918, !tbaa !1936
-  %479 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 11, !dbg !3921
-  %480 = load i32* %479, align 4, !dbg !3921, !tbaa !1948
-  %481 = icmp eq i32 %478, %480, !dbg !3922
-  br i1 %481, label %482, label %thread-pre-split.thread, !dbg !3923
-
-; <label>:482                                     ; preds = %475
-  br i1 %469, label %483, label %thread-pre-split, !dbg !3924
-
-; <label>:483                                     ; preds = %482
-  %484 = getelementptr inbounds %struct.frame_store* %476, i64 0, i32 0, !dbg !3927
-  %485 = load i32* %484, align 4, !dbg !3927, !tbaa !1925
-  %486 = icmp eq i32 %485, 2, !dbg !3928
-  br i1 %486, label %492, label %thread-pre-split.thread, !dbg !3929
-
-thread-pre-split:                                 ; preds = %482
-  %487 = icmp eq i32 %468, 2, !dbg !3930
-  br i1 %487, label %488, label %thread-pre-split.thread, !dbg !3931
-
-; <label>:488                                     ; preds = %thread-pre-split
-  %489 = getelementptr inbounds %struct.frame_store* %476, i64 0, i32 0, !dbg !3932
-  %490 = load i32* %489, align 4, !dbg !3932, !tbaa !1925
-  %491 = icmp eq i32 %490, 1, !dbg !3933
-  br i1 %491, label %492, label %thread-pre-split.thread, !dbg !3934
-
-; <label>:492                                     ; preds = %488, %483
-  %493 = load i32* %9, align 4, !dbg !3935, !tbaa !1881
-  %494 = icmp eq i32 %493, 0, !dbg !3938
-  %.phi.trans.insert = getelementptr inbounds %struct.frame_store* %476, i64 0, i32 3
-  %.pre = load i32* %.phi.trans.insert, align 4, !dbg !3939, !tbaa !3940
-  %495 = icmp eq i32 %.pre, 0, !dbg !3941
-  br i1 %494, label %.thread, label %496, !dbg !3942
-
-; <label>:496                                     ; preds = %492
-  br i1 %495, label %thread-pre-split.thread, label %497, !dbg !3943
-
-.thread:                                          ; preds = %492
-  br i1 %495, label %497, label %thread-pre-split.thread, !dbg !3944
-
-; <label>:497                                     ; preds = %496, %.thread
-  tail call fastcc void @insert_picture_in_dpb(%struct.frame_store* %476, %struct.storable_picture* %p) #9, !dbg !3945
-  tail call void @update_ref_list() #9, !dbg !3947
-  tail call void @update_ltref_list() #9, !dbg !3948
-  store %struct.frame_store* null, %struct.frame_store** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 10), align 8, !dbg !3949, !tbaa !1461
-  br label %615, !dbg !3950
-
-thread-pre-split.thread:                          ; preds = %483, %496, %474, %thread-pre-split, %488, %.thread, %475, %470
-  %498 = load %struct.ImageParameters** @img, align 8, !dbg !3951, !tbaa !1389
-  %499 = getelementptr inbounds %struct.ImageParameters* %498, i64 0, i32 49, !dbg !3953
-  %500 = load %struct.Picture** %499, align 8, !dbg !3953, !tbaa !3299
-  %501 = getelementptr inbounds %struct.Picture* %500, i64 0, i32 1, !dbg !3954
-  %502 = load i32* %501, align 4, !dbg !3954, !tbaa !3301
-  %503 = icmp eq i32 %502, 0, !dbg !3951
-  br i1 %503, label %504, label %539, !dbg !3955
-
-; <label>:504                                     ; preds = %thread-pre-split.thread
-  %505 = load i32* %9, align 4, !dbg !3956, !tbaa !1881
-  %506 = icmp eq i32 %505, 0, !dbg !3957
-  br i1 %506, label %539, label %507, !dbg !3958
-
-; <label>:507                                     ; preds = %504
-  %508 = getelementptr inbounds %struct.ImageParameters* %498, i64 0, i32 114, !dbg !3959
-  %509 = load i32* %508, align 4, !dbg !3959, !tbaa !3369
-  %510 = icmp eq i32 %509, 0, !dbg !3960
-  br i1 %510, label %511, label %539, !dbg !3961
-
-; <label>:511                                     ; preds = %507
-  tail call void @llvm.dbg.value(metadata %struct.storable_picture* %p, i64 0, metadata !1006, metadata !1408) #7, !dbg !3962
-  %512 = load i64* bitcast (i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5) to i64*), align 8, !dbg !3965
-  %513 = trunc i64 %512 to i32, !dbg !3965
-  %514 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !dbg !3967, !tbaa !1389
-  %515 = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %514, i64 0, i32 21, !dbg !3968
-  %516 = load i32* %515, align 4, !dbg !3968, !tbaa !3969
-  %517 = lshr i64 %512, 32, !dbg !3970
-  %518 = trunc i64 %517 to i32, !dbg !3970
-  %519 = sub i32 %516, %518, !dbg !3971
-  %520 = icmp eq i32 %513, %519, !dbg !3972
-  br i1 %520, label %.preheader.i6, label %sliding_window_memory_management.exit, !dbg !3973
-
-.preheader.i6:                                    ; preds = %511
-  %521 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !3974, !tbaa !1459
-  %522 = icmp eq i32 %521, 0, !dbg !3978
-  br i1 %522, label %sliding_window_memory_management.exit, label %.lr.ph.i7, !dbg !3979
-
-.lr.ph.i7:                                        ; preds = %.preheader.i6
-  %523 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !3980, !tbaa !1469
-  %524 = zext i32 %521 to i64, !dbg !3979
-  br label %525, !dbg !3979
-
-; <label>:525                                     ; preds = %536, %.lr.ph.i7
-  %indvars.iv.i8 = phi i64 [ 0, %.lr.ph.i7 ], [ %indvars.iv.next.i9, %536 ], !dbg !3970
-  %526 = getelementptr inbounds %struct.frame_store** %523, i64 %indvars.iv.i8, !dbg !3983
-  %527 = load %struct.frame_store** %526, align 8, !dbg !3983, !tbaa !1389
-  %528 = getelementptr inbounds %struct.frame_store* %527, i64 0, i32 1, !dbg !3984
-  %529 = load i32* %528, align 4, !dbg !3984, !tbaa !1973
-  %530 = icmp eq i32 %529, 0, !dbg !3983
-  br i1 %530, label %536, label %531, !dbg !3985
-
-; <label>:531                                     ; preds = %525
-  %532 = getelementptr inbounds %struct.frame_store* %527, i64 0, i32 2, !dbg !3986
-  %533 = load i32* %532, align 4, !dbg !3986, !tbaa !2134
-  %534 = icmp eq i32 %533, 0, !dbg !3987
-  br i1 %534, label %535, label %536, !dbg !3988
-
-; <label>:535                                     ; preds = %531
-  tail call fastcc void @unmark_for_reference(%struct.frame_store* %527) #8, !dbg !3989
-  tail call void @update_ref_list() #8, !dbg !3991
-  br label %sliding_window_memory_management.exit, !dbg !3992
-
-; <label>:536                                     ; preds = %531, %525
-  %indvars.iv.next.i9 = add nuw nsw i64 %indvars.iv.i8, 1, !dbg !3979
-  %537 = icmp ult i64 %indvars.iv.next.i9, %524, !dbg !3978
-  br i1 %537, label %525, label %sliding_window_memory_management.exit, !dbg !3979
-
-sliding_window_memory_management.exit:            ; preds = %536, %511, %.preheader.i6, %535
-  %538 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 14, !dbg !3993
-  store i32 0, i32* %538, align 4, !dbg !3994, !tbaa !1885
-  br label %539, !dbg !3995
-
-; <label>:539                                     ; preds = %507, %504, %thread-pre-split.thread, %sliding_window_memory_management.exit
-  %540 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !3996, !tbaa !1459
-  %541 = load i64* bitcast (i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 3) to i64*), align 8, !dbg !3998
-  %542 = trunc i64 %541 to i32, !dbg !3998
-  %543 = icmp eq i32 %540, %542, !dbg !3999
-  %544 = lshr i64 %541, 32
-  %545 = trunc i64 %544 to i32
-  br i1 %543, label %546, label %.preheader12, !dbg !4000
-
-; <label>:546                                     ; preds = %539
-  %547 = tail call fastcc i32 @remove_unused_frame_from_dpb() #9, !dbg !4001
-  %.pre112 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !4003, !tbaa !1459
-  %.pre113 = load i64* bitcast (i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 3) to i64*), align 8, !dbg !4004
-  %548 = trunc i64 %.pre113 to i32, !dbg !4004
-  %549 = lshr i64 %.pre113, 32
-  %550 = trunc i64 %549 to i32
-  br label %.preheader12, !dbg !4005
-
-.preheader12:                                     ; preds = %546, %539
-  %.pre115120 = phi i32 [ %.pre112, %546 ], [ %540, %539 ]
-  %551 = phi i32 [ %550, %546 ], [ %545, %539 ]
-  %552 = phi i32 [ %548, %546 ], [ %542, %539 ]
-  %553 = phi i32 [ %.pre112, %546 ], [ %545, %539 ]
-  %554 = icmp eq i32 %553, %552, !dbg !4006
-  %555 = load i32* %9, align 4, !dbg !4007, !tbaa !1881
-  %556 = icmp ne i32 %555, 0, !dbg !4010
-  br i1 %554, label %.lr.ph62, label %578, !dbg !4011
-
-.lr.ph62:                                         ; preds = %.preheader12
-  %557 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 1, !dbg !4012
-  br label %558, !dbg !4011
-
-; <label>:558                                     ; preds = %.lr.ph62, %569
-  %559 = phi i1 [ %556, %.lr.ph62 ], [ %575, %569 ]
-  br i1 %559, label %569, label %560, !dbg !4015
-
-; <label>:560                                     ; preds = %558
-  tail call void @llvm.dbg.value(metadata i32* %poc, i64 0, metadata !236, metadata !1408), !dbg !4016
-  tail call void @llvm.dbg.value(metadata i32* %pos, i64 0, metadata !237, metadata !1408), !dbg !4017
-  call fastcc void @get_smallest_poc(i32* %poc, i32* %pos) #9, !dbg !4018
-  tail call void @llvm.dbg.value(metadata i32* %pos, i64 0, metadata !237, metadata !1408), !dbg !4017
-  %561 = load i32* %pos, align 4, !dbg !4019, !tbaa !1532
-  %562 = icmp eq i32 %561, -1, !dbg !4020
-  br i1 %562, label %567, label %563, !dbg !4021
-
-; <label>:563                                     ; preds = %560
-  %564 = load i32* %557, align 4, !dbg !4012, !tbaa !2195
-  tail call void @llvm.dbg.value(metadata i32* %poc, i64 0, metadata !236, metadata !1408), !dbg !4016
-  %565 = load i32* %poc, align 4, !dbg !4022, !tbaa !1532
-  %566 = icmp slt i32 %564, %565, !dbg !4023
-  br i1 %566, label %567, label %569, !dbg !4024
-
-; <label>:567                                     ; preds = %563, %560
-  %568 = load i32* @p_dec, align 4, !dbg !4025, !tbaa !1532
-  tail call void @direct_output(%struct.storable_picture* %p, i32 %568) #8, !dbg !4027
-  br label %615, !dbg !4028
-
-; <label>:569                                     ; preds = %563, %558
-  tail call fastcc void @output_one_frame_from_dpb() #9, !dbg !4029
-  %570 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !4003, !tbaa !1459
-  %571 = load i64* bitcast (i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 3) to i64*), align 8, !dbg !4004
-  %572 = trunc i64 %571 to i32, !dbg !4004
-  %573 = icmp eq i32 %570, %572, !dbg !4006
-  %574 = load i32* %9, align 4, !dbg !4007, !tbaa !1881
-  %575 = icmp ne i32 %574, 0, !dbg !4010
-  br i1 %573, label %558, label %._crit_edge, !dbg !4011
-
-._crit_edge:                                      ; preds = %569
-  %576 = lshr i64 %571, 32
-  %577 = trunc i64 %576 to i32
-  br i1 %575, label %579, label %.loopexit, !dbg !4030
-
-; <label>:578                                     ; preds = %.preheader12
-  br i1 %556, label %579, label %.loopexit, !dbg !4030
-
-; <label>:579                                     ; preds = %._crit_edge, %578
-  %580 = phi i32 [ %577, %._crit_edge ], [ %551, %578 ]
-  %.pre115119121 = phi i32 [ %570, %._crit_edge ], [ %.pre115120, %578 ]
-  %581 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 14, !dbg !4032
-  %582 = load i32* %581, align 4, !dbg !4032, !tbaa !1885
-  %583 = icmp eq i32 %582, 0, !dbg !4033
-  br i1 %583, label %.preheader, label %.loopexit, !dbg !4034
-
-.preheader:                                       ; preds = %579
-  %584 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !4035, !tbaa !1463
-  %585 = icmp eq i32 %584, 0, !dbg !4039
-  br i1 %585, label %.loopexit, label %.lr.ph, !dbg !4040
-
-.lr.ph:                                           ; preds = %.preheader
-  %586 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 10, !dbg !4041
-  br label %587, !dbg !4040
-
-; <label>:587                                     ; preds = %.lr.ph, %598
-  %588 = phi i32 [ %584, %.lr.ph ], [ %599, %598 ]
-  %i.061 = phi i32 [ 0, %.lr.ph ], [ %600, %598 ]
-  %589 = zext i32 %i.061 to i64, !dbg !4044
-  %590 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !4045, !tbaa !1478
-  %591 = getelementptr inbounds %struct.frame_store** %590, i64 %589, !dbg !4044
-  %592 = load %struct.frame_store** %591, align 8, !dbg !4044, !tbaa !1389
-  %593 = getelementptr inbounds %struct.frame_store* %592, i64 0, i32 5, !dbg !4046
-  %594 = load i32* %593, align 4, !dbg !4046, !tbaa !1936
-  %595 = load i32* %586, align 4, !dbg !4041, !tbaa !3411
-  %596 = icmp eq i32 %594, %595, !dbg !4047
-  br i1 %596, label %597, label %598, !dbg !4048
-
-; <label>:597                                     ; preds = %587
-  tail call void @error(i8* getelementptr inbounds ([59 x i8]* @.str15, i64 0, i64 0), i32 500) #8, !dbg !4049
-  %.pre114 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !4035, !tbaa !1463
-  br label %598, !dbg !4051
-
-; <label>:598                                     ; preds = %587, %597
-  %599 = phi i32 [ %588, %587 ], [ %.pre114, %597 ], !dbg !4052
-  %600 = add nuw i32 %i.061, 1, !dbg !4052
-  tail call void @llvm.dbg.value(metadata i32 %600, i64 0, metadata !235, metadata !1408), !dbg !4053
-  %601 = icmp ult i32 %600, %599, !dbg !4039
-  br i1 %601, label %587, label %..loopexit_crit_edge, !dbg !4040
-
-..loopexit_crit_edge:                             ; preds = %598
-  %.pre115.pre = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !4054, !tbaa !1459
-  br label %.loopexit, !dbg !4040
-
-.loopexit:                                        ; preds = %..loopexit_crit_edge, %.preheader, %._crit_edge, %579, %578
-  %602 = phi i32 [ %580, %579 ], [ %551, %578 ], [ %577, %._crit_edge ], [ %.pre115119121, %.preheader ], [ %.pre115.pre, %..loopexit_crit_edge ]
-  %603 = zext i32 %602 to i64, !dbg !4055
-  %604 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !4056, !tbaa !1469
-  %605 = getelementptr inbounds %struct.frame_store** %604, i64 %603, !dbg !4055
-  %606 = load %struct.frame_store** %605, align 8, !dbg !4055, !tbaa !1389
-  tail call fastcc void @insert_picture_in_dpb(%struct.frame_store* %606, %struct.storable_picture* %p) #9, !dbg !4057
-  %607 = load i32* %467, align 4, !dbg !4058, !tbaa !1723
-  %608 = icmp eq i32 %607, 0, !dbg !4060
-  %.pre117 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !4061, !tbaa !1459
-  br i1 %608, label %._crit_edge116, label %609, !dbg !4062
-
-; <label>:609                                     ; preds = %.loopexit
-  %610 = zext i32 %.pre117 to i64, !dbg !4063
-  %611 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !4065, !tbaa !1469
-  %612 = getelementptr inbounds %struct.frame_store** %611, i64 %610, !dbg !4063
-  %613 = load %struct.frame_store** %612, align 8, !dbg !4063, !tbaa !1389
-  br label %._crit_edge116, !dbg !4066
-
-._crit_edge116:                                   ; preds = %.loopexit, %609
-  %storemerge = phi %struct.frame_store* [ %613, %609 ], [ null, %.loopexit ]
-  store %struct.frame_store* %storemerge, %struct.frame_store** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 10), align 8, !dbg !4067, !tbaa !1461
-  %614 = add i32 %.pre117, 1, !dbg !4061
-  store i32 %614, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !4061, !tbaa !1459
-  tail call void @update_ref_list() #9, !dbg !4068
-  tail call void @update_ltref_list() #9, !dbg !4069
-  br label %615, !dbg !4070
-
-; <label>:615                                     ; preds = %._crit_edge116, %567, %497
-  ret void, !dbg !4070
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !232), !dbg !2193
+  call void @llvm.dbg.declare(metadata !{i32* %poc}, metadata !234), !dbg !2194
+  call void @llvm.dbg.declare(metadata !{i32* %pos}, metadata !235), !dbg !2194
+  %cmp = icmp eq %struct.storable_picture* %p, null, !dbg !2195
+  br i1 %cmp, label %cond.false, label %cond.end, !dbg !2195
+
+cond.false:                                       ; preds = %entry
+  call void @__assert_fail(i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str14, i64 0, i64 0), i32 2187, i8* getelementptr inbounds ([45 x i8]* @__PRETTY_FUNCTION__.store_picture_in_dpb, i64 0, i64 0)) #10, !dbg !2195
+  unreachable, !dbg !2195
+
+cond.end:                                         ; preds = %entry
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !2196, !tbaa !1363
+  %nal_reference_idc = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 113, !dbg !2196
+  %1 = load i32* %nal_reference_idc, align 4, !dbg !2196, !tbaa !1366
+  %cmp1 = icmp ne i32 %1, 0, !dbg !2196
+  %conv = zext i1 %cmp1 to i32, !dbg !2196
+  %used_for_reference = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 15, !dbg !2196
+  store i32 %conv, i32* %used_for_reference, align 4, !dbg !2196, !tbaa !1366
+  %last_has_mmco_5 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 145, !dbg !2197
+  store i32 0, i32* %last_has_mmco_5, align 4, !dbg !2197, !tbaa !1366
+  %structure = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 7, !dbg !2198
+  %2 = load i32* %structure, align 4, !dbg !2198, !tbaa !1366
+  %cmp2 = icmp eq i32 %2, 2, !dbg !2198
+  %conv3 = zext i1 %cmp2 to i32, !dbg !2198
+  %last_pic_bottom_field = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 144, !dbg !2198
+  store i32 %conv3, i32* %last_pic_bottom_field, align 4, !dbg !2198, !tbaa !1366
+  %currentPicture = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 49, !dbg !2199
+  %3 = load %struct.Picture** %currentPicture, align 8, !dbg !2199, !tbaa !1363
+  %idr_flag = getelementptr inbounds %struct.Picture* %3, i64 0, i32 1, !dbg !2199
+  %4 = load i32* %idr_flag, align 4, !dbg !2199, !tbaa !1366
+  %tobool = icmp eq i32 %4, 0, !dbg !2199
+  br i1 %tobool, label %if.else, label %cond.end.i, !dbg !2199
+
+cond.end.i:                                       ; preds = %cond.end
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !2200) #7, !dbg !2202
+  %no_output_of_prior_pics_flag.i = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 115, !dbg !2203
+  %5 = load i32* %no_output_of_prior_pics_flag.i, align 4, !dbg !2203, !tbaa !1366
+  %tobool1.i = icmp eq i32 %5, 0, !dbg !2203
+  br i1 %tobool1.i, label %if.else.i, label %for.cond.preheader.i, !dbg !2203
+
+for.cond.preheader.i:                             ; preds = %cond.end.i
+  %6 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !2204, !tbaa !1366
+  %cmp40.i = icmp eq i32 %6, 0, !dbg !2204
+  br i1 %cmp40.i, label %for.cond4.preheader.i, label %for.body.i, !dbg !2204
+
+for.cond4.preheader.i:                            ; preds = %for.body.i, %for.cond.preheader.i
+  %7 = load i64* bitcast (i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5) to i64*), align 8, !dbg !2207
+  %8 = trunc i64 %7 to i32, !dbg !2207
+  %cmp538.i = icmp eq i32 %8, 0, !dbg !2207
+  %9 = lshr i64 %7, 32
+  %10 = trunc i64 %9 to i32
+  br i1 %cmp538.i, label %for.cond12.preheader.i, label %for.body6.i, !dbg !2207
+
+for.body.i:                                       ; preds = %for.cond.preheader.i, %for.body.i
+  %i.041.i = phi i32 [ %inc.i, %for.body.i ], [ 0, %for.cond.preheader.i ]
+  %idxprom.i = zext i32 %i.041.i to i64, !dbg !2209
+  %11 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !2209, !tbaa !1363
+  %arrayidx.i = getelementptr inbounds %struct.frame_store** %11, i64 %idxprom.i, !dbg !2209
+  %12 = load %struct.frame_store** %arrayidx.i, align 8, !dbg !2209, !tbaa !1363
+  call void @free_frame_store(%struct.frame_store* %12) #8, !dbg !2209
+  %call.i = call %struct.frame_store* @alloc_frame_store() #8, !dbg !2211
+  %13 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !2211, !tbaa !1363
+  %arrayidx3.i = getelementptr inbounds %struct.frame_store** %13, i64 %idxprom.i, !dbg !2211
+  store %struct.frame_store* %call.i, %struct.frame_store** %arrayidx3.i, align 8, !dbg !2211, !tbaa !1363
+  %inc.i = add i32 %i.041.i, 1, !dbg !2204
+  call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !2212) #7, !dbg !2204
+  %14 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !2204, !tbaa !1366
+  %cmp.i = icmp ult i32 %inc.i, %14, !dbg !2204
+  br i1 %cmp.i, label %for.body.i, label %for.cond4.preheader.i, !dbg !2204
+
+for.cond12.preheader.i:                           ; preds = %for.body6.i, %for.cond4.preheader.i
+  %cmp1336.i = icmp eq i32 %10, 0, !dbg !2213
+  br i1 %cmp1336.i, label %for.end19.i, label %for.body14.i, !dbg !2213
+
+for.body6.i:                                      ; preds = %for.cond4.preheader.i, %for.body6.i
+  %indvars.iv42.i = phi i64 [ %indvars.iv.next43.i, %for.body6.i ], [ 0, %for.cond4.preheader.i ]
+  %15 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !2215, !tbaa !1363
+  %arrayidx8.i = getelementptr inbounds %struct.frame_store** %15, i64 %indvars.iv42.i, !dbg !2215
+  store %struct.frame_store* null, %struct.frame_store** %arrayidx8.i, align 8, !dbg !2215, !tbaa !1363
+  %indvars.iv.next43.i = add i64 %indvars.iv42.i, 1, !dbg !2207
+  %lftr.wideiv216 = trunc i64 %indvars.iv.next43.i to i32, !dbg !2207
+  %exitcond217 = icmp eq i32 %lftr.wideiv216, %8, !dbg !2207
+  br i1 %exitcond217, label %for.cond12.preheader.i, label %for.body6.i, !dbg !2207
+
+for.body14.i:                                     ; preds = %for.cond12.preheader.i, %for.body14.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body14.i ], [ 0, %for.cond12.preheader.i ]
+  %16 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 2), align 8, !dbg !2217, !tbaa !1363
+  %arrayidx16.i = getelementptr inbounds %struct.frame_store** %16, i64 %indvars.iv.i, !dbg !2217
+  store %struct.frame_store* null, %struct.frame_store** %arrayidx16.i, align 8, !dbg !2217, !tbaa !1363
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !2213
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32, !dbg !2213
+  %exitcond = icmp eq i32 %lftr.wideiv, %10, !dbg !2213
+  br i1 %exitcond, label %for.end19.i, label %for.body14.i, !dbg !2213
+
+for.end19.i:                                      ; preds = %for.body14.i, %for.cond12.preheader.i
+  store i32 0, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !2219, !tbaa !1366
+  br label %if.end.i, !dbg !2220
+
+if.else.i:                                        ; preds = %cond.end.i
+  call void @flush_dpb() #8, !dbg !2221
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.else.i, %for.end19.i
+  store %struct.frame_store* null, %struct.frame_store** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 10), align 8, !dbg !2223, !tbaa !1363
+  call void @update_ref_list() #8, !dbg !2224
+  call void @update_ltref_list() #8, !dbg !2225
+  store i32 -2147483648, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 7), align 8, !dbg !2226, !tbaa !1366
+  %17 = load %struct.ImageParameters** @img, align 8, !dbg !2227, !tbaa !1363
+  %long_term_reference_flag.i = getelementptr inbounds %struct.ImageParameters* %17, i64 0, i32 116, !dbg !2227
+  %18 = load i32* %long_term_reference_flag.i, align 4, !dbg !2227, !tbaa !1366
+  %tobool20.i = icmp eq i32 %18, 0, !dbg !2227
+  br i1 %tobool20.i, label %if.else22.i, label %if.then21.i, !dbg !2227
+
+if.then21.i:                                      ; preds = %if.end.i
+  store i32 0, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 8), align 4, !dbg !2228, !tbaa !1366
+  %is_long_term.i = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 14, !dbg !2230
+  store i32 1, i32* %is_long_term.i, align 4, !dbg !2230, !tbaa !1366
+  %long_term_frame_idx.i = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 13, !dbg !2231
+  store i32 0, i32* %long_term_frame_idx.i, align 4, !dbg !2231, !tbaa !1366
+  br label %if.end8, !dbg !2232
+
+if.else22.i:                                      ; preds = %if.end.i
+  store i32 -1, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 8), align 4, !dbg !2233, !tbaa !1366
+  %is_long_term23.i = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 14, !dbg !2235
+  store i32 0, i32* %is_long_term23.i, align 4, !dbg !2235, !tbaa !1366
+  br label %if.end8
+
+if.else:                                          ; preds = %cond.end
+  %19 = load i32* %used_for_reference, align 4, !dbg !2236, !tbaa !1366
+  %tobool5 = icmp eq i32 %19, 0, !dbg !2236
+  br i1 %tobool5, label %if.end8, label %land.lhs.true, !dbg !2236
+
+land.lhs.true:                                    ; preds = %if.else
+  %adaptive_ref_pic_buffering_flag = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 114, !dbg !2236
+  %20 = load i32* %adaptive_ref_pic_buffering_flag, align 4, !dbg !2236, !tbaa !1366
+  %tobool6 = icmp eq i32 %20, 0, !dbg !2236
+  br i1 %tobool6, label %if.end8, label %if.then7, !dbg !2236
+
+if.then7:                                         ; preds = %land.lhs.true
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !2238) #7, !dbg !2240
+  store i32 0, i32* %last_has_mmco_5, align 4, !dbg !2241, !tbaa !1366
+  %21 = load i32* %idr_flag, align 4, !dbg !2242, !tbaa !1366
+  %tobool.i132 = icmp eq i32 %21, 0, !dbg !2242
+  br i1 %tobool.i132, label %while.cond.preheader.i, label %cond.false.i133, !dbg !2242
+
+cond.false.i133:                                  ; preds = %if.then7
+  call void @__assert_fail(i8* getelementptr inbounds ([31 x i8]* @.str31, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str14, i64 0, i64 0), i32 2092, i8* getelementptr inbounds ([51 x i8]* @__PRETTY_FUNCTION__.adaptive_memory_management, i64 0, i64 0)) #10, !dbg !2242
+  unreachable, !dbg !2242
+
+while.cond.preheader.i:                           ; preds = %if.then7
+  %dec_ref_pic_marking_buffer124.i = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 117, !dbg !2243
+  %22 = load %struct.DecRefPicMarking_s** %dec_ref_pic_marking_buffer124.i, align 8, !dbg !2243, !tbaa !1363
+  %tobool5125.i = icmp eq %struct.DecRefPicMarking_s* %22, null, !dbg !2243
+  br i1 %tobool5125.i, label %if.end8, label %while.body.lr.ph.i, !dbg !2243
+
+while.body.lr.ph.i:                               ; preds = %while.cond.preheader.i
+  %structure.i.i.i = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 0, !dbg !2244
+  %frame_num.i.i.i = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 10, !dbg !2249
+  %is_long_term.i97.i = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 14, !dbg !2250
+  %long_term_frame_idx2.i.i = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 13, !dbg !2252
+  %pic_num.i95.i = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 11, !dbg !2253
+  br label %while.body.i, !dbg !2243
+
+while.body.i:                                     ; preds = %sw.epilog.i, %while.body.lr.ph.i
+  %23 = phi %struct.DecRefPicMarking_s* [ %22, %while.body.lr.ph.i ], [ %134, %sw.epilog.i ]
+  call void @llvm.dbg.value(metadata !{%struct.DecRefPicMarking_s* %23}, i64 0, metadata !2255) #7, !dbg !2256
+  %memory_management_control_operation.i = getelementptr inbounds %struct.DecRefPicMarking_s* %23, i64 0, i32 0, !dbg !2257
+  %24 = load i32* %memory_management_control_operation.i, align 4, !dbg !2257, !tbaa !1366
+  switch i32 %24, label %sw.default.i [
+    i32 0, label %sw.bb.i
+    i32 1, label %sw.bb7.i
+    i32 2, label %sw.bb8.i
+    i32 3, label %sw.bb9.i
+    i32 4, label %sw.bb11.i
+    i32 5, label %sw.bb12.i
+    i32 6, label %sw.bb14.i
+  ], !dbg !2257
+
+sw.bb.i:                                          ; preds = %while.body.i
+  %Next.i = getelementptr inbounds %struct.DecRefPicMarking_s* %23, i64 0, i32 5, !dbg !2258
+  %25 = load %struct.DecRefPicMarking_s** %Next.i, align 8, !dbg !2258, !tbaa !1363
+  %cmp.i136 = icmp eq %struct.DecRefPicMarking_s* %25, null, !dbg !2258
+  br i1 %cmp.i136, label %sw.epilog.i, label %if.then.i, !dbg !2258
+
+if.then.i:                                        ; preds = %sw.bb.i
+  call void @error(i8* getelementptr inbounds ([69 x i8]* @.str33, i64 0, i64 0), i32 500) #8, !dbg !2259
+  br label %sw.epilog.i, !dbg !2261
+
+sw.bb7.i:                                         ; preds = %while.body.i
+  %difference_of_pic_nums_minus1.i = getelementptr inbounds %struct.DecRefPicMarking_s* %23, i64 0, i32 1, !dbg !2246
+  %26 = load i32* %difference_of_pic_nums_minus1.i, align 4, !dbg !2246, !tbaa !1366
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !2262) #7, !dbg !2263
+  call void @llvm.dbg.value(metadata !{i32 %26}, i64 0, metadata !2264) #7, !dbg !2263
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !2265) #7, !dbg !2266
+  call void @llvm.dbg.value(metadata !{i32 %26}, i64 0, metadata !2267) #7, !dbg !2266
+  %27 = load i32* %structure.i.i.i, align 4, !dbg !2244, !tbaa !1364
+  %cmp.i.i.i = icmp eq i32 %27, 0, !dbg !2244
+  %28 = load i32* %frame_num.i.i.i, align 4, !dbg !2249, !tbaa !1366
+  br i1 %cmp.i.i.i, label %get_pic_num_x.exit.i.i, label %if.else.i.i.i, !dbg !2244
+
+if.else.i.i.i:                                    ; preds = %sw.bb7.i
+  %mul.i.i.i = shl i32 %28, 1, !dbg !2268
+  %add4.i.i.i = or i32 %mul.i.i.i, 1, !dbg !2268
+  call void @llvm.dbg.value(metadata !{i32 %add4.i.i.i}, i64 0, metadata !2269) #7, !dbg !2268
+  br label %get_pic_num_x.exit.i.i
+
+get_pic_num_x.exit.i.i:                           ; preds = %if.else.i.i.i, %sw.bb7.i
+  %currPicNum.0.i.i.i = phi i32 [ %add4.i.i.i, %if.else.i.i.i ], [ %28, %sw.bb7.i ]
+  %add2.neg.i.i.i = xor i32 %26, -1, !dbg !2270
+  %sub.i.i.i = add i32 %currPicNum.0.i.i.i, %add2.neg.i.i.i, !dbg !2270
+  call void @llvm.dbg.value(metadata !{i32 %sub.i.i.i}, i64 0, metadata !2271) #7, !dbg !2245
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !2272) #7, !dbg !2273
+  %29 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !2273, !tbaa !1366
+  %cmp111.i.i = icmp eq i32 %29, 0, !dbg !2273
+  br i1 %cmp111.i.i, label %mm_unmark_short_term_for_reference.exit.i, label %for.body.lr.ph.i.i, !dbg !2273
+
+for.body.lr.ph.i.i:                               ; preds = %get_pic_num_x.exit.i.i
+  %30 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !2275, !tbaa !1363
+  br label %for.body.i.i, !dbg !2273
+
+for.body.i.i:                                     ; preds = %for.inc.i.i, %for.body.lr.ph.i.i
+  %indvars.iv.i.i = phi i64 [ 0, %for.body.lr.ph.i.i ], [ %indvars.iv.next.i.i, %for.inc.i.i ]
+  %arrayidx.i.i = getelementptr inbounds %struct.frame_store** %30, i64 %indvars.iv.i.i, !dbg !2275
+  %31 = load %struct.frame_store** %arrayidx.i.i, align 8, !dbg !2275, !tbaa !1363
+  %is_reference.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 1, !dbg !2275
+  %32 = load i32* %is_reference.i.i, align 4, !dbg !2275, !tbaa !1366
+  br i1 %cmp.i.i.i, label %if.then.i.i, label %if.else.i.i, !dbg !2278
+
+if.then.i.i:                                      ; preds = %for.body.i.i
+  %cmp2.i.i = icmp eq i32 %32, 3, !dbg !2275
+  br i1 %cmp2.i.i, label %land.lhs.true.i.i, label %for.inc.i.i, !dbg !2275
+
+land.lhs.true.i.i:                                ; preds = %if.then.i.i
+  %is_long_term.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 2, !dbg !2275
+  %33 = load i32* %is_long_term.i.i, align 4, !dbg !2275, !tbaa !1366
+  %cmp5.i.i = icmp eq i32 %33, 0, !dbg !2275
+  br i1 %cmp5.i.i, label %if.then6.i.i, label %for.inc.i.i, !dbg !2275
+
+if.then6.i.i:                                     ; preds = %land.lhs.true.i.i
+  %frame.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 10, !dbg !2279
+  %34 = load %struct.storable_picture** %frame.i.i, align 8, !dbg !2279, !tbaa !1363
+  %pic_num.i.i = getelementptr inbounds %struct.storable_picture* %34, i64 0, i32 11, !dbg !2279
+  %35 = load i32* %pic_num.i.i, align 4, !dbg !2279, !tbaa !1366
+  %cmp9.i.i = icmp eq i32 %35, %sub.i.i.i, !dbg !2279
+  br i1 %cmp9.i.i, label %if.then10.i.i, label %for.inc.i.i, !dbg !2279
+
+if.then10.i.i:                                    ; preds = %if.then6.i.i
+  call fastcc void @unmark_for_reference(%struct.frame_store* %31) #8, !dbg !2281
+  br label %mm_unmark_short_term_for_reference.exit.i, !dbg !2283
+
+if.else.i.i:                                      ; preds = %for.body.i.i
+  %and.i.i = and i32 %32, 1, !dbg !2284
+  %tobool.i.i = icmp eq i32 %and.i.i, 0, !dbg !2284
+  br i1 %tobool.i.i, label %if.end46.i.i, label %land.lhs.true17.i.i, !dbg !2284
+
+land.lhs.true17.i.i:                              ; preds = %if.else.i.i
+  %is_long_term20.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 2, !dbg !2284
+  %36 = load i32* %is_long_term20.i.i, align 4, !dbg !2284, !tbaa !1366
+  %and21.i.i = and i32 %36, 1, !dbg !2284
+  %tobool22.i.i = icmp eq i32 %and21.i.i, 0, !dbg !2284
+  br i1 %tobool22.i.i, label %if.then23.i.i, label %if.end46.i.i, !dbg !2284
+
+if.then23.i.i:                                    ; preds = %land.lhs.true17.i.i
+  %top_field.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 11, !dbg !2286
+  %37 = load %struct.storable_picture** %top_field.i.i, align 8, !dbg !2286, !tbaa !1363
+  %pic_num26.i.i = getelementptr inbounds %struct.storable_picture* %37, i64 0, i32 11, !dbg !2286
+  %38 = load i32* %pic_num26.i.i, align 4, !dbg !2286, !tbaa !1366
+  %cmp27.i.i = icmp eq i32 %38, %sub.i.i.i, !dbg !2286
+  br i1 %cmp27.i.i, label %if.then28.i.i, label %if.end46.i.i, !dbg !2286
+
+if.then28.i.i:                                    ; preds = %if.then23.i.i
+  %used_for_reference.i.i = getelementptr inbounds %struct.storable_picture* %37, i64 0, i32 15, !dbg !2288
+  store i32 0, i32* %used_for_reference.i.i, align 4, !dbg !2288, !tbaa !1366
+  %39 = load i32* %is_reference.i.i, align 4, !dbg !2290, !tbaa !1366
+  %and35.i.i = and i32 %39, 2, !dbg !2290
+  store i32 %and35.i.i, i32* %is_reference.i.i, align 4, !dbg !2290, !tbaa !1366
+  %is_used.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 0, !dbg !2291
+  %40 = load i32* %is_used.i.i, align 4, !dbg !2291, !tbaa !1366
+  %cmp38.i.i = icmp eq i32 %40, 3, !dbg !2291
+  br i1 %cmp38.i.i, label %if.then39.i.i, label %mm_unmark_short_term_for_reference.exit.i, !dbg !2291
+
+if.then39.i.i:                                    ; preds = %if.then28.i.i
+  %frame42.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 10, !dbg !2292
+  %41 = load %struct.storable_picture** %frame42.i.i, align 8, !dbg !2292, !tbaa !1363
+  %used_for_reference43.i.i = getelementptr inbounds %struct.storable_picture* %41, i64 0, i32 15, !dbg !2292
+  store i32 0, i32* %used_for_reference43.i.i, align 4, !dbg !2292, !tbaa !1366
+  br label %mm_unmark_short_term_for_reference.exit.i, !dbg !2294
+
+if.end46.i.i:                                     ; preds = %if.then23.i.i, %land.lhs.true17.i.i, %if.else.i.i
+  %and50.i.i = and i32 %32, 2, !dbg !2295
+  %tobool51.i.i = icmp eq i32 %and50.i.i, 0, !dbg !2295
+  br i1 %tobool51.i.i, label %for.inc.i.i, label %land.lhs.true52.i.i, !dbg !2295
+
+land.lhs.true52.i.i:                              ; preds = %if.end46.i.i
+  %is_long_term55.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 2, !dbg !2295
+  %42 = load i32* %is_long_term55.i.i, align 4, !dbg !2295, !tbaa !1366
+  %and56.i.i = and i32 %42, 2, !dbg !2295
+  %tobool57.i.i = icmp eq i32 %and56.i.i, 0, !dbg !2295
+  br i1 %tobool57.i.i, label %if.then58.i.i, label %for.inc.i.i, !dbg !2295
+
+if.then58.i.i:                                    ; preds = %land.lhs.true52.i.i
+  %bottom_field.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 12, !dbg !2296
+  %43 = load %struct.storable_picture** %bottom_field.i.i, align 8, !dbg !2296, !tbaa !1363
+  %pic_num61.i.i = getelementptr inbounds %struct.storable_picture* %43, i64 0, i32 11, !dbg !2296
+  %44 = load i32* %pic_num61.i.i, align 4, !dbg !2296, !tbaa !1366
+  %cmp62.i.i = icmp eq i32 %44, %sub.i.i.i, !dbg !2296
+  br i1 %cmp62.i.i, label %if.then63.i.i, label %for.inc.i.i, !dbg !2296
+
+if.then63.i.i:                                    ; preds = %if.then58.i.i
+  %used_for_reference67.i.i = getelementptr inbounds %struct.storable_picture* %43, i64 0, i32 15, !dbg !2298
+  store i32 0, i32* %used_for_reference67.i.i, align 4, !dbg !2298, !tbaa !1366
+  %45 = load i32* %is_reference.i.i, align 4, !dbg !2300, !tbaa !1366
+  %and71.i.i = and i32 %45, 1, !dbg !2300
+  store i32 %and71.i.i, i32* %is_reference.i.i, align 4, !dbg !2300, !tbaa !1366
+  %is_used74.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 0, !dbg !2301
+  %46 = load i32* %is_used74.i.i, align 4, !dbg !2301, !tbaa !1366
+  %cmp75.i.i = icmp eq i32 %46, 3, !dbg !2301
+  br i1 %cmp75.i.i, label %if.then76.i.i, label %mm_unmark_short_term_for_reference.exit.i, !dbg !2301
+
+if.then76.i.i:                                    ; preds = %if.then63.i.i
+  %frame79.i.i = getelementptr inbounds %struct.frame_store* %31, i64 0, i32 10, !dbg !2302
+  %47 = load %struct.storable_picture** %frame79.i.i, align 8, !dbg !2302, !tbaa !1363
+  %used_for_reference80.i.i = getelementptr inbounds %struct.storable_picture* %47, i64 0, i32 15, !dbg !2302
+  store i32 0, i32* %used_for_reference80.i.i, align 4, !dbg !2302, !tbaa !1366
+  br label %mm_unmark_short_term_for_reference.exit.i, !dbg !2304
+
+for.inc.i.i:                                      ; preds = %if.then58.i.i, %land.lhs.true52.i.i, %if.end46.i.i, %if.then6.i.i, %land.lhs.true.i.i, %if.then.i.i
+  %indvars.iv.next.i.i = add i64 %indvars.iv.i.i, 1, !dbg !2273
+  %48 = trunc i64 %indvars.iv.next.i.i to i32, !dbg !2273
+  %cmp.i.i = icmp ult i32 %48, %29, !dbg !2273
+  br i1 %cmp.i.i, label %for.body.i.i, label %mm_unmark_short_term_for_reference.exit.i, !dbg !2273
+
+mm_unmark_short_term_for_reference.exit.i:        ; preds = %for.inc.i.i, %if.then76.i.i, %if.then63.i.i, %if.then39.i.i, %if.then28.i.i, %if.then10.i.i, %get_pic_num_x.exit.i.i
+  call void @update_ref_list() #8, !dbg !2305
+  br label %sw.epilog.i, !dbg !2306
+
+sw.bb8.i:                                         ; preds = %while.body.i
+  %long_term_pic_num.i = getelementptr inbounds %struct.DecRefPicMarking_s* %23, i64 0, i32 2, !dbg !2307
+  %49 = load i32* %long_term_pic_num.i, align 4, !dbg !2307, !tbaa !1366
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !2308) #7, !dbg !2309
+  call void @llvm.dbg.value(metadata !{i32 %49}, i64 0, metadata !2310) #7, !dbg !2309
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !2311) #7, !dbg !2312
+  %50 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 6), align 4, !dbg !2312, !tbaa !1366
+  %cmp138.i.i = icmp eq i32 %50, 0, !dbg !2312
+  br i1 %cmp138.i.i, label %mm_unmark_long_term_for_reference.exit.i, label %for.body.i45.i, !dbg !2312
+
+for.body.i45.i:                                   ; preds = %for.inc.i64.i, %sw.bb8.i
+  %51 = phi i32 [ %50, %sw.bb8.i ], [ %73, %for.inc.i64.i ]
+  %i.0139.i.i = phi i32 [ 0, %sw.bb8.i ], [ %inc.i.i, %for.inc.i64.i ]
+  %52 = load i32* %structure.i.i.i, align 4, !dbg !2314, !tbaa !1364
+  %cmp1.i.i = icmp eq i32 %52, 0, !dbg !2314
+  %idxprom.i.i = zext i32 %i.0139.i.i to i64, !dbg !2316
+  %53 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 2), align 8, !dbg !2316, !tbaa !1363
+  %arrayidx.i43.i = getelementptr inbounds %struct.frame_store** %53, i64 %idxprom.i.i, !dbg !2316
+  %54 = load %struct.frame_store** %arrayidx.i43.i, align 8, !dbg !2316, !tbaa !1363
+  %is_reference.i44.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 1, !dbg !2316
+  %55 = load i32* %is_reference.i44.i, align 4, !dbg !2316, !tbaa !1366
+  br i1 %cmp1.i.i, label %if.then.i47.i, label %if.else.i55.i, !dbg !2314
+
+if.then.i47.i:                                    ; preds = %for.body.i45.i
+  %cmp2.i46.i = icmp eq i32 %55, 3, !dbg !2316
+  br i1 %cmp2.i46.i, label %land.lhs.true.i50.i, label %for.inc.i64.i, !dbg !2316
+
+land.lhs.true.i50.i:                              ; preds = %if.then.i47.i
+  %is_long_term.i48.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 2, !dbg !2316
+  %56 = load i32* %is_long_term.i48.i, align 4, !dbg !2316, !tbaa !1366
+  %cmp5.i49.i = icmp eq i32 %56, 3, !dbg !2316
+  br i1 %cmp5.i49.i, label %if.then6.i52.i, label %for.inc.i64.i, !dbg !2316
+
+if.then6.i52.i:                                   ; preds = %land.lhs.true.i50.i
+  %frame.i51.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 10, !dbg !2318
+  %57 = load %struct.storable_picture** %frame.i51.i, align 8, !dbg !2318, !tbaa !1363
+  %long_term_pic_num9.i.i = getelementptr inbounds %struct.storable_picture* %57, i64 0, i32 12, !dbg !2318
+  %58 = load i32* %long_term_pic_num9.i.i, align 4, !dbg !2318, !tbaa !1366
+  %cmp10.i.i = icmp eq i32 %58, %49, !dbg !2318
+  br i1 %cmp10.i.i, label %if.then11.i.i, label %for.inc.i64.i, !dbg !2318
+
+if.then11.i.i:                                    ; preds = %if.then6.i52.i
+  call fastcc void @unmark_for_long_term_reference(%struct.frame_store* %54) #8, !dbg !2320
+  %.pre.i.i = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 6), align 4, !dbg !2312, !tbaa !1366
+  br label %for.inc.i64.i, !dbg !2322
+
+if.else.i55.i:                                    ; preds = %for.body.i45.i
+  %and.i53.i = and i32 %55, 1, !dbg !2323
+  %tobool.i54.i = icmp eq i32 %and.i53.i, 0, !dbg !2323
+  br i1 %tobool.i54.i, label %if.end59.i.i, label %land.lhs.true18.i.i, !dbg !2323
+
+land.lhs.true18.i.i:                              ; preds = %if.else.i55.i
+  %is_long_term21.i.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 2, !dbg !2323
+  %59 = load i32* %is_long_term21.i.i, align 4, !dbg !2323, !tbaa !1366
+  %and22.i.i = and i32 %59, 1, !dbg !2323
+  %tobool23.i.i = icmp eq i32 %and22.i.i, 0, !dbg !2323
+  br i1 %tobool23.i.i, label %if.end59.i.i, label %if.then24.i.i, !dbg !2323
+
+if.then24.i.i:                                    ; preds = %land.lhs.true18.i.i
+  %top_field.i56.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 11, !dbg !2325
+  %60 = load %struct.storable_picture** %top_field.i56.i, align 8, !dbg !2325, !tbaa !1363
+  %long_term_pic_num27.i.i = getelementptr inbounds %struct.storable_picture* %60, i64 0, i32 12, !dbg !2325
+  %61 = load i32* %long_term_pic_num27.i.i, align 4, !dbg !2325, !tbaa !1366
+  %cmp28.i.i = icmp eq i32 %61, %49, !dbg !2325
+  br i1 %cmp28.i.i, label %if.then29.i.i, label %if.end59.i.i, !dbg !2325
+
+if.then29.i.i:                                    ; preds = %if.then24.i.i
+  %used_for_reference.i57.i = getelementptr inbounds %struct.storable_picture* %60, i64 0, i32 15, !dbg !2327
+  store i32 0, i32* %used_for_reference.i57.i, align 4, !dbg !2327, !tbaa !1366
+  %is_long_term36.i.i = getelementptr inbounds %struct.storable_picture* %60, i64 0, i32 14, !dbg !2329
+  store i32 0, i32* %is_long_term36.i.i, align 4, !dbg !2329, !tbaa !1366
+  %62 = load i32* %is_reference.i44.i, align 4, !dbg !2330, !tbaa !1366
+  %and40.i.i = and i32 %62, 2, !dbg !2330
+  store i32 %and40.i.i, i32* %is_reference.i44.i, align 4, !dbg !2330, !tbaa !1366
+  %63 = load i32* %is_long_term21.i.i, align 4, !dbg !2331, !tbaa !1366
+  %and44.i.i = and i32 %63, 2, !dbg !2331
+  store i32 %and44.i.i, i32* %is_long_term21.i.i, align 4, !dbg !2331, !tbaa !1366
+  %is_used.i58.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 0, !dbg !2332
+  %64 = load i32* %is_used.i58.i, align 4, !dbg !2332, !tbaa !1366
+  %cmp47.i.i = icmp eq i32 %64, 3, !dbg !2332
+  br i1 %cmp47.i.i, label %if.then48.i.i, label %mm_unmark_long_term_for_reference.exit.i, !dbg !2332
+
+if.then48.i.i:                                    ; preds = %if.then29.i.i
+  %frame51.i.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 10, !dbg !2333
+  %65 = load %struct.storable_picture** %frame51.i.i, align 8, !dbg !2333, !tbaa !1363
+  %used_for_reference52.i.i = getelementptr inbounds %struct.storable_picture* %65, i64 0, i32 15, !dbg !2333
+  store i32 0, i32* %used_for_reference52.i.i, align 4, !dbg !2333, !tbaa !1366
+  %is_long_term56.i.i = getelementptr inbounds %struct.storable_picture* %65, i64 0, i32 14, !dbg !2335
+  store i32 0, i32* %is_long_term56.i.i, align 4, !dbg !2335, !tbaa !1366
+  br label %mm_unmark_long_term_for_reference.exit.i, !dbg !2336
+
+if.end59.i.i:                                     ; preds = %if.then24.i.i, %land.lhs.true18.i.i, %if.else.i55.i
+  %and63.i.i = and i32 %55, 2, !dbg !2337
+  %tobool64.i.i = icmp eq i32 %and63.i.i, 0, !dbg !2337
+  br i1 %tobool64.i.i, label %for.inc.i64.i, label %land.lhs.true65.i.i, !dbg !2337
+
+land.lhs.true65.i.i:                              ; preds = %if.end59.i.i
+  %is_long_term68.i.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 2, !dbg !2337
+  %66 = load i32* %is_long_term68.i.i, align 4, !dbg !2337, !tbaa !1366
+  %and69.i.i = and i32 %66, 2, !dbg !2337
+  %tobool70.i.i = icmp eq i32 %and69.i.i, 0, !dbg !2337
+  br i1 %tobool70.i.i, label %for.inc.i64.i, label %if.then71.i.i, !dbg !2337
+
+if.then71.i.i:                                    ; preds = %land.lhs.true65.i.i
+  %bottom_field.i59.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 12, !dbg !2338
+  %67 = load %struct.storable_picture** %bottom_field.i59.i, align 8, !dbg !2338, !tbaa !1363
+  %long_term_pic_num74.i.i = getelementptr inbounds %struct.storable_picture* %67, i64 0, i32 12, !dbg !2338
+  %68 = load i32* %long_term_pic_num74.i.i, align 4, !dbg !2338, !tbaa !1366
+  %cmp75.i60.i = icmp eq i32 %68, %49, !dbg !2338
+  br i1 %cmp75.i60.i, label %if.then76.i62.i, label %for.inc.i64.i, !dbg !2338
+
+if.then76.i62.i:                                  ; preds = %if.then71.i.i
+  %used_for_reference80.i61.i = getelementptr inbounds %struct.storable_picture* %67, i64 0, i32 15, !dbg !2340
+  store i32 0, i32* %used_for_reference80.i61.i, align 4, !dbg !2340, !tbaa !1366
+  %is_long_term84.i.i = getelementptr inbounds %struct.storable_picture* %67, i64 0, i32 14, !dbg !2342
+  store i32 0, i32* %is_long_term84.i.i, align 4, !dbg !2342, !tbaa !1366
+  %69 = load i32* %is_reference.i44.i, align 4, !dbg !2343, !tbaa !1366
+  %and88.i.i = and i32 %69, 1, !dbg !2343
+  store i32 %and88.i.i, i32* %is_reference.i44.i, align 4, !dbg !2343, !tbaa !1366
+  %70 = load i32* %is_long_term68.i.i, align 4, !dbg !2344, !tbaa !1366
+  %and92.i.i = and i32 %70, 1, !dbg !2344
+  store i32 %and92.i.i, i32* %is_long_term68.i.i, align 4, !dbg !2344, !tbaa !1366
+  %is_used95.i.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 0, !dbg !2345
+  %71 = load i32* %is_used95.i.i, align 4, !dbg !2345, !tbaa !1366
+  %cmp96.i.i = icmp eq i32 %71, 3, !dbg !2345
+  br i1 %cmp96.i.i, label %if.then97.i.i, label %mm_unmark_long_term_for_reference.exit.i, !dbg !2345
+
+if.then97.i.i:                                    ; preds = %if.then76.i62.i
+  %frame100.i.i = getelementptr inbounds %struct.frame_store* %54, i64 0, i32 10, !dbg !2346
+  %72 = load %struct.storable_picture** %frame100.i.i, align 8, !dbg !2346, !tbaa !1363
+  %used_for_reference101.i.i = getelementptr inbounds %struct.storable_picture* %72, i64 0, i32 15, !dbg !2346
+  store i32 0, i32* %used_for_reference101.i.i, align 4, !dbg !2346, !tbaa !1366
+  %is_long_term105.i.i = getelementptr inbounds %struct.storable_picture* %72, i64 0, i32 14, !dbg !2348
+  store i32 0, i32* %is_long_term105.i.i, align 4, !dbg !2348, !tbaa !1366
+  br label %mm_unmark_long_term_for_reference.exit.i, !dbg !2349
+
+for.inc.i64.i:                                    ; preds = %if.then71.i.i, %land.lhs.true65.i.i, %if.end59.i.i, %if.then11.i.i, %if.then6.i52.i, %land.lhs.true.i50.i, %if.then.i47.i
+  %73 = phi i32 [ %51, %land.lhs.true65.i.i ], [ %51, %if.end59.i.i ], [ %51, %if.then6.i52.i ], [ %.pre.i.i, %if.then11.i.i ], [ %51, %land.lhs.true.i50.i ], [ %51, %if.then.i47.i ], [ %51, %if.then71.i.i ], !dbg !2312
+  %inc.i.i = add i32 %i.0139.i.i, 1, !dbg !2312
+  call void @llvm.dbg.value(metadata !{i32 %inc.i.i}, i64 0, metadata !2311) #7, !dbg !2312
+  %cmp.i63.i = icmp ult i32 %inc.i.i, %73, !dbg !2312
+  br i1 %cmp.i63.i, label %for.body.i45.i, label %mm_unmark_long_term_for_reference.exit.i, !dbg !2312
+
+mm_unmark_long_term_for_reference.exit.i:         ; preds = %for.inc.i64.i, %if.then97.i.i, %if.then76.i62.i, %if.then48.i.i, %if.then29.i.i, %sw.bb8.i
+  call void @update_ltref_list() #8, !dbg !2350
+  br label %sw.epilog.i, !dbg !2351
+
+sw.bb9.i:                                         ; preds = %while.body.i
+  %difference_of_pic_nums_minus110.i = getelementptr inbounds %struct.DecRefPicMarking_s* %23, i64 0, i32 1, !dbg !2352
+  %74 = load i32* %difference_of_pic_nums_minus110.i, align 4, !dbg !2352, !tbaa !1366
+  %long_term_frame_idx.i137 = getelementptr inbounds %struct.DecRefPicMarking_s* %23, i64 0, i32 3, !dbg !2352
+  %75 = load i32* %long_term_frame_idx.i137, align 4, !dbg !2352, !tbaa !1366
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !2353) #7, !dbg !2354
+  call void @llvm.dbg.value(metadata !{i32 %74}, i64 0, metadata !2355) #7, !dbg !2354
+  call void @llvm.dbg.value(metadata !{i32 %75}, i64 0, metadata !2356) #7, !dbg !2354
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !2357) #7, !dbg !2359
+  call void @llvm.dbg.value(metadata !{i32 %74}, i64 0, metadata !2360) #7, !dbg !2359
+  %76 = load i32* %structure.i.i.i, align 4, !dbg !2361, !tbaa !1364
+  %cmp.i.i66.i = icmp eq i32 %76, 0, !dbg !2361
+  %77 = load i32* %frame_num.i.i.i, align 4, !dbg !2362, !tbaa !1366
+  br i1 %cmp.i.i66.i, label %if.then.i73.i, label %for.cond.preheader.i.i, !dbg !2361
+
+for.cond.preheader.i.i:                           ; preds = %sw.bb9.i
+  %mul.i.i68.i = shl i32 %77, 1, !dbg !2363
+  %add4.i.i69.i = or i32 %mul.i.i68.i, 1, !dbg !2363
+  call void @llvm.dbg.value(metadata !{i32 %add4.i.i69.i}, i64 0, metadata !2364) #7, !dbg !2363
+  %add2.neg.i.i70.i = xor i32 %74, -1, !dbg !2365
+  %sub.i.i71.i = add i32 %add4.i.i69.i, %add2.neg.i.i70.i, !dbg !2365
+  call void @llvm.dbg.value(metadata !{i32 %sub.i.i71.i}, i64 0, metadata !2366) #7, !dbg !2358
+  %78 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !2367, !tbaa !1366
+  %cmp263.i.i = icmp eq i32 %78, 0, !dbg !2367
+  br i1 %cmp263.i.i, label %if.then23.i86.i, label %for.body.lr.ph.i72.i, !dbg !2367
+
+for.body.lr.ph.i72.i:                             ; preds = %for.cond.preheader.i.i
+  %79 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !2369, !tbaa !1363
+  br label %for.body.i79.i, !dbg !2367
+
+if.then.i73.i:                                    ; preds = %sw.bb9.i
+  %add2.neg.i41.i.i = xor i32 %74, -1, !dbg !2365
+  %sub.i42.i.i = add i32 %77, %add2.neg.i41.i.i, !dbg !2365
+  call void @llvm.dbg.value(metadata !{i32 %sub.i.i71.i}, i64 0, metadata !2366) #7, !dbg !2358
+  call fastcc void @unmark_long_term_frame_for_reference_by_frame_idx(i32 %75) #8, !dbg !2371
+  br label %if.end25.i.i, !dbg !2373
+
+for.body.i79.i:                                   ; preds = %for.inc.i85.i, %for.body.lr.ph.i72.i
+  %indvars.iv.i74.i = phi i64 [ 0, %for.body.lr.ph.i72.i ], [ %indvars.iv.next.i83.i, %for.inc.i85.i ]
+  %arrayidx.i75.i = getelementptr inbounds %struct.frame_store** %79, i64 %indvars.iv.i74.i, !dbg !2369
+  %80 = load %struct.frame_store** %arrayidx.i75.i, align 8, !dbg !2369, !tbaa !1363
+  %is_reference.i76.i = getelementptr inbounds %struct.frame_store* %80, i64 0, i32 1, !dbg !2369
+  %81 = load i32* %is_reference.i76.i, align 4, !dbg !2369, !tbaa !1366
+  %and.i77.i = and i32 %81, 1, !dbg !2369
+  %tobool.i78.i = icmp eq i32 %and.i77.i, 0, !dbg !2369
+  br i1 %tobool.i78.i, label %if.end8.i.i, label %if.then3.i.i, !dbg !2369
+
+if.then3.i.i:                                     ; preds = %for.body.i79.i
+  %top_field.i80.i = getelementptr inbounds %struct.frame_store* %80, i64 0, i32 11, !dbg !2374
+  %82 = load %struct.storable_picture** %top_field.i80.i, align 8, !dbg !2374, !tbaa !1363
+  %pic_num.i81.i = getelementptr inbounds %struct.storable_picture* %82, i64 0, i32 11, !dbg !2374
+  %83 = load i32* %pic_num.i81.i, align 4, !dbg !2374, !tbaa !1366
+  %cmp6.i.i = icmp eq i32 %83, %sub.i.i71.i, !dbg !2374
+  br i1 %cmp6.i.i, label %if.end24.i.i, label %if.end8.i.i, !dbg !2374
+
+if.end8.i.i:                                      ; preds = %if.then3.i.i, %for.body.i79.i
+  %and12.i.i = and i32 %81, 2, !dbg !2376
+  %tobool13.i.i = icmp eq i32 %and12.i.i, 0, !dbg !2376
+  br i1 %tobool13.i.i, label %for.inc.i85.i, label %if.then14.i.i, !dbg !2376
+
+if.then14.i.i:                                    ; preds = %if.end8.i.i
+  %bottom_field.i82.i = getelementptr inbounds %struct.frame_store* %80, i64 0, i32 12, !dbg !2377
+  %84 = load %struct.storable_picture** %bottom_field.i82.i, align 8, !dbg !2377, !tbaa !1363
+  %pic_num17.i.i = getelementptr inbounds %struct.storable_picture* %84, i64 0, i32 11, !dbg !2377
+  %85 = load i32* %pic_num17.i.i, align 4, !dbg !2377, !tbaa !1366
+  %cmp18.i.i = icmp eq i32 %85, %sub.i.i71.i, !dbg !2377
+  br i1 %cmp18.i.i, label %if.end24.i.i, label %for.inc.i85.i, !dbg !2377
+
+for.inc.i85.i:                                    ; preds = %if.then14.i.i, %if.end8.i.i
+  %indvars.iv.next.i83.i = add i64 %indvars.iv.i74.i, 1, !dbg !2367
+  %86 = trunc i64 %indvars.iv.next.i83.i to i32, !dbg !2367
+  %cmp2.i84.i = icmp ult i32 %86, %78, !dbg !2367
+  br i1 %cmp2.i84.i, label %for.body.i79.i, label %if.then23.i86.i, !dbg !2367
+
+if.then23.i86.i:                                  ; preds = %for.inc.i85.i, %for.cond.preheader.i.i
+  call void @error(i8* getelementptr inbounds ([38 x i8]* @.str36, i64 0, i64 0), i32 200) #8, !dbg !2379
+  br label %if.end24.i.i, !dbg !2381
+
+if.end24.i.i:                                     ; preds = %if.then14.i.i, %if.then3.i.i, %if.then23.i86.i
+  %structure1.049.i.i = phi i32 [ 0, %if.then23.i86.i ], [ 2, %if.then14.i.i ], [ 1, %if.then3.i.i ]
+  call fastcc void @unmark_long_term_field_for_reference_by_frame_idx(i32 %structure1.049.i.i, i32 %75, i32 0, i32 0, i32 %sub.i.i71.i) #8, !dbg !2382
+  br label %if.end25.i.i
+
+if.end25.i.i:                                     ; preds = %if.end24.i.i, %if.then.i73.i
+  %sub.i45.i.i = phi i32 [ %sub.i.i71.i, %if.end24.i.i ], [ %sub.i42.i.i, %if.then.i73.i ]
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !2383) #7, !dbg !2385
+  call void @llvm.dbg.value(metadata !{i32 %75}, i64 0, metadata !2386) #7, !dbg !2385
+  call void @llvm.dbg.value(metadata !{i32 %sub.i.i71.i}, i64 0, metadata !2387) #7, !dbg !2385
+  %87 = load i32* %structure.i.i.i, align 4, !dbg !2388, !tbaa !1364
+  switch i32 %87, label %if.else54.i.i.i [
+    i32 0, label %for.cond.preheader.i.i.i
+    i32 1, label %if.end55.i.i.i
+  ], !dbg !2388
+
+for.cond.preheader.i.i.i:                         ; preds = %if.end25.i.i
+  %88 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !2389, !tbaa !1366
+  %cmp1269.i.i.i = icmp eq i32 %88, 0, !dbg !2389
+  br i1 %cmp1269.i.i.i, label %for.end.i.i.i, label %for.body.lr.ph.i.i.i, !dbg !2389
+
+for.body.lr.ph.i.i.i:                             ; preds = %for.cond.preheader.i.i.i
+  %89 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !2392, !tbaa !1363
+  br label %for.body.i.i.i, !dbg !2389
+
+for.body.i.i.i:                                   ; preds = %for.inc.i.i.i, %for.body.lr.ph.i.i.i
+  %indvars.iv280.i.i.i = phi i64 [ 0, %for.body.lr.ph.i.i.i ], [ %indvars.iv.next281.i.i.i, %for.inc.i.i.i ]
+  %arrayidx.i.i.i = getelementptr inbounds %struct.frame_store** %89, i64 %indvars.iv280.i.i.i, !dbg !2392
+  %90 = load %struct.frame_store** %arrayidx.i.i.i, align 8, !dbg !2392, !tbaa !1363
+  %is_reference.i.i.i = getelementptr inbounds %struct.frame_store* %90, i64 0, i32 1, !dbg !2392
+  %91 = load i32* %is_reference.i.i.i, align 4, !dbg !2392, !tbaa !1366
+  %cmp2.i.i.i = icmp eq i32 %91, 3, !dbg !2392
+  br i1 %cmp2.i.i.i, label %if.then3.i.i.i, label %for.inc.i.i.i, !dbg !2392
+
+if.then3.i.i.i:                                   ; preds = %for.body.i.i.i
+  %frame.i.i.i = getelementptr inbounds %struct.frame_store* %90, i64 0, i32 10, !dbg !2394
+  %92 = load %struct.storable_picture** %frame.i.i.i, align 8, !dbg !2394, !tbaa !1363
+  %is_long_term.i.i.i = getelementptr inbounds %struct.storable_picture* %92, i64 0, i32 14, !dbg !2394
+  %93 = load i32* %is_long_term.i.i.i, align 4, !dbg !2394, !tbaa !1366
+  %tobool.i.i.i = icmp eq i32 %93, 0, !dbg !2394
+  br i1 %tobool.i.i.i, label %land.lhs.true.i.i.i, label %for.inc.i.i.i, !dbg !2394
+
+land.lhs.true.i.i.i:                              ; preds = %if.then3.i.i.i
+  %pic_num.i.i.i = getelementptr inbounds %struct.storable_picture* %92, i64 0, i32 11, !dbg !2394
+  %94 = load i32* %pic_num.i.i.i, align 4, !dbg !2394, !tbaa !1366
+  %cmp9.i.i.i = icmp eq i32 %94, %sub.i45.i.i, !dbg !2394
+  br i1 %cmp9.i.i.i, label %if.then10.i.i.i, label %for.inc.i.i.i, !dbg !2394
+
+if.then10.i.i.i:                                  ; preds = %land.lhs.true.i.i.i
+  %bottom_field.i.i.i = getelementptr inbounds %struct.frame_store* %90, i64 0, i32 12, !dbg !2396
+  %95 = load %struct.storable_picture** %bottom_field.i.i.i, align 8, !dbg !2396, !tbaa !1363
+  %long_term_frame_idx13.i.i.i = getelementptr inbounds %struct.storable_picture* %95, i64 0, i32 13, !dbg !2396
+  store i32 %75, i32* %long_term_frame_idx13.i.i.i, align 4, !dbg !2396, !tbaa !1366
+  %top_field.i.i.i = getelementptr inbounds %struct.frame_store* %90, i64 0, i32 11, !dbg !2396
+  %96 = load %struct.storable_picture** %top_field.i.i.i, align 8, !dbg !2396, !tbaa !1363
+  %long_term_frame_idx16.i.i.i = getelementptr inbounds %struct.storable_picture* %96, i64 0, i32 13, !dbg !2396
+  store i32 %75, i32* %long_term_frame_idx16.i.i.i, align 4, !dbg !2396, !tbaa !1366
+  %long_term_frame_idx20.i.i.i = getelementptr inbounds %struct.storable_picture* %92, i64 0, i32 13, !dbg !2396
+  store i32 %75, i32* %long_term_frame_idx20.i.i.i, align 4, !dbg !2396, !tbaa !1366
+  %long_term_frame_idx23.i.i.i = getelementptr inbounds %struct.frame_store* %90, i64 0, i32 7, !dbg !2396
+  store i32 %75, i32* %long_term_frame_idx23.i.i.i, align 4, !dbg !2396, !tbaa !1366
+  %long_term_pic_num.i.i.i = getelementptr inbounds %struct.storable_picture* %95, i64 0, i32 12, !dbg !2398
+  store i32 %75, i32* %long_term_pic_num.i.i.i, align 4, !dbg !2398, !tbaa !1366
+  %long_term_pic_num30.i.i.i = getelementptr inbounds %struct.storable_picture* %96, i64 0, i32 12, !dbg !2398
+  store i32 %75, i32* %long_term_pic_num30.i.i.i, align 4, !dbg !2398, !tbaa !1366
+  %long_term_pic_num34.i.i.i = getelementptr inbounds %struct.storable_picture* %92, i64 0, i32 12, !dbg !2398
+  store i32 %75, i32* %long_term_pic_num34.i.i.i, align 4, !dbg !2398, !tbaa !1366
+  %is_long_term38.i.i.i = getelementptr inbounds %struct.storable_picture* %95, i64 0, i32 14, !dbg !2399
+  store i32 1, i32* %is_long_term38.i.i.i, align 4, !dbg !2399, !tbaa !1366
+  %is_long_term42.i.i.i = getelementptr inbounds %struct.storable_picture* %96, i64 0, i32 14, !dbg !2399
+  store i32 1, i32* %is_long_term42.i.i.i, align 4, !dbg !2399, !tbaa !1366
+  store i32 1, i32* %is_long_term.i.i.i, align 4, !dbg !2399, !tbaa !1366
+  %is_long_term49.i.i.i = getelementptr inbounds %struct.frame_store* %90, i64 0, i32 2, !dbg !2400
+  store i32 3, i32* %is_long_term49.i.i.i, align 4, !dbg !2400, !tbaa !1366
+  br label %mm_assign_long_term_frame_idx.exit.i, !dbg !2401
+
+for.inc.i.i.i:                                    ; preds = %land.lhs.true.i.i.i, %if.then3.i.i.i, %for.body.i.i.i
+  %indvars.iv.next281.i.i.i = add i64 %indvars.iv280.i.i.i, 1, !dbg !2389
+  %97 = trunc i64 %indvars.iv.next281.i.i.i to i32, !dbg !2389
+  %cmp1.i.i.i = icmp ult i32 %97, %88, !dbg !2389
+  br i1 %cmp1.i.i.i, label %for.body.i.i.i, label %for.end.i.i.i, !dbg !2389
+
+for.end.i.i.i:                                    ; preds = %for.inc.i.i.i, %for.cond.preheader.i.i.i
+  %puts262.i.i.i = call i32 @puts(i8* getelementptr inbounds ([57 x i8]* @str43, i64 0, i64 0)) #7, !dbg !2402
+  br label %mm_assign_long_term_frame_idx.exit.i, !dbg !2403
+
+if.else54.i.i.i:                                  ; preds = %if.end25.i.i
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !2404) #7, !dbg !2405
+  call void @llvm.dbg.value(metadata !1865, i64 0, metadata !2408) #7, !dbg !2409
+  br label %if.end55.i.i.i
+
+if.end55.i.i.i:                                   ; preds = %if.else54.i.i.i, %if.end25.i.i
+  %add_top.0.i.i.i = phi i32 [ 0, %if.else54.i.i.i ], [ 1, %if.end25.i.i ]
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !2410) #7, !dbg !2411
+  %98 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !2411, !tbaa !1366
+  %cmp57266.i.i.i = icmp eq i32 %98, 0, !dbg !2411
+  br i1 %cmp57266.i.i.i, label %for.end199.i.i.i, label %for.body58.lr.ph.i.i.i, !dbg !2411
+
+for.body58.lr.ph.i.i.i:                           ; preds = %if.end55.i.i.i
+  %99 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !2413, !tbaa !1363
+  br label %for.body58.i.i.i, !dbg !2411
+
+for.body58.i.i.i:                                 ; preds = %for.inc197.i.i.i, %for.body58.lr.ph.i.i.i
+  %indvars.iv.i.i.i = phi i64 [ 0, %for.body58.lr.ph.i.i.i ], [ %indvars.iv.next.i.i.i, %for.inc197.i.i.i ]
+  %arrayidx60.i.i.i = getelementptr inbounds %struct.frame_store** %99, i64 %indvars.iv.i.i.i, !dbg !2413
+  %100 = load %struct.frame_store** %arrayidx60.i.i.i, align 8, !dbg !2413, !tbaa !1363
+  %is_reference61.i.i.i = getelementptr inbounds %struct.frame_store* %100, i64 0, i32 1, !dbg !2413
+  %101 = load i32* %is_reference61.i.i.i, align 4, !dbg !2413, !tbaa !1366
+  %and.i.i.i = and i32 %101, 1, !dbg !2413
+  %tobool62.i.i.i = icmp eq i32 %and.i.i.i, 0, !dbg !2413
+  br i1 %tobool62.i.i.i, label %if.end125.i.i.i, label %if.then63.i.i.i, !dbg !2413
+
+if.then63.i.i.i:                                  ; preds = %for.body58.i.i.i
+  %top_field66.i.i.i = getelementptr inbounds %struct.frame_store* %100, i64 0, i32 11, !dbg !2415
+  %102 = load %struct.storable_picture** %top_field66.i.i.i, align 8, !dbg !2415, !tbaa !1363
+  %is_long_term67.i.i.i = getelementptr inbounds %struct.storable_picture* %102, i64 0, i32 14, !dbg !2415
+  %103 = load i32* %is_long_term67.i.i.i, align 4, !dbg !2415, !tbaa !1366
+  %tobool68.i.i.i = icmp eq i32 %103, 0, !dbg !2415
+  br i1 %tobool68.i.i.i, label %land.lhs.true69.i.i.i, label %if.end125.i.i.i, !dbg !2415
+
+land.lhs.true69.i.i.i:                            ; preds = %if.then63.i.i.i
+  %pic_num73.i.i.i = getelementptr inbounds %struct.storable_picture* %102, i64 0, i32 11, !dbg !2415
+  %104 = load i32* %pic_num73.i.i.i, align 4, !dbg !2415, !tbaa !1366
+  %cmp74.i.i.i = icmp eq i32 %104, %sub.i45.i.i, !dbg !2415
+  br i1 %cmp74.i.i.i, label %if.then75.i.i.i, label %if.end125.i.i.i, !dbg !2415
+
+if.then75.i.i.i:                                  ; preds = %land.lhs.true69.i.i.i
+  %is_long_term78.i.i.i = getelementptr inbounds %struct.frame_store* %100, i64 0, i32 2, !dbg !2417
+  %105 = load i32* %is_long_term78.i.i.i, align 4, !dbg !2417, !tbaa !1366
+  %tobool79.i.i.i = icmp eq i32 %105, 0, !dbg !2417
+  br i1 %tobool79.i.i.i, label %if.end87.i.i.i, label %land.lhs.true80.i.i.i, !dbg !2417
+
+land.lhs.true80.i.i.i:                            ; preds = %if.then75.i.i.i
+  %long_term_frame_idx83.i.i.i = getelementptr inbounds %struct.frame_store* %100, i64 0, i32 7, !dbg !2417
+  %106 = load i32* %long_term_frame_idx83.i.i.i, align 4, !dbg !2417, !tbaa !1366
+  %cmp84.i.i.i = icmp eq i32 %106, %75, !dbg !2417
+  br i1 %cmp84.i.i.i, label %if.end87.i.i.i, label %if.then85.i.i.i, !dbg !2417
+
+if.then85.i.i.i:                                  ; preds = %land.lhs.true80.i.i.i
+  %puts261.i.i.i = call i32 @puts(i8* getelementptr inbounds ([66 x i8]* @str42, i64 0, i64 0)) #7, !dbg !2419
+  %.pre284.i.i.i = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !2421, !tbaa !1363
+  %arrayidx89.phi.trans.insert.i.i.i = getelementptr inbounds %struct.frame_store** %.pre284.i.i.i, i64 %indvars.iv.i.i.i
+  %.pre285.i.i.i = load %struct.frame_store** %arrayidx89.phi.trans.insert.i.i.i, align 8, !dbg !2421, !tbaa !1363
+  %top_field90.phi.trans.insert.i.i.i = getelementptr inbounds %struct.frame_store* %.pre285.i.i.i, i64 0, i32 11
+  %.pre286.i.i.i = load %struct.storable_picture** %top_field90.phi.trans.insert.i.i.i, align 8, !dbg !2421, !tbaa !1363
+  br label %if.end87.i.i.i, !dbg !2422
+
+if.end87.i.i.i:                                   ; preds = %if.then85.i.i.i, %land.lhs.true80.i.i.i, %if.then75.i.i.i
+  %107 = phi %struct.storable_picture* [ %102, %land.lhs.true80.i.i.i ], [ %102, %if.then75.i.i.i ], [ %.pre286.i.i.i, %if.then85.i.i.i ]
+  %108 = phi %struct.frame_store* [ %100, %land.lhs.true80.i.i.i ], [ %100, %if.then75.i.i.i ], [ %.pre285.i.i.i, %if.then85.i.i.i ]
+  %long_term_frame_idx91.i.i.i = getelementptr inbounds %struct.storable_picture* %107, i64 0, i32 13, !dbg !2421
+  store i32 %75, i32* %long_term_frame_idx91.i.i.i, align 4, !dbg !2421, !tbaa !1366
+  %long_term_frame_idx94.i.i.i = getelementptr inbounds %struct.frame_store* %108, i64 0, i32 7, !dbg !2421
+  store i32 %75, i32* %long_term_frame_idx94.i.i.i, align 4, !dbg !2421, !tbaa !1366
+  %mul.i40.i.i = shl nsw i32 %75, 1, !dbg !2423
+  %add.i.i.i = or i32 %add_top.0.i.i.i, %mul.i40.i.i, !dbg !2423
+  %long_term_pic_num98.i.i.i = getelementptr inbounds %struct.storable_picture* %107, i64 0, i32 12, !dbg !2423
+  store i32 %add.i.i.i, i32* %long_term_pic_num98.i.i.i, align 4, !dbg !2423, !tbaa !1366
+  %is_long_term102.i.i.i = getelementptr inbounds %struct.storable_picture* %107, i64 0, i32 14, !dbg !2424
+  store i32 1, i32* %is_long_term102.i.i.i, align 4, !dbg !2424, !tbaa !1366
+  %is_long_term105.i.i.i = getelementptr inbounds %struct.frame_store* %108, i64 0, i32 2, !dbg !2425
+  %109 = load i32* %is_long_term105.i.i.i, align 4, !dbg !2425, !tbaa !1366
+  %or.i.i.i = or i32 %109, 1, !dbg !2425
+  store i32 %or.i.i.i, i32* %is_long_term105.i.i.i, align 4, !dbg !2425, !tbaa !1366
+  %cmp109.i.i.i = icmp eq i32 %or.i.i.i, 3, !dbg !2426
+  br i1 %cmp109.i.i.i, label %if.then110.i.i.i, label %mm_assign_long_term_frame_idx.exit.i, !dbg !2426
+
+if.then110.i.i.i:                                 ; preds = %if.end87.i.i.i
+  %frame113.i.i.i = getelementptr inbounds %struct.frame_store* %108, i64 0, i32 10, !dbg !2427
+  %110 = load %struct.storable_picture** %frame113.i.i.i, align 8, !dbg !2427, !tbaa !1363
+  %is_long_term114.i.i.i = getelementptr inbounds %struct.storable_picture* %110, i64 0, i32 14, !dbg !2427
+  store i32 1, i32* %is_long_term114.i.i.i, align 4, !dbg !2427, !tbaa !1366
+  %long_term_pic_num118.i.i.i = getelementptr inbounds %struct.storable_picture* %110, i64 0, i32 12, !dbg !2429
+  store i32 %75, i32* %long_term_pic_num118.i.i.i, align 4, !dbg !2429, !tbaa !1366
+  %long_term_frame_idx122.i.i.i = getelementptr inbounds %struct.storable_picture* %110, i64 0, i32 13, !dbg !2429
+  store i32 %75, i32* %long_term_frame_idx122.i.i.i, align 4, !dbg !2429, !tbaa !1366
+  br label %mm_assign_long_term_frame_idx.exit.i, !dbg !2430
+
+if.end125.i.i.i:                                  ; preds = %land.lhs.true69.i.i.i, %if.then63.i.i.i, %for.body58.i.i.i
+  %and129.i.i.i = and i32 %101, 2, !dbg !2431
+  %tobool130.i.i.i = icmp eq i32 %and129.i.i.i, 0, !dbg !2431
+  br i1 %tobool130.i.i.i, label %for.inc197.i.i.i, label %if.then131.i.i.i, !dbg !2431
+
+if.then131.i.i.i:                                 ; preds = %if.end125.i.i.i
+  %bottom_field134.i.i.i = getelementptr inbounds %struct.frame_store* %100, i64 0, i32 12, !dbg !2432
+  %111 = load %struct.storable_picture** %bottom_field134.i.i.i, align 8, !dbg !2432, !tbaa !1363
+  %is_long_term135.i.i.i = getelementptr inbounds %struct.storable_picture* %111, i64 0, i32 14, !dbg !2432
+  %112 = load i32* %is_long_term135.i.i.i, align 4, !dbg !2432, !tbaa !1366
+  %tobool136.i.i.i = icmp eq i32 %112, 0, !dbg !2432
+  br i1 %tobool136.i.i.i, label %land.lhs.true137.i.i.i, label %for.inc197.i.i.i, !dbg !2432
+
+land.lhs.true137.i.i.i:                           ; preds = %if.then131.i.i.i
+  %pic_num141.i.i.i = getelementptr inbounds %struct.storable_picture* %111, i64 0, i32 11, !dbg !2432
+  %113 = load i32* %pic_num141.i.i.i, align 4, !dbg !2432, !tbaa !1366
+  %cmp142.i.i.i = icmp eq i32 %113, %sub.i45.i.i, !dbg !2432
+  br i1 %cmp142.i.i.i, label %if.then143.i.i.i, label %for.inc197.i.i.i, !dbg !2432
+
+if.then143.i.i.i:                                 ; preds = %land.lhs.true137.i.i.i
+  %is_long_term146.i.i.i = getelementptr inbounds %struct.frame_store* %100, i64 0, i32 2, !dbg !2434
+  %114 = load i32* %is_long_term146.i.i.i, align 4, !dbg !2434, !tbaa !1366
+  %tobool147.i.i.i = icmp eq i32 %114, 0, !dbg !2434
+  br i1 %tobool147.i.i.i, label %if.end155.i.i.i, label %land.lhs.true148.i.i.i, !dbg !2434
+
+land.lhs.true148.i.i.i:                           ; preds = %if.then143.i.i.i
+  %long_term_frame_idx151.i.i.i = getelementptr inbounds %struct.frame_store* %100, i64 0, i32 7, !dbg !2434
+  %115 = load i32* %long_term_frame_idx151.i.i.i, align 4, !dbg !2434, !tbaa !1366
+  %cmp152.i.i.i = icmp eq i32 %115, %75, !dbg !2434
+  br i1 %cmp152.i.i.i, label %if.end155.i.i.i, label %if.then153.i.i.i, !dbg !2434
+
+if.then153.i.i.i:                                 ; preds = %land.lhs.true148.i.i.i
+  %puts260.i.i.i = call i32 @puts(i8* getelementptr inbounds ([66 x i8]* @str42, i64 0, i64 0)) #7, !dbg !2436
+  %.pre.i.i.i = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !2438, !tbaa !1363
+  %arrayidx157.phi.trans.insert.i.i.i = getelementptr inbounds %struct.frame_store** %.pre.i.i.i, i64 %indvars.iv.i.i.i
+  %.pre282.i.i.i = load %struct.frame_store** %arrayidx157.phi.trans.insert.i.i.i, align 8, !dbg !2438, !tbaa !1363
+  %bottom_field158.phi.trans.insert.i.i.i = getelementptr inbounds %struct.frame_store* %.pre282.i.i.i, i64 0, i32 12
+  %.pre283.i.i.i = load %struct.storable_picture** %bottom_field158.phi.trans.insert.i.i.i, align 8, !dbg !2438, !tbaa !1363
+  br label %if.end155.i.i.i, !dbg !2439
+
+if.end155.i.i.i:                                  ; preds = %if.then153.i.i.i, %land.lhs.true148.i.i.i, %if.then143.i.i.i
+  %116 = phi %struct.storable_picture* [ %111, %land.lhs.true148.i.i.i ], [ %111, %if.then143.i.i.i ], [ %.pre283.i.i.i, %if.then153.i.i.i ]
+  %117 = phi %struct.frame_store* [ %100, %land.lhs.true148.i.i.i ], [ %100, %if.then143.i.i.i ], [ %.pre282.i.i.i, %if.then153.i.i.i ]
+  %long_term_frame_idx159.i.i.i = getelementptr inbounds %struct.storable_picture* %116, i64 0, i32 13, !dbg !2438
+  store i32 %75, i32* %long_term_frame_idx159.i.i.i, align 4, !dbg !2438, !tbaa !1366
+  %long_term_frame_idx162.i.i.i = getelementptr inbounds %struct.frame_store* %117, i64 0, i32 7, !dbg !2438
+  store i32 %75, i32* %long_term_frame_idx162.i.i.i, align 4, !dbg !2438, !tbaa !1366
+  %mul163.i.i.i = shl nsw i32 %75, 1, !dbg !2440
+  %add164.i.i.i = or i32 %add_top.0.i.i.i, %mul163.i.i.i, !dbg !2440
+  %long_term_pic_num168.i.i.i = getelementptr inbounds %struct.storable_picture* %116, i64 0, i32 12, !dbg !2440
+  store i32 %add164.i.i.i, i32* %long_term_pic_num168.i.i.i, align 4, !dbg !2440, !tbaa !1366
+  %is_long_term172.i.i.i = getelementptr inbounds %struct.storable_picture* %116, i64 0, i32 14, !dbg !2441
+  store i32 1, i32* %is_long_term172.i.i.i, align 4, !dbg !2441, !tbaa !1366
+  %is_long_term175.i.i.i = getelementptr inbounds %struct.frame_store* %117, i64 0, i32 2, !dbg !2442
+  %118 = load i32* %is_long_term175.i.i.i, align 4, !dbg !2442, !tbaa !1366
+  %or176.i.i.i = or i32 %118, 2, !dbg !2442
+  store i32 %or176.i.i.i, i32* %is_long_term175.i.i.i, align 4, !dbg !2442, !tbaa !1366
+  %cmp180.i.i.i = icmp eq i32 %or176.i.i.i, 3, !dbg !2443
+  br i1 %cmp180.i.i.i, label %if.then181.i.i.i, label %mm_assign_long_term_frame_idx.exit.i, !dbg !2443
+
+if.then181.i.i.i:                                 ; preds = %if.end155.i.i.i
+  %frame184.i.i.i = getelementptr inbounds %struct.frame_store* %117, i64 0, i32 10, !dbg !2444
+  %119 = load %struct.storable_picture** %frame184.i.i.i, align 8, !dbg !2444, !tbaa !1363
+  %is_long_term185.i.i.i = getelementptr inbounds %struct.storable_picture* %119, i64 0, i32 14, !dbg !2444
+  store i32 1, i32* %is_long_term185.i.i.i, align 4, !dbg !2444, !tbaa !1366
+  %long_term_pic_num189.i.i.i = getelementptr inbounds %struct.storable_picture* %119, i64 0, i32 12, !dbg !2446
+  store i32 %75, i32* %long_term_pic_num189.i.i.i, align 4, !dbg !2446, !tbaa !1366
+  %long_term_frame_idx193.i.i.i = getelementptr inbounds %struct.storable_picture* %119, i64 0, i32 13, !dbg !2446
+  store i32 %75, i32* %long_term_frame_idx193.i.i.i, align 4, !dbg !2446, !tbaa !1366
+  br label %mm_assign_long_term_frame_idx.exit.i, !dbg !2447
+
+for.inc197.i.i.i:                                 ; preds = %land.lhs.true137.i.i.i, %if.then131.i.i.i, %if.end125.i.i.i
+  %indvars.iv.next.i.i.i = add i64 %indvars.iv.i.i.i, 1, !dbg !2411
+  %120 = trunc i64 %indvars.iv.next.i.i.i to i32, !dbg !2411
+  %cmp57.i.i.i = icmp ult i32 %120, %98, !dbg !2411
+  br i1 %cmp57.i.i.i, label %for.body58.i.i.i, label %for.end199.i.i.i, !dbg !2411
+
+for.end199.i.i.i:                                 ; preds = %for.inc197.i.i.i, %if.end55.i.i.i
+  %puts.i.i.i = call i32 @puts(i8* getelementptr inbounds ([57 x i8]* @str, i64 0, i64 0)) #7, !dbg !2448
+  br label %mm_assign_long_term_frame_idx.exit.i
+
+mm_assign_long_term_frame_idx.exit.i:             ; preds = %for.end199.i.i.i, %if.then181.i.i.i, %if.end155.i.i.i, %if.then110.i.i.i, %if.end87.i.i.i, %for.end.i.i.i, %if.then10.i.i.i
+  call void @update_ref_list() #8, !dbg !2449
+  call void @update_ltref_list() #8, !dbg !2450
+  br label %sw.epilog.i, !dbg !2451
+
+sw.bb11.i:                                        ; preds = %while.body.i
+  %max_long_term_frame_idx_plus1.i = getelementptr inbounds %struct.DecRefPicMarking_s* %23, i64 0, i32 4, !dbg !2452
+  %121 = load i32* %max_long_term_frame_idx_plus1.i, align 4, !dbg !2452, !tbaa !1366
+  call void @mm_update_max_long_term_frame_idx(i32 %121) #8, !dbg !2452
+  call void @update_ltref_list() #8, !dbg !2453
+  br label %sw.epilog.i, !dbg !2454
+
+sw.bb12.i:                                        ; preds = %while.body.i
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !2455) #7, !dbg !2457
+  %122 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !2457, !tbaa !1366
+  %cmp3.i.i = icmp eq i32 %122, 0, !dbg !2457
+  br i1 %cmp3.i.i, label %mm_unmark_all_short_term_for_reference.exit.i, label %for.body.i91.i, !dbg !2457
+
+for.body.i91.i:                                   ; preds = %sw.bb12.i, %for.body.i91.i
+  %i.04.i.i = phi i32 [ %inc.i89.i, %for.body.i91.i ], [ 0, %sw.bb12.i ]
+  %idxprom.i87.i = zext i32 %i.04.i.i to i64, !dbg !2459
+  %123 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !2459, !tbaa !1363
+  %arrayidx.i88.i = getelementptr inbounds %struct.frame_store** %123, i64 %idxprom.i87.i, !dbg !2459
+  %124 = load %struct.frame_store** %arrayidx.i88.i, align 8, !dbg !2459, !tbaa !1363
+  call fastcc void @unmark_for_reference(%struct.frame_store* %124) #8, !dbg !2459
+  %inc.i89.i = add i32 %i.04.i.i, 1, !dbg !2457
+  call void @llvm.dbg.value(metadata !{i32 %inc.i89.i}, i64 0, metadata !2455) #7, !dbg !2457
+  %125 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !2457, !tbaa !1366
+  %cmp.i90.i = icmp ult i32 %inc.i89.i, %125, !dbg !2457
+  br i1 %cmp.i90.i, label %for.body.i91.i, label %mm_unmark_all_short_term_for_reference.exit.i, !dbg !2457
+
+mm_unmark_all_short_term_for_reference.exit.i:    ; preds = %for.body.i91.i, %sw.bb12.i
+  call void @update_ref_list() #8, !dbg !2461
+  call void @mm_update_max_long_term_frame_idx(i32 0) #8, !dbg !2462
+  %126 = load %struct.ImageParameters** @img, align 8, !dbg !2464, !tbaa !1363
+  %last_has_mmco_513.i = getelementptr inbounds %struct.ImageParameters* %126, i64 0, i32 145, !dbg !2464
+  store i32 1, i32* %last_has_mmco_513.i, align 4, !dbg !2464, !tbaa !1366
+  br label %sw.epilog.i, !dbg !2465
+
+sw.bb14.i:                                        ; preds = %while.body.i
+  %long_term_frame_idx15.i = getelementptr inbounds %struct.DecRefPicMarking_s* %23, i64 0, i32 3, !dbg !2251
+  %127 = load i32* %long_term_frame_idx15.i, align 4, !dbg !2251, !tbaa !1366
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !2466) #7, !dbg !2467
+  call void @llvm.dbg.value(metadata !{i32 %127}, i64 0, metadata !2468) #7, !dbg !2467
+  %128 = load i32* %structure.i.i.i, align 4, !dbg !2469, !tbaa !1364
+  %cmp.i93.i = icmp eq i32 %128, 0, !dbg !2469
+  br i1 %cmp.i93.i, label %if.then.i94.i, label %if.else.i96.i, !dbg !2469
+
+if.then.i94.i:                                    ; preds = %sw.bb14.i
+  call fastcc void @unmark_long_term_frame_for_reference_by_frame_idx(i32 %127) #8, !dbg !2470
+  br label %mm_mark_current_picture_long_term.exit.i, !dbg !2472
+
+if.else.i96.i:                                    ; preds = %sw.bb14.i
+  %129 = load i32* %pic_num.i95.i, align 4, !dbg !2253, !tbaa !1366
+  call fastcc void @unmark_long_term_field_for_reference_by_frame_idx(i32 %128, i32 %127, i32 1, i32 %129, i32 0) #8, !dbg !2253
+  br label %mm_mark_current_picture_long_term.exit.i
+
+mm_mark_current_picture_long_term.exit.i:         ; preds = %if.else.i96.i, %if.then.i94.i
+  store i32 1, i32* %is_long_term.i97.i, align 4, !dbg !2250, !tbaa !1366
+  store i32 %127, i32* %long_term_frame_idx2.i.i, align 4, !dbg !2252, !tbaa !1366
+  br label %sw.epilog.i, !dbg !2473
+
+sw.default.i:                                     ; preds = %while.body.i
+  call void @error(i8* getelementptr inbounds ([54 x i8]* @.str34, i64 0, i64 0), i32 500) #8, !dbg !2474
+  br label %sw.epilog.i, !dbg !2475
+
+sw.epilog.i:                                      ; preds = %sw.default.i, %mm_mark_current_picture_long_term.exit.i, %mm_unmark_all_short_term_for_reference.exit.i, %sw.bb11.i, %mm_assign_long_term_frame_idx.exit.i, %mm_unmark_long_term_for_reference.exit.i, %mm_unmark_short_term_for_reference.exit.i, %if.then.i, %sw.bb.i
+  %Next16.i = getelementptr inbounds %struct.DecRefPicMarking_s* %23, i64 0, i32 5, !dbg !2476
+  %130 = load %struct.DecRefPicMarking_s** %Next16.i, align 8, !dbg !2476, !tbaa !1363
+  %131 = load %struct.ImageParameters** @img, align 8, !dbg !2476, !tbaa !1363
+  %dec_ref_pic_marking_buffer17.i = getelementptr inbounds %struct.ImageParameters* %131, i64 0, i32 117, !dbg !2476
+  store %struct.DecRefPicMarking_s* %130, %struct.DecRefPicMarking_s** %dec_ref_pic_marking_buffer17.i, align 8, !dbg !2476, !tbaa !1363
+  %132 = bitcast %struct.DecRefPicMarking_s* %23 to i8*, !dbg !2477
+  call void @free(i8* %132) #8, !dbg !2477
+  %133 = load %struct.ImageParameters** @img, align 8, !dbg !2243, !tbaa !1363
+  %dec_ref_pic_marking_buffer.i = getelementptr inbounds %struct.ImageParameters* %133, i64 0, i32 117, !dbg !2243
+  %134 = load %struct.DecRefPicMarking_s** %dec_ref_pic_marking_buffer.i, align 8, !dbg !2243, !tbaa !1363
+  %tobool5.i = icmp eq %struct.DecRefPicMarking_s* %134, null, !dbg !2243
+  br i1 %tobool5.i, label %while.end.i, label %while.body.i, !dbg !2243
+
+while.end.i:                                      ; preds = %sw.epilog.i
+  %last_has_mmco_518.phi.trans.insert.i = getelementptr inbounds %struct.ImageParameters* %133, i64 0, i32 145
+  %.pre.i = load i32* %last_has_mmco_518.phi.trans.insert.i, align 4, !dbg !2478, !tbaa !1366
+  %phitmp.i = icmp eq i32 %.pre.i, 0, !dbg !2243
+  br i1 %phitmp.i, label %if.end8, label %if.then20.i, !dbg !2478
+
+if.then20.i:                                      ; preds = %while.end.i
+  store i32 0, i32* %frame_num.i.i.i, align 4, !dbg !2479, !tbaa !1366
+  store i32 0, i32* %pic_num.i95.i, align 4, !dbg !2479, !tbaa !1366
+  %poc.i = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 1, !dbg !2481
+  store i32 0, i32* %poc.i, align 4, !dbg !2481, !tbaa !1366
+  %ThisPOC.i = getelementptr inbounds %struct.ImageParameters* %133, i64 0, i32 104, !dbg !2482
+  store i32 0, i32* %ThisPOC.i, align 4, !dbg !2482, !tbaa !1366
+  %135 = load i32* %structure.i.i.i, align 4, !dbg !2483, !tbaa !1364
+  switch i32 %135, label %sw.epilog24.i [
+    i32 1, label %sw.bb21.i
+    i32 2, label %sw.bb22.i
+    i32 0, label %sw.bb23.i
+  ], !dbg !2483
+
+sw.bb21.i:                                        ; preds = %if.then20.i
+  %toppoc.i = getelementptr inbounds %struct.ImageParameters* %133, i64 0, i32 101, !dbg !2484
+  store i32 0, i32* %toppoc.i, align 4, !dbg !2484, !tbaa !1366
+  br label %sw.epilog24.i, !dbg !2487
+
+sw.bb22.i:                                        ; preds = %if.then20.i
+  %bottompoc.i = getelementptr inbounds %struct.ImageParameters* %133, i64 0, i32 102, !dbg !2488
+  store i32 0, i32* %bottompoc.i, align 4, !dbg !2488, !tbaa !1366
+  br label %sw.epilog24.i, !dbg !2490
+
+sw.bb23.i:                                        ; preds = %if.then20.i
+  %framepoc.i = getelementptr inbounds %struct.ImageParameters* %133, i64 0, i32 103, !dbg !2491
+  store i32 0, i32* %framepoc.i, align 4, !dbg !2491, !tbaa !1366
+  br label %sw.epilog24.i, !dbg !2493
+
+sw.epilog24.i:                                    ; preds = %sw.bb23.i, %sw.bb22.i, %sw.bb21.i, %if.then20.i
+  call void @flush_dpb() #8, !dbg !2494
+  br label %if.end8, !dbg !2495
+
+if.end8:                                          ; preds = %sw.epilog24.i, %while.end.i, %while.cond.preheader.i, %if.else22.i, %if.then21.i, %land.lhs.true, %if.else
+  %structure9 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 0, !dbg !2496
+  %136 = load i32* %structure9, align 4, !dbg !2496, !tbaa !1364
+  %cmp10 = icmp eq i32 %136, 1, !dbg !2496
+  br i1 %cmp10, label %if.then15, label %lor.lhs.false, !dbg !2496
+
+lor.lhs.false:                                    ; preds = %if.end8
+  %cmp13 = icmp eq i32 %136, 2, !dbg !2496
+  %137 = load %struct.frame_store** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 10), align 8, !dbg !2497, !tbaa !1363
+  %tobool16 = icmp ne %struct.frame_store* %137, null, !dbg !2497
+  %or.cond = and i1 %cmp13, %tobool16, !dbg !2496
+  br i1 %or.cond, label %if.then17, label %if.end53, !dbg !2496
+
+if.then15:                                        ; preds = %if.end8
+  %.old = load %struct.frame_store** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 10), align 8, !dbg !2497, !tbaa !1363
+  %tobool16.old = icmp eq %struct.frame_store* %.old, null, !dbg !2497
+  br i1 %tobool16.old, label %if.end53, label %if.then17, !dbg !2497
+
+if.then17:                                        ; preds = %if.then15, %lor.lhs.false
+  %138 = phi %struct.frame_store* [ %.old, %if.then15 ], [ %137, %lor.lhs.false ]
+  %frame_num = getelementptr inbounds %struct.frame_store* %138, i64 0, i32 5, !dbg !2499
+  %139 = load i32* %frame_num, align 4, !dbg !2499, !tbaa !1366
+  %pic_num = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 11, !dbg !2499
+  %140 = load i32* %pic_num, align 4, !dbg !2499, !tbaa !1366
+  %cmp18 = icmp eq i32 %139, %140, !dbg !2499
+  br i1 %cmp18, label %if.then20, label %if.end53, !dbg !2499
+
+if.then20:                                        ; preds = %if.then17
+  br i1 %cmp10, label %land.lhs.true24, label %lor.lhs.false27, !dbg !2501
+
+land.lhs.true24:                                  ; preds = %if.then20
+  %is_used = getelementptr inbounds %struct.frame_store* %138, i64 0, i32 0, !dbg !2501
+  %141 = load i32* %is_used, align 4, !dbg !2501, !tbaa !1366
+  %cmp25 = icmp eq i32 %141, 2, !dbg !2501
+  br i1 %cmp25, label %if.then35, label %if.end53, !dbg !2501
+
+lor.lhs.false27:                                  ; preds = %if.then20
+  %cmp29 = icmp eq i32 %136, 2, !dbg !2501
+  br i1 %cmp29, label %land.lhs.true31, label %if.end53, !dbg !2501
+
+land.lhs.true31:                                  ; preds = %lor.lhs.false27
+  %is_used32 = getelementptr inbounds %struct.frame_store* %138, i64 0, i32 0, !dbg !2501
+  %142 = load i32* %is_used32, align 4, !dbg !2501, !tbaa !1366
+  %cmp33 = icmp eq i32 %142, 1, !dbg !2501
+  br i1 %cmp33, label %if.then35, label %if.end53, !dbg !2501
+
+if.then35:                                        ; preds = %land.lhs.true31, %land.lhs.true24
+  %143 = load i32* %used_for_reference, align 4, !dbg !2503, !tbaa !1366
+  %tobool37 = icmp eq i32 %143, 0, !dbg !2503
+  %is_orig_reference45.phi.trans.insert = getelementptr inbounds %struct.frame_store* %138, i64 0, i32 3
+  %.pre225 = load i32* %is_orig_reference45.phi.trans.insert, align 4, !dbg !2503, !tbaa !1366
+  %phitmp = icmp eq i32 %.pre225, 0, !dbg !2503
+  br i1 %tobool37, label %land.lhs.true44, label %land.lhs.true38, !dbg !2503
+
+land.lhs.true38:                                  ; preds = %if.then35
+  br i1 %phitmp, label %if.end53, label %if.then48, !dbg !2503
+
+land.lhs.true44:                                  ; preds = %if.then35
+  br i1 %phitmp, label %if.then48, label %if.end53, !dbg !2503
+
+if.then48:                                        ; preds = %land.lhs.true38, %land.lhs.true44
+  call fastcc void @insert_picture_in_dpb(%struct.frame_store* %138, %struct.storable_picture* %p) #9, !dbg !2505
+  call void @update_ref_list() #9, !dbg !2507
+  call void @update_ltref_list() #9, !dbg !2508
+  store %struct.frame_store* null, %struct.frame_store** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 10), align 8, !dbg !2509, !tbaa !1363
+  br label %return, !dbg !2510
+
+if.end53:                                         ; preds = %land.lhs.true24, %land.lhs.true44, %land.lhs.true38, %land.lhs.true31, %lor.lhs.false27, %if.then17, %if.then15, %lor.lhs.false
+  %144 = load %struct.ImageParameters** @img, align 8, !dbg !2511, !tbaa !1363
+  %currentPicture54 = getelementptr inbounds %struct.ImageParameters* %144, i64 0, i32 49, !dbg !2511
+  %145 = load %struct.Picture** %currentPicture54, align 8, !dbg !2511, !tbaa !1363
+  %idr_flag55 = getelementptr inbounds %struct.Picture* %145, i64 0, i32 1, !dbg !2511
+  %146 = load i32* %idr_flag55, align 4, !dbg !2511, !tbaa !1366
+  %tobool56 = icmp eq i32 %146, 0, !dbg !2511
+  br i1 %tobool56, label %land.lhs.true57, label %if.end64, !dbg !2511
+
+land.lhs.true57:                                  ; preds = %if.end53
+  %147 = load i32* %used_for_reference, align 4, !dbg !2511, !tbaa !1366
+  %tobool59 = icmp eq i32 %147, 0, !dbg !2511
+  br i1 %tobool59, label %if.end64, label %land.lhs.true60, !dbg !2511
+
+land.lhs.true60:                                  ; preds = %land.lhs.true57
+  %adaptive_ref_pic_buffering_flag61 = getelementptr inbounds %struct.ImageParameters* %144, i64 0, i32 114, !dbg !2511
+  %148 = load i32* %adaptive_ref_pic_buffering_flag61, align 4, !dbg !2511, !tbaa !1366
+  %tobool62 = icmp eq i32 %148, 0, !dbg !2511
+  br i1 %tobool62, label %cond.end.i143, label %if.end64, !dbg !2511
+
+cond.end.i143:                                    ; preds = %land.lhs.true60
+  call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !2512) #7, !dbg !2515
+  %149 = load i64* bitcast (i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5) to i64*), align 8, !dbg !2516
+  %150 = trunc i64 %149 to i32, !dbg !2516
+  %151 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !dbg !2516, !tbaa !1363
+  %num_ref_frames.i = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %151, i64 0, i32 21, !dbg !2516
+  %152 = load i32* %num_ref_frames.i, align 4, !dbg !2516, !tbaa !1366
+  %153 = lshr i64 %149, 32
+  %154 = trunc i64 %153 to i32
+  %sub.i = sub i32 %152, %154, !dbg !2516
+  %cmp.i142 = icmp eq i32 %150, %sub.i, !dbg !2516
+  br i1 %cmp.i142, label %for.cond.preheader.i144, label %sliding_window_memory_management.exit, !dbg !2516
+
+for.cond.preheader.i144:                          ; preds = %cond.end.i143
+  %155 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !2517, !tbaa !1366
+  %cmp115.i = icmp eq i32 %155, 0, !dbg !2517
+  br i1 %cmp115.i, label %sliding_window_memory_management.exit, label %for.body.lr.ph.i, !dbg !2517
+
+for.body.lr.ph.i:                                 ; preds = %for.cond.preheader.i144
+  %156 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !2520, !tbaa !1363
+  br label %for.body.i147, !dbg !2517
+
+for.body.i147:                                    ; preds = %for.inc.i, %for.body.lr.ph.i
+  %indvars.iv.i145 = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next.i150, %for.inc.i ]
+  %arrayidx.i146 = getelementptr inbounds %struct.frame_store** %156, i64 %indvars.iv.i145, !dbg !2520
+  %157 = load %struct.frame_store** %arrayidx.i146, align 8, !dbg !2520, !tbaa !1363
+  %is_reference.i = getelementptr inbounds %struct.frame_store* %157, i64 0, i32 1, !dbg !2520
+  %158 = load i32* %is_reference.i, align 4, !dbg !2520, !tbaa !1366
+  %tobool2.i = icmp eq i32 %158, 0, !dbg !2520
+  br i1 %tobool2.i, label %for.inc.i, label %land.lhs.true.i, !dbg !2520
+
+land.lhs.true.i:                                  ; preds = %for.body.i147
+  %is_long_term.i148 = getelementptr inbounds %struct.frame_store* %157, i64 0, i32 2, !dbg !2520
+  %159 = load i32* %is_long_term.i148, align 4, !dbg !2520, !tbaa !1366
+  %tobool5.i149 = icmp eq i32 %159, 0, !dbg !2520
+  br i1 %tobool5.i149, label %if.then6.i, label %for.inc.i, !dbg !2520
+
+if.then6.i:                                       ; preds = %land.lhs.true.i
+  call fastcc void @unmark_for_reference(%struct.frame_store* %157) #8, !dbg !2522
+  call void @update_ref_list() #8, !dbg !2524
+  br label %sliding_window_memory_management.exit, !dbg !2525
+
+for.inc.i:                                        ; preds = %land.lhs.true.i, %for.body.i147
+  %indvars.iv.next.i150 = add i64 %indvars.iv.i145, 1, !dbg !2517
+  %160 = trunc i64 %indvars.iv.next.i150 to i32, !dbg !2517
+  %cmp1.i = icmp ult i32 %160, %155, !dbg !2517
+  br i1 %cmp1.i, label %for.body.i147, label %sliding_window_memory_management.exit, !dbg !2517
+
+sliding_window_memory_management.exit:            ; preds = %for.inc.i, %cond.end.i143, %for.cond.preheader.i144, %if.then6.i
+  %is_long_term10.i = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 14, !dbg !2526
+  store i32 0, i32* %is_long_term10.i, align 4, !dbg !2526, !tbaa !1366
+  br label %if.end64, !dbg !2527
+
+if.end64:                                         ; preds = %land.lhs.true60, %land.lhs.true57, %if.end53, %sliding_window_memory_management.exit
+  %161 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !2528, !tbaa !1366
+  %162 = load i64* bitcast (i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 3) to i64*), align 8, !dbg !2528
+  %163 = trunc i64 %162 to i32, !dbg !2528
+  %cmp65 = icmp eq i32 %161, %163, !dbg !2528
+  %164 = lshr i64 %162, 32
+  %165 = trunc i64 %164 to i32
+  br i1 %cmp65, label %if.then67, label %while.cond.preheader, !dbg !2528
+
+if.then67:                                        ; preds = %if.end64
+  %call = call fastcc i32 @remove_unused_frame_from_dpb() #9, !dbg !2529
+  %.pre = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !2531, !tbaa !1366
+  %.pre218 = load i64* bitcast (i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 3) to i64*), align 8, !dbg !2531
+  %166 = trunc i64 %.pre218 to i32, !dbg !2531
+  %167 = lshr i64 %.pre218, 32
+  %168 = trunc i64 %167 to i32
+  br label %while.cond.preheader, !dbg !2532
+
+while.cond.preheader:                             ; preds = %if.end64, %if.then67
+  %.pre220223 = phi i32 [ %.pre, %if.then67 ], [ %161, %if.end64 ]
+  %169 = phi i32 [ %168, %if.then67 ], [ %165, %if.end64 ]
+  %170 = phi i32 [ %166, %if.then67 ], [ %163, %if.end64 ]
+  %171 = phi i32 [ %.pre, %if.then67 ], [ %165, %if.end64 ]
+  %cmp69156 = icmp eq i32 %171, %170, !dbg !2531
+  %172 = load i32* %used_for_reference, align 4, !dbg !2533, !tbaa !1366
+  %tobool72157 = icmp ne i32 %172, 0, !dbg !2533
+  br i1 %cmp69156, label %while.body.lr.ph, label %while.end, !dbg !2531
+
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %poc77 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 1, !dbg !2535
+  br label %while.body, !dbg !2531
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end82
+  %tobool72158 = phi i1 [ %tobool72157, %while.body.lr.ph ], [ %tobool72, %if.end82 ]
+  br i1 %tobool72158, label %if.end82, label %if.then73, !dbg !2533
+
+if.then73:                                        ; preds = %while.body
+  call fastcc void @get_smallest_poc(i32* %poc, i32* %pos) #9, !dbg !2537
+  call void @llvm.dbg.value(metadata !{i32* %pos}, i64 0, metadata !235), !dbg !2535
+  %173 = load i32* %pos, align 4, !dbg !2535, !tbaa !1366
+  %cmp74 = icmp eq i32 %173, -1, !dbg !2535
+  br i1 %cmp74, label %if.then80, label %lor.lhs.false76, !dbg !2535
+
+lor.lhs.false76:                                  ; preds = %if.then73
+  %174 = load i32* %poc77, align 4, !dbg !2535, !tbaa !1366
+  call void @llvm.dbg.value(metadata !{i32* %poc}, i64 0, metadata !234), !dbg !2535
+  %175 = load i32* %poc, align 4, !dbg !2535, !tbaa !1366
+  %cmp78 = icmp slt i32 %174, %175, !dbg !2535
+  br i1 %cmp78, label %if.then80, label %if.end82, !dbg !2535
+
+if.then80:                                        ; preds = %lor.lhs.false76, %if.then73
+  %176 = load i32* @p_dec, align 4, !dbg !2538, !tbaa !1366
+  call void @direct_output(%struct.storable_picture* %p, i32 %176) #8, !dbg !2538
+  br label %return, !dbg !2540
+
+if.end82:                                         ; preds = %lor.lhs.false76, %while.body
+  call fastcc void @output_one_frame_from_dpb() #9, !dbg !2541
+  %177 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !2531, !tbaa !1366
+  %178 = load i64* bitcast (i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 3) to i64*), align 8, !dbg !2531
+  %179 = trunc i64 %178 to i32, !dbg !2531
+  %cmp69 = icmp eq i32 %177, %179, !dbg !2531
+  %180 = load i32* %used_for_reference, align 4, !dbg !2533, !tbaa !1366
+  %tobool72 = icmp ne i32 %180, 0, !dbg !2533
+  br i1 %cmp69, label %while.body, label %while.cond.while.end_crit_edge, !dbg !2531
+
+while.cond.while.end_crit_edge:                   ; preds = %if.end82
+  %181 = lshr i64 %178, 32
+  %182 = trunc i64 %181 to i32
+  br i1 %tobool72, label %land.lhs.true85, label %if.end96, !dbg !2542
+
+while.end:                                        ; preds = %while.cond.preheader
+  br i1 %tobool72157, label %land.lhs.true85, label %if.end96, !dbg !2542
+
+land.lhs.true85:                                  ; preds = %while.cond.while.end_crit_edge, %while.end
+  %183 = phi i32 [ %182, %while.cond.while.end_crit_edge ], [ %169, %while.end ]
+  %.pre220222227 = phi i32 [ %177, %while.cond.while.end_crit_edge ], [ %.pre220223, %while.end ]
+  %is_long_term = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 14, !dbg !2542
+  %184 = load i32* %is_long_term, align 4, !dbg !2542, !tbaa !1366
+  %tobool86 = icmp eq i32 %184, 0, !dbg !2542
+  br i1 %tobool86, label %for.cond.preheader, label %if.end96, !dbg !2542
+
+for.cond.preheader:                               ; preds = %land.lhs.true85
+  %185 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !2543, !tbaa !1366
+  %cmp88153 = icmp eq i32 %185, 0, !dbg !2543
+  br i1 %cmp88153, label %if.end96, label %for.body.lr.ph, !dbg !2543
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %frame_num91 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 10, !dbg !2546
+  br label %for.body, !dbg !2543
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %186 = phi i32 [ %185, %for.body.lr.ph ], [ %191, %for.inc ]
+  %i.0154 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %idxprom = zext i32 %i.0154 to i64, !dbg !2546
+  %187 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 1), align 8, !dbg !2546, !tbaa !1363
+  %arrayidx = getelementptr inbounds %struct.frame_store** %187, i64 %idxprom, !dbg !2546
+  %188 = load %struct.frame_store** %arrayidx, align 8, !dbg !2546, !tbaa !1363
+  %frame_num90 = getelementptr inbounds %struct.frame_store* %188, i64 0, i32 5, !dbg !2546
+  %189 = load i32* %frame_num90, align 4, !dbg !2546, !tbaa !1366
+  %190 = load i32* %frame_num91, align 4, !dbg !2546, !tbaa !1366
+  %cmp92 = icmp eq i32 %189, %190, !dbg !2546
+  br i1 %cmp92, label %if.then94, label %for.inc, !dbg !2546
+
+if.then94:                                        ; preds = %for.body
+  call void @error(i8* getelementptr inbounds ([59 x i8]* @.str15, i64 0, i64 0), i32 500) #8, !dbg !2548
+  %.pre219 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 5), align 8, !dbg !2543, !tbaa !1366
+  br label %for.inc, !dbg !2550
+
+for.inc:                                          ; preds = %for.body, %if.then94
+  %191 = phi i32 [ %186, %for.body ], [ %.pre219, %if.then94 ], !dbg !2543
+  %inc = add i32 %i.0154, 1, !dbg !2543
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !233), !dbg !2543
+  %cmp88 = icmp ult i32 %inc, %191, !dbg !2543
+  br i1 %cmp88, label %for.body, label %for.cond.if.end96.loopexit_crit_edge, !dbg !2543
+
+for.cond.if.end96.loopexit_crit_edge:             ; preds = %for.inc
+  %.pre220.pre = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !2551, !tbaa !1366
+  br label %if.end96, !dbg !2543
+
+if.end96:                                         ; preds = %for.cond.if.end96.loopexit_crit_edge, %for.cond.preheader, %land.lhs.true85, %while.end, %while.cond.while.end_crit_edge
+  %192 = phi i32 [ %182, %while.cond.while.end_crit_edge ], [ %169, %while.end ], [ %183, %land.lhs.true85 ], [ %.pre220222227, %for.cond.preheader ], [ %.pre220.pre, %for.cond.if.end96.loopexit_crit_edge ]
+  %idxprom97 = zext i32 %192 to i64, !dbg !2551
+  %193 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !2551, !tbaa !1363
+  %arrayidx98 = getelementptr inbounds %struct.frame_store** %193, i64 %idxprom97, !dbg !2551
+  %194 = load %struct.frame_store** %arrayidx98, align 8, !dbg !2551, !tbaa !1363
+  call fastcc void @insert_picture_in_dpb(%struct.frame_store* %194, %struct.storable_picture* %p) #9, !dbg !2551
+  %195 = load i32* %structure9, align 4, !dbg !2552, !tbaa !1364
+  %cmp100 = icmp eq i32 %195, 0, !dbg !2552
+  %.pre224 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !2553, !tbaa !1366
+  br i1 %cmp100, label %if.end106, label %if.then102, !dbg !2552
+
+if.then102:                                       ; preds = %if.end96
+  %idxprom103 = zext i32 %.pre224 to i64, !dbg !2554
+  %196 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !2554, !tbaa !1363
+  %arrayidx104 = getelementptr inbounds %struct.frame_store** %196, i64 %idxprom103, !dbg !2554
+  %197 = load %struct.frame_store** %arrayidx104, align 8, !dbg !2554, !tbaa !1363
+  br label %if.end106, !dbg !2556
+
+if.end106:                                        ; preds = %if.end96, %if.then102
+  %storemerge = phi %struct.frame_store* [ %197, %if.then102 ], [ null, %if.end96 ]
+  store %struct.frame_store* %storemerge, %struct.frame_store** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 10), align 8, !dbg !2554, !tbaa !1363
+  %inc107 = add i32 %.pre224, 1, !dbg !2553
+  store i32 %inc107, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !2553, !tbaa !1366
+  call void @update_ref_list() #9, !dbg !2557
+  call void @update_ltref_list() #9, !dbg !2558
+  br label %return, !dbg !2559
+
+return:                                           ; preds = %if.end106, %if.then80, %if.then48
+  ret void, !dbg !2559
 }

@@ -1,122 +1,123 @@
-define i32 @Graph_writeForHumanEye(%struct._Graph* %graph, %struct.__sFILE* %fp) #0 {
+define i32 @Graph_writeForHumanEye(%struct._Graph* %graph, %struct._IO_FILE* %fp) #0 {
+entry:
   %ierr = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct._Graph* %graph, i64 0, metadata !213, metadata !241), !dbg !981
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !214, metadata !241), !dbg !982
-  %1 = icmp eq %struct._Graph* %graph, null, !dbg !983
-  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !985
-  %or.cond = or i1 %1, %2, !dbg !986
-  br i1 %or.cond, label %3, label %6, !dbg !986
+  call void @llvm.dbg.value(metadata !{%struct._Graph* %graph}, i64 0, metadata !203), !dbg !631
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !204), !dbg !632
+  call void @llvm.dbg.declare(metadata !{i32* %ierr}, metadata !205), !dbg !633
+  %cmp = icmp eq %struct._Graph* %graph, null, !dbg !634
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null, !dbg !634
+  %or.cond = or i1 %cmp, %cmp1, !dbg !634
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !634
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !987, !tbaa !250
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([59 x i8]* @.str48, i64 0, i64 0), %struct._Graph* %graph, %struct.__sFILE* %fp) #7, !dbg !989
-  tail call void @exit(i32 -1) #9, !dbg !990
-  unreachable, !dbg !990
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !635, !tbaa !234
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([59 x i8]* @.str48, i64 0, i64 0), %struct._Graph* %graph, %struct._IO_FILE* %fp) #7, !dbg !635
+  call void @exit(i32 -1) #10, !dbg !637
+  unreachable, !dbg !637
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 @Graph_writeStats(%struct._Graph* %graph, %struct.__sFILE* %fp) #8, !dbg !991
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !216, metadata !241), !dbg !993
-  %8 = icmp eq i32 %7, 0, !dbg !994
-  br i1 %8, label %9, label %12, !dbg !995
+if.end:                                           ; preds = %entry
+  %call2 = call i32 @Graph_writeStats(%struct._Graph* %graph, %struct._IO_FILE* %fp) #9, !dbg !638
+  call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !206), !dbg !638
+  %cmp3 = icmp eq i32 %call2, 0, !dbg !638
+  br i1 %cmp3, label %if.then4, label %if.end6, !dbg !638
 
-; <label>:9                                       ; preds = %6
-  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !996, !tbaa !250
-  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([94 x i8]* @.str49, i64 0, i64 0), %struct._Graph* %graph, %struct.__sFILE* %fp, i32 0, %struct._Graph* %graph, %struct.__sFILE* %fp) #7, !dbg !998
-  br label %70, !dbg !999
+if.then4:                                         ; preds = %if.end
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !639, !tbaa !234
+  %call5 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([94 x i8]* @.str49, i64 0, i64 0), %struct._Graph* %graph, %struct._IO_FILE* %fp, i32 0, %struct._Graph* %graph, %struct._IO_FILE* %fp) #7, !dbg !639
+  br label %return, !dbg !641
 
-; <label>:12                                      ; preds = %6
-  %13 = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 6, !dbg !1000
-  %14 = load %struct._IVL** %13, align 8, !dbg !1000, !tbaa !581
-  %15 = icmp eq %struct._IVL* %14, null, !dbg !1002
-  br i1 %15, label %25, label %16, !dbg !1003
+if.end6:                                          ; preds = %if.end
+  %adjIVL = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 6, !dbg !642
+  %2 = load %struct._IVL** %adjIVL, align 8, !dbg !642, !tbaa !234
+  %cmp7 = icmp eq %struct._IVL* %2, null, !dbg !642
+  br i1 %cmp7, label %if.end17, label %if.then8, !dbg !642
 
-; <label>:16                                      ; preds = %12
-  %17 = tail call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str50, i64 0, i64 0), i64 23, i64 1, %struct.__sFILE* %fp), !dbg !1004
-  %18 = load %struct._IVL** %13, align 8, !dbg !1006, !tbaa !581
-  %19 = tail call i32 @IVL_writeForHumanEye(%struct._IVL* %18, %struct.__sFILE* %fp) #7, !dbg !1007
-  tail call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !216, metadata !241), !dbg !993
-  %20 = icmp slt i32 %19, 0, !dbg !1008
-  br i1 %20, label %21, label %25, !dbg !1010
+if.then8:                                         ; preds = %if.end6
+  %3 = call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str50, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %fp) #4, !dbg !643
+  %4 = load %struct._IVL** %adjIVL, align 8, !dbg !645, !tbaa !234
+  %call11 = call i32 @IVL_writeForHumanEye(%struct._IVL* %4, %struct._IO_FILE* %fp) #7, !dbg !645
+  call void @llvm.dbg.value(metadata !{i32 %call11}, i64 0, metadata !206), !dbg !645
+  %cmp12 = icmp slt i32 %call11, 0, !dbg !646
+  br i1 %cmp12, label %if.then13, label %if.end17, !dbg !646
 
-; <label>:21                                      ; preds = %16
-  %22 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1011, !tbaa !250
-  %23 = load %struct._IVL** %13, align 8, !dbg !1013, !tbaa !581
-  %24 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %22, i8* getelementptr inbounds ([136 x i8]* @.str51, i64 0, i64 0), %struct._Graph* %graph, %struct.__sFILE* %fp, i32 %19, %struct._IVL* %23, %struct.__sFILE* %fp) #7, !dbg !1014
-  br label %70, !dbg !1015
+if.then13:                                        ; preds = %if.then8
+  %5 = load %struct._IO_FILE** @stderr, align 8, !dbg !647, !tbaa !234
+  %6 = load %struct._IVL** %adjIVL, align 8, !dbg !647, !tbaa !234
+  %call15 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([136 x i8]* @.str51, i64 0, i64 0), %struct._Graph* %graph, %struct._IO_FILE* %fp, i32 %call11, %struct._IVL* %6, %struct._IO_FILE* %fp) #7, !dbg !647
+  br label %return, !dbg !649
 
-; <label>:25                                      ; preds = %12, %16
-  %26 = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 0, !dbg !1016
-  %27 = load i32* %26, align 4, !dbg !1016, !tbaa !715
-  %28 = srem i32 %27, 2, !dbg !1018
-  %29 = icmp eq i32 %28, 1, !dbg !1019
-  br i1 %29, label %30, label %51, !dbg !1020
+if.end17:                                         ; preds = %if.end6, %if.then8
+  %type = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 0, !dbg !650
+  %7 = load i32* %type, align 4, !dbg !650, !tbaa !291
+  %rem = srem i32 %7, 2, !dbg !650
+  %cmp18 = icmp eq i32 %rem, 1, !dbg !650
+  br i1 %cmp18, label %if.then19, label %if.end32, !dbg !650
 
-; <label>:30                                      ; preds = %25
-  %31 = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 7, !dbg !1021
-  %32 = load i32** %31, align 8, !dbg !1021, !tbaa !595
-  %33 = icmp eq i32* %32, null, !dbg !1024
-  br i1 %33, label %34, label %37, !dbg !1025
+if.then19:                                        ; preds = %if.end17
+  %vwghts = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 7, !dbg !651
+  %8 = load i32** %vwghts, align 8, !dbg !651, !tbaa !234
+  %cmp20 = icmp eq i32* %8, null, !dbg !651
+  br i1 %cmp20, label %if.then21, label %if.end24, !dbg !651
 
-; <label>:34                                      ; preds = %30
-  %35 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1026, !tbaa !250
-  %36 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %35, i8* getelementptr inbounds ([89 x i8]* @.str52, i64 0, i64 0), %struct._Graph* %graph, %struct.__sFILE* %fp, i32 %27) #7, !dbg !1028
-  br label %70, !dbg !1029
+if.then21:                                        ; preds = %if.then19
+  %9 = load %struct._IO_FILE** @stderr, align 8, !dbg !653, !tbaa !234
+  %call23 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %9, i8* getelementptr inbounds ([89 x i8]* @.str52, i64 0, i64 0), %struct._Graph* %graph, %struct._IO_FILE* %fp, i32 %7) #7, !dbg !653
+  br label %return, !dbg !655
 
-; <label>:37                                      ; preds = %30
-  %38 = tail call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str53, i64 0, i64 0), i64 18, i64 1, %struct.__sFILE* %fp), !dbg !1030
-  %39 = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 1, !dbg !1031
-  %40 = load i32* %39, align 4, !dbg !1031, !tbaa !852
-  %41 = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 2, !dbg !1032
-  %42 = load i32* %41, align 4, !dbg !1032, !tbaa !854
-  %43 = add nsw i32 %42, %40, !dbg !1033
-  %44 = load i32** %31, align 8, !dbg !1034, !tbaa !595
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !215, metadata !241), !dbg !1035
-  %45 = call i32 @IVfp80(%struct.__sFILE* %fp, i32 %43, i32* %44, i32 80, i32* %ierr) #7, !dbg !1036
-  call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !215, metadata !241), !dbg !1035
-  %46 = load i32* %ierr, align 4, !dbg !1037, !tbaa !538
-  %47 = icmp slt i32 %46, 0, !dbg !1039
-  br i1 %47, label %48, label %thread-pre-split, !dbg !1040
+if.end24:                                         ; preds = %if.then19
+  %10 = call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str53, i64 0, i64 0), i64 18, i64 1, %struct._IO_FILE* %fp) #4, !dbg !656
+  %nvtx = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 1, !dbg !657
+  %11 = load i32* %nvtx, align 4, !dbg !657, !tbaa !291
+  %nvbnd = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 2, !dbg !657
+  %12 = load i32* %nvbnd, align 4, !dbg !657, !tbaa !291
+  %add = add nsw i32 %12, %11, !dbg !657
+  %13 = load i32** %vwghts, align 8, !dbg !657, !tbaa !234
+  %call27 = call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %add, i32* %13, i32 80, i32* %ierr) #7, !dbg !657
+  call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !205), !dbg !658
+  %14 = load i32* %ierr, align 4, !dbg !658, !tbaa !291
+  %cmp28 = icmp slt i32 %14, 0, !dbg !658
+  br i1 %cmp28, label %if.then29, label %if.end32thread-pre-split, !dbg !658
 
-; <label>:48                                      ; preds = %37
-  %49 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1041, !tbaa !250
-  %50 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %49, i8* getelementptr inbounds ([88 x i8]* @.str54, i64 0, i64 0), %struct._Graph* %graph, %struct.__sFILE* %fp, i32 %46) #7, !dbg !1043
-  br label %70, !dbg !1044
+if.then29:                                        ; preds = %if.end24
+  %15 = load %struct._IO_FILE** @stderr, align 8, !dbg !659, !tbaa !234
+  %call30 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %15, i8* getelementptr inbounds ([88 x i8]* @.str54, i64 0, i64 0), %struct._Graph* %graph, %struct._IO_FILE* %fp, i32 %14) #7, !dbg !659
+  br label %return, !dbg !661
 
-thread-pre-split:                                 ; preds = %37
-  %.pr = load i32* %26, align 4, !dbg !1045, !tbaa !715
-  br label %51
+if.end32thread-pre-split:                         ; preds = %if.end24
+  %.pr = load i32* %type, align 4, !dbg !662, !tbaa !291
+  br label %if.end32
 
-; <label>:51                                      ; preds = %thread-pre-split, %25
-  %52 = phi i32 [ %.pr, %thread-pre-split ], [ %27, %25 ], !dbg !1045
-  %53 = icmp sgt i32 %52, 1, !dbg !1047
-  br i1 %53, label %54, label %70, !dbg !1048
+if.end32:                                         ; preds = %if.end32thread-pre-split, %if.end17
+  %16 = phi i32 [ %.pr, %if.end32thread-pre-split ], [ %7, %if.end17 ], !dbg !662
+  %cmp34 = icmp sgt i32 %16, 1, !dbg !662
+  br i1 %cmp34, label %if.then35, label %return, !dbg !662
 
-; <label>:54                                      ; preds = %51
-  %55 = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 8, !dbg !1049
-  %56 = load %struct._IVL** %55, align 8, !dbg !1049, !tbaa !588
-  %57 = icmp eq %struct._IVL* %56, null, !dbg !1052
-  br i1 %57, label %58, label %61, !dbg !1053
+if.then35:                                        ; preds = %if.end32
+  %ewghtIVL = getelementptr inbounds %struct._Graph* %graph, i64 0, i32 8, !dbg !663
+  %17 = load %struct._IVL** %ewghtIVL, align 8, !dbg !663, !tbaa !234
+  %cmp36 = icmp eq %struct._IVL* %17, null, !dbg !663
+  br i1 %cmp36, label %if.then37, label %if.end40, !dbg !663
 
-; <label>:58                                      ; preds = %54
-  %59 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1054, !tbaa !250
-  %60 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %59, i8* getelementptr inbounds ([91 x i8]* @.str55, i64 0, i64 0), %struct._Graph* %graph, %struct.__sFILE* %fp, i32 %52) #7, !dbg !1056
-  br label %70, !dbg !1057
+if.then37:                                        ; preds = %if.then35
+  %18 = load %struct._IO_FILE** @stderr, align 8, !dbg !665, !tbaa !234
+  %call39 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %18, i8* getelementptr inbounds ([91 x i8]* @.str55, i64 0, i64 0), %struct._Graph* %graph, %struct._IO_FILE* %fp, i32 %16) #7, !dbg !665
+  br label %return, !dbg !667
 
-; <label>:61                                      ; preds = %54
-  %62 = call i64 @fwrite(i8* getelementptr inbounds ([27 x i8]* @.str56, i64 0, i64 0), i64 26, i64 1, %struct.__sFILE* %fp), !dbg !1058
-  %63 = load %struct._IVL** %55, align 8, !dbg !1059, !tbaa !588
-  %64 = call i32 @IVL_writeForHumanEye(%struct._IVL* %63, %struct.__sFILE* %fp) #7, !dbg !1060
-  call void @llvm.dbg.value(metadata i32 %64, i64 0, metadata !216, metadata !241), !dbg !993
-  %65 = icmp slt i32 %64, 0, !dbg !1061
-  br i1 %65, label %66, label %70, !dbg !1063
+if.end40:                                         ; preds = %if.then35
+  %19 = call i64 @fwrite(i8* getelementptr inbounds ([27 x i8]* @.str56, i64 0, i64 0), i64 26, i64 1, %struct._IO_FILE* %fp) #4, !dbg !668
+  %20 = load %struct._IVL** %ewghtIVL, align 8, !dbg !669, !tbaa !234
+  %call43 = call i32 @IVL_writeForHumanEye(%struct._IVL* %20, %struct._IO_FILE* %fp) #7, !dbg !669
+  call void @llvm.dbg.value(metadata !{i32 %call43}, i64 0, metadata !206), !dbg !669
+  %cmp44 = icmp slt i32 %call43, 0, !dbg !670
+  br i1 %cmp44, label %if.then45, label %return, !dbg !670
 
-; <label>:66                                      ; preds = %61
-  %67 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1064, !tbaa !250
-  %68 = load %struct._IVL** %55, align 8, !dbg !1066, !tbaa !588
-  %69 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %67, i8* getelementptr inbounds ([138 x i8]* @.str57, i64 0, i64 0), %struct._Graph* %graph, %struct.__sFILE* %fp, i32 %64, %struct._IVL* %68, %struct.__sFILE* %fp) #7, !dbg !1067
-  br label %70, !dbg !1068
+if.then45:                                        ; preds = %if.end40
+  %21 = load %struct._IO_FILE** @stderr, align 8, !dbg !671, !tbaa !234
+  %22 = load %struct._IVL** %ewghtIVL, align 8, !dbg !671, !tbaa !234
+  %call47 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %21, i8* getelementptr inbounds ([138 x i8]* @.str57, i64 0, i64 0), %struct._Graph* %graph, %struct._IO_FILE* %fp, i32 %call43, %struct._IVL* %22, %struct._IO_FILE* %fp) #7, !dbg !671
+  br label %return, !dbg !673
 
-; <label>:70                                      ; preds = %51, %61, %66, %58, %48, %34, %21, %9
-  %.0 = phi i32 [ 0, %9 ], [ 0, %21 ], [ 0, %34 ], [ 0, %48 ], [ 0, %58 ], [ 0, %66 ], [ 1, %61 ], [ 1, %51 ]
-  ret i32 %.0, !dbg !1069
+return:                                           ; preds = %if.end32, %if.end40, %if.then45, %if.then37, %if.then29, %if.then21, %if.then13, %if.then4
+  %retval.0 = phi i32 [ 0, %if.then4 ], [ 0, %if.then13 ], [ 0, %if.then21 ], [ 0, %if.then29 ], [ 0, %if.then37 ], [ 0, %if.then45 ], [ 1, %if.end40 ], [ 1, %if.end32 ]
+  ret i32 %retval.0, !dbg !674
 }

@@ -1,51 +1,54 @@
 define %union.tree_node* @shadow_label(%union.tree_node* %name) #0 {
 entry:
-  %0 = getelementptr inbounds %union.tree_node* %name, i64 0, i32 0, i32 8
-  %1 = load %union.tree_node** %0, align 8, !tbaa !0
-  %cmp = icmp eq %union.tree_node* %1, null
-  br i1 %cmp, label %if.end7, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %name}, i64 0, metadata !1431), !dbg !3335
+  %0 = getelementptr inbounds %union.tree_node* %name, i64 0, i32 0, i32 8, !dbg !3336
+  %1 = load %union.tree_node** %0, align 8, !dbg !3336, !tbaa !2183
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %1}, i64 0, metadata !1432), !dbg !3336
+  %cmp = icmp eq %union.tree_node* %1, null, !dbg !3337
+  br i1 %cmp, label %if.end7, label %for.cond.preheader, !dbg !3337
 
 for.cond.preheader:                               ; preds = %entry
-  %dup.018 = load %union.tree_node** @named_labels, align 8
-  %tobool19 = icmp eq %union.tree_node* %dup.018, null
-  br i1 %tobool19, label %for.end, label %for.body
+  %dup.018 = load %union.tree_node** @named_labels, align 8, !dbg !3338
+  %tobool19 = icmp eq %union.tree_node* %dup.018, null, !dbg !3338
+  br i1 %tobool19, label %for.end, label %for.body, !dbg !3338
 
 for.cond:                                         ; preds = %for.body
-  %chain = getelementptr inbounds %union.tree_node* %dup.020, i64 0, i32 0, i32 0, i32 0
-  %dup.0 = load %union.tree_node** %chain, align 8
-  %tobool = icmp eq %union.tree_node* %dup.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %chain = getelementptr inbounds %union.tree_node* %dup.020, i64 0, i32 0, i32 0, i32 0, !dbg !3338
+  %dup.0 = load %union.tree_node** %chain, align 8, !dbg !3338
+  %tobool = icmp eq %union.tree_node* %dup.0, null, !dbg !3338
+  br i1 %tobool, label %for.end, label %for.body, !dbg !3338
 
 for.body:                                         ; preds = %for.cond.preheader, %for.cond
   %dup.020 = phi %union.tree_node* [ %dup.0, %for.cond ], [ %dup.018, %for.cond.preheader ]
-  %value = getelementptr inbounds %union.tree_node* %dup.020, i64 0, i32 0, i32 2
-  %2 = bitcast i32* %value to %union.tree_node**
-  %3 = load %union.tree_node** %2, align 8, !tbaa !0
-  %cmp1 = icmp eq %union.tree_node* %3, %1
-  br i1 %cmp1, label %if.then2, label %for.cond
+  %value = getelementptr inbounds %union.tree_node* %dup.020, i64 0, i32 0, i32 2, !dbg !3340
+  %2 = bitcast i32* %value to %union.tree_node**, !dbg !3340
+  %3 = load %union.tree_node** %2, align 8, !dbg !3340, !tbaa !2183
+  %cmp1 = icmp eq %union.tree_node* %3, %1, !dbg !3340
+  br i1 %cmp1, label %if.then2, label %for.cond, !dbg !3340
 
 if.then2:                                         ; preds = %for.body
-  %id = getelementptr inbounds %union.tree_node* %name, i64 0, i32 0, i32 1
-  %4 = getelementptr inbounds i8** %id, i64 1
-  %5 = load i8** %4, align 8, !tbaa !0
-  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([33 x i8]* @.str151, i64 0, i64 0), i8* %5) #8
-  %6 = load %union.tree_node** %2, align 8, !tbaa !0
-  tail call void (%union.tree_node*, i8*, ...)* @error_with_decl(%union.tree_node* %6, i8* getelementptr inbounds ([31 x i8]* @.str152, i64 0, i64 0)) #8
-  %call = tail call %union.tree_node* @lookup_label(%union.tree_node* %name) #10
-  br label %return
+  %id = getelementptr inbounds %union.tree_node* %name, i64 0, i32 0, i32 1, !dbg !3341
+  %4 = getelementptr inbounds i8** %id, i64 1, !dbg !3341
+  %5 = load i8** %4, align 8, !dbg !3341, !tbaa !2183
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([33 x i8]* @.str151, i64 0, i64 0), i8* %5) #9, !dbg !3341
+  %6 = load %union.tree_node** %2, align 8, !dbg !3343, !tbaa !2183
+  tail call void (%union.tree_node*, i8*, ...)* @error_with_decl(%union.tree_node* %6, i8* getelementptr inbounds ([31 x i8]* @.str152, i64 0, i64 0)) #9, !dbg !3343
+  %call = tail call %union.tree_node* @lookup_label(%union.tree_node* %name) #11, !dbg !3344
+  br label %return, !dbg !3344
 
 for.end:                                          ; preds = %for.cond, %for.cond.preheader
-  %7 = load %union.tree_node** @shadowed_labels, align 8, !tbaa !0
-  %call5 = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %1, %union.tree_node* %7) #8
-  store %union.tree_node* %call5, %union.tree_node** @shadowed_labels, align 8, !tbaa !0
-  store %union.tree_node* null, %union.tree_node** %0, align 8, !tbaa !0
-  br label %if.end7
+  %7 = load %union.tree_node** @shadowed_labels, align 8, !dbg !3345, !tbaa !2183
+  %call5 = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %1, %union.tree_node* %7) #9, !dbg !3345
+  store %union.tree_node* %call5, %union.tree_node** @shadowed_labels, align 8, !dbg !3345, !tbaa !2183
+  tail call void @llvm.dbg.value(metadata !2507, i64 0, metadata !1432), !dbg !3346
+  store %union.tree_node* null, %union.tree_node** %0, align 8, !dbg !3346, !tbaa !2183
+  br label %if.end7, !dbg !3347
 
 if.end7:                                          ; preds = %entry, %for.end
-  %call8 = tail call %union.tree_node* @lookup_label(%union.tree_node* %name) #10
-  br label %return
+  %call8 = tail call %union.tree_node* @lookup_label(%union.tree_node* %name) #11, !dbg !3348
+  br label %return, !dbg !3348
 
 return:                                           ; preds = %if.end7, %if.then2
   %retval.0 = phi %union.tree_node* [ %call, %if.then2 ], [ %call8, %if.end7 ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !3349
 }

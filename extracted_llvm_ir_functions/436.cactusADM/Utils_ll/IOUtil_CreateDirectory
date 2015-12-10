@@ -1,39 +1,40 @@
 define i32 @IOUtil_CreateDirectory(%struct.cGH* %GH, i8* %dirname, i32 %multiple_io_procs, i32 %ioproc) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !138, metadata !151), !dbg !418
-  tail call void @llvm.dbg.value(metadata i8* %dirname, i64 0, metadata !139, metadata !151), !dbg !419
-  tail call void @llvm.dbg.value(metadata i32 %multiple_io_procs, i64 0, metadata !140, metadata !151), !dbg !420
-  tail call void @llvm.dbg.value(metadata i32 %ioproc, i64 0, metadata !141, metadata !151), !dbg !421
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !143, metadata !151), !dbg !422
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !423, !tbaa !213
-  %2 = tail call i32 %1(%struct.cGH* %GH) #7, !dbg !423
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !142, metadata !151), !dbg !424
-  %3 = icmp eq i32 %2, 0, !dbg !425
-  br i1 %3, label %4, label %6, !dbg !427
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !138), !dbg !277
+  tail call void @llvm.dbg.value(metadata !{i8* %dirname}, i64 0, metadata !139), !dbg !277
+  tail call void @llvm.dbg.value(metadata !{i32 %multiple_io_procs}, i64 0, metadata !140), !dbg !278
+  tail call void @llvm.dbg.value(metadata !{i32 %ioproc}, i64 0, metadata !141), !dbg !278
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !143), !dbg !279
+  %0 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !280, !tbaa !183
+  %call = tail call i32 %0(%struct.cGH* %GH) #7, !dbg !280
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !142), !dbg !280
+  %cmp = icmp eq i32 %call, 0, !dbg !281
+  br i1 %cmp, label %if.then, label %if.end, !dbg !281
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @CCTK_CreateDirectory(i32 493, i8* %dirname) #7, !dbg !428
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !143, metadata !151), !dbg !422
-  br label %6, !dbg !430
+if.then:                                          ; preds = %entry
+  %call2 = tail call i32 @CCTK_CreateDirectory(i32 493, i8* %dirname) #7, !dbg !282
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !143), !dbg !282
+  br label %if.end, !dbg !284
 
-; <label>:6                                       ; preds = %4, %0
-  %retval.0 = phi i32 [ %5, %4 ], [ 0, %0 ]
-  %7 = icmp eq i32 %multiple_io_procs, 0, !dbg !431
-  br i1 %7, label %15, label %8, !dbg !433
+if.end:                                           ; preds = %if.then, %entry
+  %retval1.0 = phi i32 [ %call2, %if.then ], [ 0, %entry ]
+  %tobool = icmp eq i32 %multiple_io_procs, 0, !dbg !285
+  br i1 %tobool, label %if.end10, label %if.then3, !dbg !285
 
-; <label>:8                                       ; preds = %6
-  %9 = load i32 (%struct.cGH*)** @CCTK_Barrier, align 8, !dbg !434, !tbaa !213
-  %10 = tail call i32 %9(%struct.cGH* %GH) #7, !dbg !434
-  %11 = icmp eq i32 %2, %ioproc, !dbg !436
-  %12 = icmp ne i32 %ioproc, 0, !dbg !438
-  %or.cond = or i1 %12, %11, !dbg !439
-  br i1 %or.cond, label %13, label %15, !dbg !439
+if.then3:                                         ; preds = %if.end
+  %1 = load i32 (%struct.cGH*)** @CCTK_Barrier, align 8, !dbg !286, !tbaa !183
+  %call4 = tail call i32 %1(%struct.cGH* %GH) #7, !dbg !286
+  %cmp5 = icmp eq i32 %call, %ioproc, !dbg !288
+  %cmp6 = icmp ne i32 %ioproc, 0, !dbg !288
+  %or.cond = or i1 %cmp5, %cmp6, !dbg !288
+  br i1 %or.cond, label %if.then7, label %if.end10, !dbg !288
 
-; <label>:13                                      ; preds = %8
-  %14 = tail call i32 @CCTK_CreateDirectory(i32 493, i8* %dirname) #7, !dbg !440
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !143, metadata !151), !dbg !422
-  br label %15, !dbg !442
+if.then7:                                         ; preds = %if.then3
+  %call8 = tail call i32 @CCTK_CreateDirectory(i32 493, i8* %dirname) #7, !dbg !289
+  tail call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !143), !dbg !289
+  br label %if.end10, !dbg !291
 
-; <label>:15                                      ; preds = %6, %13, %8
-  %retval.1 = phi i32 [ %14, %13 ], [ %retval.0, %8 ], [ %retval.0, %6 ]
-  ret i32 %retval.1, !dbg !443
+if.end10:                                         ; preds = %if.end, %if.then7, %if.then3
+  %retval1.1 = phi i32 [ %call8, %if.then7 ], [ %retval1.0, %if.then3 ], [ %retval1.0, %if.end ]
+  ret i32 %retval1.1, !dbg !292
 }

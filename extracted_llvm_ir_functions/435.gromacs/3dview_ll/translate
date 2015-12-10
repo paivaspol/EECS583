@@ -1,39 +1,42 @@
-define void @translate(float %tx, float %ty, float %tz, [4 x float]* nocapture %A) #4 {
-  tail call void @llvm.dbg.value(metadata float %tx, i64 0, metadata !143, metadata !259), !dbg !455
-  tail call void @llvm.dbg.value(metadata float %ty, i64 0, metadata !144, metadata !259), !dbg !456
-  tail call void @llvm.dbg.value(metadata float %tz, i64 0, metadata !145, metadata !259), !dbg !457
-  tail call void @llvm.dbg.value(metadata [4 x float]* %A, i64 0, metadata !146, metadata !259), !dbg !458
-  tail call void @llvm.dbg.value(metadata [4 x float]* %A, i64 0, metadata !101, metadata !259), !dbg !459
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !102, metadata !259), !dbg !461
-  br label %.preheader.i, !dbg !462
+define void @translate(float %tx, float %ty, float %tz, [4 x float]* nocapture %A) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %tx}, i64 0, metadata !124), !dbg !317
+  tail call void @llvm.dbg.value(metadata !{float %ty}, i64 0, metadata !125), !dbg !317
+  tail call void @llvm.dbg.value(metadata !{float %tz}, i64 0, metadata !126), !dbg !317
+  tail call void @llvm.dbg.value(metadata !{[4 x float]* %A}, i64 0, metadata !127), !dbg !317
+  tail call void @llvm.dbg.value(metadata !{[4 x float]* %A}, i64 0, metadata !318), !dbg !320
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !321), !dbg !322
+  br label %for.cond1.preheader.i, !dbg !322
 
-.preheader.i:                                     ; preds = %6, %0
-  %indvars.iv3.i = phi i64 [ 0, %0 ], [ %indvars.iv.next4.i, %6 ], !dbg !463
-  %1 = trunc i64 %indvars.iv3.i to i32, !dbg !464
-  br label %2, !dbg !465
+for.cond1.preheader.i:                            ; preds = %for.inc11.i, %entry
+  %indvars.iv21.i = phi i64 [ 0, %entry ], [ %indvars.iv.next22.i, %for.inc11.i ]
+  %0 = trunc i64 %indvars.iv21.i to i32, !dbg !323
+  br label %for.body3.i, !dbg !324
 
-; <label>:2                                       ; preds = %2, %.preheader.i
-  %indvars.iv.i = phi i64 [ 0, %.preheader.i ], [ %indvars.iv.next.i, %2 ], !dbg !463
-  %3 = trunc i64 %indvars.iv.i to i32, !dbg !464
-  %4 = icmp eq i32 %1, %3, !dbg !464
-  %5 = getelementptr inbounds [4 x float]* %A, i64 %indvars.iv3.i, i64 %indvars.iv.i, !dbg !466
-  %..i = select i1 %4, float 1.000000e+00, float 0.000000e+00, !dbg !466
-  store float %..i, float* %5, align 4, !dbg !467, !tbaa !308
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !465
-  %exitcond.i = icmp eq i64 %indvars.iv.next.i, 4, !dbg !465
-  br i1 %exitcond.i, label %6, label %2, !dbg !465
+for.body3.i:                                      ; preds = %for.body3.i, %for.cond1.preheader.i
+  %indvars.iv.i = phi i64 [ 0, %for.cond1.preheader.i ], [ %indvars.iv.next.i, %for.body3.i ]
+  %1 = trunc i64 %indvars.iv.i to i32, !dbg !323
+  %cmp4.i = icmp eq i32 %0, %1, !dbg !323
+  %arrayidx6.i = getelementptr inbounds [4 x float]* %A, i64 %indvars.iv21.i, i64 %indvars.iv.i, !dbg !325
+  %..i = select i1 %cmp4.i, float 1.000000e+00, float 0.000000e+00, !dbg !325
+  store float %..i, float* %arrayidx6.i, align 4, !dbg !325, !tbaa !242
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !324
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32, !dbg !324
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !324
+  br i1 %exitcond, label %for.inc11.i, label %for.body3.i, !dbg !324
 
-; <label>:6                                       ; preds = %2
-  %indvars.iv.next4.i = add nuw nsw i64 %indvars.iv3.i, 1, !dbg !462
-  %exitcond5.i = icmp eq i64 %indvars.iv.next4.i, 4, !dbg !462
-  br i1 %exitcond5.i, label %unity_m4.exit, label %.preheader.i, !dbg !462
+for.inc11.i:                                      ; preds = %for.body3.i
+  %indvars.iv.next22.i = add i64 %indvars.iv21.i, 1, !dbg !322
+  %lftr.wideiv9 = trunc i64 %indvars.iv.next22.i to i32, !dbg !322
+  %exitcond10 = icmp eq i32 %lftr.wideiv9, 4, !dbg !322
+  br i1 %exitcond10, label %unity_m4.exit, label %for.cond1.preheader.i, !dbg !322
 
-unity_m4.exit:                                    ; preds = %6
-  %7 = getelementptr inbounds [4 x float]* %A, i64 3, i64 0, !dbg !468
-  store float %tx, float* %7, align 4, !dbg !469, !tbaa !308
-  %8 = getelementptr inbounds [4 x float]* %A, i64 3, i64 1, !dbg !470
-  store float %ty, float* %8, align 4, !dbg !471, !tbaa !308
-  %9 = getelementptr inbounds [4 x float]* %A, i64 3, i64 2, !dbg !472
-  store float %tz, float* %9, align 4, !dbg !473, !tbaa !308
-  ret void, !dbg !474
+unity_m4.exit:                                    ; preds = %for.inc11.i
+  %arrayidx1 = getelementptr inbounds [4 x float]* %A, i64 3, i64 0, !dbg !326
+  store float %tx, float* %arrayidx1, align 4, !dbg !326, !tbaa !242
+  %arrayidx3 = getelementptr inbounds [4 x float]* %A, i64 3, i64 1, !dbg !327
+  store float %ty, float* %arrayidx3, align 4, !dbg !327, !tbaa !242
+  %arrayidx5 = getelementptr inbounds [4 x float]* %A, i64 3, i64 2, !dbg !328
+  store float %tz, float* %arrayidx5, align 4, !dbg !328, !tbaa !242
+  ret void, !dbg !329
 }

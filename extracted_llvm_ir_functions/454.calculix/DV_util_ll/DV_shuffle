@@ -1,31 +1,32 @@
 define void @DV_shuffle(%struct._DV* %dv, i32 %seed) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !60, metadata !102), !dbg !265
-  tail call void @llvm.dbg.value(metadata i32 %seed, i64 0, metadata !61, metadata !102), !dbg !266
-  %1 = icmp eq %struct._DV* %dv, null, !dbg !267
-  br i1 %1, label %._crit_edge, label %2, !dbg !269
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !59), !dbg !171
+  tail call void @llvm.dbg.value(metadata !{i32 %seed}, i64 0, metadata !60), !dbg !172
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !173
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !173
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !270
-  %4 = load i32* %3, align 4, !dbg !270, !tbaa !126
-  %5 = icmp slt i32 %4, 1, !dbg !271
-  br i1 %5, label %._crit_edge, label %6, !dbg !272
+lor.lhs.false:                                    ; preds = %entry
+  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !173
+  %0 = load i32* %size, align 4, !dbg !173, !tbaa !108
+  %cmp1 = icmp slt i32 %0, 1, !dbg !173
+  br i1 %cmp1, label %if.then, label %lor.lhs.false2, !dbg !173
 
-; <label>:6                                       ; preds = %2
-  %7 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !273
-  %8 = load double** %7, align 8, !dbg !273, !tbaa !118
-  %9 = icmp eq double* %8, null, !dbg !274
-  br i1 %9, label %._crit_edge, label %15, !dbg !275
+lor.lhs.false2:                                   ; preds = %lor.lhs.false
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !173
+  %1 = load double** %vec, align 8, !dbg !173, !tbaa !102
+  %cmp3 = icmp eq double* %1, null, !dbg !173
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !173
 
-._crit_edge:                                      ; preds = %0, %6, %2
-  %10 = phi i32 [ %4, %6 ], [ %4, %2 ], [ 0, %0 ]
-  %11 = load %struct.__sFILE** @__stderrp, align 8, !dbg !276, !tbaa !110
-  %12 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !278
-  %13 = load double** %12, align 8, !dbg !278, !tbaa !118
-  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %11, i8* getelementptr inbounds ([56 x i8]* @.str8, i64 0, i64 0), %struct._DV* %dv, i32 %seed, i32 %10, double* %13) #5, !dbg !279
-  tail call void @exit(i32 -1) #6, !dbg !280
-  unreachable, !dbg !280
+if.then:                                          ; preds = %lor.lhs.false, %entry, %lor.lhs.false2
+  %2 = phi i32 [ %0, %lor.lhs.false2 ], [ 0, %entry ], [ %0, %lor.lhs.false ]
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !174, !tbaa !102
+  %vec5 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !174
+  %4 = load double** %vec5, align 8, !dbg !174, !tbaa !102
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([56 x i8]* @.str8, i64 0, i64 0), %struct._DV* %dv, i32 %seed, i32 %2, double* %4) #5, !dbg !174
+  tail call void @exit(i32 -1) #6, !dbg !176
+  unreachable, !dbg !176
 
-; <label>:15                                      ; preds = %6
-  tail call void @DVshuffle(i32 %4, double* %8, i32 %seed) #5, !dbg !281
-  ret void, !dbg !282
+if.end:                                           ; preds = %lor.lhs.false2
+  tail call void @DVshuffle(i32 %0, double* %1, i32 %seed) #5, !dbg !177
+  ret void, !dbg !178
 }

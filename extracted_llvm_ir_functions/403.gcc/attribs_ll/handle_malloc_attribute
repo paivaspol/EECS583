@@ -1,29 +1,34 @@
 define internal noalias %union.tree_node* @handle_malloc_attribute(%union.tree_node** nocapture %node, %union.tree_node* nocapture %name, %union.tree_node* nocapture %args, i32 %flags, i8* nocapture %no_add_attrs) #0 {
 entry:
-  %0 = load %union.tree_node** %node, align 8, !tbaa !0
-  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
-  %1 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 30
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node** %node}, i64 0, metadata !845), !dbg !1517
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %name}, i64 0, metadata !846), !dbg !1518
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %args}, i64 0, metadata !847), !dbg !1519
+  tail call void @llvm.dbg.value(metadata !{i32 %flags}, i64 0, metadata !848), !dbg !1520
+  tail call void @llvm.dbg.value(metadata !{i8* %no_add_attrs}, i64 0, metadata !849), !dbg !1521
+  %0 = load %union.tree_node** %node, align 8, !dbg !1522, !tbaa !1026
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2, !dbg !1522
+  %1 = bitcast [4 x i8]* %code to i32*, !dbg !1522
+  %bf.load = load i32* %1, align 8, !dbg !1522
+  %bf.clear = and i32 %bf.load, 255, !dbg !1522
+  %cmp = icmp eq i32 %bf.clear, 30, !dbg !1522
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1522
 
 if.then:                                          ; preds = %entry
-  %malloc_flag = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 5
-  %2 = bitcast [8 x i8]* %malloc_flag to i64*
-  %bf.load1 = load i64* %2, align 8
-  %bf.set = or i64 %bf.load1, 134217728
-  store i64 %bf.set, i64* %2, align 8
-  br label %if.end
+  %malloc_flag = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 5, !dbg !1523
+  %2 = bitcast [8 x i8]* %malloc_flag to i64*, !dbg !1523
+  %bf.load1 = load i64* %2, align 8, !dbg !1523
+  %bf.set = or i64 %bf.load1, 134217728, !dbg !1523
+  store i64 %bf.set, i64* %2, align 8, !dbg !1523
+  br label %if.end, !dbg !1523
 
 if.else:                                          ; preds = %entry
-  %id = getelementptr inbounds %union.tree_node* %name, i64 0, i32 0, i32 1
-  %3 = getelementptr inbounds i8** %id, i64 1
-  %4 = load i8** %3, align 8, !tbaa !0
-  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([23 x i8]* @.str4, i64 0, i64 0), i8* %4) #4
-  store i8 1, i8* %no_add_attrs, align 1, !tbaa !4
+  %id = getelementptr inbounds %union.tree_node* %name, i64 0, i32 0, i32 1, !dbg !1524
+  %3 = getelementptr inbounds i8** %id, i64 1, !dbg !1524
+  %4 = load i8** %3, align 8, !dbg !1524, !tbaa !1026
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([23 x i8]* @.str4, i64 0, i64 0), i8* %4) #5, !dbg !1524
+  store i8 1, i8* %no_add_attrs, align 1, !dbg !1526, !tbaa !1050
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  ret %union.tree_node* null
+  ret %union.tree_node* null, !dbg !1527
 }

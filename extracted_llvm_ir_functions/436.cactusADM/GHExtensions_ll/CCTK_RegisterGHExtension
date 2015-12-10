@@ -1,26 +1,27 @@
 define i32 @CCTK_RegisterGHExtension(i8* %name) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !79, metadata !197), !dbg !198
-  %1 = load %struct.cHandledData** @GHExtensions, align 8, !dbg !199, !tbaa !200
-  %2 = tail call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %name, i8** null) #6, !dbg !204
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !80, metadata !197), !dbg !205
-  %3 = icmp slt i32 %2, 0, !dbg !206
-  br i1 %3, label %4, label %11, !dbg !208
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !16), !dbg !193
+  %0 = load %struct.cHandledData** @GHExtensions, align 8, !dbg !194, !tbaa !195
+  %call = tail call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %name, i8** null) #6, !dbg !194
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !17), !dbg !194
+  %cmp = icmp slt i32 %call, 0, !dbg !198
+  br i1 %cmp, label %if.then, label %if.end5, !dbg !198
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @malloc(i64 24) #6, !dbg !209
-  %6 = icmp eq i8* %5, null, !dbg !211
-  br i1 %6, label %11, label %7, !dbg !213
+if.then:                                          ; preds = %entry
+  %call1 = tail call noalias i8* @malloc(i64 24) #6, !dbg !199
+  %tobool = icmp eq i8* %call1, null, !dbg !201
+  br i1 %tobool, label %if.end5, label %if.then2, !dbg !201
 
-; <label>:7                                       ; preds = %4
-  %8 = tail call i32 @Util_NewHandle(%struct.cHandledData** @GHExtensions, i8* %name, i8* %5) #6, !dbg !214
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !80, metadata !197), !dbg !205
-  call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 24, i32 8, i1 false), !dbg !216
-  %9 = load i32* @num_extensions, align 4, !dbg !217, !tbaa !218
-  %10 = add nsw i32 %9, 1, !dbg !217
-  store i32 %10, i32* @num_extensions, align 4, !dbg !217, !tbaa !218
-  br label %11, !dbg !220
+if.then2:                                         ; preds = %if.then
+  %call3 = tail call i32 @Util_NewHandle(%struct.cHandledData** @GHExtensions, i8* %name, i8* %call1) #6, !dbg !202
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !17), !dbg !202
+  call void @llvm.memset.p0i8.i64(i8* %call1, i8 0, i64 24, i32 8, i1 false), !dbg !204
+  %1 = load i32* @num_extensions, align 4, !dbg !205, !tbaa !206
+  %inc = add nsw i32 %1, 1, !dbg !205
+  store i32 %inc, i32* @num_extensions, align 4, !dbg !205, !tbaa !206
+  br label %if.end5, !dbg !207
 
-; <label>:11                                      ; preds = %0, %4, %7
-  %handle.0 = phi i32 [ %8, %7 ], [ -2, %4 ], [ -1, %0 ]
-  ret i32 %handle.0, !dbg !221
+if.end5:                                          ; preds = %entry, %if.then, %if.then2
+  %handle.0 = phi i32 [ %call3, %if.then2 ], [ -2, %if.then ], [ -1, %entry ]
+  ret i32 %handle.0, !dbg !208
 }

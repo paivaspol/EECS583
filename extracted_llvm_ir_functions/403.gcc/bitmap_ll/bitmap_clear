@@ -1,26 +1,30 @@
 define void @bitmap_clear(%struct.bitmap_head_def* nocapture %head) #0 {
 entry:
-  %first = getelementptr inbounds %struct.bitmap_head_def* %head, i64 0, i32 0
-  %0 = load %struct.bitmap_element_def** %first, align 8, !tbaa !0
-  %cmp9 = icmp eq %struct.bitmap_element_def* %0, null
-  br i1 %cmp9, label %for.end, label %for.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_head_def* %head}, i64 0, metadata !84), !dbg !376
+  %first = getelementptr inbounds %struct.bitmap_head_def* %head, i64 0, i32 0, !dbg !377
+  %0 = load %struct.bitmap_element_def** %first, align 8, !dbg !377, !tbaa !368
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_element_def* %0}, i64 0, metadata !85), !dbg !377
+  %cmp9 = icmp eq %struct.bitmap_element_def* %0, null, !dbg !377
+  br i1 %cmp9, label %for.end, label %for.body.lr.ph, !dbg !377
 
 for.body.lr.ph:                                   ; preds = %entry
-  %.pre = load %struct.bitmap_element_def** @bitmap_free, align 8, !tbaa !0
-  br label %for.body
+  %.pre = load %struct.bitmap_element_def** @bitmap_free, align 8, !dbg !379, !tbaa !368
+  br label %for.body, !dbg !377
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
-  %1 = phi %struct.bitmap_element_def* [ %.pre, %for.body.lr.ph ], [ %element.010, %for.body ]
+  %1 = phi %struct.bitmap_element_def* [ %.pre, %for.body.lr.ph ], [ %element.010, %for.body ], !dbg !381
   %element.010 = phi %struct.bitmap_element_def* [ %0, %for.body.lr.ph ], [ %2, %for.body ]
-  %next1 = getelementptr inbounds %struct.bitmap_element_def* %element.010, i64 0, i32 0
-  %2 = load %struct.bitmap_element_def** %next1, align 8, !tbaa !0
-  store %struct.bitmap_element_def* %1, %struct.bitmap_element_def** %next1, align 8, !tbaa !0
-  store %struct.bitmap_element_def* %element.010, %struct.bitmap_element_def** @bitmap_free, align 8, !tbaa !0
-  %cmp = icmp eq %struct.bitmap_element_def* %2, null
-  br i1 %cmp, label %for.end, label %for.body
+  %next1 = getelementptr inbounds %struct.bitmap_element_def* %element.010, i64 0, i32 0, !dbg !381
+  %2 = load %struct.bitmap_element_def** %next1, align 8, !dbg !381, !tbaa !368
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_element_def* %2}, i64 0, metadata !86), !dbg !381
+  store %struct.bitmap_element_def* %1, %struct.bitmap_element_def** %next1, align 8, !dbg !379, !tbaa !368
+  store %struct.bitmap_element_def* %element.010, %struct.bitmap_element_def** @bitmap_free, align 8, !dbg !382, !tbaa !368
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_element_def* %2}, i64 0, metadata !85), !dbg !377
+  %cmp = icmp eq %struct.bitmap_element_def* %2, null, !dbg !377
+  br i1 %cmp, label %for.end, label %for.body, !dbg !377
 
 for.end:                                          ; preds = %for.body, %entry
-  %3 = bitcast %struct.bitmap_head_def* %head to i8*
-  call void @llvm.memset.p0i8.i64(i8* %3, i8 0, i64 16, i32 8, i1 false)
-  ret void
+  %3 = bitcast %struct.bitmap_head_def* %head to i8*, !dbg !383
+  call void @llvm.memset.p0i8.i64(i8* %3, i8 0, i64 16, i32 8, i1 false), !dbg !384
+  ret void, !dbg !383
 }

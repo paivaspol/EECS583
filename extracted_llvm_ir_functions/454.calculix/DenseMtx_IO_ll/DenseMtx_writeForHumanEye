@@ -1,97 +1,100 @@
-define i32 @DenseMtx_writeForHumanEye(%struct._DenseMtx* %mtx, %struct.__sFILE* %fp) #0 {
+define i32 @DenseMtx_writeForHumanEye(%struct._DenseMtx* %mtx, %struct._IO_FILE* %fp) #0 {
+entry:
   %a2 = alloca %struct._A2, align 8
   %ierr = alloca i32, align 4
   %ncol = alloca i32, align 4
   %nrow = alloca i32, align 4
   %colind = alloca i32*, align 8
   %rowind = alloca i32*, align 8
-  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !149, metadata !191), !dbg !690
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !150, metadata !191), !dbg !691
-  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !692
-  br i1 %1, label %2, label %5, !dbg !694
+  call void @llvm.dbg.value(metadata !{%struct._DenseMtx* %mtx}, i64 0, metadata !145), !dbg !421
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !146), !dbg !422
+  call void @llvm.dbg.declare(metadata !{%struct._A2* %a2}, metadata !147), !dbg !423
+  call void @llvm.dbg.declare(metadata !{i32* %ierr}, metadata !159), !dbg !424
+  call void @llvm.dbg.declare(metadata !{i32* %ncol}, metadata !160), !dbg !424
+  call void @llvm.dbg.declare(metadata !{i32* %nrow}, metadata !161), !dbg !424
+  call void @llvm.dbg.declare(metadata !{i32** %colind}, metadata !162), !dbg !425
+  call void @llvm.dbg.declare(metadata !{i32** %rowind}, metadata !163), !dbg !425
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null, !dbg !426
+  br i1 %cmp, label %if.then, label %if.end, !dbg !426
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !695, !tbaa !201
-  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([59 x i8]* @.str36, i64 0, i64 0), i64 58, i64 1, %struct.__sFILE* %3), !dbg !697
-  br label %37, !dbg !698
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !427, !tbaa !191
+  %1 = call i64 @fwrite(i8* getelementptr inbounds ([59 x i8]* @.str36, i64 0, i64 0), i64 58, i64 1, %struct._IO_FILE* %0) #8, !dbg !427
+  br label %return, !dbg !429
 
-; <label>:5                                       ; preds = %0
-  %6 = icmp eq %struct.__sFILE* %fp, null, !dbg !699
-  br i1 %6, label %7, label %10, !dbg !701
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null, !dbg !430
+  br i1 %cmp1, label %if.then2, label %if.end4, !dbg !430
 
-; <label>:7                                       ; preds = %5
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !702, !tbaa !201
-  %9 = tail call i64 @fwrite(i8* getelementptr inbounds ([59 x i8]* @.str36, i64 0, i64 0), i64 58, i64 1, %struct.__sFILE* %8), !dbg !704
-  br label %37, !dbg !705
+if.then2:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !431, !tbaa !191
+  %3 = call i64 @fwrite(i8* getelementptr inbounds ([59 x i8]* @.str36, i64 0, i64 0), i64 58, i64 1, %struct._IO_FILE* %2) #8, !dbg !431
+  br label %return, !dbg !433
 
-; <label>:10                                      ; preds = %5
-  %11 = tail call i32 @DenseMtx_writeStats(%struct._DenseMtx* %mtx, %struct.__sFILE* %fp) #7, !dbg !706
-  tail call void @llvm.dbg.value(metadata i32* %nrow, i64 0, metadata !165, metadata !191), !dbg !707
-  tail call void @llvm.dbg.value(metadata i32** %rowind, i64 0, metadata !167, metadata !191), !dbg !708
-  call void @DenseMtx_rowIndices(%struct._DenseMtx* %mtx, i32* %nrow, i32** %rowind) #6, !dbg !709
-  call void @llvm.dbg.value(metadata i32* %nrow, i64 0, metadata !165, metadata !191), !dbg !707
-  %12 = load i32* %nrow, align 4, !dbg !710, !tbaa !281
-  %13 = icmp sgt i32 %12, 0, !dbg !712
-  call void @llvm.dbg.value(metadata i32** %rowind, i64 0, metadata !167, metadata !191), !dbg !708
-  %14 = load i32** %rowind, align 8
-  %15 = icmp ne i32* %14, null, !dbg !713
-  %or.cond = and i1 %13, %15, !dbg !714
-  br i1 %or.cond, label %16, label %21, !dbg !714
+if.end4:                                          ; preds = %if.end
+  %call5 = call i32 @DenseMtx_writeStats(%struct._DenseMtx* %mtx, %struct._IO_FILE* %fp) #7, !dbg !434
+  call void @DenseMtx_rowIndices(%struct._DenseMtx* %mtx, i32* %nrow, i32** %rowind) #5, !dbg !435
+  call void @llvm.dbg.value(metadata !{i32* %nrow}, i64 0, metadata !161), !dbg !436
+  %4 = load i32* %nrow, align 4, !dbg !436, !tbaa !238
+  %cmp6 = icmp sgt i32 %4, 0, !dbg !436
+  br i1 %cmp6, label %land.lhs.true, label %if.end11, !dbg !436
 
-; <label>:16                                      ; preds = %10
-  %17 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([26 x i8]* @.str37, i64 0, i64 0), i32* %14) #6, !dbg !715
-  call void @llvm.dbg.value(metadata i32* %nrow, i64 0, metadata !165, metadata !191), !dbg !707
-  %18 = load i32* %nrow, align 4, !dbg !717, !tbaa !281
-  call void @llvm.dbg.value(metadata i32** %rowind, i64 0, metadata !167, metadata !191), !dbg !708
-  %19 = load i32** %rowind, align 8, !dbg !718, !tbaa !201
-  call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !163, metadata !191), !dbg !719
-  %20 = call i32 @IVfp80(%struct.__sFILE* %fp, i32 %18, i32* %19, i32 80, i32* %ierr) #6, !dbg !720
-  br label %21, !dbg !721
+land.lhs.true:                                    ; preds = %if.end4
+  call void @llvm.dbg.value(metadata !{i32** %rowind}, i64 0, metadata !163), !dbg !436
+  %5 = load i32** %rowind, align 8, !dbg !436, !tbaa !191
+  %cmp7 = icmp eq i32* %5, null, !dbg !436
+  br i1 %cmp7, label %if.end11, label %if.then8, !dbg !436
 
-; <label>:21                                      ; preds = %16, %10
-  call void @llvm.dbg.value(metadata i32* %ncol, i64 0, metadata !164, metadata !191), !dbg !722
-  call void @llvm.dbg.value(metadata i32** %colind, i64 0, metadata !166, metadata !191), !dbg !723
-  call void @DenseMtx_columnIndices(%struct._DenseMtx* %mtx, i32* %ncol, i32** %colind) #6, !dbg !724
-  call void @llvm.dbg.value(metadata i32* %ncol, i64 0, metadata !164, metadata !191), !dbg !722
-  %22 = load i32* %ncol, align 4, !dbg !725, !tbaa !281
-  %23 = icmp sgt i32 %22, 0, !dbg !727
-  call void @llvm.dbg.value(metadata i32** %colind, i64 0, metadata !166, metadata !191), !dbg !723
-  %24 = load i32** %colind, align 8
-  %25 = icmp ne i32* %24, null, !dbg !728
-  %or.cond3 = and i1 %23, %25, !dbg !729
-  br i1 %or.cond3, label %26, label %31, !dbg !729
+if.then8:                                         ; preds = %land.lhs.true
+  %call9 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([26 x i8]* @.str37, i64 0, i64 0), i32* %5) #5, !dbg !437
+  call void @llvm.dbg.value(metadata !{i32* %nrow}, i64 0, metadata !161), !dbg !439
+  %6 = load i32* %nrow, align 4, !dbg !439, !tbaa !238
+  call void @llvm.dbg.value(metadata !{i32** %rowind}, i64 0, metadata !163), !dbg !439
+  %7 = load i32** %rowind, align 8, !dbg !439, !tbaa !191
+  %call10 = call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %6, i32* %7, i32 80, i32* %ierr) #5, !dbg !439
+  br label %if.end11, !dbg !440
 
-; <label>:26                                      ; preds = %21
-  %27 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str38, i64 0, i64 0), i32* %24) #6, !dbg !730
-  call void @llvm.dbg.value(metadata i32* %ncol, i64 0, metadata !164, metadata !191), !dbg !722
-  %28 = load i32* %ncol, align 4, !dbg !732, !tbaa !281
-  call void @llvm.dbg.value(metadata i32** %colind, i64 0, metadata !166, metadata !191), !dbg !723
-  %29 = load i32** %colind, align 8, !dbg !733, !tbaa !201
-  call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !163, metadata !191), !dbg !719
-  %30 = call i32 @IVfp80(%struct.__sFILE* %fp, i32 %28, i32* %29, i32 80, i32* %ierr) #6, !dbg !734
-  %.pre = load i32* %ncol, align 4
-  br label %31, !dbg !735
+if.end11:                                         ; preds = %land.lhs.true, %if.then8, %if.end4
+  call void @DenseMtx_columnIndices(%struct._DenseMtx* %mtx, i32* %ncol, i32** %colind) #5, !dbg !441
+  call void @llvm.dbg.value(metadata !{i32* %ncol}, i64 0, metadata !160), !dbg !442
+  %8 = load i32* %ncol, align 4, !dbg !442, !tbaa !238
+  %cmp12 = icmp sgt i32 %8, 0, !dbg !442
+  br i1 %cmp12, label %land.lhs.true13, label %if.end18, !dbg !442
 
-; <label>:31                                      ; preds = %26, %21
-  %32 = phi i32 [ %.pre, %26 ], [ %22, %21 ]
-  call void @llvm.dbg.value(metadata i32* %nrow, i64 0, metadata !165, metadata !191), !dbg !707
-  %33 = load i32* %nrow, align 4, !dbg !736, !tbaa !281
-  %34 = icmp sgt i32 %33, 0, !dbg !738
-  call void @llvm.dbg.value(metadata i32* %ncol, i64 0, metadata !164, metadata !191), !dbg !722
-  %35 = icmp sgt i32 %32, 0, !dbg !739
-  %or.cond5 = and i1 %34, %35, !dbg !740
-  br i1 %or.cond5, label %36, label %37, !dbg !740
+land.lhs.true13:                                  ; preds = %if.end11
+  call void @llvm.dbg.value(metadata !{i32** %colind}, i64 0, metadata !162), !dbg !442
+  %9 = load i32** %colind, align 8, !dbg !442, !tbaa !191
+  %cmp14 = icmp eq i32* %9, null, !dbg !442
+  br i1 %cmp14, label %if.end18, label %if.then15, !dbg !442
 
-; <label>:36                                      ; preds = %31
-  call void @llvm.dbg.value(metadata %struct._A2* %a2, i64 0, metadata !151, metadata !191), !dbg !741
-  call void @A2_setDefaultFields(%struct._A2* %a2) #6, !dbg !742
-  call void @llvm.dbg.value(metadata %struct._A2* %a2, i64 0, metadata !151, metadata !191), !dbg !741
-  call void @DenseMtx_setA2(%struct._DenseMtx* %mtx, %struct._A2* %a2) #6, !dbg !744
-  call void @llvm.dbg.value(metadata %struct._A2* %a2, i64 0, metadata !151, metadata !191), !dbg !741
-  call void @A2_writeForHumanEye(%struct._A2* %a2, %struct.__sFILE* %fp) #6, !dbg !745
-  br label %37, !dbg !746
+if.then15:                                        ; preds = %land.lhs.true13
+  %call16 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str38, i64 0, i64 0), i32* %9) #5, !dbg !443
+  call void @llvm.dbg.value(metadata !{i32* %ncol}, i64 0, metadata !160), !dbg !445
+  %10 = load i32* %ncol, align 4, !dbg !445, !tbaa !238
+  call void @llvm.dbg.value(metadata !{i32** %colind}, i64 0, metadata !162), !dbg !445
+  %11 = load i32** %colind, align 8, !dbg !445, !tbaa !191
+  %call17 = call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %10, i32* %11, i32 80, i32* %ierr) #5, !dbg !445
+  br label %if.end18, !dbg !446
 
-; <label>:37                                      ; preds = %31, %36, %7, %2
-  %.0 = phi i32 [ -1, %2 ], [ -2, %7 ], [ 1, %36 ], [ 1, %31 ]
-  ret i32 %.0, !dbg !747
+if.end18:                                         ; preds = %land.lhs.true13, %if.then15, %if.end11
+  call void @llvm.dbg.value(metadata !{i32* %nrow}, i64 0, metadata !161), !dbg !447
+  %12 = load i32* %nrow, align 4, !dbg !447, !tbaa !238
+  %cmp19 = icmp sgt i32 %12, 0, !dbg !447
+  br i1 %cmp19, label %land.lhs.true20, label %return, !dbg !447
+
+land.lhs.true20:                                  ; preds = %if.end18
+  call void @llvm.dbg.value(metadata !{i32* %ncol}, i64 0, metadata !160), !dbg !447
+  %13 = load i32* %ncol, align 4, !dbg !447, !tbaa !238
+  %cmp21 = icmp sgt i32 %13, 0, !dbg !447
+  br i1 %cmp21, label %if.then22, label %return, !dbg !447
+
+if.then22:                                        ; preds = %land.lhs.true20
+  call void @A2_setDefaultFields(%struct._A2* %a2) #5, !dbg !448
+  call void @DenseMtx_setA2(%struct._DenseMtx* %mtx, %struct._A2* %a2) #5, !dbg !450
+  call void @A2_writeForHumanEye(%struct._A2* %a2, %struct._IO_FILE* %fp) #5, !dbg !451
+  br label %return, !dbg !452
+
+return:                                           ; preds = %if.end18, %land.lhs.true20, %if.then22, %if.then2, %if.then
+  %retval.0 = phi i32 [ -1, %if.then ], [ -2, %if.then2 ], [ 1, %if.then22 ], [ 1, %land.lhs.true20 ], [ 1, %if.end18 ]
+  ret i32 %retval.0, !dbg !453
 }

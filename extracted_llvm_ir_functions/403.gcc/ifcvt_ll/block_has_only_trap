@@ -1,40 +1,42 @@
-define internal fastcc %struct.rtx_def* @block_has_only_trap(%struct.basic_block_def* %bb) #3 {
+define internal fastcc %struct.rtx_def* @block_has_only_trap(%struct.basic_block_def* %bb) #4 {
 entry:
-  %cmp = icmp eq %struct.basic_block_def* %bb, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %bb}, i64 0, metadata !614), !dbg !1770
+  %cmp = icmp eq %struct.basic_block_def* %bb, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1), !dbg !1771
+  br i1 %cmp, label %return, label %if.end, !dbg !1771
 
 if.end:                                           ; preds = %entry
-  %succ = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5
-  %0 = load %struct.edge_def** %succ, align 8, !tbaa !4
-  %tobool = icmp eq %struct.edge_def* %0, null
-  br i1 %tobool, label %if.end2, label %return
+  %succ = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5, !dbg !1772
+  %0 = load %struct.edge_def** %succ, align 8, !dbg !1772, !tbaa !850
+  %tobool = icmp eq %struct.edge_def* %0, null, !dbg !1772
+  br i1 %tobool, label %if.end2, label %return, !dbg !1772
 
 if.end2:                                          ; preds = %if.end
-  %call = tail call fastcc %struct.rtx_def* @first_active_insn(%struct.basic_block_def* %bb) #7
-  %end = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1
-  %1 = load %struct.rtx_def** %end, align 8, !tbaa !4
-  %cmp3 = icmp eq %struct.rtx_def* %call, %1
-  br i1 %cmp3, label %land.lhs.true, label %return
+  %call = tail call fastcc %struct.rtx_def* @first_active_insn(%struct.basic_block_def* %bb) #8, !dbg !1773
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !615), !dbg !1773
+  %end = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1, !dbg !1774
+  %1 = load %struct.rtx_def** %end, align 8, !dbg !1774, !tbaa !850
+  %cmp3 = icmp eq %struct.rtx_def* %call, %1, !dbg !1774
+  br i1 %cmp3, label %land.lhs.true, label %return, !dbg !1774
 
 land.lhs.true:                                    ; preds = %if.end2
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 3
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %3 = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load = load i32* %3, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp4 = icmp eq i32 %bf.clear, 52
-  br i1 %cmp4, label %land.lhs.true5, label %return
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 3, !dbg !1774
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1774
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !1774, !tbaa !850
+  %3 = bitcast %struct.rtx_def* %2 to i32*, !dbg !1774
+  %bf.load = load i32* %3, align 8, !dbg !1774
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1774
+  %cmp4 = icmp eq i32 %bf.clear, 52, !dbg !1774
+  br i1 %cmp4, label %land.lhs.true5, label %return, !dbg !1774
 
 land.lhs.true5:                                   ; preds = %land.lhs.true
-  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
-  %rtx11 = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %rtx11, align 8, !tbaa !4
-  %5 = load %struct.rtx_def** @const_true_rtx, align 8, !tbaa !4
-  %cmp12 = icmp eq %struct.rtx_def* %4, %5
-  %call. = select i1 %cmp12, %struct.rtx_def* %call, %struct.rtx_def* null
-  ret %struct.rtx_def* %call.
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0, !dbg !1774
+  %rtx11 = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**, !dbg !1774
+  %4 = load %struct.rtx_def** %rtx11, align 8, !dbg !1774, !tbaa !850
+  %5 = load %struct.rtx_def** @const_true_rtx, align 8, !dbg !1774, !tbaa !850
+  %cmp12 = icmp eq %struct.rtx_def* %4, %5, !dbg !1774
+  %call. = select i1 %cmp12, %struct.rtx_def* %call, %struct.rtx_def* null, !dbg !1774
+  ret %struct.rtx_def* %call., !dbg !1774
 
 return:                                           ; preds = %if.end2, %land.lhs.true, %if.end, %entry
-  ret %struct.rtx_def* null
+  ret %struct.rtx_def* null, !dbg !1775
 }

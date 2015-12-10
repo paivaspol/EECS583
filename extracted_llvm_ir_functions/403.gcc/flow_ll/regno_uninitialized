@@ -1,41 +1,42 @@
 define i32 @regno_uninitialized(i32 %regno) #0 {
 entry:
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 0
-  br i1 %cmp, label %return, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !1556), !dbg !3279
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !3280, !tbaa !2128
+  %cmp = icmp eq i32 %0, 0, !dbg !3280
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !3280
 
 lor.lhs.false:                                    ; preds = %entry
-  %cmp1 = icmp ult i32 %regno, 53
-  br i1 %cmp1, label %land.lhs.true, label %if.end
+  %cmp1 = icmp ult i32 %regno, 53, !dbg !3280
+  br i1 %cmp1, label %land.lhs.true, label %if.end, !dbg !3280
 
 land.lhs.true:                                    ; preds = %lor.lhs.false
-  %idxprom = zext i32 %regno to i64
-  %arrayidx = getelementptr inbounds [53 x i8]* @global_regs, i64 0, i64 %idxprom
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %tobool = icmp eq i8 %1, 0
-  br i1 %tobool, label %lor.lhs.false2, label %return
+  %idxprom = zext i32 %regno to i64, !dbg !3280
+  %arrayidx = getelementptr inbounds [53 x i8]* @global_regs, i64 0, i64 %idxprom, !dbg !3280
+  %1 = load i8* %arrayidx, align 1, !dbg !3280, !tbaa !2129
+  %tobool = icmp eq i8 %1, 0, !dbg !3280
+  br i1 %tobool, label %lor.lhs.false2, label %return, !dbg !3280
 
 lor.lhs.false2:                                   ; preds = %land.lhs.true
-  %arrayidx4 = getelementptr inbounds [53 x i8]* @fixed_regs, i64 0, i64 %idxprom
-  %2 = load i8* %arrayidx4, align 1, !tbaa !1
-  %tobool6 = icmp eq i8 %2, 0
-  br i1 %tobool6, label %lor.lhs.false7, label %return
+  %arrayidx4 = getelementptr inbounds [53 x i8]* @fixed_regs, i64 0, i64 %idxprom, !dbg !3280
+  %2 = load i8* %arrayidx4, align 1, !dbg !3280, !tbaa !2129
+  %tobool6 = icmp eq i8 %2, 0, !dbg !3280
+  br i1 %tobool6, label %lor.lhs.false7, label %return, !dbg !3280
 
 lor.lhs.false7:                                   ; preds = %lor.lhs.false2
-  %call = tail call zeroext i1 @ix86_function_arg_regno_p(i32 %regno) #6
-  br i1 %call, label %return, label %if.end
+  %call = tail call zeroext i1 @ix86_function_arg_regno_p(i32 %regno) #7, !dbg !3281
+  br i1 %call, label %return, label %if.end, !dbg !3281
 
 if.end:                                           ; preds = %lor.lhs.false7, %lor.lhs.false
-  %3 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
-  %data = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 4
-  %arrayidx9 = bitcast %union.varray_data_tag* %data to %struct.basic_block_def**
-  %4 = load %struct.basic_block_def** %arrayidx9, align 8, !tbaa !3
-  %global_live_at_start = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 8
-  %5 = load %struct.bitmap_head_def** %global_live_at_start, align 8, !tbaa !3
-  %call10 = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %5, i32 %regno) #6
-  br label %return
+  %3 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !3282, !tbaa !2131
+  %data = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 4, !dbg !3282
+  %arrayidx9 = bitcast %union.varray_data_tag* %data to %struct.basic_block_def**, !dbg !3282
+  %4 = load %struct.basic_block_def** %arrayidx9, align 8, !dbg !3282, !tbaa !2131
+  %global_live_at_start = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 8, !dbg !3282
+  %5 = load %struct.bitmap_head_def** %global_live_at_start, align 8, !dbg !3282, !tbaa !2131
+  %call10 = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %5, i32 %regno) #7, !dbg !3282
+  br label %return, !dbg !3282
 
 return:                                           ; preds = %entry, %lor.lhs.false7, %land.lhs.true, %lor.lhs.false2, %if.end
   %retval.0 = phi i32 [ %call10, %if.end ], [ 0, %lor.lhs.false2 ], [ 0, %land.lhs.true ], [ 0, %lor.lhs.false7 ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3283
 }

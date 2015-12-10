@@ -1,120 +1,121 @@
-define linkonce_odr %class.EtherCtrl* @_Z14check_and_castIP9EtherCtrlET_P12cPolymorphic(%class.cPolymorphic* %p) #0 {
-  tail call void @llvm.dbg.value(metadata %class.cPolymorphic* %p, i64 0, metadata !4245, metadata !5468), !dbg !5717
-  %1 = icmp eq %class.cPolymorphic* %p, null, !dbg !5718
-  br i1 %1, label %2, label %20, !dbg !5720
+define linkonce_odr %class.EtherCtrl* @_Z14check_and_castIP9EtherCtrlET_P12cPolymorphic(%class.cPolymorphic* %p) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.cPolymorphic* %p}, i64 0, metadata !4472), !dbg !4969
+  %tobool = icmp eq %class.cPolymorphic* %p, null, !dbg !4970
+  br i1 %tobool, label %if.then, label %dynamic_cast.notnull, !dbg !4970
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i8* @__cxa_allocate_exception(i64 8) #2, !dbg !5721
-  %4 = invoke noalias i8* @_Znwm(i64 32) #12
-          to label %5 unwind label %11, !dbg !5722
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 8) #1, !dbg !4971
+  %0 = bitcast i8* %exception to %class.cException**, !dbg !4971
+  %call = invoke noalias i8* @_Znwm(i64 32) #9
+          to label %invoke.cont unwind label %lpad, !dbg !4971
 
-; <label>:5                                       ; preds = %2
-  %6 = invoke i8* @_Z12opp_typenameRKSt9type_info(%"class.std::type_info"* dereferenceable(16) bitcast ({ i8*, i8*, i32, i8* }* @_ZTIP9EtherCtrl to %"class.std::type_info"*)) #10
-          to label %7 unwind label %15, !dbg !5723
+invoke.cont:                                      ; preds = %if.then
+  %1 = bitcast i8* %call to %class.cException*, !dbg !4971
+  %call3 = invoke i8* @_Z12opp_typenameRKSt9type_info(%"class.std::type_info"* bitcast ({ i8*, i8*, i32, i8* }* @_ZTIP9EtherCtrl to %"class.std::type_info"*)) #9
+          to label %invoke.cont2 unwind label %lpad1, !dbg !4971
 
-; <label>:7                                       ; preds = %5
-  %8 = bitcast i8* %4 to %class.cException*, !dbg !5722
-  invoke void (%class.cException*, i8*, ...)* @_ZN10cExceptionC1EPKcz(%class.cException* %8, i8* getelementptr inbounds ([56 x i8]* @.str28, i64 0, i64 0), i8* %6) #10
-          to label %9 unwind label %15, !dbg !5724
+invoke.cont2:                                     ; preds = %invoke.cont
+  invoke void (%class.cException*, i8*, ...)* @_ZN10cExceptionC1EPKcz(%class.cException* %1, i8* getelementptr inbounds ([56 x i8]* @.str25, i64 0, i64 0), i8* %call3) #9
+          to label %invoke.cont4 unwind label %lpad1, !dbg !4971
 
-; <label>:9                                       ; preds = %7
-  %10 = bitcast i8* %3 to i8**, !dbg !5721
-  store i8* %4, i8** %10, align 8, !dbg !5721, !tbaa !5584
-  tail call void @__cxa_throw(i8* %3, i8* bitcast ({ i8*, i8*, i32, i8* }* @_ZTIP10cException to i8*), i8* null) #13, !dbg !5721
-  unreachable, !dbg !5721
+invoke.cont4:                                     ; preds = %invoke.cont2
+  store %class.cException* %1, %class.cException** %0, align 8, !dbg !4971, !tbaa !4834
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i32, i8* }* @_ZTIP10cException to i8*), i8* null) #11, !dbg !4971
+  unreachable, !dbg !4971
 
-; <label>:11                                      ; preds = %2
-  %12 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !5725
-  %13 = extractvalue { i8*, i32 } %12, 0, !dbg !5725
-  %14 = extractvalue { i8*, i32 } %12, 1, !dbg !5725
-  br label %19, !dbg !5725
+lpad:                                             ; preds = %if.then
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4971
+  %3 = extractvalue { i8*, i32 } %2, 0, !dbg !4971
+  %4 = extractvalue { i8*, i32 } %2, 1, !dbg !4971
+  br label %ehcleanup, !dbg !4971
 
-; <label>:15                                      ; preds = %7, %5
-  %16 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !5725
-  %17 = extractvalue { i8*, i32 } %16, 0, !dbg !5725
-  %18 = extractvalue { i8*, i32 } %16, 1, !dbg !5725
-  tail call void @_ZdlPv(i8* %4) #11, !dbg !5722
-  br label %19, !dbg !5722
+lpad1:                                            ; preds = %invoke.cont2, %invoke.cont
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4971
+  %6 = extractvalue { i8*, i32 } %5, 0, !dbg !4971
+  %7 = extractvalue { i8*, i32 } %5, 1, !dbg !4971
+  tail call void @_ZdlPv(i8* %call) #10, !dbg !4971
+  br label %ehcleanup, !dbg !4971
 
-; <label>:19                                      ; preds = %15, %11
-  %.01 = phi i32 [ %18, %15 ], [ %14, %11 ]
-  %.0 = phi i8* [ %17, %15 ], [ %13, %11 ]
-  tail call void @__cxa_free_exception(i8* %3) #2, !dbg !5721
-  br label %55, !dbg !5721
+ehcleanup:                                        ; preds = %lpad1, %lpad
+  %ehselector.slot.0 = phi i32 [ %7, %lpad1 ], [ %4, %lpad ]
+  %exn.slot.0 = phi i8* [ %6, %lpad1 ], [ %3, %lpad ]
+  tail call void @__cxa_free_exception(i8* %exception) #1, !dbg !4971
+  br label %eh.resume, !dbg !4971
 
-; <label>:20                                      ; preds = %0
-  %21 = bitcast %class.cPolymorphic* %p to i8*, !dbg !5726
-  %22 = tail call i8* @__dynamic_cast(i8* %21, i8* bitcast ({ i8*, i8* }* @_ZTI12cPolymorphic to i8*), i8* bitcast (i8** @_ZTI9EtherCtrl to i8*), i64 0) #2, !dbg !5726
-  tail call void @llvm.dbg.value(metadata %class.EtherCtrl* %54, i64 0, metadata !4246, metadata !5468), !dbg !5727
-  %23 = icmp eq i8* %22, null, !dbg !5728
-  br i1 %23, label %24, label %53, !dbg !5730
+dynamic_cast.notnull:                             ; preds = %entry
+  %8 = bitcast %class.cPolymorphic* %p to i8*, !dbg !4972
+  %9 = tail call i8* @__dynamic_cast(i8* %8, i8* bitcast ({ i8*, i8* }* @_ZTI12cPolymorphic to i8*), i8* bitcast (i8** @_ZTI9EtherCtrl to i8*), i64 0) #1, !dbg !4972
+  tail call void @llvm.dbg.value(metadata !{%class.EtherCtrl* %21}, i64 0, metadata !4473), !dbg !4972
+  %tobool5 = icmp eq i8* %9, null, !dbg !4973
+  br i1 %tobool5, label %if.then6, label %if.end23, !dbg !4973
 
-; <label>:24                                      ; preds = %20
-  %25 = tail call i8* @__cxa_allocate_exception(i64 8) #2, !dbg !5731
-  %26 = invoke noalias i8* @_Znwm(i64 32) #12
-          to label %27 unwind label %44, !dbg !5732
+if.then6:                                         ; preds = %dynamic_cast.notnull
+  %exception7 = tail call i8* @__cxa_allocate_exception(i64 8) #1, !dbg !4974
+  %10 = bitcast i8* %exception7 to %class.cException**, !dbg !4974
+  %call10 = invoke noalias i8* @_Znwm(i64 32) #9
+          to label %invoke.cont9 unwind label %lpad8, !dbg !4974
 
-; <label>:27                                      ; preds = %24
-  %28 = bitcast i8* %26 to %class.cException*, !dbg !5732
-  %29 = bitcast %class.cPolymorphic* %p to i8* (%class.cPolymorphic*)***, !dbg !5733
-  %30 = load i8* (%class.cPolymorphic*)*** %29, align 8, !dbg !5733, !tbaa !5487
-  %31 = getelementptr inbounds i8* (%class.cPolymorphic*)** %30, i64 2, !dbg !5733
-  %32 = load i8* (%class.cPolymorphic*)** %31, align 8, !dbg !5733
-  %33 = invoke i8* %32(%class.cPolymorphic* %p) #10
-          to label %34 unwind label %48, !dbg !5733
+invoke.cont9:                                     ; preds = %if.then6
+  %11 = bitcast i8* %call10 to %class.cException*, !dbg !4974
+  %12 = bitcast %class.cPolymorphic* %p to i8* (%class.cPolymorphic*)***, !dbg !4974
+  %vtable = load i8* (%class.cPolymorphic*)*** %12, align 8, !dbg !4974, !tbaa !4831
+  %vfn = getelementptr inbounds i8* (%class.cPolymorphic*)** %vtable, i64 2, !dbg !4974
+  %13 = load i8* (%class.cPolymorphic*)** %vfn, align 8, !dbg !4974
+  %call13 = invoke i8* %13(%class.cPolymorphic* %p) #9
+          to label %invoke.cont12 unwind label %lpad11, !dbg !4974
 
-; <label>:34                                      ; preds = %27
-  %35 = load i8* (%class.cPolymorphic*)*** %29, align 8, !dbg !5734, !tbaa !5487
-  %36 = getelementptr inbounds i8* (%class.cPolymorphic*)** %35, i64 4, !dbg !5734
-  %37 = load i8* (%class.cPolymorphic*)** %36, align 8, !dbg !5734
-  %38 = invoke i8* %37(%class.cPolymorphic* %p) #10
-          to label %39 unwind label %48, !dbg !5734
+invoke.cont12:                                    ; preds = %invoke.cont9
+  %vtable14 = load i8* (%class.cPolymorphic*)*** %12, align 8, !dbg !4974, !tbaa !4831
+  %vfn15 = getelementptr inbounds i8* (%class.cPolymorphic*)** %vtable14, i64 4, !dbg !4974
+  %14 = load i8* (%class.cPolymorphic*)** %vfn15, align 8, !dbg !4974
+  %call17 = invoke i8* %14(%class.cPolymorphic* %p) #9
+          to label %invoke.cont16 unwind label %lpad11, !dbg !4974
 
-; <label>:39                                      ; preds = %34
-  %40 = invoke i8* @_Z12opp_typenameRKSt9type_info(%"class.std::type_info"* dereferenceable(16) bitcast ({ i8*, i8*, i32, i8* }* @_ZTIP9EtherCtrl to %"class.std::type_info"*)) #10
-          to label %41 unwind label %48, !dbg !5735
+invoke.cont16:                                    ; preds = %invoke.cont12
+  %call19 = invoke i8* @_Z12opp_typenameRKSt9type_info(%"class.std::type_info"* bitcast ({ i8*, i8*, i32, i8* }* @_ZTIP9EtherCtrl to %"class.std::type_info"*)) #9
+          to label %invoke.cont18 unwind label %lpad11, !dbg !4974
 
-; <label>:41                                      ; preds = %39
-  invoke void (%class.cException*, i8*, ...)* @_ZN10cExceptionC1EPKcz(%class.cException* %28, i8* getelementptr inbounds ([52 x i8]* @.str29, i64 0, i64 0), i8* %33, i8* %38, i8* %40) #10
-          to label %42 unwind label %48, !dbg !5736
+invoke.cont18:                                    ; preds = %invoke.cont16
+  invoke void (%class.cException*, i8*, ...)* @_ZN10cExceptionC1EPKcz(%class.cException* %11, i8* getelementptr inbounds ([52 x i8]* @.str26, i64 0, i64 0), i8* %call13, i8* %call17, i8* %call19) #9
+          to label %invoke.cont20 unwind label %lpad11, !dbg !4974
 
-; <label>:42                                      ; preds = %41
-  %43 = bitcast i8* %25 to i8**, !dbg !5731
-  store i8* %26, i8** %43, align 8, !dbg !5731, !tbaa !5584
-  tail call void @__cxa_throw(i8* %25, i8* bitcast ({ i8*, i8*, i32, i8* }* @_ZTIP10cException to i8*), i8* null) #13, !dbg !5731
-  unreachable, !dbg !5731
+invoke.cont20:                                    ; preds = %invoke.cont18
+  store %class.cException* %11, %class.cException** %10, align 8, !dbg !4974, !tbaa !4834
+  tail call void @__cxa_throw(i8* %exception7, i8* bitcast ({ i8*, i8*, i32, i8* }* @_ZTIP10cException to i8*), i8* null) #11, !dbg !4974
+  unreachable, !dbg !4974
 
-; <label>:44                                      ; preds = %24
-  %45 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !5737
-  %46 = extractvalue { i8*, i32 } %45, 0, !dbg !5737
-  %47 = extractvalue { i8*, i32 } %45, 1, !dbg !5737
-  br label %52, !dbg !5737
+lpad8:                                            ; preds = %if.then6
+  %15 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4974
+  %16 = extractvalue { i8*, i32 } %15, 0, !dbg !4974
+  %17 = extractvalue { i8*, i32 } %15, 1, !dbg !4974
+  br label %ehcleanup22, !dbg !4974
 
-; <label>:48                                      ; preds = %41, %39, %34, %27
-  %49 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !5737
-  %50 = extractvalue { i8*, i32 } %49, 0, !dbg !5737
-  %51 = extractvalue { i8*, i32 } %49, 1, !dbg !5737
-  tail call void @_ZdlPv(i8* %26) #11, !dbg !5732
-  br label %52, !dbg !5732
+lpad11:                                           ; preds = %invoke.cont18, %invoke.cont16, %invoke.cont12, %invoke.cont9
+  %18 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4974
+  %19 = extractvalue { i8*, i32 } %18, 0, !dbg !4974
+  %20 = extractvalue { i8*, i32 } %18, 1, !dbg !4974
+  tail call void @_ZdlPv(i8* %call10) #10, !dbg !4974
+  br label %ehcleanup22, !dbg !4974
 
-; <label>:52                                      ; preds = %48, %44
-  %.12 = phi i32 [ %51, %48 ], [ %47, %44 ]
-  %.1 = phi i8* [ %50, %48 ], [ %46, %44 ]
-  tail call void @__cxa_free_exception(i8* %25) #2, !dbg !5731
-  br label %55, !dbg !5731
+ehcleanup22:                                      ; preds = %lpad11, %lpad8
+  %ehselector.slot.1 = phi i32 [ %20, %lpad11 ], [ %17, %lpad8 ]
+  %exn.slot.1 = phi i8* [ %19, %lpad11 ], [ %16, %lpad8 ]
+  tail call void @__cxa_free_exception(i8* %exception7) #1, !dbg !4974
+  br label %eh.resume, !dbg !4974
 
-; <label>:53                                      ; preds = %20
-  %54 = bitcast i8* %22 to %class.EtherCtrl*, !dbg !5726
-  ret %class.EtherCtrl* %54, !dbg !5738
+if.end23:                                         ; preds = %dynamic_cast.notnull
+  %21 = bitcast i8* %9 to %class.EtherCtrl*, !dbg !4972
+  ret %class.EtherCtrl* %21, !dbg !4975
 
-; <label>:55                                      ; preds = %52, %19
-  %.23 = phi i32 [ %.12, %52 ], [ %.01, %19 ]
-  %.2 = phi i8* [ %.1, %52 ], [ %.0, %19 ]
-  %56 = insertvalue { i8*, i32 } undef, i8* %.2, 0, !dbg !5721
-  %57 = insertvalue { i8*, i32 } %56, i32 %.23, 1, !dbg !5721
-  resume { i8*, i32 } %57, !dbg !5721
+eh.resume:                                        ; preds = %ehcleanup22, %ehcleanup
+  %ehselector.slot.2 = phi i32 [ %ehselector.slot.1, %ehcleanup22 ], [ %ehselector.slot.0, %ehcleanup ]
+  %exn.slot.2 = phi i8* [ %exn.slot.1, %ehcleanup22 ], [ %exn.slot.0, %ehcleanup ]
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.2, 0, !dbg !4971
+  %lpad.val24 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.2, 1, !dbg !4971
+  resume { i8*, i32 } %lpad.val24, !dbg !4971
 }

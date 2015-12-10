@@ -1,142 +1,139 @@
-define void @PrintNewHampshireTree(%struct.__sFILE* %fp, %struct.aliinfo_s* nocapture readonly %ainfo, %struct.phylo_s* nocapture readonly %tree, i32 %N) #0 {
+define void @PrintNewHampshireTree(%struct._IO_FILE* nocapture %fp, %struct.aliinfo_s* nocapture %ainfo, %struct.phylo_s* nocapture %tree, i32 %N) #0 {
+entry:
   %code = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !195, metadata !220), !dbg !582
-  tail call void @llvm.dbg.value(metadata %struct.aliinfo_s* %ainfo, i64 0, metadata !196, metadata !220), !dbg !583
-  tail call void @llvm.dbg.value(metadata %struct.phylo_s* %tree, i64 0, metadata !197, metadata !220), !dbg !584
-  tail call void @llvm.dbg.value(metadata i32 %N, i64 0, metadata !198, metadata !220), !dbg !585
-  %1 = shl nsw i32 %N, 1, !dbg !586
-  %2 = add nsw i32 %1, -1, !dbg !586
-  %3 = sext i32 %2 to i64, !dbg !586
-  %4 = shl nsw i64 %3, 2, !dbg !586
-  %5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 464, i64 %4) #5, !dbg !586
-  %6 = bitcast i8* %5 to float*, !dbg !587
-  tail call void @llvm.dbg.value(metadata float* %6, i64 0, metadata !206, metadata !220), !dbg !588
-  %7 = tail call %struct.intstack_s* @InitIntStack() #5, !dbg !589
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %7, i64 0, metadata !199, metadata !220), !dbg !590
-  tail call void @PushIntStack(%struct.intstack_s* %7, i32 %N) #5, !dbg !591
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !207, metadata !220), !dbg !592
-  call void @llvm.dbg.value(metadata i32* %code, i64 0, metadata !205, metadata !220), !dbg !593
-  %8 = call i32 @PopIntStack(%struct.intstack_s* %7, i32* %code) #5, !dbg !594
-  %9 = icmp eq i32 %8, 0, !dbg !595
-  br i1 %9, label %._crit_edge, label %.lr.ph, !dbg !595
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !189), !dbg !351
+  call void @llvm.dbg.value(metadata !{%struct.aliinfo_s* %ainfo}, i64 0, metadata !190), !dbg !351
+  call void @llvm.dbg.value(metadata !{%struct.phylo_s* %tree}, i64 0, metadata !191), !dbg !351
+  call void @llvm.dbg.value(metadata !{i32 %N}, i64 0, metadata !192), !dbg !351
+  call void @llvm.dbg.declare(metadata !{i32* %code}, metadata !199), !dbg !352
+  %mul = shl nsw i32 %N, 1, !dbg !353
+  %sub = add nsw i32 %mul, -1, !dbg !353
+  %conv = sext i32 %sub to i64, !dbg !353
+  %mul1 = shl nsw i64 %conv, 2, !dbg !353
+  %call = call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 464, i64 %mul1) #5, !dbg !353
+  %0 = bitcast i8* %call to float*, !dbg !353
+  call void @llvm.dbg.value(metadata !{float* %0}, i64 0, metadata !200), !dbg !353
+  %call2 = call %struct.intstack_s* @InitIntStack() #5, !dbg !354
+  call void @llvm.dbg.value(metadata !{%struct.intstack_s* %call2}, i64 0, metadata !193), !dbg !354
+  call void @PushIntStack(%struct.intstack_s* %call2, i32 %N) #5, !dbg !355
+  call void @llvm.dbg.value(metadata !9, i64 0, metadata !201), !dbg !356
+  %call395 = call i32 @PopIntStack(%struct.intstack_s* %call2, i32* %code) #5, !dbg !357
+  %tobool96 = icmp eq i32 %call395, 0, !dbg !357
+  br i1 %tobool96, label %while.end, label %while.body.lr.ph, !dbg !357
 
-.lr.ph:                                           ; preds = %0
-  %10 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 6, !dbg !596
-  br label %11, !dbg !595
+while.body.lr.ph:                                 ; preds = %entry
+  %sqinfo = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 6, !dbg !358
+  br label %while.body, !dbg !357
 
-; <label>:11                                      ; preds = %.lr.ph, %.backedge
-  %docomma.01 = phi i32 [ 0, %.lr.ph ], [ %docomma.0.be, %.backedge ]
-  call void @llvm.dbg.value(metadata i32* %code, i64 0, metadata !205, metadata !220), !dbg !593
-  %12 = load i32* %code, align 4, !dbg !600, !tbaa !264
-  %13 = icmp slt i32 %12, %N, !dbg !601
-  br i1 %13, label %14, label %27, !dbg !602
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %docomma.097 = phi i32 [ 0, %while.body.lr.ph ], [ %docomma.0.be, %while.cond.backedge ]
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !199), !dbg !361
+  %1 = load i32* %code, align 4, !dbg !361, !tbaa !228
+  %cmp = icmp slt i32 %1, %N, !dbg !361
+  br i1 %cmp, label %if.then, label %if.else, !dbg !361
 
-; <label>:14                                      ; preds = %11
-  %15 = icmp eq i32 %docomma.01, 0, !dbg !603
-  br i1 %15, label %18, label %16, !dbg !605
+if.then:                                          ; preds = %while.body
+  %tobool5 = icmp eq i32 %docomma.097, 0, !dbg !362
+  br i1 %tobool5, label %if.end, label %if.then6, !dbg !362
 
-; <label>:16                                      ; preds = %14
-  %17 = call i32 @"\01_fputs"(i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0), %struct.__sFILE* %fp) #5, !dbg !606
-  %.pre = load i32* %code, align 4, !dbg !607, !tbaa !264
-  br label %18, !dbg !606
+if.then6:                                         ; preds = %if.then
+  %fputc94 = call i32 @fputc(i32 44, %struct._IO_FILE* %fp), !dbg !362
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !199), !dbg !358
+  %.pre = load i32* %code, align 4, !dbg !358, !tbaa !228
+  br label %if.end, !dbg !362
 
-; <label>:18                                      ; preds = %14, %16
-  %19 = phi i32 [ %12, %14 ], [ %.pre, %16 ]
-  call void @llvm.dbg.value(metadata i32* %code, i64 0, metadata !205, metadata !220), !dbg !593
-  %20 = sext i32 %19 to i64, !dbg !608
-  %21 = load %struct.seqinfo_s** %10, align 8, !dbg !596, !tbaa !609
-  %22 = getelementptr inbounds %struct.seqinfo_s* %21, i64 %20, i32 1, i64 0, !dbg !608
-  %23 = getelementptr inbounds float* %6, i64 %20, !dbg !611
-  %24 = load float* %23, align 4, !dbg !611, !tbaa !245
-  %25 = fpext float %24 to double, !dbg !611
-  %26 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), i8* %22, double %25) #5, !dbg !612
-  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !207, metadata !220), !dbg !592
-  br label %.backedge, !dbg !613
+if.end:                                           ; preds = %if.then, %if.then6
+  %2 = phi i32 [ %1, %if.then ], [ %.pre, %if.then6 ]
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !199), !dbg !358
+  %idxprom = sext i32 %2 to i64, !dbg !358
+  %3 = load %struct.seqinfo_s** %sqinfo, align 8, !dbg !358, !tbaa !215
+  %arraydecay = getelementptr inbounds %struct.seqinfo_s* %3, i64 %idxprom, i32 1, i64 0, !dbg !358
+  %arrayidx9 = getelementptr inbounds float* %0, i64 %idxprom, !dbg !358
+  %4 = load float* %arrayidx9, align 4, !dbg !358, !tbaa !221
+  %conv10 = fpext float %4 to double, !dbg !358
+  %call11 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), i8* %arraydecay, double %conv10) #5, !dbg !358
+  call void @llvm.dbg.value(metadata !363, i64 0, metadata !201), !dbg !364
+  br label %while.cond.backedge, !dbg !365
 
-; <label>:27                                      ; preds = %11
-  %28 = icmp slt i32 %12, %1, !dbg !614
-  br i1 %28, label %29, label %68, !dbg !616
+if.else:                                          ; preds = %while.body
+  %cmp13 = icmp slt i32 %1, %mul, !dbg !366
+  br i1 %cmp13, label %if.then15, label %if.else45, !dbg !366
 
-; <label>:29                                      ; preds = %27
-  %30 = icmp eq i32 %docomma.01, 0, !dbg !617
-  br i1 %30, label %33, label %31, !dbg !620
+if.then15:                                        ; preds = %if.else
+  %tobool16 = icmp eq i32 %docomma.097, 0, !dbg !367
+  br i1 %tobool16, label %if.end19, label %if.then17, !dbg !367
 
-; <label>:31                                      ; preds = %29
-  %32 = call i32 @"\01_fputs"(i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), %struct.__sFILE* %fp) #5, !dbg !621
-  br label %33, !dbg !621
+if.then17:                                        ; preds = %if.then15
+  %5 = call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp), !dbg !367
+  br label %if.end19, !dbg !367
 
-; <label>:33                                      ; preds = %29, %31
-  %34 = call i32 @"\01_fputs"(i8* getelementptr inbounds ([2 x i8]* @.str5, i64 0, i64 0), %struct.__sFILE* %fp) #5, !dbg !622
-  call void @llvm.dbg.value(metadata i32* %code, i64 0, metadata !205, metadata !220), !dbg !593
-  %35 = load i32* %code, align 4, !dbg !623, !tbaa !264
-  %36 = add nsw i32 %35, %N, !dbg !624
-  call void @PushIntStack(%struct.intstack_s* %7, i32 %36) #5, !dbg !625
-  call void @llvm.dbg.value(metadata i32* %code, i64 0, metadata !205, metadata !220), !dbg !593
-  %37 = load i32* %code, align 4, !dbg !626, !tbaa !264
-  %38 = sub nsw i32 %37, %N, !dbg !627
-  %39 = sext i32 %38 to i64, !dbg !628
-  %40 = getelementptr inbounds %struct.phylo_s* %tree, i64 %39, i32 2, !dbg !629
-  %41 = load i32* %40, align 4, !dbg !629, !tbaa !298
-  call void @PushIntStack(%struct.intstack_s* %7, i32 %41) #5, !dbg !630
-  call void @llvm.dbg.value(metadata i32* %code, i64 0, metadata !205, metadata !220), !dbg !593
-  %42 = load i32* %code, align 4, !dbg !631, !tbaa !264
-  %43 = sub nsw i32 %42, %N, !dbg !632
-  %44 = sext i32 %43 to i64, !dbg !633
-  %45 = getelementptr inbounds %struct.phylo_s* %tree, i64 %44, i32 1, !dbg !634
-  %46 = load i32* %45, align 4, !dbg !634, !tbaa !293
-  call void @PushIntStack(%struct.intstack_s* %7, i32 %46) #5, !dbg !635
-  call void @llvm.dbg.value(metadata i32* %code, i64 0, metadata !205, metadata !220), !dbg !593
-  %47 = load i32* %code, align 4, !dbg !636, !tbaa !264
-  %48 = sub nsw i32 %47, %N, !dbg !637
-  %49 = sext i32 %48 to i64, !dbg !638
-  %50 = getelementptr inbounds %struct.phylo_s* %tree, i64 %49, i32 5, !dbg !639
-  %51 = bitcast float* %50 to i32*, !dbg !639
-  %52 = load i32* %51, align 4, !dbg !639, !tbaa !325
-  %53 = getelementptr inbounds %struct.phylo_s* %tree, i64 %49, i32 2, !dbg !640
-  %54 = load i32* %53, align 4, !dbg !640, !tbaa !298
-  %55 = sext i32 %54 to i64, !dbg !641
-  %56 = getelementptr inbounds float* %6, i64 %55, !dbg !641
-  %57 = bitcast float* %56 to i32*, !dbg !642
-  store i32 %52, i32* %57, align 4, !dbg !642, !tbaa !245
-  call void @llvm.dbg.value(metadata i32* %code, i64 0, metadata !205, metadata !220), !dbg !593
-  %58 = getelementptr inbounds %struct.phylo_s* %tree, i64 %49, i32 4, !dbg !643
-  %59 = bitcast float* %58 to i32*, !dbg !643
-  %60 = load i32* %59, align 4, !dbg !643, !tbaa !328
-  %61 = getelementptr inbounds %struct.phylo_s* %tree, i64 %49, i32 1, !dbg !644
-  %62 = load i32* %61, align 4, !dbg !644, !tbaa !293
-  %63 = sext i32 %62 to i64, !dbg !645
-  %64 = getelementptr inbounds float* %6, i64 %63, !dbg !645
-  %65 = bitcast float* %64 to i32*, !dbg !646
-  store i32 %60, i32* %65, align 4, !dbg !646, !tbaa !245
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !207, metadata !220), !dbg !592
-  br label %.backedge, !dbg !647
+if.end19:                                         ; preds = %if.then15, %if.then17
+  %fputc = call i32 @fputc(i32 40, %struct._IO_FILE* %fp), !dbg !369
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !199), !dbg !370
+  %6 = load i32* %code, align 4, !dbg !370, !tbaa !228
+  %add = add nsw i32 %6, %N, !dbg !370
+  call void @PushIntStack(%struct.intstack_s* %call2, i32 %add) #5, !dbg !370
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !199), !dbg !371
+  %7 = load i32* %code, align 4, !dbg !371, !tbaa !228
+  %sub21 = sub nsw i32 %7, %N, !dbg !371
+  %idxprom22 = sext i32 %sub21 to i64, !dbg !371
+  %right = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom22, i32 2, !dbg !371
+  %8 = load i32* %right, align 4, !dbg !371, !tbaa !228
+  call void @PushIntStack(%struct.intstack_s* %call2, i32 %8) #5, !dbg !371
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !199), !dbg !372
+  %9 = load i32* %code, align 4, !dbg !372, !tbaa !228
+  %sub24 = sub nsw i32 %9, %N, !dbg !372
+  %idxprom25 = sext i32 %sub24 to i64, !dbg !372
+  %left = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom25, i32 1, !dbg !372
+  %10 = load i32* %left, align 4, !dbg !372, !tbaa !228
+  call void @PushIntStack(%struct.intstack_s* %call2, i32 %10) #5, !dbg !372
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !199), !dbg !373
+  %11 = load i32* %code, align 4, !dbg !373, !tbaa !228
+  %sub27 = sub nsw i32 %11, %N, !dbg !373
+  %idxprom28 = sext i32 %sub27 to i64, !dbg !373
+  %rblen = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom28, i32 5, !dbg !373
+  %12 = load float* %rblen, align 4, !dbg !373, !tbaa !221
+  %right33 = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom28, i32 2, !dbg !373
+  %13 = load i32* %right33, align 4, !dbg !373, !tbaa !228
+  %idxprom34 = sext i32 %13 to i64, !dbg !373
+  %arrayidx35 = getelementptr inbounds float* %0, i64 %idxprom34, !dbg !373
+  store float %12, float* %arrayidx35, align 4, !dbg !373, !tbaa !221
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !199), !dbg !374
+  %lblen = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom28, i32 4, !dbg !374
+  %14 = load float* %lblen, align 4, !dbg !374, !tbaa !221
+  %left42 = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom28, i32 1, !dbg !374
+  %15 = load i32* %left42, align 4, !dbg !374, !tbaa !228
+  %idxprom43 = sext i32 %15 to i64, !dbg !374
+  %arrayidx44 = getelementptr inbounds float* %0, i64 %idxprom43, !dbg !374
+  store float %14, float* %arrayidx44, align 4, !dbg !374, !tbaa !221
+  call void @llvm.dbg.value(metadata !9, i64 0, metadata !201), !dbg !375
+  br label %while.cond.backedge, !dbg !376
 
-.backedge:                                        ; preds = %33, %18, %72, %70
-  %docomma.0.be = phi i32 [ 1, %18 ], [ 0, %33 ], [ 1, %72 ], [ 1, %70 ]
-  call void @llvm.dbg.value(metadata i32* %code, i64 0, metadata !205, metadata !220), !dbg !593
-  %66 = call i32 @PopIntStack(%struct.intstack_s* %7, i32* %code) #5, !dbg !594
-  %67 = icmp eq i32 %66, 0, !dbg !595
-  br i1 %67, label %._crit_edge, label %11, !dbg !595
+while.cond.backedge:                              ; preds = %if.end19, %if.end, %if.else51, %if.then49
+  %docomma.0.be = phi i32 [ 1, %if.end ], [ 0, %if.end19 ], [ 1, %if.else51 ], [ 1, %if.then49 ]
+  %call3 = call i32 @PopIntStack(%struct.intstack_s* %call2, i32* %code) #5, !dbg !357
+  %tobool = icmp eq i32 %call3, 0, !dbg !357
+  br i1 %tobool, label %while.end, label %while.body, !dbg !357
 
-; <label>:68                                      ; preds = %27
-  %69 = icmp eq i32 %12, %1, !dbg !648
-  br i1 %69, label %70, label %72, !dbg !651
+if.else45:                                        ; preds = %if.else
+  %cmp47 = icmp eq i32 %1, %mul, !dbg !377
+  br i1 %cmp47, label %if.then49, label %if.else51, !dbg !377
 
-; <label>:70                                      ; preds = %68
-  %71 = call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str6, i64 0, i64 0), i64 3, i64 1, %struct.__sFILE* %fp), !dbg !652
-  br label %.backedge, !dbg !652
+if.then49:                                        ; preds = %if.else45
+  %16 = call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str6, i64 0, i64 0), i64 3, i64 1, %struct._IO_FILE* %fp), !dbg !377
+  br label %while.cond.backedge, !dbg !377
 
-; <label>:72                                      ; preds = %68
-  %73 = sub nsw i32 %12, %N, !dbg !653
-  %74 = sext i32 %73 to i64, !dbg !654
-  %75 = getelementptr inbounds float* %6, i64 %74, !dbg !654
-  %76 = load float* %75, align 4, !dbg !654, !tbaa !245
-  %77 = fpext float %76 to double, !dbg !654
-  %78 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0), double %77) #5, !dbg !655
-  br label %.backedge
+if.else51:                                        ; preds = %if.else45
+  %sub52 = sub nsw i32 %1, %N, !dbg !379
+  %idxprom53 = sext i32 %sub52 to i64, !dbg !379
+  %arrayidx54 = getelementptr inbounds float* %0, i64 %idxprom53, !dbg !379
+  %17 = load float* %arrayidx54, align 4, !dbg !379, !tbaa !221
+  %conv55 = fpext float %17 to double, !dbg !379
+  %call56 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0), double %conv55) #5, !dbg !379
+  br label %while.cond.backedge
 
-._crit_edge:                                      ; preds = %.backedge, %0
-  %79 = call i32 @FreeIntStack(%struct.intstack_s* %7) #5, !dbg !656
-  call void @free(i8* %5) #6, !dbg !657
-  ret void, !dbg !658
+while.end:                                        ; preds = %while.cond.backedge, %entry
+  %call60 = call i32 @FreeIntStack(%struct.intstack_s* %call2) #5, !dbg !380
+  call void @free(i8* %call) #5, !dbg !381
+  ret void, !dbg !382
 }

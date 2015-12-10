@@ -1,110 +1,115 @@
-define i32 @regexec(%struct.re_pattern_buffer* nocapture readonly %preg, i8* %string, i64 %nmatch, %struct.regmatch_t* nocapture %pmatch, i32 %eflags) #0 {
+define i32 @regexec(%struct.re_pattern_buffer* nocapture %preg, i8* %string, i64 %nmatch, %struct.regmatch_t* nocapture %pmatch, i32 %eflags) #0 {
+entry:
   %regs = alloca %struct.re_registers, align 8
   %private_preg = alloca %struct.re_pattern_buffer, align 8
-  tail call void @llvm.dbg.value(metadata %struct.re_pattern_buffer* %preg, i64 0, metadata !269, metadata !797), !dbg !3952
-  tail call void @llvm.dbg.value(metadata i8* %string, i64 0, metadata !270, metadata !797), !dbg !3953
-  tail call void @llvm.dbg.value(metadata i64 %nmatch, i64 0, metadata !271, metadata !797), !dbg !3954
-  tail call void @llvm.dbg.value(metadata %struct.regmatch_t* %pmatch, i64 0, metadata !272, metadata !797), !dbg !3955
-  tail call void @llvm.dbg.value(metadata i32 %eflags, i64 0, metadata !273, metadata !797), !dbg !3956
-  %1 = bitcast %struct.re_pattern_buffer* %private_preg to i8*, !dbg !3957
-  call void @llvm.lifetime.start(i64 64, i8* %1) #6, !dbg !3957
-  %2 = tail call i64 @strlen(i8* %string) #7, !dbg !3958
-  %3 = trunc i64 %2 to i32, !dbg !3958
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !277, metadata !797), !dbg !3959
-  %4 = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 7, !dbg !3960
-  %5 = load i8* %4, align 8, !dbg !3960
-  %6 = and i8 %5, 16, !dbg !3960
-  %7 = icmp eq i8 %6, 0, !dbg !3961
-  %8 = icmp ne i64 %nmatch, 0, !dbg !3962
-  %. = and i1 %8, %7, !dbg !3963
-  %9 = bitcast %struct.re_pattern_buffer* %preg to i8*, !dbg !3964
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* %9, i64 64, i32 8, i1 false), !dbg !3964, !tbaa.struct !3965
-  %10 = getelementptr inbounds %struct.re_pattern_buffer* %private_preg, i64 0, i32 7, !dbg !3966
-  %eflags.tr = trunc i32 %eflags to i8, !dbg !3967
-  %11 = load i8* %10, align 8, !dbg !3967
-  %12 = shl i8 %eflags.tr, 5, !dbg !3967
-  %13 = and i8 %12, 32, !dbg !3967
-  %14 = and i8 %11, -103, !dbg !3967
-  %15 = shl i32 %eflags, 5, !dbg !3968
-  %16 = trunc i32 %15 to i8, !dbg !3968
-  %17 = and i8 %16, 64, !dbg !3968
-  %18 = or i8 %13, %17, !dbg !3968
-  %19 = or i8 %18, %14, !dbg !3969
-  %20 = or i8 %19, 4, !dbg !3969
-  store i8 %20, i8* %10, align 8, !dbg !3969
-  br i1 %., label %22, label %.thread3, !dbg !3970
+  call void @llvm.dbg.value(metadata !{%struct.re_pattern_buffer* %preg}, i64 0, metadata !250), !dbg !2179
+  call void @llvm.dbg.value(metadata !{i8* %string}, i64 0, metadata !251), !dbg !2180
+  call void @llvm.dbg.value(metadata !{i64 %nmatch}, i64 0, metadata !252), !dbg !2181
+  call void @llvm.dbg.value(metadata !{%struct.regmatch_t* %pmatch}, i64 0, metadata !253), !dbg !2182
+  call void @llvm.dbg.value(metadata !{i32 %eflags}, i64 0, metadata !254), !dbg !2183
+  call void @llvm.dbg.declare(metadata !{%struct.re_registers* %regs}, metadata !256), !dbg !2184
+  %0 = bitcast %struct.re_pattern_buffer* %private_preg to i8*, !dbg !2185
+  call void @llvm.lifetime.start(i64 64, i8* %0) #3, !dbg !2185
+  call void @llvm.dbg.declare(metadata !{%struct.re_pattern_buffer* %private_preg}, metadata !257), !dbg !2185
+  %call = call i64 @strlen(i8* %string) #10, !dbg !2186
+  %conv = trunc i64 %call to i32, !dbg !2186
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !258), !dbg !2186
+  %no_sub = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 7, !dbg !2187
+  %bf.load = load i8* %no_sub, align 8, !dbg !2187
+  %bf.clear = and i8 %bf.load, 16, !dbg !2187
+  %tobool = icmp eq i8 %bf.clear, 0, !dbg !2187
+  %cmp = icmp ne i64 %nmatch, 0, !dbg !2187
+  %cmp. = and i1 %tobool, %cmp, !dbg !2187
+  %1 = bitcast %struct.re_pattern_buffer* %preg to i8*, !dbg !2188
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 64, i32 8, i1 false), !dbg !2188, !tbaa.struct !2189
+  %not_bol = getelementptr inbounds %struct.re_pattern_buffer* %private_preg, i64 0, i32 7, !dbg !2190
+  %eflags.tr = trunc i32 %eflags to i8, !dbg !2190
+  %bf.load5 = load i8* %not_bol, align 8, !dbg !2190
+  %bf.value = shl i8 %eflags.tr, 5, !dbg !2190
+  %bf.shl = and i8 %bf.value, 32, !dbg !2190
+  %bf.clear6 = and i8 %bf.load5, -103, !dbg !2190
+  %2 = shl i32 %eflags, 5, !dbg !2191
+  %bf.value14 = trunc i32 %2 to i8, !dbg !2191
+  %bf.shl15 = and i8 %bf.value14, 64, !dbg !2191
+  %bf.set = or i8 %bf.shl, %bf.shl15, !dbg !2191
+  %bf.set17 = or i8 %bf.set, %bf.clear6, !dbg !2192
+  %bf.set21 = or i8 %bf.set17, 4, !dbg !2192
+  store i8 %bf.set21, i8* %not_bol, align 8, !dbg !2192
+  br i1 %cmp., label %if.then, label %if.end31.thread, !dbg !2193
 
-.thread3:                                         ; preds = %0
-  tail call void @llvm.dbg.value(metadata %struct.re_pattern_buffer* %private_preg, i64 0, metadata !276, metadata !797), !dbg !3971
-  tail call void @llvm.dbg.value(metadata %struct.re_pattern_buffer* %private_preg, i64 0, metadata !175, metadata !797) #6, !dbg !3972
-  tail call void @llvm.dbg.value(metadata i8* %string, i64 0, metadata !176, metadata !797) #6, !dbg !3974
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !177, metadata !797) #6, !dbg !3975
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !178, metadata !797) #6, !dbg !3976
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !179, metadata !797) #6, !dbg !3977
-  %21 = call i32 @re_search_2(%struct.re_pattern_buffer* %private_preg, i8* null, i32 0, i8* %string, i32 %3, i32 0, i32 %3, %struct.re_registers* null, i32 %3) #7, !dbg !3978
-  br label %50, !dbg !3979
+if.end31.thread:                                  ; preds = %entry
+  call void @llvm.dbg.value(metadata !{%struct.re_pattern_buffer* %private_preg}, i64 0, metadata !2194) #3, !dbg !2196
+  call void @llvm.dbg.value(metadata !{i8* %string}, i64 0, metadata !2197) #3, !dbg !2198
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !2199) #3, !dbg !2200
+  call void @llvm.dbg.value(metadata !71, i64 0, metadata !2201) #3, !dbg !2200
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !2202) #3, !dbg !2200
+  call void @llvm.dbg.value(metadata !{%struct.re_registers* %regs}, i64 0, metadata !2203) #3, !dbg !2204
+  %call.i77 = call i32 @re_search_2(%struct.re_pattern_buffer* %private_preg, i8* null, i32 0, i8* %string, i32 %conv, i32 0, i32 %conv, %struct.re_registers* null, i32 %conv) #7, !dbg !2205
+  call void @llvm.dbg.value(metadata !{i32 %call.i78}, i64 0, metadata !255), !dbg !2195
+  br label %if.end53, !dbg !2206
 
-; <label>:22                                      ; preds = %0
-  %23 = trunc i64 %nmatch to i32, !dbg !3980
-  %24 = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 0, !dbg !3983
-  store i32 %23, i32* %24, align 8, !dbg !3984, !tbaa !1392
-  %25 = shl i64 %nmatch, 3, !dbg !3985
-  %26 = tail call i8* @malloc(i64 %25) #7, !dbg !3985
-  %27 = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 1, !dbg !3986
-  %28 = bitcast i32** %27 to i8**, !dbg !3987
-  store i8* %26, i8** %28, align 8, !dbg !3987, !tbaa !1397
-  %29 = icmp eq i8* %26, null, !dbg !3988
-  br i1 %29, label %52, label %30, !dbg !3990
+if.then:                                          ; preds = %entry
+  %conv23 = trunc i64 %nmatch to i32, !dbg !2207
+  %num_regs = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 0, !dbg !2207
+  store i32 %conv23, i32* %num_regs, align 8, !dbg !2207, !tbaa !795
+  %mul24 = shl i64 %nmatch, 3, !dbg !2209
+  %call25 = call noalias i8* @malloc(i64 %mul24) #7, !dbg !2209
+  %3 = bitcast i8* %call25 to i32*, !dbg !2209
+  %start = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 1, !dbg !2209
+  store i32* %3, i32** %start, align 8, !dbg !2209, !tbaa !722
+  %cmp27 = icmp eq i8* %call25, null, !dbg !2210
+  br i1 %cmp27, label %cleanup, label %if.then36, !dbg !2210
 
-; <label>:30                                      ; preds = %22
-  %31 = bitcast i8* %26 to i32*, !dbg !3985
-  %32 = getelementptr inbounds i32* %31, i64 %nmatch, !dbg !3991
-  %33 = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 2, !dbg !3992
-  store i32* %32, i32** %33, align 8, !dbg !3993, !tbaa !1401
-  tail call void @llvm.dbg.value(metadata %struct.re_pattern_buffer* %private_preg, i64 0, metadata !276, metadata !797), !dbg !3971
-  tail call void @llvm.dbg.value(metadata %struct.re_pattern_buffer* %private_preg, i64 0, metadata !175, metadata !797) #6, !dbg !3972
-  tail call void @llvm.dbg.value(metadata i8* %string, i64 0, metadata !176, metadata !797) #6, !dbg !3974
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !177, metadata !797) #6, !dbg !3975
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !178, metadata !797) #6, !dbg !3976
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !179, metadata !797) #6, !dbg !3977
-  %34 = call i32 @re_search_2(%struct.re_pattern_buffer* %private_preg, i8* null, i32 0, i8* %string, i32 %3, i32 0, i32 %3, %struct.re_registers* %regs, i32 %3) #7, !dbg !3978
-  %35 = icmp sgt i32 %34, -1, !dbg !3994
-  br i1 %35, label %.lr.ph, label %.loopexit, !dbg !3995
+if.then36:                                        ; preds = %if.then
+  %add.ptr = getelementptr inbounds i32* %3, i64 %nmatch, !dbg !2211
+  %end = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 2, !dbg !2211
+  store i32* %add.ptr, i32** %end, align 8, !dbg !2211, !tbaa !722
+  call void @llvm.dbg.value(metadata !{%struct.re_pattern_buffer* %private_preg}, i64 0, metadata !2194) #3, !dbg !2196
+  call void @llvm.dbg.value(metadata !{i8* %string}, i64 0, metadata !2197) #3, !dbg !2198
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !2199) #3, !dbg !2200
+  call void @llvm.dbg.value(metadata !71, i64 0, metadata !2201) #3, !dbg !2200
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !2202) #3, !dbg !2200
+  call void @llvm.dbg.value(metadata !{%struct.re_registers* %regs}, i64 0, metadata !2203) #3, !dbg !2204
+  %call.i = call i32 @re_search_2(%struct.re_pattern_buffer* %private_preg, i8* null, i32 0, i8* %string, i32 %conv, i32 0, i32 %conv, %struct.re_registers* %regs, i32 %conv) #7, !dbg !2205
+  call void @llvm.dbg.value(metadata !{i32 %call.i78}, i64 0, metadata !255), !dbg !2195
+  %cmp37 = icmp sgt i32 %call.i, -1, !dbg !2212
+  br i1 %cmp37, label %for.body.lr.ph, label %if.end51, !dbg !2212
 
-.lr.ph:                                           ; preds = %30
-  %36 = load i32** %27, align 8, !dbg !3996, !tbaa !1397
-  %37 = load i32** %33, align 8, !dbg !4000, !tbaa !1401
-  br label %38, !dbg !4001
+for.body.lr.ph:                                   ; preds = %if.then36
+  %4 = load i32** %start, align 8, !dbg !2213, !tbaa !722
+  %5 = load i32** %end, align 8, !dbg !2216, !tbaa !722
+  br label %for.body, !dbg !2217
 
-; <label>:38                                      ; preds = %.lr.ph, %38
-  %39 = phi i64 [ 0, %.lr.ph ], [ %47, %38 ]
-  %r.05 = phi i32 [ 0, %.lr.ph ], [ %46, %38 ]
-  %40 = getelementptr inbounds i32* %36, i64 %39, !dbg !4002
-  %41 = load i32* %40, align 4, !dbg !4002, !tbaa !964
-  %42 = getelementptr inbounds %struct.regmatch_t* %pmatch, i64 %39, i32 0, !dbg !4003
-  store i32 %41, i32* %42, align 4, !dbg !4004, !tbaa !4005
-  %43 = getelementptr inbounds i32* %37, i64 %39, !dbg !4007
-  %44 = load i32* %43, align 4, !dbg !4007, !tbaa !964
-  %45 = getelementptr inbounds %struct.regmatch_t* %pmatch, i64 %39, i32 1, !dbg !4008
-  store i32 %44, i32* %45, align 4, !dbg !4009, !tbaa !4010
-  %46 = add i32 %r.05, 1, !dbg !4011
-  call void @llvm.dbg.value(metadata i32 %46, i64 0, metadata !279, metadata !797), !dbg !4012
-  %47 = zext i32 %46 to i64, !dbg !4013
-  %48 = icmp ult i64 %47, %nmatch, !dbg !4014
-  br i1 %48, label %38, label %.loopexit, !dbg !4001
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %conv4081 = phi i64 [ 0, %for.body.lr.ph ], [ %conv40, %for.body ]
+  %r.080 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %arrayidx = getelementptr inbounds i32* %4, i64 %conv4081, !dbg !2213
+  %6 = load i32* %arrayidx, align 4, !dbg !2213, !tbaa !795
+  %rm_so = getelementptr inbounds %struct.regmatch_t* %pmatch, i64 %conv4081, i32 0, !dbg !2213
+  store i32 %6, i32* %rm_so, align 4, !dbg !2213, !tbaa !795
+  %arrayidx48 = getelementptr inbounds i32* %5, i64 %conv4081, !dbg !2216
+  %7 = load i32* %arrayidx48, align 4, !dbg !2216, !tbaa !795
+  %rm_eo = getelementptr inbounds %struct.regmatch_t* %pmatch, i64 %conv4081, i32 1, !dbg !2216
+  store i32 %7, i32* %rm_eo, align 4, !dbg !2216, !tbaa !795
+  %inc = add i32 %r.080, 1, !dbg !2217
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !260), !dbg !2217
+  %conv40 = zext i32 %inc to i64, !dbg !2217
+  %cmp41 = icmp ult i64 %conv40, %nmatch, !dbg !2217
+  br i1 %cmp41, label %for.body, label %if.end51, !dbg !2217
 
-.loopexit:                                        ; preds = %38, %30
-  %49 = load i8** %28, align 8, !dbg !4015, !tbaa !1397
-  call void @free(i8* %49) #8, !dbg !4016
-  br label %50, !dbg !4017
+if.end51:                                         ; preds = %for.body, %if.then36
+  %8 = load i32** %start, align 8, !dbg !2218, !tbaa !722
+  %9 = bitcast i32* %8 to i8*, !dbg !2218
+  call void @free(i8* %9) #7, !dbg !2218
+  br label %if.end53, !dbg !2219
 
-; <label>:50                                      ; preds = %.thread3, %.loopexit
-  %51 = phi i32 [ %34, %.loopexit ], [ %21, %.thread3 ]
-  %.lobit = lshr i32 %51, 31, !dbg !4018
-  br label %52, !dbg !4019
+if.end53:                                         ; preds = %if.end31.thread, %if.end51
+  %call.i78 = phi i32 [ %call.i77, %if.end31.thread ], [ %call.i, %if.end51 ]
+  %call34.lobit = lshr i32 %call.i78, 31, !dbg !2220
+  br label %cleanup, !dbg !2220
 
-; <label>:52                                      ; preds = %22, %50
-  %.0 = phi i32 [ %.lobit, %50 ], [ 1, %22 ]
-  call void @llvm.lifetime.end(i64 64, i8* %1) #6, !dbg !4020
-  ret i32 %.0, !dbg !4020
+cleanup:                                          ; preds = %if.then, %if.end53
+  %retval.0 = phi i32 [ %call34.lobit, %if.end53 ], [ 1, %if.then ]
+  call void @llvm.lifetime.end(i64 64, i8* %0) #3, !dbg !2221
+  ret i32 %retval.0, !dbg !2221
 }

@@ -1,51 +1,52 @@
-define internal fastcc void @_ZN3povL10insert_hitEPNS_24BCyl_Intersection_StructES1_Pi(%"struct.pov::BCyl_Intersection_Struct"* nocapture readonly %element, %"struct.pov::BCyl_Intersection_Struct"* %intervals, i32* nocapture %cnt) #0 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::BCyl_Intersection_Struct"* %element, i64 0, metadata !140, metadata !443), !dbg !818
-  tail call void @llvm.dbg.value(metadata %"struct.pov::BCyl_Intersection_Struct"* %intervals, i64 0, metadata !141, metadata !443), !dbg !819
-  tail call void @llvm.dbg.value(metadata i32* %cnt, i64 0, metadata !142, metadata !443), !dbg !820
-  %1 = load i32* %cnt, align 4, !dbg !821, !tbaa !452
-  %2 = sext i32 %1 to i64, !dbg !822
-  %3 = getelementptr inbounds %"struct.pov::BCyl_Intersection_Struct"* %intervals, i64 %2, !dbg !822
-  %4 = bitcast %"struct.pov::BCyl_Intersection_Struct"* %3 to i8*, !dbg !823
-  %5 = bitcast %"struct.pov::BCyl_Intersection_Struct"* %element to i8*, !dbg !823
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %5, i64 40, i32 8, i1 false), !dbg !823, !tbaa.struct !824
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !143, metadata !443), !dbg !826
-  %6 = getelementptr inbounds %"struct.pov::BCyl_Intersection_Struct"* %element, i64 0, i32 1, i64 0, !dbg !827
-  %7 = load double* %6, align 8, !dbg !827, !tbaa !459
-  br label %8, !dbg !830
+define internal fastcc void @_ZN3povL10insert_hitEPNS_24BCyl_Intersection_StructES1_Pi(%"struct.pov::BCyl_Intersection_Struct"* nocapture %element, %"struct.pov::BCyl_Intersection_Struct"* %intervals, i32* nocapture %cnt) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::BCyl_Intersection_Struct"* %element}, i64 0, metadata !118), !dbg !340
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::BCyl_Intersection_Struct"* %intervals}, i64 0, metadata !119), !dbg !340
+  tail call void @llvm.dbg.value(metadata !{i32* %cnt}, i64 0, metadata !120), !dbg !340
+  %0 = load i32* %cnt, align 4, !dbg !341, !tbaa !170
+  %idxprom = sext i32 %0 to i64, !dbg !341
+  %arrayidx = getelementptr inbounds %"struct.pov::BCyl_Intersection_Struct"* %intervals, i64 %idxprom, !dbg !341
+  %1 = bitcast %"struct.pov::BCyl_Intersection_Struct"* %arrayidx to i8*, !dbg !341
+  %2 = bitcast %"struct.pov::BCyl_Intersection_Struct"* %element to i8*, !dbg !341
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* %2, i64 40, i32 8, i1 false), !dbg !341, !tbaa.struct !342
+  tail call void @llvm.dbg.value(metadata !11, i64 0, metadata !121), !dbg !343
+  %arrayidx1 = getelementptr inbounds %"struct.pov::BCyl_Intersection_Struct"* %element, i64 0, i32 1, i64 0, !dbg !343
+  %3 = load double* %arrayidx1, align 8, !dbg !343, !tbaa !174
+  br label %for.cond, !dbg !343
 
-; <label>:8                                       ; preds = %8, %0
-  %indvars.iv = phi i64 [ %indvars.iv.next, %8 ], [ 0, %0 ]
-  %9 = getelementptr inbounds %"struct.pov::BCyl_Intersection_Struct"* %intervals, i64 %indvars.iv, i32 1, i64 0, !dbg !831
-  %10 = load double* %9, align 8, !dbg !831, !tbaa !459
-  %11 = fcmp ogt double %7, %10, !dbg !832
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !833
-  br i1 %11, label %8, label %12, !dbg !833
+for.cond:                                         ; preds = %for.cond, %entry
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %k.0 = phi i32 [ %inc, %for.cond ], [ 0, %entry ]
+  %arrayidx3 = getelementptr inbounds %"struct.pov::BCyl_Intersection_Struct"* %intervals, i64 %indvars.iv, !dbg !343
+  %arrayidx5 = getelementptr inbounds %"struct.pov::BCyl_Intersection_Struct"* %intervals, i64 %indvars.iv, i32 1, i64 0, !dbg !343
+  %4 = load double* %arrayidx5, align 8, !dbg !343, !tbaa !174
+  %cmp = fcmp ogt double %3, %4, !dbg !343
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !343
+  %inc = add nsw i32 %k.0, 1, !dbg !343
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !121), !dbg !343
+  br i1 %cmp, label %for.cond, label %for.end, !dbg !343
 
-; <label>:12                                      ; preds = %8
-  %13 = trunc i64 %indvars.iv to i32, !dbg !834
-  %14 = load i32* %cnt, align 4, !dbg !834, !tbaa !452
-  %15 = icmp sgt i32 %14, %13, !dbg !836
-  br i1 %15, label %16, label %27, !dbg !837
+for.end:                                          ; preds = %for.cond
+  %5 = load i32* %cnt, align 4, !dbg !345, !tbaa !170
+  %cmp6 = icmp slt i32 %k.0, %5, !dbg !345
+  br i1 %cmp6, label %if.then, label %if.end, !dbg !345
 
-; <label>:16                                      ; preds = %12
-  %17 = getelementptr inbounds %"struct.pov::BCyl_Intersection_Struct"* %intervals, i64 %indvars.iv, !dbg !831
-  %18 = shl i64 %indvars.iv, 32, !dbg !838
-  %sext = add i64 %18, 4294967296, !dbg !838
-  %19 = ashr exact i64 %sext, 32, !dbg !838
-  %20 = getelementptr inbounds %"struct.pov::BCyl_Intersection_Struct"* %intervals, i64 %19, !dbg !838
-  %21 = bitcast %"struct.pov::BCyl_Intersection_Struct"* %20 to i8*, !dbg !838
-  %22 = bitcast %"struct.pov::BCyl_Intersection_Struct"* %17 to i8*, !dbg !838
-  %23 = sub nsw i32 %14, %13, !dbg !838
-  %24 = sext i32 %23 to i64, !dbg !838
-  %25 = mul nsw i64 %24, 40, !dbg !838
-  %26 = tail call i8* @_ZN3pov11pov_memmoveEPvS0_m(i8* %21, i8* %22, i64 %25) #6, !dbg !838
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %22, i8* %5, i64 40, i32 8, i1 false), !dbg !840, !tbaa.struct !824
-  %.pre = load i32* %cnt, align 4, !dbg !841, !tbaa !452
-  br label %27, !dbg !842
+if.then:                                          ; preds = %for.end
+  %idxprom7 = sext i32 %inc to i64, !dbg !346
+  %arrayidx8 = getelementptr inbounds %"struct.pov::BCyl_Intersection_Struct"* %intervals, i64 %idxprom7, !dbg !346
+  %6 = bitcast %"struct.pov::BCyl_Intersection_Struct"* %arrayidx8 to i8*, !dbg !346
+  %7 = bitcast %"struct.pov::BCyl_Intersection_Struct"* %arrayidx3 to i8*, !dbg !346
+  %sub = sub nsw i32 %5, %k.0, !dbg !346
+  %conv = sext i32 %sub to i64, !dbg !346
+  %mul = mul i64 %conv, 40, !dbg !346
+  %call = tail call i8* @_ZN3pov11pov_memmoveEPvS0_m(i8* %6, i8* %7, i64 %mul) #6, !dbg !346
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %7, i8* %2, i64 40, i32 8, i1 false), !dbg !348, !tbaa.struct !342
+  %.pre = load i32* %cnt, align 4, !dbg !349, !tbaa !170
+  br label %if.end, !dbg !350
 
-; <label>:27                                      ; preds = %16, %12
-  %28 = phi i32 [ %.pre, %16 ], [ %14, %12 ]
-  %29 = add nsw i32 %28, 1, !dbg !841
-  store i32 %29, i32* %cnt, align 4, !dbg !841, !tbaa !452
-  ret void, !dbg !843
+if.end:                                           ; preds = %if.then, %for.end
+  %8 = phi i32 [ %.pre, %if.then ], [ %5, %for.end ]
+  %inc13 = add nsw i32 %8, 1, !dbg !349
+  store i32 %inc13, i32* %cnt, align 4, !dbg !349, !tbaa !170
+  ret void, !dbg !351
 }

@@ -1,16 +1,17 @@
 define void @ETree_setDefaultFields(%struct._ETree* %etree) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ETree* %etree, i64 0, metadata !51, metadata !66), !dbg !77
-  %1 = icmp eq %struct._ETree* %etree, null, !dbg !78
-  br i1 %1, label %2, label %5, !dbg !80
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !46), !dbg !62
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !63
+  br i1 %cmp, label %if.then, label %if.end, !dbg !63
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !81, !tbaa !71
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([60 x i8]* @.str2, i64 0, i64 0), %struct._ETree* null) #6, !dbg !83
-  tail call void @exit(i32 -1) #7, !dbg !84
-  unreachable, !dbg !84
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !64, !tbaa !57
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str2, i64 0, i64 0), %struct._ETree* null) #6, !dbg !64
+  tail call void @exit(i32 -1) #7, !dbg !66
+  unreachable, !dbg !66
 
-; <label>:5                                       ; preds = %0
-  %6 = bitcast %struct._ETree* %etree to i8*, !dbg !85
-  call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 40, i32 4, i1 false), !dbg !86
-  ret void, !dbg !85
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct._ETree* %etree to i8*, !dbg !67
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 40, i32 4, i1 false), !dbg !68
+  ret void, !dbg !67
 }

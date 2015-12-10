@@ -1,409 +1,429 @@
 define internal fastcc void @add_pending_init(%union.tree_node* %purpose, %union.tree_node* %value) #0 {
 entry:
-  %0 = load %union.tree_node** @constructor_type, align 8, !tbaa !0
-  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
-  %1 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 18
-  br i1 %cmp, label %while.cond.preheader, label %if.else18
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %purpose}, i64 0, metadata !1653), !dbg !4768
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %value}, i64 0, metadata !1654), !dbg !4768
+  tail call void @llvm.dbg.value(metadata !4769, i64 0, metadata !1656), !dbg !4770
+  tail call void @llvm.dbg.value(metadata !4771, i64 0, metadata !1655), !dbg !4772
+  %0 = load %union.tree_node** @constructor_type, align 8, !dbg !4773, !tbaa !1977
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2, !dbg !4773
+  %1 = bitcast [4 x i8]* %code to i32*, !dbg !4773
+  %bf.load = load i32* %1, align 8, !dbg !4773
+  %bf.clear = and i32 %bf.load, 255, !dbg !4773
+  %cmp = icmp eq i32 %bf.clear, 18, !dbg !4773
+  br i1 %cmp, label %while.cond.preheader, label %if.else18, !dbg !4773
 
 while.cond.preheader:                             ; preds = %entry
-  %2 = load %struct.init_node** @constructor_pending_elts, align 8, !tbaa !0
-  %cmp1390 = icmp eq %struct.init_node* %2, null
-  br i1 %cmp1390, label %if.end48, label %while.body
+  %2 = load %struct.init_node** @constructor_pending_elts, align 8, !dbg !4774, !tbaa !1977
+  %cmp1390 = icmp eq %struct.init_node* %2, null, !dbg !4774
+  br i1 %cmp1390, label %if.end48, label %while.body, !dbg !4774
 
 while.body:                                       ; preds = %while.cond.preheader, %while.cond.backedge
   %3 = phi %struct.init_node* [ %6, %while.cond.backedge ], [ %2, %while.cond.preheader ]
-  %purpose2 = getelementptr inbounds %struct.init_node* %3, i64 0, i32 4
-  %4 = load %union.tree_node** %purpose2, align 8, !tbaa !0
-  %call = tail call i32 @tree_int_cst_lt(%union.tree_node* %purpose, %union.tree_node* %4) #8
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.else, label %if.then3
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %3}, i64 0, metadata !1655), !dbg !4776
+  %purpose2 = getelementptr inbounds %struct.init_node* %3, i64 0, i32 4, !dbg !4778
+  %4 = load %union.tree_node** %purpose2, align 8, !dbg !4778, !tbaa !1977
+  %call = tail call i32 @tree_int_cst_lt(%union.tree_node* %purpose, %union.tree_node* %4) #9, !dbg !4778
+  %tobool = icmp eq i32 %call, 0, !dbg !4778
+  br i1 %tobool, label %if.else, label %if.then3, !dbg !4778
 
 if.then3:                                         ; preds = %while.body
-  %left = getelementptr inbounds %struct.init_node* %3, i64 0, i32 0
-  br label %while.cond.backedge
+  %left = getelementptr inbounds %struct.init_node* %3, i64 0, i32 0, !dbg !4779
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node** %left}, i64 0, metadata !1656), !dbg !4779
+  br label %while.cond.backedge, !dbg !4779
 
 if.else:                                          ; preds = %while.body
-  %5 = load %union.tree_node** %purpose2, align 8, !tbaa !0
-  %call5 = tail call i32 @tree_int_cst_lt(%union.tree_node* %5, %union.tree_node* %purpose) #8
-  %tobool6 = icmp eq i32 %call5, 0
-  br i1 %tobool6, label %if.else8, label %if.then7
+  %5 = load %union.tree_node** %purpose2, align 8, !dbg !4780, !tbaa !1977
+  %call5 = tail call i32 @tree_int_cst_lt(%union.tree_node* %5, %union.tree_node* %purpose) #9, !dbg !4780
+  %tobool6 = icmp eq i32 %call5, 0, !dbg !4780
+  br i1 %tobool6, label %if.else8, label %if.then7, !dbg !4780
 
 if.then7:                                         ; preds = %if.else
-  %right = getelementptr inbounds %struct.init_node* %3, i64 0, i32 1
+  %right = getelementptr inbounds %struct.init_node* %3, i64 0, i32 1, !dbg !4781
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node** %right}, i64 0, metadata !1656), !dbg !4781
   br label %while.cond.backedge
 
 while.cond.backedge:                              ; preds = %if.then7, %if.then3
   %q.0.be = phi %struct.init_node** [ %left, %if.then3 ], [ %right, %if.then7 ]
-  %6 = load %struct.init_node** %q.0.be, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct.init_node* %6, null
-  br i1 %cmp1, label %if.end48, label %while.body
+  %6 = load %struct.init_node** %q.0.be, align 8, !dbg !4774, !tbaa !1977
+  %cmp1 = icmp eq %struct.init_node* %6, null, !dbg !4774
+  br i1 %cmp1, label %if.end48, label %while.body, !dbg !4774
 
 if.else8:                                         ; preds = %if.else
-  %value9 = getelementptr inbounds %struct.init_node* %3, i64 0, i32 5
-  %7 = load %union.tree_node** %value9, align 8, !tbaa !0
-  %side_effects_flag = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 0, i32 2
-  %8 = bitcast [4 x i8]* %side_effects_flag to i32*
-  %bf.load11 = load i32* %8, align 8
-  %bf.clear12 = and i32 %bf.load11, 256
-  %tobool13 = icmp eq i32 %bf.clear12, 0
-  br i1 %tobool13, label %if.end, label %if.then14
+  %value9 = getelementptr inbounds %struct.init_node* %3, i64 0, i32 5, !dbg !4782
+  %7 = load %union.tree_node** %value9, align 8, !dbg !4782, !tbaa !1977
+  %side_effects_flag = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 0, i32 2, !dbg !4782
+  %8 = bitcast [4 x i8]* %side_effects_flag to i32*, !dbg !4782
+  %bf.load11 = load i32* %8, align 8, !dbg !4782
+  %bf.clear12 = and i32 %bf.load11, 256, !dbg !4782
+  %tobool13 = icmp eq i32 %bf.clear12, 0, !dbg !4782
+  br i1 %tobool13, label %if.end, label %if.then14, !dbg !4782
 
 if.then14:                                        ; preds = %if.else8
-  tail call fastcc void @warning_init(i8* getelementptr inbounds ([48 x i8]* @.str152, i64 0, i64 0)) #7
-  br label %if.end
+  tail call fastcc void @warning_init(i8* getelementptr inbounds ([48 x i8]* @.str152, i64 0, i64 0)) #8, !dbg !4784
+  br label %if.end, !dbg !4784
 
 if.end:                                           ; preds = %if.else8, %if.then14
-  store %union.tree_node* %value, %union.tree_node** %value9, align 8, !tbaa !0
-  br label %while.end238
+  store %union.tree_node* %value, %union.tree_node** %value9, align 8, !dbg !4785, !tbaa !1977
+  br label %while.end238, !dbg !4786
 
 if.else18:                                        ; preds = %entry
-  %call19 = tail call %union.tree_node* @bit_position(%union.tree_node* %purpose) #8
-  %9 = load %struct.init_node** @constructor_pending_elts, align 8, !tbaa !0
-  %cmp21397 = icmp eq %struct.init_node* %9, null
-  br i1 %cmp21397, label %if.end48, label %while.body22
+  %call19 = tail call %union.tree_node* @bit_position(%union.tree_node* %purpose) #9, !dbg !4787
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call19}, i64 0, metadata !1659), !dbg !4787
+  %9 = load %struct.init_node** @constructor_pending_elts, align 8, !dbg !4788, !tbaa !1977
+  %cmp21397 = icmp eq %struct.init_node* %9, null, !dbg !4788
+  br i1 %cmp21397, label %if.end48, label %while.body22, !dbg !4788
 
 while.body22:                                     ; preds = %if.else18, %while.cond20.backedge
   %10 = phi %struct.init_node* [ %13, %while.cond20.backedge ], [ %9, %if.else18 ]
-  %purpose23 = getelementptr inbounds %struct.init_node* %10, i64 0, i32 4
-  %11 = load %union.tree_node** %purpose23, align 8, !tbaa !0
-  %call24 = tail call %union.tree_node* @bit_position(%union.tree_node* %11) #8
-  %call25 = tail call i32 @tree_int_cst_lt(%union.tree_node* %call19, %union.tree_node* %call24) #8
-  %tobool26 = icmp eq i32 %call25, 0
-  br i1 %tobool26, label %if.else29, label %if.then27
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %10}, i64 0, metadata !1655), !dbg !4789
+  %purpose23 = getelementptr inbounds %struct.init_node* %10, i64 0, i32 4, !dbg !4791
+  %11 = load %union.tree_node** %purpose23, align 8, !dbg !4791, !tbaa !1977
+  %call24 = tail call %union.tree_node* @bit_position(%union.tree_node* %11) #9, !dbg !4791
+  %call25 = tail call i32 @tree_int_cst_lt(%union.tree_node* %call19, %union.tree_node* %call24) #9, !dbg !4791
+  %tobool26 = icmp eq i32 %call25, 0, !dbg !4791
+  br i1 %tobool26, label %if.else29, label %if.then27, !dbg !4791
 
 if.then27:                                        ; preds = %while.body22
-  %left28 = getelementptr inbounds %struct.init_node* %10, i64 0, i32 0
-  br label %while.cond20.backedge
+  %left28 = getelementptr inbounds %struct.init_node* %10, i64 0, i32 0, !dbg !4792
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node** %left28}, i64 0, metadata !1656), !dbg !4792
+  br label %while.cond20.backedge, !dbg !4792
 
 if.else29:                                        ; preds = %while.body22
-  %12 = load %union.tree_node** %purpose23, align 8, !tbaa !0
-  %cmp31 = icmp eq %union.tree_node* %12, %purpose
-  br i1 %cmp31, label %if.else34, label %if.then32
+  %12 = load %union.tree_node** %purpose23, align 8, !dbg !4793, !tbaa !1977
+  %cmp31 = icmp eq %union.tree_node* %12, %purpose, !dbg !4793
+  br i1 %cmp31, label %if.else34, label %if.then32, !dbg !4793
 
 if.then32:                                        ; preds = %if.else29
-  %right33 = getelementptr inbounds %struct.init_node* %10, i64 0, i32 1
+  %right33 = getelementptr inbounds %struct.init_node* %10, i64 0, i32 1, !dbg !4794
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node** %right33}, i64 0, metadata !1656), !dbg !4794
   br label %while.cond20.backedge
 
 while.cond20.backedge:                            ; preds = %if.then32, %if.then27
   %q.1.be = phi %struct.init_node** [ %left28, %if.then27 ], [ %right33, %if.then32 ]
-  %13 = load %struct.init_node** %q.1.be, align 8, !tbaa !0
-  %cmp21 = icmp eq %struct.init_node* %13, null
-  br i1 %cmp21, label %if.end48, label %while.body22
+  %13 = load %struct.init_node** %q.1.be, align 8, !dbg !4788, !tbaa !1977
+  %cmp21 = icmp eq %struct.init_node* %13, null, !dbg !4788
+  br i1 %cmp21, label %if.end48, label %while.body22, !dbg !4788
 
 if.else34:                                        ; preds = %if.else29
-  %value35 = getelementptr inbounds %struct.init_node* %10, i64 0, i32 5
-  %14 = load %union.tree_node** %value35, align 8, !tbaa !0
-  %side_effects_flag37 = getelementptr inbounds %union.tree_node* %14, i64 0, i32 0, i32 0, i32 2
-  %15 = bitcast [4 x i8]* %side_effects_flag37 to i32*
-  %bf.load38 = load i32* %15, align 8
-  %bf.clear40 = and i32 %bf.load38, 256
-  %tobool41 = icmp eq i32 %bf.clear40, 0
-  br i1 %tobool41, label %if.end43, label %if.then42
+  %value35 = getelementptr inbounds %struct.init_node* %10, i64 0, i32 5, !dbg !4795
+  %14 = load %union.tree_node** %value35, align 8, !dbg !4795, !tbaa !1977
+  %side_effects_flag37 = getelementptr inbounds %union.tree_node* %14, i64 0, i32 0, i32 0, i32 2, !dbg !4795
+  %15 = bitcast [4 x i8]* %side_effects_flag37 to i32*, !dbg !4795
+  %bf.load38 = load i32* %15, align 8, !dbg !4795
+  %bf.clear40 = and i32 %bf.load38, 256, !dbg !4795
+  %tobool41 = icmp eq i32 %bf.clear40, 0, !dbg !4795
+  br i1 %tobool41, label %if.end43, label %if.then42, !dbg !4795
 
 if.then42:                                        ; preds = %if.else34
-  tail call fastcc void @warning_init(i8* getelementptr inbounds ([48 x i8]* @.str152, i64 0, i64 0)) #7
-  br label %if.end43
+  tail call fastcc void @warning_init(i8* getelementptr inbounds ([48 x i8]* @.str152, i64 0, i64 0)) #8, !dbg !4797
+  br label %if.end43, !dbg !4797
 
 if.end43:                                         ; preds = %if.else34, %if.then42
-  store %union.tree_node* %value, %union.tree_node** %value35, align 8, !tbaa !0
-  br label %while.end238
+  store %union.tree_node* %value, %union.tree_node** %value35, align 8, !dbg !4798, !tbaa !1977
+  br label %while.end238, !dbg !4799
 
 if.end48:                                         ; preds = %if.else18, %while.cond20.backedge, %while.cond.preheader, %while.cond.backedge
   %q.2 = phi %struct.init_node** [ @constructor_pending_elts, %while.cond.preheader ], [ %q.0.be, %while.cond.backedge ], [ @constructor_pending_elts, %if.else18 ], [ %q.1.be, %while.cond20.backedge ]
   %p.2 = phi %struct.init_node* [ null, %while.cond.preheader ], [ %3, %while.cond.backedge ], [ null, %if.else18 ], [ %10, %while.cond20.backedge ]
-  %call49 = tail call i8* @ggc_alloc(i64 48) #8
-  %16 = bitcast i8* %call49 to %struct.init_node*
-  %purpose50 = getelementptr inbounds i8* %call49, i64 32
-  %17 = bitcast i8* %purpose50 to %union.tree_node**
-  store %union.tree_node* %purpose, %union.tree_node** %17, align 8, !tbaa !0
-  %value51 = getelementptr inbounds i8* %call49, i64 40
-  %18 = bitcast i8* %value51 to %union.tree_node**
-  store %union.tree_node* %value, %union.tree_node** %18, align 8, !tbaa !0
-  store %struct.init_node* %16, %struct.init_node** %q.2, align 8, !tbaa !0
-  %parent = getelementptr inbounds i8* %call49, i64 16
-  %19 = bitcast i8* %parent to %struct.init_node**
-  store %struct.init_node* %p.2, %struct.init_node** %19, align 8, !tbaa !0
-  %balance = getelementptr inbounds i8* %call49, i64 24
-  %20 = bitcast i8* %balance to i32*
-  store i32 0, i32* %20, align 4, !tbaa !3
-  %tobool55383 = icmp eq %struct.init_node* %p.2, null
-  call void @llvm.memset.p0i8.i64(i8* %call49, i8 0, i64 16, i32 8, i1 false)
-  br i1 %tobool55383, label %while.end238, label %while.body56
+  %call49 = tail call i8* @ggc_alloc(i64 48) #9, !dbg !4800
+  %16 = bitcast i8* %call49 to %struct.init_node*, !dbg !4800
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %16}, i64 0, metadata !1658), !dbg !4800
+  %purpose50 = getelementptr inbounds i8* %call49, i64 32, !dbg !4801
+  %17 = bitcast i8* %purpose50 to %union.tree_node**, !dbg !4801
+  store %union.tree_node* %purpose, %union.tree_node** %17, align 8, !dbg !4801, !tbaa !1977
+  %value51 = getelementptr inbounds i8* %call49, i64 40, !dbg !4802
+  %18 = bitcast i8* %value51 to %union.tree_node**, !dbg !4802
+  store %union.tree_node* %value, %union.tree_node** %18, align 8, !dbg !4802, !tbaa !1977
+  store %struct.init_node* %16, %struct.init_node** %q.2, align 8, !dbg !4803, !tbaa !1977
+  %parent = getelementptr inbounds i8* %call49, i64 16, !dbg !4804
+  %19 = bitcast i8* %parent to %struct.init_node**, !dbg !4804
+  store %struct.init_node* %p.2, %struct.init_node** %19, align 8, !dbg !4804, !tbaa !1977
+  %balance = getelementptr inbounds i8* %call49, i64 24, !dbg !4805
+  %20 = bitcast i8* %balance to i32*, !dbg !4805
+  store i32 0, i32* %20, align 4, !dbg !4805, !tbaa !2105
+  %tobool55383 = icmp eq %struct.init_node* %p.2, null, !dbg !4806
+  call void @llvm.memset.p0i8.i64(i8* %call49, i8 0, i64 16, i32 8, i1 false), !dbg !4807
+  br i1 %tobool55383, label %while.end238, label %while.body56, !dbg !4806
 
 while.body56:                                     ; preds = %if.end48, %if.end236
   %p.3385 = phi %struct.init_node* [ %43, %if.end236 ], [ %p.2, %if.end48 ]
   %r.0384 = phi %struct.init_node* [ %p.3385, %if.end236 ], [ %16, %if.end48 ]
-  %left57 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 0
-  %21 = load %struct.init_node** %left57, align 8, !tbaa !0
-  %cmp58 = icmp eq %struct.init_node* %r.0384, %21
-  %balance60 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 3
-  %22 = load i32* %balance60, align 4, !tbaa !3
-  %cmp61 = icmp eq i32 %22, 0
-  br i1 %cmp58, label %if.then59, label %if.else144
+  %left57 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 0, !dbg !4808
+  %21 = load %struct.init_node** %left57, align 8, !dbg !4808, !tbaa !1977
+  %cmp58 = icmp eq %struct.init_node* %r.0384, %21, !dbg !4808
+  %balance60 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 3, !dbg !4809
+  %22 = load i32* %balance60, align 4, !dbg !4809, !tbaa !2105
+  %cmp61 = icmp eq i32 %22, 0, !dbg !4809
+  br i1 %cmp58, label %if.then59, label %if.else144, !dbg !4808
 
 if.then59:                                        ; preds = %while.body56
-  br i1 %cmp61, label %if.end236, label %if.else64
+  br i1 %cmp61, label %if.end236, label %if.else64, !dbg !4809
 
 if.else64:                                        ; preds = %if.then59
-  %cmp66 = icmp slt i32 %22, 0
-  br i1 %cmp66, label %if.then67, label %if.else141
+  %cmp66 = icmp slt i32 %22, 0, !dbg !4810
+  br i1 %cmp66, label %if.then67, label %if.else141, !dbg !4810
 
 if.then67:                                        ; preds = %if.else64
-  %balance68 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 3
-  %23 = load i32* %balance68, align 4, !tbaa !3
-  %cmp69 = icmp slt i32 %23, 0
-  %right71 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 1
-  %24 = load %struct.init_node** %right71, align 8, !tbaa !0
-  br i1 %cmp69, label %if.then70, label %if.else96
+  %balance68 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 3, !dbg !4811
+  %23 = load i32* %balance68, align 4, !dbg !4811, !tbaa !2105
+  %cmp69 = icmp slt i32 %23, 0, !dbg !4811
+  %right71 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 1, !dbg !4812
+  %24 = load %struct.init_node** %right71, align 8, !dbg !4812, !tbaa !1977
+  br i1 %cmp69, label %if.then70, label %if.else96, !dbg !4811
 
 if.then70:                                        ; preds = %if.then67
-  store %struct.init_node* %24, %struct.init_node** %left57, align 8, !tbaa !0
-  %tobool74 = icmp eq %struct.init_node* %24, null
-  br i1 %tobool74, label %if.end78, label %if.then75
+  store %struct.init_node* %24, %struct.init_node** %left57, align 8, !dbg !4812, !tbaa !1977
+  %tobool74 = icmp eq %struct.init_node* %24, null, !dbg !4814
+  br i1 %tobool74, label %if.end78, label %if.then75, !dbg !4814
 
 if.then75:                                        ; preds = %if.then70
-  %parent77 = getelementptr inbounds %struct.init_node* %24, i64 0, i32 2
-  store %struct.init_node* %p.3385, %struct.init_node** %parent77, align 8, !tbaa !0
-  br label %if.end78
+  %parent77 = getelementptr inbounds %struct.init_node* %24, i64 0, i32 2, !dbg !4815
+  store %struct.init_node* %p.3385, %struct.init_node** %parent77, align 8, !dbg !4815, !tbaa !1977
+  br label %if.end78, !dbg !4815
 
 if.end78:                                         ; preds = %if.then70, %if.then75
-  store %struct.init_node* %p.3385, %struct.init_node** %right71, align 8, !tbaa !0
-  store i32 0, i32* %balance60, align 4, !tbaa !3
-  store i32 0, i32* %balance68, align 4, !tbaa !3
-  %parent82 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 2
-  %25 = load %struct.init_node** %parent82, align 8, !tbaa !0
-  store %struct.init_node* %r.0384, %struct.init_node** %parent82, align 8, !tbaa !0
-  %parent84 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 2
-  store %struct.init_node* %25, %struct.init_node** %parent84, align 8, !tbaa !0
-  %tobool85 = icmp eq %struct.init_node* %25, null
-  br i1 %tobool85, label %if.else94, label %if.then86
+  store %struct.init_node* %p.3385, %struct.init_node** %right71, align 8, !dbg !4816, !tbaa !1977
+  store i32 0, i32* %balance60, align 4, !dbg !4817, !tbaa !2105
+  store i32 0, i32* %balance68, align 4, !dbg !4818, !tbaa !2105
+  %parent82 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 2, !dbg !4819
+  %25 = load %struct.init_node** %parent82, align 8, !dbg !4819, !tbaa !1977
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %25}, i64 0, metadata !1661), !dbg !4819
+  store %struct.init_node* %r.0384, %struct.init_node** %parent82, align 8, !dbg !4820, !tbaa !1977
+  %parent84 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 2, !dbg !4821
+  store %struct.init_node* %25, %struct.init_node** %parent84, align 8, !dbg !4821, !tbaa !1977
+  %tobool85 = icmp eq %struct.init_node* %25, null, !dbg !4822
+  br i1 %tobool85, label %if.else94, label %if.then86, !dbg !4822
 
 if.then86:                                        ; preds = %if.end78
-  %left87 = getelementptr inbounds %struct.init_node* %25, i64 0, i32 0
-  %26 = load %struct.init_node** %left87, align 8, !tbaa !0
-  %cmp88 = icmp eq %struct.init_node* %26, %p.3385
-  br i1 %cmp88, label %if.then89, label %if.else91
+  %left87 = getelementptr inbounds %struct.init_node* %25, i64 0, i32 0, !dbg !4823
+  %26 = load %struct.init_node** %left87, align 8, !dbg !4823, !tbaa !1977
+  %cmp88 = icmp eq %struct.init_node* %26, %p.3385, !dbg !4823
+  br i1 %cmp88, label %if.then89, label %if.else91, !dbg !4823
 
 if.then89:                                        ; preds = %if.then86
-  store %struct.init_node* %r.0384, %struct.init_node** %left87, align 8, !tbaa !0
-  br label %while.end238
+  store %struct.init_node* %r.0384, %struct.init_node** %left87, align 8, !dbg !4825, !tbaa !1977
+  br label %while.end238, !dbg !4825
 
 if.else91:                                        ; preds = %if.then86
-  %right92 = getelementptr inbounds %struct.init_node* %25, i64 0, i32 1
-  store %struct.init_node* %r.0384, %struct.init_node** %right92, align 8, !tbaa !0
+  %right92 = getelementptr inbounds %struct.init_node* %25, i64 0, i32 1, !dbg !4826
+  store %struct.init_node* %r.0384, %struct.init_node** %right92, align 8, !dbg !4826, !tbaa !1977
   br label %while.end238
 
 if.else94:                                        ; preds = %if.end78
-  store %struct.init_node* %r.0384, %struct.init_node** @constructor_pending_elts, align 8, !tbaa !0
+  store %struct.init_node* %r.0384, %struct.init_node** @constructor_pending_elts, align 8, !dbg !4827, !tbaa !1977
   br label %while.end238
 
 if.else96:                                        ; preds = %if.then67
-  %left98 = getelementptr inbounds %struct.init_node* %24, i64 0, i32 0
-  %27 = load %struct.init_node** %left98, align 8, !tbaa !0
-  store %struct.init_node* %27, %struct.init_node** %right71, align 8, !tbaa !0
-  %tobool101 = icmp eq %struct.init_node* %27, null
-  br i1 %tobool101, label %if.end105, label %if.then102
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %24}, i64 0, metadata !1663), !dbg !4828
+  %left98 = getelementptr inbounds %struct.init_node* %24, i64 0, i32 0, !dbg !4829
+  %27 = load %struct.init_node** %left98, align 8, !dbg !4829, !tbaa !1977
+  store %struct.init_node* %27, %struct.init_node** %right71, align 8, !dbg !4829, !tbaa !1977
+  %tobool101 = icmp eq %struct.init_node* %27, null, !dbg !4830
+  br i1 %tobool101, label %if.end105, label %if.then102, !dbg !4830
 
 if.then102:                                       ; preds = %if.else96
-  %parent104 = getelementptr inbounds %struct.init_node* %27, i64 0, i32 2
-  store %struct.init_node* %r.0384, %struct.init_node** %parent104, align 8, !tbaa !0
-  br label %if.end105
+  %parent104 = getelementptr inbounds %struct.init_node* %27, i64 0, i32 2, !dbg !4831
+  store %struct.init_node* %r.0384, %struct.init_node** %parent104, align 8, !dbg !4831, !tbaa !1977
+  br label %if.end105, !dbg !4831
 
 if.end105:                                        ; preds = %if.else96, %if.then102
-  store %struct.init_node* %r.0384, %struct.init_node** %left98, align 8, !tbaa !0
-  %right107 = getelementptr inbounds %struct.init_node* %24, i64 0, i32 1
-  %28 = load %struct.init_node** %right107, align 8, !tbaa !0
-  store %struct.init_node* %28, %struct.init_node** %left57, align 8, !tbaa !0
-  %tobool110 = icmp eq %struct.init_node* %28, null
-  br i1 %tobool110, label %if.end114, label %if.then111
+  store %struct.init_node* %r.0384, %struct.init_node** %left98, align 8, !dbg !4832, !tbaa !1977
+  %right107 = getelementptr inbounds %struct.init_node* %24, i64 0, i32 1, !dbg !4833
+  %28 = load %struct.init_node** %right107, align 8, !dbg !4833, !tbaa !1977
+  store %struct.init_node* %28, %struct.init_node** %left57, align 8, !dbg !4833, !tbaa !1977
+  %tobool110 = icmp eq %struct.init_node* %28, null, !dbg !4834
+  br i1 %tobool110, label %if.end114, label %if.then111, !dbg !4834
 
 if.then111:                                       ; preds = %if.end105
-  %parent113 = getelementptr inbounds %struct.init_node* %28, i64 0, i32 2
-  store %struct.init_node* %p.3385, %struct.init_node** %parent113, align 8, !tbaa !0
-  br label %if.end114
+  %parent113 = getelementptr inbounds %struct.init_node* %28, i64 0, i32 2, !dbg !4835
+  store %struct.init_node* %p.3385, %struct.init_node** %parent113, align 8, !dbg !4835, !tbaa !1977
+  br label %if.end114, !dbg !4835
 
 if.end114:                                        ; preds = %if.end105, %if.then111
-  store %struct.init_node* %p.3385, %struct.init_node** %right107, align 8, !tbaa !0
-  %balance116 = getelementptr inbounds %struct.init_node* %24, i64 0, i32 3
-  %29 = load i32* %balance116, align 4, !tbaa !3
-  %.lobit375 = lshr i32 %29, 31
-  store i32 %.lobit375, i32* %balance60, align 4, !tbaa !3
-  %30 = load i32* %balance116, align 4, !tbaa !3
-  %cmp120 = icmp sgt i32 %30, 0
-  %sub = sext i1 %cmp120 to i32
-  store i32 %sub, i32* %balance68, align 4, !tbaa !3
-  store i32 0, i32* %balance116, align 4, !tbaa !3
-  %parent124 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 2
-  %31 = load %struct.init_node** %parent124, align 8, !tbaa !0
-  store %struct.init_node* %24, %struct.init_node** %parent124, align 8, !tbaa !0
-  %parent126 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 2
-  store %struct.init_node* %24, %struct.init_node** %parent126, align 8, !tbaa !0
-  %parent127 = getelementptr inbounds %struct.init_node* %24, i64 0, i32 2
-  store %struct.init_node* %31, %struct.init_node** %parent127, align 8, !tbaa !0
-  %tobool128 = icmp eq %struct.init_node* %31, null
-  br i1 %tobool128, label %if.else138, label %if.then129
+  store %struct.init_node* %p.3385, %struct.init_node** %right107, align 8, !dbg !4836, !tbaa !1977
+  %balance116 = getelementptr inbounds %struct.init_node* %24, i64 0, i32 3, !dbg !4837
+  %29 = load i32* %balance116, align 4, !dbg !4837, !tbaa !2105
+  %.lobit375 = lshr i32 %29, 31, !dbg !4837
+  store i32 %.lobit375, i32* %balance60, align 4, !dbg !4837, !tbaa !2105
+  %30 = load i32* %balance116, align 4, !dbg !4838, !tbaa !2105
+  %cmp120 = icmp sgt i32 %30, 0, !dbg !4838
+  %sub = sext i1 %cmp120 to i32, !dbg !4838
+  store i32 %sub, i32* %balance68, align 4, !dbg !4838, !tbaa !2105
+  store i32 0, i32* %balance116, align 4, !dbg !4839, !tbaa !2105
+  %parent124 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 2, !dbg !4840
+  %31 = load %struct.init_node** %parent124, align 8, !dbg !4840, !tbaa !1977
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %31}, i64 0, metadata !1661), !dbg !4840
+  store %struct.init_node* %24, %struct.init_node** %parent124, align 8, !dbg !4841, !tbaa !1977
+  %parent126 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 2, !dbg !4842
+  store %struct.init_node* %24, %struct.init_node** %parent126, align 8, !dbg !4842, !tbaa !1977
+  %parent127 = getelementptr inbounds %struct.init_node* %24, i64 0, i32 2, !dbg !4843
+  store %struct.init_node* %31, %struct.init_node** %parent127, align 8, !dbg !4843, !tbaa !1977
+  %tobool128 = icmp eq %struct.init_node* %31, null, !dbg !4844
+  br i1 %tobool128, label %if.else138, label %if.then129, !dbg !4844
 
 if.then129:                                       ; preds = %if.end114
-  %left130 = getelementptr inbounds %struct.init_node* %31, i64 0, i32 0
-  %32 = load %struct.init_node** %left130, align 8, !tbaa !0
-  %cmp131 = icmp eq %struct.init_node* %32, %p.3385
-  br i1 %cmp131, label %if.then133, label %if.else135
+  %left130 = getelementptr inbounds %struct.init_node* %31, i64 0, i32 0, !dbg !4845
+  %32 = load %struct.init_node** %left130, align 8, !dbg !4845, !tbaa !1977
+  %cmp131 = icmp eq %struct.init_node* %32, %p.3385, !dbg !4845
+  br i1 %cmp131, label %if.then133, label %if.else135, !dbg !4845
 
 if.then133:                                       ; preds = %if.then129
-  store %struct.init_node* %24, %struct.init_node** %left130, align 8, !tbaa !0
-  br label %while.end238
+  store %struct.init_node* %24, %struct.init_node** %left130, align 8, !dbg !4847, !tbaa !1977
+  br label %while.end238, !dbg !4847
 
 if.else135:                                       ; preds = %if.then129
-  %right136 = getelementptr inbounds %struct.init_node* %31, i64 0, i32 1
-  store %struct.init_node* %24, %struct.init_node** %right136, align 8, !tbaa !0
+  %right136 = getelementptr inbounds %struct.init_node* %31, i64 0, i32 1, !dbg !4848
+  store %struct.init_node* %24, %struct.init_node** %right136, align 8, !dbg !4848, !tbaa !1977
   br label %while.end238
 
 if.else138:                                       ; preds = %if.end114
-  store %struct.init_node* %24, %struct.init_node** @constructor_pending_elts, align 8, !tbaa !0
+  store %struct.init_node* %24, %struct.init_node** @constructor_pending_elts, align 8, !dbg !4849, !tbaa !1977
   br label %while.end238
 
 if.else141:                                       ; preds = %if.else64
-  store i32 0, i32* %balance60, align 4, !tbaa !3
-  br label %while.end238
+  store i32 0, i32* %balance60, align 4, !dbg !4850, !tbaa !2105
+  br label %while.end238, !dbg !4852
 
 if.else144:                                       ; preds = %while.body56
-  br i1 %cmp61, label %if.end236, label %if.else150
+  br i1 %cmp61, label %if.end236, label %if.else150, !dbg !4853
 
 if.else150:                                       ; preds = %if.else144
-  %cmp152 = icmp sgt i32 %22, 0
-  br i1 %cmp152, label %if.then154, label %if.else233
+  %cmp152 = icmp sgt i32 %22, 0, !dbg !4854
+  br i1 %cmp152, label %if.then154, label %if.else233, !dbg !4854
 
 if.then154:                                       ; preds = %if.else150
-  %balance155 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 3
-  %33 = load i32* %balance155, align 4, !tbaa !3
-  %cmp156 = icmp sgt i32 %33, 0
-  %left159 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 0
-  %34 = load %struct.init_node** %left159, align 8, !tbaa !0
-  br i1 %cmp156, label %if.then158, label %if.else185
+  %balance155 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 3, !dbg !4855
+  %33 = load i32* %balance155, align 4, !dbg !4855, !tbaa !2105
+  %cmp156 = icmp sgt i32 %33, 0, !dbg !4855
+  %left159 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 0, !dbg !4856
+  %34 = load %struct.init_node** %left159, align 8, !dbg !4856, !tbaa !1977
+  br i1 %cmp156, label %if.then158, label %if.else185, !dbg !4855
 
 if.then158:                                       ; preds = %if.then154
-  %right160 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 1
-  store %struct.init_node* %34, %struct.init_node** %right160, align 8, !tbaa !0
-  %tobool162 = icmp eq %struct.init_node* %34, null
-  br i1 %tobool162, label %if.end166, label %if.then163
+  %right160 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 1, !dbg !4856
+  store %struct.init_node* %34, %struct.init_node** %right160, align 8, !dbg !4856, !tbaa !1977
+  %tobool162 = icmp eq %struct.init_node* %34, null, !dbg !4858
+  br i1 %tobool162, label %if.end166, label %if.then163, !dbg !4858
 
 if.then163:                                       ; preds = %if.then158
-  %parent165 = getelementptr inbounds %struct.init_node* %34, i64 0, i32 2
-  store %struct.init_node* %p.3385, %struct.init_node** %parent165, align 8, !tbaa !0
-  br label %if.end166
+  %parent165 = getelementptr inbounds %struct.init_node* %34, i64 0, i32 2, !dbg !4859
+  store %struct.init_node* %p.3385, %struct.init_node** %parent165, align 8, !dbg !4859, !tbaa !1977
+  br label %if.end166, !dbg !4859
 
 if.end166:                                        ; preds = %if.then158, %if.then163
-  store %struct.init_node* %p.3385, %struct.init_node** %left159, align 8, !tbaa !0
-  store i32 0, i32* %balance60, align 4, !tbaa !3
-  store i32 0, i32* %balance155, align 4, !tbaa !3
-  %parent170 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 2
-  %35 = load %struct.init_node** %parent170, align 8, !tbaa !0
-  store %struct.init_node* %r.0384, %struct.init_node** %parent170, align 8, !tbaa !0
-  %parent172 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 2
-  store %struct.init_node* %35, %struct.init_node** %parent172, align 8, !tbaa !0
-  %tobool173 = icmp eq %struct.init_node* %35, null
-  br i1 %tobool173, label %if.else183, label %if.then174
+  store %struct.init_node* %p.3385, %struct.init_node** %left159, align 8, !dbg !4860, !tbaa !1977
+  store i32 0, i32* %balance60, align 4, !dbg !4861, !tbaa !2105
+  store i32 0, i32* %balance155, align 4, !dbg !4862, !tbaa !2105
+  %parent170 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 2, !dbg !4863
+  %35 = load %struct.init_node** %parent170, align 8, !dbg !4863, !tbaa !1977
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %35}, i64 0, metadata !1661), !dbg !4863
+  store %struct.init_node* %r.0384, %struct.init_node** %parent170, align 8, !dbg !4864, !tbaa !1977
+  %parent172 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 2, !dbg !4865
+  store %struct.init_node* %35, %struct.init_node** %parent172, align 8, !dbg !4865, !tbaa !1977
+  %tobool173 = icmp eq %struct.init_node* %35, null, !dbg !4866
+  br i1 %tobool173, label %if.else183, label %if.then174, !dbg !4866
 
 if.then174:                                       ; preds = %if.end166
-  %left175 = getelementptr inbounds %struct.init_node* %35, i64 0, i32 0
-  %36 = load %struct.init_node** %left175, align 8, !tbaa !0
-  %cmp176 = icmp eq %struct.init_node* %36, %p.3385
-  br i1 %cmp176, label %if.then178, label %if.else180
+  %left175 = getelementptr inbounds %struct.init_node* %35, i64 0, i32 0, !dbg !4867
+  %36 = load %struct.init_node** %left175, align 8, !dbg !4867, !tbaa !1977
+  %cmp176 = icmp eq %struct.init_node* %36, %p.3385, !dbg !4867
+  br i1 %cmp176, label %if.then178, label %if.else180, !dbg !4867
 
 if.then178:                                       ; preds = %if.then174
-  store %struct.init_node* %r.0384, %struct.init_node** %left175, align 8, !tbaa !0
-  br label %while.end238
+  store %struct.init_node* %r.0384, %struct.init_node** %left175, align 8, !dbg !4869, !tbaa !1977
+  br label %while.end238, !dbg !4869
 
 if.else180:                                       ; preds = %if.then174
-  %right181 = getelementptr inbounds %struct.init_node* %35, i64 0, i32 1
-  store %struct.init_node* %r.0384, %struct.init_node** %right181, align 8, !tbaa !0
+  %right181 = getelementptr inbounds %struct.init_node* %35, i64 0, i32 1, !dbg !4870
+  store %struct.init_node* %r.0384, %struct.init_node** %right181, align 8, !dbg !4870, !tbaa !1977
   br label %while.end238
 
 if.else183:                                       ; preds = %if.end166
-  store %struct.init_node* %r.0384, %struct.init_node** @constructor_pending_elts, align 8, !tbaa !0
+  store %struct.init_node* %r.0384, %struct.init_node** @constructor_pending_elts, align 8, !dbg !4871, !tbaa !1977
   br label %while.end238
 
 if.else185:                                       ; preds = %if.then154
-  %right188 = getelementptr inbounds %struct.init_node* %34, i64 0, i32 1
-  %37 = load %struct.init_node** %right188, align 8, !tbaa !0
-  store %struct.init_node* %37, %struct.init_node** %left159, align 8, !tbaa !0
-  %tobool191 = icmp eq %struct.init_node* %37, null
-  br i1 %tobool191, label %if.end195, label %if.then192
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %34}, i64 0, metadata !1667), !dbg !4872
+  %right188 = getelementptr inbounds %struct.init_node* %34, i64 0, i32 1, !dbg !4873
+  %37 = load %struct.init_node** %right188, align 8, !dbg !4873, !tbaa !1977
+  store %struct.init_node* %37, %struct.init_node** %left159, align 8, !dbg !4873, !tbaa !1977
+  %tobool191 = icmp eq %struct.init_node* %37, null, !dbg !4874
+  br i1 %tobool191, label %if.end195, label %if.then192, !dbg !4874
 
 if.then192:                                       ; preds = %if.else185
-  %parent194 = getelementptr inbounds %struct.init_node* %37, i64 0, i32 2
-  store %struct.init_node* %r.0384, %struct.init_node** %parent194, align 8, !tbaa !0
-  br label %if.end195
+  %parent194 = getelementptr inbounds %struct.init_node* %37, i64 0, i32 2, !dbg !4875
+  store %struct.init_node* %r.0384, %struct.init_node** %parent194, align 8, !dbg !4875, !tbaa !1977
+  br label %if.end195, !dbg !4875
 
 if.end195:                                        ; preds = %if.else185, %if.then192
-  store %struct.init_node* %r.0384, %struct.init_node** %right188, align 8, !tbaa !0
-  %left197 = getelementptr inbounds %struct.init_node* %34, i64 0, i32 0
-  %38 = load %struct.init_node** %left197, align 8, !tbaa !0
-  %right198 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 1
-  store %struct.init_node* %38, %struct.init_node** %right198, align 8, !tbaa !0
-  %tobool200 = icmp eq %struct.init_node* %38, null
-  br i1 %tobool200, label %if.end204, label %if.then201
+  store %struct.init_node* %r.0384, %struct.init_node** %right188, align 8, !dbg !4876, !tbaa !1977
+  %left197 = getelementptr inbounds %struct.init_node* %34, i64 0, i32 0, !dbg !4877
+  %38 = load %struct.init_node** %left197, align 8, !dbg !4877, !tbaa !1977
+  %right198 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 1, !dbg !4877
+  store %struct.init_node* %38, %struct.init_node** %right198, align 8, !dbg !4877, !tbaa !1977
+  %tobool200 = icmp eq %struct.init_node* %38, null, !dbg !4878
+  br i1 %tobool200, label %if.end204, label %if.then201, !dbg !4878
 
 if.then201:                                       ; preds = %if.end195
-  %parent203 = getelementptr inbounds %struct.init_node* %38, i64 0, i32 2
-  store %struct.init_node* %p.3385, %struct.init_node** %parent203, align 8, !tbaa !0
-  br label %if.end204
+  %parent203 = getelementptr inbounds %struct.init_node* %38, i64 0, i32 2, !dbg !4879
+  store %struct.init_node* %p.3385, %struct.init_node** %parent203, align 8, !dbg !4879, !tbaa !1977
+  br label %if.end204, !dbg !4879
 
 if.end204:                                        ; preds = %if.end195, %if.then201
-  store %struct.init_node* %p.3385, %struct.init_node** %left197, align 8, !tbaa !0
-  %balance206 = getelementptr inbounds %struct.init_node* %34, i64 0, i32 3
-  %39 = load i32* %balance206, align 4, !tbaa !3
-  %.lobit = lshr i32 %39, 31
-  store i32 %.lobit, i32* %balance155, align 4, !tbaa !3
-  %40 = load i32* %balance206, align 4, !tbaa !3
-  %cmp211 = icmp sgt i32 %40, 0
-  %sub213 = sext i1 %cmp211 to i32
-  store i32 %sub213, i32* %balance60, align 4, !tbaa !3
-  store i32 0, i32* %balance206, align 4, !tbaa !3
-  %parent216 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 2
-  %41 = load %struct.init_node** %parent216, align 8, !tbaa !0
-  store %struct.init_node* %34, %struct.init_node** %parent216, align 8, !tbaa !0
-  %parent218 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 2
-  store %struct.init_node* %34, %struct.init_node** %parent218, align 8, !tbaa !0
-  %parent219 = getelementptr inbounds %struct.init_node* %34, i64 0, i32 2
-  store %struct.init_node* %41, %struct.init_node** %parent219, align 8, !tbaa !0
-  %tobool220 = icmp eq %struct.init_node* %41, null
-  br i1 %tobool220, label %if.else230, label %if.then221
+  store %struct.init_node* %p.3385, %struct.init_node** %left197, align 8, !dbg !4880, !tbaa !1977
+  %balance206 = getelementptr inbounds %struct.init_node* %34, i64 0, i32 3, !dbg !4881
+  %39 = load i32* %balance206, align 4, !dbg !4881, !tbaa !2105
+  %.lobit = lshr i32 %39, 31, !dbg !4881
+  store i32 %.lobit, i32* %balance155, align 4, !dbg !4881, !tbaa !2105
+  %40 = load i32* %balance206, align 4, !dbg !4882, !tbaa !2105
+  %cmp211 = icmp sgt i32 %40, 0, !dbg !4882
+  %sub213 = sext i1 %cmp211 to i32, !dbg !4882
+  store i32 %sub213, i32* %balance60, align 4, !dbg !4882, !tbaa !2105
+  store i32 0, i32* %balance206, align 4, !dbg !4883, !tbaa !2105
+  %parent216 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 2, !dbg !4884
+  %41 = load %struct.init_node** %parent216, align 8, !dbg !4884, !tbaa !1977
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %41}, i64 0, metadata !1661), !dbg !4884
+  store %struct.init_node* %34, %struct.init_node** %parent216, align 8, !dbg !4885, !tbaa !1977
+  %parent218 = getelementptr inbounds %struct.init_node* %r.0384, i64 0, i32 2, !dbg !4886
+  store %struct.init_node* %34, %struct.init_node** %parent218, align 8, !dbg !4886, !tbaa !1977
+  %parent219 = getelementptr inbounds %struct.init_node* %34, i64 0, i32 2, !dbg !4887
+  store %struct.init_node* %41, %struct.init_node** %parent219, align 8, !dbg !4887, !tbaa !1977
+  %tobool220 = icmp eq %struct.init_node* %41, null, !dbg !4888
+  br i1 %tobool220, label %if.else230, label %if.then221, !dbg !4888
 
 if.then221:                                       ; preds = %if.end204
-  %left222 = getelementptr inbounds %struct.init_node* %41, i64 0, i32 0
-  %42 = load %struct.init_node** %left222, align 8, !tbaa !0
-  %cmp223 = icmp eq %struct.init_node* %42, %p.3385
-  br i1 %cmp223, label %if.then225, label %if.else227
+  %left222 = getelementptr inbounds %struct.init_node* %41, i64 0, i32 0, !dbg !4889
+  %42 = load %struct.init_node** %left222, align 8, !dbg !4889, !tbaa !1977
+  %cmp223 = icmp eq %struct.init_node* %42, %p.3385, !dbg !4889
+  br i1 %cmp223, label %if.then225, label %if.else227, !dbg !4889
 
 if.then225:                                       ; preds = %if.then221
-  store %struct.init_node* %34, %struct.init_node** %left222, align 8, !tbaa !0
-  br label %while.end238
+  store %struct.init_node* %34, %struct.init_node** %left222, align 8, !dbg !4891, !tbaa !1977
+  br label %while.end238, !dbg !4891
 
 if.else227:                                       ; preds = %if.then221
-  %right228 = getelementptr inbounds %struct.init_node* %41, i64 0, i32 1
-  store %struct.init_node* %34, %struct.init_node** %right228, align 8, !tbaa !0
+  %right228 = getelementptr inbounds %struct.init_node* %41, i64 0, i32 1, !dbg !4892
+  store %struct.init_node* %34, %struct.init_node** %right228, align 8, !dbg !4892, !tbaa !1977
   br label %while.end238
 
 if.else230:                                       ; preds = %if.end204
-  store %struct.init_node* %34, %struct.init_node** @constructor_pending_elts, align 8, !tbaa !0
+  store %struct.init_node* %34, %struct.init_node** @constructor_pending_elts, align 8, !dbg !4893, !tbaa !1977
   br label %while.end238
 
 if.else233:                                       ; preds = %if.else150
-  store i32 0, i32* %balance60, align 4, !tbaa !3
-  br label %while.end238
+  store i32 0, i32* %balance60, align 4, !dbg !4894, !tbaa !2105
+  br label %while.end238, !dbg !4896
 
 if.end236:                                        ; preds = %if.else144, %if.then59
   %storemerge = phi i32 [ -1, %if.then59 ], [ 1, %if.else144 ]
-  store i32 %storemerge, i32* %balance60, align 4, !tbaa !3
-  %parent237 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 2
-  %43 = load %struct.init_node** %parent237, align 8, !tbaa !0
-  %tobool55 = icmp eq %struct.init_node* %43, null
-  br i1 %tobool55, label %while.end238, label %while.body56
+  store i32 %storemerge, i32* %balance60, align 4, !dbg !4897, !tbaa !2105
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %p.3385}, i64 0, metadata !1658), !dbg !4898
+  %parent237 = getelementptr inbounds %struct.init_node* %p.3385, i64 0, i32 2, !dbg !4899
+  %43 = load %struct.init_node** %parent237, align 8, !dbg !4899, !tbaa !1977
+  tail call void @llvm.dbg.value(metadata !{%struct.init_node* %43}, i64 0, metadata !1655), !dbg !4899
+  %tobool55 = icmp eq %struct.init_node* %43, null, !dbg !4806
+  br i1 %tobool55, label %while.end238, label %while.body56, !dbg !4806
 
 while.end238:                                     ; preds = %if.end48, %if.end236, %if.then178, %if.else180, %if.else183, %if.then225, %if.else227, %if.else230, %if.then89, %if.else91, %if.else94, %if.then133, %if.else135, %if.else138, %if.end, %if.end43, %if.else233, %if.else141
-  ret void
+  ret void, !dbg !4900
 }

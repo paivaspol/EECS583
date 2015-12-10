@@ -1,39 +1,40 @@
-define void @check_nnodes_top(i8* %fn, %struct.t_topology* nocapture readonly %top, i32 %nnodes) #4 {
-  tail call void @llvm.dbg.value(metadata i8* %fn, i64 0, metadata !401, metadata !752), !dbg !885
-  tail call void @llvm.dbg.value(metadata %struct.t_topology* %top, i64 0, metadata !402, metadata !752), !dbg !886
-  tail call void @llvm.dbg.value(metadata i32 %nnodes, i64 0, metadata !403, metadata !752), !dbg !887
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !405, metadata !752), !dbg !888
-  tail call void @llvm.dbg.value(metadata i32 255, i64 0, metadata !404, metadata !752), !dbg !889
-  br label %1, !dbg !890
+define void @check_nnodes_top(i8* %fn, %struct.t_topology* nocapture %top, i32 %nnodes) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !280), !dbg !622
+  tail call void @llvm.dbg.value(metadata !{%struct.t_topology* %top}, i64 0, metadata !281), !dbg !622
+  tail call void @llvm.dbg.value(metadata !{i32 %nnodes}, i64 0, metadata !282), !dbg !622
+  tail call void @llvm.dbg.value(metadata !34, i64 0, metadata !284), !dbg !623
+  tail call void @llvm.dbg.value(metadata !624, i64 0, metadata !283), !dbg !625
+  br label %land.rhs, !dbg !625
 
-; <label>:1                                       ; preds = %0, %6
-  %indvars.iv = phi i64 [ 255, %0 ], [ %indvars.iv.next, %6 ]
-  %i.01 = phi i32 [ 255, %0 ], [ %7, %6 ]
-  %2 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, i32 0, i64 %indvars.iv, !dbg !893
-  %3 = load i32* %2, align 4, !dbg !893, !tbaa !894
-  %4 = icmp eq i32 %3, 0, !dbg !896
-  %5 = trunc i64 %indvars.iv to i32, !dbg !897
-  br i1 %4, label %6, label %.critedge, !dbg !897
+for.cond:                                         ; preds = %land.rhs
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !625
+  %cmp = icmp sgt i32 %0, 0, !dbg !625
+  br i1 %cmp, label %land.rhs, label %for.end, !dbg !625
 
-; <label>:6                                       ; preds = %1
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !890
-  %7 = add nsw i32 %i.01, -1, !dbg !898
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !404, metadata !752), !dbg !889
-  %8 = icmp sgt i64 %indvars.iv, 1, !dbg !899
-  br i1 %8, label %1, label %.critedge, !dbg !890
+land.rhs:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ 255, %entry ], [ %indvars.iv.next, %for.cond ]
+  %i.09 = phi i32 [ 255, %entry ], [ %dec, %for.cond ]
+  %arrayidx1 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, i32 0, i64 %indvars.iv, !dbg !625
+  %1 = load i32* %arrayidx1, align 4, !dbg !625, !tbaa !627
+  %cmp2 = icmp eq i32 %1, 0, !dbg !625
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !625
+  %dec = add nsw i32 %i.09, -1, !dbg !625
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !283), !dbg !625
+  br i1 %cmp2, label %for.cond, label %for.end
 
-.critedge:                                        ; preds = %6, %1
-  %i.0.lcssa = phi i32 [ %7, %6 ], [ %5, %1 ]
-  %9 = add nsw i32 %i.0.lcssa, 1, !dbg !900
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !405, metadata !752), !dbg !888
-  %10 = icmp eq i32 %9, %nnodes, !dbg !901
-  br i1 %10, label %13, label %11, !dbg !903
+for.end:                                          ; preds = %for.cond, %land.rhs
+  %i.0.lcssa = phi i32 [ %dec, %for.cond ], [ %i.09, %land.rhs ]
+  %add = add nsw i32 %i.0.lcssa, 1, !dbg !630
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !284), !dbg !630
+  %cmp3 = icmp eq i32 %add, %nnodes, !dbg !631
+  br i1 %cmp3, label %if.end, label %if.then, !dbg !631
 
-; <label>:11                                      ; preds = %.critedge
-  %12 = tail call i8* @ShortProgram() #8, !dbg !904
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([95 x i8]* @.str, i64 0, i64 0), i8* %fn, i32 %9, i8* %12, i32 %nnodes) #8, !dbg !905
-  br label %13, !dbg !905
+if.then:                                          ; preds = %for.end
+  %call = tail call i8* @ShortProgram() #5, !dbg !632
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([95 x i8]* @.str, i64 0, i64 0), i8* %fn, i32 %add, i8* %call, i32 %nnodes) #5, !dbg !632
+  br label %if.end, !dbg !632
 
-; <label>:13                                      ; preds = %.critedge, %11
-  ret void, !dbg !906
+if.end:                                           ; preds = %for.end, %if.then
+  ret void, !dbg !633
 }

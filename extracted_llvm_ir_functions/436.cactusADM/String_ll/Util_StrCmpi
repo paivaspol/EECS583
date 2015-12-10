@@ -1,38 +1,39 @@
-define i32 @Util_StrCmpi(i8* nocapture readonly %string1, i8* nocapture readonly %string2) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %string1, i64 0, metadata !50, metadata !107), !dbg !226
-  tail call void @llvm.dbg.value(metadata i8* %string2, i64 0, metadata !51, metadata !107), !dbg !227
-  br label %1, !dbg !228
+define i32 @Util_StrCmpi(i8* nocapture %string1, i8* nocapture %string2) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %string1}, i64 0, metadata !45), !dbg !167
+  tail call void @llvm.dbg.value(metadata !{i8* %string2}, i64 0, metadata !46), !dbg !167
+  %call = tail call i32** @__ctype_tolower_loc() #11, !dbg !168
+  %0 = load i32** %call, align 8, !dbg !168, !tbaa !101
+  br label %do.body, !dbg !169
 
-; <label>:1                                       ; preds = %12, %0
-  %.02 = phi i8* [ %string2, %0 ], [ %14, %12 ]
-  %.0 = phi i8* [ %string1, %0 ], [ %13, %12 ]
-  %2 = load i8* %.0, align 1, !dbg !229, !tbaa !148
-  %3 = sext i8 %2 to i32, !dbg !229
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !98, metadata !107) #5, !dbg !231
-  %4 = tail call i32 @__tolower(i32 %3) #7, !dbg !233
-  %5 = load i8* %.02, align 1, !dbg !234, !tbaa !148
-  %6 = sext i8 %5 to i32, !dbg !234
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !98, metadata !107) #5, !dbg !235
-  %7 = tail call i32 @__tolower(i32 %6) #7, !dbg !237
-  %8 = icmp eq i32 %4, %7, !dbg !238
-  br i1 %8, label %9, label %.critedge, !dbg !239
+do.body:                                          ; preds = %land.rhs, %entry
+  %string2.addr.0 = phi i8* [ %string2, %entry ], [ %incdec.ptr9, %land.rhs ]
+  %string1.addr.0 = phi i8* [ %string1, %entry ], [ %incdec.ptr, %land.rhs ]
+  %1 = load i8* %string1.addr.0, align 1, !dbg !168, !tbaa !102
+  %idxprom = sext i8 %1 to i64, !dbg !168
+  %arrayidx = getelementptr inbounds i32* %0, i64 %idxprom, !dbg !168
+  %2 = load i32* %arrayidx, align 4, !dbg !168, !tbaa !170
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !48), !dbg !168
+  %3 = load i8* %string2.addr.0, align 1, !dbg !171, !tbaa !102
+  %idxprom4 = sext i8 %3 to i64, !dbg !171
+  %arrayidx6 = getelementptr inbounds i32* %0, i64 %idxprom4, !dbg !171
+  %4 = load i32* %arrayidx6, align 4, !dbg !171, !tbaa !170
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !51), !dbg !171
+  %sub = sub nsw i32 %2, %4, !dbg !171
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !47), !dbg !171
+  %tobool = icmp ne i32 %2, %4, !dbg !172
+  %tobool8 = icmp eq i8 %1, 0, !dbg !172
+  %or.cond = or i1 %tobool, %tobool8, !dbg !172
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !45), !dbg !172
+  br i1 %or.cond, label %do.end, label %land.rhs, !dbg !172
 
-; <label>:9                                       ; preds = %1
-  tail call void @llvm.dbg.value(metadata i8* %13, i64 0, metadata !50, metadata !107), !dbg !226
-  %10 = load i8* %.0, align 1, !dbg !240, !tbaa !148
-  %11 = icmp eq i8 %10, 0, !dbg !240
-  br i1 %11, label %.critedge, label %12, !dbg !241
+land.rhs:                                         ; preds = %do.body
+  %incdec.ptr = getelementptr inbounds i8* %string1.addr.0, i64 1, !dbg !172
+  %incdec.ptr9 = getelementptr inbounds i8* %string2.addr.0, i64 1, !dbg !172
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr9}, i64 0, metadata !46), !dbg !172
+  %tobool11 = icmp eq i8 %3, 0, !dbg !172
+  br i1 %tobool11, label %do.end, label %do.body
 
-; <label>:12                                      ; preds = %9
-  %13 = getelementptr inbounds i8* %.0, i64 1, !dbg !242
-  %14 = getelementptr inbounds i8* %.02, i64 1, !dbg !243
-  tail call void @llvm.dbg.value(metadata i8* %14, i64 0, metadata !51, metadata !107), !dbg !227
-  %15 = load i8* %.02, align 1, !dbg !244, !tbaa !148
-  %16 = icmp eq i8 %15, 0, !dbg !241
-  br i1 %16, label %.critedge, label %1, !dbg !245
-
-.critedge:                                        ; preds = %12, %9, %1
-  %.lcssa5 = phi i32 [ %4, %12 ], [ %4, %9 ], [ %7, %1 ]
-  %17 = sub nsw i32 %4, %.lcssa5, !dbg !246
-  ret i32 %17, !dbg !247
+do.end:                                           ; preds = %do.body, %land.rhs
+  ret i32 %sub, !dbg !173
 }

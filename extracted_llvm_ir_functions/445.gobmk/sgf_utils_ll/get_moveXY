@@ -1,15 +1,18 @@
-define i32 @get_moveXY(%struct.SGFProperty_t* nocapture readonly %property, i32* nocapture %i, i32* nocapture %j, i32 %boardsize) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %property, i64 0, metadata !35, metadata !90), !dbg !134
-  tail call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !36, metadata !90), !dbg !135
-  tail call void @llvm.dbg.value(metadata i32* %j, i64 0, metadata !37, metadata !90), !dbg !136
-  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !38, metadata !90), !dbg !137
-  %1 = tail call i32 @get_moveX(%struct.SGFProperty_t* %property, i32 %boardsize) #8, !dbg !138
-  store i32 %1, i32* %i, align 4, !dbg !139, !tbaa !140
-  %2 = tail call i32 @get_moveY(%struct.SGFProperty_t* %property, i32 %boardsize) #8, !dbg !142
-  store i32 %2, i32* %j, align 4, !dbg !143, !tbaa !140
-  %3 = load i32* %i, align 4, !dbg !144, !tbaa !140
-  %4 = and i32 %3, %2, !dbg !146
-  %not. = icmp ne i32 %4, -1, !dbg !146
-  %.0 = zext i1 %not. to i32, !dbg !146
-  ret i32 %.0, !dbg !147
+define i32 @get_moveXY(%struct.SGFProperty_t* nocapture %property, i32* nocapture %i, i32* nocapture %j, i32 %boardsize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %property}, i64 0, metadata !39), !dbg !103
+  tail call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !40), !dbg !103
+  tail call void @llvm.dbg.value(metadata !{i32* %j}, i64 0, metadata !41), !dbg !103
+  tail call void @llvm.dbg.value(metadata !{i32 %boardsize}, i64 0, metadata !42), !dbg !103
+  %call = tail call i32 @get_moveX(%struct.SGFProperty_t* %property, i32 %boardsize) #8, !dbg !104
+  store i32 %call, i32* %i, align 4, !dbg !104, !tbaa !105
+  %call1 = tail call i32 @get_moveY(%struct.SGFProperty_t* %property, i32 %boardsize) #8, !dbg !106
+  store i32 %call1, i32* %j, align 4, !dbg !106, !tbaa !105
+  %0 = load i32* %i, align 4, !dbg !107, !tbaa !105
+  %cmp = icmp eq i32 %0, -1, !dbg !107
+  %cmp2 = icmp eq i32 %call1, -1, !dbg !107
+  %or.cond = and i1 %cmp, %cmp2, !dbg !107
+  %1 = zext i1 %or.cond to i32, !dbg !107
+  %retval.0 = xor i32 %1, 1, !dbg !107
+  ret i32 %retval.0, !dbg !108
 }

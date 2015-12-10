@@ -1,44 +1,47 @@
 define internal fastcc void @undo_all() #0 {
 entry:
-  %0 = load %struct.undo** getelementptr inbounds (%struct.undobuf* @undobuf, i64 0, i32 0), align 8, !tbaa !3
-  %tobool15 = icmp eq %struct.undo* %0, null
-  br i1 %tobool15, label %for.end, label %for.body
+  %0 = load %struct.undo** getelementptr inbounds (%struct.undobuf* @undobuf, i64 0, i32 0), align 8, !dbg !2918, !tbaa !1685
+  tail call void @llvm.dbg.value(metadata !{%struct.undo* %0}, i64 0, metadata !1557), !dbg !2918
+  %tobool15 = icmp eq %struct.undo* %0, null, !dbg !2918
+  br i1 %tobool15, label %for.end, label %for.body, !dbg !2918
 
 for.body:                                         ; preds = %entry, %if.end
   %undo.016 = phi %struct.undo* [ %1, %if.end ], [ %0, %entry ]
-  %next1 = getelementptr inbounds %struct.undo* %undo.016, i64 0, i32 0
-  %1 = load %struct.undo** %next1, align 8, !tbaa !3
-  %is_int = getelementptr inbounds %struct.undo* %undo.016, i64 0, i32 1
-  %2 = load i32* %is_int, align 4, !tbaa !0
-  %tobool2 = icmp eq i32 %2, 0
-  %old_contents = getelementptr inbounds %struct.undo* %undo.016, i64 0, i32 2
-  br i1 %tobool2, label %if.else, label %if.then
+  %next1 = getelementptr inbounds %struct.undo* %undo.016, i64 0, i32 0, !dbg !2920
+  %1 = load %struct.undo** %next1, align 8, !dbg !2920, !tbaa !1685
+  tail call void @llvm.dbg.value(metadata !{%struct.undo* %1}, i64 0, metadata !1558), !dbg !2920
+  %is_int = getelementptr inbounds %struct.undo* %undo.016, i64 0, i32 1, !dbg !2922
+  %2 = load i32* %is_int, align 4, !dbg !2922, !tbaa !1676
+  %tobool2 = icmp eq i32 %2, 0, !dbg !2922
+  %old_contents = getelementptr inbounds %struct.undo* %undo.016, i64 0, i32 2, !dbg !2923
+  br i1 %tobool2, label %if.else, label %if.then, !dbg !2922
 
 if.then:                                          ; preds = %for.body
-  %i = bitcast %union.anon* %old_contents to i32*
-  %3 = load i32* %i, align 4, !tbaa !0
-  %where = getelementptr inbounds %struct.undo* %undo.016, i64 0, i32 3
-  %i3 = bitcast %union.anon.0* %where to i32**
-  %4 = load i32** %i3, align 8, !tbaa !3
-  store i32 %3, i32* %4, align 4, !tbaa !0
-  br label %if.end
+  %i = bitcast %union.anon* %old_contents to i32*, !dbg !2923
+  %3 = load i32* %i, align 4, !dbg !2923, !tbaa !1676
+  %where = getelementptr inbounds %struct.undo* %undo.016, i64 0, i32 3, !dbg !2923
+  %i3 = bitcast %union.anon.0* %where to i32**, !dbg !2923
+  %4 = load i32** %i3, align 8, !dbg !2923, !tbaa !1685
+  store i32 %3, i32* %4, align 4, !dbg !2923, !tbaa !1676
+  br label %if.end, !dbg !2923
 
 if.else:                                          ; preds = %for.body
-  %r = getelementptr inbounds %union.anon* %old_contents, i64 0, i32 0
-  %5 = load %struct.rtx_def** %r, align 8, !tbaa !3
-  %r6 = getelementptr inbounds %struct.undo* %undo.016, i64 0, i32 3, i32 0
-  %6 = load %struct.rtx_def*** %r6, align 8, !tbaa !3
-  store %struct.rtx_def* %5, %struct.rtx_def** %6, align 8, !tbaa !3
+  %r = getelementptr inbounds %union.anon* %old_contents, i64 0, i32 0, !dbg !2924
+  %5 = load %struct.rtx_def** %r, align 8, !dbg !2924, !tbaa !1685
+  %r6 = getelementptr inbounds %struct.undo* %undo.016, i64 0, i32 3, i32 0, !dbg !2924
+  %6 = load %struct.rtx_def*** %r6, align 8, !dbg !2924, !tbaa !1685
+  store %struct.rtx_def* %5, %struct.rtx_def** %6, align 8, !dbg !2924, !tbaa !1685
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  %7 = load %struct.undo** getelementptr inbounds (%struct.undobuf* @undobuf, i64 0, i32 1), align 8, !tbaa !3
-  store %struct.undo* %7, %struct.undo** %next1, align 8, !tbaa !3
-  store %struct.undo* %undo.016, %struct.undo** getelementptr inbounds (%struct.undobuf* @undobuf, i64 0, i32 1), align 8, !tbaa !3
-  %tobool = icmp eq %struct.undo* %1, null
-  br i1 %tobool, label %for.end, label %for.body
+  %7 = load %struct.undo** getelementptr inbounds (%struct.undobuf* @undobuf, i64 0, i32 1), align 8, !dbg !2925, !tbaa !1685
+  store %struct.undo* %7, %struct.undo** %next1, align 8, !dbg !2925, !tbaa !1685
+  store %struct.undo* %undo.016, %struct.undo** getelementptr inbounds (%struct.undobuf* @undobuf, i64 0, i32 1), align 8, !dbg !2926, !tbaa !1685
+  tail call void @llvm.dbg.value(metadata !{%struct.undo* %1}, i64 0, metadata !1557), !dbg !2918
+  %tobool = icmp eq %struct.undo* %1, null, !dbg !2918
+  br i1 %tobool, label %for.end, label %for.body, !dbg !2918
 
 for.end:                                          ; preds = %if.end, %entry
-  store %struct.undo* null, %struct.undo** getelementptr inbounds (%struct.undobuf* @undobuf, i64 0, i32 0), align 8, !tbaa !3
-  ret void
+  store %struct.undo* null, %struct.undo** getelementptr inbounds (%struct.undobuf* @undobuf, i64 0, i32 0), align 8, !dbg !2927, !tbaa !1685
+  ret void, !dbg !2928
 }

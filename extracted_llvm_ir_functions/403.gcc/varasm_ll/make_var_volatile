@@ -1,43 +1,44 @@
 define void @make_var_volatile(%union.tree_node* %var) #0 {
 entry:
-  %rtl = getelementptr inbounds %union.tree_node* %var, i64 0, i32 0, i32 17
-  %0 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
-  %tobool = icmp eq %struct.rtx_def* %0, null
-  br i1 %tobool, label %cond.false, label %cond.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %var}, i64 0, metadata !1278), !dbg !2654
+  %rtl = getelementptr inbounds %union.tree_node* %var, i64 0, i32 0, i32 17, !dbg !2655
+  %0 = load %struct.rtx_def** %rtl, align 8, !dbg !2655, !tbaa !2357
+  %tobool = icmp eq %struct.rtx_def* %0, null, !dbg !2655
+  br i1 %tobool, label %cond.false, label %cond.end, !dbg !2655
 
 cond.false:                                       ; preds = %entry
-  tail call void @make_decl_rtl(%union.tree_node* %var, i8* null) #10
-  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
-  br label %cond.end
+  tail call void @make_decl_rtl(%union.tree_node* %var, i8* null) #11, !dbg !2655
+  %1 = load %struct.rtx_def** %rtl, align 8, !dbg !2655, !tbaa !2357
+  br label %cond.end, !dbg !2655
 
 cond.end:                                         ; preds = %entry, %cond.false
-  %2 = phi %struct.rtx_def* [ %1, %cond.false ], [ %0, %entry ]
-  %3 = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load = load i32* %3, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 66
-  br i1 %cmp, label %if.end, label %if.then
+  %2 = phi %struct.rtx_def* [ %1, %cond.false ], [ %0, %entry ], !dbg !2655
+  %3 = bitcast %struct.rtx_def* %2 to i32*, !dbg !2655
+  %bf.load = load i32* %3, align 8, !dbg !2655
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2655
+  %cmp = icmp eq i32 %bf.clear, 66, !dbg !2655
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2655
 
 if.then:                                          ; preds = %cond.end
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 997, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.make_var_volatile, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 997, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.make_var_volatile, i64 0, i64 0)) #13, !dbg !2656
+  unreachable, !dbg !2656
 
 if.end:                                           ; preds = %cond.end
-  %tobool7 = icmp eq %struct.rtx_def* %2, null
-  br i1 %tobool7, label %cond.false11, label %cond.end14
+  %tobool7 = icmp eq %struct.rtx_def* %2, null, !dbg !2657
+  br i1 %tobool7, label %cond.false11, label %cond.end14, !dbg !2657
 
 cond.false11:                                     ; preds = %if.end
-  tail call void @make_decl_rtl(%union.tree_node* %var, i8* null) #10
-  %4 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
+  tail call void @make_decl_rtl(%union.tree_node* %var, i8* null) #11, !dbg !2657
+  %4 = load %struct.rtx_def** %rtl, align 8, !dbg !2657, !tbaa !2357
   %.phi.trans.insert = bitcast %struct.rtx_def* %4 to i32*
-  %bf.load16.pre = load i32* %.phi.trans.insert, align 8
-  br label %cond.end14
+  %bf.load16.pre = load i32* %.phi.trans.insert, align 8, !dbg !2657
+  br label %cond.end14, !dbg !2657
 
 cond.end14:                                       ; preds = %if.end, %cond.false11
   %bf.load16 = phi i32 [ %bf.load16.pre, %cond.false11 ], [ %bf.load, %if.end ]
-  %cond15 = phi %struct.rtx_def* [ %4, %cond.false11 ], [ %2, %if.end ]
-  %5 = bitcast %struct.rtx_def* %cond15 to i32*
-  %bf.set = or i32 %bf.load16, 134217728
-  store i32 %bf.set, i32* %5, align 8
-  ret void
+  %cond15 = phi %struct.rtx_def* [ %4, %cond.false11 ], [ %2, %if.end ], !dbg !2657
+  %5 = bitcast %struct.rtx_def* %cond15 to i32*, !dbg !2657
+  %bf.set = or i32 %bf.load16, 134217728, !dbg !2657
+  store i32 %bf.set, i32* %5, align 8, !dbg !2657
+  ret void, !dbg !2658
 }

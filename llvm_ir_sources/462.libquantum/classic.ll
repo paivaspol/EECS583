@@ -1,326 +1,273 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/462.libquantum/src/classic.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/462.libquantum/src/classic.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-; Function Attrs: nounwind optsize readnone ssp uwtable
+; Function Attrs: nounwind optsize readnone uwtable
 define i32 @quantum_ipow(i32 %a, i32 %b) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %a, i64 0, metadata !12, metadata !53), !dbg !54
-  tail call void @llvm.dbg.value(metadata i32 %b, i64 0, metadata !13, metadata !53), !dbg !55
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !15, metadata !53), !dbg !56
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !14, metadata !53), !dbg !57
-  %1 = icmp sgt i32 %b, 0, !dbg !58
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !61
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %a}, i64 0, metadata !10), !dbg !48
+  tail call void @llvm.dbg.value(metadata !{i32 %b}, i64 0, metadata !11), !dbg !48
+  tail call void @llvm.dbg.value(metadata !49, i64 0, metadata !13), !dbg !50
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !12), !dbg !51
+  %cmp3 = icmp sgt i32 %b, 0, !dbg !51
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !51
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %b, -1, !dbg !61
-  br label %3, !dbg !61
+for.body:                                         ; preds = %entry, %for.body
+  %r.05 = phi i32 [ %mul, %for.body ], [ 1, %entry ]
+  %i.04 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %mul = mul nsw i32 %r.05, %a, !dbg !53
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !13), !dbg !53
+  %inc = add nsw i32 %i.04, 1, !dbg !51
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !12), !dbg !51
+  %exitcond = icmp eq i32 %inc, %b, !dbg !51
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !51
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %r.02 = phi i32 [ 1, %.lr.ph ], [ %4, %3 ]
-  %i.01 = phi i32 [ 0, %.lr.ph ], [ %5, %3 ]
-  %4 = mul nsw i32 %r.02, %a, !dbg !62
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !15, metadata !53), !dbg !56
-  %5 = add nuw nsw i32 %i.01, 1, !dbg !63
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !14, metadata !53), !dbg !57
-  %exitcond = icmp eq i32 %i.01, %2, !dbg !61
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !61
-
-._crit_edge:                                      ; preds = %3, %0
-  %r.0.lcssa = phi i32 [ 1, %0 ], [ %4, %3 ]
-  ret i32 %r.0.lcssa, !dbg !64
+for.end:                                          ; preds = %for.body, %entry
+  %r.0.lcssa = phi i32 [ 1, %entry ], [ %mul, %for.body ]
+  ret i32 %r.0.lcssa, !dbg !54
 }
 
-; Function Attrs: nounwind optsize readnone ssp uwtable
+; Function Attrs: nounwind optsize readnone uwtable
 define i32 @quantum_gcd(i32 %u, i32 %v) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %u, i64 0, metadata !18, metadata !53), !dbg !65
-  tail call void @llvm.dbg.value(metadata i32 %v, i64 0, metadata !19, metadata !53), !dbg !66
-  %1 = icmp eq i32 %v, 0, !dbg !67
-  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !67
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %u}, i64 0, metadata !16), !dbg !55
+  tail call void @llvm.dbg.value(metadata !{i32 %v}, i64 0, metadata !17), !dbg !55
+  %tobool3 = icmp eq i32 %v, 0, !dbg !56
+  br i1 %tobool3, label %while.end, label %while.body, !dbg !56
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %.03 = phi i32 [ %.012, %.lr.ph ], [ %u, %0 ]
-  %.012 = phi i32 [ %2, %.lr.ph ], [ %v, %0 ]
-  %2 = srem i32 %.03, %.012, !dbg !68
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !20, metadata !53), !dbg !70
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !18, metadata !53), !dbg !65
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !19, metadata !53), !dbg !66
-  %3 = icmp eq i32 %2, 0, !dbg !67
-  br i1 %3, label %._crit_edge, label %.lr.ph, !dbg !67
+while.body:                                       ; preds = %entry, %while.body
+  %u.addr.05 = phi i32 [ %v.addr.04, %while.body ], [ %u, %entry ]
+  %v.addr.04 = phi i32 [ %rem, %while.body ], [ %v, %entry ]
+  %rem = srem i32 %u.addr.05, %v.addr.04, !dbg !57
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !18), !dbg !57
+  tail call void @llvm.dbg.value(metadata !{i32 %v.addr.04}, i64 0, metadata !16), !dbg !59
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !17), !dbg !60
+  %tobool = icmp eq i32 %rem, 0, !dbg !56
+  br i1 %tobool, label %while.end, label %while.body, !dbg !56
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  %.0.lcssa = phi i32 [ %u, %0 ], [ %.012, %.lr.ph ]
-  ret i32 %.0.lcssa, !dbg !71
+while.end:                                        ; preds = %while.body, %entry
+  %u.addr.0.lcssa = phi i32 [ %u, %entry ], [ %v.addr.04, %while.body ]
+  ret i32 %u.addr.0.lcssa, !dbg !61
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @quantum_frac_approx(i32* nocapture %a, i32* nocapture %b, i32 %width) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %a, i64 0, metadata !26, metadata !53), !dbg !72
-  tail call void @llvm.dbg.value(metadata i32* %b, i64 0, metadata !27, metadata !53), !dbg !73
-  tail call void @llvm.dbg.value(metadata i32 %width, i64 0, metadata !28, metadata !53), !dbg !74
-  %1 = load i32* %a, align 4, !dbg !75, !tbaa !76
-  %2 = sitofp i32 %1 to float, !dbg !80
-  %3 = load i32* %b, align 4, !dbg !81, !tbaa !76
-  %4 = sitofp i32 %3 to float, !dbg !81
-  %5 = fdiv float %2, %4, !dbg !82
-  tail call void @llvm.dbg.value(metadata float %5, i64 0, metadata !29, metadata !53), !dbg !83
-  tail call void @llvm.dbg.value(metadata float %5, i64 0, metadata !30, metadata !53), !dbg !84
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !32, metadata !53), !dbg !85
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !33, metadata !53), !dbg !86
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !34, metadata !53), !dbg !87
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !35, metadata !53), !dbg !88
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !36, metadata !53), !dbg !89
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !37, metadata !53), !dbg !90
-  %6 = shl i32 1, %width, !dbg !91
-  %7 = fpext float %5 to double, !dbg !94
-  %8 = shl nsw i32 %6, 1, !dbg !95
-  %9 = sitofp i32 %8 to double, !dbg !96
-  %10 = fdiv double 1.000000e+00, %9, !dbg !97
-  br label %11, !dbg !98
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %a}, i64 0, metadata !24), !dbg !62
+  tail call void @llvm.dbg.value(metadata !{i32* %b}, i64 0, metadata !25), !dbg !62
+  tail call void @llvm.dbg.value(metadata !{i32 %width}, i64 0, metadata !26), !dbg !62
+  %0 = load i32* %a, align 4, !dbg !63, !tbaa !64
+  %conv = sitofp i32 %0 to float, !dbg !63
+  %1 = load i32* %b, align 4, !dbg !63, !tbaa !64
+  %conv1 = sitofp i32 %1 to float, !dbg !63
+  %div = fdiv float %conv, %conv1, !dbg !63
+  tail call void @llvm.dbg.value(metadata !{float %div}, i64 0, metadata !27), !dbg !63
+  tail call void @llvm.dbg.value(metadata !{float %div}, i64 0, metadata !29), !dbg !67
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !31), !dbg !68
+  tail call void @llvm.dbg.value(metadata !49, i64 0, metadata !32), !dbg !68
+  tail call void @llvm.dbg.value(metadata !49, i64 0, metadata !33), !dbg !68
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !34), !dbg !68
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !35), !dbg !68
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !36), !dbg !68
+  %shl = shl i32 1, %width, !dbg !69
+  %conv20 = fpext float %div to double, !dbg !71
+  %mul23 = shl nsw i32 %shl, 1, !dbg !71
+  %conv24 = sitofp i32 %mul23 to double, !dbg !71
+  %div25 = fdiv double 1.000000e+00, %conv24, !dbg !71
+  br label %do.body, !dbg !72
 
-; <label>:11                                      ; preds = %18, %0
-  %g.0 = phi float [ %5, %0 ], [ %23, %18 ]
-  %num2.0 = phi i32 [ 0, %0 ], [ %num1.0, %18 ]
-  %den2.0 = phi i32 [ 1, %0 ], [ %den1.0, %18 ]
-  %num1.0 = phi i32 [ 1, %0 ], [ %25, %18 ]
-  %den1.0 = phi i32 [ 0, %0 ], [ %16, %18 ]
-  %num.0 = phi i32 [ 0, %0 ], [ %25, %18 ]
-  %12 = fpext float %g.0 to double, !dbg !99
-  %13 = fadd double %12, 5.000000e-06, !dbg !100
-  %14 = fptosi double %13 to i32, !dbg !101
-  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !31, metadata !53), !dbg !102
-  tail call void @llvm.dbg.value(metadata float %22, i64 0, metadata !30, metadata !53), !dbg !84
-  tail call void @llvm.dbg.value(metadata float %23, i64 0, metadata !30, metadata !53), !dbg !84
-  %15 = mul nsw i32 %den1.0, %14, !dbg !103
-  %16 = add nsw i32 %15, %den2.0, !dbg !104
-  %17 = icmp sgt i32 %16, %6, !dbg !105
-  br i1 %17, label %32, label %18, !dbg !106
+do.body:                                          ; preds = %if.end, %entry
+  %g.0 = phi float [ %div, %entry ], [ %conv10, %if.end ]
+  %num2.0 = phi i32 [ 0, %entry ], [ %num1.0, %if.end ]
+  %den2.0 = phi i32 [ 1, %entry ], [ %den1.0, %if.end ]
+  %num1.0 = phi i32 [ 1, %entry ], [ %add14, %if.end ]
+  %den1.0 = phi i32 [ 0, %entry ], [ %add11, %if.end ]
+  %num.0 = phi i32 [ 0, %entry ], [ %add14, %if.end ]
+  %conv2 = fpext float %g.0 to double, !dbg !73
+  %add = fadd double %conv2, 5.000000e-06, !dbg !73
+  %conv3 = fptosi double %add to i32, !dbg !73
+  tail call void @llvm.dbg.value(metadata !{i32 %conv3}, i64 0, metadata !30), !dbg !73
+  tail call void @llvm.dbg.value(metadata !{float %conv7}, i64 0, metadata !29), !dbg !74
+  tail call void @llvm.dbg.value(metadata !{float %conv10}, i64 0, metadata !29), !dbg !75
+  %mul = mul nsw i32 %den1.0, %conv3, !dbg !69
+  %add11 = add nsw i32 %mul, %den2.0, !dbg !69
+  %cmp = icmp sgt i32 %add11, %shl, !dbg !69
+  br i1 %cmp, label %do.end, label %if.end, !dbg !69
 
-; <label>:18                                      ; preds = %11
-  %19 = sitofp i32 %14 to double, !dbg !107
-  %20 = fadd double %19, -5.000000e-06, !dbg !108
-  %21 = fsub double %12, %20, !dbg !109
-  %22 = fptrunc double %21 to float, !dbg !109
-  %23 = fdiv float 1.000000e+00, %22, !dbg !110
-  %24 = mul nsw i32 %14, %num1.0, !dbg !111
-  %25 = add nsw i32 %24, %num2.0, !dbg !112
-  tail call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !36, metadata !53), !dbg !89
-  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !37, metadata !53), !dbg !90
-  tail call void @llvm.dbg.value(metadata i32 %num1.0, i64 0, metadata !32, metadata !53), !dbg !85
-  tail call void @llvm.dbg.value(metadata i32 %den1.0, i64 0, metadata !33, metadata !53), !dbg !86
-  tail call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !34, metadata !53), !dbg !87
-  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !35, metadata !53), !dbg !88
-  %26 = sitofp i32 %25 to double, !dbg !113
-  %27 = sitofp i32 %16 to double, !dbg !114
-  %28 = fdiv double %26, %27, !dbg !115
-  %29 = fsub double %28, %7, !dbg !116
-  %30 = tail call double @fabs(double %29) #4, !dbg !117
-  %31 = fcmp ogt double %30, %10, !dbg !118
-  br i1 %31, label %11, label %32, !dbg !119
+if.end:                                           ; preds = %do.body
+  %conv4 = sitofp i32 %conv3 to double, !dbg !74
+  %sub = fadd double %conv4, -5.000000e-06, !dbg !74
+  %sub6 = fsub double %conv2, %sub, !dbg !74
+  %conv7 = fptrunc double %sub6 to float, !dbg !74
+  %conv10 = fdiv float 1.000000e+00, %conv7, !dbg !75
+  %mul13 = mul nsw i32 %conv3, %num1.0, !dbg !76
+  %add14 = add nsw i32 %mul13, %num2.0, !dbg !76
+  tail call void @llvm.dbg.value(metadata !{i32 %add14}, i64 0, metadata !35), !dbg !76
+  tail call void @llvm.dbg.value(metadata !{i32 %add11}, i64 0, metadata !36), !dbg !77
+  tail call void @llvm.dbg.value(metadata !{i32 %num1.0}, i64 0, metadata !31), !dbg !78
+  tail call void @llvm.dbg.value(metadata !{i32 %den1.0}, i64 0, metadata !32), !dbg !79
+  tail call void @llvm.dbg.value(metadata !{i32 %add14}, i64 0, metadata !33), !dbg !80
+  tail call void @llvm.dbg.value(metadata !{i32 %add11}, i64 0, metadata !34), !dbg !81
+  %conv17 = sitofp i32 %add14 to double, !dbg !71
+  %conv18 = sitofp i32 %add11 to double, !dbg !71
+  %div19 = fdiv double %conv17, %conv18, !dbg !71
+  %sub21 = fsub double %div19, %conv20, !dbg !71
+  %call = tail call double @fabs(double %sub21) #4, !dbg !71
+  %cmp26 = fcmp ogt double %call, %div25, !dbg !71
+  br i1 %cmp26, label %do.body, label %do.end, !dbg !71
 
-; <label>:32                                      ; preds = %11, %18
-  %num.1 = phi i32 [ %num.0, %11 ], [ %25, %18 ]
-  %den.1 = phi i32 [ %den1.0, %11 ], [ %16, %18 ]
-  store i32 %num.1, i32* %a, align 4, !dbg !120, !tbaa !76
-  store i32 %den.1, i32* %b, align 4, !dbg !121, !tbaa !76
-  ret void, !dbg !122
+do.end:                                           ; preds = %do.body, %if.end
+  %num.1 = phi i32 [ %num.0, %do.body ], [ %add14, %if.end ]
+  %den.1 = phi i32 [ %den1.0, %do.body ], [ %add11, %if.end ]
+  store i32 %num.1, i32* %a, align 4, !dbg !82, !tbaa !64
+  store i32 %den.1, i32* %b, align 4, !dbg !83, !tbaa !64
+  ret void, !dbg !84
 }
 
 ; Function Attrs: nounwind optsize readnone
 declare double @fabs(double) #2
 
-; Function Attrs: nounwind optsize readnone ssp uwtable
+; Function Attrs: nounwind optsize readnone uwtable
 define i32 @quantum_getwidth(i32 %n) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !42, metadata !53), !dbg !123
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !43, metadata !53), !dbg !124
-  br label %1, !dbg !125
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !41), !dbg !85
+  tail call void @llvm.dbg.value(metadata !49, i64 0, metadata !42), !dbg !86
+  br label %for.cond, !dbg !86
 
-; <label>:1                                       ; preds = %1, %0
-  %i.0 = phi i32 [ 1, %0 ], [ %4, %1 ]
-  %2 = shl i32 1, %i.0, !dbg !127
-  %3 = icmp slt i32 %2, %n, !dbg !129
-  %4 = add nuw nsw i32 %i.0, 1, !dbg !130
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !43, metadata !53), !dbg !124
-  br i1 %3, label %1, label %5, !dbg !131
+for.cond:                                         ; preds = %for.cond, %entry
+  %i.0 = phi i32 [ 1, %entry ], [ %inc, %for.cond ]
+  %shl = shl i32 1, %i.0, !dbg !86
+  %cmp = icmp slt i32 %shl, %n, !dbg !86
+  %inc = add nsw i32 %i.0, 1, !dbg !86
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !42), !dbg !86
+  br i1 %cmp, label %for.cond, label %for.end, !dbg !86
 
-; <label>:5                                       ; preds = %1
-  ret i32 %i.0, !dbg !132
+for.end:                                          ; preds = %for.cond
+  ret i32 %i.0, !dbg !88
 }
 
-; Function Attrs: nounwind optsize readnone ssp uwtable
+; Function Attrs: nounwind optsize readnone uwtable
 define i32 @quantum_inverse_mod(i32 %n, i32 %c) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !46, metadata !53), !dbg !133
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !47, metadata !53), !dbg !134
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !48, metadata !53), !dbg !135
-  br label %1, !dbg !136
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !45), !dbg !89
+  tail call void @llvm.dbg.value(metadata !{i32 %c}, i64 0, metadata !46), !dbg !89
+  tail call void @llvm.dbg.value(metadata !49, i64 0, metadata !47), !dbg !90
+  br label %for.cond, !dbg !90
 
-; <label>:1                                       ; preds = %1, %0
-  %i.0 = phi i32 [ 1, %0 ], [ %5, %1 ]
-  %2 = mul nsw i32 %i.0, %c, !dbg !138
-  %3 = srem i32 %2, %n, !dbg !140
-  %4 = icmp eq i32 %3, 1, !dbg !141
-  %5 = add nuw nsw i32 %i.0, 1, !dbg !142
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !48, metadata !53), !dbg !135
-  br i1 %4, label %6, label %1, !dbg !143
+for.cond:                                         ; preds = %for.cond, %entry
+  %i.0 = phi i32 [ 1, %entry ], [ %inc, %for.cond ]
+  %mul = mul nsw i32 %i.0, %c, !dbg !90
+  %rem = srem i32 %mul, %n, !dbg !90
+  %cmp = icmp eq i32 %rem, 1, !dbg !90
+  %inc = add nsw i32 %i.0, 1, !dbg !90
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !47), !dbg !90
+  br i1 %cmp, label %for.end, label %for.cond, !dbg !90
 
-; <label>:6                                       ; preds = %1
-  ret i32 %i.0, !dbg !144
+for.end:                                          ; preds = %for.cond
+  ret i32 %i.0, !dbg !92
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #3
+declare void @llvm.dbg.value(metadata, i64, metadata) #3
 
-attributes #0 = { nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #3 = { nounwind readnone }
 attributes #4 = { nounwind optsize readnone }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!49, !50, !51}
-!llvm.ident = !{!52}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !7, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/462.libquantum/src/classic.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !5, !6}
-!4 = !DIBasicType(name: "float", size: 32, align: 32, encoding: DW_ATE_float)
-!5 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!6 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!7 = !{!8, !16, !21, !38, !44}
-!8 = !DISubprogram(name: "quantum_ipow", scope: !1, file: !1, line: 37, type: !9, isLocal: false, isDefinition: true, scopeLine: 38, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32, i32)* @quantum_ipow, variables: !11)
-!9 = !DISubroutineType(types: !10)
-!10 = !{!5, !5, !5}
-!11 = !{!12, !13, !14, !15}
-!12 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "a", arg: 1, scope: !8, file: !1, line: 37, type: !5)
-!13 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "b", arg: 2, scope: !8, file: !1, line: 37, type: !5)
-!14 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !8, file: !1, line: 39, type: !5)
-!15 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "r", scope: !8, file: !1, line: 40, type: !5)
-!16 = !DISubprogram(name: "quantum_gcd", scope: !1, file: !1, line: 51, type: !9, isLocal: false, isDefinition: true, scopeLine: 52, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32, i32)* @quantum_gcd, variables: !17)
-!17 = !{!18, !19, !20}
-!18 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "u", arg: 1, scope: !16, file: !1, line: 51, type: !5)
-!19 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "v", arg: 2, scope: !16, file: !1, line: 51, type: !5)
-!20 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "r", scope: !16, file: !1, line: 53, type: !5)
-!21 = !DISubprogram(name: "quantum_frac_approx", scope: !1, file: !1, line: 67, type: !22, isLocal: false, isDefinition: true, scopeLine: 68, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i32*, i32)* @quantum_frac_approx, variables: !25)
-!22 = !DISubroutineType(types: !23)
-!23 = !{null, !24, !24, !5}
-!24 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!25 = !{!26, !27, !28, !29, !30, !31, !32, !33, !34, !35, !36, !37}
-!26 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "a", arg: 1, scope: !21, file: !1, line: 67, type: !24)
-!27 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "b", arg: 2, scope: !21, file: !1, line: 67, type: !24)
-!28 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "width", arg: 3, scope: !21, file: !1, line: 67, type: !5)
-!29 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "f", scope: !21, file: !1, line: 69, type: !4)
-!30 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "g", scope: !21, file: !1, line: 70, type: !4)
-!31 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !21, file: !1, line: 71, type: !5)
-!32 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "num2", scope: !21, file: !1, line: 71, type: !5)
-!33 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "den2", scope: !21, file: !1, line: 71, type: !5)
-!34 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "num1", scope: !21, file: !1, line: 71, type: !5)
-!35 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "den1", scope: !21, file: !1, line: 71, type: !5)
-!36 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "num", scope: !21, file: !1, line: 71, type: !5)
-!37 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "den", scope: !21, file: !1, line: 71, type: !5)
-!38 = !DISubprogram(name: "quantum_getwidth", scope: !1, file: !1, line: 104, type: !39, isLocal: false, isDefinition: true, scopeLine: 105, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32)* @quantum_getwidth, variables: !41)
-!39 = !DISubroutineType(types: !40)
-!40 = !{!5, !5}
-!41 = !{!42, !43}
-!42 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "n", arg: 1, scope: !38, file: !1, line: 104, type: !5)
-!43 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !38, file: !1, line: 106, type: !5)
-!44 = !DISubprogram(name: "quantum_inverse_mod", scope: !1, file: !1, line: 116, type: !9, isLocal: false, isDefinition: true, scopeLine: 117, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32, i32)* @quantum_inverse_mod, variables: !45)
-!45 = !{!46, !47, !48}
-!46 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "n", arg: 1, scope: !44, file: !1, line: 116, type: !5)
-!47 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "c", arg: 2, scope: !44, file: !1, line: 116, type: !5)
-!48 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !44, file: !1, line: 118, type: !5)
-!49 = !{i32 2, !"Dwarf Version", i32 2}
-!50 = !{i32 2, !"Debug Info Version", i32 700000003}
-!51 = !{i32 1, !"PIC Level", i32 2}
-!52 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!53 = !DIExpression()
-!54 = !DILocation(line: 37, column: 18, scope: !8)
-!55 = !DILocation(line: 37, column: 25, scope: !8)
-!56 = !DILocation(line: 40, column: 7, scope: !8)
-!57 = !DILocation(line: 39, column: 7, scope: !8)
-!58 = !DILocation(line: 42, column: 13, scope: !59)
-!59 = distinct !DILexicalBlock(scope: !60, file: !1, line: 42, column: 3)
-!60 = distinct !DILexicalBlock(scope: !8, file: !1, line: 42, column: 3)
-!61 = !DILocation(line: 42, column: 3, scope: !60)
-!62 = !DILocation(line: 43, column: 6, scope: !59)
-!63 = !DILocation(line: 42, column: 18, scope: !59)
-!64 = !DILocation(line: 45, column: 3, scope: !8)
-!65 = !DILocation(line: 51, column: 17, scope: !16)
-!66 = !DILocation(line: 51, column: 24, scope: !16)
-!67 = !DILocation(line: 55, column: 3, scope: !16)
-!68 = !DILocation(line: 57, column: 13, scope: !69)
-!69 = distinct !DILexicalBlock(scope: !16, file: !1, line: 56, column: 5)
-!70 = !DILocation(line: 53, column: 7, scope: !16)
-!71 = !DILocation(line: 61, column: 3, scope: !16)
-!72 = !DILocation(line: 67, column: 26, scope: !21)
-!73 = !DILocation(line: 67, column: 34, scope: !21)
-!74 = !DILocation(line: 67, column: 41, scope: !21)
-!75 = !DILocation(line: 69, column: 21, scope: !21)
-!76 = !{!77, !77, i64 0}
-!77 = !{!"int", !78, i64 0}
-!78 = !{!"omnipotent char", !79, i64 0}
-!79 = !{!"Simple C/C++ TBAA"}
-!80 = !DILocation(line: 69, column: 13, scope: !21)
-!81 = !DILocation(line: 69, column: 26, scope: !21)
-!82 = !DILocation(line: 69, column: 24, scope: !21)
-!83 = !DILocation(line: 69, column: 9, scope: !21)
-!84 = !DILocation(line: 70, column: 9, scope: !21)
-!85 = !DILocation(line: 71, column: 10, scope: !21)
-!86 = !DILocation(line: 71, column: 18, scope: !21)
-!87 = !DILocation(line: 71, column: 26, scope: !21)
-!88 = !DILocation(line: 71, column: 34, scope: !21)
-!89 = !DILocation(line: 71, column: 42, scope: !21)
-!90 = !DILocation(line: 71, column: 49, scope: !21)
-!91 = !DILocation(line: 80, column: 30, scope: !92)
-!92 = distinct !DILexicalBlock(scope: !93, file: !1, line: 80, column: 11)
-!93 = distinct !DILexicalBlock(scope: !21, file: !1, line: 74, column: 5)
-!94 = !DILocation(line: 91, column: 41, scope: !21)
-!95 = !DILocation(line: 91, column: 55, scope: !21)
-!96 = !DILocation(line: 91, column: 52, scope: !21)
-!97 = !DILocation(line: 91, column: 50, scope: !21)
-!98 = !DILocation(line: 73, column: 3, scope: !21)
-!99 = !DILocation(line: 75, column: 18, scope: !93)
-!100 = !DILocation(line: 75, column: 19, scope: !93)
-!101 = !DILocation(line: 75, column: 11, scope: !93)
-!102 = !DILocation(line: 71, column: 7, scope: !21)
-!103 = !DILocation(line: 80, column: 13, scope: !92)
-!104 = !DILocation(line: 80, column: 20, scope: !92)
-!105 = !DILocation(line: 80, column: 27, scope: !92)
-!106 = !DILocation(line: 80, column: 11, scope: !93)
-!107 = !DILocation(line: 77, column: 12, scope: !93)
-!108 = !DILocation(line: 77, column: 13, scope: !93)
-!109 = !DILocation(line: 77, column: 9, scope: !93)
-!110 = !DILocation(line: 78, column: 11, scope: !93)
-!111 = !DILocation(line: 83, column: 15, scope: !93)
-!112 = !DILocation(line: 83, column: 22, scope: !93)
-!113 = !DILocation(line: 91, column: 19, scope: !21)
-!114 = !DILocation(line: 91, column: 34, scope: !21)
-!115 = !DILocation(line: 91, column: 32, scope: !21)
-!116 = !DILocation(line: 91, column: 39, scope: !21)
-!117 = !DILocation(line: 91, column: 13, scope: !21)
-!118 = !DILocation(line: 91, column: 44, scope: !21)
-!119 = !DILocation(line: 91, column: 5, scope: !93)
-!120 = !DILocation(line: 95, column: 6, scope: !21)
-!121 = !DILocation(line: 96, column: 6, scope: !21)
-!122 = !DILocation(line: 98, column: 3, scope: !21)
-!123 = !DILocation(line: 104, column: 22, scope: !38)
-!124 = !DILocation(line: 106, column: 7, scope: !38)
-!125 = !DILocation(line: 108, column: 7, scope: !126)
-!126 = distinct !DILexicalBlock(scope: !38, file: !1, line: 108, column: 3)
-!127 = !DILocation(line: 108, column: 13, scope: !128)
-!128 = distinct !DILexicalBlock(scope: !126, file: !1, line: 108, column: 3)
-!129 = !DILocation(line: 108, column: 16, scope: !128)
-!130 = !DILocation(line: 108, column: 21, scope: !128)
-!131 = !DILocation(line: 108, column: 3, scope: !126)
-!132 = !DILocation(line: 110, column: 3, scope: !38)
-!133 = !DILocation(line: 116, column: 25, scope: !44)
-!134 = !DILocation(line: 116, column: 32, scope: !44)
-!135 = !DILocation(line: 118, column: 7, scope: !44)
-!136 = !DILocation(line: 120, column: 7, scope: !137)
-!137 = distinct !DILexicalBlock(scope: !44, file: !1, line: 120, column: 3)
-!138 = !DILocation(line: 120, column: 14, scope: !139)
-!139 = distinct !DILexicalBlock(scope: !137, file: !1, line: 120, column: 3)
-!140 = !DILocation(line: 120, column: 17, scope: !139)
-!141 = !DILocation(line: 120, column: 19, scope: !139)
-!142 = !DILocation(line: 120, column: 25, scope: !139)
-!143 = !DILocation(line: 120, column: 3, scope: !137)
-!144 = !DILocation(line: 122, column: 3, scope: !44)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/462.libquantum/src/classic.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/462.libquantum/src/classic.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !14, metadata !19, metadata !37, metadata !43}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"quantum_ipow", metadata !"quantum_ipow", metadata !"", i32 37, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32, i32)* @quantum_ipow, null, null, metadata !9, i32 38} ; [ DW_TAG_subprogram ] [line 37] [def] [scope 38] [quantum_ipow]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/462.libquantum/src/classic.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8, metadata !8, metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{metadata !10, metadata !11, metadata !12, metadata !13}
+!10 = metadata !{i32 786689, metadata !4, metadata !"a", metadata !5, i32 16777253, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [a] [line 37]
+!11 = metadata !{i32 786689, metadata !4, metadata !"b", metadata !5, i32 33554469, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [b] [line 37]
+!12 = metadata !{i32 786688, metadata !4, metadata !"i", metadata !5, i32 39, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 39]
+!13 = metadata !{i32 786688, metadata !4, metadata !"r", metadata !5, i32 40, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [r] [line 40]
+!14 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"quantum_gcd", metadata !"quantum_gcd", metadata !"", i32 51, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32, i32)* @quantum_gcd, null, null, metadata !15, i32 52} ; [ DW_TAG_subprogram ] [line 51] [def] [scope 52] [quantum_gcd]
+!15 = metadata !{metadata !16, metadata !17, metadata !18}
+!16 = metadata !{i32 786689, metadata !14, metadata !"u", metadata !5, i32 16777267, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [u] [line 51]
+!17 = metadata !{i32 786689, metadata !14, metadata !"v", metadata !5, i32 33554483, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [v] [line 51]
+!18 = metadata !{i32 786688, metadata !14, metadata !"r", metadata !5, i32 53, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [r] [line 53]
+!19 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"quantum_frac_approx", metadata !"quantum_frac_approx", metadata !"", i32 67, metadata !20, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i32*, i32)* @quantum_frac_approx, null, null, metadata !23, i32 68} ; [ DW_TAG_subprogram ] [line 67] [def] [scope 68] [quantum_frac_approx]
+!20 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !21, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!21 = metadata !{null, metadata !22, metadata !22, metadata !8}
+!22 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !8} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!23 = metadata !{metadata !24, metadata !25, metadata !26, metadata !27, metadata !29, metadata !30, metadata !31, metadata !32, metadata !33, metadata !34, metadata !35, metadata !36}
+!24 = metadata !{i32 786689, metadata !19, metadata !"a", metadata !5, i32 16777283, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [a] [line 67]
+!25 = metadata !{i32 786689, metadata !19, metadata !"b", metadata !5, i32 33554499, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [b] [line 67]
+!26 = metadata !{i32 786689, metadata !19, metadata !"width", metadata !5, i32 50331715, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [width] [line 67]
+!27 = metadata !{i32 786688, metadata !19, metadata !"f", metadata !5, i32 69, metadata !28, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [f] [line 69]
+!28 = metadata !{i32 786468, null, null, metadata !"float", i32 0, i64 32, i64 32, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [float] [line 0, size 32, align 32, offset 0, enc DW_ATE_float]
+!29 = metadata !{i32 786688, metadata !19, metadata !"g", metadata !5, i32 70, metadata !28, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [g] [line 70]
+!30 = metadata !{i32 786688, metadata !19, metadata !"i", metadata !5, i32 71, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 71]
+!31 = metadata !{i32 786688, metadata !19, metadata !"num2", metadata !5, i32 71, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [num2] [line 71]
+!32 = metadata !{i32 786688, metadata !19, metadata !"den2", metadata !5, i32 71, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [den2] [line 71]
+!33 = metadata !{i32 786688, metadata !19, metadata !"num1", metadata !5, i32 71, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [num1] [line 71]
+!34 = metadata !{i32 786688, metadata !19, metadata !"den1", metadata !5, i32 71, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [den1] [line 71]
+!35 = metadata !{i32 786688, metadata !19, metadata !"num", metadata !5, i32 71, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [num] [line 71]
+!36 = metadata !{i32 786688, metadata !19, metadata !"den", metadata !5, i32 71, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [den] [line 71]
+!37 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"quantum_getwidth", metadata !"quantum_getwidth", metadata !"", i32 104, metadata !38, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32)* @quantum_getwidth, null, null, metadata !40, i32 105} ; [ DW_TAG_subprogram ] [line 104] [def] [scope 105] [quantum_getwidth]
+!38 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !39, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!39 = metadata !{metadata !8, metadata !8}
+!40 = metadata !{metadata !41, metadata !42}
+!41 = metadata !{i32 786689, metadata !37, metadata !"n", metadata !5, i32 16777320, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [n] [line 104]
+!42 = metadata !{i32 786688, metadata !37, metadata !"i", metadata !5, i32 106, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 106]
+!43 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"quantum_inverse_mod", metadata !"quantum_inverse_mod", metadata !"", i32 116, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32, i32)* @quantum_inverse_mod, null, null, metadata !44, i32 117} ; [ DW_TAG_subprogram ] [line 116] [def] [scope 117] [quantum_inverse_mod]
+!44 = metadata !{metadata !45, metadata !46, metadata !47}
+!45 = metadata !{i32 786689, metadata !43, metadata !"n", metadata !5, i32 16777332, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [n] [line 116]
+!46 = metadata !{i32 786689, metadata !43, metadata !"c", metadata !5, i32 33554548, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [c] [line 116]
+!47 = metadata !{i32 786688, metadata !43, metadata !"i", metadata !5, i32 118, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 118]
+!48 = metadata !{i32 37, i32 0, metadata !4, null}
+!49 = metadata !{i32 1}
+!50 = metadata !{i32 40, i32 0, metadata !4, null}
+!51 = metadata !{i32 42, i32 0, metadata !52, null}
+!52 = metadata !{i32 786443, metadata !1, metadata !4, i32 42, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/462.libquantum/src/classic.c]
+!53 = metadata !{i32 43, i32 0, metadata !52, null}
+!54 = metadata !{i32 45, i32 0, metadata !4, null}
+!55 = metadata !{i32 51, i32 0, metadata !14, null}
+!56 = metadata !{i32 55, i32 0, metadata !14, null}
+!57 = metadata !{i32 57, i32 0, metadata !58, null}
+!58 = metadata !{i32 786443, metadata !1, metadata !14, i32 56, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/462.libquantum/src/classic.c]
+!59 = metadata !{i32 58, i32 0, metadata !58, null} ; [ DW_TAG_imported_module ]
+!60 = metadata !{i32 59, i32 0, metadata !58, null}
+!61 = metadata !{i32 61, i32 0, metadata !14, null}
+!62 = metadata !{i32 67, i32 0, metadata !19, null}
+!63 = metadata !{i32 69, i32 0, metadata !19, null}
+!64 = metadata !{metadata !"int", metadata !65}
+!65 = metadata !{metadata !"omnipotent char", metadata !66}
+!66 = metadata !{metadata !"Simple C/C++ TBAA"}
+!67 = metadata !{i32 70, i32 0, metadata !19, null}
+!68 = metadata !{i32 71, i32 0, metadata !19, null}
+!69 = metadata !{i32 80, i32 0, metadata !70, null}
+!70 = metadata !{i32 786443, metadata !1, metadata !19, i32 74, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/462.libquantum/src/classic.c]
+!71 = metadata !{i32 91, i32 0, metadata !19, null}
+!72 = metadata !{i32 73, i32 0, metadata !19, null}
+!73 = metadata !{i32 75, i32 0, metadata !70, null}
+!74 = metadata !{i32 77, i32 0, metadata !70, null}
+!75 = metadata !{i32 78, i32 0, metadata !70, null}
+!76 = metadata !{i32 83, i32 0, metadata !70, null}
+!77 = metadata !{i32 84, i32 0, metadata !70, null}
+!78 = metadata !{i32 86, i32 0, metadata !70, null}
+!79 = metadata !{i32 87, i32 0, metadata !70, null}
+!80 = metadata !{i32 88, i32 0, metadata !70, null}
+!81 = metadata !{i32 89, i32 0, metadata !70, null}
+!82 = metadata !{i32 95, i32 0, metadata !19, null}
+!83 = metadata !{i32 96, i32 0, metadata !19, null}
+!84 = metadata !{i32 98, i32 0, metadata !19, null}
+!85 = metadata !{i32 104, i32 0, metadata !37, null}
+!86 = metadata !{i32 108, i32 0, metadata !87, null}
+!87 = metadata !{i32 786443, metadata !1, metadata !37, i32 108, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/462.libquantum/src/classic.c]
+!88 = metadata !{i32 110, i32 0, metadata !37, null}
+!89 = metadata !{i32 116, i32 0, metadata !43, null}
+!90 = metadata !{i32 120, i32 0, metadata !91, null}
+!91 = metadata !{i32 786443, metadata !1, metadata !43, i32 120, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/462.libquantum/src/classic.c]
+!92 = metadata !{i32 122, i32 0, metadata !43, null}

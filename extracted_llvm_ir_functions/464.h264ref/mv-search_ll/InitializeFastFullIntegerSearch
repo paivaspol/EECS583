@@ -1,361 +1,374 @@
 define void @InitializeFastFullIntegerSearch() #0 {
-  %1 = load %struct.InputParameters** @input, align 8, !dbg !1456, !tbaa !1457
-  %2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 8, !dbg !1461
-  %3 = load i32* %2, align 4, !dbg !1461, !tbaa !1462
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !45, metadata !1466), !dbg !1467
-  %4 = shl nsw i32 %3, 1, !dbg !1468
-  %5 = or i32 %4, 1, !dbg !1469
-  %6 = mul nsw i32 %5, %5, !dbg !1470
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !46, metadata !1466), !dbg !1471
-  %7 = tail call i8* @malloc(i64 16) #8, !dbg !1472
-  store i8* %7, i8** bitcast (i32****** @BlockSAD to i8**), align 8, !dbg !1474, !tbaa !1457
-  %8 = icmp eq i8* %7, null, !dbg !1475
-  br i1 %8, label %9, label %.preheader8, !dbg !1476
+entry:
+  %0 = load %struct.InputParameters** @input, align 8, !dbg !1437, !tbaa !1438
+  %search_range1 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 8, !dbg !1437
+  %1 = load i32* %search_range1, align 4, !dbg !1437, !tbaa !1441
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !38), !dbg !1437
+  %mul = shl nsw i32 %1, 1, !dbg !1442
+  %add246 = or i32 %mul, 1, !dbg !1442
+  %mul4 = mul nsw i32 %add246, %add246, !dbg !1442
+  tail call void @llvm.dbg.value(metadata !{i32 %mul4}, i64 0, metadata !39), !dbg !1442
+  %call = tail call noalias i8* @malloc(i64 16) #8, !dbg !1443
+  %2 = bitcast i8* %call to i32*****, !dbg !1443
+  store i32***** %2, i32****** @BlockSAD, align 8, !dbg !1443, !tbaa !1438
+  %cmp = icmp eq i8* %call, null, !dbg !1443
+  br i1 %cmp, label %if.then, label %for.cond.preheader, !dbg !1443
 
-; <label>:9                                       ; preds = %0
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1477
-  br label %.preheader8, !dbg !1477
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1444
+  br label %for.cond.preheader, !dbg !1444
 
-.preheader8:                                      ; preds = %9, %0
-  %10 = zext i32 %6 to i64, !dbg !1478
-  %11 = shl nuw nsw i64 %10, 2, !dbg !1492
-  %.pre = load %struct.ImageParameters** @img, align 8, !dbg !1493, !tbaa !1457
-  br label %12, !dbg !1495
+for.cond.preheader:                               ; preds = %if.then, %entry
+  %conv46247 = zext i32 %mul4 to i64, !dbg !1445
+  %mul47 = shl nuw nsw i64 %conv46247, 2, !dbg !1445
+  %.pre = load %struct.ImageParameters** @img, align 8, !dbg !1454, !tbaa !1438
+  br label %for.body, !dbg !1455
 
-; <label>:12                                      ; preds = %._crit_edge21, %.preheader8
-  %13 = phi %struct.ImageParameters* [ %.pre, %.preheader8 ], [ %67, %._crit_edge21 ]
-  %indvars.iv41 = phi i64 [ 0, %.preheader8 ], [ %indvars.iv.next42, %._crit_edge21 ]
-  %14 = getelementptr inbounds %struct.ImageParameters* %13, i64 0, i32 9, !dbg !1496
-  %15 = load i32* %14, align 4, !dbg !1496, !tbaa !1497
-  %16 = add nsw i32 %15, 1, !dbg !1500
-  %17 = sext i32 %16 to i64, !dbg !1501
-  %18 = shl nsw i64 %17, 3, !dbg !1502
-  %19 = tail call i8* @malloc(i64 %18) #8, !dbg !1503
-  %20 = load i32****** @BlockSAD, align 8, !dbg !1504, !tbaa !1457
-  %21 = getelementptr inbounds i32***** %20, i64 %indvars.iv41, !dbg !1504
-  %22 = bitcast i32***** %21 to i8**, !dbg !1505
-  store i8* %19, i8** %22, align 8, !dbg !1505, !tbaa !1457
-  %23 = icmp eq i8* %19, null, !dbg !1506
-  br i1 %23, label %24, label %.preheader7, !dbg !1507
+for.body:                                         ; preds = %for.inc67, %for.cond.preheader
+  %3 = phi %struct.ImageParameters* [ %.pre, %for.cond.preheader ], [ %24, %for.inc67 ]
+  %indvars.iv286 = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next287, %for.inc67 ]
+  %max_num_references = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 9, !dbg !1454
+  %4 = load i32* %max_num_references, align 4, !dbg !1454, !tbaa !1441
+  %add6 = add nsw i32 %4, 1, !dbg !1454
+  %conv = sext i32 %add6 to i64, !dbg !1454
+  %mul7 = shl nsw i64 %conv, 3, !dbg !1454
+  %call8 = tail call noalias i8* @malloc(i64 %mul7) #8, !dbg !1454
+  %5 = bitcast i8* %call8 to i32****, !dbg !1454
+  %6 = load i32****** @BlockSAD, align 8, !dbg !1454, !tbaa !1438
+  %arrayidx = getelementptr inbounds i32***** %6, i64 %indvars.iv286, !dbg !1454
+  store i32**** %5, i32***** %arrayidx, align 8, !dbg !1454, !tbaa !1438
+  %cmp9 = icmp eq i8* %call8, null, !dbg !1454
+  br i1 %cmp9, label %if.then11, label %for.cond13.preheader, !dbg !1454
 
-; <label>:24                                      ; preds = %12
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1508
-  br label %.preheader7, !dbg !1508
+if.then11:                                        ; preds = %for.body
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1456
+  br label %for.cond13.preheader, !dbg !1456
 
-.preheader7:                                      ; preds = %24, %12
-  %25 = load %struct.ImageParameters** @img, align 8, !dbg !1509, !tbaa !1457
-  %26 = getelementptr inbounds %struct.ImageParameters* %25, i64 0, i32 9, !dbg !1510
-  %27 = load i32* %26, align 4, !dbg !1510, !tbaa !1497
-  %28 = icmp slt i32 %27, 0, !dbg !1511
-  br i1 %28, label %._crit_edge21, label %.lr.ph20, !dbg !1512
+for.cond13.preheader:                             ; preds = %if.then11, %for.body
+  %7 = load %struct.ImageParameters** @img, align 8, !dbg !1457, !tbaa !1438
+  %max_num_references14260 = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 9, !dbg !1457
+  %8 = load i32* %max_num_references14260, align 4, !dbg !1457, !tbaa !1441
+  %cmp15261 = icmp slt i32 %8, 0, !dbg !1457
+  br i1 %cmp15261, label %for.inc67, label %for.body17, !dbg !1457
 
-.lr.ph20:                                         ; preds = %.preheader7, %61
-  %indvars.iv39 = phi i64 [ %indvars.iv.next40, %61 ], [ 0, %.preheader7 ]
-  %29 = tail call i8* @malloc(i64 64) #8, !dbg !1513
-  %30 = load i32****** @BlockSAD, align 8, !dbg !1515, !tbaa !1457
-  %31 = getelementptr inbounds i32***** %30, i64 %indvars.iv41, !dbg !1515
-  %32 = load i32***** %31, align 8, !dbg !1515, !tbaa !1457
-  %33 = getelementptr inbounds i32**** %32, i64 %indvars.iv39, !dbg !1515
-  %34 = bitcast i32**** %33 to i8**, !dbg !1516
-  store i8* %29, i8** %34, align 8, !dbg !1516, !tbaa !1457
-  %35 = icmp eq i8* %29, null, !dbg !1517
-  br i1 %35, label %36, label %.preheader6, !dbg !1518
+for.body17:                                       ; preds = %for.cond13.preheader, %for.inc64
+  %indvars.iv284 = phi i64 [ %indvars.iv.next285, %for.inc64 ], [ 0, %for.cond13.preheader ]
+  %call18 = tail call noalias i8* @malloc(i64 64) #8, !dbg !1458
+  %9 = bitcast i8* %call18 to i32***, !dbg !1458
+  %10 = load i32****** @BlockSAD, align 8, !dbg !1458, !tbaa !1438
+  %arrayidx21 = getelementptr inbounds i32***** %10, i64 %indvars.iv286, !dbg !1458
+  %11 = load i32***** %arrayidx21, align 8, !dbg !1458, !tbaa !1438
+  %arrayidx22 = getelementptr inbounds i32**** %11, i64 %indvars.iv284, !dbg !1458
+  store i32*** %9, i32**** %arrayidx22, align 8, !dbg !1458, !tbaa !1438
+  %cmp23 = icmp eq i8* %call18, null, !dbg !1458
+  br i1 %cmp23, label %if.then25, label %for.body30, !dbg !1458
 
-; <label>:36                                      ; preds = %.lr.ph20
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1519
-  br label %.preheader6, !dbg !1519
+if.then25:                                        ; preds = %for.body17
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1459
+  br label %for.body30, !dbg !1459
 
-.preheader6:                                      ; preds = %.lr.ph20, %36, %60
-  %indvars.iv36 = phi i64 [ %indvars.iv.next37, %60 ], [ 1, %36 ], [ 1, %.lr.ph20 ]
-  %37 = tail call i8* @malloc(i64 128) #8, !dbg !1520
-  %38 = load i32****** @BlockSAD, align 8, !dbg !1522, !tbaa !1457
-  %39 = getelementptr inbounds i32***** %38, i64 %indvars.iv41, !dbg !1522
-  %40 = load i32***** %39, align 8, !dbg !1522, !tbaa !1457
-  %41 = getelementptr inbounds i32**** %40, i64 %indvars.iv39, !dbg !1522
-  %42 = load i32**** %41, align 8, !dbg !1522, !tbaa !1457
-  %43 = getelementptr inbounds i32*** %42, i64 %indvars.iv36, !dbg !1522
-  %44 = bitcast i32*** %43 to i8**, !dbg !1523
-  store i8* %37, i8** %44, align 8, !dbg !1523, !tbaa !1457
-  %45 = icmp eq i8* %37, null, !dbg !1524
-  br i1 %45, label %46, label %.preheader5, !dbg !1525
+for.body30:                                       ; preds = %for.body17, %if.then25, %for.inc61
+  %indvars.iv280 = phi i64 [ %indvars.iv.next281, %for.inc61 ], [ 1, %if.then25 ], [ 1, %for.body17 ]
+  %call31 = tail call noalias i8* @malloc(i64 128) #8, !dbg !1460
+  %12 = bitcast i8* %call31 to i32**, !dbg !1460
+  %13 = load i32****** @BlockSAD, align 8, !dbg !1460, !tbaa !1438
+  %arrayidx35 = getelementptr inbounds i32***** %13, i64 %indvars.iv286, !dbg !1460
+  %14 = load i32***** %arrayidx35, align 8, !dbg !1460, !tbaa !1438
+  %arrayidx36 = getelementptr inbounds i32**** %14, i64 %indvars.iv284, !dbg !1460
+  %15 = load i32**** %arrayidx36, align 8, !dbg !1460, !tbaa !1438
+  %arrayidx37 = getelementptr inbounds i32*** %15, i64 %indvars.iv280, !dbg !1460
+  store i32** %12, i32*** %arrayidx37, align 8, !dbg !1460, !tbaa !1438
+  %cmp38 = icmp eq i8* %call31, null, !dbg !1460
+  br i1 %cmp38, label %if.then40, label %for.body45, !dbg !1460
 
-; <label>:46                                      ; preds = %.preheader6
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1526
-  br label %.preheader5, !dbg !1526
+if.then40:                                        ; preds = %for.body30
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1461
+  br label %for.body45, !dbg !1461
 
-.preheader5:                                      ; preds = %.preheader6, %46, %59
-  %indvars.iv33 = phi i64 [ %indvars.iv.next34, %59 ], [ 0, %46 ], [ 0, %.preheader6 ]
-  %47 = tail call i8* @malloc(i64 %11) #8, !dbg !1527
-  %48 = load i32****** @BlockSAD, align 8, !dbg !1528, !tbaa !1457
-  %49 = getelementptr inbounds i32***** %48, i64 %indvars.iv41, !dbg !1528
-  %50 = load i32***** %49, align 8, !dbg !1528, !tbaa !1457
-  %51 = getelementptr inbounds i32**** %50, i64 %indvars.iv39, !dbg !1528
-  %52 = load i32**** %51, align 8, !dbg !1528, !tbaa !1457
-  %53 = getelementptr inbounds i32*** %52, i64 %indvars.iv36, !dbg !1528
-  %54 = load i32*** %53, align 8, !dbg !1528, !tbaa !1457
-  %55 = getelementptr inbounds i32** %54, i64 %indvars.iv33, !dbg !1528
-  %56 = bitcast i32** %55 to i8**, !dbg !1529
-  store i8* %47, i8** %56, align 8, !dbg !1529, !tbaa !1457
-  %57 = icmp eq i8* %47, null, !dbg !1530
-  br i1 %57, label %58, label %59, !dbg !1531
+for.body45:                                       ; preds = %for.body30, %if.then40, %for.inc
+  %indvars.iv276 = phi i64 [ %indvars.iv.next277, %for.inc ], [ 0, %if.then40 ], [ 0, %for.body30 ]
+  %call48 = tail call noalias i8* @malloc(i64 %mul47) #8, !dbg !1445
+  %16 = bitcast i8* %call48 to i32*, !dbg !1445
+  %17 = load i32****** @BlockSAD, align 8, !dbg !1445, !tbaa !1438
+  %arrayidx53 = getelementptr inbounds i32***** %17, i64 %indvars.iv286, !dbg !1445
+  %18 = load i32***** %arrayidx53, align 8, !dbg !1445, !tbaa !1438
+  %arrayidx54 = getelementptr inbounds i32**** %18, i64 %indvars.iv284, !dbg !1445
+  %19 = load i32**** %arrayidx54, align 8, !dbg !1445, !tbaa !1438
+  %arrayidx55 = getelementptr inbounds i32*** %19, i64 %indvars.iv280, !dbg !1445
+  %20 = load i32*** %arrayidx55, align 8, !dbg !1445, !tbaa !1438
+  %arrayidx56 = getelementptr inbounds i32** %20, i64 %indvars.iv276, !dbg !1445
+  store i32* %16, i32** %arrayidx56, align 8, !dbg !1445, !tbaa !1438
+  %cmp57 = icmp eq i8* %call48, null, !dbg !1445
+  br i1 %cmp57, label %if.then59, label %for.inc, !dbg !1445
 
-; <label>:58                                      ; preds = %.preheader5
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1532
-  br label %59, !dbg !1532
+if.then59:                                        ; preds = %for.body45
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([42 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1462
+  br label %for.inc, !dbg !1462
 
-; <label>:59                                      ; preds = %.preheader5, %58
-  %indvars.iv.next34 = add nuw nsw i64 %indvars.iv33, 1, !dbg !1533
-  %exitcond35 = icmp eq i64 %indvars.iv.next34, 16, !dbg !1533
-  br i1 %exitcond35, label %60, label %.preheader5, !dbg !1533
+for.inc:                                          ; preds = %for.body45, %if.then59
+  %indvars.iv.next277 = add i64 %indvars.iv276, 1, !dbg !1463
+  %lftr.wideiv278 = trunc i64 %indvars.iv.next277 to i32, !dbg !1463
+  %exitcond279 = icmp eq i32 %lftr.wideiv278, 16, !dbg !1463
+  br i1 %exitcond279, label %for.inc61, label %for.body45, !dbg !1463
 
-; <label>:60                                      ; preds = %59
-  %indvars.iv.next37 = add nuw nsw i64 %indvars.iv36, 1, !dbg !1534
-  %exitcond38 = icmp eq i64 %indvars.iv.next37, 8, !dbg !1534
-  br i1 %exitcond38, label %61, label %.preheader6, !dbg !1534
+for.inc61:                                        ; preds = %for.inc
+  %indvars.iv.next281 = add i64 %indvars.iv280, 1, !dbg !1464
+  %lftr.wideiv282 = trunc i64 %indvars.iv.next281 to i32, !dbg !1464
+  %exitcond283 = icmp eq i32 %lftr.wideiv282, 8, !dbg !1464
+  br i1 %exitcond283, label %for.inc64, label %for.body30, !dbg !1464
 
-; <label>:61                                      ; preds = %60
-  %indvars.iv.next40 = add nuw i64 %indvars.iv39, 1, !dbg !1512
-  %62 = load %struct.ImageParameters** @img, align 8, !dbg !1509, !tbaa !1457
-  %63 = getelementptr inbounds %struct.ImageParameters* %62, i64 0, i32 9, !dbg !1510
-  %64 = load i32* %63, align 4, !dbg !1510, !tbaa !1497
-  %65 = sext i32 %64 to i64, !dbg !1511
-  %66 = icmp slt i64 %indvars.iv39, %65, !dbg !1511
-  br i1 %66, label %.lr.ph20, label %._crit_edge21, !dbg !1512
+for.inc64:                                        ; preds = %for.inc61
+  %indvars.iv.next285 = add i64 %indvars.iv284, 1, !dbg !1457
+  %21 = load %struct.ImageParameters** @img, align 8, !dbg !1457, !tbaa !1438
+  %max_num_references14 = getelementptr inbounds %struct.ImageParameters* %21, i64 0, i32 9, !dbg !1457
+  %22 = load i32* %max_num_references14, align 4, !dbg !1457, !tbaa !1441
+  %23 = trunc i64 %indvars.iv284 to i32, !dbg !1457
+  %cmp15 = icmp slt i32 %23, %22, !dbg !1457
+  br i1 %cmp15, label %for.body17, label %for.inc67, !dbg !1457
 
-._crit_edge21:                                    ; preds = %61, %.preheader7
-  %67 = phi %struct.ImageParameters* [ %25, %.preheader7 ], [ %62, %61 ]
-  %indvars.iv.next42 = add nuw nsw i64 %indvars.iv41, 1, !dbg !1495
-  %exitcond43 = icmp eq i64 %indvars.iv.next42, 2, !dbg !1495
-  br i1 %exitcond43, label %68, label %12, !dbg !1495
+for.inc67:                                        ; preds = %for.inc64, %for.cond13.preheader
+  %24 = phi %struct.ImageParameters* [ %7, %for.cond13.preheader ], [ %21, %for.inc64 ]
+  %indvars.iv.next287 = add i64 %indvars.iv286, 1, !dbg !1455
+  %lftr.wideiv288 = trunc i64 %indvars.iv.next287 to i32, !dbg !1455
+  %exitcond289 = icmp eq i32 %lftr.wideiv288, 2, !dbg !1455
+  br i1 %exitcond289, label %for.end69, label %for.body, !dbg !1455
 
-; <label>:68                                      ; preds = %._crit_edge21
-  %69 = tail call i8* @malloc(i64 16) #8, !dbg !1535
-  store i8* %69, i8** bitcast (i32*** @search_setup_done to i8**), align 8, !dbg !1537, !tbaa !1457
-  %70 = icmp eq i8* %69, null, !dbg !1538
-  br i1 %70, label %71, label %72, !dbg !1539
+for.end69:                                        ; preds = %for.inc67
+  %call70 = tail call noalias i8* @malloc(i64 16) #8, !dbg !1465
+  %25 = bitcast i8* %call70 to i32**, !dbg !1465
+  store i32** %25, i32*** @search_setup_done, align 8, !dbg !1465, !tbaa !1438
+  %cmp71 = icmp eq i8* %call70, null, !dbg !1465
+  br i1 %cmp71, label %if.then73, label %if.end74, !dbg !1465
 
-; <label>:71                                      ; preds = %68
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !1540
-  br label %72, !dbg !1540
+if.then73:                                        ; preds = %for.end69
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !1466
+  br label %if.end74, !dbg !1466
 
-; <label>:72                                      ; preds = %71, %68
-  %73 = tail call i8* @malloc(i64 16) #8, !dbg !1541
-  store i8* %73, i8** bitcast (i32*** @search_center_x to i8**), align 8, !dbg !1543, !tbaa !1457
-  %74 = icmp eq i8* %73, null, !dbg !1544
-  br i1 %74, label %75, label %76, !dbg !1545
+if.end74:                                         ; preds = %if.then73, %for.end69
+  %call75 = tail call noalias i8* @malloc(i64 16) #8, !dbg !1467
+  %26 = bitcast i8* %call75 to i32**, !dbg !1467
+  store i32** %26, i32*** @search_center_x, align 8, !dbg !1467, !tbaa !1438
+  %cmp76 = icmp eq i8* %call75, null, !dbg !1467
+  br i1 %cmp76, label %if.then78, label %if.end79, !dbg !1467
 
-; <label>:75                                      ; preds = %72
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0)) #8, !dbg !1546
-  br label %76, !dbg !1546
+if.then78:                                        ; preds = %if.end74
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0)) #8, !dbg !1468
+  br label %if.end79, !dbg !1468
 
-; <label>:76                                      ; preds = %75, %72
-  %77 = tail call i8* @malloc(i64 16) #8, !dbg !1547
-  store i8* %77, i8** bitcast (i32*** @search_center_y to i8**), align 8, !dbg !1549, !tbaa !1457
-  %78 = icmp eq i8* %77, null, !dbg !1550
-  br i1 %78, label %79, label %80, !dbg !1551
+if.end79:                                         ; preds = %if.then78, %if.end74
+  %call80 = tail call noalias i8* @malloc(i64 16) #8, !dbg !1469
+  %27 = bitcast i8* %call80 to i32**, !dbg !1469
+  store i32** %27, i32*** @search_center_y, align 8, !dbg !1469, !tbaa !1438
+  %cmp81 = icmp eq i8* %call80, null, !dbg !1469
+  br i1 %cmp81, label %if.then83, label %if.end84, !dbg !1469
 
-; <label>:79                                      ; preds = %76
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !1552
-  br label %80, !dbg !1552
+if.then83:                                        ; preds = %if.end79
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !1470
+  br label %if.end84, !dbg !1470
 
-; <label>:80                                      ; preds = %79, %76
-  %81 = tail call i8* @malloc(i64 16) #8, !dbg !1553
-  store i8* %81, i8** bitcast (i32*** @pos_00 to i8**), align 8, !dbg !1555, !tbaa !1457
-  %82 = icmp eq i8* %81, null, !dbg !1556
-  br i1 %82, label %83, label %84, !dbg !1557
+if.end84:                                         ; preds = %if.then83, %if.end79
+  %call85 = tail call noalias i8* @malloc(i64 16) #8, !dbg !1471
+  %28 = bitcast i8* %call85 to i32**, !dbg !1471
+  store i32** %28, i32*** @pos_00, align 8, !dbg !1471, !tbaa !1438
+  %cmp86 = icmp eq i8* %call85, null, !dbg !1471
+  br i1 %cmp86, label %if.then88, label %if.end89, !dbg !1471
 
-; <label>:83                                      ; preds = %80
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([40 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !1558
-  br label %84, !dbg !1558
+if.then88:                                        ; preds = %if.end84
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([40 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !1472
+  br label %if.end89, !dbg !1472
 
-; <label>:84                                      ; preds = %83, %80
-  %85 = tail call i8* @malloc(i64 16) #8, !dbg !1559
-  store i8* %85, i8** bitcast (i32*** @max_search_range to i8**), align 8, !dbg !1561, !tbaa !1457
-  %86 = icmp eq i8* %85, null, !dbg !1562
-  br i1 %86, label %87, label %.preheader4, !dbg !1563
+if.end89:                                         ; preds = %if.then88, %if.end84
+  %call90 = tail call noalias i8* @malloc(i64 16) #8, !dbg !1473
+  %29 = bitcast i8* %call90 to i32**, !dbg !1473
+  store i32** %29, i32*** @max_search_range, align 8, !dbg !1473, !tbaa !1438
+  %cmp91 = icmp eq i8* %call90, null, !dbg !1473
+  br i1 %cmp91, label %if.then93, label %for.body98, !dbg !1473
 
-; <label>:87                                      ; preds = %84
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([50 x i8]* @.str5, i64 0, i64 0)) #8, !dbg !1564
-  br label %.preheader4, !dbg !1564
+if.then93:                                        ; preds = %if.end89
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([50 x i8]* @.str5, i64 0, i64 0)) #8, !dbg !1474
+  br label %for.body98, !dbg !1474
 
-.preheader4:                                      ; preds = %84, %87, %152
-  %indvars.iv30 = phi i64 [ %indvars.iv.next31, %152 ], [ 0, %87 ], [ 0, %84 ]
-  %88 = load %struct.ImageParameters** @img, align 8, !dbg !1565, !tbaa !1457
-  %89 = getelementptr inbounds %struct.ImageParameters* %88, i64 0, i32 9, !dbg !1570
-  %90 = load i32* %89, align 4, !dbg !1570, !tbaa !1497
-  %91 = add nsw i32 %90, 1, !dbg !1571
-  %92 = sext i32 %91 to i64, !dbg !1572
-  %93 = shl nsw i64 %92, 2, !dbg !1573
-  %94 = tail call i8* @malloc(i64 %93) #8, !dbg !1574
-  %95 = load i32*** @search_setup_done, align 8, !dbg !1575, !tbaa !1457
-  %96 = getelementptr inbounds i32** %95, i64 %indvars.iv30, !dbg !1575
-  %97 = bitcast i32** %96 to i8**, !dbg !1576
-  store i8* %94, i8** %97, align 8, !dbg !1576, !tbaa !1457
-  %98 = icmp eq i8* %94, null, !dbg !1577
-  br i1 %98, label %99, label %100, !dbg !1578
+for.body98:                                       ; preds = %for.inc154, %if.end89, %if.then93
+  %indvars.iv272 = phi i64 [ 0, %if.then93 ], [ 0, %if.end89 ], [ %indvars.iv.next273, %for.inc154 ]
+  %30 = load %struct.ImageParameters** @img, align 8, !dbg !1475, !tbaa !1438
+  %max_num_references99 = getelementptr inbounds %struct.ImageParameters* %30, i64 0, i32 9, !dbg !1475
+  %31 = load i32* %max_num_references99, align 4, !dbg !1475, !tbaa !1441
+  %add100 = add nsw i32 %31, 1, !dbg !1475
+  %conv101 = sext i32 %add100 to i64, !dbg !1475
+  %mul102 = shl nsw i64 %conv101, 2, !dbg !1475
+  %call103 = tail call noalias i8* @malloc(i64 %mul102) #8, !dbg !1475
+  %32 = bitcast i8* %call103 to i32*, !dbg !1475
+  %33 = load i32*** @search_setup_done, align 8, !dbg !1475, !tbaa !1438
+  %arrayidx105 = getelementptr inbounds i32** %33, i64 %indvars.iv272, !dbg !1475
+  store i32* %32, i32** %arrayidx105, align 8, !dbg !1475, !tbaa !1438
+  %cmp106 = icmp eq i8* %call103, null, !dbg !1475
+  br i1 %cmp106, label %if.then108, label %if.end109, !dbg !1475
 
-; <label>:99                                      ; preds = %.preheader4
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !1579
-  br label %100, !dbg !1579
+if.then108:                                       ; preds = %for.body98
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !1478
+  br label %if.end109, !dbg !1478
 
-; <label>:100                                     ; preds = %99, %.preheader4
-  %101 = load %struct.ImageParameters** @img, align 8, !dbg !1580, !tbaa !1457
-  %102 = getelementptr inbounds %struct.ImageParameters* %101, i64 0, i32 9, !dbg !1582
-  %103 = load i32* %102, align 4, !dbg !1582, !tbaa !1497
-  %104 = add nsw i32 %103, 1, !dbg !1583
-  %105 = sext i32 %104 to i64, !dbg !1584
-  %106 = shl nsw i64 %105, 2, !dbg !1585
-  %107 = tail call i8* @malloc(i64 %106) #8, !dbg !1586
-  %108 = load i32*** @search_center_x, align 8, !dbg !1587, !tbaa !1457
-  %109 = getelementptr inbounds i32** %108, i64 %indvars.iv30, !dbg !1587
-  %110 = bitcast i32** %109 to i8**, !dbg !1588
-  store i8* %107, i8** %110, align 8, !dbg !1588, !tbaa !1457
-  %111 = icmp eq i8* %107, null, !dbg !1589
-  br i1 %111, label %112, label %113, !dbg !1590
+if.end109:                                        ; preds = %if.then108, %for.body98
+  %34 = load %struct.ImageParameters** @img, align 8, !dbg !1479, !tbaa !1438
+  %max_num_references110 = getelementptr inbounds %struct.ImageParameters* %34, i64 0, i32 9, !dbg !1479
+  %35 = load i32* %max_num_references110, align 4, !dbg !1479, !tbaa !1441
+  %add111 = add nsw i32 %35, 1, !dbg !1479
+  %conv112 = sext i32 %add111 to i64, !dbg !1479
+  %mul113 = shl nsw i64 %conv112, 2, !dbg !1479
+  %call114 = tail call noalias i8* @malloc(i64 %mul113) #8, !dbg !1479
+  %36 = bitcast i8* %call114 to i32*, !dbg !1479
+  %37 = load i32*** @search_center_x, align 8, !dbg !1479, !tbaa !1438
+  %arrayidx116 = getelementptr inbounds i32** %37, i64 %indvars.iv272, !dbg !1479
+  store i32* %36, i32** %arrayidx116, align 8, !dbg !1479, !tbaa !1438
+  %cmp117 = icmp eq i8* %call114, null, !dbg !1479
+  br i1 %cmp117, label %if.then119, label %if.end120, !dbg !1479
 
-; <label>:112                                     ; preds = %100
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0)) #8, !dbg !1591
-  br label %113, !dbg !1591
+if.then119:                                       ; preds = %if.end109
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0)) #8, !dbg !1480
+  br label %if.end120, !dbg !1480
 
-; <label>:113                                     ; preds = %112, %100
-  %114 = load %struct.ImageParameters** @img, align 8, !dbg !1592, !tbaa !1457
-  %115 = getelementptr inbounds %struct.ImageParameters* %114, i64 0, i32 9, !dbg !1594
-  %116 = load i32* %115, align 4, !dbg !1594, !tbaa !1497
-  %117 = add nsw i32 %116, 1, !dbg !1595
-  %118 = sext i32 %117 to i64, !dbg !1596
-  %119 = shl nsw i64 %118, 2, !dbg !1597
-  %120 = tail call i8* @malloc(i64 %119) #8, !dbg !1598
-  %121 = load i32*** @search_center_y, align 8, !dbg !1599, !tbaa !1457
-  %122 = getelementptr inbounds i32** %121, i64 %indvars.iv30, !dbg !1599
-  %123 = bitcast i32** %122 to i8**, !dbg !1600
-  store i8* %120, i8** %123, align 8, !dbg !1600, !tbaa !1457
-  %124 = icmp eq i8* %120, null, !dbg !1601
-  br i1 %124, label %125, label %126, !dbg !1602
+if.end120:                                        ; preds = %if.then119, %if.end109
+  %38 = load %struct.ImageParameters** @img, align 8, !dbg !1481, !tbaa !1438
+  %max_num_references121 = getelementptr inbounds %struct.ImageParameters* %38, i64 0, i32 9, !dbg !1481
+  %39 = load i32* %max_num_references121, align 4, !dbg !1481, !tbaa !1441
+  %add122 = add nsw i32 %39, 1, !dbg !1481
+  %conv123 = sext i32 %add122 to i64, !dbg !1481
+  %mul124 = shl nsw i64 %conv123, 2, !dbg !1481
+  %call125 = tail call noalias i8* @malloc(i64 %mul124) #8, !dbg !1481
+  %40 = bitcast i8* %call125 to i32*, !dbg !1481
+  %41 = load i32*** @search_center_y, align 8, !dbg !1481, !tbaa !1438
+  %arrayidx127 = getelementptr inbounds i32** %41, i64 %indvars.iv272, !dbg !1481
+  store i32* %40, i32** %arrayidx127, align 8, !dbg !1481, !tbaa !1438
+  %cmp128 = icmp eq i8* %call125, null, !dbg !1481
+  br i1 %cmp128, label %if.then130, label %if.end131, !dbg !1481
 
-; <label>:125                                     ; preds = %113
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !1603
-  br label %126, !dbg !1603
+if.then130:                                       ; preds = %if.end120
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !1482
+  br label %if.end131, !dbg !1482
 
-; <label>:126                                     ; preds = %125, %113
-  %127 = load %struct.ImageParameters** @img, align 8, !dbg !1604, !tbaa !1457
-  %128 = getelementptr inbounds %struct.ImageParameters* %127, i64 0, i32 9, !dbg !1606
-  %129 = load i32* %128, align 4, !dbg !1606, !tbaa !1497
-  %130 = add nsw i32 %129, 1, !dbg !1607
-  %131 = sext i32 %130 to i64, !dbg !1608
-  %132 = shl nsw i64 %131, 2, !dbg !1609
-  %133 = tail call i8* @malloc(i64 %132) #8, !dbg !1610
-  %134 = load i32*** @pos_00, align 8, !dbg !1611, !tbaa !1457
-  %135 = getelementptr inbounds i32** %134, i64 %indvars.iv30, !dbg !1611
-  %136 = bitcast i32** %135 to i8**, !dbg !1612
-  store i8* %133, i8** %136, align 8, !dbg !1612, !tbaa !1457
-  %137 = icmp eq i8* %133, null, !dbg !1613
-  br i1 %137, label %138, label %139, !dbg !1614
+if.end131:                                        ; preds = %if.then130, %if.end120
+  %42 = load %struct.ImageParameters** @img, align 8, !dbg !1483, !tbaa !1438
+  %max_num_references132 = getelementptr inbounds %struct.ImageParameters* %42, i64 0, i32 9, !dbg !1483
+  %43 = load i32* %max_num_references132, align 4, !dbg !1483, !tbaa !1441
+  %add133 = add nsw i32 %43, 1, !dbg !1483
+  %conv134 = sext i32 %add133 to i64, !dbg !1483
+  %mul135 = shl nsw i64 %conv134, 2, !dbg !1483
+  %call136 = tail call noalias i8* @malloc(i64 %mul135) #8, !dbg !1483
+  %44 = bitcast i8* %call136 to i32*, !dbg !1483
+  %45 = load i32*** @pos_00, align 8, !dbg !1483, !tbaa !1438
+  %arrayidx138 = getelementptr inbounds i32** %45, i64 %indvars.iv272, !dbg !1483
+  store i32* %44, i32** %arrayidx138, align 8, !dbg !1483, !tbaa !1438
+  %cmp139 = icmp eq i8* %call136, null, !dbg !1483
+  br i1 %cmp139, label %if.then141, label %if.end142, !dbg !1483
 
-; <label>:138                                     ; preds = %126
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([40 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !1615
-  br label %139, !dbg !1615
+if.then141:                                       ; preds = %if.end131
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([40 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !1484
+  br label %if.end142, !dbg !1484
 
-; <label>:139                                     ; preds = %138, %126
-  %140 = load %struct.ImageParameters** @img, align 8, !dbg !1616, !tbaa !1457
-  %141 = getelementptr inbounds %struct.ImageParameters* %140, i64 0, i32 9, !dbg !1618
-  %142 = load i32* %141, align 4, !dbg !1618, !tbaa !1497
-  %143 = add nsw i32 %142, 1, !dbg !1619
-  %144 = sext i32 %143 to i64, !dbg !1620
-  %145 = shl nsw i64 %144, 2, !dbg !1621
-  %146 = tail call i8* @malloc(i64 %145) #8, !dbg !1622
-  %147 = load i32*** @max_search_range, align 8, !dbg !1623, !tbaa !1457
-  %148 = getelementptr inbounds i32** %147, i64 %indvars.iv30, !dbg !1623
-  %149 = bitcast i32** %148 to i8**, !dbg !1624
-  store i8* %146, i8** %149, align 8, !dbg !1624, !tbaa !1457
-  %150 = icmp eq i8* %146, null, !dbg !1625
-  br i1 %150, label %151, label %152, !dbg !1626
+if.end142:                                        ; preds = %if.then141, %if.end131
+  %46 = load %struct.ImageParameters** @img, align 8, !dbg !1485, !tbaa !1438
+  %max_num_references143 = getelementptr inbounds %struct.ImageParameters* %46, i64 0, i32 9, !dbg !1485
+  %47 = load i32* %max_num_references143, align 4, !dbg !1485, !tbaa !1441
+  %add144 = add nsw i32 %47, 1, !dbg !1485
+  %conv145 = sext i32 %add144 to i64, !dbg !1485
+  %mul146 = shl nsw i64 %conv145, 2, !dbg !1485
+  %call147 = tail call noalias i8* @malloc(i64 %mul146) #8, !dbg !1485
+  %48 = bitcast i8* %call147 to i32*, !dbg !1485
+  %49 = load i32*** @max_search_range, align 8, !dbg !1485, !tbaa !1438
+  %arrayidx149 = getelementptr inbounds i32** %49, i64 %indvars.iv272, !dbg !1485
+  store i32* %48, i32** %arrayidx149, align 8, !dbg !1485, !tbaa !1438
+  %cmp150 = icmp eq i8* %call147, null, !dbg !1485
+  br i1 %cmp150, label %if.then152, label %for.inc154, !dbg !1485
 
-; <label>:151                                     ; preds = %139
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([50 x i8]* @.str5, i64 0, i64 0)) #8, !dbg !1627
-  br label %152, !dbg !1627
+if.then152:                                       ; preds = %if.end142
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([50 x i8]* @.str5, i64 0, i64 0)) #8, !dbg !1486
+  br label %for.inc154, !dbg !1486
 
-; <label>:152                                     ; preds = %139, %151
-  %indvars.iv.next31 = add nuw nsw i64 %indvars.iv30, 1, !dbg !1628
-  %exitcond32 = icmp eq i64 %indvars.iv.next31, 2, !dbg !1628
-  br i1 %exitcond32, label %153, label %.preheader4, !dbg !1628
+for.inc154:                                       ; preds = %if.end142, %if.then152
+  %indvars.iv.next273 = add i64 %indvars.iv272, 1, !dbg !1487
+  %lftr.wideiv274 = trunc i64 %indvars.iv.next273 to i32, !dbg !1487
+  %exitcond275 = icmp eq i32 %lftr.wideiv274, 2, !dbg !1487
+  br i1 %exitcond275, label %for.end156, label %for.body98, !dbg !1487
 
-; <label>:153                                     ; preds = %152
-  %154 = load %struct.InputParameters** @input, align 8, !dbg !1629, !tbaa !1457
-  %155 = getelementptr inbounds %struct.InputParameters* %154, i64 0, i32 78, !dbg !1631
-  %156 = load i32* %155, align 4, !dbg !1631, !tbaa !1632
-  %157 = icmp eq i32 %156, 2, !dbg !1633
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !44, metadata !1466), !dbg !1634
-  %158 = load %struct.ImageParameters** @img, align 8, !dbg !1635, !tbaa !1457
-  %159 = getelementptr inbounds %struct.ImageParameters* %158, i64 0, i32 9, !dbg !1641
-  %160 = load i32*** @max_search_range, align 8, !dbg !1642, !tbaa !1457
-  br i1 %157, label %.preheader1, label %.preheader2, !dbg !1643
+for.end156:                                       ; preds = %for.inc154
+  %50 = load %struct.InputParameters** @input, align 8, !dbg !1488, !tbaa !1438
+  %full_search = getelementptr inbounds %struct.InputParameters* %50, i64 0, i32 78, !dbg !1488
+  %51 = load i32* %full_search, align 4, !dbg !1488, !tbaa !1441
+  %cmp157 = icmp eq i32 %51, 2, !dbg !1488
+  tail call void @llvm.dbg.value(metadata !26, i64 0, metadata !37), !dbg !1489
+  %52 = load %struct.ImageParameters** @img, align 8, !dbg !1492, !tbaa !1438
+  %max_num_references165248 = getelementptr inbounds %struct.ImageParameters* %52, i64 0, i32 9, !dbg !1492
+  %53 = load i32*** @max_search_range, align 8, !dbg !1494, !tbaa !1438
+  br i1 %cmp157, label %for.cond160.preheader, label %for.cond179.preheader, !dbg !1488
 
-.preheader2:                                      ; preds = %153
-  %161 = sdiv i32 %3, 2, !dbg !1644
-  %.pre44 = load i32* %159, align 4, !dbg !1651, !tbaa !1497
-  br label %172, !dbg !1652
+for.cond179.preheader:                            ; preds = %for.end156
+  %div = sdiv i32 %1, 2, !dbg !1495
+  %.pre291 = load i32* %max_num_references165248, align 4, !dbg !1500, !tbaa !1441
+  br label %for.body182, !dbg !1501
 
-.preheader1:                                      ; preds = %153
-  %.pre45 = load i32* %159, align 4, !dbg !1641, !tbaa !1497
-  br label %.preheader, !dbg !1653
+for.cond160.preheader:                            ; preds = %for.end156
+  %.pre290 = load i32* %max_num_references165248, align 4, !dbg !1492, !tbaa !1441
+  br label %for.cond164.preheader, !dbg !1489
 
-.preheader:                                       ; preds = %._crit_edge, %.preheader1
-  %162 = phi i32 [ %.pre45, %.preheader1 ], [ %171, %._crit_edge ], !dbg !1641
-  %indvars.iv23 = phi i64 [ 0, %.preheader1 ], [ %indvars.iv.next24, %._crit_edge ]
-  %163 = icmp slt i32 %162, 0, !dbg !1654
-  br i1 %163, label %._crit_edge, label %.lr.ph, !dbg !1655
+for.cond164.preheader:                            ; preds = %for.inc176, %for.cond160.preheader
+  %54 = phi i32 [ %.pre290, %for.cond160.preheader ], [ %58, %for.inc176 ], !dbg !1492
+  %indvars.iv264 = phi i64 [ 0, %for.cond160.preheader ], [ %indvars.iv.next265, %for.inc176 ]
+  %cmp166249 = icmp slt i32 %54, 0, !dbg !1492
+  br i1 %cmp166249, label %for.inc176, label %for.body168.lr.ph, !dbg !1492
 
-.lr.ph:                                           ; preds = %.preheader
-  %164 = getelementptr inbounds i32** %160, i64 %indvars.iv23, !dbg !1642
-  %165 = load i32** %164, align 8, !dbg !1642, !tbaa !1457
-  br label %166, !dbg !1655
+for.body168.lr.ph:                                ; preds = %for.cond164.preheader
+  %arrayidx171 = getelementptr inbounds i32** %53, i64 %indvars.iv264, !dbg !1494
+  %55 = load i32** %arrayidx171, align 8, !dbg !1494, !tbaa !1438
+  br label %for.body168, !dbg !1492
 
-; <label>:166                                     ; preds = %166, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %166 ], [ 0, %.lr.ph ]
-  %167 = getelementptr inbounds i32* %165, i64 %indvars.iv, !dbg !1642
-  store i32 %3, i32* %167, align 4, !dbg !1656, !tbaa !1657
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !1655
-  %168 = load i32* %159, align 4, !dbg !1641, !tbaa !1497
-  %169 = sext i32 %168 to i64, !dbg !1654
-  %170 = icmp slt i64 %indvars.iv, %169, !dbg !1654
-  br i1 %170, label %166, label %._crit_edge, !dbg !1655
+for.body168:                                      ; preds = %for.body168, %for.body168.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body168 ], [ 0, %for.body168.lr.ph ]
+  %arrayidx172 = getelementptr inbounds i32* %55, i64 %indvars.iv, !dbg !1494
+  store i32 %1, i32* %arrayidx172, align 4, !dbg !1494, !tbaa !1441
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1492
+  %56 = load i32* %max_num_references165248, align 4, !dbg !1492, !tbaa !1441
+  %57 = trunc i64 %indvars.iv to i32, !dbg !1492
+  %cmp166 = icmp slt i32 %57, %56, !dbg !1492
+  br i1 %cmp166, label %for.body168, label %for.inc176, !dbg !1492
 
-._crit_edge:                                      ; preds = %166, %.preheader
-  %171 = phi i32 [ %162, %.preheader ], [ %168, %166 ]
-  %indvars.iv.next24 = add nuw nsw i64 %indvars.iv23, 1, !dbg !1653
-  %exitcond = icmp eq i64 %indvars.iv.next24, 2, !dbg !1653
-  br i1 %exitcond, label %.loopexit, label %.preheader, !dbg !1653
+for.inc176:                                       ; preds = %for.body168, %for.cond164.preheader
+  %58 = phi i32 [ %54, %for.cond164.preheader ], [ %56, %for.body168 ]
+  %indvars.iv.next265 = add i64 %indvars.iv264, 1, !dbg !1489
+  %lftr.wideiv = trunc i64 %indvars.iv.next265 to i32, !dbg !1489
+  %exitcond = icmp eq i32 %lftr.wideiv, 2, !dbg !1489
+  br i1 %exitcond, label %if.end206, label %for.cond164.preheader, !dbg !1489
 
-; <label>:172                                     ; preds = %._crit_edge14, %.preheader2
-  %173 = phi i32 [ %.pre44, %.preheader2 ], [ %184, %._crit_edge14 ], !dbg !1651
-  %indvars.iv27 = phi i64 [ 0, %.preheader2 ], [ %indvars.iv.next28, %._crit_edge14 ]
-  %174 = sext i32 %173 to i64, !dbg !1658
-  %175 = getelementptr inbounds i32** %160, i64 %indvars.iv27, !dbg !1658
-  %176 = load i32** %175, align 8, !dbg !1658, !tbaa !1457
-  %177 = getelementptr inbounds i32* %176, i64 %174, !dbg !1658
-  store i32 %3, i32* %177, align 4, !dbg !1659, !tbaa !1657
-  store i32 %3, i32* %176, align 4, !dbg !1660, !tbaa !1657
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !41, metadata !1466), !dbg !1661
-  %178 = load i32* %159, align 4, !dbg !1662, !tbaa !1497
-  %179 = icmp sgt i32 %178, 1, !dbg !1663
-  br i1 %179, label %.lr.ph13, label %._crit_edge14, !dbg !1664
+for.body182:                                      ; preds = %for.inc203, %for.cond179.preheader
+  %59 = phi i32 [ %.pre291, %for.cond179.preheader ], [ %64, %for.inc203 ], !dbg !1500
+  %indvars.iv268 = phi i64 [ 0, %for.cond179.preheader ], [ %indvars.iv.next269, %for.inc203 ]
+  %idxprom184 = sext i32 %59 to i64, !dbg !1500
+  %arrayidx186 = getelementptr inbounds i32** %53, i64 %indvars.iv268, !dbg !1500
+  %60 = load i32** %arrayidx186, align 8, !dbg !1500, !tbaa !1438
+  %arrayidx187 = getelementptr inbounds i32* %60, i64 %idxprom184, !dbg !1500
+  store i32 %1, i32* %arrayidx187, align 4, !dbg !1500, !tbaa !1441
+  store i32 %1, i32* %60, align 4, !dbg !1500, !tbaa !1441
+  tail call void @llvm.dbg.value(metadata !1502, i64 0, metadata !33), !dbg !1495
+  %61 = load i32* %max_num_references165248, align 4, !dbg !1495, !tbaa !1441
+  %cmp193253 = icmp sgt i32 %61, 1, !dbg !1495
+  br i1 %cmp193253, label %for.body195, label %for.inc203, !dbg !1495
 
-.lr.ph13:                                         ; preds = %172, %.lr.ph13
-  %indvars.iv25 = phi i64 [ %indvars.iv.next26, %.lr.ph13 ], [ 1, %172 ]
-  %180 = getelementptr inbounds i32* %176, i64 %indvars.iv25, !dbg !1665
-  store i32 %161, i32* %180, align 4, !dbg !1666, !tbaa !1657
-  %indvars.iv.next26 = add nuw nsw i64 %indvars.iv25, 1, !dbg !1664
-  %181 = load i32* %159, align 4, !dbg !1662, !tbaa !1497
-  %182 = sext i32 %181 to i64, !dbg !1663
-  %183 = icmp slt i64 %indvars.iv.next26, %182, !dbg !1663
-  br i1 %183, label %.lr.ph13, label %._crit_edge14, !dbg !1664
+for.body195:                                      ; preds = %for.body182, %for.body195
+  %indvars.iv266 = phi i64 [ %indvars.iv.next267, %for.body195 ], [ 1, %for.body182 ]
+  %arrayidx199 = getelementptr inbounds i32* %60, i64 %indvars.iv266, !dbg !1495
+  store i32 %div, i32* %arrayidx199, align 4, !dbg !1495, !tbaa !1441
+  %indvars.iv.next267 = add i64 %indvars.iv266, 1, !dbg !1495
+  %62 = load i32* %max_num_references165248, align 4, !dbg !1495, !tbaa !1441
+  %63 = trunc i64 %indvars.iv.next267 to i32, !dbg !1495
+  %cmp193 = icmp slt i32 %63, %62, !dbg !1495
+  br i1 %cmp193, label %for.body195, label %for.inc203, !dbg !1495
 
-._crit_edge14:                                    ; preds = %.lr.ph13, %172
-  %184 = phi i32 [ %178, %172 ], [ %181, %.lr.ph13 ]
-  %indvars.iv.next28 = add nuw nsw i64 %indvars.iv27, 1, !dbg !1652
-  %exitcond29 = icmp eq i64 %indvars.iv.next28, 2, !dbg !1652
-  br i1 %exitcond29, label %.loopexit, label %172, !dbg !1652
+for.inc203:                                       ; preds = %for.body195, %for.body182
+  %64 = phi i32 [ %61, %for.body182 ], [ %62, %for.body195 ]
+  %indvars.iv.next269 = add i64 %indvars.iv268, 1, !dbg !1501
+  %lftr.wideiv270 = trunc i64 %indvars.iv.next269 to i32, !dbg !1501
+  %exitcond271 = icmp eq i32 %lftr.wideiv270, 2, !dbg !1501
+  br i1 %exitcond271, label %if.end206, label %for.body182, !dbg !1501
 
-.loopexit:                                        ; preds = %._crit_edge14, %._crit_edge
-  ret void, !dbg !1667
+if.end206:                                        ; preds = %for.inc203, %for.inc176
+  ret void, !dbg !1503
 }

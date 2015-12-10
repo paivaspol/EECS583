@@ -1,0 +1,37 @@
+define %"class.xalanc_1_8::XalanDOMString"* @_ZNK10xalanc_1_818XPathProcessorImpl16getTokenRelativeEi(%"class.xalanc_1_8::XPathProcessorImpl"* nocapture %this, i32 %theOffset) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XPathProcessorImpl"* %this}, i64 0, metadata !8813), !dbg !13000
+  tail call void @llvm.dbg.value(metadata !{i32 %theOffset}, i64 0, metadata !8814), !dbg !13000
+  tail call void @llvm.dbg.value(metadata !13001, i64 0, metadata !8815), !dbg !13002
+  %cmp = icmp slt i32 %theOffset, 0, !dbg !13003
+  %m_expression = getelementptr inbounds %"class.xalanc_1_8::XPathProcessorImpl"* %this, i64 0, i32 5, !dbg !13004
+  %0 = load %"class.xalanc_1_8::XPathExpression"** %m_expression, align 8, !dbg !13004, !tbaa !11526
+  br i1 %cmp, label %if.then, label %if.else, !dbg !13003
+
+if.then:                                          ; preds = %entry
+  %sub = sub nsw i32 0, %theOffset, !dbg !13004
+  %call = tail call %"class.xalanc_1_8::XToken"* @_ZNK10xalanc_1_815XPathExpression16getRelativeTokenEiNS0_18eRelativeDirectionE(%"class.xalanc_1_8::XPathExpression"* %0, i32 %sub, i32 0) #11, !dbg !13004
+  br label %if.end, !dbg !13006
+
+if.else:                                          ; preds = %entry
+  %call3 = tail call %"class.xalanc_1_8::XToken"* @_ZNK10xalanc_1_815XPathExpression16getRelativeTokenEiNS0_18eRelativeDirectionE(%"class.xalanc_1_8::XPathExpression"* %0, i32 %theOffset, i32 1) #11, !dbg !13007
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %call.pn = phi %"class.xalanc_1_8::XToken"* [ %call, %if.then ], [ %call3, %if.else ]
+  %cmp4 = icmp eq %"class.xalanc_1_8::XToken"* %call.pn, null, !dbg !13009
+  br i1 %cmp4, label %cond.end, label %cond.false, !dbg !13009
+
+cond.false:                                       ; preds = %if.end
+  %theToken.0 = getelementptr inbounds %"class.xalanc_1_8::XToken"* %call.pn, i64 0, i32 0, !dbg !13004
+  %1 = bitcast %"class.xalanc_1_8::XToken"* %call.pn to %"class.xalanc_1_8::XalanDOMString"* (%"class.xalanc_1_8::XObject"*)***, !dbg !13009
+  %vtable = load %"class.xalanc_1_8::XalanDOMString"* (%"class.xalanc_1_8::XObject"*)*** %1, align 8, !dbg !13009, !tbaa !11509
+  %vfn = getelementptr inbounds %"class.xalanc_1_8::XalanDOMString"* (%"class.xalanc_1_8::XObject"*)** %vtable, i64 9, !dbg !13009
+  %2 = load %"class.xalanc_1_8::XalanDOMString"* (%"class.xalanc_1_8::XObject"*)** %vfn, align 8, !dbg !13009
+  %call5 = tail call %"class.xalanc_1_8::XalanDOMString"* %2(%"class.xalanc_1_8::XObject"* %theToken.0) #11, !dbg !13009
+  br label %cond.end, !dbg !13009
+
+cond.end:                                         ; preds = %if.end, %cond.false
+  %cond-lvalue = phi %"class.xalanc_1_8::XalanDOMString"* [ %call5, %cond.false ], [ @_ZN10xalanc_1_818XPathProcessorImpl13s_emptyStringE, %if.end ], !dbg !13009
+  ret %"class.xalanc_1_8::XalanDOMString"* %cond-lvalue, !dbg !13009
+}

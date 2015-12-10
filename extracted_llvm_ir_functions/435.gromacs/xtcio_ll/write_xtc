@@ -1,41 +1,41 @@
-define i32 @write_xtc(i32 %fp, i32 %natoms, i32 %step, float %time, [3 x float]* %box, [3 x float]* %x, float %prec) #4 {
-  %1 = alloca i32, align 4
-  %2 = alloca i32, align 4
-  %3 = alloca float, align 4
-  %4 = alloca float, align 4
+define i32 @write_xtc(i32 %fp, i32 %natoms, i32 %step, float %time, [3 x float]* %box, [3 x float]* %x, float %prec) #0 {
+entry:
+  %natoms.addr = alloca i32, align 4
+  %step.addr = alloca i32, align 4
+  %time.addr = alloca float, align 4
+  %prec.addr = alloca float, align 4
   %magic_number = alloca i32, align 4
   %bDum = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata i32 %fp, i64 0, metadata !241, metadata !363), !dbg !558
-  tail call void @llvm.dbg.value(metadata i32 %natoms, i64 0, metadata !242, metadata !363), !dbg !559
-  store i32 %natoms, i32* %1, align 4, !tbaa !560
-  tail call void @llvm.dbg.value(metadata i32 %step, i64 0, metadata !243, metadata !363), !dbg !561
-  store i32 %step, i32* %2, align 4, !tbaa !560
-  tail call void @llvm.dbg.value(metadata float %time, i64 0, metadata !244, metadata !363), !dbg !562
-  store float %time, float* %3, align 4, !tbaa !491
-  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !245, metadata !363), !dbg !563
-  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !246, metadata !363), !dbg !564
-  tail call void @llvm.dbg.value(metadata float %prec, i64 0, metadata !247, metadata !363), !dbg !565
-  store float %prec, float* %4, align 4, !tbaa !491
-  tail call void @llvm.dbg.value(metadata i32 1995, i64 0, metadata !248, metadata !363), !dbg !566
-  store i32 1995, i32* %magic_number, align 4, !dbg !566, !tbaa !560
-  %5 = tail call %struct.XDR* @gmx_fio_getxdr(i32 %fp) #6, !dbg !567
-  tail call void @llvm.dbg.value(metadata %struct.XDR* %5, i64 0, metadata !249, metadata !363), !dbg !568
-  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !242, metadata !363), !dbg !559
-  tail call void @llvm.dbg.value(metadata i32* %2, i64 0, metadata !243, metadata !363), !dbg !561
-  tail call void @llvm.dbg.value(metadata float* %3, i64 0, metadata !244, metadata !363), !dbg !562
-  tail call void @llvm.dbg.value(metadata i32* %magic_number, i64 0, metadata !248, metadata !363), !dbg !566
-  tail call void @llvm.dbg.value(metadata i32* %bDum, i64 0, metadata !299, metadata !363), !dbg !569
-  %6 = call fastcc i32 @xtc_header(%struct.XDR* %5, i32* %magic_number, i32* %1, i32* %2, float* %3, i32* %bDum) #9, !dbg !570
-  %7 = icmp eq i32 %6, 0, !dbg !570
-  br i1 %7, label %10, label %8, !dbg !572
+  call void @llvm.dbg.value(metadata !{i32 %fp}, i64 0, metadata !54), !dbg !194
+  call void @llvm.dbg.value(metadata !{i32 %natoms}, i64 0, metadata !55), !dbg !195
+  store i32 %natoms, i32* %natoms.addr, align 4, !tbaa !196
+  call void @llvm.dbg.declare(metadata !{i32* %natoms.addr}, metadata !55), !dbg !195
+  call void @llvm.dbg.value(metadata !{i32 %step}, i64 0, metadata !56), !dbg !195
+  store i32 %step, i32* %step.addr, align 4, !tbaa !196
+  call void @llvm.dbg.declare(metadata !{i32* %step.addr}, metadata !56), !dbg !195
+  call void @llvm.dbg.value(metadata !{float %time}, i64 0, metadata !57), !dbg !195
+  store float %time, float* %time.addr, align 4, !tbaa !197
+  call void @llvm.dbg.declare(metadata !{float* %time.addr}, metadata !57), !dbg !195
+  call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !58), !dbg !198
+  call void @llvm.dbg.value(metadata !{[3 x float]* %x}, i64 0, metadata !59), !dbg !198
+  call void @llvm.dbg.value(metadata !{float %prec}, i64 0, metadata !60), !dbg !198
+  store float %prec, float* %prec.addr, align 4, !tbaa !197
+  call void @llvm.dbg.declare(metadata !{float* %prec.addr}, metadata !60), !dbg !198
+  call void @llvm.dbg.declare(metadata !{i32* %magic_number}, metadata !61), !dbg !199
+  call void @llvm.dbg.value(metadata !200, i64 0, metadata !61), !dbg !199
+  store i32 1995, i32* %magic_number, align 4, !dbg !199, !tbaa !196
+  call void @llvm.dbg.declare(metadata !{i32* %bDum}, metadata !115), !dbg !201
+  %call = call %struct.XDR* @gmx_fio_getxdr(i32 %fp) #4, !dbg !202
+  call void @llvm.dbg.value(metadata !{%struct.XDR* %call}, i64 0, metadata !62), !dbg !202
+  %call1 = call fastcc i32 @xtc_header(%struct.XDR* %call, i32* %magic_number, i32* %natoms.addr, i32* %step.addr, float* %time.addr, i32* %bDum) #5, !dbg !203
+  %tobool = icmp eq i32 %call1, 0, !dbg !203
+  br i1 %tobool, label %return, label %if.end, !dbg !203
 
-; <label>:8                                       ; preds = %0
-  call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !242, metadata !363), !dbg !559
-  call void @llvm.dbg.value(metadata float* %4, i64 0, metadata !247, metadata !363), !dbg !565
-  %9 = call fastcc i32 @xtc_coord(%struct.XDR* %5, i32* %1, [3 x float]* %box, [3 x float]* %x, float* %4) #9, !dbg !573
-  br label %10, !dbg !574
+if.end:                                           ; preds = %entry
+  %call2 = call fastcc i32 @xtc_coord(%struct.XDR* %call, i32* %natoms.addr, [3 x float]* %box, [3 x float]* %x, float* %prec.addr) #5, !dbg !204
+  br label %return, !dbg !204
 
-; <label>:10                                      ; preds = %0, %8
-  %.0 = phi i32 [ %9, %8 ], [ 0, %0 ]
-  ret i32 %.0, !dbg !575
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ %call2, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !205
 }

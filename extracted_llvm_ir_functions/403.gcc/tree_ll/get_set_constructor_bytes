@@ -1,48 +1,61 @@
 define %union.tree_node* @get_set_constructor_bytes(%union.tree_node* nocapture %init, i8* nocapture %buffer, i32 %wd_size) #0 {
 entry:
-  %mul = shl nsw i32 %wd_size, 3
-  %conv = sext i32 %mul to i64
-  %0 = alloca i8, i64 %conv, align 1
-  %call = call %union.tree_node* @get_set_constructor_bits(%union.tree_node* %init, i8* %0, i32 %mul) #10
-  %cmp36 = icmp sgt i32 %wd_size, 0
-  br i1 %cmp36, label %for.body5.lr.ph, label %for.end17
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %init}, i64 0, metadata !1714), !dbg !3556
+  call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !1715), !dbg !3557
+  call void @llvm.dbg.value(metadata !{i32 %wd_size}, i64 0, metadata !1716), !dbg !3558
+  call void @llvm.dbg.value(metadata !3559, i64 0, metadata !1718), !dbg !3560
+  %mul = shl nsw i32 %wd_size, 3, !dbg !3561
+  call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !1719), !dbg !3561
+  call void @llvm.dbg.value(metadata !429, i64 0, metadata !1720), !dbg !3562
+  call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !1721), !dbg !3563
+  %conv = sext i32 %mul to i64, !dbg !3564
+  %0 = alloca i8, i64 %conv, align 1, !dbg !3564
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !1722), !dbg !3564
+  %call = call %union.tree_node* @get_set_constructor_bits(%union.tree_node* %init, i8* %0, i32 %mul) #11, !dbg !3565
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1723), !dbg !3565
+  call void @llvm.dbg.value(metadata !429, i64 0, metadata !1717), !dbg !3566
+  %cmp36 = icmp sgt i32 %wd_size, 0, !dbg !3566
+  br i1 %cmp36, label %for.body5.lr.ph, label %for.end17, !dbg !3566
 
 for.body5.lr.ph:                                  ; preds = %entry
-  %1 = add i32 %wd_size, -1
+  %1 = add i32 %wd_size, -1, !dbg !3566
   %2 = zext i32 %1 to i64
-  %3 = add i64 %2, 1
-  call void @llvm.memset.p0i8.i64(i8* %buffer, i8 0, i64 %3, i32 1, i1 false)
-  br label %for.body5
+  %3 = add i64 %2, 1, !dbg !3566
+  call void @llvm.memset.p0i8.i64(i8* %buffer, i8 0, i64 %3, i32 1, i1 false), !dbg !3568
+  br label %for.body5, !dbg !3569
 
 for.body5:                                        ; preds = %for.body5.lr.ph, %if.end
   %indvars.iv = phi i64 [ 0, %for.body5.lr.ph ], [ %indvars.iv.next, %if.end ]
   %bit_pos.034 = phi i32 [ 0, %for.body5.lr.ph ], [ %.inc10, %if.end ]
   %bytep.033 = phi i8* [ %buffer, %for.body5.lr.ph ], [ %incdec.ptr.bytep.0, %if.end ]
-  %arrayidx7 = getelementptr inbounds i8* %0, i64 %indvars.iv
-  %4 = load i8* %arrayidx7, align 1, !tbaa !1
-  %tobool = icmp eq i8 %4, 0
-  br i1 %tobool, label %if.end, label %if.then
+  %arrayidx7 = getelementptr inbounds i8* %0, i64 %indvars.iv, !dbg !3571
+  %4 = load i8* %arrayidx7, align 1, !dbg !3571, !tbaa !1914
+  %tobool = icmp eq i8 %4, 0, !dbg !3571
+  br i1 %tobool, label %if.end, label %if.then, !dbg !3571
 
 if.then:                                          ; preds = %for.body5
-  %shl = shl i32 1, %bit_pos.034
-  %5 = load i8* %bytep.033, align 1, !tbaa !1
-  %conv8 = zext i8 %5 to i32
-  %or = or i32 %conv8, %shl
-  %conv9 = trunc i32 %or to i8
-  store i8 %conv9, i8* %bytep.033, align 1, !tbaa !1
-  br label %if.end
+  %shl = shl i32 1, %bit_pos.034, !dbg !3573
+  %5 = load i8* %bytep.033, align 1, !dbg !3573, !tbaa !1914
+  %conv8 = zext i8 %5 to i32, !dbg !3573
+  %or = or i32 %conv8, %shl, !dbg !3573
+  %conv9 = trunc i32 %or to i8, !dbg !3573
+  store i8 %conv9, i8* %bytep.033, align 1, !dbg !3573, !tbaa !1914
+  br label %if.end, !dbg !3575
 
 if.end:                                           ; preds = %for.body5, %if.then
-  %inc10 = add nsw i32 %bit_pos.034, 1
-  %cmp11 = icmp sgt i32 %bit_pos.034, 6
-  %incdec.ptr = getelementptr inbounds i8* %bytep.033, i64 1
-  %incdec.ptr.bytep.0 = select i1 %cmp11, i8* %incdec.ptr, i8* %bytep.033
-  %.inc10 = select i1 %cmp11, i32 0, i32 %inc10
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %6 = trunc i64 %indvars.iv.next to i32
-  %cmp3 = icmp slt i32 %6, %mul
-  br i1 %cmp3, label %for.body5, label %for.end17
+  %inc10 = add nsw i32 %bit_pos.034, 1, !dbg !3576
+  call void @llvm.dbg.value(metadata !{i32 %inc10}, i64 0, metadata !1720), !dbg !3576
+  %cmp11 = icmp sgt i32 %bit_pos.034, 6, !dbg !3577
+  call void @llvm.dbg.value(metadata !429, i64 0, metadata !1720), !dbg !3578
+  %incdec.ptr = getelementptr inbounds i8* %bytep.033, i64 1, !dbg !3578
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !1721), !dbg !3578
+  %incdec.ptr.bytep.0 = select i1 %cmp11, i8* %incdec.ptr, i8* %bytep.033, !dbg !3577
+  %.inc10 = select i1 %cmp11, i32 0, i32 %inc10, !dbg !3577
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3569
+  %6 = trunc i64 %indvars.iv.next to i32, !dbg !3569
+  %cmp3 = icmp slt i32 %6, %mul, !dbg !3569
+  br i1 %cmp3, label %for.body5, label %for.end17, !dbg !3569
 
 for.end17:                                        ; preds = %if.end, %entry
-  ret %union.tree_node* %call
+  ret %union.tree_node* %call, !dbg !3579
 }

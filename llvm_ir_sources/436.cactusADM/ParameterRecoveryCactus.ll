@@ -1,80 +1,75 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryCactus.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryCactus.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-; Function Attrs: nounwind optsize readnone ssp uwtable
+; Function Attrs: nounwind optsize readnone uwtable
 define i32 @CCTKi_BindingsParameterRecovery_Cactus() #0 {
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !34, metadata !39), !dbg !40
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  tail call void @llvm.dbg.value(metadata i8* undef, i64 0, metadata !31, metadata !39), !dbg !41
-  ret i32 0, !dbg !42
+entry:
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !35), !dbg !36
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !32), !dbg !38
+  ret i32 0, !dbg !38
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #1
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
 
-attributes #0 = { nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { nounwind readnone }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!35, !36, !37}
-!llvm.ident = !{!38}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !2, subprograms: !3, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryCactus.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DISubprogram(name: "CCTKi_BindingsParameterRecovery_Cactus", scope: !1, file: !1, line: 30, type: !5, isLocal: false, isDefinition: true, scopeLine: 31, flags: DIFlagPrototyped, isOptimized: true, function: i32 ()* @CCTKi_BindingsParameterRecovery_Cactus, variables: !8)
-!5 = !DISubroutineType(types: !6)
-!6 = !{!7}
-!7 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!8 = !{!9, !12, !13, !17, !19, !20, !21, !22, !23, !24, !25, !26, !27, !28, !29, !30, !31, !34}
-!9 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_final_time", scope: !4, file: !1, line: 32, type: !10)
-!10 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !11)
-!11 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!12 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_initial_time", scope: !4, file: !1, line: 32, type: !10)
-!13 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "terminate", scope: !4, file: !1, line: 32, type: !14)
-!14 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !15, size: 64, align: 64)
-!15 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !16)
-!16 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!17 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_itlast", scope: !4, file: !1, line: 32, type: !18)
-!18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !7)
-!19 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "terminate_next", scope: !4, file: !1, line: 32, type: !18)
-!20 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_run_title", scope: !4, file: !1, line: 32, type: !14)
-!21 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_timer_output", scope: !4, file: !1, line: 32, type: !14)
-!22 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "allow_mixeddim_gfs", scope: !4, file: !1, line: 32, type: !18)
-!23 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_brief_output", scope: !4, file: !1, line: 32, type: !18)
-!24 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_full_warnings", scope: !4, file: !1, line: 32, type: !18)
-!25 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_show_banners", scope: !4, file: !1, line: 32, type: !18)
-!26 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_show_schedule", scope: !4, file: !1, line: 32, type: !18)
-!27 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_strong_param_check", scope: !4, file: !1, line: 32, type: !18)
-!28 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "manual_cache_setup", scope: !4, file: !1, line: 32, type: !18)
-!29 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "manual_cache_size", scope: !4, file: !1, line: 32, type: !18)
-!30 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "manual_cacheline_bytes", scope: !4, file: !1, line: 32, type: !18)
-!31 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cctk_pdummy_pointer", scope: !4, file: !1, line: 32, type: !32)
-!32 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !33, size: 64, align: 64)
-!33 = !DIDerivedType(tag: DW_TAG_const_type, baseType: null)
-!34 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "result", scope: !4, file: !1, line: 33, type: !7)
-!35 = !{i32 2, !"Dwarf Version", i32 2}
-!36 = !{i32 2, !"Debug Info Version", i32 700000003}
-!37 = !{i32 1, !"PIC Level", i32 2}
-!38 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!39 = !DIExpression()
-!40 = !DILocation(line: 33, column: 7, scope: !4)
-!41 = !DILocation(line: 32, column: 3, scope: !4)
-!42 = !DILocation(line: 36, column: 26, scope: !4)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryCactus.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryCactus.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"CCTKi_BindingsParameterRecovery_Cactus", metadata !"CCTKi_BindingsParameterRecovery_Cactus", metadata !"", i32 30, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 ()* @CCTKi_BindingsParameterRecovery_Cactus, null, null, metadata !9, i32 31} ; [ DW_TAG_subprogram ] [line 30] [def] [scope 31] [CCTKi_BindingsParameterRecovery_Cactus]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/CactusBindings/ParameterRecoveryCactus.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{metadata !10, metadata !13, metadata !14, metadata !18, metadata !20, metadata !21, metadata !22, metadata !23, metadata !24, metadata !25, metadata !26, metadata !27, metadata !28, metadata !29, metadata !30, metadata !31, metadata !32, metadata !35}
+!10 = metadata !{i32 786688, metadata !4, metadata !"cctk_final_time", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_final_time] [line 32]
+!11 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !12} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from double]
+!12 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!13 = metadata !{i32 786688, metadata !4, metadata !"cctk_initial_time", metadata !5, i32 32, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_initial_time] [line 32]
+!14 = metadata !{i32 786688, metadata !4, metadata !"terminate", metadata !5, i32 32, metadata !15, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [terminate] [line 32]
+!15 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !16} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!16 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !17} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!17 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!18 = metadata !{i32 786688, metadata !4, metadata !"cctk_itlast", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_itlast] [line 32]
+!19 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !8} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from int]
+!20 = metadata !{i32 786688, metadata !4, metadata !"terminate_next", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [terminate_next] [line 32]
+!21 = metadata !{i32 786688, metadata !4, metadata !"cctk_run_title", metadata !5, i32 32, metadata !15, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_run_title] [line 32]
+!22 = metadata !{i32 786688, metadata !4, metadata !"cctk_timer_output", metadata !5, i32 32, metadata !15, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_timer_output] [line 32]
+!23 = metadata !{i32 786688, metadata !4, metadata !"allow_mixeddim_gfs", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [allow_mixeddim_gfs] [line 32]
+!24 = metadata !{i32 786688, metadata !4, metadata !"cctk_brief_output", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_brief_output] [line 32]
+!25 = metadata !{i32 786688, metadata !4, metadata !"cctk_full_warnings", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_full_warnings] [line 32]
+!26 = metadata !{i32 786688, metadata !4, metadata !"cctk_show_banners", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_show_banners] [line 32]
+!27 = metadata !{i32 786688, metadata !4, metadata !"cctk_show_schedule", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_show_schedule] [line 32]
+!28 = metadata !{i32 786688, metadata !4, metadata !"cctk_strong_param_check", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_strong_param_check] [line 32]
+!29 = metadata !{i32 786688, metadata !4, metadata !"manual_cache_setup", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [manual_cache_setup] [line 32]
+!30 = metadata !{i32 786688, metadata !4, metadata !"manual_cache_size", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [manual_cache_size] [line 32]
+!31 = metadata !{i32 786688, metadata !4, metadata !"manual_cacheline_bytes", metadata !5, i32 32, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [manual_cacheline_bytes] [line 32]
+!32 = metadata !{i32 786688, metadata !4, metadata !"cctk_pdummy_pointer", metadata !5, i32 32, metadata !33, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cctk_pdummy_pointer] [line 32]
+!33 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !34} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!34 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from ]
+!35 = metadata !{i32 786688, metadata !4, metadata !"result", metadata !5, i32 33, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [result] [line 33]
+!36 = metadata !{i32 33, i32 0, metadata !4, null}
+!37 = metadata !{i8* undef}
+!38 = metadata !{i32 36, i32 0, metadata !4, null}

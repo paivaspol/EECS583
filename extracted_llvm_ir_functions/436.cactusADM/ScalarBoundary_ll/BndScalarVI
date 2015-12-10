@@ -1,27 +1,28 @@
 define i32 @BndScalarVI(%struct.cGH* %GH, i32* %stencil, double %scalar, i32 %vi) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !103, metadata !1207), !dbg !2002
-  tail call void @llvm.dbg.value(metadata i32* %stencil, i64 0, metadata !104, metadata !1207), !dbg !2003
-  tail call void @llvm.dbg.value(metadata double %scalar, i64 0, metadata !105, metadata !1207), !dbg !2004
-  tail call void @llvm.dbg.value(metadata i32 %vi, i64 0, metadata !106, metadata !1207), !dbg !2005
-  %1 = icmp sgt i32 %vi, -1, !dbg !2006
-  br i1 %1, label %2, label %7, !dbg !2008
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !78), !dbg !1321
+  tail call void @llvm.dbg.value(metadata !{i32* %stencil}, i64 0, metadata !79), !dbg !1322
+  tail call void @llvm.dbg.value(metadata !{double %scalar}, i64 0, metadata !80), !dbg !1323
+  tail call void @llvm.dbg.value(metadata !{i32 %vi}, i64 0, metadata !81), !dbg !1324
+  %cmp = icmp sgt i32 %vi, -1, !dbg !1325
+  br i1 %cmp, label %land.lhs.true, label %if.else, !dbg !1325
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i32 @CCTK_NumVars() #6, !dbg !2009
-  %4 = icmp sgt i32 %3, %vi, !dbg !2010
-  br i1 %4, label %5, label %7, !dbg !2011
+land.lhs.true:                                    ; preds = %entry
+  %call = tail call i32 @CCTK_NumVars() #6, !dbg !1325
+  %cmp2 = icmp sgt i32 %call, %vi, !dbg !1325
+  br i1 %cmp2, label %if.then, label %if.else, !dbg !1325
 
-; <label>:5                                       ; preds = %2
-  %6 = tail call fastcc i32 @ApplyBndScalar(%struct.cGH* %GH, i32 -1, i32* %stencil, i32 0, double %scalar, i32 %vi, i32 1) #7, !dbg !2012
-  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !107, metadata !1207), !dbg !2014
-  br label %9, !dbg !2015
+if.then:                                          ; preds = %land.lhs.true
+  %call3 = tail call fastcc i32 @ApplyBndScalar(%struct.cGH* %GH, i32 -1, i32* %stencil, i32 0, double %scalar, i32 %vi, i32 1) #7, !dbg !1326
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !82), !dbg !1326
+  br label %if.end, !dbg !1328
 
-; <label>:7                                       ; preds = %2, %0
-  %8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 231, i8* getelementptr inbounds ([85 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), i32 %vi) #6, !dbg !2016
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !107, metadata !1207), !dbg !2014
-  br label %9
+if.else:                                          ; preds = %land.lhs.true, %entry
+  %call4 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 231, i8* getelementptr inbounds ([73 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), i32 %vi) #6, !dbg !1329
+  tail call void @llvm.dbg.value(metadata !898, i64 0, metadata !82), !dbg !1331
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %5
-  %retval.0 = phi i32 [ %6, %5 ], [ -1, %7 ]
-  ret i32 %retval.0, !dbg !2018
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call3, %if.then ], [ -1, %if.else ]
+  ret i32 %retval1.0, !dbg !1332
 }

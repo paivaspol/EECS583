@@ -1,34 +1,38 @@
 define i32 @reg_no_sp_operand(%struct.rtx_def* %op, i32 %mode) #1 {
 entry:
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 63
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2354), !dbg !6206
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2355), !dbg !6207
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2356), !dbg !6208
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !6209
+  %bf.load = load i32* %0, align 8, !dbg !6209
+  %bf.clear = and i32 %bf.load, 65535, !dbg !6209
+  %cmp = icmp eq i32 %bf.clear, 63, !dbg !6209
+  br i1 %cmp, label %if.then, label %if.end, !dbg !6209
 
 if.then:                                          ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  br label %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, !dbg !6210
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !6210
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !6210, !tbaa !4365
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !2356), !dbg !6210
+  br label %if.end, !dbg !6210
 
 if.end:                                           ; preds = %if.then, %entry
   %t.0 = phi %struct.rtx_def* [ %1, %if.then ], [ %op, %entry ]
-  %2 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !4
-  %cmp1 = icmp eq %struct.rtx_def* %t.0, %2
-  %3 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 5), align 8, !tbaa !4
-  %cmp2 = icmp eq %struct.rtx_def* %t.0, %3
-  %or.cond = or i1 %cmp1, %cmp2
-  %4 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 3), align 8, !tbaa !4
-  %cmp4 = icmp eq %struct.rtx_def* %t.0, %4
-  %or.cond12 = or i1 %or.cond, %cmp4
-  br i1 %or.cond12, label %return, label %if.end6
+  %2 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !dbg !6211, !tbaa !4365
+  %cmp1 = icmp eq %struct.rtx_def* %t.0, %2, !dbg !6211
+  %3 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 5), align 8, !dbg !6211, !tbaa !4365
+  %cmp2 = icmp eq %struct.rtx_def* %t.0, %3, !dbg !6211
+  %or.cond = or i1 %cmp1, %cmp2, !dbg !6211
+  %4 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 3), align 8, !dbg !6211, !tbaa !4365
+  %cmp4 = icmp eq %struct.rtx_def* %t.0, %4, !dbg !6211
+  %or.cond12 = or i1 %or.cond, %cmp4, !dbg !6211
+  br i1 %or.cond12, label %return, label %if.end6, !dbg !6211
 
 if.end6:                                          ; preds = %if.end
-  %call = tail call i32 @register_operand(%struct.rtx_def* %op, i32 %mode) #9
-  br label %return
+  %call = tail call i32 @register_operand(%struct.rtx_def* %op, i32 %mode) #10, !dbg !6212
+  br label %return, !dbg !6212
 
 return:                                           ; preds = %if.end, %if.end6
   %retval.0 = phi i32 [ %call, %if.end6 ], [ 0, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6213
 }

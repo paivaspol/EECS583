@@ -1,22 +1,27 @@
 define internal fastcc void @calc_die_sizes(%struct.die_struct* nocapture %die) #1 {
 entry:
-  %0 = load i64* @next_die_offset, align 8, !tbaa !6
-  %die_offset = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 6
-  store i64 %0, i64* %die_offset, align 8, !tbaa !6
-  %die_abbrev.i = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 7
-  %1 = load i64* %die_abbrev.i, align 8, !tbaa !6
-  %call.i = tail call i32 @size_of_uleb128(i64 %1) #9
-  %conv.i = sext i32 %call.i to i64
-  %die_attr.i = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2
-  %a.099.i = load %struct.dw_attr_struct** %die_attr.i, align 8
-  %cmp100.i = icmp eq %struct.dw_attr_struct* %a.099.i, null
-  br i1 %cmp100.i, label %size_of_die.exit, label %for.body.i
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %die}, i64 0, metadata !2178), !dbg !7248
+  %0 = load i64* @next_die_offset, align 8, !dbg !7249, !tbaa !3782
+  %die_offset = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 6, !dbg !7249
+  store i64 %0, i64* %die_offset, align 8, !dbg !7249, !tbaa !3782
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %die}, i64 0, metadata !7250) #6, !dbg !7252
+  tail call void @llvm.dbg.value(metadata !3843, i64 0, metadata !7253) #6, !dbg !7254
+  %die_abbrev.i = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 7, !dbg !7255
+  %1 = load i64* %die_abbrev.i, align 8, !dbg !7255, !tbaa !3782
+  %call.i = tail call i32 @size_of_uleb128(i64 %1) #10, !dbg !7255
+  %conv.i = sext i32 %call.i to i64, !dbg !7255
+  tail call void @llvm.dbg.value(metadata !{i64 %conv.i}, i64 0, metadata !7253) #6, !dbg !7255
+  %die_attr.i = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2, !dbg !7256
+  %a.099.i = load %struct.dw_attr_struct** %die_attr.i, align 8, !dbg !7256
+  %cmp100.i = icmp eq %struct.dw_attr_struct* %a.099.i, null, !dbg !7256
+  br i1 %cmp100.i, label %size_of_die.exit, label %for.body.i, !dbg !7256
 
 for.body.i:                                       ; preds = %entry, %for.inc.i
   %a.0102.i = phi %struct.dw_attr_struct* [ %a.0.i, %for.inc.i ], [ %a.099.i, %entry ]
   %size.0101.i = phi i64 [ %size.1.i, %for.inc.i ], [ %conv.i, %entry ]
-  %val_class.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 0
-  %2 = load i32* %val_class.i.i, align 4, !tbaa !1
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0102.i}, i64 0, metadata !7257) #6, !dbg !7259
+  %val_class.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 0, !dbg !7260
+  %2 = load i32* %val_class.i.i, align 4, !dbg !7260, !tbaa !3759
   switch i32 %2, label %sw.default.i [
     i32 0, label %sw.bb.i
     i32 1, label %sw.bb5.i
@@ -33,157 +38,180 @@ for.body.i:                                       ; preds = %entry, %for.inc.i
     i32 12, label %sw.bb40.i
     i32 13, label %sw.bb47.i
     i32 14, label %sw.bb49.i
-  ]
+  ], !dbg !7258
 
 sw.bb.i:                                          ; preds = %for.body.i
-  %3 = load i32* @target_flags, align 4, !tbaa !0
-  %and.i = lshr i32 %3, 20
-  %4 = and i32 %and.i, 32
-  %5 = add i32 %4, 32
-  %div.i = sdiv i32 %5, 8
-  %conv3.i = sext i32 %div.i to i64
-  %add4.i = add i64 %conv3.i, %size.0101.i
-  br label %for.inc.i
+  %3 = load i32* @target_flags, align 4, !dbg !7261, !tbaa !3758
+  %and.i = lshr i32 %3, 20, !dbg !7261
+  %4 = and i32 %and.i, 32, !dbg !7261
+  %5 = add i32 %4, 32, !dbg !7261
+  %div.i = sdiv i32 %5, 8, !dbg !7261
+  %conv3.i = sext i32 %div.i to i64, !dbg !7261
+  %add4.i = add i64 %conv3.i, %size.0101.i, !dbg !7261
+  tail call void @llvm.dbg.value(metadata !{i64 %add4.i}, i64 0, metadata !7253) #6, !dbg !7261
+  br label %for.inc.i, !dbg !7262
 
 sw.bb5.i:                                         ; preds = %for.body.i
-  %add6.i = add i64 %size.0101.i, 4
-  br label %for.inc.i
+  %add6.i = add i64 %size.0101.i, 4, !dbg !7263
+  tail call void @llvm.dbg.value(metadata !{i64 %add6.i}, i64 0, metadata !7253) #6, !dbg !7263
+  br label %for.inc.i, !dbg !7264
 
 AT_loc.exit.i:                                    ; preds = %for.body.i
-  %v.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1
-  %val_loc.i.i = bitcast %union.anon.3* %v.i.i to %struct.dw_loc_descr_struct**
-  %6 = load %struct.dw_loc_descr_struct** %val_loc.i.i, align 8, !tbaa !4
-  %call9.i = tail call fastcc i64 @size_of_locs(%struct.dw_loc_descr_struct* %6) #9
-  %call10.i = tail call fastcc i32 @constant_size(i64 %call9.i) #9
-  %conv11.i = sext i32 %call10.i to i64
-  %add12.i = add i64 %call9.i, %size.0101.i
-  %add13.i = add i64 %add12.i, %conv11.i
-  br label %for.inc.i
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0102.i}, i64 0, metadata !7265) #6, !dbg !7267
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0102.i}, i64 0, metadata !7268) #6, !dbg !7270
+  %v.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, !dbg !7271
+  %val_loc.i.i = bitcast %union.anon.3* %v.i.i to %struct.dw_loc_descr_struct**, !dbg !7271
+  %6 = load %struct.dw_loc_descr_struct** %val_loc.i.i, align 8, !dbg !7271, !tbaa !3768
+  %call9.i = tail call fastcc i64 @size_of_locs(%struct.dw_loc_descr_struct* %6) #10, !dbg !7266
+  tail call void @llvm.dbg.value(metadata !{i64 %call9.i}, i64 0, metadata !7272) #6, !dbg !7266
+  %call10.i = tail call fastcc i32 @constant_size(i64 %call9.i) #10, !dbg !7273
+  %conv11.i = sext i32 %call10.i to i64, !dbg !7273
+  %add12.i = add i64 %call9.i, %size.0101.i, !dbg !7273
+  %add13.i = add i64 %add12.i, %conv11.i, !dbg !7274
+  tail call void @llvm.dbg.value(metadata !{i64 %add13.i}, i64 0, metadata !7253) #6, !dbg !7274
+  br label %for.inc.i, !dbg !7275
 
 sw.bb14.i:                                        ; preds = %for.body.i
-  %add15.i = add i64 %size.0101.i, 4
-  br label %for.inc.i
+  %add15.i = add i64 %size.0101.i, 4, !dbg !7276
+  tail call void @llvm.dbg.value(metadata !{i64 %add15.i}, i64 0, metadata !7253) #6, !dbg !7276
+  br label %for.inc.i, !dbg !7277
 
 sw.bb16.i:                                        ; preds = %for.body.i
-  %add17.i = add i64 %size.0101.i, 4
-  br label %for.inc.i
+  %add17.i = add i64 %size.0101.i, 4, !dbg !7278
+  tail call void @llvm.dbg.value(metadata !{i64 %add17.i}, i64 0, metadata !7253) #6, !dbg !7278
+  br label %for.inc.i, !dbg !7279
 
 AT_int.exit.i:                                    ; preds = %for.body.i
-  %val_int.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, i32 0, i32 0
-  %7 = load i64* %val_int.i.i, align 8, !tbaa !6
-  %call20.i = tail call i32 @size_of_sleb128(i64 %7) #9
-  %conv21.i = sext i32 %call20.i to i64
-  %add22.i = add i64 %conv21.i, %size.0101.i
-  br label %for.inc.i
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0102.i}, i64 0, metadata !7280) #6, !dbg !7282
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0102.i}, i64 0, metadata !7283) #6, !dbg !7285
+  %val_int.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7286
+  %7 = load i64* %val_int.i.i, align 8, !dbg !7286, !tbaa !3782
+  %call20.i = tail call i32 @size_of_sleb128(i64 %7) #10, !dbg !7281
+  %conv21.i = sext i32 %call20.i to i64, !dbg !7281
+  %add22.i = add i64 %conv21.i, %size.0101.i, !dbg !7281
+  tail call void @llvm.dbg.value(metadata !{i64 %add22.i}, i64 0, metadata !7253) #6, !dbg !7281
+  br label %for.inc.i, !dbg !7287
 
 AT_unsigned.exit.i:                               ; preds = %for.body.i
-  %val_unsigned.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, i32 0, i32 0
-  %8 = load i64* %val_unsigned.i.i, align 8, !tbaa !6
-  %call25.i = tail call fastcc i32 @constant_size(i64 %8) #9
-  %conv26.i = sext i32 %call25.i to i64
-  %add27.i = add i64 %conv26.i, %size.0101.i
-  br label %for.inc.i
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0102.i}, i64 0, metadata !7288) #6, !dbg !7290
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.0102.i}, i64 0, metadata !7291) #6, !dbg !7293
+  %val_unsigned.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7294
+  %8 = load i64* %val_unsigned.i.i, align 8, !dbg !7294, !tbaa !3782
+  %call25.i = tail call fastcc i32 @constant_size(i64 %8) #10, !dbg !7289
+  %conv26.i = sext i32 %call25.i to i64, !dbg !7289
+  %add27.i = add i64 %conv26.i, %size.0101.i, !dbg !7289
+  tail call void @llvm.dbg.value(metadata !{i64 %add27.i}, i64 0, metadata !7253) #6, !dbg !7289
+  br label %for.inc.i, !dbg !7295
 
 sw.bb28.i:                                        ; preds = %for.body.i
-  %add29.i = add i64 %size.0101.i, 17
-  br label %for.inc.i
+  %add29.i = add i64 %size.0101.i, 17, !dbg !7296
+  tail call void @llvm.dbg.value(metadata !{i64 %add29.i}, i64 0, metadata !7253) #6, !dbg !7296
+  br label %for.inc.i, !dbg !7297
 
 sw.bb30.i:                                        ; preds = %for.body.i
-  %length.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, i32 0, i32 1
-  %9 = bitcast i64* %length.i to i32*
-  %10 = load i32* %9, align 4, !tbaa !0
-  %mul.i = shl i32 %10, 2
-  %add3187.i = or i32 %mul.i, 1
-  %conv32.i = zext i32 %add3187.i to i64
-  %add33.i = add i64 %conv32.i, %size.0101.i
-  br label %for.inc.i
+  %length.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, i32 0, i32 1, !dbg !7298
+  %9 = bitcast i64* %length.i to i32*, !dbg !7298
+  %10 = load i32* %9, align 4, !dbg !7298, !tbaa !3758
+  %mul.i = shl i32 %10, 2, !dbg !7298
+  %add3187.i = or i32 %mul.i, 1, !dbg !7298
+  %conv32.i = zext i32 %add3187.i to i64, !dbg !7298
+  %add33.i = add i64 %conv32.i, %size.0101.i, !dbg !7298
+  tail call void @llvm.dbg.value(metadata !{i64 %add33.i}, i64 0, metadata !7253) #6, !dbg !7298
+  br label %for.inc.i, !dbg !7299
 
 sw.bb34.i:                                        ; preds = %for.body.i
-  %add35.i = add i64 %size.0101.i, 1
-  br label %for.inc.i
+  %add35.i = add i64 %size.0101.i, 1, !dbg !7300
+  tail call void @llvm.dbg.value(metadata !{i64 %add35.i}, i64 0, metadata !7253) #6, !dbg !7300
+  br label %for.inc.i, !dbg !7301
 
 sw.bb36.i:                                        ; preds = %for.body.i
-  %add37.i = add i64 %size.0101.i, 4
-  br label %for.inc.i
+  %add37.i = add i64 %size.0101.i, 4, !dbg !7302
+  tail call void @llvm.dbg.value(metadata !{i64 %add37.i}, i64 0, metadata !7253) #6, !dbg !7302
+  br label %for.inc.i, !dbg !7303
 
 sw.bb38.i:                                        ; preds = %for.body.i
-  %add39.i = add i64 %size.0101.i, 4
-  br label %for.inc.i
+  %add39.i = add i64 %size.0101.i, 4, !dbg !7304
+  tail call void @llvm.dbg.value(metadata !{i64 %add39.i}, i64 0, metadata !7253) #6, !dbg !7304
+  br label %for.inc.i, !dbg !7305
 
 sw.bb40.i:                                        ; preds = %for.body.i
-  %11 = load i32* @target_flags, align 4, !tbaa !0
-  %and41.i = lshr i32 %11, 20
-  %12 = and i32 %and41.i, 32
-  %13 = add i32 %12, 32
-  %div44.i = sdiv i32 %13, 8
-  %conv45.i = sext i32 %div44.i to i64
-  %add46.i = add i64 %conv45.i, %size.0101.i
-  br label %for.inc.i
+  %11 = load i32* @target_flags, align 4, !dbg !7306, !tbaa !3758
+  %and41.i = lshr i32 %11, 20, !dbg !7306
+  %12 = and i32 %and41.i, 32, !dbg !7306
+  %13 = add i32 %12, 32, !dbg !7306
+  %div44.i = sdiv i32 %13, 8, !dbg !7306
+  %conv45.i = sext i32 %div44.i to i64, !dbg !7306
+  %add46.i = add i64 %conv45.i, %size.0101.i, !dbg !7306
+  tail call void @llvm.dbg.value(metadata !{i64 %add46.i}, i64 0, metadata !7253) #6, !dbg !7306
+  br label %for.inc.i, !dbg !7307
 
 sw.bb47.i:                                        ; preds = %for.body.i
-  %add48.i = add i64 %size.0101.i, 4
-  br label %for.inc.i
+  %add48.i = add i64 %size.0101.i, 4, !dbg !7308
+  tail call void @llvm.dbg.value(metadata !{i64 %add48.i}, i64 0, metadata !7253) #6, !dbg !7308
+  br label %for.inc.i, !dbg !7309
 
 sw.bb49.i:                                        ; preds = %for.body.i
-  %call50.i = tail call fastcc i32 @AT_string_form(%struct.dw_attr_struct* %a.0102.i) #9
-  %cmp51.i = icmp eq i32 %call50.i, 14
-  br i1 %cmp51.i, label %if.then.i, label %if.else.i
+  %call50.i = tail call fastcc i32 @AT_string_form(%struct.dw_attr_struct* %a.0102.i) #10, !dbg !7310
+  %cmp51.i = icmp eq i32 %call50.i, 14, !dbg !7310
+  br i1 %cmp51.i, label %if.then.i, label %if.else.i, !dbg !7310
 
 if.then.i:                                        ; preds = %sw.bb49.i
-  %add53.i = add i64 %size.0101.i, 4
-  br label %for.inc.i
+  %add53.i = add i64 %size.0101.i, 4, !dbg !7311
+  tail call void @llvm.dbg.value(metadata !{i64 %add53.i}, i64 0, metadata !7253) #6, !dbg !7311
+  br label %for.inc.i, !dbg !7311
 
 if.else.i:                                        ; preds = %sw.bb49.i
-  %v55.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1
-  %val_str.i = bitcast %union.anon.3* %v55.i to %struct.indirect_string_node**
-  %14 = load %struct.indirect_string_node** %val_str.i, align 8, !tbaa !4
-  %len.i = getelementptr inbounds %struct.indirect_string_node* %14, i64 0, i32 0, i32 0
-  %15 = load i32* %len.i, align 4, !tbaa !0
-  %add56.i = add i32 %15, 1
-  %conv57.i = zext i32 %add56.i to i64
-  %add58.i = add i64 %conv57.i, %size.0101.i
+  %v55.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, !dbg !7312
+  %val_str.i = bitcast %union.anon.3* %v55.i to %struct.indirect_string_node**, !dbg !7312
+  %14 = load %struct.indirect_string_node** %val_str.i, align 8, !dbg !7312, !tbaa !3768
+  %len.i = getelementptr inbounds %struct.indirect_string_node* %14, i64 0, i32 0, i32 0, !dbg !7312
+  %15 = load i32* %len.i, align 4, !dbg !7312, !tbaa !3758
+  %add56.i = add i32 %15, 1, !dbg !7312
+  %conv57.i = zext i32 %add56.i to i64, !dbg !7312
+  %add58.i = add i64 %conv57.i, %size.0101.i, !dbg !7312
+  tail call void @llvm.dbg.value(metadata !{i64 %add58.i}, i64 0, metadata !7253) #6, !dbg !7312
   br label %for.inc.i
 
 sw.default.i:                                     ; preds = %for.body.i
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 5914, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.size_of_die, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 5914, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.size_of_die, i64 0, i64 0)) #13, !dbg !7313
+  unreachable, !dbg !7313
 
 for.inc.i:                                        ; preds = %if.else.i, %if.then.i, %sw.bb47.i, %sw.bb40.i, %sw.bb38.i, %sw.bb36.i, %sw.bb34.i, %sw.bb30.i, %sw.bb28.i, %AT_unsigned.exit.i, %AT_int.exit.i, %sw.bb16.i, %sw.bb14.i, %AT_loc.exit.i, %sw.bb5.i, %sw.bb.i
   %size.1.i = phi i64 [ %add53.i, %if.then.i ], [ %add58.i, %if.else.i ], [ %add48.i, %sw.bb47.i ], [ %add46.i, %sw.bb40.i ], [ %add39.i, %sw.bb38.i ], [ %add37.i, %sw.bb36.i ], [ %add35.i, %sw.bb34.i ], [ %add33.i, %sw.bb30.i ], [ %add29.i, %sw.bb28.i ], [ %add27.i, %AT_unsigned.exit.i ], [ %add22.i, %AT_int.exit.i ], [ %add17.i, %sw.bb16.i ], [ %add15.i, %sw.bb14.i ], [ %add13.i, %AT_loc.exit.i ], [ %add6.i, %sw.bb5.i ], [ %add4.i, %sw.bb.i ]
-  %dw_attr_next.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 1
-  %a.0.i = load %struct.dw_attr_struct** %dw_attr_next.i, align 8
-  %cmp.i = icmp eq %struct.dw_attr_struct* %a.0.i, null
-  br i1 %cmp.i, label %size_of_die.exit, label %for.body.i
+  %dw_attr_next.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 1, !dbg !7256
+  %a.0.i = load %struct.dw_attr_struct** %dw_attr_next.i, align 8, !dbg !7256
+  %cmp.i = icmp eq %struct.dw_attr_struct* %a.0.i, null, !dbg !7256
+  br i1 %cmp.i, label %size_of_die.exit, label %for.body.i, !dbg !7256
 
 size_of_die.exit:                                 ; preds = %for.inc.i, %entry
   %size.0.lcssa.i = phi i64 [ %conv.i, %entry ], [ %size.1.i, %for.inc.i ]
-  %16 = load i64* @next_die_offset, align 8, !tbaa !6
-  %add = add i64 %16, %size.0.lcssa.i
-  store i64 %add, i64* @next_die_offset, align 8, !tbaa !6
-  %die_child = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 4
-  %c.09 = load %struct.die_struct** %die_child, align 8
-  %cmp10 = icmp eq %struct.die_struct* %c.09, null
-  br i1 %cmp10, label %if.end, label %for.body
+  %16 = load i64* @next_die_offset, align 8, !dbg !7251, !tbaa !3782
+  %add = add i64 %16, %size.0.lcssa.i, !dbg !7251
+  store i64 %add, i64* @next_die_offset, align 8, !dbg !7251, !tbaa !3782
+  %die_child = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 4, !dbg !7314
+  %c.09 = load %struct.die_struct** %die_child, align 8, !dbg !7314
+  %cmp10 = icmp eq %struct.die_struct* %c.09, null, !dbg !7314
+  br i1 %cmp10, label %if.end, label %for.body, !dbg !7314
 
 for.body:                                         ; preds = %size_of_die.exit, %for.body
   %c.011 = phi %struct.die_struct* [ %c.0, %for.body ], [ %c.09, %size_of_die.exit ]
-  tail call fastcc void @calc_die_sizes(%struct.die_struct* %c.011) #10
-  %die_sib = getelementptr inbounds %struct.die_struct* %c.011, i64 0, i32 5
-  %c.0 = load %struct.die_struct** %die_sib, align 8
-  %cmp = icmp eq %struct.die_struct* %c.0, null
-  br i1 %cmp, label %for.end, label %for.body
+  tail call fastcc void @calc_die_sizes(%struct.die_struct* %c.011) #11, !dbg !7316
+  %die_sib = getelementptr inbounds %struct.die_struct* %c.011, i64 0, i32 5, !dbg !7314
+  %c.0 = load %struct.die_struct** %die_sib, align 8, !dbg !7314
+  %cmp = icmp eq %struct.die_struct* %c.0, null, !dbg !7314
+  br i1 %cmp, label %for.end, label %for.body, !dbg !7314
 
 for.end:                                          ; preds = %for.body
-  %.pre = load %struct.die_struct** %die_child, align 8, !tbaa !4
-  %phitmp = icmp eq %struct.die_struct* %.pre, null
-  br i1 %phitmp, label %if.end, label %if.then
+  %.pre = load %struct.die_struct** %die_child, align 8, !dbg !7317, !tbaa !3768
+  %phitmp = icmp eq %struct.die_struct* %.pre, null, !dbg !7314
+  br i1 %phitmp, label %if.end, label %if.then, !dbg !7317
 
 if.then:                                          ; preds = %for.end
-  %17 = load i64* @next_die_offset, align 8, !tbaa !6
-  %add3 = add i64 %17, 1
-  store i64 %add3, i64* @next_die_offset, align 8, !tbaa !6
-  br label %if.end
+  %17 = load i64* @next_die_offset, align 8, !dbg !7318, !tbaa !3782
+  %add3 = add i64 %17, 1, !dbg !7318
+  store i64 %add3, i64* @next_die_offset, align 8, !dbg !7318, !tbaa !3782
+  br label %if.end, !dbg !7318
 
 if.end:                                           ; preds = %size_of_die.exit, %for.end, %if.then
-  ret void
+  ret void, !dbg !7319
 }

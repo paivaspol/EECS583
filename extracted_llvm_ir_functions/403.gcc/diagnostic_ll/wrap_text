@@ -1,88 +1,97 @@
 define internal fastcc void @wrap_text(%struct.output_buffer* %buffer, i8* %start, i8* %end) #2 {
 entry:
-  %ideal_maximum_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 2
-  %0 = load i32* %ideal_maximum_length.i, align 4, !tbaa !0
-  %cmp.i = icmp sgt i32 %0, 0
-  %cmp61 = icmp eq i8* %start, %end
-  br i1 %cmp61, label %while.end32, label %while.cond1.preheader.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct.output_buffer* %buffer}, i64 0, metadata !1097), !dbg !2019
+  tail call void @llvm.dbg.value(metadata !{i8* %start}, i64 0, metadata !1098), !dbg !2020
+  tail call void @llvm.dbg.value(metadata !{i8* %end}, i64 0, metadata !1099), !dbg !2021
+  tail call void @llvm.dbg.value(metadata !{%struct.output_buffer* %buffer}, i64 0, metadata !2022), !dbg !2024
+  %ideal_maximum_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 2, !dbg !2025
+  %0 = load i32* %ideal_maximum_length.i, align 4, !dbg !2025, !tbaa !1172
+  %cmp.i = icmp sgt i32 %0, 0, !dbg !2025
+  %cmp61 = icmp eq i8* %start, %end, !dbg !2026
+  br i1 %cmp61, label %while.end32, label %while.cond1.preheader.lr.ph, !dbg !2026
 
 while.cond1.preheader.lr.ph:                      ; preds = %entry
-  %maximum_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 1
-  %line_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 3
-  br label %while.cond1.preheader
+  %maximum_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 1, !dbg !2027
+  %line_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 3, !dbg !2027
+  br label %while.cond1.preheader, !dbg !2026
 
 while.cond1.preheader:                            ; preds = %while.cond1.preheader.lr.ph, %while.cond.backedge
   %start.addr.062 = phi i8* [ %start, %while.cond1.preheader.lr.ph ], [ %start.addr.0.be, %while.cond.backedge ]
-  %cmp257 = icmp eq i8* %start.addr.062, %end
-  br i1 %cmp257, label %while.end, label %land.lhs.true
+  %cmp257 = icmp eq i8* %start.addr.062, %end, !dbg !2029
+  br i1 %cmp257, label %while.end, label %land.lhs.true, !dbg !2029
 
 land.lhs.true:                                    ; preds = %while.body8, %while.cond1.preheader
   %p.058 = phi i8* [ %start.addr.062, %while.cond1.preheader ], [ %incdec.ptr, %while.body8 ]
-  %1 = load i8* %p.058, align 1, !tbaa !1
+  %1 = load i8* %p.058, align 1, !dbg !2029, !tbaa !1173
   switch i8 %1, label %while.body8 [
     i8 32, label %while.end
     i8 10, label %while.end
-  ]
+  ], !dbg !2029
 
 while.body8:                                      ; preds = %land.lhs.true
-  %incdec.ptr = getelementptr inbounds i8* %p.058, i64 1
-  %cmp2 = icmp eq i8* %incdec.ptr, %end
-  br i1 %cmp2, label %while.end, label %land.lhs.true
+  %incdec.ptr = getelementptr inbounds i8* %p.058, i64 1, !dbg !2030
+  tail call void @llvm.dbg.value(metadata !{i8* %end}, i64 0, metadata !1101), !dbg !2030
+  %cmp2 = icmp eq i8* %incdec.ptr, %end, !dbg !2029
+  br i1 %cmp2, label %while.end, label %land.lhs.true, !dbg !2029
 
 while.end:                                        ; preds = %while.body8, %land.lhs.true, %land.lhs.true, %while.cond1.preheader
   %cmp2.lcssa = phi i1 [ false, %while.cond1.preheader ], [ true, %land.lhs.true ], [ true, %land.lhs.true ], [ false, %while.body8 ]
   %p.0.lcssa = phi i8* [ %end, %while.cond1.preheader ], [ %p.058, %land.lhs.true ], [ %p.058, %land.lhs.true ], [ %end, %while.body8 ]
-  br i1 %cmp.i, label %land.lhs.true9, label %if.end
+  br i1 %cmp.i, label %land.lhs.true9, label %if.end, !dbg !2028
 
 land.lhs.true9:                                   ; preds = %while.end
-  %sub.ptr.lhs.cast = ptrtoint i8* %p.0.lcssa to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %start.addr.062 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %2 = load i32* %maximum_length.i, align 4, !tbaa !0
-  %3 = load i32* %line_length.i, align 4, !tbaa !0
-  %sub.i = sub nsw i32 %2, %3
-  %conv11 = sext i32 %sub.i to i64
-  %cmp12 = icmp slt i64 %sub.ptr.sub, %conv11
-  br i1 %cmp12, label %if.end, label %if.then
+  %sub.ptr.lhs.cast = ptrtoint i8* %p.0.lcssa to i64, !dbg !2028
+  %sub.ptr.rhs.cast = ptrtoint i8* %start.addr.062 to i64, !dbg !2028
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !2028
+  tail call void @llvm.dbg.value(metadata !{%struct.output_buffer* %buffer}, i64 0, metadata !2031), !dbg !2032
+  %2 = load i32* %maximum_length.i, align 4, !dbg !2027, !tbaa !1172
+  %3 = load i32* %line_length.i, align 4, !dbg !2027, !tbaa !1172
+  %sub.i = sub nsw i32 %2, %3, !dbg !2027
+  %conv11 = sext i32 %sub.i to i64, !dbg !2028
+  %cmp12 = icmp slt i64 %sub.ptr.sub, %conv11, !dbg !2028
+  br i1 %cmp12, label %if.end, label %if.then, !dbg !2028
 
 if.then:                                          ; preds = %land.lhs.true9
-  tail call void @output_add_newline(%struct.output_buffer* %buffer) #11
-  br label %if.end
+  tail call void @output_add_newline(%struct.output_buffer* %buffer) #12, !dbg !2033
+  br label %if.end, !dbg !2033
 
 if.end:                                           ; preds = %while.end, %land.lhs.true9, %if.then
-  tail call void @output_append(%struct.output_buffer* %buffer, i8* %start.addr.062, i8* %p.0.lcssa) #11
-  br i1 %cmp2.lcssa, label %land.lhs.true16, label %if.end22
+  tail call void @output_append(%struct.output_buffer* %buffer, i8* %start.addr.062, i8* %p.0.lcssa) #12, !dbg !2034
+  tail call void @llvm.dbg.value(metadata !{i8* %p.0.lcssa}, i64 0, metadata !1098), !dbg !2035
+  br i1 %cmp2.lcssa, label %land.lhs.true16, label %if.end22, !dbg !2036
 
 land.lhs.true16:                                  ; preds = %if.end
-  %4 = load i8* %p.0.lcssa, align 1, !tbaa !1
-  %cmp18 = icmp eq i8 %4, 32
-  br i1 %cmp18, label %if.then20, label %if.end22
+  %4 = load i8* %p.0.lcssa, align 1, !dbg !2036, !tbaa !1173
+  %cmp18 = icmp eq i8 %4, 32, !dbg !2036
+  br i1 %cmp18, label %if.then20, label %if.end22, !dbg !2036
 
 if.then20:                                        ; preds = %land.lhs.true16
-  tail call void @output_add_space(%struct.output_buffer* %buffer) #11
-  %incdec.ptr21 = getelementptr inbounds i8* %p.0.lcssa, i64 1
-  br label %if.end22
+  tail call void @output_add_space(%struct.output_buffer* %buffer) #12, !dbg !2037
+  %incdec.ptr21 = getelementptr inbounds i8* %p.0.lcssa, i64 1, !dbg !2039
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr21}, i64 0, metadata !1098), !dbg !2039
+  br label %if.end22, !dbg !2040
 
 if.end22:                                         ; preds = %if.then20, %land.lhs.true16, %if.end
   %start.addr.1 = phi i8* [ %incdec.ptr21, %if.then20 ], [ %p.0.lcssa, %land.lhs.true16 ], [ %p.0.lcssa, %if.end ]
-  %cmp23 = icmp eq i8* %start.addr.1, %end
-  br i1 %cmp23, label %while.end32, label %land.lhs.true25
+  %cmp23 = icmp eq i8* %start.addr.1, %end, !dbg !2041
+  br i1 %cmp23, label %while.end32, label %land.lhs.true25, !dbg !2041
 
 land.lhs.true25:                                  ; preds = %if.end22
-  %5 = load i8* %start.addr.1, align 1, !tbaa !1
-  %cmp27 = icmp eq i8 %5, 10
-  br i1 %cmp27, label %if.then29, label %while.cond.backedge
+  %5 = load i8* %start.addr.1, align 1, !dbg !2041, !tbaa !1173
+  %cmp27 = icmp eq i8 %5, 10, !dbg !2041
+  br i1 %cmp27, label %if.then29, label %while.cond.backedge, !dbg !2041
 
 if.then29:                                        ; preds = %land.lhs.true25
-  tail call void @output_add_newline(%struct.output_buffer* %buffer) #11
-  %incdec.ptr30 = getelementptr inbounds i8* %start.addr.1, i64 1
-  br label %while.cond.backedge
+  tail call void @output_add_newline(%struct.output_buffer* %buffer) #12, !dbg !2042
+  %incdec.ptr30 = getelementptr inbounds i8* %start.addr.1, i64 1, !dbg !2044
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr30}, i64 0, metadata !1098), !dbg !2044
+  br label %while.cond.backedge, !dbg !2045
 
 while.cond.backedge:                              ; preds = %if.then29, %land.lhs.true25
   %start.addr.0.be = phi i8* [ %incdec.ptr30, %if.then29 ], [ %start.addr.1, %land.lhs.true25 ]
-  %cmp = icmp eq i8* %start.addr.0.be, %end
-  br i1 %cmp, label %while.end32, label %while.cond1.preheader
+  %cmp = icmp eq i8* %start.addr.0.be, %end, !dbg !2026
+  br i1 %cmp, label %while.end32, label %while.cond1.preheader, !dbg !2026
 
 while.end32:                                      ; preds = %if.end22, %while.cond.backedge, %entry
-  ret void
+  ret void, !dbg !2046
 }

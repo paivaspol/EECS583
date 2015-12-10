@@ -1,28 +1,29 @@
-define internal i32 @_ZN3povL11Inside_DiscEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* nocapture readonly %Object) #0 {
+define internal i32 @_ZN3povL11Inside_DiscEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* nocapture %Object) #0 {
+entry:
   %New_Point = alloca [3 x double], align 16
-  tail call void @llvm.dbg.value(metadata double* %IPoint, i64 0, metadata !1021, metadata !1399), !dbg !1674
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !1022, metadata !1399), !dbg !1675
-  tail call void @llvm.dbg.declare(metadata [3 x double]* %New_Point, metadata !1023, metadata !1399), !dbg !1676
-  %1 = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 0, !dbg !1677
-  %2 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !1678
-  %3 = load %"struct.pov::Transform_Struct"** %2, align 8, !dbg !1678, !tbaa !1452
-  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %1, double* %IPoint, %"struct.pov::Transform_Struct"* %3) #6, !dbg !1679
-  %4 = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 2, !dbg !1680
-  %5 = load double* %4, align 16, !dbg !1680, !tbaa !1444
-  %6 = fcmp ult double %5, 0.000000e+00, !dbg !1682
-  %7 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !1683
-  %8 = load i32* %7, align 4, !dbg !1683, !tbaa !1685
-  %9 = zext i32 %8 to i64, !dbg !1683
-  %10 = and i64 %9, 4, !dbg !1683
-  br i1 %6, label %11, label %13, !dbg !1686
+  call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1048), !dbg !1380
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1049), !dbg !1380
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %New_Point}, metadata !1050), !dbg !1381
+  %arraydecay = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 0, !dbg !1382
+  %0 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !1382
+  %1 = load %"struct.pov::Transform_Struct"** %0, align 8, !dbg !1382, !tbaa !1182
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay, double* %IPoint, %"struct.pov::Transform_Struct"* %1) #7, !dbg !1382
+  %arrayidx = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 2, !dbg !1383
+  %2 = load double* %arrayidx, align 16, !dbg !1383, !tbaa !1214
+  %cmp = fcmp ult double %2, 0.000000e+00, !dbg !1383
+  %3 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !1384
+  %4 = load i32* %3, align 4, !dbg !1384, !tbaa !1179
+  %conv = zext i32 %4 to i64, !dbg !1384
+  %and = and i64 %conv, 4, !dbg !1384
+  br i1 %cmp, label %if.else, label %return, !dbg !1383
 
-; <label>:11                                      ; preds = %0
-  %.lobit = lshr exact i64 %10, 2, !dbg !1687
-  %12 = xor i64 %.lobit, 1, !dbg !1687
-  br label %13, !dbg !1689
+if.else:                                          ; preds = %entry
+  %and.lobit = lshr exact i64 %and, 2, !dbg !1386
+  %5 = xor i64 %and.lobit, 1, !dbg !1386
+  br label %return, !dbg !1386
 
-; <label>:13                                      ; preds = %0, %11
-  %.0.in = phi i64 [ %12, %11 ], [ %10, %0 ]
-  %.0 = trunc i64 %.0.in to i32, !dbg !1690
-  ret i32 %.0, !dbg !1691
+return:                                           ; preds = %entry, %if.else
+  %retval.0.in = phi i64 [ %5, %if.else ], [ %and, %entry ]
+  %retval.0 = trunc i64 %retval.0.in to i32, !dbg !1384
+  ret i32 %retval.0, !dbg !1388
 }

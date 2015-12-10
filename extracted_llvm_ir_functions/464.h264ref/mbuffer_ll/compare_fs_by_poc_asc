@@ -1,23 +1,24 @@
-define internal i32 @compare_fs_by_poc_asc(i8* nocapture readonly %arg1, i8* nocapture readonly %arg2) #4 {
-  tail call void @llvm.dbg.value(metadata i8* %arg1, i64 0, metadata !897, metadata !1408), !dbg !2736
-  tail call void @llvm.dbg.value(metadata i8* %arg2, i64 0, metadata !898, metadata !1408), !dbg !2737
-  %1 = bitcast i8* %arg1 to %struct.frame_store**, !dbg !2738
-  %2 = load %struct.frame_store** %1, align 8, !dbg !2740, !tbaa !1389
-  %3 = getelementptr inbounds %struct.frame_store* %2, i64 0, i32 9, !dbg !2741
-  %4 = load i32* %3, align 4, !dbg !2741, !tbaa !2359
-  %5 = bitcast i8* %arg2 to %struct.frame_store**, !dbg !2742
-  %6 = load %struct.frame_store** %5, align 8, !dbg !2743, !tbaa !1389
-  %7 = getelementptr inbounds %struct.frame_store* %6, i64 0, i32 9, !dbg !2744
-  %8 = load i32* %7, align 4, !dbg !2744, !tbaa !2359
-  %9 = icmp slt i32 %4, %8, !dbg !2745
-  br i1 %9, label %12, label %10, !dbg !2746
+define internal i32 @compare_fs_by_poc_asc(i8* nocapture %arg1, i8* nocapture %arg2) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %arg1}, i64 0, metadata !986), !dbg !1976
+  tail call void @llvm.dbg.value(metadata !{i8* %arg2}, i64 0, metadata !987), !dbg !1976
+  %0 = bitcast i8* %arg1 to %struct.frame_store**, !dbg !1977
+  %1 = load %struct.frame_store** %0, align 8, !dbg !1977, !tbaa !1363
+  %poc = getelementptr inbounds %struct.frame_store* %1, i64 0, i32 9, !dbg !1977
+  %2 = load i32* %poc, align 4, !dbg !1977, !tbaa !1366
+  %3 = bitcast i8* %arg2 to %struct.frame_store**, !dbg !1977
+  %4 = load %struct.frame_store** %3, align 8, !dbg !1977, !tbaa !1363
+  %poc1 = getelementptr inbounds %struct.frame_store* %4, i64 0, i32 9, !dbg !1977
+  %5 = load i32* %poc1, align 4, !dbg !1977, !tbaa !1366
+  %cmp = icmp slt i32 %2, %5, !dbg !1977
+  br i1 %cmp, label %return, label %if.end, !dbg !1977
 
-; <label>:10                                      ; preds = %0
-  %11 = icmp sgt i32 %4, %8, !dbg !2747
-  %. = zext i1 %11 to i32, !dbg !2749
-  br label %12, !dbg !2749
+if.end:                                           ; preds = %entry
+  %cmp4 = icmp sgt i32 %2, %5, !dbg !1978
+  %. = zext i1 %cmp4 to i32, !dbg !1979
+  br label %return, !dbg !1979
 
-; <label>:12                                      ; preds = %10, %0
-  %.0 = phi i32 [ -1, %0 ], [ %., %10 ]
-  ret i32 %.0, !dbg !2750
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %., %if.end ]
+  ret i32 %retval.0, !dbg !1980
 }

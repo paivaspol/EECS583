@@ -1,50 +1,55 @@
 define internal fastcc void @instantiate_decls(%union.tree_node* nocapture %fndecl, i32 %valid_only) #0 {
 entry:
-  %arguments = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 10
-  %decl.034 = load %union.tree_node** %arguments, align 8
-  %tobool35 = icmp eq %union.tree_node* %decl.034, null
-  br i1 %tobool35, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %fndecl}, i64 0, metadata !2306), !dbg !3542
+  tail call void @llvm.dbg.value(metadata !{i32 %valid_only}, i64 0, metadata !2307), !dbg !3543
+  %arguments = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 10, !dbg !3544
+  %decl.034 = load %union.tree_node** %arguments, align 8, !dbg !3544
+  %tobool35 = icmp eq %union.tree_node* %decl.034, null, !dbg !3544
+  br i1 %tobool35, label %for.end, label %for.body, !dbg !3544
 
 for.body:                                         ; preds = %entry, %cond.end
   %decl.036 = phi %union.tree_node* [ %decl.0, %cond.end ], [ %decl.034, %entry ]
-  %type = getelementptr inbounds %union.tree_node* %decl.036, i64 0, i32 0, i32 0, i32 1
-  %0 = load %union.tree_node** %type, align 8, !tbaa !0
-  %call = tail call i64 @int_size_in_bytes(%union.tree_node* %0) #10
-  %rtl = getelementptr inbounds %union.tree_node* %decl.036, i64 0, i32 0, i32 17
-  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
-  %tobool3 = icmp eq %struct.rtx_def* %1, null
-  br i1 %tobool3, label %cond.false, label %cond.end
+  %type = getelementptr inbounds %union.tree_node* %decl.036, i64 0, i32 0, i32 0, i32 1, !dbg !3545
+  %0 = load %union.tree_node** %type, align 8, !dbg !3545, !tbaa !2729
+  %call = tail call i64 @int_size_in_bytes(%union.tree_node* %0) #11, !dbg !3545
+  tail call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !2309), !dbg !3545
+  %rtl = getelementptr inbounds %union.tree_node* %decl.036, i64 0, i32 0, i32 17, !dbg !3546
+  %1 = load %struct.rtx_def** %rtl, align 8, !dbg !3546, !tbaa !2729
+  %tobool3 = icmp eq %struct.rtx_def* %1, null, !dbg !3546
+  br i1 %tobool3, label %cond.false, label %cond.end, !dbg !3546
 
 cond.false:                                       ; preds = %for.body
-  tail call void @make_decl_rtl(%union.tree_node* %decl.036, i8* null) #10
-  %2 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
-  br label %cond.end
+  tail call void @make_decl_rtl(%union.tree_node* %decl.036, i8* null) #11, !dbg !3546
+  %2 = load %struct.rtx_def** %rtl, align 8, !dbg !3546, !tbaa !2729
+  br label %cond.end, !dbg !3546
 
 cond.end:                                         ; preds = %for.body, %cond.false
-  %cond = phi %struct.rtx_def* [ %2, %cond.false ], [ %1, %for.body ]
-  tail call fastcc void @instantiate_decl(%struct.rtx_def* %cond, i64 %call, i32 %valid_only) #9
-  %u2 = getelementptr inbounds %union.tree_node* %decl.036, i64 0, i32 0, i32 19
-  %r = bitcast %union.anon.1* %u2 to %struct.rtx_def**
-  %3 = load %struct.rtx_def** %r, align 8, !tbaa !0
-  %4 = bitcast %struct.rtx_def* %3 to i32*
-  %bf.load = load i32* %4, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %idxprom33 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom33
-  %5 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = zext i8 %5 to i64
-  %cmp = icmp sgt i64 %conv, %call
-  %cond13 = select i1 %cmp, i64 %conv, i64 %call
-  tail call fastcc void @instantiate_decl(%struct.rtx_def* %3, i64 %cond13, i32 %valid_only) #9
-  %chain = getelementptr inbounds %union.tree_node* %decl.036, i64 0, i32 0, i32 0, i32 0
-  %decl.0 = load %union.tree_node** %chain, align 8
-  %tobool = icmp eq %union.tree_node* %decl.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %cond = phi %struct.rtx_def* [ %2, %cond.false ], [ %1, %for.body ], !dbg !3546
+  tail call fastcc void @instantiate_decl(%struct.rtx_def* %cond, i64 %call, i32 %valid_only) #10, !dbg !3546
+  %u2 = getelementptr inbounds %union.tree_node* %decl.036, i64 0, i32 0, i32 19, !dbg !3547
+  %r = bitcast %union.anon.1* %u2 to %struct.rtx_def**, !dbg !3547
+  %3 = load %struct.rtx_def** %r, align 8, !dbg !3547, !tbaa !2729
+  %4 = bitcast %struct.rtx_def* %3 to i32*, !dbg !3547
+  %bf.load = load i32* %4, align 8, !dbg !3547
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !3547
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !3547
+  %idxprom33 = zext i32 %bf.clear to i64, !dbg !3547
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom33, !dbg !3547
+  %5 = load i8* %arrayidx, align 1, !dbg !3547, !tbaa !2730
+  %conv = zext i8 %5 to i64, !dbg !3547
+  tail call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !2312), !dbg !3547
+  %cmp = icmp sgt i64 %conv, %call, !dbg !3548
+  %cond13 = select i1 %cmp, i64 %conv, i64 %call, !dbg !3548
+  tail call void @llvm.dbg.value(metadata !{i64 %cond13}, i64 0, metadata !2309), !dbg !3548
+  tail call fastcc void @instantiate_decl(%struct.rtx_def* %3, i64 %cond13, i32 %valid_only) #10, !dbg !3549
+  %chain = getelementptr inbounds %union.tree_node* %decl.036, i64 0, i32 0, i32 0, i32 0, !dbg !3544
+  %decl.0 = load %union.tree_node** %chain, align 8, !dbg !3544
+  %tobool = icmp eq %union.tree_node* %decl.0, null, !dbg !3544
+  br i1 %tobool, label %for.end, label %for.body, !dbg !3544
 
 for.end:                                          ; preds = %cond.end, %entry
-  %initial = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 12
-  %6 = load %union.tree_node** %initial, align 8, !tbaa !0
-  tail call fastcc void @instantiate_decls_1(%union.tree_node* %6, i32 %valid_only) #9
-  ret void
+  %initial = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 12, !dbg !3550
+  %6 = load %union.tree_node** %initial, align 8, !dbg !3550, !tbaa !2729
+  tail call fastcc void @instantiate_decls_1(%union.tree_node* %6, i32 %valid_only) #10, !dbg !3550
+  ret void, !dbg !3551
 }

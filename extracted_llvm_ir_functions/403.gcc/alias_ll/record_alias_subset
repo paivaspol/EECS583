@@ -1,95 +1,104 @@
 define void @record_alias_subset(i64 %superset, i64 %subset) #0 {
 entry:
-  %cmp = icmp eq i64 %superset, %subset
-  br i1 %cmp, label %if.end26, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i64 %superset}, i64 0, metadata !1244), !dbg !1700
+  tail call void @llvm.dbg.value(metadata !{i64 %subset}, i64 0, metadata !1245), !dbg !1701
+  %cmp = icmp eq i64 %superset, %subset, !dbg !1702
+  br i1 %cmp, label %if.end26, label %if.end, !dbg !1702
 
 if.end:                                           ; preds = %entry
-  %cmp1 = icmp eq i64 %superset, 0
-  br i1 %cmp1, label %if.then2, label %if.end3
+  %cmp1 = icmp eq i64 %superset, 0, !dbg !1703
+  br i1 %cmp1, label %if.then2, label %if.end3, !dbg !1703
 
 if.then2:                                         ; preds = %if.end
-  tail call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 625, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.record_alias_subset, i64 0, i64 0)) #9
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 625, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.record_alias_subset, i64 0, i64 0)) #10, !dbg !1704
+  unreachable, !dbg !1704
 
 if.end3:                                          ; preds = %if.end
-  %0 = load %struct.splay_tree_s** @alias_sets, align 8, !tbaa !0
-  %call.i = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %0, i64 %superset) #7
-  %cmp.i = icmp eq %struct.splay_tree_node_s* %call.i, null
-  br i1 %cmp.i, label %if.then5, label %get_alias_set_entry.exit
+  tail call void @llvm.dbg.value(metadata !{i64 %superset}, i64 0, metadata !1705) #5, !dbg !1707
+  %0 = load %struct.splay_tree_s** @alias_sets, align 8, !dbg !1708, !tbaa !1579
+  %call.i = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %0, i64 %superset) #8, !dbg !1708
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %call.i}, i64 0, metadata !1709) #5, !dbg !1708
+  %cmp.i = icmp eq %struct.splay_tree_node_s* %call.i, null, !dbg !1710
+  br i1 %cmp.i, label %if.then5, label %get_alias_set_entry.exit, !dbg !1710
 
 get_alias_set_entry.exit:                         ; preds = %if.end3
-  %value.i = getelementptr inbounds %struct.splay_tree_node_s* %call.i, i64 0, i32 1
-  %1 = load i64* %value.i, align 8, !tbaa !3
-  %2 = inttoptr i64 %1 to %struct.alias_set_entry*
-  %cmp4 = icmp eq i64 %1, 0
-  br i1 %cmp4, label %if.then5, label %if.end9
+  %value.i = getelementptr inbounds %struct.splay_tree_node_s* %call.i, i64 0, i32 1, !dbg !1710
+  %1 = load i64* %value.i, align 8, !dbg !1710, !tbaa !1584
+  %2 = inttoptr i64 %1 to %struct.alias_set_entry*, !dbg !1710
+  tail call void @llvm.dbg.value(metadata !{%struct.alias_set_entry* %2}, i64 0, metadata !1246), !dbg !1706
+  %cmp4 = icmp eq i64 %1, 0, !dbg !1711
+  br i1 %cmp4, label %if.then5, label %if.end9, !dbg !1711
 
 if.then5:                                         ; preds = %if.end3, %get_alias_set_entry.exit
-  %call6 = tail call noalias i8* @xmalloc(i64 24) #7
-  %3 = bitcast i8* %call6 to %struct.alias_set_entry*
-  %alias_set = bitcast i8* %call6 to i64*
-  store i64 %superset, i64* %alias_set, align 8, !tbaa !3
-  %call7 = tail call %struct.splay_tree_s* @splay_tree_new(i32 (i64, i64)* @splay_tree_compare_ints, void (i64)* null, void (i64)* null) #7
-  %children = getelementptr inbounds i8* %call6, i64 8
-  %4 = bitcast i8* %children to %struct.splay_tree_s**
-  store %struct.splay_tree_s* %call7, %struct.splay_tree_s** %4, align 8, !tbaa !0
-  %has_zero_child = getelementptr inbounds i8* %call6, i64 16
-  %5 = bitcast i8* %has_zero_child to i32*
-  store i32 0, i32* %5, align 4, !tbaa !4
-  %6 = load %struct.splay_tree_s** @alias_sets, align 8, !tbaa !0
-  %7 = ptrtoint i8* %call6 to i64
-  %call8 = tail call %struct.splay_tree_node_s* @splay_tree_insert(%struct.splay_tree_s* %6, i64 %superset, i64 %7) #7
-  br label %if.end9
+  %call6 = tail call noalias i8* @xmalloc(i64 24) #8, !dbg !1712
+  %3 = bitcast i8* %call6 to %struct.alias_set_entry*, !dbg !1712
+  tail call void @llvm.dbg.value(metadata !{%struct.alias_set_entry* %3}, i64 0, metadata !1246), !dbg !1712
+  %alias_set = bitcast i8* %call6 to i64*, !dbg !1714
+  store i64 %superset, i64* %alias_set, align 8, !dbg !1714, !tbaa !1584
+  %call7 = tail call %struct.splay_tree_s* @splay_tree_new(i32 (i64, i64)* @splay_tree_compare_ints, void (i64)* null, void (i64)* null) #8, !dbg !1715
+  %children = getelementptr inbounds i8* %call6, i64 8, !dbg !1715
+  %4 = bitcast i8* %children to %struct.splay_tree_s**, !dbg !1715
+  store %struct.splay_tree_s* %call7, %struct.splay_tree_s** %4, align 8, !dbg !1715, !tbaa !1579
+  %has_zero_child = getelementptr inbounds i8* %call6, i64 16, !dbg !1716
+  %5 = bitcast i8* %has_zero_child to i32*, !dbg !1716
+  store i32 0, i32* %5, align 4, !dbg !1716, !tbaa !1586
+  %6 = load %struct.splay_tree_s** @alias_sets, align 8, !dbg !1717, !tbaa !1579
+  %7 = ptrtoint i8* %call6 to i64, !dbg !1717
+  %call8 = tail call %struct.splay_tree_node_s* @splay_tree_insert(%struct.splay_tree_s* %6, i64 %superset, i64 %7) #8, !dbg !1717
+  br label %if.end9, !dbg !1718
 
 if.end9:                                          ; preds = %if.then5, %get_alias_set_entry.exit
   %superset_entry.0 = phi %struct.alias_set_entry* [ %3, %if.then5 ], [ %2, %get_alias_set_entry.exit ]
-  %cmp10 = icmp eq i64 %subset, 0
-  br i1 %cmp10, label %if.then11, label %if.else
+  %cmp10 = icmp eq i64 %subset, 0, !dbg !1719
+  br i1 %cmp10, label %if.then11, label %if.else, !dbg !1719
 
 if.then11:                                        ; preds = %if.end9
-  %has_zero_child12 = getelementptr inbounds %struct.alias_set_entry* %superset_entry.0, i64 0, i32 2
-  store i32 1, i32* %has_zero_child12, align 4, !tbaa !4
-  br label %if.end26
+  %has_zero_child12 = getelementptr inbounds %struct.alias_set_entry* %superset_entry.0, i64 0, i32 2, !dbg !1720
+  store i32 1, i32* %has_zero_child12, align 4, !dbg !1720, !tbaa !1586
+  br label %if.end26, !dbg !1720
 
 if.else:                                          ; preds = %if.end9
-  %8 = load %struct.splay_tree_s** @alias_sets, align 8, !tbaa !0
-  %call.i44 = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %8, i64 %subset) #7
-  %cmp.i45 = icmp eq %struct.splay_tree_node_s* %call.i44, null
-  br i1 %cmp.i45, label %if.end23, label %get_alias_set_entry.exit49
+  tail call void @llvm.dbg.value(metadata !{i64 %subset}, i64 0, metadata !1721) #5, !dbg !1724
+  %8 = load %struct.splay_tree_s** @alias_sets, align 8, !dbg !1725, !tbaa !1579
+  %call.i44 = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %8, i64 %subset) #8, !dbg !1725
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %call.i44}, i64 0, metadata !1726) #5, !dbg !1725
+  %cmp.i45 = icmp eq %struct.splay_tree_node_s* %call.i44, null, !dbg !1727
+  br i1 %cmp.i45, label %if.end23, label %get_alias_set_entry.exit49, !dbg !1727
 
 get_alias_set_entry.exit49:                       ; preds = %if.else
-  %value.i46 = getelementptr inbounds %struct.splay_tree_node_s* %call.i44, i64 0, i32 1
-  %9 = load i64* %value.i46, align 8, !tbaa !3
-  %10 = inttoptr i64 %9 to %struct.alias_set_entry*
-  %tobool = icmp eq i64 %9, 0
-  br i1 %tobool, label %if.end23, label %if.then14
+  %value.i46 = getelementptr inbounds %struct.splay_tree_node_s* %call.i44, i64 0, i32 1, !dbg !1727
+  %9 = load i64* %value.i46, align 8, !dbg !1727, !tbaa !1584
+  %10 = inttoptr i64 %9 to %struct.alias_set_entry*, !dbg !1727
+  tail call void @llvm.dbg.value(metadata !{%struct.alias_set_entry* %10}, i64 0, metadata !1247), !dbg !1722
+  %tobool = icmp eq i64 %9, 0, !dbg !1728
+  br i1 %tobool, label %if.end23, label %if.then14, !dbg !1728
 
 if.then14:                                        ; preds = %get_alias_set_entry.exit49
-  %has_zero_child15 = getelementptr inbounds %struct.alias_set_entry* %10, i64 0, i32 2
-  %11 = load i32* %has_zero_child15, align 4, !tbaa !4
-  %tobool16 = icmp eq i32 %11, 0
-  br i1 %tobool16, label %if.end19, label %if.then17
+  %has_zero_child15 = getelementptr inbounds %struct.alias_set_entry* %10, i64 0, i32 2, !dbg !1729
+  %11 = load i32* %has_zero_child15, align 4, !dbg !1729, !tbaa !1586
+  %tobool16 = icmp eq i32 %11, 0, !dbg !1729
+  br i1 %tobool16, label %if.end19, label %if.then17, !dbg !1729
 
 if.then17:                                        ; preds = %if.then14
-  %has_zero_child18 = getelementptr inbounds %struct.alias_set_entry* %superset_entry.0, i64 0, i32 2
-  store i32 1, i32* %has_zero_child18, align 4, !tbaa !4
-  br label %if.end19
+  %has_zero_child18 = getelementptr inbounds %struct.alias_set_entry* %superset_entry.0, i64 0, i32 2, !dbg !1731
+  store i32 1, i32* %has_zero_child18, align 4, !dbg !1731, !tbaa !1586
+  br label %if.end19, !dbg !1731
 
 if.end19:                                         ; preds = %if.then14, %if.then17
-  %children20 = getelementptr inbounds %struct.alias_set_entry* %10, i64 0, i32 1
-  %12 = load %struct.splay_tree_s** %children20, align 8, !tbaa !0
-  %children21 = getelementptr inbounds %struct.alias_set_entry* %superset_entry.0, i64 0, i32 1
-  %13 = load %struct.splay_tree_s** %children21, align 8, !tbaa !0
-  %14 = bitcast %struct.splay_tree_s* %13 to i8*
-  %call22 = tail call i32 @splay_tree_foreach(%struct.splay_tree_s* %12, i32 (%struct.splay_tree_node_s*, i8*)* @insert_subset_children, i8* %14) #7
-  br label %if.end23
+  %children20 = getelementptr inbounds %struct.alias_set_entry* %10, i64 0, i32 1, !dbg !1732
+  %12 = load %struct.splay_tree_s** %children20, align 8, !dbg !1732, !tbaa !1579
+  %children21 = getelementptr inbounds %struct.alias_set_entry* %superset_entry.0, i64 0, i32 1, !dbg !1732
+  %13 = load %struct.splay_tree_s** %children21, align 8, !dbg !1732, !tbaa !1579
+  %14 = bitcast %struct.splay_tree_s* %13 to i8*, !dbg !1732
+  %call22 = tail call i32 @splay_tree_foreach(%struct.splay_tree_s* %12, i32 (%struct.splay_tree_node_s*, i8*)* @insert_subset_children, i8* %14) #8, !dbg !1732
+  br label %if.end23, !dbg !1733
 
 if.end23:                                         ; preds = %if.else, %get_alias_set_entry.exit49, %if.end19
-  %children24 = getelementptr inbounds %struct.alias_set_entry* %superset_entry.0, i64 0, i32 1
-  %15 = load %struct.splay_tree_s** %children24, align 8, !tbaa !0
-  %call25 = tail call %struct.splay_tree_node_s* @splay_tree_insert(%struct.splay_tree_s* %15, i64 %subset, i64 0) #7
+  %children24 = getelementptr inbounds %struct.alias_set_entry* %superset_entry.0, i64 0, i32 1, !dbg !1734
+  %15 = load %struct.splay_tree_s** %children24, align 8, !dbg !1734, !tbaa !1579
+  %call25 = tail call %struct.splay_tree_node_s* @splay_tree_insert(%struct.splay_tree_s* %15, i64 %subset, i64 0) #8, !dbg !1734
   br label %if.end26
 
 if.end26:                                         ; preds = %entry, %if.end23, %if.then11
-  ret void
+  ret void, !dbg !1735
 }

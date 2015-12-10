@@ -1,24 +1,25 @@
-define i32 @CCTK_GrouplbndVN(%struct.cGH* %cctkGH, i32 %dim, i32* %lbnd, i8* %varname) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %cctkGH, i64 0, metadata !201, metadata !553), !dbg !781
-  tail call void @llvm.dbg.value(metadata i32 %dim, i64 0, metadata !202, metadata !553), !dbg !782
-  tail call void @llvm.dbg.value(metadata i32* %lbnd, i64 0, metadata !203, metadata !553), !dbg !783
-  tail call void @llvm.dbg.value(metadata i8* %varname, i64 0, metadata !204, metadata !553), !dbg !784
-  %1 = tail call i32 @CCTK_GroupIndexFromVar(i8* %varname) #6, !dbg !785
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !206, metadata !553), !dbg !786
-  %2 = icmp sgt i32 %1, -1, !dbg !787
-  br i1 %2, label %3, label %5, !dbg !789
+define i32 @CCTK_GrouplbndVN(%struct.cGH* %cctkGH, i32 %dim, i32* nocapture %lbnd, i8* %varname) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %cctkGH}, i64 0, metadata !201), !dbg !696
+  tail call void @llvm.dbg.value(metadata !{i32 %dim}, i64 0, metadata !202), !dbg !697
+  tail call void @llvm.dbg.value(metadata !{i32* %lbnd}, i64 0, metadata !203), !dbg !698
+  tail call void @llvm.dbg.value(metadata !{i8* %varname}, i64 0, metadata !204), !dbg !699
+  %call = tail call i32 @CCTK_GroupIndexFromVar(i8* %varname) #6, !dbg !700
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !206), !dbg !700
+  %cmp = icmp sgt i32 %call, -1, !dbg !701
+  br i1 %cmp, label %if.then, label %if.else, !dbg !701
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CCTK_GrouplbndGI(%struct.cGH* %cctkGH, i32 %dim, i32* %lbnd, i32 %1) #7, !dbg !790
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !205, metadata !553), !dbg !792
-  br label %7, !dbg !793
+if.then:                                          ; preds = %entry
+  %call2 = tail call i32 @CCTK_GrouplbndGI(%struct.cGH* %cctkGH, i32 %dim, i32* %lbnd, i32 %call) #7, !dbg !702
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !205), !dbg !702
+  br label %if.end, !dbg !704
 
-; <label>:5                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 -4, i64 0, metadata !205, metadata !553), !dbg !792
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 672, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([47 x i8]* @.str9, i64 0, i64 0), i8* %varname) #6, !dbg !794
-  br label %7
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !662, i64 0, metadata !205), !dbg !705
+  %call3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 672, i8* getelementptr inbounds ([67 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([47 x i8]* @.str9, i64 0, i64 0), i8* %varname) #6, !dbg !707
+  br label %if.end
 
-; <label>:7                                       ; preds = %5, %3
-  %retval.0 = phi i32 [ %4, %3 ], [ -4, %5 ]
-  ret i32 %retval.0, !dbg !796
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call2, %if.then ], [ -4, %if.else ]
+  ret i32 %retval1.0, !dbg !708
 }

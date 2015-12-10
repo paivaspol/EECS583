@@ -1,0 +1,43 @@
+define i8* @_Z8fgetlineP8_IO_FILE(%struct._IO_FILE* nocapture %fp) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !1206), !dbg !3902
+  %call = tail call noalias i8* @_Znam(i64 100) #7, !dbg !3903
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !1207), !dbg !3903
+  %call1 = tail call i8* @fgets(i8* %call, i32 100, %struct._IO_FILE* %fp) #7, !dbg !3904
+  %cmp = icmp eq i8* %call1, null, !dbg !3904
+  br i1 %cmp, label %return, label %if.end, !dbg !3904
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds i8* %call, i64 99, !dbg !3905
+  store i8 0, i8* %arrayidx, align 1, !dbg !3905, !tbaa !3906
+  %call2 = tail call i64 @strlen(i8* %call) #8, !dbg !3908
+  %conv = trunc i64 %call2 to i32, !dbg !3908
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1209), !dbg !3908
+  %cmp323 = icmp sgt i32 %conv, 0, !dbg !3909
+  br i1 %cmp323, label %land.rhs.lr.ph, label %return, !dbg !3909
+
+land.rhs.lr.ph:                                   ; preds = %if.end
+  %sext = shl i64 %call2, 32
+  %0 = ashr exact i64 %sext, 32
+  br label %land.rhs, !dbg !3909
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %while.body
+  %indvars.iv = phi i64 [ %0, %land.rhs.lr.ph ], [ %indvars.iv.next, %while.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !3909
+  %arrayidx4 = getelementptr inbounds i8* %call, i64 %indvars.iv.next, !dbg !3909
+  %1 = load i8* %arrayidx4, align 1, !dbg !3909, !tbaa !3906
+  switch i8 %1, label %return [
+    i8 10, label %while.body
+    i8 13, label %while.body
+  ], !dbg !3909
+
+while.body:                                       ; preds = %land.rhs, %land.rhs
+  store i8 0, i8* %arrayidx4, align 1, !dbg !3910, !tbaa !3906
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !3909
+  %cmp3 = icmp sgt i32 %2, 0, !dbg !3909
+  br i1 %cmp3, label %land.rhs, label %return, !dbg !3909
+
+return:                                           ; preds = %if.end, %land.rhs, %while.body, %entry
+  %retval.0 = phi i8* [ null, %entry ], [ %call, %while.body ], [ %call, %land.rhs ], [ %call, %if.end ]
+  ret i8* %retval.0, !dbg !3911
+}

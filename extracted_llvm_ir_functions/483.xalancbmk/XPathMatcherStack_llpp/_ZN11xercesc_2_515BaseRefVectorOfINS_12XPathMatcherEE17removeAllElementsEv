@@ -1,0 +1,52 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_12XPathMatcherEE17removeAllElementsEv(%"class.xercesc_2_5::BaseRefVectorOf"* nocapture %this) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf"* %this}, i64 0, metadata !1362), !dbg !1579
+  tail call void @llvm.dbg.value(metadata !464, i64 0, metadata !1363), !dbg !1580
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 2, !dbg !1580
+  %0 = load i32* %fCurCount, align 4, !dbg !1580, !tbaa !1435
+  %cmp9 = icmp eq i32 %0, 0, !dbg !1580
+  br i1 %cmp9, label %for.end, label %for.body.lr.ph, !dbg !1580
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 1, !dbg !1581
+  %fElemList3 = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 4, !dbg !1583
+  br label %for.body, !dbg !1580
+
+for.body:                                         ; preds = %if.end, %for.body.lr.ph
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %7, %if.end ]
+  %index.010 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %if.end ]
+  %2 = load i8* %fAdoptedElems, align 1, !dbg !1581, !tbaa !1475, !range !1575
+  %tobool = icmp eq i8 %2, 0, !dbg !1581
+  %idxprom2.pre = zext i32 %index.010 to i64, !dbg !1583
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1581
+
+if.then:                                          ; preds = %for.body
+  %3 = load %"class.xercesc_2_5::XPathMatcher"*** %fElemList3, align 8, !dbg !1584, !tbaa !1476
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XPathMatcher"** %3, i64 %idxprom2.pre, !dbg !1584
+  %4 = load %"class.xercesc_2_5::XPathMatcher"** %arrayidx, align 8, !dbg !1584, !tbaa !1476
+  %isnull = icmp eq %"class.xercesc_2_5::XPathMatcher"* %4, null, !dbg !1584
+  br i1 %isnull, label %if.end, label %delete.notnull, !dbg !1584
+
+delete.notnull:                                   ; preds = %if.then
+  %5 = bitcast %"class.xercesc_2_5::XPathMatcher"* %4 to void (%"class.xercesc_2_5::XPathMatcher"*)***, !dbg !1584
+  %vtable = load void (%"class.xercesc_2_5::XPathMatcher"*)*** %5, align 8, !dbg !1584, !tbaa !1479
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::XPathMatcher"*)** %vtable, i64 1, !dbg !1584
+  %6 = load void (%"class.xercesc_2_5::XPathMatcher"*)** %vfn, align 8, !dbg !1584
+  tail call void %6(%"class.xercesc_2_5::XPathMatcher"* %4) #6, !dbg !1584
+  %.pre = load i32* %fCurCount, align 4, !dbg !1580, !tbaa !1435
+  br label %if.end, !dbg !1584
+
+if.end:                                           ; preds = %for.body, %if.then, %delete.notnull
+  %7 = phi i32 [ %1, %if.then ], [ %.pre, %delete.notnull ], [ %1, %for.body ], !dbg !1583
+  %8 = load %"class.xercesc_2_5::XPathMatcher"*** %fElemList3, align 8, !dbg !1583, !tbaa !1476
+  %arrayidx4 = getelementptr inbounds %"class.xercesc_2_5::XPathMatcher"** %8, i64 %idxprom2.pre, !dbg !1583
+  store %"class.xercesc_2_5::XPathMatcher"* null, %"class.xercesc_2_5::XPathMatcher"** %arrayidx4, align 8, !dbg !1583, !tbaa !1476
+  %inc = add i32 %index.010, 1, !dbg !1580
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1363), !dbg !1580
+  %cmp = icmp ult i32 %inc, %7, !dbg !1580
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1580
+
+for.end:                                          ; preds = %if.end, %entry
+  store i32 0, i32* %fCurCount, align 4, !dbg !1585, !tbaa !1435
+  ret void, !dbg !1586
+}

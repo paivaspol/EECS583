@@ -2,9 +2,16 @@ define internal fastcc void @find_reloads_address_part(%struct.rtx_def* %x, %str
 entry:
   %tem = alloca %struct.rtx_def*, align 8
   %tem100 = alloca %struct.rtx_def*, align 8
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1688), !dbg !4118
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def** %loc}, i64 0, metadata !1689), !dbg !4119
+  call void @llvm.dbg.value(metadata !{i32 %class}, i64 0, metadata !1690), !dbg !4120
+  call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !1691), !dbg !4121
+  call void @llvm.dbg.value(metadata !{i32 %opnum}, i64 0, metadata !1692), !dbg !4122
+  call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !1693), !dbg !4123
+  call void @llvm.dbg.value(metadata !{i32 %ind_levels}, i64 0, metadata !1694), !dbg !4124
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !4125
+  %bf.load = load i32* %0, align 8, !dbg !4125
+  %bf.clear = and i32 %bf.load, 65535, !dbg !4125
   switch i32 %bf.clear, label %if.else [
     i32 67, label %land.lhs.true
     i32 68, label %land.lhs.true
@@ -14,39 +21,42 @@ entry:
     i32 134, label %land.lhs.true
     i32 56, label %land.lhs.true
     i32 140, label %land.lhs.true
-  ]
+  ], !dbg !4125
 
 land.lhs.true:                                    ; preds = %entry, %entry, %entry, %entry, %entry, %entry, %entry, %entry
-  %call = call i32 @ix86_preferred_reload_class(%struct.rtx_def* %x, i32 %class) #6
-  %cmp28 = icmp eq i32 %call, 0
-  br i1 %cmp28, label %if.then, label %land.lhs.true.if.else_crit_edge
+  %call = call i32 @ix86_preferred_reload_class(%struct.rtx_def* %x, i32 %class) #7, !dbg !4126
+  %cmp28 = icmp eq i32 %call, 0, !dbg !4126
+  br i1 %cmp28, label %if.then, label %land.lhs.true.if.else_crit_edge, !dbg !4126
 
 land.lhs.true.if.else_crit_edge:                  ; preds = %land.lhs.true
-  %bf.load34.pre = load i32* %0, align 8
-  br label %if.else
+  %bf.load34.pre = load i32* %0, align 8, !dbg !4127
+  br label %if.else, !dbg !4126
 
 if.then:                                          ; preds = %land.lhs.true
-  %call29 = call %struct.rtx_def* @force_const_mem(i32 %mode, %struct.rtx_def* %x) #6
-  store %struct.rtx_def* %call29, %struct.rtx_def** %tem, align 8, !tbaa !5
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %call29, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !5
-  %call33 = call fastcc i32 @find_reloads_address(i32 %mode, %struct.rtx_def** %tem, %struct.rtx_def* %1, %struct.rtx_def** %rtx, i32 %opnum, i32 %type, i32 %ind_levels, %struct.rtx_def* null) #7
-  br label %if.end121
+  call void @llvm.dbg.declare(metadata !{%struct.rtx_def** %tem}, metadata !1695), !dbg !4128
+  %call29 = call %struct.rtx_def* @force_const_mem(i32 %mode, %struct.rtx_def* %x) #7, !dbg !4129
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call29}, i64 0, metadata !1688), !dbg !4129
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call29}, i64 0, metadata !1695), !dbg !4129
+  store %struct.rtx_def* %call29, %struct.rtx_def** %tem, align 8, !dbg !4129, !tbaa !1970
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call29, i64 0, i32 1, i64 0, !dbg !4130
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !4130
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !4130, !tbaa !1970
+  %call33 = call fastcc i32 @find_reloads_address(i32 %mode, %struct.rtx_def** %tem, %struct.rtx_def* %1, %struct.rtx_def** %rtx, i32 %opnum, i32 %type, i32 %ind_levels, %struct.rtx_def* null) #8, !dbg !4130
+  br label %if.end121, !dbg !4131
 
 if.else:                                          ; preds = %land.lhs.true.if.else_crit_edge, %entry
   %bf.load34 = phi i32 [ %bf.load34.pre, %land.lhs.true.if.else_crit_edge ], [ %bf.load, %entry ]
-  %bf.clear35 = and i32 %bf.load34, 65535
-  %cmp36 = icmp eq i32 %bf.clear35, 75
-  br i1 %cmp36, label %land.lhs.true37, label %if.end121
+  %bf.clear35 = and i32 %bf.load34, 65535, !dbg !4127
+  %cmp36 = icmp eq i32 %bf.clear35, 75, !dbg !4127
+  br i1 %cmp36, label %land.lhs.true37, label %if.end121, !dbg !4127
 
 land.lhs.true37:                                  ; preds = %if.else
-  %arrayidx39 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
-  %rtx40 = bitcast %union.rtunion_def* %arrayidx39 to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx40, align 8, !tbaa !5
-  %3 = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load41 = load i32* %3, align 8
-  %bf.clear42 = and i32 %bf.load41, 65535
+  %arrayidx39 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1, !dbg !4127
+  %rtx40 = bitcast %union.rtunion_def* %arrayidx39 to %struct.rtx_def**, !dbg !4127
+  %2 = load %struct.rtx_def** %rtx40, align 8, !dbg !4127, !tbaa !1970
+  %3 = bitcast %struct.rtx_def* %2 to i32*, !dbg !4127
+  %bf.load41 = load i32* %3, align 8, !dbg !4127
+  %bf.clear42 = and i32 %bf.load41, 65535, !dbg !4127
   switch i32 %bf.clear42, label %if.end121 [
     i32 67, label %land.lhs.true93
     i32 68, label %land.lhs.true93
@@ -56,35 +66,39 @@ land.lhs.true37:                                  ; preds = %if.else
     i32 134, label %land.lhs.true93
     i32 56, label %land.lhs.true93
     i32 140, label %land.lhs.true93
-  ]
+  ], !dbg !4127
 
 land.lhs.true93:                                  ; preds = %land.lhs.true37, %land.lhs.true37, %land.lhs.true37, %land.lhs.true37, %land.lhs.true37, %land.lhs.true37, %land.lhs.true37, %land.lhs.true37
-  %call97 = call i32 @ix86_preferred_reload_class(%struct.rtx_def* %2, i32 %class) #6
-  %cmp98 = icmp eq i32 %call97, 0
-  br i1 %cmp98, label %if.then99, label %if.end121
+  %call97 = call i32 @ix86_preferred_reload_class(%struct.rtx_def* %2, i32 %class) #7, !dbg !4132
+  %cmp98 = icmp eq i32 %call97, 0, !dbg !4132
+  br i1 %cmp98, label %if.then99, label %if.end121, !dbg !4132
 
 if.then99:                                        ; preds = %land.lhs.true93
-  %bf.load101 = load i32* %0, align 8
-  %bf.lshr = lshr i32 %bf.load101, 16
-  %bf.clear102 = and i32 %bf.lshr, 255
-  %4 = load %struct.rtx_def** %rtx40, align 8, !tbaa !5
-  %call106 = call %struct.rtx_def* @force_const_mem(i32 %bf.clear102, %struct.rtx_def* %4) #6
-  store %struct.rtx_def* %call106, %struct.rtx_def** %tem100, align 8, !tbaa !5
-  %bf.load107 = load i32* %0, align 8
-  %bf.lshr108 = lshr i32 %bf.load107, 16
-  %bf.clear109 = and i32 %bf.lshr108, 255
-  %arrayidx111 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx112 = bitcast %union.rtunion_def* %arrayidx111 to %struct.rtx_def**
-  %5 = load %struct.rtx_def** %rtx112, align 8, !tbaa !5
-  %call113 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 75, i32 %bf.clear109, %struct.rtx_def* %5, %struct.rtx_def* %call106) #6
-  %arrayidx115 = getelementptr inbounds %struct.rtx_def* %call106, i64 0, i32 1, i64 0
-  %rtx116 = bitcast %union.rtunion_def* %arrayidx115 to %struct.rtx_def**
-  %6 = load %struct.rtx_def** %rtx116, align 8, !tbaa !5
-  %call120 = call fastcc i32 @find_reloads_address(i32 %mode, %struct.rtx_def** %tem100, %struct.rtx_def* %6, %struct.rtx_def** %rtx116, i32 %opnum, i32 %type, i32 %ind_levels, %struct.rtx_def* null) #7
-  br label %if.end121
+  call void @llvm.dbg.declare(metadata !{%struct.rtx_def** %tem100}, metadata !1697), !dbg !4133
+  %bf.load101 = load i32* %0, align 8, !dbg !4134
+  %bf.lshr = lshr i32 %bf.load101, 16, !dbg !4134
+  %bf.clear102 = and i32 %bf.lshr, 255, !dbg !4134
+  %4 = load %struct.rtx_def** %rtx40, align 8, !dbg !4134, !tbaa !1970
+  %call106 = call %struct.rtx_def* @force_const_mem(i32 %bf.clear102, %struct.rtx_def* %4) #7, !dbg !4134
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call106}, i64 0, metadata !1697), !dbg !4134
+  store %struct.rtx_def* %call106, %struct.rtx_def** %tem100, align 8, !dbg !4134, !tbaa !1970
+  %bf.load107 = load i32* %0, align 8, !dbg !4135
+  %bf.lshr108 = lshr i32 %bf.load107, 16, !dbg !4135
+  %bf.clear109 = and i32 %bf.lshr108, 255, !dbg !4135
+  %arrayidx111 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !4135
+  %rtx112 = bitcast %union.rtunion_def* %arrayidx111 to %struct.rtx_def**, !dbg !4135
+  %5 = load %struct.rtx_def** %rtx112, align 8, !dbg !4135, !tbaa !1970
+  %call113 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 75, i32 %bf.clear109, %struct.rtx_def* %5, %struct.rtx_def* %call106) #7, !dbg !4135
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call113}, i64 0, metadata !1688), !dbg !4135
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def** %tem100}, i64 0, metadata !1697), !dbg !4136
+  %arrayidx115 = getelementptr inbounds %struct.rtx_def* %call106, i64 0, i32 1, i64 0, !dbg !4136
+  %rtx116 = bitcast %union.rtunion_def* %arrayidx115 to %struct.rtx_def**, !dbg !4136
+  %6 = load %struct.rtx_def** %rtx116, align 8, !dbg !4136, !tbaa !1970
+  %call120 = call fastcc i32 @find_reloads_address(i32 %mode, %struct.rtx_def** %tem100, %struct.rtx_def* %6, %struct.rtx_def** %rtx116, i32 %opnum, i32 %type, i32 %ind_levels, %struct.rtx_def* null) #8, !dbg !4136
+  br label %if.end121, !dbg !4137
 
 if.end121:                                        ; preds = %land.lhs.true37, %if.else, %land.lhs.true93, %if.then99, %if.then
   %x.addr.0 = phi %struct.rtx_def* [ %call29, %if.then ], [ %call113, %if.then99 ], [ %x, %land.lhs.true93 ], [ %x, %if.else ], [ %x, %land.lhs.true37 ]
-  %call122 = call i32 @push_reload(%struct.rtx_def* %x.addr.0, %struct.rtx_def* null, %struct.rtx_def** %loc, %struct.rtx_def** null, i32 %class, i32 %mode, i32 0, i32 0, i32 0, i32 %opnum, i32 %type) #7
-  ret void
+  %call122 = call i32 @push_reload(%struct.rtx_def* %x.addr.0, %struct.rtx_def* null, %struct.rtx_def** %loc, %struct.rtx_def** null, i32 %class, i32 %mode, i32 0, i32 0, i32 0, i32 %opnum, i32 %type) #8, !dbg !4138
+  ret void, !dbg !4139
 }

@@ -1,34 +1,35 @@
 define void @SubMtxManager_init(%struct._SubMtxManager* %manager, i32 %lockflag, i32 %mode) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._SubMtxManager* %manager, i64 0, metadata !60, metadata !67), !dbg !68
-  tail call void @llvm.dbg.value(metadata i32 %lockflag, i64 0, metadata !61, metadata !67), !dbg !69
-  tail call void @llvm.dbg.value(metadata i32 %mode, i64 0, metadata !62, metadata !67), !dbg !70
-  %1 = icmp eq %struct._SubMtxManager* %manager, null, !dbg !71
-  %2 = icmp ugt i32 %lockflag, 2, !dbg !73
-  %3 = or i1 %1, %2, !dbg !73
-  %4 = icmp ugt i32 %mode, 1, !dbg !73
-  %5 = or i1 %4, %3, !dbg !73
-  br i1 %5, label %6, label %9, !dbg !73
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtxManager* %manager}, i64 0, metadata !62), !dbg !65
+  tail call void @llvm.dbg.value(metadata !{i32 %lockflag}, i64 0, metadata !63), !dbg !66
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !64), !dbg !67
+  %cmp = icmp eq %struct._SubMtxManager* %manager, null, !dbg !68
+  %0 = icmp ugt i32 %lockflag, 2, !dbg !68
+  %or.cond = or i1 %cmp, %0, !dbg !68
+  %1 = icmp ugt i32 %mode, 1, !dbg !68
+  %or.cond27 = or i1 %or.cond, %1, !dbg !68
+  br i1 %or.cond27, label %if.then, label %if.end, !dbg !68
 
-; <label>:6                                       ; preds = %0
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !74, !tbaa !76
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([58 x i8]* @.str, i64 0, i64 0), %struct._SubMtxManager* %manager, i32 %lockflag, i32 %mode) #5, !dbg !80
-  tail call void @exit(i32 -1) #6, !dbg !81
-  unreachable, !dbg !81
+if.then:                                          ; preds = %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !69, !tbaa !71
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([58 x i8]* @.str, i64 0, i64 0), %struct._SubMtxManager* %manager, i32 %lockflag, i32 %mode) #5, !dbg !69
+  tail call void @exit(i32 -1) #6, !dbg !74
+  unreachable, !dbg !74
 
-; <label>:9                                       ; preds = %0
-  tail call void @SubMtxManager_clearData(%struct._SubMtxManager* %manager) #5, !dbg !82
-  %10 = icmp eq i32 %lockflag, 0, !dbg !83
-  br i1 %10, label %14, label %11, !dbg !85
+if.end:                                           ; preds = %entry
+  tail call void @SubMtxManager_clearData(%struct._SubMtxManager* %manager) #5, !dbg !75
+  %cmp8 = icmp eq i32 %lockflag, 0, !dbg !76
+  br i1 %cmp8, label %if.end12, label %if.then9, !dbg !76
 
-; <label>:11                                      ; preds = %9
-  %12 = tail call %struct._Lock* @Lock_new() #5, !dbg !86
-  %13 = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 1, !dbg !88
-  store %struct._Lock* %12, %struct._Lock** %13, align 8, !dbg !89, !tbaa !90
-  tail call void @Lock_init(%struct._Lock* %12, i32 %lockflag) #5, !dbg !93
-  br label %14, !dbg !94
+if.then9:                                         ; preds = %if.end
+  %call10 = tail call %struct._Lock* @Lock_new() #5, !dbg !77
+  %lock = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 1, !dbg !77
+  store %struct._Lock* %call10, %struct._Lock** %lock, align 8, !dbg !77, !tbaa !71
+  tail call void @Lock_init(%struct._Lock* %call10, i32 %lockflag) #5, !dbg !79
+  br label %if.end12, !dbg !80
 
-; <label>:14                                      ; preds = %9, %11
-  %15 = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 2, !dbg !95
-  store i32 %mode, i32* %15, align 4, !dbg !96, !tbaa !97
-  ret void, !dbg !98
+if.end12:                                         ; preds = %if.end, %if.then9
+  %mode13 = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 2, !dbg !81
+  store i32 %mode, i32* %mode13, align 4, !dbg !81, !tbaa !82
+  ret void, !dbg !83
 }

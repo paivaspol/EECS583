@@ -1,33 +1,21 @@
 define i32 @sre_toupper(i32 %c) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !12, metadata !42), !dbg !66
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !34, metadata !42) #3, !dbg !67
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !24, metadata !42) #3, !dbg !70
-  tail call void @llvm.dbg.value(metadata i64 4096, i64 0, metadata !25, metadata !42) #3, !dbg !72
-  %isascii.i.i = icmp ult i32 %c, 128, !dbg !73
-  br i1 %isascii.i.i, label %1, label %6, !dbg !73
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %c}, i64 0, metadata !31), !dbg !44
+  %idxprom = sext i32 %c to i64, !dbg !45
+  %call = tail call i16** @__ctype_b_loc() #4, !dbg !45
+  %0 = load i16** %call, align 8, !dbg !45, !tbaa !36
+  %arrayidx = getelementptr inbounds i16* %0, i64 %idxprom, !dbg !45
+  %1 = load i16* %arrayidx, align 2, !dbg !45, !tbaa !39
+  %and = and i16 %1, 512, !dbg !45
+  %tobool = icmp eq i16 %and, 0, !dbg !45
+  br i1 %tobool, label %return, label %if.then, !dbg !45
 
-; <label>:1                                       ; preds = %0
-  %2 = sext i32 %c to i64, !dbg !74
-  %3 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %2, !dbg !74
-  %4 = load i32* %3, align 4, !dbg !74, !tbaa !52
-  %5 = and i32 %4, 4096, !dbg !75
-  br label %islower.exit, !dbg !73
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @toupper(i32 %c) #5, !dbg !46
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !32), !dbg !46
+  br label %return, !dbg !48
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 @__maskrune(i32 %c, i64 4096) #4, !dbg !76
-  br label %islower.exit, !dbg !73
-
-islower.exit:                                     ; preds = %1, %6
-  %.sink.i.in.i = phi i32 [ %5, %1 ], [ %7, %6 ], !dbg !77
-  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0, !dbg !78
-  br i1 %.sink.i.i, label %10, label %8, !dbg !79
-
-; <label>:8                                       ; preds = %islower.exit
-  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !37, metadata !42) #3, !dbg !80
-  %9 = tail call i32 @__toupper(i32 %c) #4, !dbg !82
-  br label %10, !dbg !83
-
-; <label>:10                                      ; preds = %islower.exit, %8
-  %.0 = phi i32 [ %9, %8 ], [ %c, %islower.exit ]
-  ret i32 %.0, !dbg !84
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ %call1, %if.then ], [ %c, %entry ]
+  ret i32 %retval.0, !dbg !49
 }

@@ -1,35 +1,34 @@
-define void @fill_buff(i32* nocapture %data, i32 %items) #3 {
-  tail call void @llvm.dbg.value(metadata i32* %data, i64 0, metadata !91, metadata !111), !dbg !162
-  tail call void @llvm.dbg.value(metadata i32 %items, i64 0, metadata !92, metadata !111), !dbg !163
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !93, metadata !111), !dbg !164
-  %1 = icmp sgt i32 %items, 0, !dbg !165
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !168
+define void @fill_buff(i32* nocapture %data, i32 %items) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %data}, i64 0, metadata !21), !dbg !100
+  tail call void @llvm.dbg.value(metadata !{i32 %items}, i64 0, metadata !22), !dbg !100
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !23), !dbg !101
+  %cmp4 = icmp sgt i32 %items, 0, !dbg !101
+  br i1 %cmp4, label %for.body, label %for.end, !dbg !101
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %items, -1, !dbg !168
-  br label %3, !dbg !168
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  tail call void @llvm.dbg.value(metadata !103, i64 0, metadata !104), !dbg !105
+  %0 = trunc i64 %indvars.iv to i32, !dbg !106
+  %and.i = and i32 %0, 255, !dbg !106
+  %add.i = shl i32 %0, 8, !dbg !106
+  %and1.i = add i32 %add.i, 256, !dbg !106
+  %shl.i = and i32 %and1.i, 65280, !dbg !106
+  %add2.i = shl i32 %0, 16, !dbg !106
+  %and3.i = add i32 %add2.i, 131072, !dbg !106
+  %shl4.i = and i32 %and3.i, 16711680, !dbg !106
+  %add6.i = shl i32 %0, 24, !dbg !106
+  %shl8.i = add i32 %add6.i, 50331648, !dbg !106
+  %or.i = or i32 %shl8.i, %and.i, !dbg !106
+  %or5.i = or i32 %or.i, %shl.i, !dbg !106
+  %or9.i = or i32 %or5.i, %shl4.i, !dbg !106
+  %arrayidx = getelementptr inbounds i32* %data, i64 %indvars.iv, !dbg !101
+  store i32 %or9.i, i32* %arrayidx, align 4, !dbg !101, !tbaa !107
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !101
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !101
+  %exitcond = icmp eq i32 %lftr.wideiv, %items, !dbg !101
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !101
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = trunc i64 %indvars.iv to i32, !dbg !169
-  %5 = and i32 %4, 255, !dbg !169
-  %6 = shl i32 %4, 8, !dbg !171
-  %7 = add i32 %6, 256, !dbg !171
-  %8 = and i32 %7, 65280, !dbg !171
-  %9 = shl i32 %4, 16, !dbg !172
-  %10 = add i32 %9, 131072, !dbg !172
-  %11 = and i32 %10, 16711680, !dbg !172
-  %12 = shl i32 %4, 24, !dbg !173
-  %13 = add i32 %12, 50331648, !dbg !173
-  %14 = or i32 %13, %5, !dbg !174
-  %15 = or i32 %14, %8, !dbg !175
-  %16 = or i32 %15, %11, !dbg !176
-  %17 = getelementptr inbounds i32* %data, i64 %indvars.iv, !dbg !177
-  store i32 %16, i32* %17, align 4, !dbg !178, !tbaa !179
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !168
-  %exitcond = icmp eq i32 %4, %2, !dbg !168
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !168
-
-._crit_edge:                                      ; preds = %3, %0
-  ret void, !dbg !180
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !110
 }

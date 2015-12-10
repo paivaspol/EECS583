@@ -1,24 +1,25 @@
-define void @_ZN6wayobj11removepointEii(%class.wayobj* nocapture readonly %this, i32 %x, i32 %y) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.wayobj* %this, i64 0, metadata !312, metadata !358), !dbg !703
-  tail call void @llvm.dbg.value(metadata i32 %x, i64 0, metadata !313, metadata !358), !dbg !704
-  tail call void @llvm.dbg.value(metadata i32 %y, i64 0, metadata !314, metadata !358), !dbg !705
-  %1 = getelementptr inbounds %class.wayobj* %this, i64 0, i32 2, !dbg !706
-  %2 = load i32* %1, align 4, !dbg !706, !tbaa !530
-  %3 = shl i32 %y, %2, !dbg !708
-  %4 = or i32 %3, %x, !dbg !709
-  %5 = sext i32 %4 to i64, !dbg !710
-  %6 = getelementptr inbounds %class.wayobj* %this, i64 0, i32 17, !dbg !710
-  %7 = load i16** %6, align 8, !dbg !710, !tbaa !533
-  %8 = getelementptr inbounds i16* %7, i64 %5, !dbg !710
-  %9 = load i16* %8, align 2, !dbg !710, !tbaa !535
-  %10 = icmp sgt i16 %9, -1, !dbg !711
-  br i1 %10, label %11, label %13, !dbg !712
+define void @_ZN6wayobj11removepointEii(%class.wayobj* nocapture %this, i32 %x, i32 %y) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.wayobj* %this}, i64 0, metadata !348), !dbg !519
+  tail call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !349), !dbg !519
+  tail call void @llvm.dbg.value(metadata !{i32 %y}, i64 0, metadata !350), !dbg !519
+  %shift = getelementptr inbounds %class.wayobj* %this, i64 0, i32 2, !dbg !520
+  %0 = load i32* %shift, align 4, !dbg !520, !tbaa !426
+  %shl = shl i32 %y, %0, !dbg !520
+  %or = or i32 %shl, %x, !dbg !520
+  %idxprom = sext i32 %or to i64, !dbg !520
+  %maparp = getelementptr inbounds %class.wayobj* %this, i64 0, i32 16, !dbg !520
+  %1 = load i16** %maparp, align 8, !dbg !520, !tbaa !456
+  %arrayidx = getelementptr inbounds i16* %1, i64 %idxprom, !dbg !520
+  %2 = load i16* %arrayidx, align 2, !dbg !520, !tbaa !457
+  %cmp = icmp sgt i16 %2, -1, !dbg !520
+  br i1 %cmp, label %if.then, label %if.end, !dbg !520
 
-; <label>:11                                      ; preds = %0
-  %12 = add i16 %9, -1, !dbg !713
-  store i16 %12, i16* %8, align 2, !dbg !713, !tbaa !535
-  br label %13, !dbg !714
+if.then:                                          ; preds = %entry
+  %dec = add i16 %2, -1, !dbg !521
+  store i16 %dec, i16* %arrayidx, align 2, !dbg !521, !tbaa !457
+  br label %if.end, !dbg !521
 
-; <label>:13                                      ; preds = %11, %0
-  ret void, !dbg !715
+if.end:                                           ; preds = %if.then, %entry
+  ret void, !dbg !522
 }

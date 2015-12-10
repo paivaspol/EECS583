@@ -1,0 +1,39 @@
+define zeroext i16 @_ZN11xercesc_2_59ReaderMgr15skipUntilInOrWSEPKt(%"class.xercesc_2_5::ReaderMgr"* nocapture %this, i16* %listToSkip) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ReaderMgr"* %this}, i64 0, metadata !2270), !dbg !4193
+  tail call void @llvm.dbg.value(metadata !{i16* %listToSkip}, i64 0, metadata !2271), !dbg !4193
+  %fCurReader = getelementptr inbounds %"class.xercesc_2_5::ReaderMgr"* %this, i64 0, i32 2, !dbg !4194
+  %call12 = tail call zeroext i16 @_ZN11xercesc_2_59ReaderMgr12peekNextCharEv(%"class.xercesc_2_5::ReaderMgr"* %this) #9, !dbg !4196
+  tail call void @llvm.dbg.value(metadata !{i16 %call.lcssa}, i64 0, metadata !2272), !dbg !4196
+  %tobool13 = icmp eq i16 %call12, 0, !dbg !4197
+  br i1 %tobool13, label %while.end, label %if.end, !dbg !4197
+
+if.end:                                           ; preds = %entry, %if.end7
+  %call14 = phi i16 [ %call, %if.end7 ], [ %call12, %entry ]
+  %0 = load %"class.xercesc_2_5::XMLReader"** %fCurReader, align 8, !dbg !4194, !tbaa !3955
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %0}, i64 0, metadata !4198), !dbg !4199
+  tail call void @llvm.dbg.value(metadata !{i16 %call.lcssa}, i64 0, metadata !4200), !dbg !4199
+  %idxprom.i = zext i16 %call14 to i64, !dbg !4201
+  %fgCharCharsTable.i = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %0, i64 0, i32 27, !dbg !4201
+  %1 = load i8** %fgCharCharsTable.i, align 8, !dbg !4201, !tbaa !3955
+  %arrayidx.i = getelementptr inbounds i8* %1, i64 %idxprom.i, !dbg !4201
+  %2 = load i8* %arrayidx.i, align 1, !dbg !4201, !tbaa !3954
+  %cmp.i = icmp slt i8 %2, 0, !dbg !4201
+  br i1 %cmp.i, label %while.end, label %if.end4, !dbg !4194
+
+if.end4:                                          ; preds = %if.end
+  %call5 = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* %listToSkip, i16 zeroext %call14) #9, !dbg !4202
+  %cmp = icmp eq i32 %call5, -1, !dbg !4202
+  br i1 %cmp, label %if.end7, label %while.end, !dbg !4202
+
+if.end7:                                          ; preds = %if.end4
+  %call8 = tail call zeroext i16 @_ZN11xercesc_2_59ReaderMgr11getNextCharEv(%"class.xercesc_2_5::ReaderMgr"* %this) #9, !dbg !4203
+  %call = tail call zeroext i16 @_ZN11xercesc_2_59ReaderMgr12peekNextCharEv(%"class.xercesc_2_5::ReaderMgr"* %this) #9, !dbg !4196
+  tail call void @llvm.dbg.value(metadata !{i16 %call.lcssa}, i64 0, metadata !2272), !dbg !4196
+  %tobool = icmp eq i16 %call, 0, !dbg !4197
+  br i1 %tobool, label %while.end, label %if.end, !dbg !4197
+
+while.end:                                        ; preds = %if.end7, %if.end4, %if.end, %entry
+  %call.lcssa = phi i16 [ 0, %entry ], [ %call14, %if.end ], [ %call14, %if.end4 ], [ 0, %if.end7 ]
+  ret i16 %call.lcssa, !dbg !4204
+}

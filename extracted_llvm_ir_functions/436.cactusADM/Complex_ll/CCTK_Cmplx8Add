@@ -1,11 +1,15 @@
 define <2 x float> @CCTK_Cmplx8Add(<2 x float> %a.coerce, <2 x float> %b.coerce) #0 {
-  tail call void @llvm.dbg.value(metadata <2 x float> %a.coerce, i64 0, metadata !45, metadata !243), !dbg !251
-  tail call void @llvm.dbg.value(metadata <2 x float> %b.coerce, i64 0, metadata !46, metadata !243), !dbg !251
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX8* undef, metadata !45, metadata !243), !dbg !251
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX8* undef, metadata !46, metadata !243), !dbg !251
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX8* undef, metadata !47, metadata !243), !dbg !251
-  tail call void @llvm.dbg.value(metadata float undef, i64 0, metadata !47, metadata !245), !dbg !251
-  %1 = fadd <2 x float> %a.coerce, %b.coerce, !dbg !251
-  tail call void @llvm.dbg.value(metadata float undef, i64 0, metadata !47, metadata !246), !dbg !251
-  ret <2 x float> %1, !dbg !251
+entry:
+  tail call void @llvm.dbg.declare(metadata !241, metadata !46), !dbg !246
+  tail call void @llvm.dbg.declare(metadata !241, metadata !47), !dbg !246
+  tail call void @llvm.dbg.declare(metadata !241, metadata !48), !dbg !246
+  %a.sroa.0.0.vec.extract = extractelement <2 x float> %a.coerce, i32 0, !dbg !246
+  %b.sroa.0.0.vec.extract = extractelement <2 x float> %b.coerce, i32 0, !dbg !246
+  %add = fadd float %a.sroa.0.0.vec.extract, %b.sroa.0.0.vec.extract, !dbg !246
+  %a.sroa.0.4.vec.extract = extractelement <2 x float> %a.coerce, i32 1, !dbg !246
+  %b.sroa.0.4.vec.extract = extractelement <2 x float> %b.coerce, i32 1, !dbg !246
+  %add4 = fadd float %a.sroa.0.4.vec.extract, %b.sroa.0.4.vec.extract, !dbg !246
+  %retval.sroa.0.0.vec.insert = insertelement <2 x float> undef, float %add, i32 0, !dbg !246
+  %retval.sroa.0.4.vec.insert = insertelement <2 x float> %retval.sroa.0.0.vec.insert, float %add4, i32 1, !dbg !246
+  ret <2 x float> %retval.sroa.0.4.vec.insert, !dbg !246
 }

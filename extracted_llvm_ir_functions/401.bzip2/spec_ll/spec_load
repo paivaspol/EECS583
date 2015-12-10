@@ -1,108 +1,108 @@
 define i32 @spec_load(i32 %num, i8* %filename, i32 %size) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %num, i64 0, metadata !47, metadata !127), !dbg !258
-  tail call void @llvm.dbg.value(metadata i8* %filename, i64 0, metadata !48, metadata !127), !dbg !259
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !49, metadata !127), !dbg !260
-  %1 = tail call i32 (i8*, i32, ...)* @"\01_open"(i8* %filename, i32 0) #6, !dbg !261
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !50, metadata !127), !dbg !262
-  %2 = icmp slt i32 %1, 0, !dbg !263
-  br i1 %2, label %3, label %9, !dbg !265
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %num}, i64 0, metadata !42), !dbg !186
+  tail call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !43), !dbg !186
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !44), !dbg !186
+  %call = tail call i32 (i8*, i32, ...)* @open(i8* %filename, i32 0) #7, !dbg !187
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !45), !dbg !187
+  %cmp = icmp slt i32 %call, 0, !dbg !188
+  br i1 %cmp, label %if.then, label %if.end, !dbg !188
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !266, !tbaa !268
-  %5 = tail call i32* @__error() #6, !dbg !269
-  %6 = load i32* %5, align 4, !dbg !269, !tbaa !148
-  %7 = tail call i8* @"\01_strerror"(i32 %6) #6, !dbg !270
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([24 x i8]* @.str5, i64 0, i64 0), i8* %filename, i8* %7) #6, !dbg !271
-  tail call void @exit(i32 0) #7, !dbg !272
-  unreachable, !dbg !272
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !189, !tbaa !133
+  %call1 = tail call i32* @__errno_location() #9, !dbg !189
+  %1 = load i32* %call1, align 4, !dbg !189, !tbaa !128
+  %call2 = tail call i8* @strerror(i32 %1) #7, !dbg !189
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([24 x i8]* @.str5, i64 0, i64 0), i8* %filename, i8* %call2) #7, !dbg !189
+  tail call void @exit(i32 0) #8, !dbg !191
+  unreachable, !dbg !191
 
-; <label>:9                                       ; preds = %0
-  %10 = sext i32 %num to i64, !dbg !273
-  %11 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %10, i32 1, !dbg !274
-  store i32 0, i32* %11, align 4, !dbg !275, !tbaa !256
-  %12 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %10, i32 2, !dbg !276
-  store i32 0, i32* %12, align 8, !dbg !277, !tbaa !278
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !52, metadata !127), !dbg !279
-  %13 = icmp sgt i32 %size, 0, !dbg !280
-  br i1 %13, label %.lr.ph3, label %._crit_edge4, !dbg !283
+if.end:                                           ; preds = %entry
+  %idxprom = sext i32 %num to i64, !dbg !192
+  %len = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 1, !dbg !192
+  store i32 0, i32* %len, align 4, !dbg !192, !tbaa !128
+  %pos = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 2, !dbg !192
+  store i32 0, i32* %pos, align 8, !dbg !192, !tbaa !128
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !47), !dbg !193
+  %cmp691 = icmp sgt i32 %size, 0, !dbg !193
+  br i1 %cmp691, label %for.body.lr.ph, label %for.end, !dbg !193
 
-.lr.ph3:                                          ; preds = %9
-  %14 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %10, i32 3, !dbg !284
-  br label %15, !dbg !283
+for.body.lr.ph:                                   ; preds = %if.end
+  %buf = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 3, !dbg !195
+  br label %for.body, !dbg !193
 
-; <label>:15                                      ; preds = %.lr.ph3, %30
-  %i.01 = phi i32 [ 0, %.lr.ph3 ], [ %33, %30 ]
-  %16 = load i8** %14, align 8, !dbg !284, !tbaa !164
-  %17 = sext i32 %i.01 to i64, !dbg !286
-  %18 = getelementptr inbounds i8* %16, i64 %17, !dbg !286
-  %19 = tail call i64 @"\01_read"(i32 %1, i8* %18, i64 131072) #6, !dbg !287
-  %20 = trunc i64 %19 to i32, !dbg !287
-  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !51, metadata !127), !dbg !288
-  %21 = icmp eq i32 %20, 0, !dbg !289
-  br i1 %21, label %._crit_edge4, label %22, !dbg !291
+for.body:                                         ; preds = %for.body.lr.ph, %if.end20
+  %i.092 = phi i32 [ 0, %for.body.lr.ph ], [ %add24, %if.end20 ]
+  %2 = load i8** %buf, align 8, !dbg !195, !tbaa !133
+  %idx.ext = sext i32 %i.092 to i64, !dbg !195
+  %add.ptr = getelementptr inbounds i8* %2, i64 %idx.ext, !dbg !195
+  %call9 = tail call i64 @read(i32 %call, i8* %add.ptr, i64 131072) #7, !dbg !195
+  %conv = trunc i64 %call9 to i32, !dbg !195
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !46), !dbg !195
+  %cmp10 = icmp eq i32 %conv, 0, !dbg !197
+  br i1 %cmp10, label %for.end, label %if.end13, !dbg !197
 
-; <label>:22                                      ; preds = %15
-  %23 = icmp slt i32 %20, 0, !dbg !292
-  br i1 %23, label %24, label %30, !dbg !294
+if.end13:                                         ; preds = %for.body
+  %cmp14 = icmp slt i32 %conv, 0, !dbg !198
+  br i1 %cmp14, label %if.then16, label %if.end20, !dbg !198
 
-; <label>:24                                      ; preds = %22
-  %25 = load %struct.__sFILE** @__stderrp, align 8, !dbg !295, !tbaa !268
-  %26 = tail call i32* @__error() #6, !dbg !297
-  %27 = load i32* %26, align 4, !dbg !297, !tbaa !148
-  %28 = tail call i8* @"\01_strerror"(i32 %27) #6, !dbg !298
-  %29 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %25, i8* getelementptr inbounds ([27 x i8]* @.str6, i64 0, i64 0), i8* %filename, i8* %28) #6, !dbg !299
-  tail call void @exit(i32 0) #7, !dbg !300
-  unreachable, !dbg !300
+if.then16:                                        ; preds = %if.end13
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !199, !tbaa !133
+  %call17 = tail call i32* @__errno_location() #9, !dbg !199
+  %4 = load i32* %call17, align 4, !dbg !199, !tbaa !128
+  %call18 = tail call i8* @strerror(i32 %4) #7, !dbg !199
+  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([27 x i8]* @.str6, i64 0, i64 0), i8* %filename, i8* %call18) #7, !dbg !199
+  tail call void @exit(i32 0) #8, !dbg !201
+  unreachable, !dbg !201
 
-; <label>:30                                      ; preds = %22
-  %31 = load i32* %11, align 4, !dbg !301, !tbaa !256
-  %32 = add nsw i32 %31, %20, !dbg !301
-  store i32 %32, i32* %11, align 4, !dbg !301, !tbaa !256
-  %33 = add nsw i32 %20, %i.01, !dbg !302
-  tail call void @llvm.dbg.value(metadata i32 %33, i64 0, metadata !52, metadata !127), !dbg !279
-  %34 = icmp slt i32 %33, %size, !dbg !280
-  br i1 %34, label %15, label %._crit_edge4, !dbg !283
+if.end20:                                         ; preds = %if.end13
+  %5 = load i32* %len, align 4, !dbg !202, !tbaa !128
+  %add = add nsw i32 %5, %conv, !dbg !202
+  store i32 %add, i32* %len, align 4, !dbg !202, !tbaa !128
+  %add24 = add nsw i32 %conv, %i.092, !dbg !193
+  tail call void @llvm.dbg.value(metadata !{i32 %add24}, i64 0, metadata !47), !dbg !193
+  %cmp6 = icmp slt i32 %add24, %size, !dbg !193
+  br i1 %cmp6, label %for.body, label %for.end, !dbg !193
 
-._crit_edge4:                                     ; preds = %30, %15, %9
-  %35 = tail call i32 @"\01_close"(i32 %1) #6, !dbg !303
-  %36 = load i32* %11, align 4, !dbg !304, !tbaa !256
-  %37 = icmp slt i32 %36, %size, !dbg !305
-  br i1 %37, label %.lr.ph, label %._crit_edge, !dbg !306
+for.end:                                          ; preds = %if.end20, %for.body, %if.end
+  %call25 = tail call i32 @close(i32 %call) #7, !dbg !203
+  %6 = load i32* %len, align 4, !dbg !204, !tbaa !128
+  %cmp2990 = icmp slt i32 %6, %size, !dbg !204
+  br i1 %cmp2990, label %while.body.lr.ph, label %while.end, !dbg !204
 
-.lr.ph:                                           ; preds = %._crit_edge4
-  %38 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %10, i32 3, !dbg !307
-  br label %39, !dbg !306
+while.body.lr.ph:                                 ; preds = %for.end
+  %buf51 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 3, !dbg !205
+  br label %while.body, !dbg !204
 
-; <label>:39                                      ; preds = %.lr.ph, %47
-  %40 = phi i32 [ %36, %.lr.ph ], [ %56, %47 ]
-  %41 = sub nsw i32 %size, %40, !dbg !308
-  tail call void @llvm.dbg.value(metadata i32 %41, i64 0, metadata !53, metadata !127), !dbg !309
-  %42 = icmp sgt i32 %41, %40, !dbg !310
-  tail call void @llvm.dbg.value(metadata i32 %56, i64 0, metadata !53, metadata !127), !dbg !309
-  %. = select i1 %42, i32 %40, i32 %41, !dbg !312
-  %43 = load i32* @dbglvl, align 4, !dbg !313, !tbaa !148
-  %44 = icmp sgt i32 %43, 3, !dbg !313
-  br i1 %44, label %45, label %47, !dbg !316
+while.body:                                       ; preds = %while.body.lr.ph, %if.end48
+  %7 = phi i32 [ %6, %while.body.lr.ph ], [ %add64, %if.end48 ]
+  %sub = sub nsw i32 %size, %7, !dbg !206
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !48), !dbg !206
+  %cmp37 = icmp sgt i32 %sub, %7, !dbg !207
+  tail call void @llvm.dbg.value(metadata !{i32 %7}, i64 0, metadata !48), !dbg !207
+  %.sub = select i1 %cmp37, i32 %7, i32 %sub, !dbg !207
+  %8 = load i32* @dbglvl, align 4, !dbg !208, !tbaa !128
+  %cmp44 = icmp sgt i32 %8, 3, !dbg !208
+  br i1 %cmp44, label %if.then46, label %if.end48, !dbg !208
 
-; <label>:45                                      ; preds = %39
-  %46 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0), i32 %.) #6, !dbg !313
-  %.pre = load i32* %11, align 4, !dbg !307, !tbaa !256
-  br label %47, !dbg !313
+if.then46:                                        ; preds = %while.body
+  %call47 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0), i32 %.sub) #7, !dbg !208
+  %.pre = load i32* %len, align 4, !dbg !205, !tbaa !128
+  br label %if.end48, !dbg !208
 
-; <label>:47                                      ; preds = %45, %39
-  %48 = phi i32 [ %.pre, %45 ], [ %40, %39 ], !dbg !307
-  %49 = load i8** %38, align 8, !dbg !307, !tbaa !164
-  %50 = sext i32 %48 to i64, !dbg !307
-  %51 = getelementptr inbounds i8* %49, i64 %50, !dbg !307
-  %52 = sext i32 %. to i64, !dbg !307
-  %53 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %51, i1 false), !dbg !307
-  %54 = tail call i8* @__memcpy_chk(i8* %51, i8* %49, i64 %52, i64 %53) #6, !dbg !307
-  %55 = load i32* %11, align 4, !dbg !317, !tbaa !256
-  %56 = add nsw i32 %55, %., !dbg !317
-  store i32 %56, i32* %11, align 4, !dbg !317, !tbaa !256
-  %57 = icmp slt i32 %56, %size, !dbg !305
-  br i1 %57, label %39, label %._crit_edge, !dbg !306
+if.end48:                                         ; preds = %if.then46, %while.body
+  %9 = phi i32 [ %.pre, %if.then46 ], [ %7, %while.body ], !dbg !205
+  %10 = load i8** %buf51, align 8, !dbg !205, !tbaa !133
+  %idx.ext55 = sext i32 %9 to i64, !dbg !205
+  %add.ptr56 = getelementptr inbounds i8* %10, i64 %idx.ext55, !dbg !205
+  %conv60 = sext i32 %.sub to i64, !dbg !205
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr56, i8* %10, i64 %conv60, i32 1, i1 false), !dbg !205
+  %11 = load i32* %len, align 4, !dbg !210, !tbaa !128
+  %add64 = add nsw i32 %11, %.sub, !dbg !210
+  store i32 %add64, i32* %len, align 4, !dbg !210, !tbaa !128
+  %cmp29 = icmp slt i32 %add64, %size, !dbg !204
+  br i1 %cmp29, label %while.body, label %while.end, !dbg !204
 
-._crit_edge:                                      ; preds = %47, %._crit_edge4
-  ret i32 0, !dbg !318
+while.end:                                        ; preds = %if.end48, %for.end
+  ret i32 0, !dbg !211
 }

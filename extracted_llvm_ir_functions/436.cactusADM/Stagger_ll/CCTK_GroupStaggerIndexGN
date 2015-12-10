@@ -1,16 +1,17 @@
 define i32 @CCTK_GroupStaggerIndexGN(i8* %gname) #1 {
+entry:
   %group.i = alloca %struct.cGroup, align 4
-  tail call void @llvm.dbg.value(metadata i8* %gname, i64 0, metadata !42, metadata !169), !dbg !194
-  %1 = tail call i32 @CCTK_GroupIndex(i8* %gname) #7, !dbg !195
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !43, metadata !169), !dbg !196
-  %2 = bitcast %struct.cGroup* %group.i to i8*, !dbg !197
-  call void @llvm.lifetime.start(i64 32, i8* %2), !dbg !197
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !16, metadata !169) #6, !dbg !197
-  tail call void @llvm.dbg.value(metadata %struct.cGroup* %group.i, i64 0, metadata !17, metadata !169) #6, !dbg !199
-  %3 = call i32 @CCTK_GroupData(i32 %1, %struct.cGroup* %group.i) #7, !dbg !200
-  %4 = getelementptr inbounds %struct.cGroup* %group.i, i64 0, i32 3, !dbg !201
-  %5 = load i32* %4, align 4, !dbg !201, !tbaa !174
-  call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !30, metadata !169) #6, !dbg !202
-  call void @llvm.lifetime.end(i64 32, i8* %2), !dbg !203
-  ret i32 %5, !dbg !204
+  call void @llvm.dbg.value(metadata !{i8* %gname}, i64 0, metadata !42), !dbg !189
+  %call = call i32 @CCTK_GroupIndex(i8* %gname) #8, !dbg !190
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !43), !dbg !190
+  %0 = bitcast %struct.cGroup* %group.i to i8*, !dbg !191
+  call void @llvm.lifetime.start(i64 32, i8* %0) #7, !dbg !191
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !193) #7, !dbg !191
+  call void @llvm.dbg.declare(metadata !{%struct.cGroup* %group.i}, metadata !17) #7, !dbg !194
+  %call.i = call i32 @CCTK_GroupData(i32 %call, %struct.cGroup* %group.i) #8, !dbg !195
+  %stagtype.i = getelementptr inbounds %struct.cGroup* %group.i, i64 0, i32 3, !dbg !196
+  %1 = load i32* %stagtype.i, align 4, !dbg !196, !tbaa !175
+  call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !197) #7, !dbg !196
+  call void @llvm.lifetime.end(i64 32, i8* %0) #7, !dbg !198
+  ret i32 %1, !dbg !192
 }

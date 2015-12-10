@@ -1,6 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.cHandledData = type { %struct.cHandleStorage*, i32, i32 }
 %struct.cHandleStorage = type { i32, i8*, i8* }
@@ -16,7 +16,7 @@ target triple = "x86_64-apple-macosx10.10.0"
 @clocks = internal global %struct.cHandledData* null, align 8
 @n_clock_vals = internal unnamed_addr global i32 0, align 4
 @.str = private unnamed_addr constant [18 x i8] c"UNNAMED TIMER %5d\00", align 1
-@.str1 = private unnamed_addr constant [81 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c\00", align 1
+@.str1 = private unnamed_addr constant [69 x i8] c"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c\00", align 1
 @.str2 = private unnamed_addr constant [7 x i8] c"Cactus\00", align 1
 @.str3 = private unnamed_addr constant [40 x i8] c"CCTK_TimerDestroy: Timer '%s' not found\00", align 1
 @.str4 = private unnamed_addr constant [39 x i8] c"CCTK_TimerDestroyI: Timer %d not found\00", align 1
@@ -35,112 +35,126 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str17 = private unnamed_addr constant [40 x i8] c"CCTK_TimerPrintData: Timer %s not found\00", align 1
 @.str18 = private unnamed_addr constant [88 x i8] c"$Header: /cactus/Cactus/src/util/CactusTimers.c,v 1.24 2002/01/02 19:36:20 tradke Exp $\00", align 1
 
-; Function Attrs: nounwind optsize readnone ssp uwtable
+; Function Attrs: nounwind optsize readnone uwtable
 define i8* @CCTKi_version_util_CactusTimers_c() #0 {
-  ret i8* getelementptr inbounds ([88 x i8]* @.str18, i64 0, i64 0), !dbg !353
+entry:
+  ret i8* getelementptr inbounds ([88 x i8]* @.str18, i64 0, i64 0), !dbg !349
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @CCTK_ClockRegister(i8* %clockname, %struct.cClockFuncs* nocapture readonly %functions) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %clockname, i64 0, metadata !77, metadata !354), !dbg !355
-  tail call void @llvm.dbg.value(metadata %struct.cClockFuncs* %functions, i64 0, metadata !78, metadata !354), !dbg !356
-  %1 = tail call i8* @malloc(i64 72) #8, !dbg !357
-  %2 = icmp eq i8* %1, null, !dbg !358
-  br i1 %2, label %.preheader, label %3, !dbg !360
+; Function Attrs: nounwind optsize uwtable
+define i32 @CCTK_ClockRegister(i8* %clockname, %struct.cClockFuncs* nocapture %functions) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %clockname}, i64 0, metadata !64), !dbg !350
+  tail call void @llvm.dbg.value(metadata !{%struct.cClockFuncs* %functions}, i64 0, metadata !65), !dbg !350
+  %call = tail call noalias i8* @malloc(i64 72) #8, !dbg !351
+  %tobool = icmp eq i8* %call, null, !dbg !352
+  br i1 %tobool, label %for.cond.preheader, label %if.then, !dbg !352
 
-; <label>:3                                       ; preds = %0
-  %4 = bitcast i8* %1 to i8**, !dbg !361
-  store i8* %clockname, i8** %4, align 8, !dbg !363, !tbaa !364
-  %5 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 1, !dbg !370
-  %6 = load i32* %5, align 4, !dbg !370, !tbaa !371
-  %7 = getelementptr inbounds i8* %1, i64 8, !dbg !372
-  %8 = bitcast i8* %7 to i32*, !dbg !372
-  store i32 %6, i32* %8, align 4, !dbg !373, !tbaa !371
-  %9 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 2, !dbg !374
-  %10 = getelementptr inbounds i8* %1, i64 16, !dbg !375
-  %11 = bitcast i8* (i32)** %9 to <2 x i64>*, !dbg !374
-  %12 = load <2 x i64>* %11, align 8, !dbg !374, !tbaa !376
-  %13 = bitcast i8* %10 to <2 x i64>*, !dbg !375
-  store <2 x i64> %12, <2 x i64>* %13, align 8, !dbg !375, !tbaa !376
-  %14 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 4, !dbg !377
-  %15 = getelementptr inbounds i8* %1, i64 32, !dbg !378
-  %16 = bitcast void (i32, i8*)** %14 to <2 x i64>*, !dbg !377
-  %17 = load <2 x i64>* %16, align 8, !dbg !377, !tbaa !376
-  %18 = bitcast i8* %15 to <2 x i64>*, !dbg !378
-  store <2 x i64> %17, <2 x i64>* %18, align 8, !dbg !378, !tbaa !376
-  %19 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 6, !dbg !379
-  %20 = getelementptr inbounds i8* %1, i64 48, !dbg !380
-  %21 = bitcast void (i32, i8*)** %19 to <2 x i64>*, !dbg !379
-  %22 = load <2 x i64>* %21, align 8, !dbg !379, !tbaa !376
-  %23 = bitcast i8* %20 to <2 x i64>*, !dbg !380
-  store <2 x i64> %22, <2 x i64>* %23, align 8, !dbg !380, !tbaa !376
-  %24 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 8, !dbg !381
-  %25 = bitcast void (i32, i8*, %struct.cTimerVal*)** %24 to i64*, !dbg !381
-  %26 = load i64* %25, align 8, !dbg !381, !tbaa !382
-  %27 = getelementptr inbounds i8* %1, i64 64, !dbg !383
-  %28 = bitcast i8* %27 to i64*, !dbg !383
-  store i64 %26, i64* %28, align 8, !dbg !383, !tbaa !382
-  br label %.preheader, !dbg !384
+if.then:                                          ; preds = %entry
+  %name = bitcast i8* %call to i8**, !dbg !353
+  store i8* %clockname, i8** %name, align 8, !dbg !353, !tbaa !355
+  %n_vals = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 1, !dbg !358
+  %0 = load i32* %n_vals, align 4, !dbg !358, !tbaa !359
+  %n_vals4 = getelementptr inbounds i8* %call, i64 8, !dbg !358
+  %1 = bitcast i8* %n_vals4 to i32*, !dbg !358
+  store i32 %0, i32* %1, align 4, !dbg !358, !tbaa !359
+  %create = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 2, !dbg !360
+  %2 = load i8* (i32)** %create, align 8, !dbg !360, !tbaa !355
+  %create5 = getelementptr inbounds i8* %call, i64 16, !dbg !360
+  %3 = bitcast i8* %create5 to i8* (i32)**, !dbg !360
+  store i8* (i32)* %2, i8* (i32)** %3, align 8, !dbg !360, !tbaa !355
+  %destroy = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 3, !dbg !361
+  %4 = load void (i32, i8*)** %destroy, align 8, !dbg !361, !tbaa !355
+  %destroy6 = getelementptr inbounds i8* %call, i64 24, !dbg !361
+  %5 = bitcast i8* %destroy6 to void (i32, i8*)**, !dbg !361
+  store void (i32, i8*)* %4, void (i32, i8*)** %5, align 8, !dbg !361, !tbaa !355
+  %start = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 4, !dbg !362
+  %6 = load void (i32, i8*)** %start, align 8, !dbg !362, !tbaa !355
+  %start7 = getelementptr inbounds i8* %call, i64 32, !dbg !362
+  %7 = bitcast i8* %start7 to void (i32, i8*)**, !dbg !362
+  store void (i32, i8*)* %6, void (i32, i8*)** %7, align 8, !dbg !362, !tbaa !355
+  %stop = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 5, !dbg !363
+  %8 = load void (i32, i8*)** %stop, align 8, !dbg !363, !tbaa !355
+  %stop8 = getelementptr inbounds i8* %call, i64 40, !dbg !363
+  %9 = bitcast i8* %stop8 to void (i32, i8*)**, !dbg !363
+  store void (i32, i8*)* %8, void (i32, i8*)** %9, align 8, !dbg !363, !tbaa !355
+  %reset = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 6, !dbg !364
+  %10 = load void (i32, i8*)** %reset, align 8, !dbg !364, !tbaa !355
+  %reset9 = getelementptr inbounds i8* %call, i64 48, !dbg !364
+  %11 = bitcast i8* %reset9 to void (i32, i8*)**, !dbg !364
+  store void (i32, i8*)* %10, void (i32, i8*)** %11, align 8, !dbg !364, !tbaa !355
+  %get = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 7, !dbg !365
+  %12 = load void (i32, i8*, %struct.cTimerVal*)** %get, align 8, !dbg !365, !tbaa !355
+  %get10 = getelementptr inbounds i8* %call, i64 56, !dbg !365
+  %13 = bitcast i8* %get10 to void (i32, i8*, %struct.cTimerVal*)**, !dbg !365
+  store void (i32, i8*, %struct.cTimerVal*)* %12, void (i32, i8*, %struct.cTimerVal*)** %13, align 8, !dbg !365, !tbaa !355
+  %set = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 8, !dbg !366
+  %14 = load void (i32, i8*, %struct.cTimerVal*)** %set, align 8, !dbg !366, !tbaa !355
+  %set11 = getelementptr inbounds i8* %call, i64 64, !dbg !366
+  %15 = bitcast i8* %set11 to void (i32, i8*, %struct.cTimerVal*)**, !dbg !366
+  store void (i32, i8*, %struct.cTimerVal*)* %14, void (i32, i8*, %struct.cTimerVal*)** %15, align 8, !dbg !366, !tbaa !355
+  br label %for.cond.preheader, !dbg !367
 
-.preheader:                                       ; preds = %0, %3
-  %29 = load i32* @n_timers, align 4, !dbg !385, !tbaa !388
-  %30 = icmp sgt i32 %29, 0, !dbg !389
-  br i1 %30, label %.lr.ph, label %._crit_edge, !dbg !390
+for.cond.preheader:                               ; preds = %entry, %if.then
+  %16 = load i32* @n_timers, align 4, !dbg !368, !tbaa !359
+  %cmp52 = icmp sgt i32 %16, 0, !dbg !368
+  br i1 %cmp52, label %for.body.lr.ph, label %for.end, !dbg !368
 
-.lr.ph:                                           ; preds = %.preheader
-  %31 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 2, !dbg !391
-  br label %32, !dbg !390
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %create17 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 2, !dbg !370
+  br label %for.body, !dbg !368
 
-; <label>:32                                      ; preds = %.lr.ph, %51
-  %handle.01 = phi i32 [ 0, %.lr.ph ], [ %52, %51 ]
-  %33 = load %struct.cHandledData** @timers, align 8, !dbg !395, !tbaa !376
-  %34 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %33, i32 %handle.01) #8, !dbg !396
-  %35 = bitcast i8* %34 to i8**, !dbg !397
-  %36 = load i8** %35, align 8, !dbg !397, !tbaa !398
-  %37 = load i32* @n_clocks, align 4, !dbg !400, !tbaa !388
-  %38 = add nsw i32 %37, 1, !dbg !401
-  %39 = sext i32 %38 to i64, !dbg !402
-  %40 = shl nsw i64 %39, 3, !dbg !403
-  %41 = tail call i8* @realloc(i8* %36, i64 %40) #8, !dbg !404
-  tail call void @llvm.dbg.value(metadata i8* %41, i64 0, metadata !79, metadata !354), !dbg !405
-  %42 = icmp eq i8* %41, null, !dbg !406
-  br i1 %42, label %51, label %43, !dbg !407
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %handle.053 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %17 = load %struct.cHandledData** @timers, align 8, !dbg !373, !tbaa !355
+  %call12 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %17, i32 %handle.053) #8, !dbg !373
+  %data = bitcast i8* %call12 to i8***, !dbg !374
+  %18 = load i8*** %data, align 8, !dbg !374, !tbaa !355
+  %19 = bitcast i8** %18 to i8*, !dbg !374
+  %20 = load i32* @n_clocks, align 4, !dbg !374, !tbaa !359
+  %add = add nsw i32 %20, 1, !dbg !374
+  %conv = sext i32 %add to i64, !dbg !374
+  %mul = shl nsw i64 %conv, 3, !dbg !374
+  %call13 = tail call i8* @realloc(i8* %19, i64 %mul) #8, !dbg !374
+  tail call void @llvm.dbg.value(metadata !{i8* %call13}, i64 0, metadata !66), !dbg !374
+  %tobool14 = icmp eq i8* %call13, null, !dbg !375
+  br i1 %tobool14, label %for.inc, label %if.then15, !dbg !375
 
-; <label>:43                                      ; preds = %32
-  %44 = bitcast i8* %34 to i8***, !dbg !397
-  store i8* %41, i8** %35, align 8, !dbg !408, !tbaa !398
-  %45 = load i8* (i32)** %31, align 8, !dbg !391, !tbaa !409
-  %46 = tail call i8* %45(i32 %handle.01) #8, !dbg !410
-  %47 = load i32* @n_clocks, align 4, !dbg !411, !tbaa !388
-  %48 = sext i32 %47 to i64, !dbg !412
-  %49 = load i8*** %44, align 8, !dbg !413, !tbaa !398
-  %50 = getelementptr inbounds i8** %49, i64 %48, !dbg !412
-  store i8* %46, i8** %50, align 8, !dbg !414, !tbaa !376
-  br label %51, !dbg !415
+if.then15:                                        ; preds = %for.body
+  %21 = bitcast i8* %call13 to i8**, !dbg !376
+  store i8** %21, i8*** %data, align 8, !dbg !376, !tbaa !355
+  %22 = load i8* (i32)** %create17, align 8, !dbg !370, !tbaa !355
+  %call18 = tail call i8* %22(i32 %handle.053) #8, !dbg !370
+  %23 = load i32* @n_clocks, align 4, !dbg !370, !tbaa !359
+  %idxprom = sext i32 %23 to i64, !dbg !370
+  %24 = load i8*** %data, align 8, !dbg !370, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %24, i64 %idxprom, !dbg !370
+  store i8* %call18, i8** %arrayidx, align 8, !dbg !370, !tbaa !355
+  br label %for.inc, !dbg !377
 
-; <label>:51                                      ; preds = %32, %43
-  %52 = add nuw nsw i32 %handle.01, 1, !dbg !416
-  tail call void @llvm.dbg.value(metadata i32 %52, i64 0, metadata !80, metadata !354), !dbg !417
-  %53 = load i32* @n_timers, align 4, !dbg !385, !tbaa !388
-  %54 = icmp slt i32 %52, %53, !dbg !389
-  br i1 %54, label %32, label %._crit_edge, !dbg !390
+for.inc:                                          ; preds = %for.body, %if.then15
+  %inc = add nsw i32 %handle.053, 1, !dbg !368
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !67), !dbg !368
+  %25 = load i32* @n_timers, align 4, !dbg !368, !tbaa !359
+  %cmp = icmp slt i32 %inc, %25, !dbg !368
+  br i1 %cmp, label %for.body, label %for.end, !dbg !368
 
-._crit_edge:                                      ; preds = %51, %.preheader
-  %55 = tail call i32 @Util_NewHandle(%struct.cHandledData** @clocks, i8* %clockname, i8* %1) #8, !dbg !418
-  tail call void @llvm.dbg.value(metadata i32 %55, i64 0, metadata !80, metadata !354), !dbg !417
-  %56 = load i32* @n_clocks, align 4, !dbg !419, !tbaa !388
-  %57 = add nsw i32 %56, 1, !dbg !419
-  store i32 %57, i32* @n_clocks, align 4, !dbg !419, !tbaa !388
-  %58 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 1, !dbg !420
-  %59 = load i32* %58, align 4, !dbg !420, !tbaa !371
-  %60 = load i32* @n_clock_vals, align 4, !dbg !421, !tbaa !388
-  %61 = add nsw i32 %60, %59, !dbg !421
-  store i32 %61, i32* @n_clock_vals, align 4, !dbg !421, !tbaa !388
-  ret i32 %55, !dbg !422
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %call21 = tail call i32 @Util_NewHandle(%struct.cHandledData** @clocks, i8* %clockname, i8* %call) #8, !dbg !378
+  tail call void @llvm.dbg.value(metadata !{i32 %call21}, i64 0, metadata !67), !dbg !378
+  %26 = load i32* @n_clocks, align 4, !dbg !379, !tbaa !359
+  %inc22 = add nsw i32 %26, 1, !dbg !379
+  store i32 %inc22, i32* @n_clocks, align 4, !dbg !379, !tbaa !359
+  %n_vals23 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 1, !dbg !380
+  %27 = load i32* %n_vals23, align 4, !dbg !380, !tbaa !359
+  %28 = load i32* @n_clock_vals, align 4, !dbg !380, !tbaa !359
+  %add24 = add nsw i32 %28, %27, !dbg !380
+  store i32 %add24, i32* @n_clock_vals, align 4, !dbg !380, !tbaa !359
+  ret i32 %call21, !dbg !381
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.declare(metadata, metadata, metadata) #2
+declare void @llvm.dbg.declare(metadata, metadata) #2
 
 ; Function Attrs: nounwind optsize
 declare noalias i8* @malloc(i64) #3
@@ -154,194 +168,204 @@ declare noalias i8* @realloc(i8* nocapture, i64) #3
 ; Function Attrs: optsize
 declare i32 @Util_NewHandle(%struct.cHandledData**, i8*, i8*) #4
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i8* @CCTK_ClockName(i32 %handle) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !87, metadata !354), !dbg !423
-  %1 = load %struct.cHandledData** @clocks, align 8, !dbg !424, !tbaa !376
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #8, !dbg !425
-  %3 = icmp eq i8* %2, null, !dbg !426
-  br i1 %3, label %7, label %4, !dbg !426
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !81), !dbg !382
+  %0 = load %struct.cHandledData** @clocks, align 8, !dbg !383, !tbaa !355
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %handle) #8, !dbg !383
+  %tobool = icmp eq i8* %call, null, !dbg !384
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !384
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to i8**, !dbg !427
-  %6 = load i8** %5, align 8, !dbg !427, !tbaa !364
-  br label %7, !dbg !426
+cond.true:                                        ; preds = %entry
+  %name = bitcast i8* %call to i8**, !dbg !384
+  %1 = load i8** %name, align 8, !dbg !384, !tbaa !355
+  br label %cond.end, !dbg !384
 
-; <label>:7                                       ; preds = %0, %4
-  %8 = phi i8* [ %6, %4 ], [ null, %0 ], !dbg !426
-  ret i8* %8, !dbg !428
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i8* [ %1, %cond.true ], [ null, %entry ], !dbg !384
+  ret i8* %cond, !dbg !384
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @CCTK_ClockHandle(i8* nocapture readonly %clockname) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %clockname, i64 0, metadata !93, metadata !354), !dbg !429
-  %1 = load i32* @n_clocks, align 4, !dbg !430, !tbaa !388
-  %handle.01 = add nsw i32 %1, -1, !dbg !433
-  %2 = icmp sgt i32 %1, 0, !dbg !434
-  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !436
+; Function Attrs: nounwind optsize uwtable
+define i32 @CCTK_ClockHandle(i8* nocapture %clockname) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %clockname}, i64 0, metadata !87), !dbg !385
+  %0 = load i32* @n_clocks, align 4, !dbg !386, !tbaa !359
+  %handle.08 = add nsw i32 %0, -1, !dbg !387
+  %cmp9 = icmp sgt i32 %0, 0, !dbg !387
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !387
 
-.lr.ph:                                           ; preds = %0, %.backedge
-  %handle.02 = phi i32 [ %handle.0, %.backedge ], [ %handle.01, %0 ]
-  %3 = load %struct.cHandledData** @clocks, align 8, !dbg !437, !tbaa !376
-  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.02) #8, !dbg !439
-  %5 = icmp eq i8* %4, null, !dbg !440
-  br i1 %5, label %.backedge, label %7, !dbg !442
+for.body:                                         ; preds = %entry, %for.cond.backedge
+  %handle.010 = phi i32 [ %handle.0, %for.cond.backedge ], [ %handle.08, %entry ]
+  %1 = load %struct.cHandledData** @clocks, align 8, !dbg !389, !tbaa !355
+  %call1 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle.010) #8, !dbg !389
+  %tobool = icmp eq i8* %call1, null, !dbg !391
+  br i1 %tobool, label %for.cond.backedge, label %land.lhs.true, !dbg !391
 
-.backedge:                                        ; preds = %.lr.ph, %7
-  %handle.0 = add nsw i32 %handle.02, -1, !dbg !433
-  %6 = icmp sgt i32 %handle.02, 0, !dbg !434
-  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !436
+for.cond.backedge:                                ; preds = %for.body, %land.lhs.true
+  %handle.0 = add nsw i32 %handle.010, -1, !dbg !387
+  %cmp = icmp sgt i32 %handle.010, 0, !dbg !387
+  br i1 %cmp, label %for.body, label %for.end, !dbg !387
 
-; <label>:7                                       ; preds = %.lr.ph
-  %8 = bitcast i8* %4 to i8**, !dbg !443
-  %9 = load i8** %8, align 8, !dbg !443, !tbaa !364
-  %10 = tail call i32 @strcmp(i8* %9, i8* %clockname) #8, !dbg !444
-  %11 = icmp eq i32 %10, 0, !dbg !445
-  br i1 %11, label %._crit_edge, label %.backedge, !dbg !446
+land.lhs.true:                                    ; preds = %for.body
+  %name = bitcast i8* %call1 to i8**, !dbg !391
+  %2 = load i8** %name, align 8, !dbg !391, !tbaa !355
+  %call2 = tail call i32 @strcmp(i8* %2, i8* %clockname) #9, !dbg !391
+  %cmp3 = icmp eq i32 %call2, 0, !dbg !391
+  br i1 %cmp3, label %for.end, label %for.cond.backedge, !dbg !391
 
-._crit_edge:                                      ; preds = %.backedge, %7, %0
-  %handle.0.lcssa = phi i32 [ %handle.01, %0 ], [ %handle.0, %.backedge ], [ %handle.02, %7 ]
-  ret i32 %handle.0.lcssa, !dbg !447
+for.end:                                          ; preds = %for.cond.backedge, %land.lhs.true, %entry
+  %handle.0.lcssa = phi i32 [ %handle.08, %entry ], [ %handle.010, %land.lhs.true ], [ %handle.0, %for.cond.backedge ]
+  ret i32 %handle.0.lcssa, !dbg !392
 }
 
-; Function Attrs: nounwind optsize readonly ssp uwtable
+; Function Attrs: nounwind optsize readonly uwtable
 define i32 @CCTK_NumClocks() #5 {
-  %1 = load i32* @n_clocks, align 4, !dbg !448, !tbaa !388
-  ret i32 %1, !dbg !449
+entry:
+  %0 = load i32* @n_clocks, align 4, !dbg !393, !tbaa !359
+  ret i32 %0, !dbg !393
 }
 
 ; Function Attrs: nounwind optsize readonly
 declare i32 @strcmp(i8* nocapture, i8* nocapture) #6
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @cctk_numclocks_(i32* nocapture %nclocks) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %nclocks, i64 0, metadata !104, metadata !354), !dbg !450
-  %1 = load i32* @n_clocks, align 4, !dbg !451, !tbaa !388
-  store i32 %1, i32* %nclocks, align 4, !dbg !453, !tbaa !388
-  ret void, !dbg !454
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %nclocks}, i64 0, metadata !98), !dbg !394
+  %0 = load i32* @n_clocks, align 4, !dbg !395, !tbaa !359
+  store i32 %0, i32* %nclocks, align 4, !dbg !396, !tbaa !359
+  ret void, !dbg !397
 }
 
-; Function Attrs: nounwind optsize readonly ssp uwtable
+; Function Attrs: nounwind optsize readonly uwtable
 define i32 @CCTK_NumTimers() #5 {
-  %1 = load i32* @n_timers, align 4, !dbg !455, !tbaa !388
-  ret i32 %1, !dbg !456
+entry:
+  %0 = load i32* @n_timers, align 4, !dbg !398, !tbaa !359
+  ret i32 %0, !dbg !398
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @cctk_numtimers_(i32* nocapture %ntimers) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ntimers, i64 0, metadata !108, metadata !354), !dbg !457
-  %1 = load i32* @n_timers, align 4, !dbg !458, !tbaa !388
-  store i32 %1, i32* %ntimers, align 4, !dbg !460, !tbaa !388
-  ret void, !dbg !461
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ntimers}, i64 0, metadata !102), !dbg !399
+  %0 = load i32* @n_timers, align 4, !dbg !400, !tbaa !359
+  store i32 %0, i32* %ntimers, align 4, !dbg !401, !tbaa !359
+  ret void, !dbg !402
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i8* @CCTK_TimerName(i32 %timer_handle) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %timer_handle, i64 0, metadata !111, metadata !354), !dbg !462
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !463, !tbaa !376
-  %2 = tail call i8* @Util_GetHandleName(%struct.cHandledData* %1, i32 %timer_handle) #8, !dbg !464
-  tail call void @llvm.dbg.value(metadata i8* %2, i64 0, metadata !112, metadata !354), !dbg !465
-  ret i8* %2, !dbg !466
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %timer_handle}, i64 0, metadata !105), !dbg !403
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !404, !tbaa !355
+  %call = tail call i8* @Util_GetHandleName(%struct.cHandledData* %0, i32 %timer_handle) #8, !dbg !404
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !106), !dbg !404
+  ret i8* %call, !dbg !405
 }
 
 ; Function Attrs: optsize
 declare i8* @Util_GetHandleName(%struct.cHandledData*, i32) #4
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerCreate(i8* %timername) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %timername, i64 0, metadata !115, metadata !354), !dbg !467
-  %1 = tail call fastcc i32 @CCTKi_TimerCreate(i8* %timername) #9, !dbg !468
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !116, metadata !354), !dbg !469
-  ret i32 %1, !dbg !470
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !109), !dbg !406
+  %call = tail call fastcc i32 @CCTKi_TimerCreate(i8* %timername) #10, !dbg !407
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !110), !dbg !407
+  ret i32 %call, !dbg !408
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define internal fastcc i32 @CCTKi_TimerCreate(i8* %timername) #1 {
+entry:
   %timer = alloca %struct.t_Timer*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %timername, i64 0, metadata !285, metadata !354), !dbg !471
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !472, !tbaa !376
-  %2 = bitcast %struct.t_Timer** %timer to i8**, !dbg !474
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %timername, i8** %2) #8, !dbg !475
-  %4 = icmp sgt i32 %3, -1, !dbg !476
-  br i1 %4, label %.loopexit, label %5, !dbg !477
+  call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !321), !dbg !409
+  call void @llvm.dbg.declare(metadata !{%struct.t_Timer** %timer}, metadata !323), !dbg !410
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !411, !tbaa !355
+  %1 = bitcast %struct.t_Timer** %timer to i8**, !dbg !411
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %timername, i8** %1) #8, !dbg !411
+  %cmp = icmp sgt i32 %call, -1, !dbg !411
+  br i1 %cmp, label %if.end18, label %if.else, !dbg !411
 
-; <label>:5                                       ; preds = %0
-  %6 = call i8* @malloc(i64 8) #8, !dbg !478
-  store i8* %6, i8** %2, align 8, !dbg !480, !tbaa !376
-  %7 = icmp eq i8* %6, null, !dbg !481
-  br i1 %7, label %.loopexit, label %8, !dbg !483
+if.else:                                          ; preds = %entry
+  %call2 = call noalias i8* @malloc(i64 8) #8, !dbg !412
+  %2 = bitcast i8* %call2 to %struct.t_Timer*, !dbg !412
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer* %2}, i64 0, metadata !323), !dbg !412
+  store %struct.t_Timer* %2, %struct.t_Timer** %timer, align 8, !dbg !412, !tbaa !355
+  %tobool = icmp eq i8* %call2, null, !dbg !414
+  br i1 %tobool, label %if.end18, label %if.then3, !dbg !414
 
-; <label>:8                                       ; preds = %5
-  %9 = bitcast i8* %6 to i8**
-  %10 = load i32* @n_clocks, align 4, !dbg !484, !tbaa !388
-  %11 = sext i32 %10 to i64, !dbg !484
-  %12 = shl nsw i64 %11, 3, !dbg !486
-  %13 = call i8* @malloc(i64 %12) #8, !dbg !487
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !287, metadata !354), !dbg !488
-  store i8* %13, i8** %9, align 8, !dbg !489, !tbaa !398
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !287, metadata !354), !dbg !488
-  %14 = load %struct.t_Timer** %timer, align 8, !dbg !490, !tbaa !376
-  %15 = getelementptr inbounds %struct.t_Timer* %14, i64 0, i32 0, !dbg !492
-  %16 = load i8*** %15, align 8, !dbg !492, !tbaa !398
-  %17 = icmp eq i8** %16, null, !dbg !490
-  %18 = bitcast %struct.t_Timer* %14 to i8*, !dbg !493
-  br i1 %17, label %39, label %19, !dbg !495
+if.then3:                                         ; preds = %if.else
+  %3 = load i32* @n_clocks, align 4, !dbg !415, !tbaa !359
+  %conv = sext i32 %3 to i64, !dbg !415
+  %mul = shl nsw i64 %conv, 3, !dbg !415
+  %call4 = call noalias i8* @malloc(i64 %mul) #8, !dbg !415
+  %4 = bitcast i8* %call4 to i8**, !dbg !415
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !323), !dbg !415
+  %data = bitcast i8* %call2 to i8***, !dbg !415
+  store i8** %4, i8*** %data, align 8, !dbg !415, !tbaa !355
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !323), !dbg !417
+  %tobool6 = icmp eq i8* %call4, null, !dbg !417
+  br i1 %tobool6, label %if.else15, label %if.then7, !dbg !417
 
-; <label>:19                                      ; preds = %8
-  %20 = call i32 @Util_NewHandle(%struct.cHandledData** @timers, i8* %timername, i8* %18) #8, !dbg !496
-  call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !289, metadata !354), !dbg !498
-  %21 = load i32* @n_timers, align 4, !dbg !499, !tbaa !388
-  %22 = add nsw i32 %21, 1, !dbg !499
-  store i32 %22, i32* @n_timers, align 4, !dbg !499, !tbaa !388
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !290, metadata !354), !dbg !500
-  %23 = load i32* @n_clocks, align 4, !dbg !501, !tbaa !388
-  %24 = icmp sgt i32 %23, 0, !dbg !504
-  br i1 %24, label %.lr.ph, label %.loopexit, !dbg !505
+if.then7:                                         ; preds = %if.then3
+  %call8 = call i32 @Util_NewHandle(%struct.cHandledData** @timers, i8* %timername, i8* %call2) #8, !dbg !418
+  call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !325), !dbg !418
+  %5 = load i32* @n_timers, align 4, !dbg !420, !tbaa !359
+  %inc = add nsw i32 %5, 1, !dbg !420
+  store i32 %inc, i32* @n_timers, align 4, !dbg !420, !tbaa !359
+  call void @llvm.dbg.value(metadata !10, i64 0, metadata !326), !dbg !421
+  %6 = load i32* @n_clocks, align 4, !dbg !421, !tbaa !359
+  %cmp924 = icmp sgt i32 %6, 0, !dbg !421
+  br i1 %cmp924, label %for.body, label %if.end18, !dbg !421
 
-.lr.ph:                                           ; preds = %19, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %19 ]
-  %25 = load %struct.cHandledData** @clocks, align 8, !dbg !506, !tbaa !376
-  %26 = trunc i64 %indvars.iv to i32, !dbg !508
-  %27 = call i8* @Util_GetHandledData(%struct.cHandledData* %25, i32 %26) #8, !dbg !508
-  %28 = getelementptr inbounds i8* %27, i64 16, !dbg !509
-  %29 = bitcast i8* %28 to i8* (i32)**, !dbg !509
-  %30 = load i8* (i32)** %29, align 8, !dbg !509, !tbaa !409
-  %31 = call i8* %30(i32 %20) #8, !dbg !510
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !287, metadata !354), !dbg !488
-  %32 = load %struct.t_Timer** %timer, align 8, !dbg !511, !tbaa !376
-  %33 = getelementptr inbounds %struct.t_Timer* %32, i64 0, i32 0, !dbg !512
-  %34 = load i8*** %33, align 8, !dbg !512, !tbaa !398
-  %35 = getelementptr inbounds i8** %34, i64 %indvars.iv, !dbg !511
-  store i8* %31, i8** %35, align 8, !dbg !513, !tbaa !376
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !505
-  %36 = load i32* @n_clocks, align 4, !dbg !501, !tbaa !388
-  %37 = sext i32 %36 to i64, !dbg !504
-  %38 = icmp slt i64 %indvars.iv.next, %37, !dbg !504
-  br i1 %38, label %.lr.ph, label %.loopexit, !dbg !505
+for.body:                                         ; preds = %if.then7, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then7 ]
+  %7 = load %struct.cHandledData** @clocks, align 8, !dbg !423, !tbaa !355
+  %8 = trunc i64 %indvars.iv to i32, !dbg !423
+  %call11 = call i8* @Util_GetHandledData(%struct.cHandledData* %7, i32 %8) #8, !dbg !423
+  %create = getelementptr inbounds i8* %call11, i64 16, !dbg !425
+  %9 = bitcast i8* %create to i8* (i32)**, !dbg !425
+  %10 = load i8* (i32)** %9, align 8, !dbg !425, !tbaa !355
+  %call12 = call i8* %10(i32 %call8) #8, !dbg !425
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !323), !dbg !425
+  %11 = load %struct.t_Timer** %timer, align 8, !dbg !425, !tbaa !355
+  %data13 = getelementptr inbounds %struct.t_Timer* %11, i64 0, i32 0, !dbg !425
+  %12 = load i8*** %data13, align 8, !dbg !425, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %12, i64 %indvars.iv, !dbg !425
+  store i8* %call12, i8** %arrayidx, align 8, !dbg !425, !tbaa !355
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !421
+  %13 = load i32* @n_clocks, align 4, !dbg !421, !tbaa !359
+  %14 = trunc i64 %indvars.iv.next to i32, !dbg !421
+  %cmp9 = icmp slt i32 %14, %13, !dbg !421
+  br i1 %cmp9, label %for.body, label %if.end18, !dbg !421
 
-; <label>:39                                      ; preds = %8
-  call void @free(i8* %18) #9, !dbg !514
-  call void @llvm.dbg.value(metadata i32 -2, i64 0, metadata !286, metadata !354), !dbg !515
-  br label %.loopexit
+if.else15:                                        ; preds = %if.then3
+  call void @free(i8* %call2) #8, !dbg !426
+  call void @llvm.dbg.value(metadata !428, i64 0, metadata !322), !dbg !429
+  br label %if.end18
 
-.loopexit:                                        ; preds = %.lr.ph, %19, %5, %0, %39
-  %retval.0 = phi i32 [ -2, %39 ], [ -1, %0 ], [ -2, %5 ], [ %20, %19 ], [ %20, %.lr.ph ]
-  ret i32 %retval.0, !dbg !516
+if.end18:                                         ; preds = %if.then7, %for.body, %if.else, %entry, %if.else15
+  %retval1.0 = phi i32 [ -2, %if.else15 ], [ -1, %entry ], [ -2, %if.else ], [ %call8, %for.body ], [ %call8, %if.then7 ]
+  ret i32 %retval1.0, !dbg !430
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @cctk_timercreate_(i32* nocapture %timer_index, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %timer_index, i64 0, metadata !123, metadata !354), !dbg !517
-  tail call void @llvm.dbg.value(metadata i8* %cctk_str1, i64 0, metadata !124, metadata !354), !dbg !518
-  tail call void @llvm.dbg.value(metadata i32 %cctk_strlen1, i64 0, metadata !125, metadata !354), !dbg !518
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !519
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !126, metadata !354), !dbg !519
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !115, metadata !354) #7, !dbg !520
-  %2 = tail call fastcc i32 @CCTKi_TimerCreate(i8* %1) #8, !dbg !522
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !116, metadata !354) #7, !dbg !523
-  store i32 %2, i32* %timer_index, align 4, !dbg !524, !tbaa !388
-  tail call void @free(i8* %1) #9, !dbg !525
-  ret void, !dbg !526
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %timer_index}, i64 0, metadata !117), !dbg !431
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !118), !dbg !431
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !119), !dbg !431
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !432
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !120), !dbg !432
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !433) #7, !dbg !435
+  %call.i = tail call fastcc i32 @CCTKi_TimerCreate(i8* %call) #8, !dbg !436
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !437) #7, !dbg !436
+  store i32 %call.i, i32* %timer_index, align 4, !dbg !434, !tbaa !359
+  tail call void @free(i8* %call) #8, !dbg !438
+  ret void, !dbg !439
 }
 
 ; Function Attrs: optsize
@@ -350,1985 +374,1688 @@ declare i8* @Util_NullTerminateString(i8*, i32) #4
 ; Function Attrs: nounwind optsize
 declare void @free(i8* nocapture) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerCreateI() #1 {
+entry:
   %timername = alloca [40 x i8], align 16
-  %1 = getelementptr inbounds [40 x i8]* %timername, i64 0, i64 0, !dbg !527
-  call void @llvm.lifetime.start(i64 40, i8* %1) #7, !dbg !527
-  tail call void @llvm.dbg.declare(metadata [40 x i8]* %timername, metadata !130, metadata !354), !dbg !528
-  %2 = load i32* @n_timers, align 4, !dbg !529, !tbaa !388
-  %3 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 40, i8* getelementptr inbounds ([18 x i8]* @.str, i64 0, i64 0), i32 %2) #8, !dbg !529
-  %4 = call fastcc i32 @CCTKi_TimerCreate(i8* %1) #9, !dbg !530
-  call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !129, metadata !354), !dbg !531
-  call void @llvm.lifetime.end(i64 40, i8* %1) #7, !dbg !532
-  ret i32 %4, !dbg !532
+  %0 = getelementptr inbounds [40 x i8]* %timername, i64 0, i64 0, !dbg !440
+  call void @llvm.lifetime.start(i64 40, i8* %0) #7, !dbg !440
+  call void @llvm.dbg.declare(metadata !{[40 x i8]* %timername}, metadata !124), !dbg !440
+  %1 = load i32* @n_timers, align 4, !dbg !441, !tbaa !359
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str, i64 0, i64 0), i32 %1) #8, !dbg !441
+  %call3 = call fastcc i32 @CCTKi_TimerCreate(i8* %0) #10, !dbg !442
+  call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !123), !dbg !442
+  call void @llvm.lifetime.end(i64 40, i8* %0) #7, !dbg !443
+  ret i32 %call3, !dbg !443
 }
 
 ; Function Attrs: nounwind
 declare void @llvm.lifetime.start(i64, i8* nocapture) #7
 
-; Function Attrs: optsize
-declare i32 @__sprintf_chk(i8*, i32, i64, i8*, ...) #4
+; Function Attrs: nounwind optsize
+declare i32 @sprintf(i8* nocapture, i8* nocapture, ...) #3
 
 ; Function Attrs: nounwind
 declare void @llvm.lifetime.end(i64, i8* nocapture) #7
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @cctk_timercreatei_(i32* nocapture %ierr) #1 {
+entry:
   %timername.i = alloca [40 x i8], align 16
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !136, metadata !354), !dbg !533
-  %1 = getelementptr inbounds [40 x i8]* %timername.i, i64 0, i64 0, !dbg !534
-  call void @llvm.lifetime.start(i64 40, i8* %1) #7, !dbg !534
-  %2 = load i32* @n_timers, align 4, !dbg !536, !tbaa !388
-  %3 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 40, i8* getelementptr inbounds ([18 x i8]* @.str, i64 0, i64 0), i32 %2) #8, !dbg !536
-  %4 = call fastcc i32 @CCTKi_TimerCreate(i8* %1) #8, !dbg !537
-  call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !129, metadata !354) #7, !dbg !538
-  call void @llvm.lifetime.end(i64 40, i8* %1) #7, !dbg !539
-  store i32 %4, i32* %ierr, align 4, !dbg !540, !tbaa !388
-  call void @llvm.dbg.declare(metadata [40 x i8]* %timername.i, metadata !130, metadata !354), !dbg !541
-  ret void, !dbg !542
+  call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !130), !dbg !444
+  %0 = getelementptr inbounds [40 x i8]* %timername.i, i64 0, i64 0, !dbg !445
+  call void @llvm.lifetime.start(i64 40, i8* %0) #7, !dbg !445
+  call void @llvm.dbg.declare(metadata !{[40 x i8]* %timername.i}, metadata !124) #7, !dbg !445
+  %1 = load i32* @n_timers, align 4, !dbg !447, !tbaa !359
+  %call.i = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str, i64 0, i64 0), i32 %1) #8, !dbg !447
+  %call3.i = call fastcc i32 @CCTKi_TimerCreate(i8* %0) #8, !dbg !448
+  call void @llvm.dbg.value(metadata !{i32 %call3.i}, i64 0, metadata !449) #7, !dbg !448
+  call void @llvm.lifetime.end(i64 40, i8* %0) #7, !dbg !450
+  store i32 %call3.i, i32* %ierr, align 4, !dbg !446, !tbaa !359
+  ret void, !dbg !451
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerDestroy(i8* %timername) #1 {
+entry:
   %timer = alloca %struct.t_Timer*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %timername, i64 0, metadata !139, metadata !354), !dbg !543
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !544, !tbaa !376
-  %2 = bitcast %struct.t_Timer** %timer to i8**, !dbg !545
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %timername, i8** %2) #8, !dbg !546
-  call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !141, metadata !354), !dbg !547
-  %4 = icmp sgt i32 %3, -1, !dbg !548
-  br i1 %4, label %5, label %7, !dbg !550
+  call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !133), !dbg !452
+  call void @llvm.dbg.declare(metadata !{%struct.t_Timer** %timer}, metadata !134), !dbg !453
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !454, !tbaa !355
+  %1 = bitcast %struct.t_Timer** %timer to i8**, !dbg !454
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %timername, i8** %1) #8, !dbg !454
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !135), !dbg !454
+  %cmp = icmp sgt i32 %call, -1, !dbg !455
+  br i1 %cmp, label %if.then, label %if.else, !dbg !455
 
-; <label>:5                                       ; preds = %0
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !140, metadata !354), !dbg !551
-  %6 = load %struct.t_Timer** %timer, align 8, !dbg !552, !tbaa !376
-  call fastcc void @CCTKi_TimerDestroy(i32 %3, %struct.t_Timer* %6) #9, !dbg !554
-  br label %9, !dbg !555
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !134), !dbg !456
+  %2 = load %struct.t_Timer** %timer, align 8, !dbg !456, !tbaa !355
+  call fastcc void @CCTKi_TimerDestroy(i32 %call, %struct.t_Timer* %2) #10, !dbg !456
+  br label %if.end, !dbg !458
 
-; <label>:7                                       ; preds = %0
-  %8 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 493, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str3, i64 0, i64 0), i8* %timername) #8, !dbg !556
-  br label %9
+if.else:                                          ; preds = %entry
+  %call1 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 493, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str3, i64 0, i64 0), i8* %timername) #8, !dbg !459
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %5
-  %not. = xor i1 %4, true, !dbg !558
-  %10 = sext i1 %not. to i32, !dbg !558
-  ret i32 %10, !dbg !559
+if.end:                                           ; preds = %if.else, %if.then
+  %not.cmp = xor i1 %cmp, true, !dbg !461
+  %cond = sext i1 %not.cmp to i32, !dbg !461
+  ret i32 %cond, !dbg !461
 }
 
 ; Function Attrs: optsize
 declare i32 @Util_GetHandle(%struct.cHandledData*, i8*, i8**) #4
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define internal fastcc void @CCTKi_TimerDestroy(i32 %this_timer, %struct.t_Timer* %timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !295, metadata !354), !dbg !560
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %timer, i64 0, metadata !296, metadata !354), !dbg !561
-  %1 = icmp eq %struct.t_Timer* %timer, null, !dbg !562
-  br i1 %1, label %27, label %2, !dbg !564
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !315), !dbg !462
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %timer}, i64 0, metadata !316), !dbg !462
+  %tobool = icmp eq %struct.t_Timer* %timer, null, !dbg !463
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !463
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !565
-  %4 = load i8*** %3, align 8, !dbg !565, !tbaa !398
-  %5 = icmp eq i8** %4, null, !dbg !566
-  br i1 %5, label %27, label %.preheader, !dbg !567
+land.lhs.true:                                    ; preds = %entry
+  %data = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !463
+  %0 = load i8*** %data, align 8, !dbg !463, !tbaa !355
+  %tobool1 = icmp eq i8** %0, null, !dbg !463
+  br i1 %tobool1, label %if.end, label %for.cond.preheader, !dbg !463
 
-.preheader:                                       ; preds = %2
-  %6 = bitcast i8** %4 to i8*
-  %7 = load i32* @n_clocks, align 4, !dbg !568, !tbaa !388
-  %8 = icmp sgt i32 %7, 0, !dbg !572
-  br i1 %8, label %.lr.ph, label %.preheader._crit_edge, !dbg !573
+for.cond.preheader:                               ; preds = %land.lhs.true
+  %1 = load i32* @n_clocks, align 4, !dbg !464, !tbaa !359
+  %cmp13 = icmp sgt i32 %1, 0, !dbg !464
+  br i1 %cmp13, label %for.body, label %for.end, !dbg !464
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %.preheader ]
-  %9 = load %struct.cHandledData** @clocks, align 8, !dbg !574, !tbaa !376
-  %10 = trunc i64 %indvars.iv to i32, !dbg !576
-  %11 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %9, i32 %10) #8, !dbg !576
-  %12 = getelementptr inbounds i8* %11, i64 24, !dbg !577
-  %13 = bitcast i8* %12 to void (i32, i8*)**, !dbg !577
-  %14 = load void (i32, i8*)** %13, align 8, !dbg !577, !tbaa !578
-  %15 = load i8*** %3, align 8, !dbg !579, !tbaa !398
-  %16 = getelementptr inbounds i8** %15, i64 %indvars.iv, !dbg !580
-  %17 = load i8** %16, align 8, !dbg !580, !tbaa !376
-  tail call void %14(i32 %this_timer, i8* %17) #8, !dbg !581
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !573
-  %18 = load i32* @n_clocks, align 4, !dbg !568, !tbaa !388
-  %19 = sext i32 %18 to i64, !dbg !572
-  %20 = icmp slt i64 %indvars.iv.next, %19, !dbg !572
-  br i1 %20, label %.lr.ph, label %._crit_edge, !dbg !573
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %2 = load %struct.cHandledData** @clocks, align 8, !dbg !467, !tbaa !355
+  %3 = trunc i64 %indvars.iv to i32, !dbg !467
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %2, i32 %3) #8, !dbg !467
+  %destroy = getelementptr inbounds i8* %call, i64 24, !dbg !469
+  %4 = bitcast i8* %destroy to void (i32, i8*)**, !dbg !469
+  %5 = load void (i32, i8*)** %4, align 8, !dbg !469, !tbaa !355
+  %6 = load i8*** %data, align 8, !dbg !469, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %6, i64 %indvars.iv, !dbg !469
+  %7 = load i8** %arrayidx, align 8, !dbg !469, !tbaa !355
+  tail call void %5(i32 %this_timer, i8* %7) #8, !dbg !469
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !464
+  %8 = load i32* @n_clocks, align 4, !dbg !464, !tbaa !359
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !464
+  %cmp = icmp slt i32 %9, %8, !dbg !464
+  br i1 %cmp, label %for.body, label %for.cond.for.end_crit_edge, !dbg !464
 
-._crit_edge:                                      ; preds = %.lr.ph
-  %.phi.trans.insert = bitcast %struct.t_Timer* %timer to i8**
-  %.pre = load i8** %.phi.trans.insert, align 8, !dbg !582, !tbaa !398
-  br label %.preheader._crit_edge, !dbg !573
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %.pre = load i8*** %data, align 8, !dbg !470, !tbaa !355
+  br label %for.end, !dbg !464
 
-.preheader._crit_edge:                            ; preds = %.preheader, %._crit_edge
-  %21 = phi i8* [ %.pre, %._crit_edge ], [ %6, %.preheader ]
-  tail call void @free(i8* %21) #9, !dbg !583
-  %22 = bitcast %struct.t_Timer* %timer to i8*, !dbg !584
-  tail call void @free(i8* %22) #9, !dbg !585
-  %23 = load %struct.cHandledData** @timers, align 8, !dbg !586, !tbaa !376
-  %24 = tail call i32 @Util_DeleteHandle(%struct.cHandledData* %23, i32 %this_timer) #8, !dbg !587
-  %25 = load i32* @n_timers, align 4, !dbg !588, !tbaa !388
-  %26 = add nsw i32 %25, -1, !dbg !588
-  store i32 %26, i32* @n_timers, align 4, !dbg !588, !tbaa !388
-  br label %27, !dbg !589
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %for.cond.preheader
+  %10 = phi i8** [ %.pre, %for.cond.for.end_crit_edge ], [ %0, %for.cond.preheader ]
+  %11 = bitcast i8** %10 to i8*, !dbg !470
+  tail call void @free(i8* %11) #8, !dbg !470
+  %12 = bitcast %struct.t_Timer* %timer to i8*, !dbg !471
+  tail call void @free(i8* %12) #8, !dbg !471
+  %13 = load %struct.cHandledData** @timers, align 8, !dbg !472, !tbaa !355
+  %call4 = tail call i32 @Util_DeleteHandle(%struct.cHandledData* %13, i32 %this_timer) #8, !dbg !472
+  %14 = load i32* @n_timers, align 4, !dbg !473, !tbaa !359
+  %dec = add nsw i32 %14, -1, !dbg !473
+  store i32 %dec, i32* @n_timers, align 4, !dbg !473, !tbaa !359
+  br label %if.end, !dbg !474
 
-; <label>:27                                      ; preds = %2, %0, %.preheader._crit_edge
-  ret void, !dbg !590
+if.end:                                           ; preds = %land.lhs.true, %entry, %for.end
+  ret void, !dbg !475
 }
 
 ; Function Attrs: optsize
 declare i32 @CCTK_VWarn(i32, i32, i8*, i8*, i8*, ...) #4
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @cctk_timerdestroy_(i32* nocapture %ierr, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !144, metadata !354), !dbg !591
-  tail call void @llvm.dbg.value(metadata i8* %cctk_str1, i64 0, metadata !145, metadata !354), !dbg !592
-  tail call void @llvm.dbg.value(metadata i32 %cctk_strlen1, i64 0, metadata !146, metadata !354), !dbg !592
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !593
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !147, metadata !354), !dbg !593
-  %2 = tail call i32 @CCTK_TimerDestroy(i8* %1) #9, !dbg !594
-  store i32 %2, i32* %ierr, align 4, !dbg !595, !tbaa !388
-  tail call void @free(i8* %1) #9, !dbg !596
-  ret void, !dbg !597
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !138), !dbg !476
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !139), !dbg !476
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !140), !dbg !476
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !477
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !141), !dbg !477
+  %call1 = tail call i32 @CCTK_TimerDestroy(i8* %call) #10, !dbg !478
+  store i32 %call1, i32* %ierr, align 4, !dbg !478, !tbaa !359
+  tail call void @free(i8* %call) #8, !dbg !479
+  ret void, !dbg !480
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerDestroyI(i32 %this_timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !152, metadata !354), !dbg !598
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !599, !tbaa !376
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_timer) #8, !dbg !600
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %5, i64 0, metadata !153, metadata !354), !dbg !601
-  %3 = icmp ne i8* %2, null, !dbg !602
-  br i1 %3, label %4, label %6, !dbg !604
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !146), !dbg !481
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !482, !tbaa !355
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %this_timer) #8, !dbg !482
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %1}, i64 0, metadata !147), !dbg !482
+  %tobool = icmp ne i8* %call, null, !dbg !483
+  br i1 %tobool, label %if.then, label %if.else, !dbg !483
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to %struct.t_Timer*, !dbg !600
-  tail call fastcc void @CCTKi_TimerDestroy(i32 %this_timer, %struct.t_Timer* %5) #9, !dbg !605
-  br label %8, !dbg !607
+if.then:                                          ; preds = %entry
+  %1 = bitcast i8* %call to %struct.t_Timer*, !dbg !482
+  tail call fastcc void @CCTKi_TimerDestroy(i32 %this_timer, %struct.t_Timer* %1) #10, !dbg !484
+  br label %if.end, !dbg !486
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 541, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([39 x i8]* @.str4, i64 0, i64 0), i32 %this_timer) #8, !dbg !608
-  br label %8
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 541, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([39 x i8]* @.str4, i64 0, i64 0), i32 %this_timer) #8, !dbg !487
+  br label %if.end
 
-; <label>:8                                       ; preds = %6, %4
-  %not. = xor i1 %3, true, !dbg !610
-  %9 = sext i1 %not. to i32, !dbg !610
-  ret i32 %9, !dbg !611
+if.end:                                           ; preds = %if.else, %if.then
+  %not.tobool = xor i1 %tobool, true, !dbg !489
+  %cond = sext i1 %not.tobool to i32, !dbg !489
+  ret i32 %cond, !dbg !489
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @cctk_timerdestroyi_(i32* nocapture %ierr, i32* nocapture readonly %this_timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !158, metadata !354), !dbg !612
-  tail call void @llvm.dbg.value(metadata i32* %this_timer, i64 0, metadata !159, metadata !354), !dbg !613
-  %1 = load i32* %this_timer, align 4, !dbg !614, !tbaa !388
-  %2 = tail call i32 @CCTK_TimerDestroyI(i32 %1) #9, !dbg !615
-  store i32 %2, i32* %ierr, align 4, !dbg !616, !tbaa !388
-  ret void, !dbg !617
+; Function Attrs: nounwind optsize uwtable
+define void @cctk_timerdestroyi_(i32* nocapture %ierr, i32* nocapture %this_timer) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !152), !dbg !490
+  tail call void @llvm.dbg.value(metadata !{i32* %this_timer}, i64 0, metadata !153), !dbg !490
+  %0 = load i32* %this_timer, align 4, !dbg !491, !tbaa !359
+  %call = tail call i32 @CCTK_TimerDestroyI(i32 %0) #10, !dbg !491
+  store i32 %call, i32* %ierr, align 4, !dbg !491, !tbaa !359
+  ret void, !dbg !492
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerStart(i8* %timername) #1 {
+entry:
   %timer = alloca %struct.t_Timer*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %timername, i64 0, metadata !162, metadata !354), !dbg !618
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !619, !tbaa !376
-  %2 = bitcast %struct.t_Timer** %timer to i8**, !dbg !620
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %timername, i8** %2) #8, !dbg !621
-  call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !164, metadata !354), !dbg !622
-  %4 = icmp sgt i32 %3, -1, !dbg !623
-  br i1 %4, label %5, label %7, !dbg !625
+  call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !156), !dbg !493
+  call void @llvm.dbg.declare(metadata !{%struct.t_Timer** %timer}, metadata !157), !dbg !494
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !495, !tbaa !355
+  %1 = bitcast %struct.t_Timer** %timer to i8**, !dbg !495
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %timername, i8** %1) #8, !dbg !495
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !158), !dbg !495
+  %cmp = icmp sgt i32 %call, -1, !dbg !496
+  br i1 %cmp, label %if.then, label %if.else, !dbg !496
 
-; <label>:5                                       ; preds = %0
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !163, metadata !354), !dbg !626
-  %6 = load %struct.t_Timer** %timer, align 8, !dbg !627, !tbaa !376
-  call fastcc void @CCTKi_TimerStart(i32 %3, %struct.t_Timer* %6) #9, !dbg !629
-  br label %9, !dbg !630
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !157), !dbg !497
+  %2 = load %struct.t_Timer** %timer, align 8, !dbg !497, !tbaa !355
+  call fastcc void @CCTKi_TimerStart(i32 %call, %struct.t_Timer* %2) #10, !dbg !497
+  br label %if.end, !dbg !499
 
-; <label>:7                                       ; preds = %0
-  %8 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 629, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str5, i64 0, i64 0), i8* %timername) #8, !dbg !631
-  br label %9
+if.else:                                          ; preds = %entry
+  %call1 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 629, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str5, i64 0, i64 0), i8* %timername) #8, !dbg !500
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %5
-  %not. = xor i1 %4, true, !dbg !633
-  %10 = sext i1 %not. to i32, !dbg !633
-  ret i32 %10, !dbg !634
+if.end:                                           ; preds = %if.else, %if.then
+  %not.cmp = xor i1 %cmp, true, !dbg !502
+  %cond = sext i1 %not.cmp to i32, !dbg !502
+  ret i32 %cond, !dbg !502
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define internal fastcc void @CCTKi_TimerStart(i32 %this_timer, %struct.t_Timer* readonly %timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !301, metadata !354), !dbg !635
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %timer, i64 0, metadata !302, metadata !354), !dbg !636
-  %1 = icmp eq %struct.t_Timer* %timer, null, !dbg !637
-  br i1 %1, label %.loopexit, label %2, !dbg !639
+; Function Attrs: nounwind optsize uwtable
+define internal fastcc void @CCTKi_TimerStart(i32 %this_timer, %struct.t_Timer* %timer) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !309), !dbg !503
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %timer}, i64 0, metadata !310), !dbg !503
+  %tobool = icmp eq %struct.t_Timer* %timer, null, !dbg !504
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !504
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !640
-  %4 = load i8*** %3, align 8, !dbg !640, !tbaa !398
-  %5 = icmp ne i8** %4, null, !dbg !641
-  %6 = load i32* @n_clocks, align 4
-  %7 = icmp sgt i32 %6, 0, !dbg !642
-  %or.cond = and i1 %5, %7, !dbg !646
-  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !646
+land.lhs.true:                                    ; preds = %entry
+  %data = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !504
+  %0 = load i8*** %data, align 8, !dbg !504, !tbaa !355
+  %tobool1 = icmp ne i8** %0, null, !dbg !504
+  %1 = load i32* @n_clocks, align 4, !dbg !505, !tbaa !359
+  %cmp8 = icmp sgt i32 %1, 0, !dbg !505
+  %or.cond = and i1 %tobool1, %cmp8, !dbg !504
+  br i1 %or.cond, label %for.body, label %if.end, !dbg !504
 
-.lr.ph:                                           ; preds = %2, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %2 ]
-  %8 = load %struct.cHandledData** @clocks, align 8, !dbg !647, !tbaa !376
-  %9 = trunc i64 %indvars.iv to i32, !dbg !649
-  %10 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %8, i32 %9) #8, !dbg !649
-  %11 = getelementptr inbounds i8* %10, i64 32, !dbg !650
-  %12 = bitcast i8* %11 to void (i32, i8*)**, !dbg !650
-  %13 = load void (i32, i8*)** %12, align 8, !dbg !650, !tbaa !651
-  %14 = load i8*** %3, align 8, !dbg !652, !tbaa !398
-  %15 = getelementptr inbounds i8** %14, i64 %indvars.iv, !dbg !653
-  %16 = load i8** %15, align 8, !dbg !653, !tbaa !376
-  tail call void %13(i32 %this_timer, i8* %16) #8, !dbg !654
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !655
-  %17 = load i32* @n_clocks, align 4, !dbg !656, !tbaa !388
-  %18 = sext i32 %17 to i64, !dbg !642
-  %19 = icmp slt i64 %indvars.iv.next, %18, !dbg !642
-  br i1 %19, label %.lr.ph, label %.loopexit, !dbg !655
+for.body:                                         ; preds = %land.lhs.true, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %land.lhs.true ]
+  %2 = load %struct.cHandledData** @clocks, align 8, !dbg !508, !tbaa !355
+  %3 = trunc i64 %indvars.iv to i32, !dbg !508
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %2, i32 %3) #8, !dbg !508
+  %start = getelementptr inbounds i8* %call, i64 32, !dbg !510
+  %4 = bitcast i8* %start to void (i32, i8*)**, !dbg !510
+  %5 = load void (i32, i8*)** %4, align 8, !dbg !510, !tbaa !355
+  %6 = load i8*** %data, align 8, !dbg !510, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %6, i64 %indvars.iv, !dbg !510
+  %7 = load i8** %arrayidx, align 8, !dbg !510, !tbaa !355
+  tail call void %5(i32 %this_timer, i8* %7) #8, !dbg !510
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !505
+  %8 = load i32* @n_clocks, align 4, !dbg !505, !tbaa !359
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !505
+  %cmp = icmp slt i32 %9, %8, !dbg !505
+  br i1 %cmp, label %for.body, label %if.end, !dbg !505
 
-.loopexit:                                        ; preds = %.lr.ph, %2, %0
-  ret void, !dbg !657
+if.end:                                           ; preds = %land.lhs.true, %for.body, %entry
+  ret void, !dbg !511
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @cctk_timerstart_(i32* nocapture %ierr, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !167, metadata !354), !dbg !658
-  tail call void @llvm.dbg.value(metadata i8* %cctk_str1, i64 0, metadata !168, metadata !354), !dbg !659
-  tail call void @llvm.dbg.value(metadata i32 %cctk_strlen1, i64 0, metadata !169, metadata !354), !dbg !659
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !660
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !170, metadata !354), !dbg !660
-  %2 = tail call i32 @CCTK_TimerStart(i8* %1) #9, !dbg !661
-  store i32 %2, i32* %ierr, align 4, !dbg !662, !tbaa !388
-  tail call void @free(i8* %1) #9, !dbg !663
-  ret void, !dbg !664
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !161), !dbg !512
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !162), !dbg !512
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !163), !dbg !512
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !513
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !164), !dbg !513
+  %call1 = tail call i32 @CCTK_TimerStart(i8* %call) #10, !dbg !514
+  store i32 %call1, i32* %ierr, align 4, !dbg !514, !tbaa !359
+  tail call void @free(i8* %call) #8, !dbg !515
+  ret void, !dbg !516
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerStartI(i32 %this_timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !173, metadata !354), !dbg !665
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !666, !tbaa !376
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_timer) #8, !dbg !667
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %5, i64 0, metadata !174, metadata !354), !dbg !668
-  %3 = icmp ne i8* %2, null, !dbg !669
-  br i1 %3, label %4, label %6, !dbg !671
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !167), !dbg !517
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !518, !tbaa !355
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %this_timer) #8, !dbg !518
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %1}, i64 0, metadata !168), !dbg !518
+  %tobool = icmp ne i8* %call, null, !dbg !519
+  br i1 %tobool, label %if.then, label %if.else, !dbg !519
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to %struct.t_Timer*, !dbg !667
-  tail call fastcc void @CCTKi_TimerStart(i32 %this_timer, %struct.t_Timer* %5) #9, !dbg !672
-  br label %8, !dbg !674
+if.then:                                          ; preds = %entry
+  %1 = bitcast i8* %call to %struct.t_Timer*, !dbg !518
+  tail call fastcc void @CCTKi_TimerStart(i32 %this_timer, %struct.t_Timer* %1) #10, !dbg !520
+  br label %if.end, !dbg !522
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 677, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([37 x i8]* @.str6, i64 0, i64 0), i32 %this_timer) #8, !dbg !675
-  br label %8
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 677, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([37 x i8]* @.str6, i64 0, i64 0), i32 %this_timer) #8, !dbg !523
+  br label %if.end
 
-; <label>:8                                       ; preds = %6, %4
-  %not. = xor i1 %3, true, !dbg !677
-  %9 = sext i1 %not. to i32, !dbg !677
-  ret i32 %9, !dbg !678
+if.end:                                           ; preds = %if.else, %if.then
+  %not.tobool = xor i1 %tobool, true, !dbg !525
+  %cond = sext i1 %not.tobool to i32, !dbg !525
+  ret i32 %cond, !dbg !525
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @cctk_timerstarti_(i32* nocapture %ierr, i32* nocapture readonly %this_timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !177, metadata !354), !dbg !679
-  tail call void @llvm.dbg.value(metadata i32* %this_timer, i64 0, metadata !178, metadata !354), !dbg !680
-  %1 = load i32* %this_timer, align 4, !dbg !681, !tbaa !388
-  %2 = tail call i32 @CCTK_TimerStartI(i32 %1) #9, !dbg !682
-  store i32 %2, i32* %ierr, align 4, !dbg !683, !tbaa !388
-  ret void, !dbg !684
+; Function Attrs: nounwind optsize uwtable
+define void @cctk_timerstarti_(i32* nocapture %ierr, i32* nocapture %this_timer) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !171), !dbg !526
+  tail call void @llvm.dbg.value(metadata !{i32* %this_timer}, i64 0, metadata !172), !dbg !526
+  %0 = load i32* %this_timer, align 4, !dbg !527, !tbaa !359
+  %call = tail call i32 @CCTK_TimerStartI(i32 %0) #10, !dbg !527
+  store i32 %call, i32* %ierr, align 4, !dbg !527, !tbaa !359
+  ret void, !dbg !528
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerStop(i8* %timername) #1 {
+entry:
   %timer = alloca %struct.t_Timer*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %timername, i64 0, metadata !181, metadata !354), !dbg !685
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !686, !tbaa !376
-  %2 = bitcast %struct.t_Timer** %timer to i8**, !dbg !687
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %timername, i8** %2) #8, !dbg !688
-  call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !183, metadata !354), !dbg !689
-  %4 = icmp sgt i32 %3, -1, !dbg !690
-  br i1 %4, label %5, label %7, !dbg !692
+  call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !175), !dbg !529
+  call void @llvm.dbg.declare(metadata !{%struct.t_Timer** %timer}, metadata !176), !dbg !530
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !531, !tbaa !355
+  %1 = bitcast %struct.t_Timer** %timer to i8**, !dbg !531
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %timername, i8** %1) #8, !dbg !531
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !177), !dbg !531
+  %cmp = icmp sgt i32 %call, -1, !dbg !532
+  br i1 %cmp, label %if.then, label %if.else, !dbg !532
 
-; <label>:5                                       ; preds = %0
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !182, metadata !354), !dbg !693
-  %6 = load %struct.t_Timer** %timer, align 8, !dbg !694, !tbaa !376
-  call fastcc void @CCTKi_TimerStop(i32 %3, %struct.t_Timer* %6) #9, !dbg !696
-  br label %9, !dbg !697
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !176), !dbg !533
+  %2 = load %struct.t_Timer** %timer, align 8, !dbg !533, !tbaa !355
+  call fastcc void @CCTKi_TimerStop(i32 %call, %struct.t_Timer* %2) #10, !dbg !533
+  br label %if.end, !dbg !535
 
-; <label>:7                                       ; preds = %0
-  %8 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 761, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([35 x i8]* @.str7, i64 0, i64 0), i8* %timername) #8, !dbg !698
-  br label %9
+if.else:                                          ; preds = %entry
+  %call1 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 761, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([35 x i8]* @.str7, i64 0, i64 0), i8* %timername) #8, !dbg !536
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %5
-  %not. = xor i1 %4, true, !dbg !700
-  %10 = sext i1 %not. to i32, !dbg !700
-  ret i32 %10, !dbg !701
+if.end:                                           ; preds = %if.else, %if.then
+  %not.cmp = xor i1 %cmp, true, !dbg !538
+  %cond = sext i1 %not.cmp to i32, !dbg !538
+  ret i32 %cond, !dbg !538
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define internal fastcc void @CCTKi_TimerStop(i32 %this_timer, %struct.t_Timer* readonly %timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !307, metadata !354), !dbg !702
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %timer, i64 0, metadata !308, metadata !354), !dbg !703
-  %1 = icmp eq %struct.t_Timer* %timer, null, !dbg !704
-  br i1 %1, label %.loopexit, label %2, !dbg !706
+; Function Attrs: nounwind optsize uwtable
+define internal fastcc void @CCTKi_TimerStop(i32 %this_timer, %struct.t_Timer* %timer) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !303), !dbg !539
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %timer}, i64 0, metadata !304), !dbg !539
+  %tobool = icmp eq %struct.t_Timer* %timer, null, !dbg !540
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !540
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !707
-  %4 = load i8*** %3, align 8, !dbg !707, !tbaa !398
-  %5 = icmp ne i8** %4, null, !dbg !708
-  %6 = load i32* @n_clocks, align 4
-  %7 = icmp sgt i32 %6, 0, !dbg !709
-  %or.cond = and i1 %5, %7, !dbg !713
-  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !713
+land.lhs.true:                                    ; preds = %entry
+  %data = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !540
+  %0 = load i8*** %data, align 8, !dbg !540, !tbaa !355
+  %tobool1 = icmp ne i8** %0, null, !dbg !540
+  %1 = load i32* @n_clocks, align 4, !dbg !541, !tbaa !359
+  %cmp8 = icmp sgt i32 %1, 0, !dbg !541
+  %or.cond = and i1 %tobool1, %cmp8, !dbg !540
+  br i1 %or.cond, label %for.body, label %if.end, !dbg !540
 
-.lr.ph:                                           ; preds = %2, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %2 ]
-  %8 = load %struct.cHandledData** @clocks, align 8, !dbg !714, !tbaa !376
-  %9 = trunc i64 %indvars.iv to i32, !dbg !716
-  %10 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %8, i32 %9) #8, !dbg !716
-  %11 = getelementptr inbounds i8* %10, i64 40, !dbg !717
-  %12 = bitcast i8* %11 to void (i32, i8*)**, !dbg !717
-  %13 = load void (i32, i8*)** %12, align 8, !dbg !717, !tbaa !718
-  %14 = load i8*** %3, align 8, !dbg !719, !tbaa !398
-  %15 = getelementptr inbounds i8** %14, i64 %indvars.iv, !dbg !720
-  %16 = load i8** %15, align 8, !dbg !720, !tbaa !376
-  tail call void %13(i32 %this_timer, i8* %16) #8, !dbg !721
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !722
-  %17 = load i32* @n_clocks, align 4, !dbg !723, !tbaa !388
-  %18 = sext i32 %17 to i64, !dbg !709
-  %19 = icmp slt i64 %indvars.iv.next, %18, !dbg !709
-  br i1 %19, label %.lr.ph, label %.loopexit, !dbg !722
+for.body:                                         ; preds = %land.lhs.true, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %land.lhs.true ]
+  %2 = load %struct.cHandledData** @clocks, align 8, !dbg !544, !tbaa !355
+  %3 = trunc i64 %indvars.iv to i32, !dbg !544
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %2, i32 %3) #8, !dbg !544
+  %stop = getelementptr inbounds i8* %call, i64 40, !dbg !546
+  %4 = bitcast i8* %stop to void (i32, i8*)**, !dbg !546
+  %5 = load void (i32, i8*)** %4, align 8, !dbg !546, !tbaa !355
+  %6 = load i8*** %data, align 8, !dbg !546, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %6, i64 %indvars.iv, !dbg !546
+  %7 = load i8** %arrayidx, align 8, !dbg !546, !tbaa !355
+  tail call void %5(i32 %this_timer, i8* %7) #8, !dbg !546
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !541
+  %8 = load i32* @n_clocks, align 4, !dbg !541, !tbaa !359
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !541
+  %cmp = icmp slt i32 %9, %8, !dbg !541
+  br i1 %cmp, label %for.body, label %if.end, !dbg !541
 
-.loopexit:                                        ; preds = %.lr.ph, %2, %0
-  ret void, !dbg !724
+if.end:                                           ; preds = %land.lhs.true, %for.body, %entry
+  ret void, !dbg !547
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @cctk_timerstop_(i32* nocapture %ierr, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !186, metadata !354), !dbg !725
-  tail call void @llvm.dbg.value(metadata i8* %cctk_str1, i64 0, metadata !187, metadata !354), !dbg !726
-  tail call void @llvm.dbg.value(metadata i32 %cctk_strlen1, i64 0, metadata !188, metadata !354), !dbg !726
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !727
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !189, metadata !354), !dbg !727
-  %2 = tail call i32 @CCTK_TimerStop(i8* %1) #9, !dbg !728
-  store i32 %2, i32* %ierr, align 4, !dbg !729, !tbaa !388
-  tail call void @free(i8* %1) #9, !dbg !730
-  ret void, !dbg !731
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !180), !dbg !548
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !181), !dbg !548
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !182), !dbg !548
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !549
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !183), !dbg !549
+  %call1 = tail call i32 @CCTK_TimerStop(i8* %call) #10, !dbg !550
+  store i32 %call1, i32* %ierr, align 4, !dbg !550, !tbaa !359
+  tail call void @free(i8* %call) #8, !dbg !551
+  ret void, !dbg !552
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerStopI(i32 %this_timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !192, metadata !354), !dbg !732
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !733, !tbaa !376
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_timer) #8, !dbg !734
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %5, i64 0, metadata !193, metadata !354), !dbg !735
-  %3 = icmp ne i8* %2, null, !dbg !736
-  br i1 %3, label %4, label %6, !dbg !738
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !186), !dbg !553
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !554, !tbaa !355
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %this_timer) #8, !dbg !554
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %1}, i64 0, metadata !187), !dbg !554
+  %tobool = icmp ne i8* %call, null, !dbg !555
+  br i1 %tobool, label %if.then, label %if.else, !dbg !555
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to %struct.t_Timer*, !dbg !734
-  tail call fastcc void @CCTKi_TimerStop(i32 %this_timer, %struct.t_Timer* %5) #9, !dbg !739
-  br label %8, !dbg !741
+if.then:                                          ; preds = %entry
+  %1 = bitcast i8* %call to %struct.t_Timer*, !dbg !554
+  tail call fastcc void @CCTKi_TimerStop(i32 %this_timer, %struct.t_Timer* %1) #10, !dbg !556
+  br label %if.end, !dbg !558
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 809, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str8, i64 0, i64 0), i32 %this_timer) #8, !dbg !742
-  br label %8
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 809, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str8, i64 0, i64 0), i32 %this_timer) #8, !dbg !559
+  br label %if.end
 
-; <label>:8                                       ; preds = %6, %4
-  %not. = xor i1 %3, true, !dbg !744
-  %9 = sext i1 %not. to i32, !dbg !744
-  ret i32 %9, !dbg !745
+if.end:                                           ; preds = %if.else, %if.then
+  %not.tobool = xor i1 %tobool, true, !dbg !561
+  %cond = sext i1 %not.tobool to i32, !dbg !561
+  ret i32 %cond, !dbg !561
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @cctk_timerstopi_(i32* nocapture %ierr, i32* nocapture readonly %this_timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !196, metadata !354), !dbg !746
-  tail call void @llvm.dbg.value(metadata i32* %this_timer, i64 0, metadata !197, metadata !354), !dbg !747
-  %1 = load i32* %this_timer, align 4, !dbg !748, !tbaa !388
-  %2 = tail call i32 @CCTK_TimerStopI(i32 %1) #9, !dbg !749
-  store i32 %2, i32* %ierr, align 4, !dbg !750, !tbaa !388
-  ret void, !dbg !751
+; Function Attrs: nounwind optsize uwtable
+define void @cctk_timerstopi_(i32* nocapture %ierr, i32* nocapture %this_timer) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !190), !dbg !562
+  tail call void @llvm.dbg.value(metadata !{i32* %this_timer}, i64 0, metadata !191), !dbg !562
+  %0 = load i32* %this_timer, align 4, !dbg !563, !tbaa !359
+  %call = tail call i32 @CCTK_TimerStopI(i32 %0) #10, !dbg !563
+  store i32 %call, i32* %ierr, align 4, !dbg !563, !tbaa !359
+  ret void, !dbg !564
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerReset(i8* %timername) #1 {
+entry:
   %timer = alloca %struct.t_Timer*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %timername, i64 0, metadata !200, metadata !354), !dbg !752
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !753, !tbaa !376
-  %2 = bitcast %struct.t_Timer** %timer to i8**, !dbg !754
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %timername, i8** %2) #8, !dbg !755
-  call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !202, metadata !354), !dbg !756
-  %4 = icmp sgt i32 %3, -1, !dbg !757
-  br i1 %4, label %5, label %7, !dbg !759
+  call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !194), !dbg !565
+  call void @llvm.dbg.declare(metadata !{%struct.t_Timer** %timer}, metadata !195), !dbg !566
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !567, !tbaa !355
+  %1 = bitcast %struct.t_Timer** %timer to i8**, !dbg !567
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %timername, i8** %1) #8, !dbg !567
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !196), !dbg !567
+  %cmp = icmp sgt i32 %call, -1, !dbg !568
+  br i1 %cmp, label %if.then, label %if.else, !dbg !568
 
-; <label>:5                                       ; preds = %0
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !201, metadata !354), !dbg !760
-  %6 = load %struct.t_Timer** %timer, align 8, !dbg !761, !tbaa !376
-  call fastcc void @CCTKi_TimerReset(i32 %3, %struct.t_Timer* %6) #9, !dbg !763
-  br label %9, !dbg !764
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !195), !dbg !569
+  %2 = load %struct.t_Timer** %timer, align 8, !dbg !569, !tbaa !355
+  call fastcc void @CCTKi_TimerReset(i32 %call, %struct.t_Timer* %2) #10, !dbg !569
+  br label %if.end, !dbg !571
 
-; <label>:7                                       ; preds = %0
-  %8 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 892, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str9, i64 0, i64 0), i8* %timername) #8, !dbg !765
-  br label %9
+if.else:                                          ; preds = %entry
+  %call1 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 892, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str9, i64 0, i64 0), i8* %timername) #8, !dbg !572
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %5
-  %not. = xor i1 %4, true, !dbg !767
-  %10 = sext i1 %not. to i32, !dbg !767
-  ret i32 %10, !dbg !768
+if.end:                                           ; preds = %if.else, %if.then
+  %not.cmp = xor i1 %cmp, true, !dbg !574
+  %cond = sext i1 %not.cmp to i32, !dbg !574
+  ret i32 %cond, !dbg !574
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define internal fastcc void @CCTKi_TimerReset(i32 %this_timer, %struct.t_Timer* readonly %timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !313, metadata !354), !dbg !769
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %timer, i64 0, metadata !314, metadata !354), !dbg !770
-  %1 = icmp eq %struct.t_Timer* %timer, null, !dbg !771
-  br i1 %1, label %.loopexit, label %2, !dbg !773
+; Function Attrs: nounwind optsize uwtable
+define internal fastcc void @CCTKi_TimerReset(i32 %this_timer, %struct.t_Timer* %timer) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !297), !dbg !575
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %timer}, i64 0, metadata !298), !dbg !575
+  %tobool = icmp eq %struct.t_Timer* %timer, null, !dbg !576
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !576
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !774
-  %4 = load i8*** %3, align 8, !dbg !774, !tbaa !398
-  %5 = icmp ne i8** %4, null, !dbg !775
-  %6 = load i32* @n_clocks, align 4
-  %7 = icmp sgt i32 %6, 0, !dbg !776
-  %or.cond = and i1 %5, %7, !dbg !780
-  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !780
+land.lhs.true:                                    ; preds = %entry
+  %data = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !576
+  %0 = load i8*** %data, align 8, !dbg !576, !tbaa !355
+  %tobool1 = icmp ne i8** %0, null, !dbg !576
+  %1 = load i32* @n_clocks, align 4, !dbg !577, !tbaa !359
+  %cmp8 = icmp sgt i32 %1, 0, !dbg !577
+  %or.cond = and i1 %tobool1, %cmp8, !dbg !576
+  br i1 %or.cond, label %for.body, label %if.end, !dbg !576
 
-.lr.ph:                                           ; preds = %2, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %2 ]
-  %8 = load %struct.cHandledData** @clocks, align 8, !dbg !781, !tbaa !376
-  %9 = trunc i64 %indvars.iv to i32, !dbg !783
-  %10 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %8, i32 %9) #8, !dbg !783
-  %11 = getelementptr inbounds i8* %10, i64 48, !dbg !784
-  %12 = bitcast i8* %11 to void (i32, i8*)**, !dbg !784
-  %13 = load void (i32, i8*)** %12, align 8, !dbg !784, !tbaa !785
-  %14 = load i8*** %3, align 8, !dbg !786, !tbaa !398
-  %15 = getelementptr inbounds i8** %14, i64 %indvars.iv, !dbg !787
-  %16 = load i8** %15, align 8, !dbg !787, !tbaa !376
-  tail call void %13(i32 %this_timer, i8* %16) #8, !dbg !788
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !789
-  %17 = load i32* @n_clocks, align 4, !dbg !790, !tbaa !388
-  %18 = sext i32 %17 to i64, !dbg !776
-  %19 = icmp slt i64 %indvars.iv.next, %18, !dbg !776
-  br i1 %19, label %.lr.ph, label %.loopexit, !dbg !789
+for.body:                                         ; preds = %land.lhs.true, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %land.lhs.true ]
+  %2 = load %struct.cHandledData** @clocks, align 8, !dbg !580, !tbaa !355
+  %3 = trunc i64 %indvars.iv to i32, !dbg !580
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %2, i32 %3) #8, !dbg !580
+  %reset = getelementptr inbounds i8* %call, i64 48, !dbg !582
+  %4 = bitcast i8* %reset to void (i32, i8*)**, !dbg !582
+  %5 = load void (i32, i8*)** %4, align 8, !dbg !582, !tbaa !355
+  %6 = load i8*** %data, align 8, !dbg !582, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %6, i64 %indvars.iv, !dbg !582
+  %7 = load i8** %arrayidx, align 8, !dbg !582, !tbaa !355
+  tail call void %5(i32 %this_timer, i8* %7) #8, !dbg !582
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !577
+  %8 = load i32* @n_clocks, align 4, !dbg !577, !tbaa !359
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !577
+  %cmp = icmp slt i32 %9, %8, !dbg !577
+  br i1 %cmp, label %for.body, label %if.end, !dbg !577
 
-.loopexit:                                        ; preds = %.lr.ph, %2, %0
-  ret void, !dbg !791
+if.end:                                           ; preds = %land.lhs.true, %for.body, %entry
+  ret void, !dbg !583
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @cctk_timerreset_(i32* nocapture %ierr, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !205, metadata !354), !dbg !792
-  tail call void @llvm.dbg.value(metadata i8* %cctk_str1, i64 0, metadata !206, metadata !354), !dbg !793
-  tail call void @llvm.dbg.value(metadata i32 %cctk_strlen1, i64 0, metadata !207, metadata !354), !dbg !793
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !794
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !208, metadata !354), !dbg !794
-  %2 = tail call i32 @CCTK_TimerReset(i8* %1) #9, !dbg !795
-  store i32 %2, i32* %ierr, align 4, !dbg !796, !tbaa !388
-  tail call void @free(i8* %1) #9, !dbg !797
-  ret void, !dbg !798
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !199), !dbg !584
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !200), !dbg !584
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !201), !dbg !584
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !585
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !202), !dbg !585
+  %call1 = tail call i32 @CCTK_TimerReset(i8* %call) #10, !dbg !586
+  store i32 %call1, i32* %ierr, align 4, !dbg !586, !tbaa !359
+  tail call void @free(i8* %call) #8, !dbg !587
+  ret void, !dbg !588
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerResetI(i32 %this_timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !211, metadata !354), !dbg !799
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !800, !tbaa !376
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_timer) #8, !dbg !801
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %5, i64 0, metadata !212, metadata !354), !dbg !802
-  %3 = icmp ne i8* %2, null, !dbg !803
-  br i1 %3, label %4, label %6, !dbg !805
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !205), !dbg !589
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !590, !tbaa !355
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %this_timer) #8, !dbg !590
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %1}, i64 0, metadata !206), !dbg !590
+  %tobool = icmp ne i8* %call, null, !dbg !591
+  br i1 %tobool, label %if.then, label %if.else, !dbg !591
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to %struct.t_Timer*, !dbg !801
-  tail call fastcc void @CCTKi_TimerReset(i32 %this_timer, %struct.t_Timer* %5) #9, !dbg !806
-  br label %8, !dbg !808
+if.then:                                          ; preds = %entry
+  %1 = bitcast i8* %call to %struct.t_Timer*, !dbg !590
+  tail call fastcc void @CCTKi_TimerReset(i32 %this_timer, %struct.t_Timer* %1) #10, !dbg !592
+  br label %if.end, !dbg !594
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 940, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([37 x i8]* @.str10, i64 0, i64 0), i32 %this_timer) #8, !dbg !809
-  br label %8
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 940, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([37 x i8]* @.str10, i64 0, i64 0), i32 %this_timer) #8, !dbg !595
+  br label %if.end
 
-; <label>:8                                       ; preds = %6, %4
-  %not. = xor i1 %3, true, !dbg !811
-  %9 = sext i1 %not. to i32, !dbg !811
-  ret i32 %9, !dbg !812
+if.end:                                           ; preds = %if.else, %if.then
+  %not.tobool = xor i1 %tobool, true, !dbg !597
+  %cond = sext i1 %not.tobool to i32, !dbg !597
+  ret i32 %cond, !dbg !597
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @cctk_timerreseti_(i32* nocapture %ierr, i32* nocapture readonly %this_timer) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !215, metadata !354), !dbg !813
-  tail call void @llvm.dbg.value(metadata i32* %this_timer, i64 0, metadata !216, metadata !354), !dbg !814
-  %1 = load i32* %this_timer, align 4, !dbg !815, !tbaa !388
-  %2 = tail call i32 @CCTK_TimerResetI(i32 %1) #9, !dbg !816
-  store i32 %2, i32* %ierr, align 4, !dbg !817, !tbaa !388
-  ret void, !dbg !818
+; Function Attrs: nounwind optsize uwtable
+define void @cctk_timerreseti_(i32* nocapture %ierr, i32* nocapture %this_timer) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !209), !dbg !598
+  tail call void @llvm.dbg.value(metadata !{i32* %this_timer}, i64 0, metadata !210), !dbg !598
+  %0 = load i32* %this_timer, align 4, !dbg !599, !tbaa !359
+  %call = tail call i32 @CCTK_TimerResetI(i32 %0) #10, !dbg !599
+  store i32 %call, i32* %ierr, align 4, !dbg !599, !tbaa !359
+  ret void, !dbg !600
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_Timer(i8* %timername, %struct.cTimerData* nocapture %info) #1 {
+entry:
   %timer = alloca %struct.t_Timer*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %timername, i64 0, metadata !221, metadata !354), !dbg !819
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* %info, i64 0, metadata !222, metadata !354), !dbg !820
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !821, !tbaa !376
-  %2 = bitcast %struct.t_Timer** %timer to i8**, !dbg !822
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %timername, i8** %2) #8, !dbg !823
-  call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !224, metadata !354), !dbg !824
-  %4 = icmp sgt i32 %3, -1, !dbg !825
-  br i1 %4, label %5, label %7, !dbg !827
+  call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !221), !dbg !601
+  call void @llvm.dbg.value(metadata !{%struct.cTimerData* %info}, i64 0, metadata !222), !dbg !601
+  call void @llvm.dbg.declare(metadata !{%struct.t_Timer** %timer}, metadata !223), !dbg !602
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !603, !tbaa !355
+  %1 = bitcast %struct.t_Timer** %timer to i8**, !dbg !603
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %timername, i8** %1) #8, !dbg !603
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !224), !dbg !603
+  %cmp = icmp sgt i32 %call, -1, !dbg !604
+  br i1 %cmp, label %if.then, label %if.end, !dbg !604
 
-; <label>:5                                       ; preds = %0
-  call void @llvm.dbg.value(metadata %struct.t_Timer** %timer, i64 0, metadata !223, metadata !354), !dbg !828
-  %6 = load %struct.t_Timer** %timer, align 8, !dbg !829, !tbaa !376
-  call fastcc void @CCTKi_Timer(i32 %3, %struct.t_Timer* %6, %struct.cTimerData* %info) #9, !dbg !831
-  br label %7, !dbg !832
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !223), !dbg !605
+  %2 = load %struct.t_Timer** %timer, align 8, !dbg !605, !tbaa !355
+  call fastcc void @CCTKi_Timer(i32 %call, %struct.t_Timer* %2, %struct.cTimerData* %info) #10, !dbg !605
+  br label %if.end, !dbg !607
 
-; <label>:7                                       ; preds = %5, %0
-  %not. = xor i1 %4, true, !dbg !833
-  %8 = sext i1 %not. to i32, !dbg !833
-  ret i32 %8, !dbg !834
+if.end:                                           ; preds = %if.then, %entry
+  %not.cmp = xor i1 %cmp, true, !dbg !608
+  %cond = sext i1 %not.cmp to i32, !dbg !608
+  ret i32 %cond, !dbg !608
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define internal fastcc void @CCTKi_Timer(i32 %this_timer, %struct.t_Timer* readonly %timer, %struct.cTimerData* nocapture %info) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !321, metadata !354), !dbg !835
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %timer, i64 0, metadata !322, metadata !354), !dbg !836
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* %info, i64 0, metadata !323, metadata !354), !dbg !837
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !326, metadata !354), !dbg !838
-  %1 = icmp eq %struct.t_Timer* %timer, null, !dbg !839
-  br i1 %1, label %.loopexit, label %2, !dbg !841
+; Function Attrs: nounwind optsize uwtable
+define internal fastcc void @CCTKi_Timer(i32 %this_timer, %struct.t_Timer* %timer, %struct.cTimerData* nocapture %info) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !287), !dbg !609
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %timer}, i64 0, metadata !288), !dbg !609
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %info}, i64 0, metadata !289), !dbg !609
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !292), !dbg !610
+  %tobool = icmp eq %struct.t_Timer* %timer, null, !dbg !611
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !611
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !842
-  %4 = load i8*** %3, align 8, !dbg !842, !tbaa !398
-  %5 = icmp ne i8** %4, null, !dbg !843
-  %6 = load i32* @n_clocks, align 4
-  %7 = icmp sgt i32 %6, 0, !dbg !844
-  %or.cond = and i1 %5, %7, !dbg !848
-  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !848
+land.lhs.true:                                    ; preds = %entry
+  %data = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !611
+  %0 = load i8*** %data, align 8, !dbg !611, !tbaa !355
+  %tobool1 = icmp ne i8** %0, null, !dbg !611
+  %1 = load i32* @n_clocks, align 4, !dbg !612, !tbaa !359
+  %cmp15 = icmp sgt i32 %1, 0, !dbg !612
+  %or.cond = and i1 %tobool1, %cmp15, !dbg !611
+  br i1 %or.cond, label %for.body.lr.ph, label %if.end, !dbg !611
 
-.lr.ph:                                           ; preds = %2
-  %8 = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 1, !dbg !849
-  br label %9, !dbg !851
+for.body.lr.ph:                                   ; preds = %land.lhs.true
+  %vals = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 1, !dbg !615
+  br label %for.body, !dbg !612
 
-; <label>:9                                       ; preds = %.lr.ph, %9
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %total_vars.02 = phi i32 [ 0, %.lr.ph ], [ %25, %9 ]
-  %10 = load %struct.cHandledData** @clocks, align 8, !dbg !852, !tbaa !376
-  %11 = trunc i64 %indvars.iv to i32, !dbg !853
-  %12 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %10, i32 %11) #8, !dbg !853
-  %13 = getelementptr inbounds i8* %12, i64 56, !dbg !854
-  %14 = bitcast i8* %13 to void (i32, i8*, %struct.cTimerVal*)**, !dbg !854
-  %15 = load void (i32, i8*, %struct.cTimerVal*)** %14, align 8, !dbg !854, !tbaa !855
-  %16 = load i8*** %3, align 8, !dbg !856, !tbaa !398
-  %17 = getelementptr inbounds i8** %16, i64 %indvars.iv, !dbg !857
-  %18 = load i8** %17, align 8, !dbg !857, !tbaa !376
-  %19 = sext i32 %total_vars.02 to i64, !dbg !858
-  %20 = load %struct.cTimerVal** %8, align 8, !dbg !849, !tbaa !859
-  %21 = getelementptr inbounds %struct.cTimerVal* %20, i64 %19, !dbg !858
-  tail call void %15(i32 %this_timer, i8* %18, %struct.cTimerVal* %21) #8, !dbg !861
-  %22 = getelementptr inbounds i8* %12, i64 8, !dbg !862
-  %23 = bitcast i8* %22 to i32*, !dbg !862
-  %24 = load i32* %23, align 4, !dbg !862, !tbaa !371
-  %25 = add nsw i32 %24, %total_vars.02, !dbg !863
-  tail call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !326, metadata !354), !dbg !838
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !851
-  %26 = load i32* @n_clocks, align 4, !dbg !864, !tbaa !388
-  %27 = sext i32 %26 to i64, !dbg !844
-  %28 = icmp slt i64 %indvars.iv.next, %27, !dbg !844
-  br i1 %28, label %9, label %.loopexit, !dbg !851
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %total_vars.017 = phi i32 [ 0, %for.body.lr.ph ], [ %add, %for.body ]
+  %2 = load %struct.cHandledData** @clocks, align 8, !dbg !617, !tbaa !355
+  %3 = trunc i64 %indvars.iv to i32, !dbg !617
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %2, i32 %3) #8, !dbg !617
+  %get = getelementptr inbounds i8* %call, i64 56, !dbg !615
+  %4 = bitcast i8* %get to void (i32, i8*, %struct.cTimerVal*)**, !dbg !615
+  %5 = load void (i32, i8*, %struct.cTimerVal*)** %4, align 8, !dbg !615, !tbaa !355
+  %6 = load i8*** %data, align 8, !dbg !615, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %6, i64 %indvars.iv, !dbg !615
+  %7 = load i8** %arrayidx, align 8, !dbg !615, !tbaa !355
+  %idxprom3 = sext i32 %total_vars.017 to i64, !dbg !615
+  %8 = load %struct.cTimerVal** %vals, align 8, !dbg !615, !tbaa !355
+  %arrayidx4 = getelementptr inbounds %struct.cTimerVal* %8, i64 %idxprom3, !dbg !615
+  tail call void %5(i32 %this_timer, i8* %7, %struct.cTimerVal* %arrayidx4) #8, !dbg !615
+  %n_vals = getelementptr inbounds i8* %call, i64 8, !dbg !618
+  %9 = bitcast i8* %n_vals to i32*, !dbg !618
+  %10 = load i32* %9, align 4, !dbg !618, !tbaa !359
+  %add = add nsw i32 %10, %total_vars.017, !dbg !618
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !292), !dbg !618
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !612
+  %11 = load i32* @n_clocks, align 4, !dbg !612, !tbaa !359
+  %12 = trunc i64 %indvars.iv.next to i32, !dbg !612
+  %cmp = icmp slt i32 %12, %11, !dbg !612
+  br i1 %cmp, label %for.body, label %if.end, !dbg !612
 
-.loopexit:                                        ; preds = %9, %2, %0
-  %total_vars.1 = phi i32 [ 0, %2 ], [ 0, %0 ], [ %25, %9 ]
-  %29 = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 0, !dbg !865
-  store i32 %total_vars.1, i32* %29, align 4, !dbg !866, !tbaa !867
-  ret void, !dbg !868
+if.end:                                           ; preds = %land.lhs.true, %for.body, %entry
+  %total_vars.1 = phi i32 [ 0, %land.lhs.true ], [ 0, %entry ], [ %add, %for.body ]
+  %n_vals5 = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 0, !dbg !619
+  store i32 %total_vars.1, i32* %n_vals5, align 4, !dbg !619, !tbaa !359
+  ret void, !dbg !620
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerI(i32 %this_timer, %struct.cTimerData* nocapture %info) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !229, metadata !354), !dbg !869
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* %info, i64 0, metadata !230, metadata !354), !dbg !870
-  %1 = load %struct.cHandledData** @timers, align 8, !dbg !871, !tbaa !376
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_timer) #8, !dbg !872
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %5, i64 0, metadata !231, metadata !354), !dbg !873
-  %3 = icmp ne i8* %2, null, !dbg !874
-  br i1 %3, label %4, label %6, !dbg !876
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !229), !dbg !621
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %info}, i64 0, metadata !230), !dbg !621
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !622, !tbaa !355
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %this_timer) #8, !dbg !622
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %1}, i64 0, metadata !231), !dbg !622
+  %tobool = icmp ne i8* %call, null, !dbg !623
+  br i1 %tobool, label %if.then, label %if.end, !dbg !623
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to %struct.t_Timer*, !dbg !872
-  tail call fastcc void @CCTKi_Timer(i32 %this_timer, %struct.t_Timer* %5, %struct.cTimerData* %info) #9, !dbg !877
-  br label %6, !dbg !879
+if.then:                                          ; preds = %entry
+  %1 = bitcast i8* %call to %struct.t_Timer*, !dbg !622
+  tail call fastcc void @CCTKi_Timer(i32 %this_timer, %struct.t_Timer* %1, %struct.cTimerData* %info) #10, !dbg !624
+  br label %if.end, !dbg !626
 
-; <label>:6                                       ; preds = %4, %0
-  %not. = xor i1 %3, true, !dbg !880
-  %7 = sext i1 %not. to i32, !dbg !880
-  ret i32 %7, !dbg !881
+if.end:                                           ; preds = %if.then, %entry
+  %not.tobool = xor i1 %tobool, true, !dbg !627
+  %cond = sext i1 %not.tobool to i32, !dbg !627
+  ret i32 %cond, !dbg !627
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define noalias %struct.cTimerData* @CCTK_TimerCreateData() #1 {
-  %1 = tail call i8* @malloc(i64 16) #8, !dbg !882
-  %2 = bitcast i8* %1 to %struct.cTimerData*, !dbg !883
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* %2, i64 0, metadata !236, metadata !354), !dbg !884
-  %3 = icmp eq i8* %1, null, !dbg !885
-  br i1 %3, label %14, label %4, !dbg !887
+entry:
+  %call = tail call noalias i8* @malloc(i64 16) #8, !dbg !628
+  %0 = bitcast i8* %call to %struct.cTimerData*, !dbg !628
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %0}, i64 0, metadata !236), !dbg !628
+  %tobool = icmp eq i8* %call, null, !dbg !629
+  br i1 %tobool, label %if.end6, label %if.then, !dbg !629
 
-; <label>:4                                       ; preds = %0
-  %5 = load i32* @n_clock_vals, align 4, !dbg !888, !tbaa !388
-  %6 = bitcast i8* %1 to i32*, !dbg !890
-  store i32 %5, i32* %6, align 4, !dbg !891, !tbaa !867
-  %7 = sext i32 %5 to i64, !dbg !892
-  %8 = shl nsw i64 %7, 5, !dbg !893
-  %9 = tail call i8* @malloc(i64 %8) #8, !dbg !894
-  %10 = getelementptr inbounds i8* %1, i64 8, !dbg !895
-  %11 = bitcast i8* %10 to i8**, !dbg !896
-  store i8* %9, i8** %11, align 8, !dbg !896, !tbaa !859
-  %12 = icmp eq i8* %9, null, !dbg !897
-  br i1 %12, label %13, label %14, !dbg !899
+if.then:                                          ; preds = %entry
+  %1 = load i32* @n_clock_vals, align 4, !dbg !630, !tbaa !359
+  %n_vals = bitcast i8* %call to i32*, !dbg !630
+  store i32 %1, i32* %n_vals, align 4, !dbg !630, !tbaa !359
+  %conv = sext i32 %1 to i64, !dbg !632
+  %mul = shl nsw i64 %conv, 5, !dbg !632
+  %call2 = tail call noalias i8* @malloc(i64 %mul) #8, !dbg !632
+  %2 = bitcast i8* %call2 to %struct.cTimerVal*, !dbg !632
+  %vals = getelementptr inbounds i8* %call, i64 8, !dbg !632
+  %3 = bitcast i8* %vals to %struct.cTimerVal**, !dbg !632
+  store %struct.cTimerVal* %2, %struct.cTimerVal** %3, align 8, !dbg !632, !tbaa !355
+  %tobool4 = icmp eq i8* %call2, null, !dbg !633
+  br i1 %tobool4, label %if.then5, label %if.end6, !dbg !633
 
-; <label>:13                                      ; preds = %4
-  tail call void @free(i8* %1) #9, !dbg !900
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* null, i64 0, metadata !236, metadata !354), !dbg !884
-  br label %14, !dbg !902
+if.then5:                                         ; preds = %if.then
+  tail call void @free(i8* %call) #8, !dbg !634
+  tail call void @llvm.dbg.value(metadata !636, i64 0, metadata !236), !dbg !637
+  br label %if.end6, !dbg !638
 
-; <label>:14                                      ; preds = %4, %0, %13
-  %retval.0 = phi %struct.cTimerData* [ %2, %4 ], [ null, %13 ], [ %2, %0 ]
-  ret %struct.cTimerData* %retval.0, !dbg !903
+if.end6:                                          ; preds = %if.then, %entry, %if.then5
+  %retval1.0 = phi %struct.cTimerData* [ %0, %if.then ], [ null, %if.then5 ], [ %0, %entry ]
+  ret %struct.cTimerData* %retval1.0, !dbg !639
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerDestroyData(%struct.cTimerData* %info) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* %info, i64 0, metadata !241, metadata !354), !dbg !904
-  %1 = icmp eq %struct.cTimerData* %info, null, !dbg !905
-  br i1 %1, label %10, label %2, !dbg !907
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %info}, i64 0, metadata !241), !dbg !640
+  %tobool = icmp eq %struct.cTimerData* %info, null, !dbg !641
+  br i1 %tobool, label %if.end5, label %if.then, !dbg !641
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 1, !dbg !908
-  %4 = load %struct.cTimerVal** %3, align 8, !dbg !908, !tbaa !859
-  %5 = icmp eq %struct.cTimerVal* %4, null, !dbg !911
-  br i1 %5, label %8, label %6, !dbg !912
+if.then:                                          ; preds = %entry
+  %vals = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 1, !dbg !642
+  %0 = load %struct.cTimerVal** %vals, align 8, !dbg !642, !tbaa !355
+  %tobool1 = icmp eq %struct.cTimerVal* %0, null, !dbg !642
+  br i1 %tobool1, label %if.end, label %if.then2, !dbg !642
 
-; <label>:6                                       ; preds = %2
-  %7 = bitcast %struct.cTimerVal* %4 to i8*, !dbg !913
-  tail call void @free(i8* %7) #9, !dbg !915
-  br label %8, !dbg !916
+if.then2:                                         ; preds = %if.then
+  %1 = bitcast %struct.cTimerVal* %0 to i8*, !dbg !644
+  tail call void @free(i8* %1) #8, !dbg !644
+  br label %if.end, !dbg !646
 
-; <label>:8                                       ; preds = %2, %6
-  %9 = bitcast %struct.cTimerData* %info to i8*, !dbg !917
-  tail call void @free(i8* %9) #9, !dbg !918
-  br label %10, !dbg !919
+if.end:                                           ; preds = %if.then, %if.then2
+  %2 = bitcast %struct.cTimerData* %info to i8*, !dbg !647
+  tail call void @free(i8* %2) #8, !dbg !647
+  br label %if.end5, !dbg !648
 
-; <label>:10                                      ; preds = %0, %8
-  ret i32 0, !dbg !920
+if.end5:                                          ; preds = %entry, %if.end
+  ret i32 0, !dbg !649
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerPrintDataI(i32 %this_timer, i32 %this_clock) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !246, metadata !354), !dbg !921
-  tail call void @llvm.dbg.value(metadata i32 %this_clock, i64 0, metadata !247, metadata !354), !dbg !922
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !251, metadata !354), !dbg !923
-  %1 = icmp eq i32 %this_timer, -1, !dbg !924
-  br i1 %1, label %9, label %2, !dbg !926
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !246), !dbg !650
+  tail call void @llvm.dbg.value(metadata !{i32 %this_clock}, i64 0, metadata !247), !dbg !650
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !251), !dbg !651
+  %cmp = icmp eq i32 %this_timer, -1, !dbg !652
+  br i1 %cmp, label %if.end7, label %if.else, !dbg !652
 
-; <label>:2                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !254, metadata !354), !dbg !927
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !255, metadata !354), !dbg !928
-  %3 = icmp slt i32 %this_timer, 0, !dbg !929
-  br i1 %3, label %.thread11, label %4, !dbg !932
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !254), !dbg !653
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !255), !dbg !655
+  %cmp2 = icmp slt i32 %this_timer, 0, !dbg !656
+  br i1 %cmp2, label %if.end7.thread108, label %lor.lhs.false, !dbg !656
 
-; <label>:4                                       ; preds = %2
-  %5 = add nsw i32 %this_timer, 1, !dbg !933
-  %6 = load i32* @n_timers, align 4, !dbg !934, !tbaa !388
-  %7 = icmp slt i32 %6, %this_timer, !dbg !936
-  br i1 %7, label %.thread11, label %.lr.ph4, !dbg !937
+lor.lhs.false:                                    ; preds = %if.else
+  %add = add nsw i32 %this_timer, 1, !dbg !655
+  %0 = load i32* @n_timers, align 4, !dbg !657, !tbaa !359
+  %cmp4 = icmp slt i32 %0, %this_timer, !dbg !656
+  br i1 %cmp4, label %if.end7.thread108, label %for.body.lr.ph, !dbg !656
 
-.thread11:                                        ; preds = %2, %4
-  %8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1235, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([41 x i8]* @.str11, i64 0, i64 0), i32 %this_timer) #8, !dbg !938
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !251, metadata !354), !dbg !923
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !255, metadata !354), !dbg !928
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !250, metadata !354), !dbg !940
-  br label %._crit_edge5, !dbg !941
+if.end7.thread108:                                ; preds = %if.else, %lor.lhs.false
+  %call6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1235, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([41 x i8]* @.str11, i64 0, i64 0), i32 %this_timer) #8, !dbg !658
+  tail call void @llvm.dbg.value(metadata !660, i64 0, metadata !251), !dbg !661
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !255), !dbg !662
+  tail call void @llvm.dbg.value(metadata !{i32 %firsttimer.0106}, i64 0, metadata !250), !dbg !663
+  br label %for.end64, !dbg !663
 
-; <label>:9                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !254, metadata !354), !dbg !927
-  %10 = load i32* @n_timers, align 4, !dbg !943, !tbaa !388
-  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !255, metadata !354), !dbg !928
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !250, metadata !354), !dbg !940
-  %11 = icmp sgt i32 %10, 0, !dbg !946
-  br i1 %11, label %.lr.ph4, label %._crit_edge5, !dbg !941
+if.end7:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !254), !dbg !665
+  %1 = load i32* @n_timers, align 4, !dbg !667, !tbaa !359
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !255), !dbg !668
+  tail call void @llvm.dbg.value(metadata !{i32 %firsttimer.0106}, i64 0, metadata !250), !dbg !663
+  %cmp8101 = icmp sgt i32 %1, 0, !dbg !663
+  br i1 %cmp8101, label %for.body.lr.ph, label %for.end64, !dbg !663
 
-.lr.ph4:                                          ; preds = %4, %9
-  %lasttimer.010 = phi i32 [ %10, %9 ], [ %5, %4 ]
-  %firsttimer.09 = phi i32 [ 0, %9 ], [ %this_timer, %4 ]
-  %12 = icmp eq i32 %this_clock, -1, !dbg !948
-  %13 = add nsw i32 %this_clock, 1, !dbg !951
-  %14 = add i32 %lasttimer.010, -1, !dbg !941
-  br label %15, !dbg !941
+for.body.lr.ph:                                   ; preds = %lor.lhs.false, %if.end7
+  %lasttimer.0107 = phi i32 [ %1, %if.end7 ], [ %add, %lor.lhs.false ]
+  %firsttimer.0106 = phi i32 [ 0, %if.end7 ], [ %this_timer, %lor.lhs.false ]
+  %cmp13 = icmp eq i32 %this_clock, -1, !dbg !669
+  %add16 = add nsw i32 %this_clock, 1, !dbg !671
+  br label %for.body, !dbg !663
 
-; <label>:15                                      ; preds = %._crit_edge, %.lr.ph4
-  %timer.02 = phi i32 [ %firsttimer.09, %.lr.ph4 ], [ %63, %._crit_edge ]
-  %16 = tail call %struct.cTimerData* @CCTK_TimerCreateData() #9, !dbg !953
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* %16, i64 0, metadata !248, metadata !354), !dbg !954
-  %17 = tail call i32 @CCTK_TimerI(i32 %timer.02, %struct.cTimerData* %16) #9, !dbg !955
-  tail call void @llvm.dbg.value(metadata i32 %63, i64 0, metadata !111, metadata !354) #7, !dbg !956
-  %18 = load %struct.cHandledData** @timers, align 8, !dbg !958, !tbaa !376
-  %19 = tail call i8* @Util_GetHandleName(%struct.cHandledData* %18, i32 %timer.02) #8, !dbg !959
-  tail call void @llvm.dbg.value(metadata i8* %19, i64 0, metadata !112, metadata !354) #7, !dbg !960
-  %20 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([26 x i8]* @.str12, i64 0, i64 0), i8* %19) #8, !dbg !961
-  br i1 %12, label %21, label %.lr.ph, !dbg !962
+for.body:                                         ; preds = %for.end, %for.body.lr.ph
+  %timer.0102 = phi i32 [ %firsttimer.0106, %for.body.lr.ph ], [ %inc63, %for.end ]
+  %call9 = tail call %struct.cTimerData* @CCTK_TimerCreateData() #10, !dbg !673
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %call9}, i64 0, metadata !248), !dbg !673
+  %call10 = tail call i32 @CCTK_TimerI(i32 %timer.0102, %struct.cTimerData* %call9) #10, !dbg !674
+  tail call void @llvm.dbg.value(metadata !{i32 %timer.0102}, i64 0, metadata !675) #7, !dbg !677
+  %2 = load %struct.cHandledData** @timers, align 8, !dbg !678, !tbaa !355
+  %call.i = tail call i8* @Util_GetHandleName(%struct.cHandledData* %2, i32 %timer.0102) #8, !dbg !678
+  tail call void @llvm.dbg.value(metadata !{i8* %call.i}, i64 0, metadata !679) #7, !dbg !678
+  %call12 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([26 x i8]* @.str12, i64 0, i64 0), i8* %call.i) #8, !dbg !676
+  br i1 %cmp13, label %if.end17, label %for.body20.lr.ph, !dbg !669
 
-; <label>:21                                      ; preds = %15
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !252, metadata !354), !dbg !963
-  %22 = getelementptr inbounds %struct.cTimerData* %16, i64 0, i32 0, !dbg !964
-  %23 = load i32* %22, align 4, !dbg !964, !tbaa !867
-  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !253, metadata !354), !dbg !966
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !249, metadata !354), !dbg !967
-  %24 = icmp sgt i32 %23, 0, !dbg !968
-  br i1 %24, label %.lr.ph, label %._crit_edge, !dbg !971
+if.end17:                                         ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !252), !dbg !680
+  %n_vals = getelementptr inbounds %struct.cTimerData* %call9, i64 0, i32 0, !dbg !682
+  %3 = load i32* %n_vals, align 4, !dbg !682, !tbaa !359
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !253), !dbg !682
+  tail call void @llvm.dbg.value(metadata !{i32 %firstclock.0111}, i64 0, metadata !249), !dbg !683
+  %cmp1999 = icmp sgt i32 %3, 0, !dbg !683
+  br i1 %cmp1999, label %for.body20.lr.ph, label %for.end, !dbg !683
 
-.lr.ph:                                           ; preds = %15, %21
-  %lastclock.014 = phi i32 [ %23, %21 ], [ %13, %15 ]
-  %firstclock.013 = phi i32 [ 0, %21 ], [ %this_clock, %15 ]
-  %25 = getelementptr inbounds %struct.cTimerData* %16, i64 0, i32 1, !dbg !972
-  %26 = sext i32 %firstclock.013 to i64
-  %27 = add i32 %lastclock.014, -1, !dbg !971
-  br label %28, !dbg !971
+for.body20.lr.ph:                                 ; preds = %for.body, %if.end17
+  %lastclock.0112 = phi i32 [ %3, %if.end17 ], [ %add16, %for.body ]
+  %firstclock.0111 = phi i32 [ 0, %if.end17 ], [ %this_clock, %for.body ]
+  %vals = getelementptr inbounds %struct.cTimerData* %call9, i64 0, i32 1, !dbg !685
+  %4 = sext i32 %firstclock.0111 to i64
+  br label %for.body20, !dbg !683
 
-; <label>:28                                      ; preds = %61, %.lr.ph
-  %indvars.iv = phi i64 [ %26, %.lr.ph ], [ %indvars.iv.next, %61 ]
-  %29 = load %struct.cTimerVal** %25, align 8, !dbg !972, !tbaa !859
-  %30 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 0, !dbg !974
-  %31 = load i32* %30, align 4, !dbg !974, !tbaa !975
-  switch i32 %31, label %59 [
-    i32 1, label %32
-    i32 2, label %41
-    i32 3, label %50
-  ], !dbg !977
+for.body20:                                       ; preds = %for.body20.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ %4, %for.body20.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %5 = load %struct.cTimerVal** %vals, align 8, !dbg !685, !tbaa !355
+  %type = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 0, !dbg !685
+  %6 = load i32* %type, align 4, !dbg !685, !tbaa !356
+  switch i32 %6, label %sw.default [
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb32
+    i32 3, label %sw.bb46
+  ], !dbg !685
 
-; <label>:32                                      ; preds = %28
-  %33 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 1, !dbg !978
-  %34 = load i8** %33, align 8, !dbg !978, !tbaa !980
-  %35 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 3, !dbg !981
-  %36 = bitcast %union.anon* %35 to i32*, !dbg !982
-  %37 = load i32* %36, align 4, !dbg !982, !tbaa !388
-  %38 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 2, !dbg !983
-  %39 = load i8** %38, align 8, !dbg !983, !tbaa !984
-  %40 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), i8* %34, i32 %37, i8* %39) #8, !dbg !985
-  br label %61, !dbg !986
+sw.bb:                                            ; preds = %for.body20
+  %heading = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 1, !dbg !687
+  %7 = load i8** %heading, align 8, !dbg !687, !tbaa !355
+  %val = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 3, !dbg !687
+  %i27 = bitcast %union.anon* %val to i32*, !dbg !687
+  %8 = load i32* %i27, align 4, !dbg !687, !tbaa !359
+  %units = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 2, !dbg !687
+  %9 = load i8** %units, align 8, !dbg !687, !tbaa !355
+  %call31 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), i8* %7, i32 %8, i8* %9) #8, !dbg !687
+  br label %for.inc, !dbg !689
 
-; <label>:41                                      ; preds = %28
-  %42 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 1, !dbg !987
-  %43 = load i8** %42, align 8, !dbg !987, !tbaa !980
-  %44 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 3, i32 0, !dbg !988
-  %45 = load i64* %44, align 8, !dbg !988, !tbaa !989
-  %46 = trunc i64 %45 to i32, !dbg !991
-  %47 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 2, !dbg !992
-  %48 = load i8** %47, align 8, !dbg !992, !tbaa !984
-  %49 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), i8* %43, i32 %46, i8* %48) #8, !dbg !993
-  br label %61, !dbg !994
+sw.bb32:                                          ; preds = %for.body20
+  %heading36 = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 1, !dbg !690
+  %10 = load i8** %heading36, align 8, !dbg !690, !tbaa !355
+  %l = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 3, i32 0, !dbg !690
+  %11 = load i64* %l, align 8, !dbg !690, !tbaa !691
+  %conv = trunc i64 %11 to i32, !dbg !690
+  %units44 = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 2, !dbg !690
+  %12 = load i8** %units44, align 8, !dbg !690, !tbaa !355
+  %call45 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), i8* %10, i32 %conv, i8* %12) #8, !dbg !690
+  br label %for.inc, !dbg !692
 
-; <label>:50                                      ; preds = %28
-  %51 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 1, !dbg !995
-  %52 = load i8** %51, align 8, !dbg !995, !tbaa !980
-  %53 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 3, !dbg !996
-  %54 = bitcast %union.anon* %53 to double*, !dbg !997
-  %55 = load double* %54, align 8, !dbg !997, !tbaa !998
-  %56 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 2, !dbg !1000
-  %57 = load i8** %56, align 8, !dbg !1000, !tbaa !984
-  %58 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str14, i64 0, i64 0), i8* %52, double %55, i8* %57) #8, !dbg !1001
-  br label %61, !dbg !1002
+sw.bb46:                                          ; preds = %for.body20
+  %heading50 = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 1, !dbg !693
+  %13 = load i8** %heading50, align 8, !dbg !693, !tbaa !355
+  %val54 = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 3, !dbg !693
+  %d = bitcast %union.anon* %val54 to double*, !dbg !693
+  %14 = load double* %d, align 8, !dbg !693, !tbaa !694
+  %units58 = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 2, !dbg !693
+  %15 = load i8** %units58, align 8, !dbg !693, !tbaa !355
+  %call59 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str14, i64 0, i64 0), i8* %13, double %14, i8* %15) #8, !dbg !693
+  br label %for.inc, !dbg !695
 
-; <label>:59                                      ; preds = %28
-  %60 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 1280, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str15, i64 0, i64 0)) #8, !dbg !1003
-  br label %61, !dbg !1004
+sw.default:                                       ; preds = %for.body20
+  %call60 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 1280, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str15, i64 0, i64 0)) #8, !dbg !696
+  br label %for.inc, !dbg !697
 
-; <label>:61                                      ; preds = %32, %41, %50, %59
-  %indvars.iv.next = add nsw i64 %indvars.iv, 1, !dbg !971
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !971
-  %exitcond = icmp eq i32 %lftr.wideiv, %27, !dbg !971
-  br i1 %exitcond, label %._crit_edge, label %28, !dbg !971
+for.inc:                                          ; preds = %sw.bb, %sw.bb32, %sw.bb46, %sw.default
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !683
+  %16 = trunc i64 %indvars.iv.next to i32, !dbg !683
+  %cmp19 = icmp slt i32 %16, %lastclock.0112, !dbg !683
+  br i1 %cmp19, label %for.body20, label %for.end, !dbg !683
 
-._crit_edge:                                      ; preds = %61, %21
-  %62 = tail call i32 @CCTK_TimerDestroyData(%struct.cTimerData* %16) #9, !dbg !1005
-  %63 = add nsw i32 %timer.02, 1, !dbg !1006
-  tail call void @llvm.dbg.value(metadata i32 %63, i64 0, metadata !250, metadata !354), !dbg !940
-  %exitcond6 = icmp eq i32 %timer.02, %14, !dbg !941
-  br i1 %exitcond6, label %._crit_edge5, label %15, !dbg !941
+for.end:                                          ; preds = %for.inc, %if.end17
+  %call61 = tail call i32 @CCTK_TimerDestroyData(%struct.cTimerData* %call9) #10, !dbg !698
+  %inc63 = add nsw i32 %timer.0102, 1, !dbg !663
+  tail call void @llvm.dbg.value(metadata !{i32 %inc63}, i64 0, metadata !250), !dbg !663
+  %exitcond = icmp eq i32 %inc63, %lasttimer.0107, !dbg !663
+  br i1 %exitcond, label %for.end64, label %for.body, !dbg !663
 
-._crit_edge5:                                     ; preds = %._crit_edge, %.thread11, %9
-  %retval.07 = phi i32 [ 0, %9 ], [ -1, %.thread11 ], [ 0, %._crit_edge ]
-  ret i32 %retval.07, !dbg !1007
+for.end64:                                        ; preds = %for.end, %if.end7.thread108, %if.end7
+  %retval1.0104 = phi i32 [ 0, %if.end7 ], [ -1, %if.end7.thread108 ], [ 0, %for.end ]
+  ret i32 %retval1.0104, !dbg !699
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @printf(i8* nocapture readonly, ...) #3
+declare i32 @printf(i8* nocapture, ...) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @cctk_timerprintdatai_(i32* nocapture %ierr, i32* nocapture readonly %this_timer, i32* nocapture readonly %this_clock) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !260, metadata !354), !dbg !1008
-  tail call void @llvm.dbg.value(metadata i32* %this_timer, i64 0, metadata !261, metadata !354), !dbg !1009
-  tail call void @llvm.dbg.value(metadata i32* %this_clock, i64 0, metadata !262, metadata !354), !dbg !1010
-  %1 = load i32* %this_timer, align 4, !dbg !1011, !tbaa !388
-  %2 = load i32* %this_clock, align 4, !dbg !1012, !tbaa !388
-  %3 = tail call i32 @CCTK_TimerPrintDataI(i32 %1, i32 %2) #9, !dbg !1013
-  store i32 %3, i32* %ierr, align 4, !dbg !1014, !tbaa !388
-  ret void, !dbg !1015
+; Function Attrs: nounwind optsize uwtable
+define void @cctk_timerprintdatai_(i32* nocapture %ierr, i32* nocapture %this_timer, i32* nocapture %this_clock) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !260), !dbg !700
+  tail call void @llvm.dbg.value(metadata !{i32* %this_timer}, i64 0, metadata !261), !dbg !700
+  tail call void @llvm.dbg.value(metadata !{i32* %this_clock}, i64 0, metadata !262), !dbg !700
+  %0 = load i32* %this_timer, align 4, !dbg !701, !tbaa !359
+  %1 = load i32* %this_clock, align 4, !dbg !701, !tbaa !359
+  %call = tail call i32 @CCTK_TimerPrintDataI(i32 %0, i32 %1) #10, !dbg !701
+  store i32 %call, i32* %ierr, align 4, !dbg !701, !tbaa !359
+  ret void, !dbg !702
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i32 @CCTK_TimerPrintData(i8* %timername, i8* %clockname) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %timername, i64 0, metadata !267, metadata !354), !dbg !1016
-  tail call void @llvm.dbg.value(metadata i8* %clockname, i64 0, metadata !268, metadata !354), !dbg !1017
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !271, metadata !354), !dbg !1018
-  %1 = icmp eq i8* %clockname, null, !dbg !1019
-  br i1 %1, label %7, label %2, !dbg !1021
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !267), !dbg !703
+  tail call void @llvm.dbg.value(metadata !{i8* %clockname}, i64 0, metadata !268), !dbg !703
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !271), !dbg !704
+  %tobool = icmp eq i8* %clockname, null, !dbg !705
+  br i1 %tobool, label %if.end4, label %if.else, !dbg !705
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i32 @CCTK_ClockHandle(i8* %clockname) #9, !dbg !1022
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !270, metadata !354), !dbg !1024
-  %4 = icmp eq i32 %3, -1, !dbg !1025
-  br i1 %4, label %5, label %7, !dbg !1027
+if.else:                                          ; preds = %entry
+  %call = tail call i32 @CCTK_ClockHandle(i8* %clockname) #10, !dbg !706
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !270), !dbg !706
+  %cmp = icmp eq i32 %call, -1, !dbg !708
+  br i1 %cmp, label %if.then2, label %if.end4, !dbg !708
 
-; <label>:5                                       ; preds = %2
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1339, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str16, i64 0, i64 0), i8* %clockname) #8, !dbg !1028
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !271, metadata !354), !dbg !1018
-  br label %7, !dbg !1030
+if.then2:                                         ; preds = %if.else
+  %call3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1339, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str16, i64 0, i64 0), i8* %clockname) #8, !dbg !709
+  tail call void @llvm.dbg.value(metadata !660, i64 0, metadata !271), !dbg !711
+  br label %if.end4, !dbg !712
 
-; <label>:7                                       ; preds = %0, %2, %5
-  %this_clock.0 = phi i32 [ -1, %5 ], [ %3, %2 ], [ -1, %0 ]
-  %retval.0 = phi i32 [ -1, %5 ], [ 0, %2 ], [ 0, %0 ]
-  %8 = icmp eq i8* %timername, null, !dbg !1031
-  br i1 %8, label %14, label %9, !dbg !1033
+if.end4:                                          ; preds = %entry, %if.else, %if.then2
+  %this_clock.0 = phi i32 [ -1, %if.then2 ], [ %call, %if.else ], [ -1, %entry ]
+  %retval1.0 = phi i32 [ -1, %if.then2 ], [ 0, %if.else ], [ 0, %entry ]
+  %tobool5 = icmp eq i8* %timername, null, !dbg !713
+  br i1 %tobool5, label %if.end13, label %if.else7, !dbg !713
 
-; <label>:9                                       ; preds = %7
-  %10 = load %struct.cHandledData** @timers, align 8, !dbg !1034, !tbaa !376
-  %11 = tail call i32 @Util_GetHandle(%struct.cHandledData* %10, i8* %timername, i8** null) #8, !dbg !1036
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !269, metadata !354), !dbg !1037
-  %12 = icmp eq i32 %11, -1, !dbg !1038
-  br i1 %12, label %.thread, label %14, !dbg !1040
+if.else7:                                         ; preds = %if.end4
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !714, !tbaa !355
+  %call8 = tail call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %timername, i8** null) #8, !dbg !714
+  tail call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !269), !dbg !714
+  %cmp9 = icmp eq i32 %call8, -1, !dbg !716
+  br i1 %cmp9, label %if.end13.thread, label %if.end13, !dbg !716
 
-.thread:                                          ; preds = %9
-  %13 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1354, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str17, i64 0, i64 0), i8* %timername) #8, !dbg !1041
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !271, metadata !354), !dbg !1018
-  br label %18, !dbg !1043
+if.end13.thread:                                  ; preds = %if.else7
+  %call11 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1354, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str17, i64 0, i64 0), i8* %timername) #8, !dbg !717
+  tail call void @llvm.dbg.value(metadata !660, i64 0, metadata !271), !dbg !719
+  br label %if.end17, !dbg !720
 
-; <label>:14                                      ; preds = %7, %9
-  %this_timer.0 = phi i32 [ %11, %9 ], [ -1, %7 ]
-  %15 = icmp eq i32 %retval.0, 0, !dbg !1044
-  br i1 %15, label %16, label %18, !dbg !1043
+if.end13:                                         ; preds = %if.end4, %if.else7
+  %this_timer.0 = phi i32 [ %call8, %if.else7 ], [ -1, %if.end4 ]
+  %cmp14 = icmp eq i32 %retval1.0, 0, !dbg !720
+  br i1 %cmp14, label %if.then15, label %if.end17, !dbg !720
 
-; <label>:16                                      ; preds = %14
-  %17 = tail call i32 @CCTK_TimerPrintDataI(i32 %this_timer.0, i32 %this_clock.0) #9, !dbg !1046
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !271, metadata !354), !dbg !1018
-  br label %18, !dbg !1048
+if.then15:                                        ; preds = %if.end13
+  %call16 = tail call i32 @CCTK_TimerPrintDataI(i32 %this_timer.0, i32 %this_clock.0) #10, !dbg !721
+  tail call void @llvm.dbg.value(metadata !{i32 %call16}, i64 0, metadata !271), !dbg !721
+  br label %if.end17, !dbg !723
 
-; <label>:18                                      ; preds = %.thread, %16, %14
-  %retval.2 = phi i32 [ %17, %16 ], [ -1, %14 ], [ -1, %.thread ]
-  ret i32 %retval.2, !dbg !1049
+if.end17:                                         ; preds = %if.end13.thread, %if.then15, %if.end13
+  %retval1.2 = phi i32 [ %call16, %if.then15 ], [ -1, %if.end13 ], [ -1, %if.end13.thread ]
+  ret i32 %retval1.2, !dbg !724
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @cctk_timerprintdata_(i32* nocapture %ierr, i8* %cctk_str1, i8* %cctk_str2, i32 %cctk_strlen1, i32 %cctk_strlen2) #1 {
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !276, metadata !354), !dbg !1050
-  tail call void @llvm.dbg.value(metadata i8* %cctk_str1, i64 0, metadata !277, metadata !354), !dbg !1051
-  tail call void @llvm.dbg.value(metadata i8* %cctk_str2, i64 0, metadata !278, metadata !354), !dbg !1051
-  tail call void @llvm.dbg.value(metadata i32 %cctk_strlen1, i64 0, metadata !279, metadata !354), !dbg !1051
-  tail call void @llvm.dbg.value(metadata i32 %cctk_strlen2, i64 0, metadata !280, metadata !354), !dbg !1051
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !1052
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !281, metadata !354), !dbg !1052
-  %2 = tail call i8* @Util_NullTerminateString(i8* %cctk_str2, i32 %cctk_strlen2) #8, !dbg !1052
-  tail call void @llvm.dbg.value(metadata i8* %2, i64 0, metadata !282, metadata !354), !dbg !1052
-  %3 = load i8* %1, align 1, !dbg !1053, !tbaa !1054
-  %4 = icmp ne i8 %3, 0, !dbg !1053
-  %5 = select i1 %4, i8* %1, i8* null, !dbg !1053
-  %6 = load i8* %2, align 1, !dbg !1055, !tbaa !1054
-  %7 = icmp ne i8 %6, 0, !dbg !1055
-  %8 = select i1 %7, i8* %2, i8* null, !dbg !1055
-  %9 = tail call i32 @CCTK_TimerPrintData(i8* %5, i8* %8) #9, !dbg !1056
-  store i32 %9, i32* %ierr, align 4, !dbg !1057, !tbaa !388
-  tail call void @free(i8* %1) #9, !dbg !1058
-  tail call void @free(i8* %2) #9, !dbg !1059
-  ret void, !dbg !1060
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !276), !dbg !725
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !277), !dbg !725
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str2}, i64 0, metadata !278), !dbg !725
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !279), !dbg !725
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen2}, i64 0, metadata !280), !dbg !725
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !726
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !281), !dbg !726
+  %call1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str2, i32 %cctk_strlen2) #8, !dbg !726
+  tail call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !282), !dbg !726
+  %0 = load i8* %call, align 1, !dbg !727, !tbaa !356
+  %tobool = icmp ne i8 %0, 0, !dbg !727
+  %cond = select i1 %tobool, i8* %call, i8* null, !dbg !727
+  %1 = load i8* %call1, align 1, !dbg !727, !tbaa !356
+  %tobool3 = icmp ne i8 %1, 0, !dbg !727
+  %cond7 = select i1 %tobool3, i8* %call1, i8* null, !dbg !727
+  %call8 = tail call i32 @CCTK_TimerPrintData(i8* %cond, i8* %cond7) #10, !dbg !727
+  store i32 %call8, i32* %ierr, align 4, !dbg !727, !tbaa !359
+  tail call void @free(i8* %call) #8, !dbg !728
+  tail call void @free(i8* %call1) #8, !dbg !729
+  ret void, !dbg !730
 }
 
 ; Function Attrs: optsize
 declare i32 @Util_DeleteHandle(%struct.cHandledData*, i32) #4
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #2
+declare void @llvm.dbg.value(metadata, i64, metadata) #2
 
-attributes #0 = { nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readnone }
-attributes #3 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #5 = { nounwind optsize readonly ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #6 = { nounwind optsize readonly "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { nounwind optsize readonly uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #6 = { nounwind optsize readonly "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #7 = { nounwind }
 attributes #8 = { nounwind optsize }
-attributes #9 = { optsize }
+attributes #9 = { nounwind optsize readonly }
+attributes #10 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!349, !350, !351}
-!llvm.ident = !{!352}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !10, subprograms: !68, globals: !327, imports: !72)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{!3}
-!3 = !DICompositeType(tag: DW_TAG_enumeration_type, file: !4, line: 16, size: 32, align: 32, elements: !5)
-!4 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/cctk_Timers.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!5 = !{!6, !7, !8, !9}
-!6 = !DIEnumerator(name: "val_none", value: 0)
-!7 = !DIEnumerator(name: "val_int", value: 1)
-!8 = !DIEnumerator(name: "val_long", value: 2)
-!9 = !DIEnumerator(name: "val_double", value: 3)
-!10 = !{!11, !54, !59, !60, !62, !37, !20}
-!11 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !12, size: 64, align: 64)
-!12 = !DIDerivedType(tag: DW_TAG_typedef, name: "cClockFuncs", file: !4, line: 49, baseType: !13)
-!13 = !DICompositeType(tag: DW_TAG_structure_type, file: !4, line: 38, size: 576, align: 64, elements: !14)
-!14 = !{!15, !19, !21, !26, !30, !31, !32, !33, !53}
-!15 = !DIDerivedType(tag: DW_TAG_member, name: "name", scope: !13, file: !4, line: 40, baseType: !16, size: 64, align: 64)
-!16 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !17, size: 64, align: 64)
-!17 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !18)
-!18 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "n_vals", scope: !13, file: !4, line: 41, baseType: !20, size: 32, align: 32, offset: 64)
-!20 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!21 = !DIDerivedType(tag: DW_TAG_member, name: "create", scope: !13, file: !4, line: 42, baseType: !22, size: 64, align: 64, offset: 128)
-!22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !23, size: 64, align: 64)
-!23 = !DISubroutineType(types: !24)
-!24 = !{!25, !20}
-!25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!26 = !DIDerivedType(tag: DW_TAG_member, name: "destroy", scope: !13, file: !4, line: 43, baseType: !27, size: 64, align: 64, offset: 192)
-!27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64, align: 64)
-!28 = !DISubroutineType(types: !29)
-!29 = !{null, !20, !25}
-!30 = !DIDerivedType(tag: DW_TAG_member, name: "start", scope: !13, file: !4, line: 44, baseType: !27, size: 64, align: 64, offset: 256)
-!31 = !DIDerivedType(tag: DW_TAG_member, name: "stop", scope: !13, file: !4, line: 45, baseType: !27, size: 64, align: 64, offset: 320)
-!32 = !DIDerivedType(tag: DW_TAG_member, name: "reset", scope: !13, file: !4, line: 46, baseType: !27, size: 64, align: 64, offset: 384)
-!33 = !DIDerivedType(tag: DW_TAG_member, name: "get", scope: !13, file: !4, line: 47, baseType: !34, size: 64, align: 64, offset: 448)
-!34 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !35, size: 64, align: 64)
-!35 = !DISubroutineType(types: !36)
-!36 = !{null, !20, !25, !37}
-!37 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !38, size: 64, align: 64)
-!38 = !DIDerivedType(tag: DW_TAG_typedef, name: "cTimerVal", file: !4, line: 29, baseType: !39)
-!39 = !DICompositeType(tag: DW_TAG_structure_type, file: !4, line: 18, size: 256, align: 64, elements: !40)
-!40 = !{!41, !43, !44, !45}
-!41 = !DIDerivedType(tag: DW_TAG_member, name: "type", scope: !39, file: !4, line: 20, baseType: !42, size: 32, align: 32)
-!42 = !DIDerivedType(tag: DW_TAG_typedef, name: "cTimerValType", file: !4, line: 16, baseType: !3)
-!43 = !DIDerivedType(tag: DW_TAG_member, name: "heading", scope: !39, file: !4, line: 21, baseType: !16, size: 64, align: 64, offset: 64)
-!44 = !DIDerivedType(tag: DW_TAG_member, name: "units", scope: !39, file: !4, line: 22, baseType: !16, size: 64, align: 64, offset: 128)
-!45 = !DIDerivedType(tag: DW_TAG_member, name: "val", scope: !39, file: !4, line: 28, baseType: !46, size: 64, align: 64, offset: 192)
-!46 = !DICompositeType(tag: DW_TAG_union_type, scope: !39, file: !4, line: 23, size: 64, align: 64, elements: !47)
-!47 = !{!48, !49, !51}
-!48 = !DIDerivedType(tag: DW_TAG_member, name: "i", scope: !46, file: !4, line: 25, baseType: !20, size: 32, align: 32)
-!49 = !DIDerivedType(tag: DW_TAG_member, name: "l", scope: !46, file: !4, line: 26, baseType: !50, size: 64, align: 64)
-!50 = !DIBasicType(name: "long int", size: 64, align: 64, encoding: DW_ATE_signed)
-!51 = !DIDerivedType(tag: DW_TAG_member, name: "d", scope: !46, file: !4, line: 27, baseType: !52, size: 64, align: 64)
-!52 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!53 = !DIDerivedType(tag: DW_TAG_member, name: "set", scope: !13, file: !4, line: 48, baseType: !34, size: 64, align: 64, offset: 512)
-!54 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !55, size: 64, align: 64)
-!55 = !DIDerivedType(tag: DW_TAG_typedef, name: "t_Timer", file: !1, line: 68, baseType: !56)
-!56 = !DICompositeType(tag: DW_TAG_structure_type, file: !1, line: 65, size: 64, align: 64, elements: !57)
-!57 = !{!58}
-!58 = !DIDerivedType(tag: DW_TAG_member, name: "data", scope: !56, file: !1, line: 67, baseType: !59, size: 64, align: 64)
-!59 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !25, size: 64, align: 64)
-!60 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !61, size: 64, align: 64)
-!61 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !12)
-!62 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !63, size: 64, align: 64)
-!63 = !DIDerivedType(tag: DW_TAG_typedef, name: "cTimerData", file: !4, line: 35, baseType: !64)
-!64 = !DICompositeType(tag: DW_TAG_structure_type, file: !4, line: 31, size: 128, align: 64, elements: !65)
-!65 = !{!66, !67}
-!66 = !DIDerivedType(tag: DW_TAG_member, name: "n_vals", scope: !64, file: !4, line: 33, baseType: !20, size: 32, align: 32)
-!67 = !DIDerivedType(tag: DW_TAG_member, name: "vals", scope: !64, file: !4, line: 34, baseType: !37, size: 64, align: 64, offset: 64)
-!68 = !{!69, !73, !83, !89, !96, !99, !105, !106, !109, !113, !117, !127, !134, !137, !142, !148, !154, !160, !165, !171, !175, !179, !184, !190, !194, !198, !203, !209, !213, !217, !225, !232, !237, !242, !256, !263, !272, !283, !291, !299, !305, !311, !317}
-!69 = !DISubprogram(name: "CCTKi_version_util_CactusTimers_c", scope: !1, file: !1, line: 27, type: !70, isLocal: false, isDefinition: true, scopeLine: 27, flags: DIFlagPrototyped, isOptimized: true, function: i8* ()* @CCTKi_version_util_CactusTimers_c, variables: !72)
-!70 = !DISubroutineType(types: !71)
-!71 = !{!16}
-!72 = !{}
-!73 = !DISubprogram(name: "CCTK_ClockRegister", scope: !1, file: !1, line: 121, type: !74, isLocal: false, isDefinition: true, scopeLine: 122, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i8*, %struct.cClockFuncs*)* @CCTK_ClockRegister, variables: !76)
-!74 = !DISubroutineType(types: !75)
-!75 = !{!20, !16, !60}
-!76 = !{!77, !78, !79, !80, !81, !82}
-!77 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "clockname", arg: 1, scope: !73, file: !1, line: 121, type: !16)
-!78 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "functions", arg: 2, scope: !73, file: !1, line: 121, type: !60)
-!79 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "tmp", scope: !73, file: !1, line: 123, type: !25)
-!80 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "handle", scope: !73, file: !1, line: 124, type: !20)
-!81 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !73, file: !1, line: 125, type: !54)
-!82 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "newfuncs", scope: !73, file: !1, line: 126, type: !11)
-!83 = !DISubprogram(name: "CCTK_ClockName", scope: !1, file: !1, line: 184, type: !84, isLocal: false, isDefinition: true, scopeLine: 185, flags: DIFlagPrototyped, isOptimized: true, function: i8* (i32)* @CCTK_ClockName, variables: !86)
-!84 = !DISubroutineType(types: !85)
-!85 = !{!16, !20}
-!86 = !{!87, !88}
-!87 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "handle", arg: 1, scope: !83, file: !1, line: 184, type: !20)
-!88 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "funcs", scope: !83, file: !1, line: 186, type: !60)
-!89 = !DISubprogram(name: "CCTK_ClockHandle", scope: !1, file: !1, line: 214, type: !90, isLocal: false, isDefinition: true, scopeLine: 215, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i8*)* @CCTK_ClockHandle, variables: !92)
-!90 = !DISubroutineType(types: !91)
-!91 = !{!20, !16}
-!92 = !{!93, !94, !95}
-!93 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "clockname", arg: 1, scope: !89, file: !1, line: 214, type: !16)
-!94 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "handle", scope: !89, file: !1, line: 216, type: !20)
-!95 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "funcs", scope: !89, file: !1, line: 217, type: !60)
-!96 = !DISubprogram(name: "CCTK_NumClocks", scope: !1, file: !1, line: 246, type: !97, isLocal: false, isDefinition: true, scopeLine: 247, flags: DIFlagPrototyped, isOptimized: true, function: i32 ()* @CCTK_NumClocks, variables: !72)
-!97 = !DISubroutineType(types: !98)
-!98 = !{!20}
-!99 = !DISubprogram(name: "cctk_numclocks_", scope: !1, file: !1, line: 251, type: !100, isLocal: false, isDefinition: true, scopeLine: 253, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*)* @cctk_numclocks_, variables: !103)
-!100 = !DISubroutineType(types: !101)
-!101 = !{null, !102}
-!102 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64, align: 64)
-!103 = !{!104}
-!104 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "nclocks", arg: 1, scope: !99, file: !1, line: 252, type: !102)
-!105 = !DISubprogram(name: "CCTK_NumTimers", scope: !1, file: !1, line: 271, type: !97, isLocal: false, isDefinition: true, scopeLine: 272, flags: DIFlagPrototyped, isOptimized: true, function: i32 ()* @CCTK_NumTimers, variables: !72)
-!106 = !DISubprogram(name: "cctk_numtimers_", scope: !1, file: !1, line: 276, type: !100, isLocal: false, isDefinition: true, scopeLine: 278, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*)* @cctk_numtimers_, variables: !107)
-!107 = !{!108}
-!108 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ntimers", arg: 1, scope: !106, file: !1, line: 277, type: !102)
-!109 = !DISubprogram(name: "CCTK_TimerName", scope: !1, file: !1, line: 303, type: !84, isLocal: false, isDefinition: true, scopeLine: 304, flags: DIFlagPrototyped, isOptimized: true, function: i8* (i32)* @CCTK_TimerName, variables: !110)
-!110 = !{!111, !112}
-!111 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timer_handle", arg: 1, scope: !109, file: !1, line: 303, type: !20)
-!112 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "retval", scope: !109, file: !1, line: 305, type: !16)
-!113 = !DISubprogram(name: "CCTK_TimerCreate", scope: !1, file: !1, line: 334, type: !90, isLocal: false, isDefinition: true, scopeLine: 335, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i8*)* @CCTK_TimerCreate, variables: !114)
-!114 = !{!115, !116}
-!115 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timername", arg: 1, scope: !113, file: !1, line: 334, type: !16)
-!116 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "retval", scope: !113, file: !1, line: 336, type: !20)
-!117 = !DISubprogram(name: "cctk_timercreate_", scope: !1, file: !1, line: 344, type: !118, isLocal: false, isDefinition: true, scopeLine: 346, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i8*, i32)* @cctk_timercreate_, variables: !122)
-!118 = !DISubroutineType(types: !119)
-!119 = !{null, !102, !120, !121}
-!120 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !18, size: 64, align: 64)
-!121 = !DIBasicType(name: "unsigned int", size: 32, align: 32, encoding: DW_ATE_unsigned)
-!122 = !{!123, !124, !125, !126}
-!123 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timer_index", arg: 1, scope: !117, file: !1, line: 345, type: !102)
-!124 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_str1", arg: 2, scope: !117, file: !1, line: 345, type: !120)
-!125 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_strlen1", arg: 3, scope: !117, file: !1, line: 345, type: !121)
-!126 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timername", scope: !117, file: !1, line: 347, type: !120)
-!127 = !DISubprogram(name: "CCTK_TimerCreateI", scope: !1, file: !1, line: 367, type: !97, isLocal: false, isDefinition: true, scopeLine: 368, flags: DIFlagPrototyped, isOptimized: true, function: i32 ()* @CCTK_TimerCreateI, variables: !128)
-!128 = !{!129, !130}
-!129 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "retval", scope: !127, file: !1, line: 369, type: !20)
-!130 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timername", scope: !127, file: !1, line: 370, type: !131)
-!131 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, align: 8, elements: !132)
-!132 = !{!133}
-!133 = !DISubrange(count: 40)
-!134 = !DISubprogram(name: "cctk_timercreatei_", scope: !1, file: !1, line: 379, type: !100, isLocal: false, isDefinition: true, scopeLine: 381, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*)* @cctk_timercreatei_, variables: !135)
-!135 = !{!136}
-!136 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !134, file: !1, line: 380, type: !102)
-!137 = !DISubprogram(name: "CCTK_TimerDestroy", scope: !1, file: !1, line: 480, type: !90, isLocal: false, isDefinition: true, scopeLine: 481, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i8*)* @CCTK_TimerDestroy, variables: !138)
-!138 = !{!139, !140, !141}
-!139 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timername", arg: 1, scope: !137, file: !1, line: 480, type: !16)
-!140 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !137, file: !1, line: 482, type: !54)
-!141 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "this_timer", scope: !137, file: !1, line: 483, type: !20)
-!142 = !DISubprogram(name: "cctk_timerdestroy_", scope: !1, file: !1, line: 500, type: !118, isLocal: false, isDefinition: true, scopeLine: 502, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i8*, i32)* @cctk_timerdestroy_, variables: !143)
-!143 = !{!144, !145, !146, !147}
-!144 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !142, file: !1, line: 501, type: !102)
-!145 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_str1", arg: 2, scope: !142, file: !1, line: 501, type: !120)
-!146 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_strlen1", arg: 3, scope: !142, file: !1, line: 501, type: !121)
-!147 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timername", scope: !142, file: !1, line: 503, type: !120)
-!148 = !DISubprogram(name: "CCTK_TimerDestroyI", scope: !1, file: !1, line: 529, type: !149, isLocal: false, isDefinition: true, scopeLine: 530, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32)* @CCTK_TimerDestroyI, variables: !151)
-!149 = !DISubroutineType(types: !150)
-!150 = !{!20, !20}
-!151 = !{!152, !153}
-!152 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !148, file: !1, line: 529, type: !20)
-!153 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !148, file: !1, line: 531, type: !54)
-!154 = !DISubprogram(name: "cctk_timerdestroyi_", scope: !1, file: !1, line: 548, type: !155, isLocal: false, isDefinition: true, scopeLine: 550, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i32*)* @cctk_timerdestroyi_, variables: !157)
-!155 = !DISubroutineType(types: !156)
-!156 = !{null, !102, !102}
-!157 = !{!158, !159}
-!158 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !154, file: !1, line: 549, type: !102)
-!159 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 2, scope: !154, file: !1, line: 549, type: !102)
-!160 = !DISubprogram(name: "CCTK_TimerStart", scope: !1, file: !1, line: 616, type: !90, isLocal: false, isDefinition: true, scopeLine: 617, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i8*)* @CCTK_TimerStart, variables: !161)
-!161 = !{!162, !163, !164}
-!162 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timername", arg: 1, scope: !160, file: !1, line: 616, type: !16)
-!163 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !160, file: !1, line: 618, type: !54)
-!164 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "this_timer", scope: !160, file: !1, line: 619, type: !20)
-!165 = !DISubprogram(name: "cctk_timerstart_", scope: !1, file: !1, line: 636, type: !118, isLocal: false, isDefinition: true, scopeLine: 638, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i8*, i32)* @cctk_timerstart_, variables: !166)
-!166 = !{!167, !168, !169, !170}
-!167 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !165, file: !1, line: 637, type: !102)
-!168 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_str1", arg: 2, scope: !165, file: !1, line: 637, type: !120)
-!169 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_strlen1", arg: 3, scope: !165, file: !1, line: 637, type: !121)
-!170 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timername", scope: !165, file: !1, line: 639, type: !120)
-!171 = !DISubprogram(name: "CCTK_TimerStartI", scope: !1, file: !1, line: 665, type: !149, isLocal: false, isDefinition: true, scopeLine: 666, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32)* @CCTK_TimerStartI, variables: !172)
-!172 = !{!173, !174}
-!173 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !171, file: !1, line: 665, type: !20)
-!174 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !171, file: !1, line: 667, type: !54)
-!175 = !DISubprogram(name: "cctk_timerstarti_", scope: !1, file: !1, line: 684, type: !155, isLocal: false, isDefinition: true, scopeLine: 686, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i32*)* @cctk_timerstarti_, variables: !176)
-!176 = !{!177, !178}
-!177 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !175, file: !1, line: 685, type: !102)
-!178 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 2, scope: !175, file: !1, line: 685, type: !102)
-!179 = !DISubprogram(name: "CCTK_TimerStop", scope: !1, file: !1, line: 748, type: !90, isLocal: false, isDefinition: true, scopeLine: 749, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i8*)* @CCTK_TimerStop, variables: !180)
-!180 = !{!181, !182, !183}
-!181 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timername", arg: 1, scope: !179, file: !1, line: 748, type: !16)
-!182 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !179, file: !1, line: 750, type: !54)
-!183 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "this_timer", scope: !179, file: !1, line: 751, type: !20)
-!184 = !DISubprogram(name: "cctk_timerstop_", scope: !1, file: !1, line: 768, type: !118, isLocal: false, isDefinition: true, scopeLine: 770, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i8*, i32)* @cctk_timerstop_, variables: !185)
-!185 = !{!186, !187, !188, !189}
-!186 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !184, file: !1, line: 769, type: !102)
-!187 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_str1", arg: 2, scope: !184, file: !1, line: 769, type: !120)
-!188 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_strlen1", arg: 3, scope: !184, file: !1, line: 769, type: !121)
-!189 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timername", scope: !184, file: !1, line: 771, type: !120)
-!190 = !DISubprogram(name: "CCTK_TimerStopI", scope: !1, file: !1, line: 797, type: !149, isLocal: false, isDefinition: true, scopeLine: 798, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32)* @CCTK_TimerStopI, variables: !191)
-!191 = !{!192, !193}
-!192 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !190, file: !1, line: 797, type: !20)
-!193 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !190, file: !1, line: 799, type: !54)
-!194 = !DISubprogram(name: "cctk_timerstopi_", scope: !1, file: !1, line: 816, type: !155, isLocal: false, isDefinition: true, scopeLine: 818, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i32*)* @cctk_timerstopi_, variables: !195)
-!195 = !{!196, !197}
-!196 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !194, file: !1, line: 817, type: !102)
-!197 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 2, scope: !194, file: !1, line: 817, type: !102)
-!198 = !DISubprogram(name: "CCTK_TimerReset", scope: !1, file: !1, line: 879, type: !90, isLocal: false, isDefinition: true, scopeLine: 880, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i8*)* @CCTK_TimerReset, variables: !199)
-!199 = !{!200, !201, !202}
-!200 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timername", arg: 1, scope: !198, file: !1, line: 879, type: !16)
-!201 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !198, file: !1, line: 881, type: !54)
-!202 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "this_timer", scope: !198, file: !1, line: 882, type: !20)
-!203 = !DISubprogram(name: "cctk_timerreset_", scope: !1, file: !1, line: 899, type: !118, isLocal: false, isDefinition: true, scopeLine: 901, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i8*, i32)* @cctk_timerreset_, variables: !204)
-!204 = !{!205, !206, !207, !208}
-!205 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !203, file: !1, line: 900, type: !102)
-!206 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_str1", arg: 2, scope: !203, file: !1, line: 900, type: !120)
-!207 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_strlen1", arg: 3, scope: !203, file: !1, line: 900, type: !121)
-!208 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timername", scope: !203, file: !1, line: 902, type: !120)
-!209 = !DISubprogram(name: "CCTK_TimerResetI", scope: !1, file: !1, line: 928, type: !149, isLocal: false, isDefinition: true, scopeLine: 929, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32)* @CCTK_TimerResetI, variables: !210)
-!210 = !{!211, !212}
-!211 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !209, file: !1, line: 928, type: !20)
-!212 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !209, file: !1, line: 930, type: !54)
-!213 = !DISubprogram(name: "cctk_timerreseti_", scope: !1, file: !1, line: 947, type: !155, isLocal: false, isDefinition: true, scopeLine: 949, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i32*)* @cctk_timerreseti_, variables: !214)
-!214 = !{!215, !216}
-!215 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !213, file: !1, line: 948, type: !102)
-!216 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 2, scope: !213, file: !1, line: 948, type: !102)
-!217 = !DISubprogram(name: "CCTK_Timer", scope: !1, file: !1, line: 1016, type: !218, isLocal: false, isDefinition: true, scopeLine: 1017, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i8*, %struct.cTimerData*)* @CCTK_Timer, variables: !220)
-!218 = !DISubroutineType(types: !219)
-!219 = !{!20, !16, !62}
-!220 = !{!221, !222, !223, !224}
-!221 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timername", arg: 1, scope: !217, file: !1, line: 1016, type: !16)
-!222 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "info", arg: 2, scope: !217, file: !1, line: 1016, type: !62)
-!223 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !217, file: !1, line: 1018, type: !54)
-!224 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "this_timer", scope: !217, file: !1, line: 1019, type: !20)
-!225 = !DISubprogram(name: "CCTK_TimerI", scope: !1, file: !1, line: 1057, type: !226, isLocal: false, isDefinition: true, scopeLine: 1058, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32, %struct.cTimerData*)* @CCTK_TimerI, variables: !228)
-!226 = !DISubroutineType(types: !227)
-!227 = !{!20, !20, !62}
-!228 = !{!229, !230, !231}
-!229 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !225, file: !1, line: 1057, type: !20)
-!230 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "info", arg: 2, scope: !225, file: !1, line: 1057, type: !62)
-!231 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !225, file: !1, line: 1059, type: !54)
-!232 = !DISubprogram(name: "CCTK_TimerCreateData", scope: !1, file: !1, line: 1131, type: !233, isLocal: false, isDefinition: true, scopeLine: 1132, flags: DIFlagPrototyped, isOptimized: true, function: %struct.cTimerData* ()* @CCTK_TimerCreateData, variables: !235)
-!233 = !DISubroutineType(types: !234)
-!234 = !{!62}
-!235 = !{!236}
-!236 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "retval", scope: !232, file: !1, line: 1133, type: !62)
-!237 = !DISubprogram(name: "CCTK_TimerDestroyData", scope: !1, file: !1, line: 1172, type: !238, isLocal: false, isDefinition: true, scopeLine: 1173, flags: DIFlagPrototyped, isOptimized: true, function: i32 (%struct.cTimerData*)* @CCTK_TimerDestroyData, variables: !240)
-!238 = !DISubroutineType(types: !239)
-!239 = !{!20, !62}
-!240 = !{!241}
-!241 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "info", arg: 1, scope: !237, file: !1, line: 1172, type: !62)
-!242 = !DISubprogram(name: "CCTK_TimerPrintDataI", scope: !1, file: !1, line: 1214, type: !243, isLocal: false, isDefinition: true, scopeLine: 1215, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i32, i32)* @CCTK_TimerPrintDataI, variables: !245)
-!243 = !DISubroutineType(types: !244)
-!244 = !{!20, !20, !20}
-!245 = !{!246, !247, !248, !249, !250, !251, !252, !253, !254, !255}
-!246 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !242, file: !1, line: 1214, type: !20)
-!247 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_clock", arg: 2, scope: !242, file: !1, line: 1214, type: !20)
-!248 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "info", scope: !242, file: !1, line: 1216, type: !62)
-!249 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "i", scope: !242, file: !1, line: 1217, type: !20)
-!250 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !242, file: !1, line: 1217, type: !20)
-!251 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "retval", scope: !242, file: !1, line: 1217, type: !20)
-!252 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "firstclock", scope: !242, file: !1, line: 1218, type: !20)
-!253 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "lastclock", scope: !242, file: !1, line: 1218, type: !20)
-!254 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "firsttimer", scope: !242, file: !1, line: 1219, type: !20)
-!255 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "lasttimer", scope: !242, file: !1, line: 1219, type: !20)
-!256 = !DISubprogram(name: "cctk_timerprintdatai_", scope: !1, file: !1, line: 1291, type: !257, isLocal: false, isDefinition: true, scopeLine: 1293, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i32*, i32*)* @cctk_timerprintdatai_, variables: !259)
-!257 = !DISubroutineType(types: !258)
-!258 = !{null, !102, !102, !102}
-!259 = !{!260, !261, !262}
-!260 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !256, file: !1, line: 1292, type: !102)
-!261 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 2, scope: !256, file: !1, line: 1292, type: !102)
-!262 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_clock", arg: 3, scope: !256, file: !1, line: 1292, type: !102)
-!263 = !DISubprogram(name: "CCTK_TimerPrintData", scope: !1, file: !1, line: 1323, type: !264, isLocal: false, isDefinition: true, scopeLine: 1324, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i8*, i8*)* @CCTK_TimerPrintData, variables: !266)
-!264 = !DISubroutineType(types: !265)
-!265 = !{!20, !16, !16}
-!266 = !{!267, !268, !269, !270, !271}
-!267 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timername", arg: 1, scope: !263, file: !1, line: 1323, type: !16)
-!268 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "clockname", arg: 2, scope: !263, file: !1, line: 1323, type: !16)
-!269 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "this_timer", scope: !263, file: !1, line: 1325, type: !20)
-!270 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "this_clock", scope: !263, file: !1, line: 1325, type: !20)
-!271 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "retval", scope: !263, file: !1, line: 1325, type: !20)
-!272 = !DISubprogram(name: "cctk_timerprintdata_", scope: !1, file: !1, line: 1368, type: !273, isLocal: false, isDefinition: true, scopeLine: 1370, flags: DIFlagPrototyped, isOptimized: true, function: void (i32*, i8*, i8*, i32, i32)* @cctk_timerprintdata_, variables: !275)
-!273 = !DISubroutineType(types: !274)
-!274 = !{null, !102, !120, !120, !121, !121}
-!275 = !{!276, !277, !278, !279, !280, !281, !282}
-!276 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ierr", arg: 1, scope: !272, file: !1, line: 1369, type: !102)
-!277 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_str1", arg: 2, scope: !272, file: !1, line: 1369, type: !120)
-!278 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_str2", arg: 3, scope: !272, file: !1, line: 1369, type: !120)
-!279 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_strlen1", arg: 4, scope: !272, file: !1, line: 1369, type: !121)
-!280 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "cctk_strlen2", arg: 5, scope: !272, file: !1, line: 1369, type: !121)
-!281 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !272, file: !1, line: 1371, type: !120)
-!282 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "clock", scope: !272, file: !1, line: 1371, type: !120)
-!283 = !DISubprogram(name: "CCTKi_TimerCreate", scope: !1, file: !1, line: 407, type: !90, isLocal: true, isDefinition: true, scopeLine: 408, flags: DIFlagPrototyped, isOptimized: true, function: i32 (i8*)* @CCTKi_TimerCreate, variables: !284)
-!284 = !{!285, !286, !287, !288, !289, !290}
-!285 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timername", arg: 1, scope: !283, file: !1, line: 407, type: !16)
-!286 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "retval", scope: !283, file: !1, line: 409, type: !20)
-!287 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "timer", scope: !283, file: !1, line: 410, type: !54)
-!288 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "funcs", scope: !283, file: !1, line: 411, type: !60)
-!289 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "this_timer", scope: !283, file: !1, line: 412, type: !20)
-!290 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "handle", scope: !283, file: !1, line: 413, type: !20)
-!291 = !DISubprogram(name: "CCTKi_TimerDestroy", scope: !1, file: !1, line: 574, type: !292, isLocal: true, isDefinition: true, scopeLine: 575, flags: DIFlagPrototyped, isOptimized: true, function: void (i32, %struct.t_Timer*)* @CCTKi_TimerDestroy, variables: !294)
-!292 = !DISubroutineType(types: !293)
-!293 = !{null, !20, !54}
-!294 = !{!295, !296, !297, !298}
-!295 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !291, file: !1, line: 574, type: !20)
-!296 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timer", arg: 2, scope: !291, file: !1, line: 574, type: !54)
-!297 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "handle", scope: !291, file: !1, line: 576, type: !20)
-!298 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "funcs", scope: !291, file: !1, line: 577, type: !60)
-!299 = !DISubprogram(name: "CCTKi_TimerStart", scope: !1, file: !1, line: 710, type: !292, isLocal: true, isDefinition: true, scopeLine: 711, flags: DIFlagPrototyped, isOptimized: true, function: void (i32, %struct.t_Timer*)* @CCTKi_TimerStart, variables: !300)
-!300 = !{!301, !302, !303, !304}
-!301 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !299, file: !1, line: 710, type: !20)
-!302 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timer", arg: 2, scope: !299, file: !1, line: 710, type: !54)
-!303 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "funcs", scope: !299, file: !1, line: 712, type: !60)
-!304 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "handle", scope: !299, file: !1, line: 713, type: !20)
-!305 = !DISubprogram(name: "CCTKi_TimerStop", scope: !1, file: !1, line: 842, type: !292, isLocal: true, isDefinition: true, scopeLine: 843, flags: DIFlagPrototyped, isOptimized: true, function: void (i32, %struct.t_Timer*)* @CCTKi_TimerStop, variables: !306)
-!306 = !{!307, !308, !309, !310}
-!307 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !305, file: !1, line: 842, type: !20)
-!308 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timer", arg: 2, scope: !305, file: !1, line: 842, type: !54)
-!309 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "funcs", scope: !305, file: !1, line: 844, type: !60)
-!310 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "handle", scope: !305, file: !1, line: 845, type: !20)
-!311 = !DISubprogram(name: "CCTKi_TimerReset", scope: !1, file: !1, line: 973, type: !292, isLocal: true, isDefinition: true, scopeLine: 974, flags: DIFlagPrototyped, isOptimized: true, function: void (i32, %struct.t_Timer*)* @CCTKi_TimerReset, variables: !312)
-!312 = !{!313, !314, !315, !316}
-!313 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !311, file: !1, line: 973, type: !20)
-!314 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timer", arg: 2, scope: !311, file: !1, line: 973, type: !54)
-!315 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "funcs", scope: !311, file: !1, line: 975, type: !60)
-!316 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "handle", scope: !311, file: !1, line: 976, type: !20)
-!317 = !DISubprogram(name: "CCTKi_Timer", scope: !1, file: !1, line: 1096, type: !318, isLocal: true, isDefinition: true, scopeLine: 1097, flags: DIFlagPrototyped, isOptimized: true, function: void (i32, %struct.t_Timer*, %struct.cTimerData*)* @CCTKi_Timer, variables: !320)
-!318 = !DISubroutineType(types: !319)
-!319 = !{null, !20, !54, !62}
-!320 = !{!321, !322, !323, !324, !325, !326}
-!321 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "this_timer", arg: 1, scope: !317, file: !1, line: 1096, type: !20)
-!322 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "timer", arg: 2, scope: !317, file: !1, line: 1096, type: !54)
-!323 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "info", arg: 3, scope: !317, file: !1, line: 1096, type: !62)
-!324 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "funcs", scope: !317, file: !1, line: 1098, type: !60)
-!325 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "handle", scope: !317, file: !1, line: 1099, type: !20)
-!326 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "total_vars", scope: !317, file: !1, line: 1099, type: !20)
-!327 = !{!328, !329, !330, !346, !347, !348}
-!328 = !DIGlobalVariable(name: "rcsid", scope: !0, file: !1, line: 25, type: !16, isLocal: true, isDefinition: true)
-!329 = !DIGlobalVariable(name: "n_timers", scope: !0, file: !1, line: 91, type: !20, isLocal: true, isDefinition: true, variable: i32* @n_timers)
-!330 = !DIGlobalVariable(name: "timers", scope: !0, file: !1, line: 92, type: !331, isLocal: true, isDefinition: true, variable: %struct.cHandledData** @timers)
-!331 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !332, size: 64, align: 64)
-!332 = !DIDerivedType(tag: DW_TAG_typedef, name: "cHandledData", file: !333, line: 28, baseType: !334)
-!333 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/StoreHandledData.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!334 = !DICompositeType(tag: DW_TAG_structure_type, file: !333, line: 23, size: 128, align: 64, elements: !335)
-!335 = !{!336, !344, !345}
-!336 = !DIDerivedType(tag: DW_TAG_member, name: "array", scope: !334, file: !333, line: 25, baseType: !337, size: 64, align: 64)
-!337 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !338, size: 64, align: 64)
-!338 = !DIDerivedType(tag: DW_TAG_typedef, name: "cHandleStorage", file: !333, line: 21, baseType: !339)
-!339 = !DICompositeType(tag: DW_TAG_structure_type, file: !333, line: 16, size: 192, align: 64, elements: !340)
-!340 = !{!341, !342, !343}
-!341 = !DIDerivedType(tag: DW_TAG_member, name: "in_use", scope: !339, file: !333, line: 18, baseType: !121, size: 32, align: 32)
-!342 = !DIDerivedType(tag: DW_TAG_member, name: "name", scope: !339, file: !333, line: 19, baseType: !120, size: 64, align: 64, offset: 64)
-!343 = !DIDerivedType(tag: DW_TAG_member, name: "data", scope: !339, file: !333, line: 20, baseType: !25, size: 64, align: 64, offset: 128)
-!344 = !DIDerivedType(tag: DW_TAG_member, name: "array_size", scope: !334, file: !333, line: 26, baseType: !121, size: 32, align: 32, offset: 64)
-!345 = !DIDerivedType(tag: DW_TAG_member, name: "first_unused", scope: !334, file: !333, line: 27, baseType: !121, size: 32, align: 32, offset: 96)
-!346 = !DIGlobalVariable(name: "n_clocks", scope: !0, file: !1, line: 85, type: !20, isLocal: true, isDefinition: true, variable: i32* @n_clocks)
-!347 = !DIGlobalVariable(name: "clocks", scope: !0, file: !1, line: 86, type: !331, isLocal: true, isDefinition: true, variable: %struct.cHandledData** @clocks)
-!348 = !DIGlobalVariable(name: "n_clock_vals", scope: !0, file: !1, line: 89, type: !20, isLocal: true, isDefinition: true, variable: i32* @n_clock_vals)
-!349 = !{i32 2, !"Dwarf Version", i32 2}
-!350 = !{i32 2, !"Debug Info Version", i32 700000003}
-!351 = !{i32 1, !"PIC Level", i32 2}
-!352 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!353 = !DILocation(line: 27, column: 1, scope: !69)
-!354 = !DIExpression()
-!355 = !DILocation(line: 121, column: 37, scope: !73)
-!356 = !DILocation(line: 121, column: 67, scope: !73)
-!357 = !DILocation(line: 129, column: 30, scope: !73)
-!358 = !DILocation(line: 130, column: 7, scope: !359)
-!359 = distinct !DILexicalBlock(scope: !73, file: !1, line: 130, column: 7)
-!360 = !DILocation(line: 130, column: 7, scope: !73)
-!361 = !DILocation(line: 132, column: 15, scope: !362)
-!362 = distinct !DILexicalBlock(scope: !359, file: !1, line: 131, column: 3)
-!363 = !DILocation(line: 132, column: 20, scope: !362)
-!364 = !{!365, !366, i64 0}
-!365 = !{!"", !366, i64 0, !369, i64 8, !366, i64 16, !366, i64 24, !366, i64 32, !366, i64 40, !366, i64 48, !366, i64 56, !366, i64 64}
-!366 = !{!"any pointer", !367, i64 0}
-!367 = !{!"omnipotent char", !368, i64 0}
-!368 = !{!"Simple C/C++ TBAA"}
-!369 = !{!"int", !367, i64 0}
-!370 = !DILocation(line: 133, column: 35, scope: !362)
-!371 = !{!365, !369, i64 8}
-!372 = !DILocation(line: 133, column: 15, scope: !362)
-!373 = !DILocation(line: 133, column: 22, scope: !362)
-!374 = !DILocation(line: 134, column: 35, scope: !362)
-!375 = !DILocation(line: 134, column: 22, scope: !362)
-!376 = !{!366, !366, i64 0}
-!377 = !DILocation(line: 136, column: 34, scope: !362)
-!378 = !DILocation(line: 136, column: 21, scope: !362)
-!379 = !DILocation(line: 138, column: 34, scope: !362)
-!380 = !DILocation(line: 138, column: 21, scope: !362)
-!381 = !DILocation(line: 140, column: 32, scope: !362)
-!382 = !{!365, !366, i64 64}
-!383 = !DILocation(line: 140, column: 19, scope: !362)
-!384 = !DILocation(line: 141, column: 3, scope: !362)
-!385 = !DILocation(line: 144, column: 29, scope: !386)
-!386 = distinct !DILexicalBlock(scope: !387, file: !1, line: 144, column: 3)
-!387 = distinct !DILexicalBlock(scope: !73, file: !1, line: 144, column: 3)
-!388 = !{!369, !369, i64 0}
-!389 = !DILocation(line: 144, column: 27, scope: !386)
-!390 = !DILocation(line: 144, column: 3, scope: !387)
-!391 = !DILocation(line: 152, column: 42, scope: !392)
-!392 = distinct !DILexicalBlock(scope: !393, file: !1, line: 150, column: 5)
-!393 = distinct !DILexicalBlock(scope: !394, file: !1, line: 149, column: 9)
-!394 = distinct !DILexicalBlock(scope: !386, file: !1, line: 145, column: 3)
-!395 = !DILocation(line: 146, column: 46, scope: !394)
-!396 = !DILocation(line: 146, column: 25, scope: !394)
-!397 = !DILocation(line: 148, column: 27, scope: !394)
-!398 = !{!399, !366, i64 0}
-!399 = !{!"", !366, i64 0}
-!400 = !DILocation(line: 148, column: 34, scope: !394)
-!401 = !DILocation(line: 148, column: 43, scope: !394)
-!402 = !DILocation(line: 148, column: 33, scope: !394)
-!403 = !DILocation(line: 148, column: 48, scope: !394)
-!404 = !DILocation(line: 148, column: 11, scope: !394)
-!405 = !DILocation(line: 123, column: 9, scope: !73)
-!406 = !DILocation(line: 149, column: 9, scope: !393)
-!407 = !DILocation(line: 149, column: 9, scope: !394)
-!408 = !DILocation(line: 151, column: 19, scope: !392)
-!409 = !{!365, !366, i64 16}
-!410 = !DILocation(line: 152, column: 31, scope: !392)
-!411 = !DILocation(line: 152, column: 19, scope: !392)
-!412 = !DILocation(line: 152, column: 7, scope: !392)
-!413 = !DILocation(line: 152, column: 14, scope: !392)
-!414 = !DILocation(line: 152, column: 29, scope: !392)
-!415 = !DILocation(line: 153, column: 5, scope: !392)
-!416 = !DILocation(line: 144, column: 45, scope: !386)
-!417 = !DILocation(line: 124, column: 7, scope: !73)
-!418 = !DILocation(line: 157, column: 12, scope: !73)
-!419 = !DILocation(line: 158, column: 11, scope: !73)
-!420 = !DILocation(line: 159, column: 30, scope: !73)
-!421 = !DILocation(line: 159, column: 16, scope: !73)
-!422 = !DILocation(line: 161, column: 3, scope: !73)
-!423 = !DILocation(line: 184, column: 33, scope: !83)
-!424 = !DILocation(line: 189, column: 54, scope: !83)
-!425 = !DILocation(line: 189, column: 33, scope: !83)
-!426 = !DILocation(line: 191, column: 11, scope: !83)
-!427 = !DILocation(line: 191, column: 26, scope: !83)
-!428 = !DILocation(line: 191, column: 3, scope: !83)
-!429 = !DILocation(line: 214, column: 35, scope: !89)
-!430 = !DILocation(line: 248, column: 11, scope: !96, inlinedAt: !431)
-!431 = distinct !DILocation(line: 220, column: 17, scope: !432)
-!432 = distinct !DILexicalBlock(scope: !89, file: !1, line: 220, column: 3)
-!433 = !DILocation(line: 220, column: 35, scope: !432)
-!434 = !DILocation(line: 220, column: 47, scope: !435)
-!435 = distinct !DILexicalBlock(scope: !432, file: !1, line: 220, column: 3)
-!436 = !DILocation(line: 220, column: 3, scope: !432)
-!437 = !DILocation(line: 222, column: 56, scope: !438)
-!438 = distinct !DILexicalBlock(scope: !435, file: !1, line: 221, column: 3)
-!439 = !DILocation(line: 222, column: 35, scope: !438)
-!440 = !DILocation(line: 223, column: 9, scope: !441)
-!441 = distinct !DILexicalBlock(scope: !438, file: !1, line: 223, column: 9)
-!442 = !DILocation(line: 223, column: 15, scope: !441)
-!443 = !DILocation(line: 223, column: 33, scope: !441)
-!444 = !DILocation(line: 223, column: 18, scope: !441)
-!445 = !DILocation(line: 223, column: 50, scope: !441)
-!446 = !DILocation(line: 223, column: 9, scope: !438)
-!447 = !DILocation(line: 229, column: 3, scope: !89)
-!448 = !DILocation(line: 248, column: 11, scope: !96)
-!449 = !DILocation(line: 248, column: 3, scope: !96)
-!450 = !DILocation(line: 252, column: 34, scope: !99)
-!451 = !DILocation(line: 248, column: 11, scope: !96, inlinedAt: !452)
-!452 = distinct !DILocation(line: 254, column: 14, scope: !99)
-!453 = !DILocation(line: 254, column: 12, scope: !99)
-!454 = !DILocation(line: 255, column: 1, scope: !99)
-!455 = !DILocation(line: 273, column: 11, scope: !105)
-!456 = !DILocation(line: 273, column: 3, scope: !105)
-!457 = !DILocation(line: 277, column: 34, scope: !106)
-!458 = !DILocation(line: 273, column: 11, scope: !105, inlinedAt: !459)
-!459 = distinct !DILocation(line: 279, column: 14, scope: !106)
-!460 = !DILocation(line: 279, column: 12, scope: !106)
-!461 = !DILocation(line: 280, column: 1, scope: !106)
-!462 = !DILocation(line: 303, column: 33, scope: !109)
-!463 = !DILocation(line: 308, column: 32, scope: !109)
-!464 = !DILocation(line: 308, column: 12, scope: !109)
-!465 = !DILocation(line: 305, column: 15, scope: !109)
-!466 = !DILocation(line: 310, column: 3, scope: !109)
-!467 = !DILocation(line: 334, column: 35, scope: !113)
-!468 = !DILocation(line: 339, column: 12, scope: !113)
-!469 = !DILocation(line: 336, column: 7, scope: !113)
-!470 = !DILocation(line: 341, column: 3, scope: !113)
-!471 = !DILocation(line: 407, column: 43, scope: !283)
-!472 = !DILocation(line: 416, column: 23, scope: !473)
-!473 = distinct !DILexicalBlock(scope: !283, file: !1, line: 416, column: 7)
-!474 = !DILocation(line: 416, column: 42, scope: !473)
-!475 = !DILocation(line: 416, column: 7, scope: !473)
-!476 = !DILocation(line: 416, column: 60, scope: !473)
-!477 = !DILocation(line: 416, column: 7, scope: !283)
-!478 = !DILocation(line: 423, column: 25, scope: !479)
-!479 = distinct !DILexicalBlock(scope: !473, file: !1, line: 422, column: 3)
-!480 = !DILocation(line: 423, column: 11, scope: !479)
-!481 = !DILocation(line: 425, column: 9, scope: !482)
-!482 = distinct !DILexicalBlock(scope: !479, file: !1, line: 425, column: 9)
-!483 = !DILocation(line: 425, column: 9, scope: !479)
-!484 = !DILocation(line: 427, column: 39, scope: !485)
-!485 = distinct !DILexicalBlock(scope: !482, file: !1, line: 426, column: 5)
-!486 = !DILocation(line: 427, column: 48, scope: !485)
-!487 = !DILocation(line: 427, column: 31, scope: !485)
-!488 = !DILocation(line: 410, column: 12, scope: !283)
-!489 = !DILocation(line: 427, column: 19, scope: !485)
-!490 = !DILocation(line: 429, column: 11, scope: !491)
-!491 = distinct !DILexicalBlock(scope: !485, file: !1, line: 429, column: 11)
-!492 = !DILocation(line: 429, column: 18, scope: !491)
-!493 = !DILocation(line: 446, column: 15, scope: !494)
-!494 = distinct !DILexicalBlock(scope: !491, file: !1, line: 445, column: 7)
-!495 = !DILocation(line: 429, column: 11, scope: !485)
-!496 = !DILocation(line: 432, column: 22, scope: !497)
-!497 = distinct !DILexicalBlock(scope: !491, file: !1, line: 430, column: 7)
-!498 = !DILocation(line: 412, column: 7, scope: !283)
-!499 = !DILocation(line: 433, column: 17, scope: !497)
-!500 = !DILocation(line: 413, column: 7, scope: !283)
-!501 = !DILocation(line: 436, column: 35, scope: !502)
-!502 = distinct !DILexicalBlock(scope: !503, file: !1, line: 436, column: 9)
-!503 = distinct !DILexicalBlock(scope: !497, file: !1, line: 436, column: 9)
-!504 = !DILocation(line: 436, column: 33, scope: !502)
-!505 = !DILocation(line: 436, column: 9, scope: !503)
-!506 = !DILocation(line: 438, column: 62, scope: !507)
-!507 = distinct !DILexicalBlock(scope: !502, file: !1, line: 437, column: 9)
-!508 = !DILocation(line: 438, column: 41, scope: !507)
-!509 = !DILocation(line: 440, column: 40, scope: !507)
-!510 = !DILocation(line: 440, column: 33, scope: !507)
-!511 = !DILocation(line: 440, column: 11, scope: !507)
-!512 = !DILocation(line: 440, column: 18, scope: !507)
-!513 = !DILocation(line: 440, column: 31, scope: !507)
-!514 = !DILocation(line: 446, column: 9, scope: !494)
-!515 = !DILocation(line: 409, column: 7, scope: !283)
-!516 = !DILocation(line: 456, column: 3, scope: !283)
-!517 = !DILocation(line: 345, column: 34, scope: !117)
-!518 = !DILocation(line: 345, column: 47, scope: !117)
-!519 = !DILocation(line: 347, column: 3, scope: !117)
-!520 = !DILocation(line: 334, column: 35, scope: !113, inlinedAt: !521)
-!521 = distinct !DILocation(line: 348, column: 18, scope: !117)
-!522 = !DILocation(line: 339, column: 12, scope: !113, inlinedAt: !521)
-!523 = !DILocation(line: 336, column: 7, scope: !113, inlinedAt: !521)
-!524 = !DILocation(line: 348, column: 16, scope: !117)
-!525 = !DILocation(line: 349, column: 3, scope: !117)
-!526 = !DILocation(line: 350, column: 1, scope: !117)
-!527 = !DILocation(line: 370, column: 3, scope: !127)
-!528 = !DILocation(line: 370, column: 8, scope: !127)
-!529 = !DILocation(line: 373, column: 3, scope: !127)
-!530 = !DILocation(line: 374, column: 12, scope: !127)
-!531 = !DILocation(line: 369, column: 7, scope: !127)
-!532 = !DILocation(line: 377, column: 1, scope: !127)
-!533 = !DILocation(line: 380, column: 34, scope: !134)
-!534 = !DILocation(line: 370, column: 3, scope: !127, inlinedAt: !535)
-!535 = distinct !DILocation(line: 382, column: 11, scope: !134)
-!536 = !DILocation(line: 373, column: 3, scope: !127, inlinedAt: !535)
-!537 = !DILocation(line: 374, column: 12, scope: !127, inlinedAt: !535)
-!538 = !DILocation(line: 369, column: 7, scope: !127, inlinedAt: !535)
-!539 = !DILocation(line: 377, column: 1, scope: !127, inlinedAt: !535)
-!540 = !DILocation(line: 382, column: 9, scope: !134)
-!541 = !DILocation(line: 370, column: 8, scope: !127, inlinedAt: !535)
-!542 = !DILocation(line: 383, column: 1, scope: !134)
-!543 = !DILocation(line: 480, column: 36, scope: !137)
-!544 = !DILocation(line: 486, column: 32, scope: !137)
-!545 = !DILocation(line: 486, column: 52, scope: !137)
-!546 = !DILocation(line: 486, column: 16, scope: !137)
-!547 = !DILocation(line: 483, column: 7, scope: !137)
-!548 = !DILocation(line: 487, column: 18, scope: !549)
-!549 = distinct !DILexicalBlock(scope: !137, file: !1, line: 487, column: 7)
-!550 = !DILocation(line: 487, column: 7, scope: !137)
-!551 = !DILocation(line: 482, column: 12, scope: !137)
-!552 = !DILocation(line: 489, column: 37, scope: !553)
-!553 = distinct !DILexicalBlock(scope: !549, file: !1, line: 488, column: 3)
-!554 = !DILocation(line: 489, column: 5, scope: !553)
-!555 = !DILocation(line: 490, column: 3, scope: !553)
-!556 = !DILocation(line: 493, column: 5, scope: !557)
-!557 = distinct !DILexicalBlock(scope: !549, file: !1, line: 492, column: 3)
-!558 = !DILocation(line: 497, column: 11, scope: !137)
-!559 = !DILocation(line: 497, column: 3, scope: !137)
-!560 = !DILocation(line: 574, column: 37, scope: !291)
-!561 = !DILocation(line: 574, column: 58, scope: !291)
-!562 = !DILocation(line: 580, column: 7, scope: !563)
-!563 = distinct !DILexicalBlock(scope: !291, file: !1, line: 580, column: 7)
-!564 = !DILocation(line: 580, column: 13, scope: !563)
-!565 = !DILocation(line: 580, column: 23, scope: !563)
-!566 = !DILocation(line: 580, column: 16, scope: !563)
-!567 = !DILocation(line: 580, column: 7, scope: !291)
-!568 = !DILocation(line: 583, column: 31, scope: !569)
-!569 = distinct !DILexicalBlock(scope: !570, file: !1, line: 583, column: 5)
-!570 = distinct !DILexicalBlock(scope: !571, file: !1, line: 583, column: 5)
-!571 = distinct !DILexicalBlock(scope: !563, file: !1, line: 581, column: 3)
-!572 = !DILocation(line: 583, column: 29, scope: !569)
-!573 = !DILocation(line: 583, column: 5, scope: !570)
-!574 = !DILocation(line: 585, column: 58, scope: !575)
-!575 = distinct !DILexicalBlock(scope: !569, file: !1, line: 584, column: 5)
-!576 = !DILocation(line: 585, column: 37, scope: !575)
-!577 = !DILocation(line: 586, column: 14, scope: !575)
-!578 = !{!365, !366, i64 24}
-!579 = !DILocation(line: 586, column: 42, scope: !575)
-!580 = !DILocation(line: 586, column: 35, scope: !575)
-!581 = !DILocation(line: 586, column: 7, scope: !575)
-!582 = !DILocation(line: 588, column: 18, scope: !571)
-!583 = !DILocation(line: 588, column: 5, scope: !571)
-!584 = !DILocation(line: 589, column: 11, scope: !571)
-!585 = !DILocation(line: 589, column: 5, scope: !571)
-!586 = !DILocation(line: 590, column: 24, scope: !571)
-!587 = !DILocation(line: 590, column: 5, scope: !571)
-!588 = !DILocation(line: 591, column: 13, scope: !571)
-!589 = !DILocation(line: 592, column: 3, scope: !571)
-!590 = !DILocation(line: 593, column: 1, scope: !291)
-!591 = !DILocation(line: 501, column: 34, scope: !142)
-!592 = !DILocation(line: 501, column: 40, scope: !142)
-!593 = !DILocation(line: 503, column: 3, scope: !142)
-!594 = !DILocation(line: 504, column: 11, scope: !142)
-!595 = !DILocation(line: 504, column: 9, scope: !142)
-!596 = !DILocation(line: 505, column: 3, scope: !142)
-!597 = !DILocation(line: 506, column: 1, scope: !142)
-!598 = !DILocation(line: 529, column: 29, scope: !148)
-!599 = !DILocation(line: 534, column: 32, scope: !148)
-!600 = !DILocation(line: 534, column: 11, scope: !148)
-!601 = !DILocation(line: 531, column: 12, scope: !148)
-!602 = !DILocation(line: 535, column: 7, scope: !603)
-!603 = distinct !DILexicalBlock(scope: !148, file: !1, line: 535, column: 7)
-!604 = !DILocation(line: 535, column: 7, scope: !148)
-!605 = !DILocation(line: 537, column: 5, scope: !606)
-!606 = distinct !DILexicalBlock(scope: !603, file: !1, line: 536, column: 3)
-!607 = !DILocation(line: 538, column: 3, scope: !606)
-!608 = !DILocation(line: 541, column: 5, scope: !609)
-!609 = distinct !DILexicalBlock(scope: !603, file: !1, line: 540, column: 3)
-!610 = !DILocation(line: 545, column: 11, scope: !148)
-!611 = !DILocation(line: 545, column: 3, scope: !148)
-!612 = !DILocation(line: 549, column: 34, scope: !154)
-!613 = !DILocation(line: 549, column: 45, scope: !154)
-!614 = !DILocation(line: 551, column: 31, scope: !154)
-!615 = !DILocation(line: 551, column: 11, scope: !154)
-!616 = !DILocation(line: 551, column: 9, scope: !154)
-!617 = !DILocation(line: 552, column: 1, scope: !154)
-!618 = !DILocation(line: 616, column: 34, scope: !160)
-!619 = !DILocation(line: 622, column: 32, scope: !160)
-!620 = !DILocation(line: 622, column: 51, scope: !160)
-!621 = !DILocation(line: 622, column: 16, scope: !160)
-!622 = !DILocation(line: 619, column: 7, scope: !160)
-!623 = !DILocation(line: 623, column: 18, scope: !624)
-!624 = distinct !DILexicalBlock(scope: !160, file: !1, line: 623, column: 7)
-!625 = !DILocation(line: 623, column: 7, scope: !160)
-!626 = !DILocation(line: 618, column: 12, scope: !160)
-!627 = !DILocation(line: 625, column: 35, scope: !628)
-!628 = distinct !DILexicalBlock(scope: !624, file: !1, line: 624, column: 3)
-!629 = !DILocation(line: 625, column: 5, scope: !628)
-!630 = !DILocation(line: 626, column: 3, scope: !628)
-!631 = !DILocation(line: 629, column: 5, scope: !632)
-!632 = distinct !DILexicalBlock(scope: !624, file: !1, line: 628, column: 3)
-!633 = !DILocation(line: 633, column: 11, scope: !160)
-!634 = !DILocation(line: 633, column: 3, scope: !160)
-!635 = !DILocation(line: 710, column: 35, scope: !299)
-!636 = !DILocation(line: 710, column: 56, scope: !299)
-!637 = !DILocation(line: 716, column: 7, scope: !638)
-!638 = distinct !DILexicalBlock(scope: !299, file: !1, line: 716, column: 7)
-!639 = !DILocation(line: 716, column: 13, scope: !638)
-!640 = !DILocation(line: 716, column: 23, scope: !638)
-!641 = !DILocation(line: 716, column: 16, scope: !638)
-!642 = !DILocation(line: 719, column: 29, scope: !643)
-!643 = distinct !DILexicalBlock(scope: !644, file: !1, line: 719, column: 5)
-!644 = distinct !DILexicalBlock(scope: !645, file: !1, line: 719, column: 5)
-!645 = distinct !DILexicalBlock(scope: !638, file: !1, line: 717, column: 3)
-!646 = !DILocation(line: 716, column: 7, scope: !299)
-!647 = !DILocation(line: 721, column: 58, scope: !648)
-!648 = distinct !DILexicalBlock(scope: !643, file: !1, line: 720, column: 5)
-!649 = !DILocation(line: 721, column: 37, scope: !648)
-!650 = !DILocation(line: 722, column: 14, scope: !648)
-!651 = !{!365, !366, i64 32}
-!652 = !DILocation(line: 722, column: 40, scope: !648)
-!653 = !DILocation(line: 722, column: 33, scope: !648)
-!654 = !DILocation(line: 722, column: 7, scope: !648)
-!655 = !DILocation(line: 719, column: 5, scope: !644)
-!656 = !DILocation(line: 719, column: 31, scope: !643)
-!657 = !DILocation(line: 725, column: 1, scope: !299)
-!658 = !DILocation(line: 637, column: 34, scope: !165)
-!659 = !DILocation(line: 637, column: 40, scope: !165)
-!660 = !DILocation(line: 639, column: 3, scope: !165)
-!661 = !DILocation(line: 640, column: 11, scope: !165)
-!662 = !DILocation(line: 640, column: 9, scope: !165)
-!663 = !DILocation(line: 641, column: 3, scope: !165)
-!664 = !DILocation(line: 642, column: 1, scope: !165)
-!665 = !DILocation(line: 665, column: 27, scope: !171)
-!666 = !DILocation(line: 670, column: 32, scope: !171)
-!667 = !DILocation(line: 670, column: 11, scope: !171)
-!668 = !DILocation(line: 667, column: 12, scope: !171)
-!669 = !DILocation(line: 671, column: 7, scope: !670)
-!670 = distinct !DILexicalBlock(scope: !171, file: !1, line: 671, column: 7)
-!671 = !DILocation(line: 671, column: 7, scope: !171)
-!672 = !DILocation(line: 673, column: 5, scope: !673)
-!673 = distinct !DILexicalBlock(scope: !670, file: !1, line: 672, column: 3)
-!674 = !DILocation(line: 674, column: 3, scope: !673)
-!675 = !DILocation(line: 677, column: 5, scope: !676)
-!676 = distinct !DILexicalBlock(scope: !670, file: !1, line: 676, column: 3)
-!677 = !DILocation(line: 681, column: 11, scope: !171)
-!678 = !DILocation(line: 681, column: 3, scope: !171)
-!679 = !DILocation(line: 685, column: 34, scope: !175)
-!680 = !DILocation(line: 685, column: 45, scope: !175)
-!681 = !DILocation(line: 687, column: 29, scope: !175)
-!682 = !DILocation(line: 687, column: 11, scope: !175)
-!683 = !DILocation(line: 687, column: 9, scope: !175)
-!684 = !DILocation(line: 688, column: 1, scope: !175)
-!685 = !DILocation(line: 748, column: 33, scope: !179)
-!686 = !DILocation(line: 754, column: 32, scope: !179)
-!687 = !DILocation(line: 754, column: 51, scope: !179)
-!688 = !DILocation(line: 754, column: 16, scope: !179)
-!689 = !DILocation(line: 751, column: 7, scope: !179)
-!690 = !DILocation(line: 755, column: 18, scope: !691)
-!691 = distinct !DILexicalBlock(scope: !179, file: !1, line: 755, column: 7)
-!692 = !DILocation(line: 755, column: 7, scope: !179)
-!693 = !DILocation(line: 750, column: 12, scope: !179)
-!694 = !DILocation(line: 757, column: 34, scope: !695)
-!695 = distinct !DILexicalBlock(scope: !691, file: !1, line: 756, column: 3)
-!696 = !DILocation(line: 757, column: 5, scope: !695)
-!697 = !DILocation(line: 758, column: 3, scope: !695)
-!698 = !DILocation(line: 761, column: 5, scope: !699)
-!699 = distinct !DILexicalBlock(scope: !691, file: !1, line: 760, column: 3)
-!700 = !DILocation(line: 765, column: 11, scope: !179)
-!701 = !DILocation(line: 765, column: 3, scope: !179)
-!702 = !DILocation(line: 842, column: 34, scope: !305)
-!703 = !DILocation(line: 842, column: 55, scope: !305)
-!704 = !DILocation(line: 847, column: 7, scope: !705)
-!705 = distinct !DILexicalBlock(scope: !305, file: !1, line: 847, column: 7)
-!706 = !DILocation(line: 847, column: 13, scope: !705)
-!707 = !DILocation(line: 847, column: 23, scope: !705)
-!708 = !DILocation(line: 847, column: 16, scope: !705)
-!709 = !DILocation(line: 850, column: 29, scope: !710)
-!710 = distinct !DILexicalBlock(scope: !711, file: !1, line: 850, column: 5)
-!711 = distinct !DILexicalBlock(scope: !712, file: !1, line: 850, column: 5)
-!712 = distinct !DILexicalBlock(scope: !705, file: !1, line: 848, column: 3)
-!713 = !DILocation(line: 847, column: 7, scope: !305)
-!714 = !DILocation(line: 852, column: 58, scope: !715)
-!715 = distinct !DILexicalBlock(scope: !710, file: !1, line: 851, column: 5)
-!716 = !DILocation(line: 852, column: 37, scope: !715)
-!717 = !DILocation(line: 853, column: 14, scope: !715)
-!718 = !{!365, !366, i64 40}
-!719 = !DILocation(line: 853, column: 39, scope: !715)
-!720 = !DILocation(line: 853, column: 32, scope: !715)
-!721 = !DILocation(line: 853, column: 7, scope: !715)
-!722 = !DILocation(line: 850, column: 5, scope: !711)
-!723 = !DILocation(line: 850, column: 31, scope: !710)
-!724 = !DILocation(line: 856, column: 1, scope: !305)
-!725 = !DILocation(line: 769, column: 34, scope: !184)
-!726 = !DILocation(line: 769, column: 40, scope: !184)
-!727 = !DILocation(line: 771, column: 3, scope: !184)
-!728 = !DILocation(line: 772, column: 11, scope: !184)
-!729 = !DILocation(line: 772, column: 9, scope: !184)
-!730 = !DILocation(line: 773, column: 3, scope: !184)
-!731 = !DILocation(line: 774, column: 1, scope: !184)
-!732 = !DILocation(line: 797, column: 26, scope: !190)
-!733 = !DILocation(line: 802, column: 32, scope: !190)
-!734 = !DILocation(line: 802, column: 11, scope: !190)
-!735 = !DILocation(line: 799, column: 12, scope: !190)
-!736 = !DILocation(line: 803, column: 7, scope: !737)
-!737 = distinct !DILexicalBlock(scope: !190, file: !1, line: 803, column: 7)
-!738 = !DILocation(line: 803, column: 7, scope: !190)
-!739 = !DILocation(line: 805, column: 5, scope: !740)
-!740 = distinct !DILexicalBlock(scope: !737, file: !1, line: 804, column: 3)
-!741 = !DILocation(line: 806, column: 3, scope: !740)
-!742 = !DILocation(line: 809, column: 5, scope: !743)
-!743 = distinct !DILexicalBlock(scope: !737, file: !1, line: 808, column: 3)
-!744 = !DILocation(line: 813, column: 11, scope: !190)
-!745 = !DILocation(line: 813, column: 3, scope: !190)
-!746 = !DILocation(line: 817, column: 34, scope: !194)
-!747 = !DILocation(line: 817, column: 45, scope: !194)
-!748 = !DILocation(line: 819, column: 28, scope: !194)
-!749 = !DILocation(line: 819, column: 11, scope: !194)
-!750 = !DILocation(line: 819, column: 9, scope: !194)
-!751 = !DILocation(line: 820, column: 1, scope: !194)
-!752 = !DILocation(line: 879, column: 34, scope: !198)
-!753 = !DILocation(line: 885, column: 32, scope: !198)
-!754 = !DILocation(line: 885, column: 51, scope: !198)
-!755 = !DILocation(line: 885, column: 16, scope: !198)
-!756 = !DILocation(line: 882, column: 7, scope: !198)
-!757 = !DILocation(line: 886, column: 18, scope: !758)
-!758 = distinct !DILexicalBlock(scope: !198, file: !1, line: 886, column: 7)
-!759 = !DILocation(line: 886, column: 7, scope: !198)
-!760 = !DILocation(line: 881, column: 12, scope: !198)
-!761 = !DILocation(line: 888, column: 35, scope: !762)
-!762 = distinct !DILexicalBlock(scope: !758, file: !1, line: 887, column: 3)
-!763 = !DILocation(line: 888, column: 5, scope: !762)
-!764 = !DILocation(line: 889, column: 3, scope: !762)
-!765 = !DILocation(line: 892, column: 5, scope: !766)
-!766 = distinct !DILexicalBlock(scope: !758, file: !1, line: 891, column: 3)
-!767 = !DILocation(line: 896, column: 11, scope: !198)
-!768 = !DILocation(line: 896, column: 3, scope: !198)
-!769 = !DILocation(line: 973, column: 35, scope: !311)
-!770 = !DILocation(line: 973, column: 56, scope: !311)
-!771 = !DILocation(line: 979, column: 7, scope: !772)
-!772 = distinct !DILexicalBlock(scope: !311, file: !1, line: 979, column: 7)
-!773 = !DILocation(line: 979, column: 13, scope: !772)
-!774 = !DILocation(line: 979, column: 23, scope: !772)
-!775 = !DILocation(line: 979, column: 16, scope: !772)
-!776 = !DILocation(line: 982, column: 29, scope: !777)
-!777 = distinct !DILexicalBlock(scope: !778, file: !1, line: 982, column: 5)
-!778 = distinct !DILexicalBlock(scope: !779, file: !1, line: 982, column: 5)
-!779 = distinct !DILexicalBlock(scope: !772, file: !1, line: 980, column: 3)
-!780 = !DILocation(line: 979, column: 7, scope: !311)
-!781 = !DILocation(line: 984, column: 58, scope: !782)
-!782 = distinct !DILexicalBlock(scope: !777, file: !1, line: 983, column: 5)
-!783 = !DILocation(line: 984, column: 37, scope: !782)
-!784 = !DILocation(line: 985, column: 14, scope: !782)
-!785 = !{!365, !366, i64 48}
-!786 = !DILocation(line: 985, column: 40, scope: !782)
-!787 = !DILocation(line: 985, column: 33, scope: !782)
-!788 = !DILocation(line: 985, column: 7, scope: !782)
-!789 = !DILocation(line: 982, column: 5, scope: !778)
-!790 = !DILocation(line: 982, column: 31, scope: !777)
-!791 = !DILocation(line: 988, column: 1, scope: !311)
-!792 = !DILocation(line: 900, column: 34, scope: !203)
-!793 = !DILocation(line: 900, column: 40, scope: !203)
-!794 = !DILocation(line: 902, column: 3, scope: !203)
-!795 = !DILocation(line: 903, column: 11, scope: !203)
-!796 = !DILocation(line: 903, column: 9, scope: !203)
-!797 = !DILocation(line: 904, column: 3, scope: !203)
-!798 = !DILocation(line: 905, column: 1, scope: !203)
-!799 = !DILocation(line: 928, column: 27, scope: !209)
-!800 = !DILocation(line: 933, column: 32, scope: !209)
-!801 = !DILocation(line: 933, column: 11, scope: !209)
-!802 = !DILocation(line: 930, column: 12, scope: !209)
-!803 = !DILocation(line: 934, column: 7, scope: !804)
-!804 = distinct !DILexicalBlock(scope: !209, file: !1, line: 934, column: 7)
-!805 = !DILocation(line: 934, column: 7, scope: !209)
-!806 = !DILocation(line: 936, column: 5, scope: !807)
-!807 = distinct !DILexicalBlock(scope: !804, file: !1, line: 935, column: 3)
-!808 = !DILocation(line: 937, column: 3, scope: !807)
-!809 = !DILocation(line: 940, column: 5, scope: !810)
-!810 = distinct !DILexicalBlock(scope: !804, file: !1, line: 939, column: 3)
-!811 = !DILocation(line: 944, column: 11, scope: !209)
-!812 = !DILocation(line: 944, column: 3, scope: !209)
-!813 = !DILocation(line: 948, column: 34, scope: !213)
-!814 = !DILocation(line: 948, column: 45, scope: !213)
-!815 = !DILocation(line: 950, column: 29, scope: !213)
-!816 = !DILocation(line: 950, column: 11, scope: !213)
-!817 = !DILocation(line: 950, column: 9, scope: !213)
-!818 = !DILocation(line: 951, column: 1, scope: !213)
-!819 = !DILocation(line: 1016, column: 29, scope: !217)
-!820 = !DILocation(line: 1016, column: 52, scope: !217)
-!821 = !DILocation(line: 1022, column: 32, scope: !217)
-!822 = !DILocation(line: 1022, column: 51, scope: !217)
-!823 = !DILocation(line: 1022, column: 16, scope: !217)
-!824 = !DILocation(line: 1019, column: 7, scope: !217)
-!825 = !DILocation(line: 1023, column: 18, scope: !826)
-!826 = distinct !DILexicalBlock(scope: !217, file: !1, line: 1023, column: 7)
-!827 = !DILocation(line: 1023, column: 7, scope: !217)
-!828 = !DILocation(line: 1018, column: 12, scope: !217)
-!829 = !DILocation(line: 1025, column: 30, scope: !830)
-!830 = distinct !DILexicalBlock(scope: !826, file: !1, line: 1024, column: 3)
-!831 = !DILocation(line: 1025, column: 5, scope: !830)
-!832 = !DILocation(line: 1026, column: 3, scope: !830)
-!833 = !DILocation(line: 1028, column: 11, scope: !217)
-!834 = !DILocation(line: 1028, column: 3, scope: !217)
-!835 = !DILocation(line: 1096, column: 30, scope: !317)
-!836 = !DILocation(line: 1096, column: 51, scope: !317)
-!837 = !DILocation(line: 1096, column: 70, scope: !317)
-!838 = !DILocation(line: 1099, column: 15, scope: !317)
-!839 = !DILocation(line: 1103, column: 7, scope: !840)
-!840 = distinct !DILexicalBlock(scope: !317, file: !1, line: 1103, column: 7)
-!841 = !DILocation(line: 1103, column: 13, scope: !840)
-!842 = !DILocation(line: 1103, column: 23, scope: !840)
-!843 = !DILocation(line: 1103, column: 16, scope: !840)
-!844 = !DILocation(line: 1106, column: 29, scope: !845)
-!845 = distinct !DILexicalBlock(scope: !846, file: !1, line: 1106, column: 5)
-!846 = distinct !DILexicalBlock(scope: !847, file: !1, line: 1106, column: 5)
-!847 = distinct !DILexicalBlock(scope: !840, file: !1, line: 1104, column: 3)
-!848 = !DILocation(line: 1103, column: 7, scope: !317)
-!849 = !DILocation(line: 1109, column: 60, scope: !850)
-!850 = distinct !DILexicalBlock(scope: !845, file: !1, line: 1107, column: 5)
-!851 = !DILocation(line: 1106, column: 5, scope: !846)
-!852 = !DILocation(line: 1108, column: 58, scope: !850)
-!853 = !DILocation(line: 1108, column: 37, scope: !850)
-!854 = !DILocation(line: 1109, column: 14, scope: !850)
-!855 = !{!365, !366, i64 56}
-!856 = !DILocation(line: 1109, column: 38, scope: !850)
-!857 = !DILocation(line: 1109, column: 31, scope: !850)
-!858 = !DILocation(line: 1109, column: 54, scope: !850)
-!859 = !{!860, !366, i64 8}
-!860 = !{!"", !369, i64 0, !366, i64 8}
-!861 = !DILocation(line: 1109, column: 7, scope: !850)
-!862 = !DILocation(line: 1111, column: 28, scope: !850)
-!863 = !DILocation(line: 1111, column: 18, scope: !850)
-!864 = !DILocation(line: 1106, column: 31, scope: !845)
-!865 = !DILocation(line: 1114, column: 9, scope: !317)
-!866 = !DILocation(line: 1114, column: 16, scope: !317)
-!867 = !{!860, !369, i64 0}
-!868 = !DILocation(line: 1115, column: 1, scope: !317)
-!869 = !DILocation(line: 1057, column: 22, scope: !225)
-!870 = !DILocation(line: 1057, column: 46, scope: !225)
-!871 = !DILocation(line: 1062, column: 32, scope: !225)
-!872 = !DILocation(line: 1062, column: 11, scope: !225)
-!873 = !DILocation(line: 1059, column: 12, scope: !225)
-!874 = !DILocation(line: 1063, column: 7, scope: !875)
-!875 = distinct !DILexicalBlock(scope: !225, file: !1, line: 1063, column: 7)
-!876 = !DILocation(line: 1063, column: 7, scope: !225)
-!877 = !DILocation(line: 1065, column: 5, scope: !878)
-!878 = distinct !DILexicalBlock(scope: !875, file: !1, line: 1064, column: 3)
-!879 = !DILocation(line: 1066, column: 3, scope: !878)
-!880 = !DILocation(line: 1068, column: 11, scope: !225)
-!881 = !DILocation(line: 1068, column: 3, scope: !225)
-!882 = !DILocation(line: 1136, column: 27, scope: !232)
-!883 = !DILocation(line: 1136, column: 12, scope: !232)
-!884 = !DILocation(line: 1133, column: 15, scope: !232)
-!885 = !DILocation(line: 1137, column: 7, scope: !886)
-!886 = distinct !DILexicalBlock(scope: !232, file: !1, line: 1137, column: 7)
-!887 = !DILocation(line: 1137, column: 7, scope: !232)
-!888 = !DILocation(line: 1139, column: 22, scope: !889)
-!889 = distinct !DILexicalBlock(scope: !886, file: !1, line: 1138, column: 3)
-!890 = !DILocation(line: 1139, column: 13, scope: !889)
-!891 = !DILocation(line: 1139, column: 20, scope: !889)
-!892 = !DILocation(line: 1141, column: 42, scope: !889)
-!893 = !DILocation(line: 1141, column: 55, scope: !889)
-!894 = !DILocation(line: 1141, column: 34, scope: !889)
-!895 = !DILocation(line: 1141, column: 13, scope: !889)
-!896 = !DILocation(line: 1141, column: 18, scope: !889)
-!897 = !DILocation(line: 1142, column: 11, scope: !898)
-!898 = distinct !DILexicalBlock(scope: !889, file: !1, line: 1142, column: 9)
-!899 = !DILocation(line: 1142, column: 9, scope: !889)
-!900 = !DILocation(line: 1144, column: 7, scope: !901)
-!901 = distinct !DILexicalBlock(scope: !898, file: !1, line: 1143, column: 5)
-!902 = !DILocation(line: 1146, column: 5, scope: !901)
-!903 = !DILocation(line: 1149, column: 3, scope: !232)
-!904 = !DILocation(line: 1172, column: 40, scope: !237)
-!905 = !DILocation(line: 1174, column: 7, scope: !906)
-!906 = distinct !DILexicalBlock(scope: !237, file: !1, line: 1174, column: 7)
-!907 = !DILocation(line: 1174, column: 7, scope: !237)
-!908 = !DILocation(line: 1176, column: 15, scope: !909)
-!909 = distinct !DILexicalBlock(scope: !910, file: !1, line: 1176, column: 9)
-!910 = distinct !DILexicalBlock(scope: !906, file: !1, line: 1175, column: 3)
-!911 = !DILocation(line: 1176, column: 9, scope: !909)
-!912 = !DILocation(line: 1176, column: 9, scope: !910)
-!913 = !DILocation(line: 1178, column: 13, scope: !914)
-!914 = distinct !DILexicalBlock(scope: !909, file: !1, line: 1177, column: 5)
-!915 = !DILocation(line: 1178, column: 7, scope: !914)
-!916 = !DILocation(line: 1180, column: 5, scope: !914)
-!917 = !DILocation(line: 1181, column: 11, scope: !910)
-!918 = !DILocation(line: 1181, column: 5, scope: !910)
-!919 = !DILocation(line: 1182, column: 3, scope: !910)
-!920 = !DILocation(line: 1184, column: 3, scope: !237)
-!921 = !DILocation(line: 1214, column: 31, scope: !242)
-!922 = !DILocation(line: 1214, column: 47, scope: !242)
-!923 = !DILocation(line: 1217, column: 17, scope: !242)
-!924 = !DILocation(line: 1224, column: 18, scope: !925)
-!925 = distinct !DILexicalBlock(scope: !242, file: !1, line: 1224, column: 7)
-!926 = !DILocation(line: 1224, column: 7, scope: !242)
-!927 = !DILocation(line: 1219, column: 7, scope: !242)
-!928 = !DILocation(line: 1219, column: 19, scope: !242)
-!929 = !DILocation(line: 1233, column: 20, scope: !930)
-!930 = distinct !DILexicalBlock(scope: !931, file: !1, line: 1233, column: 9)
-!931 = distinct !DILexicalBlock(scope: !925, file: !1, line: 1230, column: 3)
-!932 = !DILocation(line: 1233, column: 24, scope: !930)
-!933 = !DILocation(line: 1232, column: 28, scope: !931)
-!934 = !DILocation(line: 273, column: 11, scope: !105, inlinedAt: !935)
-!935 = distinct !DILocation(line: 1233, column: 40, scope: !930)
-!936 = !DILocation(line: 1233, column: 38, scope: !930)
-!937 = !DILocation(line: 1233, column: 9, scope: !931)
-!938 = !DILocation(line: 1235, column: 7, scope: !939)
-!939 = distinct !DILexicalBlock(scope: !930, file: !1, line: 1234, column: 5)
-!940 = !DILocation(line: 1217, column: 10, scope: !242)
-!941 = !DILocation(line: 1242, column: 3, scope: !942)
-!942 = distinct !DILexicalBlock(scope: !242, file: !1, line: 1242, column: 3)
-!943 = !DILocation(line: 273, column: 11, scope: !105, inlinedAt: !944)
-!944 = distinct !DILocation(line: 1227, column: 17, scope: !945)
-!945 = distinct !DILexicalBlock(scope: !925, file: !1, line: 1225, column: 3)
-!946 = !DILocation(line: 1242, column: 34, scope: !947)
-!947 = distinct !DILexicalBlock(scope: !942, file: !1, line: 1242, column: 3)
-!948 = !DILocation(line: 1249, column: 20, scope: !949)
-!949 = distinct !DILexicalBlock(scope: !950, file: !1, line: 1249, column: 9)
-!950 = distinct !DILexicalBlock(scope: !947, file: !1, line: 1243, column: 3)
-!951 = !DILocation(line: 1257, column: 30, scope: !952)
-!952 = distinct !DILexicalBlock(scope: !949, file: !1, line: 1255, column: 5)
-!953 = !DILocation(line: 1244, column: 12, scope: !950)
-!954 = !DILocation(line: 1216, column: 15, scope: !242)
-!955 = !DILocation(line: 1245, column: 5, scope: !950)
-!956 = !DILocation(line: 303, column: 33, scope: !109, inlinedAt: !957)
-!957 = distinct !DILocation(line: 1247, column: 45, scope: !950)
-!958 = !DILocation(line: 308, column: 32, scope: !109, inlinedAt: !957)
-!959 = !DILocation(line: 308, column: 12, scope: !109, inlinedAt: !957)
-!960 = !DILocation(line: 305, column: 15, scope: !109, inlinedAt: !957)
-!961 = !DILocation(line: 1247, column: 5, scope: !950)
-!962 = !DILocation(line: 1249, column: 9, scope: !950)
-!963 = !DILocation(line: 1218, column: 7, scope: !242)
-!964 = !DILocation(line: 1252, column: 25, scope: !965)
-!965 = distinct !DILexicalBlock(scope: !949, file: !1, line: 1250, column: 5)
-!966 = !DILocation(line: 1218, column: 19, scope: !242)
-!967 = !DILocation(line: 1217, column: 7, scope: !242)
-!968 = !DILocation(line: 1260, column: 28, scope: !969)
-!969 = distinct !DILexicalBlock(scope: !970, file: !1, line: 1260, column: 5)
-!970 = distinct !DILexicalBlock(scope: !950, file: !1, line: 1260, column: 5)
-!971 = !DILocation(line: 1260, column: 5, scope: !970)
-!972 = !DILocation(line: 1262, column: 21, scope: !973)
-!973 = distinct !DILexicalBlock(scope: !969, file: !1, line: 1261, column: 5)
-!974 = !DILocation(line: 1262, column: 29, scope: !973)
-!975 = !{!976, !367, i64 0}
-!976 = !{!"", !367, i64 0, !366, i64 8, !366, i64 16, !367, i64 24}
-!977 = !DILocation(line: 1262, column: 7, scope: !973)
-!978 = !DILocation(line: 1265, column: 50, scope: !979)
-!979 = distinct !DILexicalBlock(scope: !973, file: !1, line: 1263, column: 7)
-!980 = !{!976, !366, i64 8}
-!981 = !DILocation(line: 1266, column: 33, scope: !979)
-!982 = !DILocation(line: 1266, column: 37, scope: !979)
-!983 = !DILocation(line: 1266, column: 54, scope: !979)
-!984 = !{!976, !366, i64 16}
-!985 = !DILocation(line: 1265, column: 11, scope: !979)
-!986 = !DILocation(line: 1267, column: 11, scope: !979)
-!987 = !DILocation(line: 1270, column: 50, scope: !979)
-!988 = !DILocation(line: 1271, column: 43, scope: !979)
-!989 = !{!990, !990, i64 0}
-!990 = !{!"long", !367, i64 0}
-!991 = !DILocation(line: 1271, column: 19, scope: !979)
-!992 = !DILocation(line: 1271, column: 60, scope: !979)
-!993 = !DILocation(line: 1270, column: 11, scope: !979)
-!994 = !DILocation(line: 1272, column: 11, scope: !979)
-!995 = !DILocation(line: 1275, column: 52, scope: !979)
-!996 = !DILocation(line: 1276, column: 33, scope: !979)
-!997 = !DILocation(line: 1276, column: 37, scope: !979)
-!998 = !{!999, !999, i64 0}
-!999 = !{!"double", !367, i64 0}
-!1000 = !DILocation(line: 1276, column: 54, scope: !979)
-!1001 = !DILocation(line: 1275, column: 11, scope: !979)
-!1002 = !DILocation(line: 1277, column: 11, scope: !979)
-!1003 = !DILocation(line: 1280, column: 11, scope: !979)
-!1004 = !DILocation(line: 1282, column: 11, scope: !979)
-!1005 = !DILocation(line: 1285, column: 5, scope: !950)
-!1006 = !DILocation(line: 1242, column: 52, scope: !947)
-!1007 = !DILocation(line: 1288, column: 3, scope: !242)
-!1008 = !DILocation(line: 1292, column: 34, scope: !256)
-!1009 = !DILocation(line: 1292, column: 45, scope: !256)
-!1010 = !DILocation(line: 1292, column: 62, scope: !256)
-!1011 = !DILocation(line: 1294, column: 33, scope: !256)
-!1012 = !DILocation(line: 1294, column: 46, scope: !256)
-!1013 = !DILocation(line: 1294, column: 11, scope: !256)
-!1014 = !DILocation(line: 1294, column: 9, scope: !256)
-!1015 = !DILocation(line: 1295, column: 1, scope: !256)
-!1016 = !DILocation(line: 1323, column: 38, scope: !263)
-!1017 = !DILocation(line: 1323, column: 61, scope: !263)
-!1018 = !DILocation(line: 1325, column: 31, scope: !263)
-!1019 = !DILocation(line: 1330, column: 9, scope: !1020)
-!1020 = distinct !DILexicalBlock(scope: !263, file: !1, line: 1330, column: 7)
-!1021 = !DILocation(line: 1330, column: 7, scope: !263)
-!1022 = !DILocation(line: 1336, column: 18, scope: !1023)
-!1023 = distinct !DILexicalBlock(scope: !1020, file: !1, line: 1335, column: 3)
-!1024 = !DILocation(line: 1325, column: 19, scope: !263)
-!1025 = !DILocation(line: 1337, column: 20, scope: !1026)
-!1026 = distinct !DILexicalBlock(scope: !1023, file: !1, line: 1337, column: 9)
-!1027 = !DILocation(line: 1337, column: 9, scope: !1023)
-!1028 = !DILocation(line: 1339, column: 7, scope: !1029)
-!1029 = distinct !DILexicalBlock(scope: !1026, file: !1, line: 1338, column: 5)
-!1030 = !DILocation(line: 1342, column: 5, scope: !1029)
-!1031 = !DILocation(line: 1345, column: 9, scope: !1032)
-!1032 = distinct !DILexicalBlock(scope: !263, file: !1, line: 1345, column: 7)
-!1033 = !DILocation(line: 1345, column: 7, scope: !263)
-!1034 = !DILocation(line: 1351, column: 34, scope: !1035)
-!1035 = distinct !DILexicalBlock(scope: !1032, file: !1, line: 1350, column: 3)
-!1036 = !DILocation(line: 1351, column: 18, scope: !1035)
-!1037 = !DILocation(line: 1325, column: 7, scope: !263)
-!1038 = !DILocation(line: 1352, column: 20, scope: !1039)
-!1039 = distinct !DILexicalBlock(scope: !1035, file: !1, line: 1352, column: 9)
-!1040 = !DILocation(line: 1352, column: 9, scope: !1035)
-!1041 = !DILocation(line: 1354, column: 7, scope: !1042)
-!1042 = distinct !DILexicalBlock(scope: !1039, file: !1, line: 1353, column: 5)
-!1043 = !DILocation(line: 1360, column: 7, scope: !263)
-!1044 = !DILocation(line: 1360, column: 14, scope: !1045)
-!1045 = distinct !DILexicalBlock(scope: !263, file: !1, line: 1360, column: 7)
-!1046 = !DILocation(line: 1362, column: 14, scope: !1047)
-!1047 = distinct !DILexicalBlock(scope: !1045, file: !1, line: 1361, column: 3)
-!1048 = !DILocation(line: 1363, column: 3, scope: !1047)
-!1049 = !DILocation(line: 1365, column: 3, scope: !263)
-!1050 = !DILocation(line: 1369, column: 34, scope: !272)
-!1051 = !DILocation(line: 1369, column: 40, scope: !272)
-!1052 = !DILocation(line: 1371, column: 3, scope: !272)
-!1053 = !DILocation(line: 1374, column: 32, scope: !272)
-!1054 = !{!367, !367, i64 0}
-!1055 = !DILocation(line: 1374, column: 55, scope: !272)
-!1056 = !DILocation(line: 1374, column: 11, scope: !272)
-!1057 = !DILocation(line: 1374, column: 9, scope: !272)
-!1058 = !DILocation(line: 1375, column: 3, scope: !272)
-!1059 = !DILocation(line: 1376, column: 3, scope: !272)
-!1060 = !DILocation(line: 1377, column: 1, scope: !272)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !10, metadata !11, metadata !327, metadata !10, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{metadata !3}
+!3 = metadata !{i32 786436, metadata !4, null, metadata !"", i32 16, i64 32, i64 32, i32 0, i32 0, null, metadata !5, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 16, size 32, align 32, offset 0] [from ]
+!4 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/cctk_Timers.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!5 = metadata !{metadata !6, metadata !7, metadata !8, metadata !9}
+!6 = metadata !{i32 786472, metadata !"val_none", i64 0} ; [ DW_TAG_enumerator ] [val_none :: 0]
+!7 = metadata !{i32 786472, metadata !"val_int", i64 1} ; [ DW_TAG_enumerator ] [val_int :: 1]
+!8 = metadata !{i32 786472, metadata !"val_long", i64 2} ; [ DW_TAG_enumerator ] [val_long :: 2]
+!9 = metadata !{i32 786472, metadata !"val_double", i64 3} ; [ DW_TAG_enumerator ] [val_double :: 3]
+!10 = metadata !{i32 0}
+!11 = metadata !{metadata !12, metadata !19, metadata !77, metadata !83, metadata !90, metadata !93, metadata !99, metadata !100, metadata !103, metadata !107, metadata !111, metadata !121, metadata !128, metadata !131, metadata !136, metadata !142, metadata !148, metadata !154, metadata !159, metadata !165, metadata !169, metadata !173, metadata !178, metadata !184, metadata !188, metadata !192, metadata !197, metadata !203, metadata !207, metadata !211, metadata !225, metadata !232, metadata !237, metadata !242, metadata !256, metadata !263, metadata !272, metadata !283, metadata !293, metadata !301, metadata !307, metadata !313, metadata !319}
+!12 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTKi_version_util_CactusTimers_c", metadata !"CCTKi_version_util_CactusTimers_c", metadata !"", i32 27, metadata !14, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* ()* @CCTKi_version_util_CactusTimers_c, null, null, metadata !10, i32 27} ; [ DW_TAG_subprogram ] [line 27] [def] [CCTKi_version_util_CactusTimers_c]
+!13 = metadata !{i32 786473, metadata !1}         ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!14 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !15, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!15 = metadata !{metadata !16}
+!16 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !17} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!17 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !18} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!18 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!19 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_ClockRegister", metadata !"CCTK_ClockRegister", metadata !"", i32 121, metadata !20, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*, %struct.cClockFuncs*)* @CCTK_ClockRegister, null, null, metadata !63, i32 122} ; [ DW_TAG_subprogram ] [line 121] [def] [scope 122] [CCTK_ClockRegister]
+!20 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !21, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!21 = metadata !{metadata !22, metadata !16, metadata !23}
+!22 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!23 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !24} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!24 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !25} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from cClockFuncs]
+!25 = metadata !{i32 786454, metadata !1, null, metadata !"cClockFuncs", i32 49, i64 0, i64 0, i64 0, i32 0, metadata !26} ; [ DW_TAG_typedef ] [cClockFuncs] [line 49, size 0, align 0, offset 0] [from ]
+!26 = metadata !{i32 786451, metadata !4, null, metadata !"", i32 38, i64 576, i64 64, i32 0, i32 0, null, metadata !27, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 38, size 576, align 64, offset 0] [from ]
+!27 = metadata !{metadata !28, metadata !29, metadata !30, metadata !35, metadata !39, metadata !40, metadata !41, metadata !42, metadata !62}
+!28 = metadata !{i32 786445, metadata !4, metadata !26, metadata !"name", i32 40, i64 64, i64 64, i64 0, i32 0, metadata !16} ; [ DW_TAG_member ] [name] [line 40, size 64, align 64, offset 0] [from ]
+!29 = metadata !{i32 786445, metadata !4, metadata !26, metadata !"n_vals", i32 41, i64 32, i64 32, i64 64, i32 0, metadata !22} ; [ DW_TAG_member ] [n_vals] [line 41, size 32, align 32, offset 64] [from int]
+!30 = metadata !{i32 786445, metadata !4, metadata !26, metadata !"create", i32 42, i64 64, i64 64, i64 128, i32 0, metadata !31} ; [ DW_TAG_member ] [create] [line 42, size 64, align 64, offset 128] [from ]
+!31 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !32} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!32 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !33, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!33 = metadata !{metadata !34, metadata !22}
+!34 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!35 = metadata !{i32 786445, metadata !4, metadata !26, metadata !"destroy", i32 43, i64 64, i64 64, i64 192, i32 0, metadata !36} ; [ DW_TAG_member ] [destroy] [line 43, size 64, align 64, offset 192] [from ]
+!36 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !37} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!37 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !38, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!38 = metadata !{null, metadata !22, metadata !34}
+!39 = metadata !{i32 786445, metadata !4, metadata !26, metadata !"start", i32 44, i64 64, i64 64, i64 256, i32 0, metadata !36} ; [ DW_TAG_member ] [start] [line 44, size 64, align 64, offset 256] [from ]
+!40 = metadata !{i32 786445, metadata !4, metadata !26, metadata !"stop", i32 45, i64 64, i64 64, i64 320, i32 0, metadata !36} ; [ DW_TAG_member ] [stop] [line 45, size 64, align 64, offset 320] [from ]
+!41 = metadata !{i32 786445, metadata !4, metadata !26, metadata !"reset", i32 46, i64 64, i64 64, i64 384, i32 0, metadata !36} ; [ DW_TAG_member ] [reset] [line 46, size 64, align 64, offset 384] [from ]
+!42 = metadata !{i32 786445, metadata !4, metadata !26, metadata !"get", i32 47, i64 64, i64 64, i64 448, i32 0, metadata !43} ; [ DW_TAG_member ] [get] [line 47, size 64, align 64, offset 448] [from ]
+!43 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !44} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!44 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !45, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!45 = metadata !{null, metadata !22, metadata !34, metadata !46}
+!46 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !47} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from cTimerVal]
+!47 = metadata !{i32 786454, metadata !4, null, metadata !"cTimerVal", i32 29, i64 0, i64 0, i64 0, i32 0, metadata !48} ; [ DW_TAG_typedef ] [cTimerVal] [line 29, size 0, align 0, offset 0] [from ]
+!48 = metadata !{i32 786451, metadata !4, null, metadata !"", i32 18, i64 256, i64 64, i32 0, i32 0, null, metadata !49, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 18, size 256, align 64, offset 0] [from ]
+!49 = metadata !{metadata !50, metadata !52, metadata !53, metadata !54}
+!50 = metadata !{i32 786445, metadata !4, metadata !48, metadata !"type", i32 20, i64 32, i64 32, i64 0, i32 0, metadata !51} ; [ DW_TAG_member ] [type] [line 20, size 32, align 32, offset 0] [from cTimerValType]
+!51 = metadata !{i32 786454, metadata !4, null, metadata !"cTimerValType", i32 16, i64 0, i64 0, i64 0, i32 0, metadata !3} ; [ DW_TAG_typedef ] [cTimerValType] [line 16, size 0, align 0, offset 0] [from ]
+!52 = metadata !{i32 786445, metadata !4, metadata !48, metadata !"heading", i32 21, i64 64, i64 64, i64 64, i32 0, metadata !16} ; [ DW_TAG_member ] [heading] [line 21, size 64, align 64, offset 64] [from ]
+!53 = metadata !{i32 786445, metadata !4, metadata !48, metadata !"units", i32 22, i64 64, i64 64, i64 128, i32 0, metadata !16} ; [ DW_TAG_member ] [units] [line 22, size 64, align 64, offset 128] [from ]
+!54 = metadata !{i32 786445, metadata !4, metadata !48, metadata !"val", i32 28, i64 64, i64 64, i64 192, i32 0, metadata !55} ; [ DW_TAG_member ] [val] [line 28, size 64, align 64, offset 192] [from ]
+!55 = metadata !{i32 786455, metadata !4, metadata !48, metadata !"", i32 23, i64 64, i64 64, i64 0, i32 0, null, metadata !56, i32 0, i32 0, null} ; [ DW_TAG_union_type ] [line 23, size 64, align 64, offset 0] [from ]
+!56 = metadata !{metadata !57, metadata !58, metadata !60}
+!57 = metadata !{i32 786445, metadata !4, metadata !55, metadata !"i", i32 25, i64 32, i64 32, i64 0, i32 0, metadata !22} ; [ DW_TAG_member ] [i] [line 25, size 32, align 32, offset 0] [from int]
+!58 = metadata !{i32 786445, metadata !4, metadata !55, metadata !"l", i32 26, i64 64, i64 64, i64 0, i32 0, metadata !59} ; [ DW_TAG_member ] [l] [line 26, size 64, align 64, offset 0] [from long int]
+!59 = metadata !{i32 786468, null, null, metadata !"long int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [long int] [line 0, size 64, align 64, offset 0, enc DW_ATE_signed]
+!60 = metadata !{i32 786445, metadata !4, metadata !55, metadata !"d", i32 27, i64 64, i64 64, i64 0, i32 0, metadata !61} ; [ DW_TAG_member ] [d] [line 27, size 64, align 64, offset 0] [from double]
+!61 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!62 = metadata !{i32 786445, metadata !4, metadata !26, metadata !"set", i32 48, i64 64, i64 64, i64 512, i32 0, metadata !43} ; [ DW_TAG_member ] [set] [line 48, size 64, align 64, offset 512] [from ]
+!63 = metadata !{metadata !64, metadata !65, metadata !66, metadata !67, metadata !68, metadata !75}
+!64 = metadata !{i32 786689, metadata !19, metadata !"clockname", metadata !13, i32 16777337, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [clockname] [line 121]
+!65 = metadata !{i32 786689, metadata !19, metadata !"functions", metadata !13, i32 33554553, metadata !23, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [functions] [line 121]
+!66 = metadata !{i32 786688, metadata !19, metadata !"tmp", metadata !13, i32 123, metadata !34, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [tmp] [line 123]
+!67 = metadata !{i32 786688, metadata !19, metadata !"handle", metadata !13, i32 124, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [handle] [line 124]
+!68 = metadata !{i32 786688, metadata !19, metadata !"timer", metadata !13, i32 125, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 125]
+!69 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !70} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from t_Timer]
+!70 = metadata !{i32 786454, metadata !1, null, metadata !"t_Timer", i32 68, i64 0, i64 0, i64 0, i32 0, metadata !71} ; [ DW_TAG_typedef ] [t_Timer] [line 68, size 0, align 0, offset 0] [from ]
+!71 = metadata !{i32 786451, metadata !1, null, metadata !"", i32 65, i64 64, i64 64, i32 0, i32 0, null, metadata !72, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 65, size 64, align 64, offset 0] [from ]
+!72 = metadata !{metadata !73}
+!73 = metadata !{i32 786445, metadata !1, metadata !71, metadata !"data", i32 67, i64 64, i64 64, i64 0, i32 0, metadata !74} ; [ DW_TAG_member ] [data] [line 67, size 64, align 64, offset 0] [from ]
+!74 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !34} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!75 = metadata !{i32 786688, metadata !19, metadata !"newfuncs", metadata !13, i32 126, metadata !76, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [newfuncs] [line 126]
+!76 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !25} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from cClockFuncs]
+!77 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_ClockName", metadata !"CCTK_ClockName", metadata !"", i32 184, metadata !78, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* (i32)* @CCTK_ClockName, null, null, metadata !80, i32 185} ; [ DW_TAG_subprogram ] [line 184] [def] [scope 185] [CCTK_ClockName]
+!78 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !79, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!79 = metadata !{metadata !16, metadata !22}
+!80 = metadata !{metadata !81, metadata !82}
+!81 = metadata !{i32 786689, metadata !77, metadata !"handle", metadata !13, i32 16777400, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [handle] [line 184]
+!82 = metadata !{i32 786688, metadata !77, metadata !"funcs", metadata !13, i32 186, metadata !23, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [funcs] [line 186]
+!83 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_ClockHandle", metadata !"CCTK_ClockHandle", metadata !"", i32 214, metadata !84, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*)* @CCTK_ClockHandle, null, null, metadata !86, i32 215} ; [ DW_TAG_subprogram ] [line 214] [def] [scope 215] [CCTK_ClockHandle]
+!84 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !85, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!85 = metadata !{metadata !22, metadata !16}
+!86 = metadata !{metadata !87, metadata !88, metadata !89}
+!87 = metadata !{i32 786689, metadata !83, metadata !"clockname", metadata !13, i32 16777430, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [clockname] [line 214]
+!88 = metadata !{i32 786688, metadata !83, metadata !"handle", metadata !13, i32 216, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [handle] [line 216]
+!89 = metadata !{i32 786688, metadata !83, metadata !"funcs", metadata !13, i32 217, metadata !23, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [funcs] [line 217]
+!90 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_NumClocks", metadata !"CCTK_NumClocks", metadata !"", i32 246, metadata !91, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 ()* @CCTK_NumClocks, null, null, metadata !10, i32 247} ; [ DW_TAG_subprogram ] [line 246] [def] [scope 247] [CCTK_NumClocks]
+!91 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !92, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!92 = metadata !{metadata !22}
+!93 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_numclocks_", metadata !"cctk_numclocks_", metadata !"", i32 251, metadata !94, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*)* @cctk_numclocks_, null, null, metadata !97, i32 253} ; [ DW_TAG_subprogram ] [line 251] [def] [scope 253] [cctk_numclocks_]
+!94 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !95, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!95 = metadata !{null, metadata !96}
+!96 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !22} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!97 = metadata !{metadata !98}
+!98 = metadata !{i32 786689, metadata !93, metadata !"nclocks", metadata !13, i32 16777468, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [nclocks] [line 252]
+!99 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_NumTimers", metadata !"CCTK_NumTimers", metadata !"", i32 271, metadata !91, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 ()* @CCTK_NumTimers, null, null, metadata !10, i32 272} ; [ DW_TAG_subprogram ] [line 271] [def] [scope 272] [CCTK_NumTimers]
+!100 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_numtimers_", metadata !"cctk_numtimers_", metadata !"", i32 276, metadata !94, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*)* @cctk_numtimers_, null, null, metadata !101, i32 278} ; [ DW_TAG_subprogram ] [line 276] [def] [scope 278] [cctk_numtimers_]
+!101 = metadata !{metadata !102}
+!102 = metadata !{i32 786689, metadata !100, metadata !"ntimers", metadata !13, i32 16777493, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ntimers] [line 277]
+!103 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerName", metadata !"CCTK_TimerName", metadata !"", i32 303, metadata !78, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* (i32)* @CCTK_TimerName, null, null, metadata !104, i32 304} ; [ DW_TAG_subprogram ] [line 303] [def] [scope 304] [CCTK_TimerName]
+!104 = metadata !{metadata !105, metadata !106}
+!105 = metadata !{i32 786689, metadata !103, metadata !"timer_handle", metadata !13, i32 16777519, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timer_handle] [line 303]
+!106 = metadata !{i32 786688, metadata !103, metadata !"retval", metadata !13, i32 305, metadata !16, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [retval] [line 305]
+!107 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerCreate", metadata !"CCTK_TimerCreate", metadata !"", i32 334, metadata !84, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*)* @CCTK_TimerCreate, null, null, metadata !108, i32 335} ; [ DW_TAG_subprogram ] [line 334] [def] [scope 335] [CCTK_TimerCreate]
+!108 = metadata !{metadata !109, metadata !110}
+!109 = metadata !{i32 786689, metadata !107, metadata !"timername", metadata !13, i32 16777550, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timername] [line 334]
+!110 = metadata !{i32 786688, metadata !107, metadata !"retval", metadata !13, i32 336, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [retval] [line 336]
+!111 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timercreate_", metadata !"cctk_timercreate_", metadata !"", i32 344, metadata !112, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i8*, i32)* @cctk_timercreate_, null, null, metadata !116, i32 346} ; [ DW_TAG_subprogram ] [line 344] [def] [scope 346] [cctk_timercreate_]
+!112 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !113, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!113 = metadata !{null, metadata !96, metadata !114, metadata !115}
+!114 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !18} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!115 = metadata !{i32 786468, null, null, metadata !"unsigned int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned int] [line 0, size 32, align 32, offset 0, enc DW_ATE_unsigned]
+!116 = metadata !{metadata !117, metadata !118, metadata !119, metadata !120}
+!117 = metadata !{i32 786689, metadata !111, metadata !"timer_index", metadata !13, i32 16777561, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timer_index] [line 345]
+!118 = metadata !{i32 786689, metadata !111, metadata !"cctk_str1", metadata !13, i32 33554777, metadata !114, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_str1] [line 345]
+!119 = metadata !{i32 786689, metadata !111, metadata !"cctk_strlen1", metadata !13, i32 50331993, metadata !115, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_strlen1] [line 345]
+!120 = metadata !{i32 786688, metadata !111, metadata !"timername", metadata !13, i32 347, metadata !114, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timername] [line 347]
+!121 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerCreateI", metadata !"CCTK_TimerCreateI", metadata !"", i32 367, metadata !91, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 ()* @CCTK_TimerCreateI, null, null, metadata !122, i32 368} ; [ DW_TAG_subprogram ] [line 367] [def] [scope 368] [CCTK_TimerCreateI]
+!122 = metadata !{metadata !123, metadata !124}
+!123 = metadata !{i32 786688, metadata !121, metadata !"retval", metadata !13, i32 369, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [retval] [line 369]
+!124 = metadata !{i32 786688, metadata !121, metadata !"timername", metadata !13, i32 370, metadata !125, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timername] [line 370]
+!125 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 320, i64 8, i32 0, i32 0, metadata !18, metadata !126, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 320, align 8, offset 0] [from char]
+!126 = metadata !{metadata !127}
+!127 = metadata !{i32 786465, i64 0, i64 40}      ; [ DW_TAG_subrange_type ] [0, 39]
+!128 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timercreatei_", metadata !"cctk_timercreatei_", metadata !"", i32 379, metadata !94, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*)* @cctk_timercreatei_, null, null, metadata !129, i32 381} ; [ DW_TAG_subprogram ] [line 379] [def] [scope 381] [cctk_timercreatei_]
+!129 = metadata !{metadata !130}
+!130 = metadata !{i32 786689, metadata !128, metadata !"ierr", metadata !13, i32 16777596, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 380]
+!131 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerDestroy", metadata !"CCTK_TimerDestroy", metadata !"", i32 480, metadata !84, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*)* @CCTK_TimerDestroy, null, null, metadata !132, i32 481} ; [ DW_TAG_subprogram ] [line 480] [def] [scope 481] [CCTK_TimerDestroy]
+!132 = metadata !{metadata !133, metadata !134, metadata !135}
+!133 = metadata !{i32 786689, metadata !131, metadata !"timername", metadata !13, i32 16777696, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timername] [line 480]
+!134 = metadata !{i32 786688, metadata !131, metadata !"timer", metadata !13, i32 482, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 482]
+!135 = metadata !{i32 786688, metadata !131, metadata !"this_timer", metadata !13, i32 483, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [this_timer] [line 483]
+!136 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timerdestroy_", metadata !"cctk_timerdestroy_", metadata !"", i32 500, metadata !112, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i8*, i32)* @cctk_timerdestroy_, null, null, metadata !137, i32 502} ; [ DW_TAG_subprogram ] [line 500] [def] [scope 502] [cctk_timerdestroy_]
+!137 = metadata !{metadata !138, metadata !139, metadata !140, metadata !141}
+!138 = metadata !{i32 786689, metadata !136, metadata !"ierr", metadata !13, i32 16777717, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 501]
+!139 = metadata !{i32 786689, metadata !136, metadata !"cctk_str1", metadata !13, i32 33554933, metadata !114, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_str1] [line 501]
+!140 = metadata !{i32 786689, metadata !136, metadata !"cctk_strlen1", metadata !13, i32 50332149, metadata !115, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_strlen1] [line 501]
+!141 = metadata !{i32 786688, metadata !136, metadata !"timername", metadata !13, i32 503, metadata !114, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timername] [line 503]
+!142 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerDestroyI", metadata !"CCTK_TimerDestroyI", metadata !"", i32 529, metadata !143, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32)* @CCTK_TimerDestroyI, null, null, metadata !145, i32 530} ; [ DW_TAG_subprogram ] [line 529] [def] [scope 530] [CCTK_TimerDestroyI]
+!143 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !144, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!144 = metadata !{metadata !22, metadata !22}
+!145 = metadata !{metadata !146, metadata !147}
+!146 = metadata !{i32 786689, metadata !142, metadata !"this_timer", metadata !13, i32 16777745, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 529]
+!147 = metadata !{i32 786688, metadata !142, metadata !"timer", metadata !13, i32 531, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 531]
+!148 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timerdestroyi_", metadata !"cctk_timerdestroyi_", metadata !"", i32 548, metadata !149, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i32*)* @cctk_timerdestroyi_, null, null, metadata !151, i32 550} ; [ DW_TAG_subprogram ] [line 548] [def] [scope 550] [cctk_timerdestroyi_]
+!149 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !150, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!150 = metadata !{null, metadata !96, metadata !96}
+!151 = metadata !{metadata !152, metadata !153}
+!152 = metadata !{i32 786689, metadata !148, metadata !"ierr", metadata !13, i32 16777765, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 549]
+!153 = metadata !{i32 786689, metadata !148, metadata !"this_timer", metadata !13, i32 33554981, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 549]
+!154 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerStart", metadata !"CCTK_TimerStart", metadata !"", i32 616, metadata !84, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*)* @CCTK_TimerStart, null, null, metadata !155, i32 617} ; [ DW_TAG_subprogram ] [line 616] [def] [scope 617] [CCTK_TimerStart]
+!155 = metadata !{metadata !156, metadata !157, metadata !158}
+!156 = metadata !{i32 786689, metadata !154, metadata !"timername", metadata !13, i32 16777832, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timername] [line 616]
+!157 = metadata !{i32 786688, metadata !154, metadata !"timer", metadata !13, i32 618, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 618]
+!158 = metadata !{i32 786688, metadata !154, metadata !"this_timer", metadata !13, i32 619, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [this_timer] [line 619]
+!159 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timerstart_", metadata !"cctk_timerstart_", metadata !"", i32 636, metadata !112, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i8*, i32)* @cctk_timerstart_, null, null, metadata !160, i32 638} ; [ DW_TAG_subprogram ] [line 636] [def] [scope 638] [cctk_timerstart_]
+!160 = metadata !{metadata !161, metadata !162, metadata !163, metadata !164}
+!161 = metadata !{i32 786689, metadata !159, metadata !"ierr", metadata !13, i32 16777853, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 637]
+!162 = metadata !{i32 786689, metadata !159, metadata !"cctk_str1", metadata !13, i32 33555069, metadata !114, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_str1] [line 637]
+!163 = metadata !{i32 786689, metadata !159, metadata !"cctk_strlen1", metadata !13, i32 50332285, metadata !115, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_strlen1] [line 637]
+!164 = metadata !{i32 786688, metadata !159, metadata !"timername", metadata !13, i32 639, metadata !114, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timername] [line 639]
+!165 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerStartI", metadata !"CCTK_TimerStartI", metadata !"", i32 665, metadata !143, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32)* @CCTK_TimerStartI, null, null, metadata !166, i32 666} ; [ DW_TAG_subprogram ] [line 665] [def] [scope 666] [CCTK_TimerStartI]
+!166 = metadata !{metadata !167, metadata !168}
+!167 = metadata !{i32 786689, metadata !165, metadata !"this_timer", metadata !13, i32 16777881, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 665]
+!168 = metadata !{i32 786688, metadata !165, metadata !"timer", metadata !13, i32 667, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 667]
+!169 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timerstarti_", metadata !"cctk_timerstarti_", metadata !"", i32 684, metadata !149, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i32*)* @cctk_timerstarti_, null, null, metadata !170, i32 686} ; [ DW_TAG_subprogram ] [line 684] [def] [scope 686] [cctk_timerstarti_]
+!170 = metadata !{metadata !171, metadata !172}
+!171 = metadata !{i32 786689, metadata !169, metadata !"ierr", metadata !13, i32 16777901, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 685]
+!172 = metadata !{i32 786689, metadata !169, metadata !"this_timer", metadata !13, i32 33555117, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 685]
+!173 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerStop", metadata !"CCTK_TimerStop", metadata !"", i32 748, metadata !84, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*)* @CCTK_TimerStop, null, null, metadata !174, i32 749} ; [ DW_TAG_subprogram ] [line 748] [def] [scope 749] [CCTK_TimerStop]
+!174 = metadata !{metadata !175, metadata !176, metadata !177}
+!175 = metadata !{i32 786689, metadata !173, metadata !"timername", metadata !13, i32 16777964, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timername] [line 748]
+!176 = metadata !{i32 786688, metadata !173, metadata !"timer", metadata !13, i32 750, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 750]
+!177 = metadata !{i32 786688, metadata !173, metadata !"this_timer", metadata !13, i32 751, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [this_timer] [line 751]
+!178 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timerstop_", metadata !"cctk_timerstop_", metadata !"", i32 768, metadata !112, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i8*, i32)* @cctk_timerstop_, null, null, metadata !179, i32 770} ; [ DW_TAG_subprogram ] [line 768] [def] [scope 770] [cctk_timerstop_]
+!179 = metadata !{metadata !180, metadata !181, metadata !182, metadata !183}
+!180 = metadata !{i32 786689, metadata !178, metadata !"ierr", metadata !13, i32 16777985, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 769]
+!181 = metadata !{i32 786689, metadata !178, metadata !"cctk_str1", metadata !13, i32 33555201, metadata !114, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_str1] [line 769]
+!182 = metadata !{i32 786689, metadata !178, metadata !"cctk_strlen1", metadata !13, i32 50332417, metadata !115, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_strlen1] [line 769]
+!183 = metadata !{i32 786688, metadata !178, metadata !"timername", metadata !13, i32 771, metadata !114, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timername] [line 771]
+!184 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerStopI", metadata !"CCTK_TimerStopI", metadata !"", i32 797, metadata !143, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32)* @CCTK_TimerStopI, null, null, metadata !185, i32 798} ; [ DW_TAG_subprogram ] [line 797] [def] [scope 798] [CCTK_TimerStopI]
+!185 = metadata !{metadata !186, metadata !187}
+!186 = metadata !{i32 786689, metadata !184, metadata !"this_timer", metadata !13, i32 16778013, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 797]
+!187 = metadata !{i32 786688, metadata !184, metadata !"timer", metadata !13, i32 799, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 799]
+!188 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timerstopi_", metadata !"cctk_timerstopi_", metadata !"", i32 816, metadata !149, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i32*)* @cctk_timerstopi_, null, null, metadata !189, i32 818} ; [ DW_TAG_subprogram ] [line 816] [def] [scope 818] [cctk_timerstopi_]
+!189 = metadata !{metadata !190, metadata !191}
+!190 = metadata !{i32 786689, metadata !188, metadata !"ierr", metadata !13, i32 16778033, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 817]
+!191 = metadata !{i32 786689, metadata !188, metadata !"this_timer", metadata !13, i32 33555249, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 817]
+!192 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerReset", metadata !"CCTK_TimerReset", metadata !"", i32 879, metadata !84, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*)* @CCTK_TimerReset, null, null, metadata !193, i32 880} ; [ DW_TAG_subprogram ] [line 879] [def] [scope 880] [CCTK_TimerReset]
+!193 = metadata !{metadata !194, metadata !195, metadata !196}
+!194 = metadata !{i32 786689, metadata !192, metadata !"timername", metadata !13, i32 16778095, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timername] [line 879]
+!195 = metadata !{i32 786688, metadata !192, metadata !"timer", metadata !13, i32 881, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 881]
+!196 = metadata !{i32 786688, metadata !192, metadata !"this_timer", metadata !13, i32 882, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [this_timer] [line 882]
+!197 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timerreset_", metadata !"cctk_timerreset_", metadata !"", i32 899, metadata !112, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i8*, i32)* @cctk_timerreset_, null, null, metadata !198, i32 901} ; [ DW_TAG_subprogram ] [line 899] [def] [scope 901] [cctk_timerreset_]
+!198 = metadata !{metadata !199, metadata !200, metadata !201, metadata !202}
+!199 = metadata !{i32 786689, metadata !197, metadata !"ierr", metadata !13, i32 16778116, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 900]
+!200 = metadata !{i32 786689, metadata !197, metadata !"cctk_str1", metadata !13, i32 33555332, metadata !114, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_str1] [line 900]
+!201 = metadata !{i32 786689, metadata !197, metadata !"cctk_strlen1", metadata !13, i32 50332548, metadata !115, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_strlen1] [line 900]
+!202 = metadata !{i32 786688, metadata !197, metadata !"timername", metadata !13, i32 902, metadata !114, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timername] [line 902]
+!203 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerResetI", metadata !"CCTK_TimerResetI", metadata !"", i32 928, metadata !143, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32)* @CCTK_TimerResetI, null, null, metadata !204, i32 929} ; [ DW_TAG_subprogram ] [line 928] [def] [scope 929] [CCTK_TimerResetI]
+!204 = metadata !{metadata !205, metadata !206}
+!205 = metadata !{i32 786689, metadata !203, metadata !"this_timer", metadata !13, i32 16778144, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 928]
+!206 = metadata !{i32 786688, metadata !203, metadata !"timer", metadata !13, i32 930, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 930]
+!207 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timerreseti_", metadata !"cctk_timerreseti_", metadata !"", i32 947, metadata !149, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i32*)* @cctk_timerreseti_, null, null, metadata !208, i32 949} ; [ DW_TAG_subprogram ] [line 947] [def] [scope 949] [cctk_timerreseti_]
+!208 = metadata !{metadata !209, metadata !210}
+!209 = metadata !{i32 786689, metadata !207, metadata !"ierr", metadata !13, i32 16778164, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 948]
+!210 = metadata !{i32 786689, metadata !207, metadata !"this_timer", metadata !13, i32 33555380, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 948]
+!211 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_Timer", metadata !"CCTK_Timer", metadata !"", i32 1016, metadata !212, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*, %struct.cTimerData*)* @CCTK_Timer, null, null, metadata !220, i32 1017} ; [ DW_TAG_subprogram ] [line 1016] [def] [scope 1017] [CCTK_Timer]
+!212 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !213, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!213 = metadata !{metadata !22, metadata !16, metadata !214}
+!214 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !215} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from cTimerData]
+!215 = metadata !{i32 786454, metadata !1, null, metadata !"cTimerData", i32 35, i64 0, i64 0, i64 0, i32 0, metadata !216} ; [ DW_TAG_typedef ] [cTimerData] [line 35, size 0, align 0, offset 0] [from ]
+!216 = metadata !{i32 786451, metadata !4, null, metadata !"", i32 31, i64 128, i64 64, i32 0, i32 0, null, metadata !217, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 31, size 128, align 64, offset 0] [from ]
+!217 = metadata !{metadata !218, metadata !219}
+!218 = metadata !{i32 786445, metadata !4, metadata !216, metadata !"n_vals", i32 33, i64 32, i64 32, i64 0, i32 0, metadata !22} ; [ DW_TAG_member ] [n_vals] [line 33, size 32, align 32, offset 0] [from int]
+!219 = metadata !{i32 786445, metadata !4, metadata !216, metadata !"vals", i32 34, i64 64, i64 64, i64 64, i32 0, metadata !46} ; [ DW_TAG_member ] [vals] [line 34, size 64, align 64, offset 64] [from ]
+!220 = metadata !{metadata !221, metadata !222, metadata !223, metadata !224}
+!221 = metadata !{i32 786689, metadata !211, metadata !"timername", metadata !13, i32 16778232, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timername] [line 1016]
+!222 = metadata !{i32 786689, metadata !211, metadata !"info", metadata !13, i32 33555448, metadata !214, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [info] [line 1016]
+!223 = metadata !{i32 786688, metadata !211, metadata !"timer", metadata !13, i32 1018, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 1018]
+!224 = metadata !{i32 786688, metadata !211, metadata !"this_timer", metadata !13, i32 1019, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [this_timer] [line 1019]
+!225 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerI", metadata !"CCTK_TimerI", metadata !"", i32 1057, metadata !226, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32, %struct.cTimerData*)* @CCTK_TimerI, null, null, metadata !228, i32 1058} ; [ DW_TAG_subprogram ] [line 1057] [def] [scope 1058] [CCTK_TimerI]
+!226 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !227, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!227 = metadata !{metadata !22, metadata !22, metadata !214}
+!228 = metadata !{metadata !229, metadata !230, metadata !231}
+!229 = metadata !{i32 786689, metadata !225, metadata !"this_timer", metadata !13, i32 16778273, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 1057]
+!230 = metadata !{i32 786689, metadata !225, metadata !"info", metadata !13, i32 33555489, metadata !214, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [info] [line 1057]
+!231 = metadata !{i32 786688, metadata !225, metadata !"timer", metadata !13, i32 1059, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 1059]
+!232 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerCreateData", metadata !"CCTK_TimerCreateData", metadata !"", i32 1131, metadata !233, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct.cTimerData* ()* @CCTK_TimerCreateData, null, null, metadata !235, i32 1132} ; [ DW_TAG_subprogram ] [line 1131] [def] [scope 1132] [CCTK_TimerCreateData]
+!233 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !234, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!234 = metadata !{metadata !214}
+!235 = metadata !{metadata !236}
+!236 = metadata !{i32 786688, metadata !232, metadata !"retval", metadata !13, i32 1133, metadata !214, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [retval] [line 1133]
+!237 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerDestroyData", metadata !"CCTK_TimerDestroyData", metadata !"", i32 1172, metadata !238, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.cTimerData*)* @CCTK_TimerDestroyData, null, null, metadata !240, i32 1173} ; [ DW_TAG_subprogram ] [line 1172] [def] [scope 1173] [CCTK_TimerDestroyData]
+!238 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !239, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!239 = metadata !{metadata !22, metadata !214}
+!240 = metadata !{metadata !241}
+!241 = metadata !{i32 786689, metadata !237, metadata !"info", metadata !13, i32 16778388, metadata !214, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [info] [line 1172]
+!242 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerPrintDataI", metadata !"CCTK_TimerPrintDataI", metadata !"", i32 1214, metadata !243, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32, i32)* @CCTK_TimerPrintDataI, null, null, metadata !245, i32 1215} ; [ DW_TAG_subprogram ] [line 1214] [def] [scope 1215] [CCTK_TimerPrintDataI]
+!243 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !244, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!244 = metadata !{metadata !22, metadata !22, metadata !22}
+!245 = metadata !{metadata !246, metadata !247, metadata !248, metadata !249, metadata !250, metadata !251, metadata !252, metadata !253, metadata !254, metadata !255}
+!246 = metadata !{i32 786689, metadata !242, metadata !"this_timer", metadata !13, i32 16778430, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 1214]
+!247 = metadata !{i32 786689, metadata !242, metadata !"this_clock", metadata !13, i32 33555646, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_clock] [line 1214]
+!248 = metadata !{i32 786688, metadata !242, metadata !"info", metadata !13, i32 1216, metadata !214, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [info] [line 1216]
+!249 = metadata !{i32 786688, metadata !242, metadata !"i", metadata !13, i32 1217, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 1217]
+!250 = metadata !{i32 786688, metadata !242, metadata !"timer", metadata !13, i32 1217, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 1217]
+!251 = metadata !{i32 786688, metadata !242, metadata !"retval", metadata !13, i32 1217, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [retval] [line 1217]
+!252 = metadata !{i32 786688, metadata !242, metadata !"firstclock", metadata !13, i32 1218, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [firstclock] [line 1218]
+!253 = metadata !{i32 786688, metadata !242, metadata !"lastclock", metadata !13, i32 1218, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [lastclock] [line 1218]
+!254 = metadata !{i32 786688, metadata !242, metadata !"firsttimer", metadata !13, i32 1219, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [firsttimer] [line 1219]
+!255 = metadata !{i32 786688, metadata !242, metadata !"lasttimer", metadata !13, i32 1219, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [lasttimer] [line 1219]
+!256 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timerprintdatai_", metadata !"cctk_timerprintdatai_", metadata !"", i32 1291, metadata !257, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i32*, i32*)* @cctk_timerprintdatai_, null, null, metadata !259, i32 1293} ; [ DW_TAG_subprogram ] [line 1291] [def] [scope 1293] [cctk_timerprintdatai_]
+!257 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !258, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!258 = metadata !{null, metadata !96, metadata !96, metadata !96}
+!259 = metadata !{metadata !260, metadata !261, metadata !262}
+!260 = metadata !{i32 786689, metadata !256, metadata !"ierr", metadata !13, i32 16778508, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 1292]
+!261 = metadata !{i32 786689, metadata !256, metadata !"this_timer", metadata !13, i32 33555724, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 1292]
+!262 = metadata !{i32 786689, metadata !256, metadata !"this_clock", metadata !13, i32 50332940, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_clock] [line 1292]
+!263 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTK_TimerPrintData", metadata !"CCTK_TimerPrintData", metadata !"", i32 1323, metadata !264, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*, i8*)* @CCTK_TimerPrintData, null, null, metadata !266, i32 1324} ; [ DW_TAG_subprogram ] [line 1323] [def] [scope 1324] [CCTK_TimerPrintData]
+!264 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !265, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!265 = metadata !{metadata !22, metadata !16, metadata !16}
+!266 = metadata !{metadata !267, metadata !268, metadata !269, metadata !270, metadata !271}
+!267 = metadata !{i32 786689, metadata !263, metadata !"timername", metadata !13, i32 16778539, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timername] [line 1323]
+!268 = metadata !{i32 786689, metadata !263, metadata !"clockname", metadata !13, i32 33555755, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [clockname] [line 1323]
+!269 = metadata !{i32 786688, metadata !263, metadata !"this_timer", metadata !13, i32 1325, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [this_timer] [line 1325]
+!270 = metadata !{i32 786688, metadata !263, metadata !"this_clock", metadata !13, i32 1325, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [this_clock] [line 1325]
+!271 = metadata !{i32 786688, metadata !263, metadata !"retval", metadata !13, i32 1325, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [retval] [line 1325]
+!272 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"cctk_timerprintdata_", metadata !"cctk_timerprintdata_", metadata !"", i32 1368, metadata !273, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32*, i8*, i8*, i32, i32)* @cctk_timerprintdata_, null, null, metadata !275, i32 1370} ; [ DW_TAG_subprogram ] [line 1368] [def] [scope 1370] [cctk_timerprintdata_]
+!273 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !274, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!274 = metadata !{null, metadata !96, metadata !114, metadata !114, metadata !115, metadata !115}
+!275 = metadata !{metadata !276, metadata !277, metadata !278, metadata !279, metadata !280, metadata !281, metadata !282}
+!276 = metadata !{i32 786689, metadata !272, metadata !"ierr", metadata !13, i32 16778585, metadata !96, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ierr] [line 1369]
+!277 = metadata !{i32 786689, metadata !272, metadata !"cctk_str1", metadata !13, i32 33555801, metadata !114, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_str1] [line 1369]
+!278 = metadata !{i32 786689, metadata !272, metadata !"cctk_str2", metadata !13, i32 50333017, metadata !114, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_str2] [line 1369]
+!279 = metadata !{i32 786689, metadata !272, metadata !"cctk_strlen1", metadata !13, i32 67110233, metadata !115, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_strlen1] [line 1369]
+!280 = metadata !{i32 786689, metadata !272, metadata !"cctk_strlen2", metadata !13, i32 83887449, metadata !115, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cctk_strlen2] [line 1369]
+!281 = metadata !{i32 786688, metadata !272, metadata !"timer", metadata !13, i32 1371, metadata !114, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 1371]
+!282 = metadata !{i32 786688, metadata !272, metadata !"clock", metadata !13, i32 1371, metadata !114, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [clock] [line 1371]
+!283 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTKi_Timer", metadata !"CCTKi_Timer", metadata !"", i32 1096, metadata !284, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32, %struct.t_Timer*, %struct.cTimerData*)* @CCTKi_Timer, null, null, metadata !286, i32 1097} ; [ DW_TAG_subprogram ] [line 1096] [local] [def] [scope 1097] [CCTKi_Timer]
+!284 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !285, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!285 = metadata !{null, metadata !22, metadata !69, metadata !214}
+!286 = metadata !{metadata !287, metadata !288, metadata !289, metadata !290, metadata !291, metadata !292}
+!287 = metadata !{i32 786689, metadata !283, metadata !"this_timer", metadata !13, i32 16778312, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 1096]
+!288 = metadata !{i32 786689, metadata !283, metadata !"timer", metadata !13, i32 33555528, metadata !69, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timer] [line 1096]
+!289 = metadata !{i32 786689, metadata !283, metadata !"info", metadata !13, i32 50332744, metadata !214, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [info] [line 1096]
+!290 = metadata !{i32 786688, metadata !283, metadata !"funcs", metadata !13, i32 1098, metadata !23, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [funcs] [line 1098]
+!291 = metadata !{i32 786688, metadata !283, metadata !"handle", metadata !13, i32 1099, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [handle] [line 1099]
+!292 = metadata !{i32 786688, metadata !283, metadata !"total_vars", metadata !13, i32 1099, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [total_vars] [line 1099]
+!293 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTKi_TimerReset", metadata !"CCTKi_TimerReset", metadata !"", i32 973, metadata !294, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32, %struct.t_Timer*)* @CCTKi_TimerReset, null, null, metadata !296, i32 974} ; [ DW_TAG_subprogram ] [line 973] [local] [def] [scope 974] [CCTKi_TimerReset]
+!294 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !295, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!295 = metadata !{null, metadata !22, metadata !69}
+!296 = metadata !{metadata !297, metadata !298, metadata !299, metadata !300}
+!297 = metadata !{i32 786689, metadata !293, metadata !"this_timer", metadata !13, i32 16778189, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 973]
+!298 = metadata !{i32 786689, metadata !293, metadata !"timer", metadata !13, i32 33555405, metadata !69, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timer] [line 973]
+!299 = metadata !{i32 786688, metadata !293, metadata !"funcs", metadata !13, i32 975, metadata !23, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [funcs] [line 975]
+!300 = metadata !{i32 786688, metadata !293, metadata !"handle", metadata !13, i32 976, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [handle] [line 976]
+!301 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTKi_TimerStop", metadata !"CCTKi_TimerStop", metadata !"", i32 842, metadata !294, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32, %struct.t_Timer*)* @CCTKi_TimerStop, null, null, metadata !302, i32 843} ; [ DW_TAG_subprogram ] [line 842] [local] [def] [scope 843] [CCTKi_TimerStop]
+!302 = metadata !{metadata !303, metadata !304, metadata !305, metadata !306}
+!303 = metadata !{i32 786689, metadata !301, metadata !"this_timer", metadata !13, i32 16778058, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 842]
+!304 = metadata !{i32 786689, metadata !301, metadata !"timer", metadata !13, i32 33555274, metadata !69, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timer] [line 842]
+!305 = metadata !{i32 786688, metadata !301, metadata !"funcs", metadata !13, i32 844, metadata !23, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [funcs] [line 844]
+!306 = metadata !{i32 786688, metadata !301, metadata !"handle", metadata !13, i32 845, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [handle] [line 845]
+!307 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTKi_TimerStart", metadata !"CCTKi_TimerStart", metadata !"", i32 710, metadata !294, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32, %struct.t_Timer*)* @CCTKi_TimerStart, null, null, metadata !308, i32 711} ; [ DW_TAG_subprogram ] [line 710] [local] [def] [scope 711] [CCTKi_TimerStart]
+!308 = metadata !{metadata !309, metadata !310, metadata !311, metadata !312}
+!309 = metadata !{i32 786689, metadata !307, metadata !"this_timer", metadata !13, i32 16777926, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 710]
+!310 = metadata !{i32 786689, metadata !307, metadata !"timer", metadata !13, i32 33555142, metadata !69, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timer] [line 710]
+!311 = metadata !{i32 786688, metadata !307, metadata !"funcs", metadata !13, i32 712, metadata !23, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [funcs] [line 712]
+!312 = metadata !{i32 786688, metadata !307, metadata !"handle", metadata !13, i32 713, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [handle] [line 713]
+!313 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTKi_TimerDestroy", metadata !"CCTKi_TimerDestroy", metadata !"", i32 574, metadata !294, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32, %struct.t_Timer*)* @CCTKi_TimerDestroy, null, null, metadata !314, i32 575} ; [ DW_TAG_subprogram ] [line 574] [local] [def] [scope 575] [CCTKi_TimerDestroy]
+!314 = metadata !{metadata !315, metadata !316, metadata !317, metadata !318}
+!315 = metadata !{i32 786689, metadata !313, metadata !"this_timer", metadata !13, i32 16777790, metadata !22, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [this_timer] [line 574]
+!316 = metadata !{i32 786689, metadata !313, metadata !"timer", metadata !13, i32 33555006, metadata !69, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timer] [line 574]
+!317 = metadata !{i32 786688, metadata !313, metadata !"handle", metadata !13, i32 576, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [handle] [line 576]
+!318 = metadata !{i32 786688, metadata !313, metadata !"funcs", metadata !13, i32 577, metadata !23, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [funcs] [line 577]
+!319 = metadata !{i32 786478, metadata !1, metadata !13, metadata !"CCTKi_TimerCreate", metadata !"CCTKi_TimerCreate", metadata !"", i32 407, metadata !84, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*)* @CCTKi_TimerCreate, null, null, metadata !320, i32 408} ; [ DW_TAG_subprogram ] [line 407] [local] [def] [scope 408] [CCTKi_TimerCreate]
+!320 = metadata !{metadata !321, metadata !322, metadata !323, metadata !324, metadata !325, metadata !326}
+!321 = metadata !{i32 786689, metadata !319, metadata !"timername", metadata !13, i32 16777623, metadata !16, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [timername] [line 407]
+!322 = metadata !{i32 786688, metadata !319, metadata !"retval", metadata !13, i32 409, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [retval] [line 409]
+!323 = metadata !{i32 786688, metadata !319, metadata !"timer", metadata !13, i32 410, metadata !69, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [timer] [line 410]
+!324 = metadata !{i32 786688, metadata !319, metadata !"funcs", metadata !13, i32 411, metadata !23, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [funcs] [line 411]
+!325 = metadata !{i32 786688, metadata !319, metadata !"this_timer", metadata !13, i32 412, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [this_timer] [line 412]
+!326 = metadata !{i32 786688, metadata !319, metadata !"handle", metadata !13, i32 413, metadata !22, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [handle] [line 413]
+!327 = metadata !{metadata !328, metadata !329, metadata !345, metadata !346, metadata !347, metadata !348}
+!328 = metadata !{i32 786484, i32 0, null, metadata !"n_clock_vals", metadata !"n_clock_vals", metadata !"", metadata !13, i32 89, metadata !22, i32 1, i32 1, i32* @n_clock_vals, null} ; [ DW_TAG_variable ] [n_clock_vals] [line 89] [local] [def]
+!329 = metadata !{i32 786484, i32 0, null, metadata !"clocks", metadata !"clocks", metadata !"", metadata !13, i32 86, metadata !330, i32 1, i32 1, %struct.cHandledData** @clocks, null} ; [ DW_TAG_variable ] [clocks] [line 86] [local] [def]
+!330 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !331} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from cHandledData]
+!331 = metadata !{i32 786454, metadata !1, null, metadata !"cHandledData", i32 28, i64 0, i64 0, i64 0, i32 0, metadata !332} ; [ DW_TAG_typedef ] [cHandledData] [line 28, size 0, align 0, offset 0] [from ]
+!332 = metadata !{i32 786451, metadata !333, null, metadata !"", i32 23, i64 128, i64 64, i32 0, i32 0, null, metadata !334, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 23, size 128, align 64, offset 0] [from ]
+!333 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/../include/StoreHandledData.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!334 = metadata !{metadata !335, metadata !343, metadata !344}
+!335 = metadata !{i32 786445, metadata !333, metadata !332, metadata !"array", i32 25, i64 64, i64 64, i64 0, i32 0, metadata !336} ; [ DW_TAG_member ] [array] [line 25, size 64, align 64, offset 0] [from ]
+!336 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !337} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from cHandleStorage]
+!337 = metadata !{i32 786454, metadata !333, null, metadata !"cHandleStorage", i32 21, i64 0, i64 0, i64 0, i32 0, metadata !338} ; [ DW_TAG_typedef ] [cHandleStorage] [line 21, size 0, align 0, offset 0] [from ]
+!338 = metadata !{i32 786451, metadata !333, null, metadata !"", i32 16, i64 192, i64 64, i32 0, i32 0, null, metadata !339, i32 0, null, null} ; [ DW_TAG_structure_type ] [line 16, size 192, align 64, offset 0] [from ]
+!339 = metadata !{metadata !340, metadata !341, metadata !342}
+!340 = metadata !{i32 786445, metadata !333, metadata !338, metadata !"in_use", i32 18, i64 32, i64 32, i64 0, i32 0, metadata !115} ; [ DW_TAG_member ] [in_use] [line 18, size 32, align 32, offset 0] [from unsigned int]
+!341 = metadata !{i32 786445, metadata !333, metadata !338, metadata !"name", i32 19, i64 64, i64 64, i64 64, i32 0, metadata !114} ; [ DW_TAG_member ] [name] [line 19, size 64, align 64, offset 64] [from ]
+!342 = metadata !{i32 786445, metadata !333, metadata !338, metadata !"data", i32 20, i64 64, i64 64, i64 128, i32 0, metadata !34} ; [ DW_TAG_member ] [data] [line 20, size 64, align 64, offset 128] [from ]
+!343 = metadata !{i32 786445, metadata !333, metadata !332, metadata !"array_size", i32 26, i64 32, i64 32, i64 64, i32 0, metadata !115} ; [ DW_TAG_member ] [array_size] [line 26, size 32, align 32, offset 64] [from unsigned int]
+!344 = metadata !{i32 786445, metadata !333, metadata !332, metadata !"first_unused", i32 27, i64 32, i64 32, i64 96, i32 0, metadata !115} ; [ DW_TAG_member ] [first_unused] [line 27, size 32, align 32, offset 96] [from unsigned int]
+!345 = metadata !{i32 786484, i32 0, null, metadata !"n_clocks", metadata !"n_clocks", metadata !"", metadata !13, i32 85, metadata !22, i32 1, i32 1, i32* @n_clocks, null} ; [ DW_TAG_variable ] [n_clocks] [line 85] [local] [def]
+!346 = metadata !{i32 786484, i32 0, null, metadata !"timers", metadata !"timers", metadata !"", metadata !13, i32 92, metadata !330, i32 1, i32 1, %struct.cHandledData** @timers, null} ; [ DW_TAG_variable ] [timers] [line 92] [local] [def]
+!347 = metadata !{i32 786484, i32 0, null, metadata !"n_timers", metadata !"n_timers", metadata !"", metadata !13, i32 91, metadata !22, i32 1, i32 1, i32* @n_timers, null} ; [ DW_TAG_variable ] [n_timers] [line 91] [local] [def]
+!348 = metadata !{i32 786484, i32 0, null, metadata !"rcsid", metadata !"rcsid", metadata !"", metadata !13, i32 25, metadata !16, i32 1, i32 1, null, null}
+!349 = metadata !{i32 27, i32 0, metadata !12, null}
+!350 = metadata !{i32 121, i32 0, metadata !19, null}
+!351 = metadata !{i32 129, i32 0, metadata !19, null}
+!352 = metadata !{i32 130, i32 0, metadata !19, null}
+!353 = metadata !{i32 132, i32 0, metadata !354, null}
+!354 = metadata !{i32 786443, metadata !1, metadata !19, i32 131, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!355 = metadata !{metadata !"any pointer", metadata !356}
+!356 = metadata !{metadata !"omnipotent char", metadata !357}
+!357 = metadata !{metadata !"Simple C/C++ TBAA"}
+!358 = metadata !{i32 133, i32 0, metadata !354, null}
+!359 = metadata !{metadata !"int", metadata !356}
+!360 = metadata !{i32 134, i32 0, metadata !354, null}
+!361 = metadata !{i32 135, i32 0, metadata !354, null}
+!362 = metadata !{i32 136, i32 0, metadata !354, null}
+!363 = metadata !{i32 137, i32 0, metadata !354, null}
+!364 = metadata !{i32 138, i32 0, metadata !354, null}
+!365 = metadata !{i32 139, i32 0, metadata !354, null}
+!366 = metadata !{i32 140, i32 0, metadata !354, null}
+!367 = metadata !{i32 141, i32 0, metadata !354, null}
+!368 = metadata !{i32 144, i32 0, metadata !369, null}
+!369 = metadata !{i32 786443, metadata !1, metadata !19, i32 144, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!370 = metadata !{i32 152, i32 0, metadata !371, null}
+!371 = metadata !{i32 786443, metadata !1, metadata !372, i32 150, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!372 = metadata !{i32 786443, metadata !1, metadata !369, i32 145, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!373 = metadata !{i32 146, i32 0, metadata !372, null}
+!374 = metadata !{i32 148, i32 0, metadata !372, null}
+!375 = metadata !{i32 149, i32 0, metadata !372, null}
+!376 = metadata !{i32 151, i32 0, metadata !371, null}
+!377 = metadata !{i32 153, i32 0, metadata !371, null}
+!378 = metadata !{i32 157, i32 0, metadata !19, null}
+!379 = metadata !{i32 158, i32 0, metadata !19, null}
+!380 = metadata !{i32 159, i32 0, metadata !19, null}
+!381 = metadata !{i32 161, i32 0, metadata !19, null}
+!382 = metadata !{i32 184, i32 0, metadata !77, null}
+!383 = metadata !{i32 189, i32 0, metadata !77, null}
+!384 = metadata !{i32 191, i32 0, metadata !77, null}
+!385 = metadata !{i32 214, i32 0, metadata !83, null}
+!386 = metadata !{i32 248, i32 0, metadata !90, metadata !387}
+!387 = metadata !{i32 220, i32 0, metadata !388, null}
+!388 = metadata !{i32 786443, metadata !1, metadata !83, i32 220, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!389 = metadata !{i32 222, i32 0, metadata !390, null}
+!390 = metadata !{i32 786443, metadata !1, metadata !388, i32 221, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!391 = metadata !{i32 223, i32 0, metadata !390, null}
+!392 = metadata !{i32 229, i32 0, metadata !83, null}
+!393 = metadata !{i32 248, i32 0, metadata !90, null}
+!394 = metadata !{i32 252, i32 0, metadata !93, null}
+!395 = metadata !{i32 248, i32 0, metadata !90, metadata !396}
+!396 = metadata !{i32 254, i32 0, metadata !93, null}
+!397 = metadata !{i32 255, i32 0, metadata !93, null}
+!398 = metadata !{i32 273, i32 0, metadata !99, null}
+!399 = metadata !{i32 277, i32 0, metadata !100, null}
+!400 = metadata !{i32 273, i32 0, metadata !99, metadata !401}
+!401 = metadata !{i32 279, i32 0, metadata !100, null}
+!402 = metadata !{i32 280, i32 0, metadata !100, null}
+!403 = metadata !{i32 303, i32 0, metadata !103, null}
+!404 = metadata !{i32 308, i32 0, metadata !103, null}
+!405 = metadata !{i32 310, i32 0, metadata !103, null}
+!406 = metadata !{i32 334, i32 0, metadata !107, null}
+!407 = metadata !{i32 339, i32 0, metadata !107, null}
+!408 = metadata !{i32 341, i32 0, metadata !107, null}
+!409 = metadata !{i32 407, i32 0, metadata !319, null}
+!410 = metadata !{i32 410, i32 0, metadata !319, null}
+!411 = metadata !{i32 416, i32 0, metadata !319, null}
+!412 = metadata !{i32 423, i32 0, metadata !413, null}
+!413 = metadata !{i32 786443, metadata !1, metadata !319, i32 422, i32 0, i32 62} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!414 = metadata !{i32 425, i32 0, metadata !413, null}
+!415 = metadata !{i32 427, i32 0, metadata !416, null}
+!416 = metadata !{i32 786443, metadata !1, metadata !413, i32 426, i32 0, i32 63} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!417 = metadata !{i32 429, i32 0, metadata !416, null}
+!418 = metadata !{i32 432, i32 0, metadata !419, null}
+!419 = metadata !{i32 786443, metadata !1, metadata !416, i32 430, i32 0, i32 64} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!420 = metadata !{i32 433, i32 0, metadata !419, null}
+!421 = metadata !{i32 436, i32 0, metadata !422, null}
+!422 = metadata !{i32 786443, metadata !1, metadata !419, i32 436, i32 0, i32 65} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!423 = metadata !{i32 438, i32 0, metadata !424, null}
+!424 = metadata !{i32 786443, metadata !1, metadata !422, i32 437, i32 0, i32 66} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!425 = metadata !{i32 440, i32 0, metadata !424, null}
+!426 = metadata !{i32 446, i32 0, metadata !427, null}
+!427 = metadata !{i32 786443, metadata !1, metadata !416, i32 445, i32 0, i32 67} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!428 = metadata !{i32 -2}
+!429 = metadata !{i32 447, i32 0, metadata !427, null}
+!430 = metadata !{i32 456, i32 0, metadata !319, null}
+!431 = metadata !{i32 345, i32 0, metadata !111, null}
+!432 = metadata !{i32 347, i32 0, metadata !111, null}
+!433 = metadata !{i32 786689, metadata !107, metadata !"timername", metadata !13, i32 16777550, metadata !16, i32 0, metadata !434} ; [ DW_TAG_arg_variable ] [timername] [line 334]
+!434 = metadata !{i32 348, i32 0, metadata !111, null}
+!435 = metadata !{i32 334, i32 0, metadata !107, metadata !434}
+!436 = metadata !{i32 339, i32 0, metadata !107, metadata !434}
+!437 = metadata !{i32 786688, metadata !107, metadata !"retval", metadata !13, i32 336, metadata !22, i32 0, metadata !434} ; [ DW_TAG_auto_variable ] [retval] [line 336]
+!438 = metadata !{i32 349, i32 0, metadata !111, null}
+!439 = metadata !{i32 350, i32 0, metadata !111, null}
+!440 = metadata !{i32 370, i32 0, metadata !121, null}
+!441 = metadata !{i32 373, i32 0, metadata !121, null}
+!442 = metadata !{i32 374, i32 0, metadata !121, null}
+!443 = metadata !{i32 377, i32 0, metadata !121, null}
+!444 = metadata !{i32 380, i32 0, metadata !128, null}
+!445 = metadata !{i32 370, i32 0, metadata !121, metadata !446}
+!446 = metadata !{i32 382, i32 0, metadata !128, null}
+!447 = metadata !{i32 373, i32 0, metadata !121, metadata !446}
+!448 = metadata !{i32 374, i32 0, metadata !121, metadata !446}
+!449 = metadata !{i32 786688, metadata !121, metadata !"retval", metadata !13, i32 369, metadata !22, i32 0, metadata !446} ; [ DW_TAG_auto_variable ] [retval] [line 369]
+!450 = metadata !{i32 377, i32 0, metadata !121, metadata !446}
+!451 = metadata !{i32 383, i32 0, metadata !128, null}
+!452 = metadata !{i32 480, i32 0, metadata !131, null}
+!453 = metadata !{i32 482, i32 0, metadata !131, null}
+!454 = metadata !{i32 486, i32 0, metadata !131, null}
+!455 = metadata !{i32 487, i32 0, metadata !131, null}
+!456 = metadata !{i32 489, i32 0, metadata !457, null}
+!457 = metadata !{i32 786443, metadata !1, metadata !131, i32 488, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!458 = metadata !{i32 490, i32 0, metadata !457, null}
+!459 = metadata !{i32 493, i32 0, metadata !460, null}
+!460 = metadata !{i32 786443, metadata !1, metadata !131, i32 492, i32 0, i32 8} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!461 = metadata !{i32 497, i32 0, metadata !131, null}
+!462 = metadata !{i32 574, i32 0, metadata !313, null}
+!463 = metadata !{i32 580, i32 0, metadata !313, null}
+!464 = metadata !{i32 583, i32 0, metadata !465, null}
+!465 = metadata !{i32 786443, metadata !1, metadata !466, i32 583, i32 0, i32 59} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!466 = metadata !{i32 786443, metadata !1, metadata !313, i32 581, i32 0, i32 58} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!467 = metadata !{i32 585, i32 0, metadata !468, null}
+!468 = metadata !{i32 786443, metadata !1, metadata !465, i32 584, i32 0, i32 60} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!469 = metadata !{i32 586, i32 0, metadata !468, null}
+!470 = metadata !{i32 588, i32 0, metadata !466, null}
+!471 = metadata !{i32 589, i32 0, metadata !466, null}
+!472 = metadata !{i32 590, i32 0, metadata !466, null}
+!473 = metadata !{i32 591, i32 0, metadata !466, null}
+!474 = metadata !{i32 592, i32 0, metadata !466, null}
+!475 = metadata !{i32 593, i32 0, metadata !313, null}
+!476 = metadata !{i32 501, i32 0, metadata !136, null}
+!477 = metadata !{i32 503, i32 0, metadata !136, null}
+!478 = metadata !{i32 504, i32 0, metadata !136, null}
+!479 = metadata !{i32 505, i32 0, metadata !136, null}
+!480 = metadata !{i32 506, i32 0, metadata !136, null}
+!481 = metadata !{i32 529, i32 0, metadata !142, null}
+!482 = metadata !{i32 534, i32 0, metadata !142, null}
+!483 = metadata !{i32 535, i32 0, metadata !142, null}
+!484 = metadata !{i32 537, i32 0, metadata !485, null}
+!485 = metadata !{i32 786443, metadata !1, metadata !142, i32 536, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!486 = metadata !{i32 538, i32 0, metadata !485, null}
+!487 = metadata !{i32 541, i32 0, metadata !488, null}
+!488 = metadata !{i32 786443, metadata !1, metadata !142, i32 540, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!489 = metadata !{i32 545, i32 0, metadata !142, null}
+!490 = metadata !{i32 549, i32 0, metadata !148, null}
+!491 = metadata !{i32 551, i32 0, metadata !148, null}
+!492 = metadata !{i32 552, i32 0, metadata !148, null}
+!493 = metadata !{i32 616, i32 0, metadata !154, null}
+!494 = metadata !{i32 618, i32 0, metadata !154, null}
+!495 = metadata !{i32 622, i32 0, metadata !154, null}
+!496 = metadata !{i32 623, i32 0, metadata !154, null}
+!497 = metadata !{i32 625, i32 0, metadata !498, null}
+!498 = metadata !{i32 786443, metadata !1, metadata !154, i32 624, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!499 = metadata !{i32 626, i32 0, metadata !498, null}
+!500 = metadata !{i32 629, i32 0, metadata !501, null}
+!501 = metadata !{i32 786443, metadata !1, metadata !154, i32 628, i32 0, i32 12} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!502 = metadata !{i32 633, i32 0, metadata !154, null}
+!503 = metadata !{i32 710, i32 0, metadata !307, null}
+!504 = metadata !{i32 716, i32 0, metadata !307, null}
+!505 = metadata !{i32 719, i32 0, metadata !506, null}
+!506 = metadata !{i32 786443, metadata !1, metadata !507, i32 719, i32 0, i32 56} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!507 = metadata !{i32 786443, metadata !1, metadata !307, i32 717, i32 0, i32 55} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!508 = metadata !{i32 721, i32 0, metadata !509, null}
+!509 = metadata !{i32 786443, metadata !1, metadata !506, i32 720, i32 0, i32 57} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!510 = metadata !{i32 722, i32 0, metadata !509, null}
+!511 = metadata !{i32 725, i32 0, metadata !307, null}
+!512 = metadata !{i32 637, i32 0, metadata !159, null}
+!513 = metadata !{i32 639, i32 0, metadata !159, null}
+!514 = metadata !{i32 640, i32 0, metadata !159, null}
+!515 = metadata !{i32 641, i32 0, metadata !159, null}
+!516 = metadata !{i32 642, i32 0, metadata !159, null}
+!517 = metadata !{i32 665, i32 0, metadata !165, null}
+!518 = metadata !{i32 670, i32 0, metadata !165, null}
+!519 = metadata !{i32 671, i32 0, metadata !165, null}
+!520 = metadata !{i32 673, i32 0, metadata !521, null}
+!521 = metadata !{i32 786443, metadata !1, metadata !165, i32 672, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!522 = metadata !{i32 674, i32 0, metadata !521, null}
+!523 = metadata !{i32 677, i32 0, metadata !524, null}
+!524 = metadata !{i32 786443, metadata !1, metadata !165, i32 676, i32 0, i32 14} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!525 = metadata !{i32 681, i32 0, metadata !165, null}
+!526 = metadata !{i32 685, i32 0, metadata !169, null}
+!527 = metadata !{i32 687, i32 0, metadata !169, null}
+!528 = metadata !{i32 688, i32 0, metadata !169, null}
+!529 = metadata !{i32 748, i32 0, metadata !173, null}
+!530 = metadata !{i32 750, i32 0, metadata !173, null}
+!531 = metadata !{i32 754, i32 0, metadata !173, null}
+!532 = metadata !{i32 755, i32 0, metadata !173, null}
+!533 = metadata !{i32 757, i32 0, metadata !534, null}
+!534 = metadata !{i32 786443, metadata !1, metadata !173, i32 756, i32 0, i32 15} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!535 = metadata !{i32 758, i32 0, metadata !534, null}
+!536 = metadata !{i32 761, i32 0, metadata !537, null}
+!537 = metadata !{i32 786443, metadata !1, metadata !173, i32 760, i32 0, i32 16} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!538 = metadata !{i32 765, i32 0, metadata !173, null}
+!539 = metadata !{i32 842, i32 0, metadata !301, null}
+!540 = metadata !{i32 847, i32 0, metadata !301, null}
+!541 = metadata !{i32 850, i32 0, metadata !542, null}
+!542 = metadata !{i32 786443, metadata !1, metadata !543, i32 850, i32 0, i32 53} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!543 = metadata !{i32 786443, metadata !1, metadata !301, i32 848, i32 0, i32 52} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!544 = metadata !{i32 852, i32 0, metadata !545, null}
+!545 = metadata !{i32 786443, metadata !1, metadata !542, i32 851, i32 0, i32 54} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!546 = metadata !{i32 853, i32 0, metadata !545, null}
+!547 = metadata !{i32 856, i32 0, metadata !301, null}
+!548 = metadata !{i32 769, i32 0, metadata !178, null}
+!549 = metadata !{i32 771, i32 0, metadata !178, null}
+!550 = metadata !{i32 772, i32 0, metadata !178, null}
+!551 = metadata !{i32 773, i32 0, metadata !178, null}
+!552 = metadata !{i32 774, i32 0, metadata !178, null}
+!553 = metadata !{i32 797, i32 0, metadata !184, null}
+!554 = metadata !{i32 802, i32 0, metadata !184, null}
+!555 = metadata !{i32 803, i32 0, metadata !184, null}
+!556 = metadata !{i32 805, i32 0, metadata !557, null}
+!557 = metadata !{i32 786443, metadata !1, metadata !184, i32 804, i32 0, i32 17} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!558 = metadata !{i32 806, i32 0, metadata !557, null}
+!559 = metadata !{i32 809, i32 0, metadata !560, null}
+!560 = metadata !{i32 786443, metadata !1, metadata !184, i32 808, i32 0, i32 18} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!561 = metadata !{i32 813, i32 0, metadata !184, null}
+!562 = metadata !{i32 817, i32 0, metadata !188, null}
+!563 = metadata !{i32 819, i32 0, metadata !188, null}
+!564 = metadata !{i32 820, i32 0, metadata !188, null}
+!565 = metadata !{i32 879, i32 0, metadata !192, null}
+!566 = metadata !{i32 881, i32 0, metadata !192, null}
+!567 = metadata !{i32 885, i32 0, metadata !192, null}
+!568 = metadata !{i32 886, i32 0, metadata !192, null}
+!569 = metadata !{i32 888, i32 0, metadata !570, null}
+!570 = metadata !{i32 786443, metadata !1, metadata !192, i32 887, i32 0, i32 19} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!571 = metadata !{i32 889, i32 0, metadata !570, null}
+!572 = metadata !{i32 892, i32 0, metadata !573, null}
+!573 = metadata !{i32 786443, metadata !1, metadata !192, i32 891, i32 0, i32 20} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!574 = metadata !{i32 896, i32 0, metadata !192, null}
+!575 = metadata !{i32 973, i32 0, metadata !293, null}
+!576 = metadata !{i32 979, i32 0, metadata !293, null}
+!577 = metadata !{i32 982, i32 0, metadata !578, null}
+!578 = metadata !{i32 786443, metadata !1, metadata !579, i32 982, i32 0, i32 50} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!579 = metadata !{i32 786443, metadata !1, metadata !293, i32 980, i32 0, i32 49} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!580 = metadata !{i32 984, i32 0, metadata !581, null}
+!581 = metadata !{i32 786443, metadata !1, metadata !578, i32 983, i32 0, i32 51} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!582 = metadata !{i32 985, i32 0, metadata !581, null}
+!583 = metadata !{i32 988, i32 0, metadata !293, null}
+!584 = metadata !{i32 900, i32 0, metadata !197, null}
+!585 = metadata !{i32 902, i32 0, metadata !197, null}
+!586 = metadata !{i32 903, i32 0, metadata !197, null}
+!587 = metadata !{i32 904, i32 0, metadata !197, null}
+!588 = metadata !{i32 905, i32 0, metadata !197, null}
+!589 = metadata !{i32 928, i32 0, metadata !203, null}
+!590 = metadata !{i32 933, i32 0, metadata !203, null}
+!591 = metadata !{i32 934, i32 0, metadata !203, null}
+!592 = metadata !{i32 936, i32 0, metadata !593, null}
+!593 = metadata !{i32 786443, metadata !1, metadata !203, i32 935, i32 0, i32 21} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!594 = metadata !{i32 937, i32 0, metadata !593, null}
+!595 = metadata !{i32 940, i32 0, metadata !596, null}
+!596 = metadata !{i32 786443, metadata !1, metadata !203, i32 939, i32 0, i32 22} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!597 = metadata !{i32 944, i32 0, metadata !203, null}
+!598 = metadata !{i32 948, i32 0, metadata !207, null}
+!599 = metadata !{i32 950, i32 0, metadata !207, null}
+!600 = metadata !{i32 951, i32 0, metadata !207, null}
+!601 = metadata !{i32 1016, i32 0, metadata !211, null}
+!602 = metadata !{i32 1018, i32 0, metadata !211, null}
+!603 = metadata !{i32 1022, i32 0, metadata !211, null}
+!604 = metadata !{i32 1023, i32 0, metadata !211, null}
+!605 = metadata !{i32 1025, i32 0, metadata !606, null}
+!606 = metadata !{i32 786443, metadata !1, metadata !211, i32 1024, i32 0, i32 23} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!607 = metadata !{i32 1026, i32 0, metadata !606, null}
+!608 = metadata !{i32 1028, i32 0, metadata !211, null}
+!609 = metadata !{i32 1096, i32 0, metadata !283, null}
+!610 = metadata !{i32 1102, i32 0, metadata !283, null}
+!611 = metadata !{i32 1103, i32 0, metadata !283, null}
+!612 = metadata !{i32 1106, i32 0, metadata !613, null}
+!613 = metadata !{i32 786443, metadata !1, metadata !614, i32 1106, i32 0, i32 47} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!614 = metadata !{i32 786443, metadata !1, metadata !283, i32 1104, i32 0, i32 46} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!615 = metadata !{i32 1109, i32 0, metadata !616, null}
+!616 = metadata !{i32 786443, metadata !1, metadata !613, i32 1107, i32 0, i32 48} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!617 = metadata !{i32 1108, i32 0, metadata !616, null}
+!618 = metadata !{i32 1111, i32 0, metadata !616, null}
+!619 = metadata !{i32 1114, i32 0, metadata !283, null}
+!620 = metadata !{i32 1115, i32 0, metadata !283, null}
+!621 = metadata !{i32 1057, i32 0, metadata !225, null}
+!622 = metadata !{i32 1062, i32 0, metadata !225, null}
+!623 = metadata !{i32 1063, i32 0, metadata !225, null}
+!624 = metadata !{i32 1065, i32 0, metadata !625, null}
+!625 = metadata !{i32 786443, metadata !1, metadata !225, i32 1064, i32 0, i32 24} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!626 = metadata !{i32 1066, i32 0, metadata !625, null}
+!627 = metadata !{i32 1068, i32 0, metadata !225, null}
+!628 = metadata !{i32 1136, i32 0, metadata !232, null}
+!629 = metadata !{i32 1137, i32 0, metadata !232, null}
+!630 = metadata !{i32 1139, i32 0, metadata !631, null}
+!631 = metadata !{i32 786443, metadata !1, metadata !232, i32 1138, i32 0, i32 25} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!632 = metadata !{i32 1141, i32 0, metadata !631, null}
+!633 = metadata !{i32 1142, i32 0, metadata !631, null}
+!634 = metadata !{i32 1144, i32 0, metadata !635, null}
+!635 = metadata !{i32 786443, metadata !1, metadata !631, i32 1143, i32 0, i32 26} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!636 = metadata !{%struct.cTimerData* null}
+!637 = metadata !{i32 1145, i32 0, metadata !635, null}
+!638 = metadata !{i32 1146, i32 0, metadata !635, null}
+!639 = metadata !{i32 1149, i32 0, metadata !232, null}
+!640 = metadata !{i32 1172, i32 0, metadata !237, null}
+!641 = metadata !{i32 1174, i32 0, metadata !237, null}
+!642 = metadata !{i32 1176, i32 0, metadata !643, null}
+!643 = metadata !{i32 786443, metadata !1, metadata !237, i32 1175, i32 0, i32 27} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!644 = metadata !{i32 1178, i32 0, metadata !645, null}
+!645 = metadata !{i32 786443, metadata !1, metadata !643, i32 1177, i32 0, i32 28} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!646 = metadata !{i32 1180, i32 0, metadata !645, null}
+!647 = metadata !{i32 1181, i32 0, metadata !643, null}
+!648 = metadata !{i32 1182, i32 0, metadata !643, null}
+!649 = metadata !{i32 1184, i32 0, metadata !237, null}
+!650 = metadata !{i32 1214, i32 0, metadata !242, null}
+!651 = metadata !{i32 1222, i32 0, metadata !242, null}
+!652 = metadata !{i32 1224, i32 0, metadata !242, null}
+!653 = metadata !{i32 1231, i32 0, metadata !654, null}
+!654 = metadata !{i32 786443, metadata !1, metadata !242, i32 1230, i32 0, i32 30} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!655 = metadata !{i32 1232, i32 0, metadata !654, null}
+!656 = metadata !{i32 1233, i32 0, metadata !654, null}
+!657 = metadata !{i32 273, i32 0, metadata !99, metadata !656}
+!658 = metadata !{i32 1235, i32 0, metadata !659, null}
+!659 = metadata !{i32 786443, metadata !1, metadata !654, i32 1234, i32 0, i32 31} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!660 = metadata !{i32 -1}
+!661 = metadata !{i32 1237, i32 0, metadata !659, null}
+!662 = metadata !{i32 1238, i32 0, metadata !659, null}
+!663 = metadata !{i32 1242, i32 0, metadata !664, null}
+!664 = metadata !{i32 786443, metadata !1, metadata !242, i32 1242, i32 0, i32 32} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!665 = metadata !{i32 1226, i32 0, metadata !666, null}
+!666 = metadata !{i32 786443, metadata !1, metadata !242, i32 1225, i32 0, i32 29} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!667 = metadata !{i32 273, i32 0, metadata !99, metadata !668}
+!668 = metadata !{i32 1227, i32 0, metadata !666, null}
+!669 = metadata !{i32 1249, i32 0, metadata !670, null}
+!670 = metadata !{i32 786443, metadata !1, metadata !664, i32 1243, i32 0, i32 33} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!671 = metadata !{i32 1257, i32 0, metadata !672, null}
+!672 = metadata !{i32 786443, metadata !1, metadata !670, i32 1255, i32 0, i32 35} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!673 = metadata !{i32 1244, i32 0, metadata !670, null}
+!674 = metadata !{i32 1245, i32 0, metadata !670, null}
+!675 = metadata !{i32 786689, metadata !103, metadata !"timer_handle", metadata !13, i32 16777519, metadata !22, i32 0, metadata !676} ; [ DW_TAG_arg_variable ] [timer_handle] [line 303]
+!676 = metadata !{i32 1247, i32 0, metadata !670, null}
+!677 = metadata !{i32 303, i32 0, metadata !103, metadata !676}
+!678 = metadata !{i32 308, i32 0, metadata !103, metadata !676}
+!679 = metadata !{i32 786688, metadata !103, metadata !"retval", metadata !13, i32 305, metadata !16, i32 0, metadata !676} ; [ DW_TAG_auto_variable ] [retval] [line 305]
+!680 = metadata !{i32 1251, i32 0, metadata !681, null}
+!681 = metadata !{i32 786443, metadata !1, metadata !670, i32 1250, i32 0, i32 34} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!682 = metadata !{i32 1252, i32 0, metadata !681, null}
+!683 = metadata !{i32 1260, i32 0, metadata !684, null}
+!684 = metadata !{i32 786443, metadata !1, metadata !670, i32 1260, i32 0, i32 36} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!685 = metadata !{i32 1262, i32 0, metadata !686, null}
+!686 = metadata !{i32 786443, metadata !1, metadata !684, i32 1261, i32 0, i32 37} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!687 = metadata !{i32 1265, i32 0, metadata !688, null}
+!688 = metadata !{i32 786443, metadata !1, metadata !686, i32 1263, i32 0, i32 38} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!689 = metadata !{i32 1267, i32 0, metadata !688, null}
+!690 = metadata !{i32 1270, i32 0, metadata !688, null}
+!691 = metadata !{metadata !"long", metadata !356}
+!692 = metadata !{i32 1272, i32 0, metadata !688, null}
+!693 = metadata !{i32 1275, i32 0, metadata !688, null}
+!694 = metadata !{metadata !"double", metadata !356}
+!695 = metadata !{i32 1277, i32 0, metadata !688, null}
+!696 = metadata !{i32 1280, i32 0, metadata !688, null}
+!697 = metadata !{i32 1282, i32 0, metadata !688, null}
+!698 = metadata !{i32 1285, i32 0, metadata !670, null}
+!699 = metadata !{i32 1288, i32 0, metadata !242, null}
+!700 = metadata !{i32 1292, i32 0, metadata !256, null}
+!701 = metadata !{i32 1294, i32 0, metadata !256, null}
+!702 = metadata !{i32 1295, i32 0, metadata !256, null}
+!703 = metadata !{i32 1323, i32 0, metadata !263, null}
+!704 = metadata !{i32 1328, i32 0, metadata !263, null}
+!705 = metadata !{i32 1330, i32 0, metadata !263, null}
+!706 = metadata !{i32 1336, i32 0, metadata !707, null}
+!707 = metadata !{i32 786443, metadata !1, metadata !263, i32 1335, i32 0, i32 40} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!708 = metadata !{i32 1337, i32 0, metadata !707, null}
+!709 = metadata !{i32 1339, i32 0, metadata !710, null}
+!710 = metadata !{i32 786443, metadata !1, metadata !707, i32 1338, i32 0, i32 41} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!711 = metadata !{i32 1341, i32 0, metadata !710, null}
+!712 = metadata !{i32 1342, i32 0, metadata !710, null}
+!713 = metadata !{i32 1345, i32 0, metadata !263, null}
+!714 = metadata !{i32 1351, i32 0, metadata !715, null}
+!715 = metadata !{i32 786443, metadata !1, metadata !263, i32 1350, i32 0, i32 43} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!716 = metadata !{i32 1352, i32 0, metadata !715, null}
+!717 = metadata !{i32 1354, i32 0, metadata !718, null}
+!718 = metadata !{i32 786443, metadata !1, metadata !715, i32 1353, i32 0, i32 44} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!719 = metadata !{i32 1356, i32 0, metadata !718, null}
+!720 = metadata !{i32 1360, i32 0, metadata !263, null}
+!721 = metadata !{i32 1362, i32 0, metadata !722, null}
+!722 = metadata !{i32 786443, metadata !1, metadata !263, i32 1361, i32 0, i32 45} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/436.cactusADM/src/Cactus/CactusTimers.c]
+!723 = metadata !{i32 1363, i32 0, metadata !722, null}
+!724 = metadata !{i32 1365, i32 0, metadata !263, null}
+!725 = metadata !{i32 1369, i32 0, metadata !272, null}
+!726 = metadata !{i32 1371, i32 0, metadata !272, null}
+!727 = metadata !{i32 1374, i32 0, metadata !272, null}
+!728 = metadata !{i32 1375, i32 0, metadata !272, null}
+!729 = metadata !{i32 1376, i32 0, metadata !272, null}
+!730 = metadata !{i32 1377, i32 0, metadata !272, null}

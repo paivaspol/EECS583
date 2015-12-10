@@ -1,21 +1,22 @@
-define internal fastcc void @mk_gct_nm(i8* %fn, i32 %ati, i32 %atj) #4 {
-  tail call void @llvm.dbg.value(metadata i32 19, i64 0, metadata !975, metadata !1073), !dbg !2613
-  %1 = tail call i8* @__strcpy_chk(i8* getelementptr inbounds ([256 x i8]* @mk_gct_nm.buf, i64 0, i64 0), i8* %fn, i64 256) #9, !dbg !2614
-  %2 = icmp eq i32 %atj, -1, !dbg !2615
-  %3 = tail call i64 @strlen(i8* %fn) #9, !dbg !2617
-  %.sum = add i64 %3, -4, !dbg !2617
-  %4 = getelementptr inbounds [256 x i8]* @mk_gct_nm.buf, i64 0, i64 %.sum, !dbg !2617
-  %5 = tail call i8* @ftp2ext(i32 19) #9, !dbg !2617
-  br i1 %2, label %6, label %8, !dbg !2618
+define internal fastcc void @mk_gct_nm(i8* nocapture %fn, i32 %ati, i32 %atj) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !1585, i64 0, metadata !858), !dbg !1586
+  %call = tail call i8* @strcpy(i8* getelementptr inbounds ([256 x i8]* @mk_gct_nm.buf, i64 0, i64 0), i8* %fn) #7, !dbg !1587
+  %cmp = icmp eq i32 %atj, -1, !dbg !1588
+  %call1 = tail call i64 @strlen(i8* %fn) #10, !dbg !1589
+  %add.ptr.sum = add i64 %call1, -4, !dbg !1589
+  %add.ptr2 = getelementptr inbounds [256 x i8]* @mk_gct_nm.buf, i64 0, i64 %add.ptr.sum, !dbg !1589
+  %call3 = tail call i8* @ftp2ext(i32 19) #7, !dbg !1589
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1588
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %4, i32 0, i64 -1, i8* getelementptr inbounds ([6 x i8]* @.str62, i64 0, i64 0), i32 %ati, i8* %5) #9, !dbg !2617
-  br label %10, !dbg !2617
+if.then:                                          ; preds = %entry
+  %call4 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %add.ptr2, i8* getelementptr inbounds ([6 x i8]* @.str63, i64 0, i64 0), i32 %ati, i8* %call3) #7, !dbg !1589
+  br label %if.end, !dbg !1589
 
-; <label>:8                                       ; preds = %0
-  %9 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %4, i32 0, i64 -1, i8* getelementptr inbounds ([9 x i8]* @.str63, i64 0, i64 0), i32 %ati, i32 %atj, i8* %5) #9, !dbg !2619
-  br label %10
+if.else:                                          ; preds = %entry
+  %call9 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %add.ptr2, i8* getelementptr inbounds ([9 x i8]* @.str64, i64 0, i64 0), i32 %ati, i32 %atj, i8* %call3) #7, !dbg !1590
+  br label %if.end
 
-; <label>:10                                      ; preds = %8, %6
+if.end:                                           ; preds = %if.else, %if.then
   ret void
 }

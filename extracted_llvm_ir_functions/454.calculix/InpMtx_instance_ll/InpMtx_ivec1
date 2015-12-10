@@ -1,16 +1,17 @@
 define i32* @InpMtx_ivec1(%struct._InpMtx* %inpmtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !77, metadata !159), !dbg !257
-  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !258
-  br i1 %1, label %2, label %5, !dbg !260
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !76), !dbg !207
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !208
+  br i1 %cmp, label %if.then, label %if.end, !dbg !208
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !261, !tbaa !166
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([46 x i8]* @.str8, i64 0, i64 0), %struct._InpMtx* null) #5, !dbg !263
-  tail call void @exit(i32 -1) #6, !dbg !264
-  unreachable, !dbg !264
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !209, !tbaa !158
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str8, i64 0, i64 0), %struct._InpMtx* null) #5, !dbg !209
+  tail call void @exit(i32 -1) #6, !dbg !211
+  unreachable, !dbg !211
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6, !dbg !265
-  %7 = tail call i32* @IV_entries(%struct._IV* %6) #5, !dbg !266
-  ret i32* %7, !dbg !267
+if.end:                                           ; preds = %entry
+  %ivec1IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6, !dbg !212
+  %call1 = tail call i32* @IV_entries(%struct._IV* %ivec1IV) #5, !dbg !212
+  ret i32* %call1, !dbg !212
 }

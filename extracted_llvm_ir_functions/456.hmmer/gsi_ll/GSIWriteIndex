@@ -1,67 +1,68 @@
-define void @GSIWriteIndex(%struct.__sFILE* %fp, %struct.gsiindex_s* nocapture readonly %g) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !179, metadata !226), !dbg !542
-  tail call void @llvm.dbg.value(metadata %struct.gsiindex_s* %g, i64 0, metadata !180, metadata !226), !dbg !543
-  %1 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 2, !dbg !544
-  %2 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 4, !dbg !546
-  %3 = load i16* %1, align 2, !dbg !548, !tbaa !435
-  %4 = zext i16 %3 to i32, !dbg !549
-  %5 = load i32* %2, align 4, !dbg !550, !tbaa !438
-  %6 = sext i32 %5 to i64, !dbg !551
-  tail call void @GSIWriteHeader(%struct.__sFILE* %fp, i32 %4, i64 %6) #8, !dbg !552
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !181, metadata !226), !dbg !553
-  %7 = load i16* %1, align 2, !dbg !554, !tbaa !435
-  %8 = icmp eq i16 %7, 0, !dbg !557
-  br i1 %8, label %.preheader, label %.lr.ph4, !dbg !558
+define void @GSIWriteIndex(%struct._IO_FILE* nocapture %fp, %struct.gsiindex_s* nocapture %g) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !170), !dbg !331
+  tail call void @llvm.dbg.value(metadata !{%struct.gsiindex_s* %g}, i64 0, metadata !171), !dbg !331
+  %nfiles = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 2, !dbg !332
+  %nkeys = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 4, !dbg !333
+  %0 = load i16* %nfiles, align 2, !dbg !334, !tbaa !236
+  %conv7 = zext i16 %0 to i32, !dbg !334
+  %1 = load i32* %nkeys, align 4, !dbg !334, !tbaa !222
+  %conv9 = sext i32 %1 to i64, !dbg !334
+  tail call void @GSIWriteHeader(%struct._IO_FILE* %fp, i32 %conv7, i64 %conv9) #9, !dbg !334
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !172), !dbg !335
+  %2 = load i16* %nfiles, align 2, !dbg !335, !tbaa !236
+  %cmp1259 = icmp eq i16 %2, 0, !dbg !335
+  br i1 %cmp1259, label %for.cond16.preheader, label %for.body.lr.ph, !dbg !335
 
-.lr.ph4:                                          ; preds = %0
-  %9 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 0, !dbg !559
-  %10 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 1, !dbg !560
-  br label %14, !dbg !558
+for.body.lr.ph:                                   ; preds = %entry
+  %filenames = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 0, !dbg !337
+  %fmt = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 1, !dbg !337
+  br label %for.body, !dbg !335
 
-.preheader:                                       ; preds = %14, %0
-  %11 = load i32* %2, align 4, !dbg !561, !tbaa !438
-  %12 = icmp eq i32 %11, 0, !dbg !564
-  br i1 %12, label %._crit_edge, label %.lr.ph, !dbg !565
+for.cond16.preheader:                             ; preds = %for.body, %entry
+  %3 = load i32* %nkeys, align 4, !dbg !338, !tbaa !222
+  %cmp1856 = icmp eq i32 %3, 0, !dbg !338
+  br i1 %cmp1856, label %for.end34, label %for.body20.lr.ph, !dbg !338
 
-.lr.ph:                                           ; preds = %.preheader
-  %13 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 3, !dbg !566
-  br label %27, !dbg !565
+for.body20.lr.ph:                                 ; preds = %for.cond16.preheader
+  %elems = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 3, !dbg !340
+  br label %for.body20, !dbg !338
 
-; <label>:14                                      ; preds = %.lr.ph4, %14
-  %i.02 = phi i32 [ 0, %.lr.ph4 ], [ %19, %14 ]
-  %15 = zext i32 %i.02 to i64, !dbg !567
-  %16 = load i8*** %9, align 8, !dbg !559, !tbaa !423
-  %17 = getelementptr inbounds i8** %16, i64 %15, !dbg !567
-  %18 = load i8** %17, align 8, !dbg !567, !tbaa !449
-  %19 = add nuw nsw i32 %i.02, 1, !dbg !568
-  %20 = load i32** %10, align 8, !dbg !560, !tbaa !428
-  %21 = getelementptr inbounds i32* %20, i64 %15, !dbg !569
-  %22 = load i32* %21, align 4, !dbg !569, !tbaa !248
-  %23 = tail call i32 @GSIWriteFileRecord(%struct.__sFILE* %fp, i8* %18, i32 %19, i32 %22) #8, !dbg !570
-  tail call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !181, metadata !226), !dbg !553
-  %24 = load i16* %1, align 2, !dbg !554, !tbaa !435
-  %25 = zext i16 %24 to i32, !dbg !571
-  %26 = icmp ult i32 %19, %25, !dbg !557
-  br i1 %26, label %14, label %.preheader, !dbg !558
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %i.060 = phi i32 [ 0, %for.body.lr.ph ], [ %add, %for.body ]
+  %idxprom = zext i32 %i.060 to i64, !dbg !337
+  %4 = load i8*** %filenames, align 8, !dbg !337, !tbaa !217
+  %arrayidx = getelementptr inbounds i8** %4, i64 %idxprom, !dbg !337
+  %5 = load i8** %arrayidx, align 8, !dbg !337, !tbaa !217
+  %add = add i32 %i.060, 1, !dbg !337
+  %6 = load i32** %fmt, align 8, !dbg !337, !tbaa !217
+  %arrayidx15 = getelementptr inbounds i32* %6, i64 %idxprom, !dbg !337
+  %7 = load i32* %arrayidx15, align 4, !dbg !337, !tbaa !222
+  %call = tail call i32 @GSIWriteFileRecord(%struct._IO_FILE* %fp, i8* %5, i32 %add, i32 %7) #9, !dbg !337
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !172), !dbg !335
+  %8 = load i16* %nfiles, align 2, !dbg !335, !tbaa !236
+  %conv11 = zext i16 %8 to i32, !dbg !335
+  %cmp12 = icmp ult i32 %add, %conv11, !dbg !335
+  br i1 %cmp12, label %for.body, label %for.cond16.preheader, !dbg !335
 
-; <label>:27                                      ; preds = %.lr.ph, %27
-  %i.11 = phi i32 [ 0, %.lr.ph ], [ %38, %27 ]
-  %28 = zext i32 %i.11 to i64, !dbg !572
-  %29 = load %struct.gsikey_s** %13, align 8, !dbg !566, !tbaa !432
-  %30 = getelementptr inbounds %struct.gsikey_s* %29, i64 %28, i32 0, i64 0, !dbg !572
-  %31 = getelementptr inbounds %struct.gsikey_s* %29, i64 %28, i32 1, !dbg !573
-  %32 = load i16* %31, align 2, !dbg !573, !tbaa !518
-  %33 = zext i16 %32 to i32, !dbg !574
-  %34 = getelementptr inbounds %struct.gsikey_s* %29, i64 %28, i32 2, !dbg !575
-  %35 = load i32* %34, align 4, !dbg !575, !tbaa !523
-  %36 = zext i32 %35 to i64, !dbg !576
-  %37 = tail call i32 @GSIWriteKeyRecord(%struct.__sFILE* %fp, i8* %30, i32 %33, i64 %36) #8, !dbg !577
-  %38 = add nuw i32 %i.11, 1, !dbg !578
-  tail call void @llvm.dbg.value(metadata i32 %38, i64 0, metadata !181, metadata !226), !dbg !553
-  %39 = load i32* %2, align 4, !dbg !561, !tbaa !438
-  %40 = icmp ult i32 %38, %39, !dbg !564
-  br i1 %40, label %27, label %._crit_edge, !dbg !565
+for.body20:                                       ; preds = %for.body20.lr.ph, %for.body20
+  %i.157 = phi i32 [ 0, %for.body20.lr.ph ], [ %inc33, %for.body20 ]
+  %idxprom21 = zext i32 %i.157 to i64, !dbg !340
+  %9 = load %struct.gsikey_s** %elems, align 8, !dbg !340, !tbaa !217
+  %arraydecay = getelementptr inbounds %struct.gsikey_s* %9, i64 %idxprom21, i32 0, i64 0, !dbg !340
+  %filenum = getelementptr inbounds %struct.gsikey_s* %9, i64 %idxprom21, i32 1, !dbg !340
+  %10 = load i16* %filenum, align 2, !dbg !340, !tbaa !236
+  %conv26 = zext i16 %10 to i32, !dbg !340
+  %offset = getelementptr inbounds %struct.gsikey_s* %9, i64 %idxprom21, i32 2, !dbg !340
+  %11 = load i32* %offset, align 4, !dbg !340, !tbaa !222
+  %conv30 = zext i32 %11 to i64, !dbg !340
+  %call31 = tail call i32 @GSIWriteKeyRecord(%struct._IO_FILE* %fp, i8* %arraydecay, i32 %conv26, i64 %conv30) #9, !dbg !340
+  %inc33 = add i32 %i.157, 1, !dbg !338
+  tail call void @llvm.dbg.value(metadata !{i32 %inc33}, i64 0, metadata !172), !dbg !338
+  %12 = load i32* %nkeys, align 4, !dbg !338, !tbaa !222
+  %cmp18 = icmp ult i32 %inc33, %12, !dbg !338
+  br i1 %cmp18, label %for.body20, label %for.end34, !dbg !338
 
-._crit_edge:                                      ; preds = %27, %.preheader
-  ret void, !dbg !579
+for.end34:                                        ; preds = %for.body20, %for.cond16.preheader
+  ret void, !dbg !341
 }

@@ -1,54 +1,54 @@
-define internal i32 @read_bin11hmm(%struct.hmmfile_s* nocapture readonly %hmmfp, %struct.plan7_s** nocapture %ret_hmm) #0 {
+define internal i32 @read_bin11hmm(%struct.hmmfile_s* nocapture %hmmfp, %struct.plan7_s** nocapture %ret_hmm) #0 {
+entry:
   %magic = alloca i32, align 4
   %hmm = alloca %struct.plan7_s*, align 8
-  tail call void @llvm.dbg.value(metadata %struct.hmmfile_s* %hmmfp, i64 0, metadata !407, metadata !464), !dbg !1421
-  tail call void @llvm.dbg.value(metadata %struct.plan7_s** %ret_hmm, i64 0, metadata !408, metadata !464), !dbg !1422
-  %1 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0, !dbg !1423
-  %2 = load %struct.__sFILE** %1, align 8, !dbg !1423, !tbaa !490
-  %3 = tail call i32 @feof(%struct.__sFILE* %2) #6, !dbg !1425
-  %4 = icmp eq i32 %3, 0, !dbg !1425
-  br i1 %4, label %5, label %26, !dbg !1426
+  call void @llvm.dbg.value(metadata !{%struct.hmmfile_s* %hmmfp}, i64 0, metadata !342), !dbg !878
+  call void @llvm.dbg.value(metadata !{%struct.plan7_s** %ret_hmm}, i64 0, metadata !343), !dbg !878
+  call void @llvm.dbg.declare(metadata !{i32* %magic}, metadata !344), !dbg !879
+  call void @llvm.dbg.declare(metadata !{%struct.plan7_s** %hmm}, metadata !345), !dbg !880
+  %f = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0, !dbg !881
+  %0 = load %struct._IO_FILE** %f, align 8, !dbg !881, !tbaa !465
+  %call = call i32 @feof(%struct._IO_FILE* %0) #7, !dbg !881
+  %tobool = icmp eq i32 %call, 0, !dbg !881
+  br i1 %tobool, label %if.end, label %return, !dbg !881
 
-; <label>:5                                       ; preds = %0
-  %6 = bitcast i32* %magic to i8*, !dbg !1427
-  %7 = load %struct.__sFILE** %1, align 8, !dbg !1429, !tbaa !490
-  %8 = call i64 @fread(i8* %6, i64 4, i64 1, %struct.__sFILE* %7) #6, !dbg !1430
-  %9 = icmp eq i64 %8, 0, !dbg !1430
-  br i1 %9, label %26, label %10, !dbg !1431
+if.end:                                           ; preds = %entry
+  %1 = bitcast i32* %magic to i8*, !dbg !882
+  %2 = load %struct._IO_FILE** %f, align 8, !dbg !882, !tbaa !465
+  %call2 = call i64 @fread(i8* %1, i64 4, i64 1, %struct._IO_FILE* %2) #7, !dbg !882
+  %tobool3 = icmp eq i64 %call2, 0, !dbg !882
+  br i1 %tobool3, label %return, label %if.end5, !dbg !882
 
-; <label>:10                                      ; preds = %5
-  %11 = load %struct.__sFILE** %1, align 8, !dbg !1432, !tbaa !490
-  %12 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 4, !dbg !1433
-  %13 = load i32* %12, align 4, !dbg !1433, !tbaa !566
-  %14 = tail call fastcc %struct.plan9_s* @read_plan9_binhmm(%struct.__sFILE* %11, i32 3, i32 %13) #7, !dbg !1434
-  tail call void @llvm.dbg.value(metadata %struct.plan9_s* %14, i64 0, metadata !411, metadata !464), !dbg !1435
-  %15 = icmp eq %struct.plan9_s* %14, null, !dbg !1436
-  br i1 %15, label %16, label %17, !dbg !1438
+if.end5:                                          ; preds = %if.end
+  %3 = load %struct._IO_FILE** %f, align 8, !dbg !883, !tbaa !465
+  %byteswap = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 4, !dbg !883
+  %4 = load i32* %byteswap, align 4, !dbg !883, !tbaa !460
+  %call7 = call fastcc %struct.plan9_s* @read_plan9_binhmm(%struct._IO_FILE* %3, i32 3, i32 %4) #9, !dbg !883
+  call void @llvm.dbg.value(metadata !{%struct.plan9_s* %call7}, i64 0, metadata !346), !dbg !883
+  %cmp = icmp eq %struct.plan9_s* %call7, null, !dbg !884
+  br i1 %cmp, label %if.then8, label %if.end9, !dbg !884
 
-; <label>:16                                      ; preds = %10
-  store %struct.plan7_s* null, %struct.plan7_s** %ret_hmm, align 8, !dbg !1439, !tbaa !511
-  br label %26, !dbg !1441
+if.then8:                                         ; preds = %if.end5
+  store %struct.plan7_s* null, %struct.plan7_s** %ret_hmm, align 8, !dbg !885, !tbaa !465
+  br label %return, !dbg !885
 
-; <label>:17                                      ; preds = %10
-  tail call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !410, metadata !464), !dbg !1442
-  call void @Plan9toPlan7(%struct.plan9_s* %14, %struct.plan7_s** %hmm) #6, !dbg !1443
-  %18 = call i8* @Strdup(i8* getelementptr inbounds ([34 x i8]* @.str84, i64 0, i64 0)) #6, !dbg !1444
-  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !410, metadata !464), !dbg !1442
-  %19 = load %struct.plan7_s** %hmm, align 8, !dbg !1445, !tbaa !511
-  %20 = getelementptr inbounds %struct.plan7_s* %19, i64 0, i32 6, !dbg !1446
-  store i8* %18, i8** %20, align 8, !dbg !1447, !tbaa !1379
-  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !410, metadata !464), !dbg !1442
-  %21 = load %struct.plan7_s** %hmm, align 8, !dbg !1448, !tbaa !511
-  call void @Plan7SetCtime(%struct.plan7_s* %21) #6, !dbg !1449
-  %22 = call i32 @P9FreeHMM(%struct.plan9_s* %14) #6, !dbg !1450
-  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !410, metadata !464), !dbg !1442
-  %23 = bitcast %struct.plan7_s** %hmm to i64*, !dbg !1451
-  %24 = load i64* %23, align 8, !dbg !1451, !tbaa !511
-  %25 = bitcast %struct.plan7_s** %ret_hmm to i64*, !dbg !1452
-  store i64 %24, i64* %25, align 8, !dbg !1452, !tbaa !511
-  br label %26, !dbg !1453
+if.end9:                                          ; preds = %if.end5
+  call void @Plan9toPlan7(%struct.plan9_s* %call7, %struct.plan7_s** %hmm) #7, !dbg !887
+  %call10 = call i8* @Strdup(i8* getelementptr inbounds ([34 x i8]* @.str59, i64 0, i64 0)) #7, !dbg !888
+  call void @llvm.dbg.value(metadata !{%struct.plan7_s** %hmm}, i64 0, metadata !345), !dbg !888
+  %5 = load %struct.plan7_s** %hmm, align 8, !dbg !888, !tbaa !465
+  %comlog = getelementptr inbounds %struct.plan7_s* %5, i64 0, i32 6, !dbg !888
+  store i8* %call10, i8** %comlog, align 8, !dbg !888, !tbaa !465
+  call void @llvm.dbg.value(metadata !{%struct.plan7_s** %hmm}, i64 0, metadata !345), !dbg !889
+  %6 = load %struct.plan7_s** %hmm, align 8, !dbg !889, !tbaa !465
+  call void @Plan7SetCtime(%struct.plan7_s* %6) #7, !dbg !889
+  %call11 = call i32 @P9FreeHMM(%struct.plan9_s* %call7) #7, !dbg !890
+  call void @llvm.dbg.value(metadata !{%struct.plan7_s** %hmm}, i64 0, metadata !345), !dbg !891
+  %7 = load %struct.plan7_s** %hmm, align 8, !dbg !891, !tbaa !465
+  store %struct.plan7_s* %7, %struct.plan7_s** %ret_hmm, align 8, !dbg !891, !tbaa !465
+  br label %return, !dbg !892
 
-; <label>:26                                      ; preds = %5, %0, %17, %16
-  %.0 = phi i32 [ 1, %16 ], [ 1, %17 ], [ 0, %0 ], [ 0, %5 ]
-  ret i32 %.0, !dbg !1454
+return:                                           ; preds = %if.end, %entry, %if.end9, %if.then8
+  %retval.0 = phi i32 [ 1, %if.then8 ], [ 1, %if.end9 ], [ 0, %entry ], [ 0, %if.end ]
+  ret i32 %retval.0, !dbg !892
 }

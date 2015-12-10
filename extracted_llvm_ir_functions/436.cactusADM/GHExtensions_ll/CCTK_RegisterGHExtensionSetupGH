@@ -1,18 +1,19 @@
 define i32 @CCTK_RegisterGHExtensionSetupGH(i32 %handle, i8* (%struct.tFleshConfig*, i32, %struct.cGH*)* %func) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !92, metadata !197), !dbg !243
-  tail call void @llvm.dbg.value(metadata i8* (%struct.tFleshConfig*, i32, %struct.cGH*)* %func, i64 0, metadata !93, metadata !197), !dbg !244
-  %1 = load %struct.cHandledData** @GHExtensions, align 8, !dbg !245, !tbaa !200
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #6, !dbg !246
-  %3 = icmp eq i8* %2, null, !dbg !247
-  br i1 %3, label %6, label %4, !dbg !249
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !92), !dbg !223
+  tail call void @llvm.dbg.value(metadata !{i8* (%struct.tFleshConfig*, i32, %struct.cGH*)* %func}, i64 0, metadata !93), !dbg !224
+  %0 = load %struct.cHandledData** @GHExtensions, align 8, !dbg !225, !tbaa !195
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %handle) #6, !dbg !225
+  %tobool = icmp eq i8* %call, null, !dbg !226
+  br i1 %tobool, label %if.end, label %if.then, !dbg !226
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to i8* (%struct.tFleshConfig*, i32, %struct.cGH*)**, !dbg !250
-  store i8* (%struct.tFleshConfig*, i32, %struct.cGH*)* %func, i8* (%struct.tFleshConfig*, i32, %struct.cGH*)** %5, align 8, !dbg !252, !tbaa !253
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !94, metadata !197), !dbg !255
-  br label %6, !dbg !256
+if.then:                                          ; preds = %entry
+  %SetupGH = bitcast i8* %call to i8* (%struct.tFleshConfig*, i32, %struct.cGH*)**, !dbg !227
+  store i8* (%struct.tFleshConfig*, i32, %struct.cGH*)* %func, i8* (%struct.tFleshConfig*, i32, %struct.cGH*)** %SetupGH, align 8, !dbg !227, !tbaa !195
+  tail call void @llvm.dbg.value(metadata !229, i64 0, metadata !94), !dbg !230
+  br label %if.end, !dbg !231
 
-; <label>:6                                       ; preds = %0, %4
-  %return_code.0 = phi i32 [ 1, %4 ], [ 0, %0 ]
-  ret i32 %return_code.0, !dbg !257
+if.end:                                           ; preds = %entry, %if.then
+  %return_code.0 = phi i32 [ 1, %if.then ], [ 0, %entry ]
+  ret i32 %return_code.0, !dbg !232
 }

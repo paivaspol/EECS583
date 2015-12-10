@@ -1,51 +1,48 @@
-define void @ZVscale(i32 %size, double* %y, double %areal, double %aimag) #2 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !147, metadata !841), !dbg !1273
-  tail call void @llvm.dbg.value(metadata double* %y, i64 0, metadata !148, metadata !841), !dbg !1274
-  tail call void @llvm.dbg.value(metadata double %areal, i64 0, metadata !149, metadata !841), !dbg !1275
-  tail call void @llvm.dbg.value(metadata double %aimag, i64 0, metadata !150, metadata !841), !dbg !1276
-  %1 = icmp slt i32 %size, 0, !dbg !1277
-  %2 = icmp eq double* %y, null, !dbg !1279
-  %or.cond = or i1 %1, %2, !dbg !1280
-  br i1 %or.cond, label %5, label %.preheader, !dbg !1280
+define void @ZVscale(i32 %size, double* %y, double %areal, double %aimag) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !145), !dbg !1042
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !146), !dbg !1043
+  tail call void @llvm.dbg.value(metadata !{double %areal}, i64 0, metadata !147), !dbg !1044
+  tail call void @llvm.dbg.value(metadata !{double %aimag}, i64 0, metadata !148), !dbg !1045
+  %cmp = icmp slt i32 %size, 0, !dbg !1046
+  %cmp1 = icmp eq double* %y, null, !dbg !1046
+  %or.cond = or i1 %cmp, %cmp1, !dbg !1046
+  br i1 %or.cond, label %if.then, label %for.cond.preheader, !dbg !1046
 
-.preheader:                                       ; preds = %0
-  %3 = icmp sgt i32 %size, 0, !dbg !1281
-  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !1284
+for.cond.preheader:                               ; preds = %entry
+  %cmp234 = icmp sgt i32 %size, 0, !dbg !1047
+  br i1 %cmp234, label %for.body, label %for.end, !dbg !1047
 
-.lr.ph:                                           ; preds = %.preheader
-  %4 = add i32 %size, -1, !dbg !1284
-  br label %8, !dbg !1284
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1049, !tbaa !925
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str8, i64 0, i64 0), i32 %size, double* %y, double %areal, double %aimag) #6, !dbg !1049
+  tail call void @exit(i32 -1) #8, !dbg !1051
+  unreachable, !dbg !1051
 
-; <label>:5                                       ; preds = %0
-  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1285, !tbaa !1046
-  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([50 x i8]* @.str8, i64 0, i64 0), i32 %size, double* %y, double %areal, double %aimag) #8, !dbg !1287
-  tail call void @exit(i32 -1) #9, !dbg !1288
-  unreachable, !dbg !1288
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %ii.035 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1052
+  %1 = load double* %arrayidx, align 8, !dbg !1052, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{double %1}, i64 0, metadata !150), !dbg !1052
+  %2 = or i64 %indvars.iv, 1, !dbg !1054
+  %arrayidx4 = getelementptr inbounds double* %y, i64 %2, !dbg !1054
+  %3 = load double* %arrayidx4, align 8, !dbg !1054, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{double %3}, i64 0, metadata !149), !dbg !1054
+  %mul = fmul double %1, %areal, !dbg !1055
+  %mul5 = fmul double %3, %aimag, !dbg !1055
+  %sub = fsub double %mul, %mul5, !dbg !1055
+  store double %sub, double* %arrayidx, align 8, !dbg !1055, !tbaa !861
+  %mul8 = fmul double %3, %areal, !dbg !1056
+  %mul9 = fmul double %1, %aimag, !dbg !1056
+  %add10 = fadd double %mul9, %mul8, !dbg !1056
+  store double %add10, double* %arrayidx4, align 8, !dbg !1056, !tbaa !861
+  %inc = add nsw i32 %ii.035, 1, !dbg !1047
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !151), !dbg !1047
+  %indvars.iv.next = add i64 %indvars.iv, 2, !dbg !1047
+  %exitcond = icmp eq i32 %inc, %size, !dbg !1047
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1047
 
-; <label>:8                                       ; preds = %8, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %8 ]
-  %ii.02 = phi i32 [ 0, %.lr.ph ], [ %20, %8 ]
-  %9 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1289
-  %10 = load double* %9, align 8, !dbg !1289, !tbaa !907
-  tail call void @llvm.dbg.value(metadata double %10, i64 0, metadata !152, metadata !841), !dbg !1291
-  %11 = or i64 %indvars.iv, 1, !dbg !1292
-  %12 = getelementptr inbounds double* %y, i64 %11, !dbg !1293
-  %13 = load double* %12, align 8, !dbg !1293, !tbaa !907
-  tail call void @llvm.dbg.value(metadata double %13, i64 0, metadata !151, metadata !841), !dbg !1294
-  %14 = fmul double %10, %areal, !dbg !1295
-  %15 = fmul double %13, %aimag, !dbg !1296
-  %16 = fsub double %14, %15, !dbg !1297
-  store double %16, double* %9, align 8, !dbg !1298, !tbaa !907
-  %17 = fmul double %13, %areal, !dbg !1299
-  %18 = fmul double %10, %aimag, !dbg !1300
-  %19 = fadd double %18, %17, !dbg !1301
-  store double %19, double* %12, align 8, !dbg !1302, !tbaa !907
-  %20 = add nuw nsw i32 %ii.02, 1, !dbg !1303
-  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !153, metadata !841), !dbg !1304
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 2, !dbg !1284
-  %exitcond = icmp eq i32 %ii.02, %4, !dbg !1284
-  br i1 %exitcond, label %._crit_edge, label %8, !dbg !1284
-
-._crit_edge:                                      ; preds = %8, %.preheader
-  ret void, !dbg !1305
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void, !dbg !1057
 }

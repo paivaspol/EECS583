@@ -1,76 +1,75 @@
-define void @tree(i32 %depth, i32 %indent, %struct.__sFILE* %output, i8* nocapture readonly %disp_b) #0 {
+define void @tree(i32 %depth, i32 %indent, %struct._IO_FILE* %output, i8* nocapture %disp_b) #0 {
+entry:
   %moves = alloca [512 x %struct.move_s], align 16
-  tail call void @llvm.dbg.value(metadata i32 %depth, i64 0, metadata !242, metadata !296), !dbg !2665
-  tail call void @llvm.dbg.value(metadata i32 %indent, i64 0, metadata !243, metadata !296), !dbg !2666
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %output, i64 0, metadata !244, metadata !296), !dbg !2667
-  tail call void @llvm.dbg.value(metadata i8* %disp_b, i64 0, metadata !245, metadata !296), !dbg !2668
-  %1 = bitcast [512 x %struct.move_s]* %moves to i8*, !dbg !2669
-  call void @llvm.lifetime.start(i64 12288, i8* %1) #3, !dbg !2669
-  tail call void @llvm.dbg.declare(metadata [512 x %struct.move_s]* %moves, metadata !246, metadata !296), !dbg !2670
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !247, metadata !296), !dbg !2671
-  %2 = icmp eq i32 %depth, 0, !dbg !2672
-  br i1 %2, label %.loopexit, label %3, !dbg !2674
+  call void @llvm.dbg.value(metadata !{i32 %depth}, i64 0, metadata !236), !dbg !1401
+  call void @llvm.dbg.value(metadata !{i32 %indent}, i64 0, metadata !237), !dbg !1401
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %output}, i64 0, metadata !238), !dbg !1401
+  call void @llvm.dbg.value(metadata !{i8* %disp_b}, i64 0, metadata !239), !dbg !1401
+  %0 = bitcast [512 x %struct.move_s]* %moves to i8*, !dbg !1402
+  call void @llvm.lifetime.start(i64 12288, i8* %0) #3, !dbg !1402
+  call void @llvm.dbg.declare(metadata !{[512 x %struct.move_s]* %moves}, metadata !240), !dbg !1402
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !241), !dbg !1403
+  %tobool = icmp eq i32 %depth, 0, !dbg !1404
+  br i1 %tobool, label %cleanup, label %if.end, !dbg !1404
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0, !dbg !2675
-  call void @gen(%struct.move_s* %4) #6, !dbg !2676
-  %5 = load i32* @numb_moves, align 4, !dbg !2677, !tbaa !351
-  call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !247, metadata !296), !dbg !2671
-  %6 = call i32 @in_check() #6, !dbg !2678
-  call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !250, metadata !296), !dbg !2679
-  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !248, metadata !296), !dbg !2680
-  %7 = icmp sgt i32 %5, 0, !dbg !2681
-  br i1 %7, label %.lr.ph4, label %.loopexit, !dbg !2684
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0, !dbg !1405
+  call void @gen(%struct.move_s* %arrayidx) #6, !dbg !1405
+  %1 = load i32* @numb_moves, align 4, !dbg !1406, !tbaa !300
+  call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !241), !dbg !1406
+  %call = call i32 @in_check() #6, !dbg !1407
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !244), !dbg !1407
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !242), !dbg !1408
+  %cmp37 = icmp sgt i32 %1, 0, !dbg !1408
+  br i1 %cmp37, label %for.body.lr.ph, label %cleanup, !dbg !1408
 
-.lr.ph4:                                          ; preds = %3
-  %8 = icmp sgt i32 %indent, 0, !dbg !2685
-  %9 = add nsw i32 %depth, -1, !dbg !2691
-  %10 = add nsw i32 %indent, 2, !dbg !2692
-  %11 = add i32 %indent, -1, !dbg !2684
-  %12 = add i32 %5, -1, !dbg !2684
-  br label %13, !dbg !2684
+for.body.lr.ph:                                   ; preds = %if.end
+  %cmp735 = icmp sgt i32 %indent, 0, !dbg !1410
+  %sub = add nsw i32 %depth, -1, !dbg !1414
+  %add = add nsw i32 %indent, 2, !dbg !1414
+  br label %for.body, !dbg !1408
 
-; <label>:13                                      ; preds = %22, %.lr.ph4
-  %i.02 = phi i32 [ 0, %.lr.ph4 ], [ %23, %22 ]
-  call void @make(%struct.move_s* %4, i32 %i.02) #6, !dbg !2693
-  %14 = call i32 @check_legal(%struct.move_s* %4, i32 %i.02, i32 %6) #6, !dbg !2694
-  %15 = icmp eq i32 %14, 0, !dbg !2694
-  br i1 %15, label %22, label %.preheader, !dbg !2695
+for.body:                                         ; preds = %if.end17, %for.body.lr.ph
+  %i.038 = phi i32 [ 0, %for.body.lr.ph ], [ %inc20, %if.end17 ]
+  call void @make(%struct.move_s* %arrayidx, i32 %i.038) #6, !dbg !1415
+  %call3 = call i32 @check_legal(%struct.move_s* %arrayidx, i32 %i.038, i32 %call) #6, !dbg !1416
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !1416
+  br i1 %tobool4, label %if.end17, label %for.cond6.preheader, !dbg !1416
 
-.preheader:                                       ; preds = %13
-  br i1 %8, label %.lr.ph, label %._crit_edge, !dbg !2696
+for.cond6.preheader:                              ; preds = %for.body
+  br i1 %cmp735, label %for.body8, label %for.end, !dbg !1410
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %j.01 = phi i32 [ %17, %.lr.ph ], [ 0, %.preheader ]
-  %16 = call i32 @fputc(i32 32, %struct.__sFILE* %output) #6, !dbg !2697
-  %17 = add nuw nsw i32 %j.01, 1, !dbg !2699
-  call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !249, metadata !296), !dbg !2700
-  %exitcond = icmp eq i32 %j.01, %11, !dbg !2696
-  br i1 %exitcond, label %._crit_edge, label %.lr.ph, !dbg !2696
+for.body8:                                        ; preds = %for.cond6.preheader, %for.body8
+  %j.036 = phi i32 [ %inc, %for.body8 ], [ 0, %for.cond6.preheader ]
+  %call9 = call i32 @fputc(i32 32, %struct._IO_FILE* %output) #6, !dbg !1417
+  %inc = add nsw i32 %j.036, 1, !dbg !1410
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !243), !dbg !1410
+  %exitcond = icmp eq i32 %inc, %indent, !dbg !1410
+  br i1 %exitcond, label %for.end, label %for.body8, !dbg !1410
 
-._crit_edge:                                      ; preds = %.lr.ph, %.preheader
-  call void @print_move(%struct.move_s* %4, i32 %i.02, %struct.__sFILE* %output) #6, !dbg !2701
-  %fputc = call i32 @fputc(i32 10, %struct.__sFILE* %output) #3, !dbg !2702
-  %18 = load i8* %disp_b, align 1, !dbg !2703, !tbaa !304
-  %19 = icmp eq i8 %18, 121, !dbg !2705
-  br i1 %19, label %20, label %21, !dbg !2706
+for.end:                                          ; preds = %for.body8, %for.cond6.preheader
+  call void @print_move(%struct.move_s* %arrayidx, i32 %i.038, %struct._IO_FILE* %output) #6, !dbg !1419
+  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %output) #3, !dbg !1420
+  %2 = load i8* %disp_b, align 1, !dbg !1421, !tbaa !284
+  %cmp13 = icmp eq i8 %2, 121, !dbg !1421
+  br i1 %cmp13, label %if.then15, label %if.end16, !dbg !1421
 
-; <label>:20                                      ; preds = %._crit_edge
-  call void @display_board(%struct.__sFILE* %output, i32 1) #6, !dbg !2707
-  br label %21, !dbg !2707
+if.then15:                                        ; preds = %for.end
+  call void @display_board(%struct._IO_FILE* %output, i32 1) #6, !dbg !1422
+  br label %if.end16, !dbg !1422
 
-; <label>:21                                      ; preds = %20, %._crit_edge
-  call void @tree(i32 %9, i32 %10, %struct.__sFILE* %output, i8* %disp_b) #7, !dbg !2708
-  br label %22, !dbg !2709
+if.end16:                                         ; preds = %if.then15, %for.end
+  call void @tree(i32 %sub, i32 %add, %struct._IO_FILE* %output, i8* %disp_b) #7, !dbg !1414
+  br label %if.end17, !dbg !1423
 
-; <label>:22                                      ; preds = %13, %21
-  call void @unmake(%struct.move_s* %4, i32 %i.02) #6, !dbg !2710
-  %23 = add nuw nsw i32 %i.02, 1, !dbg !2711
-  call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !248, metadata !296), !dbg !2680
-  %exitcond5 = icmp eq i32 %i.02, %12, !dbg !2684
-  br i1 %exitcond5, label %.loopexit, label %13, !dbg !2684
+if.end17:                                         ; preds = %for.body, %if.end16
+  call void @unmake(%struct.move_s* %arrayidx, i32 %i.038) #6, !dbg !1424
+  %inc20 = add nsw i32 %i.038, 1, !dbg !1408
+  call void @llvm.dbg.value(metadata !{i32 %inc20}, i64 0, metadata !242), !dbg !1408
+  %exitcond39 = icmp eq i32 %inc20, %1, !dbg !1408
+  br i1 %exitcond39, label %cleanup, label %for.body, !dbg !1408
 
-.loopexit:                                        ; preds = %22, %3, %0
-  call void @llvm.lifetime.end(i64 12288, i8* %1) #3, !dbg !2712
-  ret void, !dbg !2712
+cleanup:                                          ; preds = %if.end, %if.end17, %entry
+  call void @llvm.lifetime.end(i64 12288, i8* %0) #3, !dbg !1425
+  ret void, !dbg !1426
 }

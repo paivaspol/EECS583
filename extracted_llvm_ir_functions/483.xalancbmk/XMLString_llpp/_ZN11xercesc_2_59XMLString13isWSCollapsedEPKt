@@ -1,0 +1,76 @@
+define zeroext i1 @_ZN11xercesc_2_59XMLString13isWSCollapsedEPKt(i16* %toCheck) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !2112), !dbg !4119
+  %tobool = icmp eq i16* %toCheck, null, !dbg !4120
+  br i1 %tobool, label %return, label %lor.lhs.false, !dbg !4120
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = load i16* %toCheck, align 2, !dbg !4120, !tbaa !2947
+  %tobool1 = icmp eq i16 %0, 0, !dbg !4120
+  br i1 %tobool1, label %return, label %while.cond.i, !dbg !4120
+
+while.cond.i:                                     ; preds = %lor.lhs.false, %if.end10.i
+  %1 = phi i16 [ %.pre.i, %if.end10.i ], [ %0, %lor.lhs.false ]
+  %startPtr.0.i = phi i16* [ %incdec.ptr.i, %if.end10.i ], [ %toCheck, %lor.lhs.false ]
+  switch i16 %1, label %if.end10.i [
+    i16 0, label %if.end3
+    i16 13, label %return
+    i16 10, label %return
+    i16 9, label %return
+  ], !dbg !4121
+
+if.end10.i:                                       ; preds = %while.cond.i
+  %incdec.ptr.i = getelementptr inbounds i16* %startPtr.0.i, i64 1, !dbg !4123
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr.i}, i64 0, metadata !4124), !dbg !4123
+  %.pre.i = load i16* %incdec.ptr.i, align 2, !dbg !4121, !tbaa !2947
+  br label %while.cond.i, !dbg !4125
+
+if.end3:                                          ; preds = %while.cond.i
+  %cmp = icmp eq i16 %0, 32, !dbg !4126
+  br i1 %cmp, label %return, label %while.cond.i29, !dbg !4126
+
+while.cond.i29:                                   ; preds = %if.end3, %while.cond.i29
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i29 ], [ %toCheck, %if.end3 ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !4127
+  %2 = load i16* %pszTmp.0.i, align 2, !dbg !4129, !tbaa !2947
+  %tobool.i28 = icmp eq i16 %2, 0, !dbg !4129
+  br i1 %tobool.i28, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i29, !dbg !4129
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %while.cond.i29
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !4130
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %toCheck to i64, !dbg !4130
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !4130
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !4130
+  %phitmp = add i64 %sub.ptr.div7.i, 4294967295, !dbg !4130
+  %phitmp31 = and i64 %phitmp, 4294967295, !dbg !4130
+  %arrayidx = getelementptr inbounds i16* %toCheck, i64 %phitmp31, !dbg !4128
+  %3 = load i16* %arrayidx, align 2, !dbg !4128, !tbaa !2947
+  %cmp7 = icmp eq i16 %3, 32, !dbg !4128
+  br i1 %cmp7, label %return, label %while.cond, !dbg !4128
+
+while.cond:                                       ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, %if.end19
+  %4 = phi i16 [ %.pre, %if.end19 ], [ %0, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ]
+  %startPtr.0 = phi i16* [ %incdec.ptr, %if.end19 ], [ %toCheck, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ]
+  %inSpace.0 = phi i8 [ %inSpace.1, %if.end19 ], [ 0, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ]
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !2114), !dbg !4131
+  switch i16 %4, label %if.end19 [
+    i16 0, label %return
+    i16 32, label %if.then14
+  ], !dbg !4131
+
+if.then14:                                        ; preds = %while.cond
+  %5 = and i8 %inSpace.0, 1, !dbg !4132
+  %tobool15 = icmp eq i8 %5, 0, !dbg !4132
+  br i1 %tobool15, label %if.end19, label %return, !dbg !4132
+
+if.end19:                                         ; preds = %while.cond, %if.then14
+  %inSpace.1 = phi i8 [ 1, %if.then14 ], [ 0, %while.cond ]
+  %incdec.ptr = getelementptr inbounds i16* %startPtr.0, i64 1, !dbg !4135
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !2113), !dbg !4135
+  %.pre = load i16* %incdec.ptr, align 2, !dbg !4131, !tbaa !2947
+  br label %while.cond, !dbg !4136
+
+return:                                           ; preds = %while.cond.i, %while.cond.i, %while.cond.i, %while.cond, %if.then14, %if.end3, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, %entry, %lor.lhs.false
+  %retval.0 = phi i1 [ true, %lor.lhs.false ], [ true, %entry ], [ false, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ], [ false, %if.end3 ], [ true, %while.cond ], [ false, %if.then14 ], [ false, %while.cond.i ], [ false, %while.cond.i ], [ false, %while.cond.i ]
+  ret i1 %retval.0, !dbg !4137
+}

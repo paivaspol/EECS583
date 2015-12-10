@@ -1,40 +1,38 @@
-define noalias i8* @RandomSequence(i8* nocapture readonly %alphabet, float* %p, i32 %n, i32 %len) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %alphabet, i64 0, metadata !89, metadata !225), !dbg !389
-  tail call void @llvm.dbg.value(metadata float* %p, i64 0, metadata !90, metadata !225), !dbg !390
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !91, metadata !225), !dbg !391
-  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !92, metadata !225), !dbg !392
-  %1 = add nsw i32 %len, 1, !dbg !393
-  %2 = sext i32 %1 to i64, !dbg !393
-  %3 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([68 x i8]* @.str2, i64 0, i64 0), i32 199, i64 %2) #7, !dbg !393
-  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !93, metadata !225), !dbg !394
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !94, metadata !225), !dbg !395
-  %4 = icmp sgt i32 %len, 0, !dbg !396
-  br i1 %4, label %.lr.ph, label %12, !dbg !399
+define noalias i8* @RandomSequence(i8* nocapture %alphabet, float* %p, i32 %n, i32 %len) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %alphabet}, i64 0, metadata !102), !dbg !285
+  tail call void @llvm.dbg.value(metadata !{float* %p}, i64 0, metadata !103), !dbg !285
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !104), !dbg !285
+  tail call void @llvm.dbg.value(metadata !{i32 %len}, i64 0, metadata !105), !dbg !285
+  %add = add nsw i32 %len, 1, !dbg !286
+  %conv = sext i32 %add to i64, !dbg !286
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 199, i64 %conv) #11, !dbg !286
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !106), !dbg !286
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !107), !dbg !287
+  %cmp13 = icmp sgt i32 %len, 0, !dbg !287
+  br i1 %cmp13, label %for.body, label %for.end, !dbg !287
 
-.lr.ph:                                           ; preds = %0
-  %5 = add i32 %len, -1, !dbg !399
-  br label %6, !dbg !399
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %call2 = tail call i32 @FChoose(float* %p, i32 %n) #9, !dbg !289
+  %idxprom = sext i32 %call2 to i64, !dbg !289
+  %arrayidx = getelementptr inbounds i8* %alphabet, i64 %idxprom, !dbg !289
+  %0 = load i8* %arrayidx, align 1, !dbg !289, !tbaa !221
+  %arrayidx4 = getelementptr inbounds i8* %call, i64 %indvars.iv, !dbg !289
+  store i8 %0, i8* %arrayidx4, align 1, !dbg !289, !tbaa !221
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !287
+  tail call void @llvm.dbg.value(metadata !{i32 %len}, i64 0, metadata !107), !dbg !287
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !287
+  %exitcond = icmp eq i32 %lftr.wideiv, %len, !dbg !287
+  br i1 %exitcond, label %for.cond.for.end_crit_edge, label %for.body, !dbg !287
 
-; <label>:6                                       ; preds = %6, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %6 ]
-  %7 = tail call i32 @FChoose(float* %p, i32 %n) #5, !dbg !400
-  %8 = sext i32 %7 to i64, !dbg !401
-  %9 = getelementptr inbounds i8* %alphabet, i64 %8, !dbg !401
-  %10 = load i8* %9, align 1, !dbg !401, !tbaa !247
-  %11 = getelementptr inbounds i8* %3, i64 %indvars.iv, !dbg !402
-  store i8 %10, i8* %11, align 1, !dbg !403, !tbaa !247
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !399
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !399
-  %exitcond = icmp eq i32 %lftr.wideiv, %5, !dbg !399
-  br i1 %exitcond, label %._crit_edge, label %6, !dbg !399
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %phitmp = sext i32 %len to i64, !dbg !287
+  br label %for.end, !dbg !287
 
-._crit_edge:                                      ; preds = %6
-  %phitmp = sext i32 %len to i64, !dbg !399
-  br label %12, !dbg !399
-
-; <label>:12                                      ; preds = %._crit_edge, %0
-  %x.0.lcssa = phi i64 [ %phitmp, %._crit_edge ], [ 0, %0 ]
-  %13 = getelementptr inbounds i8* %3, i64 %x.0.lcssa, !dbg !404
-  store i8 0, i8* %13, align 1, !dbg !405, !tbaa !247
-  ret i8* %3, !dbg !406
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %entry
+  %x.0.lcssa = phi i64 [ %phitmp, %for.cond.for.end_crit_edge ], [ 0, %entry ]
+  %arrayidx6 = getelementptr inbounds i8* %call, i64 %x.0.lcssa, !dbg !290
+  store i8 0, i8* %arrayidx6, align 1, !dbg !290, !tbaa !221
+  ret i8* %call, !dbg !291
 }

@@ -1,24 +1,25 @@
-define i32 @CCTK_GroupnghostzonesGN(%struct.cGH* %cctkGH, i32 %dim, i32* %nghostzones, i8* %groupname) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %cctkGH, i64 0, metadata !433, metadata !553), !dbg !1268
-  tail call void @llvm.dbg.value(metadata i32 %dim, i64 0, metadata !434, metadata !553), !dbg !1269
-  tail call void @llvm.dbg.value(metadata i32* %nghostzones, i64 0, metadata !435, metadata !553), !dbg !1270
-  tail call void @llvm.dbg.value(metadata i8* %groupname, i64 0, metadata !436, metadata !553), !dbg !1271
-  %1 = tail call i32 @CCTK_GroupIndex(i8* %groupname) #6, !dbg !1272
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !438, metadata !553), !dbg !1273
-  %2 = icmp sgt i32 %1, -1, !dbg !1274
-  br i1 %2, label %3, label %5, !dbg !1276
+define i32 @CCTK_GroupnghostzonesGN(%struct.cGH* %cctkGH, i32 %dim, i32* nocapture %nghostzones, i8* %groupname) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %cctkGH}, i64 0, metadata !433), !dbg !1050
+  tail call void @llvm.dbg.value(metadata !{i32 %dim}, i64 0, metadata !434), !dbg !1051
+  tail call void @llvm.dbg.value(metadata !{i32* %nghostzones}, i64 0, metadata !435), !dbg !1052
+  tail call void @llvm.dbg.value(metadata !{i8* %groupname}, i64 0, metadata !436), !dbg !1053
+  %call = tail call i32 @CCTK_GroupIndex(i8* %groupname) #6, !dbg !1054
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !438), !dbg !1054
+  %cmp = icmp sgt i32 %call, -1, !dbg !1055
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1055
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CCTK_GroupnghostzonesGI(%struct.cGH* %cctkGH, i32 %dim, i32* %nghostzones, i32 %1) #7, !dbg !1277
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !437, metadata !553), !dbg !1279
-  br label %7, !dbg !1280
+if.then:                                          ; preds = %entry
+  %call2 = tail call i32 @CCTK_GroupnghostzonesGI(%struct.cGH* %cctkGH, i32 %dim, i32* %nghostzones, i32 %call) #7, !dbg !1056
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !437), !dbg !1056
+  br label %if.end, !dbg !1058
 
-; <label>:5                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32 -4, i64 0, metadata !437, metadata !553), !dbg !1279
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 1330, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str31, i64 0, i64 0), i8* %groupname) #6, !dbg !1281
-  br label %7
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !662, i64 0, metadata !437), !dbg !1059
+  %call3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 1330, i8* getelementptr inbounds ([67 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str31, i64 0, i64 0), i8* %groupname) #6, !dbg !1061
+  br label %if.end
 
-; <label>:7                                       ; preds = %5, %3
-  %retval.0 = phi i32 [ %4, %3 ], [ -4, %5 ]
-  ret i32 %retval.0, !dbg !1283
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call2, %if.then ], [ -4, %if.else ]
+  ret i32 %retval1.0, !dbg !1062
 }

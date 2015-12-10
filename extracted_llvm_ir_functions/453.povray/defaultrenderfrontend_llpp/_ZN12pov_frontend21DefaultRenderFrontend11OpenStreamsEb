@@ -1,149 +1,144 @@
 define void @_ZN12pov_frontend21DefaultRenderFrontend11OpenStreamsEb(%"class.pov_frontend::DefaultRenderFrontend"* nocapture %this, i1 zeroext %append) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.pov_frontend::DefaultRenderFrontend"* %this, i64 0, metadata !846, metadata !1448), !dbg !1625
-  tail call void @llvm.dbg.value(metadata i1 %append, i64 0, metadata !847, metadata !1448), !dbg !1626
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !848, metadata !1448), !dbg !1627
-  br label %1, !dbg !1628
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::DefaultRenderFrontend"* %this}, i64 0, metadata !523), !dbg !966
+  tail call void @llvm.dbg.value(metadata !{i1 %append}, i64 0, metadata !524), !dbg !966
+  tail call void @llvm.dbg.value(metadata !438, i64 0, metadata !525), !dbg !967
+  br label %for.body, !dbg !967
 
-; <label>:1                                       ; preds = %0, %62
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %62 ]
-  %2 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %this, i64 0, i32 0, i32 0, i32 1, i64 %indvars.iv, !dbg !1629
-  %3 = load %"class.pov_base::TextStreamBuffer"** %2, align 8, !dbg !1629, !tbaa !1631
-  %4 = icmp eq %"class.pov_base::TextStreamBuffer"* %3, null, !dbg !1634
-  br i1 %4, label %10, label %5, !dbg !1635
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %this, i64 0, i32 0, i32 0, i32 1, i64 %indvars.iv, !dbg !968
+  %0 = load %"class.pov_base::TextStreamBuffer"** %arrayidx, align 8, !dbg !968, !tbaa !969
+  %cmp2 = icmp eq %"class.pov_base::TextStreamBuffer"* %0, null, !dbg !968
+  br i1 %cmp2, label %if.end, label %delete.notnull, !dbg !968
 
-; <label>:5                                       ; preds = %1
-  %6 = bitcast %"class.pov_base::TextStreamBuffer"* %3 to void (%"class.pov_base::TextStreamBuffer"*)***, !dbg !1636
-  %7 = load void (%"class.pov_base::TextStreamBuffer"*)*** %6, align 8, !dbg !1636, !tbaa !1454
-  %8 = getelementptr inbounds void (%"class.pov_base::TextStreamBuffer"*)** %7, i64 1, !dbg !1636
-  %9 = load void (%"class.pov_base::TextStreamBuffer"*)** %8, align 8, !dbg !1636
-  tail call void %9(%"class.pov_base::TextStreamBuffer"* %3) #10, !dbg !1636
-  br label %10, !dbg !1636
+delete.notnull:                                   ; preds = %for.body
+  %1 = bitcast %"class.pov_base::TextStreamBuffer"* %0 to void (%"class.pov_base::TextStreamBuffer"*)***, !dbg !971
+  %vtable = load void (%"class.pov_base::TextStreamBuffer"*)*** %1, align 8, !dbg !971, !tbaa !812
+  %vfn = getelementptr inbounds void (%"class.pov_base::TextStreamBuffer"*)** %vtable, i64 1, !dbg !971
+  %2 = load void (%"class.pov_base::TextStreamBuffer"*)** %vfn, align 8, !dbg !971
+  tail call void %2(%"class.pov_base::TextStreamBuffer"* %0) #8, !dbg !971
+  br label %if.end, !dbg !971
 
-; <label>:10                                      ; preds = %1, %5
-  store %"class.pov_base::TextStreamBuffer"* null, %"class.pov_base::TextStreamBuffer"** %2, align 8, !dbg !1637, !tbaa !1631
-  %11 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %this, i64 0, i32 0, i32 0, i32 2, i64 %indvars.iv, !dbg !1638
-  %12 = load i8** %11, align 8, !dbg !1638, !tbaa !1631
-  %13 = icmp eq i8* %12, null, !dbg !1640
-  br i1 %append, label %14, label %38, !dbg !1641
+if.end:                                           ; preds = %for.body, %delete.notnull
+  store %"class.pov_base::TextStreamBuffer"* null, %"class.pov_base::TextStreamBuffer"** %arrayidx, align 8, !dbg !972, !tbaa !969
+  %arrayidx11 = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend"* %this, i64 0, i32 0, i32 0, i32 2, i64 %indvars.iv, !dbg !973
+  %3 = load i8** %arrayidx11, align 8, !dbg !973, !tbaa !969
+  %cmp12 = icmp eq i8* %3, null, !dbg !973
+  br i1 %append, label %if.then9, label %if.else, !dbg !974
 
-; <label>:14                                      ; preds = %10
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* null, i64 0, metadata !850, metadata !1448), !dbg !1642
-  br i1 %13, label %21, label %15, !dbg !1643
+if.then9:                                         ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !975, i64 0, metadata !527), !dbg !976
+  br i1 %cmp12, label %if.end24, label %if.then13, !dbg !973
 
-; <label>:15                                      ; preds = %14
-  %16 = tail call %"class.pov_base::OStream"* @_ZN8pov_base11New_OStreamEPKcjb(i8* %12, i32 14, i1 zeroext true) #10, !dbg !1644
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %16, i64 0, metadata !850, metadata !1448), !dbg !1642
-  %17 = icmp eq %"class.pov_base::OStream"* %16, null, !dbg !1646
-  br i1 %17, label %18, label %21, !dbg !1648
+if.then13:                                        ; preds = %if.then9
+  %call = tail call %"class.pov_base::OStream"* @_ZN8pov_base11New_OStreamEPKcjb(i8* %3, i32 14, i1 zeroext true) #8, !dbg !977
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %call}, i64 0, metadata !527), !dbg !977
+  %cmp17 = icmp eq %"class.pov_base::OStream"* %call, null, !dbg !979
+  br i1 %cmp17, label %if.then18, label %if.end24, !dbg !979
 
-; <label>:18                                      ; preds = %15
-  %19 = load i8** %11, align 8, !dbg !1649, !tbaa !1631
-  %20 = tail call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str84, i64 0, i64 0), i8* %19) #10, !dbg !1650
-  br label %21, !dbg !1650
+if.then18:                                        ; preds = %if.then13
+  %4 = load i8** %arrayidx11, align 8, !dbg !980, !tbaa !969
+  %call22 = tail call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str84, i64 0, i64 0), i8* %4) #8, !dbg !980
+  br label %if.end24, !dbg !980
 
-; <label>:21                                      ; preds = %14, %15, %18
-  %os.0 = phi %"class.pov_base::OStream"* [ null, %18 ], [ %16, %15 ], [ null, %14 ]
-  %22 = tail call noalias i8* @_Znwm(i64 48) #13, !dbg !1651
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %os.0, i64 0, metadata !872, metadata !1448), !dbg !1652
-  tail call void @llvm.dbg.value(metadata i1 %26, i64 0, metadata !873, metadata !1448), !dbg !1654
-  tail call void @llvm.dbg.value(metadata i1 %26, i64 0, metadata !874, metadata !1448), !dbg !1655
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %os.0, i64 0, metadata !866, metadata !1448), !dbg !1656
-  tail call void @llvm.dbg.value(metadata i1 %26, i64 0, metadata !867, metadata !1448), !dbg !1658
-  tail call void @llvm.dbg.value(metadata i1 %26, i64 0, metadata !868, metadata !1448), !dbg !1659
-  %23 = bitcast i8* %22 to %"class.pov_base::TextStreamBuffer"*, !dbg !1660
-  invoke void @_ZN8pov_base16TextStreamBufferC2Emj(%"class.pov_base::TextStreamBuffer"* %23, i64 8192, i32 80) #10
-          to label %24 unwind label %34, !dbg !1661
+if.end24:                                         ; preds = %if.then9, %if.then13, %if.then18
+  %os.0 = phi %"class.pov_base::OStream"* [ null, %if.then18 ], [ %call, %if.then13 ], [ null, %if.then9 ]
+  %call25 = tail call noalias i8* @_Znwm(i64 48) #8, !dbg !981
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %os.0}, i64 0, metadata !982), !dbg !983
+  tail call void @llvm.dbg.value(metadata !{i1 %cmp26}, i64 0, metadata !984), !dbg !983
+  tail call void @llvm.dbg.value(metadata !{i1 %cmp26}, i64 0, metadata !985), !dbg !983
+  %5 = bitcast i8* %call25 to %"class.pov_base::TextStreamBuffer"*, !dbg !986
+  invoke void @_ZN8pov_base16TextStreamBufferC2Emj(%"class.pov_base::TextStreamBuffer"* %5, i64 8192, i32 80) #8
+          to label %_ZN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferC2EPN8pov_base7OStreamEbb.exit unwind label %lpad
 
-; <label>:24                                      ; preds = %21
-  %25 = trunc i64 %indvars.iv to i32, !dbg !1662
-  %26 = icmp eq i32 %25, 7, !dbg !1662
-  %27 = bitcast i8* %22 to i32 (...)***, !dbg !1660
-  store i32 (...)** bitcast (i8** getelementptr inbounds ([7 x i8*]* @_ZTVN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %27, align 8, !dbg !1660, !tbaa !1454
-  %28 = getelementptr inbounds i8* %22, i64 32, !dbg !1663
-  %29 = bitcast i8* %28 to %"class.pov_base::OStream"**, !dbg !1663
-  store %"class.pov_base::OStream"* %os.0, %"class.pov_base::OStream"** %29, align 8, !dbg !1665, !tbaa !1666
-  %30 = getelementptr inbounds i8* %22, i64 40, !dbg !1669
-  %31 = zext i1 %26 to i8, !dbg !1670
-  store i8 %31, i8* %30, align 1, !dbg !1670, !tbaa !1671
-  %32 = getelementptr inbounds i8* %22, i64 41, !dbg !1672
-  store i8 %31, i8* %32, align 1, !dbg !1673, !tbaa !1674
-  %33 = bitcast %"class.pov_base::TextStreamBuffer"** %2 to i8**, !dbg !1675
-  store i8* %22, i8** %33, align 8, !dbg !1675, !tbaa !1631
-  br label %62, !dbg !1676
+_ZN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferC2EPN8pov_base7OStreamEbb.exit: ; preds = %if.end24
+  %6 = trunc i64 %indvars.iv to i32, !dbg !981
+  %cmp26 = icmp eq i32 %6, 7, !dbg !981
+  %7 = bitcast i8* %call25 to i32 (...)***, !dbg !986
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([7 x i8*]* @_ZTVN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %7, align 8, !dbg !986, !tbaa !812
+  %handle.i = getelementptr inbounds i8* %call25, i64 32, !dbg !987
+  %8 = bitcast i8* %handle.i to %"class.pov_base::OStream"**, !dbg !987
+  store %"class.pov_base::OStream"* %os.0, %"class.pov_base::OStream"** %8, align 8, !dbg !987, !tbaa !969
+  %9 = getelementptr inbounds i8* %call25, i64 40, !dbg !989
+  %frombool3.i = zext i1 %cmp26 to i8, !dbg !989
+  store i8 %frombool3.i, i8* %9, align 1, !dbg !989, !tbaa !990
+  %10 = getelementptr inbounds i8* %call25, i64 41, !dbg !991
+  store i8 %frombool3.i, i8* %10, align 1, !dbg !991, !tbaa !990
+  br label %for.inc, !dbg !992
 
-; <label>:34                                      ; preds = %21
-  %35 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !1677
-  %36 = extractvalue { i8*, i32 } %35, 0, !dbg !1677
-  %37 = extractvalue { i8*, i32 } %35, 1, !dbg !1677
-  tail call void @_ZdlPv(i8* %22) #12, !dbg !1651
-  br label %65, !dbg !1651
+lpad:                                             ; preds = %if.end24
+  %11 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !981
+  %12 = extractvalue { i8*, i32 } %11, 0, !dbg !981
+  %13 = extractvalue { i8*, i32 } %11, 1, !dbg !981
+  tail call void @_ZdlPv(i8* %call25) #10, !dbg !981
+  br label %eh.resume, !dbg !981
 
-; <label>:38                                      ; preds = %10
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* null, i64 0, metadata !855, metadata !1448), !dbg !1678
-  br i1 %13, label %45, label %39, !dbg !1679
+if.else:                                          ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !975, i64 0, metadata !672), !dbg !993
+  br i1 %cmp12, label %if.end49, label %if.then37, !dbg !994
 
-; <label>:39                                      ; preds = %38
-  %40 = tail call %"class.pov_base::OStream"* @_ZN8pov_base11New_OStreamEPKcjb(i8* %12, i32 14, i1 zeroext false) #10, !dbg !1680
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %40, i64 0, metadata !855, metadata !1448), !dbg !1678
-  %41 = icmp eq %"class.pov_base::OStream"* %40, null, !dbg !1683
-  br i1 %41, label %42, label %45, !dbg !1685
+if.then37:                                        ; preds = %if.else
+  %call41 = tail call %"class.pov_base::OStream"* @_ZN8pov_base11New_OStreamEPKcjb(i8* %3, i32 14, i1 zeroext false) #8, !dbg !995
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %call41}, i64 0, metadata !672), !dbg !995
+  %cmp42 = icmp eq %"class.pov_base::OStream"* %call41, null, !dbg !997
+  br i1 %cmp42, label %if.then43, label %if.end49, !dbg !997
 
-; <label>:42                                      ; preds = %39
-  %43 = load i8** %11, align 8, !dbg !1686, !tbaa !1631
-  %44 = tail call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 0, i8* getelementptr inbounds ([35 x i8]* @.str85, i64 0, i64 0), i8* %43) #10, !dbg !1687
-  br label %45, !dbg !1687
+if.then43:                                        ; preds = %if.then37
+  %14 = load i8** %arrayidx11, align 8, !dbg !998, !tbaa !969
+  %call47 = tail call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 0, i8* getelementptr inbounds ([35 x i8]* @.str85, i64 0, i64 0), i8* %14) #8, !dbg !998
+  br label %if.end49, !dbg !998
 
-; <label>:45                                      ; preds = %38, %39, %42
-  %os1.0 = phi %"class.pov_base::OStream"* [ null, %42 ], [ %40, %39 ], [ null, %38 ]
-  %46 = tail call noalias i8* @_Znwm(i64 48) #13, !dbg !1688
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %os1.0, i64 0, metadata !872, metadata !1448), !dbg !1689
-  tail call void @llvm.dbg.value(metadata i1 %50, i64 0, metadata !873, metadata !1448), !dbg !1691
-  tail call void @llvm.dbg.value(metadata i1 %50, i64 0, metadata !874, metadata !1448), !dbg !1692
-  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %os1.0, i64 0, metadata !866, metadata !1448), !dbg !1693
-  tail call void @llvm.dbg.value(metadata i1 %50, i64 0, metadata !867, metadata !1448), !dbg !1695
-  tail call void @llvm.dbg.value(metadata i1 %50, i64 0, metadata !868, metadata !1448), !dbg !1696
-  %47 = bitcast i8* %46 to %"class.pov_base::TextStreamBuffer"*, !dbg !1697
-  invoke void @_ZN8pov_base16TextStreamBufferC2Emj(%"class.pov_base::TextStreamBuffer"* %47, i64 8192, i32 80) #10
-          to label %48 unwind label %58, !dbg !1698
+if.end49:                                         ; preds = %if.else, %if.then37, %if.then43
+  %os32.0 = phi %"class.pov_base::OStream"* [ null, %if.then43 ], [ %call41, %if.then37 ], [ null, %if.else ]
+  %call50 = tail call noalias i8* @_Znwm(i64 48) #8, !dbg !999
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %os32.0}, i64 0, metadata !1000), !dbg !1001
+  tail call void @llvm.dbg.value(metadata !{i1 %cmp51}, i64 0, metadata !1002), !dbg !1001
+  tail call void @llvm.dbg.value(metadata !{i1 %cmp51}, i64 0, metadata !1003), !dbg !1001
+  %15 = bitcast i8* %call50 to %"class.pov_base::TextStreamBuffer"*, !dbg !1004
+  invoke void @_ZN8pov_base16TextStreamBufferC2Emj(%"class.pov_base::TextStreamBuffer"* %15, i64 8192, i32 80) #8
+          to label %_ZN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferC2EPN8pov_base7OStreamEbb.exit90 unwind label %lpad59
 
-; <label>:48                                      ; preds = %45
-  %49 = trunc i64 %indvars.iv to i32, !dbg !1699
-  %50 = icmp eq i32 %49, 7, !dbg !1699
-  %51 = bitcast i8* %46 to i32 (...)***, !dbg !1697
-  store i32 (...)** bitcast (i8** getelementptr inbounds ([7 x i8*]* @_ZTVN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %51, align 8, !dbg !1697, !tbaa !1454
-  %52 = getelementptr inbounds i8* %46, i64 32, !dbg !1700
-  %53 = bitcast i8* %52 to %"class.pov_base::OStream"**, !dbg !1700
-  store %"class.pov_base::OStream"* %os1.0, %"class.pov_base::OStream"** %53, align 8, !dbg !1701, !tbaa !1666
-  %54 = getelementptr inbounds i8* %46, i64 40, !dbg !1702
-  %55 = zext i1 %50 to i8, !dbg !1703
-  store i8 %55, i8* %54, align 1, !dbg !1703, !tbaa !1671
-  %56 = getelementptr inbounds i8* %46, i64 41, !dbg !1704
-  store i8 %55, i8* %56, align 1, !dbg !1705, !tbaa !1674
-  %57 = bitcast %"class.pov_base::TextStreamBuffer"** %2 to i8**, !dbg !1706
-  store i8* %46, i8** %57, align 8, !dbg !1706, !tbaa !1631
-  br label %62
+_ZN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferC2EPN8pov_base7OStreamEbb.exit90: ; preds = %if.end49
+  %16 = trunc i64 %indvars.iv to i32, !dbg !999
+  %cmp51 = icmp eq i32 %16, 7, !dbg !999
+  %17 = bitcast i8* %call50 to i32 (...)***, !dbg !1004
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([7 x i8*]* @_ZTVN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %17, align 8, !dbg !1004, !tbaa !812
+  %handle.i85 = getelementptr inbounds i8* %call50, i64 32, !dbg !1005
+  %18 = bitcast i8* %handle.i85 to %"class.pov_base::OStream"**, !dbg !1005
+  store %"class.pov_base::OStream"* %os32.0, %"class.pov_base::OStream"** %18, align 8, !dbg !1005, !tbaa !969
+  %19 = getelementptr inbounds i8* %call50, i64 40, !dbg !1006
+  %frombool3.i87 = zext i1 %cmp51 to i8, !dbg !1006
+  store i8 %frombool3.i87, i8* %19, align 1, !dbg !1006, !tbaa !990
+  %20 = getelementptr inbounds i8* %call50, i64 41, !dbg !1007
+  store i8 %frombool3.i87, i8* %20, align 1, !dbg !1007, !tbaa !990
+  br label %for.inc, !dbg !1008
 
-; <label>:58                                      ; preds = %45
-  %59 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
-          cleanup, !dbg !1707
-  %60 = extractvalue { i8*, i32 } %59, 0, !dbg !1707
-  %61 = extractvalue { i8*, i32 } %59, 1, !dbg !1707
-  tail call void @_ZdlPv(i8* %46) #12, !dbg !1688
-  br label %65, !dbg !1688
+lpad59:                                           ; preds = %if.end49
+  %21 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !999
+  %22 = extractvalue { i8*, i32 } %21, 0, !dbg !999
+  %23 = extractvalue { i8*, i32 } %21, 1, !dbg !999
+  tail call void @_ZdlPv(i8* %call50) #10, !dbg !999
+  br label %eh.resume, !dbg !999
 
-; <label>:62                                      ; preds = %24, %48
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1628
-  %63 = icmp slt i64 %indvars.iv.next, 8, !dbg !1708
-  br i1 %63, label %1, label %64, !dbg !1628
+for.inc:                                          ; preds = %_ZN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferC2EPN8pov_base7OStreamEbb.exit90, %_ZN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferC2EPN8pov_base7OStreamEbb.exit
+  %storemerge.in = phi i8* [ %call25, %_ZN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferC2EPN8pov_base7OStreamEbb.exit ], [ %call50, %_ZN12pov_frontend21DefaultRenderFrontend19DefaultStreamBufferC2EPN8pov_base7OStreamEbb.exit90 ]
+  %storemerge = bitcast i8* %storemerge.in to %"class.pov_base::TextStreamBuffer"*, !dbg !999
+  store %"class.pov_base::TextStreamBuffer"* %storemerge, %"class.pov_base::TextStreamBuffer"** %arrayidx, align 8, !dbg !981, !tbaa !969
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !967
+  %24 = trunc i64 %indvars.iv.next to i32, !dbg !967
+  %cmp = icmp slt i32 %24, 8, !dbg !967
+  br i1 %cmp, label %for.body, label %for.end, !dbg !967
 
-; <label>:64                                      ; preds = %62
-  ret void, !dbg !1709
+for.end:                                          ; preds = %for.inc
+  ret void, !dbg !1009
 
-; <label>:65                                      ; preds = %58, %34
-  %.02 = phi i8* [ %36, %34 ], [ %60, %58 ]
-  %.0 = phi i32 [ %37, %34 ], [ %61, %58 ]
-  %66 = insertvalue { i8*, i32 } undef, i8* %.02, 0, !dbg !1651
-  %67 = insertvalue { i8*, i32 } %66, i32 %.0, 1, !dbg !1651
-  resume { i8*, i32 } %67, !dbg !1651
+eh.resume:                                        ; preds = %lpad59, %lpad
+  %exn.slot.0 = phi i8* [ %12, %lpad ], [ %22, %lpad59 ]
+  %ehselector.slot.0 = phi i32 [ %13, %lpad ], [ %23, %lpad59 ]
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !981
+  %lpad.val65 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !981
+  resume { i8*, i32 } %lpad.val65, !dbg !981
 }

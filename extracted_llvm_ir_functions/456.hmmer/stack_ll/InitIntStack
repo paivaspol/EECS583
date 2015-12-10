@@ -1,17 +1,18 @@
 define noalias %struct.intstack_s* @InitIntStack() #0 {
-  %1 = tail call i8* @malloc(i64 16) #4, !dbg !51
-  %2 = bitcast i8* %1 to %struct.intstack_s*, !dbg !53
-  tail call void @llvm.dbg.value(metadata %struct.intstack_s* %2, i64 0, metadata !17, metadata !54), !dbg !55
-  %3 = icmp eq i8* %1, null, !dbg !56
-  br i1 %3, label %4, label %5, !dbg !57
+entry:
+  %call = tail call noalias i8* @malloc(i64 16) #4, !dbg !46
+  %0 = bitcast i8* %call to %struct.intstack_s*, !dbg !46
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %0}, i64 0, metadata !16), !dbg !46
+  %cmp = icmp eq i8* %call, null, !dbg !46
+  br i1 %cmp, label %if.then, label %if.end, !dbg !46
 
-; <label>:4                                       ; preds = %0
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([40 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str1, i64 0, i64 0), i32 42) #4, !dbg !58
-  br label %5, !dbg !58
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([40 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 42) #4, !dbg !47
+  br label %if.end, !dbg !47
 
-; <label>:5                                       ; preds = %4, %0
-  %6 = getelementptr inbounds i8* %1, i64 8, !dbg !59
-  %7 = bitcast i8* %6 to %struct.intstack_s**, !dbg !59
-  store %struct.intstack_s* null, %struct.intstack_s** %7, align 8, !dbg !60, !tbaa !61
-  ret %struct.intstack_s* %2, !dbg !67
+if.end:                                           ; preds = %if.then, %entry
+  %nxt = getelementptr inbounds i8* %call, i64 8, !dbg !48
+  %1 = bitcast i8* %nxt to %struct.intstack_s**, !dbg !48
+  store %struct.intstack_s* null, %struct.intstack_s** %1, align 8, !dbg !48, !tbaa !49
+  ret %struct.intstack_s* %0, !dbg !52
 }

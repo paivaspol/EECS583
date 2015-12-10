@@ -2,112 +2,125 @@ define void @asm_fprintf(%struct._IO_FILE* nocapture %file, i8* nocapture %p, ..
 entry:
   %buf = alloca [10 x i8], align 1
   %argptr = alloca [1 x %struct.__va_list_tag], align 16
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %argptr to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %arrayidx = getelementptr inbounds [10 x i8]* %buf, i64 0, i64 0
-  store i8 37, i8* %arrayidx, align 1, !tbaa !1
-  %0 = load i8* %p, align 1, !tbaa !1
-  %tobool187 = icmp eq i8 %0, 0
-  br i1 %tobool187, label %while.end123, label %while.body.lr.ph
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !1315), !dbg !2513
+  call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !1316), !dbg !2513
+  call void @llvm.dbg.declare(metadata !{[10 x i8]* %buf}, metadata !1317), !dbg !2514
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %argptr}, metadata !1323), !dbg !2515
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %argptr to i8*, !dbg !2515
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !2515
+  %arrayidx = getelementptr inbounds [10 x i8]* %buf, i64 0, i64 0, !dbg !2516
+  store i8 37, i8* %arrayidx, align 1, !dbg !2516, !tbaa !1556
+  %0 = load i8* %p, align 1, !dbg !2517, !tbaa !1556
+  call void @llvm.dbg.value(metadata !{i8 %0}, i64 0, metadata !1322), !dbg !2517
+  %tobool187 = icmp eq i8 %0, 0, !dbg !2517
+  br i1 %tobool187, label %while.end123, label %while.body.lr.ph, !dbg !2517
 
 while.body.lr.ph:                                 ; preds = %entry
-  %arrayidx29 = getelementptr inbounds [10 x i8]* %buf, i64 0, i64 1
-  %gp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %argptr, i64 0, i64 0, i32 0
-  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %argptr, i64 0, i64 0, i32 3
-  %overflow_arg_area_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %argptr, i64 0, i64 0, i32 2
-  %fp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %argptr, i64 0, i64 0, i32 1
-  br label %while.body
+  %arrayidx29 = getelementptr inbounds [10 x i8]* %buf, i64 0, i64 1, !dbg !2518
+  %gp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %argptr, i64 0, i64 0, i32 0, !dbg !2519
+  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %argptr, i64 0, i64 0, i32 3, !dbg !2519
+  %overflow_arg_area_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %argptr, i64 0, i64 0, i32 2, !dbg !2519
+  %fp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %argptr, i64 0, i64 0, i32 1, !dbg !2521
+  br label %while.body, !dbg !2517
 
 while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
   %2 = phi i8 [ %0, %while.body.lr.ph ], [ %9, %while.cond.backedge ]
   %p.pn = phi i8* [ %p, %while.body.lr.ph ], [ %p.addr.0.be, %while.cond.backedge ]
-  %incdec.ptr189 = getelementptr inbounds i8* %p.pn, i64 1
-  %conv = sext i8 %2 to i32
+  %incdec.ptr189 = getelementptr inbounds i8* %p.pn, i64 1, !dbg !2517
+  %conv = sext i8 %2 to i32, !dbg !2522
   switch i32 %conv, label %sw.default119 [
     i32 123, label %for.cond.preheader
     i32 124, label %while.cond16
     i32 125, label %while.cond.backedge
     i32 37, label %sw.bb27
-  ]
+  ], !dbg !2522
 
 for.cond.preheader:                               ; preds = %while.body
-  %3 = load i32* @dialect_number, align 4, !tbaa !4
-  %cmp182 = icmp sgt i32 %3, 0
-  br i1 %cmp182, label %while.cond3.preheader, label %while.cond.backedge
+  %3 = load i32* @dialect_number, align 4, !dbg !2523, !tbaa !1560
+  %cmp182 = icmp sgt i32 %3, 0, !dbg !2523
+  br i1 %cmp182, label %while.cond3.preheader, label %while.cond.backedge, !dbg !2523
 
 while.cond3.preheader:                            ; preds = %for.cond.preheader, %while.end
   %i.0184 = phi i32 [ %inc, %while.end ], [ 0, %for.cond.preheader ]
   %p.addr.1183 = phi i8* [ %incdec.ptr14.p.addr.3, %while.end ], [ %incdec.ptr189, %for.cond.preheader ]
-  br label %while.cond3
+  br label %while.cond3, !dbg !2525
 
 while.cond3:                                      ; preds = %while.cond3.preheader, %land.rhs
   %p.addr.2 = phi i8* [ %incdec.ptr6, %land.rhs ], [ %p.addr.1183, %while.cond3.preheader ]
-  %4 = load i8* %p.addr.2, align 1, !tbaa !1
-  %tobool5 = icmp eq i8 %4, 0
-  br i1 %tobool5, label %while.end, label %land.rhs
+  %4 = load i8* %p.addr.2, align 1, !dbg !2525, !tbaa !1556
+  %tobool5 = icmp eq i8 %4, 0, !dbg !2525
+  br i1 %tobool5, label %while.end, label %land.rhs, !dbg !2525
 
 land.rhs:                                         ; preds = %while.cond3
-  %incdec.ptr6 = getelementptr inbounds i8* %p.addr.2, i64 1
-  %cmp8 = icmp eq i8 %4, 124
+  %incdec.ptr6 = getelementptr inbounds i8* %p.addr.2, i64 1, !dbg !2525
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr6}, i64 0, metadata !1316), !dbg !2525
+  %cmp8 = icmp eq i8 %4, 124, !dbg !2525
   br i1 %cmp8, label %land.rhs.while.end_crit_edge, label %while.cond3
 
 land.rhs.while.end_crit_edge:                     ; preds = %land.rhs
-  %.pre = load i8* %incdec.ptr6, align 1, !tbaa !1
+  %.pre = load i8* %incdec.ptr6, align 1, !dbg !2527, !tbaa !1556
   %phitmp = icmp eq i8 %.pre, 124
   br label %while.end
 
 while.end:                                        ; preds = %land.rhs.while.end_crit_edge, %while.cond3
   %5 = phi i1 [ %phitmp, %land.rhs.while.end_crit_edge ], [ false, %while.cond3 ]
   %p.addr.3 = phi i8* [ %incdec.ptr6, %land.rhs.while.end_crit_edge ], [ %p.addr.2, %while.cond3 ]
-  %incdec.ptr14 = getelementptr inbounds i8* %p.addr.3, i64 1
-  %incdec.ptr14.p.addr.3 = select i1 %5, i8* %incdec.ptr14, i8* %p.addr.3
-  %inc = add nsw i32 %i.0184, 1
-  %cmp = icmp slt i32 %inc, %3
-  br i1 %cmp, label %while.cond3.preheader, label %while.cond.backedge
+  %incdec.ptr14 = getelementptr inbounds i8* %p.addr.3, i64 1, !dbg !2528
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr14}, i64 0, metadata !1316), !dbg !2528
+  %incdec.ptr14.p.addr.3 = select i1 %5, i8* %incdec.ptr14, i8* %p.addr.3, !dbg !2527
+  %inc = add nsw i32 %i.0184, 1, !dbg !2523
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1325), !dbg !2523
+  %cmp = icmp slt i32 %inc, %3, !dbg !2523
+  br i1 %cmp, label %while.cond3.preheader, label %while.cond.backedge, !dbg !2523
 
 while.cond16:                                     ; preds = %while.body, %land.rhs19
   %p.addr.5 = phi i8* [ %incdec.ptr20, %land.rhs19 ], [ %incdec.ptr189, %while.body ]
-  %6 = load i8* %p.addr.5, align 1, !tbaa !1
-  %tobool18 = icmp eq i8 %6, 0
-  br i1 %tobool18, label %while.cond.backedge, label %land.rhs19
+  %6 = load i8* %p.addr.5, align 1, !dbg !2529, !tbaa !1556
+  %tobool18 = icmp eq i8 %6, 0, !dbg !2529
+  br i1 %tobool18, label %while.cond.backedge, label %land.rhs19, !dbg !2529
 
 land.rhs19:                                       ; preds = %while.cond16
-  %incdec.ptr20 = getelementptr inbounds i8* %p.addr.5, i64 1
-  %cmp22 = icmp eq i8 %6, 125
+  %incdec.ptr20 = getelementptr inbounds i8* %p.addr.5, i64 1, !dbg !2529
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr20}, i64 0, metadata !1316), !dbg !2529
+  %cmp22 = icmp eq i8 %6, 125, !dbg !2529
   br i1 %cmp22, label %while.cond.backedge, label %while.cond16
 
 sw.bb27:                                          ; preds = %while.body
-  %incdec.ptr28 = getelementptr inbounds i8* %p.pn, i64 2
-  %c.0166 = load i8* %incdec.ptr189, align 1
-  %conv31167 = sext i8 %c.0166 to i32
-  %and168 = and i32 %conv31167, 255
-  %idxprom165169 = zext i32 %and168 to i64
-  %arrayidx32170 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom165169
-  %7 = load i16* %arrayidx32170, align 2, !tbaa !5
-  %and34171 = and i16 %7, 4
-  %cmp37172 = icmp eq i8 %c.0166, 46
-  %not.tobool35173 = icmp ne i16 %and34171, 0
-  %cmp37.174 = or i1 %cmp37172, %not.tobool35173
-  br i1 %cmp37.174, label %while.body39, label %while.end42
+  %incdec.ptr28 = getelementptr inbounds i8* %p.pn, i64 2, !dbg !2530
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr28}, i64 0, metadata !1316), !dbg !2530
+  call void @llvm.dbg.value(metadata !{i8* %arrayidx29}, i64 0, metadata !1321), !dbg !2518
+  %c.0166 = load i8* %incdec.ptr189, align 1, !dbg !2530
+  %conv31167 = sext i8 %c.0166 to i32, !dbg !2531
+  %and168 = and i32 %conv31167, 255, !dbg !2531
+  %idxprom165169 = zext i32 %and168 to i64, !dbg !2531
+  %arrayidx32170 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom165169, !dbg !2531
+  %7 = load i16* %arrayidx32170, align 2, !dbg !2531, !tbaa !1685
+  %and34171 = and i16 %7, 4, !dbg !2531
+  %cmp37172 = icmp eq i8 %c.0166, 46, !dbg !2531
+  %not.tobool35173 = icmp ne i16 %and34171, 0, !dbg !2531
+  %cmp37.174 = or i1 %cmp37172, %not.tobool35173, !dbg !2531
+  br i1 %cmp37.174, label %while.body39, label %while.end42, !dbg !2531
 
 while.body39:                                     ; preds = %sw.bb27, %while.body39
   %c.0177 = phi i8 [ %c.0, %while.body39 ], [ %c.0166, %sw.bb27 ]
   %q.0176 = phi i8* [ %incdec.ptr40, %while.body39 ], [ %arrayidx29, %sw.bb27 ]
   %p.addr.6175 = phi i8* [ %incdec.ptr41, %while.body39 ], [ %incdec.ptr28, %sw.bb27 ]
-  %incdec.ptr40 = getelementptr inbounds i8* %q.0176, i64 1
-  store i8 %c.0177, i8* %q.0176, align 1, !tbaa !1
-  %incdec.ptr41 = getelementptr inbounds i8* %p.addr.6175, i64 1
-  %c.0 = load i8* %p.addr.6175, align 1
-  %conv31 = sext i8 %c.0 to i32
-  %and = and i32 %conv31, 255
-  %idxprom165 = zext i32 %and to i64
-  %arrayidx32 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom165
-  %8 = load i16* %arrayidx32, align 2, !tbaa !5
-  %and34 = and i16 %8, 4
-  %cmp37 = icmp eq i8 %c.0, 46
-  %not.tobool35 = icmp ne i16 %and34, 0
-  %cmp37. = or i1 %cmp37, %not.tobool35
-  br i1 %cmp37., label %while.body39, label %while.end42
+  %incdec.ptr40 = getelementptr inbounds i8* %q.0176, i64 1, !dbg !2532
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr40}, i64 0, metadata !1321), !dbg !2532
+  store i8 %c.0177, i8* %q.0176, align 1, !dbg !2532, !tbaa !1556
+  %incdec.ptr41 = getelementptr inbounds i8* %p.addr.6175, i64 1, !dbg !2534
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr41}, i64 0, metadata !1316), !dbg !2534
+  %c.0 = load i8* %p.addr.6175, align 1, !dbg !2530
+  %conv31 = sext i8 %c.0 to i32, !dbg !2531
+  %and = and i32 %conv31, 255, !dbg !2531
+  %idxprom165 = zext i32 %and to i64, !dbg !2531
+  %arrayidx32 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom165, !dbg !2531
+  %8 = load i16* %arrayidx32, align 2, !dbg !2531, !tbaa !1685
+  %and34 = and i16 %8, 4, !dbg !2531
+  %cmp37 = icmp eq i8 %c.0, 46, !dbg !2531
+  %not.tobool35 = icmp ne i16 %and34, 0, !dbg !2531
+  %cmp37. = or i1 %cmp37, %not.tobool35, !dbg !2531
+  br i1 %cmp37., label %while.body39, label %while.end42, !dbg !2531
 
 while.end42:                                      ; preds = %while.body39, %sw.bb27
   %conv31.lcssa = phi i32 [ %conv31167, %sw.bb27 ], [ %conv31, %while.body39 ]
@@ -134,189 +147,200 @@ while.end42:                                      ; preds = %while.body39, %sw.b
     i32 73, label %while.cond.backedge
     i32 76, label %sw.bb115
     i32 85, label %sw.bb117
-  ]
+  ], !dbg !2535
 
 sw.bb44:                                          ; preds = %while.end42
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([3 x i8]* @.str43, i64 0, i64 0)) #8
-  br label %while.cond.backedge
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([3 x i8]* @.str43, i64 0, i64 0)) #9, !dbg !2536
+  br label %while.cond.backedge, !dbg !2537
 
 while.cond.backedge:                              ; preds = %while.end42, %while.end42, %while.end42, %while.body, %for.cond.preheader, %while.end, %land.rhs19, %while.cond16, %sw.bb44, %vaarg.end, %vaarg.end65, %vaarg.end83, %vaarg.end96, %vaarg.end112, %sw.bb115, %sw.bb117, %sw.default119
   %p.addr.0.be = phi i8* [ %incdec.ptr189, %sw.default119 ], [ %p.addr.6.lcssa, %sw.bb117 ], [ %p.addr.6.lcssa, %sw.bb115 ], [ %p.addr.6.lcssa, %vaarg.end112 ], [ %p.addr.6.lcssa, %vaarg.end96 ], [ %incdec.ptr70, %vaarg.end83 ], [ %incdec.ptr52, %vaarg.end65 ], [ %p.addr.6.lcssa, %vaarg.end ], [ %p.addr.6.lcssa, %sw.bb44 ], [ %incdec.ptr20, %land.rhs19 ], [ %p.addr.5, %while.cond16 ], [ %incdec.ptr189, %for.cond.preheader ], [ %incdec.ptr14.p.addr.3, %while.end ], [ %incdec.ptr189, %while.body ], [ %p.addr.6.lcssa, %while.end42 ], [ %p.addr.6.lcssa, %while.end42 ], [ %p.addr.6.lcssa, %while.end42 ]
-  %9 = load i8* %p.addr.0.be, align 1, !tbaa !1
-  %tobool = icmp eq i8 %9, 0
-  br i1 %tobool, label %while.end123, label %while.body
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr189}, i64 0, metadata !1316), !dbg !2517
+  %9 = load i8* %p.addr.0.be, align 1, !dbg !2517, !tbaa !1556
+  call void @llvm.dbg.value(metadata !{i8 %2}, i64 0, metadata !1322), !dbg !2517
+  %tobool = icmp eq i8 %9, 0, !dbg !2517
+  br i1 %tobool, label %while.end123, label %while.body, !dbg !2517
 
 sw.bb45:                                          ; preds = %while.end42, %while.end42, %while.end42, %while.end42, %while.end42, %while.end42, %while.end42
-  %incdec.ptr46 = getelementptr inbounds i8* %q.0.lcssa, i64 1
-  store i8 %c.0.lcssa, i8* %q.0.lcssa, align 1, !tbaa !1
-  store i8 0, i8* %incdec.ptr46, align 1, !tbaa !1
-  %gp_offset = load i32* %gp_offset_p, align 16
-  %fits_in_gp = icmp ult i32 %gp_offset, 41
-  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem
+  %incdec.ptr46 = getelementptr inbounds i8* %q.0.lcssa, i64 1, !dbg !2538
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr46}, i64 0, metadata !1321), !dbg !2538
+  store i8 %c.0.lcssa, i8* %q.0.lcssa, align 1, !dbg !2538, !tbaa !1556
+  store i8 0, i8* %incdec.ptr46, align 1, !dbg !2539, !tbaa !1556
+  %gp_offset = load i32* %gp_offset_p, align 16, !dbg !2519
+  %fits_in_gp = icmp ult i32 %gp_offset, 41, !dbg !2519
+  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem, !dbg !2519
 
 vaarg.in_reg:                                     ; preds = %sw.bb45
-  %reg_save_area = load i8** %1, align 16
-  %10 = sext i32 %gp_offset to i64
-  %11 = getelementptr i8* %reg_save_area, i64 %10
-  %12 = add i32 %gp_offset, 8
-  store i32 %12, i32* %gp_offset_p, align 16
-  br label %vaarg.end
+  %reg_save_area = load i8** %1, align 16, !dbg !2519
+  %10 = sext i32 %gp_offset to i64, !dbg !2519
+  %11 = getelementptr i8* %reg_save_area, i64 %10, !dbg !2519
+  %12 = add i32 %gp_offset, 8, !dbg !2519
+  store i32 %12, i32* %gp_offset_p, align 16, !dbg !2519
+  br label %vaarg.end, !dbg !2519
 
 vaarg.in_mem:                                     ; preds = %sw.bb45
-  %overflow_arg_area = load i8** %overflow_arg_area_p, align 8
-  %overflow_arg_area.next = getelementptr i8* %overflow_arg_area, i64 8
-  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8
-  br label %vaarg.end
+  %overflow_arg_area = load i8** %overflow_arg_area_p, align 8, !dbg !2519
+  %overflow_arg_area.next = getelementptr i8* %overflow_arg_area, i64 8, !dbg !2519
+  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8, !dbg !2519
+  br label %vaarg.end, !dbg !2519
 
 vaarg.end:                                        ; preds = %vaarg.in_mem, %vaarg.in_reg
   %vaarg.addr.in = phi i8* [ %11, %vaarg.in_reg ], [ %overflow_arg_area, %vaarg.in_mem ]
-  %vaarg.addr = bitcast i8* %vaarg.addr.in to i32*
-  %13 = load i32* %vaarg.addr, align 4
-  %call49 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %arrayidx, i32 %13) #8
-  br label %while.cond.backedge
+  %vaarg.addr = bitcast i8* %vaarg.addr.in to i32*, !dbg !2519
+  %13 = load i32* %vaarg.addr, align 4, !dbg !2519
+  %call49 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %arrayidx, i32 %13) #9, !dbg !2519
+  br label %while.cond.backedge, !dbg !2540
 
 sw.bb50:                                          ; preds = %while.end42
-  %incdec.ptr51 = getelementptr inbounds i8* %q.0.lcssa, i64 1
-  store i8 108, i8* %q.0.lcssa, align 1, !tbaa !1
-  %incdec.ptr52 = getelementptr inbounds i8* %p.addr.6.lcssa, i64 1
-  %14 = load i8* %p.addr.6.lcssa, align 1, !tbaa !1
-  %incdec.ptr53 = getelementptr inbounds i8* %q.0.lcssa, i64 2
-  store i8 %14, i8* %incdec.ptr51, align 1, !tbaa !1
-  store i8 0, i8* %incdec.ptr53, align 1, !tbaa !1
-  %gp_offset57 = load i32* %gp_offset_p, align 16
-  %fits_in_gp58 = icmp ult i32 %gp_offset57, 41
-  br i1 %fits_in_gp58, label %vaarg.in_reg59, label %vaarg.in_mem61
+  %incdec.ptr51 = getelementptr inbounds i8* %q.0.lcssa, i64 1, !dbg !2541
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr51}, i64 0, metadata !1321), !dbg !2541
+  store i8 108, i8* %q.0.lcssa, align 1, !dbg !2541, !tbaa !1556
+  %incdec.ptr52 = getelementptr inbounds i8* %p.addr.6.lcssa, i64 1, !dbg !2542
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr52}, i64 0, metadata !1316), !dbg !2542
+  %14 = load i8* %p.addr.6.lcssa, align 1, !dbg !2542, !tbaa !1556
+  %incdec.ptr53 = getelementptr inbounds i8* %q.0.lcssa, i64 2, !dbg !2542
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr53}, i64 0, metadata !1321), !dbg !2542
+  store i8 %14, i8* %incdec.ptr51, align 1, !dbg !2542, !tbaa !1556
+  store i8 0, i8* %incdec.ptr53, align 1, !dbg !2543, !tbaa !1556
+  %gp_offset57 = load i32* %gp_offset_p, align 16, !dbg !2544
+  %fits_in_gp58 = icmp ult i32 %gp_offset57, 41, !dbg !2544
+  br i1 %fits_in_gp58, label %vaarg.in_reg59, label %vaarg.in_mem61, !dbg !2544
 
 vaarg.in_reg59:                                   ; preds = %sw.bb50
-  %reg_save_area60 = load i8** %1, align 16
-  %15 = sext i32 %gp_offset57 to i64
-  %16 = getelementptr i8* %reg_save_area60, i64 %15
-  %17 = add i32 %gp_offset57, 8
-  store i32 %17, i32* %gp_offset_p, align 16
-  br label %vaarg.end65
+  %reg_save_area60 = load i8** %1, align 16, !dbg !2544
+  %15 = sext i32 %gp_offset57 to i64, !dbg !2544
+  %16 = getelementptr i8* %reg_save_area60, i64 %15, !dbg !2544
+  %17 = add i32 %gp_offset57, 8, !dbg !2544
+  store i32 %17, i32* %gp_offset_p, align 16, !dbg !2544
+  br label %vaarg.end65, !dbg !2544
 
 vaarg.in_mem61:                                   ; preds = %sw.bb50
-  %overflow_arg_area63 = load i8** %overflow_arg_area_p, align 8
-  %overflow_arg_area.next64 = getelementptr i8* %overflow_arg_area63, i64 8
-  store i8* %overflow_arg_area.next64, i8** %overflow_arg_area_p, align 8
-  br label %vaarg.end65
+  %overflow_arg_area63 = load i8** %overflow_arg_area_p, align 8, !dbg !2544
+  %overflow_arg_area.next64 = getelementptr i8* %overflow_arg_area63, i64 8, !dbg !2544
+  store i8* %overflow_arg_area.next64, i8** %overflow_arg_area_p, align 8, !dbg !2544
+  br label %vaarg.end65, !dbg !2544
 
 vaarg.end65:                                      ; preds = %vaarg.in_mem61, %vaarg.in_reg59
   %vaarg.addr66.in = phi i8* [ %16, %vaarg.in_reg59 ], [ %overflow_arg_area63, %vaarg.in_mem61 ]
-  %vaarg.addr66 = bitcast i8* %vaarg.addr66.in to i64*
-  %18 = load i64* %vaarg.addr66, align 8
-  %call67 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %arrayidx, i64 %18) #8
-  br label %while.cond.backedge
+  %vaarg.addr66 = bitcast i8* %vaarg.addr66.in to i64*, !dbg !2544
+  %18 = load i64* %vaarg.addr66, align 8, !dbg !2544
+  %call67 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %arrayidx, i64 %18) #9, !dbg !2544
+  br label %while.cond.backedge, !dbg !2545
 
 sw.bb68:                                          ; preds = %while.end42
-  %incdec.ptr69 = getelementptr inbounds i8* %q.0.lcssa, i64 1
-  store i8 %c.0.lcssa, i8* %q.0.lcssa, align 1, !tbaa !1
-  %incdec.ptr70 = getelementptr inbounds i8* %p.addr.6.lcssa, i64 1
-  %19 = load i8* %p.addr.6.lcssa, align 1, !tbaa !1
-  %incdec.ptr71 = getelementptr inbounds i8* %q.0.lcssa, i64 2
-  store i8 %19, i8* %incdec.ptr69, align 1, !tbaa !1
-  store i8 0, i8* %incdec.ptr71, align 1, !tbaa !1
-  %gp_offset75 = load i32* %gp_offset_p, align 16
-  %fits_in_gp76 = icmp ult i32 %gp_offset75, 41
-  br i1 %fits_in_gp76, label %vaarg.in_reg77, label %vaarg.in_mem79
+  %incdec.ptr69 = getelementptr inbounds i8* %q.0.lcssa, i64 1, !dbg !2546
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr69}, i64 0, metadata !1321), !dbg !2546
+  store i8 %c.0.lcssa, i8* %q.0.lcssa, align 1, !dbg !2546, !tbaa !1556
+  %incdec.ptr70 = getelementptr inbounds i8* %p.addr.6.lcssa, i64 1, !dbg !2547
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr70}, i64 0, metadata !1316), !dbg !2547
+  %19 = load i8* %p.addr.6.lcssa, align 1, !dbg !2547, !tbaa !1556
+  %incdec.ptr71 = getelementptr inbounds i8* %q.0.lcssa, i64 2, !dbg !2547
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr71}, i64 0, metadata !1321), !dbg !2547
+  store i8 %19, i8* %incdec.ptr69, align 1, !dbg !2547, !tbaa !1556
+  store i8 0, i8* %incdec.ptr71, align 1, !dbg !2548, !tbaa !1556
+  %gp_offset75 = load i32* %gp_offset_p, align 16, !dbg !2549
+  %fits_in_gp76 = icmp ult i32 %gp_offset75, 41, !dbg !2549
+  br i1 %fits_in_gp76, label %vaarg.in_reg77, label %vaarg.in_mem79, !dbg !2549
 
 vaarg.in_reg77:                                   ; preds = %sw.bb68
-  %reg_save_area78 = load i8** %1, align 16
-  %20 = sext i32 %gp_offset75 to i64
-  %21 = getelementptr i8* %reg_save_area78, i64 %20
-  %22 = add i32 %gp_offset75, 8
-  store i32 %22, i32* %gp_offset_p, align 16
-  br label %vaarg.end83
+  %reg_save_area78 = load i8** %1, align 16, !dbg !2549
+  %20 = sext i32 %gp_offset75 to i64, !dbg !2549
+  %21 = getelementptr i8* %reg_save_area78, i64 %20, !dbg !2549
+  %22 = add i32 %gp_offset75, 8, !dbg !2549
+  store i32 %22, i32* %gp_offset_p, align 16, !dbg !2549
+  br label %vaarg.end83, !dbg !2549
 
 vaarg.in_mem79:                                   ; preds = %sw.bb68
-  %overflow_arg_area81 = load i8** %overflow_arg_area_p, align 8
-  %overflow_arg_area.next82 = getelementptr i8* %overflow_arg_area81, i64 8
-  store i8* %overflow_arg_area.next82, i8** %overflow_arg_area_p, align 8
-  br label %vaarg.end83
+  %overflow_arg_area81 = load i8** %overflow_arg_area_p, align 8, !dbg !2549
+  %overflow_arg_area.next82 = getelementptr i8* %overflow_arg_area81, i64 8, !dbg !2549
+  store i8* %overflow_arg_area.next82, i8** %overflow_arg_area_p, align 8, !dbg !2549
+  br label %vaarg.end83, !dbg !2549
 
 vaarg.end83:                                      ; preds = %vaarg.in_mem79, %vaarg.in_reg77
   %vaarg.addr84.in = phi i8* [ %21, %vaarg.in_reg77 ], [ %overflow_arg_area81, %vaarg.in_mem79 ]
-  %vaarg.addr84 = bitcast i8* %vaarg.addr84.in to i64*
-  %23 = load i64* %vaarg.addr84, align 8
-  %call85 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %arrayidx, i64 %23) #8
-  br label %while.cond.backedge
+  %vaarg.addr84 = bitcast i8* %vaarg.addr84.in to i64*, !dbg !2549
+  %23 = load i64* %vaarg.addr84, align 8, !dbg !2549
+  %call85 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %arrayidx, i64 %23) #9, !dbg !2549
+  br label %while.cond.backedge, !dbg !2550
 
 sw.bb86:                                          ; preds = %while.end42, %while.end42, %while.end42
-  %incdec.ptr87 = getelementptr inbounds i8* %q.0.lcssa, i64 1
-  store i8 %c.0.lcssa, i8* %q.0.lcssa, align 1, !tbaa !1
-  store i8 0, i8* %incdec.ptr87, align 1, !tbaa !1
-  %fp_offset = load i32* %fp_offset_p, align 4
-  %fits_in_fp = icmp ult i32 %fp_offset, 161
-  br i1 %fits_in_fp, label %vaarg.in_reg90, label %vaarg.in_mem92
+  %incdec.ptr87 = getelementptr inbounds i8* %q.0.lcssa, i64 1, !dbg !2551
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr87}, i64 0, metadata !1321), !dbg !2551
+  store i8 %c.0.lcssa, i8* %q.0.lcssa, align 1, !dbg !2551, !tbaa !1556
+  store i8 0, i8* %incdec.ptr87, align 1, !dbg !2552, !tbaa !1556
+  %fp_offset = load i32* %fp_offset_p, align 4, !dbg !2521
+  %fits_in_fp = icmp ult i32 %fp_offset, 161, !dbg !2521
+  br i1 %fits_in_fp, label %vaarg.in_reg90, label %vaarg.in_mem92, !dbg !2521
 
 vaarg.in_reg90:                                   ; preds = %sw.bb86
-  %reg_save_area91 = load i8** %1, align 16
-  %24 = sext i32 %fp_offset to i64
-  %25 = getelementptr i8* %reg_save_area91, i64 %24
-  %26 = add i32 %fp_offset, 16
-  store i32 %26, i32* %fp_offset_p, align 4
-  br label %vaarg.end96
+  %reg_save_area91 = load i8** %1, align 16, !dbg !2521
+  %24 = sext i32 %fp_offset to i64, !dbg !2521
+  %25 = getelementptr i8* %reg_save_area91, i64 %24, !dbg !2521
+  %26 = add i32 %fp_offset, 16, !dbg !2521
+  store i32 %26, i32* %fp_offset_p, align 4, !dbg !2521
+  br label %vaarg.end96, !dbg !2521
 
 vaarg.in_mem92:                                   ; preds = %sw.bb86
-  %overflow_arg_area94 = load i8** %overflow_arg_area_p, align 8
-  %overflow_arg_area.next95 = getelementptr i8* %overflow_arg_area94, i64 8
-  store i8* %overflow_arg_area.next95, i8** %overflow_arg_area_p, align 8
-  br label %vaarg.end96
+  %overflow_arg_area94 = load i8** %overflow_arg_area_p, align 8, !dbg !2521
+  %overflow_arg_area.next95 = getelementptr i8* %overflow_arg_area94, i64 8, !dbg !2521
+  store i8* %overflow_arg_area.next95, i8** %overflow_arg_area_p, align 8, !dbg !2521
+  br label %vaarg.end96, !dbg !2521
 
 vaarg.end96:                                      ; preds = %vaarg.in_mem92, %vaarg.in_reg90
   %vaarg.addr97.in = phi i8* [ %25, %vaarg.in_reg90 ], [ %overflow_arg_area94, %vaarg.in_mem92 ]
-  %vaarg.addr97 = bitcast i8* %vaarg.addr97.in to double*
-  %27 = load double* %vaarg.addr97, align 8
-  %call98 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %arrayidx, double %27) #8
-  br label %while.cond.backedge
+  %vaarg.addr97 = bitcast i8* %vaarg.addr97.in to double*, !dbg !2521
+  %27 = load double* %vaarg.addr97, align 8, !dbg !2521
+  %call98 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %arrayidx, double %27) #9, !dbg !2521
+  br label %while.cond.backedge, !dbg !2553
 
 sw.bb99:                                          ; preds = %while.end42
-  %incdec.ptr100 = getelementptr inbounds i8* %q.0.lcssa, i64 1
-  store i8 %c.0.lcssa, i8* %q.0.lcssa, align 1, !tbaa !1
-  store i8 0, i8* %incdec.ptr100, align 1, !tbaa !1
-  %gp_offset104 = load i32* %gp_offset_p, align 16
-  %fits_in_gp105 = icmp ult i32 %gp_offset104, 41
-  br i1 %fits_in_gp105, label %vaarg.in_reg106, label %vaarg.in_mem108
+  %incdec.ptr100 = getelementptr inbounds i8* %q.0.lcssa, i64 1, !dbg !2554
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr100}, i64 0, metadata !1321), !dbg !2554
+  store i8 %c.0.lcssa, i8* %q.0.lcssa, align 1, !dbg !2554, !tbaa !1556
+  store i8 0, i8* %incdec.ptr100, align 1, !dbg !2555, !tbaa !1556
+  %gp_offset104 = load i32* %gp_offset_p, align 16, !dbg !2556
+  %fits_in_gp105 = icmp ult i32 %gp_offset104, 41, !dbg !2556
+  br i1 %fits_in_gp105, label %vaarg.in_reg106, label %vaarg.in_mem108, !dbg !2556
 
 vaarg.in_reg106:                                  ; preds = %sw.bb99
-  %reg_save_area107 = load i8** %1, align 16
-  %28 = sext i32 %gp_offset104 to i64
-  %29 = getelementptr i8* %reg_save_area107, i64 %28
-  %30 = add i32 %gp_offset104, 8
-  store i32 %30, i32* %gp_offset_p, align 16
-  br label %vaarg.end112
+  %reg_save_area107 = load i8** %1, align 16, !dbg !2556
+  %28 = sext i32 %gp_offset104 to i64, !dbg !2556
+  %29 = getelementptr i8* %reg_save_area107, i64 %28, !dbg !2556
+  %30 = add i32 %gp_offset104, 8, !dbg !2556
+  store i32 %30, i32* %gp_offset_p, align 16, !dbg !2556
+  br label %vaarg.end112, !dbg !2556
 
 vaarg.in_mem108:                                  ; preds = %sw.bb99
-  %overflow_arg_area110 = load i8** %overflow_arg_area_p, align 8
-  %overflow_arg_area.next111 = getelementptr i8* %overflow_arg_area110, i64 8
-  store i8* %overflow_arg_area.next111, i8** %overflow_arg_area_p, align 8
-  br label %vaarg.end112
+  %overflow_arg_area110 = load i8** %overflow_arg_area_p, align 8, !dbg !2556
+  %overflow_arg_area.next111 = getelementptr i8* %overflow_arg_area110, i64 8, !dbg !2556
+  store i8* %overflow_arg_area.next111, i8** %overflow_arg_area_p, align 8, !dbg !2556
+  br label %vaarg.end112, !dbg !2556
 
 vaarg.end112:                                     ; preds = %vaarg.in_mem108, %vaarg.in_reg106
   %vaarg.addr113.in = phi i8* [ %29, %vaarg.in_reg106 ], [ %overflow_arg_area110, %vaarg.in_mem108 ]
-  %vaarg.addr113 = bitcast i8* %vaarg.addr113.in to i8**
-  %31 = load i8** %vaarg.addr113, align 8
-  %call114 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %arrayidx, i8* %31) #8
-  br label %while.cond.backedge
+  %vaarg.addr113 = bitcast i8* %vaarg.addr113.in to i8**, !dbg !2556
+  %31 = load i8** %vaarg.addr113, align 8, !dbg !2556
+  %call114 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* %arrayidx, i8* %31) #9, !dbg !2556
+  br label %while.cond.backedge, !dbg !2557
 
 sw.bb115:                                         ; preds = %while.end42
-  %fputc = call i32 @fputc(i32 46, %struct._IO_FILE* %file) #7
-  br label %while.cond.backedge
+  %fputc = call i32 @fputc(i32 46, %struct._IO_FILE* %file) #8, !dbg !2558
+  br label %while.cond.backedge, !dbg !2559
 
 sw.bb117:                                         ; preds = %while.end42
-  %32 = load i8** @user_label_prefix, align 8, !tbaa !0
-  %call118 = call i32 @fputs(i8* %32, %struct._IO_FILE* %file) #8
-  br label %while.cond.backedge
+  %32 = load i8** @user_label_prefix, align 8, !dbg !2560, !tbaa !1555
+  %call118 = call i32 @fputs(i8* %32, %struct._IO_FILE* %file) #9, !dbg !2560
+  br label %while.cond.backedge, !dbg !2561
 
 sw.default:                                       ; preds = %while.end42
-  call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 3648, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.asm_fprintf, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 3648, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.asm_fprintf, i64 0, i64 0)) #12, !dbg !2562
+  unreachable, !dbg !2562
 
 sw.default119:                                    ; preds = %while.body
-  %call121 = call i32 @fputc(i32 %conv, %struct._IO_FILE* %file) #8
-  br label %while.cond.backedge
+  %call121 = call i32 @fputc(i32 %conv, %struct._IO_FILE* %file) #9, !dbg !2563
+  br label %while.cond.backedge, !dbg !2564
 
 while.end123:                                     ; preds = %while.cond.backedge, %entry
-  call void @llvm.va_end(i8* %arraydecay1)
-  ret void
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !2565
+  ret void, !dbg !2566
 }

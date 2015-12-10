@@ -1,33 +1,41 @@
 define i32 @_ZN9regmngobj13getregfillnumEv(%class.regmngobj* nocapture %this) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.regmngobj* %this, i64 0, metadata !499, metadata !675), !dbg !1970
-  %1 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 5, !dbg !1971
-  %2 = load i32* %1, align 4, !dbg !1972, !tbaa !695
-  %3 = add nsw i32 %2, 1, !dbg !1972
-  %4 = icmp eq i32 %3, 1073741824, !dbg !1973
-  %. = select i1 %4, i32 1, i32 %3, !dbg !1975
-  store i32 %., i32* %1, align 4, !dbg !1972, !tbaa !695
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !500, metadata !675), !dbg !1976
-  %5 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 16, i32 4, !dbg !1977
-  %6 = load i32* %5, align 4, !dbg !1977, !tbaa !771
-  %7 = icmp sgt i32 %6, 0, !dbg !1980
-  br i1 %7, label %.lr.ph, label %._crit_edge, !dbg !1981
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.regmngobj* %this}, i64 0, metadata !598), !dbg !1472
+  %regfillnum = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 5, !dbg !1473
+  %0 = load i32* %regfillnum, align 4, !dbg !1473, !tbaa !781
+  %inc = add nsw i32 %0, 1, !dbg !1473
+  %cmp = icmp eq i32 %inc, 1073741824, !dbg !1474
+  %.inc = select i1 %cmp, i32 1, i32 %inc, !dbg !1474
+  store i32 %.inc, i32* %regfillnum, align 4, !dbg !1473, !tbaa !781
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !599), !dbg !1475
+  %elemqu = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 16, i32 4, !dbg !1475
+  %1 = load i32* %elemqu, align 4, !dbg !1475, !tbaa !781
+  %cmp410 = icmp sgt i32 %1, 0, !dbg !1475
+  br i1 %cmp410, label %for.body.lr.ph, label %for.end, !dbg !1475
 
-.lr.ph:                                           ; preds = %0
-  %8 = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 16, i32 0, !dbg !1982
-  %9 = load %class.regobj*** %8, align 8, !dbg !1982, !tbaa !710
-  %10 = sext i32 %6 to i64, !dbg !1981
-  br label %11, !dbg !1981
+for.body.lr.ph:                                   ; preds = %entry
+  %ep.i = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 16, i32 0, !dbg !1477
+  %2 = load %class.regobj*** %ep.i, align 8, !dbg !1477, !tbaa !777
+  br label %for.body, !dbg !1475
 
-; <label>:11                                      ; preds = %.lr.ph, %11
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %11 ]
-  %12 = getelementptr inbounds %class.regobj** %9, i64 %indvars.iv, !dbg !1982
-  %13 = load %class.regobj** %12, align 8, !dbg !1984, !tbaa !779
-  %14 = getelementptr inbounds %class.regobj* %13, i64 0, i32 7, !dbg !1985
-  store i32 0, i32* %14, align 4, !dbg !1986, !tbaa !1761
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1981
-  %15 = icmp slt i64 %indvars.iv.next, %10, !dbg !1980
-  br i1 %15, label %11, label %._crit_edge, !dbg !1981
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  tail call void @llvm.dbg.value(metadata !796, i64 0, metadata !1479), !dbg !1480
+  %arrayidx.i = getelementptr inbounds %class.regobj** %2, i64 %indvars.iv, !dbg !1477
+  %3 = load %class.regobj** %arrayidx.i, align 8, !dbg !1478, !tbaa !777
+  %fillnum = getelementptr inbounds %class.regobj* %3, i64 0, i32 7, !dbg !1478
+  store i32 0, i32* %fillnum, align 4, !dbg !1478, !tbaa !781
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1475
+  %4 = load i32* %elemqu, align 4, !dbg !1475, !tbaa !781
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !1475
+  %cmp4 = icmp slt i32 %5, %4, !dbg !1475
+  br i1 %cmp4, label %for.body, label %for.cond.for.end_crit_edge, !dbg !1475
 
-._crit_edge:                                      ; preds = %11, %0
-  ret i32 %., !dbg !1987
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %.pre = load i32* %regfillnum, align 4, !dbg !1481, !tbaa !781
+  br label %for.end, !dbg !1475
+
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %entry
+  %6 = phi i32 [ %.pre, %for.cond.for.end_crit_edge ], [ %.inc, %entry ]
+  ret i32 %6, !dbg !1481
 }

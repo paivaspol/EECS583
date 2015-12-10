@@ -1,40 +1,41 @@
-define i8* @save_realloc(i8* %name, i8* %file, i32 %line, i8* %ptr, i32 %size) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !44, metadata !74), !dbg !123
-  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !45, metadata !74), !dbg !124
-  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !46, metadata !74), !dbg !125
-  tail call void @llvm.dbg.value(metadata i8* %ptr, i64 0, metadata !47, metadata !74), !dbg !126
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !48, metadata !74), !dbg !127
-  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !49, metadata !74), !dbg !128
-  %1 = icmp eq i32 %size, 0, !dbg !129
-  br i1 %1, label %14, label %2, !dbg !131
+define i8* @save_realloc(i8* %name, i8* %file, i32 %line, i8* %ptr, i32 %size) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !33), !dbg !79
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !34), !dbg !79
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !35), !dbg !79
+  tail call void @llvm.dbg.value(metadata !{i8* %ptr}, i64 0, metadata !36), !dbg !79
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !37), !dbg !79
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !38), !dbg !80
+  %cmp = icmp eq i32 %size, 0, !dbg !81
+  br i1 %cmp, label %if.end11, label %if.else, !dbg !81
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp eq i8* %ptr, null, !dbg !132
-  %4 = zext i32 %size to i64, !dbg !135
-  br i1 %3, label %5, label %7, !dbg !136
+if.else:                                          ; preds = %entry
+  %cmp1 = icmp eq i8* %ptr, null, !dbg !82
+  %conv = zext i32 %size to i64, !dbg !84
+  br i1 %cmp1, label %if.then2, label %if.else3, !dbg !82
 
-; <label>:5                                       ; preds = %2
-  %6 = tail call i8* @malloc(i64 %4) #6, !dbg !137
-  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !49, metadata !74), !dbg !128
-  br label %9, !dbg !138
+if.then2:                                         ; preds = %if.else
+  %call = tail call noalias i8* @malloc(i64 %conv) #7, !dbg !84
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !38), !dbg !84
+  br label %if.end, !dbg !84
 
-; <label>:7                                       ; preds = %2
-  %8 = tail call i8* @realloc(i8* %ptr, i64 %4) #6, !dbg !139
-  tail call void @llvm.dbg.value(metadata i8* %8, i64 0, metadata !49, metadata !74), !dbg !128
-  br label %9
+if.else3:                                         ; preds = %if.else
+  %call5 = tail call i8* @realloc(i8* %ptr, i64 %conv) #7, !dbg !85
+  tail call void @llvm.dbg.value(metadata !{i8* %call5}, i64 0, metadata !38), !dbg !85
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %5
-  %p.0 = phi i8* [ %6, %5 ], [ %8, %7 ]
-  %10 = icmp eq i8* %p.0, null, !dbg !140
-  br i1 %10, label %11, label %14, !dbg !142
+if.end:                                           ; preds = %if.else3, %if.then2
+  %p.0 = phi i8* [ %call, %if.then2 ], [ %call5, %if.else3 ]
+  %cmp6 = icmp eq i8* %p.0, null, !dbg !86
+  br i1 %cmp6, label %if.then8, label %if.end11, !dbg !86
 
-; <label>:11                                      ; preds = %9
-  %12 = tail call i32* @__error() #6, !dbg !143
-  %13 = load i32* %12, align 4, !dbg !143, !tbaa !96
-  tail call void (i32, i8*, ...)* @fatal_error(i32 %13, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i8* %name, i32 %size, i8* %file, i32 %line, i8* %name, i8* %ptr) #6, !dbg !144
-  br label %14, !dbg !144
+if.then8:                                         ; preds = %if.end
+  %call9 = tail call i32* @__errno_location() #8, !dbg !87
+  %0 = load i32* %call9, align 4, !dbg !87, !tbaa !66
+  tail call void (i32, i8*, ...)* @fatal_error(i32 %0, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i8* %name, i32 %size, i8* %file, i32 %line, i8* %name, i8* %ptr) #7, !dbg !87
+  br label %if.end11, !dbg !87
 
-; <label>:14                                      ; preds = %0, %9, %11
-  %p.1 = phi i8* [ null, %11 ], [ %p.0, %9 ], [ null, %0 ]
-  ret i8* %p.1, !dbg !145
+if.end11:                                         ; preds = %entry, %if.end, %if.then8
+  %p.1 = phi i8* [ null, %if.then8 ], [ %p.0, %if.end ], [ null, %entry ]
+  ret i8* %p.1, !dbg !88
 }

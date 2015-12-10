@@ -1,56 +1,61 @@
-define i8* @xvgr_tlabel() #2 {
-  tail call void @llvm.dbg.value(metadata i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 0), i64 0, metadata !688, metadata !852), !dbg !1265
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !689, metadata !852), !dbg !1267
-  %1 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 1), align 8, !dbg !1268, !tbaa !1132
-  %2 = icmp eq i8* %1, null, !dbg !1268
-  br i1 %2, label %nenum.exit7, label %.lr.ph.i, !dbg !1269
+define i8* @xvgr_tlabel() #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !689, i64 0, metadata !690), !dbg !692
+  tail call void @llvm.dbg.value(metadata !680, i64 0, metadata !693), !dbg !694
+  %0 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 1), align 8, !dbg !695, !tbaa !636
+  %tobool9.i = icmp eq i8* %0, null, !dbg !695
+  br i1 %tobool9.i, label %nenum.exit15, label %land.rhs.lr.ph.i, !dbg !695
 
-.lr.ph.i:                                         ; preds = %0
-  %3 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 0), align 16, !dbg !1270, !tbaa !1132
-  br label %4, !dbg !1269
+land.rhs.lr.ph.i:                                 ; preds = %entry
+  %1 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 0), align 16, !dbg !695, !tbaa !636
+  br label %land.rhs.i, !dbg !695
 
-; <label>:4                                       ; preds = %7, %.lr.ph.i
-  %indvars.iv.i = phi i64 [ 1, %.lr.ph.i ], [ %indvars.iv.next.i, %7 ], !dbg !1271
-  %5 = phi i8* [ %1, %.lr.ph.i ], [ %9, %7 ], !dbg !1271
-  %6 = icmp eq i8* %3, %5, !dbg !1272
-  br i1 %6, label %nenum.exit, label %7, !dbg !1273
+while.cond.i:                                     ; preds = %land.rhs.i
+  %arrayidx.i = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i, !dbg !695
+  %2 = load i8** %arrayidx.i, align 8, !dbg !695, !tbaa !636
+  %tobool.i = icmp eq i8* %2, null, !dbg !695
+  br i1 %tobool.i, label %nenum.exit, label %land.rhs.i, !dbg !695
 
-; <label>:7                                       ; preds = %4
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !1269
-  %8 = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i, !dbg !1268
-  %9 = load i8** %8, align 8, !dbg !1268, !tbaa !1132
-  %10 = icmp eq i8* %9, null, !dbg !1268
-  br i1 %10, label %nenum.exit, label %4, !dbg !1269
+land.rhs.i:                                       ; preds = %while.cond.i, %land.rhs.lr.ph.i
+  %indvars.iv.i = phi i64 [ 1, %land.rhs.lr.ph.i ], [ %indvars.iv.next.i, %while.cond.i ]
+  %3 = phi i8* [ %0, %land.rhs.lr.ph.i ], [ %2, %while.cond.i ]
+  %i.010.i = phi i32 [ 1, %land.rhs.lr.ph.i ], [ %inc.i, %while.cond.i ]
+  %cmp.i = icmp eq i8* %1, %3, !dbg !695
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !695
+  %inc.i = add nsw i32 %i.010.i, 1, !dbg !696
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !693), !dbg !696
+  br i1 %cmp.i, label %nenum.exit, label %while.cond.i
 
-nenum.exit:                                       ; preds = %4, %7
-  %indvars.iv.i.sink = phi i64 [ %indvars.iv.next.i, %7 ], [ %indvars.iv.i, %4 ]
-  %11 = trunc i64 %indvars.iv.i.sink to i32, !dbg !1273
-  %12 = icmp eq i32 %11, 0, !dbg !1271
-  br i1 %12, label %22, label %.lr.ph.i1, !dbg !1271
+nenum.exit:                                       ; preds = %while.cond.i, %land.rhs.i
+  %i.0.lcssa.i = phi i32 [ %i.010.i, %land.rhs.i ], [ %inc.i, %while.cond.i ]
+  %tobool = icmp eq i32 %i.0.lcssa.i, 0, !dbg !691
+  br i1 %tobool, label %cond.end, label %land.rhs.i13, !dbg !691
 
-.lr.ph.i1:                                        ; preds = %nenum.exit, %15
-  %indvars.iv.i2 = phi i64 [ %indvars.iv.next.i3, %15 ], [ 1, %nenum.exit ], !dbg !1271
-  %13 = phi i8* [ %17, %15 ], [ %1, %nenum.exit ], !dbg !1271
-  %14 = icmp eq i8* %3, %13, !dbg !1274
-  br i1 %14, label %nenum.exit7, label %15, !dbg !1276
+while.cond.i7:                                    ; preds = %land.rhs.i13
+  %arrayidx.i5 = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i11, !dbg !695
+  %4 = load i8** %arrayidx.i5, align 8, !dbg !695, !tbaa !636
+  %tobool.i6 = icmp eq i8* %4, null, !dbg !695
+  br i1 %tobool.i6, label %nenum.exit15, label %land.rhs.i13, !dbg !695
 
-; <label>:15                                      ; preds = %.lr.ph.i1
-  %indvars.iv.next.i3 = add nuw nsw i64 %indvars.iv.i2, 1, !dbg !1277
-  %16 = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i3, !dbg !1278
-  %17 = load i8** %16, align 8, !dbg !1278, !tbaa !1132
-  %18 = icmp eq i8* %17, null, !dbg !1278
-  br i1 %18, label %nenum.exit7, label %.lr.ph.i1, !dbg !1277
+land.rhs.i13:                                     ; preds = %nenum.exit, %while.cond.i7
+  %indvars.iv.i8 = phi i64 [ %indvars.iv.next.i11, %while.cond.i7 ], [ 1, %nenum.exit ]
+  %5 = phi i8* [ %4, %while.cond.i7 ], [ %0, %nenum.exit ]
+  %i.010.i9 = phi i32 [ %inc.i12, %while.cond.i7 ], [ 1, %nenum.exit ]
+  %cmp.i10 = icmp eq i8* %1, %5, !dbg !695
+  %indvars.iv.next.i11 = add i64 %indvars.iv.i8, 1, !dbg !695
+  %inc.i12 = add nsw i32 %i.010.i9, 1, !dbg !696
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i12}, i64 0, metadata !693), !dbg !696
+  br i1 %cmp.i10, label %nenum.exit15, label %while.cond.i7
 
-nenum.exit7:                                      ; preds = %15, %.lr.ph.i1, %0
-  %i.0.lcssa.i6 = phi i64 [ 1, %0 ], [ %indvars.iv.i2, %.lr.ph.i1 ], [ %indvars.iv.next.i3, %15 ], !dbg !1271
-  %sext = shl i64 %i.0.lcssa.i6, 32, !dbg !1271
-  %19 = ashr exact i64 %sext, 32, !dbg !1271
-  %20 = getelementptr inbounds [10 x i8*]* @xvgrtimestr, i64 0, i64 %19, !dbg !1271
-  %21 = load i8** %20, align 8, !dbg !1271, !tbaa !1132
-  br label %22, !dbg !1271
+nenum.exit15:                                     ; preds = %while.cond.i7, %land.rhs.i13, %entry
+  %i.0.lcssa.i14 = phi i32 [ 1, %entry ], [ %inc.i12, %while.cond.i7 ], [ %i.010.i9, %land.rhs.i13 ]
+  %idxprom = sext i32 %i.0.lcssa.i14 to i64, !dbg !691
+  %arrayidx = getelementptr inbounds [10 x i8*]* @xvgrtimestr, i64 0, i64 %idxprom, !dbg !691
+  %6 = load i8** %arrayidx, align 8, !dbg !691, !tbaa !636
+  br label %cond.end, !dbg !691
 
-; <label>:22                                      ; preds = %nenum.exit, %nenum.exit7
-  %23 = phi i8* [ %21, %nenum.exit7 ], [ getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), %nenum.exit ], !dbg !1271
-  %24 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([20 x i8]* @xvgr_tlabel.label, i64 0, i64 0), i32 0, i64 20, i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i8* %23) #12, !dbg !1271
-  ret i8* getelementptr inbounds ([20 x i8]* @xvgr_tlabel.label, i64 0, i64 0), !dbg !1279
+cond.end:                                         ; preds = %nenum.exit, %nenum.exit15
+  %cond = phi i8* [ %6, %nenum.exit15 ], [ getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), %nenum.exit ], !dbg !691
+  %call2 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([20 x i8]* @xvgr_tlabel.label, i64 0, i64 0), i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i8* %cond) #11, !dbg !691
+  ret i8* getelementptr inbounds ([20 x i8]* @xvgr_tlabel.label, i64 0, i64 0), !dbg !697
 }

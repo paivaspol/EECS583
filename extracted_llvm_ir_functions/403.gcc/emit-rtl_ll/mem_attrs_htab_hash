@@ -1,48 +1,49 @@
-define internal i32 @mem_attrs_htab_hash(i8* nocapture %x) #5 {
+define internal i32 @mem_attrs_htab_hash(i8* nocapture %x) #6 {
 entry:
-  %alias = bitcast i8* %x to i64*
-  %0 = load i64* %alias, align 8, !tbaa !3
-  %align = getelementptr inbounds i8* %x, i64 32
-  %1 = bitcast i8* %align to i32*
-  %2 = load i32* %1, align 4, !tbaa !0
-  %mul = mul i32 %2, 1000
-  %conv = zext i32 %mul to i64
-  %xor = xor i64 %conv, %0
-  %offset = getelementptr inbounds i8* %x, i64 16
-  %3 = bitcast i8* %offset to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %3, align 8, !tbaa !4
-  %tobool = icmp eq %struct.rtx_def* %4, null
-  br i1 %tobool, label %cond.end, label %cond.true
+  tail call void @llvm.dbg.value(metadata !{i8* %x}, i64 0, metadata !2110), !dbg !4313
+  %alias = bitcast i8* %x to i64*, !dbg !4314
+  %0 = load i64* %alias, align 8, !dbg !4314, !tbaa !2269
+  %align = getelementptr inbounds i8* %x, i64 32, !dbg !4314
+  %1 = bitcast i8* %align to i32*, !dbg !4314
+  %2 = load i32* %1, align 4, !dbg !4314, !tbaa !2263
+  %mul = mul i32 %2, 1000, !dbg !4314
+  %conv = zext i32 %mul to i64, !dbg !4314
+  %xor = xor i64 %conv, %0, !dbg !4314
+  %offset = getelementptr inbounds i8* %x, i64 16, !dbg !4314
+  %3 = bitcast i8* %offset to %struct.rtx_def**, !dbg !4314
+  %4 = load %struct.rtx_def** %3, align 8, !dbg !4314, !tbaa !2272
+  %tobool = icmp eq %struct.rtx_def* %4, null, !dbg !4314
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !4314
 
 cond.true:                                        ; preds = %entry
-  %rtwint = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0, i32 0
-  %5 = load i64* %rtwint, align 8, !tbaa !3
-  %phitmp = mul i64 %5, 50000
-  br label %cond.end
+  %rtwint = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0, i32 0, !dbg !4314
+  %5 = load i64* %rtwint, align 8, !dbg !4314, !tbaa !2269
+  %phitmp = mul i64 %5, 50000, !dbg !4314
+  br label %cond.end, !dbg !4314
 
 cond.end:                                         ; preds = %entry, %cond.true
   %cond = phi i64 [ %phitmp, %cond.true ], [ 0, %entry ]
-  %xor3 = xor i64 %xor, %cond
-  %size = getelementptr inbounds i8* %x, i64 24
-  %6 = bitcast i8* %size to %struct.rtx_def**
-  %7 = load %struct.rtx_def** %6, align 8, !tbaa !4
-  %tobool4 = icmp eq %struct.rtx_def* %7, null
-  br i1 %tobool4, label %cond.end11, label %cond.true5
+  %xor3 = xor i64 %xor, %cond, !dbg !4314
+  %size = getelementptr inbounds i8* %x, i64 24, !dbg !4314
+  %6 = bitcast i8* %size to %struct.rtx_def**, !dbg !4314
+  %7 = load %struct.rtx_def** %6, align 8, !dbg !4314, !tbaa !2272
+  %tobool4 = icmp eq %struct.rtx_def* %7, null, !dbg !4314
+  br i1 %tobool4, label %cond.end11, label %cond.true5, !dbg !4314
 
 cond.true5:                                       ; preds = %cond.end
-  %rtwint9 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 0, i32 0
-  %8 = load i64* %rtwint9, align 8, !tbaa !3
-  %phitmp23 = mul i64 %8, 2500000
-  br label %cond.end11
+  %rtwint9 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 0, i32 0, !dbg !4314
+  %8 = load i64* %rtwint9, align 8, !dbg !4314, !tbaa !2269
+  %phitmp23 = mul i64 %8, 2500000, !dbg !4314
+  br label %cond.end11, !dbg !4314
 
 cond.end11:                                       ; preds = %cond.end, %cond.true5
   %cond12 = phi i64 [ %phitmp23, %cond.true5 ], [ 0, %cond.end ]
-  %xor14 = xor i64 %xor3, %cond12
-  %expr = getelementptr inbounds i8* %x, i64 8
-  %9 = bitcast i8* %expr to %union.tree_node**
-  %10 = load %union.tree_node** %9, align 8, !tbaa !4
-  %11 = ptrtoint %union.tree_node* %10 to i64
-  %xor15 = xor i64 %xor14, %11
-  %conv16 = trunc i64 %xor15 to i32
-  ret i32 %conv16
+  %xor14 = xor i64 %xor3, %cond12, !dbg !4314
+  %expr = getelementptr inbounds i8* %x, i64 8, !dbg !4314
+  %9 = bitcast i8* %expr to %union.tree_node**, !dbg !4314
+  %10 = load %union.tree_node** %9, align 8, !dbg !4314, !tbaa !2272
+  %11 = ptrtoint %union.tree_node* %10 to i64, !dbg !4314
+  %xor15 = xor i64 %xor14, %11, !dbg !4314
+  %conv16 = trunc i64 %xor15 to i32, !dbg !4314
+  ret i32 %conv16, !dbg !4314
 }

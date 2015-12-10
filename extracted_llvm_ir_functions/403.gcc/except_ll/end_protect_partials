@@ -1,30 +1,32 @@
 define void @end_protect_partials() #0 {
 entry:
-  %0 = load %struct.function** @cfun, align 8, !tbaa !3
-  %eh = getelementptr inbounds %struct.function* %0, i64 0, i32 0
-  %1 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %protect_list = getelementptr inbounds %struct.eh_status* %1, i64 0, i32 4
-  %2 = load %union.tree_node** %protect_list, align 8, !tbaa !3
-  %value = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 2
-  %3 = bitcast i32* %value to %union.tree_node**
-  %4 = load %union.tree_node** %3, align 8, !tbaa !3
-  %chain = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 0
-  %5 = load %union.tree_node** %chain, align 8, !tbaa !3
-  store %union.tree_node* %5, %union.tree_node** %protect_list, align 8, !tbaa !3
-  %tobool11 = icmp eq %union.tree_node* %4, null
-  br i1 %tobool11, label %for.end, label %for.body
+  %0 = load %struct.function** @cfun, align 8, !dbg !2597, !tbaa !2232
+  %eh = getelementptr inbounds %struct.function* %0, i64 0, i32 0, !dbg !2597
+  %1 = load %struct.eh_status** %eh, align 8, !dbg !2597, !tbaa !2232
+  %protect_list = getelementptr inbounds %struct.eh_status* %1, i64 0, i32 4, !dbg !2597
+  %2 = load %union.tree_node** %protect_list, align 8, !dbg !2597, !tbaa !2232
+  %value = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 2, !dbg !2597
+  %3 = bitcast i32* %value to %union.tree_node**, !dbg !2597
+  %4 = load %union.tree_node** %3, align 8, !dbg !2597, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %4}, i64 0, metadata !1526), !dbg !2597
+  %chain = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 0, !dbg !2598
+  %5 = load %union.tree_node** %chain, align 8, !dbg !2598, !tbaa !2232
+  store %union.tree_node* %5, %union.tree_node** %protect_list, align 8, !dbg !2598, !tbaa !2232
+  %tobool11 = icmp eq %union.tree_node* %4, null, !dbg !2599
+  br i1 %tobool11, label %for.end, label %for.body, !dbg !2599
 
 for.body:                                         ; preds = %entry, %for.body
   %t.012 = phi %union.tree_node* [ %8, %for.body ], [ %4, %entry ]
-  %value6 = getelementptr inbounds %union.tree_node* %t.012, i64 0, i32 0, i32 2
-  %6 = bitcast i32* %value6 to %union.tree_node**
-  %7 = load %union.tree_node** %6, align 8, !tbaa !3
-  tail call void @expand_eh_region_end_cleanup(%union.tree_node* %7) #7
-  %chain8 = getelementptr inbounds %union.tree_node* %t.012, i64 0, i32 0, i32 0, i32 0
-  %8 = load %union.tree_node** %chain8, align 8, !tbaa !3
-  %tobool = icmp eq %union.tree_node* %8, null
-  br i1 %tobool, label %for.end, label %for.body
+  %value6 = getelementptr inbounds %union.tree_node* %t.012, i64 0, i32 0, i32 2, !dbg !2601
+  %6 = bitcast i32* %value6 to %union.tree_node**, !dbg !2601
+  %7 = load %union.tree_node** %6, align 8, !dbg !2601, !tbaa !2232
+  tail call void @expand_eh_region_end_cleanup(%union.tree_node* %7) #8, !dbg !2601
+  %chain8 = getelementptr inbounds %union.tree_node* %t.012, i64 0, i32 0, i32 0, i32 0, !dbg !2599
+  %8 = load %union.tree_node** %chain8, align 8, !dbg !2599, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %8}, i64 0, metadata !1526), !dbg !2599
+  %tobool = icmp eq %union.tree_node* %8, null, !dbg !2599
+  br i1 %tobool, label %for.end, label %for.body, !dbg !2599
 
 for.end:                                          ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !2602
 }

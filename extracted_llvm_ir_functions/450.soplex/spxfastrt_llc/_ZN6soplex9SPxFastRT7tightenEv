@@ -1,41 +1,42 @@
-define void @_ZN6soplex9SPxFastRT7tightenEv(%"class.soplex::SPxFastRT"* nocapture %this) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxFastRT"* %this, i64 0, metadata !5227, metadata !6975), !dbg !6985
-  %1 = getelementptr inbounds %"class.soplex::SPxFastRT"* %this, i64 0, i32 3, !dbg !6986
-  %2 = load double* %1, align 8, !dbg !6986, !tbaa !6988
-  %3 = getelementptr inbounds %"class.soplex::SPxFastRT"* %this, i64 0, i32 4, !dbg !6989
-  %4 = load double* %3, align 8, !dbg !6989, !tbaa !6990
-  %5 = fadd double %4, 1.000000e-05, !dbg !6991
-  %6 = fcmp ult double %2, %5, !dbg !6992
-  br i1 %6, label %12, label %7, !dbg !6993
+define void @_ZN6soplex9SPxFastRT7tightenEv(%"class.soplex::SPxFastRT"* nocapture %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxFastRT"* %this}, i64 0, metadata !6920), !dbg !7773
+  %delta = getelementptr inbounds %"class.soplex::SPxFastRT"* %this, i64 0, i32 3, !dbg !7774
+  %0 = load double* %delta, align 8, !dbg !7774, !tbaa !7769
+  %delta0 = getelementptr inbounds %"class.soplex::SPxFastRT"* %this, i64 0, i32 4, !dbg !7774
+  %1 = load double* %delta0, align 8, !dbg !7774, !tbaa !7769
+  %add = fadd double %1, 1.000000e-05, !dbg !7774
+  %cmp = fcmp ult double %0, %add, !dbg !7774
+  br i1 %cmp, label %if.end8, label %if.then, !dbg !7774
 
-; <label>:7                                       ; preds = %0
-  %8 = fadd double %2, -1.000000e-05, !dbg !6994
-  store double %8, double* %1, align 8, !dbg !6994, !tbaa !6988
-  %9 = fcmp ogt double %8, 1.000000e-04, !dbg !6996
-  br i1 %9, label %10, label %12, !dbg !6998
+if.then:                                          ; preds = %entry
+  %sub = fadd double %0, -1.000000e-05, !dbg !7775
+  store double %sub, double* %delta, align 8, !dbg !7775, !tbaa !7769
+  %cmp4 = fcmp ogt double %sub, 1.000000e-04, !dbg !7777
+  br i1 %cmp4, label %if.then5, label %if.end8, !dbg !7777
 
-; <label>:10                                      ; preds = %7
-  %11 = fadd double %8, -2.000000e-05, !dbg !6999
-  store double %11, double* %1, align 8, !dbg !6999, !tbaa !6988
-  br label %12, !dbg !7000
+if.then5:                                         ; preds = %if.then
+  %sub7 = fadd double %sub, -2.000000e-05, !dbg !7778
+  store double %sub7, double* %delta, align 8, !dbg !7778, !tbaa !7769
+  br label %if.end8, !dbg !7778
 
-; <label>:12                                      ; preds = %0, %7, %10
-  %13 = getelementptr inbounds %"class.soplex::SPxFastRT"* %this, i64 0, i32 1, !dbg !7001
-  %14 = load double* %13, align 8, !dbg !7001, !tbaa !7003
-  %15 = fcmp olt double %14, 1.000000e-05, !dbg !7004
-  br i1 %15, label %16, label %21, !dbg !7005
+if.end8:                                          ; preds = %entry, %if.then, %if.then5
+  %minStab = getelementptr inbounds %"class.soplex::SPxFastRT"* %this, i64 0, i32 1, !dbg !7779
+  %2 = load double* %minStab, align 8, !dbg !7779, !tbaa !7769
+  %cmp9 = fcmp olt double %2, 1.000000e-05, !dbg !7779
+  br i1 %cmp9, label %if.then10, label %if.end18, !dbg !7779
 
-; <label>:16                                      ; preds = %12
-  %17 = fdiv double %14, 9.000000e-01, !dbg !7006
-  store double %17, double* %13, align 8, !dbg !7006, !tbaa !7003
-  %18 = fcmp olt double %17, 1.000000e-06, !dbg !7008
-  br i1 %18, label %19, label %21, !dbg !7010
+if.then10:                                        ; preds = %if.end8
+  %div = fdiv double %2, 9.000000e-01, !dbg !7780
+  store double %div, double* %minStab, align 8, !dbg !7780, !tbaa !7769
+  %cmp13 = fcmp olt double %div, 1.000000e-06, !dbg !7782
+  br i1 %cmp13, label %if.then14, label %if.end18, !dbg !7782
 
-; <label>:19                                      ; preds = %16
-  %20 = fdiv double %17, 9.000000e-01, !dbg !7011
-  store double %20, double* %13, align 8, !dbg !7011, !tbaa !7003
-  br label %21, !dbg !7012
+if.then14:                                        ; preds = %if.then10
+  %div16 = fdiv double %div, 9.000000e-01, !dbg !7783
+  store double %div16, double* %minStab, align 8, !dbg !7783, !tbaa !7769
+  br label %if.end18, !dbg !7783
 
-; <label>:21                                      ; preds = %16, %19, %12
-  ret void, !dbg !7013
+if.end18:                                         ; preds = %if.then10, %if.then14, %if.end8
+  ret void, !dbg !7784
 }

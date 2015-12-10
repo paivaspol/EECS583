@@ -1,24 +1,25 @@
-define void @calc_invh(float* nocapture readonly %box, i32 %nx, i32 %ny, i32 %nz, float* nocapture %invh) #2 {
-  tail call void @llvm.dbg.value(metadata float* %box, i64 0, metadata !163, metadata !695), !dbg !702
-  tail call void @llvm.dbg.value(metadata i32 %nx, i64 0, metadata !164, metadata !695), !dbg !703
-  tail call void @llvm.dbg.value(metadata i32 %ny, i64 0, metadata !165, metadata !695), !dbg !704
-  tail call void @llvm.dbg.value(metadata i32 %nz, i64 0, metadata !166, metadata !695), !dbg !705
-  tail call void @llvm.dbg.value(metadata float* %invh, i64 0, metadata !167, metadata !695), !dbg !706
-  %1 = sitofp i32 %nx to float, !dbg !707
-  %2 = load float* %box, align 4, !dbg !708, !tbaa !709
-  %3 = fdiv float %1, %2, !dbg !713
-  store float %3, float* %invh, align 4, !dbg !714, !tbaa !709
-  %4 = sitofp i32 %ny to float, !dbg !715
-  %5 = getelementptr inbounds float* %box, i64 1, !dbg !716
-  %6 = load float* %5, align 4, !dbg !716, !tbaa !709
-  %7 = fdiv float %4, %6, !dbg !717
-  %8 = getelementptr inbounds float* %invh, i64 1, !dbg !718
-  store float %7, float* %8, align 4, !dbg !719, !tbaa !709
-  %9 = sitofp i32 %nz to float, !dbg !720
-  %10 = getelementptr inbounds float* %box, i64 2, !dbg !721
-  %11 = load float* %10, align 4, !dbg !721, !tbaa !709
-  %12 = fdiv float %9, %11, !dbg !722
-  %13 = getelementptr inbounds float* %invh, i64 2, !dbg !723
-  store float %12, float* %13, align 4, !dbg !724, !tbaa !709
-  ret void, !dbg !725
+define void @calc_invh(float* nocapture %box, i32 %nx, i32 %ny, i32 %nz, float* nocapture %invh) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %box}, i64 0, metadata !153), !dbg !682
+  tail call void @llvm.dbg.value(metadata !{i32 %nx}, i64 0, metadata !154), !dbg !682
+  tail call void @llvm.dbg.value(metadata !{i32 %ny}, i64 0, metadata !155), !dbg !682
+  tail call void @llvm.dbg.value(metadata !{i32 %nz}, i64 0, metadata !156), !dbg !682
+  tail call void @llvm.dbg.value(metadata !{float* %invh}, i64 0, metadata !157), !dbg !682
+  %conv = sitofp i32 %nx to float, !dbg !683
+  %0 = load float* %box, align 4, !dbg !683, !tbaa !684
+  %div = fdiv float %conv, %0, !dbg !683
+  store float %div, float* %invh, align 4, !dbg !683, !tbaa !684
+  %conv2 = sitofp i32 %ny to float, !dbg !687
+  %arrayidx3 = getelementptr inbounds float* %box, i64 1, !dbg !687
+  %1 = load float* %arrayidx3, align 4, !dbg !687, !tbaa !684
+  %div4 = fdiv float %conv2, %1, !dbg !687
+  %arrayidx5 = getelementptr inbounds float* %invh, i64 1, !dbg !687
+  store float %div4, float* %arrayidx5, align 4, !dbg !687, !tbaa !684
+  %conv6 = sitofp i32 %nz to float, !dbg !688
+  %arrayidx7 = getelementptr inbounds float* %box, i64 2, !dbg !688
+  %2 = load float* %arrayidx7, align 4, !dbg !688, !tbaa !684
+  %div8 = fdiv float %conv6, %2, !dbg !688
+  %arrayidx9 = getelementptr inbounds float* %invh, i64 2, !dbg !688
+  store float %div8, float* %arrayidx9, align 4, !dbg !688, !tbaa !684
+  ret void, !dbg !689
 }

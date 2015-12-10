@@ -1,127 +1,131 @@
 define %struct.msa_struct* @ReadClustal(%struct.msafile_struct* %afp) #0 {
+entry:
   %s = alloca i8*, align 8
   %slen = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct.msafile_struct* %afp, i64 0, metadata !205, metadata !232), !dbg !233
-  %1 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !234
-  %2 = load %struct.__sFILE** %1, align 8, !dbg !234, !tbaa !236
-  %3 = tail call i32 @feof(%struct.__sFILE* %2) #6, !dbg !242
-  %4 = icmp eq i32 %3, 0, !dbg !242
-  br i1 %4, label %.preheader, label %.thread, !dbg !243
+  call void @llvm.dbg.value(metadata !{%struct.msafile_struct* %afp}, i64 0, metadata !197), !dbg !220
+  call void @llvm.dbg.declare(metadata !{i8** %s}, metadata !199), !dbg !221
+  call void @llvm.dbg.declare(metadata !{i32* %slen}, metadata !200), !dbg !222
+  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !223
+  %0 = load %struct._IO_FILE** %f, align 8, !dbg !223, !tbaa !224
+  %call = call i32 @feof(%struct._IO_FILE* %0) #6, !dbg !223
+  %tobool = icmp eq i32 %call, 0, !dbg !223
+  br i1 %tobool, label %while.cond.preheader, label %return, !dbg !223
 
-.preheader:                                       ; preds = %0
-  %5 = tail call i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #6, !dbg !244
-  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !207, metadata !232), !dbg !245
-  store i8* %5, i8** %s, align 8, !dbg !246, !tbaa !247
-  %6 = icmp eq i8* %5, null, !dbg !248
-  br i1 %6, label %.thread, label %.lr.ph2, !dbg !249
+while.cond.preheader:                             ; preds = %entry
+  %call163 = call i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #6, !dbg !227
+  call void @llvm.dbg.value(metadata !{i8* %call163}, i64 0, metadata !199), !dbg !227
+  store i8* %call163, i8** %s, align 8, !dbg !227, !tbaa !224
+  %cmp64 = icmp eq i8* %call163, null, !dbg !227
+  br i1 %cmp64, label %return, label %while.body, !dbg !227
 
-.lr.ph2:                                          ; preds = %.preheader, %.backedge1
-  %.pr = phi i8* [ %9, %.backedge1 ], [ %5, %.preheader ]
-  %7 = tail call i32 @strncmp(i8* %.pr, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i64 7) #6, !dbg !250
-  %8 = icmp eq i32 %7, 0, !dbg !253
-  br i1 %8, label %11, label %.backedge1, !dbg !254
+while.body:                                       ; preds = %while.cond.preheader, %while.cond.backedge
+  %.pr = phi i8* [ %call1, %while.cond.backedge ], [ %call163, %while.cond.preheader ]
+  %call2 = call i32 @strncmp(i8* %.pr, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i64 7) #7, !dbg !228
+  %cmp3 = icmp eq i32 %call2, 0, !dbg !228
+  br i1 %cmp3, label %land.lhs.true, label %while.cond.backedge, !dbg !228
 
-.backedge1:                                       ; preds = %.lr.ph2, %11
-  %9 = tail call i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #6, !dbg !244
-  tail call void @llvm.dbg.value(metadata i8* %9, i64 0, metadata !207, metadata !232), !dbg !245
-  store i8* %9, i8** %s, align 8, !dbg !246, !tbaa !247
-  %10 = icmp eq i8* %9, null, !dbg !248
-  br i1 %10, label %.thread, label %.lr.ph2, !dbg !249
+while.cond.backedge:                              ; preds = %while.body, %land.lhs.true
+  %call1 = call i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #6, !dbg !227
+  call void @llvm.dbg.value(metadata !{i8* %.pr}, i64 0, metadata !199), !dbg !227
+  call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !199), !dbg !227
+  store i8* %call1, i8** %s, align 8, !dbg !227, !tbaa !224
+  %cmp = icmp eq i8* %call1, null, !dbg !227
+  br i1 %cmp, label %return, label %while.body, !dbg !227
 
-; <label>:11                                      ; preds = %.lr.ph2
-  tail call void @llvm.dbg.value(metadata i8** %s, i64 0, metadata !207, metadata !232), !dbg !245
-  %12 = tail call i8* @strstr(i8* %.pr, i8* getelementptr inbounds ([28 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !255
-  %13 = icmp eq i8* %12, null, !dbg !256
-  br i1 %13, label %.backedge1, label %14, !dbg !257
+land.lhs.true:                                    ; preds = %while.body
+  %call4 = call i8* @strstr(i8* %.pr, i8* getelementptr inbounds ([28 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !230
+  %cmp5 = icmp eq i8* %call4, null, !dbg !230
+  br i1 %cmp5, label %while.cond.backedge, label %while.end, !dbg !230
 
-; <label>:14                                      ; preds = %11
-  tail call void @llvm.dbg.value(metadata i8** %s, i64 0, metadata !207, metadata !232), !dbg !245
-  %15 = tail call %struct.msa_struct* @MSAAlloc(i32 10, i32 0) #6, !dbg !258
-  tail call void @llvm.dbg.value(metadata %struct.msa_struct* %15, i64 0, metadata !206, metadata !232), !dbg !259
-  %16 = call i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #6, !dbg !260
-  call void @llvm.dbg.value(metadata i8* %16, i64 0, metadata !207, metadata !232), !dbg !245
-  store i8* %16, i8** %s, align 8, !dbg !261, !tbaa !247
-  %17 = icmp eq i8* %16, null, !dbg !262
-  br i1 %17, label %._crit_edge, label %.lr.ph, !dbg !263
+while.end:                                        ; preds = %land.lhs.true
+  call void @llvm.dbg.value(metadata !{i8** %s}, i64 0, metadata !199), !dbg !231
+  call void @llvm.dbg.value(metadata !{i8** %s}, i64 0, metadata !199), !dbg !231
+  %cmp8 = icmp eq i8* %.pr, null, !dbg !231
+  br i1 %cmp8, label %return, label %if.end10, !dbg !231
 
-.lr.ph:                                           ; preds = %14
-  %18 = getelementptr inbounds %struct.msa_struct* %15, i64 0, i32 45, !dbg !264
-  %19 = getelementptr inbounds %struct.msa_struct* %15, i64 0, i32 0, !dbg !266
-  %20 = getelementptr inbounds %struct.msa_struct* %15, i64 0, i32 42, !dbg !267
-  %21 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 2, !dbg !268
-  %22 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 1, !dbg !270
-  br label %23, !dbg !263
+if.end10:                                         ; preds = %while.end
+  %call11 = call %struct.msa_struct* @MSAAlloc(i32 10, i32 0) #6, !dbg !232
+  call void @llvm.dbg.value(metadata !{%struct.msa_struct* %call11}, i64 0, metadata !198), !dbg !232
+  %call1361 = call i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #6, !dbg !233
+  call void @llvm.dbg.value(metadata !{i8* %call1361}, i64 0, metadata !199), !dbg !233
+  store i8* %call1361, i8** %s, align 8, !dbg !233, !tbaa !224
+  %cmp1462 = icmp eq i8* %call1361, null, !dbg !233
+  br i1 %cmp1462, label %while.end43, label %while.body15.lr.ph, !dbg !233
 
-; <label>:23                                      ; preds = %.lr.ph, %.backedge
-  call void @llvm.dbg.value(metadata i8** %s, i64 0, metadata !207, metadata !232), !dbg !245
-  %24 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i32* null) #6, !dbg !271
-  call void @llvm.dbg.value(metadata i8* %24, i64 0, metadata !210, metadata !232), !dbg !273
-  %25 = icmp eq i8* %24, null, !dbg !274
-  br i1 %25, label %.backedge, label %26, !dbg !275
+while.body15.lr.ph:                               ; preds = %if.end10
+  %lastidx = getelementptr inbounds %struct.msa_struct* %call11, i64 0, i32 45, !dbg !234
+  %aseq = getelementptr inbounds %struct.msa_struct* %call11, i64 0, i32 0, !dbg !236
+  %sqlen = getelementptr inbounds %struct.msa_struct* %call11, i64 0, i32 42, !dbg !236
+  %linenumber = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 2, !dbg !237
+  %fname = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 1, !dbg !237
+  br label %while.body15, !dbg !233
 
-; <label>:26                                      ; preds = %23
-  call void @llvm.dbg.value(metadata i8** %s, i64 0, metadata !207, metadata !232), !dbg !245
-  call void @llvm.dbg.value(metadata i32* %slen, i64 0, metadata !208, metadata !232), !dbg !276
-  %27 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i32* %slen) #6, !dbg !277
-  call void @llvm.dbg.value(metadata i8* %27, i64 0, metadata !211, metadata !232), !dbg !279
-  %28 = icmp eq i8* %27, null, !dbg !280
-  br i1 %28, label %.backedge, label %29, !dbg !281
+while.body15:                                     ; preds = %while.body15.lr.ph, %while.cond12.backedge
+  %call16 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i32* null) #6, !dbg !238
+  call void @llvm.dbg.value(metadata !{i8* %call16}, i64 0, metadata !202), !dbg !238
+  %cmp17 = icmp eq i8* %call16, null, !dbg !238
+  br i1 %cmp17, label %while.cond12.backedge, label %if.end19, !dbg !238
 
-; <label>:29                                      ; preds = %26
-  call void @llvm.dbg.value(metadata i8** %s, i64 0, metadata !207, metadata !232), !dbg !245
-  %30 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0), i32* null) #6, !dbg !282
-  call void @llvm.dbg.value(metadata i8* %30, i64 0, metadata !212, metadata !232), !dbg !283
-  %31 = call i8* @strpbrk(i8* %24, i8* getelementptr inbounds ([4 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !284
-  %32 = icmp eq i8* %31, null, !dbg !286
-  br i1 %32, label %36, label %33, !dbg !287
+if.end19:                                         ; preds = %while.body15
+  %call20 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i32* %slen) #6, !dbg !239
+  call void @llvm.dbg.value(metadata !{i8* %call20}, i64 0, metadata !203), !dbg !239
+  %cmp21 = icmp eq i8* %call20, null, !dbg !239
+  br i1 %cmp21, label %while.cond12.backedge, label %if.end23, !dbg !239
 
-; <label>:33                                      ; preds = %29
-  %34 = call i8* @strpbrk(i8* %27, i8* getelementptr inbounds ([4 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !288
-  %35 = icmp eq i8* %34, null, !dbg !289
-  br i1 %35, label %36, label %.backedge, !dbg !290
+if.end23:                                         ; preds = %if.end19
+  %call24 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0), i32* null) #6, !dbg !240
+  call void @llvm.dbg.value(metadata !{i8* %call24}, i64 0, metadata !204), !dbg !240
+  %call25 = call i8* @strpbrk(i8* %call16, i8* getelementptr inbounds ([4 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !241
+  %cmp26 = icmp eq i8* %call25, null, !dbg !241
+  br i1 %cmp26, label %if.end31, label %land.lhs.true27, !dbg !241
 
-; <label>:36                                      ; preds = %33, %29
-  %37 = icmp eq i8* %30, null, !dbg !291
-  br i1 %37, label %41, label %38, !dbg !292
+land.lhs.true27:                                  ; preds = %if.end23
+  %call28 = call i8* @strpbrk(i8* %call20, i8* getelementptr inbounds ([4 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !241
+  %cmp29 = icmp eq i8* %call28, null, !dbg !241
+  br i1 %cmp29, label %if.end31, label %while.cond12.backedge, !dbg !241
 
-; <label>:38                                      ; preds = %36
-  %39 = load i32* %21, align 4, !dbg !268, !tbaa !293
-  %40 = load i8** %22, align 8, !dbg !270, !tbaa !294
-  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([64 x i8]* @.str5, i64 0, i64 0), i32 %39, i8* %40) #6, !dbg !295
-  br label %41, !dbg !295
+if.end31:                                         ; preds = %land.lhs.true27, %if.end23
+  %cmp32 = icmp eq i8* %call24, null, !dbg !242
+  br i1 %cmp32, label %if.end34, label %if.then33, !dbg !242
 
-; <label>:41                                      ; preds = %36, %38
-  %42 = load i32* %18, align 4, !dbg !264, !tbaa !296
-  %43 = add nsw i32 %42, 1, !dbg !298
-  %44 = call i32 @MSAGetSeqidx(%struct.msa_struct* %15, i8* %24, i32 %43) #6, !dbg !299
-  call void @llvm.dbg.value(metadata i32 %44, i64 0, metadata !209, metadata !232), !dbg !300
-  store i32 %44, i32* %18, align 4, !dbg !301, !tbaa !296
-  %45 = sext i32 %44 to i64, !dbg !302
-  %46 = load i8*** %19, align 8, !dbg !266, !tbaa !303
-  %47 = getelementptr inbounds i8** %46, i64 %45, !dbg !302
-  %48 = load i32** %20, align 8, !dbg !267, !tbaa !304
-  %49 = getelementptr inbounds i32* %48, i64 %45, !dbg !305
-  %50 = load i32* %49, align 4, !dbg !305, !tbaa !306
-  call void @llvm.dbg.value(metadata i32* %slen, i64 0, metadata !208, metadata !232), !dbg !276
-  %51 = load i32* %slen, align 4, !dbg !307, !tbaa !306
-  %52 = call i32 @sre_strcat(i8** %47, i32 %50, i8* %27, i32 %51) #6, !dbg !308
-  %53 = load i32** %20, align 8, !dbg !309, !tbaa !304
-  %54 = getelementptr inbounds i32* %53, i64 %45, !dbg !310
-  store i32 %52, i32* %54, align 4, !dbg !311, !tbaa !306
-  br label %.backedge, !dbg !263
+if.then33:                                        ; preds = %if.end31
+  %1 = load i32* %linenumber, align 4, !dbg !237, !tbaa !243
+  %2 = load i8** %fname, align 8, !dbg !237, !tbaa !224
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([64 x i8]* @.str5, i64 0, i64 0), i32 %1, i8* %2) #6, !dbg !237
+  br label %if.end34, !dbg !237
 
-.backedge:                                        ; preds = %41, %23, %26, %33
-  %55 = call i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #6, !dbg !260
-  call void @llvm.dbg.value(metadata i8* %55, i64 0, metadata !207, metadata !232), !dbg !245
-  store i8* %55, i8** %s, align 8, !dbg !261, !tbaa !247
-  %56 = icmp eq i8* %55, null, !dbg !262
-  br i1 %56, label %._crit_edge, label %23, !dbg !263
+if.end34:                                         ; preds = %if.end31, %if.then33
+  %3 = load i32* %lastidx, align 4, !dbg !234, !tbaa !243
+  %add = add nsw i32 %3, 1, !dbg !234
+  %call35 = call i32 @MSAGetSeqidx(%struct.msa_struct* %call11, i8* %call16, i32 %add) #6, !dbg !234
+  call void @llvm.dbg.value(metadata !{i32 %call35}, i64 0, metadata !201), !dbg !234
+  store i32 %call35, i32* %lastidx, align 4, !dbg !244, !tbaa !243
+  %idxprom = sext i32 %call35 to i64, !dbg !236
+  %4 = load i8*** %aseq, align 8, !dbg !236, !tbaa !224
+  %arrayidx = getelementptr inbounds i8** %4, i64 %idxprom, !dbg !236
+  %5 = load i32** %sqlen, align 8, !dbg !236, !tbaa !224
+  %arrayidx38 = getelementptr inbounds i32* %5, i64 %idxprom, !dbg !236
+  %6 = load i32* %arrayidx38, align 4, !dbg !236, !tbaa !243
+  call void @llvm.dbg.value(metadata !{i32* %slen}, i64 0, metadata !200), !dbg !236
+  %7 = load i32* %slen, align 4, !dbg !236, !tbaa !243
+  %call39 = call i32 @sre_strcat(i8** %arrayidx, i32 %6, i8* %call20, i32 %7) #6, !dbg !236
+  %8 = load i32** %sqlen, align 8, !dbg !236, !tbaa !224
+  %arrayidx42 = getelementptr inbounds i32* %8, i64 %idxprom, !dbg !236
+  store i32 %call39, i32* %arrayidx42, align 4, !dbg !236, !tbaa !243
+  br label %while.cond12.backedge, !dbg !245
 
-._crit_edge:                                      ; preds = %.backedge, %14
-  call void @MSAVerifyParse(%struct.msa_struct* %15) #6, !dbg !312
-  br label %.thread, !dbg !313
+while.cond12.backedge:                            ; preds = %if.end34, %while.body15, %if.end19, %land.lhs.true27
+  %call13 = call i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #6, !dbg !233
+  call void @llvm.dbg.value(metadata !{i8* %call13}, i64 0, metadata !199), !dbg !233
+  store i8* %call13, i8** %s, align 8, !dbg !233, !tbaa !224
+  %cmp14 = icmp eq i8* %call13, null, !dbg !233
+  br i1 %cmp14, label %while.end43, label %while.body15, !dbg !233
 
-.thread:                                          ; preds = %.backedge1, %.preheader, %0, %._crit_edge
-  %.0 = phi %struct.msa_struct* [ %15, %._crit_edge ], [ null, %0 ], [ null, %.preheader ], [ null, %.backedge1 ]
-  ret %struct.msa_struct* %.0, !dbg !314
+while.end43:                                      ; preds = %while.cond12.backedge, %if.end10
+  call void @MSAVerifyParse(%struct.msa_struct* %call11) #6, !dbg !246
+  br label %return, !dbg !247
+
+return:                                           ; preds = %while.cond.preheader, %while.cond.backedge, %while.end, %entry, %while.end43
+  %retval.0 = phi %struct.msa_struct* [ %call11, %while.end43 ], [ null, %entry ], [ null, %while.end ], [ null, %while.cond.backedge ], [ null, %while.cond.preheader ]
+  ret %struct.msa_struct* %retval.0, !dbg !248
 }

@@ -1,30 +1,33 @@
-define internal void @set_of_1(%struct.rtx_def* %x, %struct.rtx_def* %pat, i8* nocapture %data1) #1 {
+define internal void @set_of_1(%struct.rtx_def* %x, %struct.rtx_def* %pat, i8* nocapture %data1) #2 {
 entry:
-  %pat1 = getelementptr inbounds i8* %data1, i64 8
-  %0 = bitcast i8* %pat1 to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %0, align 8, !tbaa !0
-  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %x, %struct.rtx_def* %1) #5
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %lor.lhs.false, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !961), !dbg !1415
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pat}, i64 0, metadata !962), !dbg !1416
+  tail call void @llvm.dbg.value(metadata !{i8* %data1}, i64 0, metadata !963), !dbg !1417
+  %pat1 = getelementptr inbounds i8* %data1, i64 8, !dbg !1418
+  %0 = bitcast i8* %pat1 to %struct.rtx_def**, !dbg !1418
+  %1 = load %struct.rtx_def** %0, align 8, !dbg !1418, !tbaa !979
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %x, %struct.rtx_def* %1) #6, !dbg !1418
+  %tobool = icmp eq i32 %call, 0, !dbg !1418
+  br i1 %tobool, label %lor.lhs.false, label %if.then, !dbg !1418
 
 lor.lhs.false:                                    ; preds = %entry
-  %2 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 66
-  br i1 %cmp, label %if.end, label %land.lhs.true
+  %2 = bitcast %struct.rtx_def* %x to i32*, !dbg !1418
+  %bf.load = load i32* %2, align 8, !dbg !1418
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1418
+  %cmp = icmp eq i32 %bf.clear, 66, !dbg !1418
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !1418
 
 land.lhs.true:                                    ; preds = %lor.lhs.false
-  %3 = load %struct.rtx_def** %0, align 8, !tbaa !0
-  %call3 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %3, %struct.rtx_def* %x) #4
-  %tobool4 = icmp eq i32 %call3, 0
-  br i1 %tobool4, label %if.end, label %if.then
+  %3 = load %struct.rtx_def** %0, align 8, !dbg !1419, !tbaa !979
+  %call3 = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %3, %struct.rtx_def* %x) #5, !dbg !1419
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !1419
+  br i1 %tobool4, label %if.end, label %if.then, !dbg !1419
 
 if.then:                                          ; preds = %land.lhs.true, %entry
-  %found = bitcast i8* %data1 to %struct.rtx_def**
-  store %struct.rtx_def* %pat, %struct.rtx_def** %found, align 8, !tbaa !0
-  br label %if.end
+  %found = bitcast i8* %data1 to %struct.rtx_def**, !dbg !1420
+  store %struct.rtx_def* %pat, %struct.rtx_def** %found, align 8, !dbg !1420, !tbaa !979
+  br label %if.end, !dbg !1420
 
 if.end:                                           ; preds = %land.lhs.true, %lor.lhs.false, %if.then
-  ret void
+  ret void, !dbg !1421
 }

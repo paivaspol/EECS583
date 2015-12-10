@@ -1,30 +1,31 @@
-define void @_ZN3pov10MTransposeEPA4_dS1_([4 x double]* nocapture %result, [4 x double]* nocapture readonly %matrix1) #0 {
-  tail call void @llvm.dbg.value(metadata [4 x double]* %result, i64 0, metadata !102, metadata !650), !dbg !1396
-  tail call void @llvm.dbg.value(metadata [4 x double]* %matrix1, i64 0, metadata !103, metadata !650), !dbg !1397
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !104, metadata !650), !dbg !1398
-  br label %.preheader, !dbg !1399
+define void @_ZN3pov10MTransposeEPA4_dS1_([4 x double]* nocapture %result, [4 x double]* nocapture %matrix1) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{[4 x double]* %result}, i64 0, metadata !64), !dbg !495
+  tail call void @llvm.dbg.value(metadata !{[4 x double]* %matrix1}, i64 0, metadata !65), !dbg !495
+  tail call void @llvm.dbg.value(metadata !11, i64 0, metadata !66), !dbg !496
+  br label %for.cond1.preheader, !dbg !496
 
-.preheader:                                       ; preds = %7, %0
-  %indvars.iv3 = phi i64 [ 0, %0 ], [ %indvars.iv.next4, %7 ]
-  br label %1, !dbg !1401
+for.cond1.preheader:                              ; preds = %for.inc10, %entry
+  %indvars.iv20 = phi i64 [ 0, %entry ], [ %indvars.iv.next21, %for.inc10 ]
+  br label %for.body3, !dbg !498
 
-; <label>:1                                       ; preds = %1, %.preheader
-  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds [4 x double]* %matrix1, i64 %indvars.iv, i64 %indvars.iv3, !dbg !1405
-  %3 = bitcast double* %2 to i64*, !dbg !1405
-  %4 = load i64* %3, align 8, !dbg !1405, !tbaa !677
-  %5 = getelementptr inbounds [4 x double]* %result, i64 %indvars.iv3, i64 %indvars.iv, !dbg !1408
-  %6 = bitcast double* %5 to i64*, !dbg !1409
-  store i64 %4, i64* %6, align 8, !dbg !1409, !tbaa !677
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1401
-  %exitcond = icmp eq i64 %indvars.iv.next, 4, !dbg !1401
-  br i1 %exitcond, label %7, label %1, !dbg !1401
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %arrayidx5 = getelementptr inbounds [4 x double]* %matrix1, i64 %indvars.iv, i64 %indvars.iv20, !dbg !501
+  %0 = load double* %arrayidx5, align 8, !dbg !501, !tbaa !397
+  %arrayidx9 = getelementptr inbounds [4 x double]* %result, i64 %indvars.iv20, i64 %indvars.iv, !dbg !501
+  store double %0, double* %arrayidx9, align 8, !dbg !501, !tbaa !397
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !498
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !498
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !498
+  br i1 %exitcond, label %for.inc10, label %for.body3, !dbg !498
 
-; <label>:7                                       ; preds = %1
-  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1, !dbg !1399
-  %exitcond5 = icmp eq i64 %indvars.iv.next4, 4, !dbg !1399
-  br i1 %exitcond5, label %8, label %.preheader, !dbg !1399
+for.inc10:                                        ; preds = %for.body3
+  %indvars.iv.next21 = add i64 %indvars.iv20, 1, !dbg !496
+  %lftr.wideiv22 = trunc i64 %indvars.iv.next21 to i32, !dbg !496
+  %exitcond23 = icmp eq i32 %lftr.wideiv22, 4, !dbg !496
+  br i1 %exitcond23, label %for.end12, label %for.cond1.preheader, !dbg !496
 
-; <label>:8                                       ; preds = %7
-  ret void, !dbg !1410
+for.end12:                                        ; preds = %for.inc10
+  ret void, !dbg !503
 }

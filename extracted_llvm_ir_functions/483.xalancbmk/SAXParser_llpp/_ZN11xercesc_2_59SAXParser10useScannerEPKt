@@ -1,0 +1,41 @@
+define void @_ZN11xercesc_2_59SAXParser10useScannerEPKt(%"class.xercesc_2_5::SAXParser"* nocapture %this, i16* %scannerName) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::SAXParser"* %this}, i64 0, metadata !5862), !dbg !7862
+  tail call void @llvm.dbg.value(metadata !{i16* %scannerName}, i64 0, metadata !5863), !dbg !7862
+  %fValidator = getelementptr inbounds %"class.xercesc_2_5::SAXParser"* %this, i64 0, i32 20, !dbg !7863
+  %0 = load %"class.xercesc_2_5::XMLValidator"** %fValidator, align 8, !dbg !7863, !tbaa !7432
+  %fGrammarResolver = getelementptr inbounds %"class.xercesc_2_5::SAXParser"* %this, i64 0, i32 18, !dbg !7863
+  %1 = load %"class.xercesc_2_5::GrammarResolver"** %fGrammarResolver, align 8, !dbg !7863, !tbaa !7432
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::SAXParser"* %this, i64 0, i32 21, !dbg !7863
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !7863, !tbaa !7432
+  %call = tail call %"class.xercesc_2_5::XMLScanner"* @_ZN11xercesc_2_518XMLScannerResolver14resolveScannerEPKtPNS_12XMLValidatorEPNS_15GrammarResolverEPNS_13MemoryManagerE(i16* %scannerName, %"class.xercesc_2_5::XMLValidator"* %0, %"class.xercesc_2_5::GrammarResolver"* %1, %"class.xercesc_2_5::MemoryManager"* %2) #9, !dbg !7863
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLScanner"* %call}, i64 0, metadata !5864), !dbg !7863
+  %tobool = icmp eq %"class.xercesc_2_5::XMLScanner"* %call, null, !dbg !7864
+  br i1 %tobool, label %if.end, label %if.then, !dbg !7864
+
+if.then:                                          ; preds = %entry
+  %fScanner = getelementptr inbounds %"class.xercesc_2_5::SAXParser"* %this, i64 0, i32 17, !dbg !7865
+  %3 = load %"class.xercesc_2_5::XMLScanner"** %fScanner, align 8, !dbg !7865, !tbaa !7432
+  tail call void @_ZN11xercesc_2_510XMLScanner16setParseSettingsEPS0_(%"class.xercesc_2_5::XMLScanner"* %call, %"class.xercesc_2_5::XMLScanner"* %3) #9, !dbg !7865
+  %fURIStringPool = getelementptr inbounds %"class.xercesc_2_5::SAXParser"* %this, i64 0, i32 19, !dbg !7867
+  %4 = load %"class.xercesc_2_5::XMLStringPool"** %fURIStringPool, align 8, !dbg !7867, !tbaa !7432
+  tail call void @_ZN11xercesc_2_510XMLScanner16setURIStringPoolEPNS_13XMLStringPoolE(%"class.xercesc_2_5::XMLScanner"* %call, %"class.xercesc_2_5::XMLStringPool"* %4) #9, !dbg !7867
+  %5 = load %"class.xercesc_2_5::XMLScanner"** %fScanner, align 8, !dbg !7868, !tbaa !7432
+  %isnull = icmp eq %"class.xercesc_2_5::XMLScanner"* %5, null, !dbg !7868
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !7868
+
+delete.notnull:                                   ; preds = %if.then
+  %6 = bitcast %"class.xercesc_2_5::XMLScanner"* %5 to void (%"class.xercesc_2_5::XMLScanner"*)***, !dbg !7868
+  %vtable = load void (%"class.xercesc_2_5::XMLScanner"*)*** %6, align 8, !dbg !7868, !tbaa !7427
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::XMLScanner"*)** %vtable, i64 1, !dbg !7868
+  %7 = load void (%"class.xercesc_2_5::XMLScanner"*)** %vfn, align 8, !dbg !7868
+  tail call void %7(%"class.xercesc_2_5::XMLScanner"* %5) #9, !dbg !7868
+  br label %delete.end, !dbg !7868
+
+delete.end:                                       ; preds = %delete.notnull, %if.then
+  store %"class.xercesc_2_5::XMLScanner"* %call, %"class.xercesc_2_5::XMLScanner"** %fScanner, align 8, !dbg !7869, !tbaa !7432
+  br label %if.end, !dbg !7870
+
+if.end:                                           ; preds = %entry, %delete.end
+  ret void, !dbg !7871
+}

@@ -1,65 +1,66 @@
-define void @IIheap_print(%struct._IIheap* %heap, %struct.__sFILE* %fp) #0 {
+define void @IIheap_print(%struct._IIheap* %heap, %struct._IO_FILE* %fp) #0 {
+entry:
   %ierr = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct._IIheap* %heap, i64 0, metadata !132, metadata !170), !dbg !497
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !133, metadata !170), !dbg !498
-  %1 = icmp eq %struct._IIheap* %heap, null, !dbg !499
-  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !501
-  %or.cond = or i1 %1, %2, !dbg !502
-  br i1 %or.cond, label %3, label %6, !dbg !502
+  call void @llvm.dbg.value(metadata !{%struct._IIheap* %heap}, i64 0, metadata !124), !dbg !340
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !125), !dbg !341
+  call void @llvm.dbg.declare(metadata !{i32* %ierr}, metadata !126), !dbg !342
+  %cmp = icmp eq %struct._IIheap* %heap, null, !dbg !343
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null, !dbg !343
+  %or.cond = or i1 %cmp, %cmp1, !dbg !343
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !343
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !503, !tbaa !175
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([75 x i8]* @.str12, i64 0, i64 0), %struct._IIheap* %heap, %struct.__sFILE* %fp) #7, !dbg !505
-  tail call void @exit(i32 -1) #8, !dbg !506
-  unreachable, !dbg !506
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !344, !tbaa !158
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([75 x i8]* @.str12, i64 0, i64 0), %struct._IIheap* %heap, %struct._IO_FILE* %fp) #7, !dbg !344
+  call void @exit(i32 -1) #8, !dbg !346
+  unreachable, !dbg !346
 
-; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 0, !dbg !507
-  %8 = load i32* %7, align 4, !dbg !507, !tbaa !278
-  %9 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 1, !dbg !508
-  %10 = load i32* %9, align 4, !dbg !508, !tbaa !253
-  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([41 x i8]* @.str13, i64 0, i64 0), i32 %8, i32 %10) #7, !dbg !509
-  %12 = load i32* %7, align 4, !dbg !510, !tbaa !278
-  %13 = icmp sgt i32 %12, 0, !dbg !512
-  br i1 %13, label %14, label %37, !dbg !513
+if.end:                                           ; preds = %entry
+  %size = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 0, !dbg !347
+  %1 = load i32* %size, align 4, !dbg !347, !tbaa !207
+  %maxsize = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 1, !dbg !347
+  %2 = load i32* %maxsize, align 4, !dbg !347, !tbaa !207
+  %call2 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([41 x i8]* @.str13, i64 0, i64 0), i32 %1, i32 %2) #7, !dbg !347
+  %3 = load i32* %size, align 4, !dbg !348, !tbaa !207
+  %cmp4 = icmp sgt i32 %3, 0, !dbg !348
+  br i1 %cmp4, label %if.then5, label %if.end15, !dbg !348
 
-; <label>:14                                      ; preds = %6
-  %15 = tail call i64 @fwrite(i8* getelementptr inbounds ([41 x i8]* @.str14, i64 0, i64 0), i64 40, i64 1, %struct.__sFILE* %fp), !dbg !514
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !135, metadata !170), !dbg !516
-  %16 = load i32* %7, align 4, !dbg !517, !tbaa !278
-  %17 = icmp sgt i32 %16, 0, !dbg !520
-  br i1 %17, label %.lr.ph, label %._crit_edge, !dbg !521
+if.then5:                                         ; preds = %if.end
+  %4 = call i64 @fwrite(i8* getelementptr inbounds ([41 x i8]* @.str14, i64 0, i64 0), i64 40, i64 1, %struct._IO_FILE* %fp), !dbg !349
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !127), !dbg !351
+  %5 = load i32* %size, align 4, !dbg !351, !tbaa !207
+  %cmp834 = icmp sgt i32 %5, 0, !dbg !351
+  br i1 %cmp834, label %for.body.lr.ph, label %for.end, !dbg !351
 
-.lr.ph:                                           ; preds = %14
-  %18 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 3, !dbg !522
-  %19 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 4, !dbg !524
-  br label %20, !dbg !521
+for.body.lr.ph:                                   ; preds = %if.then5
+  %keys = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 3, !dbg !353
+  %values = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 4, !dbg !353
+  br label %for.body, !dbg !351
 
-; <label>:20                                      ; preds = %.lr.ph, %20
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %20 ]
-  %21 = load i32** %18, align 8, !dbg !522, !tbaa !211
-  %22 = getelementptr inbounds i32* %21, i64 %indvars.iv, !dbg !525
-  %23 = load i32* %22, align 4, !dbg !525, !tbaa !284
-  %24 = load i32** %19, align 8, !dbg !524, !tbaa !219
-  %25 = getelementptr inbounds i32* %24, i64 %indvars.iv, !dbg !526
-  %26 = load i32* %25, align 4, !dbg !526, !tbaa !284
-  %27 = trunc i64 %indvars.iv to i32, !dbg !527
-  %28 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([14 x i8]* @.str15, i64 0, i64 0), i32 %27, i32 %23, i32 %26) #7, !dbg !527
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !521
-  %29 = load i32* %7, align 4, !dbg !517, !tbaa !278
-  %30 = sext i32 %29 to i64, !dbg !520
-  %31 = icmp slt i64 %indvars.iv.next, %30, !dbg !520
-  br i1 %31, label %20, label %._crit_edge, !dbg !521
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %6 = load i32** %keys, align 8, !dbg !353, !tbaa !158
+  %arrayidx = getelementptr inbounds i32* %6, i64 %indvars.iv, !dbg !353
+  %7 = load i32* %arrayidx, align 4, !dbg !353, !tbaa !207
+  %8 = load i32** %values, align 8, !dbg !353, !tbaa !158
+  %arrayidx10 = getelementptr inbounds i32* %8, i64 %indvars.iv, !dbg !353
+  %9 = load i32* %arrayidx10, align 4, !dbg !353, !tbaa !207
+  %10 = trunc i64 %indvars.iv to i32, !dbg !353
+  %call11 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([14 x i8]* @.str15, i64 0, i64 0), i32 %10, i32 %7, i32 %9) #7, !dbg !353
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !351
+  %11 = load i32* %size, align 4, !dbg !351, !tbaa !207
+  %12 = trunc i64 %indvars.iv.next to i32, !dbg !351
+  %cmp8 = icmp slt i32 %12, %11, !dbg !351
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !351
 
-._crit_edge:                                      ; preds = %20, %14
-  %32 = tail call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str16, i64 0, i64 0), i64 18, i64 1, %struct.__sFILE* %fp), !dbg !528
-  %33 = load i32* %9, align 4, !dbg !529, !tbaa !253
-  %34 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 2, !dbg !530
-  %35 = load i32** %34, align 8, !dbg !530, !tbaa !201
-  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !134, metadata !170), !dbg !531
-  %36 = call i32 @IVfp80(%struct.__sFILE* %fp, i32 %33, i32* %35, i32 80, i32* %ierr) #7, !dbg !532
-  br label %37, !dbg !533
+for.end:                                          ; preds = %for.body, %if.then5
+  %13 = call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str16, i64 0, i64 0), i64 18, i64 1, %struct._IO_FILE* %fp), !dbg !355
+  %14 = load i32* %maxsize, align 4, !dbg !356, !tbaa !207
+  %heapLoc = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 2, !dbg !356
+  %15 = load i32** %heapLoc, align 8, !dbg !356, !tbaa !158
+  %call14 = call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %14, i32* %15, i32 80, i32* %ierr) #7, !dbg !356
+  br label %if.end15, !dbg !357
 
-; <label>:37                                      ; preds = %._crit_edge, %6
-  ret void, !dbg !534
+if.end15:                                         ; preds = %for.end, %if.end
+  ret void, !dbg !358
 }

@@ -1,25 +1,27 @@
 define noalias %struct.uStringList* @Util_StringListCreate(i32 %size) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !31, metadata !63), !dbg !64
-  %1 = tail call i8* @malloc(i64 32) #5, !dbg !65
-  %2 = bitcast i8* %1 to %struct.uStringList*, !dbg !66
-  tail call void @llvm.dbg.value(metadata %struct.uStringList* %2, i64 0, metadata !32, metadata !63), !dbg !67
-  %3 = icmp eq i8* %1, null, !dbg !68
-  br i1 %3, label %13, label %4, !dbg !70
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !31), !dbg !59
+  %call = tail call noalias i8* @malloc(i64 32) #5, !dbg !60
+  %0 = bitcast i8* %call to %struct.uStringList*, !dbg !60
+  tail call void @llvm.dbg.value(metadata !{%struct.uStringList* %0}, i64 0, metadata !32), !dbg !60
+  %tobool = icmp eq i8* %call, null, !dbg !61
+  br i1 %tobool, label %if.end, label %if.then, !dbg !61
 
-; <label>:4                                       ; preds = %0
-  %5 = add nsw i32 %size, 1, !dbg !71
-  %6 = sext i32 %5 to i64, !dbg !73
-  %7 = tail call i8* @calloc(i64 %6, i64 16) #5, !dbg !74
-  %8 = getelementptr inbounds i8* %1, i64 8, !dbg !75
-  %9 = bitcast i8* %8 to i8**, !dbg !76
-  store i8* %7, i8** %9, align 8, !dbg !76, !tbaa !77
-  %10 = getelementptr inbounds i8* %1, i64 24, !dbg !83
-  %11 = bitcast i8* %10 to %struct.iInternalStringList**, !dbg !83
-  store %struct.iInternalStringList* null, %struct.iInternalStringList** %11, align 8, !dbg !84, !tbaa !85
-  %12 = bitcast i8* %1 to i32*, !dbg !86
-  store i32 0, i32* %12, align 4, !dbg !87, !tbaa !88
-  br label %13, !dbg !89
+if.then:                                          ; preds = %entry
+  %add = add nsw i32 %size, 1, !dbg !62
+  %conv = sext i32 %add to i64, !dbg !62
+  %call1 = tail call noalias i8* @calloc(i64 %conv, i64 16) #5, !dbg !62
+  %1 = bitcast i8* %call1 to %struct.iInternalStringList*, !dbg !62
+  %list = getelementptr inbounds i8* %call, i64 8, !dbg !62
+  %2 = bitcast i8* %list to %struct.iInternalStringList**, !dbg !62
+  store %struct.iInternalStringList* %1, %struct.iInternalStringList** %2, align 8, !dbg !62, !tbaa !64
+  %current = getelementptr inbounds i8* %call, i64 24, !dbg !67
+  %3 = bitcast i8* %current to %struct.iInternalStringList**, !dbg !67
+  store %struct.iInternalStringList* null, %struct.iInternalStringList** %3, align 8, !dbg !67, !tbaa !64
+  %fill = bitcast i8* %call to i32*, !dbg !68
+  store i32 0, i32* %fill, align 4, !dbg !68, !tbaa !69
+  br label %if.end, !dbg !70
 
-; <label>:13                                      ; preds = %0, %4
-  ret %struct.uStringList* %2, !dbg !90
+if.end:                                           ; preds = %entry, %if.then
+  ret %struct.uStringList* %0, !dbg !71
 }

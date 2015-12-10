@@ -1,47 +1,51 @@
 define internal fastcc void @remove_invalid_refs(i32 %regno) #0 {
 entry:
-  %add = add i32 %regno, 1
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !1138), !dbg !4261
+  tail call void @llvm.dbg.value(metadata !340, i64 0, metadata !1139), !dbg !4262
+  %add = add i32 %regno, 1, !dbg !4264
+  br label %for.body, !dbg !4262
 
 for.body:                                         ; preds = %for.inc6, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc6 ]
-  %arrayidx = getelementptr inbounds [32 x %struct.table_elt*]* @table, i64 0, i64 %indvars.iv
-  %0 = load %struct.table_elt** %arrayidx, align 8, !tbaa !0
-  %tobool16 = icmp eq %struct.table_elt* %0, null
-  br i1 %tobool16, label %for.inc6, label %for.body2
+  %arrayidx = getelementptr inbounds [32 x %struct.table_elt*]* @table, i64 0, i64 %indvars.iv, !dbg !4267
+  %0 = load %struct.table_elt** %arrayidx, align 8, !dbg !4267, !tbaa !1677
+  tail call void @llvm.dbg.value(metadata !{%struct.table_elt* %0}, i64 0, metadata !1140), !dbg !4267
+  %tobool16 = icmp eq %struct.table_elt* %0, null, !dbg !4267
+  br i1 %tobool16, label %for.inc6, label %for.body2, !dbg !4267
 
 for.body2:                                        ; preds = %for.body, %for.cond1.backedge
   %p.017 = phi %struct.table_elt* [ %1, %for.cond1.backedge ], [ %0, %for.body ]
-  %next_same_hash = getelementptr inbounds %struct.table_elt* %p.017, i64 0, i32 2
-  %1 = load %struct.table_elt** %next_same_hash, align 8, !tbaa !0
-  %exp = getelementptr inbounds %struct.table_elt* %p.017, i64 0, i32 0
-  %2 = load %struct.rtx_def** %exp, align 8, !tbaa !0
-  %3 = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load = load i32* %3, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp3 = icmp eq i32 %bf.clear, 61
-  br i1 %cmp3, label %for.cond1.backedge, label %land.lhs.true
+  %next_same_hash = getelementptr inbounds %struct.table_elt* %p.017, i64 0, i32 2, !dbg !4268
+  %1 = load %struct.table_elt** %next_same_hash, align 8, !dbg !4268, !tbaa !1677
+  tail call void @llvm.dbg.value(metadata !{%struct.table_elt* %1}, i64 0, metadata !1141), !dbg !4268
+  %exp = getelementptr inbounds %struct.table_elt* %p.017, i64 0, i32 0, !dbg !4269
+  %2 = load %struct.rtx_def** %exp, align 8, !dbg !4269, !tbaa !1677
+  %3 = bitcast %struct.rtx_def* %2 to i32*, !dbg !4269
+  %bf.load = load i32* %3, align 8, !dbg !4269
+  %bf.clear = and i32 %bf.load, 65535, !dbg !4269
+  %cmp3 = icmp eq i32 %bf.clear, 61, !dbg !4269
+  br i1 %cmp3, label %for.cond1.backedge, label %land.lhs.true, !dbg !4269
 
 land.lhs.true:                                    ; preds = %for.body2
-  %call = tail call i32 @refers_to_regno_p(i32 %regno, i32 %add, %struct.rtx_def* %2, %struct.rtx_def** null) #6
-  %tobool5 = icmp eq i32 %call, 0
-  br i1 %tobool5, label %for.cond1.backedge, label %if.then
+  %call = tail call i32 @refers_to_regno_p(i32 %regno, i32 %add, %struct.rtx_def* %2, %struct.rtx_def** null) #7, !dbg !4264
+  %tobool5 = icmp eq i32 %call, 0, !dbg !4264
+  br i1 %tobool5, label %for.cond1.backedge, label %if.then, !dbg !4264
 
 for.cond1.backedge:                               ; preds = %land.lhs.true, %for.body2, %if.then
-  %tobool = icmp eq %struct.table_elt* %1, null
-  br i1 %tobool, label %for.inc6, label %for.body2
+  %tobool = icmp eq %struct.table_elt* %1, null, !dbg !4267
+  br i1 %tobool, label %for.inc6, label %for.body2, !dbg !4267
 
 if.then:                                          ; preds = %land.lhs.true
-  %4 = trunc i64 %indvars.iv to i32
-  tail call fastcc void @remove_from_table(%struct.table_elt* %p.017, i32 %4) #7
-  br label %for.cond1.backedge
+  %4 = trunc i64 %indvars.iv to i32, !dbg !4270
+  tail call fastcc void @remove_from_table(%struct.table_elt* %p.017, i32 %4) #8, !dbg !4270
+  br label %for.cond1.backedge, !dbg !4270
 
 for.inc6:                                         ; preds = %for.cond1.backedge, %for.body
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 32
-  br i1 %exitcond, label %for.end7, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !4262
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !4262
+  %exitcond = icmp eq i32 %lftr.wideiv, 32, !dbg !4262
+  br i1 %exitcond, label %for.end7, label %for.body, !dbg !4262
 
 for.end7:                                         ; preds = %for.inc6
-  ret void
+  ret void, !dbg !4271
 }

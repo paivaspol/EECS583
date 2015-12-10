@@ -1,0 +1,32 @@
+define %"class.xercesc_2_5::Token"* @_ZN11xercesc_2_510RegxParser11processPlusEPNS_5TokenE(%"class.xercesc_2_5::RegxParser"* nocapture %this, %"class.xercesc_2_5::Token"* %tok) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RegxParser"* %this}, i64 0, metadata !2201), !dbg !3831
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::Token"* %tok}, i64 0, metadata !2202), !dbg !3831
+  tail call void @_ZN11xercesc_2_510RegxParser11processNextEv(%"class.xercesc_2_5::RegxParser"* %this) #9, !dbg !3832
+  %fState = getelementptr inbounds %"class.xercesc_2_5::RegxParser"* %this, i64 0, i32 8, !dbg !3833
+  %0 = load i16* %fState, align 2, !dbg !3833, !tbaa !3280
+  %cmp = icmp eq i16 %0, 5, !dbg !3833
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3833
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN11xercesc_2_510RegxParser11processNextEv(%"class.xercesc_2_5::RegxParser"* %this) #9, !dbg !3834
+  %fTokenFactory = getelementptr inbounds %"class.xercesc_2_5::RegxParser"* %this, i64 0, i32 12, !dbg !3836
+  %1 = load %"class.xercesc_2_5::TokenFactory"** %fTokenFactory, align 8, !dbg !3836, !tbaa !3278
+  %call = tail call %"class.xercesc_2_5::ClosureToken"* @_ZN11xercesc_2_512TokenFactory13createClosureEPNS_5TokenEb(%"class.xercesc_2_5::TokenFactory"* %1, %"class.xercesc_2_5::Token"* %tok, i1 zeroext true) #9, !dbg !3837
+  %2 = getelementptr inbounds %"class.xercesc_2_5::ClosureToken"* %call, i64 0, i32 0, !dbg !3837
+  %call3 = tail call %"class.xercesc_2_5::ConcatToken"* @_ZN11xercesc_2_512TokenFactory12createConcatEPNS_5TokenES2_(%"class.xercesc_2_5::TokenFactory"* %1, %"class.xercesc_2_5::Token"* %tok, %"class.xercesc_2_5::Token"* %2) #9, !dbg !3837
+  br label %return, !dbg !3837
+
+if.end:                                           ; preds = %entry
+  %fTokenFactory4 = getelementptr inbounds %"class.xercesc_2_5::RegxParser"* %this, i64 0, i32 12, !dbg !3838
+  %3 = load %"class.xercesc_2_5::TokenFactory"** %fTokenFactory4, align 8, !dbg !3838, !tbaa !3278
+  %call6 = tail call %"class.xercesc_2_5::ClosureToken"* @_ZN11xercesc_2_512TokenFactory13createClosureEPNS_5TokenEb(%"class.xercesc_2_5::TokenFactory"* %3, %"class.xercesc_2_5::Token"* %tok, i1 zeroext false) #9, !dbg !3839
+  %4 = getelementptr inbounds %"class.xercesc_2_5::ClosureToken"* %call6, i64 0, i32 0, !dbg !3839
+  %call7 = tail call %"class.xercesc_2_5::ConcatToken"* @_ZN11xercesc_2_512TokenFactory12createConcatEPNS_5TokenES2_(%"class.xercesc_2_5::TokenFactory"* %3, %"class.xercesc_2_5::Token"* %tok, %"class.xercesc_2_5::Token"* %4) #9, !dbg !3839
+  br label %return, !dbg !3839
+
+return:                                           ; preds = %if.end, %if.then
+  %call3.pn = phi %"class.xercesc_2_5::ConcatToken"* [ %call3, %if.then ], [ %call7, %if.end ]
+  %retval.0 = getelementptr inbounds %"class.xercesc_2_5::ConcatToken"* %call3.pn, i64 0, i32 0, !dbg !3837
+  ret %"class.xercesc_2_5::Token"* %retval.0, !dbg !3840
+}

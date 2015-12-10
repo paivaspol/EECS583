@@ -1,55 +1,23 @@
 define internal fastcc zeroext i1 @_ZN3povL11Skip_SpacesEv() #0 {
-  br label %1, !dbg !3772
+entry:
+  br label %while.body, !dbg !2547
 
-; <label>:1                                       ; preds = %_Z7isspacei.exit, %0
-  %2 = tail call fastcc i32 @_ZN3povL9Echo_getcEv() #11, !dbg !3773
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !1399, metadata !2141), !dbg !3775
-  %3 = icmp eq i32 %2, -1, !dbg !3776
-  br i1 %3, label %.loopexit, label %4, !dbg !3778
+while.body:                                       ; preds = %if.end, %entry
+  %call = tail call fastcc i32 @_ZN3povL9Echo_getcEv() #9, !dbg !2548
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1385), !dbg !2548
+  %cmp = icmp eq i32 %call, -1, !dbg !2550
+  br i1 %cmp, label %return, label %if.end, !dbg !2550
 
-; <label>:4                                       ; preds = %1
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !1405, metadata !2141), !dbg !3779
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !1411, metadata !2141), !dbg !3782
-  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !1412, metadata !2141), !dbg !3784
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !1415, metadata !2141), !dbg !3785
-  %5 = icmp ult i32 %2, 128, !dbg !3787
-  br i1 %5, label %6, label %11, !dbg !3788
+if.end:                                           ; preds = %while.body
+  %call1 = tail call i32 @isspace(i32 %call) #10, !dbg !2551
+  %tobool = icmp eq i32 %call1, 0, !dbg !2551
+  br i1 %tobool, label %while.end, label %while.body, !dbg !2551
 
-; <label>:6                                       ; preds = %4
-  %7 = sext i32 %2 to i64, !dbg !3789
-  %8 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %7, !dbg !3789
-  %9 = load i32* %8, align 4, !dbg !3789, !tbaa !2146
-  %10 = and i32 %9, 16384, !dbg !3790
-  br label %_Z7isspacei.exit, !dbg !3788
+while.end:                                        ; preds = %if.end
+  tail call fastcc void @_ZN3povL11Echo_ungetcEi(i32 %call) #9, !dbg !2552
+  br label %return, !dbg !2553
 
-; <label>:11                                      ; preds = %4
-  %12 = tail call i32 @__maskrune(i32 %2, i64 16384) #11, !dbg !3791
-  br label %_Z7isspacei.exit, !dbg !3788
-
-_Z7isspacei.exit:                                 ; preds = %6, %11
-  %.sink1.i.in.i = phi i32 [ %10, %6 ], [ %12, %11 ], !dbg !3792
-  %.sink1.i.i = icmp eq i32 %.sink1.i.in.i, 0, !dbg !3793
-  br i1 %.sink1.i.i, label %13, label %1, !dbg !3794
-
-; <label>:13                                      ; preds = %_Z7isspacei.exit
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !1471, metadata !2141), !dbg !3795
-  %14 = load i32* @_ZN3pov9Echo_IndxE, align 4, !dbg !3797, !tbaa !2146
-  %15 = icmp sgt i32 %14, 0, !dbg !3798
-  br i1 %15, label %16, label %_ZN3povL11Echo_ungetcEi.exit, !dbg !3799
-
-; <label>:16                                      ; preds = %13
-  %17 = add nsw i32 %14, -1, !dbg !3800
-  store i32 %17, i32* @_ZN3pov9Echo_IndxE, align 4, !dbg !3800, !tbaa !2146
-  br label %_ZN3povL11Echo_ungetcEi.exit, !dbg !3801
-
-_ZN3povL11Echo_ungetcEi.exit:                     ; preds = %13, %16
-  %18 = load %"struct.pov::InputFileData"** @_ZN3pov10Input_FileE, align 8, !dbg !3802, !tbaa !2174
-  %19 = getelementptr inbounds %"struct.pov::InputFileData"* %18, i64 0, i32 0, !dbg !3803
-  %20 = load %"class.pov_base::ITextStream"** %19, align 8, !dbg !3803, !tbaa !2176
-  tail call void @_ZN8pov_base11ITextStream9ungetcharEi(%"class.pov_base::ITextStream"* %20, i32 %2) #11, !dbg !3802
-  br label %.loopexit, !dbg !3804
-
-.loopexit:                                        ; preds = %1, %_ZN3povL11Echo_ungetcEi.exit
-  %.0 = phi i1 [ true, %_ZN3povL11Echo_ungetcEi.exit ], [ false, %1 ]
-  ret i1 %.0, !dbg !3805
+return:                                           ; preds = %while.body, %while.end
+  %retval.0 = phi i1 [ true, %while.end ], [ false, %while.body ]
+  ret i1 %retval.0, !dbg !2553
 }

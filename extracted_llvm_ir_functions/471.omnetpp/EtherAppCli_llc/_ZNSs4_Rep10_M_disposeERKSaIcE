@@ -1,0 +1,43 @@
+define available_externally void @_ZNSs4_Rep10_M_disposeERKSaIcE(%"struct.std::basic_string<char, std::char_traits<char>, std::allocator<char> >::_Rep"* %this, %"class.std::allocator"* %__a) #8 align 2 {
+entry:
+  %.atomicdst.i.i = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%"struct.std::basic_string<char, std::char_traits<char>, std::allocator<char> >::_Rep"* %this}, i64 0, metadata !5194), !dbg !5847
+  call void @llvm.dbg.value(metadata !{%"class.std::allocator"* %__a}, i64 0, metadata !5195), !dbg !5847
+  %cmp = icmp eq %"struct.std::basic_string<char, std::char_traits<char>, std::allocator<char> >::_Rep"* %this, bitcast ([0 x i64]* @_ZNSs4_Rep20_S_empty_rep_storageE to %"struct.std::basic_string<char, std::char_traits<char>, std::allocator<char> >::_Rep"*), !dbg !5848
+  br i1 %cmp, label %if.end5, label %if.then, !dbg !5848, !prof !5850
+
+if.then:                                          ; preds = %entry
+  %_M_refcount = getelementptr inbounds %"struct.std::basic_string<char, std::char_traits<char>, std::allocator<char> >::_Rep"* %this, i64 0, i32 0, i32 2, !dbg !5851
+  call void @llvm.dbg.value(metadata !5853, i64 0, metadata !5854) #1, !dbg !5855
+  br i1 icmp ne (i8* bitcast (i32 (i32*, void (i8*)*)* @__pthread_key_create to i8*), i8* null), label %if.then.i, label %if.else.i, !dbg !5856
+
+if.then.i:                                        ; preds = %if.then
+  %.atomicdst.i.i.0.cast = bitcast i32* %.atomicdst.i.i to i8*, !dbg !5858
+  call void @llvm.lifetime.start(i64 4, i8* %.atomicdst.i.i.0.cast), !dbg !5858
+  call void @llvm.dbg.value(metadata !5853, i64 0, metadata !5860) #1, !dbg !5858
+  %0 = atomicrmw volatile add i32* %_M_refcount, i32 -1 acq_rel, !dbg !5861
+  store i32 %0, i32* %.atomicdst.i.i, align 4, !dbg !5861
+  %.atomicdst.i.i.0.load = load volatile i32* %.atomicdst.i.i, align 4, !dbg !5861
+  call void @llvm.lifetime.end(i64 4, i8* %.atomicdst.i.i.0.cast), !dbg !5861
+  br label %_ZN9__gnu_cxxL27__exchange_and_add_dispatchEPii.exit, !dbg !5859
+
+if.else.i:                                        ; preds = %if.then
+  call void @llvm.dbg.value(metadata !5853, i64 0, metadata !5862) #1, !dbg !5864
+  %1 = load i32* %_M_refcount, align 4, !dbg !5865, !tbaa !5567
+  call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !5866) #1, !dbg !5865
+  %add.i.i = add nsw i32 %1, -1, !dbg !5867
+  store i32 %add.i.i, i32* %_M_refcount, align 4, !dbg !5867, !tbaa !5567
+  br label %_ZN9__gnu_cxxL27__exchange_and_add_dispatchEPii.exit, !dbg !5863
+
+_ZN9__gnu_cxxL27__exchange_and_add_dispatchEPii.exit: ; preds = %if.then.i, %if.else.i
+  %retval.0.i = phi i32 [ %.atomicdst.i.i.0.load, %if.then.i ], [ %1, %if.else.i ]
+  %cmp3 = icmp slt i32 %retval.0.i, 1, !dbg !5851
+  br i1 %cmp3, label %if.then4, label %if.end5, !dbg !5851
+
+if.then4:                                         ; preds = %_ZN9__gnu_cxxL27__exchange_and_add_dispatchEPii.exit
+  call void @_ZNSs4_Rep10_M_destroyERKSaIcE(%"struct.std::basic_string<char, std::char_traits<char>, std::allocator<char> >::_Rep"* %this, %"class.std::allocator"* %__a) #11, !dbg !5868
+  br label %if.end5, !dbg !5870
+
+if.end5:                                          ; preds = %entry, %_ZN9__gnu_cxxL27__exchange_and_add_dispatchEPii.exit, %if.then4
+  ret void, !dbg !5871
+}

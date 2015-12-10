@@ -1,21 +1,22 @@
-define i32 @CCTK_GroupTypeNumber(i8* nocapture readonly %type) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %type, i64 0, metadata !149, metadata !483), !dbg !767
-  %1 = tail call i32 @strcmp(i8* %type, i8* getelementptr inbounds ([7 x i8]* @.str5, i64 0, i64 0)) #10, !dbg !768
-  %2 = icmp eq i32 %1, 0, !dbg !768
-  br i1 %2, label %9, label %3, !dbg !770
+define i32 @CCTK_GroupTypeNumber(i8* nocapture %type) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %type}, i64 0, metadata !135), !dbg !631
+  %call = tail call i32 @strcmp(i8* %type, i8* getelementptr inbounds ([7 x i8]* @.str5, i64 0, i64 0)) #12, !dbg !632
+  %tobool = icmp eq i32 %call, 0, !dbg !632
+  br i1 %tobool, label %if.end11, label %if.else, !dbg !632
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @strcmp(i8* %type, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #10, !dbg !771
-  %5 = icmp eq i32 %4, 0, !dbg !771
-  br i1 %5, label %9, label %6, !dbg !773
+if.else:                                          ; preds = %entry
+  %call2 = tail call i32 @strcmp(i8* %type, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #12, !dbg !633
+  %tobool3 = icmp eq i32 %call2, 0, !dbg !633
+  br i1 %tobool3, label %if.end11, label %if.else5, !dbg !633
 
-; <label>:6                                       ; preds = %3
-  %7 = tail call i32 @strcmp(i8* %type, i8* getelementptr inbounds ([6 x i8]* @.str7, i64 0, i64 0)) #10, !dbg !774
-  %8 = icmp eq i32 %7, 0, !dbg !774
-  %. = select i1 %8, i32 3, i32 -1, !dbg !776
-  br label %9, !dbg !776
+if.else5:                                         ; preds = %if.else
+  %call6 = tail call i32 @strcmp(i8* %type, i8* getelementptr inbounds ([6 x i8]* @.str7, i64 0, i64 0)) #12, !dbg !634
+  %tobool7 = icmp eq i32 %call6, 0, !dbg !634
+  %. = select i1 %tobool7, i32 3, i32 -1, !dbg !635
+  br label %if.end11, !dbg !635
 
-; <label>:9                                       ; preds = %6, %3, %0
-  %retval.0 = phi i32 [ 1, %0 ], [ 2, %3 ], [ %., %6 ]
-  ret i32 %retval.0, !dbg !778
+if.end11:                                         ; preds = %if.else5, %if.else, %entry
+  %retval1.0 = phi i32 [ 1, %entry ], [ 2, %if.else ], [ %., %if.else5 ]
+  ret i32 %retval1.0, !dbg !637
 }

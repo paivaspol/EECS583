@@ -1,0 +1,36 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_20XSElementDeclarationEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf.27"* nocapture %this) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.27"* %this}, i64 0, metadata !9975), !dbg !13344
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.27"* %this, i64 0, i32 2, !dbg !13345
+  %0 = load i32* %fCurCount, align 4, !dbg !13345, !tbaa !11224
+  %tobool = icmp eq i32 %0, 0, !dbg !13345
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !13345
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !13346
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !13346, !tbaa !11224
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.27"* %this, i64 0, i32 1, !dbg !13347
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !13347, !tbaa !11344, !range !11345
+  %tobool3 = icmp eq i8 %1, 0, !dbg !13347
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !13347
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !13348
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.27"* %this, i64 0, i32 4, !dbg !13348
+  %2 = load %"class.xercesc_2_5::XSElementDeclaration"*** %fElemList, align 8, !dbg !13348, !tbaa !11081
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XSElementDeclaration"** %2, i64 %idxprom, !dbg !13348
+  %3 = load %"class.xercesc_2_5::XSElementDeclaration"** %arrayidx, align 8, !dbg !13348, !tbaa !11081
+  %isnull = icmp eq %"class.xercesc_2_5::XSElementDeclaration"* %3, null, !dbg !13348
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !13348
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast %"class.xercesc_2_5::XSElementDeclaration"* %3 to void (%"class.xercesc_2_5::XSElementDeclaration"*)***, !dbg !13348
+  %vtable = load void (%"class.xercesc_2_5::XSElementDeclaration"*)*** %4, align 8, !dbg !13348, !tbaa !11085
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::XSElementDeclaration"*)** %vtable, i64 1, !dbg !13348
+  %5 = load void (%"class.xercesc_2_5::XSElementDeclaration"*)** %vfn, align 8, !dbg !13348
+  tail call void %5(%"class.xercesc_2_5::XSElementDeclaration"* %3) #10, !dbg !13348
+  br label %if.end6, !dbg !13348
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !13348
+}

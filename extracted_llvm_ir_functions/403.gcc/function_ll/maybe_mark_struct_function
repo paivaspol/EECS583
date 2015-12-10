@@ -1,14 +1,16 @@
 define internal void @maybe_mark_struct_function(i8* nocapture %arg) #0 {
 entry:
-  %0 = bitcast i8* %arg to %struct.function**
-  %1 = load %struct.function** %0, align 8, !tbaa !0
-  %cmp = icmp eq %struct.function* %1, null
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8* %arg}, i64 0, metadata !2009), !dbg !5170
+  %0 = bitcast i8* %arg to %struct.function**, !dbg !5171
+  %1 = load %struct.function** %0, align 8, !dbg !5171, !tbaa !2729
+  tail call void @llvm.dbg.value(metadata !{%struct.function* %1}, i64 0, metadata !2010), !dbg !5171
+  %cmp = icmp eq %struct.function* %1, null, !dbg !5172
+  br i1 %cmp, label %return, label %if.end, !dbg !5172
 
 if.end:                                           ; preds = %entry
-  tail call void @ggc_mark_struct_function(%struct.function* %1) #9
-  br label %return
+  tail call void @ggc_mark_struct_function(%struct.function* %1) #10, !dbg !5173
+  br label %return, !dbg !5173
 
 return:                                           ; preds = %entry, %if.end
-  ret void
+  ret void, !dbg !5173
 }

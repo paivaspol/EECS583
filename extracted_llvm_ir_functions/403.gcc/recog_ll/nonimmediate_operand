@@ -1,13 +1,15 @@
 define i32 @nonimmediate_operand(%struct.rtx_def* %op, i32 %mode) #0 {
 entry:
-  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %mode) #7
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %land.end, label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !654), !dbg !1851
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !655), !dbg !1852
+  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %mode) #8, !dbg !1853
+  %tobool = icmp eq i32 %call, 0, !dbg !1853
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !1853
 
 land.rhs:                                         ; preds = %entry
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !1853
+  %bf.load = load i32* %0, align 8, !dbg !1853
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1853
   switch i32 %bf.clear, label %lor.rhs [
     i32 67, label %land.end
     i32 68, label %land.end
@@ -17,12 +19,12 @@ land.rhs:                                         ; preds = %entry
     i32 134, label %land.end
     i32 56, label %land.end
     i32 140, label %land.end
-  ]
+  ], !dbg !1853
 
 lor.rhs:                                          ; preds = %land.rhs
-  br label %land.end
+  br label %land.end, !dbg !1853
 
 land.end:                                         ; preds = %land.rhs, %lor.rhs, %land.rhs, %land.rhs, %land.rhs, %land.rhs, %land.rhs, %land.rhs, %land.rhs, %entry
   %1 = phi i32 [ 0, %entry ], [ 0, %land.rhs ], [ 1, %lor.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ]
-  ret i32 %1
+  ret i32 %1, !dbg !1854
 }

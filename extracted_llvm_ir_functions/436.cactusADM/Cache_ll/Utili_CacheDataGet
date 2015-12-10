@@ -1,19 +1,20 @@
 define i32 @Utili_CacheDataGet(i64* nocapture %cacheline_bytes, i64* nocapture %cache_size) #1 {
-  tail call void @llvm.dbg.value(metadata i64* %cacheline_bytes, i64 0, metadata !46, metadata !62), !dbg !120
-  tail call void @llvm.dbg.value(metadata i64* %cache_size, i64 0, metadata !47, metadata !62), !dbg !121
-  %1 = load i32* @cache_set, align 4, !dbg !122, !tbaa !70
-  %2 = icmp eq i32 %1, 0, !dbg !122
-  br i1 %2, label %6, label %3, !dbg !123
+entry:
+  tail call void @llvm.dbg.value(metadata !{i64* %cacheline_bytes}, i64 0, metadata !42), !dbg !86
+  tail call void @llvm.dbg.value(metadata !{i64* %cache_size}, i64 0, metadata !43), !dbg !87
+  %0 = load i32* @cache_set, align 4, !dbg !88, !tbaa !59
+  %tobool = icmp eq i32 %0, 0, !dbg !88
+  br i1 %tobool, label %if.end, label %if.then, !dbg !88
 
-; <label>:3                                       ; preds = %0
-  %4 = load i64* @cache_data.0, align 8, !dbg !124, !tbaa !77
-  store i64 %4, i64* %cacheline_bytes, align 8, !dbg !125, !tbaa !126
-  %5 = load i64* @cache_data.1, align 8, !dbg !127, !tbaa !83
-  store i64 %5, i64* %cache_size, align 8, !dbg !128, !tbaa !126
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !48, metadata !62), !dbg !129
-  br label %6, !dbg !130
+if.then:                                          ; preds = %entry
+  %1 = load i64* @cache_data.0, align 8, !dbg !89, !tbaa !64
+  store i64 %1, i64* %cacheline_bytes, align 8, !dbg !89, !tbaa !64
+  %2 = load i64* @cache_data.1, align 8, !dbg !90, !tbaa !64
+  store i64 %2, i64* %cache_size, align 8, !dbg !90, !tbaa !64
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !44), !dbg !91
+  br label %if.end, !dbg !92
 
-; <label>:6                                       ; preds = %0, %3
-  %retcode.0 = phi i32 [ 0, %3 ], [ -1, %0 ]
-  ret i32 %retcode.0, !dbg !131
+if.end:                                           ; preds = %entry, %if.then
+  %retcode.0 = phi i32 [ 0, %if.then ], [ -1, %entry ]
+  ret i32 %retcode.0, !dbg !93
 }

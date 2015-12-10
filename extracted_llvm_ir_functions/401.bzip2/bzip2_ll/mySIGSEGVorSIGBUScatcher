@@ -1,49 +1,32 @@
-define internal void @mySIGSEGVorSIGBUScatcher(i32 %n) #3 {
-  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !115, metadata !524), !dbg !1038
-  %1 = load i32* @opMode, align 4, !dbg !1039, !tbaa !552
-  %2 = icmp eq i32 %1, 1, !dbg !1041
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1042, !tbaa !542
-  %4 = load i8** @progName, align 8, !dbg !1043, !tbaa !542
-  br i1 %2, label %5, label %7, !dbg !1044
+define internal void @mySIGSEGVorSIGBUScatcher(i32 %n) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !442), !dbg !721
+  %0 = load i32* @opMode, align 4, !dbg !722, !tbaa !492
+  %cmp = icmp eq i32 %0, 1, !dbg !722
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !723, !tbaa !484
+  %2 = load i8** @progName, align 8, !dbg !723, !tbaa !484
+  br i1 %cmp, label %if.then, label %if.else, !dbg !722
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([869 x i8]* @.str36, i64 0, i64 0), i8* %4) #9, !dbg !1045
-  br label %9, !dbg !1045
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([869 x i8]* @.str103, i64 0, i64 0), i8* %2) #10, !dbg !723
+  br label %if.end, !dbg !723
 
-; <label>:7                                       ; preds = %0
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([996 x i8]* @.str37, i64 0, i64 0), i8* %4) #9, !dbg !1046
-  br label %9
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([996 x i8]* @.str104, i64 0, i64 0), i8* %2) #10, !dbg !724
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %5
-  %10 = load i8* @noisy, align 1, !dbg !1047, !tbaa !547
-  %11 = icmp eq i8 %10, 0, !dbg !1047
-  br i1 %11, label %showFileNames.exit, label %12, !dbg !1050
+if.end:                                           ; preds = %if.else, %if.then
+  tail call fastcc void @showFileNames() #11, !dbg !725
+  %3 = load i32* @opMode, align 4, !dbg !726, !tbaa !492
+  %cmp2 = icmp eq i32 %3, 1, !dbg !726
+  br i1 %cmp2, label %if.then3, label %if.else4, !dbg !726
 
-; <label>:12                                      ; preds = %9
-  %13 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1051, !tbaa !542
-  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %13, i8* getelementptr inbounds ([36 x i8]* @.str38, i64 0, i64 0), i8* getelementptr inbounds ([1034 x i8]* @inName, i64 0, i64 0), i8* getelementptr inbounds ([1034 x i8]* @outName, i64 0, i64 0)) #9, !dbg !1052
-  br label %showFileNames.exit, !dbg !1052
+if.then3:                                         ; preds = %if.end
+  tail call fastcc void @cleanUpAndFail(i32 3) #14, !dbg !727
+  unreachable, !dbg !727
 
-showFileNames.exit:                               ; preds = %9, %12
-  %15 = load i32* @opMode, align 4, !dbg !1053, !tbaa !552
-  %16 = icmp eq i32 %15, 1, !dbg !1055
-  br i1 %16, label %17, label %18, !dbg !1056
-
-; <label>:17                                      ; preds = %showFileNames.exit
-  tail call fastcc void @cleanUpAndFail(i32 3) #12, !dbg !1057
-  unreachable, !dbg !1057
-
-; <label>:18                                      ; preds = %showFileNames.exit
-  %19 = load i8* @noisy, align 1, !dbg !1058, !tbaa !547
-  %20 = icmp eq i8 %19, 0, !dbg !1058
-  br i1 %20, label %cadvise.exit, label %21, !dbg !1062
-
-; <label>:21                                      ; preds = %18
-  %22 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1063, !tbaa !542
-  %23 = tail call i64 @fwrite(i8* getelementptr inbounds ([241 x i8]* @.str46, i64 0, i64 0), i64 240, i64 1, %struct.__sFILE* %22) #7, !dbg !1064
-  br label %cadvise.exit, !dbg !1064
-
-cadvise.exit:                                     ; preds = %18, %21
-  tail call fastcc void @cleanUpAndFail(i32 2) #12, !dbg !1065
-  unreachable, !dbg !1065
+if.else4:                                         ; preds = %if.end
+  tail call fastcc void @cadvise() #11, !dbg !728
+  tail call fastcc void @cleanUpAndFail(i32 2) #14, !dbg !728
+  unreachable, !dbg !728
 }

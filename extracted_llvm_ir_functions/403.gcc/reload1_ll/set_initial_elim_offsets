@@ -1,29 +1,31 @@
 define internal fastcc void @set_initial_elim_offsets() #0 {
 for.body.lr.ph:
-  %0 = load %struct.elim_table** @reg_eliminate, align 8, !tbaa !3
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.elim_table* %0}, i64 0, metadata !2838), !dbg !4180
+  %0 = load %struct.elim_table** @reg_eliminate, align 8, !dbg !4180, !tbaa !3248
+  br label %for.body, !dbg !4181
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %ep.011 = phi %struct.elim_table* [ %0, %for.body.lr.ph ], [ %incdec.ptr, %for.body ]
-  %from = getelementptr inbounds %struct.elim_table* %ep.011, i64 0, i32 0
-  %1 = load i32* %from, align 4, !tbaa !0
-  %to = getelementptr inbounds %struct.elim_table* %ep.011, i64 0, i32 1
-  %2 = load i32* %to, align 4, !tbaa !0
-  %call = tail call i64 @ix86_initial_elimination_offset(i32 %1, i32 %2) #7
-  %conv = trunc i64 %call to i32
-  %initial_offset = getelementptr inbounds %struct.elim_table* %ep.011, i64 0, i32 2
-  store i32 %conv, i32* %initial_offset, align 4, !tbaa !0
-  %offset = getelementptr inbounds %struct.elim_table* %ep.011, i64 0, i32 5
-  store i32 %conv, i32* %offset, align 4, !tbaa !0
-  %previous_offset = getelementptr inbounds %struct.elim_table* %ep.011, i64 0, i32 6
-  store i32 %conv, i32* %previous_offset, align 4, !tbaa !0
-  %incdec.ptr = getelementptr inbounds %struct.elim_table* %ep.011, i64 1
-  %3 = load %struct.elim_table** @reg_eliminate, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct.elim_table* %3, i64 4
-  %cmp = icmp ult %struct.elim_table* %incdec.ptr, %arrayidx
-  br i1 %cmp, label %for.body, label %for.end
+  %from = getelementptr inbounds %struct.elim_table* %ep.011, i64 0, i32 0, !dbg !4183
+  %1 = load i32* %from, align 4, !dbg !4183, !tbaa !3224
+  %to = getelementptr inbounds %struct.elim_table* %ep.011, i64 0, i32 1, !dbg !4183
+  %2 = load i32* %to, align 4, !dbg !4183, !tbaa !3224
+  %call = tail call i64 @ix86_initial_elimination_offset(i32 %1, i32 %2) #8, !dbg !4183
+  %conv = trunc i64 %call to i32, !dbg !4183
+  %initial_offset = getelementptr inbounds %struct.elim_table* %ep.011, i64 0, i32 2, !dbg !4183
+  store i32 %conv, i32* %initial_offset, align 4, !dbg !4183, !tbaa !3224
+  %offset = getelementptr inbounds %struct.elim_table* %ep.011, i64 0, i32 5, !dbg !4185
+  store i32 %conv, i32* %offset, align 4, !dbg !4185, !tbaa !3224
+  %previous_offset = getelementptr inbounds %struct.elim_table* %ep.011, i64 0, i32 6, !dbg !4185
+  store i32 %conv, i32* %previous_offset, align 4, !dbg !4185, !tbaa !3224
+  %incdec.ptr = getelementptr inbounds %struct.elim_table* %ep.011, i64 1, !dbg !4181
+  tail call void @llvm.dbg.value(metadata !{%struct.elim_table* %incdec.ptr}, i64 0, metadata !2838), !dbg !4181
+  %3 = load %struct.elim_table** @reg_eliminate, align 8, !dbg !4181, !tbaa !3248
+  %arrayidx = getelementptr inbounds %struct.elim_table* %3, i64 4, !dbg !4181
+  %cmp = icmp ult %struct.elim_table* %incdec.ptr, %arrayidx, !dbg !4181
+  br i1 %cmp, label %for.body, label %for.end, !dbg !4181
 
 for.end:                                          ; preds = %for.body
-  store i32 0, i32* @num_not_at_initial_offset, align 4, !tbaa !0
-  ret void
+  store i32 0, i32* @num_not_at_initial_offset, align 4, !dbg !4186, !tbaa !3224
+  ret void, !dbg !4187
 }

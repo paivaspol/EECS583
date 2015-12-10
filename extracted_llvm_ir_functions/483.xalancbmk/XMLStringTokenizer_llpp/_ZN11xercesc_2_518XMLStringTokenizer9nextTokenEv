@@ -1,0 +1,100 @@
+define i16* @_ZN11xercesc_2_518XMLStringTokenizer9nextTokenEv(%"class.xercesc_2_5::XMLStringTokenizer"* nocapture %this) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLStringTokenizer"* %this}, i64 0, metadata !868), !dbg !1872
+  %fOffset = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 0, !dbg !1873
+  %0 = load i32* %fOffset, align 4, !dbg !1873, !tbaa !1700
+  %fStringLen = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 1, !dbg !1873
+  %1 = load i32* %fStringLen, align 4, !dbg !1873, !tbaa !1700
+  %cmp = icmp slt i32 %0, %1, !dbg !1873
+  br i1 %cmp, label %for.body.lr.ph, label %return, !dbg !1873
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fString = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 2, !dbg !1874
+  %fDelimeters.i = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 3, !dbg !1877
+  %2 = sext i32 %0 to i64
+  br label %for.body, !dbg !1878
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %endIndex.031 = phi i32 [ %0, %for.body.lr.ph ], [ %inc10, %for.inc ]
+  %startIndex.030 = phi i32 [ %0, %for.body.lr.ph ], [ %startIndex.1, %for.inc ]
+  %tokFound.029 = phi i8 [ 0, %for.body.lr.ph ], [ %tokFound.1, %for.inc ]
+  %3 = load i16** %fString, align 8, !dbg !1874, !tbaa !1731
+  %arrayidx = getelementptr inbounds i16* %3, i64 %indvars.iv, !dbg !1874
+  %4 = load i16* %arrayidx, align 2, !dbg !1874, !tbaa !1716
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLStringTokenizer"* %this}, i64 0, metadata !1879), !dbg !1880
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !1881), !dbg !1880
+  %5 = load i16** %fDelimeters.i, align 8, !dbg !1877, !tbaa !1731
+  %call.i = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* %5, i16 zeroext %4) #8, !dbg !1877
+  %not.cmp.i = icmp eq i32 %call.i, -1, !dbg !1877
+  br i1 %not.cmp.i, label %for.inc, label %if.then6, !dbg !1874
+
+if.then6:                                         ; preds = %for.body
+  %6 = and i8 %tokFound.029, 1, !dbg !1882
+  %tobool = icmp eq i8 %6, 0, !dbg !1882
+  br i1 %tobool, label %if.end8, label %for.end, !dbg !1882
+
+if.end8:                                          ; preds = %if.then6
+  %inc = add nsw i32 %startIndex.030, 1, !dbg !1884
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !870), !dbg !1884
+  br label %for.inc, !dbg !1885
+
+for.inc:                                          ; preds = %for.body, %if.end8
+  %tokFound.1 = phi i8 [ %tokFound.029, %if.end8 ], [ 1, %for.body ]
+  %startIndex.1 = phi i32 [ %inc, %if.end8 ], [ %startIndex.030, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1878
+  %inc10 = add nsw i32 %endIndex.031, 1, !dbg !1878
+  tail call void @llvm.dbg.value(metadata !{i32 %inc10}, i64 0, metadata !871), !dbg !1878
+  %7 = load i32* %fStringLen, align 4, !dbg !1878, !tbaa !1700
+  %8 = trunc i64 %indvars.iv.next to i32, !dbg !1878
+  %cmp5 = icmp slt i32 %8, %7, !dbg !1878
+  br i1 %cmp5, label %for.body, label %for.end, !dbg !1878
+
+for.end:                                          ; preds = %for.inc, %if.then6
+  %endIndex.0.lcssa = phi i32 [ %endIndex.031, %if.then6 ], [ %inc10, %for.inc ]
+  %startIndex.0.lcssa = phi i32 [ %startIndex.030, %if.then6 ], [ %startIndex.1, %for.inc ]
+  %tokFound.0.lcssa = phi i8 [ %tokFound.029, %if.then6 ], [ %tokFound.1, %for.inc ]
+  store i32 %endIndex.0.lcssa, i32* %fOffset, align 4, !dbg !1886, !tbaa !1700
+  %9 = and i8 %tokFound.0.lcssa, 1, !dbg !1887
+  %tobool12 = icmp eq i8 %9, 0, !dbg !1887
+  br i1 %tobool12, label %return, label %if.then13, !dbg !1887
+
+if.then13:                                        ; preds = %for.end
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 5, !dbg !1888
+  %10 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !1888, !tbaa !1731
+  %11 = bitcast %"class.xercesc_2_5::MemoryManager"* %10 to i8* (%"class.xercesc_2_5::MemoryManager"*, i64)***, !dbg !1888
+  %vtable = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)*** %11, align 8, !dbg !1888, !tbaa !1728
+  %vfn = getelementptr inbounds i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vtable, i64 2, !dbg !1888
+  %12 = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vfn, align 8, !dbg !1888
+  %sub = sub i32 1, %startIndex.0.lcssa, !dbg !1888
+  %add = add i32 %sub, %endIndex.0.lcssa, !dbg !1888
+  %conv = sext i32 %add to i64, !dbg !1888
+  %mul = shl nsw i64 %conv, 1, !dbg !1888
+  %call14 = tail call i8* %12(%"class.xercesc_2_5::MemoryManager"* %10, i64 %mul) #8, !dbg !1888
+  %13 = bitcast i8* %call14 to i16*, !dbg !1888
+  tail call void @llvm.dbg.value(metadata !{i16* %13}, i64 0, metadata !872), !dbg !1888
+  %fString15 = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 2, !dbg !1889
+  %14 = load i16** %fString15, align 8, !dbg !1889, !tbaa !1731
+  %15 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !1889, !tbaa !1731
+  tail call void @_ZN11xercesc_2_59XMLString9subStringEPtPKtiiPNS_13MemoryManagerE(i16* %13, i16* %14, i32 %startIndex.0.lcssa, i32 %endIndex.0.lcssa, %"class.xercesc_2_5::MemoryManager"* %15) #8, !dbg !1889
+  %fTokens = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 4, !dbg !1890
+  %16 = load %"class.xercesc_2_5::RefArrayVectorOf"** %fTokens, align 8, !dbg !1890, !tbaa !1731
+  %17 = getelementptr inbounds %"class.xercesc_2_5::RefArrayVectorOf"* %16, i64 0, i32 0, !dbg !1890
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf"* %17}, i64 0, metadata !1891), !dbg !1892
+  tail call void @llvm.dbg.value(metadata !{i16* %13}, i64 0, metadata !1893), !dbg !1892
+  tail call void @_ZN11xercesc_2_515BaseRefVectorOfItE19ensureExtraCapacityEj(%"class.xercesc_2_5::BaseRefVectorOf"* %17, i32 1) #8, !dbg !1894
+  %fCurCount.i = getelementptr inbounds %"class.xercesc_2_5::RefArrayVectorOf"* %16, i64 0, i32 0, i32 2, !dbg !1896
+  %18 = load i32* %fCurCount.i, align 4, !dbg !1896, !tbaa !1700
+  %idxprom.i = zext i32 %18 to i64, !dbg !1896
+  %fElemList.i = getelementptr inbounds %"class.xercesc_2_5::RefArrayVectorOf"* %16, i64 0, i32 0, i32 4, !dbg !1896
+  %19 = load i16*** %fElemList.i, align 8, !dbg !1896, !tbaa !1731
+  %arrayidx.i = getelementptr inbounds i16** %19, i64 %idxprom.i, !dbg !1896
+  store i16* %13, i16** %arrayidx.i, align 8, !dbg !1896, !tbaa !1731
+  %inc.i = add i32 %18, 1, !dbg !1897
+  store i32 %inc.i, i32* %fCurCount.i, align 4, !dbg !1897, !tbaa !1700
+  br label %return, !dbg !1898
+
+return:                                           ; preds = %for.end, %entry, %if.then13
+  %retval.0 = phi i16* [ %13, %if.then13 ], [ null, %entry ], [ null, %for.end ]
+  ret i16* %retval.0, !dbg !1899
+}

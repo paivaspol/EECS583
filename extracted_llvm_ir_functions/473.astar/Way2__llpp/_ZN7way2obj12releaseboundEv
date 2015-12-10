@@ -1,51 +1,53 @@
-define void @_ZN7way2obj12releaseboundEv(%class.way2obj* nocapture %this) #1 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.way2obj* %this, i64 0, metadata !174, metadata !293), !dbg !519
-  %1 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 5, !dbg !520
-  %2 = load i32* %1, align 4, !dbg !520, !tbaa !522
-  %3 = sext i32 %2 to i64, !dbg !523
-  %4 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %3, i32 1, !dbg !524
-  %5 = load i32* %4, align 4, !dbg !524, !tbaa !359
-  %6 = icmp eq i32 %5, 0, !dbg !525
-  %7 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 6, !dbg !526
-  br i1 %6, label %8, label %11, !dbg !527
+define void @_ZN7way2obj12releaseboundEv(%class.way2obj* nocapture %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.way2obj* %this}, i64 0, metadata !196), !dbg !404
+  %curbound = getelementptr inbounds %class.way2obj* %this, i64 0, i32 5, !dbg !405
+  %0 = load i32* %curbound, align 4, !dbg !405, !tbaa !324
+  %idxprom = sext i32 %0 to i64, !dbg !405
+  %elemqu = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %idxprom, i32 1, !dbg !405
+  %1 = load i32* %elemqu, align 4, !dbg !405, !tbaa !324
+  %cmp = icmp eq i32 %1, 0, !dbg !405
+  %nonboundqu = getelementptr inbounds %class.way2obj* %this, i64 0, i32 6, !dbg !406
+  br i1 %cmp, label %if.then, label %if.else, !dbg !405
 
-; <label>:8                                       ; preds = %0
-  %9 = load i32* %7, align 4, !dbg !526, !tbaa !528
-  %10 = add nsw i32 %9, 1, !dbg !529
-  store i32 %10, i32* %7, align 4, !dbg !530, !tbaa !528
-  br label %26, !dbg !531
+if.then:                                          ; preds = %entry
+  %2 = load i32* %nonboundqu, align 4, !dbg !406, !tbaa !324
+  %add = add nsw i32 %2, 1, !dbg !406
+  store i32 %add, i32* %nonboundqu, align 4, !dbg !406, !tbaa !324
+  br label %if.end, !dbg !406
 
-; <label>:11                                      ; preds = %0
-  store i32 0, i32* %7, align 4, !dbg !532, !tbaa !528
-  %12 = icmp sgt i32 %5, 0, !dbg !534
-  br i1 %12, label %.lr.ph, label %._crit_edge, !dbg !537
+if.else:                                          ; preds = %entry
+  store i32 0, i32* %nonboundqu, align 4, !dbg !407, !tbaa !324
+  %cmp930 = icmp sgt i32 %1, 0, !dbg !409
+  br i1 %cmp930, label %for.body.lr.ph, label %for.end, !dbg !409
 
-.lr.ph:                                           ; preds = %11
-  %13 = sext i32 %5 to i64
-  br label %14, !dbg !537
+for.body.lr.ph:                                   ; preds = %if.else
+  %3 = sext i32 %1 to i64
+  br label %for.body, !dbg !409
 
-; <label>:14                                      ; preds = %.lr.ph, %14
-  %indvars.iv = phi i64 [ %13, %.lr.ph ], [ %indvars.iv.next, %14 ]
-  %15 = phi i64 [ %3, %.lr.ph ], [ %24, %14 ]
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !537
-  %16 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %15, i32 0, !dbg !538
-  %17 = load %struct.pointt** %16, align 8, !dbg !538, !tbaa !366
-  %18 = getelementptr inbounds %struct.pointt* %17, i64 %indvars.iv.next, i32 0, !dbg !540
-  %19 = load i32* %18, align 4, !dbg !540, !tbaa !349
-  %20 = getelementptr inbounds %struct.pointt* %17, i64 %indvars.iv.next, i32 1, !dbg !541
-  %21 = load i32* %20, align 4, !dbg !541, !tbaa !353
-  tail call void @_ZN7way2obj12releasepointEii(%class.way2obj* %this, i32 %19, i32 %21) #7, !dbg !542
-  %22 = icmp sgt i64 %indvars.iv, 1, !dbg !534
-  %23 = load i32* %1, align 4, !dbg !543, !tbaa !522
-  %24 = sext i32 %23 to i64, !dbg !544
-  br i1 %22, label %14, label %._crit_edge, !dbg !537
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %3, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %idxprom1133 = phi i64 [ %idxprom, %for.body.lr.ph ], [ %idxprom11, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !409
+  %ep.i = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %idxprom1133, i32 0, !dbg !411
+  %4 = load %struct.pointt** %ep.i, align 8, !dbg !411, !tbaa !327
+  %x = getelementptr inbounds %struct.pointt* %4, i64 %indvars.iv.next, i32 0, !dbg !412
+  %5 = load i32* %x, align 4, !dbg !412, !tbaa !324
+  %y = getelementptr inbounds %struct.pointt* %4, i64 %indvars.iv.next, i32 1, !dbg !413
+  %6 = load i32* %y, align 4, !dbg !413, !tbaa !324
+  tail call void @_ZN7way2obj12releasepointEii(%class.way2obj* %this, i32 %5, i32 %6) #7, !dbg !413
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !409
+  %cmp9 = icmp sgt i32 %7, 0, !dbg !409
+  %8 = load i32* %curbound, align 4, !dbg !412, !tbaa !324
+  %idxprom11 = sext i32 %8 to i64, !dbg !412
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !409
 
-._crit_edge:                                      ; preds = %14, %11
-  %.lcssa = phi i64 [ %3, %11 ], [ %24, %14 ]
-  %25 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %.lcssa, i32 1, !dbg !545
-  store i32 0, i32* %25, align 4, !dbg !547, !tbaa !359
-  br label %26
+for.end:                                          ; preds = %for.body, %if.else
+  %idxprom11.lcssa = phi i64 [ %idxprom, %if.else ], [ %idxprom11, %for.body ]
+  %elemqu.i = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %idxprom11.lcssa, i32 1, !dbg !414
+  store i32 0, i32* %elemqu.i, align 4, !dbg !414, !tbaa !324
+  br label %if.end
 
-; <label>:26                                      ; preds = %._crit_edge, %8
-  ret void, !dbg !548
+if.end:                                           ; preds = %for.end, %if.then
+  ret void, !dbg !416
 }

@@ -1,0 +1,57 @@
+define %"class.xercesc_2_5::ElementImpl"* @_ZN11xercesc_2_512DocumentImpl13createElementEPKt(%"class.xercesc_2_5::DocumentImpl"* %this, i16* %tagName) unnamed_addr #2 align 2 {
+entry:
+  %pooledTagName = alloca %"class.xercesc_2_5::DOMString", align 8
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DocumentImpl"* %this}, i64 0, metadata !4795), !dbg !5959
+  call void @llvm.dbg.value(metadata !{i16* %tagName}, i64 0, metadata !4796), !dbg !5959
+  call void @llvm.dbg.declare(metadata !{%"class.xercesc_2_5::DOMString"* %pooledTagName}, metadata !4797), !dbg !5960
+  %namePool = getelementptr inbounds %"class.xercesc_2_5::DocumentImpl"* %this, i64 0, i32 3, !dbg !5960
+  %0 = load %"class.xercesc_2_5::DStringPool"** %namePool, align 8, !dbg !5960, !tbaa !5820
+  %call = call %"class.xercesc_2_5::DOMString"* @_ZN11xercesc_2_511DStringPool15getPooledStringEPKt(%"class.xercesc_2_5::DStringPool"* %0, i16* %tagName) #9, !dbg !5960
+  call void @_ZN11xercesc_2_59DOMStringC1ERKS0_(%"class.xercesc_2_5::DOMString"* %pooledTagName, %"class.xercesc_2_5::DOMString"* %call) #9, !dbg !5960
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::DocumentImpl"* %this, i64 0, i32 11, !dbg !5961
+  %1 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !5961, !tbaa !5820
+  %call2 = invoke i8* @_ZN11xercesc_2_57XMemorynwEmPNS_13MemoryManagerE(i64 104, %"class.xercesc_2_5::MemoryManager"* %1) #9
+          to label %invoke.cont unwind label %lpad, !dbg !5961
+
+invoke.cont:                                      ; preds = %entry
+  %2 = bitcast i8* %call2 to %"class.xercesc_2_5::ElementImpl"*, !dbg !5961
+  invoke void @_ZN11xercesc_2_511ElementImplC1EPNS_12DocumentImplERKNS_9DOMStringE(%"class.xercesc_2_5::ElementImpl"* %2, %"class.xercesc_2_5::DocumentImpl"* %this, %"class.xercesc_2_5::DOMString"* %pooledTagName) #9
+          to label %invoke.cont4 unwind label %lpad3, !dbg !5961
+
+invoke.cont4:                                     ; preds = %invoke.cont
+  call void @_ZN11xercesc_2_59DOMStringD1Ev(%"class.xercesc_2_5::DOMString"* %pooledTagName) #9, !dbg !5962
+  ret %"class.xercesc_2_5::ElementImpl"* %2, !dbg !5962
+
+lpad:                                             ; preds = %entry
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !5961
+  %4 = extractvalue { i8*, i32 } %3, 0, !dbg !5961
+  %5 = extractvalue { i8*, i32 } %3, 1, !dbg !5961
+  br label %ehcleanup, !dbg !5961
+
+lpad3:                                            ; preds = %invoke.cont
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !5961
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !5961
+  %8 = extractvalue { i8*, i32 } %6, 1, !dbg !5961
+  invoke void @_ZN11xercesc_2_57XMemorydlEPvPNS_13MemoryManagerE(i8* %call2, %"class.xercesc_2_5::MemoryManager"* %1) #9
+          to label %ehcleanup unwind label %terminate.lpad, !dbg !5961
+
+ehcleanup:                                        ; preds = %lpad3, %lpad
+  %ehselector.slot.0 = phi i32 [ %8, %lpad3 ], [ %5, %lpad ]
+  %exn.slot.0 = phi i8* [ %7, %lpad3 ], [ %4, %lpad ]
+  invoke void @_ZN11xercesc_2_59DOMStringD1Ev(%"class.xercesc_2_5::DOMString"* %pooledTagName) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !5962
+
+eh.resume:                                        ; preds = %ehcleanup
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !5962
+  %lpad.val7 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !5962
+  resume { i8*, i32 } %lpad.val7, !dbg !5962
+
+terminate.lpad:                                   ; preds = %ehcleanup, %lpad3
+  %9 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !5961
+  %10 = extractvalue { i8*, i32 } %9, 0, !dbg !5961
+  call void @__clang_call_terminate(i8* %10) #10, !dbg !5961
+  unreachable, !dbg !5961
+}

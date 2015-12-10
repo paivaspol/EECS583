@@ -1,105 +1,107 @@
 define void @FilterAlignment(%struct.msa_struct* %msa, float %cutoff, %struct.msa_struct** %ret_new) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.msa_struct* %msa, i64 0, metadata !177, metadata !292), !dbg !937
-  tail call void @llvm.dbg.value(metadata float %cutoff, i64 0, metadata !178, metadata !292), !dbg !938
-  tail call void @llvm.dbg.value(metadata %struct.msa_struct** %ret_new, i64 0, metadata !179, metadata !292), !dbg !939
-  %1 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 4, !dbg !940
-  %2 = load i32* %1, align 4, !dbg !940, !tbaa !941
-  %3 = sext i32 %2 to i64, !dbg !940
-  %4 = shl nsw i64 %3, 2, !dbg !940
-  %5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), i32 532, i64 %4) #5, !dbg !940
-  %6 = bitcast i8* %5 to i32*, !dbg !940
-  tail call void @llvm.dbg.value(metadata i32* %6, i64 0, metadata !181, metadata !292), !dbg !943
-  %7 = load i32* %1, align 4, !dbg !944, !tbaa !941
-  %8 = sext i32 %7 to i64, !dbg !944
-  %9 = shl nsw i64 %8, 2, !dbg !944
-  %10 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), i32 533, i64 %9) #5, !dbg !944
-  %11 = bitcast i8* %10 to i32*, !dbg !944
-  tail call void @llvm.dbg.value(metadata i32* %11, i64 0, metadata !182, metadata !292), !dbg !945
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !184, metadata !292), !dbg !946
-  %12 = load i32* %1, align 4, !dbg !947, !tbaa !941
-  %13 = icmp sgt i32 %12, 0, !dbg !950
-  br i1 %13, label %.lr.ph11, label %._crit_edge8, !dbg !951
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.msa_struct* %msa}, i64 0, metadata !199), !dbg !542
+  tail call void @llvm.dbg.value(metadata !{float %cutoff}, i64 0, metadata !200), !dbg !542
+  tail call void @llvm.dbg.value(metadata !{%struct.msa_struct** %ret_new}, i64 0, metadata !201), !dbg !542
+  %nseq = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 4, !dbg !543
+  %0 = load i32* %nseq, align 4, !dbg !543, !tbaa !314
+  %conv = sext i32 %0 to i64, !dbg !543
+  %mul = shl nsw i64 %conv, 2, !dbg !543
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), i32 532, i64 %mul) #6, !dbg !543
+  %1 = bitcast i8* %call to i32*, !dbg !543
+  tail call void @llvm.dbg.value(metadata !{i32* %1}, i64 0, metadata !203), !dbg !543
+  %2 = load i32* %nseq, align 4, !dbg !544, !tbaa !314
+  %conv2 = sext i32 %2 to i64, !dbg !544
+  %mul3 = shl nsw i64 %conv2, 2, !dbg !544
+  %call4 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), i32 533, i64 %mul3) #6, !dbg !544
+  %3 = bitcast i8* %call4 to i32*, !dbg !544
+  tail call void @llvm.dbg.value(metadata !{i32* %3}, i64 0, metadata !204), !dbg !544
+  tail call void @llvm.dbg.value(metadata !24, i64 0, metadata !206), !dbg !545
+  %4 = load i32* %nseq, align 4, !dbg !545, !tbaa !314
+  %cmp83 = icmp sgt i32 %4, 0, !dbg !545
+  br i1 %cmp83, label %for.body, label %for.end49, !dbg !545
 
-.preheader1:                                      ; preds = %.lr.ph11
-  %14 = icmp sgt i32 %18, 0, !dbg !952
-  br i1 %14, label %.preheader.lr.ph, label %._crit_edge8, !dbg !955
+for.cond7.preheader:                              ; preds = %for.body
+  %cmp979 = icmp sgt i32 %5, 0, !dbg !547
+  br i1 %cmp979, label %for.cond12.preheader.lr.ph, label %for.end49, !dbg !547
 
-.preheader.lr.ph:                                 ; preds = %.preheader1
-  %15 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 0, !dbg !956
-  %16 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 1, !dbg !961
-  br label %.preheader, !dbg !955
+for.cond12.preheader.lr.ph:                       ; preds = %for.cond7.preheader
+  %aseq = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 0, !dbg !549
+  %sqname = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 1, !dbg !553
+  br label %for.cond12.preheader, !dbg !547
 
-.lr.ph11:                                         ; preds = %0, %.lr.ph11
-  %indvars.iv17 = phi i64 [ %indvars.iv.next18, %.lr.ph11 ], [ 0, %0 ]
-  %17 = getelementptr inbounds i32* %11, i64 %indvars.iv17, !dbg !964
-  store i32 0, i32* %17, align 4, !dbg !965, !tbaa !593
-  %indvars.iv.next18 = add nuw nsw i64 %indvars.iv17, 1, !dbg !951
-  %18 = load i32* %1, align 4, !dbg !947, !tbaa !941
-  %19 = sext i32 %18 to i64, !dbg !950
-  %20 = icmp slt i64 %indvars.iv.next18, %19, !dbg !950
-  br i1 %20, label %.lr.ph11, label %.preheader1, !dbg !951
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv89 = phi i64 [ %indvars.iv.next90, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %3, i64 %indvars.iv89, !dbg !545
+  store i32 0, i32* %arrayidx, align 4, !dbg !545, !tbaa !314
+  %indvars.iv.next90 = add i64 %indvars.iv89, 1, !dbg !545
+  %5 = load i32* %nseq, align 4, !dbg !545, !tbaa !314
+  %6 = trunc i64 %indvars.iv.next90 to i32, !dbg !545
+  %cmp = icmp slt i32 %6, %5, !dbg !545
+  br i1 %cmp, label %for.body, label %for.cond7.preheader, !dbg !545
 
-.preheader:                                       ; preds = %.preheader.lr.ph, %48
-  %indvars.iv15 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next16, %48 ]
-  %nnew.05 = phi i32 [ 0, %.preheader.lr.ph ], [ %nnew.1, %48 ]
-  %21 = icmp sgt i32 %nnew.05, 0, !dbg !966
-  %22 = sext i32 %nnew.05 to i64, !dbg !967
-  br i1 %21, label %.lr.ph, label %._crit_edge, !dbg !967
+for.cond12.preheader:                             ; preds = %for.cond12.preheader.lr.ph, %for.inc47
+  %indvars.iv87 = phi i64 [ 0, %for.cond12.preheader.lr.ph ], [ %indvars.iv.next88, %for.inc47 ]
+  %nnew.080 = phi i32 [ 0, %for.cond12.preheader.lr.ph ], [ %nnew.1, %for.inc47 ]
+  %cmp1377 = icmp sgt i32 %nnew.080, 0, !dbg !555
+  br i1 %cmp1377, label %for.body15, label %if.then40, !dbg !555
 
-; <label>:23                                      ; preds = %.lr.ph
-  %24 = icmp slt i64 %indvars.iv.next, %22, !dbg !966
-  br i1 %24, label %.lr.ph, label %._crit_edge, !dbg !967
+for.cond12:                                       ; preds = %for.body15
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !555
+  %cmp13 = icmp slt i32 %7, %nnew.080, !dbg !555
+  br i1 %cmp13, label %for.body15, label %if.then40, !dbg !555
 
-.lr.ph:                                           ; preds = %.preheader, %23
-  %indvars.iv = phi i64 [ %indvars.iv.next, %23 ], [ 0, %.preheader ]
-  %25 = load i8*** %15, align 8, !dbg !956, !tbaa !968
-  %26 = getelementptr inbounds i8** %25, i64 %indvars.iv15, !dbg !969
-  %27 = load i8** %26, align 8, !dbg !969, !tbaa !311
-  %28 = getelementptr inbounds i32* %6, i64 %indvars.iv, !dbg !970
-  %29 = load i32* %28, align 4, !dbg !970, !tbaa !593
-  %30 = sext i32 %29 to i64, !dbg !971
-  %31 = getelementptr inbounds i8** %25, i64 %30, !dbg !971
-  %32 = load i8** %31, align 8, !dbg !971, !tbaa !311
-  %33 = tail call float @PairwiseIdentity(i8* %27, i8* %32) #5, !dbg !972
-  tail call void @llvm.dbg.value(metadata float %33, i64 0, metadata !183, metadata !292), !dbg !973
-  %34 = fcmp ogt float %33, %cutoff, !dbg !974
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !967
-  br i1 %34, label %.critedge, label %23, !dbg !975
+for.body15:                                       ; preds = %for.cond12.preheader, %for.cond12
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond12 ], [ 0, %for.cond12.preheader ]
+  %8 = load i8*** %aseq, align 8, !dbg !549, !tbaa !296
+  %arrayidx17 = getelementptr inbounds i8** %8, i64 %indvars.iv87, !dbg !549
+  %9 = load i8** %arrayidx17, align 8, !dbg !549, !tbaa !296
+  %arrayidx19 = getelementptr inbounds i32* %1, i64 %indvars.iv, !dbg !549
+  %10 = load i32* %arrayidx19, align 4, !dbg !549, !tbaa !314
+  %idxprom20 = sext i32 %10 to i64, !dbg !549
+  %arrayidx22 = getelementptr inbounds i8** %8, i64 %idxprom20, !dbg !549
+  %11 = load i8** %arrayidx22, align 8, !dbg !549, !tbaa !296
+  %call23 = tail call float @PairwiseIdentity(i8* %9, i8* %11) #6, !dbg !549
+  tail call void @llvm.dbg.value(metadata !{float %call23}, i64 0, metadata !205), !dbg !549
+  %cmp24 = fcmp ogt float %call23, %cutoff, !dbg !556
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !555
+  br i1 %cmp24, label %if.then, label %for.cond12, !dbg !556
 
-.critedge:                                        ; preds = %.lr.ph
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !186, metadata !292), !dbg !976
-  %35 = load i8*** %16, align 8, !dbg !961, !tbaa !977
-  %36 = getelementptr inbounds i8** %35, i64 %indvars.iv15, !dbg !978
-  %37 = load i8** %36, align 8, !dbg !978, !tbaa !311
-  %38 = fpext float %33 to double, !dbg !979
-  %39 = load i32* %28, align 4, !dbg !980, !tbaa !593
-  %40 = sext i32 %39 to i64, !dbg !981
-  %41 = getelementptr inbounds i8** %35, i64 %40, !dbg !981
-  %42 = load i8** %41, align 8, !dbg !981, !tbaa !311
-  %43 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0), i8* %37, double %38, i8* %42) #5, !dbg !982
-  br label %48
+if.then:                                          ; preds = %for.body15
+  tail call void @llvm.dbg.value(metadata !557, i64 0, metadata !208), !dbg !558
+  %12 = load i8*** %sqname, align 8, !dbg !553, !tbaa !296
+  %arrayidx27 = getelementptr inbounds i8** %12, i64 %indvars.iv87, !dbg !553
+  %13 = load i8** %arrayidx27, align 8, !dbg !553, !tbaa !296
+  %conv28 = fpext float %call23 to double, !dbg !553
+  %14 = load i32* %arrayidx19, align 4, !dbg !553, !tbaa !314
+  %idxprom31 = sext i32 %14 to i64, !dbg !553
+  %arrayidx33 = getelementptr inbounds i8** %12, i64 %idxprom31, !dbg !553
+  %15 = load i8** %arrayidx33, align 8, !dbg !553, !tbaa !296
+  %call34 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0), i8* %13, double %conv28, i8* %15) #6, !dbg !553
+  br label %for.inc47
 
-._crit_edge:                                      ; preds = %23, %.preheader
-  %44 = add nsw i32 %nnew.05, 1, !dbg !983
-  tail call void @llvm.dbg.value(metadata i32 %44, i64 0, metadata !180, metadata !292), !dbg !986
-  %45 = getelementptr inbounds i32* %6, i64 %22, !dbg !987
-  %46 = trunc i64 %indvars.iv15 to i32, !dbg !988
-  store i32 %46, i32* %45, align 4, !dbg !988, !tbaa !593
-  %47 = getelementptr inbounds i32* %11, i64 %indvars.iv15, !dbg !989
-  store i32 1, i32* %47, align 4, !dbg !990, !tbaa !593
-  br label %48, !dbg !991
+if.then40:                                        ; preds = %for.cond12, %for.cond12.preheader
+  %inc41 = add nsw i32 %nnew.080, 1, !dbg !559
+  tail call void @llvm.dbg.value(metadata !{i32 %inc41}, i64 0, metadata !202), !dbg !559
+  %idxprom42 = sext i32 %nnew.080 to i64, !dbg !559
+  %arrayidx43 = getelementptr inbounds i32* %1, i64 %idxprom42, !dbg !559
+  %16 = trunc i64 %indvars.iv87 to i32, !dbg !559
+  store i32 %16, i32* %arrayidx43, align 4, !dbg !559, !tbaa !314
+  %arrayidx45 = getelementptr inbounds i32* %3, i64 %indvars.iv87, !dbg !561
+  store i32 1, i32* %arrayidx45, align 4, !dbg !561, !tbaa !314
+  br label %for.inc47, !dbg !562
 
-; <label>:48                                      ; preds = %.critedge, %._crit_edge
-  %nnew.1 = phi i32 [ %44, %._crit_edge ], [ %nnew.05, %.critedge ]
-  %indvars.iv.next16 = add nuw nsw i64 %indvars.iv15, 1, !dbg !955
-  %49 = load i32* %1, align 4, !dbg !992, !tbaa !941
-  %50 = sext i32 %49 to i64, !dbg !952
-  %51 = icmp slt i64 %indvars.iv.next16, %50, !dbg !952
-  br i1 %51, label %.preheader, label %._crit_edge8, !dbg !955
+for.inc47:                                        ; preds = %if.then, %if.then40
+  %nnew.1 = phi i32 [ %inc41, %if.then40 ], [ %nnew.080, %if.then ]
+  %indvars.iv.next88 = add i64 %indvars.iv87, 1, !dbg !547
+  %17 = load i32* %nseq, align 4, !dbg !547, !tbaa !314
+  %18 = trunc i64 %indvars.iv.next88 to i32, !dbg !547
+  %cmp9 = icmp slt i32 %18, %17, !dbg !547
+  br i1 %cmp9, label %for.cond12.preheader, label %for.end49, !dbg !547
 
-._crit_edge8:                                     ; preds = %48, %0, %.preheader1
-  tail call void @MSASmallerAlignment(%struct.msa_struct* %msa, i32* %11, %struct.msa_struct** %ret_new) #5, !dbg !993
-  tail call void @free(i8* %5) #6, !dbg !994
-  tail call void @free(i8* %10) #6, !dbg !995
-  ret void, !dbg !996
+for.end49:                                        ; preds = %entry, %for.inc47, %for.cond7.preheader
+  tail call void @MSASmallerAlignment(%struct.msa_struct* %msa, i32* %3, %struct.msa_struct** %ret_new) #6, !dbg !563
+  tail call void @free(i8* %call) #6, !dbg !564
+  tail call void @free(i8* %call4) #6, !dbg !565
+  ret void, !dbg !566
 }

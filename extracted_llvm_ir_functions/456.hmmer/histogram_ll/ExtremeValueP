@@ -1,34 +1,35 @@
-define double @ExtremeValueP(float %x, float %mu, float %lambda) #5 {
-  tail call void @llvm.dbg.value(metadata float %x, i64 0, metadata !258, metadata !372), !dbg !804
-  tail call void @llvm.dbg.value(metadata float %mu, i64 0, metadata !259, metadata !372), !dbg !805
-  tail call void @llvm.dbg.value(metadata float %lambda, i64 0, metadata !260, metadata !372), !dbg !806
-  %1 = fsub float %x, %mu, !dbg !807
-  %2 = fmul float %1, %lambda, !dbg !809
-  %3 = fpext float %2 to double, !dbg !810
-  %4 = fcmp ugt double %3, 0xC00CAD875732FBD5, !dbg !811
-  br i1 %4, label %5, label %18, !dbg !812
+define double @ExtremeValueP(float %x, float %mu, float %lambda) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %x}, i64 0, metadata !250), !dbg !538
+  tail call void @llvm.dbg.value(metadata !{float %mu}, i64 0, metadata !251), !dbg !538
+  tail call void @llvm.dbg.value(metadata !{float %lambda}, i64 0, metadata !252), !dbg !538
+  %sub = fsub float %x, %mu, !dbg !539
+  %mul = fmul float %sub, %lambda, !dbg !539
+  %conv = fpext float %mul to double, !dbg !539
+  %cmp = fcmp ugt double %conv, 0xC00CAD875732FBD5, !dbg !539
+  br i1 %cmp, label %if.end, label %return, !dbg !539
 
-; <label>:5                                       ; preds = %0
-  %6 = fcmp ult double %3, 7.084000e+02, !dbg !813
-  br i1 %6, label %7, label %18, !dbg !815
+if.end:                                           ; preds = %entry
+  %cmp8 = fcmp ult double %conv, 7.084000e+02, !dbg !540
+  br i1 %cmp8, label %if.end11, label %return, !dbg !540
 
-; <label>:7                                       ; preds = %5
-  %8 = fpext float %lambda to double, !dbg !816
-  %9 = fpext float %1 to double, !dbg !817
-  %10 = fmul double %8, %9, !dbg !818
-  %11 = fsub double -0.000000e+00, %10, !dbg !818
-  %12 = tail call double @exp(double %11) #9, !dbg !819
-  tail call void @llvm.dbg.value(metadata double %12, i64 0, metadata !261, metadata !372), !dbg !820
-  %13 = fcmp olt double %12, 1.000000e-07, !dbg !821
-  br i1 %13, label %18, label %14, !dbg !823
+if.end11:                                         ; preds = %if.end
+  %conv12 = fpext float %lambda to double, !dbg !541
+  %mul13 = fmul double %conv12, -1.000000e+00, !dbg !541
+  %conv15 = fpext float %sub to double, !dbg !541
+  %mul16 = fmul double %conv15, %mul13, !dbg !541
+  %call17 = tail call double @exp(double %mul16) #5, !dbg !541
+  tail call void @llvm.dbg.value(metadata !{double %call17}, i64 0, metadata !253), !dbg !541
+  %cmp18 = fcmp olt double %call17, 1.000000e-07, !dbg !542
+  br i1 %cmp18, label %return, label %if.else, !dbg !542
 
-; <label>:14                                      ; preds = %7
-  %15 = fsub double -0.000000e+00, %12, !dbg !824
-  %16 = tail call double @exp(double %15) #9, !dbg !825
-  %17 = fsub double 1.000000e+00, %16, !dbg !826
-  br label %18, !dbg !827
+if.else:                                          ; preds = %if.end11
+  %mul21 = fmul double %call17, -1.000000e+00, !dbg !543
+  %call22 = tail call double @exp(double %mul21) #5, !dbg !543
+  %sub23 = fsub double 1.000000e+00, %call22, !dbg !543
+  br label %return, !dbg !543
 
-; <label>:18                                      ; preds = %7, %5, %0, %14
-  %.0 = phi double [ %17, %14 ], [ 1.000000e+00, %0 ], [ 0.000000e+00, %5 ], [ %12, %7 ]
-  ret double %.0, !dbg !828
+return:                                           ; preds = %if.end11, %if.end, %entry, %if.else
+  %retval.0 = phi double [ %sub23, %if.else ], [ 1.000000e+00, %entry ], [ 0.000000e+00, %if.end ], [ %call17, %if.end11 ]
+  ret double %retval.0, !dbg !544
 }

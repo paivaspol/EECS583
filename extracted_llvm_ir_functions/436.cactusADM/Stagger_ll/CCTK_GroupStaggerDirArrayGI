@@ -1,19 +1,20 @@
 define i32 @CCTK_GroupStaggerDirArrayGI(i32* nocapture %dindex, i32 %dim, i32 %gi) #1 {
+entry:
   %group.i = alloca %struct.cGroup, align 4
-  tail call void @llvm.dbg.value(metadata i32* %dindex, i64 0, metadata !104, metadata !169), !dbg !348
-  tail call void @llvm.dbg.value(metadata i32 %dim, i64 0, metadata !105, metadata !169), !dbg !349
-  tail call void @llvm.dbg.value(metadata i32 %gi, i64 0, metadata !106, metadata !169), !dbg !350
-  %1 = bitcast %struct.cGroup* %group.i to i8*, !dbg !351
-  call void @llvm.lifetime.start(i64 32, i8* %1), !dbg !351
-  tail call void @llvm.dbg.value(metadata i32 %gi, i64 0, metadata !16, metadata !169) #6, !dbg !351
-  tail call void @llvm.dbg.value(metadata %struct.cGroup* %group.i, i64 0, metadata !17, metadata !169) #6, !dbg !353
-  %2 = call i32 @CCTK_GroupData(i32 %gi, %struct.cGroup* %group.i) #7, !dbg !354
-  %3 = getelementptr inbounds %struct.cGroup* %group.i, i64 0, i32 3, !dbg !355
-  %4 = load i32* %3, align 4, !dbg !355, !tbaa !174
-  call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !30, metadata !169) #6, !dbg !356
-  call void @llvm.lifetime.end(i64 32, i8* %1), !dbg !357
-  call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !107, metadata !169), !dbg !358
-  %5 = call i32 @CCTK_StaggerDirArray(i32* %dindex, i32 %dim, i32 %4) #8, !dbg !359
-  call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !108, metadata !169), !dbg !360
-  ret i32 %5, !dbg !361
+  call void @llvm.dbg.value(metadata !{i32* %dindex}, i64 0, metadata !108), !dbg !278
+  call void @llvm.dbg.value(metadata !{i32 %dim}, i64 0, metadata !109), !dbg !278
+  call void @llvm.dbg.value(metadata !{i32 %gi}, i64 0, metadata !110), !dbg !278
+  %0 = bitcast %struct.cGroup* %group.i to i8*, !dbg !279
+  call void @llvm.lifetime.start(i64 32, i8* %0) #7, !dbg !279
+  call void @llvm.dbg.value(metadata !{i32 %gi}, i64 0, metadata !281) #7, !dbg !279
+  call void @llvm.dbg.declare(metadata !{%struct.cGroup* %group.i}, metadata !17) #7, !dbg !282
+  %call.i = call i32 @CCTK_GroupData(i32 %gi, %struct.cGroup* %group.i) #8, !dbg !283
+  %stagtype.i = getelementptr inbounds %struct.cGroup* %group.i, i64 0, i32 3, !dbg !284
+  %1 = load i32* %stagtype.i, align 4, !dbg !284, !tbaa !175
+  call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !285) #7, !dbg !284
+  call void @llvm.lifetime.end(i64 32, i8* %0) #7, !dbg !286
+  call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !111), !dbg !280
+  %call1 = call i32 @CCTK_StaggerDirArray(i32* %dindex, i32 %dim, i32 %1) #11, !dbg !287
+  call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !112), !dbg !287
+  ret i32 %call1, !dbg !288
 }

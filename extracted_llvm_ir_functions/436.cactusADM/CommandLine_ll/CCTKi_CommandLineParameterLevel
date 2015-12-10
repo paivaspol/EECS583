@@ -1,26 +1,27 @@
 define void @CCTKi_CommandLineParameterLevel(i8* %argument) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !80, metadata !130), !dbg !356
-  %1 = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0)) #6, !dbg !357
-  %2 = icmp eq i32 %1, 0, !dbg !357
-  br i1 %2, label %3, label %11, !dbg !359
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !79), !dbg !250
+  %call = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0)) #6, !dbg !251
+  %tobool = icmp eq i32 %call, 0, !dbg !251
+  br i1 %tobool, label %if.else, label %if.end11, !dbg !251
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([7 x i8]* @.str8, i64 0, i64 0)) #6, !dbg !360
-  %5 = icmp eq i32 %4, 0, !dbg !360
-  br i1 %5, label %6, label %11, !dbg !362
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([7 x i8]* @.str8, i64 0, i64 0)) #6, !dbg !252
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !252
+  br i1 %tobool2, label %if.else4, label %if.end11, !dbg !252
 
-; <label>:6                                       ; preds = %3
-  %7 = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([8 x i8]* @.str9, i64 0, i64 0)) #6, !dbg !363
-  %8 = icmp eq i32 %7, 0, !dbg !363
-  br i1 %8, label %9, label %11, !dbg !365
+if.else4:                                         ; preds = %if.else
+  %call5 = tail call i32 @CCTK_Equals(i8* %argument, i8* getelementptr inbounds ([8 x i8]* @.str9, i64 0, i64 0)) #6, !dbg !253
+  %tobool6 = icmp eq i32 %call5, 0, !dbg !253
+  br i1 %tobool6, label %if.else8, label %if.end11, !dbg !253
 
-; <label>:9                                       ; preds = %6
-  %10 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 374, i8* getelementptr inbounds ([80 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([100 x i8]* @.str12, i64 0, i64 0), i8* %argument) #6, !dbg !366
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !81, metadata !130), !dbg !368
-  br label %11
+if.else8:                                         ; preds = %if.else4
+  %call9 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 374, i8* getelementptr inbounds ([68 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([100 x i8]* @.str12, i64 0, i64 0), i8* %argument) #6, !dbg !254
+  tail call void @llvm.dbg.value(metadata !150, i64 0, metadata !80), !dbg !256
+  br label %if.end11
 
-; <label>:11                                      ; preds = %6, %3, %0, %9
-  %parameterlevel.0 = phi i32 [ 1, %9 ], [ 0, %0 ], [ 1, %3 ], [ 2, %6 ]
-  %12 = tail call i32 @CCTKi_SetParameterLevel(i32 %parameterlevel.0) #6, !dbg !369
-  ret void, !dbg !370
+if.end11:                                         ; preds = %if.else4, %if.else, %entry, %if.else8
+  %parameterlevel.0 = phi i32 [ 1, %if.else8 ], [ 0, %entry ], [ 1, %if.else ], [ 2, %if.else4 ]
+  %call12 = tail call i32 @CCTKi_SetParameterLevel(i32 %parameterlevel.0) #6, !dbg !257
+  ret void, !dbg !258
 }

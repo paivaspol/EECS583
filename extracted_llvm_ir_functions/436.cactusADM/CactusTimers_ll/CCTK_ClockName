@@ -1,16 +1,17 @@
 define i8* @CCTK_ClockName(i32 %handle) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !87, metadata !354), !dbg !423
-  %1 = load %struct.cHandledData** @clocks, align 8, !dbg !424, !tbaa !376
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #8, !dbg !425
-  %3 = icmp eq i8* %2, null, !dbg !426
-  br i1 %3, label %7, label %4, !dbg !426
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !81), !dbg !382
+  %0 = load %struct.cHandledData** @clocks, align 8, !dbg !383, !tbaa !355
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %handle) #8, !dbg !383
+  %tobool = icmp eq i8* %call, null, !dbg !384
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !384
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to i8**, !dbg !427
-  %6 = load i8** %5, align 8, !dbg !427, !tbaa !364
-  br label %7, !dbg !426
+cond.true:                                        ; preds = %entry
+  %name = bitcast i8* %call to i8**, !dbg !384
+  %1 = load i8** %name, align 8, !dbg !384, !tbaa !355
+  br label %cond.end, !dbg !384
 
-; <label>:7                                       ; preds = %0, %4
-  %8 = phi i8* [ %6, %4 ], [ null, %0 ], !dbg !426
-  ret i8* %8, !dbg !428
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i8* [ %1, %cond.true ], [ null, %entry ], !dbg !384
+  ret i8* %cond, !dbg !384
 }

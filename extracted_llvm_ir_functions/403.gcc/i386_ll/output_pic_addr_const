@@ -1,11 +1,15 @@
 define internal fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* nocapture %x, i32 %code) #1 {
 entry:
   %buf = alloca [256 x i8], align 16
-  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %0) #5
-  %1 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !3818), !dbg !7077
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !3819), !dbg !7078
+  call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !3820), !dbg !7079
+  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0, !dbg !7080
+  call void @llvm.lifetime.start(i64 256, i8* %0) #6, !dbg !7080
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %buf}, metadata !3821), !dbg !7080
+  %1 = bitcast %struct.rtx_def* %x to i32*, !dbg !7081
+  %bf.load = load i32* %1, align 8, !dbg !7081
+  %bf.clear = and i32 %bf.load, 65535, !dbg !7081
   switch i32 %bf.clear, label %sw.default121 [
     i32 59, label %sw.bb
     i32 68, label %sw.bb1
@@ -17,207 +21,208 @@ entry:
     i32 75, label %sw.bb54
     i32 76, label %sw.bb87
     i32 42, label %sw.bb100
-  ]
+  ], !dbg !7081
 
 sw.bb:                                            ; preds = %entry
-  %2 = load i32* @flag_pic, align 4, !tbaa !0
-  %tobool = icmp eq i32 %2, 0
-  br i1 %tobool, label %if.else, label %if.then
+  %2 = load i32* @flag_pic, align 4, !dbg !7082, !tbaa !4347
+  %tobool = icmp eq i32 %2, 0, !dbg !7082
+  br i1 %tobool, label %if.else, label %if.then, !dbg !7082
 
 if.then:                                          ; preds = %sw.bb
-  %call = call i32 @_IO_putc(i32 46, %struct._IO_FILE* %file) #9
-  br label %sw.epilog122
+  %call = call i32 @_IO_putc(i32 46, %struct._IO_FILE* %file) #10, !dbg !7084
+  br label %sw.epilog122, !dbg !7085
 
 if.else:                                          ; preds = %sw.bb
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5343, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.output_pic_addr_const, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5343, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.output_pic_addr_const, i64 0, i64 0)) #12, !dbg !7086
+  unreachable, !dbg !7086
 
 sw.bb1:                                           ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtstr = bitcast %union.rtunion_def* %arrayidx to i8**
-  %3 = load i8** %rtstr, align 8, !tbaa !4
-  call void @assemble_name(%struct._IO_FILE* %file, i8* %3) #9
-  %cmp = icmp eq i32 %code, 80
-  br i1 %cmp, label %land.lhs.true, label %sw.epilog122
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !7087
+  %rtstr = bitcast %union.rtunion_def* %arrayidx to i8**, !dbg !7087
+  %3 = load i8** %rtstr, align 8, !dbg !7087, !tbaa !4365
+  call void @assemble_name(%struct._IO_FILE* %file, i8* %3) #10, !dbg !7087
+  %cmp = icmp eq i32 %code, 80, !dbg !7088
+  br i1 %cmp, label %land.lhs.true, label %sw.epilog122, !dbg !7088
 
 land.lhs.true:                                    ; preds = %sw.bb1
-  %bf.load2 = load i32* %1, align 8
-  %bf.clear3 = and i32 %bf.load2, 134217728
-  %tobool4 = icmp eq i32 %bf.clear3, 0
-  br i1 %tobool4, label %if.then5, label %sw.epilog122
+  %bf.load2 = load i32* %1, align 8, !dbg !7088
+  %bf.clear3 = and i32 %bf.load2, 134217728, !dbg !7088
+  %tobool4 = icmp eq i32 %bf.clear3, 0, !dbg !7088
+  br i1 %tobool4, label %if.then5, label %sw.epilog122, !dbg !7088
 
 if.then5:                                         ; preds = %land.lhs.true
-  %4 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str469, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %file)
-  br label %sw.epilog122
+  %4 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str469, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %file), !dbg !7089
+  br label %sw.epilog122, !dbg !7089
 
 sw.bb8:                                           ; preds = %entry
-  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**
-  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  br label %do.body
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !7090
+  %rtx = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**, !dbg !7090
+  %5 = load %struct.rtx_def** %rtx, align 8, !dbg !7090, !tbaa !4365
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %5}, i64 0, metadata !3819), !dbg !7090
+  br label %do.body, !dbg !7090
 
 do.body:                                          ; preds = %sw.bb8, %entry
   %x.addr.0 = phi %struct.rtx_def* [ %x, %entry ], [ %5, %sw.bb8 ]
-  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 5
-  %rtint = bitcast %union.rtunion_def* %arrayidx13 to i32*
-  %6 = load i32* %rtint, align 4, !tbaa !0
-  %call14 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str55, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str208, i64 0, i64 0), i32 %6) #9
-  %7 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
-  call void @assemble_name(%struct._IO_FILE* %7, i8* %0) #9
-  br label %sw.epilog122
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 5, !dbg !7091
+  %rtint = bitcast %union.rtunion_def* %arrayidx13 to i32*, !dbg !7091
+  %6 = load i32* %rtint, align 4, !dbg !7091, !tbaa !4347
+  %call14 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str55, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str208, i64 0, i64 0), i32 %6) #10, !dbg !7091
+  %7 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !7093, !tbaa !4365
+  call void @assemble_name(%struct._IO_FILE* %7, i8* %0) #10, !dbg !7093
+  br label %sw.epilog122, !dbg !7094
 
 sw.bb16:                                          ; preds = %entry
-  %rtwint = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, i32 0
-  %8 = load i64* %rtwint, align 8, !tbaa !14
-  %call19 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str130, i64 0, i64 0), i64 %8) #9
-  br label %sw.epilog122
+  %rtwint = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, i32 0, !dbg !7095
+  %8 = load i64* %rtwint, align 8, !dbg !7095, !tbaa !5557
+  %call19 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str130, i64 0, i64 0), i64 %8) #10, !dbg !7095
+  br label %sw.epilog122, !dbg !7096
 
 sw.bb20:                                          ; preds = %entry
-  %arrayidx22 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx23 = bitcast %union.rtunion_def* %arrayidx22 to %struct.rtx_def**
-  %9 = load %struct.rtx_def** %rtx23, align 8, !tbaa !4
-  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %9, i32 %code) #10
-  br label %sw.epilog122
+  %arrayidx22 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !7097
+  %rtx23 = bitcast %union.rtunion_def* %arrayidx22 to %struct.rtx_def**, !dbg !7097
+  %9 = load %struct.rtx_def** %rtx23, align 8, !dbg !7097, !tbaa !4365
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %9, i32 %code) #11, !dbg !7097
+  br label %sw.epilog122, !dbg !7098
 
 sw.bb24:                                          ; preds = %entry
-  %bf.clear27 = and i32 %bf.load, 16711680
-  %cmp28 = icmp eq i32 %bf.clear27, 0
-  br i1 %cmp28, label %if.then29, label %if.else52
+  %bf.clear27 = and i32 %bf.load, 16711680, !dbg !7099
+  %cmp28 = icmp eq i32 %bf.clear27, 0, !dbg !7099
+  br i1 %cmp28, label %if.then29, label %if.else52, !dbg !7099
 
 if.then29:                                        ; preds = %sw.bb24
-  %rtwint32 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 2, i32 0
-  %10 = load i64* %rtwint32, align 8, !tbaa !14
-  %tobool33 = icmp ne i64 %10, 0
-  %rtwint36 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1, i32 0
-  %11 = load i64* %rtwint36, align 8, !tbaa !14
-  %cmp37 = icmp slt i64 %11, 0
-  %or.cond = or i1 %tobool33, %cmp37
-  br i1 %or.cond, label %if.then38, label %if.else46
+  %rtwint32 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 2, i32 0, !dbg !7100
+  %10 = load i64* %rtwint32, align 8, !dbg !7100, !tbaa !5557
+  %tobool33 = icmp ne i64 %10, 0, !dbg !7100
+  %rtwint36 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1, i32 0, !dbg !7100
+  %11 = load i64* %rtwint36, align 8, !dbg !7100, !tbaa !5557
+  %cmp37 = icmp slt i64 %11, 0, !dbg !7100
+  %or.cond = or i1 %tobool33, %cmp37, !dbg !7100
+  br i1 %or.cond, label %if.then38, label %if.else46, !dbg !7100
 
 if.then38:                                        ; preds = %if.then29
-  %call45 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([11 x i8]* @.str470, i64 0, i64 0), i64 %10, i64 %11) #9
-  br label %sw.epilog122
+  %call45 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([11 x i8]* @.str470, i64 0, i64 0), i64 %10, i64 %11) #10, !dbg !7102
+  br label %sw.epilog122, !dbg !7102
 
 if.else46:                                        ; preds = %if.then29
-  %call50 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str130, i64 0, i64 0), i64 %11) #9
+  %call50 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str130, i64 0, i64 0), i64 %11) #10, !dbg !7103
   br label %sw.epilog122
 
 if.else52:                                        ; preds = %sw.bb24
-  call void (i8*, ...)* @output_operand_lossage(i8* getelementptr inbounds ([26 x i8]* @.str471, i64 0, i64 0)) #9
+  call void (i8*, ...)* @output_operand_lossage(i8* getelementptr inbounds ([26 x i8]* @.str471, i64 0, i64 0)) #10, !dbg !7104
   br label %sw.epilog122
 
 sw.bb54:                                          ; preds = %entry
-  %fld55 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
-  %rtx57 = bitcast [1 x %union.rtunion_def]* %fld55 to %struct.rtx_def**
-  %12 = load %struct.rtx_def** %rtx57, align 8, !tbaa !4
-  %13 = bitcast %struct.rtx_def* %12 to i32*
-  %bf.load58 = load i32* %13, align 8
-  %bf.clear59 = and i32 %bf.load58, 65535
-  %cmp60 = icmp eq i32 %bf.clear59, 54
-  br i1 %cmp60, label %if.then61, label %if.else69
+  %fld55 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, !dbg !7105
+  %rtx57 = bitcast [1 x %union.rtunion_def]* %fld55 to %struct.rtx_def**, !dbg !7105
+  %12 = load %struct.rtx_def** %rtx57, align 8, !dbg !7105, !tbaa !4365
+  %13 = bitcast %struct.rtx_def* %12 to i32*, !dbg !7105
+  %bf.load58 = load i32* %13, align 8, !dbg !7105
+  %bf.clear59 = and i32 %bf.load58, 65535, !dbg !7105
+  %cmp60 = icmp eq i32 %bf.clear59, 54, !dbg !7105
+  br i1 %cmp60, label %if.then61, label %if.else69, !dbg !7105
 
 if.then61:                                        ; preds = %sw.bb54
-  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %12, i32 %code) #10
-  %call65 = call i32 @_IO_putc(i32 43, %struct._IO_FILE* %file) #9
-  %arrayidx67 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
-  %rtx68 = bitcast %union.rtunion_def* %arrayidx67 to %struct.rtx_def**
-  %14 = load %struct.rtx_def** %rtx68, align 8, !tbaa !4
-  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %14, i32 %code) #10
-  br label %sw.epilog122
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %12, i32 %code) #11, !dbg !7106
+  %call65 = call i32 @_IO_putc(i32 43, %struct._IO_FILE* %file) #10, !dbg !7108
+  %arrayidx67 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1, !dbg !7109
+  %rtx68 = bitcast %union.rtunion_def* %arrayidx67 to %struct.rtx_def**, !dbg !7109
+  %14 = load %struct.rtx_def** %rtx68, align 8, !dbg !7109, !tbaa !4365
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %14, i32 %code) #11, !dbg !7109
+  br label %sw.epilog122, !dbg !7110
 
 if.else69:                                        ; preds = %sw.bb54
-  %arrayidx71 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
-  %rtx72 = bitcast %union.rtunion_def* %arrayidx71 to %struct.rtx_def**
-  %15 = load %struct.rtx_def** %rtx72, align 8, !tbaa !4
-  %16 = bitcast %struct.rtx_def* %15 to i32*
-  %bf.load73 = load i32* %16, align 8
-  %bf.clear74 = and i32 %bf.load73, 65535
-  %cmp75 = icmp eq i32 %bf.clear74, 54
-  br i1 %cmp75, label %if.then76, label %if.else84
+  %arrayidx71 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1, !dbg !7111
+  %rtx72 = bitcast %union.rtunion_def* %arrayidx71 to %struct.rtx_def**, !dbg !7111
+  %15 = load %struct.rtx_def** %rtx72, align 8, !dbg !7111, !tbaa !4365
+  %16 = bitcast %struct.rtx_def* %15 to i32*, !dbg !7111
+  %bf.load73 = load i32* %16, align 8, !dbg !7111
+  %bf.clear74 = and i32 %bf.load73, 65535, !dbg !7111
+  %cmp75 = icmp eq i32 %bf.clear74, 54, !dbg !7111
+  br i1 %cmp75, label %if.then76, label %if.else84, !dbg !7111
 
 if.then76:                                        ; preds = %if.else69
-  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %15, i32 %code) #10
-  %call80 = call i32 @_IO_putc(i32 43, %struct._IO_FILE* %file) #9
-  %17 = load %struct.rtx_def** %rtx57, align 8, !tbaa !4
-  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %17, i32 %code) #10
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %15, i32 %code) #11, !dbg !7112
+  %call80 = call i32 @_IO_putc(i32 43, %struct._IO_FILE* %file) #10, !dbg !7114
+  %17 = load %struct.rtx_def** %rtx57, align 8, !dbg !7115, !tbaa !4365
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %17, i32 %code) #11, !dbg !7115
   br label %sw.epilog122
 
 if.else84:                                        ; preds = %if.else69
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5402, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.output_pic_addr_const, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5402, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.output_pic_addr_const, i64 0, i64 0)) #12, !dbg !7116
+  unreachable, !dbg !7116
 
 sw.bb87:                                          ; preds = %entry
-  %18 = load i32* @ix86_asm_dialect, align 4, !tbaa !11
-  %cmp88 = icmp eq i32 %18, 1
-  %cond = select i1 %cmp88, i32 40, i32 91
-  %call89 = call i32 @_IO_putc(i32 %cond, %struct._IO_FILE* %file) #9
-  %fld90 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
-  %rtx92 = bitcast [1 x %union.rtunion_def]* %fld90 to %struct.rtx_def**
-  %19 = load %struct.rtx_def** %rtx92, align 8, !tbaa !4
-  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %19, i32 %code) #10
-  %call93 = call i32 @_IO_putc(i32 45, %struct._IO_FILE* %file) #9
-  %arrayidx95 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
-  %rtx96 = bitcast %union.rtunion_def* %arrayidx95 to %struct.rtx_def**
-  %20 = load %struct.rtx_def** %rtx96, align 8, !tbaa !4
-  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %20, i32 %code) #10
-  %21 = load i32* @ix86_asm_dialect, align 4, !tbaa !11
-  %cmp97 = icmp eq i32 %21, 1
-  %cond98 = select i1 %cmp97, i32 41, i32 93
-  %call99 = call i32 @_IO_putc(i32 %cond98, %struct._IO_FILE* %file) #9
-  br label %sw.epilog122
+  %18 = load i32* @ix86_asm_dialect, align 4, !dbg !7117, !tbaa !5306
+  %cmp88 = icmp eq i32 %18, 1, !dbg !7117
+  %cond = select i1 %cmp88, i32 40, i32 91, !dbg !7117
+  %call89 = call i32 @_IO_putc(i32 %cond, %struct._IO_FILE* %file) #10, !dbg !7117
+  %fld90 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, !dbg !7118
+  %rtx92 = bitcast [1 x %union.rtunion_def]* %fld90 to %struct.rtx_def**, !dbg !7118
+  %19 = load %struct.rtx_def** %rtx92, align 8, !dbg !7118, !tbaa !4365
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %19, i32 %code) #11, !dbg !7118
+  %call93 = call i32 @_IO_putc(i32 45, %struct._IO_FILE* %file) #10, !dbg !7119
+  %arrayidx95 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1, !dbg !7120
+  %rtx96 = bitcast %union.rtunion_def* %arrayidx95 to %struct.rtx_def**, !dbg !7120
+  %20 = load %struct.rtx_def** %rtx96, align 8, !dbg !7120, !tbaa !4365
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %20, i32 %code) #11, !dbg !7120
+  %21 = load i32* @ix86_asm_dialect, align 4, !dbg !7121, !tbaa !5306
+  %cmp97 = icmp eq i32 %21, 1, !dbg !7121
+  %cond98 = select i1 %cmp97, i32 41, i32 93, !dbg !7121
+  %call99 = call i32 @_IO_putc(i32 %cond98, %struct._IO_FILE* %file) #10, !dbg !7121
+  br label %sw.epilog122, !dbg !7122
 
 sw.bb100:                                         ; preds = %entry
-  %fld101 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
-  %rtvec = bitcast [1 x %union.rtunion_def]* %fld101 to %struct.rtvec_def**
-  %22 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
-  %num_elem = getelementptr inbounds %struct.rtvec_def* %22, i64 0, i32 0
-  %23 = load i32* %num_elem, align 4, !tbaa !0
-  %cmp103 = icmp eq i32 %23, 1
-  br i1 %cmp103, label %if.end105, label %if.then104
+  %fld101 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, !dbg !7123
+  %rtvec = bitcast [1 x %union.rtunion_def]* %fld101 to %struct.rtvec_def**, !dbg !7123
+  %22 = load %struct.rtvec_def** %rtvec, align 8, !dbg !7123, !tbaa !4365
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %22, i64 0, i32 0, !dbg !7123
+  %23 = load i32* %num_elem, align 4, !dbg !7123, !tbaa !4347
+  %cmp103 = icmp eq i32 %23, 1, !dbg !7123
+  br i1 %cmp103, label %if.end105, label %if.then104, !dbg !7123
 
 if.then104:                                       ; preds = %sw.bb100
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5415, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.output_pic_addr_const, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5415, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.output_pic_addr_const, i64 0, i64 0)) #12, !dbg !7124
+  unreachable, !dbg !7124
 
 if.end105:                                        ; preds = %sw.bb100
-  %arrayidx109 = getelementptr inbounds %struct.rtvec_def* %22, i64 0, i32 1, i64 0
-  %24 = load %struct.rtx_def** %arrayidx109, align 8, !tbaa !4
-  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %24, i32 %code) #10
-  %arrayidx111 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
-  %rtint112 = bitcast %union.rtunion_def* %arrayidx111 to i32*
-  %25 = load i32* %rtint112, align 4, !tbaa !0
+  %arrayidx109 = getelementptr inbounds %struct.rtvec_def* %22, i64 0, i32 1, i64 0, !dbg !7125
+  %24 = load %struct.rtx_def** %arrayidx109, align 8, !dbg !7125, !tbaa !4365
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %24, i32 %code) #11, !dbg !7125
+  %arrayidx111 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1, !dbg !7126
+  %rtint112 = bitcast %union.rtunion_def* %arrayidx111 to i32*, !dbg !7126
+  %25 = load i32* %rtint112, align 4, !dbg !7126, !tbaa !4347
   switch i32 %25, label %sw.default [
     i32 6, label %sw.bb113
     i32 7, label %sw.bb115
     i32 8, label %sw.bb117
     i32 15, label %sw.bb119
-  ]
+  ], !dbg !7126
 
 sw.bb113:                                         ; preds = %if.end105
-  %26 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str472, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %file)
-  br label %sw.epilog122
+  %26 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str472, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %file), !dbg !7127
+  br label %sw.epilog122, !dbg !7129
 
 sw.bb115:                                         ; preds = %if.end105
-  %27 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str473, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
-  br label %sw.epilog122
+  %27 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str473, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file), !dbg !7130
+  br label %sw.epilog122, !dbg !7131
 
 sw.bb117:                                         ; preds = %if.end105
-  %28 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str469, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %file)
-  br label %sw.epilog122
+  %28 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str469, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %file), !dbg !7132
+  br label %sw.epilog122, !dbg !7133
 
 sw.bb119:                                         ; preds = %if.end105
-  %29 = call i64 @fwrite(i8* getelementptr inbounds ([16 x i8]* @.str474, i64 0, i64 0), i64 15, i64 1, %struct._IO_FILE* %file)
-  br label %sw.epilog122
+  %29 = call i64 @fwrite(i8* getelementptr inbounds ([16 x i8]* @.str474, i64 0, i64 0), i64 15, i64 1, %struct._IO_FILE* %file), !dbg !7134
+  br label %sw.epilog122, !dbg !7135
 
 sw.default:                                       ; preds = %if.end105
-  call void (i8*, ...)* @output_operand_lossage(i8* getelementptr inbounds ([26 x i8]* @.str475, i64 0, i64 0)) #9
-  br label %sw.epilog122
+  call void (i8*, ...)* @output_operand_lossage(i8* getelementptr inbounds ([26 x i8]* @.str475, i64 0, i64 0)) #10, !dbg !7136
+  br label %sw.epilog122, !dbg !7137
 
 sw.default121:                                    ; preds = %entry
-  call void (i8*, ...)* @output_operand_lossage(i8* getelementptr inbounds ([30 x i8]* @.str476, i64 0, i64 0)) #9
-  br label %sw.epilog122
+  call void (i8*, ...)* @output_operand_lossage(i8* getelementptr inbounds ([30 x i8]* @.str476, i64 0, i64 0)) #10, !dbg !7138
+  br label %sw.epilog122, !dbg !7139
 
 sw.epilog122:                                     ; preds = %land.lhs.true, %sw.bb113, %sw.bb115, %sw.bb117, %sw.bb119, %sw.default, %if.then61, %if.then76, %if.else52, %if.else46, %if.then38, %sw.bb1, %if.then5, %sw.default121, %sw.bb87, %sw.bb20, %sw.bb16, %do.body, %if.then
-  call void @llvm.lifetime.end(i64 256, i8* %0) #5
-  ret void
+  call void @llvm.lifetime.end(i64 256, i8* %0) #6, !dbg !7140
+  ret void, !dbg !7140
 }

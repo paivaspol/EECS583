@@ -1,19 +1,20 @@
 define double @htab_collisions(%struct.htab* nocapture %htab) #6 {
 entry:
-  %searches = getelementptr inbounds %struct.htab* %htab, i64 0, i32 7
-  %0 = load i32* %searches, align 4, !tbaa !4
-  %cmp = icmp eq i32 %0, 0
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.htab* %htab}, i64 0, metadata !150), !dbg !437
+  %searches = getelementptr inbounds %struct.htab* %htab, i64 0, i32 7, !dbg !438
+  %0 = load i32* %searches, align 4, !dbg !438, !tbaa !230
+  %cmp = icmp eq i32 %0, 0, !dbg !438
+  br i1 %cmp, label %return, label %if.end, !dbg !438
 
 if.end:                                           ; preds = %entry
-  %collisions = getelementptr inbounds %struct.htab* %htab, i64 0, i32 8
-  %1 = load i32* %collisions, align 4, !tbaa !4
-  %conv = uitofp i32 %1 to double
-  %conv2 = uitofp i32 %0 to double
-  %div = fdiv double %conv, %conv2
-  br label %return
+  %collisions = getelementptr inbounds %struct.htab* %htab, i64 0, i32 8, !dbg !439
+  %1 = load i32* %collisions, align 4, !dbg !439, !tbaa !230
+  %conv = uitofp i32 %1 to double, !dbg !439
+  %conv2 = uitofp i32 %0 to double, !dbg !439
+  %div = fdiv double %conv, %conv2, !dbg !439
+  br label %return, !dbg !439
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi double [ %div, %if.end ], [ 0.000000e+00, %entry ]
-  ret double %retval.0
+  ret double %retval.0, !dbg !440
 }

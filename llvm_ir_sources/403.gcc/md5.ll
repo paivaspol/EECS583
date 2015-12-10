@@ -1,1905 +1,1748 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/403.gcc/src/md5.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 %struct.md5_ctx = type { i32, i32, i32, i32, [2 x i32], i32, [128 x i8] }
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 
-@fillbuf = internal constant [64 x i8] c"\80\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00", align 16
+@fillbuf = internal unnamed_addr constant [64 x i8] c"\80\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00", align 16
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @md5_init_ctx(%struct.md5_ctx* nocapture %ctx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !32, metadata !183), !dbg !184
-  %1 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !185
-  store i32 1732584193, i32* %1, align 4, !dbg !186, !tbaa !187
-  %2 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !192
-  store i32 -271733879, i32* %2, align 4, !dbg !193, !tbaa !194
-  %3 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !195
-  store i32 -1732584194, i32* %3, align 4, !dbg !196, !tbaa !197
-  %4 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !198
-  store i32 271733878, i32* %4, align 4, !dbg !199, !tbaa !200
-  %5 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !201
-  store i32 0, i32* %5, align 4, !dbg !202, !tbaa !203
-  %6 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !204
-  store i32 0, i32* %6, align 4, !dbg !205, !tbaa !203
-  %7 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !206
-  store i32 0, i32* %7, align 4, !dbg !207, !tbaa !208
-  ret void, !dbg !209
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !29), !dbg !171
+  %A = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !172
+  store i32 1732584193, i32* %A, align 4, !dbg !172, !tbaa !173
+  %B = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !176
+  store i32 -271733879, i32* %B, align 4, !dbg !176, !tbaa !173
+  %C = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !177
+  store i32 -1732584194, i32* %C, align 4, !dbg !177, !tbaa !173
+  %D = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !178
+  store i32 271733878, i32* %D, align 4, !dbg !178, !tbaa !173
+  %arrayidx = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !179
+  store i32 0, i32* %arrayidx, align 4, !dbg !179, !tbaa !173
+  %arrayidx2 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !179
+  store i32 0, i32* %arrayidx2, align 4, !dbg !179, !tbaa !173
+  %buflen = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !180
+  store i32 0, i32* %buflen, align 4, !dbg !180, !tbaa !173
+  ret void, !dbg !181
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.declare(metadata, metadata, metadata) #1
+declare void @llvm.dbg.declare(metadata, metadata) #1
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i8* @md5_read_ctx(%struct.md5_ctx* nocapture readonly %ctx, i8* %resbuf) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !40, metadata !183), !dbg !210
-  tail call void @llvm.dbg.value(metadata i8* %resbuf, i64 0, metadata !41, metadata !183), !dbg !211
-  %1 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !212
-  %2 = load i32* %1, align 4, !dbg !212, !tbaa !187
-  %3 = bitcast i8* %resbuf to i32*, !dbg !213
-  store i32 %2, i32* %3, align 4, !dbg !214, !tbaa !203
-  %4 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !215
-  %5 = load i32* %4, align 4, !dbg !215, !tbaa !194
-  %6 = getelementptr inbounds i8* %resbuf, i64 4, !dbg !216
-  %7 = bitcast i8* %6 to i32*, !dbg !216
-  store i32 %5, i32* %7, align 4, !dbg !217, !tbaa !203
-  %8 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !218
-  %9 = load i32* %8, align 4, !dbg !218, !tbaa !197
-  %10 = getelementptr inbounds i8* %resbuf, i64 8, !dbg !219
-  %11 = bitcast i8* %10 to i32*, !dbg !219
-  store i32 %9, i32* %11, align 4, !dbg !220, !tbaa !203
-  %12 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !221
-  %13 = load i32* %12, align 4, !dbg !221, !tbaa !200
-  %14 = getelementptr inbounds i8* %resbuf, i64 12, !dbg !222
-  %15 = bitcast i8* %14 to i32*, !dbg !222
-  store i32 %13, i32* %15, align 4, !dbg !223, !tbaa !203
-  ret i8* %resbuf, !dbg !224
+; Function Attrs: nounwind optsize uwtable
+define i8* @md5_read_ctx(%struct.md5_ctx* nocapture %ctx, i8* %resbuf) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !37), !dbg !182
+  tail call void @llvm.dbg.value(metadata !{i8* %resbuf}, i64 0, metadata !38), !dbg !183
+  %A = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !184
+  %0 = load i32* %A, align 4, !dbg !184, !tbaa !173
+  %1 = bitcast i8* %resbuf to i32*, !dbg !184
+  store i32 %0, i32* %1, align 4, !dbg !184, !tbaa !173
+  %B = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !185
+  %2 = load i32* %B, align 4, !dbg !185, !tbaa !173
+  %arrayidx1 = getelementptr inbounds i8* %resbuf, i64 4, !dbg !185
+  %3 = bitcast i8* %arrayidx1 to i32*, !dbg !185
+  store i32 %2, i32* %3, align 4, !dbg !185, !tbaa !173
+  %C = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !186
+  %4 = load i32* %C, align 4, !dbg !186, !tbaa !173
+  %arrayidx2 = getelementptr inbounds i8* %resbuf, i64 8, !dbg !186
+  %5 = bitcast i8* %arrayidx2 to i32*, !dbg !186
+  store i32 %4, i32* %5, align 4, !dbg !186, !tbaa !173
+  %D = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !187
+  %6 = load i32* %D, align 4, !dbg !187, !tbaa !173
+  %arrayidx3 = getelementptr inbounds i8* %resbuf, i64 12, !dbg !187
+  %7 = bitcast i8* %arrayidx3 to i32*, !dbg !187
+  store i32 %6, i32* %7, align 4, !dbg !187, !tbaa !173
+  ret i8* %resbuf, !dbg !188
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i8* @md5_finish_ctx(%struct.md5_ctx* %ctx, i8* %resbuf) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !46, metadata !183), !dbg !225
-  tail call void @llvm.dbg.value(metadata i8* %resbuf, i64 0, metadata !47, metadata !183), !dbg !226
-  %1 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !227
-  %2 = load i32* %1, align 4, !dbg !227, !tbaa !208
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !48, metadata !183), !dbg !228
-  %3 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !229
-  %4 = load i32* %3, align 4, !dbg !230, !tbaa !203
-  %uadd = tail call { i32, i1 } @llvm.uadd.with.overflow.i32(i32 %4, i32 %2), !dbg !230
-  %5 = extractvalue { i32, i1 } %uadd, 0, !dbg !230
-  store i32 %5, i32* %3, align 4, !dbg !230, !tbaa !203
-  %6 = extractvalue { i32, i1 } %uadd, 1, !dbg !231
-  %7 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !233
-  br i1 %6, label %8, label %._crit_edge, !dbg !234
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !43), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{i8* %resbuf}, i64 0, metadata !44), !dbg !190
+  %buflen = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !191
+  %0 = load i32* %buflen, align 4, !dbg !191, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !45), !dbg !191
+  %arrayidx = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !192
+  %1 = load i32* %arrayidx, align 4, !dbg !192, !tbaa !173
+  %uadd = tail call { i32, i1 } @llvm.uadd.with.overflow.i32(i32 %1, i32 %0), !dbg !192
+  %2 = extractvalue { i32, i1 } %uadd, 0, !dbg !192
+  store i32 %2, i32* %arrayidx, align 4, !dbg !192, !tbaa !173
+  %cmp = extractvalue { i32, i1 } %uadd, 1, !dbg !193
+  %arrayidx4 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !194
+  br i1 %cmp, label %if.then, label %if.end, !dbg !193
 
-; <label>:8                                       ; preds = %0
-  %9 = load i32* %7, align 4, !dbg !235, !tbaa !203
-  %10 = add i32 %9, 1, !dbg !235
-  store i32 %10, i32* %7, align 4, !dbg !235, !tbaa !203
-  br label %._crit_edge, !dbg !235
+if.then:                                          ; preds = %entry
+  %3 = load i32* %arrayidx4, align 4, !dbg !194, !tbaa !173
+  %inc = add i32 %3, 1, !dbg !194
+  store i32 %inc, i32* %arrayidx4, align 4, !dbg !194, !tbaa !173
+  br label %if.end, !dbg !194
 
-._crit_edge:                                      ; preds = %0, %8
-  %11 = icmp ugt i32 %2, 55, !dbg !236
-  %.v = select i1 %11, i32 120, i32 56, !dbg !237
-  %12 = sub i32 %.v, %2, !dbg !237
-  %13 = zext i32 %12 to i64, !dbg !237
-  tail call void @llvm.dbg.value(metadata i64 %13, i64 0, metadata !49, metadata !183), !dbg !238
-  %14 = zext i32 %2 to i64, !dbg !239
-  %15 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %14, !dbg !239
-  %16 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %15, i1 false), !dbg !239
-  %17 = tail call i8* @__memcpy_chk(i8* %15, i8* getelementptr inbounds ([64 x i8]* @fillbuf, i64 0, i64 0), i64 %13, i64 %16) #5, !dbg !239
-  %18 = load i32* %3, align 4, !dbg !240, !tbaa !203
-  %19 = shl i32 %18, 3, !dbg !240
-  %20 = add nuw nsw i64 %13, %14, !dbg !241
-  %21 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %20, !dbg !242
-  %22 = bitcast i8* %21 to i32*, !dbg !243
-  store i32 %19, i32* %22, align 4, !dbg !244, !tbaa !203
-  %23 = load i32* %7, align 4, !dbg !245, !tbaa !203
-  %24 = shl i32 %23, 3, !dbg !245
-  %25 = lshr i32 %18, 29, !dbg !245
-  %26 = or i32 %25, %24, !dbg !245
-  %27 = add nuw nsw i64 %20, 4, !dbg !246
-  %28 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %27, !dbg !247
-  %29 = bitcast i8* %28 to i32*, !dbg !248
-  store i32 %26, i32* %29, align 4, !dbg !249, !tbaa !203
-  %30 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0, !dbg !250
-  %31 = add nuw nsw i64 %20, 8, !dbg !251
-  tail call void @md5_process_block(i8* %30, i64 %31, %struct.md5_ctx* %ctx) #6, !dbg !252
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !40, metadata !183), !dbg !253
-  tail call void @llvm.dbg.value(metadata i8* %resbuf, i64 0, metadata !41, metadata !183), !dbg !255
-  %32 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !256
-  %33 = load i32* %32, align 4, !dbg !256, !tbaa !187
-  %34 = bitcast i8* %resbuf to i32*, !dbg !257
-  store i32 %33, i32* %34, align 4, !dbg !258, !tbaa !203
-  %35 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !259
-  %36 = load i32* %35, align 4, !dbg !259, !tbaa !194
-  %37 = getelementptr inbounds i8* %resbuf, i64 4, !dbg !260
-  %38 = bitcast i8* %37 to i32*, !dbg !260
-  store i32 %36, i32* %38, align 4, !dbg !261, !tbaa !203
-  %39 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !262
-  %40 = load i32* %39, align 4, !dbg !262, !tbaa !197
-  %41 = getelementptr inbounds i8* %resbuf, i64 8, !dbg !263
-  %42 = bitcast i8* %41 to i32*, !dbg !263
-  store i32 %40, i32* %42, align 4, !dbg !264, !tbaa !203
-  %43 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !265
-  %44 = load i32* %43, align 4, !dbg !265, !tbaa !200
-  %45 = getelementptr inbounds i8* %resbuf, i64 12, !dbg !266
-  %46 = bitcast i8* %45 to i32*, !dbg !266
-  store i32 %44, i32* %46, align 4, !dbg !267, !tbaa !203
-  ret i8* %resbuf, !dbg !268
+if.end:                                           ; preds = %entry, %if.then
+  %cmp5 = icmp ugt i32 %0, 55, !dbg !195
+  %cond.v = select i1 %cmp5, i32 120, i32 56, !dbg !195
+  %cond = sub i32 %cond.v, %0, !dbg !195
+  %conv = zext i32 %cond to i64, !dbg !195
+  tail call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !46), !dbg !195
+  %idxprom = zext i32 %0 to i64, !dbg !196
+  %arrayidx7 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %idxprom, !dbg !196
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arrayidx7, i8* getelementptr inbounds ([64 x i8]* @fillbuf, i64 0, i64 0), i64 %conv, i32 1, i1 false), !dbg !196
+  %4 = load i32* %arrayidx, align 4, !dbg !197, !tbaa !173
+  %shl = shl i32 %4, 3, !dbg !197
+  %add11 = add i64 %conv, %idxprom, !dbg !197
+  %arrayidx13 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %add11, !dbg !197
+  %5 = bitcast i8* %arrayidx13 to i32*, !dbg !197
+  store i32 %shl, i32* %5, align 4, !dbg !197, !tbaa !173
+  %6 = load i32* %arrayidx4, align 4, !dbg !198, !tbaa !173
+  %shl16 = shl i32 %6, 3, !dbg !198
+  %7 = load i32* %arrayidx, align 4, !dbg !198, !tbaa !173
+  %shr = lshr i32 %7, 29, !dbg !198
+  %or = or i32 %shr, %shl16, !dbg !198
+  %add21 = add i64 %add11, 4, !dbg !198
+  %arrayidx23 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %add21, !dbg !198
+  %8 = bitcast i8* %arrayidx23 to i32*, !dbg !198
+  store i32 %or, i32* %8, align 4, !dbg !198, !tbaa !173
+  %arraydecay = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0, !dbg !199
+  %add27 = add i64 %add11, 8, !dbg !199
+  tail call void @md5_process_block(i8* %arraydecay, i64 %add27, %struct.md5_ctx* %ctx) #5, !dbg !199
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !200), !dbg !202
+  tail call void @llvm.dbg.value(metadata !{i8* %resbuf}, i64 0, metadata !203), !dbg !204
+  %A.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !205
+  %9 = load i32* %A.i, align 4, !dbg !205, !tbaa !173
+  %10 = bitcast i8* %resbuf to i32*, !dbg !205
+  store i32 %9, i32* %10, align 4, !dbg !205, !tbaa !173
+  %B.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !206
+  %11 = load i32* %B.i, align 4, !dbg !206, !tbaa !173
+  %arrayidx1.i = getelementptr inbounds i8* %resbuf, i64 4, !dbg !206
+  %12 = bitcast i8* %arrayidx1.i to i32*, !dbg !206
+  store i32 %11, i32* %12, align 4, !dbg !206, !tbaa !173
+  %C.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !207
+  %13 = load i32* %C.i, align 4, !dbg !207, !tbaa !173
+  %arrayidx2.i = getelementptr inbounds i8* %resbuf, i64 8, !dbg !207
+  %14 = bitcast i8* %arrayidx2.i to i32*, !dbg !207
+  store i32 %13, i32* %14, align 4, !dbg !207, !tbaa !173
+  %D.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !208
+  %15 = load i32* %D.i, align 4, !dbg !208, !tbaa !173
+  %arrayidx3.i = getelementptr inbounds i8* %resbuf, i64 12, !dbg !208
+  %16 = bitcast i8* %arrayidx3.i to i32*, !dbg !208
+  store i32 %15, i32* %16, align 4, !dbg !208, !tbaa !173
+  ret i8* %resbuf, !dbg !201
 }
 
-; Function Attrs: nounwind optsize
-declare i8* @__memcpy_chk(i8*, i8*, i64, i64) #2
+; Function Attrs: nounwind
+declare void @llvm.memcpy.p0i8.p0i8.i64(i8* nocapture, i8* nocapture, i64, i32, i1) #2
 
-; Function Attrs: nounwind readnone
-declare i64 @llvm.objectsize.i64.p0i8(i8*, i1) #1
+; Function Attrs: nounwind optsize uwtable
+define void @md5_process_block(i8* %buffer, i64 %len, %struct.md5_ctx* nocapture %ctx) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !141), !dbg !209
+  tail call void @llvm.dbg.value(metadata !{i64 %len}, i64 0, metadata !142), !dbg !210
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !143), !dbg !211
+  tail call void @llvm.dbg.declare(metadata !212, metadata !144), !dbg !213
+  %0 = bitcast i8* %buffer to i32*, !dbg !214
+  tail call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !148), !dbg !214
+  %div = lshr i64 %len, 2, !dbg !215
+  tail call void @llvm.dbg.value(metadata !{i64 %div}, i64 0, metadata !151), !dbg !215
+  %add.ptr = getelementptr inbounds i32* %0, i64 %div, !dbg !216
+  tail call void @llvm.dbg.value(metadata !{i32* %add.ptr}, i64 0, metadata !152), !dbg !216
+  %A1 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !217
+  %1 = load i32* %A1, align 4, !dbg !217, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !153), !dbg !217
+  %B2 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !218
+  %2 = load i32* %B2, align 4, !dbg !218, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !154), !dbg !218
+  %C3 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !219
+  %3 = load i32* %C3, align 4, !dbg !219, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !155), !dbg !219
+  %D4 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !220
+  %4 = load i32* %D4, align 4, !dbg !220, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !156), !dbg !220
+  %arrayidx = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !221
+  %5 = load i32* %arrayidx, align 4, !dbg !221, !tbaa !173
+  %conv = zext i32 %5 to i64, !dbg !221
+  %add = add i64 %conv, %len, !dbg !221
+  %conv5 = trunc i64 %add to i32, !dbg !221
+  store i32 %conv5, i32* %arrayidx, align 4, !dbg !221, !tbaa !173
+  %conv8 = and i64 %add, 4294967295, !dbg !222
+  %cmp = icmp ult i64 %conv8, %len, !dbg !222
+  br i1 %cmp, label %if.then, label %while.cond.preheader, !dbg !222
 
-; Function Attrs: nounwind optsize ssp uwtable
-define void @md5_process_block(i8* readonly %buffer, i64 %len, %struct.md5_ctx* nocapture %ctx) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %buffer, i64 0, metadata !151, metadata !183), !dbg !269
-  tail call void @llvm.dbg.value(metadata i64 %len, i64 0, metadata !152, metadata !183), !dbg !270
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !153, metadata !183), !dbg !271
-  tail call void @llvm.dbg.declare(metadata [16 x i32]* undef, metadata !154, metadata !183), !dbg !272
-  %1 = bitcast i8* %buffer to i32*, !dbg !273
-  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !158, metadata !183), !dbg !274
-  %2 = lshr i64 %len, 2, !dbg !275
-  tail call void @llvm.dbg.value(metadata i64 %2, i64 0, metadata !161, metadata !183), !dbg !276
-  %3 = getelementptr inbounds i32* %1, i64 %2, !dbg !277
-  tail call void @llvm.dbg.value(metadata i32* %3, i64 0, metadata !162, metadata !183), !dbg !278
-  %4 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !279
-  %5 = load i32* %4, align 4, !dbg !279, !tbaa !187
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !163, metadata !183), !dbg !280
-  %6 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !281
-  %7 = load i32* %6, align 4, !dbg !281, !tbaa !194
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !164, metadata !183), !dbg !282
-  %8 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !283
-  %9 = load i32* %8, align 4, !dbg !283, !tbaa !197
-  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !165, metadata !183), !dbg !284
-  %10 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !285
-  %11 = load i32* %10, align 4, !dbg !285, !tbaa !200
-  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !166, metadata !183), !dbg !286
-  %12 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !287
-  %13 = load i32* %12, align 4, !dbg !288, !tbaa !203
-  %14 = zext i32 %13 to i64, !dbg !288
-  %15 = add i64 %14, %len, !dbg !288
-  %16 = trunc i64 %15 to i32, !dbg !288
-  store i32 %16, i32* %12, align 4, !dbg !288, !tbaa !203
-  %17 = and i64 %15, 4294967295, !dbg !289
-  %18 = icmp ult i64 %17, %len, !dbg !291
-  br i1 %18, label %19, label %.preheader, !dbg !292
+if.then:                                          ; preds = %entry
+  %arrayidx11 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !223
+  %6 = load i32* %arrayidx11, align 4, !dbg !223, !tbaa !173
+  %inc = add i32 %6, 1, !dbg !223
+  store i32 %inc, i32* %arrayidx11, align 4, !dbg !223, !tbaa !173
+  br label %while.cond.preheader, !dbg !223
 
-; <label>:19                                      ; preds = %0
-  %20 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !293
-  %21 = load i32* %20, align 4, !dbg !294, !tbaa !203
-  %22 = add i32 %21, 1, !dbg !294
-  store i32 %22, i32* %20, align 4, !dbg !294, !tbaa !203
-  br label %.preheader, !dbg !294
+while.cond.preheader:                             ; preds = %if.then, %entry
+  %cmp121568 = icmp ult i32* %0, %add.ptr, !dbg !224
+  br i1 %cmp121568, label %while.body, label %while.end, !dbg !224
 
-.preheader:                                       ; preds = %19, %0
-  %23 = icmp ult i32* %1, %3, !dbg !295
-  br i1 %23, label %.lr.ph, label %._crit_edge, !dbg !296
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %words.01573 = phi i32* [ %incdec.ptr238, %while.body ], [ %0, %while.cond.preheader ]
+  %A.01572 = phi i32 [ %add900, %while.body ], [ %1, %while.cond.preheader ]
+  %B.01571 = phi i32 [ %add901, %while.body ], [ %2, %while.cond.preheader ]
+  %C.01570 = phi i32 [ %add902, %while.body ], [ %3, %while.cond.preheader ]
+  %D.01569 = phi i32 [ %add903, %while.body ], [ %4, %while.cond.preheader ]
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !226
+  tail call void @llvm.dbg.value(metadata !{i32 %A.0.lcssa}, i64 0, metadata !160), !dbg !227
+  tail call void @llvm.dbg.value(metadata !{i32 %B.0.lcssa}, i64 0, metadata !161), !dbg !228
+  tail call void @llvm.dbg.value(metadata !{i32 %C.0.lcssa}, i64 0, metadata !162), !dbg !229
+  tail call void @llvm.dbg.value(metadata !{i32 %D.0.lcssa}, i64 0, metadata !163), !dbg !230
+  %xor = xor i32 %C.01570, %D.01569, !dbg !231
+  %and = and i32 %B.01571, %xor, !dbg !231
+  %xor14 = xor i32 %and, %D.01569, !dbg !231
+  %7 = load i32* %words.01573, align 4, !dbg !231, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !231
+  %add15 = add i32 %A.01572, -680876936, !dbg !231
+  %add16 = add i32 %add15, %xor14, !dbg !231
+  %add17 = add i32 %add16, %7, !dbg !231
+  tail call void @llvm.dbg.value(metadata !{i32 %add17}, i64 0, metadata !153), !dbg !231
+  %incdec.ptr18 = getelementptr inbounds i32* %words.01573, i64 1, !dbg !231
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr18}, i64 0, metadata !148), !dbg !231
+  %shl = shl i32 %add17, 7, !dbg !231
+  %shr = lshr i32 %add17, 25, !dbg !231
+  %or = or i32 %shl, %shr, !dbg !231
+  tail call void @llvm.dbg.value(metadata !{i32 %or}, i64 0, metadata !153), !dbg !231
+  %add19 = add i32 %or, %B.01571, !dbg !231
+  tail call void @llvm.dbg.value(metadata !{i32 %add19}, i64 0, metadata !153), !dbg !231
+  %xor21 = xor i32 %B.01571, %C.01570, !dbg !233
+  %and22 = and i32 %add19, %xor21, !dbg !233
+  %xor23 = xor i32 %and22, %C.01570, !dbg !233
+  %8 = load i32* %incdec.ptr18, align 4, !dbg !233, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !233
+  %add25 = add i32 %D.01569, -389564586, !dbg !233
+  %add26 = add i32 %add25, %8, !dbg !233
+  %add27 = add i32 %add26, %xor23, !dbg !233
+  tail call void @llvm.dbg.value(metadata !{i32 %add27}, i64 0, metadata !156), !dbg !233
+  %incdec.ptr28 = getelementptr inbounds i32* %words.01573, i64 2, !dbg !233
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr28}, i64 0, metadata !148), !dbg !233
+  %shl29 = shl i32 %add27, 12, !dbg !233
+  %shr30 = lshr i32 %add27, 20, !dbg !233
+  %or31 = or i32 %shl29, %shr30, !dbg !233
+  tail call void @llvm.dbg.value(metadata !{i32 %or31}, i64 0, metadata !156), !dbg !233
+  %add32 = add i32 %or31, %add19, !dbg !233
+  tail call void @llvm.dbg.value(metadata !{i32 %add32}, i64 0, metadata !156), !dbg !233
+  %xor36 = xor i32 %add19, %B.01571, !dbg !235
+  %and37 = and i32 %add32, %xor36, !dbg !235
+  %xor38 = xor i32 %and37, %B.01571, !dbg !235
+  %9 = load i32* %incdec.ptr28, align 4, !dbg !235, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !235
+  %add40 = add i32 %C.01570, 606105819, !dbg !235
+  %add41 = add i32 %add40, %9, !dbg !235
+  %add42 = add i32 %add41, %xor38, !dbg !235
+  tail call void @llvm.dbg.value(metadata !{i32 %add42}, i64 0, metadata !155), !dbg !235
+  %incdec.ptr43 = getelementptr inbounds i32* %words.01573, i64 3, !dbg !235
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr43}, i64 0, metadata !148), !dbg !235
+  %shl44 = shl i32 %add42, 17, !dbg !235
+  %shr45 = lshr i32 %add42, 15, !dbg !235
+  %or46 = or i32 %shl44, %shr45, !dbg !235
+  tail call void @llvm.dbg.value(metadata !{i32 %or46}, i64 0, metadata !155), !dbg !235
+  %add47 = add i32 %or46, %add32, !dbg !235
+  tail call void @llvm.dbg.value(metadata !{i32 %add47}, i64 0, metadata !155), !dbg !235
+  %xor51 = xor i32 %add32, %add19, !dbg !237
+  %and52 = and i32 %add47, %xor51, !dbg !237
+  %xor53 = xor i32 %and52, %add19, !dbg !237
+  %10 = load i32* %incdec.ptr43, align 4, !dbg !237, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !237
+  %add55 = add i32 %B.01571, -1044525330, !dbg !237
+  %add56 = add i32 %add55, %10, !dbg !237
+  %add57 = add i32 %add56, %xor53, !dbg !237
+  tail call void @llvm.dbg.value(metadata !{i32 %add57}, i64 0, metadata !154), !dbg !237
+  %incdec.ptr58 = getelementptr inbounds i32* %words.01573, i64 4, !dbg !237
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr58}, i64 0, metadata !148), !dbg !237
+  %shl59 = shl i32 %add57, 22, !dbg !237
+  %shr60 = lshr i32 %add57, 10, !dbg !237
+  %or61 = or i32 %shl59, %shr60, !dbg !237
+  tail call void @llvm.dbg.value(metadata !{i32 %or61}, i64 0, metadata !154), !dbg !237
+  %add62 = add i32 %or61, %add47, !dbg !237
+  tail call void @llvm.dbg.value(metadata !{i32 %add62}, i64 0, metadata !154), !dbg !237
+  %xor66 = xor i32 %add47, %add32, !dbg !239
+  %and67 = and i32 %add62, %xor66, !dbg !239
+  %xor68 = xor i32 %and67, %add32, !dbg !239
+  %11 = load i32* %incdec.ptr58, align 4, !dbg !239, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !239
+  %add70 = add i32 %11, -176418897, !dbg !239
+  %add71 = add i32 %add70, %add19, !dbg !239
+  %add72 = add i32 %add71, %xor68, !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i32 %add72}, i64 0, metadata !153), !dbg !239
+  %incdec.ptr73 = getelementptr inbounds i32* %words.01573, i64 5, !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr73}, i64 0, metadata !148), !dbg !239
+  %shl74 = shl i32 %add72, 7, !dbg !239
+  %shr75 = lshr i32 %add72, 25, !dbg !239
+  %or76 = or i32 %shl74, %shr75, !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i32 %or76}, i64 0, metadata !153), !dbg !239
+  %add77 = add i32 %or76, %add62, !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i32 %add77}, i64 0, metadata !153), !dbg !239
+  %xor81 = xor i32 %add62, %add47, !dbg !241
+  %and82 = and i32 %add77, %xor81, !dbg !241
+  %xor83 = xor i32 %and82, %add47, !dbg !241
+  %12 = load i32* %incdec.ptr73, align 4, !dbg !241, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !241
+  %add85 = add i32 %12, 1200080426, !dbg !241
+  %add86 = add i32 %add85, %add32, !dbg !241
+  %add87 = add i32 %add86, %xor83, !dbg !241
+  tail call void @llvm.dbg.value(metadata !{i32 %add87}, i64 0, metadata !156), !dbg !241
+  %incdec.ptr88 = getelementptr inbounds i32* %words.01573, i64 6, !dbg !241
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr88}, i64 0, metadata !148), !dbg !241
+  %shl89 = shl i32 %add87, 12, !dbg !241
+  %shr90 = lshr i32 %add87, 20, !dbg !241
+  %or91 = or i32 %shl89, %shr90, !dbg !241
+  tail call void @llvm.dbg.value(metadata !{i32 %or91}, i64 0, metadata !156), !dbg !241
+  %add92 = add i32 %or91, %add77, !dbg !241
+  tail call void @llvm.dbg.value(metadata !{i32 %add92}, i64 0, metadata !156), !dbg !241
+  %xor96 = xor i32 %add77, %add62, !dbg !243
+  %and97 = and i32 %add92, %xor96, !dbg !243
+  %xor98 = xor i32 %and97, %add62, !dbg !243
+  %13 = load i32* %incdec.ptr88, align 4, !dbg !243, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !243
+  %add100 = add i32 %13, -1473231341, !dbg !243
+  %add101 = add i32 %add100, %add47, !dbg !243
+  %add102 = add i32 %add101, %xor98, !dbg !243
+  tail call void @llvm.dbg.value(metadata !{i32 %add102}, i64 0, metadata !155), !dbg !243
+  %incdec.ptr103 = getelementptr inbounds i32* %words.01573, i64 7, !dbg !243
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr103}, i64 0, metadata !148), !dbg !243
+  %shl104 = shl i32 %add102, 17, !dbg !243
+  %shr105 = lshr i32 %add102, 15, !dbg !243
+  %or106 = or i32 %shl104, %shr105, !dbg !243
+  tail call void @llvm.dbg.value(metadata !{i32 %or106}, i64 0, metadata !155), !dbg !243
+  %add107 = add i32 %or106, %add92, !dbg !243
+  tail call void @llvm.dbg.value(metadata !{i32 %add107}, i64 0, metadata !155), !dbg !243
+  %xor111 = xor i32 %add92, %add77, !dbg !245
+  %and112 = and i32 %add107, %xor111, !dbg !245
+  %xor113 = xor i32 %and112, %add77, !dbg !245
+  %14 = load i32* %incdec.ptr103, align 4, !dbg !245, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !245
+  %add115 = add i32 %14, -45705983, !dbg !245
+  %add116 = add i32 %add115, %add62, !dbg !245
+  %add117 = add i32 %add116, %xor113, !dbg !245
+  tail call void @llvm.dbg.value(metadata !{i32 %add117}, i64 0, metadata !154), !dbg !245
+  %incdec.ptr118 = getelementptr inbounds i32* %words.01573, i64 8, !dbg !245
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr118}, i64 0, metadata !148), !dbg !245
+  %shl119 = shl i32 %add117, 22, !dbg !245
+  %shr120 = lshr i32 %add117, 10, !dbg !245
+  %or121 = or i32 %shl119, %shr120, !dbg !245
+  tail call void @llvm.dbg.value(metadata !{i32 %or121}, i64 0, metadata !154), !dbg !245
+  %add122 = add i32 %or121, %add107, !dbg !245
+  tail call void @llvm.dbg.value(metadata !{i32 %add122}, i64 0, metadata !154), !dbg !245
+  %xor126 = xor i32 %add107, %add92, !dbg !247
+  %and127 = and i32 %add122, %xor126, !dbg !247
+  %xor128 = xor i32 %and127, %add92, !dbg !247
+  %15 = load i32* %incdec.ptr118, align 4, !dbg !247, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !247
+  %add130 = add i32 %15, 1770035416, !dbg !247
+  %add131 = add i32 %add130, %add77, !dbg !247
+  %add132 = add i32 %add131, %xor128, !dbg !247
+  tail call void @llvm.dbg.value(metadata !{i32 %add132}, i64 0, metadata !153), !dbg !247
+  %incdec.ptr133 = getelementptr inbounds i32* %words.01573, i64 9, !dbg !247
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr133}, i64 0, metadata !148), !dbg !247
+  %shl134 = shl i32 %add132, 7, !dbg !247
+  %shr135 = lshr i32 %add132, 25, !dbg !247
+  %or136 = or i32 %shl134, %shr135, !dbg !247
+  tail call void @llvm.dbg.value(metadata !{i32 %or136}, i64 0, metadata !153), !dbg !247
+  %add137 = add i32 %or136, %add122, !dbg !247
+  tail call void @llvm.dbg.value(metadata !{i32 %add137}, i64 0, metadata !153), !dbg !247
+  %xor141 = xor i32 %add122, %add107, !dbg !249
+  %and142 = and i32 %add137, %xor141, !dbg !249
+  %xor143 = xor i32 %and142, %add107, !dbg !249
+  %16 = load i32* %incdec.ptr133, align 4, !dbg !249, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !249
+  %add145 = add i32 %16, -1958414417, !dbg !249
+  %add146 = add i32 %add145, %add92, !dbg !249
+  %add147 = add i32 %add146, %xor143, !dbg !249
+  tail call void @llvm.dbg.value(metadata !{i32 %add147}, i64 0, metadata !156), !dbg !249
+  %incdec.ptr148 = getelementptr inbounds i32* %words.01573, i64 10, !dbg !249
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr148}, i64 0, metadata !148), !dbg !249
+  %shl149 = shl i32 %add147, 12, !dbg !249
+  %shr150 = lshr i32 %add147, 20, !dbg !249
+  %or151 = or i32 %shl149, %shr150, !dbg !249
+  tail call void @llvm.dbg.value(metadata !{i32 %or151}, i64 0, metadata !156), !dbg !249
+  %add152 = add i32 %or151, %add137, !dbg !249
+  tail call void @llvm.dbg.value(metadata !{i32 %add152}, i64 0, metadata !156), !dbg !249
+  %xor156 = xor i32 %add137, %add122, !dbg !251
+  %and157 = and i32 %add152, %xor156, !dbg !251
+  %xor158 = xor i32 %and157, %add122, !dbg !251
+  %17 = load i32* %incdec.ptr148, align 4, !dbg !251, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !251
+  %add160 = add i32 %17, -42063, !dbg !251
+  %add161 = add i32 %add160, %add107, !dbg !251
+  %add162 = add i32 %add161, %xor158, !dbg !251
+  tail call void @llvm.dbg.value(metadata !{i32 %add162}, i64 0, metadata !155), !dbg !251
+  %incdec.ptr163 = getelementptr inbounds i32* %words.01573, i64 11, !dbg !251
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr163}, i64 0, metadata !148), !dbg !251
+  %shl164 = shl i32 %add162, 17, !dbg !251
+  %shr165 = lshr i32 %add162, 15, !dbg !251
+  %or166 = or i32 %shl164, %shr165, !dbg !251
+  tail call void @llvm.dbg.value(metadata !{i32 %or166}, i64 0, metadata !155), !dbg !251
+  %add167 = add i32 %or166, %add152, !dbg !251
+  tail call void @llvm.dbg.value(metadata !{i32 %add167}, i64 0, metadata !155), !dbg !251
+  %xor171 = xor i32 %add152, %add137, !dbg !253
+  %and172 = and i32 %add167, %xor171, !dbg !253
+  %xor173 = xor i32 %and172, %add137, !dbg !253
+  %18 = load i32* %incdec.ptr163, align 4, !dbg !253, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !253
+  %add175 = add i32 %18, -1990404162, !dbg !253
+  %add176 = add i32 %add175, %add122, !dbg !253
+  %add177 = add i32 %add176, %xor173, !dbg !253
+  tail call void @llvm.dbg.value(metadata !{i32 %add177}, i64 0, metadata !154), !dbg !253
+  %incdec.ptr178 = getelementptr inbounds i32* %words.01573, i64 12, !dbg !253
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr178}, i64 0, metadata !148), !dbg !253
+  %shl179 = shl i32 %add177, 22, !dbg !253
+  %shr180 = lshr i32 %add177, 10, !dbg !253
+  %or181 = or i32 %shl179, %shr180, !dbg !253
+  tail call void @llvm.dbg.value(metadata !{i32 %or181}, i64 0, metadata !154), !dbg !253
+  %add182 = add i32 %or181, %add167, !dbg !253
+  tail call void @llvm.dbg.value(metadata !{i32 %add182}, i64 0, metadata !154), !dbg !253
+  %xor186 = xor i32 %add167, %add152, !dbg !255
+  %and187 = and i32 %add182, %xor186, !dbg !255
+  %xor188 = xor i32 %and187, %add152, !dbg !255
+  %19 = load i32* %incdec.ptr178, align 4, !dbg !255, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !255
+  %add190 = add i32 %19, 1804603682, !dbg !255
+  %add191 = add i32 %add190, %add137, !dbg !255
+  %add192 = add i32 %add191, %xor188, !dbg !255
+  tail call void @llvm.dbg.value(metadata !{i32 %add192}, i64 0, metadata !153), !dbg !255
+  %incdec.ptr193 = getelementptr inbounds i32* %words.01573, i64 13, !dbg !255
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr193}, i64 0, metadata !148), !dbg !255
+  %shl194 = shl i32 %add192, 7, !dbg !255
+  %shr195 = lshr i32 %add192, 25, !dbg !255
+  %or196 = or i32 %shl194, %shr195, !dbg !255
+  tail call void @llvm.dbg.value(metadata !{i32 %or196}, i64 0, metadata !153), !dbg !255
+  %add197 = add i32 %or196, %add182, !dbg !255
+  tail call void @llvm.dbg.value(metadata !{i32 %add197}, i64 0, metadata !153), !dbg !255
+  %xor201 = xor i32 %add182, %add167, !dbg !257
+  %and202 = and i32 %add197, %xor201, !dbg !257
+  %xor203 = xor i32 %and202, %add167, !dbg !257
+  %20 = load i32* %incdec.ptr193, align 4, !dbg !257, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !257
+  %add205 = add i32 %20, -40341101, !dbg !257
+  %add206 = add i32 %add205, %add152, !dbg !257
+  %add207 = add i32 %add206, %xor203, !dbg !257
+  tail call void @llvm.dbg.value(metadata !{i32 %add207}, i64 0, metadata !156), !dbg !257
+  %incdec.ptr208 = getelementptr inbounds i32* %words.01573, i64 14, !dbg !257
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr208}, i64 0, metadata !148), !dbg !257
+  %shl209 = shl i32 %add207, 12, !dbg !257
+  %shr210 = lshr i32 %add207, 20, !dbg !257
+  %or211 = or i32 %shl209, %shr210, !dbg !257
+  tail call void @llvm.dbg.value(metadata !{i32 %or211}, i64 0, metadata !156), !dbg !257
+  %add212 = add i32 %or211, %add197, !dbg !257
+  tail call void @llvm.dbg.value(metadata !{i32 %add212}, i64 0, metadata !156), !dbg !257
+  %xor216 = xor i32 %add197, %add182, !dbg !259
+  %and217 = and i32 %add212, %xor216, !dbg !259
+  %xor218 = xor i32 %and217, %add182, !dbg !259
+  %21 = load i32* %incdec.ptr208, align 4, !dbg !259, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !259
+  %add220 = add i32 %21, -1502002290, !dbg !259
+  %add221 = add i32 %add220, %add167, !dbg !259
+  %add222 = add i32 %add221, %xor218, !dbg !259
+  tail call void @llvm.dbg.value(metadata !{i32 %add222}, i64 0, metadata !155), !dbg !259
+  %incdec.ptr223 = getelementptr inbounds i32* %words.01573, i64 15, !dbg !259
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr223}, i64 0, metadata !148), !dbg !259
+  %shl224 = shl i32 %add222, 17, !dbg !259
+  %shr225 = lshr i32 %add222, 15, !dbg !259
+  %or226 = or i32 %shl224, %shr225, !dbg !259
+  tail call void @llvm.dbg.value(metadata !{i32 %or226}, i64 0, metadata !155), !dbg !259
+  %add227 = add i32 %or226, %add212, !dbg !259
+  tail call void @llvm.dbg.value(metadata !{i32 %add227}, i64 0, metadata !155), !dbg !259
+  %xor231 = xor i32 %add212, %add197, !dbg !261
+  %and232 = and i32 %add227, %xor231, !dbg !261
+  %xor233 = xor i32 %and232, %add197, !dbg !261
+  %22 = load i32* %incdec.ptr223, align 4, !dbg !261, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !225, i64 0, metadata !157), !dbg !261
+  %add235 = add i32 %22, 1236535329, !dbg !261
+  %add236 = add i32 %add235, %add182, !dbg !261
+  %add237 = add i32 %add236, %xor233, !dbg !261
+  tail call void @llvm.dbg.value(metadata !{i32 %add237}, i64 0, metadata !154), !dbg !261
+  %incdec.ptr238 = getelementptr inbounds i32* %words.01573, i64 16, !dbg !261
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr238}, i64 0, metadata !148), !dbg !261
+  %shl239 = shl i32 %add237, 22, !dbg !261
+  %shr240 = lshr i32 %add237, 10, !dbg !261
+  %or241 = or i32 %shl239, %shr240, !dbg !261
+  tail call void @llvm.dbg.value(metadata !{i32 %or241}, i64 0, metadata !154), !dbg !261
+  %add242 = add i32 %or241, %add227, !dbg !261
+  tail call void @llvm.dbg.value(metadata !{i32 %add242}, i64 0, metadata !154), !dbg !261
+  %xor246 = xor i32 %add242, %add227, !dbg !263
+  %and247 = and i32 %xor246, %add212, !dbg !263
+  %xor248 = xor i32 %and247, %add227, !dbg !263
+  %add250 = add i32 %8, -165796510, !dbg !263
+  %add251 = add i32 %add250, %add197, !dbg !263
+  %add252 = add i32 %add251, %xor248, !dbg !263
+  tail call void @llvm.dbg.value(metadata !{i32 %add252}, i64 0, metadata !153), !dbg !263
+  %shl253 = shl i32 %add252, 5, !dbg !263
+  %shr254 = lshr i32 %add252, 27, !dbg !263
+  %or255 = or i32 %shl253, %shr254, !dbg !263
+  tail call void @llvm.dbg.value(metadata !{i32 %or255}, i64 0, metadata !153), !dbg !263
+  %add256 = add i32 %or255, %add242, !dbg !263
+  tail call void @llvm.dbg.value(metadata !{i32 %add256}, i64 0, metadata !153), !dbg !263
+  %xor260 = xor i32 %add256, %add242, !dbg !265
+  %and261 = and i32 %xor260, %add227, !dbg !265
+  %xor262 = xor i32 %and261, %add242, !dbg !265
+  %add264 = add i32 %13, -1069501632, !dbg !265
+  %add265 = add i32 %add264, %add212, !dbg !265
+  %add266 = add i32 %add265, %xor262, !dbg !265
+  tail call void @llvm.dbg.value(metadata !{i32 %add266}, i64 0, metadata !156), !dbg !265
+  %shl267 = shl i32 %add266, 9, !dbg !265
+  %shr268 = lshr i32 %add266, 23, !dbg !265
+  %or269 = or i32 %shl267, %shr268, !dbg !265
+  tail call void @llvm.dbg.value(metadata !{i32 %or269}, i64 0, metadata !156), !dbg !265
+  %add270 = add i32 %or269, %add256, !dbg !265
+  tail call void @llvm.dbg.value(metadata !{i32 %add270}, i64 0, metadata !156), !dbg !265
+  %xor274 = xor i32 %add270, %add256, !dbg !267
+  %and275 = and i32 %xor274, %add242, !dbg !267
+  %xor276 = xor i32 %and275, %add256, !dbg !267
+  %add278 = add i32 %18, 643717713, !dbg !267
+  %add279 = add i32 %add278, %add227, !dbg !267
+  %add280 = add i32 %add279, %xor276, !dbg !267
+  tail call void @llvm.dbg.value(metadata !{i32 %add280}, i64 0, metadata !155), !dbg !267
+  %shl281 = shl i32 %add280, 14, !dbg !267
+  %shr282 = lshr i32 %add280, 18, !dbg !267
+  %or283 = or i32 %shl281, %shr282, !dbg !267
+  tail call void @llvm.dbg.value(metadata !{i32 %or283}, i64 0, metadata !155), !dbg !267
+  %add284 = add i32 %or283, %add270, !dbg !267
+  tail call void @llvm.dbg.value(metadata !{i32 %add284}, i64 0, metadata !155), !dbg !267
+  %xor288 = xor i32 %add284, %add270, !dbg !269
+  %and289 = and i32 %xor288, %add256, !dbg !269
+  %xor290 = xor i32 %and289, %add270, !dbg !269
+  %add292 = add i32 %7, -373897302, !dbg !269
+  %add293 = add i32 %add292, %add242, !dbg !269
+  %add294 = add i32 %add293, %xor290, !dbg !269
+  tail call void @llvm.dbg.value(metadata !{i32 %add294}, i64 0, metadata !154), !dbg !269
+  %shl295 = shl i32 %add294, 20, !dbg !269
+  %shr296 = lshr i32 %add294, 12, !dbg !269
+  %or297 = or i32 %shl295, %shr296, !dbg !269
+  tail call void @llvm.dbg.value(metadata !{i32 %or297}, i64 0, metadata !154), !dbg !269
+  %add298 = add i32 %or297, %add284, !dbg !269
+  tail call void @llvm.dbg.value(metadata !{i32 %add298}, i64 0, metadata !154), !dbg !269
+  %xor302 = xor i32 %add298, %add284, !dbg !271
+  %and303 = and i32 %xor302, %add270, !dbg !271
+  %xor304 = xor i32 %and303, %add284, !dbg !271
+  %add306 = add i32 %12, -701558691, !dbg !271
+  %add307 = add i32 %add306, %add256, !dbg !271
+  %add308 = add i32 %add307, %xor304, !dbg !271
+  tail call void @llvm.dbg.value(metadata !{i32 %add308}, i64 0, metadata !153), !dbg !271
+  %shl309 = shl i32 %add308, 5, !dbg !271
+  %shr310 = lshr i32 %add308, 27, !dbg !271
+  %or311 = or i32 %shl309, %shr310, !dbg !271
+  tail call void @llvm.dbg.value(metadata !{i32 %or311}, i64 0, metadata !153), !dbg !271
+  %add312 = add i32 %or311, %add298, !dbg !271
+  tail call void @llvm.dbg.value(metadata !{i32 %add312}, i64 0, metadata !153), !dbg !271
+  %xor316 = xor i32 %add312, %add298, !dbg !273
+  %and317 = and i32 %xor316, %add284, !dbg !273
+  %xor318 = xor i32 %and317, %add298, !dbg !273
+  %add320 = add i32 %17, 38016083, !dbg !273
+  %add321 = add i32 %add320, %add270, !dbg !273
+  %add322 = add i32 %add321, %xor318, !dbg !273
+  tail call void @llvm.dbg.value(metadata !{i32 %add322}, i64 0, metadata !156), !dbg !273
+  %shl323 = shl i32 %add322, 9, !dbg !273
+  %shr324 = lshr i32 %add322, 23, !dbg !273
+  %or325 = or i32 %shl323, %shr324, !dbg !273
+  tail call void @llvm.dbg.value(metadata !{i32 %or325}, i64 0, metadata !156), !dbg !273
+  %add326 = add i32 %or325, %add312, !dbg !273
+  tail call void @llvm.dbg.value(metadata !{i32 %add326}, i64 0, metadata !156), !dbg !273
+  %xor330 = xor i32 %add326, %add312, !dbg !275
+  %and331 = and i32 %xor330, %add298, !dbg !275
+  %xor332 = xor i32 %and331, %add312, !dbg !275
+  %add334 = add i32 %22, -660478335, !dbg !275
+  %add335 = add i32 %add334, %add284, !dbg !275
+  %add336 = add i32 %add335, %xor332, !dbg !275
+  tail call void @llvm.dbg.value(metadata !{i32 %add336}, i64 0, metadata !155), !dbg !275
+  %shl337 = shl i32 %add336, 14, !dbg !275
+  %shr338 = lshr i32 %add336, 18, !dbg !275
+  %or339 = or i32 %shl337, %shr338, !dbg !275
+  tail call void @llvm.dbg.value(metadata !{i32 %or339}, i64 0, metadata !155), !dbg !275
+  %add340 = add i32 %or339, %add326, !dbg !275
+  tail call void @llvm.dbg.value(metadata !{i32 %add340}, i64 0, metadata !155), !dbg !275
+  %xor344 = xor i32 %add340, %add326, !dbg !277
+  %and345 = and i32 %xor344, %add312, !dbg !277
+  %xor346 = xor i32 %and345, %add326, !dbg !277
+  %add348 = add i32 %11, -405537848, !dbg !277
+  %add349 = add i32 %add348, %add298, !dbg !277
+  %add350 = add i32 %add349, %xor346, !dbg !277
+  tail call void @llvm.dbg.value(metadata !{i32 %add350}, i64 0, metadata !154), !dbg !277
+  %shl351 = shl i32 %add350, 20, !dbg !277
+  %shr352 = lshr i32 %add350, 12, !dbg !277
+  %or353 = or i32 %shl351, %shr352, !dbg !277
+  tail call void @llvm.dbg.value(metadata !{i32 %or353}, i64 0, metadata !154), !dbg !277
+  %add354 = add i32 %or353, %add340, !dbg !277
+  tail call void @llvm.dbg.value(metadata !{i32 %add354}, i64 0, metadata !154), !dbg !277
+  %xor358 = xor i32 %add354, %add340, !dbg !279
+  %and359 = and i32 %xor358, %add326, !dbg !279
+  %xor360 = xor i32 %and359, %add340, !dbg !279
+  %add362 = add i32 %16, 568446438, !dbg !279
+  %add363 = add i32 %add362, %add312, !dbg !279
+  %add364 = add i32 %add363, %xor360, !dbg !279
+  tail call void @llvm.dbg.value(metadata !{i32 %add364}, i64 0, metadata !153), !dbg !279
+  %shl365 = shl i32 %add364, 5, !dbg !279
+  %shr366 = lshr i32 %add364, 27, !dbg !279
+  %or367 = or i32 %shl365, %shr366, !dbg !279
+  tail call void @llvm.dbg.value(metadata !{i32 %or367}, i64 0, metadata !153), !dbg !279
+  %add368 = add i32 %or367, %add354, !dbg !279
+  tail call void @llvm.dbg.value(metadata !{i32 %add368}, i64 0, metadata !153), !dbg !279
+  %xor372 = xor i32 %add368, %add354, !dbg !281
+  %and373 = and i32 %xor372, %add340, !dbg !281
+  %xor374 = xor i32 %and373, %add354, !dbg !281
+  %add376 = add i32 %21, -1019803690, !dbg !281
+  %add377 = add i32 %add376, %add326, !dbg !281
+  %add378 = add i32 %add377, %xor374, !dbg !281
+  tail call void @llvm.dbg.value(metadata !{i32 %add378}, i64 0, metadata !156), !dbg !281
+  %shl379 = shl i32 %add378, 9, !dbg !281
+  %shr380 = lshr i32 %add378, 23, !dbg !281
+  %or381 = or i32 %shl379, %shr380, !dbg !281
+  tail call void @llvm.dbg.value(metadata !{i32 %or381}, i64 0, metadata !156), !dbg !281
+  %add382 = add i32 %or381, %add368, !dbg !281
+  tail call void @llvm.dbg.value(metadata !{i32 %add382}, i64 0, metadata !156), !dbg !281
+  %xor386 = xor i32 %add382, %add368, !dbg !283
+  %and387 = and i32 %xor386, %add354, !dbg !283
+  %xor388 = xor i32 %and387, %add368, !dbg !283
+  %add390 = add i32 %10, -187363961, !dbg !283
+  %add391 = add i32 %add390, %add340, !dbg !283
+  %add392 = add i32 %add391, %xor388, !dbg !283
+  tail call void @llvm.dbg.value(metadata !{i32 %add392}, i64 0, metadata !155), !dbg !283
+  %shl393 = shl i32 %add392, 14, !dbg !283
+  %shr394 = lshr i32 %add392, 18, !dbg !283
+  %or395 = or i32 %shl393, %shr394, !dbg !283
+  tail call void @llvm.dbg.value(metadata !{i32 %or395}, i64 0, metadata !155), !dbg !283
+  %add396 = add i32 %or395, %add382, !dbg !283
+  tail call void @llvm.dbg.value(metadata !{i32 %add396}, i64 0, metadata !155), !dbg !283
+  %xor400 = xor i32 %add396, %add382, !dbg !285
+  %and401 = and i32 %xor400, %add368, !dbg !285
+  %xor402 = xor i32 %and401, %add382, !dbg !285
+  %add404 = add i32 %15, 1163531501, !dbg !285
+  %add405 = add i32 %add404, %add354, !dbg !285
+  %add406 = add i32 %add405, %xor402, !dbg !285
+  tail call void @llvm.dbg.value(metadata !{i32 %add406}, i64 0, metadata !154), !dbg !285
+  %shl407 = shl i32 %add406, 20, !dbg !285
+  %shr408 = lshr i32 %add406, 12, !dbg !285
+  %or409 = or i32 %shl407, %shr408, !dbg !285
+  tail call void @llvm.dbg.value(metadata !{i32 %or409}, i64 0, metadata !154), !dbg !285
+  %add410 = add i32 %or409, %add396, !dbg !285
+  tail call void @llvm.dbg.value(metadata !{i32 %add410}, i64 0, metadata !154), !dbg !285
+  %xor414 = xor i32 %add410, %add396, !dbg !287
+  %and415 = and i32 %xor414, %add382, !dbg !287
+  %xor416 = xor i32 %and415, %add396, !dbg !287
+  %add418 = add i32 %20, -1444681467, !dbg !287
+  %add419 = add i32 %add418, %add368, !dbg !287
+  %add420 = add i32 %add419, %xor416, !dbg !287
+  tail call void @llvm.dbg.value(metadata !{i32 %add420}, i64 0, metadata !153), !dbg !287
+  %shl421 = shl i32 %add420, 5, !dbg !287
+  %shr422 = lshr i32 %add420, 27, !dbg !287
+  %or423 = or i32 %shl421, %shr422, !dbg !287
+  tail call void @llvm.dbg.value(metadata !{i32 %or423}, i64 0, metadata !153), !dbg !287
+  %add424 = add i32 %or423, %add410, !dbg !287
+  tail call void @llvm.dbg.value(metadata !{i32 %add424}, i64 0, metadata !153), !dbg !287
+  %xor428 = xor i32 %add424, %add410, !dbg !289
+  %and429 = and i32 %xor428, %add396, !dbg !289
+  %xor430 = xor i32 %and429, %add410, !dbg !289
+  %add432 = add i32 %9, -51403784, !dbg !289
+  %add433 = add i32 %add432, %add382, !dbg !289
+  %add434 = add i32 %add433, %xor430, !dbg !289
+  tail call void @llvm.dbg.value(metadata !{i32 %add434}, i64 0, metadata !156), !dbg !289
+  %shl435 = shl i32 %add434, 9, !dbg !289
+  %shr436 = lshr i32 %add434, 23, !dbg !289
+  %or437 = or i32 %shl435, %shr436, !dbg !289
+  tail call void @llvm.dbg.value(metadata !{i32 %or437}, i64 0, metadata !156), !dbg !289
+  %add438 = add i32 %or437, %add424, !dbg !289
+  tail call void @llvm.dbg.value(metadata !{i32 %add438}, i64 0, metadata !156), !dbg !289
+  %xor442 = xor i32 %add438, %add424, !dbg !291
+  %and443 = and i32 %xor442, %add410, !dbg !291
+  %xor444 = xor i32 %and443, %add424, !dbg !291
+  %add446 = add i32 %14, 1735328473, !dbg !291
+  %add447 = add i32 %add446, %add396, !dbg !291
+  %add448 = add i32 %add447, %xor444, !dbg !291
+  tail call void @llvm.dbg.value(metadata !{i32 %add448}, i64 0, metadata !155), !dbg !291
+  %shl449 = shl i32 %add448, 14, !dbg !291
+  %shr450 = lshr i32 %add448, 18, !dbg !291
+  %or451 = or i32 %shl449, %shr450, !dbg !291
+  tail call void @llvm.dbg.value(metadata !{i32 %or451}, i64 0, metadata !155), !dbg !291
+  %add452 = add i32 %or451, %add438, !dbg !291
+  tail call void @llvm.dbg.value(metadata !{i32 %add452}, i64 0, metadata !155), !dbg !291
+  %xor456 = xor i32 %add452, %add438, !dbg !293
+  %and457 = and i32 %xor456, %add424, !dbg !293
+  %xor458 = xor i32 %and457, %add438, !dbg !293
+  %add460 = add i32 %19, -1926607734, !dbg !293
+  %add461 = add i32 %add460, %add410, !dbg !293
+  %add462 = add i32 %add461, %xor458, !dbg !293
+  tail call void @llvm.dbg.value(metadata !{i32 %add462}, i64 0, metadata !154), !dbg !293
+  %shl463 = shl i32 %add462, 20, !dbg !293
+  %shr464 = lshr i32 %add462, 12, !dbg !293
+  %or465 = or i32 %shl463, %shr464, !dbg !293
+  tail call void @llvm.dbg.value(metadata !{i32 %or465}, i64 0, metadata !154), !dbg !293
+  %add466 = add i32 %or465, %add452, !dbg !293
+  tail call void @llvm.dbg.value(metadata !{i32 %add466}, i64 0, metadata !154), !dbg !293
+  %xor471 = xor i32 %xor456, %add466, !dbg !295
+  %add473 = add i32 %12, -378558, !dbg !295
+  %add474 = add i32 %add473, %add424, !dbg !295
+  %add475 = add i32 %add474, %xor471, !dbg !295
+  tail call void @llvm.dbg.value(metadata !{i32 %add475}, i64 0, metadata !153), !dbg !295
+  %shl476 = shl i32 %add475, 4, !dbg !295
+  %shr477 = lshr i32 %add475, 28, !dbg !295
+  %or478 = or i32 %shl476, %shr477, !dbg !295
+  tail call void @llvm.dbg.value(metadata !{i32 %or478}, i64 0, metadata !153), !dbg !295
+  %add479 = add i32 %or478, %add466, !dbg !295
+  tail call void @llvm.dbg.value(metadata !{i32 %add479}, i64 0, metadata !153), !dbg !295
+  %xor483 = xor i32 %add466, %add452, !dbg !297
+  %xor484 = xor i32 %xor483, %add479, !dbg !297
+  %add486 = add i32 %15, -2022574463, !dbg !297
+  %add487 = add i32 %add486, %add438, !dbg !297
+  %add488 = add i32 %add487, %xor484, !dbg !297
+  tail call void @llvm.dbg.value(metadata !{i32 %add488}, i64 0, metadata !156), !dbg !297
+  %shl489 = shl i32 %add488, 11, !dbg !297
+  %shr490 = lshr i32 %add488, 21, !dbg !297
+  %or491 = or i32 %shl489, %shr490, !dbg !297
+  tail call void @llvm.dbg.value(metadata !{i32 %or491}, i64 0, metadata !156), !dbg !297
+  %add492 = add i32 %or491, %add479, !dbg !297
+  tail call void @llvm.dbg.value(metadata !{i32 %add492}, i64 0, metadata !156), !dbg !297
+  %xor496 = xor i32 %add479, %add466, !dbg !299
+  %xor497 = xor i32 %xor496, %add492, !dbg !299
+  %add499 = add i32 %18, 1839030562, !dbg !299
+  %add500 = add i32 %add499, %add452, !dbg !299
+  %add501 = add i32 %add500, %xor497, !dbg !299
+  tail call void @llvm.dbg.value(metadata !{i32 %add501}, i64 0, metadata !155), !dbg !299
+  %shl502 = shl i32 %add501, 16, !dbg !299
+  %shr503 = lshr i32 %add501, 16, !dbg !299
+  %or504 = or i32 %shl502, %shr503, !dbg !299
+  tail call void @llvm.dbg.value(metadata !{i32 %or504}, i64 0, metadata !155), !dbg !299
+  %add505 = add i32 %or504, %add492, !dbg !299
+  tail call void @llvm.dbg.value(metadata !{i32 %add505}, i64 0, metadata !155), !dbg !299
+  %xor509 = xor i32 %add492, %add479, !dbg !301
+  %xor510 = xor i32 %xor509, %add505, !dbg !301
+  %add512 = add i32 %21, -35309556, !dbg !301
+  %add513 = add i32 %add512, %add466, !dbg !301
+  %add514 = add i32 %add513, %xor510, !dbg !301
+  tail call void @llvm.dbg.value(metadata !{i32 %add514}, i64 0, metadata !154), !dbg !301
+  %shl515 = shl i32 %add514, 23, !dbg !301
+  %shr516 = lshr i32 %add514, 9, !dbg !301
+  %or517 = or i32 %shl515, %shr516, !dbg !301
+  tail call void @llvm.dbg.value(metadata !{i32 %or517}, i64 0, metadata !154), !dbg !301
+  %add518 = add i32 %or517, %add505, !dbg !301
+  tail call void @llvm.dbg.value(metadata !{i32 %add518}, i64 0, metadata !154), !dbg !301
+  %xor522 = xor i32 %add505, %add492, !dbg !303
+  %xor523 = xor i32 %xor522, %add518, !dbg !303
+  %add525 = add i32 %8, -1530992060, !dbg !303
+  %add526 = add i32 %add525, %add479, !dbg !303
+  %add527 = add i32 %add526, %xor523, !dbg !303
+  tail call void @llvm.dbg.value(metadata !{i32 %add527}, i64 0, metadata !153), !dbg !303
+  %shl528 = shl i32 %add527, 4, !dbg !303
+  %shr529 = lshr i32 %add527, 28, !dbg !303
+  %or530 = or i32 %shl528, %shr529, !dbg !303
+  tail call void @llvm.dbg.value(metadata !{i32 %or530}, i64 0, metadata !153), !dbg !303
+  %add531 = add i32 %or530, %add518, !dbg !303
+  tail call void @llvm.dbg.value(metadata !{i32 %add531}, i64 0, metadata !153), !dbg !303
+  %xor535 = xor i32 %add518, %add505, !dbg !305
+  %xor536 = xor i32 %xor535, %add531, !dbg !305
+  %add538 = add i32 %11, 1272893353, !dbg !305
+  %add539 = add i32 %add538, %add492, !dbg !305
+  %add540 = add i32 %add539, %xor536, !dbg !305
+  tail call void @llvm.dbg.value(metadata !{i32 %add540}, i64 0, metadata !156), !dbg !305
+  %shl541 = shl i32 %add540, 11, !dbg !305
+  %shr542 = lshr i32 %add540, 21, !dbg !305
+  %or543 = or i32 %shl541, %shr542, !dbg !305
+  tail call void @llvm.dbg.value(metadata !{i32 %or543}, i64 0, metadata !156), !dbg !305
+  %add544 = add i32 %or543, %add531, !dbg !305
+  tail call void @llvm.dbg.value(metadata !{i32 %add544}, i64 0, metadata !156), !dbg !305
+  %xor548 = xor i32 %add531, %add518, !dbg !307
+  %xor549 = xor i32 %xor548, %add544, !dbg !307
+  %add551 = add i32 %14, -155497632, !dbg !307
+  %add552 = add i32 %add551, %add505, !dbg !307
+  %add553 = add i32 %add552, %xor549, !dbg !307
+  tail call void @llvm.dbg.value(metadata !{i32 %add553}, i64 0, metadata !155), !dbg !307
+  %shl554 = shl i32 %add553, 16, !dbg !307
+  %shr555 = lshr i32 %add553, 16, !dbg !307
+  %or556 = or i32 %shl554, %shr555, !dbg !307
+  tail call void @llvm.dbg.value(metadata !{i32 %or556}, i64 0, metadata !155), !dbg !307
+  %add557 = add i32 %or556, %add544, !dbg !307
+  tail call void @llvm.dbg.value(metadata !{i32 %add557}, i64 0, metadata !155), !dbg !307
+  %xor561 = xor i32 %add544, %add531, !dbg !309
+  %xor562 = xor i32 %xor561, %add557, !dbg !309
+  %add564 = add i32 %17, -1094730640, !dbg !309
+  %add565 = add i32 %add564, %add518, !dbg !309
+  %add566 = add i32 %add565, %xor562, !dbg !309
+  tail call void @llvm.dbg.value(metadata !{i32 %add566}, i64 0, metadata !154), !dbg !309
+  %shl567 = shl i32 %add566, 23, !dbg !309
+  %shr568 = lshr i32 %add566, 9, !dbg !309
+  %or569 = or i32 %shl567, %shr568, !dbg !309
+  tail call void @llvm.dbg.value(metadata !{i32 %or569}, i64 0, metadata !154), !dbg !309
+  %add570 = add i32 %or569, %add557, !dbg !309
+  tail call void @llvm.dbg.value(metadata !{i32 %add570}, i64 0, metadata !154), !dbg !309
+  %xor574 = xor i32 %add557, %add544, !dbg !311
+  %xor575 = xor i32 %xor574, %add570, !dbg !311
+  %add577 = add i32 %20, 681279174, !dbg !311
+  %add578 = add i32 %add577, %add531, !dbg !311
+  %add579 = add i32 %add578, %xor575, !dbg !311
+  tail call void @llvm.dbg.value(metadata !{i32 %add579}, i64 0, metadata !153), !dbg !311
+  %shl580 = shl i32 %add579, 4, !dbg !311
+  %shr581 = lshr i32 %add579, 28, !dbg !311
+  %or582 = or i32 %shl580, %shr581, !dbg !311
+  tail call void @llvm.dbg.value(metadata !{i32 %or582}, i64 0, metadata !153), !dbg !311
+  %add583 = add i32 %or582, %add570, !dbg !311
+  tail call void @llvm.dbg.value(metadata !{i32 %add583}, i64 0, metadata !153), !dbg !311
+  %xor587 = xor i32 %add570, %add557, !dbg !313
+  %xor588 = xor i32 %xor587, %add583, !dbg !313
+  %add590 = add i32 %7, -358537222, !dbg !313
+  %add591 = add i32 %add590, %add544, !dbg !313
+  %add592 = add i32 %add591, %xor588, !dbg !313
+  tail call void @llvm.dbg.value(metadata !{i32 %add592}, i64 0, metadata !156), !dbg !313
+  %shl593 = shl i32 %add592, 11, !dbg !313
+  %shr594 = lshr i32 %add592, 21, !dbg !313
+  %or595 = or i32 %shl593, %shr594, !dbg !313
+  tail call void @llvm.dbg.value(metadata !{i32 %or595}, i64 0, metadata !156), !dbg !313
+  %add596 = add i32 %or595, %add583, !dbg !313
+  tail call void @llvm.dbg.value(metadata !{i32 %add596}, i64 0, metadata !156), !dbg !313
+  %xor600 = xor i32 %add583, %add570, !dbg !315
+  %xor601 = xor i32 %xor600, %add596, !dbg !315
+  %add603 = add i32 %10, -722521979, !dbg !315
+  %add604 = add i32 %add603, %add557, !dbg !315
+  %add605 = add i32 %add604, %xor601, !dbg !315
+  tail call void @llvm.dbg.value(metadata !{i32 %add605}, i64 0, metadata !155), !dbg !315
+  %shl606 = shl i32 %add605, 16, !dbg !315
+  %shr607 = lshr i32 %add605, 16, !dbg !315
+  %or608 = or i32 %shl606, %shr607, !dbg !315
+  tail call void @llvm.dbg.value(metadata !{i32 %or608}, i64 0, metadata !155), !dbg !315
+  %add609 = add i32 %or608, %add596, !dbg !315
+  tail call void @llvm.dbg.value(metadata !{i32 %add609}, i64 0, metadata !155), !dbg !315
+  %xor613 = xor i32 %add596, %add583, !dbg !317
+  %xor614 = xor i32 %xor613, %add609, !dbg !317
+  %add616 = add i32 %13, 76029189, !dbg !317
+  %add617 = add i32 %add616, %add570, !dbg !317
+  %add618 = add i32 %add617, %xor614, !dbg !317
+  tail call void @llvm.dbg.value(metadata !{i32 %add618}, i64 0, metadata !154), !dbg !317
+  %shl619 = shl i32 %add618, 23, !dbg !317
+  %shr620 = lshr i32 %add618, 9, !dbg !317
+  %or621 = or i32 %shl619, %shr620, !dbg !317
+  tail call void @llvm.dbg.value(metadata !{i32 %or621}, i64 0, metadata !154), !dbg !317
+  %add622 = add i32 %or621, %add609, !dbg !317
+  tail call void @llvm.dbg.value(metadata !{i32 %add622}, i64 0, metadata !154), !dbg !317
+  %xor626 = xor i32 %add609, %add596, !dbg !319
+  %xor627 = xor i32 %xor626, %add622, !dbg !319
+  %add629 = add i32 %16, -640364487, !dbg !319
+  %add630 = add i32 %add629, %add583, !dbg !319
+  %add631 = add i32 %add630, %xor627, !dbg !319
+  tail call void @llvm.dbg.value(metadata !{i32 %add631}, i64 0, metadata !153), !dbg !319
+  %shl632 = shl i32 %add631, 4, !dbg !319
+  %shr633 = lshr i32 %add631, 28, !dbg !319
+  %or634 = or i32 %shl632, %shr633, !dbg !319
+  tail call void @llvm.dbg.value(metadata !{i32 %or634}, i64 0, metadata !153), !dbg !319
+  %add635 = add i32 %or634, %add622, !dbg !319
+  tail call void @llvm.dbg.value(metadata !{i32 %add635}, i64 0, metadata !153), !dbg !319
+  %xor639 = xor i32 %add622, %add609, !dbg !321
+  %xor640 = xor i32 %xor639, %add635, !dbg !321
+  %add642 = add i32 %19, -421815835, !dbg !321
+  %add643 = add i32 %add642, %add596, !dbg !321
+  %add644 = add i32 %add643, %xor640, !dbg !321
+  tail call void @llvm.dbg.value(metadata !{i32 %add644}, i64 0, metadata !156), !dbg !321
+  %shl645 = shl i32 %add644, 11, !dbg !321
+  %shr646 = lshr i32 %add644, 21, !dbg !321
+  %or647 = or i32 %shl645, %shr646, !dbg !321
+  tail call void @llvm.dbg.value(metadata !{i32 %or647}, i64 0, metadata !156), !dbg !321
+  %add648 = add i32 %or647, %add635, !dbg !321
+  tail call void @llvm.dbg.value(metadata !{i32 %add648}, i64 0, metadata !156), !dbg !321
+  %xor652 = xor i32 %add635, %add622, !dbg !323
+  %xor653 = xor i32 %xor652, %add648, !dbg !323
+  %add655 = add i32 %22, 530742520, !dbg !323
+  %add656 = add i32 %add655, %add609, !dbg !323
+  %add657 = add i32 %add656, %xor653, !dbg !323
+  tail call void @llvm.dbg.value(metadata !{i32 %add657}, i64 0, metadata !155), !dbg !323
+  %shl658 = shl i32 %add657, 16, !dbg !323
+  %shr659 = lshr i32 %add657, 16, !dbg !323
+  %or660 = or i32 %shl658, %shr659, !dbg !323
+  tail call void @llvm.dbg.value(metadata !{i32 %or660}, i64 0, metadata !155), !dbg !323
+  %add661 = add i32 %or660, %add648, !dbg !323
+  tail call void @llvm.dbg.value(metadata !{i32 %add661}, i64 0, metadata !155), !dbg !323
+  %xor665 = xor i32 %add648, %add635, !dbg !325
+  %xor666 = xor i32 %xor665, %add661, !dbg !325
+  %add668 = add i32 %9, -995338651, !dbg !325
+  %add669 = add i32 %add668, %add622, !dbg !325
+  %add670 = add i32 %add669, %xor666, !dbg !325
+  tail call void @llvm.dbg.value(metadata !{i32 %add670}, i64 0, metadata !154), !dbg !325
+  %shl671 = shl i32 %add670, 23, !dbg !325
+  %shr672 = lshr i32 %add670, 9, !dbg !325
+  %or673 = or i32 %shl671, %shr672, !dbg !325
+  tail call void @llvm.dbg.value(metadata !{i32 %or673}, i64 0, metadata !154), !dbg !325
+  %add674 = add i32 %or673, %add661, !dbg !325
+  tail call void @llvm.dbg.value(metadata !{i32 %add674}, i64 0, metadata !154), !dbg !325
+  %neg = xor i32 %add648, -1, !dbg !327
+  %or678 = or i32 %add674, %neg, !dbg !327
+  %xor679 = xor i32 %or678, %add661, !dbg !327
+  %add681 = add i32 %7, -198630844, !dbg !327
+  %add682 = add i32 %add681, %add635, !dbg !327
+  %add683 = add i32 %add682, %xor679, !dbg !327
+  tail call void @llvm.dbg.value(metadata !{i32 %add683}, i64 0, metadata !153), !dbg !327
+  %shl684 = shl i32 %add683, 6, !dbg !327
+  %shr685 = lshr i32 %add683, 26, !dbg !327
+  %or686 = or i32 %shl684, %shr685, !dbg !327
+  tail call void @llvm.dbg.value(metadata !{i32 %or686}, i64 0, metadata !153), !dbg !327
+  %add687 = add i32 %or686, %add674, !dbg !327
+  tail call void @llvm.dbg.value(metadata !{i32 %add687}, i64 0, metadata !153), !dbg !327
+  %neg691 = xor i32 %add661, -1, !dbg !329
+  %or692 = or i32 %add687, %neg691, !dbg !329
+  %xor693 = xor i32 %or692, %add674, !dbg !329
+  %add695 = add i32 %14, 1126891415, !dbg !329
+  %add696 = add i32 %add695, %add648, !dbg !329
+  %add697 = add i32 %add696, %xor693, !dbg !329
+  tail call void @llvm.dbg.value(metadata !{i32 %add697}, i64 0, metadata !156), !dbg !329
+  %shl698 = shl i32 %add697, 10, !dbg !329
+  %shr699 = lshr i32 %add697, 22, !dbg !329
+  %or700 = or i32 %shl698, %shr699, !dbg !329
+  tail call void @llvm.dbg.value(metadata !{i32 %or700}, i64 0, metadata !156), !dbg !329
+  %add701 = add i32 %or700, %add687, !dbg !329
+  tail call void @llvm.dbg.value(metadata !{i32 %add701}, i64 0, metadata !156), !dbg !329
+  %neg705 = xor i32 %add674, -1, !dbg !331
+  %or706 = or i32 %add701, %neg705, !dbg !331
+  %xor707 = xor i32 %or706, %add687, !dbg !331
+  %add709 = add i32 %21, -1416354905, !dbg !331
+  %add710 = add i32 %add709, %add661, !dbg !331
+  %add711 = add i32 %add710, %xor707, !dbg !331
+  tail call void @llvm.dbg.value(metadata !{i32 %add711}, i64 0, metadata !155), !dbg !331
+  %shl712 = shl i32 %add711, 15, !dbg !331
+  %shr713 = lshr i32 %add711, 17, !dbg !331
+  %or714 = or i32 %shl712, %shr713, !dbg !331
+  tail call void @llvm.dbg.value(metadata !{i32 %or714}, i64 0, metadata !155), !dbg !331
+  %add715 = add i32 %or714, %add701, !dbg !331
+  tail call void @llvm.dbg.value(metadata !{i32 %add715}, i64 0, metadata !155), !dbg !331
+  %neg719 = xor i32 %add687, -1, !dbg !333
+  %or720 = or i32 %add715, %neg719, !dbg !333
+  %xor721 = xor i32 %or720, %add701, !dbg !333
+  %add723 = add i32 %12, -57434055, !dbg !333
+  %add724 = add i32 %add723, %add674, !dbg !333
+  %add725 = add i32 %add724, %xor721, !dbg !333
+  tail call void @llvm.dbg.value(metadata !{i32 %add725}, i64 0, metadata !154), !dbg !333
+  %shl726 = shl i32 %add725, 21, !dbg !333
+  %shr727 = lshr i32 %add725, 11, !dbg !333
+  %or728 = or i32 %shl726, %shr727, !dbg !333
+  tail call void @llvm.dbg.value(metadata !{i32 %or728}, i64 0, metadata !154), !dbg !333
+  %add729 = add i32 %or728, %add715, !dbg !333
+  tail call void @llvm.dbg.value(metadata !{i32 %add729}, i64 0, metadata !154), !dbg !333
+  %neg733 = xor i32 %add701, -1, !dbg !335
+  %or734 = or i32 %add729, %neg733, !dbg !335
+  %xor735 = xor i32 %or734, %add715, !dbg !335
+  %add737 = add i32 %19, 1700485571, !dbg !335
+  %add738 = add i32 %add737, %add687, !dbg !335
+  %add739 = add i32 %add738, %xor735, !dbg !335
+  tail call void @llvm.dbg.value(metadata !{i32 %add739}, i64 0, metadata !153), !dbg !335
+  %shl740 = shl i32 %add739, 6, !dbg !335
+  %shr741 = lshr i32 %add739, 26, !dbg !335
+  %or742 = or i32 %shl740, %shr741, !dbg !335
+  tail call void @llvm.dbg.value(metadata !{i32 %or742}, i64 0, metadata !153), !dbg !335
+  %add743 = add i32 %or742, %add729, !dbg !335
+  tail call void @llvm.dbg.value(metadata !{i32 %add743}, i64 0, metadata !153), !dbg !335
+  %neg747 = xor i32 %add715, -1, !dbg !337
+  %or748 = or i32 %add743, %neg747, !dbg !337
+  %xor749 = xor i32 %or748, %add729, !dbg !337
+  %add751 = add i32 %10, -1894986606, !dbg !337
+  %add752 = add i32 %add751, %add701, !dbg !337
+  %add753 = add i32 %add752, %xor749, !dbg !337
+  tail call void @llvm.dbg.value(metadata !{i32 %add753}, i64 0, metadata !156), !dbg !337
+  %shl754 = shl i32 %add753, 10, !dbg !337
+  %shr755 = lshr i32 %add753, 22, !dbg !337
+  %or756 = or i32 %shl754, %shr755, !dbg !337
+  tail call void @llvm.dbg.value(metadata !{i32 %or756}, i64 0, metadata !156), !dbg !337
+  %add757 = add i32 %or756, %add743, !dbg !337
+  tail call void @llvm.dbg.value(metadata !{i32 %add757}, i64 0, metadata !156), !dbg !337
+  %neg761 = xor i32 %add729, -1, !dbg !339
+  %or762 = or i32 %add757, %neg761, !dbg !339
+  %xor763 = xor i32 %or762, %add743, !dbg !339
+  %add765 = add i32 %17, -1051523, !dbg !339
+  %add766 = add i32 %add765, %add715, !dbg !339
+  %add767 = add i32 %add766, %xor763, !dbg !339
+  tail call void @llvm.dbg.value(metadata !{i32 %add767}, i64 0, metadata !155), !dbg !339
+  %shl768 = shl i32 %add767, 15, !dbg !339
+  %shr769 = lshr i32 %add767, 17, !dbg !339
+  %or770 = or i32 %shl768, %shr769, !dbg !339
+  tail call void @llvm.dbg.value(metadata !{i32 %or770}, i64 0, metadata !155), !dbg !339
+  %add771 = add i32 %or770, %add757, !dbg !339
+  tail call void @llvm.dbg.value(metadata !{i32 %add771}, i64 0, metadata !155), !dbg !339
+  %neg775 = xor i32 %add743, -1, !dbg !341
+  %or776 = or i32 %add771, %neg775, !dbg !341
+  %xor777 = xor i32 %or776, %add757, !dbg !341
+  %add779 = add i32 %8, -2054922799, !dbg !341
+  %add780 = add i32 %add779, %add729, !dbg !341
+  %add781 = add i32 %add780, %xor777, !dbg !341
+  tail call void @llvm.dbg.value(metadata !{i32 %add781}, i64 0, metadata !154), !dbg !341
+  %shl782 = shl i32 %add781, 21, !dbg !341
+  %shr783 = lshr i32 %add781, 11, !dbg !341
+  %or784 = or i32 %shl782, %shr783, !dbg !341
+  tail call void @llvm.dbg.value(metadata !{i32 %or784}, i64 0, metadata !154), !dbg !341
+  %add785 = add i32 %or784, %add771, !dbg !341
+  tail call void @llvm.dbg.value(metadata !{i32 %add785}, i64 0, metadata !154), !dbg !341
+  %neg789 = xor i32 %add757, -1, !dbg !343
+  %or790 = or i32 %add785, %neg789, !dbg !343
+  %xor791 = xor i32 %or790, %add771, !dbg !343
+  %add793 = add i32 %15, 1873313359, !dbg !343
+  %add794 = add i32 %add793, %add743, !dbg !343
+  %add795 = add i32 %add794, %xor791, !dbg !343
+  tail call void @llvm.dbg.value(metadata !{i32 %add795}, i64 0, metadata !153), !dbg !343
+  %shl796 = shl i32 %add795, 6, !dbg !343
+  %shr797 = lshr i32 %add795, 26, !dbg !343
+  %or798 = or i32 %shl796, %shr797, !dbg !343
+  tail call void @llvm.dbg.value(metadata !{i32 %or798}, i64 0, metadata !153), !dbg !343
+  %add799 = add i32 %or798, %add785, !dbg !343
+  tail call void @llvm.dbg.value(metadata !{i32 %add799}, i64 0, metadata !153), !dbg !343
+  %neg803 = xor i32 %add771, -1, !dbg !345
+  %or804 = or i32 %add799, %neg803, !dbg !345
+  %xor805 = xor i32 %or804, %add785, !dbg !345
+  %add807 = add i32 %22, -30611744, !dbg !345
+  %add808 = add i32 %add807, %add757, !dbg !345
+  %add809 = add i32 %add808, %xor805, !dbg !345
+  tail call void @llvm.dbg.value(metadata !{i32 %add809}, i64 0, metadata !156), !dbg !345
+  %shl810 = shl i32 %add809, 10, !dbg !345
+  %shr811 = lshr i32 %add809, 22, !dbg !345
+  %or812 = or i32 %shl810, %shr811, !dbg !345
+  tail call void @llvm.dbg.value(metadata !{i32 %or812}, i64 0, metadata !156), !dbg !345
+  %add813 = add i32 %or812, %add799, !dbg !345
+  tail call void @llvm.dbg.value(metadata !{i32 %add813}, i64 0, metadata !156), !dbg !345
+  %neg817 = xor i32 %add785, -1, !dbg !347
+  %or818 = or i32 %add813, %neg817, !dbg !347
+  %xor819 = xor i32 %or818, %add799, !dbg !347
+  %add821 = add i32 %13, -1560198380, !dbg !347
+  %add822 = add i32 %add821, %add771, !dbg !347
+  %add823 = add i32 %add822, %xor819, !dbg !347
+  tail call void @llvm.dbg.value(metadata !{i32 %add823}, i64 0, metadata !155), !dbg !347
+  %shl824 = shl i32 %add823, 15, !dbg !347
+  %shr825 = lshr i32 %add823, 17, !dbg !347
+  %or826 = or i32 %shl824, %shr825, !dbg !347
+  tail call void @llvm.dbg.value(metadata !{i32 %or826}, i64 0, metadata !155), !dbg !347
+  %add827 = add i32 %or826, %add813, !dbg !347
+  tail call void @llvm.dbg.value(metadata !{i32 %add827}, i64 0, metadata !155), !dbg !347
+  %neg831 = xor i32 %add799, -1, !dbg !349
+  %or832 = or i32 %add827, %neg831, !dbg !349
+  %xor833 = xor i32 %or832, %add813, !dbg !349
+  %add835 = add i32 %20, 1309151649, !dbg !349
+  %add836 = add i32 %add835, %add785, !dbg !349
+  %add837 = add i32 %add836, %xor833, !dbg !349
+  tail call void @llvm.dbg.value(metadata !{i32 %add837}, i64 0, metadata !154), !dbg !349
+  %shl838 = shl i32 %add837, 21, !dbg !349
+  %shr839 = lshr i32 %add837, 11, !dbg !349
+  %or840 = or i32 %shl838, %shr839, !dbg !349
+  tail call void @llvm.dbg.value(metadata !{i32 %or840}, i64 0, metadata !154), !dbg !349
+  %add841 = add i32 %or840, %add827, !dbg !349
+  tail call void @llvm.dbg.value(metadata !{i32 %add841}, i64 0, metadata !154), !dbg !349
+  %neg845 = xor i32 %add813, -1, !dbg !351
+  %or846 = or i32 %add841, %neg845, !dbg !351
+  %xor847 = xor i32 %or846, %add827, !dbg !351
+  %add849 = add i32 %11, -145523070, !dbg !351
+  %add850 = add i32 %add849, %add799, !dbg !351
+  %add851 = add i32 %add850, %xor847, !dbg !351
+  tail call void @llvm.dbg.value(metadata !{i32 %add851}, i64 0, metadata !153), !dbg !351
+  %shl852 = shl i32 %add851, 6, !dbg !351
+  %shr853 = lshr i32 %add851, 26, !dbg !351
+  %or854 = or i32 %shl852, %shr853, !dbg !351
+  tail call void @llvm.dbg.value(metadata !{i32 %or854}, i64 0, metadata !153), !dbg !351
+  %add855 = add i32 %or854, %add841, !dbg !351
+  tail call void @llvm.dbg.value(metadata !{i32 %add855}, i64 0, metadata !153), !dbg !351
+  %neg859 = xor i32 %add827, -1, !dbg !353
+  %or860 = or i32 %add855, %neg859, !dbg !353
+  %xor861 = xor i32 %or860, %add841, !dbg !353
+  %add863 = add i32 %18, -1120210379, !dbg !353
+  %add864 = add i32 %add863, %add813, !dbg !353
+  %add865 = add i32 %add864, %xor861, !dbg !353
+  tail call void @llvm.dbg.value(metadata !{i32 %add865}, i64 0, metadata !156), !dbg !353
+  %shl866 = shl i32 %add865, 10, !dbg !353
+  %shr867 = lshr i32 %add865, 22, !dbg !353
+  %or868 = or i32 %shl866, %shr867, !dbg !353
+  tail call void @llvm.dbg.value(metadata !{i32 %or868}, i64 0, metadata !156), !dbg !353
+  %add869 = add i32 %or868, %add855, !dbg !353
+  tail call void @llvm.dbg.value(metadata !{i32 %add869}, i64 0, metadata !156), !dbg !353
+  %neg873 = xor i32 %add841, -1, !dbg !355
+  %or874 = or i32 %add869, %neg873, !dbg !355
+  %xor875 = xor i32 %or874, %add855, !dbg !355
+  %add877 = add i32 %9, 718787259, !dbg !355
+  %add878 = add i32 %add877, %add827, !dbg !355
+  %add879 = add i32 %add878, %xor875, !dbg !355
+  tail call void @llvm.dbg.value(metadata !{i32 %add879}, i64 0, metadata !155), !dbg !355
+  %shl880 = shl i32 %add879, 15, !dbg !355
+  %shr881 = lshr i32 %add879, 17, !dbg !355
+  %or882 = or i32 %shl880, %shr881, !dbg !355
+  tail call void @llvm.dbg.value(metadata !{i32 %or882}, i64 0, metadata !155), !dbg !355
+  %add883 = add i32 %or882, %add869, !dbg !355
+  tail call void @llvm.dbg.value(metadata !{i32 %add883}, i64 0, metadata !155), !dbg !355
+  %neg887 = xor i32 %add855, -1, !dbg !357
+  %or888 = or i32 %add883, %neg887, !dbg !357
+  %xor889 = xor i32 %or888, %add869, !dbg !357
+  %add891 = add i32 %16, -343485551, !dbg !357
+  %add892 = add i32 %add891, %add841, !dbg !357
+  %add893 = add i32 %add892, %xor889, !dbg !357
+  tail call void @llvm.dbg.value(metadata !{i32 %add893}, i64 0, metadata !154), !dbg !357
+  %shl894 = shl i32 %add893, 21, !dbg !357
+  %shr895 = lshr i32 %add893, 11, !dbg !357
+  %or896 = or i32 %shl894, %shr895, !dbg !357
+  tail call void @llvm.dbg.value(metadata !{i32 %or896}, i64 0, metadata !154), !dbg !357
+  tail call void @llvm.dbg.value(metadata !{i32 %add897}, i64 0, metadata !154), !dbg !357
+  %add900 = add i32 %add855, %A.01572, !dbg !359
+  tail call void @llvm.dbg.value(metadata !{i32 %add900}, i64 0, metadata !153), !dbg !359
+  %add897 = add i32 %add883, %B.01571, !dbg !357
+  %add901 = add i32 %add897, %or896, !dbg !360
+  tail call void @llvm.dbg.value(metadata !{i32 %add901}, i64 0, metadata !154), !dbg !360
+  %add902 = add i32 %add883, %C.01570, !dbg !361
+  tail call void @llvm.dbg.value(metadata !{i32 %add902}, i64 0, metadata !155), !dbg !361
+  %add903 = add i32 %add869, %D.01569, !dbg !362
+  tail call void @llvm.dbg.value(metadata !{i32 %add903}, i64 0, metadata !156), !dbg !362
+  %cmp12 = icmp ult i32* %incdec.ptr238, %add.ptr, !dbg !224
+  br i1 %cmp12, label %while.body, label %while.end, !dbg !224
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %words.05 = phi i32* [ %211, %.lr.ph ], [ %1, %.preheader ]
-  %A.04 = phi i32 [ %678, %.lr.ph ], [ %5, %.preheader ]
-  %B.03 = phi i32 [ %680, %.lr.ph ], [ %7, %.preheader ]
-  %C.02 = phi i32 [ %681, %.lr.ph ], [ %9, %.preheader ]
-  %D.01 = phi i32 [ %682, %.lr.ph ], [ %11, %.preheader ]
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %678, i64 0, metadata !169, metadata !183), !dbg !298
-  tail call void @llvm.dbg.value(metadata i32 %680, i64 0, metadata !170, metadata !183), !dbg !299
-  tail call void @llvm.dbg.value(metadata i32 %681, i64 0, metadata !171, metadata !183), !dbg !300
-  tail call void @llvm.dbg.value(metadata i32 %682, i64 0, metadata !172, metadata !183), !dbg !301
-  %24 = xor i32 %C.02, %D.01, !dbg !302
-  %25 = and i32 %B.03, %24, !dbg !302
-  %26 = xor i32 %25, %D.01, !dbg !302
-  %27 = load i32* %words.05, align 4, !dbg !302, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %27, i64 0, metadata !154, metadata !304), !dbg !272
-  %28 = add i32 %A.04, -680876936, !dbg !302
-  %29 = add i32 %28, %26, !dbg !302
-  %30 = add i32 %29, %27, !dbg !302
-  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !163, metadata !183), !dbg !280
-  %31 = getelementptr inbounds i32* %words.05, i64 1, !dbg !302
-  tail call void @llvm.dbg.value(metadata i32* %31, i64 0, metadata !158, metadata !183), !dbg !274
-  %32 = shl i32 %30, 7, !dbg !302
-  %33 = lshr i32 %30, 25, !dbg !302
-  %34 = or i32 %32, %33, !dbg !302
-  tail call void @llvm.dbg.value(metadata i32 %34, i64 0, metadata !163, metadata !183), !dbg !280
-  %35 = add i32 %34, %B.03, !dbg !302
-  tail call void @llvm.dbg.value(metadata i32 %35, i64 0, metadata !163, metadata !183), !dbg !280
-  %36 = xor i32 %B.03, %C.02, !dbg !305
-  %37 = and i32 %35, %36, !dbg !305
-  %38 = xor i32 %37, %C.02, !dbg !305
-  %39 = load i32* %31, align 4, !dbg !305, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %39, i64 0, metadata !154, metadata !307), !dbg !272
-  %40 = add i32 %D.01, -389564586, !dbg !305
-  %41 = add i32 %40, %39, !dbg !305
-  %42 = add i32 %41, %38, !dbg !305
-  tail call void @llvm.dbg.value(metadata i32 %42, i64 0, metadata !166, metadata !183), !dbg !286
-  %43 = getelementptr inbounds i32* %words.05, i64 2, !dbg !305
-  tail call void @llvm.dbg.value(metadata i32* %43, i64 0, metadata !158, metadata !183), !dbg !274
-  %44 = shl i32 %42, 12, !dbg !305
-  %45 = lshr i32 %42, 20, !dbg !305
-  %46 = or i32 %44, %45, !dbg !305
-  tail call void @llvm.dbg.value(metadata i32 %46, i64 0, metadata !166, metadata !183), !dbg !286
-  %47 = add i32 %46, %35, !dbg !305
-  tail call void @llvm.dbg.value(metadata i32 %47, i64 0, metadata !166, metadata !183), !dbg !286
-  %48 = xor i32 %35, %B.03, !dbg !308
-  %49 = and i32 %47, %48, !dbg !308
-  %50 = xor i32 %49, %B.03, !dbg !308
-  %51 = load i32* %43, align 4, !dbg !308, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %51, i64 0, metadata !154, metadata !310), !dbg !272
-  %52 = add i32 %C.02, 606105819, !dbg !308
-  %53 = add i32 %52, %51, !dbg !308
-  %54 = add i32 %53, %50, !dbg !308
-  tail call void @llvm.dbg.value(metadata i32 %54, i64 0, metadata !165, metadata !183), !dbg !284
-  %55 = getelementptr inbounds i32* %words.05, i64 3, !dbg !308
-  tail call void @llvm.dbg.value(metadata i32* %55, i64 0, metadata !158, metadata !183), !dbg !274
-  %56 = shl i32 %54, 17, !dbg !308
-  %57 = lshr i32 %54, 15, !dbg !308
-  %58 = or i32 %56, %57, !dbg !308
-  tail call void @llvm.dbg.value(metadata i32 %58, i64 0, metadata !165, metadata !183), !dbg !284
-  %59 = add i32 %58, %47, !dbg !308
-  tail call void @llvm.dbg.value(metadata i32 %59, i64 0, metadata !165, metadata !183), !dbg !284
-  %60 = xor i32 %47, %35, !dbg !311
-  %61 = and i32 %59, %60, !dbg !311
-  %62 = xor i32 %61, %35, !dbg !311
-  %63 = load i32* %55, align 4, !dbg !311, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %63, i64 0, metadata !154, metadata !313), !dbg !272
-  %64 = add i32 %B.03, -1044525330, !dbg !311
-  %65 = add i32 %64, %63, !dbg !311
-  %66 = add i32 %65, %62, !dbg !311
-  tail call void @llvm.dbg.value(metadata i32 %66, i64 0, metadata !164, metadata !183), !dbg !282
-  %67 = getelementptr inbounds i32* %words.05, i64 4, !dbg !311
-  tail call void @llvm.dbg.value(metadata i32* %67, i64 0, metadata !158, metadata !183), !dbg !274
-  %68 = shl i32 %66, 22, !dbg !311
-  %69 = lshr i32 %66, 10, !dbg !311
-  %70 = or i32 %68, %69, !dbg !311
-  tail call void @llvm.dbg.value(metadata i32 %70, i64 0, metadata !164, metadata !183), !dbg !282
-  %71 = add i32 %70, %59, !dbg !311
-  tail call void @llvm.dbg.value(metadata i32 %71, i64 0, metadata !164, metadata !183), !dbg !282
-  %72 = xor i32 %59, %47, !dbg !314
-  %73 = and i32 %71, %72, !dbg !314
-  %74 = xor i32 %73, %47, !dbg !314
-  %75 = load i32* %67, align 4, !dbg !314, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %75, i64 0, metadata !154, metadata !316), !dbg !272
-  %76 = add i32 %75, -176418897, !dbg !314
-  %77 = add i32 %76, %35, !dbg !314
-  %78 = add i32 %77, %74, !dbg !314
-  tail call void @llvm.dbg.value(metadata i32 %78, i64 0, metadata !163, metadata !183), !dbg !280
-  %79 = getelementptr inbounds i32* %words.05, i64 5, !dbg !314
-  tail call void @llvm.dbg.value(metadata i32* %79, i64 0, metadata !158, metadata !183), !dbg !274
-  %80 = shl i32 %78, 7, !dbg !314
-  %81 = lshr i32 %78, 25, !dbg !314
-  %82 = or i32 %80, %81, !dbg !314
-  tail call void @llvm.dbg.value(metadata i32 %82, i64 0, metadata !163, metadata !183), !dbg !280
-  %83 = add i32 %82, %71, !dbg !314
-  tail call void @llvm.dbg.value(metadata i32 %83, i64 0, metadata !163, metadata !183), !dbg !280
-  %84 = xor i32 %71, %59, !dbg !317
-  %85 = and i32 %83, %84, !dbg !317
-  %86 = xor i32 %85, %59, !dbg !317
-  %87 = load i32* %79, align 4, !dbg !317, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %87, i64 0, metadata !154, metadata !319), !dbg !272
-  %88 = add i32 %87, 1200080426, !dbg !317
-  %89 = add i32 %88, %47, !dbg !317
-  %90 = add i32 %89, %86, !dbg !317
-  tail call void @llvm.dbg.value(metadata i32 %90, i64 0, metadata !166, metadata !183), !dbg !286
-  %91 = getelementptr inbounds i32* %words.05, i64 6, !dbg !317
-  tail call void @llvm.dbg.value(metadata i32* %91, i64 0, metadata !158, metadata !183), !dbg !274
-  %92 = shl i32 %90, 12, !dbg !317
-  %93 = lshr i32 %90, 20, !dbg !317
-  %94 = or i32 %92, %93, !dbg !317
-  tail call void @llvm.dbg.value(metadata i32 %94, i64 0, metadata !166, metadata !183), !dbg !286
-  %95 = add i32 %94, %83, !dbg !317
-  tail call void @llvm.dbg.value(metadata i32 %95, i64 0, metadata !166, metadata !183), !dbg !286
-  %96 = xor i32 %83, %71, !dbg !320
-  %97 = and i32 %95, %96, !dbg !320
-  %98 = xor i32 %97, %71, !dbg !320
-  %99 = load i32* %91, align 4, !dbg !320, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %99, i64 0, metadata !154, metadata !322), !dbg !272
-  %100 = add i32 %99, -1473231341, !dbg !320
-  %101 = add i32 %100, %59, !dbg !320
-  %102 = add i32 %101, %98, !dbg !320
-  tail call void @llvm.dbg.value(metadata i32 %102, i64 0, metadata !165, metadata !183), !dbg !284
-  %103 = getelementptr inbounds i32* %words.05, i64 7, !dbg !320
-  tail call void @llvm.dbg.value(metadata i32* %103, i64 0, metadata !158, metadata !183), !dbg !274
-  %104 = shl i32 %102, 17, !dbg !320
-  %105 = lshr i32 %102, 15, !dbg !320
-  %106 = or i32 %104, %105, !dbg !320
-  tail call void @llvm.dbg.value(metadata i32 %106, i64 0, metadata !165, metadata !183), !dbg !284
-  %107 = add i32 %106, %95, !dbg !320
-  tail call void @llvm.dbg.value(metadata i32 %107, i64 0, metadata !165, metadata !183), !dbg !284
-  %108 = xor i32 %95, %83, !dbg !323
-  %109 = and i32 %107, %108, !dbg !323
-  %110 = xor i32 %109, %83, !dbg !323
-  %111 = load i32* %103, align 4, !dbg !323, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %111, i64 0, metadata !154, metadata !325), !dbg !272
-  %112 = add i32 %111, -45705983, !dbg !323
-  %113 = add i32 %112, %71, !dbg !323
-  %114 = add i32 %113, %110, !dbg !323
-  tail call void @llvm.dbg.value(metadata i32 %114, i64 0, metadata !164, metadata !183), !dbg !282
-  %115 = getelementptr inbounds i32* %words.05, i64 8, !dbg !323
-  tail call void @llvm.dbg.value(metadata i32* %115, i64 0, metadata !158, metadata !183), !dbg !274
-  %116 = shl i32 %114, 22, !dbg !323
-  %117 = lshr i32 %114, 10, !dbg !323
-  %118 = or i32 %116, %117, !dbg !323
-  tail call void @llvm.dbg.value(metadata i32 %118, i64 0, metadata !164, metadata !183), !dbg !282
-  %119 = add i32 %118, %107, !dbg !323
-  tail call void @llvm.dbg.value(metadata i32 %119, i64 0, metadata !164, metadata !183), !dbg !282
-  %120 = xor i32 %107, %95, !dbg !326
-  %121 = and i32 %119, %120, !dbg !326
-  %122 = xor i32 %121, %95, !dbg !326
-  %123 = load i32* %115, align 4, !dbg !326, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %123, i64 0, metadata !154, metadata !328), !dbg !272
-  %124 = add i32 %123, 1770035416, !dbg !326
-  %125 = add i32 %124, %83, !dbg !326
-  %126 = add i32 %125, %122, !dbg !326
-  tail call void @llvm.dbg.value(metadata i32 %126, i64 0, metadata !163, metadata !183), !dbg !280
-  %127 = getelementptr inbounds i32* %words.05, i64 9, !dbg !326
-  tail call void @llvm.dbg.value(metadata i32* %127, i64 0, metadata !158, metadata !183), !dbg !274
-  %128 = shl i32 %126, 7, !dbg !326
-  %129 = lshr i32 %126, 25, !dbg !326
-  %130 = or i32 %128, %129, !dbg !326
-  tail call void @llvm.dbg.value(metadata i32 %130, i64 0, metadata !163, metadata !183), !dbg !280
-  %131 = add i32 %130, %119, !dbg !326
-  tail call void @llvm.dbg.value(metadata i32 %131, i64 0, metadata !163, metadata !183), !dbg !280
-  %132 = xor i32 %119, %107, !dbg !329
-  %133 = and i32 %131, %132, !dbg !329
-  %134 = xor i32 %133, %107, !dbg !329
-  %135 = load i32* %127, align 4, !dbg !329, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %135, i64 0, metadata !154, metadata !331), !dbg !272
-  %136 = add i32 %135, -1958414417, !dbg !329
-  %137 = add i32 %136, %95, !dbg !329
-  %138 = add i32 %137, %134, !dbg !329
-  tail call void @llvm.dbg.value(metadata i32 %138, i64 0, metadata !166, metadata !183), !dbg !286
-  %139 = getelementptr inbounds i32* %words.05, i64 10, !dbg !329
-  tail call void @llvm.dbg.value(metadata i32* %139, i64 0, metadata !158, metadata !183), !dbg !274
-  %140 = shl i32 %138, 12, !dbg !329
-  %141 = lshr i32 %138, 20, !dbg !329
-  %142 = or i32 %140, %141, !dbg !329
-  tail call void @llvm.dbg.value(metadata i32 %142, i64 0, metadata !166, metadata !183), !dbg !286
-  %143 = add i32 %142, %131, !dbg !329
-  tail call void @llvm.dbg.value(metadata i32 %143, i64 0, metadata !166, metadata !183), !dbg !286
-  %144 = xor i32 %131, %119, !dbg !332
-  %145 = and i32 %143, %144, !dbg !332
-  %146 = xor i32 %145, %119, !dbg !332
-  %147 = load i32* %139, align 4, !dbg !332, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %147, i64 0, metadata !154, metadata !334), !dbg !272
-  %148 = add i32 %147, -42063, !dbg !332
-  %149 = add i32 %148, %107, !dbg !332
-  %150 = add i32 %149, %146, !dbg !332
-  tail call void @llvm.dbg.value(metadata i32 %150, i64 0, metadata !165, metadata !183), !dbg !284
-  %151 = getelementptr inbounds i32* %words.05, i64 11, !dbg !332
-  tail call void @llvm.dbg.value(metadata i32* %151, i64 0, metadata !158, metadata !183), !dbg !274
-  %152 = shl i32 %150, 17, !dbg !332
-  %153 = lshr i32 %150, 15, !dbg !332
-  %154 = or i32 %152, %153, !dbg !332
-  tail call void @llvm.dbg.value(metadata i32 %154, i64 0, metadata !165, metadata !183), !dbg !284
-  %155 = add i32 %154, %143, !dbg !332
-  tail call void @llvm.dbg.value(metadata i32 %155, i64 0, metadata !165, metadata !183), !dbg !284
-  %156 = xor i32 %143, %131, !dbg !335
-  %157 = and i32 %155, %156, !dbg !335
-  %158 = xor i32 %157, %131, !dbg !335
-  %159 = load i32* %151, align 4, !dbg !335, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %159, i64 0, metadata !154, metadata !337), !dbg !272
-  %160 = add i32 %159, -1990404162, !dbg !335
-  %161 = add i32 %160, %119, !dbg !335
-  %162 = add i32 %161, %158, !dbg !335
-  tail call void @llvm.dbg.value(metadata i32 %162, i64 0, metadata !164, metadata !183), !dbg !282
-  %163 = getelementptr inbounds i32* %words.05, i64 12, !dbg !335
-  tail call void @llvm.dbg.value(metadata i32* %163, i64 0, metadata !158, metadata !183), !dbg !274
-  %164 = shl i32 %162, 22, !dbg !335
-  %165 = lshr i32 %162, 10, !dbg !335
-  %166 = or i32 %164, %165, !dbg !335
-  tail call void @llvm.dbg.value(metadata i32 %166, i64 0, metadata !164, metadata !183), !dbg !282
-  %167 = add i32 %166, %155, !dbg !335
-  tail call void @llvm.dbg.value(metadata i32 %167, i64 0, metadata !164, metadata !183), !dbg !282
-  %168 = xor i32 %155, %143, !dbg !338
-  %169 = and i32 %167, %168, !dbg !338
-  %170 = xor i32 %169, %143, !dbg !338
-  %171 = load i32* %163, align 4, !dbg !338, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %171, i64 0, metadata !154, metadata !340), !dbg !272
-  %172 = add i32 %171, 1804603682, !dbg !338
-  %173 = add i32 %172, %131, !dbg !338
-  %174 = add i32 %173, %170, !dbg !338
-  tail call void @llvm.dbg.value(metadata i32 %174, i64 0, metadata !163, metadata !183), !dbg !280
-  %175 = getelementptr inbounds i32* %words.05, i64 13, !dbg !338
-  tail call void @llvm.dbg.value(metadata i32* %175, i64 0, metadata !158, metadata !183), !dbg !274
-  %176 = shl i32 %174, 7, !dbg !338
-  %177 = lshr i32 %174, 25, !dbg !338
-  %178 = or i32 %176, %177, !dbg !338
-  tail call void @llvm.dbg.value(metadata i32 %178, i64 0, metadata !163, metadata !183), !dbg !280
-  %179 = add i32 %178, %167, !dbg !338
-  tail call void @llvm.dbg.value(metadata i32 %179, i64 0, metadata !163, metadata !183), !dbg !280
-  %180 = xor i32 %167, %155, !dbg !341
-  %181 = and i32 %179, %180, !dbg !341
-  %182 = xor i32 %181, %155, !dbg !341
-  %183 = load i32* %175, align 4, !dbg !341, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %183, i64 0, metadata !154, metadata !343), !dbg !272
-  %184 = add i32 %183, -40341101, !dbg !341
-  %185 = add i32 %184, %143, !dbg !341
-  %186 = add i32 %185, %182, !dbg !341
-  tail call void @llvm.dbg.value(metadata i32 %186, i64 0, metadata !166, metadata !183), !dbg !286
-  %187 = getelementptr inbounds i32* %words.05, i64 14, !dbg !341
-  tail call void @llvm.dbg.value(metadata i32* %187, i64 0, metadata !158, metadata !183), !dbg !274
-  %188 = shl i32 %186, 12, !dbg !341
-  %189 = lshr i32 %186, 20, !dbg !341
-  %190 = or i32 %188, %189, !dbg !341
-  tail call void @llvm.dbg.value(metadata i32 %190, i64 0, metadata !166, metadata !183), !dbg !286
-  %191 = add i32 %190, %179, !dbg !341
-  tail call void @llvm.dbg.value(metadata i32 %191, i64 0, metadata !166, metadata !183), !dbg !286
-  %192 = xor i32 %179, %167, !dbg !344
-  %193 = and i32 %191, %192, !dbg !344
-  %194 = xor i32 %193, %167, !dbg !344
-  %195 = load i32* %187, align 4, !dbg !344, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %195, i64 0, metadata !154, metadata !346), !dbg !272
-  %196 = add i32 %195, -1502002290, !dbg !344
-  %197 = add i32 %196, %155, !dbg !344
-  %198 = add i32 %197, %194, !dbg !344
-  tail call void @llvm.dbg.value(metadata i32 %198, i64 0, metadata !165, metadata !183), !dbg !284
-  %199 = getelementptr inbounds i32* %words.05, i64 15, !dbg !344
-  tail call void @llvm.dbg.value(metadata i32* %199, i64 0, metadata !158, metadata !183), !dbg !274
-  %200 = shl i32 %198, 17, !dbg !344
-  %201 = lshr i32 %198, 15, !dbg !344
-  %202 = or i32 %200, %201, !dbg !344
-  tail call void @llvm.dbg.value(metadata i32 %202, i64 0, metadata !165, metadata !183), !dbg !284
-  %203 = add i32 %202, %191, !dbg !344
-  tail call void @llvm.dbg.value(metadata i32 %203, i64 0, metadata !165, metadata !183), !dbg !284
-  %204 = xor i32 %191, %179, !dbg !347
-  %205 = and i32 %203, %204, !dbg !347
-  %206 = xor i32 %205, %179, !dbg !347
-  %207 = load i32* %199, align 4, !dbg !347, !tbaa !203
-  tail call void @llvm.dbg.value(metadata i32* undef, i64 0, metadata !167, metadata !183), !dbg !297
-  tail call void @llvm.dbg.value(metadata i32 %207, i64 0, metadata !154, metadata !349), !dbg !272
-  %208 = add i32 %207, 1236535329, !dbg !347
-  %209 = add i32 %208, %167, !dbg !347
-  %210 = add i32 %209, %206, !dbg !347
-  tail call void @llvm.dbg.value(metadata i32 %210, i64 0, metadata !164, metadata !183), !dbg !282
-  %211 = getelementptr inbounds i32* %words.05, i64 16, !dbg !347
-  tail call void @llvm.dbg.value(metadata i32* %211, i64 0, metadata !158, metadata !183), !dbg !274
-  %212 = shl i32 %210, 22, !dbg !347
-  %213 = lshr i32 %210, 10, !dbg !347
-  %214 = or i32 %212, %213, !dbg !347
-  tail call void @llvm.dbg.value(metadata i32 %214, i64 0, metadata !164, metadata !183), !dbg !282
-  %215 = add i32 %214, %203, !dbg !347
-  tail call void @llvm.dbg.value(metadata i32 %215, i64 0, metadata !164, metadata !183), !dbg !282
-  %216 = xor i32 %215, %203, !dbg !350
-  %217 = and i32 %216, %191, !dbg !350
-  %218 = xor i32 %217, %203, !dbg !350
-  %219 = add i32 %39, -165796510, !dbg !350
-  %220 = add i32 %219, %179, !dbg !350
-  %221 = add i32 %220, %218, !dbg !350
-  tail call void @llvm.dbg.value(metadata i32 %221, i64 0, metadata !163, metadata !183), !dbg !280
-  %222 = shl i32 %221, 5, !dbg !350
-  %223 = lshr i32 %221, 27, !dbg !350
-  %224 = or i32 %222, %223, !dbg !350
-  tail call void @llvm.dbg.value(metadata i32 %224, i64 0, metadata !163, metadata !183), !dbg !280
-  %225 = add i32 %224, %215, !dbg !350
-  tail call void @llvm.dbg.value(metadata i32 %225, i64 0, metadata !163, metadata !183), !dbg !280
-  %226 = xor i32 %225, %215, !dbg !352
-  %227 = and i32 %226, %203, !dbg !352
-  %228 = xor i32 %227, %215, !dbg !352
-  %229 = add i32 %99, -1069501632, !dbg !352
-  %230 = add i32 %229, %191, !dbg !352
-  %231 = add i32 %230, %228, !dbg !352
-  tail call void @llvm.dbg.value(metadata i32 %231, i64 0, metadata !166, metadata !183), !dbg !286
-  %232 = shl i32 %231, 9, !dbg !352
-  %233 = lshr i32 %231, 23, !dbg !352
-  %234 = or i32 %232, %233, !dbg !352
-  tail call void @llvm.dbg.value(metadata i32 %234, i64 0, metadata !166, metadata !183), !dbg !286
-  %235 = add i32 %234, %225, !dbg !352
-  tail call void @llvm.dbg.value(metadata i32 %235, i64 0, metadata !166, metadata !183), !dbg !286
-  %236 = xor i32 %235, %225, !dbg !354
-  %237 = and i32 %236, %215, !dbg !354
-  %238 = xor i32 %237, %225, !dbg !354
-  %239 = add i32 %159, 643717713, !dbg !354
-  %240 = add i32 %239, %203, !dbg !354
-  %241 = add i32 %240, %238, !dbg !354
-  tail call void @llvm.dbg.value(metadata i32 %241, i64 0, metadata !165, metadata !183), !dbg !284
-  %242 = shl i32 %241, 14, !dbg !354
-  %243 = lshr i32 %241, 18, !dbg !354
-  %244 = or i32 %242, %243, !dbg !354
-  tail call void @llvm.dbg.value(metadata i32 %244, i64 0, metadata !165, metadata !183), !dbg !284
-  %245 = add i32 %244, %235, !dbg !354
-  tail call void @llvm.dbg.value(metadata i32 %245, i64 0, metadata !165, metadata !183), !dbg !284
-  %246 = xor i32 %245, %235, !dbg !356
-  %247 = and i32 %246, %225, !dbg !356
-  %248 = xor i32 %247, %235, !dbg !356
-  %249 = add i32 %27, -373897302, !dbg !356
-  %250 = add i32 %249, %215, !dbg !356
-  %251 = add i32 %250, %248, !dbg !356
-  tail call void @llvm.dbg.value(metadata i32 %251, i64 0, metadata !164, metadata !183), !dbg !282
-  %252 = shl i32 %251, 20, !dbg !356
-  %253 = lshr i32 %251, 12, !dbg !356
-  %254 = or i32 %252, %253, !dbg !356
-  tail call void @llvm.dbg.value(metadata i32 %254, i64 0, metadata !164, metadata !183), !dbg !282
-  %255 = add i32 %254, %245, !dbg !356
-  tail call void @llvm.dbg.value(metadata i32 %255, i64 0, metadata !164, metadata !183), !dbg !282
-  %256 = xor i32 %255, %245, !dbg !358
-  %257 = and i32 %256, %235, !dbg !358
-  %258 = xor i32 %257, %245, !dbg !358
-  %259 = add i32 %87, -701558691, !dbg !358
-  %260 = add i32 %259, %225, !dbg !358
-  %261 = add i32 %260, %258, !dbg !358
-  tail call void @llvm.dbg.value(metadata i32 %261, i64 0, metadata !163, metadata !183), !dbg !280
-  %262 = shl i32 %261, 5, !dbg !358
-  %263 = lshr i32 %261, 27, !dbg !358
-  %264 = or i32 %262, %263, !dbg !358
-  tail call void @llvm.dbg.value(metadata i32 %264, i64 0, metadata !163, metadata !183), !dbg !280
-  %265 = add i32 %264, %255, !dbg !358
-  tail call void @llvm.dbg.value(metadata i32 %265, i64 0, metadata !163, metadata !183), !dbg !280
-  %266 = xor i32 %265, %255, !dbg !360
-  %267 = and i32 %266, %245, !dbg !360
-  %268 = xor i32 %267, %255, !dbg !360
-  %269 = add i32 %147, 38016083, !dbg !360
-  %270 = add i32 %269, %235, !dbg !360
-  %271 = add i32 %270, %268, !dbg !360
-  tail call void @llvm.dbg.value(metadata i32 %271, i64 0, metadata !166, metadata !183), !dbg !286
-  %272 = shl i32 %271, 9, !dbg !360
-  %273 = lshr i32 %271, 23, !dbg !360
-  %274 = or i32 %272, %273, !dbg !360
-  tail call void @llvm.dbg.value(metadata i32 %274, i64 0, metadata !166, metadata !183), !dbg !286
-  %275 = add i32 %274, %265, !dbg !360
-  tail call void @llvm.dbg.value(metadata i32 %275, i64 0, metadata !166, metadata !183), !dbg !286
-  %276 = xor i32 %275, %265, !dbg !362
-  %277 = and i32 %276, %255, !dbg !362
-  %278 = xor i32 %277, %265, !dbg !362
-  %279 = add i32 %207, -660478335, !dbg !362
-  %280 = add i32 %279, %245, !dbg !362
-  %281 = add i32 %280, %278, !dbg !362
-  tail call void @llvm.dbg.value(metadata i32 %281, i64 0, metadata !165, metadata !183), !dbg !284
-  %282 = shl i32 %281, 14, !dbg !362
-  %283 = lshr i32 %281, 18, !dbg !362
-  %284 = or i32 %282, %283, !dbg !362
-  tail call void @llvm.dbg.value(metadata i32 %284, i64 0, metadata !165, metadata !183), !dbg !284
-  %285 = add i32 %284, %275, !dbg !362
-  tail call void @llvm.dbg.value(metadata i32 %285, i64 0, metadata !165, metadata !183), !dbg !284
-  %286 = xor i32 %285, %275, !dbg !364
-  %287 = and i32 %286, %265, !dbg !364
-  %288 = xor i32 %287, %275, !dbg !364
-  %289 = add i32 %75, -405537848, !dbg !364
-  %290 = add i32 %289, %255, !dbg !364
-  %291 = add i32 %290, %288, !dbg !364
-  tail call void @llvm.dbg.value(metadata i32 %291, i64 0, metadata !164, metadata !183), !dbg !282
-  %292 = shl i32 %291, 20, !dbg !364
-  %293 = lshr i32 %291, 12, !dbg !364
-  %294 = or i32 %292, %293, !dbg !364
-  tail call void @llvm.dbg.value(metadata i32 %294, i64 0, metadata !164, metadata !183), !dbg !282
-  %295 = add i32 %294, %285, !dbg !364
-  tail call void @llvm.dbg.value(metadata i32 %295, i64 0, metadata !164, metadata !183), !dbg !282
-  %296 = xor i32 %295, %285, !dbg !366
-  %297 = and i32 %296, %275, !dbg !366
-  %298 = xor i32 %297, %285, !dbg !366
-  %299 = add i32 %135, 568446438, !dbg !366
-  %300 = add i32 %299, %265, !dbg !366
-  %301 = add i32 %300, %298, !dbg !366
-  tail call void @llvm.dbg.value(metadata i32 %301, i64 0, metadata !163, metadata !183), !dbg !280
-  %302 = shl i32 %301, 5, !dbg !366
-  %303 = lshr i32 %301, 27, !dbg !366
-  %304 = or i32 %302, %303, !dbg !366
-  tail call void @llvm.dbg.value(metadata i32 %304, i64 0, metadata !163, metadata !183), !dbg !280
-  %305 = add i32 %304, %295, !dbg !366
-  tail call void @llvm.dbg.value(metadata i32 %305, i64 0, metadata !163, metadata !183), !dbg !280
-  %306 = xor i32 %305, %295, !dbg !368
-  %307 = and i32 %306, %285, !dbg !368
-  %308 = xor i32 %307, %295, !dbg !368
-  %309 = add i32 %195, -1019803690, !dbg !368
-  %310 = add i32 %309, %275, !dbg !368
-  %311 = add i32 %310, %308, !dbg !368
-  tail call void @llvm.dbg.value(metadata i32 %311, i64 0, metadata !166, metadata !183), !dbg !286
-  %312 = shl i32 %311, 9, !dbg !368
-  %313 = lshr i32 %311, 23, !dbg !368
-  %314 = or i32 %312, %313, !dbg !368
-  tail call void @llvm.dbg.value(metadata i32 %314, i64 0, metadata !166, metadata !183), !dbg !286
-  %315 = add i32 %314, %305, !dbg !368
-  tail call void @llvm.dbg.value(metadata i32 %315, i64 0, metadata !166, metadata !183), !dbg !286
-  %316 = xor i32 %315, %305, !dbg !370
-  %317 = and i32 %316, %295, !dbg !370
-  %318 = xor i32 %317, %305, !dbg !370
-  %319 = add i32 %63, -187363961, !dbg !370
-  %320 = add i32 %319, %285, !dbg !370
-  %321 = add i32 %320, %318, !dbg !370
-  tail call void @llvm.dbg.value(metadata i32 %321, i64 0, metadata !165, metadata !183), !dbg !284
-  %322 = shl i32 %321, 14, !dbg !370
-  %323 = lshr i32 %321, 18, !dbg !370
-  %324 = or i32 %322, %323, !dbg !370
-  tail call void @llvm.dbg.value(metadata i32 %324, i64 0, metadata !165, metadata !183), !dbg !284
-  %325 = add i32 %324, %315, !dbg !370
-  tail call void @llvm.dbg.value(metadata i32 %325, i64 0, metadata !165, metadata !183), !dbg !284
-  %326 = xor i32 %325, %315, !dbg !372
-  %327 = and i32 %326, %305, !dbg !372
-  %328 = xor i32 %327, %315, !dbg !372
-  %329 = add i32 %123, 1163531501, !dbg !372
-  %330 = add i32 %329, %295, !dbg !372
-  %331 = add i32 %330, %328, !dbg !372
-  tail call void @llvm.dbg.value(metadata i32 %331, i64 0, metadata !164, metadata !183), !dbg !282
-  %332 = shl i32 %331, 20, !dbg !372
-  %333 = lshr i32 %331, 12, !dbg !372
-  %334 = or i32 %332, %333, !dbg !372
-  tail call void @llvm.dbg.value(metadata i32 %334, i64 0, metadata !164, metadata !183), !dbg !282
-  %335 = add i32 %334, %325, !dbg !372
-  tail call void @llvm.dbg.value(metadata i32 %335, i64 0, metadata !164, metadata !183), !dbg !282
-  %336 = xor i32 %335, %325, !dbg !374
-  %337 = and i32 %336, %315, !dbg !374
-  %338 = xor i32 %337, %325, !dbg !374
-  %339 = add i32 %183, -1444681467, !dbg !374
-  %340 = add i32 %339, %305, !dbg !374
-  %341 = add i32 %340, %338, !dbg !374
-  tail call void @llvm.dbg.value(metadata i32 %341, i64 0, metadata !163, metadata !183), !dbg !280
-  %342 = shl i32 %341, 5, !dbg !374
-  %343 = lshr i32 %341, 27, !dbg !374
-  %344 = or i32 %342, %343, !dbg !374
-  tail call void @llvm.dbg.value(metadata i32 %344, i64 0, metadata !163, metadata !183), !dbg !280
-  %345 = add i32 %344, %335, !dbg !374
-  tail call void @llvm.dbg.value(metadata i32 %345, i64 0, metadata !163, metadata !183), !dbg !280
-  %346 = xor i32 %345, %335, !dbg !376
-  %347 = and i32 %346, %325, !dbg !376
-  %348 = xor i32 %347, %335, !dbg !376
-  %349 = add i32 %51, -51403784, !dbg !376
-  %350 = add i32 %349, %315, !dbg !376
-  %351 = add i32 %350, %348, !dbg !376
-  tail call void @llvm.dbg.value(metadata i32 %351, i64 0, metadata !166, metadata !183), !dbg !286
-  %352 = shl i32 %351, 9, !dbg !376
-  %353 = lshr i32 %351, 23, !dbg !376
-  %354 = or i32 %352, %353, !dbg !376
-  tail call void @llvm.dbg.value(metadata i32 %354, i64 0, metadata !166, metadata !183), !dbg !286
-  %355 = add i32 %354, %345, !dbg !376
-  tail call void @llvm.dbg.value(metadata i32 %355, i64 0, metadata !166, metadata !183), !dbg !286
-  %356 = xor i32 %355, %345, !dbg !378
-  %357 = and i32 %356, %335, !dbg !378
-  %358 = xor i32 %357, %345, !dbg !378
-  %359 = add i32 %111, 1735328473, !dbg !378
-  %360 = add i32 %359, %325, !dbg !378
-  %361 = add i32 %360, %358, !dbg !378
-  tail call void @llvm.dbg.value(metadata i32 %361, i64 0, metadata !165, metadata !183), !dbg !284
-  %362 = shl i32 %361, 14, !dbg !378
-  %363 = lshr i32 %361, 18, !dbg !378
-  %364 = or i32 %362, %363, !dbg !378
-  tail call void @llvm.dbg.value(metadata i32 %364, i64 0, metadata !165, metadata !183), !dbg !284
-  %365 = add i32 %364, %355, !dbg !378
-  tail call void @llvm.dbg.value(metadata i32 %365, i64 0, metadata !165, metadata !183), !dbg !284
-  %366 = xor i32 %365, %355, !dbg !380
-  %367 = and i32 %366, %345, !dbg !380
-  %368 = xor i32 %367, %355, !dbg !380
-  %369 = add i32 %171, -1926607734, !dbg !380
-  %370 = add i32 %369, %335, !dbg !380
-  %371 = add i32 %370, %368, !dbg !380
-  tail call void @llvm.dbg.value(metadata i32 %371, i64 0, metadata !164, metadata !183), !dbg !282
-  %372 = shl i32 %371, 20, !dbg !380
-  %373 = lshr i32 %371, 12, !dbg !380
-  %374 = or i32 %372, %373, !dbg !380
-  tail call void @llvm.dbg.value(metadata i32 %374, i64 0, metadata !164, metadata !183), !dbg !282
-  %375 = add i32 %374, %365, !dbg !380
-  tail call void @llvm.dbg.value(metadata i32 %375, i64 0, metadata !164, metadata !183), !dbg !282
-  %376 = xor i32 %366, %375, !dbg !382
-  %377 = add i32 %87, -378558, !dbg !382
-  %378 = add i32 %377, %345, !dbg !382
-  %379 = add i32 %378, %376, !dbg !382
-  tail call void @llvm.dbg.value(metadata i32 %379, i64 0, metadata !163, metadata !183), !dbg !280
-  %380 = shl i32 %379, 4, !dbg !382
-  %381 = lshr i32 %379, 28, !dbg !382
-  %382 = or i32 %380, %381, !dbg !382
-  tail call void @llvm.dbg.value(metadata i32 %382, i64 0, metadata !163, metadata !183), !dbg !280
-  %383 = add i32 %382, %375, !dbg !382
-  tail call void @llvm.dbg.value(metadata i32 %383, i64 0, metadata !163, metadata !183), !dbg !280
-  %384 = xor i32 %375, %365, !dbg !384
-  %385 = xor i32 %384, %383, !dbg !384
-  %386 = add i32 %123, -2022574463, !dbg !384
-  %387 = add i32 %386, %355, !dbg !384
-  %388 = add i32 %387, %385, !dbg !384
-  tail call void @llvm.dbg.value(metadata i32 %388, i64 0, metadata !166, metadata !183), !dbg !286
-  %389 = shl i32 %388, 11, !dbg !384
-  %390 = lshr i32 %388, 21, !dbg !384
-  %391 = or i32 %389, %390, !dbg !384
-  tail call void @llvm.dbg.value(metadata i32 %391, i64 0, metadata !166, metadata !183), !dbg !286
-  %392 = add i32 %391, %383, !dbg !384
-  tail call void @llvm.dbg.value(metadata i32 %392, i64 0, metadata !166, metadata !183), !dbg !286
-  %393 = xor i32 %383, %375, !dbg !386
-  %394 = xor i32 %393, %392, !dbg !386
-  %395 = add i32 %159, 1839030562, !dbg !386
-  %396 = add i32 %395, %365, !dbg !386
-  %397 = add i32 %396, %394, !dbg !386
-  tail call void @llvm.dbg.value(metadata i32 %397, i64 0, metadata !165, metadata !183), !dbg !284
-  %398 = shl i32 %397, 16, !dbg !386
-  %399 = lshr i32 %397, 16, !dbg !386
-  %400 = or i32 %398, %399, !dbg !386
-  tail call void @llvm.dbg.value(metadata i32 %400, i64 0, metadata !165, metadata !183), !dbg !284
-  %401 = add i32 %400, %392, !dbg !386
-  tail call void @llvm.dbg.value(metadata i32 %401, i64 0, metadata !165, metadata !183), !dbg !284
-  %402 = xor i32 %392, %383, !dbg !388
-  %403 = xor i32 %402, %401, !dbg !388
-  %404 = add i32 %195, -35309556, !dbg !388
-  %405 = add i32 %404, %375, !dbg !388
-  %406 = add i32 %405, %403, !dbg !388
-  tail call void @llvm.dbg.value(metadata i32 %406, i64 0, metadata !164, metadata !183), !dbg !282
-  %407 = shl i32 %406, 23, !dbg !388
-  %408 = lshr i32 %406, 9, !dbg !388
-  %409 = or i32 %407, %408, !dbg !388
-  tail call void @llvm.dbg.value(metadata i32 %409, i64 0, metadata !164, metadata !183), !dbg !282
-  %410 = add i32 %409, %401, !dbg !388
-  tail call void @llvm.dbg.value(metadata i32 %410, i64 0, metadata !164, metadata !183), !dbg !282
-  %411 = xor i32 %401, %392, !dbg !390
-  %412 = xor i32 %411, %410, !dbg !390
-  %413 = add i32 %39, -1530992060, !dbg !390
-  %414 = add i32 %413, %383, !dbg !390
-  %415 = add i32 %414, %412, !dbg !390
-  tail call void @llvm.dbg.value(metadata i32 %415, i64 0, metadata !163, metadata !183), !dbg !280
-  %416 = shl i32 %415, 4, !dbg !390
-  %417 = lshr i32 %415, 28, !dbg !390
-  %418 = or i32 %416, %417, !dbg !390
-  tail call void @llvm.dbg.value(metadata i32 %418, i64 0, metadata !163, metadata !183), !dbg !280
-  %419 = add i32 %418, %410, !dbg !390
-  tail call void @llvm.dbg.value(metadata i32 %419, i64 0, metadata !163, metadata !183), !dbg !280
-  %420 = xor i32 %410, %401, !dbg !392
-  %421 = xor i32 %420, %419, !dbg !392
-  %422 = add i32 %75, 1272893353, !dbg !392
-  %423 = add i32 %422, %392, !dbg !392
-  %424 = add i32 %423, %421, !dbg !392
-  tail call void @llvm.dbg.value(metadata i32 %424, i64 0, metadata !166, metadata !183), !dbg !286
-  %425 = shl i32 %424, 11, !dbg !392
-  %426 = lshr i32 %424, 21, !dbg !392
-  %427 = or i32 %425, %426, !dbg !392
-  tail call void @llvm.dbg.value(metadata i32 %427, i64 0, metadata !166, metadata !183), !dbg !286
-  %428 = add i32 %427, %419, !dbg !392
-  tail call void @llvm.dbg.value(metadata i32 %428, i64 0, metadata !166, metadata !183), !dbg !286
-  %429 = xor i32 %419, %410, !dbg !394
-  %430 = xor i32 %429, %428, !dbg !394
-  %431 = add i32 %111, -155497632, !dbg !394
-  %432 = add i32 %431, %401, !dbg !394
-  %433 = add i32 %432, %430, !dbg !394
-  tail call void @llvm.dbg.value(metadata i32 %433, i64 0, metadata !165, metadata !183), !dbg !284
-  %434 = shl i32 %433, 16, !dbg !394
-  %435 = lshr i32 %433, 16, !dbg !394
-  %436 = or i32 %434, %435, !dbg !394
-  tail call void @llvm.dbg.value(metadata i32 %436, i64 0, metadata !165, metadata !183), !dbg !284
-  %437 = add i32 %436, %428, !dbg !394
-  tail call void @llvm.dbg.value(metadata i32 %437, i64 0, metadata !165, metadata !183), !dbg !284
-  %438 = xor i32 %428, %419, !dbg !396
-  %439 = xor i32 %438, %437, !dbg !396
-  %440 = add i32 %147, -1094730640, !dbg !396
-  %441 = add i32 %440, %410, !dbg !396
-  %442 = add i32 %441, %439, !dbg !396
-  tail call void @llvm.dbg.value(metadata i32 %442, i64 0, metadata !164, metadata !183), !dbg !282
-  %443 = shl i32 %442, 23, !dbg !396
-  %444 = lshr i32 %442, 9, !dbg !396
-  %445 = or i32 %443, %444, !dbg !396
-  tail call void @llvm.dbg.value(metadata i32 %445, i64 0, metadata !164, metadata !183), !dbg !282
-  %446 = add i32 %445, %437, !dbg !396
-  tail call void @llvm.dbg.value(metadata i32 %446, i64 0, metadata !164, metadata !183), !dbg !282
-  %447 = xor i32 %437, %428, !dbg !398
-  %448 = xor i32 %447, %446, !dbg !398
-  %449 = add i32 %183, 681279174, !dbg !398
-  %450 = add i32 %449, %419, !dbg !398
-  %451 = add i32 %450, %448, !dbg !398
-  tail call void @llvm.dbg.value(metadata i32 %451, i64 0, metadata !163, metadata !183), !dbg !280
-  %452 = shl i32 %451, 4, !dbg !398
-  %453 = lshr i32 %451, 28, !dbg !398
-  %454 = or i32 %452, %453, !dbg !398
-  tail call void @llvm.dbg.value(metadata i32 %454, i64 0, metadata !163, metadata !183), !dbg !280
-  %455 = add i32 %454, %446, !dbg !398
-  tail call void @llvm.dbg.value(metadata i32 %455, i64 0, metadata !163, metadata !183), !dbg !280
-  %456 = xor i32 %446, %437, !dbg !400
-  %457 = xor i32 %456, %455, !dbg !400
-  %458 = add i32 %27, -358537222, !dbg !400
-  %459 = add i32 %458, %428, !dbg !400
-  %460 = add i32 %459, %457, !dbg !400
-  tail call void @llvm.dbg.value(metadata i32 %460, i64 0, metadata !166, metadata !183), !dbg !286
-  %461 = shl i32 %460, 11, !dbg !400
-  %462 = lshr i32 %460, 21, !dbg !400
-  %463 = or i32 %461, %462, !dbg !400
-  tail call void @llvm.dbg.value(metadata i32 %463, i64 0, metadata !166, metadata !183), !dbg !286
-  %464 = add i32 %463, %455, !dbg !400
-  tail call void @llvm.dbg.value(metadata i32 %464, i64 0, metadata !166, metadata !183), !dbg !286
-  %465 = xor i32 %455, %446, !dbg !402
-  %466 = xor i32 %465, %464, !dbg !402
-  %467 = add i32 %63, -722521979, !dbg !402
-  %468 = add i32 %467, %437, !dbg !402
-  %469 = add i32 %468, %466, !dbg !402
-  tail call void @llvm.dbg.value(metadata i32 %469, i64 0, metadata !165, metadata !183), !dbg !284
-  %470 = shl i32 %469, 16, !dbg !402
-  %471 = lshr i32 %469, 16, !dbg !402
-  %472 = or i32 %470, %471, !dbg !402
-  tail call void @llvm.dbg.value(metadata i32 %472, i64 0, metadata !165, metadata !183), !dbg !284
-  %473 = add i32 %472, %464, !dbg !402
-  tail call void @llvm.dbg.value(metadata i32 %473, i64 0, metadata !165, metadata !183), !dbg !284
-  %474 = xor i32 %464, %455, !dbg !404
-  %475 = xor i32 %474, %473, !dbg !404
-  %476 = add i32 %99, 76029189, !dbg !404
-  %477 = add i32 %476, %446, !dbg !404
-  %478 = add i32 %477, %475, !dbg !404
-  tail call void @llvm.dbg.value(metadata i32 %478, i64 0, metadata !164, metadata !183), !dbg !282
-  %479 = shl i32 %478, 23, !dbg !404
-  %480 = lshr i32 %478, 9, !dbg !404
-  %481 = or i32 %479, %480, !dbg !404
-  tail call void @llvm.dbg.value(metadata i32 %481, i64 0, metadata !164, metadata !183), !dbg !282
-  %482 = add i32 %481, %473, !dbg !404
-  tail call void @llvm.dbg.value(metadata i32 %482, i64 0, metadata !164, metadata !183), !dbg !282
-  %483 = xor i32 %473, %464, !dbg !406
-  %484 = xor i32 %483, %482, !dbg !406
-  %485 = add i32 %135, -640364487, !dbg !406
-  %486 = add i32 %485, %455, !dbg !406
-  %487 = add i32 %486, %484, !dbg !406
-  tail call void @llvm.dbg.value(metadata i32 %487, i64 0, metadata !163, metadata !183), !dbg !280
-  %488 = shl i32 %487, 4, !dbg !406
-  %489 = lshr i32 %487, 28, !dbg !406
-  %490 = or i32 %488, %489, !dbg !406
-  tail call void @llvm.dbg.value(metadata i32 %490, i64 0, metadata !163, metadata !183), !dbg !280
-  %491 = add i32 %490, %482, !dbg !406
-  tail call void @llvm.dbg.value(metadata i32 %491, i64 0, metadata !163, metadata !183), !dbg !280
-  %492 = xor i32 %482, %473, !dbg !408
-  %493 = xor i32 %492, %491, !dbg !408
-  %494 = add i32 %171, -421815835, !dbg !408
-  %495 = add i32 %494, %464, !dbg !408
-  %496 = add i32 %495, %493, !dbg !408
-  tail call void @llvm.dbg.value(metadata i32 %496, i64 0, metadata !166, metadata !183), !dbg !286
-  %497 = shl i32 %496, 11, !dbg !408
-  %498 = lshr i32 %496, 21, !dbg !408
-  %499 = or i32 %497, %498, !dbg !408
-  tail call void @llvm.dbg.value(metadata i32 %499, i64 0, metadata !166, metadata !183), !dbg !286
-  %500 = add i32 %499, %491, !dbg !408
-  tail call void @llvm.dbg.value(metadata i32 %500, i64 0, metadata !166, metadata !183), !dbg !286
-  %501 = xor i32 %491, %482, !dbg !410
-  %502 = xor i32 %501, %500, !dbg !410
-  %503 = add i32 %207, 530742520, !dbg !410
-  %504 = add i32 %503, %473, !dbg !410
-  %505 = add i32 %504, %502, !dbg !410
-  tail call void @llvm.dbg.value(metadata i32 %505, i64 0, metadata !165, metadata !183), !dbg !284
-  %506 = shl i32 %505, 16, !dbg !410
-  %507 = lshr i32 %505, 16, !dbg !410
-  %508 = or i32 %506, %507, !dbg !410
-  tail call void @llvm.dbg.value(metadata i32 %508, i64 0, metadata !165, metadata !183), !dbg !284
-  %509 = add i32 %508, %500, !dbg !410
-  tail call void @llvm.dbg.value(metadata i32 %509, i64 0, metadata !165, metadata !183), !dbg !284
-  %510 = xor i32 %500, %491, !dbg !412
-  %511 = xor i32 %510, %509, !dbg !412
-  %512 = add i32 %51, -995338651, !dbg !412
-  %513 = add i32 %512, %482, !dbg !412
-  %514 = add i32 %513, %511, !dbg !412
-  tail call void @llvm.dbg.value(metadata i32 %514, i64 0, metadata !164, metadata !183), !dbg !282
-  %515 = shl i32 %514, 23, !dbg !412
-  %516 = lshr i32 %514, 9, !dbg !412
-  %517 = or i32 %515, %516, !dbg !412
-  tail call void @llvm.dbg.value(metadata i32 %517, i64 0, metadata !164, metadata !183), !dbg !282
-  %518 = add i32 %517, %509, !dbg !412
-  tail call void @llvm.dbg.value(metadata i32 %518, i64 0, metadata !164, metadata !183), !dbg !282
-  %519 = xor i32 %500, -1, !dbg !414
-  %520 = or i32 %518, %519, !dbg !414
-  %521 = xor i32 %520, %509, !dbg !414
-  %522 = add i32 %27, -198630844, !dbg !414
-  %523 = add i32 %522, %491, !dbg !414
-  %524 = add i32 %523, %521, !dbg !414
-  tail call void @llvm.dbg.value(metadata i32 %524, i64 0, metadata !163, metadata !183), !dbg !280
-  %525 = shl i32 %524, 6, !dbg !414
-  %526 = lshr i32 %524, 26, !dbg !414
-  %527 = or i32 %525, %526, !dbg !414
-  tail call void @llvm.dbg.value(metadata i32 %527, i64 0, metadata !163, metadata !183), !dbg !280
-  %528 = add i32 %527, %518, !dbg !414
-  tail call void @llvm.dbg.value(metadata i32 %528, i64 0, metadata !163, metadata !183), !dbg !280
-  %529 = xor i32 %509, -1, !dbg !416
-  %530 = or i32 %528, %529, !dbg !416
-  %531 = xor i32 %530, %518, !dbg !416
-  %532 = add i32 %111, 1126891415, !dbg !416
-  %533 = add i32 %532, %500, !dbg !416
-  %534 = add i32 %533, %531, !dbg !416
-  tail call void @llvm.dbg.value(metadata i32 %534, i64 0, metadata !166, metadata !183), !dbg !286
-  %535 = shl i32 %534, 10, !dbg !416
-  %536 = lshr i32 %534, 22, !dbg !416
-  %537 = or i32 %535, %536, !dbg !416
-  tail call void @llvm.dbg.value(metadata i32 %537, i64 0, metadata !166, metadata !183), !dbg !286
-  %538 = add i32 %537, %528, !dbg !416
-  tail call void @llvm.dbg.value(metadata i32 %538, i64 0, metadata !166, metadata !183), !dbg !286
-  %539 = xor i32 %518, -1, !dbg !418
-  %540 = or i32 %538, %539, !dbg !418
-  %541 = xor i32 %540, %528, !dbg !418
-  %542 = add i32 %195, -1416354905, !dbg !418
-  %543 = add i32 %542, %509, !dbg !418
-  %544 = add i32 %543, %541, !dbg !418
-  tail call void @llvm.dbg.value(metadata i32 %544, i64 0, metadata !165, metadata !183), !dbg !284
-  %545 = shl i32 %544, 15, !dbg !418
-  %546 = lshr i32 %544, 17, !dbg !418
-  %547 = or i32 %545, %546, !dbg !418
-  tail call void @llvm.dbg.value(metadata i32 %547, i64 0, metadata !165, metadata !183), !dbg !284
-  %548 = add i32 %547, %538, !dbg !418
-  tail call void @llvm.dbg.value(metadata i32 %548, i64 0, metadata !165, metadata !183), !dbg !284
-  %549 = xor i32 %528, -1, !dbg !420
-  %550 = or i32 %548, %549, !dbg !420
-  %551 = xor i32 %550, %538, !dbg !420
-  %552 = add i32 %87, -57434055, !dbg !420
-  %553 = add i32 %552, %518, !dbg !420
-  %554 = add i32 %553, %551, !dbg !420
-  tail call void @llvm.dbg.value(metadata i32 %554, i64 0, metadata !164, metadata !183), !dbg !282
-  %555 = shl i32 %554, 21, !dbg !420
-  %556 = lshr i32 %554, 11, !dbg !420
-  %557 = or i32 %555, %556, !dbg !420
-  tail call void @llvm.dbg.value(metadata i32 %557, i64 0, metadata !164, metadata !183), !dbg !282
-  %558 = add i32 %557, %548, !dbg !420
-  tail call void @llvm.dbg.value(metadata i32 %558, i64 0, metadata !164, metadata !183), !dbg !282
-  %559 = xor i32 %538, -1, !dbg !422
-  %560 = or i32 %558, %559, !dbg !422
-  %561 = xor i32 %560, %548, !dbg !422
-  %562 = add i32 %171, 1700485571, !dbg !422
-  %563 = add i32 %562, %528, !dbg !422
-  %564 = add i32 %563, %561, !dbg !422
-  tail call void @llvm.dbg.value(metadata i32 %564, i64 0, metadata !163, metadata !183), !dbg !280
-  %565 = shl i32 %564, 6, !dbg !422
-  %566 = lshr i32 %564, 26, !dbg !422
-  %567 = or i32 %565, %566, !dbg !422
-  tail call void @llvm.dbg.value(metadata i32 %567, i64 0, metadata !163, metadata !183), !dbg !280
-  %568 = add i32 %567, %558, !dbg !422
-  tail call void @llvm.dbg.value(metadata i32 %568, i64 0, metadata !163, metadata !183), !dbg !280
-  %569 = xor i32 %548, -1, !dbg !424
-  %570 = or i32 %568, %569, !dbg !424
-  %571 = xor i32 %570, %558, !dbg !424
-  %572 = add i32 %63, -1894986606, !dbg !424
-  %573 = add i32 %572, %538, !dbg !424
-  %574 = add i32 %573, %571, !dbg !424
-  tail call void @llvm.dbg.value(metadata i32 %574, i64 0, metadata !166, metadata !183), !dbg !286
-  %575 = shl i32 %574, 10, !dbg !424
-  %576 = lshr i32 %574, 22, !dbg !424
-  %577 = or i32 %575, %576, !dbg !424
-  tail call void @llvm.dbg.value(metadata i32 %577, i64 0, metadata !166, metadata !183), !dbg !286
-  %578 = add i32 %577, %568, !dbg !424
-  tail call void @llvm.dbg.value(metadata i32 %578, i64 0, metadata !166, metadata !183), !dbg !286
-  %579 = xor i32 %558, -1, !dbg !426
-  %580 = or i32 %578, %579, !dbg !426
-  %581 = xor i32 %580, %568, !dbg !426
-  %582 = add i32 %147, -1051523, !dbg !426
-  %583 = add i32 %582, %548, !dbg !426
-  %584 = add i32 %583, %581, !dbg !426
-  tail call void @llvm.dbg.value(metadata i32 %584, i64 0, metadata !165, metadata !183), !dbg !284
-  %585 = shl i32 %584, 15, !dbg !426
-  %586 = lshr i32 %584, 17, !dbg !426
-  %587 = or i32 %585, %586, !dbg !426
-  tail call void @llvm.dbg.value(metadata i32 %587, i64 0, metadata !165, metadata !183), !dbg !284
-  %588 = add i32 %587, %578, !dbg !426
-  tail call void @llvm.dbg.value(metadata i32 %588, i64 0, metadata !165, metadata !183), !dbg !284
-  %589 = xor i32 %568, -1, !dbg !428
-  %590 = or i32 %588, %589, !dbg !428
-  %591 = xor i32 %590, %578, !dbg !428
-  %592 = add i32 %39, -2054922799, !dbg !428
-  %593 = add i32 %592, %558, !dbg !428
-  %594 = add i32 %593, %591, !dbg !428
-  tail call void @llvm.dbg.value(metadata i32 %594, i64 0, metadata !164, metadata !183), !dbg !282
-  %595 = shl i32 %594, 21, !dbg !428
-  %596 = lshr i32 %594, 11, !dbg !428
-  %597 = or i32 %595, %596, !dbg !428
-  tail call void @llvm.dbg.value(metadata i32 %597, i64 0, metadata !164, metadata !183), !dbg !282
-  %598 = add i32 %597, %588, !dbg !428
-  tail call void @llvm.dbg.value(metadata i32 %598, i64 0, metadata !164, metadata !183), !dbg !282
-  %599 = xor i32 %578, -1, !dbg !430
-  %600 = or i32 %598, %599, !dbg !430
-  %601 = xor i32 %600, %588, !dbg !430
-  %602 = add i32 %123, 1873313359, !dbg !430
-  %603 = add i32 %602, %568, !dbg !430
-  %604 = add i32 %603, %601, !dbg !430
-  tail call void @llvm.dbg.value(metadata i32 %604, i64 0, metadata !163, metadata !183), !dbg !280
-  %605 = shl i32 %604, 6, !dbg !430
-  %606 = lshr i32 %604, 26, !dbg !430
-  %607 = or i32 %605, %606, !dbg !430
-  tail call void @llvm.dbg.value(metadata i32 %607, i64 0, metadata !163, metadata !183), !dbg !280
-  %608 = add i32 %607, %598, !dbg !430
-  tail call void @llvm.dbg.value(metadata i32 %608, i64 0, metadata !163, metadata !183), !dbg !280
-  %609 = xor i32 %588, -1, !dbg !432
-  %610 = or i32 %608, %609, !dbg !432
-  %611 = xor i32 %610, %598, !dbg !432
-  %612 = add i32 %207, -30611744, !dbg !432
-  %613 = add i32 %612, %578, !dbg !432
-  %614 = add i32 %613, %611, !dbg !432
-  tail call void @llvm.dbg.value(metadata i32 %614, i64 0, metadata !166, metadata !183), !dbg !286
-  %615 = shl i32 %614, 10, !dbg !432
-  %616 = lshr i32 %614, 22, !dbg !432
-  %617 = or i32 %615, %616, !dbg !432
-  tail call void @llvm.dbg.value(metadata i32 %617, i64 0, metadata !166, metadata !183), !dbg !286
-  %618 = add i32 %617, %608, !dbg !432
-  tail call void @llvm.dbg.value(metadata i32 %618, i64 0, metadata !166, metadata !183), !dbg !286
-  %619 = xor i32 %598, -1, !dbg !434
-  %620 = or i32 %618, %619, !dbg !434
-  %621 = xor i32 %620, %608, !dbg !434
-  %622 = add i32 %99, -1560198380, !dbg !434
-  %623 = add i32 %622, %588, !dbg !434
-  %624 = add i32 %623, %621, !dbg !434
-  tail call void @llvm.dbg.value(metadata i32 %624, i64 0, metadata !165, metadata !183), !dbg !284
-  %625 = shl i32 %624, 15, !dbg !434
-  %626 = lshr i32 %624, 17, !dbg !434
-  %627 = or i32 %625, %626, !dbg !434
-  tail call void @llvm.dbg.value(metadata i32 %627, i64 0, metadata !165, metadata !183), !dbg !284
-  %628 = add i32 %627, %618, !dbg !434
-  tail call void @llvm.dbg.value(metadata i32 %628, i64 0, metadata !165, metadata !183), !dbg !284
-  %629 = xor i32 %608, -1, !dbg !436
-  %630 = or i32 %628, %629, !dbg !436
-  %631 = xor i32 %630, %618, !dbg !436
-  %632 = add i32 %183, 1309151649, !dbg !436
-  %633 = add i32 %632, %598, !dbg !436
-  %634 = add i32 %633, %631, !dbg !436
-  tail call void @llvm.dbg.value(metadata i32 %634, i64 0, metadata !164, metadata !183), !dbg !282
-  %635 = shl i32 %634, 21, !dbg !436
-  %636 = lshr i32 %634, 11, !dbg !436
-  %637 = or i32 %635, %636, !dbg !436
-  tail call void @llvm.dbg.value(metadata i32 %637, i64 0, metadata !164, metadata !183), !dbg !282
-  %638 = add i32 %637, %628, !dbg !436
-  tail call void @llvm.dbg.value(metadata i32 %638, i64 0, metadata !164, metadata !183), !dbg !282
-  %639 = xor i32 %618, -1, !dbg !438
-  %640 = or i32 %638, %639, !dbg !438
-  %641 = xor i32 %640, %628, !dbg !438
-  %642 = add i32 %75, -145523070, !dbg !438
-  %643 = add i32 %642, %608, !dbg !438
-  %644 = add i32 %643, %641, !dbg !438
-  tail call void @llvm.dbg.value(metadata i32 %644, i64 0, metadata !163, metadata !183), !dbg !280
-  %645 = shl i32 %644, 6, !dbg !438
-  %646 = lshr i32 %644, 26, !dbg !438
-  %647 = or i32 %645, %646, !dbg !438
-  tail call void @llvm.dbg.value(metadata i32 %647, i64 0, metadata !163, metadata !183), !dbg !280
-  %648 = add i32 %647, %638, !dbg !438
-  tail call void @llvm.dbg.value(metadata i32 %648, i64 0, metadata !163, metadata !183), !dbg !280
-  %649 = xor i32 %628, -1, !dbg !440
-  %650 = or i32 %648, %649, !dbg !440
-  %651 = xor i32 %650, %638, !dbg !440
-  %652 = add i32 %159, -1120210379, !dbg !440
-  %653 = add i32 %652, %618, !dbg !440
-  %654 = add i32 %653, %651, !dbg !440
-  tail call void @llvm.dbg.value(metadata i32 %654, i64 0, metadata !166, metadata !183), !dbg !286
-  %655 = shl i32 %654, 10, !dbg !440
-  %656 = lshr i32 %654, 22, !dbg !440
-  %657 = or i32 %655, %656, !dbg !440
-  tail call void @llvm.dbg.value(metadata i32 %657, i64 0, metadata !166, metadata !183), !dbg !286
-  %658 = add i32 %657, %648, !dbg !440
-  tail call void @llvm.dbg.value(metadata i32 %658, i64 0, metadata !166, metadata !183), !dbg !286
-  %659 = xor i32 %638, -1, !dbg !442
-  %660 = or i32 %658, %659, !dbg !442
-  %661 = xor i32 %660, %648, !dbg !442
-  %662 = add i32 %51, 718787259, !dbg !442
-  %663 = add i32 %662, %628, !dbg !442
-  %664 = add i32 %663, %661, !dbg !442
-  tail call void @llvm.dbg.value(metadata i32 %664, i64 0, metadata !165, metadata !183), !dbg !284
-  %665 = shl i32 %664, 15, !dbg !442
-  %666 = lshr i32 %664, 17, !dbg !442
-  %667 = or i32 %665, %666, !dbg !442
-  tail call void @llvm.dbg.value(metadata i32 %667, i64 0, metadata !165, metadata !183), !dbg !284
-  %668 = add i32 %667, %658, !dbg !442
-  tail call void @llvm.dbg.value(metadata i32 %668, i64 0, metadata !165, metadata !183), !dbg !284
-  %669 = xor i32 %648, -1, !dbg !444
-  %670 = or i32 %668, %669, !dbg !444
-  %671 = xor i32 %670, %658, !dbg !444
-  %672 = add i32 %135, -343485551, !dbg !444
-  %673 = add i32 %672, %638, !dbg !444
-  %674 = add i32 %673, %671, !dbg !444
-  tail call void @llvm.dbg.value(metadata i32 %674, i64 0, metadata !164, metadata !183), !dbg !282
-  %675 = shl i32 %674, 21, !dbg !444
-  %676 = lshr i32 %674, 11, !dbg !444
-  %677 = or i32 %675, %676, !dbg !444
-  tail call void @llvm.dbg.value(metadata i32 %677, i64 0, metadata !164, metadata !183), !dbg !282
-  tail call void @llvm.dbg.value(metadata i32 %679, i64 0, metadata !164, metadata !183), !dbg !282
-  %678 = add i32 %648, %A.04, !dbg !446
-  tail call void @llvm.dbg.value(metadata i32 %678, i64 0, metadata !163, metadata !183), !dbg !280
-  %679 = add i32 %668, %B.03, !dbg !444
-  %680 = add i32 %679, %677, !dbg !447
-  tail call void @llvm.dbg.value(metadata i32 %680, i64 0, metadata !164, metadata !183), !dbg !282
-  %681 = add i32 %668, %C.02, !dbg !448
-  tail call void @llvm.dbg.value(metadata i32 %681, i64 0, metadata !165, metadata !183), !dbg !284
-  %682 = add i32 %658, %D.01, !dbg !449
-  tail call void @llvm.dbg.value(metadata i32 %682, i64 0, metadata !166, metadata !183), !dbg !286
-  %683 = icmp ult i32* %211, %3, !dbg !295
-  br i1 %683, label %.lr.ph, label %._crit_edge, !dbg !296
-
-._crit_edge:                                      ; preds = %.lr.ph, %.preheader
-  %A.0.lcssa = phi i32 [ %5, %.preheader ], [ %678, %.lr.ph ]
-  %B.0.lcssa = phi i32 [ %7, %.preheader ], [ %680, %.lr.ph ]
-  %C.0.lcssa = phi i32 [ %9, %.preheader ], [ %681, %.lr.ph ]
-  %D.0.lcssa = phi i32 [ %11, %.preheader ], [ %682, %.lr.ph ]
-  store i32 %A.0.lcssa, i32* %4, align 4, !dbg !450, !tbaa !187
-  store i32 %B.0.lcssa, i32* %6, align 4, !dbg !451, !tbaa !194
-  store i32 %C.0.lcssa, i32* %8, align 4, !dbg !452, !tbaa !197
-  store i32 %D.0.lcssa, i32* %10, align 4, !dbg !453, !tbaa !200
-  ret void, !dbg !454
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %A.0.lcssa = phi i32 [ %1, %while.cond.preheader ], [ %add900, %while.body ]
+  %B.0.lcssa = phi i32 [ %2, %while.cond.preheader ], [ %add901, %while.body ]
+  %C.0.lcssa = phi i32 [ %3, %while.cond.preheader ], [ %add902, %while.body ]
+  %D.0.lcssa = phi i32 [ %4, %while.cond.preheader ], [ %add903, %while.body ]
+  store i32 %A.0.lcssa, i32* %A1, align 4, !dbg !363, !tbaa !173
+  store i32 %B.0.lcssa, i32* %B2, align 4, !dbg !364, !tbaa !173
+  store i32 %C.0.lcssa, i32* %C3, align 4, !dbg !365, !tbaa !173
+  store i32 %D.0.lcssa, i32* %D4, align 4, !dbg !366, !tbaa !173
+  ret void, !dbg !367
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
-define i32 @md5_stream(%struct.__sFILE* nocapture %stream, i8* %resblock) #0 {
+; Function Attrs: nounwind optsize uwtable
+define i32 @md5_stream(%struct._IO_FILE* nocapture %stream, i8* %resblock) #0 {
+entry:
   %ctx = alloca %struct.md5_ctx, align 4
   %buffer = alloca [4168 x i8], align 16
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %stream, i64 0, metadata !118, metadata !183), !dbg !455
-  tail call void @llvm.dbg.value(metadata i8* %resblock, i64 0, metadata !119, metadata !183), !dbg !456
-  %1 = bitcast %struct.md5_ctx* %ctx to i8*, !dbg !457
-  call void @llvm.lifetime.start(i64 156, i8* %1) #3, !dbg !457
-  %2 = getelementptr inbounds [4168 x i8]* %buffer, i64 0, i64 0, !dbg !458
-  call void @llvm.lifetime.start(i64 4168, i8* %2) #3, !dbg !458
-  tail call void @llvm.dbg.declare(metadata [4168 x i8]* %buffer, metadata !121, metadata !183), !dbg !459
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !120, metadata !183), !dbg !460
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !32, metadata !183), !dbg !461
-  %3 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !463
-  store i32 1732584193, i32* %3, align 4, !dbg !464, !tbaa !187
-  %4 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !465
-  store i32 -271733879, i32* %4, align 4, !dbg !466, !tbaa !194
-  %5 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !467
-  store i32 -1732584194, i32* %5, align 4, !dbg !468, !tbaa !197
-  %6 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !469
-  store i32 271733878, i32* %6, align 4, !dbg !470, !tbaa !200
-  %7 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !471
-  store i32 0, i32* %7, align 4, !dbg !472, !tbaa !203
-  %8 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !473
-  store i32 0, i32* %8, align 4, !dbg !474, !tbaa !203
-  %9 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !475
-  store i32 0, i32* %9, align 4, !dbg !476, !tbaa !208
-  br label %.backedge, !dbg !477
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %stream}, i64 0, metadata !107), !dbg !368
+  call void @llvm.dbg.value(metadata !{i8* %resblock}, i64 0, metadata !108), !dbg !369
+  %0 = bitcast %struct.md5_ctx* %ctx to i8*, !dbg !370
+  call void @llvm.lifetime.start(i64 156, i8* %0) #2, !dbg !370
+  call void @llvm.dbg.declare(metadata !{%struct.md5_ctx* %ctx}, metadata !109), !dbg !370
+  %1 = getelementptr inbounds [4168 x i8]* %buffer, i64 0, i64 0, !dbg !371
+  call void @llvm.lifetime.start(i64 4168, i8* %1) #2, !dbg !371
+  call void @llvm.dbg.declare(metadata !{[4168 x i8]* %buffer}, metadata !110), !dbg !371
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !372), !dbg !374
+  %A.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !375
+  store i32 1732584193, i32* %A.i, align 4, !dbg !375, !tbaa !173
+  %B.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !376
+  store i32 -271733879, i32* %B.i, align 4, !dbg !376, !tbaa !173
+  %C.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !377
+  store i32 -1732584194, i32* %C.i, align 4, !dbg !377, !tbaa !173
+  %D.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !378
+  store i32 271733878, i32* %D.i, align 4, !dbg !378, !tbaa !173
+  %arrayidx.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !379
+  store i32 0, i32* %arrayidx.i, align 4, !dbg !379, !tbaa !173
+  %arrayidx2.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !379
+  store i32 0, i32* %arrayidx2.i, align 4, !dbg !379, !tbaa !173
+  %buflen.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !380
+  store i32 0, i32* %buflen.i, align 4, !dbg !380, !tbaa !173
+  br label %do.body, !dbg !381
 
-.backedge:                                        ; preds = %.critedge2, %.backedge, %0
-  %sum.0 = phi i64 [ 0, %0 ], [ %13, %.backedge ], [ 0, %.critedge2 ]
-  %10 = getelementptr inbounds [4168 x i8]* %buffer, i64 0, i64 %sum.0, !dbg !478
-  %11 = sub i64 4096, %sum.0, !dbg !480
-  %12 = call i64 @fread(i8* %10, i64 1, i64 %11, %struct.__sFILE* %stream) #5, !dbg !481
-  call void @llvm.dbg.value(metadata i64 %12, i64 0, metadata !126, metadata !183), !dbg !482
-  %13 = add i64 %12, %sum.0, !dbg !483
-  call void @llvm.dbg.value(metadata i64 %13, i64 0, metadata !125, metadata !183), !dbg !484
-  %14 = icmp ult i64 %13, 4096, !dbg !485
-  %15 = icmp ne i64 %12, 0, !dbg !486
-  %or.cond = and i1 %15, %14, !dbg !487
-  br i1 %or.cond, label %.backedge, label %.critedge, !dbg !487
+do.body:                                          ; preds = %do.body, %if.end6, %entry
+  %sum.0 = phi i64 [ 0, %entry ], [ 0, %if.end6 ], [ %add, %do.body ]
+  %add.ptr = getelementptr inbounds [4168 x i8]* %buffer, i64 0, i64 %sum.0, !dbg !382
+  %sub = sub i64 4096, %sum.0, !dbg !382
+  %call = call i64 @fread(i8* %add.ptr, i64 1, i64 %sub, %struct._IO_FILE* %stream) #6, !dbg !382
+  call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !115), !dbg !382
+  %add = add i64 %call, %sum.0, !dbg !384
+  call void @llvm.dbg.value(metadata !{i64 %add}, i64 0, metadata !114), !dbg !384
+  %cmp = icmp ugt i64 %add, 4095, !dbg !385
+  %cmp1 = icmp eq i64 %call, 0, !dbg !385
+  %or.cond = or i1 %cmp, %cmp1, !dbg !385
+  br i1 %or.cond, label %do.end, label %do.body, !dbg !385
 
-.critedge:                                        ; preds = %.backedge
-  %16 = icmp eq i64 %12, 0, !dbg !488
-  br i1 %16, label %17, label %.critedge2, !dbg !490
+do.end:                                           ; preds = %do.body
+  br i1 %cmp1, label %land.lhs.true, label %if.end6, !dbg !386
 
-; <label>:17                                      ; preds = %.critedge
-  %18 = call i32 @ferror(%struct.__sFILE* %stream) #5, !dbg !491
-  %19 = icmp eq i32 %18, 0, !dbg !491
-  br i1 %19, label %20, label %25, !dbg !492
+land.lhs.true:                                    ; preds = %do.end
+  %call3 = call i32 @ferror(%struct._IO_FILE* %stream) #6, !dbg !386
+  %tobool = icmp eq i32 %call3, 0, !dbg !386
+  br i1 %tobool, label %while.end, label %cleanup, !dbg !386
 
-.critedge2:                                       ; preds = %.critedge
-  call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !120, metadata !183), !dbg !460
-  call void @md5_process_block(i8* %2, i64 4096, %struct.md5_ctx* %ctx) #6, !dbg !493
-  br label %.backedge, !dbg !477
+if.end6:                                          ; preds = %do.end
+  call void @md5_process_block(i8* %1, i64 4096, %struct.md5_ctx* %ctx) #5, !dbg !387
+  br label %do.body, !dbg !388
 
-; <label>:20                                      ; preds = %17
-  %21 = icmp eq i64 %13, 0, !dbg !494
-  br i1 %21, label %23, label %22, !dbg !496
+while.end:                                        ; preds = %land.lhs.true
+  %cmp8 = icmp eq i64 %add, 0, !dbg !389
+  br i1 %cmp8, label %if.end11, label %if.then9, !dbg !389
 
-; <label>:22                                      ; preds = %20
-  call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !120, metadata !183), !dbg !460
-  call void @md5_process_bytes(i8* %2, i64 %13, %struct.md5_ctx* %ctx) #6, !dbg !497
-  br label %23, !dbg !497
+if.then9:                                         ; preds = %while.end
+  call void @md5_process_bytes(i8* %1, i64 %add, %struct.md5_ctx* %ctx) #5, !dbg !390
+  br label %if.end11, !dbg !390
 
-; <label>:23                                      ; preds = %20, %22
-  call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !120, metadata !183), !dbg !460
-  %24 = call i8* @md5_finish_ctx(%struct.md5_ctx* %ctx, i8* %resblock) #6, !dbg !498
-  br label %25, !dbg !499
+if.end11:                                         ; preds = %while.end, %if.then9
+  %call12 = call i8* @md5_finish_ctx(%struct.md5_ctx* %ctx, i8* %resblock) #5, !dbg !391
+  br label %cleanup, !dbg !392
 
-; <label>:25                                      ; preds = %17, %23
-  %.0 = phi i32 [ 0, %23 ], [ 1, %17 ]
-  call void @llvm.lifetime.end(i64 4168, i8* %2) #3, !dbg !500
-  call void @llvm.lifetime.end(i64 156, i8* %1) #3, !dbg !500
-  ret i32 %.0, !dbg !500
+cleanup:                                          ; preds = %land.lhs.true, %if.end11
+  %retval.0 = phi i32 [ 0, %if.end11 ], [ 1, %land.lhs.true ]
+  call void @llvm.lifetime.end(i64 4168, i8* %1) #2, !dbg !392
+  call void @llvm.lifetime.end(i64 156, i8* %0) #2, !dbg !392
+  ret i32 %retval.0, !dbg !393
 }
 
 ; Function Attrs: nounwind
-declare void @llvm.lifetime.start(i64, i8* nocapture) #3
+declare void @llvm.lifetime.start(i64, i8* nocapture) #2
 
 ; Function Attrs: nounwind optsize
-declare i64 @fread(i8* nocapture, i64, i64, %struct.__sFILE* nocapture) #2
+declare i64 @fread(i8* nocapture, i64, i64, %struct._IO_FILE* nocapture) #3
 
 ; Function Attrs: nounwind optsize readonly
-declare i32 @ferror(%struct.__sFILE* nocapture) #4
+declare i32 @ferror(%struct._IO_FILE* nocapture) #4
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @md5_process_bytes(i8* %buffer, i64 %len, %struct.md5_ctx* %ctx) #0 {
-  tail call void @llvm.dbg.value(metadata i8* %buffer, i64 0, metadata !142, metadata !183), !dbg !501
-  tail call void @llvm.dbg.value(metadata i64 %len, i64 0, metadata !143, metadata !183), !dbg !502
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !144, metadata !183), !dbg !503
-  %1 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !504
-  %2 = load i32* %1, align 4, !dbg !504, !tbaa !208
-  %3 = icmp eq i32 %2, 0, !dbg !505
-  br i1 %3, label %28, label %4, !dbg !506
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !133), !dbg !394
+  tail call void @llvm.dbg.value(metadata !{i64 %len}, i64 0, metadata !134), !dbg !395
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !135), !dbg !396
+  %buflen = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !397
+  %0 = load i32* %buflen, align 4, !dbg !397, !tbaa !173
+  %cmp = icmp eq i32 %0, 0, !dbg !397
+  br i1 %cmp, label %if.end28, label %if.then, !dbg !397
 
-; <label>:4                                       ; preds = %0
-  %5 = zext i32 %2 to i64, !dbg !507
-  tail call void @llvm.dbg.value(metadata i64 %5, i64 0, metadata !145, metadata !183), !dbg !508
-  %6 = sub nsw i64 128, %5, !dbg !509
-  %7 = icmp ugt i64 %6, %len, !dbg !510
-  %len. = select i1 %7, i64 %len, i64 %6, !dbg !511
-  tail call void @llvm.dbg.value(metadata i64 %len., i64 0, metadata !148, metadata !183), !dbg !512
-  %8 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %5, !dbg !513
-  %9 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %8, i1 false), !dbg !513
-  %10 = tail call i8* @__memcpy_chk(i8* %8, i8* %buffer, i64 %len., i64 %9) #5, !dbg !513
-  %11 = load i32* %1, align 4, !dbg !514, !tbaa !208
-  %12 = zext i32 %11 to i64, !dbg !514
-  %13 = add i64 %12, %len., !dbg !514
-  %14 = trunc i64 %13 to i32, !dbg !514
-  store i32 %14, i32* %1, align 4, !dbg !514, !tbaa !208
-  %15 = add i64 %len., %5, !dbg !515
-  %16 = icmp ugt i64 %15, 64, !dbg !517
-  br i1 %16, label %17, label %25, !dbg !518
+if.then:                                          ; preds = %entry
+  %conv = zext i32 %0 to i64, !dbg !398
+  tail call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !136), !dbg !398
+  %sub = sub i64 128, %conv, !dbg !399
+  %cmp2 = icmp ugt i64 %sub, %len, !dbg !399
+  %len.sub = select i1 %cmp2, i64 %len, i64 %sub, !dbg !399
+  tail call void @llvm.dbg.value(metadata !{i64 %len.sub}, i64 0, metadata !138), !dbg !399
+  %arrayidx = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %conv, !dbg !400
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arrayidx, i8* %buffer, i64 %len.sub, i32 1, i1 false), !dbg !400
+  %1 = load i32* %buflen, align 4, !dbg !401, !tbaa !173
+  %conv7 = zext i32 %1 to i64, !dbg !401
+  %add8 = add i64 %conv7, %len.sub, !dbg !401
+  %conv9 = trunc i64 %add8 to i32, !dbg !401
+  store i32 %conv9, i32* %buflen, align 4, !dbg !401, !tbaa !173
+  %add10 = add i64 %len.sub, %conv, !dbg !402
+  %cmp11 = icmp ugt i64 %add10, 64, !dbg !402
+  br i1 %cmp11, label %if.then13, label %if.end, !dbg !402
 
-; <label>:17                                      ; preds = %4
-  %18 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0, !dbg !519
-  %19 = and i64 %15, -64, !dbg !521
-  tail call void @md5_process_block(i8* %18, i64 %19, %struct.md5_ctx* %ctx) #6, !dbg !522
-  %20 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %19, !dbg !523
-  %21 = and i64 %15, 63, !dbg !523
-  %22 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %18, i1 false), !dbg !523
-  %23 = tail call i8* @__memcpy_chk(i8* %18, i8* %20, i64 %21, i64 %22) #5, !dbg !523
-  %24 = trunc i64 %21 to i32, !dbg !524
-  store i32 %24, i32* %1, align 4, !dbg !525, !tbaa !208
-  br label %25, !dbg !526
+if.then13:                                        ; preds = %if.then
+  %arraydecay = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0, !dbg !403
+  %and = and i64 %add10, -64, !dbg !403
+  tail call void @md5_process_block(i8* %arraydecay, i64 %and, %struct.md5_ctx* %ctx) #5, !dbg !403
+  %arrayidx20 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %and, !dbg !405
+  %and22 = and i64 %add10, 63, !dbg !405
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arraydecay, i8* %arrayidx20, i64 %and22, i32 1, i1 false), !dbg !405
+  %conv25 = trunc i64 %and22 to i32, !dbg !406
+  store i32 %conv25, i32* %buflen, align 4, !dbg !406, !tbaa !173
+  br label %if.end, !dbg !407
 
-; <label>:25                                      ; preds = %17, %4
-  %26 = getelementptr inbounds i8* %buffer, i64 %len., !dbg !527
-  tail call void @llvm.dbg.value(metadata i8* %26, i64 0, metadata !142, metadata !183), !dbg !501
-  %27 = sub i64 %len, %len., !dbg !528
-  tail call void @llvm.dbg.value(metadata i64 %27, i64 0, metadata !143, metadata !183), !dbg !502
-  br label %28, !dbg !529
+if.end:                                           ; preds = %if.then13, %if.then
+  %add.ptr = getelementptr inbounds i8* %buffer, i64 %len.sub, !dbg !408
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !133), !dbg !408
+  %sub27 = sub i64 %len, %len.sub, !dbg !409
+  tail call void @llvm.dbg.value(metadata !{i64 %sub27}, i64 0, metadata !134), !dbg !409
+  br label %if.end28, !dbg !410
 
-; <label>:28                                      ; preds = %0, %25
-  %.01 = phi i64 [ %27, %25 ], [ %len, %0 ]
-  %.0 = phi i8* [ %26, %25 ], [ %buffer, %0 ]
-  %29 = icmp ugt i64 %.01, 64, !dbg !530
-  br i1 %29, label %30, label %34, !dbg !532
+if.end28:                                         ; preds = %entry, %if.end
+  %len.addr.0 = phi i64 [ %sub27, %if.end ], [ %len, %entry ]
+  %buffer.addr.0 = phi i8* [ %add.ptr, %if.end ], [ %buffer, %entry ]
+  %cmp29 = icmp ugt i64 %len.addr.0, 64, !dbg !411
+  br i1 %cmp29, label %if.then31, label %if.end36, !dbg !411
 
-; <label>:30                                      ; preds = %28
-  %31 = and i64 %.01, -64, !dbg !533
-  tail call void @md5_process_block(i8* %.0, i64 %31, %struct.md5_ctx* %ctx) #6, !dbg !535
-  %32 = getelementptr inbounds i8* %.0, i64 %31, !dbg !536
-  tail call void @llvm.dbg.value(metadata i8* %32, i64 0, metadata !142, metadata !183), !dbg !501
-  %33 = and i64 %.01, 63, !dbg !537
-  tail call void @llvm.dbg.value(metadata i64 %33, i64 0, metadata !143, metadata !183), !dbg !502
-  br label %34, !dbg !538
+if.then31:                                        ; preds = %if.end28
+  %and32 = and i64 %len.addr.0, -64, !dbg !412
+  tail call void @md5_process_block(i8* %buffer.addr.0, i64 %and32, %struct.md5_ctx* %ctx) #5, !dbg !412
+  %add.ptr34 = getelementptr inbounds i8* %buffer.addr.0, i64 %and32, !dbg !414
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr34}, i64 0, metadata !133), !dbg !414
+  %and35 = and i64 %len.addr.0, 63, !dbg !415
+  tail call void @llvm.dbg.value(metadata !{i64 %and35}, i64 0, metadata !134), !dbg !415
+  br label %if.end36, !dbg !416
 
-; <label>:34                                      ; preds = %30, %28
-  %.12 = phi i64 [ %33, %30 ], [ %.01, %28 ]
-  %.1 = phi i8* [ %32, %30 ], [ %.0, %28 ]
-  %35 = icmp eq i64 %.12, 0, !dbg !539
-  br i1 %35, label %41, label %36, !dbg !541
+if.end36:                                         ; preds = %if.then31, %if.end28
+  %len.addr.1 = phi i64 [ %and35, %if.then31 ], [ %len.addr.0, %if.end28 ]
+  %buffer.addr.1 = phi i8* [ %add.ptr34, %if.then31 ], [ %buffer.addr.0, %if.end28 ]
+  %cmp37 = icmp eq i64 %len.addr.1, 0, !dbg !417
+  br i1 %cmp37, label %if.end43, label %if.then39, !dbg !417
 
-; <label>:36                                      ; preds = %34
-  %37 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0, !dbg !542
-  %38 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %37, i1 false), !dbg !542
-  %39 = tail call i8* @__memcpy_chk(i8* %37, i8* %.1, i64 %.12, i64 %38) #5, !dbg !542
-  %40 = trunc i64 %.12 to i32, !dbg !544
-  store i32 %40, i32* %1, align 4, !dbg !545, !tbaa !208
-  br label %41, !dbg !546
+if.then39:                                        ; preds = %if.end36
+  %2 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0, !dbg !418
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %buffer.addr.1, i64 %len.addr.1, i32 1, i1 false), !dbg !418
+  %conv41 = trunc i64 %len.addr.1 to i32, !dbg !420
+  store i32 %conv41, i32* %buflen, align 4, !dbg !420, !tbaa !173
+  br label %if.end43, !dbg !421
 
-; <label>:41                                      ; preds = %34, %36
-  ret void, !dbg !547
+if.end43:                                         ; preds = %if.end36, %if.then39
+  ret void, !dbg !422
 }
 
 ; Function Attrs: nounwind
-declare void @llvm.lifetime.end(i64, i8* nocapture) #3
+declare void @llvm.lifetime.end(i64, i8* nocapture) #2
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i8* @md5_buffer(i8* %buffer, i64 %len, i8* %resblock) #0 {
+entry:
   %ctx = alloca %struct.md5_ctx, align 4
-  tail call void @llvm.dbg.value(metadata i8* %buffer, i64 0, metadata !132, metadata !183), !dbg !548
-  tail call void @llvm.dbg.value(metadata i64 %len, i64 0, metadata !133, metadata !183), !dbg !549
-  tail call void @llvm.dbg.value(metadata i8* %resblock, i64 0, metadata !134, metadata !183), !dbg !550
-  %1 = bitcast %struct.md5_ctx* %ctx to i8*, !dbg !551
-  call void @llvm.lifetime.start(i64 156, i8* %1) #3, !dbg !551
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !135, metadata !183), !dbg !552
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !32, metadata !183), !dbg !553
-  %2 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !555
-  store i32 1732584193, i32* %2, align 4, !dbg !556, !tbaa !187
-  %3 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !557
-  store i32 -271733879, i32* %3, align 4, !dbg !558, !tbaa !194
-  %4 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !559
-  store i32 -1732584194, i32* %4, align 4, !dbg !560, !tbaa !197
-  %5 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !561
-  store i32 271733878, i32* %5, align 4, !dbg !562, !tbaa !200
-  %6 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !563
-  store i32 0, i32* %6, align 4, !dbg !564, !tbaa !203
-  %7 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !565
-  store i32 0, i32* %7, align 4, !dbg !566, !tbaa !203
-  %8 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !567
-  store i32 0, i32* %8, align 4, !dbg !568, !tbaa !208
-  tail call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !135, metadata !183), !dbg !552
-  call void @md5_process_bytes(i8* %buffer, i64 %len, %struct.md5_ctx* %ctx) #6, !dbg !569
-  call void @llvm.dbg.value(metadata %struct.md5_ctx* %ctx, i64 0, metadata !135, metadata !183), !dbg !552
-  %9 = call i8* @md5_finish_ctx(%struct.md5_ctx* %ctx, i8* %resblock) #6, !dbg !570
-  call void @llvm.lifetime.end(i64 156, i8* %1) #3, !dbg !571
-  ret i8* %9, !dbg !571
+  call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !123), !dbg !423
+  call void @llvm.dbg.value(metadata !{i64 %len}, i64 0, metadata !124), !dbg !424
+  call void @llvm.dbg.value(metadata !{i8* %resblock}, i64 0, metadata !125), !dbg !425
+  %0 = bitcast %struct.md5_ctx* %ctx to i8*, !dbg !426
+  call void @llvm.lifetime.start(i64 156, i8* %0) #2, !dbg !426
+  call void @llvm.dbg.declare(metadata !{%struct.md5_ctx* %ctx}, metadata !126), !dbg !426
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !427), !dbg !429
+  %A.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !430
+  store i32 1732584193, i32* %A.i, align 4, !dbg !430, !tbaa !173
+  %B.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !431
+  store i32 -271733879, i32* %B.i, align 4, !dbg !431, !tbaa !173
+  %C.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !432
+  store i32 -1732584194, i32* %C.i, align 4, !dbg !432, !tbaa !173
+  %D.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !433
+  store i32 271733878, i32* %D.i, align 4, !dbg !433, !tbaa !173
+  %arrayidx.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !434
+  store i32 0, i32* %arrayidx.i, align 4, !dbg !434, !tbaa !173
+  %arrayidx2.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !434
+  store i32 0, i32* %arrayidx2.i, align 4, !dbg !434, !tbaa !173
+  %buflen.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !435
+  store i32 0, i32* %buflen.i, align 4, !dbg !435, !tbaa !173
+  call void @md5_process_bytes(i8* %buffer, i64 %len, %struct.md5_ctx* %ctx) #5, !dbg !436
+  %call = call i8* @md5_finish_ctx(%struct.md5_ctx* %ctx, i8* %resblock) #5, !dbg !437
+  call void @llvm.lifetime.end(i64 156, i8* %0) #2, !dbg !438
+  ret i8* %call, !dbg !438
 }
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #1
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
 
 ; Function Attrs: nounwind readnone
 declare { i32, i1 } @llvm.uadd.with.overflow.i32(i32, i32) #1
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { nounwind readnone }
-attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind }
-attributes #4 = { nounwind optsize readonly "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #5 = { nounwind optsize }
-attributes #6 = { optsize }
+attributes #2 = { nounwind }
+attributes #3 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind optsize readonly "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { optsize }
+attributes #6 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!179, !180, !181}
-!llvm.ident = !{!182}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !11, globals: !173, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/403.gcc/src/md5.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !7, !8}
-!4 = !DIDerivedType(tag: DW_TAG_typedef, name: "md5_uint32", file: !5, line: 53, baseType: !6)
-!5 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/403.gcc/src/md5.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!6 = !DIBasicType(name: "unsigned int", size: 32, align: 32, encoding: DW_ATE_unsigned)
-!7 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !4, size: 64, align: 64)
-!8 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !9, size: 64, align: 64)
-!9 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !10)
-!10 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!11 = !{!12, !33, !42, !55, !128, !136, !149}
-!12 = !DISubprogram(name: "md5_init_ctx", scope: !1, file: !1, line: 63, type: !13, isLocal: false, isDefinition: true, scopeLine: 65, isOptimized: true, function: void (%struct.md5_ctx*)* @md5_init_ctx, variables: !31)
-!13 = !DISubroutineType(types: !14)
-!14 = !{null, !15}
-!15 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !16, size: 64, align: 64)
-!16 = !DICompositeType(tag: DW_TAG_structure_type, name: "md5_ctx", file: !5, line: 77, size: 1248, align: 32, elements: !17)
-!17 = !{!18, !19, !20, !21, !22, !26, !27}
-!18 = !DIDerivedType(tag: DW_TAG_member, name: "A", scope: !16, file: !5, line: 79, baseType: !4, size: 32, align: 32)
-!19 = !DIDerivedType(tag: DW_TAG_member, name: "B", scope: !16, file: !5, line: 80, baseType: !4, size: 32, align: 32, offset: 32)
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "C", scope: !16, file: !5, line: 81, baseType: !4, size: 32, align: 32, offset: 64)
-!21 = !DIDerivedType(tag: DW_TAG_member, name: "D", scope: !16, file: !5, line: 82, baseType: !4, size: 32, align: 32, offset: 96)
-!22 = !DIDerivedType(tag: DW_TAG_member, name: "total", scope: !16, file: !5, line: 84, baseType: !23, size: 64, align: 32, offset: 128)
-!23 = !DICompositeType(tag: DW_TAG_array_type, baseType: !4, size: 64, align: 32, elements: !24)
-!24 = !{!25}
-!25 = !DISubrange(count: 2)
-!26 = !DIDerivedType(tag: DW_TAG_member, name: "buflen", scope: !16, file: !5, line: 85, baseType: !4, size: 32, align: 32, offset: 192)
-!27 = !DIDerivedType(tag: DW_TAG_member, name: "buffer", scope: !16, file: !5, line: 86, baseType: !28, size: 1024, align: 8, offset: 224)
-!28 = !DICompositeType(tag: DW_TAG_array_type, baseType: !10, size: 1024, align: 8, elements: !29)
-!29 = !{!30}
-!30 = !DISubrange(count: 128)
-!31 = !{!32}
-!32 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ctx", arg: 1, scope: !12, file: !1, line: 64, type: !15)
-!33 = !DISubprogram(name: "md5_read_ctx", scope: !1, file: !1, line: 81, type: !34, isLocal: false, isDefinition: true, scopeLine: 84, isOptimized: true, function: i8* (%struct.md5_ctx*, i8*)* @md5_read_ctx, variables: !39)
-!34 = !DISubroutineType(types: !35)
-!35 = !{!36, !37, !36}
-!36 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!37 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !38, size: 64, align: 64)
-!38 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !16)
-!39 = !{!40, !41}
-!40 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ctx", arg: 1, scope: !33, file: !1, line: 82, type: !37)
-!41 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "resbuf", arg: 2, scope: !33, file: !1, line: 83, type: !36)
-!42 = !DISubprogram(name: "md5_finish_ctx", scope: !1, file: !1, line: 99, type: !43, isLocal: false, isDefinition: true, scopeLine: 102, isOptimized: true, function: i8* (%struct.md5_ctx*, i8*)* @md5_finish_ctx, variables: !45)
-!43 = !DISubroutineType(types: !44)
-!44 = !{!36, !15, !36}
-!45 = !{!46, !47, !48, !49}
-!46 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ctx", arg: 1, scope: !42, file: !1, line: 100, type: !15)
-!47 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "resbuf", arg: 2, scope: !42, file: !1, line: 101, type: !36)
-!48 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "bytes", scope: !42, file: !1, line: 104, type: !4)
-!49 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "pad", scope: !42, file: !1, line: 105, type: !50)
-!50 = !DIDerivedType(tag: DW_TAG_typedef, name: "size_t", file: !51, line: 30, baseType: !52)
-!51 = !DIFile(filename: "/usr/include/sys/_types/_size_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!52 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_size_t", file: !53, line: 92, baseType: !54)
-!53 = !DIFile(filename: "/usr/include/i386/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!54 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!55 = !DISubprogram(name: "md5_stream", scope: !1, file: !1, line: 130, type: !56, isLocal: false, isDefinition: true, scopeLine: 133, isOptimized: true, function: i32 (%struct.__sFILE*, i8*)* @md5_stream, variables: !117)
-!56 = !DISubroutineType(types: !57)
-!57 = !{!58, !59, !36}
-!58 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!59 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !60, size: 64, align: 64)
-!60 = !DIDerivedType(tag: DW_TAG_typedef, name: "FILE", file: !61, line: 153, baseType: !62)
-!61 = !DIFile(filename: "/usr/include/stdio.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!62 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sFILE", file: !61, line: 122, size: 1216, align: 64, elements: !63)
-!63 = !{!64, !67, !68, !69, !71, !72, !77, !78, !79, !83, !88, !97, !101, !102, !105, !106, !110, !114, !115, !116}
-!64 = !DIDerivedType(tag: DW_TAG_member, name: "_p", scope: !62, file: !61, line: 123, baseType: !65, size: 64, align: 64)
-!65 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !66, size: 64, align: 64)
-!66 = !DIBasicType(name: "unsigned char", size: 8, align: 8, encoding: DW_ATE_unsigned_char)
-!67 = !DIDerivedType(tag: DW_TAG_member, name: "_r", scope: !62, file: !61, line: 124, baseType: !58, size: 32, align: 32, offset: 64)
-!68 = !DIDerivedType(tag: DW_TAG_member, name: "_w", scope: !62, file: !61, line: 125, baseType: !58, size: 32, align: 32, offset: 96)
-!69 = !DIDerivedType(tag: DW_TAG_member, name: "_flags", scope: !62, file: !61, line: 126, baseType: !70, size: 16, align: 16, offset: 128)
-!70 = !DIBasicType(name: "short", size: 16, align: 16, encoding: DW_ATE_signed)
-!71 = !DIDerivedType(tag: DW_TAG_member, name: "_file", scope: !62, file: !61, line: 127, baseType: !70, size: 16, align: 16, offset: 144)
-!72 = !DIDerivedType(tag: DW_TAG_member, name: "_bf", scope: !62, file: !61, line: 128, baseType: !73, size: 128, align: 64, offset: 192)
-!73 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sbuf", file: !61, line: 88, size: 128, align: 64, elements: !74)
-!74 = !{!75, !76}
-!75 = !DIDerivedType(tag: DW_TAG_member, name: "_base", scope: !73, file: !61, line: 89, baseType: !65, size: 64, align: 64)
-!76 = !DIDerivedType(tag: DW_TAG_member, name: "_size", scope: !73, file: !61, line: 90, baseType: !58, size: 32, align: 32, offset: 64)
-!77 = !DIDerivedType(tag: DW_TAG_member, name: "_lbfsize", scope: !62, file: !61, line: 129, baseType: !58, size: 32, align: 32, offset: 320)
-!78 = !DIDerivedType(tag: DW_TAG_member, name: "_cookie", scope: !62, file: !61, line: 132, baseType: !36, size: 64, align: 64, offset: 384)
-!79 = !DIDerivedType(tag: DW_TAG_member, name: "_close", scope: !62, file: !61, line: 133, baseType: !80, size: 64, align: 64, offset: 448)
-!80 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !81, size: 64, align: 64)
-!81 = !DISubroutineType(types: !82)
-!82 = !{!58, !36}
-!83 = !DIDerivedType(tag: DW_TAG_member, name: "_read", scope: !62, file: !61, line: 134, baseType: !84, size: 64, align: 64, offset: 512)
-!84 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !85, size: 64, align: 64)
-!85 = !DISubroutineType(types: !86)
-!86 = !{!58, !36, !87, !58}
-!87 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !10, size: 64, align: 64)
-!88 = !DIDerivedType(tag: DW_TAG_member, name: "_seek", scope: !62, file: !61, line: 135, baseType: !89, size: 64, align: 64, offset: 576)
-!89 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !90, size: 64, align: 64)
-!90 = !DISubroutineType(types: !91)
-!91 = !{!92, !36, !92, !58}
-!92 = !DIDerivedType(tag: DW_TAG_typedef, name: "fpos_t", file: !61, line: 77, baseType: !93)
-!93 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_off_t", file: !94, line: 71, baseType: !95)
-!94 = !DIFile(filename: "/usr/include/sys/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!95 = !DIDerivedType(tag: DW_TAG_typedef, name: "__int64_t", file: !53, line: 46, baseType: !96)
-!96 = !DIBasicType(name: "long long int", size: 64, align: 64, encoding: DW_ATE_signed)
-!97 = !DIDerivedType(tag: DW_TAG_member, name: "_write", scope: !62, file: !61, line: 136, baseType: !98, size: 64, align: 64, offset: 640)
-!98 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !99, size: 64, align: 64)
-!99 = !DISubroutineType(types: !100)
-!100 = !{!58, !36, !8, !58}
-!101 = !DIDerivedType(tag: DW_TAG_member, name: "_ub", scope: !62, file: !61, line: 139, baseType: !73, size: 128, align: 64, offset: 704)
-!102 = !DIDerivedType(tag: DW_TAG_member, name: "_extra", scope: !62, file: !61, line: 140, baseType: !103, size: 64, align: 64, offset: 832)
-!103 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !104, size: 64, align: 64)
-!104 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sFILEX", file: !61, line: 94, flags: DIFlagFwdDecl)
-!105 = !DIDerivedType(tag: DW_TAG_member, name: "_ur", scope: !62, file: !61, line: 141, baseType: !58, size: 32, align: 32, offset: 896)
-!106 = !DIDerivedType(tag: DW_TAG_member, name: "_ubuf", scope: !62, file: !61, line: 144, baseType: !107, size: 24, align: 8, offset: 928)
-!107 = !DICompositeType(tag: DW_TAG_array_type, baseType: !66, size: 24, align: 8, elements: !108)
-!108 = !{!109}
-!109 = !DISubrange(count: 3)
-!110 = !DIDerivedType(tag: DW_TAG_member, name: "_nbuf", scope: !62, file: !61, line: 145, baseType: !111, size: 8, align: 8, offset: 952)
-!111 = !DICompositeType(tag: DW_TAG_array_type, baseType: !66, size: 8, align: 8, elements: !112)
-!112 = !{!113}
-!113 = !DISubrange(count: 1)
-!114 = !DIDerivedType(tag: DW_TAG_member, name: "_lb", scope: !62, file: !61, line: 148, baseType: !73, size: 128, align: 64, offset: 960)
-!115 = !DIDerivedType(tag: DW_TAG_member, name: "_blksize", scope: !62, file: !61, line: 151, baseType: !58, size: 32, align: 32, offset: 1088)
-!116 = !DIDerivedType(tag: DW_TAG_member, name: "_offset", scope: !62, file: !61, line: 152, baseType: !92, size: 64, align: 64, offset: 1152)
-!117 = !{!118, !119, !120, !121, !125, !126}
-!118 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "stream", arg: 1, scope: !55, file: !1, line: 131, type: !59)
-!119 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "resblock", arg: 2, scope: !55, file: !1, line: 132, type: !36)
-!120 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "ctx", scope: !55, file: !1, line: 136, type: !16)
-!121 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "buffer", scope: !55, file: !1, line: 137, type: !122)
-!122 = !DICompositeType(tag: DW_TAG_array_type, baseType: !10, size: 33344, align: 8, elements: !123)
-!123 = !{!124}
-!124 = !DISubrange(count: 4168)
-!125 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "sum", scope: !55, file: !1, line: 138, type: !50)
-!126 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "n", scope: !127, file: !1, line: 149, type: !50)
-!127 = distinct !DILexicalBlock(scope: !55, file: !1, line: 145, column: 5)
-!128 = !DISubprogram(name: "md5_buffer", scope: !1, file: !1, line: 187, type: !129, isLocal: false, isDefinition: true, scopeLine: 191, isOptimized: true, function: i8* (i8*, i64, i8*)* @md5_buffer, variables: !131)
-!129 = !DISubroutineType(types: !130)
-!130 = !{!36, !8, !50, !36}
-!131 = !{!132, !133, !134, !135}
-!132 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "buffer", arg: 1, scope: !128, file: !1, line: 188, type: !8)
-!133 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "len", arg: 2, scope: !128, file: !1, line: 189, type: !50)
-!134 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "resblock", arg: 3, scope: !128, file: !1, line: 190, type: !36)
-!135 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "ctx", scope: !128, file: !1, line: 192, type: !16)
-!136 = !DISubprogram(name: "md5_process_bytes", scope: !1, file: !1, line: 206, type: !137, isLocal: false, isDefinition: true, scopeLine: 210, isOptimized: true, function: void (i8*, i64, %struct.md5_ctx*)* @md5_process_bytes, variables: !141)
-!137 = !DISubroutineType(types: !138)
-!138 = !{null, !139, !50, !15}
-!139 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !140, size: 64, align: 64)
-!140 = !DIDerivedType(tag: DW_TAG_const_type, baseType: null)
-!141 = !{!142, !143, !144, !145, !148}
-!142 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "buffer", arg: 1, scope: !136, file: !1, line: 207, type: !139)
-!143 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "len", arg: 2, scope: !136, file: !1, line: 208, type: !50)
-!144 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ctx", arg: 3, scope: !136, file: !1, line: 209, type: !15)
-!145 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "left_over", scope: !146, file: !1, line: 215, type: !50)
-!146 = distinct !DILexicalBlock(scope: !147, file: !1, line: 214, column: 5)
-!147 = distinct !DILexicalBlock(scope: !136, file: !1, line: 213, column: 7)
-!148 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "add", scope: !146, file: !1, line: 216, type: !50)
-!149 = !DISubprogram(name: "md5_process_block", scope: !1, file: !1, line: 264, type: !137, isLocal: false, isDefinition: true, scopeLine: 268, isOptimized: true, function: void (i8*, i64, %struct.md5_ctx*)* @md5_process_block, variables: !150)
-!150 = !{!151, !152, !153, !154, !158, !161, !162, !163, !164, !165, !166, !167, !169, !170, !171, !172}
-!151 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "buffer", arg: 1, scope: !149, file: !1, line: 265, type: !139)
-!152 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "len", arg: 2, scope: !149, file: !1, line: 266, type: !50)
-!153 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "ctx", arg: 3, scope: !149, file: !1, line: 267, type: !15)
-!154 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "correct_words", scope: !149, file: !1, line: 269, type: !155)
-!155 = !DICompositeType(tag: DW_TAG_array_type, baseType: !4, size: 512, align: 32, elements: !156)
-!156 = !{!157}
-!157 = !DISubrange(count: 16)
-!158 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "words", scope: !149, file: !1, line: 270, type: !159)
-!159 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !160, size: 64, align: 64)
-!160 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !4)
-!161 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "nwords", scope: !149, file: !1, line: 271, type: !50)
-!162 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "endp", scope: !149, file: !1, line: 272, type: !159)
-!163 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "A", scope: !149, file: !1, line: 273, type: !4)
-!164 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "B", scope: !149, file: !1, line: 274, type: !4)
-!165 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "C", scope: !149, file: !1, line: 275, type: !4)
-!166 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "D", scope: !149, file: !1, line: 276, type: !4)
-!167 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "cwp", scope: !168, file: !1, line: 289, type: !7)
-!168 = distinct !DILexicalBlock(scope: !149, file: !1, line: 288, column: 5)
-!169 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "A_save", scope: !168, file: !1, line: 290, type: !4)
-!170 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "B_save", scope: !168, file: !1, line: 291, type: !4)
-!171 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "C_save", scope: !168, file: !1, line: 292, type: !4)
-!172 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "D_save", scope: !168, file: !1, line: 293, type: !4)
-!173 = !{!174}
-!174 = !DIGlobalVariable(name: "fillbuf", scope: !0, file: !1, line: 57, type: !175, isLocal: true, isDefinition: true, variable: [64 x i8]* @fillbuf)
-!175 = !DICompositeType(tag: DW_TAG_array_type, baseType: !176, size: 512, align: 8, elements: !177)
-!176 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !66)
-!177 = !{!178}
-!178 = !DISubrange(count: 64)
-!179 = !{i32 2, !"Dwarf Version", i32 2}
-!180 = !{i32 2, !"Debug Info Version", i32 700000003}
-!181 = !{i32 1, !"PIC Level", i32 2}
-!182 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!183 = !DIExpression()
-!184 = !DILocation(line: 64, column: 22, scope: !12)
-!185 = !DILocation(line: 66, column: 8, scope: !12)
-!186 = !DILocation(line: 66, column: 10, scope: !12)
-!187 = !{!188, !189, i64 0}
-!188 = !{!"md5_ctx", !189, i64 0, !189, i64 4, !189, i64 8, !189, i64 12, !190, i64 16, !189, i64 24, !190, i64 28}
-!189 = !{!"int", !190, i64 0}
-!190 = !{!"omnipotent char", !191, i64 0}
-!191 = !{!"Simple C/C++ TBAA"}
-!192 = !DILocation(line: 67, column: 8, scope: !12)
-!193 = !DILocation(line: 67, column: 10, scope: !12)
-!194 = !{!188, !189, i64 4}
-!195 = !DILocation(line: 68, column: 8, scope: !12)
-!196 = !DILocation(line: 68, column: 10, scope: !12)
-!197 = !{!188, !189, i64 8}
-!198 = !DILocation(line: 69, column: 8, scope: !12)
-!199 = !DILocation(line: 69, column: 10, scope: !12)
-!200 = !{!188, !189, i64 12}
-!201 = !DILocation(line: 71, column: 19, scope: !12)
-!202 = !DILocation(line: 71, column: 33, scope: !12)
-!203 = !{!189, !189, i64 0}
-!204 = !DILocation(line: 71, column: 3, scope: !12)
-!205 = !DILocation(line: 71, column: 17, scope: !12)
-!206 = !DILocation(line: 72, column: 8, scope: !12)
-!207 = !DILocation(line: 72, column: 15, scope: !12)
-!208 = !{!188, !189, i64 24}
-!209 = !DILocation(line: 73, column: 1, scope: !12)
-!210 = !DILocation(line: 82, column: 28, scope: !33)
-!211 = !DILocation(line: 83, column: 12, scope: !33)
-!212 = !DILocation(line: 85, column: 32, scope: !33)
-!213 = !DILocation(line: 85, column: 4, scope: !33)
-!214 = !DILocation(line: 85, column: 30, scope: !33)
-!215 = !DILocation(line: 86, column: 32, scope: !33)
-!216 = !DILocation(line: 86, column: 3, scope: !33)
-!217 = !DILocation(line: 86, column: 30, scope: !33)
-!218 = !DILocation(line: 87, column: 32, scope: !33)
-!219 = !DILocation(line: 87, column: 3, scope: !33)
-!220 = !DILocation(line: 87, column: 30, scope: !33)
-!221 = !DILocation(line: 88, column: 32, scope: !33)
-!222 = !DILocation(line: 88, column: 3, scope: !33)
-!223 = !DILocation(line: 88, column: 30, scope: !33)
-!224 = !DILocation(line: 90, column: 3, scope: !33)
-!225 = !DILocation(line: 100, column: 22, scope: !42)
-!226 = !DILocation(line: 101, column: 12, scope: !42)
-!227 = !DILocation(line: 104, column: 27, scope: !42)
-!228 = !DILocation(line: 104, column: 14, scope: !42)
-!229 = !DILocation(line: 108, column: 3, scope: !42)
-!230 = !DILocation(line: 108, column: 17, scope: !42)
-!231 = !DILocation(line: 109, column: 21, scope: !232)
-!232 = distinct !DILexicalBlock(scope: !42, file: !1, line: 109, column: 7)
-!233 = !DILocation(line: 110, column: 7, scope: !232)
-!234 = !DILocation(line: 109, column: 7, scope: !42)
-!235 = !DILocation(line: 110, column: 5, scope: !232)
-!236 = !DILocation(line: 112, column: 15, scope: !42)
-!237 = !DILocation(line: 112, column: 9, scope: !42)
-!238 = !DILocation(line: 105, column: 10, scope: !42)
-!239 = !DILocation(line: 113, column: 3, scope: !42)
-!240 = !DILocation(line: 116, column: 47, scope: !42)
-!241 = !DILocation(line: 116, column: 38, scope: !42)
-!242 = !DILocation(line: 116, column: 20, scope: !42)
-!243 = !DILocation(line: 116, column: 4, scope: !42)
-!244 = !DILocation(line: 116, column: 45, scope: !42)
-!245 = !DILocation(line: 117, column: 51, scope: !42)
-!246 = !DILocation(line: 117, column: 44, scope: !42)
-!247 = !DILocation(line: 117, column: 20, scope: !42)
-!248 = !DILocation(line: 117, column: 4, scope: !42)
-!249 = !DILocation(line: 117, column: 49, scope: !42)
-!250 = !DILocation(line: 121, column: 22, scope: !42)
-!251 = !DILocation(line: 121, column: 47, scope: !42)
-!252 = !DILocation(line: 121, column: 3, scope: !42)
-!253 = !DILocation(line: 82, column: 28, scope: !33, inlinedAt: !254)
-!254 = distinct !DILocation(line: 123, column: 10, scope: !42)
-!255 = !DILocation(line: 83, column: 12, scope: !33, inlinedAt: !254)
-!256 = !DILocation(line: 85, column: 32, scope: !33, inlinedAt: !254)
-!257 = !DILocation(line: 85, column: 4, scope: !33, inlinedAt: !254)
-!258 = !DILocation(line: 85, column: 30, scope: !33, inlinedAt: !254)
-!259 = !DILocation(line: 86, column: 32, scope: !33, inlinedAt: !254)
-!260 = !DILocation(line: 86, column: 3, scope: !33, inlinedAt: !254)
-!261 = !DILocation(line: 86, column: 30, scope: !33, inlinedAt: !254)
-!262 = !DILocation(line: 87, column: 32, scope: !33, inlinedAt: !254)
-!263 = !DILocation(line: 87, column: 3, scope: !33, inlinedAt: !254)
-!264 = !DILocation(line: 87, column: 30, scope: !33, inlinedAt: !254)
-!265 = !DILocation(line: 88, column: 32, scope: !33, inlinedAt: !254)
-!266 = !DILocation(line: 88, column: 3, scope: !33, inlinedAt: !254)
-!267 = !DILocation(line: 88, column: 30, scope: !33, inlinedAt: !254)
-!268 = !DILocation(line: 123, column: 3, scope: !42)
-!269 = !DILocation(line: 265, column: 18, scope: !149)
-!270 = !DILocation(line: 266, column: 13, scope: !149)
-!271 = !DILocation(line: 267, column: 22, scope: !149)
-!272 = !DILocation(line: 269, column: 14, scope: !149)
-!273 = !DILocation(line: 270, column: 29, scope: !149)
-!274 = !DILocation(line: 270, column: 21, scope: !149)
-!275 = !DILocation(line: 271, column: 23, scope: !149)
-!276 = !DILocation(line: 271, column: 10, scope: !149)
-!277 = !DILocation(line: 272, column: 34, scope: !149)
-!278 = !DILocation(line: 272, column: 21, scope: !149)
-!279 = !DILocation(line: 273, column: 23, scope: !149)
-!280 = !DILocation(line: 273, column: 14, scope: !149)
-!281 = !DILocation(line: 274, column: 23, scope: !149)
-!282 = !DILocation(line: 274, column: 14, scope: !149)
-!283 = !DILocation(line: 275, column: 23, scope: !149)
-!284 = !DILocation(line: 275, column: 14, scope: !149)
-!285 = !DILocation(line: 276, column: 23, scope: !149)
-!286 = !DILocation(line: 276, column: 14, scope: !149)
-!287 = !DILocation(line: 281, column: 3, scope: !149)
-!288 = !DILocation(line: 281, column: 17, scope: !149)
-!289 = !DILocation(line: 282, column: 7, scope: !290)
-!290 = distinct !DILexicalBlock(scope: !149, file: !1, line: 282, column: 7)
-!291 = !DILocation(line: 282, column: 21, scope: !290)
-!292 = !DILocation(line: 282, column: 7, scope: !149)
-!293 = !DILocation(line: 283, column: 7, scope: !290)
-!294 = !DILocation(line: 283, column: 5, scope: !290)
-!295 = !DILocation(line: 287, column: 16, scope: !149)
-!296 = !DILocation(line: 287, column: 3, scope: !149)
-!297 = !DILocation(line: 289, column: 19, scope: !168)
-!298 = !DILocation(line: 290, column: 18, scope: !168)
-!299 = !DILocation(line: 291, column: 18, scope: !168)
-!300 = !DILocation(line: 292, column: 18, scope: !168)
-!301 = !DILocation(line: 293, column: 18, scope: !168)
-!302 = !DILocation(line: 323, column: 7, scope: !303)
-!303 = distinct !DILexicalBlock(scope: !168, file: !1, line: 323, column: 7)
-!304 = !DIExpression(DW_OP_bit_piece, 0, 32)
-!305 = !DILocation(line: 324, column: 7, scope: !306)
-!306 = distinct !DILexicalBlock(scope: !168, file: !1, line: 324, column: 7)
-!307 = !DIExpression(DW_OP_bit_piece, 32, 32)
-!308 = !DILocation(line: 325, column: 7, scope: !309)
-!309 = distinct !DILexicalBlock(scope: !168, file: !1, line: 325, column: 7)
-!310 = !DIExpression(DW_OP_bit_piece, 64, 32)
-!311 = !DILocation(line: 326, column: 7, scope: !312)
-!312 = distinct !DILexicalBlock(scope: !168, file: !1, line: 326, column: 7)
-!313 = !DIExpression(DW_OP_bit_piece, 96, 32)
-!314 = !DILocation(line: 327, column: 7, scope: !315)
-!315 = distinct !DILexicalBlock(scope: !168, file: !1, line: 327, column: 7)
-!316 = !DIExpression(DW_OP_bit_piece, 128, 32)
-!317 = !DILocation(line: 328, column: 7, scope: !318)
-!318 = distinct !DILexicalBlock(scope: !168, file: !1, line: 328, column: 7)
-!319 = !DIExpression(DW_OP_bit_piece, 160, 32)
-!320 = !DILocation(line: 329, column: 7, scope: !321)
-!321 = distinct !DILexicalBlock(scope: !168, file: !1, line: 329, column: 7)
-!322 = !DIExpression(DW_OP_bit_piece, 192, 32)
-!323 = !DILocation(line: 330, column: 7, scope: !324)
-!324 = distinct !DILexicalBlock(scope: !168, file: !1, line: 330, column: 7)
-!325 = !DIExpression(DW_OP_bit_piece, 224, 32)
-!326 = !DILocation(line: 331, column: 7, scope: !327)
-!327 = distinct !DILexicalBlock(scope: !168, file: !1, line: 331, column: 7)
-!328 = !DIExpression(DW_OP_bit_piece, 256, 32)
-!329 = !DILocation(line: 332, column: 7, scope: !330)
-!330 = distinct !DILexicalBlock(scope: !168, file: !1, line: 332, column: 7)
-!331 = !DIExpression(DW_OP_bit_piece, 288, 32)
-!332 = !DILocation(line: 333, column: 7, scope: !333)
-!333 = distinct !DILexicalBlock(scope: !168, file: !1, line: 333, column: 7)
-!334 = !DIExpression(DW_OP_bit_piece, 320, 32)
-!335 = !DILocation(line: 334, column: 7, scope: !336)
-!336 = distinct !DILexicalBlock(scope: !168, file: !1, line: 334, column: 7)
-!337 = !DIExpression(DW_OP_bit_piece, 352, 32)
-!338 = !DILocation(line: 335, column: 7, scope: !339)
-!339 = distinct !DILexicalBlock(scope: !168, file: !1, line: 335, column: 7)
-!340 = !DIExpression(DW_OP_bit_piece, 384, 32)
-!341 = !DILocation(line: 336, column: 7, scope: !342)
-!342 = distinct !DILexicalBlock(scope: !168, file: !1, line: 336, column: 7)
-!343 = !DIExpression(DW_OP_bit_piece, 416, 32)
-!344 = !DILocation(line: 337, column: 7, scope: !345)
-!345 = distinct !DILexicalBlock(scope: !168, file: !1, line: 337, column: 7)
-!346 = !DIExpression(DW_OP_bit_piece, 448, 32)
-!347 = !DILocation(line: 338, column: 7, scope: !348)
-!348 = distinct !DILexicalBlock(scope: !168, file: !1, line: 338, column: 7)
-!349 = !DIExpression(DW_OP_bit_piece, 480, 32)
-!350 = !DILocation(line: 354, column: 7, scope: !351)
-!351 = distinct !DILexicalBlock(scope: !168, file: !1, line: 354, column: 7)
-!352 = !DILocation(line: 355, column: 7, scope: !353)
-!353 = distinct !DILexicalBlock(scope: !168, file: !1, line: 355, column: 7)
-!354 = !DILocation(line: 356, column: 7, scope: !355)
-!355 = distinct !DILexicalBlock(scope: !168, file: !1, line: 356, column: 7)
-!356 = !DILocation(line: 357, column: 7, scope: !357)
-!357 = distinct !DILexicalBlock(scope: !168, file: !1, line: 357, column: 7)
-!358 = !DILocation(line: 358, column: 7, scope: !359)
-!359 = distinct !DILexicalBlock(scope: !168, file: !1, line: 358, column: 7)
-!360 = !DILocation(line: 359, column: 7, scope: !361)
-!361 = distinct !DILexicalBlock(scope: !168, file: !1, line: 359, column: 7)
-!362 = !DILocation(line: 360, column: 7, scope: !363)
-!363 = distinct !DILexicalBlock(scope: !168, file: !1, line: 360, column: 7)
-!364 = !DILocation(line: 361, column: 7, scope: !365)
-!365 = distinct !DILexicalBlock(scope: !168, file: !1, line: 361, column: 7)
-!366 = !DILocation(line: 362, column: 7, scope: !367)
-!367 = distinct !DILexicalBlock(scope: !168, file: !1, line: 362, column: 7)
-!368 = !DILocation(line: 363, column: 7, scope: !369)
-!369 = distinct !DILexicalBlock(scope: !168, file: !1, line: 363, column: 7)
-!370 = !DILocation(line: 364, column: 7, scope: !371)
-!371 = distinct !DILexicalBlock(scope: !168, file: !1, line: 364, column: 7)
-!372 = !DILocation(line: 365, column: 7, scope: !373)
-!373 = distinct !DILexicalBlock(scope: !168, file: !1, line: 365, column: 7)
-!374 = !DILocation(line: 366, column: 7, scope: !375)
-!375 = distinct !DILexicalBlock(scope: !168, file: !1, line: 366, column: 7)
-!376 = !DILocation(line: 367, column: 7, scope: !377)
-!377 = distinct !DILexicalBlock(scope: !168, file: !1, line: 367, column: 7)
-!378 = !DILocation(line: 368, column: 7, scope: !379)
-!379 = distinct !DILexicalBlock(scope: !168, file: !1, line: 368, column: 7)
-!380 = !DILocation(line: 369, column: 7, scope: !381)
-!381 = distinct !DILexicalBlock(scope: !168, file: !1, line: 369, column: 7)
-!382 = !DILocation(line: 372, column: 7, scope: !383)
-!383 = distinct !DILexicalBlock(scope: !168, file: !1, line: 372, column: 7)
-!384 = !DILocation(line: 373, column: 7, scope: !385)
-!385 = distinct !DILexicalBlock(scope: !168, file: !1, line: 373, column: 7)
-!386 = !DILocation(line: 374, column: 7, scope: !387)
-!387 = distinct !DILexicalBlock(scope: !168, file: !1, line: 374, column: 7)
-!388 = !DILocation(line: 375, column: 7, scope: !389)
-!389 = distinct !DILexicalBlock(scope: !168, file: !1, line: 375, column: 7)
-!390 = !DILocation(line: 376, column: 7, scope: !391)
-!391 = distinct !DILexicalBlock(scope: !168, file: !1, line: 376, column: 7)
-!392 = !DILocation(line: 377, column: 7, scope: !393)
-!393 = distinct !DILexicalBlock(scope: !168, file: !1, line: 377, column: 7)
-!394 = !DILocation(line: 378, column: 7, scope: !395)
-!395 = distinct !DILexicalBlock(scope: !168, file: !1, line: 378, column: 7)
-!396 = !DILocation(line: 379, column: 7, scope: !397)
-!397 = distinct !DILexicalBlock(scope: !168, file: !1, line: 379, column: 7)
-!398 = !DILocation(line: 380, column: 7, scope: !399)
-!399 = distinct !DILexicalBlock(scope: !168, file: !1, line: 380, column: 7)
-!400 = !DILocation(line: 381, column: 7, scope: !401)
-!401 = distinct !DILexicalBlock(scope: !168, file: !1, line: 381, column: 7)
-!402 = !DILocation(line: 382, column: 7, scope: !403)
-!403 = distinct !DILexicalBlock(scope: !168, file: !1, line: 382, column: 7)
-!404 = !DILocation(line: 383, column: 7, scope: !405)
-!405 = distinct !DILexicalBlock(scope: !168, file: !1, line: 383, column: 7)
-!406 = !DILocation(line: 384, column: 7, scope: !407)
-!407 = distinct !DILexicalBlock(scope: !168, file: !1, line: 384, column: 7)
-!408 = !DILocation(line: 385, column: 7, scope: !409)
-!409 = distinct !DILexicalBlock(scope: !168, file: !1, line: 385, column: 7)
-!410 = !DILocation(line: 386, column: 7, scope: !411)
-!411 = distinct !DILexicalBlock(scope: !168, file: !1, line: 386, column: 7)
-!412 = !DILocation(line: 387, column: 7, scope: !413)
-!413 = distinct !DILexicalBlock(scope: !168, file: !1, line: 387, column: 7)
-!414 = !DILocation(line: 390, column: 7, scope: !415)
-!415 = distinct !DILexicalBlock(scope: !168, file: !1, line: 390, column: 7)
-!416 = !DILocation(line: 391, column: 7, scope: !417)
-!417 = distinct !DILexicalBlock(scope: !168, file: !1, line: 391, column: 7)
-!418 = !DILocation(line: 392, column: 7, scope: !419)
-!419 = distinct !DILexicalBlock(scope: !168, file: !1, line: 392, column: 7)
-!420 = !DILocation(line: 393, column: 7, scope: !421)
-!421 = distinct !DILexicalBlock(scope: !168, file: !1, line: 393, column: 7)
-!422 = !DILocation(line: 394, column: 7, scope: !423)
-!423 = distinct !DILexicalBlock(scope: !168, file: !1, line: 394, column: 7)
-!424 = !DILocation(line: 395, column: 7, scope: !425)
-!425 = distinct !DILexicalBlock(scope: !168, file: !1, line: 395, column: 7)
-!426 = !DILocation(line: 396, column: 7, scope: !427)
-!427 = distinct !DILexicalBlock(scope: !168, file: !1, line: 396, column: 7)
-!428 = !DILocation(line: 397, column: 7, scope: !429)
-!429 = distinct !DILexicalBlock(scope: !168, file: !1, line: 397, column: 7)
-!430 = !DILocation(line: 398, column: 7, scope: !431)
-!431 = distinct !DILexicalBlock(scope: !168, file: !1, line: 398, column: 7)
-!432 = !DILocation(line: 399, column: 7, scope: !433)
-!433 = distinct !DILexicalBlock(scope: !168, file: !1, line: 399, column: 7)
-!434 = !DILocation(line: 400, column: 7, scope: !435)
-!435 = distinct !DILexicalBlock(scope: !168, file: !1, line: 400, column: 7)
-!436 = !DILocation(line: 401, column: 7, scope: !437)
-!437 = distinct !DILexicalBlock(scope: !168, file: !1, line: 401, column: 7)
-!438 = !DILocation(line: 402, column: 7, scope: !439)
-!439 = distinct !DILexicalBlock(scope: !168, file: !1, line: 402, column: 7)
-!440 = !DILocation(line: 403, column: 7, scope: !441)
-!441 = distinct !DILexicalBlock(scope: !168, file: !1, line: 403, column: 7)
-!442 = !DILocation(line: 404, column: 7, scope: !443)
-!443 = distinct !DILexicalBlock(scope: !168, file: !1, line: 404, column: 7)
-!444 = !DILocation(line: 405, column: 7, scope: !445)
-!445 = distinct !DILexicalBlock(scope: !168, file: !1, line: 405, column: 7)
-!446 = !DILocation(line: 408, column: 9, scope: !168)
-!447 = !DILocation(line: 409, column: 9, scope: !168)
-!448 = !DILocation(line: 410, column: 9, scope: !168)
-!449 = !DILocation(line: 411, column: 9, scope: !168)
-!450 = !DILocation(line: 415, column: 10, scope: !149)
-!451 = !DILocation(line: 416, column: 10, scope: !149)
-!452 = !DILocation(line: 417, column: 10, scope: !149)
-!453 = !DILocation(line: 418, column: 10, scope: !149)
-!454 = !DILocation(line: 419, column: 1, scope: !149)
-!455 = !DILocation(line: 131, column: 12, scope: !55)
-!456 = !DILocation(line: 132, column: 12, scope: !55)
-!457 = !DILocation(line: 136, column: 3, scope: !55)
-!458 = !DILocation(line: 137, column: 3, scope: !55)
-!459 = !DILocation(line: 137, column: 8, scope: !55)
-!460 = !DILocation(line: 136, column: 18, scope: !55)
-!461 = !DILocation(line: 64, column: 22, scope: !12, inlinedAt: !462)
-!462 = distinct !DILocation(line: 141, column: 3, scope: !55)
-!463 = !DILocation(line: 66, column: 8, scope: !12, inlinedAt: !462)
-!464 = !DILocation(line: 66, column: 10, scope: !12, inlinedAt: !462)
-!465 = !DILocation(line: 67, column: 8, scope: !12, inlinedAt: !462)
-!466 = !DILocation(line: 67, column: 10, scope: !12, inlinedAt: !462)
-!467 = !DILocation(line: 68, column: 8, scope: !12, inlinedAt: !462)
-!468 = !DILocation(line: 68, column: 10, scope: !12, inlinedAt: !462)
-!469 = !DILocation(line: 69, column: 8, scope: !12, inlinedAt: !462)
-!470 = !DILocation(line: 69, column: 10, scope: !12, inlinedAt: !462)
-!471 = !DILocation(line: 71, column: 19, scope: !12, inlinedAt: !462)
-!472 = !DILocation(line: 71, column: 33, scope: !12, inlinedAt: !462)
-!473 = !DILocation(line: 71, column: 3, scope: !12, inlinedAt: !462)
-!474 = !DILocation(line: 71, column: 17, scope: !12, inlinedAt: !462)
-!475 = !DILocation(line: 72, column: 8, scope: !12, inlinedAt: !462)
-!476 = !DILocation(line: 72, column: 15, scope: !12, inlinedAt: !462)
-!477 = !DILocation(line: 144, column: 3, scope: !55)
-!478 = !DILocation(line: 155, column: 22, scope: !479)
-!479 = distinct !DILexicalBlock(scope: !127, file: !1, line: 154, column: 2)
-!480 = !DILocation(line: 155, column: 42, scope: !479)
-!481 = !DILocation(line: 155, column: 8, scope: !479)
-!482 = !DILocation(line: 149, column: 14, scope: !127)
-!483 = !DILocation(line: 157, column: 8, scope: !479)
-!484 = !DILocation(line: 138, column: 10, scope: !55)
-!485 = !DILocation(line: 159, column: 18, scope: !127)
-!486 = !DILocation(line: 159, column: 35, scope: !127)
-!487 = !DILocation(line: 159, column: 30, scope: !127)
-!488 = !DILocation(line: 160, column: 13, scope: !489)
-!489 = distinct !DILexicalBlock(scope: !127, file: !1, line: 160, column: 11)
-!490 = !DILocation(line: 160, column: 18, scope: !489)
-!491 = !DILocation(line: 160, column: 21, scope: !489)
-!492 = !DILocation(line: 160, column: 11, scope: !127)
-!493 = !DILocation(line: 170, column: 7, scope: !127)
-!494 = !DILocation(line: 174, column: 11, scope: !495)
-!495 = distinct !DILexicalBlock(scope: !55, file: !1, line: 174, column: 7)
-!496 = !DILocation(line: 174, column: 7, scope: !55)
-!497 = !DILocation(line: 175, column: 5, scope: !495)
-!498 = !DILocation(line: 178, column: 3, scope: !55)
-!499 = !DILocation(line: 179, column: 3, scope: !55)
-!500 = !DILocation(line: 180, column: 1, scope: !55)
-!501 = !DILocation(line: 207, column: 18, scope: !136)
-!502 = !DILocation(line: 208, column: 13, scope: !136)
-!503 = !DILocation(line: 209, column: 22, scope: !136)
-!504 = !DILocation(line: 213, column: 12, scope: !147)
-!505 = !DILocation(line: 213, column: 19, scope: !147)
-!506 = !DILocation(line: 213, column: 7, scope: !136)
-!507 = !DILocation(line: 215, column: 26, scope: !146)
-!508 = !DILocation(line: 215, column: 14, scope: !146)
-!509 = !DILocation(line: 216, column: 24, scope: !146)
-!510 = !DILocation(line: 216, column: 36, scope: !146)
-!511 = !DILocation(line: 216, column: 20, scope: !146)
-!512 = !DILocation(line: 216, column: 14, scope: !146)
-!513 = !DILocation(line: 218, column: 7, scope: !146)
-!514 = !DILocation(line: 219, column: 19, scope: !146)
-!515 = !DILocation(line: 221, column: 21, scope: !516)
-!516 = distinct !DILexicalBlock(scope: !146, file: !1, line: 221, column: 11)
-!517 = !DILocation(line: 221, column: 27, scope: !516)
-!518 = !DILocation(line: 221, column: 11, scope: !146)
-!519 = !DILocation(line: 223, column: 23, scope: !520)
-!520 = distinct !DILexicalBlock(scope: !516, file: !1, line: 222, column: 2)
-!521 = !DILocation(line: 223, column: 54, scope: !520)
-!522 = !DILocation(line: 223, column: 4, scope: !520)
-!523 = !DILocation(line: 225, column: 4, scope: !520)
-!524 = !DILocation(line: 227, column: 18, scope: !520)
-!525 = !DILocation(line: 227, column: 16, scope: !520)
-!526 = !DILocation(line: 228, column: 2, scope: !520)
-!527 = !DILocation(line: 230, column: 38, scope: !146)
-!528 = !DILocation(line: 231, column: 11, scope: !146)
-!529 = !DILocation(line: 232, column: 5, scope: !146)
-!530 = !DILocation(line: 235, column: 11, scope: !531)
-!531 = distinct !DILexicalBlock(scope: !136, file: !1, line: 235, column: 7)
-!532 = !DILocation(line: 235, column: 7, scope: !136)
-!533 = !DILocation(line: 237, column: 38, scope: !534)
-!534 = distinct !DILexicalBlock(scope: !531, file: !1, line: 236, column: 5)
-!535 = !DILocation(line: 237, column: 7, scope: !534)
-!536 = !DILocation(line: 238, column: 38, scope: !534)
-!537 = !DILocation(line: 239, column: 11, scope: !534)
-!538 = !DILocation(line: 240, column: 5, scope: !534)
-!539 = !DILocation(line: 243, column: 11, scope: !540)
-!540 = distinct !DILexicalBlock(scope: !136, file: !1, line: 243, column: 7)
-!541 = !DILocation(line: 243, column: 7, scope: !136)
-!542 = !DILocation(line: 245, column: 7, scope: !543)
-!543 = distinct !DILexicalBlock(scope: !540, file: !1, line: 244, column: 5)
-!544 = !DILocation(line: 246, column: 21, scope: !543)
-!545 = !DILocation(line: 246, column: 19, scope: !543)
-!546 = !DILocation(line: 247, column: 5, scope: !543)
-!547 = !DILocation(line: 248, column: 1, scope: !136)
-!548 = !DILocation(line: 188, column: 18, scope: !128)
-!549 = !DILocation(line: 189, column: 13, scope: !128)
-!550 = !DILocation(line: 190, column: 12, scope: !128)
-!551 = !DILocation(line: 192, column: 3, scope: !128)
-!552 = !DILocation(line: 192, column: 18, scope: !128)
-!553 = !DILocation(line: 64, column: 22, scope: !12, inlinedAt: !554)
-!554 = distinct !DILocation(line: 195, column: 3, scope: !128)
-!555 = !DILocation(line: 66, column: 8, scope: !12, inlinedAt: !554)
-!556 = !DILocation(line: 66, column: 10, scope: !12, inlinedAt: !554)
-!557 = !DILocation(line: 67, column: 8, scope: !12, inlinedAt: !554)
-!558 = !DILocation(line: 67, column: 10, scope: !12, inlinedAt: !554)
-!559 = !DILocation(line: 68, column: 8, scope: !12, inlinedAt: !554)
-!560 = !DILocation(line: 68, column: 10, scope: !12, inlinedAt: !554)
-!561 = !DILocation(line: 69, column: 8, scope: !12, inlinedAt: !554)
-!562 = !DILocation(line: 69, column: 10, scope: !12, inlinedAt: !554)
-!563 = !DILocation(line: 71, column: 19, scope: !12, inlinedAt: !554)
-!564 = !DILocation(line: 71, column: 33, scope: !12, inlinedAt: !554)
-!565 = !DILocation(line: 71, column: 3, scope: !12, inlinedAt: !554)
-!566 = !DILocation(line: 71, column: 17, scope: !12, inlinedAt: !554)
-!567 = !DILocation(line: 72, column: 8, scope: !12, inlinedAt: !554)
-!568 = !DILocation(line: 72, column: 15, scope: !12, inlinedAt: !554)
-!569 = !DILocation(line: 198, column: 3, scope: !128)
-!570 = !DILocation(line: 201, column: 10, scope: !128)
-!571 = !DILocation(line: 202, column: 1, scope: !128)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !164, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !30, metadata !39, metadata !49, metadata !117, metadata !127, metadata !139}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"md5_init_ctx", metadata !"md5_init_ctx", metadata !"", i32 63, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 0, i1 true, void (%struct.md5_ctx*)* @md5_init_ctx, null, null, metadata !28, i32 65} ; [ DW_TAG_subprogram ] [line 63] [def] [scope 65] [md5_init_ctx]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{null, metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from md5_ctx]
+!9 = metadata !{i32 786451, metadata !10, null, metadata !"md5_ctx", i32 77, i64 1248, i64 32, i32 0, i32 0, null, metadata !11, i32 0, null, null} ; [ DW_TAG_structure_type ] [md5_ctx] [line 77, size 1248, align 32, offset 0] [from ]
+!10 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/403.gcc/src/md5.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!11 = metadata !{metadata !12, metadata !15, metadata !16, metadata !17, metadata !18, metadata !22, metadata !23}
+!12 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"A", i32 79, i64 32, i64 32, i64 0, i32 0, metadata !13} ; [ DW_TAG_member ] [A] [line 79, size 32, align 32, offset 0] [from md5_uint32]
+!13 = metadata !{i32 786454, metadata !10, null, metadata !"md5_uint32", i32 53, i64 0, i64 0, i64 0, i32 0, metadata !14} ; [ DW_TAG_typedef ] [md5_uint32] [line 53, size 0, align 0, offset 0] [from unsigned int]
+!14 = metadata !{i32 786468, null, null, metadata !"unsigned int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned int] [line 0, size 32, align 32, offset 0, enc DW_ATE_unsigned]
+!15 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"B", i32 80, i64 32, i64 32, i64 32, i32 0, metadata !13} ; [ DW_TAG_member ] [B] [line 80, size 32, align 32, offset 32] [from md5_uint32]
+!16 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"C", i32 81, i64 32, i64 32, i64 64, i32 0, metadata !13} ; [ DW_TAG_member ] [C] [line 81, size 32, align 32, offset 64] [from md5_uint32]
+!17 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"D", i32 82, i64 32, i64 32, i64 96, i32 0, metadata !13} ; [ DW_TAG_member ] [D] [line 82, size 32, align 32, offset 96] [from md5_uint32]
+!18 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"total", i32 84, i64 64, i64 32, i64 128, i32 0, metadata !19} ; [ DW_TAG_member ] [total] [line 84, size 64, align 32, offset 128] [from ]
+!19 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 64, i64 32, i32 0, i32 0, metadata !13, metadata !20, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 64, align 32, offset 0] [from md5_uint32]
+!20 = metadata !{metadata !21}
+!21 = metadata !{i32 786465, i64 0, i64 2}        ; [ DW_TAG_subrange_type ] [0, 1]
+!22 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"buflen", i32 85, i64 32, i64 32, i64 192, i32 0, metadata !13} ; [ DW_TAG_member ] [buflen] [line 85, size 32, align 32, offset 192] [from md5_uint32]
+!23 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"buffer", i32 86, i64 1024, i64 8, i64 224, i32 0, metadata !24} ; [ DW_TAG_member ] [buffer] [line 86, size 1024, align 8, offset 224] [from ]
+!24 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 1024, i64 8, i32 0, i32 0, metadata !25, metadata !26, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 1024, align 8, offset 0] [from char]
+!25 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!26 = metadata !{metadata !27}
+!27 = metadata !{i32 786465, i64 0, i64 128}      ; [ DW_TAG_subrange_type ] [0, 127]
+!28 = metadata !{metadata !29}
+!29 = metadata !{i32 786689, metadata !4, metadata !"ctx", metadata !5, i32 16777280, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ctx] [line 64]
+!30 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"md5_read_ctx", metadata !"md5_read_ctx", metadata !"", i32 81, metadata !31, i1 false, i1 true, i32 0, i32 0, null, i32 0, i1 true, i8* (%struct.md5_ctx*, i8*)* @md5_read_ctx, null, null, metadata !36, i32 84} ; [ DW_TAG_subprogram ] [line 81] [def] [scope 84] [md5_read_ctx]
+!31 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !32, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!32 = metadata !{metadata !33, metadata !34, metadata !33}
+!33 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!34 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !35} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!35 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !9} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from md5_ctx]
+!36 = metadata !{metadata !37, metadata !38}
+!37 = metadata !{i32 786689, metadata !30, metadata !"ctx", metadata !5, i32 16777298, metadata !34, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ctx] [line 82]
+!38 = metadata !{i32 786689, metadata !30, metadata !"resbuf", metadata !5, i32 33554515, metadata !33, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [resbuf] [line 83]
+!39 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"md5_finish_ctx", metadata !"md5_finish_ctx", metadata !"", i32 99, metadata !40, i1 false, i1 true, i32 0, i32 0, null, i32 0, i1 true, i8* (%struct.md5_ctx*, i8*)* @md5_finish_ctx, null, null, metadata !42, i32 102} ; [ DW_TAG_subprogram ] [line 99] [def] [scope 102] [md5_finish_ctx]
+!40 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !41, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!41 = metadata !{metadata !33, metadata !8, metadata !33}
+!42 = metadata !{metadata !43, metadata !44, metadata !45, metadata !46}
+!43 = metadata !{i32 786689, metadata !39, metadata !"ctx", metadata !5, i32 16777316, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ctx] [line 100]
+!44 = metadata !{i32 786689, metadata !39, metadata !"resbuf", metadata !5, i32 33554533, metadata !33, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [resbuf] [line 101]
+!45 = metadata !{i32 786688, metadata !39, metadata !"bytes", metadata !5, i32 104, metadata !13, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [bytes] [line 104]
+!46 = metadata !{i32 786688, metadata !39, metadata !"pad", metadata !5, i32 105, metadata !47, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [pad] [line 105]
+!47 = metadata !{i32 786454, metadata !1, null, metadata !"size_t", i32 42, i64 0, i64 0, i64 0, i32 0, metadata !48} ; [ DW_TAG_typedef ] [size_t] [line 42, size 0, align 0, offset 0] [from long unsigned int]
+!48 = metadata !{i32 786468, null, null, metadata !"long unsigned int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [long unsigned int] [line 0, size 64, align 64, offset 0, enc DW_ATE_unsigned]
+!49 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"md5_stream", metadata !"md5_stream", metadata !"", i32 130, metadata !50, i1 false, i1 true, i32 0, i32 0, null, i32 0, i1 true, i32 (%struct._IO_FILE*, i8*)* @md5_stream, null, null, metadata !106, i32 133} ; [ DW_TAG_subprogram ] [line 130] [def] [scope 133] [md5_stream]
+!50 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !51, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!51 = metadata !{metadata !52, metadata !53, metadata !33}
+!52 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!53 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !54} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from FILE]
+!54 = metadata !{i32 786454, metadata !1, null, metadata !"FILE", i32 48, i64 0, i64 0, i64 0, i32 0, metadata !55} ; [ DW_TAG_typedef ] [FILE] [line 48, size 0, align 0, offset 0] [from _IO_FILE]
+!55 = metadata !{i32 786451, metadata !56, null, metadata !"_IO_FILE", i32 245, i64 1728, i64 64, i32 0, i32 0, null, metadata !57, i32 0, null, null} ; [ DW_TAG_structure_type ] [_IO_FILE] [line 245, size 1728, align 64, offset 0] [from ]
+!56 = metadata !{metadata !"/usr/include/libio.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!57 = metadata !{metadata !58, metadata !59, metadata !61, metadata !62, metadata !63, metadata !64, metadata !65, metadata !66, metadata !67, metadata !68, metadata !69, metadata !70, metadata !71, metadata !79, metadata !80, metadata !81, metadata !82, metadata !85, metadata !87, metadata !89, metadata !93, metadata !94, metadata !96, metadata !97, metadata !98, metadata !99, metadata !100, metadata !101, metadata !102}
+!58 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_flags", i32 246, i64 32, i64 32, i64 0, i32 0, metadata !52} ; [ DW_TAG_member ] [_flags] [line 246, size 32, align 32, offset 0] [from int]
+!59 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_read_ptr", i32 251, i64 64, i64 64, i64 64, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_read_ptr] [line 251, size 64, align 64, offset 64] [from ]
+!60 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !25} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!61 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_read_end", i32 252, i64 64, i64 64, i64 128, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_read_end] [line 252, size 64, align 64, offset 128] [from ]
+!62 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_read_base", i32 253, i64 64, i64 64, i64 192, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_read_base] [line 253, size 64, align 64, offset 192] [from ]
+!63 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_write_base", i32 254, i64 64, i64 64, i64 256, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_write_base] [line 254, size 64, align 64, offset 256] [from ]
+!64 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_write_ptr", i32 255, i64 64, i64 64, i64 320, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_write_ptr] [line 255, size 64, align 64, offset 320] [from ]
+!65 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_write_end", i32 256, i64 64, i64 64, i64 384, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_write_end] [line 256, size 64, align 64, offset 384] [from ]
+!66 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_buf_base", i32 257, i64 64, i64 64, i64 448, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_buf_base] [line 257, size 64, align 64, offset 448] [from ]
+!67 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_buf_end", i32 258, i64 64, i64 64, i64 512, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_buf_end] [line 258, size 64, align 64, offset 512] [from ]
+!68 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_save_base", i32 260, i64 64, i64 64, i64 576, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_save_base] [line 260, size 64, align 64, offset 576] [from ]
+!69 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_backup_base", i32 261, i64 64, i64 64, i64 640, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_backup_base] [line 261, size 64, align 64, offset 640] [from ]
+!70 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_IO_save_end", i32 262, i64 64, i64 64, i64 704, i32 0, metadata !60} ; [ DW_TAG_member ] [_IO_save_end] [line 262, size 64, align 64, offset 704] [from ]
+!71 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_markers", i32 264, i64 64, i64 64, i64 768, i32 0, metadata !72} ; [ DW_TAG_member ] [_markers] [line 264, size 64, align 64, offset 768] [from ]
+!72 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !73} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from _IO_marker]
+!73 = metadata !{i32 786451, metadata !56, null, metadata !"_IO_marker", i32 160, i64 192, i64 64, i32 0, i32 0, null, metadata !74, i32 0, null, null} ; [ DW_TAG_structure_type ] [_IO_marker] [line 160, size 192, align 64, offset 0] [from ]
+!74 = metadata !{metadata !75, metadata !76, metadata !78}
+!75 = metadata !{i32 786445, metadata !56, metadata !73, metadata !"_next", i32 161, i64 64, i64 64, i64 0, i32 0, metadata !72} ; [ DW_TAG_member ] [_next] [line 161, size 64, align 64, offset 0] [from ]
+!76 = metadata !{i32 786445, metadata !56, metadata !73, metadata !"_sbuf", i32 162, i64 64, i64 64, i64 64, i32 0, metadata !77} ; [ DW_TAG_member ] [_sbuf] [line 162, size 64, align 64, offset 64] [from ]
+!77 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !55} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from _IO_FILE]
+!78 = metadata !{i32 786445, metadata !56, metadata !73, metadata !"_pos", i32 166, i64 32, i64 32, i64 128, i32 0, metadata !52} ; [ DW_TAG_member ] [_pos] [line 166, size 32, align 32, offset 128] [from int]
+!79 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_chain", i32 266, i64 64, i64 64, i64 832, i32 0, metadata !77} ; [ DW_TAG_member ] [_chain] [line 266, size 64, align 64, offset 832] [from ]
+!80 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_fileno", i32 268, i64 32, i64 32, i64 896, i32 0, metadata !52} ; [ DW_TAG_member ] [_fileno] [line 268, size 32, align 32, offset 896] [from int]
+!81 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_flags2", i32 272, i64 32, i64 32, i64 928, i32 0, metadata !52} ; [ DW_TAG_member ] [_flags2] [line 272, size 32, align 32, offset 928] [from int]
+!82 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_old_offset", i32 274, i64 64, i64 64, i64 960, i32 0, metadata !83} ; [ DW_TAG_member ] [_old_offset] [line 274, size 64, align 64, offset 960] [from __off_t]
+!83 = metadata !{i32 786454, metadata !56, null, metadata !"__off_t", i32 131, i64 0, i64 0, i64 0, i32 0, metadata !84} ; [ DW_TAG_typedef ] [__off_t] [line 131, size 0, align 0, offset 0] [from long int]
+!84 = metadata !{i32 786468, null, null, metadata !"long int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [long int] [line 0, size 64, align 64, offset 0, enc DW_ATE_signed]
+!85 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_cur_column", i32 278, i64 16, i64 16, i64 1024, i32 0, metadata !86} ; [ DW_TAG_member ] [_cur_column] [line 278, size 16, align 16, offset 1024] [from unsigned short]
+!86 = metadata !{i32 786468, null, null, metadata !"unsigned short", i32 0, i64 16, i64 16, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned short] [line 0, size 16, align 16, offset 0, enc DW_ATE_unsigned]
+!87 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_vtable_offset", i32 279, i64 8, i64 8, i64 1040, i32 0, metadata !88} ; [ DW_TAG_member ] [_vtable_offset] [line 279, size 8, align 8, offset 1040] [from signed char]
+!88 = metadata !{i32 786468, null, null, metadata !"signed char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [signed char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!89 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_shortbuf", i32 280, i64 8, i64 8, i64 1048, i32 0, metadata !90} ; [ DW_TAG_member ] [_shortbuf] [line 280, size 8, align 8, offset 1048] [from ]
+!90 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 8, i64 8, i32 0, i32 0, metadata !25, metadata !91, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 8, align 8, offset 0] [from char]
+!91 = metadata !{metadata !92}
+!92 = metadata !{i32 786465, i64 0, i64 1}        ; [ DW_TAG_subrange_type ] [0, 0]
+!93 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_lock", i32 284, i64 64, i64 64, i64 1088, i32 0, metadata !33} ; [ DW_TAG_member ] [_lock] [line 284, size 64, align 64, offset 1088] [from ]
+!94 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_offset", i32 293, i64 64, i64 64, i64 1152, i32 0, metadata !95} ; [ DW_TAG_member ] [_offset] [line 293, size 64, align 64, offset 1152] [from __off64_t]
+!95 = metadata !{i32 786454, metadata !56, null, metadata !"__off64_t", i32 132, i64 0, i64 0, i64 0, i32 0, metadata !84} ; [ DW_TAG_typedef ] [__off64_t] [line 132, size 0, align 0, offset 0] [from long int]
+!96 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"__pad1", i32 302, i64 64, i64 64, i64 1216, i32 0, metadata !33} ; [ DW_TAG_member ] [__pad1] [line 302, size 64, align 64, offset 1216] [from ]
+!97 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"__pad2", i32 303, i64 64, i64 64, i64 1280, i32 0, metadata !33} ; [ DW_TAG_member ] [__pad2] [line 303, size 64, align 64, offset 1280] [from ]
+!98 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"__pad3", i32 304, i64 64, i64 64, i64 1344, i32 0, metadata !33} ; [ DW_TAG_member ] [__pad3] [line 304, size 64, align 64, offset 1344] [from ]
+!99 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"__pad4", i32 305, i64 64, i64 64, i64 1408, i32 0, metadata !33} ; [ DW_TAG_member ] [__pad4] [line 305, size 64, align 64, offset 1408] [from ]
+!100 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"__pad5", i32 306, i64 64, i64 64, i64 1472, i32 0, metadata !47} ; [ DW_TAG_member ] [__pad5] [line 306, size 64, align 64, offset 1472] [from size_t]
+!101 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_mode", i32 308, i64 32, i64 32, i64 1536, i32 0, metadata !52} ; [ DW_TAG_member ] [_mode] [line 308, size 32, align 32, offset 1536] [from int]
+!102 = metadata !{i32 786445, metadata !56, metadata !55, metadata !"_unused2", i32 310, i64 160, i64 8, i64 1568, i32 0, metadata !103} ; [ DW_TAG_member ] [_unused2] [line 310, size 160, align 8, offset 1568] [from ]
+!103 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 160, i64 8, i32 0, i32 0, metadata !25, metadata !104, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 160, align 8, offset 0] [from char]
+!104 = metadata !{metadata !105}
+!105 = metadata !{i32 786465, i64 0, i64 20}      ; [ DW_TAG_subrange_type ] [0, 19]
+!106 = metadata !{metadata !107, metadata !108, metadata !109, metadata !110, metadata !114, metadata !115}
+!107 = metadata !{i32 786689, metadata !49, metadata !"stream", metadata !5, i32 16777347, metadata !53, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [stream] [line 131]
+!108 = metadata !{i32 786689, metadata !49, metadata !"resblock", metadata !5, i32 33554564, metadata !33, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [resblock] [line 132]
+!109 = metadata !{i32 786688, metadata !49, metadata !"ctx", metadata !5, i32 136, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [ctx] [line 136]
+!110 = metadata !{i32 786688, metadata !49, metadata !"buffer", metadata !5, i32 137, metadata !111, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [buffer] [line 137]
+!111 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 33344, i64 8, i32 0, i32 0, metadata !25, metadata !112, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 33344, align 8, offset 0] [from char]
+!112 = metadata !{metadata !113}
+!113 = metadata !{i32 786465, i64 0, i64 4168}    ; [ DW_TAG_subrange_type ] [0, 4167]
+!114 = metadata !{i32 786688, metadata !49, metadata !"sum", metadata !5, i32 138, metadata !47, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sum] [line 138]
+!115 = metadata !{i32 786688, metadata !116, metadata !"n", metadata !5, i32 149, metadata !47, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [n] [line 149]
+!116 = metadata !{i32 786443, metadata !1, metadata !49, i32 145, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!117 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"md5_buffer", metadata !"md5_buffer", metadata !"", i32 187, metadata !118, i1 false, i1 true, i32 0, i32 0, null, i32 0, i1 true, i8* (i8*, i64, i8*)* @md5_buffer, null, null, metadata !122, i32 191} ; [ DW_TAG_subprogram ] [line 187] [def] [scope 191] [md5_buffer]
+!118 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !119, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!119 = metadata !{metadata !33, metadata !120, metadata !47, metadata !33}
+!120 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !121} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!121 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !25} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!122 = metadata !{metadata !123, metadata !124, metadata !125, metadata !126}
+!123 = metadata !{i32 786689, metadata !117, metadata !"buffer", metadata !5, i32 16777404, metadata !120, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [buffer] [line 188]
+!124 = metadata !{i32 786689, metadata !117, metadata !"len", metadata !5, i32 33554621, metadata !47, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [len] [line 189]
+!125 = metadata !{i32 786689, metadata !117, metadata !"resblock", metadata !5, i32 50331838, metadata !33, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [resblock] [line 190]
+!126 = metadata !{i32 786688, metadata !117, metadata !"ctx", metadata !5, i32 192, metadata !9, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [ctx] [line 192]
+!127 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"md5_process_bytes", metadata !"md5_process_bytes", metadata !"", i32 206, metadata !128, i1 false, i1 true, i32 0, i32 0, null, i32 0, i1 true, void (i8*, i64, %struct.md5_ctx*)* @md5_process_bytes, null, null, metadata !132, i32 210} ; [ DW_TAG_subprogram ] [line 206] [def] [scope 210] [md5_process_bytes]
+!128 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !129, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!129 = metadata !{null, metadata !130, metadata !47, metadata !8}
+!130 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !131} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!131 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from ]
+!132 = metadata !{metadata !133, metadata !134, metadata !135, metadata !136, metadata !138}
+!133 = metadata !{i32 786689, metadata !127, metadata !"buffer", metadata !5, i32 16777423, metadata !130, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [buffer] [line 207]
+!134 = metadata !{i32 786689, metadata !127, metadata !"len", metadata !5, i32 33554640, metadata !47, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [len] [line 208]
+!135 = metadata !{i32 786689, metadata !127, metadata !"ctx", metadata !5, i32 50331857, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ctx] [line 209]
+!136 = metadata !{i32 786688, metadata !137, metadata !"left_over", metadata !5, i32 215, metadata !47, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [left_over] [line 215]
+!137 = metadata !{i32 786443, metadata !1, metadata !127, i32 214, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!138 = metadata !{i32 786688, metadata !137, metadata !"add", metadata !5, i32 216, metadata !47, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [add] [line 216]
+!139 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"md5_process_block", metadata !"md5_process_block", metadata !"", i32 264, metadata !128, i1 false, i1 true, i32 0, i32 0, null, i32 0, i1 true, void (i8*, i64, %struct.md5_ctx*)* @md5_process_block, null, null, metadata !140, i32 268} ; [ DW_TAG_subprogram ] [line 264] [def] [scope 268] [md5_process_block]
+!140 = metadata !{metadata !141, metadata !142, metadata !143, metadata !144, metadata !148, metadata !151, metadata !152, metadata !153, metadata !154, metadata !155, metadata !156, metadata !157, metadata !160, metadata !161, metadata !162, metadata !163}
+!141 = metadata !{i32 786689, metadata !139, metadata !"buffer", metadata !5, i32 16777481, metadata !130, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [buffer] [line 265]
+!142 = metadata !{i32 786689, metadata !139, metadata !"len", metadata !5, i32 33554698, metadata !47, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [len] [line 266]
+!143 = metadata !{i32 786689, metadata !139, metadata !"ctx", metadata !5, i32 50331915, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ctx] [line 267]
+!144 = metadata !{i32 786688, metadata !139, metadata !"correct_words", metadata !5, i32 269, metadata !145, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [correct_words] [line 269]
+!145 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 512, i64 32, i32 0, i32 0, metadata !13, metadata !146, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 512, align 32, offset 0] [from md5_uint32]
+!146 = metadata !{metadata !147}
+!147 = metadata !{i32 786465, i64 0, i64 16}      ; [ DW_TAG_subrange_type ] [0, 15]
+!148 = metadata !{i32 786688, metadata !139, metadata !"words", metadata !5, i32 270, metadata !149, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [words] [line 270]
+!149 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !150} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!150 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !13} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from md5_uint32]
+!151 = metadata !{i32 786688, metadata !139, metadata !"nwords", metadata !5, i32 271, metadata !47, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [nwords] [line 271]
+!152 = metadata !{i32 786688, metadata !139, metadata !"endp", metadata !5, i32 272, metadata !149, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [endp] [line 272]
+!153 = metadata !{i32 786688, metadata !139, metadata !"A", metadata !5, i32 273, metadata !13, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [A] [line 273]
+!154 = metadata !{i32 786688, metadata !139, metadata !"B", metadata !5, i32 274, metadata !13, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [B] [line 274]
+!155 = metadata !{i32 786688, metadata !139, metadata !"C", metadata !5, i32 275, metadata !13, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [C] [line 275]
+!156 = metadata !{i32 786688, metadata !139, metadata !"D", metadata !5, i32 276, metadata !13, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [D] [line 276]
+!157 = metadata !{i32 786688, metadata !158, metadata !"cwp", metadata !5, i32 289, metadata !159, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cwp] [line 289]
+!158 = metadata !{i32 786443, metadata !1, metadata !139, i32 288, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!159 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !13} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from md5_uint32]
+!160 = metadata !{i32 786688, metadata !158, metadata !"A_save", metadata !5, i32 290, metadata !13, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [A_save] [line 290]
+!161 = metadata !{i32 786688, metadata !158, metadata !"B_save", metadata !5, i32 291, metadata !13, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [B_save] [line 291]
+!162 = metadata !{i32 786688, metadata !158, metadata !"C_save", metadata !5, i32 292, metadata !13, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [C_save] [line 292]
+!163 = metadata !{i32 786688, metadata !158, metadata !"D_save", metadata !5, i32 293, metadata !13, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [D_save] [line 293]
+!164 = metadata !{metadata !165}
+!165 = metadata !{i32 786484, i32 0, null, metadata !"fillbuf", metadata !"fillbuf", metadata !"", metadata !5, i32 57, metadata !166, i32 1, i32 1, [64 x i8]* @fillbuf, null} ; [ DW_TAG_variable ] [fillbuf] [line 57] [local] [def]
+!166 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 512, i64 8, i32 0, i32 0, metadata !167, metadata !169, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 512, align 8, offset 0] [from ]
+!167 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !168} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from unsigned char]
+!168 = metadata !{i32 786468, null, null, metadata !"unsigned char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 8} ; [ DW_TAG_base_type ] [unsigned char] [line 0, size 8, align 8, offset 0, enc DW_ATE_unsigned_char]
+!169 = metadata !{metadata !170}
+!170 = metadata !{i32 786465, i64 0, i64 64}      ; [ DW_TAG_subrange_type ] [0, 63]
+!171 = metadata !{i32 64, i32 0, metadata !4, null}
+!172 = metadata !{i32 66, i32 0, metadata !4, null}
+!173 = metadata !{metadata !"int", metadata !174}
+!174 = metadata !{metadata !"omnipotent char", metadata !175}
+!175 = metadata !{metadata !"Simple C/C++ TBAA"}
+!176 = metadata !{i32 67, i32 0, metadata !4, null}
+!177 = metadata !{i32 68, i32 0, metadata !4, null}
+!178 = metadata !{i32 69, i32 0, metadata !4, null}
+!179 = metadata !{i32 71, i32 0, metadata !4, null}
+!180 = metadata !{i32 72, i32 0, metadata !4, null}
+!181 = metadata !{i32 73, i32 0, metadata !4, null}
+!182 = metadata !{i32 82, i32 0, metadata !30, null}
+!183 = metadata !{i32 83, i32 0, metadata !30, null}
+!184 = metadata !{i32 85, i32 0, metadata !30, null}
+!185 = metadata !{i32 86, i32 0, metadata !30, null}
+!186 = metadata !{i32 87, i32 0, metadata !30, null}
+!187 = metadata !{i32 88, i32 0, metadata !30, null}
+!188 = metadata !{i32 90, i32 0, metadata !30, null}
+!189 = metadata !{i32 100, i32 0, metadata !39, null}
+!190 = metadata !{i32 101, i32 0, metadata !39, null}
+!191 = metadata !{i32 104, i32 0, metadata !39, null}
+!192 = metadata !{i32 108, i32 0, metadata !39, null}
+!193 = metadata !{i32 109, i32 0, metadata !39, null}
+!194 = metadata !{i32 110, i32 0, metadata !39, null}
+!195 = metadata !{i32 112, i32 0, metadata !39, null}
+!196 = metadata !{i32 113, i32 0, metadata !39, null}
+!197 = metadata !{i32 116, i32 0, metadata !39, null}
+!198 = metadata !{i32 117, i32 0, metadata !39, null}
+!199 = metadata !{i32 121, i32 0, metadata !39, null}
+!200 = metadata !{i32 786689, metadata !30, metadata !"ctx", metadata !5, i32 16777298, metadata !34, i32 0, metadata !201} ; [ DW_TAG_arg_variable ] [ctx] [line 82]
+!201 = metadata !{i32 123, i32 0, metadata !39, null}
+!202 = metadata !{i32 82, i32 0, metadata !30, metadata !201}
+!203 = metadata !{i32 786689, metadata !30, metadata !"resbuf", metadata !5, i32 33554515, metadata !33, i32 0, metadata !201} ; [ DW_TAG_arg_variable ] [resbuf] [line 83]
+!204 = metadata !{i32 83, i32 0, metadata !30, metadata !201}
+!205 = metadata !{i32 85, i32 0, metadata !30, metadata !201}
+!206 = metadata !{i32 86, i32 0, metadata !30, metadata !201}
+!207 = metadata !{i32 87, i32 0, metadata !30, metadata !201}
+!208 = metadata !{i32 88, i32 0, metadata !30, metadata !201}
+!209 = metadata !{i32 265, i32 0, metadata !139, null}
+!210 = metadata !{i32 266, i32 0, metadata !139, null}
+!211 = metadata !{i32 267, i32 0, metadata !139, null}
+!212 = metadata !{[16 x i32]* undef}
+!213 = metadata !{i32 269, i32 0, metadata !139, null}
+!214 = metadata !{i32 270, i32 0, metadata !139, null}
+!215 = metadata !{i32 271, i32 0, metadata !139, null}
+!216 = metadata !{i32 272, i32 0, metadata !139, null}
+!217 = metadata !{i32 273, i32 0, metadata !139, null}
+!218 = metadata !{i32 274, i32 0, metadata !139, null}
+!219 = metadata !{i32 275, i32 0, metadata !139, null}
+!220 = metadata !{i32 276, i32 0, metadata !139, null}
+!221 = metadata !{i32 281, i32 0, metadata !139, null}
+!222 = metadata !{i32 282, i32 0, metadata !139, null}
+!223 = metadata !{i32 283, i32 0, metadata !139, null}
+!224 = metadata !{i32 287, i32 0, metadata !139, null}
+!225 = metadata !{i32* undef}
+!226 = metadata !{i32 289, i32 0, metadata !158, null}
+!227 = metadata !{i32 290, i32 0, metadata !158, null}
+!228 = metadata !{i32 291, i32 0, metadata !158, null}
+!229 = metadata !{i32 292, i32 0, metadata !158, null}
+!230 = metadata !{i32 293, i32 0, metadata !158, null}
+!231 = metadata !{i32 323, i32 0, metadata !232, null}
+!232 = metadata !{i32 786443, metadata !1, metadata !158, i32 323, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!233 = metadata !{i32 324, i32 0, metadata !234, null}
+!234 = metadata !{i32 786443, metadata !1, metadata !158, i32 324, i32 0, i32 8} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!235 = metadata !{i32 325, i32 0, metadata !236, null}
+!236 = metadata !{i32 786443, metadata !1, metadata !158, i32 325, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!237 = metadata !{i32 326, i32 0, metadata !238, null}
+!238 = metadata !{i32 786443, metadata !1, metadata !158, i32 326, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!239 = metadata !{i32 327, i32 0, metadata !240, null}
+!240 = metadata !{i32 786443, metadata !1, metadata !158, i32 327, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!241 = metadata !{i32 328, i32 0, metadata !242, null}
+!242 = metadata !{i32 786443, metadata !1, metadata !158, i32 328, i32 0, i32 12} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!243 = metadata !{i32 329, i32 0, metadata !244, null}
+!244 = metadata !{i32 786443, metadata !1, metadata !158, i32 329, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!245 = metadata !{i32 330, i32 0, metadata !246, null}
+!246 = metadata !{i32 786443, metadata !1, metadata !158, i32 330, i32 0, i32 14} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!247 = metadata !{i32 331, i32 0, metadata !248, null}
+!248 = metadata !{i32 786443, metadata !1, metadata !158, i32 331, i32 0, i32 15} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!249 = metadata !{i32 332, i32 0, metadata !250, null}
+!250 = metadata !{i32 786443, metadata !1, metadata !158, i32 332, i32 0, i32 16} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!251 = metadata !{i32 333, i32 0, metadata !252, null}
+!252 = metadata !{i32 786443, metadata !1, metadata !158, i32 333, i32 0, i32 17} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!253 = metadata !{i32 334, i32 0, metadata !254, null}
+!254 = metadata !{i32 786443, metadata !1, metadata !158, i32 334, i32 0, i32 18} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!255 = metadata !{i32 335, i32 0, metadata !256, null}
+!256 = metadata !{i32 786443, metadata !1, metadata !158, i32 335, i32 0, i32 19} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!257 = metadata !{i32 336, i32 0, metadata !258, null}
+!258 = metadata !{i32 786443, metadata !1, metadata !158, i32 336, i32 0, i32 20} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!259 = metadata !{i32 337, i32 0, metadata !260, null}
+!260 = metadata !{i32 786443, metadata !1, metadata !158, i32 337, i32 0, i32 21} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!261 = metadata !{i32 338, i32 0, metadata !262, null}
+!262 = metadata !{i32 786443, metadata !1, metadata !158, i32 338, i32 0, i32 22} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!263 = metadata !{i32 354, i32 0, metadata !264, null}
+!264 = metadata !{i32 786443, metadata !1, metadata !158, i32 354, i32 0, i32 23} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!265 = metadata !{i32 355, i32 0, metadata !266, null}
+!266 = metadata !{i32 786443, metadata !1, metadata !158, i32 355, i32 0, i32 24} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!267 = metadata !{i32 356, i32 0, metadata !268, null}
+!268 = metadata !{i32 786443, metadata !1, metadata !158, i32 356, i32 0, i32 25} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!269 = metadata !{i32 357, i32 0, metadata !270, null}
+!270 = metadata !{i32 786443, metadata !1, metadata !158, i32 357, i32 0, i32 26} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!271 = metadata !{i32 358, i32 0, metadata !272, null}
+!272 = metadata !{i32 786443, metadata !1, metadata !158, i32 358, i32 0, i32 27} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!273 = metadata !{i32 359, i32 0, metadata !274, null}
+!274 = metadata !{i32 786443, metadata !1, metadata !158, i32 359, i32 0, i32 28} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!275 = metadata !{i32 360, i32 0, metadata !276, null}
+!276 = metadata !{i32 786443, metadata !1, metadata !158, i32 360, i32 0, i32 29} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!277 = metadata !{i32 361, i32 0, metadata !278, null}
+!278 = metadata !{i32 786443, metadata !1, metadata !158, i32 361, i32 0, i32 30} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!279 = metadata !{i32 362, i32 0, metadata !280, null}
+!280 = metadata !{i32 786443, metadata !1, metadata !158, i32 362, i32 0, i32 31} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!281 = metadata !{i32 363, i32 0, metadata !282, null}
+!282 = metadata !{i32 786443, metadata !1, metadata !158, i32 363, i32 0, i32 32} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!283 = metadata !{i32 364, i32 0, metadata !284, null}
+!284 = metadata !{i32 786443, metadata !1, metadata !158, i32 364, i32 0, i32 33} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!285 = metadata !{i32 365, i32 0, metadata !286, null}
+!286 = metadata !{i32 786443, metadata !1, metadata !158, i32 365, i32 0, i32 34} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!287 = metadata !{i32 366, i32 0, metadata !288, null}
+!288 = metadata !{i32 786443, metadata !1, metadata !158, i32 366, i32 0, i32 35} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!289 = metadata !{i32 367, i32 0, metadata !290, null}
+!290 = metadata !{i32 786443, metadata !1, metadata !158, i32 367, i32 0, i32 36} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!291 = metadata !{i32 368, i32 0, metadata !292, null}
+!292 = metadata !{i32 786443, metadata !1, metadata !158, i32 368, i32 0, i32 37} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!293 = metadata !{i32 369, i32 0, metadata !294, null}
+!294 = metadata !{i32 786443, metadata !1, metadata !158, i32 369, i32 0, i32 38} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!295 = metadata !{i32 372, i32 0, metadata !296, null}
+!296 = metadata !{i32 786443, metadata !1, metadata !158, i32 372, i32 0, i32 39} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!297 = metadata !{i32 373, i32 0, metadata !298, null}
+!298 = metadata !{i32 786443, metadata !1, metadata !158, i32 373, i32 0, i32 40} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!299 = metadata !{i32 374, i32 0, metadata !300, null}
+!300 = metadata !{i32 786443, metadata !1, metadata !158, i32 374, i32 0, i32 41} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!301 = metadata !{i32 375, i32 0, metadata !302, null}
+!302 = metadata !{i32 786443, metadata !1, metadata !158, i32 375, i32 0, i32 42} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!303 = metadata !{i32 376, i32 0, metadata !304, null}
+!304 = metadata !{i32 786443, metadata !1, metadata !158, i32 376, i32 0, i32 43} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!305 = metadata !{i32 377, i32 0, metadata !306, null}
+!306 = metadata !{i32 786443, metadata !1, metadata !158, i32 377, i32 0, i32 44} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!307 = metadata !{i32 378, i32 0, metadata !308, null}
+!308 = metadata !{i32 786443, metadata !1, metadata !158, i32 378, i32 0, i32 45} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!309 = metadata !{i32 379, i32 0, metadata !310, null}
+!310 = metadata !{i32 786443, metadata !1, metadata !158, i32 379, i32 0, i32 46} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!311 = metadata !{i32 380, i32 0, metadata !312, null}
+!312 = metadata !{i32 786443, metadata !1, metadata !158, i32 380, i32 0, i32 47} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!313 = metadata !{i32 381, i32 0, metadata !314, null}
+!314 = metadata !{i32 786443, metadata !1, metadata !158, i32 381, i32 0, i32 48} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!315 = metadata !{i32 382, i32 0, metadata !316, null}
+!316 = metadata !{i32 786443, metadata !1, metadata !158, i32 382, i32 0, i32 49} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!317 = metadata !{i32 383, i32 0, metadata !318, null}
+!318 = metadata !{i32 786443, metadata !1, metadata !158, i32 383, i32 0, i32 50} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!319 = metadata !{i32 384, i32 0, metadata !320, null}
+!320 = metadata !{i32 786443, metadata !1, metadata !158, i32 384, i32 0, i32 51} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!321 = metadata !{i32 385, i32 0, metadata !322, null}
+!322 = metadata !{i32 786443, metadata !1, metadata !158, i32 385, i32 0, i32 52} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!323 = metadata !{i32 386, i32 0, metadata !324, null}
+!324 = metadata !{i32 786443, metadata !1, metadata !158, i32 386, i32 0, i32 53} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!325 = metadata !{i32 387, i32 0, metadata !326, null}
+!326 = metadata !{i32 786443, metadata !1, metadata !158, i32 387, i32 0, i32 54} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!327 = metadata !{i32 390, i32 0, metadata !328, null}
+!328 = metadata !{i32 786443, metadata !1, metadata !158, i32 390, i32 0, i32 55} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!329 = metadata !{i32 391, i32 0, metadata !330, null}
+!330 = metadata !{i32 786443, metadata !1, metadata !158, i32 391, i32 0, i32 56} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!331 = metadata !{i32 392, i32 0, metadata !332, null}
+!332 = metadata !{i32 786443, metadata !1, metadata !158, i32 392, i32 0, i32 57} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!333 = metadata !{i32 393, i32 0, metadata !334, null}
+!334 = metadata !{i32 786443, metadata !1, metadata !158, i32 393, i32 0, i32 58} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!335 = metadata !{i32 394, i32 0, metadata !336, null}
+!336 = metadata !{i32 786443, metadata !1, metadata !158, i32 394, i32 0, i32 59} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!337 = metadata !{i32 395, i32 0, metadata !338, null}
+!338 = metadata !{i32 786443, metadata !1, metadata !158, i32 395, i32 0, i32 60} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!339 = metadata !{i32 396, i32 0, metadata !340, null}
+!340 = metadata !{i32 786443, metadata !1, metadata !158, i32 396, i32 0, i32 61} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!341 = metadata !{i32 397, i32 0, metadata !342, null}
+!342 = metadata !{i32 786443, metadata !1, metadata !158, i32 397, i32 0, i32 62} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!343 = metadata !{i32 398, i32 0, metadata !344, null}
+!344 = metadata !{i32 786443, metadata !1, metadata !158, i32 398, i32 0, i32 63} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!345 = metadata !{i32 399, i32 0, metadata !346, null}
+!346 = metadata !{i32 786443, metadata !1, metadata !158, i32 399, i32 0, i32 64} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!347 = metadata !{i32 400, i32 0, metadata !348, null}
+!348 = metadata !{i32 786443, metadata !1, metadata !158, i32 400, i32 0, i32 65} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!349 = metadata !{i32 401, i32 0, metadata !350, null}
+!350 = metadata !{i32 786443, metadata !1, metadata !158, i32 401, i32 0, i32 66} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!351 = metadata !{i32 402, i32 0, metadata !352, null}
+!352 = metadata !{i32 786443, metadata !1, metadata !158, i32 402, i32 0, i32 67} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!353 = metadata !{i32 403, i32 0, metadata !354, null}
+!354 = metadata !{i32 786443, metadata !1, metadata !158, i32 403, i32 0, i32 68} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!355 = metadata !{i32 404, i32 0, metadata !356, null}
+!356 = metadata !{i32 786443, metadata !1, metadata !158, i32 404, i32 0, i32 69} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!357 = metadata !{i32 405, i32 0, metadata !358, null}
+!358 = metadata !{i32 786443, metadata !1, metadata !158, i32 405, i32 0, i32 70} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!359 = metadata !{i32 408, i32 0, metadata !158, null}
+!360 = metadata !{i32 409, i32 0, metadata !158, null}
+!361 = metadata !{i32 410, i32 0, metadata !158, null}
+!362 = metadata !{i32 411, i32 0, metadata !158, null}
+!363 = metadata !{i32 415, i32 0, metadata !139, null}
+!364 = metadata !{i32 416, i32 0, metadata !139, null}
+!365 = metadata !{i32 417, i32 0, metadata !139, null}
+!366 = metadata !{i32 418, i32 0, metadata !139, null}
+!367 = metadata !{i32 419, i32 0, metadata !139, null}
+!368 = metadata !{i32 131, i32 0, metadata !49, null}
+!369 = metadata !{i32 132, i32 0, metadata !49, null}
+!370 = metadata !{i32 136, i32 0, metadata !49, null}
+!371 = metadata !{i32 137, i32 0, metadata !49, null}
+!372 = metadata !{i32 786689, metadata !4, metadata !"ctx", metadata !5, i32 16777280, metadata !8, i32 0, metadata !373} ; [ DW_TAG_arg_variable ] [ctx] [line 64]
+!373 = metadata !{i32 141, i32 0, metadata !49, null}
+!374 = metadata !{i32 64, i32 0, metadata !4, metadata !373}
+!375 = metadata !{i32 66, i32 0, metadata !4, metadata !373}
+!376 = metadata !{i32 67, i32 0, metadata !4, metadata !373}
+!377 = metadata !{i32 68, i32 0, metadata !4, metadata !373}
+!378 = metadata !{i32 69, i32 0, metadata !4, metadata !373}
+!379 = metadata !{i32 71, i32 0, metadata !4, metadata !373}
+!380 = metadata !{i32 72, i32 0, metadata !4, metadata !373}
+!381 = metadata !{i32 144, i32 0, metadata !49, null}
+!382 = metadata !{i32 155, i32 0, metadata !383, null}
+!383 = metadata !{i32 786443, metadata !1, metadata !116, i32 154, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!384 = metadata !{i32 157, i32 0, metadata !383, null}
+!385 = metadata !{i32 158, i32 0, metadata !383, null}
+!386 = metadata !{i32 160, i32 0, metadata !116, null}
+!387 = metadata !{i32 170, i32 0, metadata !116, null}
+!388 = metadata !{i32 171, i32 0, metadata !116, null}
+!389 = metadata !{i32 174, i32 0, metadata !49, null}
+!390 = metadata !{i32 175, i32 0, metadata !49, null}
+!391 = metadata !{i32 178, i32 0, metadata !49, null}
+!392 = metadata !{i32 179, i32 0, metadata !49, null}
+!393 = metadata !{i32 180, i32 0, metadata !49, null}
+!394 = metadata !{i32 207, i32 0, metadata !127, null}
+!395 = metadata !{i32 208, i32 0, metadata !127, null}
+!396 = metadata !{i32 209, i32 0, metadata !127, null}
+!397 = metadata !{i32 213, i32 0, metadata !127, null}
+!398 = metadata !{i32 215, i32 0, metadata !137, null}
+!399 = metadata !{i32 216, i32 0, metadata !137, null}
+!400 = metadata !{i32 218, i32 0, metadata !137, null}
+!401 = metadata !{i32 219, i32 0, metadata !137, null}
+!402 = metadata !{i32 221, i32 0, metadata !137, null}
+!403 = metadata !{i32 223, i32 0, metadata !404, null}
+!404 = metadata !{i32 786443, metadata !1, metadata !137, i32 222, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!405 = metadata !{i32 225, i32 0, metadata !404, null}
+!406 = metadata !{i32 227, i32 0, metadata !404, null}
+!407 = metadata !{i32 228, i32 0, metadata !404, null}
+!408 = metadata !{i32 230, i32 0, metadata !137, null}
+!409 = metadata !{i32 231, i32 0, metadata !137, null}
+!410 = metadata !{i32 232, i32 0, metadata !137, null}
+!411 = metadata !{i32 235, i32 0, metadata !127, null}
+!412 = metadata !{i32 237, i32 0, metadata !413, null}
+!413 = metadata !{i32 786443, metadata !1, metadata !127, i32 236, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!414 = metadata !{i32 238, i32 0, metadata !413, null}
+!415 = metadata !{i32 239, i32 0, metadata !413, null}
+!416 = metadata !{i32 240, i32 0, metadata !413, null}
+!417 = metadata !{i32 243, i32 0, metadata !127, null}
+!418 = metadata !{i32 245, i32 0, metadata !419, null}
+!419 = metadata !{i32 786443, metadata !1, metadata !127, i32 244, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/md5.c]
+!420 = metadata !{i32 246, i32 0, metadata !419, null}
+!421 = metadata !{i32 247, i32 0, metadata !419, null}
+!422 = metadata !{i32 248, i32 0, metadata !127, null}
+!423 = metadata !{i32 188, i32 0, metadata !117, null}
+!424 = metadata !{i32 189, i32 0, metadata !117, null}
+!425 = metadata !{i32 190, i32 0, metadata !117, null}
+!426 = metadata !{i32 192, i32 0, metadata !117, null}
+!427 = metadata !{i32 786689, metadata !4, metadata !"ctx", metadata !5, i32 16777280, metadata !8, i32 0, metadata !428} ; [ DW_TAG_arg_variable ] [ctx] [line 64]
+!428 = metadata !{i32 195, i32 0, metadata !117, null}
+!429 = metadata !{i32 64, i32 0, metadata !4, metadata !428}
+!430 = metadata !{i32 66, i32 0, metadata !4, metadata !428}
+!431 = metadata !{i32 67, i32 0, metadata !4, metadata !428}
+!432 = metadata !{i32 68, i32 0, metadata !4, metadata !428}
+!433 = metadata !{i32 69, i32 0, metadata !4, metadata !428}
+!434 = metadata !{i32 71, i32 0, metadata !4, metadata !428}
+!435 = metadata !{i32 72, i32 0, metadata !4, metadata !428}
+!436 = metadata !{i32 198, i32 0, metadata !117, null}
+!437 = metadata !{i32 201, i32 0, metadata !117, null}
+!438 = metadata !{i32 202, i32 0, metadata !117, null}

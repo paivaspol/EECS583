@@ -1,16 +1,17 @@
 define void @Lock_setDefaultFields(%struct._Lock* %lock) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Lock* %lock, i64 0, metadata !28, metadata !43), !dbg !54
-  %1 = icmp eq %struct._Lock* %lock, null, !dbg !55
-  br i1 %1, label %2, label %5, !dbg !57
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Lock* %lock}, i64 0, metadata !24), !dbg !40
+  %cmp = icmp eq %struct._Lock* %lock, null, !dbg !41
+  br i1 %cmp, label %if.then, label %if.end, !dbg !41
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !58, !tbaa !48
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), %struct._Lock* null) #5, !dbg !60
-  tail call void @exit(i32 -1) #6, !dbg !61
-  unreachable, !dbg !61
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !42, !tbaa !35
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), %struct._Lock* null) #5, !dbg !42
+  tail call void @exit(i32 -1) #6, !dbg !44
+  unreachable, !dbg !44
 
-; <label>:5                                       ; preds = %0
-  %6 = bitcast %struct._Lock* %lock to i8*, !dbg !62
-  call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 16, i32 8, i1 false), !dbg !63
-  ret void, !dbg !62
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct._Lock* %lock to i8*, !dbg !45
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 16, i32 8, i1 false), !dbg !46
+  ret void, !dbg !45
 }

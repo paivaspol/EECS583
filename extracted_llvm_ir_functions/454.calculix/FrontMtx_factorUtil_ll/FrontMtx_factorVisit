@@ -1,628 +1,623 @@
-define signext i8 @FrontMtx_factorVisit(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._Chv** %fronts, i32 %lookahead, double %tau, double %droptol, i8* %status, %struct._IP** %heads, %struct._IV* %pivotsizesIV, %struct._DV* %workDV, i32* nocapture readonly %parent, %struct._ChvList* %aggList, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, i32* %stats, double* %cpus, i32 %msglvl, %struct.__sFILE* %msgFile) #0 {
+define signext i8 @FrontMtx_factorVisit(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._Chv** %fronts, i32 %lookahead, double %tau, double %droptol, i8* %status, %struct._IP** %heads, %struct._IV* %pivotsizesIV, %struct._DV* %workDV, i32* nocapture %parent, %struct._ChvList* %aggList, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, i32* %stats, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
+entry:
   %ndelay = alloca i32, align 4
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !341, metadata !608), !dbg !654
-  tail call void @llvm.dbg.value(metadata %struct._Pencil* %pencil, i64 0, metadata !342, metadata !608), !dbg !655
-  tail call void @llvm.dbg.value(metadata i32 %J, i64 0, metadata !343, metadata !608), !dbg !656
-  tail call void @llvm.dbg.value(metadata i32 %myid, i64 0, metadata !344, metadata !608), !dbg !657
-  tail call void @llvm.dbg.value(metadata i32* %owners, i64 0, metadata !345, metadata !608), !dbg !658
-  tail call void @llvm.dbg.value(metadata %struct._Chv** %fronts, i64 0, metadata !346, metadata !608), !dbg !659
-  tail call void @llvm.dbg.value(metadata i32 %lookahead, i64 0, metadata !347, metadata !608), !dbg !660
-  tail call void @llvm.dbg.value(metadata double %tau, i64 0, metadata !348, metadata !608), !dbg !661
-  tail call void @llvm.dbg.value(metadata double %droptol, i64 0, metadata !349, metadata !608), !dbg !662
-  tail call void @llvm.dbg.value(metadata i8* %status, i64 0, metadata !350, metadata !608), !dbg !663
-  tail call void @llvm.dbg.value(metadata %struct._IP** %heads, i64 0, metadata !351, metadata !608), !dbg !664
-  tail call void @llvm.dbg.value(metadata %struct._IV* %pivotsizesIV, i64 0, metadata !352, metadata !608), !dbg !665
-  tail call void @llvm.dbg.value(metadata %struct._DV* %workDV, i64 0, metadata !353, metadata !608), !dbg !666
-  tail call void @llvm.dbg.value(metadata i32* %parent, i64 0, metadata !354, metadata !608), !dbg !667
-  tail call void @llvm.dbg.value(metadata %struct._ChvList* %aggList, i64 0, metadata !355, metadata !608), !dbg !668
-  tail call void @llvm.dbg.value(metadata %struct._ChvList* %postList, i64 0, metadata !356, metadata !608), !dbg !669
-  tail call void @llvm.dbg.value(metadata %struct._ChvManager* %chvmanager, i64 0, metadata !357, metadata !608), !dbg !670
-  tail call void @llvm.dbg.value(metadata i32* %stats, i64 0, metadata !358, metadata !608), !dbg !671
-  tail call void @llvm.dbg.value(metadata double* %cpus, i64 0, metadata !359, metadata !608), !dbg !672
-  tail call void @llvm.dbg.value(metadata i32 %msglvl, i64 0, metadata !360, metadata !608), !dbg !673
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %msgFile, i64 0, metadata !361, metadata !608), !dbg !674
-  %1 = sext i32 %J to i64, !dbg !675
-  %2 = getelementptr inbounds i8* %status, i64 %1, !dbg !675
-  %3 = load i8* %2, align 1, !dbg !675, !tbaa !677
-  %4 = icmp eq i8 %3, 70, !dbg !678
-  br i1 %4, label %328, label %5, !dbg !679
-
-; <label>:5                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i8 78, i64 0, metadata !364, metadata !608), !dbg !680
-  tail call void @llvm.dbg.value(metadata i8 78, i64 0, metadata !362, metadata !608), !dbg !681
-  tail call void @llvm.dbg.value(metadata i8 78, i64 0, metadata !363, metadata !608), !dbg !682
-  tail call void @llvm.dbg.value(metadata %struct._Chv* null, i64 0, metadata !365, metadata !608), !dbg !683
-  %6 = getelementptr inbounds %struct._IP** %heads, i64 %1, !dbg !684
-  %7 = load %struct._IP** %6, align 8, !dbg !684, !tbaa !638
-  %8 = icmp eq %struct._IP* %7, null, !dbg !686
-  br i1 %8, label %39, label %9, !dbg !687
-
-; <label>:9                                       ; preds = %5
-  %10 = getelementptr inbounds %struct._Chv** %fronts, i64 %1, !dbg !688
-  %11 = load %struct._Chv** %10, align 8, !dbg !688, !tbaa !638
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %11, i64 0, metadata !365, metadata !608), !dbg !683
-  %12 = icmp eq %struct._Chv* %11, null, !dbg !691
-  br i1 %12, label %13, label %15, !dbg !692
-
-; <label>:13                                      ; preds = %9
-  %14 = tail call %struct._Chv* @FrontMtx_setupFront(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct.__sFILE* %msgFile) #7, !dbg !693
-  store %struct._Chv* %14, %struct._Chv** %10, align 8, !dbg !695, !tbaa !638
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %14, i64 0, metadata !365, metadata !608), !dbg !683
-  store i8 65, i8* %2, align 1, !dbg !696, !tbaa !677
-  br label %15, !dbg !697
-
-; <label>:15                                      ; preds = %13, %9
-  %frontJ.0 = phi %struct._Chv* [ %14, %13 ], [ %11, %9 ]
-  %16 = icmp sgt i32 %msglvl, 1, !dbg !698
-  br i1 %16, label %17, label %20, !dbg !700
-
-; <label>:17                                      ; preds = %15
-  %18 = tail call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i64 20, i64 1, %struct.__sFILE* %msgFile), !dbg !701
-  %19 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !703
-  br label %20, !dbg !704
-
-; <label>:20                                      ; preds = %17, %15
-  %21 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !705
-  %22 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !705, !tbaa !706
-  %23 = sitofp i64 %22 to double, !dbg !705
-  %24 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !705, !tbaa !709
-  %25 = sitofp i32 %24 to double, !dbg !705
-  %26 = fmul double %25, 1.000000e-06, !dbg !705
-  %27 = fadd double %23, %26, !dbg !705
-  tail call void @llvm.dbg.value(metadata double %27, i64 0, metadata !366, metadata !608), !dbg !710
-  tail call void @FrontMtx_update(%struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.0, %struct._IP** %heads, i8* %status, %struct._DV* %workDV, i32 %msglvl, %struct.__sFILE* %msgFile) #6, !dbg !711
-  %28 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !712
-  %29 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !712, !tbaa !706
-  %30 = sitofp i64 %29 to double, !dbg !712
-  %31 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !712, !tbaa !709
-  %32 = sitofp i32 %31 to double, !dbg !712
-  %33 = fmul double %32, 1.000000e-06, !dbg !712
-  %34 = fadd double %30, %33, !dbg !712
-  tail call void @llvm.dbg.value(metadata double %34, i64 0, metadata !367, metadata !608), !dbg !713
-  %35 = fsub double %34, %27, !dbg !714
-  %36 = getelementptr inbounds double* %cpus, i64 2, !dbg !715
-  %37 = load double* %36, align 8, !dbg !716, !tbaa !717
-  %38 = fadd double %37, %35, !dbg !716
-  store double %38, double* %36, align 8, !dbg !716, !tbaa !717
-  %.pr = load %struct._IP** %6, align 8, !dbg !719, !tbaa !638
-  br label %39, !dbg !721
-
-; <label>:39                                      ; preds = %5, %20
-  %40 = phi %struct._IP* [ null, %5 ], [ %.pr, %20 ], !dbg !719
-  %frontJ.1 = phi %struct._Chv* [ null, %5 ], [ %frontJ.0, %20 ]
-  %41 = icmp eq %struct._IP* %40, null, !dbg !722
-  tail call void @llvm.dbg.value(metadata i8 89, i64 0, metadata !364, metadata !608), !dbg !680
-  %. = select i1 %41, i32 89, i32 78, !dbg !723
-  %42 = icmp eq i32* %owners, null, !dbg !724
-  br i1 %42, label %47, label %43, !dbg !726
-
-; <label>:43                                      ; preds = %39
-  %44 = getelementptr inbounds i32* %owners, i64 %1, !dbg !727
-  %45 = load i32* %44, align 4, !dbg !727, !tbaa !627
-  %46 = icmp eq i32 %45, %myid, !dbg !728
-  br i1 %46, label %47, label %287, !dbg !729
-
-; <label>:47                                      ; preds = %43, %39
-  %48 = getelementptr inbounds %struct._Chv** %fronts, i64 %1, !dbg !730
-  %49 = load %struct._Chv** %48, align 8, !dbg !730, !tbaa !638
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %49, i64 0, metadata !365, metadata !608), !dbg !683
-  %50 = icmp eq %struct._Chv* %49, null, !dbg !733
-  br i1 %50, label %51, label %53, !dbg !734
-
-; <label>:51                                      ; preds = %47
-  %52 = tail call %struct._Chv* @FrontMtx_setupFront(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct.__sFILE* %msgFile) #7, !dbg !735
-  store %struct._Chv* %52, %struct._Chv** %48, align 8, !dbg !737, !tbaa !638
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %52, i64 0, metadata !365, metadata !608), !dbg !683
-  store i8 65, i8* %2, align 1, !dbg !738, !tbaa !677
-  br label %53, !dbg !739
-
-; <label>:53                                      ; preds = %51, %47
-  %frontJ.2 = phi %struct._Chv* [ %52, %51 ], [ %49, %47 ]
-  %54 = icmp eq %struct._ChvList* %aggList, null, !dbg !740
-  br i1 %54, label %66, label %55, !dbg !742
-
-; <label>:55                                      ; preds = %53
-  %56 = tail call i32 @ChvList_isListNonempty(%struct._ChvList* %aggList, i32 %J) #6, !dbg !743
-  %57 = icmp eq i32 %56, 1, !dbg !746
-  br i1 %57, label %58, label %59, !dbg !747
-
-; <label>:58                                      ; preds = %55
-  tail call fastcc void @assembleAggregates(%struct._Chv* %frontJ.2, %struct._ChvList* %aggList, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct.__sFILE* %msgFile) #7, !dbg !748
-  br label %59, !dbg !750
-
-; <label>:59                                      ; preds = %58, %55
-  %60 = tail call i32 @ChvList_isCountZero(%struct._ChvList* %aggList, i32 %J) #6, !dbg !751
-  %61 = icmp eq i32 %60, 1, !dbg !753
-  br i1 %61, label %62, label %66, !dbg !754
-
-; <label>:62                                      ; preds = %59
-  %63 = tail call i32 @ChvList_isListNonempty(%struct._ChvList* %aggList, i32 %J) #6, !dbg !755
-  %64 = icmp eq i32 %63, 1, !dbg !758
-  br i1 %64, label %65, label %66, !dbg !759
-
-; <label>:65                                      ; preds = %62
-  tail call fastcc void @assembleAggregates(%struct._Chv* %frontJ.2, %struct._ChvList* %aggList, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct.__sFILE* %msgFile) #7, !dbg !760
-  br label %66, !dbg !762
-
-; <label>:66                                      ; preds = %53, %62, %65, %59
-  %allAggregatesHere.0 = phi i32 [ 78, %59 ], [ 89, %65 ], [ 89, %62 ], [ 89, %53 ]
-  %67 = icmp sgt i32 %msglvl, 1, !dbg !763
-  br i1 %67, label %68, label %71, !dbg !765
-
-; <label>:68                                      ; preds = %66
-  %69 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([43 x i8]* @.str1, i64 0, i64 0), i32 %., i32 %allAggregatesHere.0) #6, !dbg !766
-  %70 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !768
-  br label %71, !dbg !769
-
-; <label>:71                                      ; preds = %68, %66
-  %72 = icmp eq i32 %allAggregatesHere.0, 89, !dbg !770
-  %or.cond = and i1 %41, %72, !dbg !772
-  br i1 %or.cond, label %73, label %317, !dbg !772
-
-; <label>:73                                      ; preds = %71
-  %74 = icmp eq %struct._ChvList* %postList, null, !dbg !773
-  br i1 %74, label %133, label %75, !dbg !776
-
-; <label>:75                                      ; preds = %73
-  tail call void @llvm.dbg.value(metadata i32* %ndelay, i64 0, metadata !369, metadata !608), !dbg !777
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !533, metadata !608) #5, !dbg !778
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %frontJ.2, i64 0, metadata !534, metadata !608) #5, !dbg !781
-  tail call void @llvm.dbg.value(metadata i32* %ndelay, i64 0, metadata !535, metadata !608) #5, !dbg !782
-  tail call void @llvm.dbg.value(metadata %struct._Chv** %fronts, i64 0, metadata !536, metadata !608) #5, !dbg !783
-  tail call void @llvm.dbg.value(metadata %struct._ChvList* %postList, i64 0, metadata !537, metadata !608) #5, !dbg !784
-  tail call void @llvm.dbg.value(metadata %struct._ChvManager* %chvmanager, i64 0, metadata !538, metadata !608) #5, !dbg !785
-  tail call void @llvm.dbg.value(metadata double* %cpus, i64 0, metadata !539, metadata !608) #5, !dbg !786
-  tail call void @llvm.dbg.value(metadata i32 %msglvl, i64 0, metadata !540, metadata !608) #5, !dbg !787
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %msgFile, i64 0, metadata !541, metadata !608) #5, !dbg !788
-  %76 = icmp sgt i32 %msglvl, 4, !dbg !789
-  br i1 %76, label %.thread.i, label %81, !dbg !791
-
-.thread.i:                                        ; preds = %75
-  %77 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([86 x i8]* @.str19, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.2, i32* %ndelay, %struct._Chv** %fronts, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, double* %cpus) #6, !dbg !792
-  %78 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !794
-  %79 = getelementptr inbounds %struct._Chv* %frontJ.2, i64 0, i32 0, !dbg !795
-  %80 = load i32* %79, align 4, !dbg !795, !tbaa !796
-  call void @llvm.dbg.value(metadata i32 %83, i64 0, metadata !545, metadata !608) #5, !dbg !799
-  br label %84, !dbg !800
-
-; <label>:81                                      ; preds = %75
-  %82 = getelementptr inbounds %struct._Chv* %frontJ.2, i64 0, i32 0, !dbg !795
-  %83 = load i32* %82, align 4, !dbg !795, !tbaa !796
-  tail call void @llvm.dbg.value(metadata i32 %83, i64 0, metadata !545, metadata !608) #5, !dbg !799
-  br i1 %67, label %84, label %94, !dbg !800
-
-; <label>:84                                      ; preds = %81, %.thread.i
-  %85 = phi i32 [ %80, %.thread.i ], [ %83, %81 ], !dbg !801
-  %86 = call i32 @ChvList_isCountZero(%struct._ChvList* %postList, i32 %85) #6, !dbg !802
-  %87 = icmp eq i32 %86, 1, !dbg !806
-  br i1 %87, label %88, label %91, !dbg !807
-
-; <label>:88                                      ; preds = %84
-  %89 = call i64 @fwrite(i8* getelementptr inbounds ([29 x i8]* @.str20, i64 0, i64 0), i64 28, i64 1, %struct.__sFILE* %msgFile) #5, !dbg !808
-  %90 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !810
-  br label %94, !dbg !811
-
-; <label>:91                                      ; preds = %84
-  %92 = call i64 @fwrite(i8* getelementptr inbounds ([34 x i8]* @.str21, i64 0, i64 0), i64 33, i64 1, %struct.__sFILE* %msgFile) #5, !dbg !812
-  %93 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !814
-  br label %94, !dbg !801
-
-; <label>:94                                      ; preds = %91, %88, %81
-  %95 = phi i1 [ true, %88 ], [ true, %91 ], [ false, %81 ], !dbg !801
-  %96 = phi i32 [ %85, %88 ], [ %85, %91 ], [ %83, %81 ], !dbg !801
-  %97 = call i32 @ChvList_isCountZero(%struct._ChvList* %postList, i32 %96) #6, !dbg !815
-  %98 = icmp eq i32 %97, 1, !dbg !817
-  br i1 %98, label %99, label %assemblePostponedData.exit, !dbg !818
-
-; <label>:99                                      ; preds = %94
-  br i1 %95, label %100, label %103, !dbg !819
-
-; <label>:100                                     ; preds = %99
-  %101 = call i64 @fwrite(i8* getelementptr inbounds ([28 x i8]* @.str22, i64 0, i64 0), i64 27, i64 1, %struct.__sFILE* %msgFile) #5, !dbg !821
-  %102 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !824
-  br label %103, !dbg !825
-
-; <label>:103                                     ; preds = %100, %99
-  %104 = call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !826
-  %105 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !826, !tbaa !706
-  %106 = sitofp i64 %105 to double, !dbg !826
-  %107 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !826, !tbaa !709
-  %108 = sitofp i32 %107 to double, !dbg !826
-  %109 = fmul double %108, 1.000000e-06, !dbg !826
-  %110 = fadd double %106, %109, !dbg !826
-  call void @llvm.dbg.value(metadata double %110, i64 0, metadata !543, metadata !608) #5, !dbg !827
-  %111 = call %struct._Chv* @FrontMtx_assemblePostponedData(%struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.2, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, i32* %ndelay) #6, !dbg !828
-  %112 = sext i32 %96 to i64, !dbg !829
-  %113 = getelementptr inbounds %struct._Chv** %fronts, i64 %112, !dbg !829
-  store %struct._Chv* %111, %struct._Chv** %113, align 8, !dbg !830, !tbaa !638
-  %114 = icmp eq %struct._Chv* %111, %frontJ.2, !dbg !831
-  br i1 %114, label %120, label %115, !dbg !833
-
-; <label>:115                                     ; preds = %103
-  br i1 %95, label %116, label %119, !dbg !834
-
-; <label>:116                                     ; preds = %115
-  %117 = call i64 @fwrite(i8* getelementptr inbounds ([22 x i8]* @.str23, i64 0, i64 0), i64 21, i64 1, %struct.__sFILE* %msgFile) #5, !dbg !836
-  %118 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !839
-  br label %119, !dbg !840
-
-; <label>:119                                     ; preds = %116, %115
-  call void @ChvManager_releaseObject(%struct._ChvManager* %chvmanager, %struct._Chv* %frontJ.2) #6, !dbg !841
-  br label %120, !dbg !842
-
-; <label>:120                                     ; preds = %119, %103
-  %121 = call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !843
-  %122 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !843, !tbaa !706
-  %123 = sitofp i64 %122 to double, !dbg !843
-  %124 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !843, !tbaa !709
-  %125 = sitofp i32 %124 to double, !dbg !843
-  %126 = fmul double %125, 1.000000e-06, !dbg !843
-  %127 = fadd double %123, %126, !dbg !843
-  call void @llvm.dbg.value(metadata double %127, i64 0, metadata !544, metadata !608) #5, !dbg !844
-  %128 = fsub double %127, %110, !dbg !845
-  %129 = getelementptr inbounds double* %cpus, i64 3, !dbg !846
-  %130 = load double* %129, align 8, !dbg !847, !tbaa !717
-  %131 = fadd double %130, %128, !dbg !847
-  store double %131, double* %129, align 8, !dbg !847, !tbaa !717
-  call void @llvm.dbg.value(metadata i8 89, i64 0, metadata !542, metadata !608) #5, !dbg !848
-  br label %assemblePostponedData.exit, !dbg !849
-
-assemblePostponedData.exit:                       ; preds = %94, %120
-  %rc.0.i = phi i32 [ 89, %120 ], [ 78, %94 ]
-  %132 = load %struct._Chv** %48, align 8, !dbg !850, !tbaa !638
-  call void @llvm.dbg.value(metadata %struct._Chv* %132, i64 0, metadata !365, metadata !608), !dbg !683
-  br label %134, !dbg !851
-
-; <label>:133                                     ; preds = %73
-  tail call void @llvm.dbg.value(metadata i8 89, i64 0, metadata !363, metadata !608), !dbg !682
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !369, metadata !608), !dbg !777
-  store i32 0, i32* %ndelay, align 4, !dbg !852, !tbaa !627
-  br label %134
-
-; <label>:134                                     ; preds = %133, %assemblePostponedData.exit
-  %allPostponedAssmb.0 = phi i32 [ %rc.0.i, %assemblePostponedData.exit ], [ 89, %133 ]
-  %frontJ.3 = phi %struct._Chv* [ %132, %assemblePostponedData.exit ], [ %frontJ.2, %133 ]
-  br i1 %67, label %135, label %138, !dbg !854
-
-; <label>:135                                     ; preds = %134
-  %136 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([24 x i8]* @.str2, i64 0, i64 0), i32 %allPostponedAssmb.0) #6, !dbg !855
-  %137 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !858
-  br label %138, !dbg !859
-
-; <label>:138                                     ; preds = %135, %134
-  %139 = icmp eq i32 %allPostponedAssmb.0, 89, !dbg !860
-  br i1 %139, label %140, label %317, !dbg !862
-
-; <label>:140                                     ; preds = %138
-  call void @llvm.dbg.value(metadata i32* %ndelay, i64 0, metadata !369, metadata !608), !dbg !777
-  %141 = load i32* %ndelay, align 4, !dbg !863, !tbaa !627
-  call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !550, metadata !608) #5, !dbg !865
-  call void @llvm.dbg.value(metadata %struct._Chv* %frontJ.3, i64 0, metadata !551, metadata !608) #5, !dbg !867
-  call void @llvm.dbg.value(metadata i32 %141, i64 0, metadata !552, metadata !608) #5, !dbg !868
-  call void @llvm.dbg.value(metadata double %tau, i64 0, metadata !553, metadata !608) #5, !dbg !869
-  call void @llvm.dbg.value(metadata %struct._IV* %pivotsizesIV, i64 0, metadata !554, metadata !608) #5, !dbg !870
-  call void @llvm.dbg.value(metadata %struct._DV* %workDV, i64 0, metadata !555, metadata !608) #5, !dbg !871
-  call void @llvm.dbg.value(metadata i32* %stats, i64 0, metadata !556, metadata !608) #5, !dbg !872
-  call void @llvm.dbg.value(metadata double* %cpus, i64 0, metadata !557, metadata !608) #5, !dbg !873
-  call void @llvm.dbg.value(metadata i32 %msglvl, i64 0, metadata !558, metadata !608) #5, !dbg !874
-  call void @llvm.dbg.value(metadata %struct.__sFILE* %msgFile, i64 0, metadata !559, metadata !608) #5, !dbg !875
-  %142 = icmp sgt i32 %msglvl, 2, !dbg !876
-  br i1 %142, label %143, label %.critedge.i, !dbg !878
-
-; <label>:143                                     ; preds = %140
-  %144 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([27 x i8]* @.str24, i64 0, i64 0), %struct._Chv* %frontJ.3, i32 %141) #6, !dbg !879
-  %145 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([15 x i8]* @.str25, i64 0, i64 0), double %tau) #6, !dbg !881
-  %146 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([20 x i8]* @.str26, i64 0, i64 0), i32* %stats, double* %cpus) #6, !dbg !882
-  %147 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !883
-  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.3, %struct.__sFILE* %msgFile) #6, !dbg !884
-  %148 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !887
-  br label %.critedge.i, !dbg !888
-
-.critedge.i:                                      ; preds = %143, %140
-  %149 = call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !889
-  %150 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !889, !tbaa !706
-  %151 = sitofp i64 %150 to double, !dbg !889
-  %152 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !889, !tbaa !709
-  %153 = sitofp i32 %152 to double, !dbg !889
-  %154 = fmul double %153, 1.000000e-06, !dbg !889
-  %155 = fadd double %151, %154, !dbg !889
-  call void @llvm.dbg.value(metadata double %155, i64 0, metadata !560, metadata !608) #5, !dbg !890
-  %156 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 5, !dbg !891
-  %157 = load i32* %156, align 4, !dbg !891, !tbaa !893
-  %158 = icmp eq i32 %157, 1, !dbg !891
-  br i1 %158, label %159, label %162, !dbg !894
-
-; <label>:159                                     ; preds = %.critedge.i
-  %160 = getelementptr inbounds i32* %stats, i64 1, !dbg !895
-  %161 = call i32 @Chv_factorWithPivoting(%struct._Chv* %frontJ.3, i32 %141, i32 1, %struct._IV* %pivotsizesIV, %struct._DV* %workDV, double %tau, i32* %160) #6, !dbg !897
-  call void @llvm.dbg.value(metadata i32 %161, i64 0, metadata !562, metadata !608) #5, !dbg !898
-  br label %166, !dbg !899
-
-; <label>:162                                     ; preds = %.critedge.i
-  %163 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 27, !dbg !900
-  %164 = load %struct._PatchAndGoInfo** %163, align 8, !dbg !900, !tbaa !902
-  %165 = call i32 @Chv_factorWithNoPivoting(%struct._Chv* %frontJ.3, %struct._PatchAndGoInfo* %164) #6, !dbg !903
-  call void @llvm.dbg.value(metadata i32 %165, i64 0, metadata !562, metadata !608) #5, !dbg !898
-  br label %166, !dbg !904
-
-; <label>:166                                     ; preds = %162, %159
-  %nelim.0.i = phi i32 [ %161, %159 ], [ %165, %162 ], !dbg !904
-  %167 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 1, !dbg !905
-  %168 = load i32* %167, align 4, !dbg !905, !tbaa !906
-  %169 = sub nsw i32 %168, %nelim.0.i, !dbg !907
-  call void @llvm.dbg.value(metadata i32 %169, i64 0, metadata !563, metadata !608) #5, !dbg !908
-  %170 = getelementptr inbounds i32* %stats, i64 2, !dbg !909
-  %171 = load i32* %170, align 4, !dbg !910, !tbaa !627
-  %172 = add nsw i32 %171, %169, !dbg !910
-  store i32 %172, i32* %170, align 4, !dbg !910, !tbaa !627
-  %173 = load i32* %156, align 4, !dbg !911, !tbaa !893
-  %174 = icmp eq i32 %173, 1, !dbg !911
-  br i1 %174, label %175, label %179, !dbg !913
-
-; <label>:175                                     ; preds = %166
-  %176 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !914
-  %177 = load i32* %176, align 4, !dbg !914, !tbaa !632
-  %178 = icmp eq i32 %177, 2, !dbg !914
-  br i1 %178, label %179, label %182, !dbg !915
-
-; <label>:179                                     ; preds = %175, %166
-  %180 = load i32* %stats, align 4, !dbg !916, !tbaa !627
-  %181 = add nsw i32 %180, %nelim.0.i, !dbg !916
-  br label %186, !dbg !918
-
-; <label>:182                                     ; preds = %175
-  %183 = call i32 @IV_size(%struct._IV* %pivotsizesIV) #6, !dbg !919
-  %184 = load i32* %stats, align 4, !dbg !921, !tbaa !627
-  %185 = add nsw i32 %184, %183, !dbg !921
-  br label %186, !dbg !904
-
-; <label>:186                                     ; preds = %182, %179
-  %storemerge.i = phi i32 [ %181, %179 ], [ %185, %182 ], !dbg !904
-  store i32 %storemerge.i, i32* %stats, align 4, !dbg !921, !tbaa !627
-  %187 = call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !922
-  %188 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !922, !tbaa !706
-  %189 = sitofp i64 %188 to double, !dbg !922
-  %190 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !922, !tbaa !709
-  %191 = sitofp i32 %190 to double, !dbg !922
-  %192 = fmul double %191, 1.000000e-06, !dbg !922
-  %193 = fadd double %189, %192, !dbg !922
-  call void @llvm.dbg.value(metadata double %193, i64 0, metadata !561, metadata !608) #5, !dbg !923
-  %194 = fsub double %193, %155, !dbg !924
-  %195 = getelementptr inbounds double* %cpus, i64 4, !dbg !925
-  %196 = load double* %195, align 8, !dbg !926, !tbaa !717
-  %197 = fadd double %196, %194, !dbg !926
-  store double %197, double* %195, align 8, !dbg !926, !tbaa !717
-  br i1 %67, label %198, label %203, !dbg !927
-
-; <label>:198                                     ; preds = %186
-  %199 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0, !dbg !928
-  %200 = load i32* %199, align 4, !dbg !928, !tbaa !796
-  %201 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([36 x i8]* @.str27, i64 0, i64 0), i32 %200, i32 %nelim.0.i, i32 %169) #6, !dbg !931
-  %202 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !932
-  br label %203, !dbg !933
-
-; <label>:203                                     ; preds = %198, %186
-  br i1 %142, label %204, label %factorFront.exit, !dbg !934
-
-; <label>:204                                     ; preds = %203
-  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.3, %struct.__sFILE* %msgFile) #6, !dbg !935
-  %205 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !938
-  br label %factorFront.exit, !dbg !939
-
-factorFront.exit:                                 ; preds = %203, %204
-  call void @llvm.dbg.value(metadata i32 %nelim.0.i, i64 0, metadata !370, metadata !608), !dbg !940
-  br i1 %67, label %206, label %211, !dbg !941
-
-; <label>:206                                     ; preds = %factorFront.exit
-  %207 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0, !dbg !942
-  %208 = load i32* %207, align 4, !dbg !942, !tbaa !796
-  %209 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([22 x i8]* @.str3, i64 0, i64 0), i32 %208, i32 %nelim.0.i) #6, !dbg !945
-  %210 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !946
-  br label %211, !dbg !947
-
-; <label>:211                                     ; preds = %206, %factorFront.exit
-  %212 = load i32* %156, align 4, !dbg !948, !tbaa !893
-  %213 = icmp ne i32 %212, 1, !dbg !948
-  %.pre = load i32* %167, align 4, !dbg !950, !tbaa !906
-  %214 = icmp sgt i32 %.pre, %nelim.0.i, !dbg !953
-  %or.cond2 = and i1 %213, %214, !dbg !954
-  br i1 %or.cond2, label %215, label %._crit_edge, !dbg !954
-
-; <label>:215                                     ; preds = %211
-  call void @ChvManager_releaseObject(%struct._ChvManager* %chvmanager, %struct._Chv* %frontJ.3) #6, !dbg !955
-  store %struct._Chv* null, %struct._Chv** %48, align 8, !dbg !957, !tbaa !638
-  store i8 69, i8* %2, align 1, !dbg !958, !tbaa !677
-  br label %317, !dbg !959
-
-._crit_edge:                                      ; preds = %211
-  call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !576, metadata !608) #5, !dbg !960
-  %216 = sub nsw i32 %.pre, %nelim.0.i, !dbg !961
-  call void @llvm.dbg.value(metadata i32 %216, i64 0, metadata !582, metadata !608) #5, !dbg !962
-  br i1 %67, label %217, label %220, !dbg !963
-
-; <label>:217                                     ; preds = %._crit_edge
-  %218 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([34 x i8]* @.str28, i64 0, i64 0), i32 %nelim.0.i) #6, !dbg !964
-  %219 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !967
-  br label %220, !dbg !968
-
-; <label>:220                                     ; preds = %217, %._crit_edge
-  %221 = call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !969
-  %222 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !969, !tbaa !706
-  %223 = sitofp i64 %222 to double, !dbg !969
-  %224 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !969, !tbaa !709
-  %225 = sitofp i32 %224 to double, !dbg !969
-  %226 = fmul double %225, 1.000000e-06, !dbg !969
-  %227 = fadd double %223, %226, !dbg !969
-  call void @llvm.dbg.value(metadata double %227, i64 0, metadata !580, metadata !608) #5, !dbg !970
-  %228 = load i32* %167, align 4, !dbg !971, !tbaa !906
-  %229 = sub nsw i32 %228, %216, !dbg !971
-  store i32 %229, i32* %167, align 4, !dbg !971, !tbaa !906
-  %230 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 2, !dbg !972
-  %231 = load i32* %230, align 4, !dbg !973, !tbaa !974
-  %232 = add nsw i32 %231, %216, !dbg !973
-  store i32 %232, i32* %230, align 4, !dbg !973, !tbaa !974
-  %233 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 3, !dbg !975
-  %234 = load i32* %233, align 4, !dbg !976, !tbaa !977
-  %235 = add nsw i32 %234, %216, !dbg !976
-  store i32 %235, i32* %233, align 4, !dbg !976, !tbaa !977
-  call void @FrontMtx_storeFront(%struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.3, %struct._IV* %pivotsizesIV, double %droptol, i32 %msglvl, %struct.__sFILE* %msgFile) #6, !dbg !978
-  %236 = load i32* %167, align 4, !dbg !979, !tbaa !906
-  %237 = add nsw i32 %236, %216, !dbg !979
-  store i32 %237, i32* %167, align 4, !dbg !979, !tbaa !906
-  %238 = load i32* %230, align 4, !dbg !980, !tbaa !974
-  %239 = sub nsw i32 %238, %216, !dbg !980
-  store i32 %239, i32* %230, align 4, !dbg !980, !tbaa !974
-  %240 = load i32* %233, align 4, !dbg !981, !tbaa !977
-  %241 = sub nsw i32 %240, %216, !dbg !981
-  store i32 %241, i32* %233, align 4, !dbg !981, !tbaa !977
-  %242 = call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !982
-  %243 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !982, !tbaa !706
-  %244 = sitofp i64 %243 to double, !dbg !982
-  %245 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !982, !tbaa !709
-  %246 = sitofp i32 %245 to double, !dbg !982
-  %247 = fmul double %246, 1.000000e-06, !dbg !982
-  %248 = fadd double %244, %247, !dbg !982
-  call void @llvm.dbg.value(metadata double %248, i64 0, metadata !581, metadata !608) #5, !dbg !983
-  %249 = fsub double %248, %227, !dbg !984
-  %250 = getelementptr inbounds double* %cpus, i64 6, !dbg !985
-  %251 = load double* %250, align 8, !dbg !986, !tbaa !717
-  %252 = fadd double %251, %249, !dbg !986
-  store double %252, double* %250, align 8, !dbg !986, !tbaa !717
-  br i1 %74, label %storeEntries.exit, label %253, !dbg !987
-
-; <label>:253                                     ; preds = %220
-  %.not = icmp slt i32 %216, 1, !dbg !988
-  %.not1 = xor i1 %142, true, !dbg !988
-  %brmerge = or i1 %.not, %.not1, !dbg !988
-  %.mux = select i1 %.not, %struct._Chv* null, %struct._Chv* %frontJ.3, !dbg !988
-  br i1 %brmerge, label %259, label %254, !dbg !988
-
-; <label>:254                                     ; preds = %253
-  %255 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0, !dbg !989
-  %256 = load i32* %255, align 4, !dbg !989, !tbaa !796
-  %257 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str29, i64 0, i64 0), i32 %256) #6, !dbg !994
-  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.3, %struct.__sFILE* %msgFile) #6, !dbg !995
-  %258 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !996
-  br label %259, !dbg !997
-
-; <label>:259                                     ; preds = %253, %254
-  %postponedchv.0.i = phi %struct._Chv* [ %frontJ.3, %254 ], [ %.mux, %253 ], !dbg !998
-  br i1 %67, label %260, label %263, !dbg !999
-
-; <label>:260                                     ; preds = %259
-  %261 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([28 x i8]* @.str30, i64 0, i64 0), %struct._Chv* %postponedchv.0.i) #6, !dbg !1000
-  %262 = call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !1003
-  br label %263, !dbg !1004
-
-; <label>:263                                     ; preds = %260, %259
-  %264 = call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !1005
-  %265 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !1005, !tbaa !706
-  %266 = sitofp i64 %265 to double, !dbg !1005
-  %267 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !1005, !tbaa !709
-  %268 = sitofp i32 %267 to double, !dbg !1005
-  %269 = fmul double %268, 1.000000e-06, !dbg !1005
-  %270 = fadd double %266, %269, !dbg !1005
-  call void @llvm.dbg.value(metadata double %270, i64 0, metadata !580, metadata !608) #5, !dbg !970
-  %271 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0, !dbg !1006
-  %272 = load i32* %271, align 4, !dbg !1006, !tbaa !796
-  %273 = sext i32 %272 to i64, !dbg !1007
-  %274 = getelementptr inbounds i32* %parent, i64 %273, !dbg !1007
-  %275 = load i32* %274, align 4, !dbg !1007, !tbaa !627
-  call void @FrontMtx_storePostponedData(%struct._FrontMtx* %frontmtx, %struct._Chv* %postponedchv.0.i, i32 %216, i32 %275, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager) #6, !dbg !1008
-  %276 = call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !1009
-  %277 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !1009, !tbaa !706
-  %278 = sitofp i64 %277 to double, !dbg !1009
-  %279 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !1009, !tbaa !709
-  %280 = sitofp i32 %279 to double, !dbg !1009
-  %281 = fmul double %280, 1.000000e-06, !dbg !1009
-  %282 = fadd double %278, %281, !dbg !1009
-  call void @llvm.dbg.value(metadata double %282, i64 0, metadata !581, metadata !608) #5, !dbg !983
-  %283 = fsub double %282, %270, !dbg !1010
-  %284 = getelementptr inbounds double* %cpus, i64 5, !dbg !1011
-  %285 = load double* %284, align 8, !dbg !1012, !tbaa !717
-  %286 = fadd double %285, %283, !dbg !1012
-  store double %286, double* %284, align 8, !dbg !1012, !tbaa !717
-  br label %storeEntries.exit, !dbg !1013
-
-storeEntries.exit:                                ; preds = %220, %263
-  call void @ChvManager_releaseObject(%struct._ChvManager* %chvmanager, %struct._Chv* %frontJ.3) #6, !dbg !1014
-  store %struct._Chv* null, %struct._Chv** %48, align 8, !dbg !1015, !tbaa !638
-  store i8 70, i8* %2, align 1, !dbg !1016, !tbaa !677
-  br label %317
-
-; <label>:287                                     ; preds = %43
-  br i1 %41, label %288, label %317, !dbg !1017
-
-; <label>:288                                     ; preds = %287
-  %289 = icmp eq %struct._Chv* %frontJ.1, null, !dbg !1018
-  br i1 %289, label %316, label %290, !dbg !1022
-
-; <label>:290                                     ; preds = %288
-  %291 = icmp sgt i32 %msglvl, 1, !dbg !1023
-  br i1 %291, label %292, label %.thread, !dbg !1026
-
-; <label>:292                                     ; preds = %290
-  %293 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str4, i64 0, i64 0), i32 %J) #6, !dbg !1027
-  %294 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !1029
-  %295 = icmp sgt i32 %msglvl, 3, !dbg !1030
-  br i1 %295, label %296, label %.thread, !dbg !1032
-
-; <label>:296                                     ; preds = %292
-  tail call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.1, %struct.__sFILE* %msgFile) #6, !dbg !1033
-  %297 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !1035
-  br label %.thread, !dbg !1036
-
-.thread:                                          ; preds = %290, %296, %292
-  %298 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !1037
-  %299 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !1037, !tbaa !706
-  %300 = sitofp i64 %299 to double, !dbg !1037
-  %301 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !1037, !tbaa !709
-  %302 = sitofp i32 %301 to double, !dbg !1037
-  %303 = fmul double %302, 1.000000e-06, !dbg !1037
-  %304 = fadd double %300, %303, !dbg !1037
-  tail call void @llvm.dbg.value(metadata double %304, i64 0, metadata !366, metadata !608), !dbg !710
-  tail call void @ChvList_addObjectToList(%struct._ChvList* %aggList, %struct._Chv* %frontJ.1, i32 %J) #6, !dbg !1038
-  %305 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !1039
-  %306 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !1039, !tbaa !706
-  %307 = sitofp i64 %306 to double, !dbg !1039
-  %308 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !1039, !tbaa !709
-  %309 = sitofp i32 %308 to double, !dbg !1039
-  %310 = fmul double %309, 1.000000e-06, !dbg !1039
-  %311 = fadd double %307, %310, !dbg !1039
-  tail call void @llvm.dbg.value(metadata double %311, i64 0, metadata !367, metadata !608), !dbg !713
-  %312 = fsub double %311, %304, !dbg !1040
-  %313 = getelementptr inbounds double* %cpus, i64 7, !dbg !1041
-  %314 = load double* %313, align 8, !dbg !1042, !tbaa !717
-  %315 = fadd double %314, %312, !dbg !1042
-  store double %315, double* %313, align 8, !dbg !1042, !tbaa !717
-  br label %316, !dbg !1043
-
-; <label>:316                                     ; preds = %288, %.thread
-  store i8 70, i8* %2, align 1, !dbg !1044, !tbaa !677
-  br label %317, !dbg !1045
-
-; <label>:317                                     ; preds = %287, %316, %71, %215, %storeEntries.exit, %138
-  %318 = add nsw i32 %lookahead, -1, !dbg !1046
-  call void @llvm.dbg.value(metadata i32 %318, i64 0, metadata !347, metadata !608), !dbg !660
-  %319 = icmp sgt i32 %lookahead, 0, !dbg !1048
-  br i1 %319, label %320, label %326, !dbg !1049
-
-; <label>:320                                     ; preds = %317
-  %321 = getelementptr inbounds i32* %parent, i64 %1, !dbg !1050
-  %322 = load i32* %321, align 4, !dbg !1050, !tbaa !627
-  call void @llvm.dbg.value(metadata i32 %322, i64 0, metadata !368, metadata !608), !dbg !1051
-  %323 = icmp eq i32 %322, -1, !dbg !1052
-  br i1 %323, label %326, label %324, !dbg !1053
-
-; <label>:324                                     ; preds = %320
-  %325 = call signext i8 @FrontMtx_factorVisit(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._Chv** %fronts, i32 %318, double %tau, double %droptol, i8* %status, %struct._IP** %heads, %struct._IV* %pivotsizesIV, %struct._DV* %workDV, i32* %parent, %struct._ChvList* %aggList, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, i32* %stats, double* %cpus, i32 %msglvl, %struct.__sFILE* %msgFile) #7, !dbg !1054
-  br label %326, !dbg !1056
-
-; <label>:326                                     ; preds = %320, %324, %317
-  %327 = load i8* %2, align 1, !dbg !1057, !tbaa !677
-  br label %328, !dbg !1058
-
-; <label>:328                                     ; preds = %0, %326
-  %.0 = phi i8 [ %327, %326 ], [ 70, %0 ]
-  ret i8 %.0, !dbg !1059
+  call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !340), !dbg !622
+  call void @llvm.dbg.value(metadata !{%struct._Pencil* %pencil}, i64 0, metadata !341), !dbg !623
+  call void @llvm.dbg.value(metadata !{i32 %J}, i64 0, metadata !342), !dbg !624
+  call void @llvm.dbg.value(metadata !{i32 %myid}, i64 0, metadata !343), !dbg !625
+  call void @llvm.dbg.value(metadata !{i32* %owners}, i64 0, metadata !344), !dbg !626
+  call void @llvm.dbg.value(metadata !{%struct._Chv** %fronts}, i64 0, metadata !345), !dbg !627
+  call void @llvm.dbg.value(metadata !{i32 %lookahead}, i64 0, metadata !346), !dbg !628
+  call void @llvm.dbg.value(metadata !{double %tau}, i64 0, metadata !347), !dbg !629
+  call void @llvm.dbg.value(metadata !{double %droptol}, i64 0, metadata !348), !dbg !630
+  call void @llvm.dbg.value(metadata !{i8* %status}, i64 0, metadata !349), !dbg !631
+  call void @llvm.dbg.value(metadata !{%struct._IP** %heads}, i64 0, metadata !350), !dbg !632
+  call void @llvm.dbg.value(metadata !{%struct._IV* %pivotsizesIV}, i64 0, metadata !351), !dbg !633
+  call void @llvm.dbg.value(metadata !{%struct._DV* %workDV}, i64 0, metadata !352), !dbg !634
+  call void @llvm.dbg.value(metadata !{i32* %parent}, i64 0, metadata !353), !dbg !635
+  call void @llvm.dbg.value(metadata !{%struct._ChvList* %aggList}, i64 0, metadata !354), !dbg !636
+  call void @llvm.dbg.value(metadata !{%struct._ChvList* %postList}, i64 0, metadata !355), !dbg !637
+  call void @llvm.dbg.value(metadata !{%struct._ChvManager* %chvmanager}, i64 0, metadata !356), !dbg !638
+  call void @llvm.dbg.value(metadata !{i32* %stats}, i64 0, metadata !357), !dbg !639
+  call void @llvm.dbg.value(metadata !{double* %cpus}, i64 0, metadata !358), !dbg !640
+  call void @llvm.dbg.value(metadata !{i32 %msglvl}, i64 0, metadata !359), !dbg !641
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %msgFile}, i64 0, metadata !360), !dbg !642
+  call void @llvm.dbg.declare(metadata !{i32* %ndelay}, metadata !368), !dbg !643
+  %idxprom = sext i32 %J to i64, !dbg !644
+  %arrayidx = getelementptr inbounds i8* %status, i64 %idxprom, !dbg !644
+  %0 = load i8* %arrayidx, align 1, !dbg !644, !tbaa !608
+  %cmp = icmp eq i8 %0, 70, !dbg !644
+  br i1 %cmp, label %return, label %if.end, !dbg !644
+
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.value(metadata !645, i64 0, metadata !363), !dbg !646
+  call void @llvm.dbg.value(metadata !645, i64 0, metadata !361), !dbg !647
+  call void @llvm.dbg.value(metadata !645, i64 0, metadata !362), !dbg !648
+  call void @llvm.dbg.value(metadata !649, i64 0, metadata !364), !dbg !650
+  %arrayidx3 = getelementptr inbounds %struct._IP** %heads, i64 %idxprom, !dbg !651
+  %1 = load %struct._IP** %arrayidx3, align 8, !dbg !651, !tbaa !607
+  %cmp4 = icmp eq %struct._IP* %1, null, !dbg !651
+  br i1 %cmp4, label %if.end35, label %if.then6, !dbg !651
+
+if.then6:                                         ; preds = %if.end
+  %arrayidx8 = getelementptr inbounds %struct._Chv** %fronts, i64 %idxprom, !dbg !652
+  %2 = load %struct._Chv** %arrayidx8, align 8, !dbg !652, !tbaa !607
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %2}, i64 0, metadata !364), !dbg !652
+  %cmp9 = icmp eq %struct._Chv* %2, null, !dbg !652
+  br i1 %cmp9, label %if.then11, label %if.end18, !dbg !652
+
+if.then11:                                        ; preds = %if.then6
+  %call = call %struct._Chv* @FrontMtx_setupFront(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #7, !dbg !654
+  store %struct._Chv* %call, %struct._Chv** %arrayidx8, align 8, !dbg !654, !tbaa !607
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %call}, i64 0, metadata !364), !dbg !656
+  store i8 65, i8* %arrayidx, align 1, !dbg !657, !tbaa !608
+  br label %if.end18, !dbg !658
+
+if.end18:                                         ; preds = %if.then11, %if.then6
+  %frontJ.0 = phi %struct._Chv* [ %call, %if.then11 ], [ %2, %if.then6 ]
+  %cmp19 = icmp sgt i32 %msglvl, 1, !dbg !659
+  br i1 %cmp19, label %if.then21, label %if.end24, !dbg !659
+
+if.then21:                                        ; preds = %if.end18
+  %3 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %msgFile), !dbg !660
+  %call23 = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !662
+  br label %if.end24, !dbg !663
+
+if.end24:                                         ; preds = %if.then21, %if.end18
+  %call25 = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !664
+  %4 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !664, !tbaa !665
+  %conv26 = sitofp i64 %4 to double, !dbg !664
+  %5 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !664, !tbaa !665
+  %conv27 = sitofp i64 %5 to double, !dbg !664
+  %mul = fmul double %conv27, 1.000000e-06, !dbg !664
+  %add = fadd double %conv26, %mul, !dbg !664
+  call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !365), !dbg !664
+  call void @FrontMtx_update(%struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.0, %struct._IP** %heads, i8* %status, %struct._DV* %workDV, i32 %msglvl, %struct._IO_FILE* %msgFile) #6, !dbg !666
+  %call28 = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !667
+  %6 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !667, !tbaa !665
+  %conv29 = sitofp i64 %6 to double, !dbg !667
+  %7 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !667, !tbaa !665
+  %conv30 = sitofp i64 %7 to double, !dbg !667
+  %mul31 = fmul double %conv30, 1.000000e-06, !dbg !667
+  %add32 = fadd double %conv29, %mul31, !dbg !667
+  call void @llvm.dbg.value(metadata !{double %add32}, i64 0, metadata !366), !dbg !667
+  %sub = fsub double %add32, %add, !dbg !668
+  %arrayidx33 = getelementptr inbounds double* %cpus, i64 2, !dbg !668
+  %8 = load double* %arrayidx33, align 8, !dbg !668, !tbaa !669
+  %add34 = fadd double %8, %sub, !dbg !668
+  store double %add34, double* %arrayidx33, align 8, !dbg !668, !tbaa !669
+  %.pr = load %struct._IP** %arrayidx3, align 8, !dbg !670, !tbaa !607
+  %phitmp374 = icmp eq %struct._IP* %.pr, null, !dbg !671
+  br label %if.end35, !dbg !671
+
+if.end35:                                         ; preds = %if.end, %if.end24
+  %9 = phi i1 [ true, %if.end ], [ %phitmp374, %if.end24 ]
+  %frontJ.1 = phi %struct._Chv* [ null, %if.end ], [ %frontJ.0, %if.end24 ]
+  call void @llvm.dbg.value(metadata !672, i64 0, metadata !363), !dbg !673
+  %. = select i1 %9, i32 89, i32 78, !dbg !670
+  %cmp42 = icmp eq i32* %owners, null, !dbg !675
+  br i1 %cmp42, label %if.then48, label %lor.lhs.false, !dbg !675
+
+lor.lhs.false:                                    ; preds = %if.end35
+  %arrayidx45 = getelementptr inbounds i32* %owners, i64 %idxprom, !dbg !675
+  %10 = load i32* %arrayidx45, align 4, !dbg !675, !tbaa !612
+  %cmp46 = icmp eq i32 %10, %myid, !dbg !675
+  br i1 %cmp46, label %if.then48, label %if.else140, !dbg !675
+
+if.then48:                                        ; preds = %lor.lhs.false, %if.end35
+  %arrayidx50 = getelementptr inbounds %struct._Chv** %fronts, i64 %idxprom, !dbg !676
+  %11 = load %struct._Chv** %arrayidx50, align 8, !dbg !676, !tbaa !607
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %11}, i64 0, metadata !364), !dbg !676
+  %cmp51 = icmp eq %struct._Chv* %11, null, !dbg !676
+  br i1 %cmp51, label %if.then53, label %if.end61, !dbg !676
+
+if.then53:                                        ; preds = %if.then48
+  %call54 = call %struct._Chv* @FrontMtx_setupFront(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #7, !dbg !678
+  store %struct._Chv* %call54, %struct._Chv** %arrayidx50, align 8, !dbg !678, !tbaa !607
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %call54}, i64 0, metadata !364), !dbg !680
+  store i8 65, i8* %arrayidx, align 1, !dbg !681, !tbaa !608
+  br label %if.end61, !dbg !682
+
+if.end61:                                         ; preds = %if.then53, %if.then48
+  %frontJ.2 = phi %struct._Chv* [ %call54, %if.then53 ], [ %11, %if.then48 ]
+  %cmp62 = icmp eq %struct._ChvList* %aggList, null, !dbg !683
+  br i1 %cmp62, label %if.end80, label %if.then64, !dbg !683
+
+if.then64:                                        ; preds = %if.end61
+  %call65 = call i32 @ChvList_isListNonempty(%struct._ChvList* %aggList, i32 %J) #6, !dbg !684
+  %cmp66 = icmp eq i32 %call65, 1, !dbg !684
+  br i1 %cmp66, label %if.then68, label %if.end69, !dbg !684
+
+if.then68:                                        ; preds = %if.then64
+  call fastcc void @assembleAggregates(%struct._Chv* %frontJ.2, %struct._ChvList* %aggList, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #7, !dbg !686
+  br label %if.end69, !dbg !688
+
+if.end69:                                         ; preds = %if.then68, %if.then64
+  %call70 = call i32 @ChvList_isCountZero(%struct._ChvList* %aggList, i32 %J) #6, !dbg !689
+  %cmp71 = icmp eq i32 %call70, 1, !dbg !689
+  br i1 %cmp71, label %if.then73, label %if.end80, !dbg !689
+
+if.then73:                                        ; preds = %if.end69
+  %call74 = call i32 @ChvList_isListNonempty(%struct._ChvList* %aggList, i32 %J) #6, !dbg !690
+  %cmp75 = icmp eq i32 %call74, 1, !dbg !690
+  br i1 %cmp75, label %if.then77, label %if.end80, !dbg !690
+
+if.then77:                                        ; preds = %if.then73
+  call fastcc void @assembleAggregates(%struct._Chv* %frontJ.2, %struct._ChvList* %aggList, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #7, !dbg !692
+  br label %if.end80, !dbg !694
+
+if.end80:                                         ; preds = %if.end61, %if.then73, %if.then77, %if.end69
+  %allAggregatesHere.0 = phi i32 [ 78, %if.end69 ], [ 89, %if.then77 ], [ 89, %if.then73 ], [ 89, %if.end61 ]
+  %cmp81 = icmp sgt i32 %msglvl, 1, !dbg !695
+  br i1 %cmp81, label %if.then83, label %if.end88, !dbg !695
+
+if.then83:                                        ; preds = %if.end80
+  %call86 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([43 x i8]* @.str1, i64 0, i64 0), i32 %., i32 %allAggregatesHere.0) #6, !dbg !696
+  %call87 = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !698
+  br label %if.end88, !dbg !699
+
+if.end88:                                         ; preds = %if.then83, %if.end80
+  %cmp93 = icmp eq i32 %allAggregatesHere.0, 89, !dbg !700
+  %or.cond = and i1 %9, %cmp93, !dbg !700
+  br i1 %or.cond, label %if.then95, label %if.end176, !dbg !700
+
+if.then95:                                        ; preds = %if.end88
+  %cmp96 = icmp eq %struct._ChvList* %postList, null, !dbg !701
+  br i1 %cmp96, label %if.else102, label %if.then98, !dbg !701
+
+if.then98:                                        ; preds = %if.then95
+  call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !703) #5, !dbg !706
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %frontJ.2}, i64 0, metadata !707) #5, !dbg !708
+  call void @llvm.dbg.value(metadata !{i32* %ndelay}, i64 0, metadata !709) #5, !dbg !710
+  call void @llvm.dbg.value(metadata !{%struct._Chv** %fronts}, i64 0, metadata !711) #5, !dbg !712
+  call void @llvm.dbg.value(metadata !{%struct._ChvList* %postList}, i64 0, metadata !713) #5, !dbg !714
+  call void @llvm.dbg.value(metadata !{%struct._ChvManager* %chvmanager}, i64 0, metadata !715) #5, !dbg !716
+  call void @llvm.dbg.value(metadata !{double* %cpus}, i64 0, metadata !717) #5, !dbg !718
+  call void @llvm.dbg.value(metadata !{i32 %msglvl}, i64 0, metadata !719) #5, !dbg !720
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %msgFile}, i64 0, metadata !721) #5, !dbg !722
+  %cmp.i = icmp sgt i32 %msglvl, 4, !dbg !723
+  br i1 %cmp.i, label %if.then.i, label %if.end.i, !dbg !723
+
+if.then.i:                                        ; preds = %if.then98
+  %call.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([86 x i8]* @.str25, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.2, i32* %ndelay, %struct._Chv** %fronts, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, double* %cpus) #6, !dbg !724
+  %call1.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !726
+  br label %if.end.i, !dbg !727
+
+if.end.i:                                         ; preds = %if.then.i, %if.then98
+  %id.i = getelementptr inbounds %struct._Chv* %frontJ.2, i64 0, i32 0, !dbg !728
+  %12 = load i32* %id.i, align 4, !dbg !728, !tbaa !612
+  call void @llvm.dbg.value(metadata !{i32 %12}, i64 0, metadata !729) #5, !dbg !728
+  br i1 %cmp81, label %if.then3.i, label %if.end12.i, !dbg !730
+
+if.then3.i:                                       ; preds = %if.end.i
+  %call4.i = call i32 @ChvList_isCountZero(%struct._ChvList* %postList, i32 %12) #6, !dbg !731
+  %cmp5.i = icmp eq i32 %call4.i, 1, !dbg !731
+  br i1 %cmp5.i, label %if.then6.i, label %if.else.i, !dbg !731
+
+if.then6.i:                                       ; preds = %if.then3.i
+  %13 = call i64 @fwrite(i8* getelementptr inbounds ([29 x i8]* @.str26, i64 0, i64 0), i64 28, i64 1, %struct._IO_FILE* %msgFile) #5, !dbg !733
+  %call8.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !735
+  br label %if.end12.i, !dbg !736
+
+if.else.i:                                        ; preds = %if.then3.i
+  %14 = call i64 @fwrite(i8* getelementptr inbounds ([34 x i8]* @.str27, i64 0, i64 0), i64 33, i64 1, %struct._IO_FILE* %msgFile) #5, !dbg !737
+  %call10.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !739
+  br label %if.end12.i
+
+if.end12.i:                                       ; preds = %if.else.i, %if.then6.i, %if.end.i
+  %call13.i = call i32 @ChvList_isCountZero(%struct._ChvList* %postList, i32 %12) #6, !dbg !740
+  %cmp14.i = icmp eq i32 %call13.i, 1, !dbg !740
+  br i1 %cmp14.i, label %if.then15.i, label %assemblePostponedData.exit, !dbg !740
+
+if.then15.i:                                      ; preds = %if.end12.i
+  br i1 %cmp81, label %if.then17.i, label %if.end20.i, !dbg !741
+
+if.then17.i:                                      ; preds = %if.then15.i
+  %15 = call i64 @fwrite(i8* getelementptr inbounds ([28 x i8]* @.str28, i64 0, i64 0), i64 27, i64 1, %struct._IO_FILE* %msgFile) #5, !dbg !743
+  %call19.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !745
+  br label %if.end20.i, !dbg !746
+
+if.end20.i:                                       ; preds = %if.then17.i, %if.then15.i
+  %call21.i = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !747
+  %16 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !747, !tbaa !665
+  %conv.i = sitofp i64 %16 to double, !dbg !747
+  %17 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !747, !tbaa !665
+  %conv22.i = sitofp i64 %17 to double, !dbg !747
+  %mul.i = fmul double %conv22.i, 1.000000e-06, !dbg !747
+  %add.i = fadd double %conv.i, %mul.i, !dbg !747
+  call void @llvm.dbg.value(metadata !{double %add.i}, i64 0, metadata !748) #5, !dbg !747
+  %call23.i = call %struct._Chv* @FrontMtx_assemblePostponedData(%struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.2, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, i32* %ndelay) #6, !dbg !749
+  %idxprom.i = sext i32 %12 to i64, !dbg !749
+  %arrayidx.i = getelementptr inbounds %struct._Chv** %fronts, i64 %idxprom.i, !dbg !749
+  store %struct._Chv* %call23.i, %struct._Chv** %arrayidx.i, align 8, !dbg !749, !tbaa !607
+  %cmp26.i = icmp eq %struct._Chv* %call23.i, %frontJ.2, !dbg !750
+  br i1 %cmp26.i, label %if.end35.i, label %if.then28.i, !dbg !750
+
+if.then28.i:                                      ; preds = %if.end20.i
+  br i1 %cmp81, label %if.then31.i, label %if.end34.i, !dbg !751
+
+if.then31.i:                                      ; preds = %if.then28.i
+  %18 = call i64 @fwrite(i8* getelementptr inbounds ([22 x i8]* @.str29, i64 0, i64 0), i64 21, i64 1, %struct._IO_FILE* %msgFile) #5, !dbg !753
+  %call33.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !755
+  br label %if.end34.i, !dbg !756
+
+if.end34.i:                                       ; preds = %if.then31.i, %if.then28.i
+  call void @ChvManager_releaseObject(%struct._ChvManager* %chvmanager, %struct._Chv* %frontJ.2) #6, !dbg !757
+  br label %if.end35.i, !dbg !758
+
+if.end35.i:                                       ; preds = %if.end34.i, %if.end20.i
+  %call36.i = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !759
+  %19 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !759, !tbaa !665
+  %conv37.i = sitofp i64 %19 to double, !dbg !759
+  %20 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !759, !tbaa !665
+  %conv38.i = sitofp i64 %20 to double, !dbg !759
+  %mul39.i = fmul double %conv38.i, 1.000000e-06, !dbg !759
+  %add40.i = fadd double %conv37.i, %mul39.i, !dbg !759
+  call void @llvm.dbg.value(metadata !{double %add40.i}, i64 0, metadata !760) #5, !dbg !759
+  %sub.i = fsub double %add40.i, %add.i, !dbg !761
+  %arrayidx41.i = getelementptr inbounds double* %cpus, i64 3, !dbg !761
+  %21 = load double* %arrayidx41.i, align 8, !dbg !761, !tbaa !669
+  %add42.i = fadd double %21, %sub.i, !dbg !761
+  store double %add42.i, double* %arrayidx41.i, align 8, !dbg !761, !tbaa !669
+  call void @llvm.dbg.value(metadata !672, i64 0, metadata !762) #5, !dbg !763
+  br label %assemblePostponedData.exit, !dbg !764
+
+assemblePostponedData.exit:                       ; preds = %if.end12.i, %if.end35.i
+  %rc.0.i = phi i32 [ 89, %if.end35.i ], [ 78, %if.end12.i ]
+  %22 = load %struct._Chv** %arrayidx50, align 8, !dbg !765, !tbaa !607
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %22}, i64 0, metadata !364), !dbg !765
+  br label %if.end103, !dbg !766
+
+if.else102:                                       ; preds = %if.then95
+  call void @llvm.dbg.value(metadata !672, i64 0, metadata !362), !dbg !767
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !368), !dbg !769
+  store i32 0, i32* %ndelay, align 4, !dbg !769, !tbaa !612
+  br label %if.end103
+
+if.end103:                                        ; preds = %if.else102, %assemblePostponedData.exit
+  %allPostponedAssmb.0 = phi i32 [ %rc.0.i, %assemblePostponedData.exit ], [ 89, %if.else102 ]
+  %frontJ.3 = phi %struct._Chv* [ %22, %assemblePostponedData.exit ], [ %frontJ.2, %if.else102 ]
+  br i1 %cmp81, label %if.then106, label %if.end110, !dbg !770
+
+if.then106:                                       ; preds = %if.end103
+  %call108 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([24 x i8]* @.str2, i64 0, i64 0), i32 %allPostponedAssmb.0) #6, !dbg !771
+  %call109 = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !773
+  br label %if.end110, !dbg !774
+
+if.end110:                                        ; preds = %if.then106, %if.end103
+  %cmp112 = icmp eq i32 %allPostponedAssmb.0, 89, !dbg !775
+  br i1 %cmp112, label %if.then114, label %if.end176, !dbg !775
+
+if.then114:                                       ; preds = %if.end110
+  call void @llvm.dbg.value(metadata !{i32* %ndelay}, i64 0, metadata !368), !dbg !776
+  %23 = load i32* %ndelay, align 4, !dbg !776, !tbaa !612
+  call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !778) #5, !dbg !779
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %frontJ.3}, i64 0, metadata !780) #5, !dbg !781
+  call void @llvm.dbg.value(metadata !{i32 %23}, i64 0, metadata !782) #5, !dbg !783
+  call void @llvm.dbg.value(metadata !{double %tau}, i64 0, metadata !784) #5, !dbg !785
+  call void @llvm.dbg.value(metadata !{%struct._IV* %pivotsizesIV}, i64 0, metadata !786) #5, !dbg !787
+  call void @llvm.dbg.value(metadata !{%struct._DV* %workDV}, i64 0, metadata !788) #5, !dbg !789
+  call void @llvm.dbg.value(metadata !{i32* %stats}, i64 0, metadata !790) #5, !dbg !791
+  call void @llvm.dbg.value(metadata !{double* %cpus}, i64 0, metadata !792) #5, !dbg !793
+  call void @llvm.dbg.value(metadata !{i32 %msglvl}, i64 0, metadata !794) #5, !dbg !795
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %msgFile}, i64 0, metadata !796) #5, !dbg !797
+  %cmp.i345 = icmp sgt i32 %msglvl, 2, !dbg !798
+  br i1 %cmp.i345, label %if.then.i348, label %if.end7.i, !dbg !798
+
+if.then.i348:                                     ; preds = %if.then114
+  %call.i346 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([27 x i8]* @.str21, i64 0, i64 0), %struct._Chv* %frontJ.3, i32 %23) #6, !dbg !799
+  %call1.i347 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([15 x i8]* @.str22, i64 0, i64 0), double %tau) #6, !dbg !801
+  %call2.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([20 x i8]* @.str23, i64 0, i64 0), i32* %stats, double* %cpus) #6, !dbg !802
+  %call3.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !803
+  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.3, %struct._IO_FILE* %msgFile) #6, !dbg !804
+  %call6.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !806
+  br label %if.end7.i, !dbg !807
+
+if.end7.i:                                        ; preds = %if.then.i348, %if.then114
+  %call8.i349 = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !808
+  %24 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !808, !tbaa !665
+  %conv.i350 = sitofp i64 %24 to double, !dbg !808
+  %25 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !808, !tbaa !665
+  %conv9.i = sitofp i64 %25 to double, !dbg !808
+  %mul.i351 = fmul double %conv9.i, 1.000000e-06, !dbg !808
+  %add.i352 = fadd double %conv.i350, %mul.i351, !dbg !808
+  call void @llvm.dbg.value(metadata !{double %add.i352}, i64 0, metadata !809) #5, !dbg !808
+  %pivotingflag.i = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 5, !dbg !810
+  %26 = load i32* %pivotingflag.i, align 4, !dbg !810, !tbaa !612
+  %cmp10.i = icmp eq i32 %26, 1, !dbg !810
+  br i1 %cmp10.i, label %if.then12.i, label %if.else.i354, !dbg !810
+
+if.then12.i:                                      ; preds = %if.end7.i
+  %arrayidx.i353 = getelementptr inbounds i32* %stats, i64 1, !dbg !811
+  %call14.i = call i32 @Chv_factorWithPivoting(%struct._Chv* %frontJ.3, i32 %23, i32 1, %struct._IV* %pivotsizesIV, %struct._DV* %workDV, double %tau, i32* %arrayidx.i353) #6, !dbg !811
+  call void @llvm.dbg.value(metadata !{i32 %call14.i}, i64 0, metadata !813) #5, !dbg !811
+  br label %if.end16.i, !dbg !814
+
+if.else.i354:                                     ; preds = %if.end7.i
+  %patchinfo.i = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 27, !dbg !815
+  %27 = load %struct._PatchAndGoInfo** %patchinfo.i, align 8, !dbg !815, !tbaa !607
+  %call15.i = call i32 @Chv_factorWithNoPivoting(%struct._Chv* %frontJ.3, %struct._PatchAndGoInfo* %27) #6, !dbg !815
+  call void @llvm.dbg.value(metadata !{i32 %call15.i}, i64 0, metadata !813) #5, !dbg !815
+  br label %if.end16.i
+
+if.end16.i:                                       ; preds = %if.else.i354, %if.then12.i
+  %nelim.0.i = phi i32 [ %call14.i, %if.then12.i ], [ %call15.i, %if.else.i354 ]
+  %nD.i = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 1, !dbg !817
+  %28 = load i32* %nD.i, align 4, !dbg !817, !tbaa !612
+  %sub.i355 = sub nsw i32 %28, %nelim.0.i, !dbg !817
+  call void @llvm.dbg.value(metadata !{i32 %sub.i355}, i64 0, metadata !818) #5, !dbg !817
+  %arrayidx17.i = getelementptr inbounds i32* %stats, i64 2, !dbg !819
+  %29 = load i32* %arrayidx17.i, align 4, !dbg !819, !tbaa !612
+  %add18.i = add nsw i32 %29, %sub.i355, !dbg !819
+  store i32 %add18.i, i32* %arrayidx17.i, align 4, !dbg !819, !tbaa !612
+  %30 = load i32* %pivotingflag.i, align 4, !dbg !820, !tbaa !612
+  %cmp20.i = icmp eq i32 %30, 1, !dbg !820
+  br i1 %cmp20.i, label %lor.lhs.false.i, label %if.then24.i, !dbg !820
+
+lor.lhs.false.i:                                  ; preds = %if.end16.i
+  %symmetryflag.i = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !820
+  %31 = load i32* %symmetryflag.i, align 4, !dbg !820, !tbaa !612
+  %cmp22.i = icmp eq i32 %31, 2, !dbg !820
+  br i1 %cmp22.i, label %if.then24.i, label %if.else27.i, !dbg !820
+
+if.then24.i:                                      ; preds = %lor.lhs.false.i, %if.end16.i
+  %32 = load i32* %stats, align 4, !dbg !821, !tbaa !612
+  %add26.i = add nsw i32 %32, %nelim.0.i, !dbg !821
+  br label %if.end31.i, !dbg !823
+
+if.else27.i:                                      ; preds = %lor.lhs.false.i
+  %call28.i = call i32 @IV_size(%struct._IV* %pivotsizesIV) #6, !dbg !824
+  %33 = load i32* %stats, align 4, !dbg !824, !tbaa !612
+  %add30.i = add nsw i32 %33, %call28.i, !dbg !824
+  br label %if.end31.i
+
+if.end31.i:                                       ; preds = %if.else27.i, %if.then24.i
+  %storemerge.i = phi i32 [ %add26.i, %if.then24.i ], [ %add30.i, %if.else27.i ]
+  store i32 %storemerge.i, i32* %stats, align 4, !dbg !824, !tbaa !612
+  %call32.i = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !826
+  %34 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !826, !tbaa !665
+  %conv33.i = sitofp i64 %34 to double, !dbg !826
+  %35 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !826, !tbaa !665
+  %conv34.i = sitofp i64 %35 to double, !dbg !826
+  %mul35.i = fmul double %conv34.i, 1.000000e-06, !dbg !826
+  %add36.i = fadd double %conv33.i, %mul35.i, !dbg !826
+  call void @llvm.dbg.value(metadata !{double %add36.i}, i64 0, metadata !827) #5, !dbg !826
+  %sub37.i = fsub double %add36.i, %add.i352, !dbg !828
+  %arrayidx38.i = getelementptr inbounds double* %cpus, i64 4, !dbg !828
+  %36 = load double* %arrayidx38.i, align 8, !dbg !828, !tbaa !669
+  %add39.i = fadd double %36, %sub37.i, !dbg !828
+  store double %add39.i, double* %arrayidx38.i, align 8, !dbg !828, !tbaa !669
+  br i1 %cmp81, label %if.then42.i, label %if.end45.i, !dbg !829
+
+if.then42.i:                                      ; preds = %if.end31.i
+  %id.i356 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0, !dbg !830
+  %37 = load i32* %id.i356, align 4, !dbg !830, !tbaa !612
+  %call43.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([36 x i8]* @.str24, i64 0, i64 0), i32 %37, i32 %nelim.0.i, i32 %sub.i355) #6, !dbg !830
+  %call44.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !832
+  br label %if.end45.i, !dbg !833
+
+if.end45.i:                                       ; preds = %if.then42.i, %if.end31.i
+  br i1 %cmp.i345, label %if.then48.i, label %factorFront.exit, !dbg !834
+
+if.then48.i:                                      ; preds = %if.end45.i
+  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.3, %struct._IO_FILE* %msgFile) #6, !dbg !835
+  %call49.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !837
+  br label %factorFront.exit, !dbg !838
+
+factorFront.exit:                                 ; preds = %if.end45.i, %if.then48.i
+  call void @llvm.dbg.value(metadata !{i32 %nelim.0.i}, i64 0, metadata !369), !dbg !776
+  br i1 %cmp81, label %if.then118, label %if.end121, !dbg !839
+
+if.then118:                                       ; preds = %factorFront.exit
+  %id = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0, !dbg !840
+  %38 = load i32* %id, align 4, !dbg !840, !tbaa !612
+  %call119 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([22 x i8]* @.str3, i64 0, i64 0), i32 %38, i32 %nelim.0.i) #6, !dbg !840
+  %call120 = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !842
+  br label %if.end121, !dbg !843
+
+if.end121:                                        ; preds = %if.then118, %factorFront.exit
+  %39 = load i32* %pivotingflag.i, align 4, !dbg !844, !tbaa !612
+  %cmp122 = icmp ne i32 %39, 1, !dbg !844
+  %.pre = load i32* %nD.i, align 4, !dbg !845, !tbaa !612
+  %cmp125 = icmp slt i32 %nelim.0.i, %.pre, !dbg !844
+  %or.cond375 = and i1 %cmp122, %cmp125, !dbg !844
+  br i1 %or.cond375, label %if.then127, label %if.else132, !dbg !844
+
+if.then127:                                       ; preds = %if.end121
+  call void @ChvManager_releaseObject(%struct._ChvManager* %chvmanager, %struct._Chv* %frontJ.3) #6, !dbg !848
+  store %struct._Chv* null, %struct._Chv** %arrayidx50, align 8, !dbg !850, !tbaa !607
+  store i8 69, i8* %arrayidx, align 1, !dbg !851, !tbaa !608
+  br label %if.end176, !dbg !852
+
+if.else132:                                       ; preds = %if.end121
+  call void @llvm.dbg.value(metadata !853, i64 0, metadata !854) #5, !dbg !855
+  %sub.i358 = sub nsw i32 %.pre, %nelim.0.i, !dbg !845
+  call void @llvm.dbg.value(metadata !{i32 %sub.i358}, i64 0, metadata !856) #5, !dbg !845
+  br i1 %cmp81, label %if.then.i362, label %if.end.i370, !dbg !857
+
+if.then.i362:                                     ; preds = %if.else132
+  %call.i360 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([34 x i8]* @.str18, i64 0, i64 0), i32 %nelim.0.i) #6, !dbg !858
+  %call1.i361 = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !860
+  br label %if.end.i370, !dbg !861
+
+if.end.i370:                                      ; preds = %if.then.i362, %if.else132
+  %call2.i363 = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !862
+  %40 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !862, !tbaa !665
+  %conv.i364 = sitofp i64 %40 to double, !dbg !862
+  %41 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !862, !tbaa !665
+  %conv3.i = sitofp i64 %41 to double, !dbg !862
+  %mul.i365 = fmul double %conv3.i, 1.000000e-06, !dbg !862
+  %add.i366 = fadd double %conv.i364, %mul.i365, !dbg !862
+  call void @llvm.dbg.value(metadata !{double %add.i366}, i64 0, metadata !863) #5, !dbg !862
+  %42 = load i32* %nD.i, align 4, !dbg !864, !tbaa !612
+  %sub5.i = sub nsw i32 %42, %sub.i358, !dbg !864
+  store i32 %sub5.i, i32* %nD.i, align 4, !dbg !864, !tbaa !612
+  %nL.i = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 2, !dbg !865
+  %43 = load i32* %nL.i, align 4, !dbg !865, !tbaa !612
+  %add6.i = add nsw i32 %43, %sub.i358, !dbg !865
+  store i32 %add6.i, i32* %nL.i, align 4, !dbg !865, !tbaa !612
+  %nU.i = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 3, !dbg !866
+  %44 = load i32* %nU.i, align 4, !dbg !866, !tbaa !612
+  %add7.i = add nsw i32 %44, %sub.i358, !dbg !866
+  store i32 %add7.i, i32* %nU.i, align 4, !dbg !866, !tbaa !612
+  call void @FrontMtx_storeFront(%struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.3, %struct._IV* %pivotsizesIV, double %droptol, i32 %msglvl, %struct._IO_FILE* %msgFile) #6, !dbg !867
+  %45 = load i32* %nD.i, align 4, !dbg !868, !tbaa !612
+  %add9.i = add nsw i32 %45, %sub.i358, !dbg !868
+  store i32 %add9.i, i32* %nD.i, align 4, !dbg !868, !tbaa !612
+  %46 = load i32* %nL.i, align 4, !dbg !869, !tbaa !612
+  %sub11.i = sub nsw i32 %46, %sub.i358, !dbg !869
+  store i32 %sub11.i, i32* %nL.i, align 4, !dbg !869, !tbaa !612
+  %47 = load i32* %nU.i, align 4, !dbg !870, !tbaa !612
+  %sub13.i = sub nsw i32 %47, %sub.i358, !dbg !870
+  store i32 %sub13.i, i32* %nU.i, align 4, !dbg !870, !tbaa !612
+  %call14.i367 = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !871
+  %48 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !871, !tbaa !665
+  %conv15.i = sitofp i64 %48 to double, !dbg !871
+  %49 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !871, !tbaa !665
+  %conv16.i = sitofp i64 %49 to double, !dbg !871
+  %mul17.i = fmul double %conv16.i, 1.000000e-06, !dbg !871
+  %add18.i368 = fadd double %conv15.i, %mul17.i, !dbg !871
+  call void @llvm.dbg.value(metadata !{double %add18.i368}, i64 0, metadata !872) #5, !dbg !871
+  %sub19.i = fsub double %add18.i368, %add.i366, !dbg !873
+  %arrayidx.i369 = getelementptr inbounds double* %cpus, i64 6, !dbg !873
+  %50 = load double* %arrayidx.i369, align 8, !dbg !873, !tbaa !669
+  %add20.i = fadd double %50, %sub19.i, !dbg !873
+  store double %add20.i, double* %arrayidx.i369, align 8, !dbg !873, !tbaa !669
+  br i1 %cmp96, label %storeEntries.exit, label %if.then23.i, !dbg !874
+
+if.then23.i:                                      ; preds = %if.end.i370
+  %cmp24.i.not = icmp slt i32 %sub.i358, 1, !dbg !875
+  %cmp.i345.not = xor i1 %cmp.i345, true, !dbg !875
+  %brmerge = or i1 %cmp24.i.not, %cmp.i345.not, !dbg !875
+  %.mux = select i1 %cmp24.i.not, %struct._Chv* null, %struct._Chv* %frontJ.3, !dbg !875
+  br i1 %brmerge, label %if.end33.i, label %if.then29.i, !dbg !875
+
+if.then29.i:                                      ; preds = %if.then23.i
+  %id.i371 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0, !dbg !876
+  %51 = load i32* %id.i371, align 4, !dbg !876, !tbaa !612
+  %call30.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str19, i64 0, i64 0), i32 %51) #6, !dbg !876
+  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.3, %struct._IO_FILE* %msgFile) #6, !dbg !879
+  %call31.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !880
+  br label %if.end33.i, !dbg !881
+
+if.end33.i:                                       ; preds = %if.then23.i, %if.then29.i
+  %postponedchv.0.i = phi %struct._Chv* [ %frontJ.3, %if.then29.i ], [ %.mux, %if.then23.i ]
+  br i1 %cmp81, label %if.then36.i, label %if.end39.i, !dbg !882
+
+if.then36.i:                                      ; preds = %if.end33.i
+  %call37.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([28 x i8]* @.str20, i64 0, i64 0), %struct._Chv* %postponedchv.0.i) #6, !dbg !883
+  %call38.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !885
+  br label %if.end39.i, !dbg !886
+
+if.end39.i:                                       ; preds = %if.then36.i, %if.end33.i
+  %call40.i = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !887
+  %52 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !887, !tbaa !665
+  %conv41.i = sitofp i64 %52 to double, !dbg !887
+  %53 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !887, !tbaa !665
+  %conv42.i = sitofp i64 %53 to double, !dbg !887
+  %mul43.i = fmul double %conv42.i, 1.000000e-06, !dbg !887
+  %add44.i = fadd double %conv41.i, %mul43.i, !dbg !887
+  call void @llvm.dbg.value(metadata !{double %add44.i}, i64 0, metadata !863) #5, !dbg !887
+  %id45.i = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0, !dbg !888
+  %54 = load i32* %id45.i, align 4, !dbg !888, !tbaa !612
+  %idxprom.i372 = sext i32 %54 to i64, !dbg !888
+  %arrayidx46.i = getelementptr inbounds i32* %parent, i64 %idxprom.i372, !dbg !888
+  %55 = load i32* %arrayidx46.i, align 4, !dbg !888, !tbaa !612
+  call void @FrontMtx_storePostponedData(%struct._FrontMtx* %frontmtx, %struct._Chv* %postponedchv.0.i, i32 %sub.i358, i32 %55, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager) #6, !dbg !888
+  %call47.i = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !889
+  %56 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !889, !tbaa !665
+  %conv48.i = sitofp i64 %56 to double, !dbg !889
+  %57 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !889, !tbaa !665
+  %conv49.i = sitofp i64 %57 to double, !dbg !889
+  %mul50.i = fmul double %conv49.i, 1.000000e-06, !dbg !889
+  %add51.i = fadd double %conv48.i, %mul50.i, !dbg !889
+  call void @llvm.dbg.value(metadata !{double %add51.i}, i64 0, metadata !872) #5, !dbg !889
+  %sub52.i = fsub double %add51.i, %add44.i, !dbg !890
+  %arrayidx53.i = getelementptr inbounds double* %cpus, i64 5, !dbg !890
+  %58 = load double* %arrayidx53.i, align 8, !dbg !890, !tbaa !669
+  %add54.i = fadd double %58, %sub52.i, !dbg !890
+  store double %add54.i, double* %arrayidx53.i, align 8, !dbg !890, !tbaa !669
+  br label %storeEntries.exit, !dbg !891
+
+storeEntries.exit:                                ; preds = %if.end.i370, %if.end39.i
+  call void @ChvManager_releaseObject(%struct._ChvManager* %chvmanager, %struct._Chv* %frontJ.3) #6, !dbg !892
+  store %struct._Chv* null, %struct._Chv** %arrayidx50, align 8, !dbg !893, !tbaa !607
+  store i8 70, i8* %arrayidx, align 1, !dbg !894, !tbaa !608
+  br label %if.end176
+
+if.else140:                                       ; preds = %lor.lhs.false
+  br i1 %9, label %if.then144, label %if.end176, !dbg !895
+
+if.then144:                                       ; preds = %if.else140
+  %cmp145 = icmp eq %struct._Chv* %frontJ.1, null, !dbg !896
+  br i1 %cmp145, label %if.end172, label %if.then147, !dbg !896
+
+if.then147:                                       ; preds = %if.then144
+  %cmp148 = icmp sgt i32 %msglvl, 1, !dbg !898
+  br i1 %cmp148, label %if.end153, label %if.end158, !dbg !898
+
+if.end153:                                        ; preds = %if.then147
+  %call151 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str4, i64 0, i64 0), i32 %J) #6, !dbg !900
+  %call152 = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !902
+  %cmp154 = icmp sgt i32 %msglvl, 3, !dbg !903
+  br i1 %cmp154, label %if.then156, label %if.end158, !dbg !903
+
+if.then156:                                       ; preds = %if.end153
+  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.1, %struct._IO_FILE* %msgFile) #6, !dbg !904
+  %call157 = call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !906
+  br label %if.end158, !dbg !907
+
+if.end158:                                        ; preds = %if.then147, %if.then156, %if.end153
+  %call159 = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !908
+  %59 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !908, !tbaa !665
+  %conv160 = sitofp i64 %59 to double, !dbg !908
+  %60 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !908, !tbaa !665
+  %conv161 = sitofp i64 %60 to double, !dbg !908
+  %mul162 = fmul double %conv161, 1.000000e-06, !dbg !908
+  %add163 = fadd double %conv160, %mul162, !dbg !908
+  call void @llvm.dbg.value(metadata !{double %add163}, i64 0, metadata !365), !dbg !908
+  call void @ChvList_addObjectToList(%struct._ChvList* %aggList, %struct._Chv* %frontJ.1, i32 %J) #6, !dbg !909
+  %call164 = call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !910
+  %61 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !910, !tbaa !665
+  %conv165 = sitofp i64 %61 to double, !dbg !910
+  %62 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !910, !tbaa !665
+  %conv166 = sitofp i64 %62 to double, !dbg !910
+  %mul167 = fmul double %conv166, 1.000000e-06, !dbg !910
+  %add168 = fadd double %conv165, %mul167, !dbg !910
+  call void @llvm.dbg.value(metadata !{double %add168}, i64 0, metadata !366), !dbg !910
+  %sub169 = fsub double %add168, %add163, !dbg !911
+  %arrayidx170 = getelementptr inbounds double* %cpus, i64 7, !dbg !911
+  %63 = load double* %arrayidx170, align 8, !dbg !911, !tbaa !669
+  %add171 = fadd double %63, %sub169, !dbg !911
+  store double %add171, double* %arrayidx170, align 8, !dbg !911, !tbaa !669
+  br label %if.end172, !dbg !912
+
+if.end172:                                        ; preds = %if.then144, %if.end158
+  store i8 70, i8* %arrayidx, align 1, !dbg !913, !tbaa !608
+  br label %if.end176, !dbg !914
+
+if.end176:                                        ; preds = %if.else140, %if.end172, %if.end88, %if.then127, %storeEntries.exit, %if.end110
+  %dec = add nsw i32 %lookahead, -1, !dbg !915
+  call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !346), !dbg !915
+  %cmp177 = icmp sgt i32 %lookahead, 0, !dbg !915
+  br i1 %cmp177, label %land.lhs.true179, label %if.end186, !dbg !915
+
+land.lhs.true179:                                 ; preds = %if.end176
+  %arrayidx181 = getelementptr inbounds i32* %parent, i64 %idxprom, !dbg !915
+  %64 = load i32* %arrayidx181, align 4, !dbg !915, !tbaa !612
+  call void @llvm.dbg.value(metadata !{i32 %64}, i64 0, metadata !367), !dbg !915
+  %cmp182 = icmp eq i32 %64, -1, !dbg !915
+  br i1 %cmp182, label %if.end186, label %if.then184, !dbg !915
+
+if.then184:                                       ; preds = %land.lhs.true179
+  %call185 = call signext i8 @FrontMtx_factorVisit(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._Chv** %fronts, i32 %dec, double %tau, double %droptol, i8* %status, %struct._IP** %heads, %struct._IV* %pivotsizesIV, %struct._DV* %workDV, i32* %parent, %struct._ChvList* %aggList, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, i32* %stats, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #7, !dbg !916
+  br label %if.end186, !dbg !918
+
+if.end186:                                        ; preds = %land.lhs.true179, %if.end176, %if.then184
+  %65 = load i8* %arrayidx, align 1, !dbg !919, !tbaa !608
+  br label %return, !dbg !919
+
+return:                                           ; preds = %entry, %if.end186
+  %retval.0 = phi i8 [ %65, %if.end186 ], [ 70, %entry ]
+  ret i8 %retval.0, !dbg !919
 }

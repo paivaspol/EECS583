@@ -1,7 +1,10 @@
 define i32 @safe_from_earlyclobber(%struct.rtx_def* %op, %struct.rtx_def* %clobber) #0 {
 entry:
   %early_data = alloca %struct.decomposition, align 8
-  call fastcc void @decompose(%struct.decomposition* sret %early_data, %struct.rtx_def* %clobber) #7
-  %call = call fastcc i32 @immune_p(%struct.rtx_def* %op, %struct.rtx_def* %clobber, %struct.decomposition* byval align 8 %early_data) #7
-  ret i32 %call
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !1313), !dbg !2983
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %clobber}, i64 0, metadata !1314), !dbg !2983
+  call void @llvm.dbg.declare(metadata !{%struct.decomposition* %early_data}, metadata !1315), !dbg !2984
+  call fastcc void @decompose(%struct.decomposition* sret %early_data, %struct.rtx_def* %clobber) #8, !dbg !2985
+  %call = call fastcc i32 @immune_p(%struct.rtx_def* %op, %struct.rtx_def* %clobber, %struct.decomposition* byval align 8 %early_data) #8, !dbg !2986
+  ret i32 %call, !dbg !2986
 }

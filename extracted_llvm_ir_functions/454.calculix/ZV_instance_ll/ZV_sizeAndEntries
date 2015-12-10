@@ -1,28 +1,27 @@
 define void @ZV_sizeAndEntries(%struct._ZV* %dv, i32* %psize, double** %pentries) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ZV* %dv, i64 0, metadata !56, metadata !74), !dbg !194
-  tail call void @llvm.dbg.value(metadata i32* %psize, i64 0, metadata !57, metadata !74), !dbg !195
-  tail call void @llvm.dbg.value(metadata double** %pentries, i64 0, metadata !58, metadata !74), !dbg !196
-  %1 = icmp eq %struct._ZV* %dv, null, !dbg !197
-  %2 = icmp eq i32* %psize, null, !dbg !199
-  %or.cond = or i1 %1, %2, !dbg !200
-  %3 = icmp eq double** %pentries, null, !dbg !201
-  %or.cond3 = or i1 %or.cond, %3, !dbg !200
-  br i1 %or.cond3, label %4, label %7, !dbg !200
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ZV* %dv}, i64 0, metadata !55), !dbg !127
+  tail call void @llvm.dbg.value(metadata !{i32* %psize}, i64 0, metadata !56), !dbg !128
+  tail call void @llvm.dbg.value(metadata !{double** %pentries}, i64 0, metadata !57), !dbg !129
+  %cmp = icmp eq %struct._ZV* %dv, null, !dbg !130
+  %cmp1 = icmp eq i32* %psize, null, !dbg !130
+  %or.cond = or i1 %cmp, %cmp1, !dbg !130
+  %cmp3 = icmp eq double** %pentries, null, !dbg !130
+  %or.cond11 = or i1 %or.cond, %cmp3, !dbg !130
+  br i1 %or.cond11, label %if.then, label %if.end, !dbg !130
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !202, !tbaa !81
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([57 x i8]* @.str8, i64 0, i64 0), %struct._ZV* %dv, i32* %psize, double** %pentries) #5, !dbg !204
-  tail call void @exit(i32 -1) #6, !dbg !205
-  unreachable, !dbg !205
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !131, !tbaa !72
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str8, i64 0, i64 0), %struct._ZV* %dv, i32* %psize, double** %pentries) #5, !dbg !131
+  tail call void @exit(i32 -1) #6, !dbg !133
+  unreachable, !dbg !133
 
-; <label>:7                                       ; preds = %0
-  %8 = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 0, !dbg !206
-  %9 = load i32* %8, align 4, !dbg !206, !tbaa !112
-  store i32 %9, i32* %psize, align 4, !dbg !207, !tbaa !208
-  %10 = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 3, !dbg !209
-  %11 = bitcast double** %10 to i64*, !dbg !209
-  %12 = load i64* %11, align 8, !dbg !209, !tbaa !134
-  %13 = bitcast double** %pentries to i64*, !dbg !210
-  store i64 %12, i64* %13, align 8, !dbg !210, !tbaa !81
-  ret void, !dbg !211
+if.end:                                           ; preds = %entry
+  %size = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 0, !dbg !134
+  %1 = load i32* %size, align 4, !dbg !134, !tbaa !77
+  store i32 %1, i32* %psize, align 4, !dbg !134, !tbaa !77
+  %vec = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 3, !dbg !135
+  %2 = load double** %vec, align 8, !dbg !135, !tbaa !72
+  store double* %2, double** %pentries, align 8, !dbg !135, !tbaa !72
+  ret void, !dbg !136
 }

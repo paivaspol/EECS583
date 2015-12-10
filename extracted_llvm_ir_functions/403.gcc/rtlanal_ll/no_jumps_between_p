@@ -1,23 +1,25 @@
 define i32 @no_jumps_between_p(%struct.rtx_def* nocapture %beg, %struct.rtx_def* %end) #0 {
 entry:
-  br label %for.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %beg}, i64 0, metadata !457), !dbg !1207
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %end}, i64 0, metadata !458), !dbg !1207
+  br label %for.cond, !dbg !1208
 
 for.cond:                                         ; preds = %for.body, %entry
   %beg.pn = phi %struct.rtx_def* [ %beg, %entry ], [ %p.0, %for.body ]
-  %p.0.in.in = getelementptr inbounds %struct.rtx_def* %beg.pn, i64 0, i32 1, i64 2
-  %p.0.in = bitcast %union.rtunion_def* %p.0.in.in to %struct.rtx_def**
-  %p.0 = load %struct.rtx_def** %p.0.in, align 8
-  %cmp = icmp eq %struct.rtx_def* %p.0, %end
-  br i1 %cmp, label %return, label %for.body
+  %p.0.in.in = getelementptr inbounds %struct.rtx_def* %beg.pn, i64 0, i32 1, i64 2, !dbg !1208
+  %p.0.in = bitcast %union.rtunion_def* %p.0.in.in to %struct.rtx_def**, !dbg !1208
+  %p.0 = load %struct.rtx_def** %p.0.in, align 8, !dbg !1208
+  %cmp = icmp eq %struct.rtx_def* %p.0, %end, !dbg !1208
+  br i1 %cmp, label %return, label %for.body, !dbg !1208
 
 for.body:                                         ; preds = %for.cond
-  %0 = bitcast %struct.rtx_def* %p.0 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp1 = icmp eq i32 %bf.clear, 33
-  br i1 %cmp1, label %return, label %for.cond
+  %0 = bitcast %struct.rtx_def* %p.0 to i32*, !dbg !1210
+  %bf.load = load i32* %0, align 8, !dbg !1210
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1210
+  %cmp1 = icmp eq i32 %bf.clear, 33, !dbg !1210
+  br i1 %cmp1, label %return, label %for.cond, !dbg !1210
 
 return:                                           ; preds = %for.cond, %for.body
   %retval.0 = phi i32 [ 0, %for.body ], [ 1, %for.cond ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1211
 }

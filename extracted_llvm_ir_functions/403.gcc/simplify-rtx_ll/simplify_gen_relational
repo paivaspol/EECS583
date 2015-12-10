@@ -1,26 +1,36 @@
 define %struct.rtx_def* @simplify_gen_relational(i32 %code, i32 %mode, i32 %cmp_mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #0 {
 entry:
-  %call = tail call %struct.rtx_def* @simplify_relational_operation(i32 %code, i32 %cmp_mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #5
-  %cmp = icmp eq %struct.rtx_def* %call, null
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !371), !dbg !1484
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !372), !dbg !1485
+  tail call void @llvm.dbg.value(metadata !{i32 %cmp_mode}, i64 0, metadata !373), !dbg !1486
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op0}, i64 0, metadata !374), !dbg !1487
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op1}, i64 0, metadata !375), !dbg !1487
+  %call = tail call %struct.rtx_def* @simplify_relational_operation(i32 %code, i32 %cmp_mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #6, !dbg !1488
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !376), !dbg !1488
+  %cmp = icmp eq %struct.rtx_def* %call, null, !dbg !1488
+  br i1 %cmp, label %if.end, label %return, !dbg !1488
 
 if.end:                                           ; preds = %entry
-  %call1 = tail call i32 @swap_commutative_operands_p(%struct.rtx_def* %op0, %struct.rtx_def* %op1) #4
-  %tobool = icmp eq i32 %call1, 0
-  br i1 %tobool, label %if.end4, label %if.then2
+  %call1 = tail call i32 @swap_commutative_operands_p(%struct.rtx_def* %op0, %struct.rtx_def* %op1) #5, !dbg !1489
+  %tobool = icmp eq i32 %call1, 0, !dbg !1489
+  br i1 %tobool, label %if.end4, label %if.then2, !dbg !1489
 
 if.then2:                                         ; preds = %if.end
-  %call3 = tail call i32 @swap_condition(i32 %code) #4
-  br label %if.end4
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op0}, i64 0, metadata !376), !dbg !1490
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op1}, i64 0, metadata !374), !dbg !1490
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op0}, i64 0, metadata !375), !dbg !1490
+  %call3 = tail call i32 @swap_condition(i32 %code) #5, !dbg !1490
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !371), !dbg !1490
+  br label %if.end4, !dbg !1490
 
 if.end4:                                          ; preds = %if.end, %if.then2
   %code.addr.0 = phi i32 [ %call3, %if.then2 ], [ %code, %if.end ]
   %op0.addr.0 = phi %struct.rtx_def* [ %op1, %if.then2 ], [ %op0, %if.end ]
   %op1.addr.0 = phi %struct.rtx_def* [ %op0, %if.then2 ], [ %op1, %if.end ]
-  %call5 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %code.addr.0, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0) #4
-  br label %return
+  %call5 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %code.addr.0, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0) #5, !dbg !1491
+  br label %return, !dbg !1491
 
 return:                                           ; preds = %entry, %if.end4
   %retval.0 = phi %struct.rtx_def* [ %call5, %if.end4 ], [ %call, %entry ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !1492
 }

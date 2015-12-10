@@ -1,52 +1,53 @@
-define void @get_pdb_coordnum(%struct.__sFILE* %in, i32* nocapture %natoms) #4 {
+define void @get_pdb_coordnum(%struct._IO_FILE* %in, i32* nocapture %natoms) #0 {
+entry:
   %line = alloca [4096 x i8], align 16
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %in, i64 0, metadata !409, metadata !551), !dbg !1592
-  tail call void @llvm.dbg.value(metadata i32* %natoms, i64 0, metadata !410, metadata !551), !dbg !1593
-  %1 = getelementptr inbounds [4096 x i8]* %line, i64 0, i64 0, !dbg !1594
-  call void @llvm.lifetime.start(i64 4096, i8* %1) #5, !dbg !1594
-  tail call void @llvm.dbg.declare(metadata [4096 x i8]* %line, metadata !411, metadata !551), !dbg !1595
-  store i32 0, i32* %natoms, align 4, !dbg !1596, !tbaa !716
-  %2 = call i8* @fgets2(i8* %1, i32 4096, %struct.__sFILE* %in) #10, !dbg !1597
-  %3 = icmp eq i8* %2, null, !dbg !1598
-  br i1 %3, label %._crit_edge, label %.lr.ph, !dbg !1598
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %in}, i64 0, metadata !294), !dbg !807
+  call void @llvm.dbg.value(metadata !{i32* %natoms}, i64 0, metadata !295), !dbg !807
+  %0 = getelementptr inbounds [4096 x i8]* %line, i64 0, i64 0, !dbg !808
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #2, !dbg !808
+  call void @llvm.dbg.declare(metadata !{[4096 x i8]* %line}, metadata !296), !dbg !808
+  store i32 0, i32* %natoms, align 4, !dbg !809, !tbaa !425
+  %call20 = call i8* @fgets2(i8* %0, i32 4096, %struct._IO_FILE* %in) #8, !dbg !810
+  %tobool21 = icmp eq i8* %call20, null, !dbg !810
+  br i1 %tobool21, label %while.end, label %while.body, !dbg !810
 
-.lr.ph:                                           ; preds = %0, %.backedge
-  %4 = load i32* @bTER, align 4, !dbg !1599, !tbaa !716
-  %5 = icmp eq i32 %4, 0, !dbg !1599
-  br i1 %5, label %.thread, label %6, !dbg !1602
+while.body:                                       ; preds = %entry, %while.cond.backedge
+  %1 = load i32* @bTER, align 4, !dbg !811, !tbaa !425
+  %tobool1 = icmp eq i32 %1, 0, !dbg !811
+  br i1 %tobool1, label %land.lhs.true5, label %land.lhs.true, !dbg !811
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0), i64 3) #10, !dbg !1603
-  %8 = icmp eq i32 %7, 0, !dbg !1604
-  br i1 %8, label %._crit_edge, label %11, !dbg !1605
+land.lhs.true:                                    ; preds = %while.body
+  %call3 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0), i64 3) #10, !dbg !811
+  %cmp = icmp eq i32 %call3, 0, !dbg !811
+  br i1 %cmp, label %while.end, label %if.end, !dbg !811
 
-.thread:                                          ; preds = %.lr.ph
-  %9 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([7 x i8]* @.str22, i64 0, i64 0), i64 6) #10, !dbg !1606
-  %10 = icmp eq i32 %9, 0, !dbg !1607
-  br i1 %10, label %._crit_edge, label %11, !dbg !1608
+land.lhs.true5:                                   ; preds = %while.body
+  %call7 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str22, i64 0, i64 0), i64 6) #10, !dbg !813
+  %cmp8 = icmp eq i32 %call7, 0, !dbg !813
+  br i1 %cmp8, label %while.end, label %if.end, !dbg !813
 
-; <label>:11                                      ; preds = %6, %.thread
-  %12 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([7 x i8]* @.str23, i64 0, i64 0), i64 6) #10, !dbg !1609
-  %13 = icmp eq i32 %12, 0, !dbg !1611
-  br i1 %13, label %17, label %14, !dbg !1612
+if.end:                                           ; preds = %land.lhs.true, %land.lhs.true5
+  %call10 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str23, i64 0, i64 0), i64 6) #10, !dbg !814
+  %cmp11 = icmp eq i32 %call10, 0, !dbg !814
+  br i1 %cmp11, label %if.then16, label %lor.lhs.false12, !dbg !814
 
-; <label>:14                                      ; preds = %11
-  %15 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([7 x i8]* @.str24, i64 0, i64 0), i64 6) #10, !dbg !1613
-  %16 = icmp eq i32 %15, 0, !dbg !1614
-  br i1 %16, label %17, label %.backedge, !dbg !1615
+lor.lhs.false12:                                  ; preds = %if.end
+  %call14 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str24, i64 0, i64 0), i64 6) #10, !dbg !814
+  %cmp15 = icmp eq i32 %call14, 0, !dbg !814
+  br i1 %cmp15, label %if.then16, label %while.cond.backedge, !dbg !814
 
-; <label>:17                                      ; preds = %14, %11
-  %18 = load i32* %natoms, align 4, !dbg !1616, !tbaa !716
-  %19 = add nsw i32 %18, 1, !dbg !1616
-  store i32 %19, i32* %natoms, align 4, !dbg !1616, !tbaa !716
-  br label %.backedge, !dbg !1617
+if.then16:                                        ; preds = %lor.lhs.false12, %if.end
+  %2 = load i32* %natoms, align 4, !dbg !815, !tbaa !425
+  %inc = add nsw i32 %2, 1, !dbg !815
+  store i32 %inc, i32* %natoms, align 4, !dbg !815, !tbaa !425
+  br label %while.cond.backedge, !dbg !815
 
-.backedge:                                        ; preds = %17, %14
-  %20 = call i8* @fgets2(i8* %1, i32 4096, %struct.__sFILE* %in) #10, !dbg !1597
-  %21 = icmp eq i8* %20, null, !dbg !1598
-  br i1 %21, label %._crit_edge, label %.lr.ph, !dbg !1598
+while.cond.backedge:                              ; preds = %if.then16, %lor.lhs.false12
+  %call = call i8* @fgets2(i8* %0, i32 4096, %struct._IO_FILE* %in) #8, !dbg !810
+  %tobool = icmp eq i8* %call, null, !dbg !810
+  br i1 %tobool, label %while.end, label %while.body, !dbg !810
 
-._crit_edge:                                      ; preds = %.thread, %6, %.backedge, %0
-  call void @llvm.lifetime.end(i64 4096, i8* %1) #5, !dbg !1618
-  ret void, !dbg !1618
+while.end:                                        ; preds = %while.cond.backedge, %land.lhs.true, %land.lhs.true5, %entry
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #2, !dbg !816
+  ret void, !dbg !816
 }

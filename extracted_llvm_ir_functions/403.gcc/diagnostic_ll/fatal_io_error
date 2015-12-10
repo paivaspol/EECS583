@@ -1,34 +1,38 @@
-define void @fatal_io_error(i8* %msgid, ...) #7 {
+define void @fatal_io_error(i8* %msgid, ...) #8 {
 entry:
   %os = alloca %struct.output_state, align 8
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %os.0.cast = bitcast %struct.output_state* %os to i8*
-  call void @llvm.lifetime.start(i64 80, i8* %os.0.cast)
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %0 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  %1 = bitcast %struct.output_buffer* %0 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %os.0.cast, i8* %1, i64 80, i32 8, i1 false), !tbaa.struct !6
-  %2 = load i8** @progname, align 8, !tbaa !3
-  %call = call i32* @__errno_location() #13
-  %3 = load i32* %call, align 4, !tbaa !0
-  %call2 = call i8* @xstrerror(i32 %3) #10
-  call void (%struct.output_buffer*, i8*, ...)* @output_printf(%struct.output_buffer* %0, i8* getelementptr inbounds ([9 x i8]* @.str6, i64 0, i64 0), i8* %2, i8* %call2) #11
-  %4 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  %format_args = getelementptr inbounds %struct.output_buffer* %4, i64 0, i32 0, i32 8
-  store [1 x %struct.__va_list_tag]* %ap, [1 x %struct.__va_list_tag]** %format_args, align 8, !tbaa !3
-  %5 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  %cursor = getelementptr inbounds %struct.output_buffer* %5, i64 0, i32 0, i32 7
-  store i8* %msgid, i8** %cursor, align 8, !tbaa !3
-  %6 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  call fastcc void @output_format(%struct.output_buffer* %6) #11
-  %7 = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !3
-  %8 = getelementptr inbounds %struct.diagnostic_context* %7, i64 0, i32 0
-  call fastcc void @diagnostic_finish(%struct.output_buffer* %8) #11
-  %9 = load %struct.output_buffer** @diagnostic_buffer, align 8, !tbaa !3
-  %10 = bitcast %struct.output_buffer* %9 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %os.0.cast, i64 80, i32 8, i1 false), !tbaa.struct !6
-  call void @llvm.va_end(i8* %arraydecay1)
-  call void @exit(i32 1) #14
-  unreachable
+  call void @llvm.dbg.value(metadata !{i8* %msgid}, i64 0, metadata !600), !dbg !1507
+  %os.0.cast = bitcast %struct.output_state* %os to i8*, !dbg !1508
+  call void @llvm.lifetime.start(i64 80, i8* %os.0.cast), !dbg !1508
+  call void @llvm.dbg.declare(metadata !{%struct.output_state* %os}, metadata !601), !dbg !1508
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !602), !dbg !1509
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !1509
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !1509
+  %0 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1510, !tbaa !1178
+  %1 = bitcast %struct.output_buffer* %0 to i8*, !dbg !1510
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %os.0.cast, i8* %1, i64 80, i32 8, i1 false), !dbg !1510, !tbaa.struct !1477
+  %2 = load i8** @progname, align 8, !dbg !1512, !tbaa !1178
+  %call = call i32* @__errno_location() #14, !dbg !1512
+  %3 = load i32* %call, align 4, !dbg !1512, !tbaa !1172
+  %call2 = call i8* @xstrerror(i32 %3) #11, !dbg !1512
+  call void (%struct.output_buffer*, i8*, ...)* @output_printf(%struct.output_buffer* %0, i8* getelementptr inbounds ([9 x i8]* @.str6, i64 0, i64 0), i8* %2, i8* %call2) #12, !dbg !1512
+  %4 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1513, !tbaa !1178
+  %format_args = getelementptr inbounds %struct.output_buffer* %4, i64 0, i32 0, i32 8, !dbg !1513
+  call void @llvm.dbg.value(metadata !{[1 x %struct.__va_list_tag]* %ap}, i64 0, metadata !602), !dbg !1513
+  store [1 x %struct.__va_list_tag]* %ap, [1 x %struct.__va_list_tag]** %format_args, align 8, !dbg !1513, !tbaa !1178
+  %5 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1514, !tbaa !1178
+  %cursor = getelementptr inbounds %struct.output_buffer* %5, i64 0, i32 0, i32 7, !dbg !1514
+  store i8* %msgid, i8** %cursor, align 8, !dbg !1514, !tbaa !1178
+  %6 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1515, !tbaa !1178
+  call fastcc void @output_format(%struct.output_buffer* %6) #12, !dbg !1515
+  %7 = load %struct.diagnostic_context** @global_dc, align 8, !dbg !1516, !tbaa !1178
+  %8 = getelementptr inbounds %struct.diagnostic_context* %7, i64 0, i32 0, !dbg !1516
+  call fastcc void @diagnostic_finish(%struct.output_buffer* %8) #12, !dbg !1516
+  %9 = load %struct.output_buffer** @diagnostic_buffer, align 8, !dbg !1517, !tbaa !1178
+  %10 = bitcast %struct.output_buffer* %9 to i8*, !dbg !1517
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %os.0.cast, i64 80, i32 8, i1 false), !dbg !1517, !tbaa.struct !1477
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !1518
+  call void @exit(i32 1) #15, !dbg !1519
+  unreachable, !dbg !1519
 }

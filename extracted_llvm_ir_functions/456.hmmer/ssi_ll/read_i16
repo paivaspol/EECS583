@@ -1,20 +1,22 @@
-define internal fastcc i32 @read_i16(%struct.__sFILE* nocapture %fp, i16* nocapture %ret_result) #0 {
+define internal fastcc i32 @read_i16(%struct._IO_FILE* nocapture %fp, i16* nocapture %ret_result) #0 {
+entry:
   %result = alloca i16, align 2
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !421, metadata !535), !dbg !893
-  tail call void @llvm.dbg.value(metadata i16* %ret_result, i64 0, metadata !422, metadata !535), !dbg !894
-  %1 = bitcast i16* %result to i8*, !dbg !895
-  %2 = call i64 @fread(i8* %1, i64 2, i64 1, %struct.__sFILE* %fp) #9, !dbg !897
-  %3 = icmp eq i64 %2, 1, !dbg !898
-  br i1 %3, label %4, label %7, !dbg !899
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !459), !dbg !609
+  call void @llvm.dbg.value(metadata !{i16* %ret_result}, i64 0, metadata !460), !dbg !609
+  call void @llvm.dbg.declare(metadata !{i16* %result}, metadata !461), !dbg !610
+  %0 = bitcast i16* %result to i8*, !dbg !611
+  %call = call i64 @fread(i8* %0, i64 2, i64 1, %struct._IO_FILE* %fp) #9, !dbg !611
+  %cmp = icmp eq i64 %call, 1, !dbg !611
+  br i1 %cmp, label %if.end, label %return, !dbg !611
 
-; <label>:4                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i16* %result, i64 0, metadata !423, metadata !535), !dbg !900
-  %5 = load i16* %result, align 2, !dbg !901, !tbaa !789
-  %6 = tail call zeroext i16 @sre_ntoh16(i16 zeroext %5) #9, !dbg !902
-  store i16 %6, i16* %ret_result, align 2, !dbg !903, !tbaa !789
-  br label %7, !dbg !904
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.value(metadata !{i16* %result}, i64 0, metadata !461), !dbg !612
+  %1 = load i16* %result, align 2, !dbg !612, !tbaa !517
+  %call1 = call zeroext i16 @sre_ntoh16(i16 zeroext %1) #9, !dbg !612
+  store i16 %call1, i16* %ret_result, align 2, !dbg !612, !tbaa !517
+  br label %return, !dbg !613
 
-; <label>:7                                       ; preds = %0, %4
-  %.0 = phi i32 [ 1, %4 ], [ 0, %0 ]
-  ret i32 %.0, !dbg !905
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !613
 }

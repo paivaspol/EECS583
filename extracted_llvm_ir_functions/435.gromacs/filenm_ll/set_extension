@@ -1,32 +1,32 @@
-define internal fastcc void @set_extension(i8* %buf, i32 %ftp) #4 {
-  tail call void @llvm.dbg.value(metadata i8* %buf, i64 0, metadata !323, metadata !382), !dbg !1179
-  tail call void @llvm.dbg.value(metadata i32 %ftp, i64 0, metadata !324, metadata !382), !dbg !1180
-  %1 = sext i32 %ftp to i64, !dbg !1181
-  %2 = tail call i64 @strlen(i8* %buf) #9, !dbg !1182
-  %3 = trunc i64 %2 to i32, !dbg !1182
-  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !325, metadata !382), !dbg !1183
-  %4 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %1, i32 1, !dbg !1184
-  %5 = load i8** %4, align 8, !dbg !1184, !tbaa !440
-  %6 = tail call i64 @strlen(i8* %5) #9, !dbg !1185
-  %7 = trunc i64 %6 to i32, !dbg !1185
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !326, metadata !382), !dbg !1186
-  %8 = icmp sgt i32 %3, %7, !dbg !1187
-  br i1 %8, label %9, label %15, !dbg !1189
+define internal fastcc void @set_extension(i8* %buf, i32 %ftp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %buf}, i64 0, metadata !305), !dbg !771
+  tail call void @llvm.dbg.value(metadata !{i32 %ftp}, i64 0, metadata !306), !dbg !771
+  %idxprom = sext i32 %ftp to i64, !dbg !772
+  %call = tail call i64 @strlen(i8* %buf) #8, !dbg !773
+  %conv = trunc i64 %call to i32, !dbg !773
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !307), !dbg !773
+  %ext = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %idxprom, i32 1, !dbg !774
+  %0 = load i8** %ext, align 8, !dbg !774, !tbaa !363
+  %call1 = tail call i64 @strlen(i8* %0) #8, !dbg !774
+  %conv2 = trunc i64 %call1 to i32, !dbg !774
+  tail call void @llvm.dbg.value(metadata !{i32 %conv2}, i64 0, metadata !308), !dbg !774
+  %cmp = icmp sgt i32 %conv, %conv2, !dbg !775
+  br i1 %cmp, label %lor.lhs.false, label %if.then, !dbg !775
 
-; <label>:9                                       ; preds = %0
-  %10 = sub i64 %2, %6, !dbg !1190
-  %sext = shl i64 %10, 32, !dbg !1191
-  %11 = ashr exact i64 %sext, 32, !dbg !1191
-  %12 = getelementptr inbounds i8* %buf, i64 %11, !dbg !1191
-  %13 = tail call i32 @strcasecmp(i8* %12, i8* %5) #9, !dbg !1192
-  %14 = icmp eq i32 %13, 0, !dbg !1193
-  br i1 %14, label %18, label %15, !dbg !1194
+lor.lhs.false:                                    ; preds = %entry
+  %sub = sub i64 %call, %call1, !dbg !775
+  %sext = shl i64 %sub, 32, !dbg !775
+  %idxprom4 = ashr exact i64 %sext, 32, !dbg !775
+  %arrayidx5 = getelementptr inbounds i8* %buf, i64 %idxprom4, !dbg !775
+  %call7 = tail call i32 @strcasecmp(i8* %arrayidx5, i8* %0) #8, !dbg !775
+  %cmp8 = icmp eq i32 %call7, 0, !dbg !775
+  br i1 %cmp8, label %if.end, label %if.then, !dbg !775
 
-; <label>:15                                      ; preds = %9, %0
-  %16 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %buf, i1 false), !dbg !1195
-  %17 = tail call i8* @__strcat_chk(i8* %buf, i8* %5, i64 %16) #9, !dbg !1195
-  br label %18, !dbg !1195
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %call11 = tail call i8* @strcat(i8* %buf, i8* %0) #7, !dbg !776
+  br label %if.end, !dbg !776
 
-; <label>:18                                      ; preds = %9, %15
-  ret void, !dbg !1196
+if.end:                                           ; preds = %lor.lhs.false, %if.then
+  ret void, !dbg !777
 }

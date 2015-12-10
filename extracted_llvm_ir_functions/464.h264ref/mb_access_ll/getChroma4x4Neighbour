@@ -1,31 +1,42 @@
 define void @getChroma4x4Neighbour(i32 %curr_mb_nr, i32 %block_x, i32 %block_y, i32 %rel_x, i32 %rel_y, %struct.pix_pos* nocapture %pix) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %curr_mb_nr, i64 0, metadata !163, metadata !700), !dbg !1446
-  tail call void @llvm.dbg.value(metadata i32 %block_x, i64 0, metadata !164, metadata !700), !dbg !1447
-  tail call void @llvm.dbg.value(metadata i32 %block_y, i64 0, metadata !165, metadata !700), !dbg !1448
-  tail call void @llvm.dbg.value(metadata i32 %rel_x, i64 0, metadata !166, metadata !700), !dbg !1449
-  tail call void @llvm.dbg.value(metadata i32 %rel_y, i64 0, metadata !167, metadata !700), !dbg !1450
-  tail call void @llvm.dbg.value(metadata %struct.pix_pos* %pix, i64 0, metadata !168, metadata !700), !dbg !1451
-  %1 = shl i32 %block_x, 2, !dbg !1452
-  %2 = add nsw i32 %1, %rel_x, !dbg !1453
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !169, metadata !700), !dbg !1454
-  %3 = shl i32 %block_y, 2, !dbg !1455
-  %4 = add nsw i32 %3, %rel_y, !dbg !1456
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !170, metadata !700), !dbg !1457
-  tail call void @getNeighbour(i32 %curr_mb_nr, i32 %2, i32 %4, i32 0, %struct.pix_pos* %pix) #6, !dbg !1458
-  %5 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0, !dbg !1459
-  %6 = load i32* %5, align 4, !dbg !1459, !tbaa !919
-  %7 = icmp eq i32 %6, 0, !dbg !1461
-  br i1 %7, label %14, label %8, !dbg !1462
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %curr_mb_nr}, i64 0, metadata !163), !dbg !1026
+  tail call void @llvm.dbg.value(metadata !{i32 %block_x}, i64 0, metadata !164), !dbg !1026
+  tail call void @llvm.dbg.value(metadata !{i32 %block_y}, i64 0, metadata !165), !dbg !1026
+  tail call void @llvm.dbg.value(metadata !{i32 %rel_x}, i64 0, metadata !166), !dbg !1026
+  tail call void @llvm.dbg.value(metadata !{i32 %rel_y}, i64 0, metadata !167), !dbg !1026
+  tail call void @llvm.dbg.value(metadata !{%struct.pix_pos* %pix}, i64 0, metadata !168), !dbg !1026
+  %mul = shl i32 %block_x, 2, !dbg !1027
+  %add = add nsw i32 %mul, %rel_x, !dbg !1027
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !169), !dbg !1027
+  %mul1 = shl i32 %block_y, 2, !dbg !1028
+  %add2 = add nsw i32 %mul1, %rel_y, !dbg !1028
+  tail call void @llvm.dbg.value(metadata !{i32 %add2}, i64 0, metadata !170), !dbg !1028
+  tail call void @getNeighbour(i32 %curr_mb_nr, i32 %add, i32 %add2, i32 0, %struct.pix_pos* %pix) #6, !dbg !1029
+  %available = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0, !dbg !1030
+  %0 = load i32* %available, align 4, !dbg !1030, !tbaa !694
+  %tobool = icmp eq i32 %0, 0, !dbg !1030
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1030
 
-; <label>:8                                       ; preds = %0
-  %9 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2, !dbg !1463
-  %10 = bitcast i32* %9 to <4 x i32>*, !dbg !1465
-  %11 = load <4 x i32>* %10, align 4, !dbg !1465, !tbaa !866
-  %12 = sdiv <4 x i32> %11, <i32 4, i32 4, i32 4, i32 4>, !dbg !1465
-  %13 = bitcast i32* %9 to <4 x i32>*, !dbg !1465
-  store <4 x i32> %12, <4 x i32>* %13, align 4, !dbg !1465, !tbaa !866
-  br label %14, !dbg !1466
+if.then:                                          ; preds = %entry
+  %x3 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2, !dbg !1031
+  %1 = load i32* %x3, align 4, !dbg !1031, !tbaa !694
+  %div = sdiv i32 %1, 4, !dbg !1031
+  store i32 %div, i32* %x3, align 4, !dbg !1031, !tbaa !694
+  %y4 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3, !dbg !1033
+  %2 = load i32* %y4, align 4, !dbg !1033, !tbaa !694
+  %div5 = sdiv i32 %2, 4, !dbg !1033
+  store i32 %div5, i32* %y4, align 4, !dbg !1033, !tbaa !694
+  %pos_x = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 4, !dbg !1034
+  %3 = load i32* %pos_x, align 4, !dbg !1034, !tbaa !694
+  %div6 = sdiv i32 %3, 4, !dbg !1034
+  store i32 %div6, i32* %pos_x, align 4, !dbg !1034, !tbaa !694
+  %pos_y = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 5, !dbg !1035
+  %4 = load i32* %pos_y, align 4, !dbg !1035, !tbaa !694
+  %div7 = sdiv i32 %4, 4, !dbg !1035
+  store i32 %div7, i32* %pos_y, align 4, !dbg !1035, !tbaa !694
+  br label %if.end, !dbg !1036
 
-; <label>:14                                      ; preds = %0, %8
-  ret void, !dbg !1467
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !1037
 }

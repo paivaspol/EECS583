@@ -1,0 +1,40 @@
+define zeroext i1 @_ZN11xercesc_2_56XMLUri22isConformantSchemeNameEPKt(i16* %scheme) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %scheme}, i64 0, metadata !1488), !dbg !4124
+  %tobool = icmp eq i16* %scheme, null, !dbg !4125
+  br i1 %tobool, label %return, label %if.end, !dbg !4125
+
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i16* %scheme}, i64 0, metadata !1489), !dbg !4126
+  %0 = load i16* %scheme, align 2, !dbg !4127, !tbaa !2644
+  %call = tail call zeroext i1 @_ZN11xercesc_2_59XMLString7isAlphaEt(i16 zeroext %0) #9, !dbg !4127
+  br i1 %call, label %while.cond.preheader, label %return, !dbg !4127
+
+while.cond.preheader:                             ; preds = %if.end
+  %tmpStr.015 = getelementptr inbounds i16* %scheme, i64 1, !dbg !4128
+  %1 = load i16* %tmpStr.015, align 2, !dbg !4129, !tbaa !2644
+  %tobool316 = icmp eq i16 %1, 0, !dbg !4129
+  br i1 %tobool316, label %return, label %while.body, !dbg !4129
+
+while.body:                                       ; preds = %while.cond.preheader, %while.cond.backedge
+  %2 = phi i16 [ %4, %while.cond.backedge ], [ %1, %while.cond.preheader ]
+  %tmpStr.017 = phi i16* [ %tmpStr.0, %while.cond.backedge ], [ %tmpStr.015, %while.cond.preheader ]
+  %call4 = tail call zeroext i1 @_ZN11xercesc_2_59XMLString10isAlphaNumEt(i16 zeroext %2) #9, !dbg !4130
+  br i1 %call4, label %while.cond.backedge, label %land.lhs.true, !dbg !4130
+
+land.lhs.true:                                    ; preds = %while.body
+  %3 = load i16* %tmpStr.017, align 2, !dbg !4132, !tbaa !2644
+  %call5 = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* getelementptr inbounds ([4 x i16]* @_ZN11xercesc_2_56XMLUri17SCHEME_CHARACTERSE, i64 0, i64 0), i16 zeroext %3) #9, !dbg !4132
+  %cmp = icmp eq i32 %call5, -1, !dbg !4132
+  br i1 %cmp, label %return, label %while.cond.backedge, !dbg !4132
+
+while.cond.backedge:                              ; preds = %land.lhs.true, %while.body
+  %tmpStr.0 = getelementptr inbounds i16* %tmpStr.017, i64 1, !dbg !4128
+  %4 = load i16* %tmpStr.0, align 2, !dbg !4129, !tbaa !2644
+  %tobool3 = icmp eq i16 %4, 0, !dbg !4129
+  br i1 %tobool3, label %return, label %while.body, !dbg !4129
+
+return:                                           ; preds = %while.cond.preheader, %land.lhs.true, %while.cond.backedge, %if.end, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ false, %if.end ], [ true, %while.cond.preheader ], [ false, %land.lhs.true ], [ true, %while.cond.backedge ]
+  ret i1 %retval.0, !dbg !4133
+}

@@ -1,19 +1,20 @@
 define internal fastcc i8* @dbgstr(i8* %desc) #2 {
-  tail call void @llvm.dbg.value(metadata i8* %desc, i64 0, metadata !530, metadata !602), !dbg !1886
-  %1 = load %struct.t_fileio** @curfio, align 8, !dbg !1887, !tbaa !784
-  %2 = getelementptr inbounds %struct.t_fileio* %1, i64 0, i32 4, !dbg !1889
-  %3 = load i32* %2, align 4, !dbg !1889, !tbaa !926
-  %4 = icmp eq i32 %3, 0, !dbg !1887
-  br i1 %4, label %10, label %5, !dbg !1890
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %desc}, i64 0, metadata !384), !dbg !988
+  %0 = load %struct.t_fileio** @curfio, align 8, !dbg !989, !tbaa !514
+  %bDebug = getelementptr inbounds %struct.t_fileio* %0, i64 0, i32 4, !dbg !989
+  %1 = load i32* %bDebug, align 4, !dbg !989, !tbaa !501
+  %tobool = icmp eq i32 %1, 0, !dbg !989
+  br i1 %tobool, label %return, label %if.else, !dbg !989
 
-; <label>:5                                       ; preds = %0
-  %6 = load i8** @add_comment, align 8, !dbg !1891, !tbaa !784
-  %7 = icmp ne i8* %6, null, !dbg !1891
-  %8 = select i1 %7, i8* %6, i8* getelementptr inbounds ([1 x i8]* @.str64, i64 0, i64 0), !dbg !1891
-  %9 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([4096 x i8]* @dbgstr.buf, i64 0, i64 0), i32 0, i64 4096, i8* getelementptr inbounds ([10 x i8]* @.str65, i64 0, i64 0), i8* %8, i8* %desc) #10, !dbg !1891
-  br label %10, !dbg !1893
+if.else:                                          ; preds = %entry
+  %2 = load i8** @add_comment, align 8, !dbg !990, !tbaa !514
+  %tobool1 = icmp ne i8* %2, null, !dbg !990
+  %cond = select i1 %tobool1, i8* %2, i8* getelementptr inbounds ([1 x i8]* @.str55, i64 0, i64 0), !dbg !990
+  %call = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([4096 x i8]* @dbgstr.buf, i64 0, i64 0), i8* getelementptr inbounds ([10 x i8]* @.str56, i64 0, i64 0), i8* %cond, i8* %desc) #8, !dbg !990
+  br label %return, !dbg !992
 
-; <label>:10                                      ; preds = %0, %5
-  %.0 = phi i8* [ getelementptr inbounds ([4096 x i8]* @dbgstr.buf, i64 0, i64 0), %5 ], [ getelementptr inbounds ([1 x i8]* @.str64, i64 0, i64 0), %0 ]
-  ret i8* %.0, !dbg !1894
+return:                                           ; preds = %entry, %if.else
+  %retval.0 = phi i8* [ getelementptr inbounds ([4096 x i8]* @dbgstr.buf, i64 0, i64 0), %if.else ], [ getelementptr inbounds ([1 x i8]* @.str55, i64 0, i64 0), %entry ]
+  ret i8* %retval.0, !dbg !993
 }

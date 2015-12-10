@@ -1,69 +1,70 @@
-define void @accumulate_u(%struct.t_commrec* %cr, %struct.t_grpopts* nocapture readonly %opts, %struct.t_groups* nocapture readonly %grps) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !291, metadata !409), !dbg !595
-  tail call void @llvm.dbg.value(metadata %struct.t_grpopts* %opts, i64 0, metadata !292, metadata !409), !dbg !596
-  tail call void @llvm.dbg.value(metadata %struct.t_groups* %grps, i64 0, metadata !293, metadata !409), !dbg !597
-  %1 = load %struct.t_bin** @accumulate_u.rb, align 8, !dbg !598, !tbaa !556
-  %2 = icmp eq %struct.t_bin* %1, null, !dbg !600
-  br i1 %2, label %3, label %5, !dbg !601
+define void @accumulate_u(%struct.t_commrec* %cr, %struct.t_grpopts* nocapture %opts, %struct.t_groups* nocapture %grps) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_commrec* %cr}, i64 0, metadata !274), !dbg !463
+  tail call void @llvm.dbg.value(metadata !{%struct.t_grpopts* %opts}, i64 0, metadata !275), !dbg !463
+  tail call void @llvm.dbg.value(metadata !{%struct.t_groups* %grps}, i64 0, metadata !276), !dbg !463
+  %0 = load %struct.t_bin** @accumulate_u.rb, align 8, !dbg !464, !tbaa !395
+  %cmp = icmp eq %struct.t_bin* %0, null, !dbg !464
+  br i1 %cmp, label %if.then, label %if.else, !dbg !464
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call %struct.t_bin* @mk_bin() #9, !dbg !602
-  store %struct.t_bin* %4, %struct.t_bin** @accumulate_u.rb, align 8, !dbg !604, !tbaa !556
-  br label %.preheader, !dbg !605
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.t_bin* @mk_bin() #5, !dbg !465
+  store %struct.t_bin* %call, %struct.t_bin** @accumulate_u.rb, align 8, !dbg !465, !tbaa !395
+  br label %for.cond.preheader, !dbg !467
 
-; <label>:5                                       ; preds = %0
-  tail call void @reset_bin(%struct.t_bin* %1) #9, !dbg !606
-  br label %.preheader
+if.else:                                          ; preds = %entry
+  tail call void @reset_bin(%struct.t_bin* %0) #5, !dbg !468
+  br label %for.cond.preheader
 
-.preheader:                                       ; preds = %5, %3
-  %6 = getelementptr inbounds %struct.t_grpopts* %opts, i64 0, i32 1, !dbg !607
-  %7 = load i32* %6, align 4, !dbg !607, !tbaa !484
-  %8 = icmp sgt i32 %7, 0, !dbg !610
-  br i1 %8, label %.lr.ph3, label %._crit_edge4, !dbg !611
+for.cond.preheader:                               ; preds = %if.else, %if.then
+  %ngacc = getelementptr inbounds %struct.t_grpopts* %opts, i64 0, i32 1, !dbg !469
+  %1 = load i32* %ngacc, align 4, !dbg !469, !tbaa !392
+  %cmp125 = icmp sgt i32 %1, 0, !dbg !469
+  br i1 %cmp125, label %for.body.lr.ph, label %for.end, !dbg !469
 
-.lr.ph3:                                          ; preds = %.preheader
-  %9 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 2, !dbg !612
-  br label %10, !dbg !611
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %grpstat = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 2, !dbg !471
+  br label %for.body, !dbg !469
 
-; <label>:10                                      ; preds = %.lr.ph3, %10
-  %indvars.iv5 = phi i64 [ 0, %.lr.ph3 ], [ %indvars.iv.next6, %10 ]
-  %11 = load %struct.__sFILE** @stdlog, align 8, !dbg !613, !tbaa !556
-  %12 = load %struct.t_bin** @accumulate_u.rb, align 8, !dbg !614, !tbaa !556
-  %13 = load %struct.t_grp_acc** %9, align 8, !dbg !612, !tbaa !485
-  %14 = getelementptr inbounds %struct.t_grp_acc* %13, i64 %indvars.iv5, i32 3, i64 0, !dbg !615
-  %15 = tail call i32 @add_binr(%struct.__sFILE* %11, %struct.t_bin* %12, i32 3, float* %14) #9, !dbg !616
-  %indvars.iv.next6 = add nuw nsw i64 %indvars.iv5, 1, !dbg !611
-  %16 = load i32* %6, align 4, !dbg !607, !tbaa !484
-  %17 = sext i32 %16 to i64, !dbg !610
-  %18 = icmp slt i64 %indvars.iv.next6, %17, !dbg !610
-  br i1 %18, label %10, label %._crit_edge4, !dbg !611
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv27 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next28, %for.body ]
+  %2 = load %struct._IO_FILE** @stdlog, align 8, !dbg !471, !tbaa !395
+  %3 = load %struct.t_bin** @accumulate_u.rb, align 8, !dbg !471, !tbaa !395
+  %4 = load %struct.t_grp_acc** %grpstat, align 8, !dbg !471, !tbaa !395
+  %arraydecay = getelementptr inbounds %struct.t_grp_acc* %4, i64 %indvars.iv27, i32 3, i64 0, !dbg !471
+  %call2 = tail call i32 @add_binr(%struct._IO_FILE* %2, %struct.t_bin* %3, i32 3, float* %arraydecay) #5, !dbg !471
+  %indvars.iv.next28 = add i64 %indvars.iv27, 1, !dbg !469
+  %5 = load i32* %ngacc, align 4, !dbg !469, !tbaa !392
+  %6 = trunc i64 %indvars.iv.next28 to i32, !dbg !469
+  %cmp1 = icmp slt i32 %6, %5, !dbg !469
+  br i1 %cmp1, label %for.body, label %for.end, !dbg !469
 
-._crit_edge4:                                     ; preds = %10, %.preheader
-  %19 = load %struct.t_bin** @accumulate_u.rb, align 8, !dbg !617, !tbaa !556
-  tail call void @sum_bin(%struct.t_bin* %19, %struct.t_commrec* %cr) #9, !dbg !618
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !294, metadata !409), !dbg !619
-  %20 = load i32* %6, align 4, !dbg !620, !tbaa !484
-  %21 = icmp sgt i32 %20, 0, !dbg !623
-  br i1 %21, label %.lr.ph, label %._crit_edge, !dbg !624
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %7 = load %struct.t_bin** @accumulate_u.rb, align 8, !dbg !472, !tbaa !395
+  tail call void @sum_bin(%struct.t_bin* %7, %struct.t_commrec* %cr) #5, !dbg !472
+  tail call void @llvm.dbg.value(metadata !62, i64 0, metadata !277), !dbg !473
+  %8 = load i32* %ngacc, align 4, !dbg !473, !tbaa !392
+  %cmp523 = icmp sgt i32 %8, 0, !dbg !473
+  br i1 %cmp523, label %for.body6.lr.ph, label %for.end14, !dbg !473
 
-.lr.ph:                                           ; preds = %._crit_edge4
-  %22 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 2, !dbg !625
-  br label %23, !dbg !624
+for.body6.lr.ph:                                  ; preds = %for.end
+  %grpstat8 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 2, !dbg !475
+  br label %for.body6, !dbg !473
 
-; <label>:23                                      ; preds = %.lr.ph, %23
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %23 ]
-  %24 = load %struct.t_bin** @accumulate_u.rb, align 8, !dbg !626, !tbaa !556
-  %25 = mul nsw i64 %indvars.iv, 3, !dbg !627
-  %26 = load %struct.t_grp_acc** %22, align 8, !dbg !625, !tbaa !485
-  %27 = getelementptr inbounds %struct.t_grp_acc* %26, i64 %indvars.iv, i32 3, i64 0, !dbg !628
-  %28 = trunc i64 %25 to i32, !dbg !629
-  tail call void @extract_binr(%struct.t_bin* %24, i32 %28, i32 3, float* %27) #9, !dbg !629
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !624
-  %29 = load i32* %6, align 4, !dbg !620, !tbaa !484
-  %30 = sext i32 %29 to i64, !dbg !623
-  %31 = icmp slt i64 %indvars.iv.next, %30, !dbg !623
-  br i1 %31, label %23, label %._crit_edge, !dbg !624
+for.body6:                                        ; preds = %for.body6.lr.ph, %for.body6
+  %indvars.iv = phi i64 [ 0, %for.body6.lr.ph ], [ %indvars.iv.next, %for.body6 ]
+  %9 = load %struct.t_bin** @accumulate_u.rb, align 8, !dbg !475, !tbaa !395
+  %10 = trunc i64 %indvars.iv to i32, !dbg !475
+  %mul = mul nsw i32 %10, 3, !dbg !475
+  %11 = load %struct.t_grp_acc** %grpstat8, align 8, !dbg !475, !tbaa !395
+  %arraydecay11 = getelementptr inbounds %struct.t_grp_acc* %11, i64 %indvars.iv, i32 3, i64 0, !dbg !475
+  tail call void @extract_binr(%struct.t_bin* %9, i32 %mul, i32 3, float* %arraydecay11) #5, !dbg !475
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !473
+  %12 = load i32* %ngacc, align 4, !dbg !473, !tbaa !392
+  %13 = trunc i64 %indvars.iv.next to i32, !dbg !473
+  %cmp5 = icmp slt i32 %13, %12, !dbg !473
+  br i1 %cmp5, label %for.body6, label %for.end14, !dbg !473
 
-._crit_edge:                                      ; preds = %23, %._crit_edge4
-  ret void, !dbg !630
+for.end14:                                        ; preds = %for.body6, %for.end
+  ret void, !dbg !476
 }

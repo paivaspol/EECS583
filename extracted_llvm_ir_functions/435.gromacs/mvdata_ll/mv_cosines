@@ -1,27 +1,28 @@
-define internal fastcc void @mv_cosines(i32 %dest, %struct.t_cosines* %cs) #4 {
-  tail call void @llvm.dbg.value(metadata i32 %dest, i64 0, metadata !772, metadata !837), !dbg !1433
-  tail call void @llvm.dbg.value(metadata %struct.t_cosines* %cs, i64 0, metadata !773, metadata !837), !dbg !1434
-  %1 = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 0, !dbg !1435
-  %2 = bitcast %struct.t_cosines* %cs to i8*, !dbg !1435
-  tail call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %2) #7, !dbg !1435
-  %3 = load i32* %1, align 4, !dbg !1436, !tbaa !1396
-  %4 = icmp sgt i32 %3, 0, !dbg !1438
-  br i1 %4, label %5, label %15, !dbg !1439
+define internal fastcc void @mv_cosines(i32 %dest, %struct.t_cosines* %cs) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %dest}, i64 0, metadata !567), !dbg !934
+  tail call void @llvm.dbg.value(metadata !{%struct.t_cosines* %cs}, i64 0, metadata !568), !dbg !934
+  %n = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 0, !dbg !935
+  %0 = bitcast %struct.t_cosines* %cs to i8*, !dbg !935
+  tail call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %0) #5, !dbg !935
+  %1 = load i32* %n, align 4, !dbg !936, !tbaa !663
+  %cmp = icmp sgt i32 %1, 0, !dbg !936
+  br i1 %cmp, label %if.then, label %if.end, !dbg !936
 
-; <label>:5                                       ; preds = %0
-  %6 = shl i32 %3, 2, !dbg !1440
-  %7 = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 1, !dbg !1440
-  %8 = bitcast float** %7 to i8**, !dbg !1440
-  %9 = load i8** %8, align 8, !dbg !1440, !tbaa !1398
-  tail call void @_blocktx(i32 %dest, i32 1, i32 %6, i8* %9) #7, !dbg !1440
-  %10 = load i32* %1, align 4, !dbg !1442, !tbaa !1396
-  %11 = shl i32 %10, 2, !dbg !1442
-  %12 = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 2, !dbg !1442
-  %13 = bitcast float** %12 to i8**, !dbg !1442
-  %14 = load i8** %13, align 8, !dbg !1442, !tbaa !1400
-  tail call void @_blocktx(i32 %dest, i32 1, i32 %11, i8* %14) #7, !dbg !1442
-  br label %15, !dbg !1443
+if.then:                                          ; preds = %entry
+  %mul = shl i32 %1, 2, !dbg !937
+  %a = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 1, !dbg !937
+  %2 = load float** %a, align 8, !dbg !937, !tbaa !666
+  %3 = bitcast float* %2 to i8*, !dbg !937
+  tail call void @_blocktx(i32 %dest, i32 1, i32 %mul, i8* %3) #5, !dbg !937
+  %4 = load i32* %n, align 4, !dbg !939, !tbaa !663
+  %mul6 = shl i32 %4, 2, !dbg !939
+  %phi = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 2, !dbg !939
+  %5 = load float** %phi, align 8, !dbg !939, !tbaa !666
+  %6 = bitcast float* %5 to i8*, !dbg !939
+  tail call void @_blocktx(i32 %dest, i32 1, i32 %mul6, i8* %6) #5, !dbg !939
+  br label %if.end, !dbg !940
 
-; <label>:15                                      ; preds = %5, %0
-  ret void, !dbg !1444
+if.end:                                           ; preds = %if.then, %entry
+  ret void, !dbg !941
 }

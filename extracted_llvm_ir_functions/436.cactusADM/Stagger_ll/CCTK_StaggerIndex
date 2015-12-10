@@ -1,58 +1,61 @@
 define i32 @CCTK_StaggerIndex(i8* %stype) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %stype, i64 0, metadata !57, metadata !169), !dbg !220
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !60, metadata !169), !dbg !221
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !59, metadata !169), !dbg !222
-  %1 = tail call i64 @strlen(i8* %stype) #7, !dbg !223
-  %2 = trunc i64 %1 to i32, !dbg !223
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !61, metadata !169), !dbg !224
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !58, metadata !169), !dbg !225
-  %3 = icmp sgt i32 %2, 0, !dbg !226
-  br i1 %3, label %.lr.ph, label %.loopexit, !dbg !229
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %stype}, i64 0, metadata !57), !dbg !212
+  tail call void @llvm.dbg.value(metadata !213, i64 0, metadata !60), !dbg !214
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !59), !dbg !215
+  %call = tail call i64 @strlen(i8* %stype) #9, !dbg !216
+  %conv = trunc i64 %call to i32, !dbg !216
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !61), !dbg !216
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !58), !dbg !217
+  %cmp17 = icmp sgt i32 %conv, 0, !dbg !217
+  br i1 %cmp17, label %for.body.lr.ph, label %return, !dbg !217
 
-.lr.ph:                                           ; preds = %0
-  %sext = shl i64 %1, 32, !dbg !229
-  %4 = ashr exact i64 %sext, 32, !dbg !229
-  br label %5, !dbg !229
+for.body.lr.ph:                                   ; preds = %entry
+  %call4 = tail call i32** @__ctype_toupper_loc() #10, !dbg !218
+  %0 = load i32** %call4, align 8, !dbg !218, !tbaa !219
+  br label %for.body, !dbg !217
 
-; <label>:5                                       ; preds = %.lr.ph, %14
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %14 ]
-  %base.04 = phi i32 [ 1, %.lr.ph ], [ %17, %14 ]
-  %scode.03 = phi i32 [ 0, %.lr.ph ], [ %16, %14 ]
-  %6 = getelementptr inbounds i8* %stype, i64 %indvars.iv, !dbg !230
-  %7 = load i8* %6, align 1, !dbg !230, !tbaa !232
-  %8 = sext i8 %7 to i32, !dbg !230
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !154, metadata !169) #6, !dbg !233
-  %9 = tail call i32 @__toupper(i32 %8) #7, !dbg !235
-  switch i32 %9, label %12 [
-    i32 77, label %14
-    i32 67, label %10
-    i32 80, label %11
-  ], !dbg !236
+for.body:                                         ; preds = %for.body.lr.ph, %sw.epilog
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %sw.epilog ]
+  %base.019 = phi i32 [ 1, %for.body.lr.ph ], [ %mul9, %sw.epilog ]
+  %scode.018 = phi i32 [ 0, %for.body.lr.ph ], [ %add, %sw.epilog ]
+  %arrayidx = getelementptr inbounds i8* %stype, i64 %indvars.iv, !dbg !218
+  %1 = load i8* %arrayidx, align 1, !dbg !218, !tbaa !176
+  %idxprom3 = sext i8 %1 to i64, !dbg !218
+  %arrayidx5 = getelementptr inbounds i32* %0, i64 %idxprom3, !dbg !218
+  %2 = load i32* %arrayidx5, align 4, !dbg !218, !tbaa !175
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !63), !dbg !218
+  switch i32 %2, label %sw.default [
+    i32 77, label %sw.epilog
+    i32 67, label %sw.bb6
+    i32 80, label %sw.bb7
+  ], !dbg !218
 
-; <label>:10                                      ; preds = %5
-  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !62, metadata !169), !dbg !237
-  br label %14, !dbg !238
+sw.bb6:                                           ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !213, i64 0, metadata !62), !dbg !220
+  br label %sw.epilog, !dbg !220
 
-; <label>:11                                      ; preds = %5
-  tail call void @llvm.dbg.value(metadata i32 2, i64 0, metadata !62, metadata !169), !dbg !237
-  br label %14, !dbg !240
+sw.bb7:                                           ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !222, i64 0, metadata !62), !dbg !223
+  br label %sw.epilog, !dbg !223
 
-; <label>:12                                      ; preds = %5
-  %13 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 150, i8* getelementptr inbounds ([76 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str2, i64 0, i64 0), i8* %stype) #7, !dbg !241
-  br label %.loopexit, !dbg !242
+sw.default:                                       ; preds = %for.body
+  %call8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 150, i8* getelementptr inbounds ([64 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str2, i64 0, i64 0), i8* %stype) #8, !dbg !224
+  br label %return, !dbg !225
 
-; <label>:14                                      ; preds = %5, %11, %10
-  %m.0 = phi i32 [ 2, %11 ], [ 1, %10 ], [ 0, %5 ]
-  %15 = mul nsw i32 %m.0, %base.04, !dbg !243
-  %16 = add nsw i32 %15, %scode.03, !dbg !244
-  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !59, metadata !169), !dbg !222
-  %17 = mul nsw i32 %base.04, 3, !dbg !245
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !60, metadata !169), !dbg !221
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !229
-  %18 = icmp slt i64 %indvars.iv.next, %4, !dbg !226
-  br i1 %18, label %5, label %.loopexit, !dbg !229
+sw.epilog:                                        ; preds = %for.body, %sw.bb7, %sw.bb6
+  %m.0 = phi i32 [ 2, %sw.bb7 ], [ 1, %sw.bb6 ], [ 0, %for.body ]
+  %mul = mul nsw i32 %m.0, %base.019, !dbg !226
+  %add = add nsw i32 %mul, %scode.018, !dbg !226
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !59), !dbg !226
+  %mul9 = mul nsw i32 %base.019, 3, !dbg !227
+  tail call void @llvm.dbg.value(metadata !{i32 %mul9}, i64 0, metadata !60), !dbg !227
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !217
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !217
+  %cmp = icmp slt i32 %3, %conv, !dbg !217
+  br i1 %cmp, label %for.body, label %return, !dbg !217
 
-.loopexit:                                        ; preds = %14, %0, %12
-  %.0 = phi i32 [ -1, %12 ], [ 0, %0 ], [ %16, %14 ]
-  ret i32 %.0, !dbg !246
+return:                                           ; preds = %entry, %sw.epilog, %sw.default
+  %retval.0 = phi i32 [ -1, %sw.default ], [ 0, %entry ], [ %add, %sw.epilog ]
+  ret i32 %retval.0, !dbg !228
 }

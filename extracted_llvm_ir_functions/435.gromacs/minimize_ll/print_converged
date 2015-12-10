@@ -1,30 +1,31 @@
-define internal fastcc void @print_converged(%struct.__sFILE* nocapture %fp, i8* %alg, float %ftol, i32 %count, i32 %bDone, i32 %nsteps, float %epot, float %fmax) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !1232, metadata !1256), !dbg !2010
-  tail call void @llvm.dbg.value(metadata i8* %alg, i64 0, metadata !1233, metadata !1256), !dbg !2011
-  tail call void @llvm.dbg.value(metadata float %ftol, i64 0, metadata !1234, metadata !1256), !dbg !2012
-  tail call void @llvm.dbg.value(metadata i32 %count, i64 0, metadata !1235, metadata !1256), !dbg !2013
-  tail call void @llvm.dbg.value(metadata i32 %bDone, i64 0, metadata !1236, metadata !1256), !dbg !2014
-  tail call void @llvm.dbg.value(metadata i32 %nsteps, i64 0, metadata !1237, metadata !1256), !dbg !2015
-  tail call void @llvm.dbg.value(metadata float %epot, i64 0, metadata !1238, metadata !1256), !dbg !2016
-  tail call void @llvm.dbg.value(metadata float %fmax, i64 0, metadata !1239, metadata !1256), !dbg !2017
-  %1 = icmp eq i32 %bDone, 0, !dbg !2018
-  br i1 %1, label %5, label %2, !dbg !2020
+define internal fastcc void @print_converged(%struct._IO_FILE* nocapture %fp, i8* %alg, float %ftol, i32 %count, i32 %bDone, i32 %nsteps, float %epot, float %fmax) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !1133), !dbg !1565
+  tail call void @llvm.dbg.value(metadata !{i8* %alg}, i64 0, metadata !1134), !dbg !1565
+  tail call void @llvm.dbg.value(metadata !{float %ftol}, i64 0, metadata !1135), !dbg !1565
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !1136), !dbg !1565
+  tail call void @llvm.dbg.value(metadata !{i32 %bDone}, i64 0, metadata !1137), !dbg !1565
+  tail call void @llvm.dbg.value(metadata !{i32 %nsteps}, i64 0, metadata !1138), !dbg !1566
+  tail call void @llvm.dbg.value(metadata !{float %epot}, i64 0, metadata !1139), !dbg !1566
+  tail call void @llvm.dbg.value(metadata !{float %fmax}, i64 0, metadata !1140), !dbg !1566
+  %tobool = icmp eq i32 %bDone, 0, !dbg !1567
+  br i1 %tobool, label %if.else, label %if.then, !dbg !1567
 
-; <label>:2                                       ; preds = %0
-  %3 = fpext float %ftol to double, !dbg !2021
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([33 x i8]* @.str38, i64 0, i64 0), i8* %alg, double %3, i32 %count) #8, !dbg !2022
-  br label %9, !dbg !2022
+if.then:                                          ; preds = %entry
+  %conv = fpext float %ftol to double, !dbg !1568
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([33 x i8]* @.str36, i64 0, i64 0), i8* %alg, double %conv, i32 %count) #6, !dbg !1568
+  br label %if.end, !dbg !1568
 
-; <label>:5                                       ; preds = %0
-  %6 = icmp slt i32 %count, %nsteps, !dbg !2023
-  %7 = select i1 %6, i32 %count, i32 %nsteps, !dbg !2023
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([34 x i8]* @.str39, i64 0, i64 0), i8* %alg, i32 %7) #8, !dbg !2024
-  br label %9
+if.else:                                          ; preds = %entry
+  %cmp = icmp slt i32 %count, %nsteps, !dbg !1569
+  %cond = select i1 %cmp, i32 %count, i32 %nsteps, !dbg !1569
+  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([34 x i8]* @.str37, i64 0, i64 0), i8* %alg, i32 %cond) #6, !dbg !1569
+  br label %if.end
 
-; <label>:9                                       ; preds = %5, %2
-  %10 = fpext float %epot to double, !dbg !2025
-  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([30 x i8]* @.str40, i64 0, i64 0), double %10) #8, !dbg !2026
-  %12 = fpext float %fmax to double, !dbg !2027
-  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([23 x i8]* @.str41, i64 0, i64 0), double %12) #8, !dbg !2028
-  ret void, !dbg !2029
+if.end:                                           ; preds = %if.else, %if.then
+  %conv3 = fpext float %epot to double, !dbg !1570
+  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([30 x i8]* @.str38, i64 0, i64 0), double %conv3) #6, !dbg !1570
+  %conv5 = fpext float %fmax to double, !dbg !1571
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([23 x i8]* @.str39, i64 0, i64 0), double %conv5) #6, !dbg !1571
+  ret void, !dbg !1572
 }

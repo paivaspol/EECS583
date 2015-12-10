@@ -1,19 +1,20 @@
 define i32 @CCTK_RegisterIOMethodTimeToOutput(i32 %handle, i32 (%struct.cGH*, i32)* %TimeToOutput) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !100, metadata !237), !dbg !333
-  tail call void @llvm.dbg.value(metadata i32 (%struct.cGH*, i32)* %TimeToOutput, i64 0, metadata !101, metadata !237), !dbg !334
-  %1 = load %struct.cHandledData** @IOMethods, align 8, !dbg !335, !tbaa !241
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #6, !dbg !336
-  %3 = icmp ne i8* %2, null, !dbg !337
-  br i1 %3, label %4, label %7, !dbg !339
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !100), !dbg !295
+  tail call void @llvm.dbg.value(metadata !{i32 (%struct.cGH*, i32)* %TimeToOutput}, i64 0, metadata !101), !dbg !296
+  %0 = load %struct.cHandledData** @IOMethods, align 8, !dbg !297, !tbaa !235
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %handle) #6, !dbg !297
+  %tobool = icmp ne i8* %call, null, !dbg !298
+  br i1 %tobool, label %if.then, label %if.end, !dbg !298
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds i8* %2, i64 40, !dbg !340
-  %6 = bitcast i8* %5 to i32 (%struct.cGH*, i32)**, !dbg !340
-  store i32 (%struct.cGH*, i32)* %TimeToOutput, i32 (%struct.cGH*, i32)** %6, align 8, !dbg !342, !tbaa !276
-  br label %7, !dbg !343
+if.then:                                          ; preds = %entry
+  %TimeToOutput1 = getelementptr inbounds i8* %call, i64 40, !dbg !299
+  %1 = bitcast i8* %TimeToOutput1 to i32 (%struct.cGH*, i32)**, !dbg !299
+  store i32 (%struct.cGH*, i32)* %TimeToOutput, i32 (%struct.cGH*, i32)** %1, align 8, !dbg !299, !tbaa !235
+  br label %if.end, !dbg !301
 
-; <label>:7                                       ; preds = %4, %0
-  %not. = xor i1 %3, true, !dbg !344
-  %8 = sext i1 %not. to i32, !dbg !344
-  ret i32 %8, !dbg !345
+if.end:                                           ; preds = %if.then, %entry
+  %not.tobool = xor i1 %tobool, true, !dbg !302
+  %cond = sext i1 %not.tobool to i32, !dbg !302
+  ret i32 %cond, !dbg !302
 }

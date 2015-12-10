@@ -1,124 +1,132 @@
-define i32 @_ZN3pov16Mesh_InterpolateEPdS0_PNS_11Mesh_StructEPNS_20Mesh_Triangle_StructE(double* nocapture %Weights, double* %IPoint, %"struct.pov::Mesh_Struct"* nocapture readonly %m, %"struct.pov::Mesh_Triangle_Struct"* nocapture readonly %tri) #0 {
+define i32 @_ZN3pov16Mesh_InterpolateEPdS0_PNS_11Mesh_StructEPNS_20Mesh_Triangle_StructE(double* nocapture %Weights, double* %IPoint, %"struct.pov::Mesh_Struct"* nocapture %m, %"struct.pov::Mesh_Triangle_Struct"* nocapture %tri) #0 {
+entry:
   %P1 = alloca [3 x double], align 16
   %P2 = alloca [3 x double], align 16
   %P3 = alloca [3 x double], align 16
   %EPoint = alloca [3 x double], align 16
-  tail call void @llvm.dbg.value(metadata double* %Weights, i64 0, metadata !1142, metadata !2016), !dbg !4390
-  tail call void @llvm.dbg.value(metadata double* %IPoint, i64 0, metadata !1143, metadata !2016), !dbg !4391
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Mesh_Struct"* %m, i64 0, metadata !1144, metadata !2016), !dbg !4392
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Mesh_Triangle_Struct"* %tri, i64 0, metadata !1145, metadata !2016), !dbg !4393
-  tail call void @llvm.dbg.declare(metadata [3 x double]* %P1, metadata !1146, metadata !2016), !dbg !4394
-  tail call void @llvm.dbg.declare(metadata [3 x double]* %P2, metadata !1147, metadata !2016), !dbg !4395
-  tail call void @llvm.dbg.declare(metadata [3 x double]* %P3, metadata !1148, metadata !2016), !dbg !4396
-  tail call void @llvm.dbg.declare(metadata [3 x double]* %EPoint, metadata !1150, metadata !2016), !dbg !4397
-  %1 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %m, i64 0, i32 10, !dbg !4398
-  %2 = load %"struct.pov::Transform_Struct"** %1, align 8, !dbg !4398, !tbaa !2036
-  %3 = icmp eq %"struct.pov::Transform_Struct"* %2, null, !dbg !4400
-  %4 = getelementptr inbounds [3 x double]* %EPoint, i64 0, i64 0, !dbg !4401
-  br i1 %3, label %6, label %5, !dbg !4403
+  call void @llvm.dbg.value(metadata !{double* %Weights}, i64 0, metadata !1127), !dbg !3036
+  call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1128), !dbg !3036
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Mesh_Struct"* %m}, i64 0, metadata !1129), !dbg !3036
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Mesh_Triangle_Struct"* %tri}, i64 0, metadata !1130), !dbg !3036
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %P1}, metadata !1131), !dbg !3037
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %P2}, metadata !1132), !dbg !3037
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %P3}, metadata !1133), !dbg !3037
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %EPoint}, metadata !1135), !dbg !3038
+  %Trans = getelementptr inbounds %"struct.pov::Mesh_Struct"* %m, i64 0, i32 10, !dbg !3039
+  %0 = load %"struct.pov::Transform_Struct"** %Trans, align 8, !dbg !3039, !tbaa !1750
+  %cmp = icmp eq %"struct.pov::Transform_Struct"* %0, null, !dbg !3039
+  %arraydecay = getelementptr inbounds [3 x double]* %EPoint, i64 0, i64 0, !dbg !3040
+  br i1 %cmp, label %if.else, label %if.then, !dbg !3039
 
-; <label>:5                                       ; preds = %0
-  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %4, double* %IPoint, %"struct.pov::Transform_Struct"* %2) #7, !dbg !4404
-  br label %15, !dbg !4405
+if.then:                                          ; preds = %entry
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay, double* %IPoint, %"struct.pov::Transform_Struct"* %0) #7, !dbg !3040
+  br label %if.end, !dbg !3042
 
-; <label>:6                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata double* %4, i64 0, metadata !1454, metadata !2016), !dbg !4406
-  tail call void @llvm.dbg.value(metadata double* %IPoint, i64 0, metadata !1455, metadata !2016), !dbg !4409
-  %7 = bitcast double* %IPoint to <2 x i64>*, !dbg !4410
-  %8 = load <2 x i64>* %7, align 8, !dbg !4410, !tbaa !2056
-  %9 = bitcast [3 x double]* %EPoint to <2 x i64>*, !dbg !4411
-  store <2 x i64> %8, <2 x i64>* %9, align 16, !dbg !4411, !tbaa !2056
-  %10 = getelementptr inbounds double* %IPoint, i64 2, !dbg !4412
-  %11 = bitcast double* %10 to i64*, !dbg !4412
-  %12 = load i64* %11, align 8, !dbg !4412, !tbaa !2056
-  %13 = getelementptr inbounds [3 x double]* %EPoint, i64 0, i64 2, !dbg !4413
-  %14 = bitcast double* %13 to i64*, !dbg !4414
-  store i64 %12, i64* %14, align 16, !dbg !4414, !tbaa !2056
-  br label %15
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !3043), !dbg !3046
+  tail call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !3047), !dbg !3046
+  %1 = load double* %IPoint, align 8, !dbg !3048, !tbaa !1758
+  store double %1, double* %arraydecay, align 16, !dbg !3048, !tbaa !1758
+  %arrayidx2.i = getelementptr inbounds double* %IPoint, i64 1, !dbg !3049
+  %2 = load double* %arrayidx2.i, align 8, !dbg !3049, !tbaa !1758
+  %arrayidx3.i = getelementptr inbounds [3 x double]* %EPoint, i64 0, i64 1, !dbg !3049
+  store double %2, double* %arrayidx3.i, align 8, !dbg !3049, !tbaa !1758
+  %arrayidx4.i = getelementptr inbounds double* %IPoint, i64 2, !dbg !3050
+  %3 = load double* %arrayidx4.i, align 8, !dbg !3050, !tbaa !1758
+  %arrayidx5.i = getelementptr inbounds [3 x double]* %EPoint, i64 0, i64 2, !dbg !3050
+  store double %3, double* %arrayidx5.i, align 16, !dbg !3050, !tbaa !1758
+  br label %if.end
 
-; <label>:15                                      ; preds = %6, %5
-  %16 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %tri, i64 0, i32 0, !dbg !4415
-  %17 = load i8* %16, align 8, !dbg !4415
-  %18 = and i8 %17, 32, !dbg !4415
-  %19 = icmp eq i8 %18, 0, !dbg !4417
-  br i1 %19, label %80, label %20, !dbg !4418
+if.end:                                           ; preds = %if.else, %if.then
+  %4 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %tri, i64 0, i32 0, !dbg !3051
+  %bf.load = load i8* %4, align 8, !dbg !3051
+  %bf.clear = and i8 %bf.load, 32, !dbg !3051
+  %tobool = icmp eq i8 %bf.clear, 0, !dbg !3051
+  br i1 %tobool, label %return, label %if.then3, !dbg !3051
 
-; <label>:20                                      ; preds = %15
-  %21 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %tri, i64 0, i32 2, !dbg !4419
-  %22 = load i64* %21, align 8, !dbg !4419, !tbaa !2424
-  %23 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %m, i64 0, i32 14, !dbg !4421
-  %24 = load %"struct.pov::Mesh_Data_Struct"** %23, align 8, !dbg !4421, !tbaa !2084
-  %25 = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %24, i64 0, i32 6, !dbg !4422
-  %26 = load [3 x float]** %25, align 8, !dbg !4422, !tbaa !2426
-  %27 = getelementptr inbounds [3 x float]* %26, i64 %22, i64 0, !dbg !4423
-  %28 = getelementptr inbounds [3 x double]* %P1, i64 0, i64 0, !dbg !4424
-  %29 = bitcast float* %27 to <2 x float>*, !dbg !4423
-  %30 = load <2 x float>* %29, align 4, !dbg !4423, !tbaa !2402
-  %31 = fpext <2 x float> %30 to <2 x double>, !dbg !4423
-  %32 = bitcast [3 x double]* %P1 to <2 x double>*, !dbg !4425
-  store <2 x double> %31, <2 x double>* %32, align 16, !dbg !4425, !tbaa !2056
-  %33 = getelementptr inbounds [3 x float]* %26, i64 %22, i64 2, !dbg !4426
-  %34 = load float* %33, align 4, !dbg !4426, !tbaa !2402
-  %35 = fpext float %34 to double, !dbg !4426
-  %36 = getelementptr inbounds [3 x double]* %P1, i64 0, i64 2, !dbg !4427
-  store double %35, double* %36, align 16, !dbg !4428, !tbaa !2056
-  %37 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %tri, i64 0, i32 3, !dbg !4429
-  %38 = load i64* %37, align 8, !dbg !4429, !tbaa !2464
-  %39 = getelementptr inbounds [3 x float]* %26, i64 %38, i64 0, !dbg !4430
-  %40 = getelementptr inbounds [3 x double]* %P2, i64 0, i64 0, !dbg !4431
-  %41 = bitcast float* %39 to <2 x float>*, !dbg !4430
-  %42 = load <2 x float>* %41, align 4, !dbg !4430, !tbaa !2402
-  %43 = fpext <2 x float> %42 to <2 x double>, !dbg !4430
-  %44 = bitcast [3 x double]* %P2 to <2 x double>*, !dbg !4432
-  store <2 x double> %43, <2 x double>* %44, align 16, !dbg !4432, !tbaa !2056
-  %45 = getelementptr inbounds [3 x float]* %26, i64 %38, i64 2, !dbg !4433
-  %46 = load float* %45, align 4, !dbg !4433, !tbaa !2402
-  %47 = fpext float %46 to double, !dbg !4433
-  %48 = getelementptr inbounds [3 x double]* %P2, i64 0, i64 2, !dbg !4434
-  store double %47, double* %48, align 16, !dbg !4435, !tbaa !2056
-  %49 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %tri, i64 0, i32 4, !dbg !4436
-  %50 = load i64* %49, align 8, !dbg !4436, !tbaa !2468
-  %51 = getelementptr inbounds [3 x float]* %26, i64 %50, i64 0, !dbg !4437
-  %52 = getelementptr inbounds [3 x double]* %P3, i64 0, i64 0, !dbg !4438
-  %53 = bitcast float* %51 to <2 x float>*, !dbg !4437
-  %54 = load <2 x float>* %53, align 4, !dbg !4437, !tbaa !2402
-  %55 = fpext <2 x float> %54 to <2 x double>, !dbg !4437
-  %56 = bitcast [3 x double]* %P3 to <2 x double>*, !dbg !4439
-  store <2 x double> %55, <2 x double>* %56, align 16, !dbg !4439, !tbaa !2056
-  %57 = getelementptr inbounds [3 x float]* %26, i64 %50, i64 2, !dbg !4440
-  %58 = load float* %57, align 4, !dbg !4440, !tbaa !2402
-  %59 = fpext float %58 to double, !dbg !4440
-  %60 = getelementptr inbounds [3 x double]* %P3, i64 0, i64 2, !dbg !4441
-  store double %59, double* %60, align 16, !dbg !4442, !tbaa !2056
-  %61 = call double @_ZN3pov18Calculate_Smooth_TEPdS0_S0_S0_(double* %4, double* %28, double* %40, double* %52) #7, !dbg !4443
-  %62 = fsub double 1.000000e+00, %61, !dbg !4444
-  store double %62, double* %Weights, align 8, !dbg !4445, !tbaa !2056
-  %63 = call double @_ZN3pov18Calculate_Smooth_TEPdS0_S0_S0_(double* %4, double* %40, double* %52, double* %28) #7, !dbg !4446
-  %64 = fsub double 1.000000e+00, %63, !dbg !4447
-  %65 = getelementptr inbounds double* %Weights, i64 1, !dbg !4448
-  store double %64, double* %65, align 8, !dbg !4449, !tbaa !2056
-  %66 = call double @_ZN3pov18Calculate_Smooth_TEPdS0_S0_S0_(double* %4, double* %52, double* %28, double* %40) #7, !dbg !4450
-  %67 = fsub double 1.000000e+00, %66, !dbg !4451
-  %68 = load double* %Weights, align 8, !dbg !4452, !tbaa !2056
-  %69 = load double* %65, align 8, !dbg !4453, !tbaa !2056
-  %70 = fadd double %68, %69, !dbg !4454
-  %71 = fadd double %67, %70, !dbg !4455
-  call void @llvm.dbg.value(metadata double %71, i64 0, metadata !1149, metadata !2016), !dbg !4456
-  %72 = fdiv double 1.000000e+00, %71, !dbg !4457
-  tail call void @llvm.dbg.value(metadata double* %Weights, i64 0, metadata !1606, metadata !2016), !dbg !4458
-  tail call void @llvm.dbg.value(metadata double %72, i64 0, metadata !1607, metadata !2016), !dbg !4460
-  %73 = fmul double %68, %72, !dbg !4461
-  store double %73, double* %Weights, align 8, !dbg !4461, !tbaa !2056
-  %74 = insertelement <2 x double> undef, double %72, i32 0, !dbg !4462
-  %75 = insertelement <2 x double> %74, double %72, i32 1, !dbg !4462
-  %76 = insertelement <2 x double> undef, double %69, i32 0, !dbg !4462
-  %77 = insertelement <2 x double> %76, double %67, i32 1, !dbg !4462
-  %78 = fmul <2 x double> %75, %77, !dbg !4462
-  %79 = bitcast double* %65 to <2 x double>*, !dbg !4462
-  store <2 x double> %78, <2 x double>* %79, align 8, !dbg !4462, !tbaa !2056
-  br label %80, !dbg !4463
+if.then3:                                         ; preds = %if.end
+  %P14 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %tri, i64 0, i32 2, !dbg !3052
+  %5 = load i64* %P14, align 8, !dbg !3052, !tbaa !1739
+  %Data = getelementptr inbounds %"struct.pov::Mesh_Struct"* %m, i64 0, i32 14, !dbg !3052
+  %6 = load %"struct.pov::Mesh_Data_Struct"** %Data, align 8, !dbg !3052, !tbaa !1750
+  %Vertices = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %6, i64 0, i32 6, !dbg !3052
+  %7 = load [3 x float]** %Vertices, align 8, !dbg !3052, !tbaa !1750
+  %arrayidx5 = getelementptr inbounds [3 x float]* %7, i64 %5, i64 0, !dbg !3052
+  %8 = load float* %arrayidx5, align 4, !dbg !3052, !tbaa !1971
+  %conv = fpext float %8 to double, !dbg !3052
+  %arrayidx6 = getelementptr inbounds [3 x double]* %P1, i64 0, i64 0, !dbg !3052
+  store double %conv, double* %arrayidx6, align 16, !dbg !3052, !tbaa !1758
+  %arrayidx11 = getelementptr inbounds [3 x float]* %7, i64 %5, i64 1, !dbg !3054
+  %9 = load float* %arrayidx11, align 4, !dbg !3054, !tbaa !1971
+  %conv12 = fpext float %9 to double, !dbg !3054
+  %arrayidx13 = getelementptr inbounds [3 x double]* %P1, i64 0, i64 1, !dbg !3054
+  store double %conv12, double* %arrayidx13, align 8, !dbg !3054, !tbaa !1758
+  %arrayidx18 = getelementptr inbounds [3 x float]* %7, i64 %5, i64 2, !dbg !3055
+  %10 = load float* %arrayidx18, align 4, !dbg !3055, !tbaa !1971
+  %conv19 = fpext float %10 to double, !dbg !3055
+  %arrayidx20 = getelementptr inbounds [3 x double]* %P1, i64 0, i64 2, !dbg !3055
+  store double %conv19, double* %arrayidx20, align 16, !dbg !3055, !tbaa !1758
+  %P221 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %tri, i64 0, i32 3, !dbg !3056
+  %11 = load i64* %P221, align 8, !dbg !3056, !tbaa !1739
+  %arrayidx25 = getelementptr inbounds [3 x float]* %7, i64 %11, i64 0, !dbg !3056
+  %12 = load float* %arrayidx25, align 4, !dbg !3056, !tbaa !1971
+  %conv26 = fpext float %12 to double, !dbg !3056
+  %arrayidx27 = getelementptr inbounds [3 x double]* %P2, i64 0, i64 0, !dbg !3056
+  store double %conv26, double* %arrayidx27, align 16, !dbg !3056, !tbaa !1758
+  %arrayidx32 = getelementptr inbounds [3 x float]* %7, i64 %11, i64 1, !dbg !3057
+  %13 = load float* %arrayidx32, align 4, !dbg !3057, !tbaa !1971
+  %conv33 = fpext float %13 to double, !dbg !3057
+  %arrayidx34 = getelementptr inbounds [3 x double]* %P2, i64 0, i64 1, !dbg !3057
+  store double %conv33, double* %arrayidx34, align 8, !dbg !3057, !tbaa !1758
+  %arrayidx39 = getelementptr inbounds [3 x float]* %7, i64 %11, i64 2, !dbg !3058
+  %14 = load float* %arrayidx39, align 4, !dbg !3058, !tbaa !1971
+  %conv40 = fpext float %14 to double, !dbg !3058
+  %arrayidx41 = getelementptr inbounds [3 x double]* %P2, i64 0, i64 2, !dbg !3058
+  store double %conv40, double* %arrayidx41, align 16, !dbg !3058, !tbaa !1758
+  %P342 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %tri, i64 0, i32 4, !dbg !3059
+  %15 = load i64* %P342, align 8, !dbg !3059, !tbaa !1739
+  %arrayidx46 = getelementptr inbounds [3 x float]* %7, i64 %15, i64 0, !dbg !3059
+  %16 = load float* %arrayidx46, align 4, !dbg !3059, !tbaa !1971
+  %conv47 = fpext float %16 to double, !dbg !3059
+  %arrayidx48 = getelementptr inbounds [3 x double]* %P3, i64 0, i64 0, !dbg !3059
+  store double %conv47, double* %arrayidx48, align 16, !dbg !3059, !tbaa !1758
+  %arrayidx53 = getelementptr inbounds [3 x float]* %7, i64 %15, i64 1, !dbg !3060
+  %17 = load float* %arrayidx53, align 4, !dbg !3060, !tbaa !1971
+  %conv54 = fpext float %17 to double, !dbg !3060
+  %arrayidx55 = getelementptr inbounds [3 x double]* %P3, i64 0, i64 1, !dbg !3060
+  store double %conv54, double* %arrayidx55, align 8, !dbg !3060, !tbaa !1758
+  %arrayidx60 = getelementptr inbounds [3 x float]* %7, i64 %15, i64 2, !dbg !3061
+  %18 = load float* %arrayidx60, align 4, !dbg !3061, !tbaa !1971
+  %conv61 = fpext float %18 to double, !dbg !3061
+  %arrayidx62 = getelementptr inbounds [3 x double]* %P3, i64 0, i64 2, !dbg !3061
+  store double %conv61, double* %arrayidx62, align 16, !dbg !3061, !tbaa !1758
+  %call = call double @_ZN3pov18Calculate_Smooth_TEPdS0_S0_S0_(double* %arraydecay, double* %arrayidx6, double* %arrayidx27, double* %arrayidx48) #7, !dbg !3062
+  %sub = fsub double 1.000000e+00, %call, !dbg !3062
+  store double %sub, double* %Weights, align 8, !dbg !3062, !tbaa !1758
+  %call72 = call double @_ZN3pov18Calculate_Smooth_TEPdS0_S0_S0_(double* %arraydecay, double* %arrayidx27, double* %arrayidx48, double* %arrayidx6) #7, !dbg !3063
+  %sub73 = fsub double 1.000000e+00, %call72, !dbg !3063
+  %arrayidx74 = getelementptr inbounds double* %Weights, i64 1, !dbg !3063
+  store double %sub73, double* %arrayidx74, align 8, !dbg !3063, !tbaa !1758
+  %call79 = call double @_ZN3pov18Calculate_Smooth_TEPdS0_S0_S0_(double* %arraydecay, double* %arrayidx48, double* %arrayidx6, double* %arrayidx27) #7, !dbg !3064
+  %sub80 = fsub double 1.000000e+00, %call79, !dbg !3064
+  %arrayidx81 = getelementptr inbounds double* %Weights, i64 2, !dbg !3064
+  %19 = load double* %Weights, align 8, !dbg !3065, !tbaa !1758
+  %20 = load double* %arrayidx74, align 8, !dbg !3065, !tbaa !1758
+  %add = fadd double %19, %20, !dbg !3065
+  %add85 = fadd double %sub80, %add, !dbg !3065
+  call void @llvm.dbg.value(metadata !{double %add85}, i64 0, metadata !1134), !dbg !3065
+  %div = fdiv double 1.000000e+00, %add85, !dbg !3066
+  tail call void @llvm.dbg.value(metadata !{double* %Weights}, i64 0, metadata !3067), !dbg !3068
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !3069), !dbg !3068
+  %mul.i = fmul double %19, %div, !dbg !3070
+  store double %mul.i, double* %Weights, align 8, !dbg !3070, !tbaa !1758
+  %mul2.i = fmul double %div, %20, !dbg !3071
+  store double %mul2.i, double* %arrayidx74, align 8, !dbg !3071, !tbaa !1758
+  %mul4.i = fmul double %div, %sub80, !dbg !3072
+  store double %mul4.i, double* %arrayidx81, align 8, !dbg !3072, !tbaa !1758
+  br label %return, !dbg !3073
 
-; <label>:80                                      ; preds = %15, %20
-  %.0 = phi i32 [ 1, %20 ], [ 0, %15 ]
-  ret i32 %.0, !dbg !4464
+return:                                           ; preds = %if.end, %if.then3
+  %retval.0 = phi i32 [ 1, %if.then3 ], [ 0, %if.end ]
+  ret i32 %retval.0, !dbg !3074
 }

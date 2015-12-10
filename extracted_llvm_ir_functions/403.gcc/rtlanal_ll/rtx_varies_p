@@ -1,8 +1,11 @@
 define i32 @rtx_varies_p(%struct.rtx_def* %x, i32 %for_alias) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !377), !dbg !997
+  tail call void @llvm.dbg.value(metadata !{i32 %for_alias}, i64 0, metadata !378), !dbg !998
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !999
+  %bf.load = load i32* %0, align 8, !dbg !999
+  %bf.clear = and i32 %bf.load, 65535, !dbg !999
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !379), !dbg !999
   switch i32 %bf.clear, label %sw.epilog [
     i32 66, label %sw.bb
     i32 71, label %return
@@ -15,141 +18,142 @@ entry:
     i32 61, label %sw.bb6
     i32 135, label %sw.bb15
     i32 41, label %sw.bb31
-  ]
+  ], !dbg !1000
 
 sw.bb:                                            ; preds = %entry
-  %bf.clear2 = and i32 %bf.load, 67108864
-  %tobool = icmp eq i32 %bf.clear2, 0
-  br i1 %tobool, label %lor.end, label %lor.rhs
+  %bf.clear2 = and i32 %bf.load, 67108864, !dbg !1001
+  %tobool = icmp eq i32 %bf.clear2, 0, !dbg !1001
+  br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !1001
 
 lor.rhs:                                          ; preds = %sw.bb
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %call = tail call i32 @rtx_varies_p(%struct.rtx_def* %1, i32 %for_alias) #4
-  %tobool3 = icmp ne i32 %call, 0
-  br label %lor.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !1001
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1001
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1001, !tbaa !979
+  %call = tail call i32 @rtx_varies_p(%struct.rtx_def* %1, i32 %for_alias) #5, !dbg !1001
+  %tobool3 = icmp ne i32 %call, 0, !dbg !1001
+  br label %lor.end, !dbg !1001
 
 lor.end:                                          ; preds = %sw.bb, %lor.rhs
   %2 = phi i1 [ true, %sw.bb ], [ %tobool3, %lor.rhs ]
-  %lor.ext = zext i1 %2 to i32
-  br label %return
+  %lor.ext = zext i1 %2 to i32, !dbg !1001
+  br label %return, !dbg !1001
 
 sw.bb5:                                           ; preds = %entry, %entry, %entry, %entry, %entry, %entry
-  br label %return
+  br label %return, !dbg !1003
 
 sw.bb6:                                           ; preds = %entry
-  %3 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 3), align 8, !tbaa !0
-  %cmp = icmp eq %struct.rtx_def* %3, %x
-  %4 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 4), align 8, !tbaa !0
-  %cmp7 = icmp eq %struct.rtx_def* %4, %x
-  %or.cond = or i1 %cmp, %cmp7
-  br i1 %or.cond, label %return, label %lor.lhs.false8
+  %3 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 3), align 8, !dbg !1004, !tbaa !979
+  %cmp = icmp eq %struct.rtx_def* %3, %x, !dbg !1004
+  %4 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 4), align 8, !dbg !1004, !tbaa !979
+  %cmp7 = icmp eq %struct.rtx_def* %4, %x, !dbg !1004
+  %or.cond = or i1 %cmp, %cmp7, !dbg !1004
+  br i1 %or.cond, label %return, label %lor.lhs.false8, !dbg !1004
 
 lor.lhs.false8:                                   ; preds = %sw.bb6
-  %5 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 5), align 8, !tbaa !0
-  %cmp9 = icmp ne %struct.rtx_def* %5, %x
-  %6 = load i8* getelementptr inbounds ([53 x i8]* @fixed_regs, i64 0, i64 16), align 1, !tbaa !1
-  %tobool10 = icmp eq i8 %6, 0
-  %or.cond113 = or i1 %cmp9, %tobool10
-  br i1 %or.cond113, label %if.end, label %return
+  %5 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 5), align 8, !dbg !1004, !tbaa !979
+  %cmp9 = icmp ne %struct.rtx_def* %5, %x, !dbg !1004
+  %6 = load i8* getelementptr inbounds ([53 x i8]* @fixed_regs, i64 0, i64 16), align 1, !dbg !1004, !tbaa !980
+  %tobool10 = icmp eq i8 %6, 0, !dbg !1004
+  %or.cond113 = or i1 %cmp9, %tobool10, !dbg !1004
+  br i1 %or.cond113, label %if.end, label %return, !dbg !1004
 
 if.end:                                           ; preds = %lor.lhs.false8
-  %7 = load %struct.rtx_def** @pic_offset_table_rtx, align 8, !tbaa !0
-  %not.cmp11 = icmp ne %struct.rtx_def* %7, %x
-  %. = zext i1 %not.cmp11 to i32
-  br label %return
+  %7 = load %struct.rtx_def** @pic_offset_table_rtx, align 8, !dbg !1005, !tbaa !979
+  %not.cmp11 = icmp ne %struct.rtx_def* %7, %x, !dbg !1006
+  %. = zext i1 %not.cmp11 to i32, !dbg !1006
+  br label %return, !dbg !1006
 
 sw.bb15:                                          ; preds = %entry
-  %tobool16 = icmp eq i32 %for_alias, 0
-  br i1 %tobool16, label %land.lhs.true17, label %lor.rhs23
+  %tobool16 = icmp eq i32 %for_alias, 0, !dbg !1007
+  br i1 %tobool16, label %land.lhs.true17, label %lor.rhs23, !dbg !1007
 
 land.lhs.true17:                                  ; preds = %sw.bb15
-  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx20 = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**
-  %8 = load %struct.rtx_def** %rtx20, align 8, !tbaa !0
-  %call21 = tail call i32 @rtx_varies_p(%struct.rtx_def* %8, i32 0) #4
-  %tobool22 = icmp eq i32 %call21, 0
-  br i1 %tobool22, label %lor.rhs23, label %lor.end29
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !1007
+  %rtx20 = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**, !dbg !1007
+  %8 = load %struct.rtx_def** %rtx20, align 8, !dbg !1007, !tbaa !979
+  %call21 = tail call i32 @rtx_varies_p(%struct.rtx_def* %8, i32 0) #5, !dbg !1007
+  %tobool22 = icmp eq i32 %call21, 0, !dbg !1007
+  br i1 %tobool22, label %lor.rhs23, label %lor.end29, !dbg !1007
 
 lor.rhs23:                                        ; preds = %land.lhs.true17, %sw.bb15
-  %arrayidx25 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
-  %rtx26 = bitcast %union.rtunion_def* %arrayidx25 to %struct.rtx_def**
-  %9 = load %struct.rtx_def** %rtx26, align 8, !tbaa !0
-  %call27 = tail call i32 @rtx_varies_p(%struct.rtx_def* %9, i32 %for_alias) #4
-  %tobool28 = icmp ne i32 %call27, 0
-  br label %lor.end29
+  %arrayidx25 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1, !dbg !1008
+  %rtx26 = bitcast %union.rtunion_def* %arrayidx25 to %struct.rtx_def**, !dbg !1008
+  %9 = load %struct.rtx_def** %rtx26, align 8, !dbg !1008, !tbaa !979
+  %call27 = tail call i32 @rtx_varies_p(%struct.rtx_def* %9, i32 %for_alias) #5, !dbg !1008
+  %tobool28 = icmp ne i32 %call27, 0, !dbg !1008
+  br label %lor.end29, !dbg !1008
 
 lor.end29:                                        ; preds = %land.lhs.true17, %lor.rhs23
   %10 = phi i1 [ true, %land.lhs.true17 ], [ %tobool28, %lor.rhs23 ]
-  %lor.ext30 = zext i1 %10 to i32
-  br label %return
+  %lor.ext30 = zext i1 %10 to i32, !dbg !1008
+  br label %return, !dbg !1008
 
 sw.bb31:                                          ; preds = %entry
-  %bf.clear34 = and i32 %bf.load, 134217728
-  %tobool35 = icmp eq i32 %bf.clear34, 0
-  br i1 %tobool35, label %sw.epilog, label %return
+  %bf.clear34 = and i32 %bf.load, 134217728, !dbg !1009
+  %tobool35 = icmp eq i32 %bf.clear34, 0, !dbg !1009
+  br i1 %tobool35, label %sw.epilog, label %return, !dbg !1009
 
 sw.epilog:                                        ; preds = %sw.bb31, %entry
-  %idxprom112 = zext i32 %bf.clear to i64
-  %arrayidx38 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom112
-  %11 = load i8** %arrayidx38, align 8, !tbaa !0
-  %arrayidx40 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom112
-  %12 = load i8* %arrayidx40, align 1, !tbaa !1
-  %cmp42119 = icmp eq i8 %12, 0
-  br i1 %cmp42119, label %return, label %for.body.lr.ph
+  %idxprom112 = zext i32 %bf.clear to i64, !dbg !1010
+  %arrayidx38 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom112, !dbg !1010
+  %11 = load i8** %arrayidx38, align 8, !dbg !1010, !tbaa !979
+  tail call void @llvm.dbg.value(metadata !{i8* %11}, i64 0, metadata !381), !dbg !1010
+  %arrayidx40 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom112, !dbg !1011
+  %12 = load i8* %arrayidx40, align 1, !dbg !1011, !tbaa !980
+  %cmp42119 = icmp eq i8 %12, 0, !dbg !1011
+  br i1 %cmp42119, label %return, label %for.body.lr.ph, !dbg !1011
 
 for.body.lr.ph:                                   ; preds = %sw.epilog
   %13 = zext i8 %12 to i64
-  br label %for.body
+  br label %for.body, !dbg !1011
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
   %indvars.iv121 = phi i64 [ %13, %for.body.lr.ph ], [ %indvars.iv.next122, %for.cond.backedge ]
-  %indvars.iv.next122 = add i64 %indvars.iv121, -1
-  %arrayidx45 = getelementptr inbounds i8* %11, i64 %indvars.iv.next122
-  %14 = load i8* %arrayidx45, align 1, !tbaa !1
+  %indvars.iv.next122 = add i64 %indvars.iv121, -1, !dbg !1011
+  %arrayidx45 = getelementptr inbounds i8* %11, i64 %indvars.iv.next122, !dbg !1012
+  %14 = load i8* %arrayidx45, align 1, !dbg !1012, !tbaa !980
   switch i8 %14, label %for.cond.backedge [
     i8 101, label %if.then49
     i8 69, label %for.cond64.preheader
-  ]
+  ], !dbg !1012
 
 for.cond.backedge:                                ; preds = %for.cond64.preheader, %for.cond64, %for.body, %if.then49
-  %15 = trunc i64 %indvars.iv.next122 to i32
-  %cmp42 = icmp sgt i32 %15, 0
-  br i1 %cmp42, label %for.body, label %return
+  %15 = trunc i64 %indvars.iv.next122 to i32, !dbg !1011
+  %cmp42 = icmp sgt i32 %15, 0, !dbg !1011
+  br i1 %cmp42, label %for.body, label %return, !dbg !1011
 
 for.cond64.preheader:                             ; preds = %for.body
-  %arrayidx67 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next122
-  %rtvec = bitcast %union.rtunion_def* %arrayidx67 to %struct.rtvec_def**
-  %16 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
-  %num_elem114 = getelementptr inbounds %struct.rtvec_def* %16, i64 0, i32 0
-  %17 = load i32* %num_elem114, align 4, !tbaa !3
-  %cmp68115 = icmp sgt i32 %17, 0
-  br i1 %cmp68115, label %for.body70, label %for.cond.backedge
+  %arrayidx67 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next122, !dbg !1013
+  %rtvec = bitcast %union.rtunion_def* %arrayidx67 to %struct.rtvec_def**, !dbg !1013
+  %16 = load %struct.rtvec_def** %rtvec, align 8, !dbg !1013, !tbaa !979
+  %num_elem114 = getelementptr inbounds %struct.rtvec_def* %16, i64 0, i32 0, !dbg !1013
+  %17 = load i32* %num_elem114, align 4, !dbg !1013, !tbaa !992
+  %cmp68115 = icmp sgt i32 %17, 0, !dbg !1013
+  br i1 %cmp68115, label %for.body70, label %for.cond.backedge, !dbg !1013
 
 if.then49:                                        ; preds = %for.body
-  %arrayidx52 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next122
-  %rtx53 = bitcast %union.rtunion_def* %arrayidx52 to %struct.rtx_def**
-  %18 = load %struct.rtx_def** %rtx53, align 8, !tbaa !0
-  %call54 = tail call i32 @rtx_varies_p(%struct.rtx_def* %18, i32 %for_alias) #4
-  %tobool55 = icmp eq i32 %call54, 0
-  br i1 %tobool55, label %for.cond.backedge, label %return
+  %arrayidx52 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next122, !dbg !1015
+  %rtx53 = bitcast %union.rtunion_def* %arrayidx52 to %struct.rtx_def**, !dbg !1015
+  %18 = load %struct.rtx_def** %rtx53, align 8, !dbg !1015, !tbaa !979
+  %call54 = tail call i32 @rtx_varies_p(%struct.rtx_def* %18, i32 %for_alias) #5, !dbg !1015
+  %tobool55 = icmp eq i32 %call54, 0, !dbg !1015
+  br i1 %tobool55, label %for.cond.backedge, label %return, !dbg !1015
 
 for.cond64:                                       ; preds = %for.body70
-  %19 = trunc i64 %indvars.iv.next to i32
-  %cmp68 = icmp slt i32 %19, %17
-  br i1 %cmp68, label %for.body70, label %for.cond.backedge
+  %19 = trunc i64 %indvars.iv.next to i32, !dbg !1013
+  %cmp68 = icmp slt i32 %19, %17, !dbg !1013
+  br i1 %cmp68, label %for.body70, label %for.cond.backedge, !dbg !1013
 
 for.body70:                                       ; preds = %for.cond64.preheader, %for.cond64
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond64 ], [ 0, %for.cond64.preheader ]
-  %arrayidx76 = getelementptr inbounds %struct.rtvec_def* %16, i64 0, i32 1, i64 %indvars.iv
-  %20 = load %struct.rtx_def** %arrayidx76, align 8, !tbaa !0
-  %call77 = tail call i32 @rtx_varies_p(%struct.rtx_def* %20, i32 %for_alias) #4
-  %tobool78 = icmp eq i32 %call77, 0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %tobool78, label %for.cond64, label %return
+  %arrayidx76 = getelementptr inbounds %struct.rtvec_def* %16, i64 0, i32 1, i64 %indvars.iv, !dbg !1017
+  %20 = load %struct.rtx_def** %arrayidx76, align 8, !dbg !1017, !tbaa !979
+  %call77 = tail call i32 @rtx_varies_p(%struct.rtx_def* %20, i32 %for_alias) #5, !dbg !1017
+  %tobool78 = icmp eq i32 %call77, 0, !dbg !1017
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1013
+  br i1 %tobool78, label %for.cond64, label %return, !dbg !1017
 
 return:                                           ; preds = %sw.epilog, %if.then49, %for.cond.backedge, %for.body70, %sw.bb31, %if.end, %sw.bb6, %lor.lhs.false8, %entry, %lor.end29, %sw.bb5, %lor.end
   %retval.0 = phi i32 [ %lor.ext30, %lor.end29 ], [ 0, %sw.bb5 ], [ %lor.ext, %lor.end ], [ 1, %entry ], [ 0, %lor.lhs.false8 ], [ 0, %sw.bb6 ], [ %., %if.end ], [ 1, %sw.bb31 ], [ 1, %for.body70 ], [ 0, %sw.epilog ], [ 1, %if.then49 ], [ 0, %for.cond.backedge ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1018
 }

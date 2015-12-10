@@ -1,0 +1,35 @@
+define zeroext i1 @_ZN11xercesc_2_510XMLChar1_011isValidNameEPKtj(i16* %toCheck, i32 %count) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !137), !dbg !281
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !138), !dbg !282
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !139), !dbg !283
+  %idx.ext = zext i32 %count to i64, !dbg !284
+  %add.ptr = getelementptr inbounds i16* %toCheck, i64 %idx.ext, !dbg !284
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr}, i64 0, metadata !140), !dbg !284
+  %0 = load i16* %toCheck, align 2, !dbg !285, !tbaa !260
+  %idxprom = zext i16 %0 to i64, !dbg !285
+  %arrayidx = getelementptr inbounds [65536 x i8]* @_ZN11xercesc_2_510XMLChar1_019fgCharCharsTable1_0E, i64 0, i64 %idxprom, !dbg !285
+  %1 = load i8* %arrayidx, align 1, !dbg !285, !tbaa !261
+  %and = and i8 %1, 2, !dbg !285
+  %tobool = icmp eq i8 %and, 0, !dbg !285
+  br i1 %tobool, label %return, label %while.cond, !dbg !285
+
+while.cond:                                       ; preds = %entry, %while.body
+  %toCheck.pn = phi i16* [ %curCh.0, %while.body ], [ %toCheck, %entry ]
+  %curCh.0 = getelementptr inbounds i16* %toCheck.pn, i64 1, !dbg !285
+  %cmp = icmp ult i16* %curCh.0, %add.ptr, !dbg !286
+  br i1 %cmp, label %while.body, label %return, !dbg !286
+
+while.body:                                       ; preds = %while.cond
+  %2 = load i16* %curCh.0, align 2, !dbg !287, !tbaa !260
+  %idxprom2 = zext i16 %2 to i64, !dbg !287
+  %arrayidx3 = getelementptr inbounds [65536 x i8]* @_ZN11xercesc_2_510XMLChar1_019fgCharCharsTable1_0E, i64 0, i64 %idxprom2, !dbg !287
+  %3 = load i8* %arrayidx3, align 1, !dbg !287, !tbaa !261
+  %and5 = and i8 %3, 4, !dbg !287
+  %tobool6 = icmp eq i8 %and5, 0, !dbg !287
+  br i1 %tobool6, label %return, label %while.cond, !dbg !287
+
+return:                                           ; preds = %while.cond, %while.body, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ true, %while.cond ], [ false, %while.body ]
+  ret i1 %retval.0, !dbg !289
+}

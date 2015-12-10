@@ -1,53 +1,50 @@
 define void @IVL_sortUp(%struct._IVL* %ivl) #0 {
+entry:
   %size = alloca i32, align 4
   %ent = alloca i32*, align 8
-  tail call void @llvm.dbg.value(metadata %struct._IVL* %ivl, i64 0, metadata !82, metadata !199), !dbg !380
-  %1 = icmp eq %struct._IVL* %ivl, null, !dbg !381
-  br i1 %1, label %8, label %2, !dbg !383
+  call void @llvm.dbg.value(metadata !{%struct._IVL* %ivl}, i64 0, metadata !79), !dbg !284
+  call void @llvm.dbg.declare(metadata !{i32* %size}, metadata !82), !dbg !285
+  call void @llvm.dbg.declare(metadata !{i32** %ent}, metadata !83), !dbg !286
+  %cmp = icmp eq %struct._IVL* %ivl, null, !dbg !287
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !287
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !384
-  %4 = load i32* %3, align 4, !dbg !384, !tbaa !214
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !84, metadata !199), !dbg !385
-  %5 = icmp slt i32 %4, 0, !dbg !386
-  br i1 %5, label %8, label %.preheader, !dbg !387
+lor.lhs.false:                                    ; preds = %entry
+  %nlist1 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !287
+  %0 = load i32* %nlist1, align 4, !dbg !287, !tbaa !203
+  call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !81), !dbg !287
+  %cmp2 = icmp slt i32 %0, 0, !dbg !287
+  br i1 %cmp2, label %if.then, label %for.cond.preheader, !dbg !287
 
-.preheader:                                       ; preds = %2
-  %6 = icmp sgt i32 %4, 0, !dbg !388
-  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !391
+for.cond.preheader:                               ; preds = %lor.lhs.false
+  %cmp312 = icmp sgt i32 %0, 0, !dbg !288
+  br i1 %cmp312, label %for.body, label %for.end, !dbg !288
 
-.lr.ph:                                           ; preds = %.preheader
-  %7 = add i32 %4, -1, !dbg !391
-  br label %11, !dbg !391
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !290, !tbaa !196
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([44 x i8]* @.str5, i64 0, i64 0), %struct._IVL* %ivl) #5, !dbg !290
+  call void @exit(i32 -1) #6, !dbg !292
+  unreachable, !dbg !292
 
-; <label>:8                                       ; preds = %2, %0
-  %9 = load %struct.__sFILE** @__stderrp, align 8, !dbg !392, !tbaa !206
-  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* getelementptr inbounds ([44 x i8]* @.str5, i64 0, i64 0), %struct._IVL* %ivl) #5, !dbg !394
-  tail call void @exit(i32 -1) #6, !dbg !395
-  unreachable, !dbg !395
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %ilist.013 = phi i32 [ %inc, %for.inc ], [ 0, %for.cond.preheader ]
+  call void @IVL_listAndSize(%struct._IVL* %ivl, i32 %ilist.013, i32* %size, i32** %ent) #5, !dbg !293
+  call void @llvm.dbg.value(metadata !{i32* %size}, i64 0, metadata !82), !dbg !295
+  %2 = load i32* %size, align 4, !dbg !295, !tbaa !203
+  %cmp4 = icmp sgt i32 %2, 0, !dbg !295
+  br i1 %cmp4, label %if.then5, label %for.inc, !dbg !295
 
-; <label>:11                                      ; preds = %16, %.lr.ph
-  %ilist.01 = phi i32 [ 0, %.lr.ph ], [ %17, %16 ]
-  call void @llvm.dbg.value(metadata i32* %size, i64 0, metadata !85, metadata !199), !dbg !396
-  call void @llvm.dbg.value(metadata i32** %ent, i64 0, metadata !86, metadata !199), !dbg !397
-  call void @IVL_listAndSize(%struct._IVL* %ivl, i32 %ilist.01, i32* %size, i32** %ent) #5, !dbg !398
-  call void @llvm.dbg.value(metadata i32* %size, i64 0, metadata !85, metadata !199), !dbg !396
-  %12 = load i32* %size, align 4, !dbg !400, !tbaa !267
-  %13 = icmp sgt i32 %12, 0, !dbg !402
-  br i1 %13, label %14, label %16, !dbg !403
+if.then5:                                         ; preds = %for.body
+  call void @llvm.dbg.value(metadata !{i32** %ent}, i64 0, metadata !83), !dbg !296
+  %3 = load i32** %ent, align 8, !dbg !296, !tbaa !196
+  call void @IVqsortUp(i32 %2, i32* %3) #5, !dbg !296
+  br label %for.inc, !dbg !298
 
-; <label>:14                                      ; preds = %11
-  call void @llvm.dbg.value(metadata i32** %ent, i64 0, metadata !86, metadata !199), !dbg !397
-  %15 = load i32** %ent, align 8, !dbg !404, !tbaa !206
-  call void @IVqsortUp(i32 %12, i32* %15) #5, !dbg !406
-  br label %16, !dbg !407
+for.inc:                                          ; preds = %for.body, %if.then5
+  %inc = add nsw i32 %ilist.013, 1, !dbg !288
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !80), !dbg !288
+  %exitcond = icmp eq i32 %inc, %0, !dbg !288
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !288
 
-; <label>:16                                      ; preds = %11, %14
-  %17 = add nuw nsw i32 %ilist.01, 1, !dbg !408
-  call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !83, metadata !199), !dbg !409
-  %exitcond = icmp eq i32 %ilist.01, %7, !dbg !391
-  br i1 %exitcond, label %._crit_edge, label %11, !dbg !391
-
-._crit_edge:                                      ; preds = %16, %.preheader
-  ret void, !dbg !410
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  ret void, !dbg !299
 }

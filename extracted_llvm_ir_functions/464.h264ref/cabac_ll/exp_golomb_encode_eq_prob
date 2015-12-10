@@ -1,41 +1,43 @@
 define void @exp_golomb_encode_eq_prob(%struct.EncodingEnvironment* %eep_dp, i32 %symbol, i32 %k) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %eep_dp, i64 0, metadata !541, metadata !1011), !dbg !2718
-  tail call void @llvm.dbg.value(metadata i32 %symbol, i64 0, metadata !542, metadata !1011), !dbg !2719
-  tail call void @llvm.dbg.value(metadata i32 %k, i64 0, metadata !543, metadata !1011), !dbg !2720
-  %1 = shl i32 1, %k, !dbg !2721
-  %2 = icmp ugt i32 %1, %symbol, !dbg !2724
-  br i1 %2, label %._crit_edge6, label %.lr.ph5, !dbg !2725
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %eep_dp}, i64 0, metadata !538), !dbg !1739
+  tail call void @llvm.dbg.value(metadata !{i32 %symbol}, i64 0, metadata !539), !dbg !1740
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !540), !dbg !1741
+  %shl16 = shl i32 1, %k, !dbg !1742
+  %cmp17 = icmp ugt i32 %shl16, %symbol, !dbg !1742
+  br i1 %cmp17, label %if.else, label %if.then, !dbg !1742
 
-.lr.ph5:                                          ; preds = %0, %.lr.ph5
-  %3 = phi i32 [ %6, %.lr.ph5 ], [ %1, %0 ]
-  %.03 = phi i32 [ %5, %.lr.ph5 ], [ %k, %0 ]
-  %.012 = phi i32 [ %4, %.lr.ph5 ], [ %symbol, %0 ]
-  tail call void @biari_encode_symbol_eq_prob(%struct.EncodingEnvironment* %eep_dp, i16 signext 1) #6, !dbg !2726
-  %4 = sub i32 %.012, %3, !dbg !2728
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !542, metadata !1011), !dbg !2719
-  %5 = add nsw i32 %.03, 1, !dbg !2729
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !543, metadata !1011), !dbg !2720
-  %6 = shl i32 1, %5, !dbg !2721
-  %7 = icmp ult i32 %4, %6, !dbg !2724
-  br i1 %7, label %._crit_edge6, label %.lr.ph5, !dbg !2725
+if.then:                                          ; preds = %entry, %if.then
+  %shl20 = phi i32 [ %shl, %if.then ], [ %shl16, %entry ]
+  %k.addr.019 = phi i32 [ %inc, %if.then ], [ %k, %entry ]
+  %symbol.addr.018 = phi i32 [ %sub, %if.then ], [ %symbol, %entry ]
+  tail call void @biari_encode_symbol_eq_prob(%struct.EncodingEnvironment* %eep_dp, i16 signext 1) #6, !dbg !1744
+  %sub = sub i32 %symbol.addr.018, %shl20, !dbg !1746
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !539), !dbg !1746
+  %inc = add nsw i32 %k.addr.019, 1, !dbg !1747
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !540), !dbg !1747
+  %shl = shl i32 1, %inc, !dbg !1742
+  %cmp = icmp ult i32 %sub, %shl, !dbg !1742
+  br i1 %cmp, label %if.else, label %if.then, !dbg !1742
 
-._crit_edge6:                                     ; preds = %.lr.ph5, %0
-  %.0.lcssa = phi i32 [ %k, %0 ], [ %5, %.lr.ph5 ]
-  %.01.lcssa = phi i32 [ %symbol, %0 ], [ %4, %.lr.ph5 ]
-  tail call void @biari_encode_symbol_eq_prob(%struct.EncodingEnvironment* %eep_dp, i16 signext 0) #6, !dbg !2730
-  %8 = icmp eq i32 %.0.lcssa, 0, !dbg !2732
-  br i1 %8, label %._crit_edge, label %.lr.ph, !dbg !2732
+if.else:                                          ; preds = %if.then, %entry
+  %k.addr.0.lcssa = phi i32 [ %k, %entry ], [ %inc, %if.then ]
+  %symbol.addr.0.lcssa = phi i32 [ %symbol, %entry ], [ %sub, %if.then ]
+  tail call void @biari_encode_symbol_eq_prob(%struct.EncodingEnvironment* %eep_dp, i16 signext 0) #6, !dbg !1748
+  %tobool14 = icmp eq i32 %k.addr.0.lcssa, 0, !dbg !1750
+  br i1 %tobool14, label %while.end5, label %while.body3, !dbg !1750
 
-.lr.ph:                                           ; preds = %._crit_edge6, %.lr.ph
-  %.in = phi i32 [ %9, %.lr.ph ], [ %.0.lcssa, %._crit_edge6 ]
-  %9 = add nsw i32 %.in, -1, !dbg !2733
-  %10 = lshr i32 %.01.lcssa, %9, !dbg !2734
-  %.tr = trunc i32 %10 to i16, !dbg !2735
-  %11 = and i16 %.tr, 1, !dbg !2735
-  tail call void @biari_encode_symbol_eq_prob(%struct.EncodingEnvironment* %eep_dp, i16 signext %11) #6, !dbg !2736
-  %12 = icmp eq i32 %9, 0, !dbg !2732
-  br i1 %12, label %._crit_edge, label %.lr.ph, !dbg !2732
+while.body3:                                      ; preds = %if.else, %while.body3
+  %dec15.in = phi i32 [ %dec15, %while.body3 ], [ %k.addr.0.lcssa, %if.else ]
+  %dec15 = add nsw i32 %dec15.in, -1, !dbg !1750
+  %shr = lshr i32 %symbol.addr.0.lcssa, %dec15, !dbg !1751
+  %shr.tr = trunc i32 %shr to i16, !dbg !1751
+  %conv = and i16 %shr.tr, 1, !dbg !1751
+  tail call void @biari_encode_symbol_eq_prob(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv) #6, !dbg !1751
+  tail call void @llvm.dbg.value(metadata !{i32 %dec15}, i64 0, metadata !540), !dbg !1750
+  %tobool = icmp eq i32 %dec15, 0, !dbg !1750
+  br i1 %tobool, label %while.end5, label %while.body3, !dbg !1750
 
-._crit_edge:                                      ; preds = %.lr.ph, %._crit_edge6
-  ret void, !dbg !2737
+while.end5:                                       ; preds = %while.body3, %if.else
+  ret void, !dbg !1752
 }

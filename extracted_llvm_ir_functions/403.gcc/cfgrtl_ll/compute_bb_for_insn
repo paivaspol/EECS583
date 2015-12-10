@@ -1,68 +1,72 @@
 define void @compute_bb_for_insn(i32 %max) #0 {
 entry:
-  %0 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !0
-  %tobool = icmp eq %struct.varray_head_tag* %0, null
-  br i1 %tobool, label %if.end3, label %if.then2
+  tail call void @llvm.dbg.value(metadata !{i32 %max}, i64 0, metadata !1079), !dbg !1643
+  %0 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !dbg !1644, !tbaa !1516
+  %tobool = icmp eq %struct.varray_head_tag* %0, null, !dbg !1644
+  br i1 %tobool, label %if.end3, label %if.then2, !dbg !1644
 
 if.then2:                                         ; preds = %entry
-  %1 = bitcast %struct.varray_head_tag* %0 to i8*
-  tail call void @free(i8* %1) #5
-  store %struct.varray_head_tag* null, %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !0
-  br label %if.end3
+  %1 = bitcast %struct.varray_head_tag* %0 to i8*, !dbg !1645
+  tail call void @free(i8* %1) #6, !dbg !1645
+  store %struct.varray_head_tag* null, %struct.varray_head_tag** @basic_block_for_insn, align 8, !dbg !1645, !tbaa !1516
+  br label %if.end3, !dbg !1645
 
 if.end3:                                          ; preds = %entry, %if.then2
-  %conv = sext i32 %max to i64
-  %call = tail call %struct.varray_head_tag* @varray_init(i64 %conv, i64 8, i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0)) #5
-  store %struct.varray_head_tag* %call, %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !0
-  %2 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %cmp36 = icmp sgt i32 %2, 0
-  br i1 %cmp36, label %for.body, label %for.end27
+  %conv = sext i32 %max to i64, !dbg !1648
+  %call = tail call %struct.varray_head_tag* @varray_init(i64 %conv, i64 8, i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !1648
+  store %struct.varray_head_tag* %call, %struct.varray_head_tag** @basic_block_for_insn, align 8, !dbg !1648, !tbaa !1516
+  tail call void @llvm.dbg.value(metadata !1010, i64 0, metadata !1080), !dbg !1649
+  %2 = load i32* @n_basic_blocks, align 4, !dbg !1649, !tbaa !1533
+  %cmp36 = icmp sgt i32 %2, 0, !dbg !1649
+  br i1 %cmp36, label %for.body, label %for.end27, !dbg !1649
 
 for.body:                                         ; preds = %for.inc26, %if.end3
   %indvars.iv = phi i64 [ 0, %if.end3 ], [ %indvars.iv.next, %for.inc26 ]
-  %3 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
-  %data = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 4
-  %bb5 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb5, i64 0, i64 %indvars.iv
-  %4 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
-  %end6 = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 1
-  %5 = load %struct.rtx_def** %end6, align 8, !tbaa !0
-  %head = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 0
-  br label %for.cond7
+  %3 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !1650, !tbaa !1516
+  %data = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 4, !dbg !1650
+  %bb5 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !1650
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb5, i64 0, i64 %indvars.iv, !dbg !1650
+  %4 = load %struct.basic_block_def** %arrayidx, align 8, !dbg !1650, !tbaa !1516
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %4}, i64 0, metadata !1081), !dbg !1650
+  %end6 = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 1, !dbg !1651
+  %5 = load %struct.rtx_def** %end6, align 8, !dbg !1651, !tbaa !1516
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %5}, i64 0, metadata !1084), !dbg !1651
+  %head = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 0, !dbg !1652
+  br label %for.cond7, !dbg !1652
 
 for.cond7:                                        ; preds = %for.inc, %for.body
   %insn.0.in = phi %struct.rtx_def** [ %head, %for.body ], [ %rtx, %for.inc ]
-  %insn.0 = load %struct.rtx_def** %insn.0.in, align 8
-  %fld = getelementptr inbounds %struct.rtx_def* %insn.0, i64 0, i32 1
-  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*
-  %6 = load i32* %rtint, align 4, !tbaa !3
-  %cmp9 = icmp slt i32 %6, %max
-  br i1 %cmp9, label %if.then11, label %if.end19
+  %insn.0 = load %struct.rtx_def** %insn.0.in, align 8, !dbg !1652
+  %fld = getelementptr inbounds %struct.rtx_def* %insn.0, i64 0, i32 1, !dbg !1654
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*, !dbg !1654
+  %6 = load i32* %rtint, align 4, !dbg !1654, !tbaa !1533
+  %cmp9 = icmp slt i32 %6, %max, !dbg !1654
+  br i1 %cmp9, label %if.then11, label %if.end19, !dbg !1654
 
 if.then11:                                        ; preds = %for.cond7
-  %idxprom15 = sext i32 %6 to i64
-  %7 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !0
-  %data16 = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 4
-  %bb17 = bitcast %union.varray_data_tag* %data16 to [1 x %struct.basic_block_def*]*
-  %arrayidx18 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb17, i64 0, i64 %idxprom15
-  store %struct.basic_block_def* %4, %struct.basic_block_def** %arrayidx18, align 8, !tbaa !0
-  br label %if.end19
+  %idxprom15 = sext i32 %6 to i64, !dbg !1656
+  %7 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !dbg !1656, !tbaa !1516
+  %data16 = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 4, !dbg !1656
+  %bb17 = bitcast %union.varray_data_tag* %data16 to [1 x %struct.basic_block_def*]*, !dbg !1656
+  %arrayidx18 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb17, i64 0, i64 %idxprom15, !dbg !1656
+  store %struct.basic_block_def* %4, %struct.basic_block_def** %arrayidx18, align 8, !dbg !1656, !tbaa !1516
+  br label %if.end19, !dbg !1656
 
 if.end19:                                         ; preds = %if.then11, %for.cond7
-  %cmp20 = icmp eq %struct.rtx_def* %insn.0, %5
-  br i1 %cmp20, label %for.inc26, label %for.inc
+  %cmp20 = icmp eq %struct.rtx_def* %insn.0, %5, !dbg !1657
+  br i1 %cmp20, label %for.inc26, label %for.inc, !dbg !1657
 
 for.inc:                                          ; preds = %if.end19
-  %arrayidx25 = getelementptr inbounds %struct.rtx_def* %insn.0, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx25 to %struct.rtx_def**
-  br label %for.cond7
+  %arrayidx25 = getelementptr inbounds %struct.rtx_def* %insn.0, i64 0, i32 1, i64 2, !dbg !1652
+  %rtx = bitcast %union.rtunion_def* %arrayidx25 to %struct.rtx_def**, !dbg !1652
+  br label %for.cond7, !dbg !1652
 
 for.inc26:                                        ; preds = %if.end19
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %8 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %8, %2
-  br i1 %cmp, label %for.body, label %for.end27
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1649
+  %8 = trunc i64 %indvars.iv.next to i32, !dbg !1649
+  %cmp = icmp slt i32 %8, %2, !dbg !1649
+  br i1 %cmp, label %for.body, label %for.end27, !dbg !1649
 
 for.end27:                                        ; preds = %for.inc26, %if.end3
-  ret void
+  ret void, !dbg !1658
 }

@@ -1,37 +1,38 @@
 define void @clear_rdopt() #0 {
-  %1 = load i32**** @cofDC, align 8, !dbg !1497, !tbaa !1498
-  tail call void @free_mem_DCcoeff(i32*** %1) #8, !dbg !1502
-  %2 = load i32***** @cofAC, align 8, !dbg !1503, !tbaa !1498
-  tail call void @free_mem_ACcoeff(i32**** %2) #8, !dbg !1504
-  %3 = load i32***** @cofAC8x8, align 8, !dbg !1505, !tbaa !1498
-  tail call void @free_mem_ACcoeff(i32**** %3) #8, !dbg !1506
-  %4 = load i32***** @cofAC4x4intern, align 8, !dbg !1507, !tbaa !1498
-  tail call void @free_mem_ACcoeff(i32**** %4) #8, !dbg !1508
-  %5 = load %struct.InputParameters** @input, align 8, !dbg !1509, !tbaa !1498
-  %6 = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 123, !dbg !1511
-  %7 = load i32* %6, align 4, !dbg !1511, !tbaa !1512
-  %8 = icmp eq i32 %7, 0, !dbg !1509
-  br i1 %8, label %11, label %9, !dbg !1516
+entry:
+  %0 = load i32**** @cofDC, align 8, !dbg !1450, !tbaa !1451
+  tail call void @free_mem_DCcoeff(i32*** %0) #9, !dbg !1450
+  %1 = load i32***** @cofAC, align 8, !dbg !1454, !tbaa !1451
+  tail call void @free_mem_ACcoeff(i32**** %1) #9, !dbg !1454
+  %2 = load i32***** @cofAC8x8, align 8, !dbg !1455, !tbaa !1451
+  tail call void @free_mem_ACcoeff(i32**** %2) #9, !dbg !1455
+  %3 = load i32***** @cofAC4x4intern, align 8, !dbg !1456, !tbaa !1451
+  tail call void @free_mem_ACcoeff(i32**** %3) #9, !dbg !1456
+  %4 = load %struct.InputParameters** @input, align 8, !dbg !1457, !tbaa !1451
+  %AllowTransform8x8 = getelementptr inbounds %struct.InputParameters* %4, i64 0, i32 123, !dbg !1457
+  %5 = load i32* %AllowTransform8x8, align 4, !dbg !1457, !tbaa !1458
+  %tobool = icmp eq i32 %5, 0, !dbg !1457
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1457
 
-; <label>:9                                       ; preds = %0
-  %10 = load i32***** @cofAC_8x8ts, align 8, !dbg !1517, !tbaa !1498
-  tail call void @free_mem_ACcoeff(i32**** %10) #8, !dbg !1519
-  br label %11, !dbg !1520
+if.then:                                          ; preds = %entry
+  %6 = load i32***** @cofAC_8x8ts, align 8, !dbg !1459, !tbaa !1451
+  tail call void @free_mem_ACcoeff(i32**** %6) #9, !dbg !1459
+  br label %if.end, !dbg !1461
 
-; <label>:11                                      ; preds = %0, %9
-  %12 = load %struct.CSobj** @cs_mb, align 8, !dbg !1521, !tbaa !1498
-  tail call void @delete_coding_state(%struct.CSobj* %12) #8, !dbg !1522
-  %13 = load %struct.CSobj** @cs_b8, align 8, !dbg !1523, !tbaa !1498
-  tail call void @delete_coding_state(%struct.CSobj* %13) #8, !dbg !1524
-  %14 = load %struct.CSobj** @cs_cm, align 8, !dbg !1525, !tbaa !1498
-  tail call void @delete_coding_state(%struct.CSobj* %14) #8, !dbg !1526
-  %15 = load %struct.CSobj** @cs_imb, align 8, !dbg !1527, !tbaa !1498
-  tail call void @delete_coding_state(%struct.CSobj* %15) #8, !dbg !1528
-  %16 = load %struct.CSobj** @cs_ib8, align 8, !dbg !1529, !tbaa !1498
-  tail call void @delete_coding_state(%struct.CSobj* %16) #8, !dbg !1530
-  %17 = load %struct.CSobj** @cs_ib4, align 8, !dbg !1531, !tbaa !1498
-  tail call void @delete_coding_state(%struct.CSobj* %17) #8, !dbg !1532
-  %18 = load %struct.CSobj** @cs_pc, align 8, !dbg !1533, !tbaa !1498
-  tail call void @delete_coding_state(%struct.CSobj* %18) #8, !dbg !1534
-  ret void, !dbg !1535
+if.end:                                           ; preds = %entry, %if.then
+  %7 = load %struct.CSobj** @cs_mb, align 8, !dbg !1462, !tbaa !1451
+  tail call void @delete_coding_state(%struct.CSobj* %7) #9, !dbg !1462
+  %8 = load %struct.CSobj** @cs_b8, align 8, !dbg !1463, !tbaa !1451
+  tail call void @delete_coding_state(%struct.CSobj* %8) #9, !dbg !1463
+  %9 = load %struct.CSobj** @cs_cm, align 8, !dbg !1464, !tbaa !1451
+  tail call void @delete_coding_state(%struct.CSobj* %9) #9, !dbg !1464
+  %10 = load %struct.CSobj** @cs_imb, align 8, !dbg !1465, !tbaa !1451
+  tail call void @delete_coding_state(%struct.CSobj* %10) #9, !dbg !1465
+  %11 = load %struct.CSobj** @cs_ib8, align 8, !dbg !1466, !tbaa !1451
+  tail call void @delete_coding_state(%struct.CSobj* %11) #9, !dbg !1466
+  %12 = load %struct.CSobj** @cs_ib4, align 8, !dbg !1467, !tbaa !1451
+  tail call void @delete_coding_state(%struct.CSobj* %12) #9, !dbg !1467
+  %13 = load %struct.CSobj** @cs_pc, align 8, !dbg !1468, !tbaa !1451
+  tail call void @delete_coding_state(%struct.CSobj* %13) #9, !dbg !1468
+  ret void, !dbg !1469
 }

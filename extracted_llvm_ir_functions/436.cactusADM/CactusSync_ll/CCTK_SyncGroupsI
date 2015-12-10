@@ -1,31 +1,28 @@
-define i32 @CCTK_SyncGroupsI(%struct.cGH* %GH, i32 %n_groups, i32* nocapture readonly %groups) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !97, metadata !109), !dbg !178
-  tail call void @llvm.dbg.value(metadata i32 %n_groups, i64 0, metadata !98, metadata !109), !dbg !179
-  tail call void @llvm.dbg.value(metadata i32* %groups, i64 0, metadata !99, metadata !109), !dbg !180
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !101, metadata !109), !dbg !181
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !100, metadata !109), !dbg !182
-  %1 = icmp sgt i32 %n_groups, 0, !dbg !183
-  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !186
+define i32 @CCTK_SyncGroupsI(%struct.cGH* %GH, i32 %n_groups, i32* nocapture %groups) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !98), !dbg !155
+  tail call void @llvm.dbg.value(metadata !{i32 %n_groups}, i64 0, metadata !99), !dbg !156
+  tail call void @llvm.dbg.value(metadata !{i32* %groups}, i64 0, metadata !100), !dbg !157
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !102), !dbg !158
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !101), !dbg !159
+  %cmp7 = icmp sgt i32 %n_groups, 0, !dbg !159
+  br i1 %cmp7, label %for.body, label %for.end, !dbg !159
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %n_groups, -1, !dbg !186
-  br label %3, !dbg !186
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %retval1.09 = phi i32 [ %inc.retval1.0, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %groups, i64 %indvars.iv, !dbg !161
+  %0 = load i32* %arrayidx, align 4, !dbg !161, !tbaa !124
+  %call = tail call i32 @CCTK_SyncGroupI(%struct.cGH* %GH, i32 %0) #6, !dbg !161
+  %cmp2 = icmp eq i32 %call, 0, !dbg !161
+  %inc = zext i1 %cmp2 to i32, !dbg !161
+  %inc.retval1.0 = add nsw i32 %inc, %retval1.09, !dbg !161
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !159
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !159
+  %exitcond = icmp eq i32 %lftr.wideiv, %n_groups, !dbg !159
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !159
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %retval.02 = phi i32 [ 0, %.lr.ph ], [ %.retval.0, %3 ]
-  %4 = getelementptr inbounds i32* %groups, i64 %indvars.iv, !dbg !187
-  %5 = load i32* %4, align 4, !dbg !187, !tbaa !134
-  %6 = tail call i32 @CCTK_SyncGroupI(%struct.cGH* %GH, i32 %5) #6, !dbg !190
-  %7 = icmp eq i32 %6, 0, !dbg !191
-  %8 = zext i1 %7 to i32, !dbg !192
-  %.retval.0 = add nsw i32 %8, %retval.02, !dbg !192
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !186
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !186
-  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !186
-  br i1 %exitcond, label %._crit_edge, label %3, !dbg !186
-
-._crit_edge:                                      ; preds = %3, %0
-  %retval.0.lcssa = phi i32 [ 0, %0 ], [ %.retval.0, %3 ]
-  ret i32 %retval.0.lcssa, !dbg !193
+for.end:                                          ; preds = %for.body, %entry
+  %retval1.0.lcssa = phi i32 [ 0, %entry ], [ %inc.retval1.0, %for.body ]
+  ret i32 %retval1.0.lcssa, !dbg !163
 }

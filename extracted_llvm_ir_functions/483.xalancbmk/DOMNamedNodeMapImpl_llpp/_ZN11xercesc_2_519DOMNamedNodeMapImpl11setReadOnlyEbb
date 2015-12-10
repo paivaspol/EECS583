@@ -1,0 +1,37 @@
+define void @_ZN11xercesc_2_519DOMNamedNodeMapImpl11setReadOnlyEbb(%"class.xercesc_2_5::DOMNamedNodeMapImpl"* nocapture %this, i1 zeroext %readOnl, i1 zeroext %deep) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMNamedNodeMapImpl"* %this}, i64 0, metadata !1877), !dbg !2701
+  tail call void @llvm.dbg.value(metadata !{i1 %readOnl}, i64 0, metadata !1878), !dbg !2701
+  tail call void @llvm.dbg.value(metadata !{i1 %deep}, i64 0, metadata !1879), !dbg !2701
+  br i1 %deep, label %land.lhs.true, label %if.end, !dbg !2702
+
+land.lhs.true:                                    ; preds = %entry
+  %fNodes = getelementptr inbounds %"class.xercesc_2_5::DOMNamedNodeMapImpl"* %this, i64 0, i32 1, !dbg !2702
+  %0 = load %"class.xercesc_2_5::DOMNodeVector"** %fNodes, align 8, !dbg !2702, !tbaa !2513
+  %cmp = icmp eq %"class.xercesc_2_5::DOMNodeVector"* %0, null, !dbg !2702
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2702
+
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call i64 @_ZN11xercesc_2_513DOMNodeVector4sizeEv(%"class.xercesc_2_5::DOMNodeVector"* %0) #8, !dbg !2703
+  %conv = trunc i64 %call to i32, !dbg !2703
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1880), !dbg !2703
+  tail call void @llvm.dbg.value(metadata !1613, i64 0, metadata !1882), !dbg !2704
+  %cmp414 = icmp sgt i32 %conv, 0, !dbg !2704
+  br i1 %cmp414, label %for.body, label %if.end, !dbg !2704
+
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %1 = load %"class.xercesc_2_5::DOMNodeVector"** %fNodes, align 8, !dbg !2705, !tbaa !2513
+  %call7 = tail call %"class.xercesc_2_5::DOMNode"* @_ZN11xercesc_2_513DOMNodeVector9elementAtEm(%"class.xercesc_2_5::DOMNodeVector"* %1, i64 %indvars.iv) #8, !dbg !2705
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMNode"* %call7}, i64 0, metadata !2707), !dbg !2708
+  %fNode.i = getelementptr inbounds %"class.xercesc_2_5::DOMNode"* %call7, i64 1, !dbg !2709
+  %2 = bitcast %"class.xercesc_2_5::DOMNode"* %fNode.i to %"class.xercesc_2_5::DOMNodeImpl"*, !dbg !2709
+  tail call void @_ZN11xercesc_2_511DOMNodeImpl11setReadOnlyEbb(%"class.xercesc_2_5::DOMNodeImpl"* %2, i1 zeroext %readOnl, i1 zeroext true) #8, !dbg !2705
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2704
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2704
+  %exitcond = icmp eq i32 %lftr.wideiv, %conv, !dbg !2704
+  br i1 %exitcond, label %if.end, label %for.body, !dbg !2704
+
+if.end:                                           ; preds = %if.then, %for.body, %land.lhs.true, %entry
+  ret void, !dbg !2710
+}

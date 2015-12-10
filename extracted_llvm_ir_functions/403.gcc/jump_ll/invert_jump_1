@@ -1,16 +1,19 @@
 define i32 @invert_jump_1(%struct.rtx_def* %jump, %struct.rtx_def* %nlabel) #0 {
 entry:
-  %call = tail call i32 @num_validated_changes() #7
-  tail call fastcc void @invert_exp_1(%struct.rtx_def* %jump) #8
-  %call1 = tail call i32 @num_validated_changes() #7
-  %cmp = icmp eq i32 %call1, %call
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %jump}, i64 0, metadata !651), !dbg !1495
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %nlabel}, i64 0, metadata !652), !dbg !1495
+  %call = tail call i32 @num_validated_changes() #9, !dbg !1496
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !653), !dbg !1496
+  tail call fastcc void @invert_exp_1(%struct.rtx_def* %jump) #10, !dbg !1497
+  %call1 = tail call i32 @num_validated_changes() #9, !dbg !1498
+  %cmp = icmp eq i32 %call1, %call, !dbg !1498
+  br i1 %cmp, label %return, label %if.end, !dbg !1498
 
 if.end:                                           ; preds = %entry
-  %call2 = tail call i32 @redirect_jump_1(%struct.rtx_def* %jump, %struct.rtx_def* %nlabel) #8
-  br label %return
+  %call2 = tail call i32 @redirect_jump_1(%struct.rtx_def* %jump, %struct.rtx_def* %nlabel) #10, !dbg !1499
+  br label %return, !dbg !1499
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i32 [ %call2, %if.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1500
 }

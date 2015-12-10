@@ -1,52 +1,46 @@
 define void @P9DefaultNullModel(float* nocapture %null) #0 {
-  tail call void @llvm.dbg.value(metadata float* %null, i64 0, metadata !63, metadata !69), !dbg !217
-  %null9 = bitcast float* %null to i8*
-  %1 = load i32* @Alphabet_type, align 4, !dbg !218, !tbaa !132
-  switch i32 %1, label %17 [
-    i32 3, label %.preheader
-    i32 2, label %.preheader1
-  ], !dbg !220
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %null}, i64 0, metadata !62), !dbg !120
+  %0 = load i32* @Alphabet_type, align 4, !dbg !121, !tbaa !76
+  switch i32 %0, label %if.else14 [
+    i32 3, label %for.cond.preheader
+    i32 2, label %for.cond6.preheader
+  ], !dbg !121
 
-.preheader1:                                      ; preds = %0
-  %2 = load i32* @Alphabet_size, align 4, !dbg !221, !tbaa !132
-  %3 = icmp sgt i32 %2, 0, !dbg !225
-  br i1 %3, label %.lr.ph5, label %.loopexit, !dbg !226
+for.cond6.preheader:                              ; preds = %entry
+  %1 = load i32* @Alphabet_size, align 4, !dbg !122, !tbaa !76
+  %cmp726 = icmp sgt i32 %1, 0, !dbg !122
+  br i1 %cmp726, label %for.body8, label %if.end15, !dbg !122
 
-.lr.ph5:                                          ; preds = %.preheader1
-  %4 = icmp sgt i32 %2, 1
-  %.op = add i32 %2, -1, !dbg !226
-  %5 = zext i32 %.op to i64
-  %.op10 = shl nuw nsw i64 %5, 2, !dbg !226
-  %.op10.op = add nuw nsw i64 %.op10, 4, !dbg !226
-  %6 = select i1 %4, i64 %.op10.op, i64 4, !dbg !226
-  call void @memset_pattern16(i8* %null9, i8* bitcast ([4 x float]* @.memset_pattern to i8*), i64 %6) #6, !dbg !227
-  br label %.loopexit, !dbg !226
+for.cond.preheader:                               ; preds = %entry
+  %2 = load i32* @Alphabet_size, align 4, !dbg !124, !tbaa !76
+  %cmp123 = icmp sgt i32 %2, 0, !dbg !124
+  br i1 %cmp123, label %for.body, label %if.end15, !dbg !124
 
-.preheader:                                       ; preds = %0
-  %7 = load i32* @Alphabet_size, align 4, !dbg !228, !tbaa !132
-  %8 = icmp sgt i32 %7, 0, !dbg !231
-  br i1 %8, label %.lr.ph, label %.loopexit, !dbg !232
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds [0 x float]* @aafq, i64 0, i64 %indvars.iv, !dbg !126
+  %3 = load float* %arrayidx, align 4, !dbg !126, !tbaa !93
+  %arrayidx3 = getelementptr inbounds float* %null, i64 %indvars.iv, !dbg !126
+  store float %3, float* %arrayidx3, align 4, !dbg !126, !tbaa !93
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !124
+  %4 = trunc i64 %indvars.iv.next to i32, !dbg !124
+  %cmp1 = icmp slt i32 %4, %2, !dbg !124
+  br i1 %cmp1, label %for.body, label %if.end15, !dbg !124
 
-.lr.ph:                                           ; preds = %.preheader
-  %9 = sext i32 %7 to i64, !dbg !232
-  br label %10, !dbg !232
+for.body8:                                        ; preds = %for.cond6.preheader, %for.body8
+  %indvars.iv29 = phi i64 [ %indvars.iv.next30, %for.body8 ], [ 0, %for.cond6.preheader ]
+  %arrayidx10 = getelementptr inbounds float* %null, i64 %indvars.iv29, !dbg !127
+  store float 2.500000e-01, float* %arrayidx10, align 4, !dbg !127, !tbaa !93
+  %indvars.iv.next30 = add i64 %indvars.iv29, 1, !dbg !122
+  %5 = trunc i64 %indvars.iv.next30 to i32, !dbg !122
+  %cmp7 = icmp slt i32 %5, %1, !dbg !122
+  br i1 %cmp7, label %for.body8, label %if.end15, !dbg !122
 
-; <label>:10                                      ; preds = %.lr.ph, %10
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %10 ]
-  %11 = getelementptr inbounds [0 x float]* @aafq, i64 0, i64 %indvars.iv, !dbg !233
-  %12 = bitcast float* %11 to i32*, !dbg !233
-  %13 = load i32* %12, align 4, !dbg !233, !tbaa !139
-  %14 = getelementptr inbounds float* %null, i64 %indvars.iv, !dbg !234
-  %15 = bitcast float* %14 to i32*, !dbg !235
-  store i32 %13, i32* %15, align 4, !dbg !235, !tbaa !139
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !232
-  %16 = icmp slt i64 %indvars.iv.next, %9, !dbg !231
-  br i1 %16, label %10, label %.loopexit, !dbg !232
+if.else14:                                        ; preds = %entry
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0)) #4, !dbg !128
+  br label %if.end15
 
-; <label>:17                                      ; preds = %0
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0)) #4, !dbg !236
-  br label %.loopexit
-
-.loopexit:                                        ; preds = %10, %.preheader1, %.lr.ph5, %.preheader, %17
-  ret void, !dbg !237
+if.end15:                                         ; preds = %for.cond6.preheader, %for.body8, %for.cond.preheader, %for.body, %if.else14
+  ret void, !dbg !129
 }

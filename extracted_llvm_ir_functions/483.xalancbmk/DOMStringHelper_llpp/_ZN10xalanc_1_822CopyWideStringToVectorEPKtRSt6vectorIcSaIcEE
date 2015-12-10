@@ -1,0 +1,64 @@
+define void @_ZN10xalanc_1_822CopyWideStringToVectorEPKtRSt6vectorIcSaIcEE(i16* %theString, %"class.std::vector.0"* nocapture %theVector) #5 {
+entry:
+  %ref.tmp = alloca i8, align 1
+  %ref.tmp5 = alloca i8, align 1
+  call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !4403), !dbg !8183
+  call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %theVector}, i64 0, metadata !4404), !dbg !8184
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !8185), !dbg !8187
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !8188), !dbg !8189
+  br label %while.cond.i, !dbg !8190
+
+while.cond.i:                                     ; preds = %while.cond.i, %entry
+  %theBufferPointer.0.i = phi i16* [ %theString, %entry ], [ %incdec.ptr.i, %while.cond.i ]
+  %0 = load i16* %theBufferPointer.0.i, align 2, !dbg !8190, !tbaa !6609
+  %cmp.i = icmp eq i16 %0, 0, !dbg !8190
+  %incdec.ptr.i = getelementptr inbounds i16* %theBufferPointer.0.i, i64 1, !dbg !8191
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr.i}, i64 0, metadata !8188), !dbg !8191
+  br i1 %cmp.i, label %_ZN10xalanc_1_86lengthEPKt.exit, label %while.cond.i, !dbg !8190
+
+_ZN10xalanc_1_86lengthEPKt.exit:                  ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %theBufferPointer.0.i to i64, !dbg !8192
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %theString to i64, !dbg !8192
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !8192
+  %sub.ptr.div4.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !8192
+  %conv1.i = trunc i64 %sub.ptr.div4.i to i32, !dbg !8192
+  call void @llvm.dbg.value(metadata !{i32 %conv1.i}, i64 0, metadata !4405), !dbg !8186
+  %cmp = icmp eq i32 %conv1.i, 0, !dbg !8193
+  br i1 %cmp, label %if.end, label %for.body.lr.ph, !dbg !8193
+
+for.body.lr.ph:                                   ; preds = %_ZN10xalanc_1_86lengthEPKt.exit
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %theVector}, i64 0, metadata !8194), !dbg !8196
+  %_M_finish.i = getelementptr inbounds %"class.std::vector.0"* %theVector, i64 0, i32 0, i32 0, i32 1, !dbg !8197
+  %1 = load i8** %_M_finish.i, align 8, !dbg !8197, !tbaa !6669
+  %_M_start.i = getelementptr inbounds %"class.std::vector.0"* %theVector, i64 0, i32 0, i32 0, i32 0, !dbg !8197
+  %2 = load i8** %_M_start.i, align 8, !dbg !8197, !tbaa !6669
+  %sub.ptr.lhs.cast.i13 = ptrtoint i8* %1 to i64, !dbg !8197
+  %sub.ptr.rhs.cast.i14 = ptrtoint i8* %2 to i64, !dbg !8197
+  %conv = and i64 %sub.ptr.div4.i, 4294967295, !dbg !8195
+  %sub.ptr.sub.i15 = add i64 %conv, 1, !dbg !8197
+  %add = add i64 %sub.ptr.sub.i15, %sub.ptr.lhs.cast.i13, !dbg !8195
+  %add2 = sub i64 %add, %sub.ptr.rhs.cast.i14, !dbg !8195
+  call void @_ZNSt6vectorIcSaIcEE7reserveEm(%"class.std::vector.0"* %theVector, i64 %add2) #12, !dbg !8195
+  call void @llvm.dbg.value(metadata !1282, i64 0, metadata !4406), !dbg !8198
+  br label %for.body, !dbg !8198
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds i16* %theString, i64 %indvars.iv, !dbg !8199
+  %3 = load i16* %arrayidx, align 2, !dbg !8199, !tbaa !6609
+  %conv4 = trunc i16 %3 to i8, !dbg !8199
+  store i8 %conv4, i8* %ref.tmp, align 1, !dbg !8199, !tbaa !6610
+  call void @_ZNSt6vectorIcSaIcEE9push_backERKc(%"class.std::vector.0"* %theVector, i8* %ref.tmp) #12, !dbg !8199
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !8198
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !8198
+  %exitcond = icmp eq i32 %lftr.wideiv, %conv1.i, !dbg !8198
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !8198
+
+for.end:                                          ; preds = %for.body
+  store i8 0, i8* %ref.tmp5, align 1, !dbg !8201, !tbaa !6610
+  call void @_ZNSt6vectorIcSaIcEE9push_backERKc(%"class.std::vector.0"* %theVector, i8* %ref.tmp5) #12, !dbg !8201
+  br label %if.end, !dbg !8202
+
+if.end:                                           ; preds = %_ZN10xalanc_1_86lengthEPKt.exit, %for.end
+  ret void, !dbg !8203
+}

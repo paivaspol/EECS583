@@ -1,18 +1,18 @@
-define i8* @Util_Strdup(i8* %s) #1 {
-  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !44, metadata !107), !dbg !214
-  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !45, metadata !107), !dbg !215
-  %1 = tail call i64 @strlen(i8* %s) #7, !dbg !216
-  %2 = add i64 %1, 1, !dbg !217
-  %3 = tail call i8* @malloc(i64 %2) #7, !dbg !218
-  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !45, metadata !107), !dbg !215
-  %4 = icmp eq i8* %3, null, !dbg !219
-  br i1 %4, label %8, label %5, !dbg !221
+define i8* @Util_Strdup(i8* nocapture %s) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !39), !dbg !158
+  tail call void @llvm.dbg.value(metadata !159, i64 0, metadata !40), !dbg !160
+  %call = tail call i64 @strlen(i8* %s) #9, !dbg !161
+  %add = add i64 %call, 1, !dbg !161
+  %call1 = tail call noalias i8* @malloc(i64 %add) #10, !dbg !161
+  tail call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !40), !dbg !161
+  %tobool = icmp eq i8* %call1, null, !dbg !162
+  br i1 %tobool, label %if.end, label %if.then, !dbg !162
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %3, i1 false), !dbg !222
-  %7 = tail call i8* @__strcpy_chk(i8* %3, i8* %s, i64 %6) #7, !dbg !222
-  br label %8, !dbg !224
+if.then:                                          ; preds = %entry
+  %call2 = tail call i8* @strcpy(i8* %call1, i8* %s) #10, !dbg !163
+  br label %if.end, !dbg !165
 
-; <label>:8                                       ; preds = %0, %5
-  ret i8* %3, !dbg !225
+if.end:                                           ; preds = %entry, %if.then
+  ret i8* %call1, !dbg !166
 }

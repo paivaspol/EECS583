@@ -1,61 +1,62 @@
-define internal fastcc void @output_one_frame_from_dpb() #1 {
+define internal fastcc void @output_one_frame_from_dpb() #2 {
+entry:
   %poc = alloca i32, align 4
   %pos = alloca i32, align 4
-  %1 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !6537, !tbaa !1459
-  %2 = icmp eq i32 %1, 0, !dbg !6539
-  br i1 %2, label %3, label %4, !dbg !6540
+  call void @llvm.dbg.declare(metadata !{i32* %poc}, metadata !838), !dbg !3321
+  call void @llvm.dbg.declare(metadata !{i32* %pos}, metadata !839), !dbg !3321
+  %0 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !3322, !tbaa !1366
+  %cmp = icmp eq i32 %0, 0, !dbg !3322
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3322
 
-; <label>:3                                       ; preds = %0
-  tail call void @error(i8* getelementptr inbounds ([32 x i8]* @.str38, i64 0, i64 0), i32 150) #8, !dbg !6541
-  br label %4, !dbg !6543
+if.then:                                          ; preds = %entry
+  call void @error(i8* getelementptr inbounds ([32 x i8]* @.str25, i64 0, i64 0), i32 150) #8, !dbg !3323
+  br label %if.end, !dbg !3325
 
-; <label>:4                                       ; preds = %3, %0
-  tail call void @llvm.dbg.value(metadata i32* %poc, i64 0, metadata !1043, metadata !1408), !dbg !6544
-  tail call void @llvm.dbg.value(metadata i32* %pos, i64 0, metadata !1044, metadata !1408), !dbg !6545
-  call fastcc void @get_smallest_poc(i32* %poc, i32* %pos) #9, !dbg !6546
-  tail call void @llvm.dbg.value(metadata i32* %pos, i64 0, metadata !1044, metadata !1408), !dbg !6545
-  %5 = load i32* %pos, align 4, !dbg !6547, !tbaa !1532
-  %6 = icmp eq i32 %5, -1, !dbg !6549
-  br i1 %6, label %7, label %8, !dbg !6550
+if.end:                                           ; preds = %if.then, %entry
+  call fastcc void @get_smallest_poc(i32* %poc, i32* %pos) #9, !dbg !3326
+  call void @llvm.dbg.value(metadata !{i32* %pos}, i64 0, metadata !839), !dbg !3327
+  %1 = load i32* %pos, align 4, !dbg !3327, !tbaa !1366
+  %cmp1 = icmp eq i32 %1, -1, !dbg !3327
+  br i1 %cmp1, label %if.then2, label %if.end3, !dbg !3327
 
-; <label>:7                                       ; preds = %4
-  tail call void @error(i8* getelementptr inbounds ([31 x i8]* @.str39, i64 0, i64 0), i32 150) #8, !dbg !6551
-  br label %8, !dbg !6553
+if.then2:                                         ; preds = %if.end
+  call void @error(i8* getelementptr inbounds ([31 x i8]* @.str26, i64 0, i64 0), i32 150) #8, !dbg !3328
+  br label %if.end3, !dbg !3330
 
-; <label>:8                                       ; preds = %7, %4
-  tail call void @llvm.dbg.value(metadata i32* %pos, i64 0, metadata !1044, metadata !1408), !dbg !6545
-  %9 = sext i32 %5 to i64, !dbg !6554
-  %10 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !6555, !tbaa !1469
-  %11 = getelementptr inbounds %struct.frame_store** %10, i64 %9, !dbg !6554
-  %12 = load %struct.frame_store** %11, align 8, !dbg !6554, !tbaa !1389
-  %13 = load i32* @p_dec, align 4, !dbg !6556, !tbaa !1532
-  tail call void @write_stored_frame(%struct.frame_store* %12, i32 %13) #8, !dbg !6557
-  %14 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 7), align 8, !dbg !6558, !tbaa !1535
-  tail call void @llvm.dbg.value(metadata i32* %poc, i64 0, metadata !1043, metadata !1408), !dbg !6544
-  %15 = load i32* %poc, align 4, !dbg !6560, !tbaa !1532
-  %16 = icmp slt i32 %14, %15, !dbg !6561
-  br i1 %16, label %18, label %17, !dbg !6562
+if.end3:                                          ; preds = %if.then2, %if.end
+  call void @llvm.dbg.value(metadata !{i32* %pos}, i64 0, metadata !839), !dbg !3331
+  %idxprom = sext i32 %1 to i64, !dbg !3331
+  %2 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !3331, !tbaa !1363
+  %arrayidx = getelementptr inbounds %struct.frame_store** %2, i64 %idxprom, !dbg !3331
+  %3 = load %struct.frame_store** %arrayidx, align 8, !dbg !3331, !tbaa !1363
+  %4 = load i32* @p_dec, align 4, !dbg !3331, !tbaa !1366
+  call void @write_stored_frame(%struct.frame_store* %3, i32 %4) #8, !dbg !3331
+  %5 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 7), align 8, !dbg !3332, !tbaa !1366
+  call void @llvm.dbg.value(metadata !{i32* %poc}, i64 0, metadata !838), !dbg !3332
+  %6 = load i32* %poc, align 4, !dbg !3332, !tbaa !1366
+  %cmp4 = icmp slt i32 %5, %6, !dbg !3332
+  br i1 %cmp4, label %if.end6, label %if.then5, !dbg !3332
 
-; <label>:17                                      ; preds = %8
-  tail call void @error(i8* getelementptr inbounds ([38 x i8]* @.str40, i64 0, i64 0), i32 150) #8, !dbg !6563
-  br label %18, !dbg !6565
+if.then5:                                         ; preds = %if.end3
+  call void @error(i8* getelementptr inbounds ([38 x i8]* @.str27, i64 0, i64 0), i32 150) #8, !dbg !3333
+  br label %if.end6, !dbg !3335
 
-; <label>:18                                      ; preds = %8, %17
-  tail call void @llvm.dbg.value(metadata i32* %poc, i64 0, metadata !1043, metadata !1408), !dbg !6544
-  store i32 %15, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 7), align 8, !dbg !6566, !tbaa !1535
-  tail call void @llvm.dbg.value(metadata i32* %pos, i64 0, metadata !1044, metadata !1408), !dbg !6545
-  %19 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !6567, !tbaa !1469
-  %20 = getelementptr inbounds %struct.frame_store** %19, i64 %9, !dbg !6569
-  %21 = load %struct.frame_store** %20, align 8, !dbg !6569, !tbaa !1389
-  %22 = tail call fastcc i32 @is_used_for_reference(%struct.frame_store* %21) #9, !dbg !6570
-  %23 = icmp eq i32 %22, 0, !dbg !6570
-  br i1 %23, label %24, label %25, !dbg !6571
+if.end6:                                          ; preds = %if.end3, %if.then5
+  call void @llvm.dbg.value(metadata !{i32* %poc}, i64 0, metadata !838), !dbg !3336
+  store i32 %6, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 7), align 8, !dbg !3336, !tbaa !1366
+  call void @llvm.dbg.value(metadata !{i32* %pos}, i64 0, metadata !839), !dbg !3337
+  %7 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !3337, !tbaa !1363
+  %arrayidx8 = getelementptr inbounds %struct.frame_store** %7, i64 %idxprom, !dbg !3337
+  %8 = load %struct.frame_store** %arrayidx8, align 8, !dbg !3337, !tbaa !1363
+  %call = call fastcc i32 @is_used_for_reference(%struct.frame_store* %8) #9, !dbg !3337
+  %tobool = icmp eq i32 %call, 0, !dbg !3337
+  br i1 %tobool, label %if.then9, label %if.end10, !dbg !3337
 
-; <label>:24                                      ; preds = %18
-  tail call void @llvm.dbg.value(metadata i32* %pos, i64 0, metadata !1044, metadata !1408), !dbg !6545
-  tail call fastcc void @remove_frame_from_dpb(i32 %5) #9, !dbg !6572
-  br label %25, !dbg !6574
+if.then9:                                         ; preds = %if.end6
+  call void @llvm.dbg.value(metadata !{i32* %pos}, i64 0, metadata !839), !dbg !3338
+  call fastcc void @remove_frame_from_dpb(i32 %1) #9, !dbg !3338
+  br label %if.end10, !dbg !3340
 
-; <label>:25                                      ; preds = %18, %24
-  ret void, !dbg !6575
+if.end10:                                         ; preds = %if.end6, %if.then9
+  ret void, !dbg !3341
 }

@@ -1,0 +1,34 @@
+define zeroext i1 @_ZN10xalanc_1_88endsWithEPKtjS1_j(i16* nocapture %theString, i32 %theStringLength, i16* nocapture %theSubstring, i32 %theSubstringLength) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !3047), !dbg !6760
+  tail call void @llvm.dbg.value(metadata !{i32 %theStringLength}, i64 0, metadata !3048), !dbg !6761
+  tail call void @llvm.dbg.value(metadata !{i16* %theSubstring}, i64 0, metadata !3049), !dbg !6762
+  tail call void @llvm.dbg.value(metadata !{i32 %theSubstringLength}, i64 0, metadata !3050), !dbg !6763
+  tail call void @llvm.dbg.value(metadata !6764, i64 0, metadata !3051), !dbg !6765
+  %cmp = icmp eq i32 %theSubstringLength, 0, !dbg !6766
+  %cmp1 = icmp ult i32 %theStringLength, %theSubstringLength, !dbg !6766
+  %or.cond = or i1 %cmp, %cmp1, !dbg !6766
+  br i1 %or.cond, label %if.end11, label %for.cond, !dbg !6766
+
+for.cond:                                         ; preds = %entry, %land.rhs
+  %i.0 = phi i32 [ %sub, %land.rhs ], [ %theStringLength, %entry ]
+  %j.0 = phi i32 [ %sub3, %land.rhs ], [ %theSubstringLength, %entry ]
+  %cond = icmp eq i32 %j.0, 0, !dbg !6767
+  br i1 %cond, label %if.end11, label %land.rhs, !dbg !6767
+
+land.rhs:                                         ; preds = %for.cond
+  %sub = add i32 %i.0, -1, !dbg !6767
+  %idxprom = zext i32 %sub to i64, !dbg !6767
+  %arrayidx = getelementptr inbounds i16* %theString, i64 %idxprom, !dbg !6767
+  %0 = load i16* %arrayidx, align 2, !dbg !6767, !tbaa !6609
+  %sub3 = add i32 %j.0, -1, !dbg !6767
+  %idxprom4 = zext i32 %sub3 to i64, !dbg !6767
+  %arrayidx5 = getelementptr inbounds i16* %theSubstring, i64 %idxprom4, !dbg !6767
+  %1 = load i16* %arrayidx5, align 2, !dbg !6767, !tbaa !6609
+  %cmp7 = icmp eq i16 %0, %1, !dbg !6767
+  br i1 %cmp7, label %for.cond, label %if.end11
+
+if.end11:                                         ; preds = %land.rhs, %for.cond, %entry
+  %fResult.0 = phi i1 [ false, %entry ], [ false, %land.rhs ], [ true, %for.cond ]
+  ret i1 %fResult.0, !dbg !6769
+}

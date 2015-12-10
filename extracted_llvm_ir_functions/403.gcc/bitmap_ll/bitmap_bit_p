@@ -1,23 +1,28 @@
 define i32 @bitmap_bit_p(%struct.bitmap_head_def* nocapture %head, i32 %bit) #0 {
 entry:
-  %call = tail call fastcc %struct.bitmap_element_def* @bitmap_find_bit(%struct.bitmap_head_def* %head, i32 %bit) #7
-  %cmp = icmp eq %struct.bitmap_element_def* %call, null
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_head_def* %head}, i64 0, metadata !120), !dbg !525
+  tail call void @llvm.dbg.value(metadata !{i32 %bit}, i64 0, metadata !121), !dbg !526
+  %call = tail call fastcc %struct.bitmap_element_def* @bitmap_find_bit(%struct.bitmap_head_def* %head, i32 %bit) #8, !dbg !527
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_element_def* %call}, i64 0, metadata !122), !dbg !527
+  %cmp = icmp eq %struct.bitmap_element_def* %call, null, !dbg !528
+  br i1 %cmp, label %return, label %if.end, !dbg !528
 
 if.end:                                           ; preds = %entry
-  %rem = and i32 %bit, 63
-  %div = lshr i32 %bit, 6
-  %rem1 = and i32 %div, 1
-  %idxprom = zext i32 %rem1 to i64
-  %arrayidx = getelementptr inbounds %struct.bitmap_element_def* %call, i64 0, i32 3, i64 %idxprom
-  %0 = load i64* %arrayidx, align 8, !tbaa !4
-  %sh_prom = zext i32 %rem to i64
-  %shr = lshr i64 %0, %sh_prom
-  %shr.tr = trunc i64 %shr to i32
-  %conv = and i32 %shr.tr, 1
-  br label %return
+  %rem = and i32 %bit, 63, !dbg !529
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !123), !dbg !529
+  %div = lshr i32 %bit, 6, !dbg !530
+  %rem1 = and i32 %div, 1, !dbg !530
+  tail call void @llvm.dbg.value(metadata !{i32 %rem1}, i64 0, metadata !124), !dbg !530
+  %idxprom = zext i32 %rem1 to i64, !dbg !531
+  %arrayidx = getelementptr inbounds %struct.bitmap_element_def* %call, i64 0, i32 3, i64 %idxprom, !dbg !531
+  %0 = load i64* %arrayidx, align 8, !dbg !531, !tbaa !408
+  %sh_prom = zext i32 %rem to i64, !dbg !531
+  %shr = lshr i64 %0, %sh_prom, !dbg !531
+  %shr.tr = trunc i64 %shr to i32, !dbg !531
+  %conv = and i32 %shr.tr, 1, !dbg !531
+  br label %return, !dbg !531
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i32 [ %conv, %if.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !532
 }

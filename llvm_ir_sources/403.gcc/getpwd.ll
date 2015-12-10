@@ -1,8 +1,8 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/403.gcc/src/getpwd.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/403.gcc/src/getpwd.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct.stat = type { i32, i16, i16, i64, i32, i32, i32, %struct.timespec, %struct.timespec, %struct.timespec, %struct.timespec, i64, i64, i32, i32, i32, i32, [2 x i64] }
+%struct.stat = type { i64, i64, i64, i32, i32, i32, i32, i64, i64, i64, i64, %struct.timespec, %struct.timespec, %struct.timespec, [3 x i64] }
 %struct.timespec = type { i64, i64 }
 
 @getpwd.pwd = internal unnamed_addr global i8* null, align 8
@@ -10,312 +10,233 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str = private unnamed_addr constant [4 x i8] c"PWD\00", align 1
 @.str1 = private unnamed_addr constant [2 x i8] c".\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define i8* @getpwd() #0 {
+entry:
   %dotstat = alloca %struct.stat, align 8
   %pwdstat = alloca %struct.stat, align 8
-  %1 = load i8** @getpwd.pwd, align 8, !dbg !99, !tbaa !100
-  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !10, metadata !104), !dbg !105
-  %2 = bitcast %struct.stat* %dotstat to i8*, !dbg !106
-  call void @llvm.lifetime.start(i64 144, i8* %2) #1, !dbg !106
-  %3 = bitcast %struct.stat* %pwdstat to i8*, !dbg !106
-  call void @llvm.lifetime.start(i64 144, i8* %3) #1, !dbg !106
-  %4 = icmp eq i8* %1, null, !dbg !107
-  br i1 %4, label %5, label %47, !dbg !108
+  %0 = load i8** @getpwd.pwd, align 8, !dbg !64, !tbaa !65
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !11), !dbg !64
+  %1 = bitcast %struct.stat* %dotstat to i8*, !dbg !68
+  call void @llvm.lifetime.start(i64 144, i8* %1) #2, !dbg !68
+  call void @llvm.dbg.declare(metadata !{%struct.stat* %dotstat}, metadata !15), !dbg !68
+  %2 = bitcast %struct.stat* %pwdstat to i8*, !dbg !68
+  call void @llvm.lifetime.start(i64 144, i8* %2) #2, !dbg !68
+  call void @llvm.dbg.declare(metadata !{%struct.stat* %pwdstat}, metadata !56), !dbg !68
+  %tobool = icmp eq i8* %0, null, !dbg !69
+  br i1 %tobool, label %land.lhs.true, label %if.end32, !dbg !69
 
-; <label>:5                                       ; preds = %0
-  %6 = load i32* @getpwd.failure_errno, align 4, !dbg !109, !tbaa !110
-  %7 = tail call i32* @__error() #6, !dbg !112
-  store i32 %6, i32* %7, align 4, !dbg !113, !tbaa !110
-  %8 = icmp eq i32 %6, 0, !dbg !113
-  br i1 %8, label %9, label %47, !dbg !114
+land.lhs.true:                                    ; preds = %entry
+  %3 = load i32* @getpwd.failure_errno, align 4, !dbg !69, !tbaa !70
+  %call = call i32* @__errno_location() #7, !dbg !69
+  store i32 %3, i32* %call, align 4, !dbg !69, !tbaa !70
+  %tobool1 = icmp eq i32 %3, 0, !dbg !69
+  br i1 %tobool1, label %if.then, label %if.end32, !dbg !69
 
-; <label>:9                                       ; preds = %5
-  %10 = tail call i8* @getenv(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0)) #6, !dbg !115
-  tail call void @llvm.dbg.value(metadata i8* %10, i64 0, metadata !10, metadata !104), !dbg !105
-  %11 = icmp eq i8* %10, null, !dbg !116
-  br i1 %11, label %.preheader, label %12, !dbg !117
+if.then:                                          ; preds = %land.lhs.true
+  %call2 = call i8* @getenv(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0)) #8, !dbg !71
+  call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !11), !dbg !71
+  %cmp = icmp eq i8* %call2, null, !dbg !71
+  br i1 %cmp, label %for.cond.preheader, label %land.lhs.true3, !dbg !71
 
-; <label>:12                                      ; preds = %9
-  %13 = load i8* %10, align 1, !dbg !118, !tbaa !119
-  %14 = icmp eq i8 %13, 47, !dbg !120
-  br i1 %14, label %15, label %.preheader, !dbg !121
+land.lhs.true3:                                   ; preds = %if.then
+  %4 = load i8* %call2, align 1, !dbg !71, !tbaa !66
+  %cmp4 = icmp eq i8 %4, 47, !dbg !71
+  br i1 %cmp4, label %land.lhs.true6, label %for.cond.preheader, !dbg !71
 
-; <label>:15                                      ; preds = %12
-  tail call void @llvm.dbg.value(metadata %struct.stat* %pwdstat, i64 0, metadata !84, metadata !104), !dbg !122
-  %16 = call i32 @"\01_stat$INODE64"(i8* %10, %struct.stat* %pwdstat) #6, !dbg !123
-  %17 = icmp eq i32 %16, 0, !dbg !124
-  br i1 %17, label %18, label %.preheader, !dbg !125
+land.lhs.true6:                                   ; preds = %land.lhs.true3
+  %call7 = call i32 @stat(i8* %call2, %struct.stat* %pwdstat) #8, !dbg !72
+  %cmp8 = icmp eq i32 %call7, 0, !dbg !72
+  br i1 %cmp8, label %land.lhs.true10, label %for.cond.preheader, !dbg !72
 
-; <label>:18                                      ; preds = %15
-  call void @llvm.dbg.value(metadata %struct.stat* %dotstat, i64 0, metadata !17, metadata !104), !dbg !126
-  %19 = call i32 @"\01_stat$INODE64"(i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0), %struct.stat* %dotstat) #6, !dbg !127
-  %20 = icmp eq i32 %19, 0, !dbg !128
-  br i1 %20, label %21, label %.preheader, !dbg !129
+land.lhs.true10:                                  ; preds = %land.lhs.true6
+  %call11 = call i32 @stat(i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0), %struct.stat* %dotstat) #8, !dbg !73
+  %cmp12 = icmp eq i32 %call11, 0, !dbg !73
+  br i1 %cmp12, label %land.lhs.true14, label %for.cond.preheader, !dbg !73
 
-; <label>:21                                      ; preds = %18
-  %22 = getelementptr inbounds %struct.stat* %dotstat, i64 0, i32 3, !dbg !130
-  %23 = load i64* %22, align 8, !dbg !130, !tbaa !131
-  %24 = getelementptr inbounds %struct.stat* %pwdstat, i64 0, i32 3, !dbg !137
-  %25 = load i64* %24, align 8, !dbg !137, !tbaa !131
-  %26 = icmp eq i64 %23, %25, !dbg !138
-  br i1 %26, label %27, label %.preheader, !dbg !139
+land.lhs.true14:                                  ; preds = %land.lhs.true10
+  %st_ino = getelementptr inbounds %struct.stat* %dotstat, i64 0, i32 1, !dbg !73
+  %5 = load i64* %st_ino, align 8, !dbg !73, !tbaa !74
+  %st_ino15 = getelementptr inbounds %struct.stat* %pwdstat, i64 0, i32 1, !dbg !73
+  %6 = load i64* %st_ino15, align 8, !dbg !73, !tbaa !74
+  %cmp16 = icmp eq i64 %5, %6, !dbg !73
+  br i1 %cmp16, label %land.lhs.true18, label %for.cond.preheader, !dbg !73
 
-; <label>:27                                      ; preds = %21
-  %28 = getelementptr inbounds %struct.stat* %dotstat, i64 0, i32 0, !dbg !140
-  %29 = load i32* %28, align 8, !dbg !140, !tbaa !141
-  %30 = getelementptr inbounds %struct.stat* %pwdstat, i64 0, i32 0, !dbg !142
-  %31 = load i32* %30, align 8, !dbg !142, !tbaa !141
-  %32 = icmp eq i32 %29, %31, !dbg !143
-  br i1 %32, label %.loopexit, label %.preheader, !dbg !144
+land.lhs.true18:                                  ; preds = %land.lhs.true14
+  %st_dev = getelementptr inbounds %struct.stat* %dotstat, i64 0, i32 0, !dbg !73
+  %7 = load i64* %st_dev, align 8, !dbg !73, !tbaa !74
+  %st_dev19 = getelementptr inbounds %struct.stat* %pwdstat, i64 0, i32 0, !dbg !73
+  %8 = load i64* %st_dev19, align 8, !dbg !73, !tbaa !74
+  %cmp20 = icmp eq i64 %7, %8, !dbg !73
+  br i1 %cmp20, label %if.end31, label %for.cond.preheader, !dbg !73
 
-.preheader:                                       ; preds = %9, %27, %21, %18, %15, %12
-  %33 = call noalias i8* @xmalloc(i64 100) #6, !dbg !145
-  call void @llvm.dbg.value(metadata i8* %33, i64 0, metadata !10, metadata !104), !dbg !105
-  %34 = call i8* @getcwd(i8* %33, i64 100) #6, !dbg !146
-  %35 = icmp eq i8* %34, null, !dbg !147
-  br i1 %35, label %.lr.ph, label %.loopexit, !dbg !148
+for.cond.preheader:                               ; preds = %if.then, %land.lhs.true18, %land.lhs.true14, %land.lhs.true10, %land.lhs.true6, %land.lhs.true3
+  %call2342 = call noalias i8* @xmalloc(i64 100) #8, !dbg !75
+  %call2443 = call i8* @getcwd(i8* %call2342, i64 100) #8, !dbg !75
+  %lnot44 = icmp eq i8* %call2443, null, !dbg !75
+  br i1 %lnot44, label %for.body, label %if.end31, !dbg !75
 
-; <label>:36                                      ; preds = %.lr.ph
-  %37 = call noalias i8* @xmalloc(i64 %44) #6, !dbg !145
-  call void @llvm.dbg.value(metadata i8* %37, i64 0, metadata !10, metadata !104), !dbg !105
-  %38 = call i8* @getcwd(i8* %37, i64 %44) #6, !dbg !146
-  %39 = icmp eq i8* %38, null, !dbg !147
-  br i1 %39, label %.lr.ph, label %.loopexit, !dbg !148
+for.cond:                                         ; preds = %for.body
+  %call23 = call noalias i8* @xmalloc(i64 %mul) #8, !dbg !75
+  %call24 = call i8* @getcwd(i8* %call23, i64 %mul) #8, !dbg !75
+  %lnot = icmp eq i8* %call24, null, !dbg !75
+  br i1 %lnot, label %for.body, label %if.end31, !dbg !75
 
-.lr.ph:                                           ; preds = %.preheader, %36
-  %40 = phi i8* [ %37, %36 ], [ %33, %.preheader ]
-  %s.03 = phi i64 [ %44, %36 ], [ 100, %.preheader ]
-  %41 = call i32* @__error() #6, !dbg !149
-  %42 = load i32* %41, align 4, !dbg !149, !tbaa !110
-  call void @llvm.dbg.value(metadata i32 %42, i64 0, metadata !85, metadata !104), !dbg !150
-  call void @free(i8* %40) #7, !dbg !151
-  %43 = icmp eq i32 %42, 34, !dbg !152
-  %44 = shl i64 %s.03, 1, !dbg !154
-  call void @llvm.dbg.value(metadata i64 %44, i64 0, metadata !11, metadata !104), !dbg !155
-  br i1 %43, label %36, label %45, !dbg !156
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %call2346 = phi i8* [ %call23, %for.cond ], [ %call2342, %for.cond.preheader ]
+  %s.045 = phi i64 [ %mul, %for.cond ], [ 100, %for.cond.preheader ]
+  %9 = load i32* %call, align 4, !dbg !76, !tbaa !70
+  call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !57), !dbg !76
+  call void @free(i8* %call2346) #8, !dbg !77
+  %cmp27 = icmp eq i32 %9, 34, !dbg !78
+  %mul = shl i64 %s.045, 1, !dbg !75
+  call void @llvm.dbg.value(metadata !{i64 %mul}, i64 0, metadata !12), !dbg !75
+  br i1 %cmp27, label %for.cond, label %if.then29, !dbg !78
 
-; <label>:45                                      ; preds = %.lr.ph
-  store i32 %42, i32* @getpwd.failure_errno, align 4, !dbg !157, !tbaa !110
-  %46 = call i32* @__error() #6, !dbg !159
-  store i32 %42, i32* %46, align 4, !dbg !160, !tbaa !110
-  call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !10, metadata !104), !dbg !105
-  br label %.loopexit, !dbg !161
+if.then29:                                        ; preds = %for.body
+  store i32 %9, i32* @getpwd.failure_errno, align 4, !dbg !79, !tbaa !70
+  store i32 %9, i32* %call, align 4, !dbg !79, !tbaa !70
+  call void @llvm.dbg.value(metadata !81, i64 0, metadata !11), !dbg !82
+  br label %if.end31, !dbg !83
 
-.loopexit:                                        ; preds = %36, %.preheader, %45, %27
-  %p.0 = phi i8* [ %10, %27 ], [ null, %45 ], [ %33, %.preheader ], [ %37, %36 ]
-  store i8* %p.0, i8** @getpwd.pwd, align 8, !dbg !162, !tbaa !100
-  br label %47, !dbg !163
+if.end31:                                         ; preds = %for.cond.preheader, %for.cond, %if.then29, %land.lhs.true18
+  %p.0 = phi i8* [ %call2, %land.lhs.true18 ], [ null, %if.then29 ], [ %call2342, %for.cond.preheader ], [ %call23, %for.cond ]
+  store i8* %p.0, i8** @getpwd.pwd, align 8, !dbg !84, !tbaa !65
+  br label %if.end32, !dbg !85
 
-; <label>:47                                      ; preds = %5, %0, %.loopexit
-  %p.1 = phi i8* [ %1, %0 ], [ null, %5 ], [ %p.0, %.loopexit ]
-  call void @llvm.lifetime.end(i64 144, i8* %3) #1, !dbg !164
-  call void @llvm.lifetime.end(i64 144, i8* %2) #1, !dbg !164
-  ret i8* %p.1, !dbg !164
+if.end32:                                         ; preds = %land.lhs.true, %entry, %if.end31
+  %p.1 = phi i8* [ %0, %entry ], [ null, %land.lhs.true ], [ %p.0, %if.end31 ]
+  call void @llvm.lifetime.end(i64 144, i8* %2) #2, !dbg !86
+  call void @llvm.lifetime.end(i64 144, i8* %1) #2, !dbg !86
+  ret i8* %p.1, !dbg !86
 }
 
-; Function Attrs: nounwind
-declare void @llvm.lifetime.start(i64, i8* nocapture) #1
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.declare(metadata, metadata) #1
 
-; Function Attrs: optsize
-declare i32* @__error() #2
+; Function Attrs: nounwind
+declare void @llvm.lifetime.start(i64, i8* nocapture) #2
+
+; Function Attrs: nounwind optsize readnone
+declare i32* @__errno_location() #3
 
 ; Function Attrs: nounwind optsize readonly
-declare i8* @getenv(i8* nocapture) #3
-
-; Function Attrs: optsize
-declare i32 @"\01_stat$INODE64"(i8*, %struct.stat*) #2
-
-; Function Attrs: optsize
-declare i8* @getcwd(i8*, i64) #2
-
-; Function Attrs: optsize
-declare noalias i8* @xmalloc(i64) #2
+declare i8* @getenv(i8* nocapture) #4
 
 ; Function Attrs: nounwind optsize
-declare void @free(i8* nocapture) #4
+declare i32 @stat(i8* nocapture, %struct.stat* nocapture) #5
+
+; Function Attrs: nounwind optsize
+declare i8* @getcwd(i8*, i64) #5
+
+; Function Attrs: optsize
+declare noalias i8* @xmalloc(i64) #6
+
+; Function Attrs: nounwind optsize
+declare void @free(i8* nocapture) #5
 
 ; Function Attrs: nounwind
-declare void @llvm.lifetime.end(i64, i8* nocapture) #1
+declare void @llvm.lifetime.end(i64, i8* nocapture) #2
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #5
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind }
-attributes #2 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind optsize readonly "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #5 = { nounwind readnone }
-attributes #6 = { nounwind optsize }
-attributes #7 = { optsize }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind readnone }
+attributes #2 = { nounwind }
+attributes #3 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind optsize readonly "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #6 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #7 = { nounwind optsize readnone }
+attributes #8 = { nounwind optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!95, !96, !97}
-!llvm.ident = !{!98}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !2, subprograms: !3, globals: !92, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/403.gcc/src/getpwd.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4}
-!4 = !DISubprogram(name: "getpwd", scope: !1, file: !1, line: 65, type: !5, isLocal: false, isDefinition: true, scopeLine: 66, flags: DIFlagPrototyped, isOptimized: true, function: i8* ()* @getpwd, variables: !9)
-!5 = !DISubroutineType(types: !6)
-!6 = !{!7}
-!7 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !8, size: 64, align: 64)
-!8 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!9 = !{!10, !11, !17, !84, !85}
-!10 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "p", scope: !4, file: !1, line: 70, type: !7)
-!11 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "s", scope: !4, file: !1, line: 71, type: !12)
-!12 = !DIDerivedType(tag: DW_TAG_typedef, name: "size_t", file: !13, line: 30, baseType: !14)
-!13 = !DIFile(filename: "/usr/include/sys/_types/_size_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!14 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_size_t", file: !15, line: 92, baseType: !16)
-!15 = !DIFile(filename: "/usr/include/i386/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!16 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!17 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "dotstat", scope: !4, file: !1, line: 72, type: !18)
-!18 = !DICompositeType(tag: DW_TAG_structure_type, name: "stat", file: !19, line: 182, size: 1152, align: 64, elements: !20)
-!19 = !DIFile(filename: "/usr/include/sys/stat.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!20 = !{!21, !28, !34, !37, !41, !47, !51, !52, !60, !61, !62, !63, !69, !73, !77, !78, !79, !80}
-!21 = !DIDerivedType(tag: DW_TAG_member, name: "st_dev", scope: !18, file: !19, line: 182, baseType: !22, size: 32, align: 32)
-!22 = !DIDerivedType(tag: DW_TAG_typedef, name: "dev_t", file: !23, line: 30, baseType: !24)
-!23 = !DIFile(filename: "/usr/include/sys/_types/_dev_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!24 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_dev_t", file: !25, line: 57, baseType: !26)
-!25 = !DIFile(filename: "/usr/include/sys/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!26 = !DIDerivedType(tag: DW_TAG_typedef, name: "__int32_t", file: !15, line: 44, baseType: !27)
-!27 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!28 = !DIDerivedType(tag: DW_TAG_member, name: "st_mode", scope: !18, file: !19, line: 182, baseType: !29, size: 16, align: 16, offset: 32)
-!29 = !DIDerivedType(tag: DW_TAG_typedef, name: "mode_t", file: !30, line: 30, baseType: !31)
-!30 = !DIFile(filename: "/usr/include/sys/_types/_mode_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!31 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_mode_t", file: !25, line: 70, baseType: !32)
-!32 = !DIDerivedType(tag: DW_TAG_typedef, name: "__uint16_t", file: !15, line: 43, baseType: !33)
-!33 = !DIBasicType(name: "unsigned short", size: 16, align: 16, encoding: DW_ATE_unsigned)
-!34 = !DIDerivedType(tag: DW_TAG_member, name: "st_nlink", scope: !18, file: !19, line: 182, baseType: !35, size: 16, align: 16, offset: 48)
-!35 = !DIDerivedType(tag: DW_TAG_typedef, name: "nlink_t", file: !36, line: 30, baseType: !32)
-!36 = !DIFile(filename: "/usr/include/sys/_types/_nlink_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!37 = !DIDerivedType(tag: DW_TAG_member, name: "st_ino", scope: !18, file: !19, line: 182, baseType: !38, size: 64, align: 64, offset: 64)
-!38 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_ino64_t", file: !25, line: 62, baseType: !39)
-!39 = !DIDerivedType(tag: DW_TAG_typedef, name: "__uint64_t", file: !15, line: 47, baseType: !40)
-!40 = !DIBasicType(name: "long long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!41 = !DIDerivedType(tag: DW_TAG_member, name: "st_uid", scope: !18, file: !19, line: 182, baseType: !42, size: 32, align: 32, offset: 128)
-!42 = !DIDerivedType(tag: DW_TAG_typedef, name: "uid_t", file: !43, line: 30, baseType: !44)
-!43 = !DIFile(filename: "/usr/include/sys/_types/_uid_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!44 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_uid_t", file: !25, line: 75, baseType: !45)
-!45 = !DIDerivedType(tag: DW_TAG_typedef, name: "__uint32_t", file: !15, line: 45, baseType: !46)
-!46 = !DIBasicType(name: "unsigned int", size: 32, align: 32, encoding: DW_ATE_unsigned)
-!47 = !DIDerivedType(tag: DW_TAG_member, name: "st_gid", scope: !18, file: !19, line: 182, baseType: !48, size: 32, align: 32, offset: 160)
-!48 = !DIDerivedType(tag: DW_TAG_typedef, name: "gid_t", file: !49, line: 30, baseType: !50)
-!49 = !DIFile(filename: "/usr/include/sys/_types/_gid_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!50 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_gid_t", file: !25, line: 60, baseType: !45)
-!51 = !DIDerivedType(tag: DW_TAG_member, name: "st_rdev", scope: !18, file: !19, line: 182, baseType: !22, size: 32, align: 32, offset: 192)
-!52 = !DIDerivedType(tag: DW_TAG_member, name: "st_atimespec", scope: !18, file: !19, line: 182, baseType: !53, size: 128, align: 64, offset: 256)
-!53 = !DICompositeType(tag: DW_TAG_structure_type, name: "timespec", file: !54, line: 30, size: 128, align: 64, elements: !55)
-!54 = !DIFile(filename: "/usr/include/sys/_types/_timespec.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!55 = !{!56, !59}
-!56 = !DIDerivedType(tag: DW_TAG_member, name: "tv_sec", scope: !53, file: !54, line: 32, baseType: !57, size: 64, align: 64)
-!57 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_time_t", file: !15, line: 120, baseType: !58)
-!58 = !DIBasicType(name: "long int", size: 64, align: 64, encoding: DW_ATE_signed)
-!59 = !DIDerivedType(tag: DW_TAG_member, name: "tv_nsec", scope: !53, file: !54, line: 33, baseType: !58, size: 64, align: 64, offset: 64)
-!60 = !DIDerivedType(tag: DW_TAG_member, name: "st_mtimespec", scope: !18, file: !19, line: 182, baseType: !53, size: 128, align: 64, offset: 384)
-!61 = !DIDerivedType(tag: DW_TAG_member, name: "st_ctimespec", scope: !18, file: !19, line: 182, baseType: !53, size: 128, align: 64, offset: 512)
-!62 = !DIDerivedType(tag: DW_TAG_member, name: "st_birthtimespec", scope: !18, file: !19, line: 182, baseType: !53, size: 128, align: 64, offset: 640)
-!63 = !DIDerivedType(tag: DW_TAG_member, name: "st_size", scope: !18, file: !19, line: 182, baseType: !64, size: 64, align: 64, offset: 768)
-!64 = !DIDerivedType(tag: DW_TAG_typedef, name: "off_t", file: !65, line: 30, baseType: !66)
-!65 = !DIFile(filename: "/usr/include/sys/_types/_off_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!66 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_off_t", file: !25, line: 71, baseType: !67)
-!67 = !DIDerivedType(tag: DW_TAG_typedef, name: "__int64_t", file: !15, line: 46, baseType: !68)
-!68 = !DIBasicType(name: "long long int", size: 64, align: 64, encoding: DW_ATE_signed)
-!69 = !DIDerivedType(tag: DW_TAG_member, name: "st_blocks", scope: !18, file: !19, line: 182, baseType: !70, size: 64, align: 64, offset: 832)
-!70 = !DIDerivedType(tag: DW_TAG_typedef, name: "blkcnt_t", file: !71, line: 30, baseType: !72)
-!71 = !DIFile(filename: "/usr/include/sys/_types/_blkcnt_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!72 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_blkcnt_t", file: !25, line: 55, baseType: !67)
-!73 = !DIDerivedType(tag: DW_TAG_member, name: "st_blksize", scope: !18, file: !19, line: 182, baseType: !74, size: 32, align: 32, offset: 896)
-!74 = !DIDerivedType(tag: DW_TAG_typedef, name: "blksize_t", file: !75, line: 30, baseType: !76)
-!75 = !DIFile(filename: "/usr/include/sys/_types/_blksize_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!76 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_blksize_t", file: !25, line: 56, baseType: !26)
-!77 = !DIDerivedType(tag: DW_TAG_member, name: "st_flags", scope: !18, file: !19, line: 182, baseType: !45, size: 32, align: 32, offset: 928)
-!78 = !DIDerivedType(tag: DW_TAG_member, name: "st_gen", scope: !18, file: !19, line: 182, baseType: !45, size: 32, align: 32, offset: 960)
-!79 = !DIDerivedType(tag: DW_TAG_member, name: "st_lspare", scope: !18, file: !19, line: 182, baseType: !26, size: 32, align: 32, offset: 992)
-!80 = !DIDerivedType(tag: DW_TAG_member, name: "st_qspare", scope: !18, file: !19, line: 182, baseType: !81, size: 128, align: 64, offset: 1024)
-!81 = !DICompositeType(tag: DW_TAG_array_type, baseType: !67, size: 128, align: 64, elements: !82)
-!82 = !{!83}
-!83 = !DISubrange(count: 2)
-!84 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "pwdstat", scope: !4, file: !1, line: 72, type: !18)
-!85 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "e", scope: !86, file: !1, line: 86, type: !27)
-!86 = distinct !DILexicalBlock(scope: !87, file: !1, line: 85, column: 4)
-!87 = distinct !DILexicalBlock(scope: !88, file: !1, line: 84, column: 2)
-!88 = distinct !DILexicalBlock(scope: !89, file: !1, line: 84, column: 2)
-!89 = distinct !DILexicalBlock(scope: !90, file: !1, line: 76, column: 11)
-!90 = distinct !DILexicalBlock(scope: !91, file: !1, line: 75, column: 5)
-!91 = distinct !DILexicalBlock(scope: !4, file: !1, line: 74, column: 7)
-!92 = !{!93, !94}
-!93 = !DIGlobalVariable(name: "pwd", scope: !4, file: !1, line: 67, type: !7, isLocal: true, isDefinition: true, variable: i8** @getpwd.pwd)
-!94 = !DIGlobalVariable(name: "failure_errno", scope: !4, file: !1, line: 68, type: !27, isLocal: true, isDefinition: true, variable: i32* @getpwd.failure_errno)
-!95 = !{i32 2, !"Dwarf Version", i32 2}
-!96 = !{i32 2, !"Debug Info Version", i32 700000003}
-!97 = !{i32 1, !"PIC Level", i32 2}
-!98 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!99 = !DILocation(line: 70, column: 13, scope: !4)
-!100 = !{!101, !101, i64 0}
-!101 = !{!"any pointer", !102, i64 0}
-!102 = !{!"omnipotent char", !103, i64 0}
-!103 = !{!"Simple C/C++ TBAA"}
-!104 = !DIExpression()
-!105 = !DILocation(line: 70, column: 9, scope: !4)
-!106 = !DILocation(line: 72, column: 3, scope: !4)
-!107 = !DILocation(line: 74, column: 8, scope: !91)
-!108 = !DILocation(line: 74, column: 10, scope: !91)
-!109 = !DILocation(line: 74, column: 23, scope: !91)
-!110 = !{!111, !111, i64 0}
-!111 = !{!"int", !102, i64 0}
-!112 = !DILocation(line: 74, column: 15, scope: !91)
-!113 = !DILocation(line: 74, column: 21, scope: !91)
-!114 = !DILocation(line: 74, column: 7, scope: !4)
-!115 = !DILocation(line: 76, column: 19, scope: !89)
-!116 = !DILocation(line: 76, column: 35, scope: !89)
-!117 = !DILocation(line: 77, column: 7, scope: !89)
-!118 = !DILocation(line: 77, column: 10, scope: !89)
-!119 = !{!102, !102, i64 0}
-!120 = !DILocation(line: 77, column: 13, scope: !89)
-!121 = !DILocation(line: 78, column: 7, scope: !89)
-!122 = !DILocation(line: 72, column: 24, scope: !4)
-!123 = !DILocation(line: 78, column: 10, scope: !89)
-!124 = !DILocation(line: 78, column: 29, scope: !89)
-!125 = !DILocation(line: 79, column: 7, scope: !89)
-!126 = !DILocation(line: 72, column: 15, scope: !4)
-!127 = !DILocation(line: 79, column: 10, scope: !89)
-!128 = !DILocation(line: 79, column: 31, scope: !89)
-!129 = !DILocation(line: 80, column: 7, scope: !89)
-!130 = !DILocation(line: 80, column: 18, scope: !89)
-!131 = !{!132, !134, i64 8}
-!132 = !{!"stat", !111, i64 0, !133, i64 4, !133, i64 6, !134, i64 8, !111, i64 16, !111, i64 20, !111, i64 24, !135, i64 32, !135, i64 48, !135, i64 64, !135, i64 80, !134, i64 96, !134, i64 104, !111, i64 112, !111, i64 116, !111, i64 120, !111, i64 124, !102, i64 128}
-!133 = !{!"short", !102, i64 0}
-!134 = !{!"long long", !102, i64 0}
-!135 = !{!"timespec", !136, i64 0, !136, i64 8}
-!136 = !{!"long", !102, i64 0}
-!137 = !DILocation(line: 80, column: 36, scope: !89)
-!138 = !DILocation(line: 80, column: 25, scope: !89)
-!139 = !DILocation(line: 81, column: 7, scope: !89)
-!140 = !DILocation(line: 81, column: 18, scope: !89)
-!141 = !{!132, !111, i64 0}
-!142 = !DILocation(line: 81, column: 36, scope: !89)
-!143 = !DILocation(line: 81, column: 25, scope: !89)
-!144 = !DILocation(line: 76, column: 11, scope: !90)
-!145 = !DILocation(line: 84, column: 40, scope: !87)
-!146 = !DILocation(line: 84, column: 28, scope: !87)
-!147 = !DILocation(line: 84, column: 26, scope: !87)
-!148 = !DILocation(line: 84, column: 2, scope: !88)
-!149 = !DILocation(line: 86, column: 14, scope: !86)
-!150 = !DILocation(line: 86, column: 10, scope: !86)
-!151 = !DILocation(line: 87, column: 6, scope: !86)
-!152 = !DILocation(line: 89, column: 12, scope: !153)
-!153 = distinct !DILexicalBlock(scope: !86, file: !1, line: 89, column: 10)
-!154 = !DILocation(line: 84, column: 60, scope: !87)
-!155 = !DILocation(line: 71, column: 10, scope: !4)
-!156 = !DILocation(line: 89, column: 10, scope: !86)
-!157 = !DILocation(line: 92, column: 25, scope: !158)
-!158 = distinct !DILexicalBlock(scope: !153, file: !1, line: 91, column: 8)
-!159 = !DILocation(line: 92, column: 3, scope: !158)
-!160 = !DILocation(line: 92, column: 9, scope: !158)
-!161 = !DILocation(line: 94, column: 3, scope: !158)
-!162 = !DILocation(line: 100, column: 11, scope: !90)
-!163 = !DILocation(line: 101, column: 5, scope: !90)
-!164 = !DILocation(line: 103, column: 1, scope: !4)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !61, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/getpwd.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/403.gcc/src/getpwd.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"getpwd", metadata !"getpwd", metadata !"", i32 65, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* ()* @getpwd, null, null, metadata !10, i32 66} ; [ DW_TAG_subprogram ] [line 65] [def] [scope 66] [getpwd]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/getpwd.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!9 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!10 = metadata !{metadata !11, metadata !12, metadata !15, metadata !56, metadata !57}
+!11 = metadata !{i32 786688, metadata !4, metadata !"p", metadata !5, i32 70, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [p] [line 70]
+!12 = metadata !{i32 786688, metadata !4, metadata !"s", metadata !5, i32 71, metadata !13, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [s] [line 71]
+!13 = metadata !{i32 786454, metadata !1, null, metadata !"size_t", i32 42, i64 0, i64 0, i64 0, i32 0, metadata !14} ; [ DW_TAG_typedef ] [size_t] [line 42, size 0, align 0, offset 0] [from long unsigned int]
+!14 = metadata !{i32 786468, null, null, metadata !"long unsigned int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [long unsigned int] [line 0, size 64, align 64, offset 0, enc DW_ATE_unsigned]
+!15 = metadata !{i32 786688, metadata !4, metadata !"dotstat", metadata !5, i32 72, metadata !16, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [dotstat] [line 72]
+!16 = metadata !{i32 786451, metadata !17, null, metadata !"stat", i32 46, i64 1152, i64 64, i32 0, i32 0, null, metadata !18, i32 0, null, null} ; [ DW_TAG_structure_type ] [stat] [line 46, size 1152, align 64, offset 0] [from ]
+!17 = metadata !{metadata !"/usr/include/x86_64-linux-gnu/bits/stat.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!18 = metadata !{metadata !19, metadata !21, metadata !23, metadata !25, metadata !28, metadata !30, metadata !32, metadata !34, metadata !35, metadata !38, metadata !40, metadata !42, metadata !50, metadata !51, metadata !52}
+!19 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_dev", i32 48, i64 64, i64 64, i64 0, i32 0, metadata !20} ; [ DW_TAG_member ] [st_dev] [line 48, size 64, align 64, offset 0] [from __dev_t]
+!20 = metadata !{i32 786454, metadata !17, null, metadata !"__dev_t", i32 124, i64 0, i64 0, i64 0, i32 0, metadata !14} ; [ DW_TAG_typedef ] [__dev_t] [line 124, size 0, align 0, offset 0] [from long unsigned int]
+!21 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_ino", i32 53, i64 64, i64 64, i64 64, i32 0, metadata !22} ; [ DW_TAG_member ] [st_ino] [line 53, size 64, align 64, offset 64] [from __ino_t]
+!22 = metadata !{i32 786454, metadata !17, null, metadata !"__ino_t", i32 127, i64 0, i64 0, i64 0, i32 0, metadata !14} ; [ DW_TAG_typedef ] [__ino_t] [line 127, size 0, align 0, offset 0] [from long unsigned int]
+!23 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_nlink", i32 61, i64 64, i64 64, i64 128, i32 0, metadata !24} ; [ DW_TAG_member ] [st_nlink] [line 61, size 64, align 64, offset 128] [from __nlink_t]
+!24 = metadata !{i32 786454, metadata !17, null, metadata !"__nlink_t", i32 130, i64 0, i64 0, i64 0, i32 0, metadata !14} ; [ DW_TAG_typedef ] [__nlink_t] [line 130, size 0, align 0, offset 0] [from long unsigned int]
+!25 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_mode", i32 62, i64 32, i64 32, i64 192, i32 0, metadata !26} ; [ DW_TAG_member ] [st_mode] [line 62, size 32, align 32, offset 192] [from __mode_t]
+!26 = metadata !{i32 786454, metadata !17, null, metadata !"__mode_t", i32 129, i64 0, i64 0, i64 0, i32 0, metadata !27} ; [ DW_TAG_typedef ] [__mode_t] [line 129, size 0, align 0, offset 0] [from unsigned int]
+!27 = metadata !{i32 786468, null, null, metadata !"unsigned int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned int] [line 0, size 32, align 32, offset 0, enc DW_ATE_unsigned]
+!28 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_uid", i32 64, i64 32, i64 32, i64 224, i32 0, metadata !29} ; [ DW_TAG_member ] [st_uid] [line 64, size 32, align 32, offset 224] [from __uid_t]
+!29 = metadata !{i32 786454, metadata !17, null, metadata !"__uid_t", i32 125, i64 0, i64 0, i64 0, i32 0, metadata !27} ; [ DW_TAG_typedef ] [__uid_t] [line 125, size 0, align 0, offset 0] [from unsigned int]
+!30 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_gid", i32 65, i64 32, i64 32, i64 256, i32 0, metadata !31} ; [ DW_TAG_member ] [st_gid] [line 65, size 32, align 32, offset 256] [from __gid_t]
+!31 = metadata !{i32 786454, metadata !17, null, metadata !"__gid_t", i32 126, i64 0, i64 0, i64 0, i32 0, metadata !27} ; [ DW_TAG_typedef ] [__gid_t] [line 126, size 0, align 0, offset 0] [from unsigned int]
+!32 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"__pad0", i32 67, i64 32, i64 32, i64 288, i32 0, metadata !33} ; [ DW_TAG_member ] [__pad0] [line 67, size 32, align 32, offset 288] [from int]
+!33 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!34 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_rdev", i32 69, i64 64, i64 64, i64 320, i32 0, metadata !20} ; [ DW_TAG_member ] [st_rdev] [line 69, size 64, align 64, offset 320] [from __dev_t]
+!35 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_size", i32 74, i64 64, i64 64, i64 384, i32 0, metadata !36} ; [ DW_TAG_member ] [st_size] [line 74, size 64, align 64, offset 384] [from __off_t]
+!36 = metadata !{i32 786454, metadata !17, null, metadata !"__off_t", i32 131, i64 0, i64 0, i64 0, i32 0, metadata !37} ; [ DW_TAG_typedef ] [__off_t] [line 131, size 0, align 0, offset 0] [from long int]
+!37 = metadata !{i32 786468, null, null, metadata !"long int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [long int] [line 0, size 64, align 64, offset 0, enc DW_ATE_signed]
+!38 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_blksize", i32 78, i64 64, i64 64, i64 448, i32 0, metadata !39} ; [ DW_TAG_member ] [st_blksize] [line 78, size 64, align 64, offset 448] [from __blksize_t]
+!39 = metadata !{i32 786454, metadata !17, null, metadata !"__blksize_t", i32 153, i64 0, i64 0, i64 0, i32 0, metadata !37} ; [ DW_TAG_typedef ] [__blksize_t] [line 153, size 0, align 0, offset 0] [from long int]
+!40 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_blocks", i32 80, i64 64, i64 64, i64 512, i32 0, metadata !41} ; [ DW_TAG_member ] [st_blocks] [line 80, size 64, align 64, offset 512] [from __blkcnt_t]
+!41 = metadata !{i32 786454, metadata !17, null, metadata !"__blkcnt_t", i32 158, i64 0, i64 0, i64 0, i32 0, metadata !37} ; [ DW_TAG_typedef ] [__blkcnt_t] [line 158, size 0, align 0, offset 0] [from long int]
+!42 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_atim", i32 91, i64 128, i64 64, i64 576, i32 0, metadata !43} ; [ DW_TAG_member ] [st_atim] [line 91, size 128, align 64, offset 576] [from timespec]
+!43 = metadata !{i32 786451, metadata !44, null, metadata !"timespec", i32 120, i64 128, i64 64, i32 0, i32 0, null, metadata !45, i32 0, null, null} ; [ DW_TAG_structure_type ] [timespec] [line 120, size 128, align 64, offset 0] [from ]
+!44 = metadata !{metadata !"/usr/include/time.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!45 = metadata !{metadata !46, metadata !48}
+!46 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"tv_sec", i32 122, i64 64, i64 64, i64 0, i32 0, metadata !47} ; [ DW_TAG_member ] [tv_sec] [line 122, size 64, align 64, offset 0] [from __time_t]
+!47 = metadata !{i32 786454, metadata !44, null, metadata !"__time_t", i32 139, i64 0, i64 0, i64 0, i32 0, metadata !37} ; [ DW_TAG_typedef ] [__time_t] [line 139, size 0, align 0, offset 0] [from long int]
+!48 = metadata !{i32 786445, metadata !44, metadata !43, metadata !"tv_nsec", i32 123, i64 64, i64 64, i64 64, i32 0, metadata !49} ; [ DW_TAG_member ] [tv_nsec] [line 123, size 64, align 64, offset 64] [from __syscall_slong_t]
+!49 = metadata !{i32 786454, metadata !44, null, metadata !"__syscall_slong_t", i32 175, i64 0, i64 0, i64 0, i32 0, metadata !37} ; [ DW_TAG_typedef ] [__syscall_slong_t] [line 175, size 0, align 0, offset 0] [from long int]
+!50 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_mtim", i32 92, i64 128, i64 64, i64 704, i32 0, metadata !43} ; [ DW_TAG_member ] [st_mtim] [line 92, size 128, align 64, offset 704] [from timespec]
+!51 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"st_ctim", i32 93, i64 128, i64 64, i64 832, i32 0, metadata !43} ; [ DW_TAG_member ] [st_ctim] [line 93, size 128, align 64, offset 832] [from timespec]
+!52 = metadata !{i32 786445, metadata !17, metadata !16, metadata !"__glibc_reserved", i32 106, i64 192, i64 64, i64 960, i32 0, metadata !53} ; [ DW_TAG_member ] [__glibc_reserved] [line 106, size 192, align 64, offset 960] [from ]
+!53 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 192, i64 64, i32 0, i32 0, metadata !49, metadata !54, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 192, align 64, offset 0] [from __syscall_slong_t]
+!54 = metadata !{metadata !55}
+!55 = metadata !{i32 786465, i64 0, i64 3}        ; [ DW_TAG_subrange_type ] [0, 2]
+!56 = metadata !{i32 786688, metadata !4, metadata !"pwdstat", metadata !5, i32 72, metadata !16, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [pwdstat] [line 72]
+!57 = metadata !{i32 786688, metadata !58, metadata !"e", metadata !5, i32 86, metadata !33, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [e] [line 86]
+!58 = metadata !{i32 786443, metadata !1, metadata !59, i32 85, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/getpwd.c]
+!59 = metadata !{i32 786443, metadata !1, metadata !60, i32 84, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/getpwd.c]
+!60 = metadata !{i32 786443, metadata !1, metadata !4, i32 75, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/getpwd.c]
+!61 = metadata !{metadata !62, metadata !63}
+!62 = metadata !{i32 786484, i32 0, metadata !4, metadata !"pwd", metadata !"pwd", metadata !"", metadata !5, i32 67, metadata !8, i32 1, i32 1, i8** @getpwd.pwd, null} ; [ DW_TAG_variable ] [pwd] [line 67] [local] [def]
+!63 = metadata !{i32 786484, i32 0, metadata !4, metadata !"failure_errno", metadata !"failure_errno", metadata !"", metadata !5, i32 68, metadata !33, i32 1, i32 1, i32* @getpwd.failure_errno, null} ; [ DW_TAG_variable ] [failure_errno] [line 68] [local] [def]
+!64 = metadata !{i32 70, i32 0, metadata !4, null}
+!65 = metadata !{metadata !"any pointer", metadata !66}
+!66 = metadata !{metadata !"omnipotent char", metadata !67}
+!67 = metadata !{metadata !"Simple C/C++ TBAA"}
+!68 = metadata !{i32 72, i32 0, metadata !4, null}
+!69 = metadata !{i32 74, i32 0, metadata !4, null}
+!70 = metadata !{metadata !"int", metadata !66}
+!71 = metadata !{i32 76, i32 0, metadata !60, null}
+!72 = metadata !{i32 78, i32 0, metadata !60, null}
+!73 = metadata !{i32 79, i32 0, metadata !60, null}
+!74 = metadata !{metadata !"long", metadata !66}
+!75 = metadata !{i32 84, i32 0, metadata !59, null}
+!76 = metadata !{i32 86, i32 0, metadata !58, null}
+!77 = metadata !{i32 87, i32 0, metadata !58, null}
+!78 = metadata !{i32 89, i32 0, metadata !58, null}
+!79 = metadata !{i32 92, i32 0, metadata !80, null}
+!80 = metadata !{i32 786443, metadata !1, metadata !58, i32 91, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/403.gcc/src/getpwd.c]
+!81 = metadata !{i8* null}
+!82 = metadata !{i32 93, i32 0, metadata !80, null}
+!83 = metadata !{i32 94, i32 0, metadata !80, null}
+!84 = metadata !{i32 100, i32 0, metadata !60, null}
+!85 = metadata !{i32 101, i32 0, metadata !60, null}
+!86 = metadata !{i32 103, i32 0, metadata !4, null}

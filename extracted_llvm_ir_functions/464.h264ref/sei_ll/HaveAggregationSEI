@@ -1,66 +1,71 @@
-define i32 @HaveAggregationSEI() #3 {
-  %1 = load i32* getelementptr inbounds ([2 x %struct.sei_struct]* @sei_message, i64 0, i64 1, i32 0), align 8, !dbg !1026, !tbaa !960
-  %2 = icmp eq i32 %1, 0, !dbg !1028
-  br i1 %2, label %10, label %3, !dbg !1029
+define i32 @HaveAggregationSEI() #4 {
+entry:
+  %0 = load i32* getelementptr inbounds ([2 x %struct.sei_struct]* @sei_message, i64 0, i64 1, i32 0), align 8, !dbg !978, !tbaa !927
+  %tobool = icmp eq i32 %0, 0, !dbg !978
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !978
 
-; <label>:3                                       ; preds = %0
-  %4 = load %struct.ImageParameters** @img, align 8, !dbg !1030, !tbaa !968
-  %5 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 6, !dbg !1031
-  %6 = load i32* %5, align 4, !dbg !1031, !tbaa !1032
-  %7 = icmp eq i32 %6, 1, !dbg !1035
-  %8 = load i32* @seiHasSubseqInfo, align 4
-  %9 = icmp eq i32 %8, 0, !dbg !1036
-  %or.cond = and i1 %7, %9, !dbg !1038
-  br i1 %or.cond, label %11, label %38, !dbg !1038
+land.lhs.true:                                    ; preds = %entry
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !978, !tbaa !926
+  %type = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 6, !dbg !978
+  %2 = load i32* %type, align 4, !dbg !978, !tbaa !937
+  %cmp = icmp eq i32 %2, 1, !dbg !978
+  %3 = load i32* @seiHasSubseqInfo, align 4, !dbg !979, !tbaa !927
+  %tobool1 = icmp eq i32 %3, 0, !dbg !979
+  %or.cond = and i1 %cmp, %tobool1, !dbg !978
+  br i1 %or.cond, label %if.end3, label %return, !dbg !978
 
-; <label>:10                                      ; preds = %0
-  %.old = load i32* @seiHasSubseqInfo, align 4, !dbg !1036, !tbaa !977
-  %.old1 = icmp eq i32 %.old, 0, !dbg !1036
-  br i1 %.old1, label %11, label %38, !dbg !1039
+if.end:                                           ; preds = %entry
+  %.old = load i32* @seiHasSubseqInfo, align 4, !dbg !979, !tbaa !927
+  %tobool1.old = icmp eq i32 %.old, 0, !dbg !979
+  br i1 %tobool1.old, label %if.end3, label %return, !dbg !979
 
-; <label>:11                                      ; preds = %3, %10
-  %12 = load i32* @seiHasSubseqLayerInfo, align 4, !dbg !1040, !tbaa !977
-  %13 = icmp eq i32 %12, 0, !dbg !1040
-  br i1 %13, label %28, label %14, !dbg !1042
+if.end3:                                          ; preds = %land.lhs.true, %if.end
+  %4 = load i32* @seiHasSubseqLayerInfo, align 4, !dbg !980, !tbaa !927
+  %tobool4 = icmp eq i32 %4, 0, !dbg !980
+  br i1 %tobool4, label %if.end8, label %land.lhs.true5, !dbg !980
 
-; <label>:14                                      ; preds = %11
-  %15 = load %struct.ImageParameters** @img, align 8, !dbg !1043, !tbaa !968
-  %16 = getelementptr inbounds %struct.ImageParameters* %15, i64 0, i32 0, !dbg !1044
-  %17 = load i32* %16, align 4, !dbg !1044, !tbaa !1045
-  %18 = icmp ne i32 %17, 0, !dbg !1046
-  %19 = load i32* @seiHasSubseqChar, align 4
-  %20 = load i32* @seiHasSceneInformation, align 4
-  %21 = or i32 %20, %19, !dbg !1047
-  %.old10 = load i32* @seiHasPanScanRectInfo, align 4
-  %22 = or i32 %21, %.old10, !dbg !1047
-  %23 = load i32* @seiHasUser_data_unregistered_info, align 4
-  %24 = or i32 %22, %23, !dbg !1047
-  %.old20 = load i32* @seiHasUser_data_registered_itu_t_t35_info, align 4
-  %25 = or i32 %24, %.old20, !dbg !1047
-  %26 = icmp eq i32 %25, 0, !dbg !1047
-  %27 = and i1 %18, %26, !dbg !1047
-  br i1 %27, label %36, label %38, !dbg !1047
+land.lhs.true5:                                   ; preds = %if.end3
+  %5 = load %struct.ImageParameters** @img, align 8, !dbg !980, !tbaa !926
+  %number = getelementptr inbounds %struct.ImageParameters* %5, i64 0, i32 0, !dbg !980
+  %6 = load i32* %number, align 4, !dbg !980, !tbaa !937
+  %cmp6 = icmp ne i32 %6, 0, !dbg !980
+  %7 = load i32* @seiHasSubseqChar, align 4, !dbg !981, !tbaa !927
+  %tobool9 = icmp eq i32 %7, 0, !dbg !981
+  %or.cond28 = and i1 %cmp6, %tobool9, !dbg !980
+  %8 = load i32* @seiHasSceneInformation, align 4, !dbg !982, !tbaa !927
+  %tobool12 = icmp eq i32 %8, 0, !dbg !982
+  %or.cond30 = and i1 %or.cond28, %tobool12, !dbg !980
+  %.old33 = load i32* @seiHasPanScanRectInfo, align 4, !dbg !983, !tbaa !927
+  %tobool15.old = icmp eq i32 %.old33, 0, !dbg !983
+  %or.cond36 = and i1 %or.cond30, %tobool15.old, !dbg !980
+  %9 = load i32* @seiHasUser_data_unregistered_info, align 4, !dbg !984, !tbaa !927
+  %tobool18 = icmp eq i32 %9, 0, !dbg !984
+  %or.cond38 = and i1 %or.cond36, %tobool18, !dbg !980
+  %.old41 = load i32* @seiHasUser_data_registered_itu_t_t35_info, align 4, !dbg !985, !tbaa !927
+  %tobool21.old = icmp eq i32 %.old41, 0, !dbg !985
+  %or.cond44 = and i1 %or.cond38, %tobool21.old, !dbg !980
+  br i1 %or.cond44, label %if.end23, label %return, !dbg !980
 
-; <label>:28                                      ; preds = %11
-  %.old2 = load i32* @seiHasSubseqChar, align 4, !dbg !1048, !tbaa !977
-  %.old5 = load i32* @seiHasSceneInformation, align 4
-  %29 = or i32 %.old5, %.old2, !dbg !1050
-  %30 = load i32* @seiHasPanScanRectInfo, align 4
-  %31 = or i32 %29, %30, !dbg !1050
-  %.old15 = load i32* @seiHasUser_data_unregistered_info, align 4
-  %32 = or i32 %31, %.old15, !dbg !1050
-  %33 = load i32* @seiHasUser_data_registered_itu_t_t35_info, align 4
-  %34 = or i32 %32, %33, !dbg !1050
-  %35 = icmp eq i32 %34, 0, !dbg !1050
-  br i1 %35, label %36, label %38, !dbg !1050
+if.end8:                                          ; preds = %if.end3
+  %.old27 = load i32* @seiHasSubseqChar, align 4, !dbg !981, !tbaa !927
+  %.old29 = load i32* @seiHasSceneInformation, align 4, !dbg !982, !tbaa !927
+  %10 = or i32 %.old29, %.old27, !dbg !981
+  %11 = load i32* @seiHasPanScanRectInfo, align 4, !dbg !983, !tbaa !927
+  %12 = or i32 %10, %11, !dbg !981
+  %.old37 = load i32* @seiHasUser_data_unregistered_info, align 4, !dbg !984, !tbaa !927
+  %13 = or i32 %12, %.old37, !dbg !981
+  %14 = load i32* @seiHasUser_data_registered_itu_t_t35_info, align 4, !dbg !985, !tbaa !927
+  %15 = or i32 %13, %14, !dbg !981
+  %16 = icmp eq i32 %15, 0, !dbg !981
+  br i1 %16, label %if.end23, label %return, !dbg !981
 
-; <label>:36                                      ; preds = %14, %28
-  %37 = load i32* @seiHasRandomAccess_info, align 4, !dbg !1051, !tbaa !977
-  %not. = icmp ne i32 %37, 0, !dbg !1053
-  %. = zext i1 %not. to i32, !dbg !1053
-  br label %38, !dbg !1053
+if.end23:                                         ; preds = %land.lhs.true5, %if.end8
+  %17 = load i32* @seiHasRandomAccess_info, align 4, !dbg !986, !tbaa !927
+  %not.tobool24 = icmp ne i32 %17, 0, !dbg !987
+  %. = zext i1 %not.tobool24 to i32, !dbg !987
+  br label %return, !dbg !987
 
-; <label>:38                                      ; preds = %14, %36, %28, %10, %3
-  %.0 = phi i32 [ 1, %3 ], [ 1, %10 ], [ 1, %14 ], [ 1, %28 ], [ %., %36 ]
-  ret i32 %.0, !dbg !1054
+return:                                           ; preds = %land.lhs.true5, %if.end23, %if.end8, %if.end, %land.lhs.true
+  %retval.0 = phi i32 [ 1, %land.lhs.true ], [ 1, %if.end ], [ 1, %land.lhs.true5 ], [ 1, %if.end8 ], [ %., %if.end23 ]
+  ret i32 %retval.0, !dbg !987
 }

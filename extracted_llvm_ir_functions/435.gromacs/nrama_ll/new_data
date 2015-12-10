@@ -1,22 +1,23 @@
-define i32 @new_data(%struct.t_xrama* %xr) #4 {
-  tail call void @llvm.dbg.value(metadata %struct.t_xrama* %xr, i64 0, metadata !320, metadata !508), !dbg !547
-  %1 = getelementptr inbounds %struct.t_xrama* %xr, i64 0, i32 4, !dbg !548
-  %2 = load i32* %1, align 4, !dbg !548, !tbaa !550
-  %3 = getelementptr inbounds %struct.t_xrama* %xr, i64 0, i32 8, !dbg !553
-  %4 = getelementptr inbounds %struct.t_xrama* %xr, i64 0, i32 5, !dbg !554
-  %5 = load i32* %4, align 4, !dbg !554, !tbaa !555
-  %6 = getelementptr inbounds %struct.t_xrama* %xr, i64 0, i32 9, !dbg !556
-  %7 = load [3 x float]** %6, align 8, !dbg !556, !tbaa !557
-  %8 = getelementptr inbounds %struct.t_xrama* %xr, i64 0, i32 10, i64 0, !dbg !558
-  %9 = tail call i32 @read_next_x(i32 %2, float* %3, i32 %5, [3 x float]* %7, [3 x float]* %8) #9, !dbg !559
-  %10 = icmp eq i32 %9, 0, !dbg !559
-  br i1 %10, label %12, label %11, !dbg !560
+define i32 @new_data(%struct.t_xrama* %xr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_xrama* %xr}, i64 0, metadata !245), !dbg !429
+  %traj = getelementptr inbounds %struct.t_xrama* %xr, i64 0, i32 4, !dbg !430
+  %0 = load i32* %traj, align 4, !dbg !430, !tbaa !431
+  %t = getelementptr inbounds %struct.t_xrama* %xr, i64 0, i32 8, !dbg !430
+  %natoms = getelementptr inbounds %struct.t_xrama* %xr, i64 0, i32 5, !dbg !430
+  %1 = load i32* %natoms, align 4, !dbg !430, !tbaa !431
+  %x = getelementptr inbounds %struct.t_xrama* %xr, i64 0, i32 9, !dbg !430
+  %2 = load [3 x float]** %x, align 8, !dbg !430, !tbaa !434
+  %arraydecay = getelementptr inbounds %struct.t_xrama* %xr, i64 0, i32 10, i64 0, !dbg !430
+  %call = tail call i32 @read_next_x(i32 %0, float* %t, i32 %1, [3 x float]* %2, [3 x float]* %arraydecay) #7, !dbg !430
+  %tobool = icmp eq i32 %call, 0, !dbg !430
+  br i1 %tobool, label %return, label %if.end, !dbg !430
 
-; <label>:11                                      ; preds = %0
-  tail call fastcc void @calc_dihs(%struct.t_xrama* %xr) #10, !dbg !561
-  br label %12, !dbg !562
+if.end:                                           ; preds = %entry
+  tail call fastcc void @calc_dihs(%struct.t_xrama* %xr) #8, !dbg !435
+  br label %return, !dbg !436
 
-; <label>:12                                      ; preds = %0, %11
-  %.0 = phi i32 [ 1, %11 ], [ 0, %0 ]
-  ret i32 %.0, !dbg !563
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !436
 }

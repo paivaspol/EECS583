@@ -1,20 +1,21 @@
 define void @DestroyKeyedData(%struct.PKeyedData* %storage) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.PKeyedData* %storage, i64 0, metadata !45, metadata !55), !dbg !113
-  tail call void @llvm.dbg.value(metadata %struct.PKeyedData* %storage, i64 0, metadata !46, metadata !55), !dbg !114
-  %1 = icmp eq %struct.PKeyedData* %storage, null, !dbg !115
-  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !115
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.PKeyedData* %storage}, i64 0, metadata !45), !dbg !81
+  tail call void @llvm.dbg.value(metadata !{%struct.PKeyedData* %storage}, i64 0, metadata !46), !dbg !82
+  %tobool4 = icmp eq %struct.PKeyedData* %storage, null, !dbg !82
+  br i1 %tobool4, label %for.end, label %for.body, !dbg !82
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %current.01 = phi %struct.PKeyedData* [ %3, %.lr.ph ], [ %storage, %0 ]
-  %2 = getelementptr inbounds %struct.PKeyedData* %current.01, i64 0, i32 1, !dbg !117
-  %3 = load %struct.PKeyedData** %2, align 8, !dbg !117, !tbaa !79
-  tail call void @llvm.dbg.value(metadata %struct.PKeyedData* %3, i64 0, metadata !47, metadata !55), !dbg !120
-  %4 = bitcast %struct.PKeyedData* %current.01 to i8*, !dbg !121
-  tail call void @free(i8* %4) #6, !dbg !122
-  tail call void @llvm.dbg.value(metadata %struct.PKeyedData* %3, i64 0, metadata !46, metadata !55), !dbg !114
-  %5 = icmp eq %struct.PKeyedData* %3, null, !dbg !115
-  br i1 %5, label %._crit_edge, label %.lr.ph, !dbg !115
+for.body:                                         ; preds = %entry, %for.body
+  %current.05 = phi %struct.PKeyedData* [ %0, %for.body ], [ %storage, %entry ]
+  %next1 = getelementptr inbounds %struct.PKeyedData* %current.05, i64 0, i32 1, !dbg !84
+  %0 = load %struct.PKeyedData** %next1, align 8, !dbg !84, !tbaa !60
+  tail call void @llvm.dbg.value(metadata !{%struct.PKeyedData* %0}, i64 0, metadata !47), !dbg !84
+  %1 = bitcast %struct.PKeyedData* %current.05 to i8*, !dbg !86
+  tail call void @free(i8* %1) #5, !dbg !86
+  tail call void @llvm.dbg.value(metadata !{%struct.PKeyedData* %0}, i64 0, metadata !46), !dbg !82
+  %tobool = icmp eq %struct.PKeyedData* %0, null, !dbg !82
+  br i1 %tobool, label %for.end, label %for.body, !dbg !82
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  ret void, !dbg !123
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !87
 }

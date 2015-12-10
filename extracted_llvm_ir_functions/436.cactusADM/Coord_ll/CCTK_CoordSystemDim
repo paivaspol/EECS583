@@ -1,26 +1,28 @@
 define i32 @CCTK_CoordSystemDim(i8* %systemname) #1 {
+entry:
   %coord_system = alloca %struct.Coordsystem*, align 8
-  tail call void @llvm.dbg.value(metadata i8* %systemname, i64 0, metadata !233, metadata !389), !dbg !888
-  %1 = load %struct.cHandledData** @CoordSystems, align 8, !dbg !889, !tbaa !395
-  %2 = bitcast %struct.Coordsystem** %coord_system to i8**, !dbg !890
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %systemname, i8** %2) #6, !dbg !891
-  call void @llvm.dbg.value(metadata %struct.Coordsystem** %coord_system, i64 0, metadata !235, metadata !389), !dbg !892
-  %4 = load %struct.Coordsystem** %coord_system, align 8, !dbg !893, !tbaa !395
-  %5 = icmp eq %struct.Coordsystem* %4, null, !dbg !893
-  br i1 %5, label %6, label %8, !dbg !895
+  call void @llvm.dbg.value(metadata !{i8* %systemname}, i64 0, metadata !233), !dbg !694
+  call void @llvm.dbg.declare(metadata !{%struct.Coordsystem** %coord_system}, metadata !235), !dbg !695
+  %0 = load %struct.cHandledData** @CoordSystems, align 8, !dbg !696, !tbaa !392
+  %1 = bitcast %struct.Coordsystem** %coord_system to i8**, !dbg !696
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %systemname, i8** %1) #6, !dbg !696
+  call void @llvm.dbg.value(metadata !{%struct.Coordsystem** %coord_system}, i64 0, metadata !235), !dbg !697
+  %2 = load %struct.Coordsystem** %coord_system, align 8, !dbg !697, !tbaa !392
+  %tobool = icmp eq %struct.Coordsystem* %2, null, !dbg !697
+  br i1 %tobool, label %if.then, label %if.else, !dbg !697
 
-; <label>:6                                       ; preds = %0
-  %7 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 893, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([48 x i8]* @.str26, i64 0, i64 0), i8* %systemname) #6, !dbg !896
-  call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !234, metadata !389), !dbg !898
-  br label %11, !dbg !899
+if.then:                                          ; preds = %entry
+  %call1 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 893, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([48 x i8]* @.str26, i64 0, i64 0), i8* %systemname) #6, !dbg !698
+  call void @llvm.dbg.value(metadata !388, i64 0, metadata !234), !dbg !700
+  br label %if.end, !dbg !701
 
-; <label>:8                                       ; preds = %0
-  %9 = getelementptr inbounds %struct.Coordsystem* %4, i64 0, i32 1, !dbg !900
-  %10 = load i32* %9, align 4, !dbg !900, !tbaa !418
-  call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !234, metadata !389), !dbg !898
-  br label %11
+if.else:                                          ; preds = %entry
+  %dimension = getelementptr inbounds %struct.Coordsystem* %2, i64 0, i32 1, !dbg !702
+  %3 = load i32* %dimension, align 4, !dbg !702, !tbaa !403
+  call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !234), !dbg !702
+  br label %if.end
 
-; <label>:11                                      ; preds = %8, %6
-  %dim.0 = phi i32 [ %10, %8 ], [ -1, %6 ]
-  ret i32 %dim.0, !dbg !902
+if.end:                                           ; preds = %if.else, %if.then
+  %dim.0 = phi i32 [ %3, %if.else ], [ -1, %if.then ]
+  ret i32 %dim.0, !dbg !704
 }

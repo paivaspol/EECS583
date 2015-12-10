@@ -1,0 +1,31 @@
+define void @_ZN10xalanc_1_821XalanFileOutputStream7doFlushEv(%"class.xalanc_1_8::XalanFileOutputStream"* %this) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanFileOutputStream"* %this}, i64 0, metadata !2007), !dbg !2753
+  %m_handle = getelementptr inbounds %"class.xalanc_1_8::XalanFileOutputStream"* %this, i64 0, i32 2, !dbg !2754
+  %0 = load %struct._IO_FILE** %m_handle, align 8, !dbg !2754, !tbaa !2580
+  %call = tail call i32 @fflush(%struct._IO_FILE* %0) #7, !dbg !2754
+  %cmp = icmp eq i32 %call, 0, !dbg !2754
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2754
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 120) #6, !dbg !2755
+  %1 = bitcast i8* %exception to %"class.xalanc_1_8::XalanFileOutputStream::XalanFileOutputStreamWriteException"*, !dbg !2755
+  %m_fileName = getelementptr inbounds %"class.xalanc_1_8::XalanFileOutputStream"* %this, i64 0, i32 1, !dbg !2755
+  %call2 = tail call i32* @__errno_location() #9, !dbg !2757
+  %2 = load i32* %call2, align 4, !dbg !2757, !tbaa !2701
+  invoke void @_ZN10xalanc_1_821XalanFileOutputStream35XalanFileOutputStreamWriteExceptionC2ERKNS_14XalanDOMStringEi(%"class.xalanc_1_8::XalanFileOutputStream::XalanFileOutputStreamWriteException"* %1, %"class.xalanc_1_8::XalanDOMString"* %m_fileName, i32 %2) #7
+          to label %invoke.cont unwind label %lpad, !dbg !2757
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN10xalanc_1_821XalanFileOutputStream35XalanFileOutputStreamWriteExceptionE to i8*), i8* bitcast (void (%"class.xalanc_1_8::XalanFileOutputStream::XalanFileOutputStreamWriteException"*)* @_ZN10xalanc_1_821XalanFileOutputStream35XalanFileOutputStreamWriteExceptionD2Ev to i8*)) #10, !dbg !2757
+  unreachable, !dbg !2757
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2757
+  tail call void @__cxa_free_exception(i8* %exception) #6, !dbg !2757
+  resume { i8*, i32 } %3, !dbg !2757
+
+if.end:                                           ; preds = %entry
+  ret void, !dbg !2758
+}

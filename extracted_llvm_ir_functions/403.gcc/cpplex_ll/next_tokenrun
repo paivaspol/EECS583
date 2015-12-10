@@ -1,33 +1,36 @@
-define internal fastcc %struct.tokenrun* @next_tokenrun(%struct.tokenrun* %run) #1 {
+define internal fastcc %struct.tokenrun* @next_tokenrun(%struct.tokenrun* %run) #2 {
 entry:
-  %next = getelementptr inbounds %struct.tokenrun* %run, i64 0, i32 0
-  %0 = load %struct.tokenrun** %next, align 8, !tbaa !0
-  %cmp = icmp eq %struct.tokenrun* %0, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.tokenrun* %run}, i64 0, metadata !968), !dbg !1023
+  %next = getelementptr inbounds %struct.tokenrun* %run, i64 0, i32 0, !dbg !1024
+  %0 = load %struct.tokenrun** %next, align 8, !dbg !1024, !tbaa !995
+  %cmp = icmp eq %struct.tokenrun* %0, null, !dbg !1024
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1024
 
 if.then:                                          ; preds = %entry
-  %call = tail call noalias i8* @xmalloc(i64 32) #9
-  %1 = bitcast i8* %call to %struct.tokenrun*
-  store %struct.tokenrun* %1, %struct.tokenrun** %next, align 8, !tbaa !0
-  %prev = getelementptr inbounds i8* %call, i64 8
-  %2 = bitcast i8* %prev to %struct.tokenrun**
-  store %struct.tokenrun* %run, %struct.tokenrun** %2, align 8, !tbaa !0
-  %call.i = tail call noalias i8* @xmalloc(i64 6000) #9
-  %3 = bitcast i8* %call.i to %struct.cpp_token*
-  %base.i = getelementptr inbounds i8* %call, i64 16
-  %4 = bitcast i8* %base.i to %struct.cpp_token**
-  store %struct.cpp_token* %3, %struct.cpp_token** %4, align 8, !tbaa !0
-  %add.ptr.i = getelementptr inbounds i8* %call.i, i64 6000
-  %5 = bitcast i8* %add.ptr.i to %struct.cpp_token*
-  %limit.i = getelementptr inbounds i8* %call, i64 24
-  %6 = bitcast i8* %limit.i to %struct.cpp_token**
-  store %struct.cpp_token* %5, %struct.cpp_token** %6, align 8, !tbaa !0
-  %next.i = bitcast i8* %call to %struct.tokenrun**
-  store %struct.tokenrun* null, %struct.tokenrun** %next.i, align 8, !tbaa !0
-  %.pre = load %struct.tokenrun** %next, align 8, !tbaa !0
-  br label %if.end
+  %call = tail call noalias i8* @xmalloc(i64 32) #10, !dbg !1025
+  %1 = bitcast i8* %call to %struct.tokenrun*, !dbg !1025
+  store %struct.tokenrun* %1, %struct.tokenrun** %next, align 8, !dbg !1025, !tbaa !995
+  %prev = getelementptr inbounds i8* %call, i64 8, !dbg !1027
+  %2 = bitcast i8* %prev to %struct.tokenrun**, !dbg !1027
+  store %struct.tokenrun* %run, %struct.tokenrun** %2, align 8, !dbg !1027, !tbaa !995
+  tail call void @llvm.dbg.value(metadata !{%struct.tokenrun* %1}, i64 0, metadata !1028) #4, !dbg !1030
+  tail call void @llvm.dbg.value(metadata !1031, i64 0, metadata !1032) #4, !dbg !1033
+  %call.i = tail call noalias i8* @xmalloc(i64 6000) #10, !dbg !1034
+  %3 = bitcast i8* %call.i to %struct.cpp_token*, !dbg !1034
+  %base.i = getelementptr inbounds i8* %call, i64 16, !dbg !1034
+  %4 = bitcast i8* %base.i to %struct.cpp_token**, !dbg !1034
+  store %struct.cpp_token* %3, %struct.cpp_token** %4, align 8, !dbg !1034, !tbaa !995
+  %add.ptr.i = getelementptr inbounds i8* %call.i, i64 6000, !dbg !1035
+  %5 = bitcast i8* %add.ptr.i to %struct.cpp_token*, !dbg !1035
+  %limit.i = getelementptr inbounds i8* %call, i64 24, !dbg !1035
+  %6 = bitcast i8* %limit.i to %struct.cpp_token**, !dbg !1035
+  store %struct.cpp_token* %5, %struct.cpp_token** %6, align 8, !dbg !1035, !tbaa !995
+  %next.i = bitcast i8* %call to %struct.tokenrun**, !dbg !1036
+  store %struct.tokenrun* null, %struct.tokenrun** %next.i, align 8, !dbg !1036, !tbaa !995
+  %.pre = load %struct.tokenrun** %next, align 8, !dbg !1037, !tbaa !995
+  br label %if.end, !dbg !1038
 
 if.end:                                           ; preds = %if.then, %entry
   %7 = phi %struct.tokenrun* [ %.pre, %if.then ], [ %0, %entry ]
-  ret %struct.tokenrun* %7
+  ret %struct.tokenrun* %7, !dbg !1037
 }

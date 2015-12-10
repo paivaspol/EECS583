@@ -1,8 +1,11 @@
 define i32 @sse_comparison_operator(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
 entry:
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2381), !dbg !6249
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2382), !dbg !6250
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !6251
+  %bf.load = load i32* %0, align 8, !dbg !6251
+  %bf.clear = and i32 %bf.load, 65535, !dbg !6251
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !2383), !dbg !6251
   switch i32 %bf.clear, label %sw.default [
     i32 103, label %return
     i32 107, label %return
@@ -18,19 +21,19 @@ entry:
     i32 119, label %sw.bb1
     i32 104, label %sw.bb1
     i32 105, label %sw.bb1
-  ]
+  ], !dbg !6252
 
 sw.bb1:                                           ; preds = %entry, %entry, %entry, %entry, %entry, %entry
-  %1 = load i32* @target_flags, align 4, !tbaa !0
-  %and = lshr i32 %1, 4
-  %and.lobit = and i32 %and, 1
-  %2 = xor i32 %and.lobit, 1
-  br label %return
+  %1 = load i32* @target_flags, align 4, !dbg !6253, !tbaa !4347
+  %and = lshr i32 %1, 4, !dbg !6253
+  %and.lobit = and i32 %and, 1, !dbg !6253
+  %2 = xor i32 %and.lobit, 1, !dbg !6253
+  br label %return, !dbg !6253
 
 sw.default:                                       ; preds = %entry
-  br label %return
+  br label %return, !dbg !6255
 
 return:                                           ; preds = %entry, %entry, %entry, %entry, %entry, %entry, %entry, %entry, %sw.default, %sw.bb1
   %retval.0 = phi i32 [ 0, %sw.default ], [ %2, %sw.bb1 ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6256
 }

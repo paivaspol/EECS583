@@ -1,48 +1,44 @@
 define void @ChvManager_clearData(%struct._ChvManager* %manager) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._ChvManager* %manager, i64 0, metadata !74, metadata !87), !dbg !108
-  %1 = icmp eq %struct._ChvManager* %manager, null, !dbg !109
-  br i1 %1, label %6, label %.preheader, !dbg !111
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvManager* %manager}, i64 0, metadata !72), !dbg !93
+  %cmp = icmp eq %struct._ChvManager* %manager, null, !dbg !94
+  br i1 %cmp, label %if.then, label %while.cond.preheader, !dbg !94
 
-.preheader:                                       ; preds = %0
-  %2 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0, !dbg !112
-  %3 = load %struct._Chv** %2, align 8, !dbg !112, !tbaa !113
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %3, i64 0, metadata !75, metadata !87), !dbg !116
-  %4 = icmp eq %struct._Chv* %3, null, !dbg !117
-  br i1 %4, label %._crit_edge, label %.lr.ph, !dbg !118
+while.cond.preheader:                             ; preds = %entry
+  %head = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0, !dbg !95
+  %0 = load %struct._Chv** %head, align 8, !dbg !95, !tbaa !81
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %0}, i64 0, metadata !73), !dbg !95
+  %cmp114 = icmp eq %struct._Chv* %0, null, !dbg !95
+  br i1 %cmp114, label %while.end, label %while.body, !dbg !95
 
-.lr.ph:                                           ; preds = %.preheader
-  %5 = bitcast %struct._ChvManager* %manager to i64*, !dbg !119
-  br label %9, !dbg !118
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !96, !tbaa !81
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([54 x i8]* @.str3, i64 0, i64 0), %struct._ChvManager* null) #6, !dbg !96
+  tail call void @exit(i32 -1) #7, !dbg !98
+  unreachable, !dbg !98
 
-; <label>:6                                       ; preds = %0
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !121, !tbaa !92
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([54 x i8]* @.str3, i64 0, i64 0), %struct._ChvManager* null) #6, !dbg !123
-  tail call void @exit(i32 -1) #7, !dbg !124
-  unreachable, !dbg !124
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %2 = phi %struct._Chv* [ %4, %while.body ], [ %0, %while.cond.preheader ]
+  %next = getelementptr inbounds %struct._Chv* %2, i64 0, i32 10, !dbg !99
+  %3 = load %struct._Chv** %next, align 8, !dbg !99, !tbaa !81
+  store %struct._Chv* %3, %struct._Chv** %head, align 8, !dbg !99, !tbaa !81
+  tail call void @Chv_free(%struct._Chv* %2) #6, !dbg !101
+  %4 = load %struct._Chv** %head, align 8, !dbg !95, !tbaa !81
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %2}, i64 0, metadata !73), !dbg !95
+  %cmp1 = icmp eq %struct._Chv* %4, null, !dbg !95
+  br i1 %cmp1, label %while.end, label %while.body, !dbg !95
 
-; <label>:9                                       ; preds = %.lr.ph, %9
-  %10 = phi %struct._Chv* [ %3, %.lr.ph ], [ %14, %9 ]
-  %11 = getelementptr inbounds %struct._Chv* %10, i64 0, i32 10, !dbg !125
-  %12 = bitcast %struct._Chv** %11 to i64*, !dbg !125
-  %13 = load i64* %12, align 8, !dbg !125, !tbaa !126
-  store i64 %13, i64* %5, align 8, !dbg !119, !tbaa !113
-  tail call void @Chv_free(%struct._Chv* %10) #6, !dbg !129
-  %14 = load %struct._Chv** %2, align 8, !dbg !112, !tbaa !113
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %14, i64 0, metadata !75, metadata !87), !dbg !116
-  %15 = icmp eq %struct._Chv* %14, null, !dbg !117
-  br i1 %15, label %._crit_edge, label %9, !dbg !118
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %lock = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1, !dbg !102
+  %5 = load %struct._Lock** %lock, align 8, !dbg !102, !tbaa !81
+  %cmp3 = icmp eq %struct._Lock* %5, null, !dbg !102
+  br i1 %cmp3, label %if.end6, label %if.then4, !dbg !102
 
-._crit_edge:                                      ; preds = %9, %.preheader
-  %16 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1, !dbg !130
-  %17 = load %struct._Lock** %16, align 8, !dbg !130, !tbaa !132
-  %18 = icmp eq %struct._Lock* %17, null, !dbg !133
-  br i1 %18, label %20, label %19, !dbg !134
+if.then4:                                         ; preds = %while.end
+  tail call void @Lock_free(%struct._Lock* %5) #6, !dbg !103
+  br label %if.end6, !dbg !105
 
-; <label>:19                                      ; preds = %._crit_edge
-  tail call void @Lock_free(%struct._Lock* %17) #6, !dbg !135
-  br label %20, !dbg !137
-
-; <label>:20                                      ; preds = %._crit_edge, %19
-  tail call void @ChvManager_setDefaultFields(%struct._ChvManager* %manager) #8, !dbg !138
-  ret void, !dbg !139
+if.end6:                                          ; preds = %while.end, %if.then4
+  tail call void @ChvManager_setDefaultFields(%struct._ChvManager* %manager) #8, !dbg !106
+  ret void, !dbg !107
 }

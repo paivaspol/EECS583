@@ -1,0 +1,28 @@
+define %"class.xalanc_1_8::XNumber"* @_ZNK10xalanc_1_87XNumber5cloneEPv(%"class.xalanc_1_8::XNumber"* %this, i8* %theAddress) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNumber"* %this}, i64 0, metadata !2178), !dbg !2558
+  tail call void @llvm.dbg.value(metadata !{i8* %theAddress}, i64 0, metadata !2180), !dbg !2558
+  %cmp = icmp eq i8* %theAddress, null, !dbg !2559
+  br i1 %cmp, label %if.then, label %new.notnull, !dbg !2559
+
+if.then:                                          ; preds = %entry
+  %call = tail call noalias i8* @_Znwm(i64 64) #7, !dbg !2560
+  %0 = bitcast i8* %call to %"class.xalanc_1_8::XNumber"*, !dbg !2560
+  invoke void @_ZN10xalanc_1_87XNumberC2ERKS0_(%"class.xalanc_1_8::XNumber"* %0, %"class.xalanc_1_8::XNumber"* %this) #7
+          to label %return unwind label %lpad, !dbg !2560
+
+lpad:                                             ; preds = %if.then
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2560
+  tail call void @_ZdlPv(i8* %call) #10, !dbg !2560
+  resume { i8*, i32 } %1, !dbg !2560
+
+new.notnull:                                      ; preds = %entry
+  %2 = bitcast i8* %theAddress to %"class.xalanc_1_8::XNumber"*, !dbg !2562
+  tail call void @_ZN10xalanc_1_87XNumberC2ERKS0_(%"class.xalanc_1_8::XNumber"* %2, %"class.xalanc_1_8::XNumber"* %this) #7, !dbg !2562
+  br label %return, !dbg !2562
+
+return:                                           ; preds = %if.then, %new.notnull
+  %retval.0 = phi %"class.xalanc_1_8::XNumber"* [ %2, %new.notnull ], [ %0, %if.then ]
+  ret %"class.xalanc_1_8::XNumber"* %retval.0, !dbg !2564
+}

@@ -1,19 +1,20 @@
-define linkonce_odr void @_ZN6soplex8SSVectorD2Ev(%"class.soplex::SSVector"* %this) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SSVector"* %this, i64 0, metadata !5720, metadata !6791), !dbg !7202
-  %1 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, i32 2, !dbg !7203
-  %2 = load i32** %1, align 8, !dbg !7203, !tbaa !7206
-  %3 = icmp eq i32* %2, null, !dbg !7203
-  br i1 %3, label %6, label %4, !dbg !7208
+define linkonce_odr void @_ZN6soplex8SSVectorD2Ev(%"class.soplex::SSVector"* %this) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !7530), !dbg !8047
+  %idx = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, i32 2, !dbg !8048
+  %0 = load i32** %idx, align 8, !dbg !8048, !tbaa !7702
+  %tobool = icmp eq i32* %0, null, !dbg !8048
+  br i1 %tobool, label %if.end, label %if.then, !dbg !8048
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i32* %2 to i8*
-  tail call void @llvm.dbg.value(metadata i32** %1, i64 0, metadata !5728, metadata !6791) #11, !dbg !7209
-  tail call void @free(i8* %5) #13, !dbg !7211
-  store i32* null, i32** %1, align 8, !dbg !7212, !tbaa !7075
-  br label %6
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i32** %idx}, i64 0, metadata !8050) #1, !dbg !8052
+  %1 = bitcast i32* %0 to i8*, !dbg !8053
+  tail call void @free(i8* %1) #14, !dbg !8053
+  store i32* null, i32** %idx, align 8, !dbg !8055, !tbaa !7702
+  br label %if.end, !dbg !8051
 
-; <label>:6                                       ; preds = %4, %0
-  %7 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, !dbg !7213
-  tail call void @_ZN6soplex7DVectorD2Ev(%"class.soplex::DVector"* %7) #12, !dbg !7213
-  ret void, !dbg !7214
+if.end:                                           ; preds = %entry, %if.then
+  %2 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, !dbg !8056
+  tail call void @_ZN6soplex7DVectorD2Ev(%"class.soplex::DVector"* %2) #13, !dbg !8056
+  ret void, !dbg !8057
 }

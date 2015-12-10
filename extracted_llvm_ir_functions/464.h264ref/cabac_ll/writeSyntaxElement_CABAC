@@ -1,29 +1,30 @@
 define i32 @writeSyntaxElement_CABAC(%struct.syntaxelement* %se, %struct.datapartition* %this_dataPart) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %se, i64 0, metadata !298, metadata !1011), !dbg !1072
-  tail call void @llvm.dbg.value(metadata %struct.datapartition* %this_dataPart, i64 0, metadata !299, metadata !1011), !dbg !1073
-  %1 = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 1, !dbg !1074
-  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %1, i64 0, metadata !301, metadata !1011), !dbg !1075
-  %2 = tail call i32 @arienco_bits_written(%struct.EncodingEnvironment* %1) #6, !dbg !1076
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !300, metadata !1011), !dbg !1077
-  %3 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 9, !dbg !1078
-  %4 = load void (%struct.syntaxelement*, %struct.EncodingEnvironment*)** %3, align 8, !dbg !1078, !tbaa !1079
-  tail call void %4(%struct.syntaxelement* %se, %struct.EncodingEnvironment* %1) #6, !dbg !1081
-  %5 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 0, !dbg !1082
-  %6 = load i32* %5, align 4, !dbg !1082, !tbaa !1084
-  %7 = icmp eq i32 %6, 0, !dbg !1085
-  br i1 %7, label %12, label %8, !dbg !1086
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %se}, i64 0, metadata !294), !dbg !1016
+  tail call void @llvm.dbg.value(metadata !{%struct.datapartition* %this_dataPart}, i64 0, metadata !295), !dbg !1016
+  %ee_cabac = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 1, !dbg !1017
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %ee_cabac}, i64 0, metadata !297), !dbg !1017
+  %call = tail call i32 @arienco_bits_written(%struct.EncodingEnvironment* %ee_cabac) #6, !dbg !1018
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !296), !dbg !1018
+  %writing = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 9, !dbg !1019
+  %0 = load void (%struct.syntaxelement*, %struct.EncodingEnvironment*)** %writing, align 8, !dbg !1019, !tbaa !989
+  tail call void %0(%struct.syntaxelement* %se, %struct.EncodingEnvironment* %ee_cabac) #6, !dbg !1019
+  %type = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 0, !dbg !1020
+  %1 = load i32* %type, align 4, !dbg !1020, !tbaa !984
+  %cmp = icmp eq i32 %1, 0, !dbg !1020
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1020
 
-; <label>:8                                       ; preds = %0
-  %9 = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0, !dbg !1087
-  %10 = load %struct.Bitstream** %9, align 8, !dbg !1087, !tbaa !1088
-  %11 = getelementptr inbounds %struct.Bitstream* %10, i64 0, i32 10, !dbg !1091
-  store i32 1, i32* %11, align 4, !dbg !1092, !tbaa !1093
-  br label %12, !dbg !1095
+if.then:                                          ; preds = %entry
+  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0, !dbg !1021
+  %2 = load %struct.Bitstream** %bitstream, align 8, !dbg !1021, !tbaa !989
+  %write_flag = getelementptr inbounds %struct.Bitstream* %2, i64 0, i32 10, !dbg !1021
+  store i32 1, i32* %write_flag, align 4, !dbg !1021, !tbaa !984
+  br label %if.end, !dbg !1021
 
-; <label>:12                                      ; preds = %0, %8
-  %13 = tail call i32 @arienco_bits_written(%struct.EncodingEnvironment* %1) #6, !dbg !1096
-  %14 = sub nsw i32 %13, %2, !dbg !1097
-  %15 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3, !dbg !1098
-  store i32 %14, i32* %15, align 4, !dbg !1099, !tbaa !1100
-  ret i32 %14, !dbg !1101
+if.end:                                           ; preds = %entry, %if.then
+  %call1 = tail call i32 @arienco_bits_written(%struct.EncodingEnvironment* %ee_cabac) #6, !dbg !1022
+  %sub = sub nsw i32 %call1, %call, !dbg !1022
+  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3, !dbg !1022
+  store i32 %sub, i32* %len, align 4, !dbg !1022, !tbaa !984
+  ret i32 %sub, !dbg !1022
 }

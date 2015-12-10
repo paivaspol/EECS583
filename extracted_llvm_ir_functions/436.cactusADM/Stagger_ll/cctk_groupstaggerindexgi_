@@ -1,17 +1,18 @@
-define void @cctk_groupstaggerindexgi_(i32* nocapture %stagcode, i32* nocapture readonly %gindex) #1 {
+define void @cctk_groupstaggerindexgi_(i32* nocapture %stagcode, i32* nocapture %gindex) #1 {
+entry:
   %group.i = alloca %struct.cGroup, align 4
-  tail call void @llvm.dbg.value(metadata i32* %stagcode, i64 0, metadata !36, metadata !169), !dbg !181
-  tail call void @llvm.dbg.value(metadata i32* %gindex, i64 0, metadata !37, metadata !169), !dbg !182
-  %1 = load i32* %gindex, align 4, !dbg !183, !tbaa !184
-  %2 = bitcast %struct.cGroup* %group.i to i8*, !dbg !185
-  call void @llvm.lifetime.start(i64 32, i8* %2), !dbg !185
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !16, metadata !169) #6, !dbg !185
-  tail call void @llvm.dbg.value(metadata %struct.cGroup* %group.i, i64 0, metadata !17, metadata !169) #6, !dbg !187
-  %3 = call i32 @CCTK_GroupData(i32 %1, %struct.cGroup* %group.i) #7, !dbg !188
-  %4 = getelementptr inbounds %struct.cGroup* %group.i, i64 0, i32 3, !dbg !189
-  %5 = load i32* %4, align 4, !dbg !189, !tbaa !174
-  call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !30, metadata !169) #6, !dbg !190
-  call void @llvm.lifetime.end(i64 32, i8* %2), !dbg !191
-  store i32 %5, i32* %stagcode, align 4, !dbg !192, !tbaa !184
-  ret void, !dbg !193
+  call void @llvm.dbg.value(metadata !{i32* %stagcode}, i64 0, metadata !36), !dbg !179
+  call void @llvm.dbg.value(metadata !{i32* %gindex}, i64 0, metadata !37), !dbg !179
+  %0 = load i32* %gindex, align 4, !dbg !180, !tbaa !175
+  %1 = bitcast %struct.cGroup* %group.i to i8*, !dbg !181
+  call void @llvm.lifetime.start(i64 32, i8* %1) #7, !dbg !181
+  call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !182) #7, !dbg !181
+  call void @llvm.dbg.declare(metadata !{%struct.cGroup* %group.i}, metadata !17) #7, !dbg !183
+  %call.i = call i32 @CCTK_GroupData(i32 %0, %struct.cGroup* %group.i) #8, !dbg !184
+  %stagtype.i = getelementptr inbounds %struct.cGroup* %group.i, i64 0, i32 3, !dbg !185
+  %2 = load i32* %stagtype.i, align 4, !dbg !185, !tbaa !175
+  call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !186) #7, !dbg !185
+  call void @llvm.lifetime.end(i64 32, i8* %1) #7, !dbg !187
+  store i32 %2, i32* %stagcode, align 4, !dbg !180, !tbaa !175
+  ret void, !dbg !188
 }

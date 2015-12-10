@@ -1,30 +1,31 @@
-define zeroext i1 @_ZN25EtherPauseFrameDescriptor16setFieldAsStringEiiPKc(%class.EtherPauseFrameDescriptor* nocapture readonly %this, i32 %field, i32 %i, i8* %value) unnamed_addr #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %class.EtherPauseFrameDescriptor* %this, i64 0, metadata !4231, metadata !5761), !dbg !7104
-  tail call void @llvm.dbg.value(metadata i32 %field, i64 0, metadata !4232, metadata !5761), !dbg !7105
-  tail call void @llvm.dbg.value(metadata i32 %i, i64 0, metadata !4233, metadata !5761), !dbg !7106
-  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !4234, metadata !5761), !dbg !7107
-  %1 = icmp slt i32 %field, 2, !dbg !7108
-  br i1 %1, label %13, label %2, !dbg !7110
+define zeroext i1 @_ZN25EtherPauseFrameDescriptor16setFieldAsStringEiiPKc(%class.EtherPauseFrameDescriptor* nocapture %this, i32 %field, i32 %i, i8* %value) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherPauseFrameDescriptor* %this}, i64 0, metadata !4101), !dbg !5223
+  tail call void @llvm.dbg.value(metadata !{i32 %field}, i64 0, metadata !4102), !dbg !5223
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !4103), !dbg !5223
+  tail call void @llvm.dbg.value(metadata !{i8* %value}, i64 0, metadata !4104), !dbg !5223
+  %cmp = icmp slt i32 %field, 2, !dbg !5224
+  br i1 %cmp, label %return, label %if.end, !dbg !5224
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %class.EtherPauseFrameDescriptor* %this, i64 0, i32 0, i32 0, i32 1, !dbg !7111
-  %4 = bitcast i8** %3 to %class.EtherPauseFrame**, !dbg !7111
-  %5 = load %class.EtherPauseFrame** %4, align 8, !dbg !7111, !tbaa !5894
-  tail call void @llvm.dbg.value(metadata %class.EtherPauseFrame* %5, i64 0, metadata !4235, metadata !5761), !dbg !7112
-  %cond = icmp eq i32 %field, 2, !dbg !7113
-  br i1 %cond, label %6, label %13, !dbg !7113
+if.end:                                           ; preds = %entry
+  %p = getelementptr inbounds %class.EtherPauseFrameDescriptor* %this, i64 0, i32 0, i32 0, i32 1, !dbg !5225
+  %0 = load i8** %p, align 8, !dbg !5225, !tbaa !4556
+  tail call void @llvm.dbg.value(metadata !{%class.EtherPauseFrame* %1}, i64 0, metadata !4105), !dbg !5225
+  %cond = icmp eq i32 %field, 2, !dbg !5226
+  br i1 %cond, label %sw.bb, label %return, !dbg !5226
 
-; <label>:6                                       ; preds = %2
-  %7 = bitcast %class.EtherPauseFrame* %5 to void (%class.EtherPauseFrame*, i32)***, !dbg !7114
-  %8 = load void (%class.EtherPauseFrame*, i32)*** %7, align 8, !dbg !7114, !tbaa !5778
-  %9 = getelementptr inbounds void (%class.EtherPauseFrame*, i32)** %8, i64 24, !dbg !7114
-  %10 = load void (%class.EtherPauseFrame*, i32)** %9, align 8, !dbg !7114
-  %11 = tail call i64 @_ZN17cStructDescriptor11string2longEPKc(i8* %value) #9, !dbg !7116
-  %12 = trunc i64 %11 to i32, !dbg !7116
-  tail call void %10(%class.EtherPauseFrame* %5, i32 %12) #9, !dbg !7114
-  br label %13, !dbg !7117
+sw.bb:                                            ; preds = %if.end
+  %1 = bitcast i8* %0 to %class.EtherPauseFrame*, !dbg !5225
+  %2 = bitcast i8* %0 to void (%class.EtherPauseFrame*, i32)***, !dbg !5227
+  %vtable = load void (%class.EtherPauseFrame*, i32)*** %2, align 8, !dbg !5227, !tbaa !4540
+  %vfn = getelementptr inbounds void (%class.EtherPauseFrame*, i32)** %vtable, i64 24, !dbg !5227
+  %3 = load void (%class.EtherPauseFrame*, i32)** %vfn, align 8, !dbg !5227
+  %call4 = tail call i64 @_ZN17cStructDescriptor11string2longEPKc(i8* %value) #9, !dbg !5227
+  %conv = trunc i64 %call4 to i32, !dbg !5227
+  tail call void %3(%class.EtherPauseFrame* %1, i32 %conv) #9, !dbg !5227
+  br label %return, !dbg !5227
 
-; <label>:13                                      ; preds = %0, %2, %6
-  %.0 = phi i1 [ true, %6 ], [ false, %2 ], [ false, %0 ]
-  ret i1 %.0, !dbg !7118
+return:                                           ; preds = %entry, %if.end, %sw.bb
+  %retval.0 = phi i1 [ true, %sw.bb ], [ false, %if.end ], [ false, %entry ]
+  ret i1 %retval.0, !dbg !5229
 }

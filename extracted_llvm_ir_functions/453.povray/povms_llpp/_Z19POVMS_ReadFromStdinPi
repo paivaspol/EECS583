@@ -1,25 +1,26 @@
-define noalias i8* @_Z19POVMS_ReadFromStdinPi(i32* nocapture readnone %l) #0 {
-  tail call void @llvm.dbg.value(metadata i32* %l, i64 0, metadata !847, metadata !1201), !dbg !4360
-  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !848, metadata !1201), !dbg !4361
-  %1 = load %struct.__sFILE** @__stdinp, align 8, !dbg !4362, !tbaa !1210
-  %2 = tail call i32 @feof(%struct.__sFILE* %1) #8, !dbg !4364
-  %3 = icmp eq i32 %2, 0, !dbg !4365
-  br i1 %3, label %4, label %10, !dbg !4366
+define noalias i8* @_Z19POVMS_ReadFromStdinPi(i32* nocapture %l) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %l}, i64 0, metadata !814), !dbg !2572
+  tail call void @llvm.dbg.value(metadata !1081, i64 0, metadata !815), !dbg !2573
+  %0 = load %struct._IO_FILE** @stdin, align 8, !dbg !2574, !tbaa !917
+  %call = tail call i32 @feof(%struct._IO_FILE* %0) #9, !dbg !2574
+  %cmp = icmp eq i32 %call, 0, !dbg !2574
+  br i1 %cmp, label %if.end, label %return, !dbg !2574
 
-; <label>:4                                       ; preds = %0
-  tail call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !847, metadata !1201), !dbg !4360
-  %5 = tail call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.str15, i64 0, i64 0), i32* null) #8, !dbg !4367
-  %6 = icmp sgt i32 %5, 0, !dbg !4368
-  br i1 %6, label %7, label %10, !dbg !4369
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !2575, i64 0, metadata !814), !dbg !2576
+  %call1 = tail call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.str15, i64 0, i64 0), i32* null) #8, !dbg !2577
+  %cmp2 = icmp sgt i32 %call1, 0, !dbg !2577
+  br i1 %cmp2, label %if.then3, label %return, !dbg !2577
 
-; <label>:7                                       ; preds = %4
-  %8 = tail call i8* @malloc(i64 0) #8, !dbg !4370
-  tail call void @llvm.dbg.value(metadata i8* %8, i64 0, metadata !848, metadata !1201), !dbg !4361
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !849, metadata !1201), !dbg !4371
-  %9 = tail call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([2 x i8]* @.str16, i64 0, i64 0)) #8, !dbg !4372
-  br label %10, !dbg !4373
+if.then3:                                         ; preds = %if.end
+  %call4 = tail call noalias i8* @malloc(i64 0) #9, !dbg !2578
+  tail call void @llvm.dbg.value(metadata !{i8* %call4}, i64 0, metadata !815), !dbg !2578
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !816), !dbg !2579
+  %call30 = tail call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([2 x i8]* @.str16, i64 0, i64 0)) #8, !dbg !2580
+  br label %return, !dbg !2581
 
-; <label>:10                                      ; preds = %4, %7, %0
-  %.0 = phi i8* [ null, %0 ], [ %8, %7 ], [ null, %4 ]
-  ret i8* %.0, !dbg !4374
+return:                                           ; preds = %if.end, %if.then3, %entry
+  %retval.0 = phi i8* [ null, %entry ], [ %call4, %if.then3 ], [ null, %if.end ]
+  ret i8* %retval.0, !dbg !2582
 }

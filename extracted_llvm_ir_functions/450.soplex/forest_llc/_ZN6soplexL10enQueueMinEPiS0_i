@@ -1,37 +1,38 @@
-define internal fastcc void @_ZN6soplexL10enQueueMinEPiS0_i(i32* nocapture %heap, i32* nocapture %size, i32 %elem) #0 {
-  tail call void @llvm.dbg.value(metadata i32* %heap, i64 0, metadata !2508, metadata !3564), !dbg !4562
-  tail call void @llvm.dbg.value(metadata i32* %size, i64 0, metadata !2509, metadata !3564), !dbg !4563
-  tail call void @llvm.dbg.value(metadata i32 %elem, i64 0, metadata !2510, metadata !3564), !dbg !4564
-  %1 = load i32* %size, align 4, !dbg !4565, !tbaa !3611
-  %2 = add nsw i32 %1, 1, !dbg !4565
-  store i32 %2, i32* %size, align 4, !dbg !4565, !tbaa !3611
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !2512, metadata !3564), !dbg !4566
-  %3 = icmp sgt i32 %1, 0, !dbg !4567
-  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !4568
+define internal fastcc void @_ZN6soplexL10enQueueMinEPiS0_i(i32* nocapture %heap, i32* nocapture %size, i32 %elem) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %heap}, i64 0, metadata !3537), !dbg !4102
+  tail call void @llvm.dbg.value(metadata !{i32* %size}, i64 0, metadata !3538), !dbg !4102
+  tail call void @llvm.dbg.value(metadata !{i32 %elem}, i64 0, metadata !3539), !dbg !4102
+  %0 = load i32* %size, align 4, !dbg !4103, !tbaa !3603
+  %inc = add nsw i32 %0, 1, !dbg !4103
+  store i32 %inc, i32* %size, align 4, !dbg !4103, !tbaa !3603
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !3541), !dbg !4103
+  %cmp17 = icmp sgt i32 %0, 0, !dbg !4104
+  br i1 %cmp17, label %while.body, label %while.end, !dbg !4104
 
-.lr.ph:                                           ; preds = %0, %10
-  %j.01 = phi i32 [ %5, %10 ], [ %1, %0 ]
-  %4 = add nsw i32 %j.01, -1, !dbg !4569
-  %5 = sdiv i32 %4, 2, !dbg !4571
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !2511, metadata !3564), !dbg !4572
-  %6 = sext i32 %5 to i64, !dbg !4573
-  %7 = getelementptr inbounds i32* %heap, i64 %6, !dbg !4573
-  %8 = load i32* %7, align 4, !dbg !4573, !tbaa !3611
-  %9 = icmp sgt i32 %8, %elem, !dbg !4575
-  br i1 %9, label %10, label %._crit_edge, !dbg !4576
+while.body:                                       ; preds = %entry, %if.then
+  %j.018 = phi i32 [ %div, %if.then ], [ %0, %entry ]
+  %sub = add nsw i32 %j.018, -1, !dbg !4105
+  %div = sdiv i32 %sub, 2, !dbg !4105
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !3540), !dbg !4105
+  %idxprom = sext i32 %div to i64, !dbg !4107
+  %arrayidx = getelementptr inbounds i32* %heap, i64 %idxprom, !dbg !4107
+  %1 = load i32* %arrayidx, align 4, !dbg !4107, !tbaa !3603
+  %cmp1 = icmp sgt i32 %1, %elem, !dbg !4107
+  br i1 %cmp1, label %if.then, label %while.end, !dbg !4107
 
-; <label>:10                                      ; preds = %.lr.ph
-  %11 = sext i32 %j.01 to i64, !dbg !4577
-  %12 = getelementptr inbounds i32* %heap, i64 %11, !dbg !4577
-  store i32 %8, i32* %12, align 4, !dbg !4579, !tbaa !3611
-  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !2512, metadata !3564), !dbg !4566
-  %13 = icmp sgt i32 %4, 1, !dbg !4567
-  br i1 %13, label %.lr.ph, label %._crit_edge, !dbg !4568
+if.then:                                          ; preds = %while.body
+  %idxprom4 = sext i32 %j.018 to i64, !dbg !4108
+  %arrayidx5 = getelementptr inbounds i32* %heap, i64 %idxprom4, !dbg !4108
+  store i32 %1, i32* %arrayidx5, align 4, !dbg !4108, !tbaa !3603
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !3541), !dbg !4110
+  %cmp = icmp sgt i32 %sub, 1, !dbg !4104
+  br i1 %cmp, label %while.body, label %while.end, !dbg !4104
 
-._crit_edge:                                      ; preds = %10, %.lr.ph, %0
-  %j.0.lcssa = phi i32 [ %1, %0 ], [ %5, %10 ], [ %j.01, %.lr.ph ]
-  %14 = sext i32 %j.0.lcssa to i64, !dbg !4580
-  %15 = getelementptr inbounds i32* %heap, i64 %14, !dbg !4580
-  store i32 %elem, i32* %15, align 4, !dbg !4581, !tbaa !3611
-  ret void, !dbg !4582
+while.end:                                        ; preds = %if.then, %while.body, %entry
+  %j.0.lcssa = phi i32 [ %0, %entry ], [ %j.018, %while.body ], [ %div, %if.then ]
+  %idxprom6 = sext i32 %j.0.lcssa to i64, !dbg !4111
+  %arrayidx7 = getelementptr inbounds i32* %heap, i64 %idxprom6, !dbg !4111
+  store i32 %elem, i32* %arrayidx7, align 4, !dbg !4111, !tbaa !3603
+  ret void, !dbg !4112
 }

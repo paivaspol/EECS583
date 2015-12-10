@@ -1,13 +1,14 @@
 define void @delete_contexts_TextureInfo(%struct.TextureInfoContexts* %enco_ctx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.TextureInfoContexts* %enco_ctx, i64 0, metadata !217, metadata !1011), !dbg !1064
-  %1 = icmp eq %struct.TextureInfoContexts* %enco_ctx, null, !dbg !1065
-  br i1 %1, label %4, label %2, !dbg !1067
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.TextureInfoContexts* %enco_ctx}, i64 0, metadata !213), !dbg !1012
+  %cmp = icmp eq %struct.TextureInfoContexts* %enco_ctx, null, !dbg !1013
+  br i1 %cmp, label %return, label %if.end, !dbg !1013
 
-; <label>:2                                       ; preds = %0
-  %3 = bitcast %struct.TextureInfoContexts* %enco_ctx to i8*, !dbg !1068
-  tail call void @free(i8* %3) #7, !dbg !1069
-  br label %4, !dbg !1070
+if.end:                                           ; preds = %entry
+  %0 = bitcast %struct.TextureInfoContexts* %enco_ctx to i8*, !dbg !1014
+  tail call void @free(i8* %0) #6, !dbg !1014
+  br label %return, !dbg !1015
 
-; <label>:4                                       ; preds = %0, %2
-  ret void, !dbg !1071
+return:                                           ; preds = %entry, %if.end
+  ret void, !dbg !1015
 }

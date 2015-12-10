@@ -1,28 +1,29 @@
-define i32 @Util_BinTreePrintNodes(%struct.T_TREE* readonly %root, i32 %depth, void (i8*, i32)* %print_node) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %root, i64 0, metadata !67, metadata !86), !dbg !205
-  tail call void @llvm.dbg.value(metadata i32 %depth, i64 0, metadata !68, metadata !86), !dbg !206
-  tail call void @llvm.dbg.value(metadata void (i8*, i32)* %print_node, i64 0, metadata !69, metadata !86), !dbg !207
-  %1 = icmp eq %struct.T_TREE* %root, null, !dbg !208
-  br i1 %1, label %tailrecurse._crit_edge, label %tailrecurse, !dbg !210
+define i32 @Util_BinTreePrintNodes(%struct.T_TREE* %root, i32 %depth, void (i8*, i32)* %print_node) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root}, i64 0, metadata !67), !dbg !145
+  tail call void @llvm.dbg.value(metadata !{i32 %depth}, i64 0, metadata !68), !dbg !146
+  tail call void @llvm.dbg.value(metadata !{void (i8*, i32)* %print_node}, i64 0, metadata !69), !dbg !147
+  %tobool10 = icmp eq %struct.T_TREE* %root, null, !dbg !148
+  br i1 %tobool10, label %if.end, label %if.then, !dbg !148
 
-tailrecurse:                                      ; preds = %0, %tailrecurse
-  %depth.tr2 = phi i32 [ %4, %tailrecurse ], [ %depth, %0 ]
-  %root.tr1 = phi %struct.T_TREE* [ %9, %tailrecurse ], [ %root, %0 ]
-  %2 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 0, !dbg !211
-  %3 = load %struct.T_TREE** %2, align 8, !dbg !211, !tbaa !121
-  %4 = add nsw i32 %depth.tr2, 1, !dbg !213
-  %5 = tail call i32 @Util_BinTreePrintNodes(%struct.T_TREE* %3, i32 %4, void (i8*, i32)* %print_node) #6, !dbg !214
-  %6 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 3, !dbg !215
-  %7 = load i8** %6, align 8, !dbg !215, !tbaa !104
-  tail call void %print_node(i8* %7, i32 %depth.tr2) #5, !dbg !216
-  %8 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 1, !dbg !217
-  %9 = load %struct.T_TREE** %8, align 8, !dbg !217, !tbaa !126
-  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %9, i64 0, metadata !67, metadata !86), !dbg !205
-  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !68, metadata !86), !dbg !206
-  tail call void @llvm.dbg.value(metadata void (i8*, i32)* %print_node, i64 0, metadata !69, metadata !86), !dbg !207
-  %10 = icmp eq %struct.T_TREE* %9, null, !dbg !208
-  br i1 %10, label %tailrecurse._crit_edge, label %tailrecurse, !dbg !210
+if.then:                                          ; preds = %entry, %if.then
+  %depth.tr12 = phi i32 [ %add, %if.then ], [ %depth, %entry ]
+  %root.tr11 = phi %struct.T_TREE* [ %2, %if.then ], [ %root, %entry ]
+  %left = getelementptr inbounds %struct.T_TREE* %root.tr11, i64 0, i32 0, !dbg !149
+  %0 = load %struct.T_TREE** %left, align 8, !dbg !149, !tbaa !93
+  %add = add nsw i32 %depth.tr12, 1, !dbg !149
+  %call = tail call i32 @Util_BinTreePrintNodes(%struct.T_TREE* %0, i32 %add, void (i8*, i32)* %print_node) #6, !dbg !149
+  %data = getelementptr inbounds %struct.T_TREE* %root.tr11, i64 0, i32 3, !dbg !151
+  %1 = load i8** %data, align 8, !dbg !151, !tbaa !93
+  tail call void %print_node(i8* %1, i32 %depth.tr12) #5, !dbg !151
+  %right = getelementptr inbounds %struct.T_TREE* %root.tr11, i64 0, i32 1, !dbg !152
+  %2 = load %struct.T_TREE** %right, align 8, !dbg !152, !tbaa !93
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root.tr11}, i64 0, metadata !67), !dbg !145
+  tail call void @llvm.dbg.value(metadata !{i32 %depth.tr12}, i64 0, metadata !68), !dbg !146
+  tail call void @llvm.dbg.value(metadata !{void (i8*, i32)* %print_node}, i64 0, metadata !69), !dbg !147
+  %tobool = icmp eq %struct.T_TREE* %2, null, !dbg !148
+  br i1 %tobool, label %if.end, label %if.then, !dbg !148
 
-tailrecurse._crit_edge:                           ; preds = %tailrecurse, %0
-  ret i32 0, !dbg !218
+if.end:                                           ; preds = %if.then, %entry
+  ret i32 0, !dbg !153
 }

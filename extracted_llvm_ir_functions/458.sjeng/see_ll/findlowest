@@ -1,59 +1,61 @@
 define void @findlowest(i32 %color, i32 %next) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %color, i64 0, metadata !19, metadata !66), !dbg !241
-  tail call void @llvm.dbg.value(metadata i32 %next, i64 0, metadata !20, metadata !66), !dbg !242
-  tail call void @llvm.dbg.value(metadata i32 %next, i64 0, metadata !21, metadata !66), !dbg !243
-  %1 = sext i32 %next to i64, !dbg !244
-  %2 = sext i32 %color to i64, !dbg !244
-  %3 = getelementptr inbounds [2 x [16 x %struct.see_data]]* @see_attackers, i64 0, i64 %2, i64 %1, !dbg !244
-  %4 = getelementptr inbounds %struct.see_data* %3, i64 0, i32 0, !dbg !245
-  %5 = load i32* %4, align 8, !dbg !245, !tbaa !92
-  %6 = sext i32 %5 to i64, !dbg !246
-  %7 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %6, !dbg !246
-  %8 = load i32* %7, align 4, !dbg !246, !tbaa !69
-  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !22, metadata !66), !dbg !247
-  tail call void @llvm.dbg.value(metadata i32 %next, i64 0, metadata !29, metadata !66), !dbg !248
-  %9 = getelementptr inbounds [2 x i32]* @see_num_attackers, i64 0, i64 %2, !dbg !249
-  %10 = load i32* %9, align 4, !dbg !249, !tbaa !69
-  %11 = icmp sgt i32 %10, %next, !dbg !252
-  br i1 %11, label %.lr.ph, label %._crit_edge, !dbg !253
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %color}, i64 0, metadata !20), !dbg !167
+  tail call void @llvm.dbg.value(metadata !{i32 %next}, i64 0, metadata !21), !dbg !167
+  tail call void @llvm.dbg.value(metadata !{i32 %next}, i64 0, metadata !22), !dbg !168
+  %idxprom = sext i32 %next to i64, !dbg !169
+  %idxprom1 = sext i32 %color to i64, !dbg !169
+  %arrayidx2 = getelementptr inbounds [2 x [16 x %struct.see_data]]* @see_attackers, i64 0, i64 %idxprom1, i64 %idxprom, !dbg !169
+  %piece = getelementptr inbounds %struct.see_data* %arrayidx2, i64 0, i32 0, !dbg !169
+  %0 = load i32* %piece, align 8, !dbg !169, !tbaa !65
+  %idxprom3 = sext i32 %0 to i64, !dbg !169
+  %arrayidx4 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom3, !dbg !169
+  %1 = load i32* %arrayidx4, align 4, !dbg !169, !tbaa !65
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !23), !dbg !169
+  tail call void @llvm.dbg.value(metadata !{i32 %next}, i64 0, metadata !30), !dbg !170
+  %arrayidx6 = getelementptr inbounds [2 x i32]* @see_num_attackers, i64 0, i64 %idxprom1, !dbg !170
+  %2 = load i32* %arrayidx6, align 4, !dbg !170, !tbaa !65
+  %cmp58 = icmp sgt i32 %2, %next, !dbg !170
+  br i1 %cmp58, label %for.body.lr.ph, label %for.end, !dbg !170
 
-.lr.ph:                                           ; preds = %0
-  %ispos = icmp sgt i32 %8, -1, !dbg !254
-  %neg = sub i32 0, %8, !dbg !254
-  %12 = select i1 %ispos, i32 %8, i32 %neg, !dbg !254
-  %13 = sext i32 %10 to i64, !dbg !253
-  br label %14, !dbg !253
+for.body.lr.ph:                                   ; preds = %entry
+  %neg = sub i32 0, %1, !dbg !169
+  %ispos = icmp sgt i32 %1, -1, !dbg !169
+  %3 = select i1 %ispos, i32 %1, i32 %neg, !dbg !169
+  br label %for.body, !dbg !170
 
-; <label>:14                                      ; preds = %.lr.ph, %14
-  %indvars.iv = phi i64 [ %1, %.lr.ph ], [ %indvars.iv.next, %14 ]
-  %lowestv.04 = phi i32 [ %12, %.lr.ph ], [ %.lowestv.0, %14 ]
-  %lowestp.03 = phi i32 [ %next, %.lr.ph ], [ %i.0.lowestp.0, %14 ]
-  %15 = getelementptr inbounds [2 x [16 x %struct.see_data]]* @see_attackers, i64 0, i64 %2, i64 %indvars.iv, i32 0, !dbg !255
-  %16 = load i32* %15, align 8, !dbg !255, !tbaa !92
-  %17 = sext i32 %16 to i64, !dbg !258
-  %18 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %17, !dbg !258
-  %19 = load i32* %18, align 4, !dbg !258, !tbaa !69
-  %ispos1 = icmp sgt i32 %19, -1, !dbg !259
-  %neg2 = sub i32 0, %19, !dbg !259
-  %20 = select i1 %ispos1, i32 %19, i32 %neg2, !dbg !259
-  %21 = icmp slt i32 %20, %lowestv.04, !dbg !260
-  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !22, metadata !66), !dbg !247
-  %22 = trunc i64 %indvars.iv to i32, !dbg !261
-  %i.0.lowestp.0 = select i1 %21, i32 %22, i32 %lowestp.03, !dbg !261
-  %.lowestv.0 = select i1 %21, i32 %20, i32 %lowestv.04, !dbg !261
-  %indvars.iv.next = add nsw i64 %indvars.iv, 1, !dbg !253
-  %23 = icmp slt i64 %indvars.iv.next, %13, !dbg !252
-  br i1 %23, label %14, label %._crit_edge, !dbg !253
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %idxprom, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %lowestv.060 = phi i32 [ %3, %for.body.lr.ph ], [ %.lowestv.0, %for.body ]
+  %lowestp.059 = phi i32 [ %next, %for.body.lr.ph ], [ %i.0.lowestp.0, %for.body ]
+  %piece11 = getelementptr inbounds [2 x [16 x %struct.see_data]]* @see_attackers, i64 0, i64 %idxprom1, i64 %indvars.iv, i32 0, !dbg !172
+  %4 = load i32* %piece11, align 8, !dbg !172, !tbaa !65
+  %idxprom12 = sext i32 %4 to i64, !dbg !172
+  %arrayidx13 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom12, !dbg !172
+  %5 = load i32* %arrayidx13, align 4, !dbg !172, !tbaa !65
+  %ispos56 = icmp sgt i32 %5, -1, !dbg !172
+  %neg57 = sub i32 0, %5, !dbg !172
+  %6 = select i1 %ispos56, i32 %5, i32 %neg57, !dbg !172
+  %cmp15 = icmp slt i32 %6, %lowestv.060, !dbg !172
+  tail call void @llvm.dbg.value(metadata !174, i64 0, metadata !22), !dbg !175
+  tail call void @llvm.dbg.value(metadata !{i32 %6}, i64 0, metadata !23), !dbg !177
+  %7 = trunc i64 %indvars.iv to i32, !dbg !172
+  %i.0.lowestp.0 = select i1 %cmp15, i32 %7, i32 %lowestp.059, !dbg !172
+  %.lowestv.0 = select i1 %cmp15, i32 %6, i32 %lowestv.060, !dbg !172
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !170
+  %8 = trunc i64 %indvars.iv.next to i32, !dbg !170
+  %cmp = icmp slt i32 %8, %2, !dbg !170
+  br i1 %cmp, label %for.body, label %for.end, !dbg !170
 
-._crit_edge:                                      ; preds = %14, %0
-  %lowestp.0.lcssa = phi i32 [ %next, %0 ], [ %i.0.lowestp.0, %14 ]
-  %24 = bitcast %struct.see_data* %3 to i64*, !dbg !262
-  %25 = load i64* %24, align 8, !dbg !262
-  %26 = sext i32 %lowestp.0.lcssa to i64, !dbg !263
-  %27 = getelementptr inbounds [2 x [16 x %struct.see_data]]* @see_attackers, i64 0, i64 %2, i64 %26, !dbg !263
-  %28 = bitcast %struct.see_data* %27 to i64*, !dbg !263
-  %29 = load i64* %28, align 8, !dbg !263
-  store i64 %29, i64* %24, align 8, !dbg !263
-  store i64 %25, i64* %28, align 8, !dbg !264
-  ret void, !dbg !265
+for.end:                                          ; preds = %for.body, %entry
+  %lowestp.0.lcssa = phi i32 [ %next, %entry ], [ %i.0.lowestp.0, %for.body ]
+  %9 = bitcast %struct.see_data* %arrayidx2 to i64*, !dbg !178
+  %10 = load i64* %9, align 8, !dbg !178
+  %idxprom32 = sext i32 %lowestp.0.lcssa to i64, !dbg !179
+  %arrayidx35 = getelementptr inbounds [2 x [16 x %struct.see_data]]* @see_attackers, i64 0, i64 %idxprom1, i64 %idxprom32, !dbg !179
+  %11 = bitcast %struct.see_data* %arrayidx35 to i64*, !dbg !179
+  %12 = load i64* %11, align 8, !dbg !179
+  store i64 %12, i64* %9, align 8, !dbg !179
+  store i64 %10, i64* %11, align 8, !dbg !180
+  ret void, !dbg !181
 }

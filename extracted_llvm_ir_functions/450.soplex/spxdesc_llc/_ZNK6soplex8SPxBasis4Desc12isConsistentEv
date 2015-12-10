@@ -1,15 +1,16 @@
-define zeroext i1 @_ZNK6soplex8SPxBasis4Desc12isConsistentEv(%"class.soplex::SPxBasis::Desc"* nocapture readonly %this) #0 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxBasis::Desc"* %this, i64 0, metadata !3663, metadata !4745), !dbg !4940
-  %1 = getelementptr inbounds %"class.soplex::SPxBasis::Desc"* %this, i64 0, i32 0, !dbg !4941
-  %2 = tail call zeroext i1 @_ZNK6soplex9DataArrayINS_8SPxBasis4Desc6StatusEE12isConsistentEv(%"class.soplex::DataArray"* %1) #7, !dbg !4941
-  br i1 %2, label %3, label %6, !dbg !4942
+define zeroext i1 @_ZNK6soplex8SPxBasis4Desc12isConsistentEv(%"class.soplex::SPxBasis::Desc"* nocapture %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxBasis::Desc"* %this}, i64 0, metadata !4826), !dbg !5159
+  %rowstat = getelementptr inbounds %"class.soplex::SPxBasis::Desc"* %this, i64 0, i32 0, !dbg !5160
+  %call = tail call zeroext i1 @_ZNK6soplex9DataArrayINS_8SPxBasis4Desc6StatusEE12isConsistentEv(%"class.soplex::DataArray"* %rowstat) #8, !dbg !5160
+  br i1 %call, label %land.rhs, label %land.end, !dbg !5160
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %"class.soplex::SPxBasis::Desc"* %this, i64 0, i32 1, !dbg !4943
-  %5 = tail call zeroext i1 @_ZNK6soplex9DataArrayINS_8SPxBasis4Desc6StatusEE12isConsistentEv(%"class.soplex::DataArray"* %4) #7, !dbg !4943
-  br label %6
+land.rhs:                                         ; preds = %entry
+  %colstat = getelementptr inbounds %"class.soplex::SPxBasis::Desc"* %this, i64 0, i32 1, !dbg !5160
+  %call2 = tail call zeroext i1 @_ZNK6soplex9DataArrayINS_8SPxBasis4Desc6StatusEE12isConsistentEv(%"class.soplex::DataArray"* %colstat) #8, !dbg !5160
+  br label %land.end
 
-; <label>:6                                       ; preds = %3, %0
-  %7 = phi i1 [ false, %0 ], [ %5, %3 ]
-  ret i1 %7, !dbg !4944
+land.end:                                         ; preds = %land.rhs, %entry
+  %0 = phi i1 [ false, %entry ], [ %call2, %land.rhs ]
+  ret i1 %0, !dbg !5161
 }

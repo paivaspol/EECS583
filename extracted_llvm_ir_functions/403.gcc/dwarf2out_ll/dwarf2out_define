@@ -1,17 +1,19 @@
 define internal void @dwarf2out_define(i32 %lineno, i8* %buffer) #1 {
 entry:
-  %0 = load i32* @debug_info_level, align 4, !tbaa !10
-  %cmp = icmp ugt i32 %0, 2
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %lineno}, i64 0, metadata !3005), !dbg !5360
+  tail call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !3006), !dbg !5361
+  %0 = load i32* @debug_info_level, align 4, !dbg !5362, !tbaa !4430
+  %cmp = icmp ugt i32 %0, 2, !dbg !5362
+  br i1 %cmp, label %if.then, label %if.end, !dbg !5362
 
 if.then:                                          ; preds = %entry
-  tail call void @named_section_flags(i8* getelementptr inbounds ([15 x i8]* @.str15, i64 0, i64 0), i32 1024) #9
-  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 1, i8* getelementptr inbounds ([13 x i8]* @.str404, i64 0, i64 0)) #9
-  %conv = zext i32 %lineno to i64
-  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %conv, i8* getelementptr inbounds ([18 x i8]* @.str402, i64 0, i64 0), i32 %lineno) #9
-  tail call void (i8*, i64, i8*, ...)* @dw2_asm_output_nstring(i8* %buffer, i64 -1, i8* getelementptr inbounds ([10 x i8]* @.str403, i64 0, i64 0)) #9
-  br label %if.end
+  tail call void @named_section_flags(i8* getelementptr inbounds ([15 x i8]* @.str15, i64 0, i64 0), i32 1024) #10, !dbg !5363
+  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 1, i8* getelementptr inbounds ([13 x i8]* @.str404, i64 0, i64 0)) #10, !dbg !5365
+  %conv = zext i32 %lineno to i64, !dbg !5366
+  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %conv, i8* getelementptr inbounds ([18 x i8]* @.str402, i64 0, i64 0), i32 %lineno) #10, !dbg !5366
+  tail call void (i8*, i64, i8*, ...)* @dw2_asm_output_nstring(i8* %buffer, i64 -1, i8* getelementptr inbounds ([10 x i8]* @.str403, i64 0, i64 0)) #10, !dbg !5367
+  br label %if.end, !dbg !5368
 
 if.end:                                           ; preds = %if.then, %entry
-  ret void
+  ret void, !dbg !5369
 }

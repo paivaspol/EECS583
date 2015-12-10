@@ -1,64 +1,61 @@
 define i32 @Tree_maxNchild(%struct._Tree* %tree) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Tree* %tree, i64 0, metadata !82, metadata !98), !dbg !371
-  %1 = icmp eq %struct._Tree* %tree, null, !dbg !372
-  br i1 %1, label %2, label %5, !dbg !374
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Tree* %tree}, i64 0, metadata !81), !dbg !219
+  %cmp = icmp eq %struct._Tree* %tree, null, !dbg !220
+  br i1 %cmp, label %if.then, label %if.end, !dbg !220
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !375, !tbaa !114
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([48 x i8]* @.str10, i64 0, i64 0), %struct._Tree* null) #5, !dbg !377
-  tail call void @exit(i32 -1) #6, !dbg !378
-  unreachable, !dbg !378
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !221, !tbaa !100
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str10, i64 0, i64 0), %struct._Tree* null) #5, !dbg !221
+  tail call void @exit(i32 -1) #6, !dbg !223
+  unreachable, !dbg !223
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !379
-  %7 = load i32* %6, align 4, !dbg !379, !tbaa !104
-  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !84, metadata !98), !dbg !380
-  %8 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3, !dbg !381
-  %9 = load i32** %8, align 8, !dbg !381, !tbaa !125
-  tail call void @llvm.dbg.value(metadata i32* %9, i64 0, metadata !88, metadata !98), !dbg !382
-  %10 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4, !dbg !383
-  %11 = load i32** %10, align 8, !dbg !383, !tbaa !146
-  tail call void @llvm.dbg.value(metadata i32* %11, i64 0, metadata !89, metadata !98), !dbg !384
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !83, metadata !98), !dbg !385
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !87, metadata !98), !dbg !386
-  %12 = icmp sgt i32 %7, 0, !dbg !387
-  br i1 %12, label %.lr.ph7, label %._crit_edge8, !dbg !390
+if.end:                                           ; preds = %entry
+  %n1 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !224
+  %1 = load i32* %n1, align 4, !dbg !224, !tbaa !95
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !83), !dbg !224
+  %fch2 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3, !dbg !225
+  %2 = load i32** %fch2, align 8, !dbg !225, !tbaa !100
+  tail call void @llvm.dbg.value(metadata !{i32* %2}, i64 0, metadata !87), !dbg !225
+  %sib3 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4, !dbg !226
+  %3 = load i32** %sib3, align 8, !dbg !226, !tbaa !100
+  tail call void @llvm.dbg.value(metadata !{i32* %3}, i64 0, metadata !88), !dbg !226
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !82), !dbg !227
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !86), !dbg !228
+  %cmp430 = icmp sgt i32 %1, 0, !dbg !228
+  br i1 %cmp430, label %for.body, label %for.end15, !dbg !228
 
-.lr.ph7:                                          ; preds = %5
-  %13 = add i32 %7, -1, !dbg !390
-  br label %14, !dbg !390
+for.body:                                         ; preds = %if.end, %for.end
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.end ], [ 0, %if.end ]
+  %maxnchild.032 = phi i32 [ %nchild.0.maxnchild.0, %for.end ], [ 0, %if.end ]
+  %arrayidx = getelementptr inbounds i32* %2, i64 %indvars.iv, !dbg !230
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !84), !dbg !230
+  %u.026 = load i32* %arrayidx, align 4, !dbg !230
+  %cmp627 = icmp eq i32 %u.026, -1, !dbg !230
+  br i1 %cmp627, label %for.end, label %for.body7, !dbg !230
 
-; <label>:14                                      ; preds = %._crit_edge, %.lr.ph7
-  %indvars.iv = phi i64 [ 0, %.lr.ph7 ], [ %indvars.iv.next, %._crit_edge ]
-  %maxnchild.05 = phi i32 [ 0, %.lr.ph7 ], [ %nchild.0.maxnchild.0, %._crit_edge ]
-  %15 = getelementptr inbounds i32* %9, i64 %indvars.iv, !dbg !391
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !85, metadata !98), !dbg !394
-  %u.01 = load i32* %15, align 4, !dbg !391
-  %16 = icmp eq i32 %u.01, -1, !dbg !395
-  br i1 %16, label %._crit_edge, label %.lr.ph, !dbg !397
+for.body7:                                        ; preds = %for.body, %for.body7
+  %u.029 = phi i32 [ %u.0, %for.body7 ], [ %u.026, %for.body ]
+  %nchild.028 = phi i32 [ %inc, %for.body7 ], [ 0, %for.body ]
+  %inc = add nsw i32 %nchild.028, 1, !dbg !233
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !84), !dbg !233
+  %idxprom8 = sext i32 %u.029 to i64, !dbg !230
+  %arrayidx9 = getelementptr inbounds i32* %3, i64 %idxprom8, !dbg !230
+  %u.0 = load i32* %arrayidx9, align 4, !dbg !230
+  %cmp6 = icmp eq i32 %u.0, -1, !dbg !230
+  br i1 %cmp6, label %for.end, label %for.body7, !dbg !230
 
-.lr.ph:                                           ; preds = %14, %.lr.ph
-  %u.03 = phi i32 [ %u.0, %.lr.ph ], [ %u.01, %14 ]
-  %nchild.02 = phi i32 [ %17, %.lr.ph ], [ 0, %14 ]
-  %17 = add nuw nsw i32 %nchild.02, 1, !dbg !398
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !85, metadata !98), !dbg !394
-  %18 = sext i32 %u.03 to i64, !dbg !400
-  %19 = getelementptr inbounds i32* %11, i64 %18, !dbg !400
-  %u.0 = load i32* %19, align 4, !dbg !391
-  %20 = icmp eq i32 %u.0, -1, !dbg !395
-  br i1 %20, label %._crit_edge, label %.lr.ph, !dbg !397
+for.end:                                          ; preds = %for.body7, %for.body
+  %nchild.0.lcssa = phi i32 [ 0, %for.body ], [ %inc, %for.body7 ]
+  %cmp10 = icmp slt i32 %maxnchild.032, %nchild.0.lcssa, !dbg !235
+  tail call void @llvm.dbg.value(metadata !{i32 %nchild.0.lcssa}, i64 0, metadata !82), !dbg !236
+  %nchild.0.maxnchild.0 = select i1 %cmp10, i32 %nchild.0.lcssa, i32 %maxnchild.032, !dbg !235
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !228
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !228
+  %exitcond = icmp eq i32 %lftr.wideiv, %1, !dbg !228
+  br i1 %exitcond, label %for.end15, label %for.body, !dbg !228
 
-._crit_edge:                                      ; preds = %.lr.ph, %14
-  %nchild.0.lcssa = phi i32 [ 0, %14 ], [ %17, %.lr.ph ]
-  %21 = icmp slt i32 %maxnchild.05, %nchild.0.lcssa, !dbg !401
-  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !83, metadata !98), !dbg !385
-  %nchild.0.maxnchild.0 = select i1 %21, i32 %nchild.0.lcssa, i32 %maxnchild.05, !dbg !403
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !390
-  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !390
-  %exitcond = icmp eq i32 %lftr.wideiv, %13, !dbg !390
-  br i1 %exitcond, label %._crit_edge8, label %14, !dbg !390
-
-._crit_edge8:                                     ; preds = %._crit_edge, %5
-  %maxnchild.0.lcssa = phi i32 [ 0, %5 ], [ %nchild.0.maxnchild.0, %._crit_edge ]
-  ret i32 %maxnchild.0.lcssa, !dbg !404
+for.end15:                                        ; preds = %for.end, %if.end
+  %maxnchild.0.lcssa = phi i32 [ 0, %if.end ], [ %nchild.0.maxnchild.0, %for.end ]
+  ret i32 %maxnchild.0.lcssa, !dbg !238
 }

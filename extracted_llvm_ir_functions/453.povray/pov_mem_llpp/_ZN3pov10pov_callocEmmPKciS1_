@@ -1,28 +1,29 @@
 define i8* @_ZN3pov10pov_callocEmmPKciS1_(i64 %nitems, i64 %size, i8* %file, i32 %line, i8* %msg) #1 {
-  tail call void @llvm.dbg.value(metadata i64 %nitems, i64 0, metadata !282, metadata !689), !dbg !775
-  tail call void @llvm.dbg.value(metadata i64 %size, i64 0, metadata !283, metadata !689), !dbg !776
-  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !284, metadata !689), !dbg !777
-  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !285, metadata !689), !dbg !778
-  tail call void @llvm.dbg.value(metadata i8* %msg, i64 0, metadata !286, metadata !689), !dbg !779
-  %1 = mul i64 %size, %nitems, !dbg !780
-  tail call void @llvm.dbg.value(metadata i64 %1, i64 0, metadata !288, metadata !689), !dbg !781
-  %2 = icmp eq i64 %1, 0, !dbg !782
-  br i1 %2, label %3, label %5, !dbg !784
+entry:
+  tail call void @llvm.dbg.value(metadata !{i64 %nitems}, i64 0, metadata !90), !dbg !527
+  tail call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !91), !dbg !527
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !92), !dbg !527
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !93), !dbg !527
+  tail call void @llvm.dbg.value(metadata !{i8* %msg}, i64 0, metadata !94), !dbg !527
+  %mul = mul i64 %size, %nitems, !dbg !528
+  tail call void @llvm.dbg.value(metadata !{i64 %mul}, i64 0, metadata !96), !dbg !528
+  %cmp = icmp eq i64 %mul, 0, !dbg !529
+  br i1 %cmp, label %if.then, label %if.end, !dbg !529
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i8* %file, i32 %line) #8, !dbg !785
-  br label %5, !dbg !787
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i8* %file, i32 %line) #8, !dbg !530
+  br label %if.end, !dbg !532
 
-; <label>:5                                       ; preds = %3, %0
-  %6 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %1, i8* %file, i32 %line, i8* %msg) #8, !dbg !788
-  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !287, metadata !689), !dbg !789
-  %7 = icmp eq i8* %6, null, !dbg !790
-  br i1 %7, label %9, label %8, !dbg !792
+if.end:                                           ; preds = %if.then, %entry
+  %call1 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul, i8* %file, i32 %line, i8* %msg) #8, !dbg !533
+  tail call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !95), !dbg !533
+  %cmp2 = icmp eq i8* %call1, null, !dbg !534
+  br i1 %cmp2, label %if.end4, label %if.then3, !dbg !534
 
-; <label>:8                                       ; preds = %5
-  tail call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 %1, i32 1, i1 false), !dbg !793
-  br label %9, !dbg !793
+if.then3:                                         ; preds = %if.end
+  tail call void @llvm.memset.p0i8.i64(i8* %call1, i8 0, i64 %mul, i32 1, i1 false), !dbg !535
+  br label %if.end4, !dbg !535
 
-; <label>:9                                       ; preds = %5, %8
-  ret i8* %6, !dbg !794
+if.end4:                                          ; preds = %if.end, %if.then3
+  ret i8* %call1, !dbg !536
 }

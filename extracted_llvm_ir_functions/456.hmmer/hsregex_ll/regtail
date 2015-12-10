@@ -1,68 +1,52 @@
-define internal fastcc void @regtail(%struct.comp* readonly %cp, i8* %p, i8* %val) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.comp* %cp, i64 0, metadata !182, metadata !274), !dbg !1095
-  tail call void @llvm.dbg.value(metadata i8* %p, i64 0, metadata !183, metadata !274), !dbg !1096
-  tail call void @llvm.dbg.value(metadata i8* %val, i64 0, metadata !184, metadata !274), !dbg !1097
-  %1 = getelementptr inbounds %struct.comp* %cp, i64 0, i32 2, !dbg !1098
-  %2 = load i8** %1, align 8, !dbg !1098, !tbaa !356
-  %3 = getelementptr inbounds %struct.comp* %cp, i64 0, i32 3, i64 0, !dbg !1098
-  %4 = icmp eq i8* %2, %3, !dbg !1098
-  br i1 %4, label %35, label %.preheader, !dbg !1100
+define internal fastcc void @regtail(%struct.comp* %cp, i8* %p, i8* %val) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.comp* %cp}, i64 0, metadata !208), !dbg !903
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !209), !dbg !904
+  tail call void @llvm.dbg.value(metadata !{i8* %val}, i64 0, metadata !210), !dbg !905
+  %regcode = getelementptr inbounds %struct.comp* %cp, i64 0, i32 2, !dbg !906
+  %0 = load i8** %regcode, align 8, !dbg !906, !tbaa !270
+  %arraydecay = getelementptr inbounds %struct.comp* %cp, i64 0, i32 3, i64 0, !dbg !906
+  %cmp = icmp eq i8* %0, %arraydecay, !dbg !906
+  br i1 %cmp, label %return, label %for.cond, !dbg !906
 
-.preheader:                                       ; preds = %0, %regnext.exit
-  %scan.0 = phi i8* [ %18, %regnext.exit ], [ %p, %0 ]
-  tail call void @llvm.dbg.value(metadata i8* %scan.0, i64 0, metadata !253, metadata !274), !dbg !1101
-  %5 = getelementptr inbounds i8* %scan.0, i64 1, !dbg !1105
-  %6 = load i8* %5, align 1, !dbg !1105, !tbaa !325
-  %7 = zext i8 %6 to i32, !dbg !1105
-  %8 = shl nuw nsw i32 %7, 8, !dbg !1105
-  %9 = and i32 %8, 32512, !dbg !1105
-  %10 = getelementptr inbounds i8* %scan.0, i64 2, !dbg !1105
-  %11 = load i8* %10, align 1, !dbg !1105, !tbaa !325
-  %12 = zext i8 %11 to i32, !dbg !1105
-  %13 = or i32 %9, %12, !dbg !1105
-  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !254, metadata !274), !dbg !1106
-  %14 = icmp eq i32 %13, 0, !dbg !1107
-  %.pre = load i8* %scan.0, align 1, !dbg !1108, !tbaa !325
-  br i1 %14, label %regnext.exit.thread, label %regnext.exit, !dbg !1109
+for.cond:                                         ; preds = %entry, %for.cond
+  %scan.0 = phi i8* [ %call, %for.cond ], [ %p, %entry ]
+  %call = tail call fastcc i8* @regnext(i8* %scan.0) #11, !dbg !907
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !212), !dbg !907
+  %cmp1 = icmp eq i8* %call, null, !dbg !907
+  br i1 %cmp1, label %for.end, label %for.cond, !dbg !907
 
-regnext.exit:                                     ; preds = %.preheader
-  %15 = icmp eq i8 %.pre, 7, !dbg !1110
-  %16 = zext i32 %13 to i64, !dbg !1111
-  %17 = sub nsw i64 0, %16, !dbg !1111
-  %.sink.i = select i1 %15, i64 %17, i64 %16, !dbg !1112
-  %18 = getelementptr inbounds i8* %scan.0, i64 %.sink.i, !dbg !1111
-  tail call void @llvm.dbg.value(metadata i8* %18, i64 0, metadata !186, metadata !274), !dbg !1113
-  %19 = icmp eq i8* %18, null, !dbg !1114
-  br i1 %19, label %regnext.exit.thread, label %.preheader, !dbg !1115
+for.end:                                          ; preds = %for.cond
+  %1 = load i8* %scan.0, align 1, !dbg !909, !tbaa !271
+  %cmp2 = icmp eq i8 %1, 7, !dbg !909
+  br i1 %cmp2, label %cond.true, label %cond.false, !dbg !909
 
-regnext.exit.thread:                              ; preds = %.preheader, %regnext.exit
-  %20 = icmp eq i8 %.pre, 7, !dbg !1116
-  br i1 %20, label %21, label %25, !dbg !1117
+cond.true:                                        ; preds = %for.end
+  %sub.ptr.lhs.cast = ptrtoint i8* %scan.0 to i64, !dbg !909
+  %sub.ptr.rhs.cast = ptrtoint i8* %val to i64, !dbg !909
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !909
+  br label %cond.end, !dbg !909
 
-; <label>:21                                      ; preds = %regnext.exit.thread
-  %22 = ptrtoint i8* %scan.0 to i64, !dbg !1118
-  %23 = ptrtoint i8* %val to i64, !dbg !1118
-  %24 = sub i64 %22, %23, !dbg !1118
-  br label %29, !dbg !1117
+cond.false:                                       ; preds = %for.end
+  %sub.ptr.lhs.cast4 = ptrtoint i8* %val to i64, !dbg !909
+  %sub.ptr.rhs.cast5 = ptrtoint i8* %scan.0 to i64, !dbg !909
+  %sub.ptr.sub6 = sub i64 %sub.ptr.lhs.cast4, %sub.ptr.rhs.cast5, !dbg !909
+  br label %cond.end, !dbg !909
 
-; <label>:25                                      ; preds = %regnext.exit.thread
-  %26 = ptrtoint i8* %val to i64, !dbg !1119
-  %27 = ptrtoint i8* %scan.0 to i64, !dbg !1119
-  %28 = sub i64 %26, %27, !dbg !1119
-  br label %29, !dbg !1117
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %sub.ptr.sub, %cond.true ], [ %sub.ptr.sub6, %cond.false ], !dbg !909
+  %conv7 = trunc i64 %cond to i32, !dbg !909
+  tail call void @llvm.dbg.value(metadata !{i32 %conv7}, i64 0, metadata !213), !dbg !909
+  %shr20 = lshr i32 %conv7, 8, !dbg !910
+  %shr20.tr = trunc i32 %shr20 to i8, !dbg !910
+  %conv8 = and i8 %shr20.tr, 127, !dbg !910
+  %add.ptr = getelementptr inbounds i8* %scan.0, i64 1, !dbg !910
+  store i8 %conv8, i8* %add.ptr, align 1, !dbg !910, !tbaa !271
+  %conv10 = trunc i64 %cond to i8, !dbg !911
+  %add.ptr11 = getelementptr inbounds i8* %scan.0, i64 2, !dbg !911
+  store i8 %conv10, i8* %add.ptr11, align 1, !dbg !911, !tbaa !271
+  br label %return, !dbg !911
 
-; <label>:29                                      ; preds = %25, %21
-  %30 = phi i64 [ %24, %21 ], [ %28, %25 ], !dbg !1117
-  %31 = trunc i64 %30 to i32, !dbg !1117
-  tail call void @llvm.dbg.value(metadata i32 %31, i64 0, metadata !187, metadata !274), !dbg !1120
-  %32 = lshr i32 %31, 8, !dbg !1121
-  %.tr = trunc i32 %32 to i8, !dbg !1122
-  %33 = and i8 %.tr, 127, !dbg !1122
-  store i8 %33, i8* %5, align 1, !dbg !1123, !tbaa !325
-  %34 = trunc i64 %30 to i8, !dbg !1124
-  store i8 %34, i8* %10, align 1, !dbg !1125, !tbaa !325
-  br label %35, !dbg !1126
-
-; <label>:35                                      ; preds = %0, %29
-  ret void, !dbg !1126
+return:                                           ; preds = %entry, %cond.end
+  ret void, !dbg !911
 }

@@ -1,74 +1,75 @@
-define void @_ZN6soplex8SSVector5setupEv(%"class.soplex::SSVector"* nocapture %this) #3 align 2 {
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SSVector"* %this, i64 0, metadata !2545, metadata !3947), !dbg !4142
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SSVector"* %this, i64 0, metadata !2784, metadata !3947), !dbg !4143
-  %1 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 2, !dbg !4145
-  %2 = load i8* %1, align 1, !dbg !4145, !tbaa !4055, !range !4059
-  %3 = icmp eq i8 %2, 0, !dbg !4145
-  br i1 %3, label %4, label %36, !dbg !4146
+define void @_ZN6soplex8SSVector5setupEv(%"class.soplex::SSVector"* nocapture %this) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !2404), !dbg !4064
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !4065), !dbg !4067
+  %setupStatus.i = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 2, !dbg !4068
+  %0 = load i8* %setupStatus.i, align 1, !dbg !4068, !tbaa !4010, !range !4011
+  %tobool.i = icmp eq i8 %0, 0, !dbg !4068
+  br i1 %tobool.i, label %if.then, label %if.end23, !dbg !4066
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, i32 0, !dbg !4147
-  store i32 0, i32* %5, align 4, !dbg !4149, !tbaa !4007
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !2546, metadata !3947), !dbg !4150
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SSVector"* %this, i64 0, metadata !2808, metadata !3947), !dbg !4151
-  %6 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, i32 0, i32 0, !dbg !4154
-  %7 = load i32* %6, align 4, !dbg !4154, !tbaa !4074
-  %8 = icmp sgt i32 %7, 0, !dbg !4155
-  br i1 %8, label %.lr.ph, label %._crit_edge, !dbg !4156
+if.then:                                          ; preds = %entry
+  %num.i = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, i32 0, !dbg !4069
+  store i32 0, i32* %num.i, align 4, !dbg !4071, !tbaa !3918
+  tail call void @llvm.dbg.value(metadata !1145, i64 0, metadata !2405), !dbg !4072
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !4073), !dbg !4074
+  %dimen.i = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, i32 0, i32 0, !dbg !4075
+  %1 = load i32* %dimen.i, align 4, !dbg !4075, !tbaa !3918
+  %cmp28 = icmp sgt i32 %1, 0, !dbg !4072
+  br i1 %cmp28, label %for.body.lr.ph, label %for.end, !dbg !4072
 
-.lr.ph:                                           ; preds = %4
-  %9 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, i32 0, i32 1, !dbg !4157
-  %10 = load double** %9, align 8, !dbg !4157, !tbaa !4067
-  %11 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 3, !dbg !4160
-  %12 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, i32 2, !dbg !4163
-  br label %13, !dbg !4156
+for.body.lr.ph:                                   ; preds = %if.then
+  %val = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, i32 0, i32 1, !dbg !4077
+  %2 = load double** %val, align 8, !dbg !4077, !tbaa !3926
+  %epsilon = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 3, !dbg !4079
+  %idx = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, i32 2, !dbg !4081
+  br label %for.body, !dbg !4072
 
-; <label>:13                                      ; preds = %.lr.ph, %31
-  %14 = phi i32 [ %7, %.lr.ph ], [ %32, %31 ]
-  %15 = phi i32 [ 0, %.lr.ph ], [ %33, %31 ]
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %31 ]
-  %16 = getelementptr inbounds double* %10, i64 %indvars.iv, !dbg !4157
-  %17 = load double* %16, align 8, !dbg !4157, !tbaa !4070
-  %18 = fcmp une double %17, 0.000000e+00, !dbg !4165
-  br i1 %18, label %19, label %31, !dbg !4166
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %3 = phi i32 [ %1, %for.body.lr.ph ], [ %10, %for.inc ]
+  %4 = phi i32 [ 0, %for.body.lr.ph ], [ %11, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds double* %2, i64 %indvars.iv, !dbg !4077
+  %5 = load double* %arrayidx, align 8, !dbg !4077, !tbaa !4014
+  %cmp4 = fcmp une double %5, 0.000000e+00, !dbg !4077
+  br i1 %cmp4, label %if.then5, label %for.inc, !dbg !4077
 
-; <label>:19                                      ; preds = %13
-  %20 = load double* %11, align 8, !dbg !4160, !tbaa !4104
-  tail call void @llvm.dbg.value(metadata double %17, i64 0, metadata !2811, metadata !3947) #4, !dbg !4167
-  tail call void @llvm.dbg.value(metadata double %20, i64 0, metadata !2812, metadata !3947) #4, !dbg !4169
-  %21 = tail call double @fabs(double %17) #13, !dbg !4170
-  %22 = fcmp ugt double %21, %20, !dbg !4171
-  br i1 %22, label %24, label %23, !dbg !4172
+if.then5:                                         ; preds = %for.body
+  %6 = load double* %epsilon, align 8, !dbg !4079, !tbaa !4014
+  tail call void @llvm.dbg.value(metadata !{double %5}, i64 0, metadata !4083) #1, !dbg !4084
+  tail call void @llvm.dbg.value(metadata !{double %6}, i64 0, metadata !4085) #1, !dbg !4084
+  %call.i = tail call double @fabs(double %5) #15, !dbg !4086
+  %cmp.i = fcmp ugt double %call.i, %6, !dbg !4086
+  br i1 %cmp.i, label %if.else, label %if.then10, !dbg !4079
 
-; <label>:23                                      ; preds = %19
-  store double 0.000000e+00, double* %16, align 8, !dbg !4173, !tbaa !4070
-  br label %31, !dbg !4174
+if.then10:                                        ; preds = %if.then5
+  store double 0.000000e+00, double* %arrayidx, align 8, !dbg !4088, !tbaa !4014
+  br label %for.inc, !dbg !4088
 
-; <label>:24                                      ; preds = %19
-  %25 = sext i32 %15 to i64, !dbg !4163
-  %26 = load i32** %12, align 8, !dbg !4163, !tbaa !4015
-  %27 = getelementptr inbounds i32* %26, i64 %25, !dbg !4163
-  %28 = trunc i64 %indvars.iv to i32, !dbg !4175
-  store i32 %28, i32* %27, align 4, !dbg !4175, !tbaa !4018
-  %29 = load i32* %5, align 4, !dbg !4176, !tbaa !4007
-  %30 = add nsw i32 %29, 1, !dbg !4176
-  store i32 %30, i32* %5, align 4, !dbg !4176, !tbaa !4007
-  %.pre = load i32* %6, align 4, !dbg !4154, !tbaa !4074
-  br label %31
+if.else:                                          ; preds = %if.then5
+  %idxprom16 = sext i32 %4 to i64, !dbg !4081
+  %7 = load i32** %idx, align 8, !dbg !4081, !tbaa !3926
+  %arrayidx18 = getelementptr inbounds i32* %7, i64 %idxprom16, !dbg !4081
+  %8 = trunc i64 %indvars.iv to i32, !dbg !4081
+  store i32 %8, i32* %arrayidx18, align 4, !dbg !4081, !tbaa !3918
+  %9 = load i32* %num.i, align 4, !dbg !4089, !tbaa !3918
+  %inc = add nsw i32 %9, 1, !dbg !4089
+  store i32 %inc, i32* %num.i, align 4, !dbg !4089, !tbaa !3918
+  %.pre = load i32* %dimen.i, align 4, !dbg !4075, !tbaa !3918
+  br label %for.inc
 
-; <label>:31                                      ; preds = %13, %24, %23
-  %32 = phi i32 [ %14, %13 ], [ %.pre, %24 ], [ %14, %23 ], !dbg !4156
-  %33 = phi i32 [ %15, %13 ], [ %30, %24 ], [ %15, %23 ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !4156
-  tail call void @llvm.dbg.value(metadata %"class.soplex::SSVector"* %this, i64 0, metadata !2808, metadata !3947), !dbg !4151
-  %34 = sext i32 %32 to i64, !dbg !4155
-  %35 = icmp slt i64 %indvars.iv.next, %34, !dbg !4155
-  br i1 %35, label %13, label %._crit_edge, !dbg !4156
+for.inc:                                          ; preds = %for.body, %if.else, %if.then10
+  %10 = phi i32 [ %3, %for.body ], [ %.pre, %if.else ], [ %3, %if.then10 ], !dbg !4072
+  %11 = phi i32 [ %4, %for.body ], [ %inc, %if.else ], [ %4, %if.then10 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !4072
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !4073), !dbg !4074
+  %12 = trunc i64 %indvars.iv.next to i32, !dbg !4072
+  %cmp = icmp slt i32 %12, %10, !dbg !4072
+  br i1 %cmp, label %for.body, label %for.end, !dbg !4072
 
-._crit_edge:                                      ; preds = %31, %4
-  store i8 1, i8* %1, align 1, !dbg !4177, !tbaa !4055
-  br label %36, !dbg !4178
+for.end:                                          ; preds = %for.inc, %if.then
+  store i8 1, i8* %setupStatus.i, align 1, !dbg !4090, !tbaa !4010
+  br label %if.end23, !dbg !4091
 
-; <label>:36                                      ; preds = %0, %._crit_edge
-  ret void, !dbg !4179
+if.end23:                                         ; preds = %entry, %for.end
+  ret void, !dbg !4092
 }

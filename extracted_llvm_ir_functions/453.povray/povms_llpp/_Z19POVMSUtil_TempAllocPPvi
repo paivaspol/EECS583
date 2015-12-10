@@ -1,18 +1,19 @@
 define i32 @_Z19POVMSUtil_TempAllocPPvi(i8** %ptr, i32 %datasize) #0 {
-  tail call void @llvm.dbg.value(metadata i8** %ptr, i64 0, metadata !836, metadata !1201), !dbg !4342
-  tail call void @llvm.dbg.value(metadata i32 %datasize, i64 0, metadata !837, metadata !1201), !dbg !4343
-  %1 = icmp eq i8** %ptr, null, !dbg !4344
-  br i1 %1, label %6, label %2, !dbg !4346
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8** %ptr}, i64 0, metadata !803), !dbg !2562
+  tail call void @llvm.dbg.value(metadata !{i32 %datasize}, i64 0, metadata !804), !dbg !2562
+  %cmp = icmp eq i8** %ptr, null, !dbg !2563
+  br i1 %cmp, label %return, label %if.end, !dbg !2563
 
-; <label>:2                                       ; preds = %0
-  %3 = sext i32 %datasize to i64, !dbg !4347
-  %4 = tail call i8* @malloc(i64 %3) #8, !dbg !4347
-  store i8* %4, i8** %ptr, align 8, !dbg !4348, !tbaa !1210
-  %5 = icmp eq i8* %4, null, !dbg !4349
-  %. = select i1 %5, i32 -2, i32 0, !dbg !4351
-  br label %6, !dbg !4351
+if.end:                                           ; preds = %entry
+  %conv = sext i32 %datasize to i64, !dbg !2564
+  %call = tail call noalias i8* @malloc(i64 %conv) #9, !dbg !2564
+  store i8* %call, i8** %ptr, align 8, !dbg !2564, !tbaa !917
+  %cmp1 = icmp eq i8* %call, null, !dbg !2565
+  %. = select i1 %cmp1, i32 -2, i32 0, !dbg !2566
+  br label %return, !dbg !2566
 
-; <label>:6                                       ; preds = %2, %0
-  %.0 = phi i32 [ -1, %0 ], [ %., %2 ]
-  ret i32 %.0, !dbg !4352
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %., %if.end ]
+  ret i32 %retval.0, !dbg !2567
 }

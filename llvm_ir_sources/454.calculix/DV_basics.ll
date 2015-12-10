@@ -1,256 +1,218 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
+; ModuleID = '../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 %struct._DV = type { i32, i32, i32, double* }
 
-@__stderrp = external global %struct.__sFILE*
+@stderr = external global %struct._IO_FILE*
 @.str = private unnamed_addr constant [49 x i8] c"\0A ALLOCATE failure : bytes %zd, line %d, file %s\00", align 1
-@.str1 = private unnamed_addr constant [85 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c\00", align 1
+@.str1 = private unnamed_addr constant [73 x i8] c"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c\00", align 1
 @.str2 = private unnamed_addr constant [53 x i8] c"\0A fatal error in DV_setDefaultFields(%p)\0A bad input\0A\00", align 1
 @.str3 = private unnamed_addr constant [46 x i8] c"\0A fatal error in DV_clearData(%p)\0A bad input\0A\00", align 1
 @.str4 = private unnamed_addr constant [41 x i8] c"\0A fatal error in DV_free(%p)\0A bad input\0A\00", align 1
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define %struct._DV* @DV_new() #0 {
-  %1 = tail call i8* @malloc(i64 24) #5, !dbg !42
-  %2 = bitcast i8* %1 to %struct._DV*, !dbg !42
-  tail call void @llvm.dbg.value(metadata %struct._DV* %2, i64 0, metadata !26, metadata !46), !dbg !47
-  %3 = icmp eq i8* %1, null, !dbg !42
-  br i1 %3, label %4, label %7, !dbg !48
+entry:
+  %call = tail call noalias i8* @malloc(i64 24) #5, !dbg !33
+  %0 = bitcast i8* %call to %struct._DV*, !dbg !33
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %0}, i64 0, metadata !21), !dbg !33
+  %cmp = icmp eq i8* %call, null, !dbg !33
+  br i1 %cmp, label %if.then, label %if.end, !dbg !33
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !49, !tbaa !51
-  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 24, i32 19, i8* getelementptr inbounds ([85 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !49
-  tail call void @exit(i32 -1) #6, !dbg !49
-  unreachable, !dbg !49
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !35, !tbaa !37
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 24, i32 19, i8* getelementptr inbounds ([73 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !35
+  tail call void @exit(i32 -1) #6, !dbg !35
+  unreachable, !dbg !35
 
-; <label>:7                                       ; preds = %0
-  tail call void @DV_setDefaultFields(%struct._DV* %2) #7, !dbg !55
-  ret %struct._DV* %2, !dbg !56
+if.end:                                           ; preds = %entry
+  tail call void @DV_setDefaultFields(%struct._DV* %0) #7, !dbg !40
+  ret %struct._DV* %0, !dbg !41
 }
 
 ; Function Attrs: nounwind optsize
 declare noalias i8* @malloc(i64) #1
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #1
+declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #1
 
-; Function Attrs: noreturn optsize
+; Function Attrs: noreturn nounwind optsize
 declare void @exit(i32) #2
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @DV_setDefaultFields(%struct._DV* %dv) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !31, metadata !46), !dbg !57
-  %1 = icmp eq %struct._DV* %dv, null, !dbg !58
-  br i1 %1, label %2, label %5, !dbg !60
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !26), !dbg !42
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !43
+  br i1 %cmp, label %if.then, label %if.end, !dbg !43
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !61, !tbaa !51
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), %struct._DV* null) #5, !dbg !63
-  tail call void @exit(i32 -1) #6, !dbg !64
-  unreachable, !dbg !64
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !44, !tbaa !37
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), %struct._DV* null) #5, !dbg !44
+  tail call void @exit(i32 -1) #6, !dbg !46
+  unreachable, !dbg !46
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !65
-  store i32 0, i32* %6, align 4, !dbg !66, !tbaa !67
-  %7 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 1, !dbg !70
-  store i32 0, i32* %7, align 4, !dbg !71, !tbaa !72
-  %8 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2, !dbg !73
-  store i32 0, i32* %8, align 4, !dbg !74, !tbaa !75
-  %9 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !76
-  store double* null, double** %9, align 8, !dbg !77, !tbaa !78
-  ret void, !dbg !79
+if.end:                                           ; preds = %entry
+  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !47
+  store i32 0, i32* %size, align 4, !dbg !47, !tbaa !48
+  %maxsize = getelementptr inbounds %struct._DV* %dv, i64 0, i32 1, !dbg !49
+  store i32 0, i32* %maxsize, align 4, !dbg !49, !tbaa !48
+  %owned = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2, !dbg !50
+  store i32 0, i32* %owned, align 4, !dbg !50, !tbaa !48
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !51
+  store double* null, double** %vec, align 8, !dbg !51, !tbaa !37
+  ret void, !dbg !52
 }
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @DV_clearData(%struct._DV* %dv) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !34, metadata !46), !dbg !80
-  %1 = icmp eq %struct._DV* %dv, null, !dbg !81
-  br i1 %1, label %2, label %5, !dbg !83
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !29), !dbg !53
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !54
+  br i1 %cmp, label %if.then, label %if.end, !dbg !54
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !84, !tbaa !51
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([46 x i8]* @.str3, i64 0, i64 0), %struct._DV* null) #5, !dbg !86
-  tail call void @exit(i32 -1) #6, !dbg !87
-  unreachable, !dbg !87
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !55, !tbaa !37
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str3, i64 0, i64 0), %struct._DV* null) #5, !dbg !55
+  tail call void @exit(i32 -1) #6, !dbg !57
+  unreachable, !dbg !57
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !88
-  %7 = load double** %6, align 8, !dbg !88, !tbaa !78
-  %8 = icmp eq double* %7, null, !dbg !90
-  br i1 %8, label %14, label %9, !dbg !91
+if.end:                                           ; preds = %entry
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !58
+  %1 = load double** %vec, align 8, !dbg !58, !tbaa !37
+  %cmp1 = icmp eq double* %1, null, !dbg !58
+  br i1 %cmp1, label %if.end5, label %land.lhs.true, !dbg !58
 
-; <label>:9                                       ; preds = %5
-  %10 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2, !dbg !92
-  %11 = load i32* %10, align 4, !dbg !92, !tbaa !75
-  %12 = icmp eq i32 %11, 1, !dbg !93
-  br i1 %12, label %13, label %14, !dbg !94
+land.lhs.true:                                    ; preds = %if.end
+  %owned = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2, !dbg !58
+  %2 = load i32* %owned, align 4, !dbg !58, !tbaa !48
+  %cmp2 = icmp eq i32 %2, 1, !dbg !58
+  br i1 %cmp2, label %if.then3, label %if.end5, !dbg !58
 
-; <label>:13                                      ; preds = %9
-  tail call void @DVfree(double* %7) #5, !dbg !95
-  br label %14, !dbg !97
+if.then3:                                         ; preds = %land.lhs.true
+  tail call void @DVfree(double* %1) #5, !dbg !59
+  br label %if.end5, !dbg !61
 
-; <label>:14                                      ; preds = %5, %13, %9
-  tail call void @DV_setDefaultFields(%struct._DV* %dv) #7, !dbg !98
-  ret void, !dbg !99
+if.end5:                                          ; preds = %if.end, %if.then3, %land.lhs.true
+  tail call void @DV_setDefaultFields(%struct._DV* %dv) #7, !dbg !62
+  ret void, !dbg !63
 }
 
 ; Function Attrs: optsize
 declare void @DVfree(double*) #3
 
-; Function Attrs: nounwind optsize ssp uwtable
+; Function Attrs: nounwind optsize uwtable
 define void @DV_free(%struct._DV* %dv) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !37, metadata !46), !dbg !100
-  %1 = icmp eq %struct._DV* %dv, null, !dbg !101
-  br i1 %1, label %2, label %5, !dbg !103
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !32), !dbg !64
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !65
+  br i1 %cmp, label %if.then, label %if.end, !dbg !65
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !104, !tbaa !51
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([41 x i8]* @.str4, i64 0, i64 0), %struct._DV* null) #5, !dbg !106
-  tail call void @exit(i32 -1) #6, !dbg !107
-  unreachable, !dbg !107
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !66, !tbaa !37
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([41 x i8]* @.str4, i64 0, i64 0), %struct._DV* null) #5, !dbg !66
+  tail call void @exit(i32 -1) #6, !dbg !68
+  unreachable, !dbg !68
 
-; <label>:5                                       ; preds = %0
-  tail call void @DV_clearData(%struct._DV* %dv) #7, !dbg !108
-  %6 = bitcast %struct._DV* %dv to i8*, !dbg !109
-  tail call void @free(i8* %6) #7, !dbg !109
-  tail call void @llvm.dbg.value(metadata %struct._DV* null, i64 0, metadata !37, metadata !46), !dbg !100
-  ret void, !dbg !112
+if.end:                                           ; preds = %entry
+  tail call void @DV_clearData(%struct._DV* %dv) #7, !dbg !69
+  %1 = bitcast %struct._DV* %dv to i8*, !dbg !70
+  tail call void @free(i8* %1) #5, !dbg !70
+  tail call void @llvm.dbg.value(metadata !72, i64 0, metadata !32), !dbg !70
+  ret void, !dbg !73
 }
 
 ; Function Attrs: nounwind optsize
 declare void @free(i8* nocapture) #1
 
 ; Function Attrs: nounwind readnone
-declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #4
+declare void @llvm.dbg.value(metadata, i64, metadata) #4
 
-attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #4 = { nounwind readnone }
 attributes #5 = { nounwind optsize }
 attributes #6 = { noreturn nounwind optsize }
 attributes #7 = { optsize }
 
 !llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!38, !39, !40}
-!llvm.ident = !{!41}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !3, subprograms: !19, globals: !2, imports: !2)
-!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!2 = !{}
-!3 = !{!4, !15, !16, !17}
-!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64, align: 64)
-!5 = !DICompositeType(tag: DW_TAG_structure_type, name: "_DV", file: !6, line: 21, size: 192, align: 64, elements: !7)
-!6 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/../DV.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
-!7 = !{!8, !10, !11, !12}
-!8 = !DIDerivedType(tag: DW_TAG_member, name: "size", scope: !5, file: !6, line: 22, baseType: !9, size: 32, align: 32)
-!9 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
-!10 = !DIDerivedType(tag: DW_TAG_member, name: "maxsize", scope: !5, file: !6, line: 23, baseType: !9, size: 32, align: 32, offset: 32)
-!11 = !DIDerivedType(tag: DW_TAG_member, name: "owned", scope: !5, file: !6, line: 24, baseType: !9, size: 32, align: 32, offset: 64)
-!12 = !DIDerivedType(tag: DW_TAG_member, name: "vec", scope: !5, file: !6, line: 25, baseType: !13, size: 64, align: 64, offset: 128)
-!13 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !14, size: 64, align: 64)
-!14 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
-!15 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
-!16 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
-!17 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !18, size: 64, align: 64)
-!18 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
-!19 = !{!20, !27, !32, !35}
-!20 = !DISubprogram(name: "DV_new", scope: !1, file: !1, line: 14, type: !21, isLocal: false, isDefinition: true, scopeLine: 16, flags: DIFlagPrototyped, isOptimized: true, function: %struct._DV* ()* @DV_new, variables: !25)
-!21 = !DISubroutineType(types: !22)
-!22 = !{!23}
-!23 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !24, size: 64, align: 64)
-!24 = !DIDerivedType(tag: DW_TAG_typedef, name: "DV", file: !6, line: 20, baseType: !5)
-!25 = !{!26}
-!26 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "dv", scope: !20, file: !1, line: 17, type: !23)
-!27 = !DISubprogram(name: "DV_setDefaultFields", scope: !1, file: !1, line: 33, type: !28, isLocal: false, isDefinition: true, scopeLine: 35, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._DV*)* @DV_setDefaultFields, variables: !30)
-!28 = !DISubroutineType(types: !29)
-!29 = !{null, !23}
-!30 = !{!31}
-!31 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "dv", arg: 1, scope: !27, file: !1, line: 34, type: !23)
-!32 = !DISubprogram(name: "DV_clearData", scope: !1, file: !1, line: 57, type: !28, isLocal: false, isDefinition: true, scopeLine: 59, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._DV*)* @DV_clearData, variables: !33)
-!33 = !{!34}
-!34 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "dv", arg: 1, scope: !32, file: !1, line: 58, type: !23)
-!35 = !DISubprogram(name: "DV_free", scope: !1, file: !1, line: 81, type: !28, isLocal: false, isDefinition: true, scopeLine: 83, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct._DV*)* @DV_free, variables: !36)
-!36 = !{!37}
-!37 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "dv", arg: 1, scope: !35, file: !1, line: 82, type: !23)
-!38 = !{i32 2, !"Dwarf Version", i32 2}
-!39 = !{i32 2, !"Debug Info Version", i32 700000003}
-!40 = !{i32 1, !"PIC Level", i32 2}
-!41 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!42 = !DILocation(line: 19, column: 1, scope: !43)
-!43 = distinct !DILexicalBlock(scope: !44, file: !1, line: 19, column: 1)
-!44 = distinct !DILexicalBlock(scope: !45, file: !1, line: 19, column: 1)
-!45 = distinct !DILexicalBlock(scope: !20, file: !1, line: 19, column: 1)
-!46 = !DIExpression()
-!47 = !DILocation(line: 17, column: 7, scope: !20)
-!48 = !DILocation(line: 19, column: 1, scope: !44)
-!49 = !DILocation(line: 19, column: 1, scope: !50)
-!50 = distinct !DILexicalBlock(scope: !43, file: !1, line: 19, column: 1)
-!51 = !{!52, !52, i64 0}
-!52 = !{!"any pointer", !53, i64 0}
-!53 = !{!"omnipotent char", !54, i64 0}
-!54 = !{!"Simple C/C++ TBAA"}
-!55 = !DILocation(line: 21, column: 1, scope: !20)
-!56 = !DILocation(line: 23, column: 1, scope: !20)
-!57 = !DILocation(line: 34, column: 10, scope: !27)
-!58 = !DILocation(line: 36, column: 9, scope: !59)
-!59 = distinct !DILexicalBlock(scope: !27, file: !1, line: 36, column: 6)
-!60 = !DILocation(line: 36, column: 6, scope: !27)
-!61 = !DILocation(line: 37, column: 12, scope: !62)
-!62 = distinct !DILexicalBlock(scope: !59, file: !1, line: 36, column: 19)
-!63 = !DILocation(line: 37, column: 4, scope: !62)
-!64 = !DILocation(line: 39, column: 4, scope: !62)
-!65 = !DILocation(line: 41, column: 5, scope: !27)
-!66 = !DILocation(line: 41, column: 13, scope: !27)
-!67 = !{!68, !69, i64 0}
-!68 = !{!"_DV", !69, i64 0, !69, i64 4, !69, i64 8, !52, i64 16}
-!69 = !{!"int", !53, i64 0}
-!70 = !DILocation(line: 42, column: 5, scope: !27)
-!71 = !DILocation(line: 42, column: 13, scope: !27)
-!72 = !{!68, !69, i64 4}
-!73 = !DILocation(line: 43, column: 5, scope: !27)
-!74 = !DILocation(line: 43, column: 13, scope: !27)
-!75 = !{!68, !69, i64 8}
-!76 = !DILocation(line: 44, column: 5, scope: !27)
-!77 = !DILocation(line: 44, column: 13, scope: !27)
-!78 = !{!68, !52, i64 16}
-!79 = !DILocation(line: 46, column: 1, scope: !27)
-!80 = !DILocation(line: 58, column: 10, scope: !32)
-!81 = !DILocation(line: 60, column: 9, scope: !82)
-!82 = distinct !DILexicalBlock(scope: !32, file: !1, line: 60, column: 6)
-!83 = !DILocation(line: 60, column: 6, scope: !32)
-!84 = !DILocation(line: 61, column: 12, scope: !85)
-!85 = distinct !DILexicalBlock(scope: !82, file: !1, line: 60, column: 19)
-!86 = !DILocation(line: 61, column: 4, scope: !85)
-!87 = !DILocation(line: 63, column: 4, scope: !85)
-!88 = !DILocation(line: 65, column: 10, scope: !89)
-!89 = distinct !DILexicalBlock(scope: !32, file: !1, line: 65, column: 6)
-!90 = !DILocation(line: 65, column: 14, scope: !89)
-!91 = !DILocation(line: 65, column: 22, scope: !89)
-!92 = !DILocation(line: 65, column: 29, scope: !89)
-!93 = !DILocation(line: 65, column: 35, scope: !89)
-!94 = !DILocation(line: 65, column: 6, scope: !32)
-!95 = !DILocation(line: 66, column: 4, scope: !96)
-!96 = distinct !DILexicalBlock(scope: !89, file: !1, line: 65, column: 42)
-!97 = !DILocation(line: 67, column: 1, scope: !96)
-!98 = !DILocation(line: 68, column: 1, scope: !32)
-!99 = !DILocation(line: 70, column: 1, scope: !32)
-!100 = !DILocation(line: 82, column: 10, scope: !35)
-!101 = !DILocation(line: 84, column: 9, scope: !102)
-!102 = distinct !DILexicalBlock(scope: !35, file: !1, line: 84, column: 6)
-!103 = !DILocation(line: 84, column: 6, scope: !35)
-!104 = !DILocation(line: 85, column: 12, scope: !105)
-!105 = distinct !DILexicalBlock(scope: !102, file: !1, line: 84, column: 19)
-!106 = !DILocation(line: 85, column: 4, scope: !105)
-!107 = !DILocation(line: 87, column: 4, scope: !105)
-!108 = !DILocation(line: 89, column: 1, scope: !35)
-!109 = !DILocation(line: 90, column: 1, scope: !110)
-!110 = distinct !DILexicalBlock(scope: !111, file: !1, line: 90, column: 1)
-!111 = distinct !DILexicalBlock(scope: !35, file: !1, line: 90, column: 1)
-!112 = !DILocation(line: 92, column: 1, scope: !35)
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !2, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !22, metadata !27, metadata !30}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DV_new", metadata !"DV_new", metadata !"", i32 14, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %struct._DV* ()* @DV_new, null, null, metadata !20, i32 16} ; [ DW_TAG_subprogram ] [line 14] [def] [scope 16] [DV_new]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8}
+!8 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from DV]
+!9 = metadata !{i32 786454, metadata !1, null, metadata !"DV", i32 20, i64 0, i64 0, i64 0, i32 0, metadata !10} ; [ DW_TAG_typedef ] [DV] [line 20, size 0, align 0, offset 0] [from _DV]
+!10 = metadata !{i32 786451, metadata !11, null, metadata !"_DV", i32 21, i64 192, i64 64, i32 0, i32 0, null, metadata !12, i32 0, null, null} ; [ DW_TAG_structure_type ] [_DV] [line 21, size 192, align 64, offset 0] [from ]
+!11 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/../DV.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!12 = metadata !{metadata !13, metadata !15, metadata !16, metadata !17}
+!13 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"size", i32 22, i64 32, i64 32, i64 0, i32 0, metadata !14} ; [ DW_TAG_member ] [size] [line 22, size 32, align 32, offset 0] [from int]
+!14 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!15 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"maxsize", i32 23, i64 32, i64 32, i64 32, i32 0, metadata !14} ; [ DW_TAG_member ] [maxsize] [line 23, size 32, align 32, offset 32] [from int]
+!16 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"owned", i32 24, i64 32, i64 32, i64 64, i32 0, metadata !14} ; [ DW_TAG_member ] [owned] [line 24, size 32, align 32, offset 64] [from int]
+!17 = metadata !{i32 786445, metadata !11, metadata !10, metadata !"vec", i32 25, i64 64, i64 64, i64 128, i32 0, metadata !18} ; [ DW_TAG_member ] [vec] [line 25, size 64, align 64, offset 128] [from ]
+!18 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !19} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from double]
+!19 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!20 = metadata !{metadata !21}
+!21 = metadata !{i32 786688, metadata !4, metadata !"dv", metadata !5, i32 17, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [dv] [line 17]
+!22 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DV_setDefaultFields", metadata !"DV_setDefaultFields", metadata !"", i32 33, metadata !23, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._DV*)* @DV_setDefaultFields, null, null, metadata !25, i32 35} ; [ DW_TAG_subprogram ] [line 33] [def] [scope 35] [DV_setDefaultFields]
+!23 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !24, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!24 = metadata !{null, metadata !8}
+!25 = metadata !{metadata !26}
+!26 = metadata !{i32 786689, metadata !22, metadata !"dv", metadata !5, i32 16777250, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [dv] [line 34]
+!27 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DV_clearData", metadata !"DV_clearData", metadata !"", i32 57, metadata !23, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._DV*)* @DV_clearData, null, null, metadata !28, i32 59} ; [ DW_TAG_subprogram ] [line 57] [def] [scope 59] [DV_clearData]
+!28 = metadata !{metadata !29}
+!29 = metadata !{i32 786689, metadata !27, metadata !"dv", metadata !5, i32 16777274, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [dv] [line 58]
+!30 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"DV_free", metadata !"DV_free", metadata !"", i32 81, metadata !23, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%struct._DV*)* @DV_free, null, null, metadata !31, i32 83} ; [ DW_TAG_subprogram ] [line 81] [def] [scope 83] [DV_free]
+!31 = metadata !{metadata !32}
+!32 = metadata !{i32 786689, metadata !30, metadata !"dv", metadata !5, i32 16777298, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [dv] [line 82]
+!33 = metadata !{i32 19, i32 0, metadata !34, null}
+!34 = metadata !{i32 786443, metadata !1, metadata !4, i32 19, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c]
+!35 = metadata !{i32 19, i32 0, metadata !36, null}
+!36 = metadata !{i32 786443, metadata !1, metadata !34, i32 19, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c]
+!37 = metadata !{metadata !"any pointer", metadata !38}
+!38 = metadata !{metadata !"omnipotent char", metadata !39}
+!39 = metadata !{metadata !"Simple C/C++ TBAA"}
+!40 = metadata !{i32 21, i32 0, metadata !4, null}
+!41 = metadata !{i32 23, i32 0, metadata !4, null}
+!42 = metadata !{i32 34, i32 0, metadata !22, null}
+!43 = metadata !{i32 36, i32 0, metadata !22, null}
+!44 = metadata !{i32 37, i32 0, metadata !45, null}
+!45 = metadata !{i32 786443, metadata !1, metadata !22, i32 36, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c]
+!46 = metadata !{i32 39, i32 0, metadata !45, null}
+!47 = metadata !{i32 41, i32 0, metadata !22, null}
+!48 = metadata !{metadata !"int", metadata !38}
+!49 = metadata !{i32 42, i32 0, metadata !22, null}
+!50 = metadata !{i32 43, i32 0, metadata !22, null}
+!51 = metadata !{i32 44, i32 0, metadata !22, null}
+!52 = metadata !{i32 46, i32 0, metadata !22, null}
+!53 = metadata !{i32 58, i32 0, metadata !27, null} ; [ DW_TAG_imported_module ]
+!54 = metadata !{i32 60, i32 0, metadata !27, null}
+!55 = metadata !{i32 61, i32 0, metadata !56, null}
+!56 = metadata !{i32 786443, metadata !1, metadata !27, i32 60, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c]
+!57 = metadata !{i32 63, i32 0, metadata !56, null}
+!58 = metadata !{i32 65, i32 0, metadata !27, null}
+!59 = metadata !{i32 66, i32 0, metadata !60, null}
+!60 = metadata !{i32 786443, metadata !1, metadata !27, i32 65, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c]
+!61 = metadata !{i32 67, i32 0, metadata !60, null}
+!62 = metadata !{i32 68, i32 0, metadata !27, null}
+!63 = metadata !{i32 70, i32 0, metadata !27, null}
+!64 = metadata !{i32 82, i32 0, metadata !30, null}
+!65 = metadata !{i32 84, i32 0, metadata !30, null}
+!66 = metadata !{i32 85, i32 0, metadata !67, null}
+!67 = metadata !{i32 786443, metadata !1, metadata !30, i32 84, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c]
+!68 = metadata !{i32 87, i32 0, metadata !67, null}
+!69 = metadata !{i32 89, i32 0, metadata !30, null}
+!70 = metadata !{i32 90, i32 0, metadata !71, null}
+!71 = metadata !{i32 786443, metadata !1, metadata !30, i32 90, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/454.calculix/src/SPOOLES/DV/src/DV_basics.c]
+!72 = metadata !{%struct._DV* null}
+!73 = metadata !{i32 92, i32 0, metadata !30, null}

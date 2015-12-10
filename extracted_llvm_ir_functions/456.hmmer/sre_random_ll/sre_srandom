@@ -1,12 +1,13 @@
 define void @sre_srandom(i32 %seed) #0 {
-  tail call void @llvm.dbg.value(metadata i32 %seed, i64 0, metadata !27, metadata !93), !dbg !186
-  %1 = icmp slt i32 %seed, 0, !dbg !187
-  %2 = sub nsw i32 0, %seed, !dbg !189
-  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !27, metadata !93), !dbg !186
-  %.seed = select i1 %1, i32 %2, i32 %seed, !dbg !190
-  %3 = icmp eq i32 %.seed, 0, !dbg !191
-  tail call void @llvm.dbg.value(metadata i32 42, i64 0, metadata !27, metadata !93), !dbg !186
-  %.1 = select i1 %3, i32 42, i32 %.seed, !dbg !193
-  store i32 %.1, i32* @sre_randseed, align 4, !dbg !194, !tbaa !104
-  ret void, !dbg !195
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %seed}, i64 0, metadata !27), !dbg !141
+  %cmp = icmp slt i32 %seed, 0, !dbg !142
+  %mul = sub i32 0, %seed, !dbg !142
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !27), !dbg !142
+  %mul.seed = select i1 %cmp, i32 %mul, i32 %seed, !dbg !142
+  %cmp1 = icmp eq i32 %mul.seed, 0, !dbg !143
+  tail call void @llvm.dbg.value(metadata !144, i64 0, metadata !27), !dbg !143
+  %seed.addr.1 = select i1 %cmp1, i32 42, i32 %mul.seed, !dbg !143
+  store i32 %seed.addr.1, i32* @sre_randseed, align 4, !dbg !145, !tbaa !106
+  ret void, !dbg !146
 }

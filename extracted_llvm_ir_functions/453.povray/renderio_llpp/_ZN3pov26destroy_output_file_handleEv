@@ -1,17 +1,18 @@
 define void @_ZN3pov26destroy_output_file_handleEv() #0 {
-  %1 = load %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !1154, !tbaa !875
-  %2 = icmp eq %"class.pov::Image_File_Class"* %1, null, !dbg !1156
-  br i1 %2, label %8, label %3, !dbg !1157
+entry:
+  %0 = load %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !500, !tbaa !354
+  %cmp = icmp eq %"class.pov::Image_File_Class"* %0, null, !dbg !500
+  br i1 %cmp, label %if.end, label %delete.notnull, !dbg !500
 
-; <label>:3                                       ; preds = %0
-  %4 = bitcast %"class.pov::Image_File_Class"* %1 to void (%"class.pov::Image_File_Class"*)***, !dbg !1158
-  %5 = load void (%"class.pov::Image_File_Class"*)*** %4, align 8, !dbg !1158, !tbaa !877
-  %6 = getelementptr inbounds void (%"class.pov::Image_File_Class"*)** %5, i64 1, !dbg !1158
-  %7 = load void (%"class.pov::Image_File_Class"*)** %6, align 8, !dbg !1158
-  tail call void %7(%"class.pov::Image_File_Class"* %1) #9, !dbg !1158
-  store %"class.pov::Image_File_Class"* null, %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !1160, !tbaa !875
-  br label %8, !dbg !1161
+delete.notnull:                                   ; preds = %entry
+  %1 = bitcast %"class.pov::Image_File_Class"* %0 to void (%"class.pov::Image_File_Class"*)***, !dbg !501
+  %vtable = load void (%"class.pov::Image_File_Class"*)*** %1, align 8, !dbg !501, !tbaa !355
+  %vfn = getelementptr inbounds void (%"class.pov::Image_File_Class"*)** %vtable, i64 1, !dbg !501
+  %2 = load void (%"class.pov::Image_File_Class"*)** %vfn, align 8, !dbg !501
+  tail call void %2(%"class.pov::Image_File_Class"* %0) #7, !dbg !501
+  store %"class.pov::Image_File_Class"* null, %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !503, !tbaa !354
+  br label %if.end, !dbg !504
 
-; <label>:8                                       ; preds = %0, %3
-  ret void, !dbg !1162
+if.end:                                           ; preds = %entry, %delete.notnull
+  ret void, !dbg !505
 }

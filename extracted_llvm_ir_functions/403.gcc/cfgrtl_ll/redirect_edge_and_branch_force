@@ -1,19 +1,21 @@
 define %struct.basic_block_def* @redirect_edge_and_branch_force(%struct.edge_def* %e, %struct.basic_block_def* %target) #0 {
 entry:
-  %call = tail call zeroext i1 @redirect_edge_and_branch(%struct.edge_def* %e, %struct.basic_block_def* %target) #7
-  br i1 %call, label %return, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct.edge_def* %e}, i64 0, metadata !1208), !dbg !1937
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %target}, i64 0, metadata !1209), !dbg !1938
+  %call = tail call zeroext i1 @redirect_edge_and_branch(%struct.edge_def* %e, %struct.basic_block_def* %target) #8, !dbg !1939
+  br i1 %call, label %return, label %lor.lhs.false, !dbg !1939
 
 lor.lhs.false:                                    ; preds = %entry
-  %dest = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 3
-  %0 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
-  %cmp = icmp eq %struct.basic_block_def* %0, %target
-  br i1 %cmp, label %return, label %if.end
+  %dest = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 3, !dbg !1939
+  %0 = load %struct.basic_block_def** %dest, align 8, !dbg !1939, !tbaa !1516
+  %cmp = icmp eq %struct.basic_block_def* %0, %target, !dbg !1939
+  br i1 %cmp, label %return, label %if.end, !dbg !1939
 
 if.end:                                           ; preds = %lor.lhs.false
-  %call1 = tail call fastcc %struct.basic_block_def* @force_nonfallthru_and_redirect(%struct.edge_def* %e, %struct.basic_block_def* %target) #7
-  br label %return
+  %call1 = tail call fastcc %struct.basic_block_def* @force_nonfallthru_and_redirect(%struct.edge_def* %e, %struct.basic_block_def* %target) #8, !dbg !1940
+  br label %return, !dbg !1940
 
 return:                                           ; preds = %entry, %lor.lhs.false, %if.end
   %retval.0 = phi %struct.basic_block_def* [ %call1, %if.end ], [ null, %lor.lhs.false ], [ null, %entry ]
-  ret %struct.basic_block_def* %retval.0
+  ret %struct.basic_block_def* %retval.0, !dbg !1941
 }

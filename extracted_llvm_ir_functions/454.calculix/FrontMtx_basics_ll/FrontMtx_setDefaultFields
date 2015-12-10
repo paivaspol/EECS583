@@ -1,35 +1,36 @@
 define void @FrontMtx_setDefaultFields(%struct._FrontMtx* %frontmtx) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !189, metadata !211), !dbg !222
-  %1 = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !223
-  br i1 %1, label %2, label %5, !dbg !225
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !189), !dbg !212
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !213
+  br i1 %cmp, label %if.then, label %if.end, !dbg !213
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !226, !tbaa !216
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([58 x i8]* @.str2, i64 0, i64 0), %struct._FrontMtx* null) #6, !dbg !228
-  tail call void @exit(i32 -1) #7, !dbg !229
-  unreachable, !dbg !229
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !214, !tbaa !207
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str2, i64 0, i64 0), %struct._FrontMtx* null) #6, !dbg !214
+  tail call void @exit(i32 -1) #7, !dbg !216
+  unreachable, !dbg !216
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !230
-  store i32 0, i32* %6, align 4, !dbg !231, !tbaa !232
-  %7 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 1, !dbg !235
-  store i32 0, i32* %7, align 4, !dbg !236, !tbaa !237
-  %8 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 2, !dbg !238
-  store i32 1, i32* %8, align 4, !dbg !239, !tbaa !240
-  %9 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !241
-  store i32 0, i32* %9, align 4, !dbg !242, !tbaa !243
-  %10 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 4, !dbg !244
-  store i32 0, i32* %10, align 4, !dbg !245, !tbaa !246
-  %11 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 5, !dbg !247
-  store i32 0, i32* %11, align 4, !dbg !248, !tbaa !249
-  %12 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6, !dbg !250
-  store i32 1, i32* %12, align 4, !dbg !251, !tbaa !252
-  %13 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 7, !dbg !253
-  %14 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 26, !dbg !254
-  store %struct._Lock* null, %struct._Lock** %14, align 8, !dbg !255, !tbaa !256
-  %15 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 28, !dbg !257
-  store i32 0, i32* %15, align 4, !dbg !258, !tbaa !259
-  %16 = bitcast i32* %13 to i8*, !dbg !260
-  call void @llvm.memset.p0i8.i64(i8* %16, i8 0, i64 132, i32 4, i1 false), !dbg !261
-  ret void, !dbg !260
+if.end:                                           ; preds = %entry
+  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !217
+  store i32 0, i32* %nfront, align 4, !dbg !217, !tbaa !218
+  %neqns = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 1, !dbg !219
+  store i32 0, i32* %neqns, align 4, !dbg !219, !tbaa !218
+  %type = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 2, !dbg !220
+  store i32 1, i32* %type, align 4, !dbg !220, !tbaa !218
+  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !221
+  store i32 0, i32* %symmetryflag, align 4, !dbg !221, !tbaa !218
+  %sparsityflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 4, !dbg !222
+  store i32 0, i32* %sparsityflag, align 4, !dbg !222, !tbaa !218
+  %pivotingflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 5, !dbg !223
+  store i32 0, i32* %pivotingflag, align 4, !dbg !223, !tbaa !218
+  %dataMode = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6, !dbg !224
+  store i32 1, i32* %dataMode, align 4, !dbg !224, !tbaa !218
+  %nentD = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 7, !dbg !225
+  %lock = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 26, !dbg !226
+  store %struct._Lock* null, %struct._Lock** %lock, align 8, !dbg !226, !tbaa !207
+  %nlocks = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 28, !dbg !227
+  store i32 0, i32* %nlocks, align 4, !dbg !227, !tbaa !218
+  %1 = bitcast i32* %nentD to i8*, !dbg !228
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 132, i32 4, i1 false), !dbg !229
+  ret void, !dbg !228
 }

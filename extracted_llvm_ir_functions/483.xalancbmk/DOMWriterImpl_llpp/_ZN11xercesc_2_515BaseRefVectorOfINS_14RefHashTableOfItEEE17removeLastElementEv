@@ -1,0 +1,55 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_14RefHashTableOfItEEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf"* nocapture %this) unnamed_addr #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf"* %this}, i64 0, metadata !3771), !dbg !6237
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 2, !dbg !6238
+  %0 = load i32* %fCurCount, align 4, !dbg !6238, !tbaa !4534
+  %tobool = icmp eq i32 %0, 0, !dbg !6238
+  br i1 %tobool, label %if.end7, label %if.end, !dbg !6238
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !6240
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !6240, !tbaa !4534
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 1, !dbg !6241
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !6241, !tbaa !4558, !range !5786
+  %tobool3 = icmp eq i8 %1, 0, !dbg !6241
+  br i1 %tobool3, label %if.end7, label %if.then4, !dbg !6241
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !6242
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 4, !dbg !6242
+  %2 = load %"class.xercesc_2_5::RefHashTableOf"*** %fElemList, align 8, !dbg !6242, !tbaa !4527
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf"** %2, i64 %idxprom, !dbg !6242
+  %3 = load %"class.xercesc_2_5::RefHashTableOf"** %arrayidx, align 8, !dbg !6242, !tbaa !4527
+  %isnull = icmp eq %"class.xercesc_2_5::RefHashTableOf"* %3, null, !dbg !6242
+  br i1 %isnull, label %if.end7, label %delete.notnull, !dbg !6242
+
+delete.notnull:                                   ; preds = %if.then4
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf"* %3}, i64 0, metadata !6243), !dbg !6244
+  invoke void @_ZN11xercesc_2_514RefHashTableOfItED2Ev(%"class.xercesc_2_5::RefHashTableOf"* %3) #10
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %4 = bitcast %"class.xercesc_2_5::RefHashTableOf"* %3 to i8*, !dbg !6242
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %4) #10, !dbg !6242
+  br label %if.end7, !dbg !6242
+
+lpad:                                             ; preds = %delete.notnull
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !6242
+  %6 = bitcast %"class.xercesc_2_5::RefHashTableOf"* %3 to i8*, !dbg !6242
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %6) #10
+          to label %eh.resume unwind label %terminate.lpad, !dbg !6242
+
+if.end7:                                          ; preds = %if.end, %entry, %if.then4, %invoke.cont
+  ret void, !dbg !6242
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %5, !dbg !6242
+
+terminate.lpad:                                   ; preds = %lpad
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !6242
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !6242
+  tail call void @__clang_call_terminate(i8* %8) #9, !dbg !6242
+  unreachable, !dbg !6242
+}

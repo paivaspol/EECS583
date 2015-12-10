@@ -1,0 +1,21 @@
+define %"class.pov_base::IStream"* @_ZN8pov_base7IStream11UnRead_ByteEi(%"class.pov_base::IStream"* %this, i32 %c) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %this}, i64 0, metadata !317), !dbg !821
+  tail call void @llvm.dbg.value(metadata !{i32 %c}, i64 0, metadata !318), !dbg !821
+  %fail = getelementptr inbounds %"class.pov_base::IStream"* %this, i64 0, i32 0, i32 1, !dbg !822
+  %0 = load i8* %fail, align 1, !dbg !822, !tbaa !687, !range !766
+  %tobool = icmp eq i8 %0, 0, !dbg !822
+  br i1 %tobool, label %if.then, label %if.end, !dbg !822
+
+if.then:                                          ; preds = %entry
+  %f = getelementptr inbounds %"class.pov_base::IStream"* %this, i64 0, i32 0, i32 2, !dbg !823
+  %1 = load %struct._IO_FILE** %f, align 8, !dbg !823, !tbaa !689
+  %call = tail call i32 @ungetc(i32 %c, %struct._IO_FILE* %1) #9, !dbg !823
+  %cmp = icmp ne i32 %call, %c, !dbg !823
+  %frombool = zext i1 %cmp to i8, !dbg !823
+  store i8 %frombool, i8* %fail, align 1, !dbg !823, !tbaa !687
+  br label %if.end, !dbg !823
+
+if.end:                                           ; preds = %entry, %if.then
+  ret %"class.pov_base::IStream"* %this, !dbg !824
+}

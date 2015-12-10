@@ -1,30 +1,33 @@
 define i32 @ix86_unary_operator_ok(i32 %code, i32 %mode, %struct.rtx_def** nocapture %operands) #1 {
 entry:
-  %0 = load %struct.rtx_def** %operands, align 8, !tbaa !4
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 66
+  tail call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !2873), !dbg !7840
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2874), !dbg !7841
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %operands}, i64 0, metadata !2875), !dbg !7842
+  %0 = load %struct.rtx_def** %operands, align 8, !dbg !7843, !tbaa !4365
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !7843
+  %bf.load = load i32* %1, align 8, !dbg !7843
+  %bf.clear = and i32 %bf.load, 65535, !dbg !7843
+  %cmp = icmp eq i32 %bf.clear, 66, !dbg !7843
   %arrayidx6.phi.trans.insert = getelementptr inbounds %struct.rtx_def** %operands, i64 1
-  %.pre = load %struct.rtx_def** %arrayidx6.phi.trans.insert, align 8, !tbaa !4
-  br i1 %cmp, label %land.lhs.true, label %lor.lhs.false
+  %.pre = load %struct.rtx_def** %arrayidx6.phi.trans.insert, align 8, !dbg !7844, !tbaa !4365
+  br i1 %cmp, label %land.lhs.true, label %lor.lhs.false, !dbg !7843
 
 lor.lhs.false:                                    ; preds = %entry
-  %2 = bitcast %struct.rtx_def* %.pre to i32*
-  %bf.load2 = load i32* %2, align 8
-  %bf.clear3 = and i32 %bf.load2, 65535
-  %cmp4 = icmp eq i32 %bf.clear3, 66
-  br i1 %cmp4, label %land.lhs.true, label %if.end
+  %2 = bitcast %struct.rtx_def* %.pre to i32*, !dbg !7843
+  %bf.load2 = load i32* %2, align 8, !dbg !7843
+  %bf.clear3 = and i32 %bf.load2, 65535, !dbg !7843
+  %cmp4 = icmp eq i32 %bf.clear3, 66, !dbg !7843
+  br i1 %cmp4, label %land.lhs.true, label %if.end, !dbg !7843
 
 land.lhs.true:                                    ; preds = %entry, %lor.lhs.false
-  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %0, %struct.rtx_def* %.pre) #9
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.end
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %0, %struct.rtx_def* %.pre) #10, !dbg !7844
+  %tobool = icmp eq i32 %call, 0, !dbg !7844
+  br i1 %tobool, label %return, label %if.end, !dbg !7844
 
 if.end:                                           ; preds = %land.lhs.true, %lor.lhs.false
-  br label %return
+  br label %return, !dbg !7845
 
 return:                                           ; preds = %land.lhs.true, %if.end
   %retval.0 = phi i32 [ 1, %if.end ], [ 0, %land.lhs.true ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !7845
 }

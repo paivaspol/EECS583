@@ -1,54 +1,55 @@
-define internal fastcc void @CCTKi_Timer(i32 %this_timer, %struct.t_Timer* readonly %timer, %struct.cTimerData* nocapture %info) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !321, metadata !354), !dbg !835
-  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %timer, i64 0, metadata !322, metadata !354), !dbg !836
-  tail call void @llvm.dbg.value(metadata %struct.cTimerData* %info, i64 0, metadata !323, metadata !354), !dbg !837
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !326, metadata !354), !dbg !838
-  %1 = icmp eq %struct.t_Timer* %timer, null, !dbg !839
-  br i1 %1, label %.loopexit, label %2, !dbg !841
+define internal fastcc void @CCTKi_Timer(i32 %this_timer, %struct.t_Timer* %timer, %struct.cTimerData* nocapture %info) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !287), !dbg !609
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %timer}, i64 0, metadata !288), !dbg !609
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %info}, i64 0, metadata !289), !dbg !609
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !292), !dbg !610
+  %tobool = icmp eq %struct.t_Timer* %timer, null, !dbg !611
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !611
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !842
-  %4 = load i8*** %3, align 8, !dbg !842, !tbaa !398
-  %5 = icmp ne i8** %4, null, !dbg !843
-  %6 = load i32* @n_clocks, align 4
-  %7 = icmp sgt i32 %6, 0, !dbg !844
-  %or.cond = and i1 %5, %7, !dbg !848
-  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !848
+land.lhs.true:                                    ; preds = %entry
+  %data = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !611
+  %0 = load i8*** %data, align 8, !dbg !611, !tbaa !355
+  %tobool1 = icmp ne i8** %0, null, !dbg !611
+  %1 = load i32* @n_clocks, align 4, !dbg !612, !tbaa !359
+  %cmp15 = icmp sgt i32 %1, 0, !dbg !612
+  %or.cond = and i1 %tobool1, %cmp15, !dbg !611
+  br i1 %or.cond, label %for.body.lr.ph, label %if.end, !dbg !611
 
-.lr.ph:                                           ; preds = %2
-  %8 = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 1, !dbg !849
-  br label %9, !dbg !851
+for.body.lr.ph:                                   ; preds = %land.lhs.true
+  %vals = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 1, !dbg !615
+  br label %for.body, !dbg !612
 
-; <label>:9                                       ; preds = %.lr.ph, %9
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %total_vars.02 = phi i32 [ 0, %.lr.ph ], [ %25, %9 ]
-  %10 = load %struct.cHandledData** @clocks, align 8, !dbg !852, !tbaa !376
-  %11 = trunc i64 %indvars.iv to i32, !dbg !853
-  %12 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %10, i32 %11) #8, !dbg !853
-  %13 = getelementptr inbounds i8* %12, i64 56, !dbg !854
-  %14 = bitcast i8* %13 to void (i32, i8*, %struct.cTimerVal*)**, !dbg !854
-  %15 = load void (i32, i8*, %struct.cTimerVal*)** %14, align 8, !dbg !854, !tbaa !855
-  %16 = load i8*** %3, align 8, !dbg !856, !tbaa !398
-  %17 = getelementptr inbounds i8** %16, i64 %indvars.iv, !dbg !857
-  %18 = load i8** %17, align 8, !dbg !857, !tbaa !376
-  %19 = sext i32 %total_vars.02 to i64, !dbg !858
-  %20 = load %struct.cTimerVal** %8, align 8, !dbg !849, !tbaa !859
-  %21 = getelementptr inbounds %struct.cTimerVal* %20, i64 %19, !dbg !858
-  tail call void %15(i32 %this_timer, i8* %18, %struct.cTimerVal* %21) #8, !dbg !861
-  %22 = getelementptr inbounds i8* %12, i64 8, !dbg !862
-  %23 = bitcast i8* %22 to i32*, !dbg !862
-  %24 = load i32* %23, align 4, !dbg !862, !tbaa !371
-  %25 = add nsw i32 %24, %total_vars.02, !dbg !863
-  tail call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !326, metadata !354), !dbg !838
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !851
-  %26 = load i32* @n_clocks, align 4, !dbg !864, !tbaa !388
-  %27 = sext i32 %26 to i64, !dbg !844
-  %28 = icmp slt i64 %indvars.iv.next, %27, !dbg !844
-  br i1 %28, label %9, label %.loopexit, !dbg !851
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %total_vars.017 = phi i32 [ 0, %for.body.lr.ph ], [ %add, %for.body ]
+  %2 = load %struct.cHandledData** @clocks, align 8, !dbg !617, !tbaa !355
+  %3 = trunc i64 %indvars.iv to i32, !dbg !617
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %2, i32 %3) #8, !dbg !617
+  %get = getelementptr inbounds i8* %call, i64 56, !dbg !615
+  %4 = bitcast i8* %get to void (i32, i8*, %struct.cTimerVal*)**, !dbg !615
+  %5 = load void (i32, i8*, %struct.cTimerVal*)** %4, align 8, !dbg !615, !tbaa !355
+  %6 = load i8*** %data, align 8, !dbg !615, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %6, i64 %indvars.iv, !dbg !615
+  %7 = load i8** %arrayidx, align 8, !dbg !615, !tbaa !355
+  %idxprom3 = sext i32 %total_vars.017 to i64, !dbg !615
+  %8 = load %struct.cTimerVal** %vals, align 8, !dbg !615, !tbaa !355
+  %arrayidx4 = getelementptr inbounds %struct.cTimerVal* %8, i64 %idxprom3, !dbg !615
+  tail call void %5(i32 %this_timer, i8* %7, %struct.cTimerVal* %arrayidx4) #8, !dbg !615
+  %n_vals = getelementptr inbounds i8* %call, i64 8, !dbg !618
+  %9 = bitcast i8* %n_vals to i32*, !dbg !618
+  %10 = load i32* %9, align 4, !dbg !618, !tbaa !359
+  %add = add nsw i32 %10, %total_vars.017, !dbg !618
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !292), !dbg !618
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !612
+  %11 = load i32* @n_clocks, align 4, !dbg !612, !tbaa !359
+  %12 = trunc i64 %indvars.iv.next to i32, !dbg !612
+  %cmp = icmp slt i32 %12, %11, !dbg !612
+  br i1 %cmp, label %for.body, label %if.end, !dbg !612
 
-.loopexit:                                        ; preds = %9, %2, %0
-  %total_vars.1 = phi i32 [ 0, %2 ], [ 0, %0 ], [ %25, %9 ]
-  %29 = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 0, !dbg !865
-  store i32 %total_vars.1, i32* %29, align 4, !dbg !866, !tbaa !867
-  ret void, !dbg !868
+if.end:                                           ; preds = %land.lhs.true, %for.body, %entry
+  %total_vars.1 = phi i32 [ 0, %land.lhs.true ], [ 0, %entry ], [ %add, %for.body ]
+  %n_vals5 = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 0, !dbg !619
+  store i32 %total_vars.1, i32* %n_vals5, align 4, !dbg !619, !tbaa !359
+  ret void, !dbg !620
 }

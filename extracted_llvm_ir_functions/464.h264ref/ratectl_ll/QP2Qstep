@@ -1,26 +1,27 @@
 define double @QP2Qstep(i32 %QP) #6 {
-  tail call void @llvm.dbg.value(metadata i32 %QP, i64 0, metadata !151, metadata !1021), !dbg !3053
-  %1 = srem i32 %QP, 6, !dbg !3054
-  %2 = sext i32 %1 to i64, !dbg !3055
-  %3 = getelementptr inbounds [6 x double]* @QP2Qstep.QP2QSTEP, i64 0, i64 %2, !dbg !3055
-  %4 = load double* %3, align 8, !dbg !3055, !tbaa !952
-  tail call void @llvm.dbg.value(metadata double %4, i64 0, metadata !153, metadata !1021), !dbg !3056
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !152, metadata !1021), !dbg !3057
-  %5 = sdiv i32 %QP, 6, !dbg !3058
-  %6 = icmp sgt i32 %QP, 5, !dbg !3059
-  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !3060
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %QP}, i64 0, metadata !147), !dbg !1688
+  %rem = srem i32 %QP, 6, !dbg !1689
+  %idxprom = sext i32 %rem to i64, !dbg !1689
+  %arrayidx = getelementptr inbounds [6 x double]* @QP2Qstep.QP2QSTEP, i64 0, i64 %idxprom, !dbg !1689
+  %0 = load double* %arrayidx, align 8, !dbg !1689, !tbaa !862
+  tail call void @llvm.dbg.value(metadata !{double %0}, i64 0, metadata !149), !dbg !1689
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !148), !dbg !1690
+  %div = sdiv i32 %QP, 6, !dbg !1690
+  %cmp3 = icmp sgt i32 %QP, 5, !dbg !1690
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !1690
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %Qstep.02 = phi double [ %7, %.lr.ph ], [ %4, %0 ]
-  %i.01 = phi i32 [ %8, %.lr.ph ], [ 0, %0 ]
-  %7 = fmul double %Qstep.02, 2.000000e+00, !dbg !3061
-  tail call void @llvm.dbg.value(metadata double %7, i64 0, metadata !153, metadata !1021), !dbg !3056
-  %8 = add nuw nsw i32 %i.01, 1, !dbg !3062
-  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !152, metadata !1021), !dbg !3057
-  %9 = icmp slt i32 %8, %5, !dbg !3059
-  br i1 %9, label %.lr.ph, label %._crit_edge, !dbg !3060
+for.body:                                         ; preds = %entry, %for.body
+  %Qstep.05 = phi double [ %mul, %for.body ], [ %0, %entry ]
+  %i.04 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %mul = fmul double %Qstep.05, 2.000000e+00, !dbg !1691
+  tail call void @llvm.dbg.value(metadata !{double %mul}, i64 0, metadata !149), !dbg !1691
+  %inc = add nsw i32 %i.04, 1, !dbg !1690
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !148), !dbg !1690
+  %cmp = icmp slt i32 %inc, %div, !dbg !1690
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1690
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  %Qstep.0.lcssa = phi double [ %4, %0 ], [ %7, %.lr.ph ]
-  ret double %Qstep.0.lcssa, !dbg !3063
+for.end:                                          ; preds = %for.body, %entry
+  %Qstep.0.lcssa = phi double [ %0, %entry ], [ %mul, %for.body ]
+  ret double %Qstep.0.lcssa, !dbg !1692
 }

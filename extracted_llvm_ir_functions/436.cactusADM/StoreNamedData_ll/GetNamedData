@@ -1,32 +1,33 @@
-define i8* @GetNamedData(%struct.PNamedData* readonly %list, i8* nocapture readonly %name) #5 {
-  tail call void @llvm.dbg.value(metadata %struct.PNamedData* %list, i64 0, metadata !38, metadata !56), !dbg !102
-  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !39, metadata !56), !dbg !103
-  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !40, metadata !56), !dbg !104
-  %1 = icmp eq %struct.PNamedData* %list, null, !dbg !105
-  br i1 %1, label %.loopexit, label %.lr.ph, !dbg !107
+define i8* @GetNamedData(%struct.PNamedData* %list, i8* nocapture %name) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.PNamedData* %list}, i64 0, metadata !38), !dbg !75
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !39), !dbg !75
+  tail call void @llvm.dbg.value(metadata !76, i64 0, metadata !40), !dbg !77
+  %tobool = icmp eq %struct.PNamedData* %list, null, !dbg !78
+  br i1 %tobool, label %if.end5, label %for.body, !dbg !78
 
-.lr.ph:                                           ; preds = %0, %9
-  %current.02 = phi %struct.PNamedData* [ %11, %9 ], [ %list, %0 ]
-  %2 = getelementptr inbounds %struct.PNamedData* %current.02, i64 0, i32 2, !dbg !108
-  %3 = load i8** %2, align 8, !dbg !108, !tbaa !70
-  %4 = tail call i32 @strcmp(i8* %3, i8* %name) #6, !dbg !114
-  %5 = icmp eq i32 %4, 0, !dbg !114
-  br i1 %5, label %6, label %9, !dbg !115
+for.body:                                         ; preds = %entry, %for.inc
+  %current.011 = phi %struct.PNamedData* [ %2, %for.inc ], [ %list, %entry ]
+  %name2 = getelementptr inbounds %struct.PNamedData* %current.011, i64 0, i32 2, !dbg !79
+  %0 = load i8** %name2, align 8, !dbg !79, !tbaa !57
+  %call = tail call i32 @strcmp(i8* %0, i8* %name) #7, !dbg !79
+  %tobool3 = icmp eq i32 %call, 0, !dbg !79
+  br i1 %tobool3, label %if.then4, label %for.inc, !dbg !79
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds %struct.PNamedData* %current.02, i64 0, i32 3, !dbg !116
-  %8 = load i8** %7, align 8, !dbg !116, !tbaa !82
-  tail call void @llvm.dbg.value(metadata i8* %8, i64 0, metadata !40, metadata !56), !dbg !104
-  br label %.loopexit, !dbg !118
+if.then4:                                         ; preds = %for.body
+  %data = getelementptr inbounds %struct.PNamedData* %current.011, i64 0, i32 3, !dbg !83
+  %1 = load i8** %data, align 8, !dbg !83, !tbaa !57
+  tail call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !40), !dbg !83
+  br label %if.end5, !dbg !85
 
-; <label>:9                                       ; preds = %.lr.ph
-  %10 = getelementptr inbounds %struct.PNamedData* %current.02, i64 0, i32 1, !dbg !119
-  %11 = load %struct.PNamedData** %10, align 8, !dbg !119, !tbaa !87
-  tail call void @llvm.dbg.value(metadata %struct.PNamedData* %11, i64 0, metadata !41, metadata !56), !dbg !120
-  %12 = icmp eq %struct.PNamedData* %11, null, !dbg !121
-  br i1 %12, label %.loopexit, label %.lr.ph, !dbg !121
+for.inc:                                          ; preds = %for.body
+  %next = getelementptr inbounds %struct.PNamedData* %current.011, i64 0, i32 1, !dbg !86
+  %2 = load %struct.PNamedData** %next, align 8, !dbg !86, !tbaa !57
+  tail call void @llvm.dbg.value(metadata !{%struct.PNamedData* %2}, i64 0, metadata !41), !dbg !86
+  %tobool1 = icmp eq %struct.PNamedData* %2, null, !dbg !86
+  br i1 %tobool1, label %if.end5, label %for.body, !dbg !86
 
-.loopexit:                                        ; preds = %9, %0, %6
-  %return_val.0 = phi i8* [ %8, %6 ], [ null, %0 ], [ null, %9 ]
-  ret i8* %return_val.0, !dbg !122
+if.end5:                                          ; preds = %for.inc, %entry, %if.then4
+  %return_val.0 = phi i8* [ %1, %if.then4 ], [ null, %entry ], [ null, %for.inc ]
+  ret i8* %return_val.0, !dbg !87
 }

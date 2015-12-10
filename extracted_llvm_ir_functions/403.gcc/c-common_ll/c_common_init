@@ -1,14 +1,16 @@
 define i8* @c_common_init(i8* %filename) #0 {
 entry:
-  %call = tail call i8* @init_c_lex(i8* %filename) #8
-  tail call void @init_pragma() #8
+  tail call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !1966), !dbg !3797
+  %call = tail call i8* @init_c_lex(i8* %filename) #9, !dbg !3798
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !1966), !dbg !3798
+  tail call void @init_pragma() #9, !dbg !3799
   %.b = load i1* @c_attrs_initialized, align 1
-  br i1 %.b, label %if.end, label %if.then
+  br i1 %.b, label %if.end, label %if.then, !dbg !3800
 
 if.then:                                          ; preds = %entry
-  tail call fastcc void @c_init_attributes() #9
-  br label %if.end
+  tail call fastcc void @c_init_attributes() #10, !dbg !3801
+  br label %if.end, !dbg !3801
 
 if.end:                                           ; preds = %if.then, %entry
-  ret i8* %call
+  ret i8* %call, !dbg !3802
 }

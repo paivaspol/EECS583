@@ -1,38 +1,39 @@
 define double @DV_entry(%struct._DV* %dv, i32 %loc) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !33, metadata !63), !dbg !103
-  tail call void @llvm.dbg.value(metadata i32 %loc, i64 0, metadata !34, metadata !63), !dbg !104
-  %1 = icmp eq %struct._DV* %dv, null, !dbg !105
-  br i1 %1, label %6, label %2, !dbg !107
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !32), !dbg !79
+  tail call void @llvm.dbg.value(metadata !{i32 %loc}, i64 0, metadata !33), !dbg !80
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !81
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !81
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !108
-  %4 = load double** %3, align 8, !dbg !108, !tbaa !109
-  %5 = icmp eq double* %4, null, !dbg !110
-  br i1 %5, label %6, label %9, !dbg !111
+lor.lhs.false:                                    ; preds = %entry
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !81
+  %0 = load double** %vec, align 8, !dbg !81, !tbaa !61
+  %cmp1 = icmp eq double* %0, null, !dbg !81
+  br i1 %cmp1, label %if.then, label %if.end, !dbg !81
 
-; <label>:6                                       ; preds = %2, %0
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !112, !tbaa !70
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([42 x i8]* @.str3, i64 0, i64 0), %struct._DV* %dv) #5, !dbg !114
-  tail call void @exit(i32 -1) #6, !dbg !115
-  unreachable, !dbg !115
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !82, !tbaa !61
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([42 x i8]* @.str3, i64 0, i64 0), %struct._DV* %dv) #5, !dbg !82
+  tail call void @exit(i32 -1) #6, !dbg !84
+  unreachable, !dbg !84
 
-; <label>:9                                       ; preds = %2
-  %10 = icmp slt i32 %loc, 0, !dbg !116
-  br i1 %10, label %19, label %11, !dbg !118
+if.end:                                           ; preds = %lor.lhs.false
+  %cmp2 = icmp slt i32 %loc, 0, !dbg !85
+  br i1 %cmp2, label %return, label %lor.lhs.false3, !dbg !85
 
-; <label>:11                                      ; preds = %9
-  %12 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !119
-  %13 = load i32* %12, align 4, !dbg !119, !tbaa !101
-  %14 = icmp sgt i32 %13, %loc, !dbg !120
-  br i1 %14, label %15, label %19, !dbg !121
+lor.lhs.false3:                                   ; preds = %if.end
+  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !85
+  %2 = load i32* %size, align 4, !dbg !85, !tbaa !66
+  %cmp4 = icmp sgt i32 %2, %loc, !dbg !85
+  br i1 %cmp4, label %if.else, label %return, !dbg !85
 
-; <label>:15                                      ; preds = %11
-  %16 = sext i32 %loc to i64, !dbg !122
-  %17 = getelementptr inbounds double* %4, i64 %16, !dbg !122
-  %18 = load double* %17, align 8, !dbg !122, !tbaa !124
-  br label %19, !dbg !126
+if.else:                                          ; preds = %lor.lhs.false3
+  %idxprom = sext i32 %loc to i64, !dbg !86
+  %arrayidx = getelementptr inbounds double* %0, i64 %idxprom, !dbg !86
+  %3 = load double* %arrayidx, align 8, !dbg !86, !tbaa !88
+  br label %return, !dbg !86
 
-; <label>:19                                      ; preds = %9, %11, %15
-  %.0 = phi double [ %18, %15 ], [ 0.000000e+00, %11 ], [ 0.000000e+00, %9 ]
-  ret double %.0, !dbg !127
+return:                                           ; preds = %if.end, %lor.lhs.false3, %if.else
+  %retval.0 = phi double [ %3, %if.else ], [ 0.000000e+00, %lor.lhs.false3 ], [ 0.000000e+00, %if.end ]
+  ret double %retval.0, !dbg !89
 }

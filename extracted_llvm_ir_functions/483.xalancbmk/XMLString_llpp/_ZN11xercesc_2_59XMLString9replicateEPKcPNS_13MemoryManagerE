@@ -1,0 +1,24 @@
+define i8* @_ZN11xercesc_2_59XMLString9replicateEPKcPNS_13MemoryManagerE(i8* %toRep, %"class.xercesc_2_5::MemoryManager"* %manager) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %toRep}, i64 0, metadata !1656), !dbg !3119
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !1657), !dbg !3120
+  %tobool = icmp eq i8* %toRep, null, !dbg !3121
+  br i1 %tobool, label %return, label %if.end, !dbg !3121
+
+if.end:                                           ; preds = %entry
+  %call = tail call i64 @strlen(i8* %toRep) #14, !dbg !3122
+  %0 = bitcast %"class.xercesc_2_5::MemoryManager"* %manager to i8* (%"class.xercesc_2_5::MemoryManager"*, i64)***, !dbg !3123
+  %vtable = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)*** %0, align 8, !dbg !3123, !tbaa !3050
+  %vfn = getelementptr inbounds i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vtable, i64 2, !dbg !3123
+  %1 = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vfn, align 8, !dbg !3123
+  %add = add i64 %call, 1, !dbg !3123
+  %conv1 = and i64 %add, 4294967295, !dbg !3123
+  %call2 = tail call i8* %1(%"class.xercesc_2_5::MemoryManager"* %manager, i64 %conv1) #11, !dbg !3123
+  tail call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !1659), !dbg !3123
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call2, i8* %toRep, i64 %conv1, i32 1, i1 false), !dbg !3124
+  br label %return, !dbg !3125
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i8* [ %call2, %if.end ], [ null, %entry ]
+  ret i8* %retval.0, !dbg !3126
+}

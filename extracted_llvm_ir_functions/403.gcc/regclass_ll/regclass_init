@@ -1,19 +1,20 @@
 define void @regclass_init() #0 {
 entry:
-  store i32 10000, i32* getelementptr inbounds (%struct.costs* @init_cost, i64 0, i32 1), align 4, !tbaa !3
-  br label %for.body
+  store i32 10000, i32* getelementptr inbounds (%struct.costs* @init_cost, i64 0, i32 1), align 4, !dbg !1247, !tbaa !959
+  tail call void @llvm.dbg.value(metadata !316, i64 0, metadata !502), !dbg !1248
+  br label %for.body, !dbg !1248
 
 for.body:                                         ; preds = %for.body, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds %struct.costs* @init_cost, i64 0, i32 0, i64 %indvars.iv
-  store i32 10000, i32* %arrayidx, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 25
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds %struct.costs* @init_cost, i64 0, i32 0, i64 %indvars.iv, !dbg !1250
+  store i32 10000, i32* %arrayidx, align 4, !dbg !1250, !tbaa !959
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1248
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1248
+  %exitcond = icmp eq i32 %lftr.wideiv, 25, !dbg !1248
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1248
 
 for.end:                                          ; preds = %for.body
-  store %struct.reg_pref* null, %struct.reg_pref** @reg_pref, align 8, !tbaa !7
+  store %struct.reg_pref* null, %struct.reg_pref** @reg_pref, align 8, !dbg !1251, !tbaa !1154
   store i1 true, i1* @no_global_reg_vars, align 1
-  ret void
+  ret void, !dbg !1252
 }

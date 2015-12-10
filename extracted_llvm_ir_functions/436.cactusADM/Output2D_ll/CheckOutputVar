@@ -1,34 +1,36 @@
 define internal fastcc i32 @CheckOutputVar(i32 %vindex) #1 {
+entry:
   %groupinfo = alloca %struct.cGroup, align 4
-  tail call void @llvm.dbg.value(metadata i32 %vindex, i64 0, metadata !206, metadata !231), !dbg !408
-  %1 = tail call i32 @CCTK_GroupIndexFromVarI(i32 %vindex) #5, !dbg !409
-  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !207, metadata !231), !dbg !410
-  tail call void @llvm.dbg.value(metadata %struct.cGroup* %groupinfo, i64 0, metadata !208, metadata !231), !dbg !411
-  %2 = call i32 @CCTK_GroupData(i32 %1, %struct.cGroup* %groupinfo) #5, !dbg !412
-  call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !222, metadata !231), !dbg !413
-  %3 = getelementptr inbounds %struct.cGroup* %groupinfo, i64 0, i32 4, !dbg !414
-  %4 = load i32* %3, align 4, !dbg !414, !tbaa !416
-  %5 = and i32 %4, -2, !dbg !418
-  %6 = icmp eq i32 %5, 2, !dbg !418
-  br i1 %6, label %7, label %11, !dbg !418
+  call void @llvm.dbg.value(metadata !{i32 %vindex}, i64 0, metadata !123), !dbg !316
+  call void @llvm.dbg.declare(metadata !{%struct.cGroup* %groupinfo}, metadata !125), !dbg !317
+  %call = call i32 @CCTK_GroupIndexFromVarI(i32 %vindex) #6, !dbg !318
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !124), !dbg !318
+  %call1 = call i32 @CCTK_GroupData(i32 %call, %struct.cGroup* %groupinfo) #6, !dbg !319
+  call void @llvm.dbg.value(metadata !267, i64 0, metadata !139), !dbg !320
+  %dim = getelementptr inbounds %struct.cGroup* %groupinfo, i64 0, i32 4, !dbg !321
+  %0 = load i32* %dim, align 4, !dbg !321, !tbaa !231
+  %.off22 = add i32 %0, -2, !dbg !321
+  %1 = icmp ugt i32 %.off22, 1, !dbg !321
+  br i1 %1, label %if.then9, label %if.end8, !dbg !321
 
-; <label>:7                                       ; preds = %0
-  %8 = getelementptr inbounds %struct.cGroup* %groupinfo, i64 0, i32 0, !dbg !419
-  %9 = load i32* %8, align 4, !dbg !419, !tbaa !421
-  %10 = and i32 %9, -2, !dbg !422
-  %switch = icmp eq i32 %10, 2, !dbg !422
-  call void @llvm.dbg.value(metadata !2, i64 0, metadata !222, metadata !231), !dbg !413
-  br i1 %switch, label %14, label %11
+if.end8:                                          ; preds = %entry
+  %grouptype = getelementptr inbounds %struct.cGroup* %groupinfo, i64 0, i32 0, !dbg !322
+  %2 = load i32* %grouptype, align 4, !dbg !322, !tbaa !231
+  %.off = add i32 %2, -2, !dbg !322
+  %switch = icmp ult i32 %.off, 2, !dbg !322
+  call void @llvm.dbg.value(metadata !323, i64 0, metadata !139), !dbg !324
+  %. = select i1 %switch, i8* null, i8* getelementptr inbounds ([61 x i8]* @.str4, i64 0, i64 0), !dbg !322
+  br i1 %switch, label %if.end12, label %if.then9, !dbg !326
 
-; <label>:11                                      ; preds = %0, %7
-  %errormsg.0.ph = phi i8* [ getelementptr inbounds ([61 x i8]* @.str12, i64 0, i64 0), %7 ], [ getelementptr inbounds ([45 x i8]* @.str11, i64 0, i64 0), %0 ]
-  %12 = call i8* @CCTK_FullName(i32 %vindex) #5, !dbg !423
-  call void @llvm.dbg.value(metadata i8* %12, i64 0, metadata !221, metadata !231), !dbg !426
-  %13 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 398, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* %errormsg.0.ph, i8* %12) #5, !dbg !427
-  call void @free(i8* %12) #6, !dbg !428
-  br label %14, !dbg !429
+if.then9:                                         ; preds = %if.end8, %entry
+  %errormsg.019 = phi i8* [ %., %if.end8 ], [ getelementptr inbounds ([45 x i8]* @.str3, i64 0, i64 0), %entry ]
+  %call10 = call i8* @CCTK_FullName(i32 %vindex) #6, !dbg !327
+  call void @llvm.dbg.value(metadata !{i8* %call10}, i64 0, metadata !138), !dbg !327
+  %call11 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 398, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* %errormsg.019, i8* %call10) #6, !dbg !329
+  call void @free(i8* %call10) #6, !dbg !330
+  br label %if.end12, !dbg !331
 
-; <label>:14                                      ; preds = %7, %11
-  %15 = phi i32 [ 1, %11 ], [ 0, %7 ]
-  ret i32 %15, !dbg !430
+if.end12:                                         ; preds = %if.end8, %if.then9
+  %tobool20 = phi i32 [ 1, %if.then9 ], [ 0, %if.end8 ]
+  ret i32 %tobool20, !dbg !332
 }

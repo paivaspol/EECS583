@@ -1,13 +1,14 @@
-define void @set_comment(i8* readonly %comment) #2 {
-  tail call void @llvm.dbg.value(metadata i8* %comment, i64 0, metadata !318, metadata !602), !dbg !778
-  %1 = icmp eq i8* %comment, null, !dbg !779
-  br i1 %1, label %4, label %2, !dbg !781
+define void @set_comment(i8* %comment) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %comment}, i64 0, metadata !106), !dbg !511
+  %tobool = icmp eq i8* %comment, null, !dbg !512
+  br i1 %tobool, label %if.end, label %if.then, !dbg !512
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i8* @strdup(i8* %comment) #10, !dbg !782
-  store i8* %3, i8** @add_comment, align 8, !dbg !783, !tbaa !784
-  br label %4, !dbg !785
+if.then:                                          ; preds = %entry
+  %call = tail call noalias i8* @strdup(i8* %comment) #8, !dbg !513
+  store i8* %call, i8** @add_comment, align 8, !dbg !513, !tbaa !514
+  br label %if.end, !dbg !513
 
-; <label>:4                                       ; preds = %0, %2
-  ret void, !dbg !786
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !515
 }

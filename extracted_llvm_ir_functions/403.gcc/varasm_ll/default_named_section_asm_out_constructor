@@ -1,28 +1,33 @@
 define void @default_named_section_asm_out_constructor(%struct.rtx_def* %symbol, i32 %priority) #0 {
 entry:
   %buf = alloca [16 x i8], align 16
-  %cmp = icmp eq i32 %priority, 65535
-  br i1 %cmp, label %if.end, label %if.then
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %symbol}, i64 0, metadata !1307), !dbg !2733
+  call void @llvm.dbg.value(metadata !{i32 %priority}, i64 0, metadata !1308), !dbg !2734
+  call void @llvm.dbg.value(metadata !2735, i64 0, metadata !1309), !dbg !2736
+  call void @llvm.dbg.declare(metadata !{[16 x i8]* %buf}, metadata !1310), !dbg !2737
+  %cmp = icmp eq i32 %priority, 65535, !dbg !2738
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2738
 
 if.then:                                          ; preds = %entry
-  %arraydecay = getelementptr inbounds [16 x i8]* %buf, i64 0, i64 0
-  %sub = sub nsw i32 65535, %priority
-  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([12 x i8]* @.str66, i64 0, i64 0), i32 %sub) #9
-  br label %if.end
+  %arraydecay = getelementptr inbounds [16 x i8]* %buf, i64 0, i64 0, !dbg !2739
+  %sub = sub nsw i32 65535, %priority, !dbg !2739
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([12 x i8]* @.str66, i64 0, i64 0), i32 %sub) #10, !dbg !2739
+  call void @llvm.dbg.value(metadata !{i8* %arraydecay}, i64 0, metadata !1309), !dbg !2741
+  br label %if.end, !dbg !2742
 
 if.end:                                           ; preds = %entry, %if.then
   %section.0 = phi i8* [ %arraydecay, %if.then ], [ getelementptr inbounds ([7 x i8]* @.str65, i64 0, i64 0), %entry ]
-  call void @named_section_flags(i8* %section.0, i32 512) #10
-  %0 = load i32* @target_flags, align 4, !tbaa !4
-  %and = lshr i32 %0, 20
-  %1 = and i32 %and, 32
-  %2 = add i32 %1, 32
-  call void @assemble_align(i32 %2) #10
-  %3 = load i32* @target_flags, align 4, !tbaa !4
-  %and2 = lshr i32 %3, 20
-  %4 = and i32 %and2, 32
-  %5 = add i32 %4, 32
-  %div = sdiv i32 %5, 8
-  %call8 = call zeroext i1 @assemble_integer(%struct.rtx_def* %symbol, i32 %div, i32 %5, i32 1) #10
-  ret void
+  call void @named_section_flags(i8* %section.0, i32 512) #11, !dbg !2743
+  %0 = load i32* @target_flags, align 4, !dbg !2744, !tbaa !2382
+  %and = lshr i32 %0, 20, !dbg !2744
+  %1 = and i32 %and, 32, !dbg !2744
+  %2 = add i32 %1, 32, !dbg !2744
+  call void @assemble_align(i32 %2) #11, !dbg !2744
+  %3 = load i32* @target_flags, align 4, !dbg !2745, !tbaa !2382
+  %and2 = lshr i32 %3, 20, !dbg !2745
+  %4 = and i32 %and2, 32, !dbg !2745
+  %5 = add i32 %4, 32, !dbg !2745
+  %div = sdiv i32 %5, 8, !dbg !2745
+  %call8 = call zeroext i1 @assemble_integer(%struct.rtx_def* %symbol, i32 %div, i32 %5, i32 1) #11, !dbg !2745
+  ret void, !dbg !2746
 }

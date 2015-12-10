@@ -1,16 +1,17 @@
 define i32* @PUGH_Topology(%struct.cGH* %GH, i32 %dim) #1 {
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !123, metadata !295), !dbg !296
-  tail call void @llvm.dbg.value(metadata i32 %dim, i64 0, metadata !124, metadata !295), !dbg !297
-  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !206, metadata !295) #6, !dbg !298
-  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0)) #7, !dbg !300
-  %2 = add nsw i32 %dim, -1, !dbg !301
-  %3 = sext i32 %2 to i64, !dbg !302
-  %4 = getelementptr inbounds i8* %1, i64 128, !dbg !303
-  %5 = bitcast i8* %4 to %struct.PConnectivity***, !dbg !303
-  %6 = load %struct.PConnectivity*** %5, align 8, !dbg !303, !tbaa !304
-  %7 = getelementptr inbounds %struct.PConnectivity** %6, i64 %3, !dbg !302
-  %8 = load %struct.PConnectivity** %7, align 8, !dbg !302, !tbaa !311
-  %9 = getelementptr inbounds %struct.PConnectivity* %8, i64 0, i32 1, !dbg !312
-  %10 = load i32** %9, align 8, !dbg !312, !tbaa !313
-  ret i32* %10, !dbg !315
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !56), !dbg !291
+  tail call void @llvm.dbg.value(metadata !{i32 %dim}, i64 0, metadata !57), !dbg !291
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !292) #6, !dbg !294
+  %call.i = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0)) #7, !dbg !295
+  %sub = add nsw i32 %dim, -1, !dbg !296
+  %idxprom = sext i32 %sub to i64, !dbg !296
+  %Connectivity = getelementptr inbounds i8* %call.i, i64 128, !dbg !296
+  %0 = bitcast i8* %Connectivity to %struct.PConnectivity***, !dbg !296
+  %1 = load %struct.PConnectivity*** %0, align 8, !dbg !296, !tbaa !297
+  %arrayidx = getelementptr inbounds %struct.PConnectivity** %1, i64 %idxprom, !dbg !296
+  %2 = load %struct.PConnectivity** %arrayidx, align 8, !dbg !296, !tbaa !297
+  %nprocs = getelementptr inbounds %struct.PConnectivity* %2, i64 0, i32 1, !dbg !296
+  %3 = load i32** %nprocs, align 8, !dbg !296, !tbaa !297
+  ret i32* %3, !dbg !296
 }

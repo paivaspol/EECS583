@@ -1,0 +1,38 @@
+define linkonce_odr void @_ZN10xalanc_1_818ReusableArenaBlockINS_14XStringAdapterEE16commitAllocationEPS1_(%"class.xalanc_1_8::ReusableArenaBlock"* %this, %"class.xalanc_1_8::XStringAdapter"* %theBlock) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !4666), !dbg !5765
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringAdapter"* %theBlock}, i64 0, metadata !4667), !dbg !5765
+  %m_freeBlockCount = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 2, !dbg !5766
+  %0 = load i64* %m_freeBlockCount, align 8, !dbg !5766, !tbaa !4983
+  %cmp = icmp eq i64 %0, 0, !dbg !5766
+  br i1 %cmp, label %if.then, label %if.else, !dbg !5766
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !5768, i64 0, metadata !5769), !dbg !5772
+  %m_objectCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 2, !dbg !5773
+  %1 = load i64* %m_objectCount.i, align 8, !dbg !5773, !tbaa !4983
+  %inc.i = add i64 %1, 1, !dbg !5773
+  store i64 %inc.i, i64* %m_objectCount.i, align 8, !dbg !5773, !tbaa !4983
+  br label %if.end, !dbg !5775
+
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !5776), !dbg !5779
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringAdapter"* %theBlock}, i64 0, metadata !5780), !dbg !5779
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringAdapter"* %theBlock}, i64 0, metadata !5781), !dbg !5783
+  %m_objectBlock.i.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 4, !dbg !5784
+  %2 = load %"class.xalanc_1_8::XStringAdapter"** %m_objectBlock.i.i, align 8, !dbg !5784, !tbaa !4997
+  %sub.ptr.lhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XStringAdapter"* %theBlock to i64, !dbg !5784
+  %sub.ptr.rhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XStringAdapter"* %2 to i64, !dbg !5784
+  %sub.ptr.sub.i.i = sub i64 %sub.ptr.lhs.cast.i.i, %sub.ptr.rhs.cast.i.i, !dbg !5784
+  %sub.ptr.div.i.i = ashr exact i64 %sub.ptr.sub.i.i, 6, !dbg !5784
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.div.i.i}, i64 0, metadata !5785), !dbg !5782
+  %m_freeList.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 1, !dbg !5786
+  tail call void @_ZN10xalanc_1_811XalanBitmap5clearEm(%"class.xalanc_1_8::XalanBitmap"* %m_freeList.i, i64 %sub.ptr.div.i.i) #10, !dbg !5786
+  %3 = load i64* %m_freeBlockCount, align 8, !dbg !5787, !tbaa !4983
+  %dec.i = add i64 %3, -1, !dbg !5787
+  store i64 %dec.i, i64* %m_freeBlockCount, align 8, !dbg !5787, !tbaa !4983
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !5788
+}

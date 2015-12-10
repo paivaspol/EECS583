@@ -1,17 +1,18 @@
 define i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv) #0 {
-  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv, i64 0, metadata !50, metadata !105), !dbg !184
-  %1 = icmp eq %struct._Chv* %chv, null, !dbg !185
-  br i1 %1, label %2, label %5, !dbg !187
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %chv}, i64 0, metadata !51), !dbg !146
+  %cmp = icmp eq %struct._Chv* %chv, null, !dbg !147
+  br i1 %cmp, label %if.then, label %if.end, !dbg !147
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !188, !tbaa !115
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([55 x i8]* @.str4, i64 0, i64 0), %struct._Chv* null) #5, !dbg !190
-  tail call void @exit(i32 -1) #6, !dbg !191
-  unreachable, !dbg !191
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !148, !tbaa !110
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str4, i64 0, i64 0), %struct._Chv* null) #5, !dbg !148
+  tail call void @exit(i32 -1) #6, !dbg !150
+  unreachable, !dbg !150
 
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 9, !dbg !192
-  %7 = tail call i32 @DV_maxsize(%struct._DV* %6) #5, !dbg !193
-  %8 = shl i32 %7, 3, !dbg !194
-  ret i32 %8, !dbg !195
+if.end:                                           ; preds = %entry
+  %wrkDV = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 9, !dbg !151
+  %call1 = tail call i32 @DV_maxsize(%struct._DV* %wrkDV) #5, !dbg !151
+  %mul = shl i32 %call1, 3, !dbg !151
+  ret i32 %mul, !dbg !151
 }

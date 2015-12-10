@@ -1,80 +1,75 @@
-define { double, double } @CCTK_Cmplx16Sqrt(double %complex_number.coerce0, double %complex_number.coerce1) #0 {
-  tail call void @llvm.dbg.value(metadata double %complex_number.coerce0, i64 0, metadata !155, metadata !288), !dbg !313
-  tail call void @llvm.dbg.value(metadata double %complex_number.coerce1, i64 0, metadata !155, metadata !289), !dbg !313
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX16* undef, metadata !155, metadata !243), !dbg !313
-  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX16* undef, metadata !160, metadata !243), !dbg !313
-  %1 = fcmp oeq double %complex_number.coerce0, 0.000000e+00, !dbg !314
-  %2 = fcmp oeq double %complex_number.coerce1, 0.000000e+00, !dbg !314
-  %or.cond = and i1 %1, %2, !dbg !314
-  br i1 %or.cond, label %38, label %3, !dbg !314
+define { double, double } @CCTK_Cmplx16Sqrt(double %complex_number.coerce0, double %complex_number.coerce1) #3 {
+entry:
+  tail call void @llvm.dbg.declare(metadata !273, metadata !156), !dbg !293
+  tail call void @llvm.dbg.declare(metadata !273, metadata !161), !dbg !293
+  %cmp = fcmp oeq double %complex_number.coerce0, 0.000000e+00, !dbg !293
+  %cmp1 = fcmp oeq double %complex_number.coerce1, 0.000000e+00, !dbg !293
+  %or.cond = and i1 %cmp, %cmp1, !dbg !293
+  br i1 %or.cond, label %if.end42, label %if.else, !dbg !293
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call double @fabs(double %complex_number.coerce0) #6, !dbg !316
-  tail call void @llvm.dbg.value(metadata double %4, i64 0, metadata !156, metadata !243), !dbg !313
-  %5 = tail call double @fabs(double %complex_number.coerce1) #6, !dbg !316
-  tail call void @llvm.dbg.value(metadata double %5, i64 0, metadata !157, metadata !243), !dbg !313
-  %6 = fcmp ult double %4, %5, !dbg !318
-  br i1 %6, label %16, label %7, !dbg !316
+if.else:                                          ; preds = %entry
+  %call = tail call double @fabs(double %complex_number.coerce0) #8, !dbg !294
+  tail call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !157), !dbg !294
+  %call6 = tail call double @fabs(double %complex_number.coerce1) #8, !dbg !294
+  tail call void @llvm.dbg.value(metadata !{double %call6}, i64 0, metadata !158), !dbg !294
+  %cmp7 = fcmp ult double %call, %call6, !dbg !294
+  br i1 %cmp7, label %if.else15, label %if.then8, !dbg !294
 
-; <label>:7                                       ; preds = %3
-  %8 = fdiv double %5, %4, !dbg !320
-  tail call void @llvm.dbg.value(metadata double %8, i64 0, metadata !159, metadata !243), !dbg !313
-  %9 = tail call double @sqrt(double %4) #6, !dbg !320
-  %10 = fmul double %8, %8, !dbg !320
-  %11 = tail call double @sqrt(double %10) #6, !dbg !320
-  %12 = fadd double %11, 1.000000e+00, !dbg !320
-  %13 = fmul double %12, 5.000000e-01, !dbg !320
-  %14 = tail call double @sqrt(double %13) #6, !dbg !320
-  %15 = fmul double %9, %14, !dbg !320
-  tail call void @llvm.dbg.value(metadata double %15, i64 0, metadata !158, metadata !243), !dbg !313
-  br label %25, !dbg !320
+if.then8:                                         ; preds = %if.else
+  %div = fdiv double %call6, %call, !dbg !296
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !160), !dbg !296
+  %call9 = tail call double @sqrt(double %call) #7, !dbg !296
+  %mul10 = fmul double %div, %div, !dbg !296
+  %call11 = tail call double @sqrt(double %mul10) #7, !dbg !296
+  %add = fadd double %call11, 1.000000e+00, !dbg !296
+  %mul12 = fmul double %add, 5.000000e-01, !dbg !296
+  %call13 = tail call double @sqrt(double %mul12) #7, !dbg !296
+  %mul14 = fmul double %call9, %call13, !dbg !296
+  tail call void @llvm.dbg.value(metadata !{double %mul14}, i64 0, metadata !159), !dbg !296
+  br label %if.end, !dbg !296
 
-; <label>:16                                      ; preds = %3
-  %17 = fdiv double %4, %5, !dbg !322
-  tail call void @llvm.dbg.value(metadata double %17, i64 0, metadata !159, metadata !243), !dbg !313
-  %18 = tail call double @sqrt(double %5) #6, !dbg !322
-  %19 = fmul double %17, %17, !dbg !322
-  %20 = tail call double @sqrt(double %19) #6, !dbg !322
-  %21 = fadd double %17, %20, !dbg !322
-  %22 = fmul double %21, 5.000000e-01, !dbg !322
-  %23 = tail call double @sqrt(double %22) #6, !dbg !322
-  %24 = fmul double %18, %23, !dbg !322
-  tail call void @llvm.dbg.value(metadata double %24, i64 0, metadata !158, metadata !243), !dbg !313
-  br label %25
+if.else15:                                        ; preds = %if.else
+  %div16 = fdiv double %call, %call6, !dbg !298
+  tail call void @llvm.dbg.value(metadata !{double %div16}, i64 0, metadata !160), !dbg !298
+  %call17 = tail call double @sqrt(double %call6) #7, !dbg !298
+  %mul19 = fmul double %div16, %div16, !dbg !298
+  %call20 = tail call double @sqrt(double %mul19) #7, !dbg !298
+  %add21 = fadd double %div16, %call20, !dbg !298
+  %mul22 = fmul double %add21, 5.000000e-01, !dbg !298
+  %call23 = tail call double @sqrt(double %mul22) #7, !dbg !298
+  %mul24 = fmul double %call17, %call23, !dbg !298
+  tail call void @llvm.dbg.value(metadata !{double %mul24}, i64 0, metadata !159), !dbg !298
+  br label %if.end
 
-; <label>:25                                      ; preds = %16, %7
-  %w.0 = phi double [ %15, %7 ], [ %24, %16 ]
-  %26 = fcmp ult double %complex_number.coerce0, 0.000000e+00, !dbg !324
-  br i1 %26, label %30, label %27, !dbg !316
+if.end:                                           ; preds = %if.else15, %if.then8
+  %w.0 = phi double [ %mul14, %if.then8 ], [ %mul24, %if.else15 ]
+  %cmp26 = fcmp ult double %complex_number.coerce0, 0.000000e+00, !dbg !294
+  br i1 %cmp26, label %if.else33, label %if.then27, !dbg !294
 
-; <label>:27                                      ; preds = %25
-  tail call void @llvm.dbg.value(metadata double %w.0, i64 0, metadata !160, metadata !288), !dbg !313
-  %28 = fmul double %w.0, 2.000000e+00, !dbg !326
-  %29 = fdiv double %complex_number.coerce1, %28, !dbg !326
-  tail call void @llvm.dbg.value(metadata double %29, i64 0, metadata !160, metadata !289), !dbg !313
-  br label %38, !dbg !326
+if.then27:                                        ; preds = %if.end
+  %mul30 = fmul double %w.0, 2.000000e+00, !dbg !300
+  %div31 = fdiv double %complex_number.coerce1, %mul30, !dbg !300
+  br label %if.end42, !dbg !300
 
-; <label>:30                                      ; preds = %25
-  %31 = fcmp ult double %complex_number.coerce1, 0.000000e+00, !dbg !328
-  br i1 %31, label %32, label %34, !dbg !328
+if.else33:                                        ; preds = %if.end
+  %cmp35 = fcmp ult double %complex_number.coerce1, 0.000000e+00, !dbg !302
+  br i1 %cmp35, label %cond.false, label %cond.end, !dbg !302
 
-; <label>:32                                      ; preds = %30
-  %33 = fsub double -0.000000e+00, %w.0, !dbg !328
-  br label %34, !dbg !328
+cond.false:                                       ; preds = %if.else33
+  %sub = fsub double -0.000000e+00, %w.0, !dbg !302
+  br label %cond.end, !dbg !302
 
-; <label>:34                                      ; preds = %30, %32
-  %35 = phi double [ %33, %32 ], [ %w.0, %30 ], !dbg !328
-  tail call void @llvm.dbg.value(metadata double %35, i64 0, metadata !156, metadata !243), !dbg !313
-  %36 = fmul double %35, 2.000000e+00, !dbg !328
-  %37 = fdiv double %complex_number.coerce1, %36, !dbg !328
-  tail call void @llvm.dbg.value(metadata double %37, i64 0, metadata !160, metadata !288), !dbg !313
-  tail call void @llvm.dbg.value(metadata double %35, i64 0, metadata !160, metadata !289), !dbg !313
-  br label %38
+cond.end:                                         ; preds = %if.else33, %cond.false
+  %cond = phi double [ %sub, %cond.false ], [ %w.0, %if.else33 ], !dbg !302
+  tail call void @llvm.dbg.value(metadata !{double %cond}, i64 0, metadata !157), !dbg !302
+  %mul37 = fmul double %cond, 2.000000e+00, !dbg !302
+  %div38 = fdiv double %complex_number.coerce1, %mul37, !dbg !302
+  br label %if.end42
 
-; <label>:38                                      ; preds = %0, %27, %34
-  %result.sroa.4.0 = phi double [ %29, %27 ], [ %35, %34 ], [ 0.000000e+00, %0 ]
-  %result.sroa.0.0 = phi double [ %w.0, %27 ], [ %37, %34 ], [ 0.000000e+00, %0 ]
-  %39 = insertvalue { double, double } undef, double %result.sroa.0.0, 0, !dbg !313
-  %40 = insertvalue { double, double } %39, double %result.sroa.4.0, 1, !dbg !313
-  ret { double, double } %40, !dbg !313
+if.end42:                                         ; preds = %entry, %if.then27, %cond.end
+  %result.sroa.1.0 = phi double [ %div31, %if.then27 ], [ %cond, %cond.end ], [ 0.000000e+00, %entry ]
+  %result.sroa.0.0 = phi double [ %w.0, %if.then27 ], [ %div38, %cond.end ], [ 0.000000e+00, %entry ]
+  %.fca.0.insert = insertvalue { double, double } undef, double %result.sroa.0.0, 0, !dbg !293
+  %.fca.1.insert = insertvalue { double, double } %.fca.0.insert, double %result.sroa.1.0, 1, !dbg !293
+  ret { double, double } %.fca.1.insert, !dbg !293
 }

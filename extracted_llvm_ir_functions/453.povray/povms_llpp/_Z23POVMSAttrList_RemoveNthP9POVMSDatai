@@ -1,89 +1,91 @@
 define i32 @_Z23POVMSAttrList_RemoveNthP9POVMSDatai(%struct.POVMSData* %attr, i32 %index) #0 {
-  tail call void @llvm.dbg.value(metadata %struct.POVMSData* %attr, i64 0, metadata !687, metadata !1201), !dbg !3916
-  tail call void @llvm.dbg.value(metadata i32 %index, i64 0, metadata !688, metadata !1201), !dbg !3917
-  %1 = icmp eq %struct.POVMSData* %attr, null, !dbg !3918
-  br i1 %1, label %50, label %2, !dbg !3920
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSData* %attr}, i64 0, metadata !656), !dbg !2324
+  tail call void @llvm.dbg.value(metadata !{i32 %index}, i64 0, metadata !657), !dbg !2324
+  %cmp = icmp eq %struct.POVMSData* %attr, null, !dbg !2325
+  br i1 %cmp, label %return, label %if.end, !dbg !2325
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 0, !dbg !3921
-  %4 = load i32* %3, align 4, !dbg !3921, !tbaa !1539
-  %5 = icmp eq i32 %4, 1279873876, !dbg !3923
-  br i1 %5, label %6, label %50, !dbg !3924
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 0, !dbg !2326
+  %0 = load i32* %type, align 4, !dbg !2326, !tbaa !937
+  %cmp1 = icmp eq i32 %0, 1279873876, !dbg !2326
+  br i1 %cmp1, label %if.end3, label %return, !dbg !2326
 
-; <label>:6                                       ; preds = %2
-  %7 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 2, !dbg !3925
-  %8 = bitcast %union.anon* %7 to %struct.POVMSData**, !dbg !3925
-  %9 = load %struct.POVMSData** %8, align 8, !dbg !3925, !tbaa !1210
-  %10 = icmp eq %struct.POVMSData* %9, null, !dbg !3927
-  %11 = icmp slt i32 %index, 1, !dbg !3928
-  %or.cond = or i1 %11, %10, !dbg !3930
-  br i1 %or.cond, label %50, label %12, !dbg !3930
+if.end3:                                          ; preds = %if.end
+  %1 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 2, !dbg !2327
+  %items = bitcast %union.anon* %1 to %struct.POVMSData**, !dbg !2327
+  %2 = load %struct.POVMSData** %items, align 8, !dbg !2327, !tbaa !917
+  %cmp4 = icmp eq %struct.POVMSData* %2, null, !dbg !2327
+  %cmp7 = icmp slt i32 %index, 1, !dbg !2328
+  %or.cond = or i1 %cmp4, %cmp7, !dbg !2327
+  br i1 %or.cond, label %return, label %if.end9, !dbg !2327
 
-; <label>:12                                      ; preds = %6
-  %13 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 1, !dbg !3931
-  %14 = load i32* %13, align 4, !dbg !3931, !tbaa !1542
-  %15 = icmp slt i32 %14, %index, !dbg !3933
-  br i1 %15, label %50, label %16, !dbg !3934
+if.end9:                                          ; preds = %if.end3
+  %size = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 1, !dbg !2329
+  %3 = load i32* %size, align 4, !dbg !2329, !tbaa !937
+  %cmp10 = icmp slt i32 %3, %index, !dbg !2329
+  br i1 %cmp10, label %return, label %if.end12, !dbg !2329
 
-; <label>:16                                      ; preds = %12
-  %17 = add nsw i32 %index, -1, !dbg !3935
-  %18 = sext i32 %17 to i64, !dbg !3936
-  %19 = getelementptr inbounds %struct.POVMSData* %9, i64 %18, !dbg !3936
-  %20 = tail call i32 @_Z16POVMSAttr_DeleteP9POVMSData(%struct.POVMSData* %19) #8, !dbg !3937
-  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !690, metadata !1201), !dbg !3938
-  %21 = icmp eq i32 %20, 0, !dbg !3939
-  br i1 %21, label %22, label %50, !dbg !3941
+if.end12:                                         ; preds = %if.end9
+  %sub = add nsw i32 %index, -1, !dbg !2330
+  %idxprom = sext i32 %sub to i64, !dbg !2330
+  %arrayidx = getelementptr inbounds %struct.POVMSData* %2, i64 %idxprom, !dbg !2330
+  %call = tail call i32 @_Z16POVMSAttr_DeleteP9POVMSData(%struct.POVMSData* %arrayidx) #8, !dbg !2330
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !659), !dbg !2330
+  %cmp14 = icmp eq i32 %call, 0, !dbg !2331
+  br i1 %cmp14, label %if.then15, label %return, !dbg !2331
 
-; <label>:22                                      ; preds = %16
-  %23 = load i32* %13, align 4, !dbg !3942, !tbaa !1542
-  %24 = icmp slt i32 %23, %index, !dbg !3945
-  br i1 %24, label %25, label %35, !dbg !3946
+if.then15:                                        ; preds = %if.end12
+  %4 = load i32* %size, align 4, !dbg !2332, !tbaa !937
+  %cmp17 = icmp slt i32 %4, %index, !dbg !2332
+  br i1 %cmp17, label %if.then18, label %if.end28, !dbg !2332
 
-; <label>:25                                      ; preds = %22
-  %26 = load %struct.POVMSData** %8, align 8, !dbg !3947, !tbaa !1210
-  %27 = getelementptr inbounds %struct.POVMSData* %26, i64 %18, !dbg !3947
-  %28 = bitcast %struct.POVMSData* %27 to i8*, !dbg !3947
-  %29 = sext i32 %index to i64, !dbg !3947
-  %30 = getelementptr inbounds %struct.POVMSData* %26, i64 %29, !dbg !3947
-  %31 = bitcast %struct.POVMSData* %30 to i8*, !dbg !3947
-  %32 = sub nsw i32 %23, %index, !dbg !3947
-  %33 = sext i32 %32 to i64, !dbg !3947
-  %34 = shl nsw i64 %33, 4, !dbg !3947
-  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* %28, i8* %31, i64 %34, i32 1, i1 false), !dbg !3947
-  %.pre = load i32* %13, align 4, !dbg !3948, !tbaa !1542
-  br label %35, !dbg !3947
+if.then18:                                        ; preds = %if.then15
+  %5 = load %struct.POVMSData** %items, align 8, !dbg !2334, !tbaa !917
+  %arrayidx22 = getelementptr inbounds %struct.POVMSData* %5, i64 %idxprom, !dbg !2334
+  %6 = bitcast %struct.POVMSData* %arrayidx22 to i8*, !dbg !2334
+  %idxprom23 = sext i32 %index to i64, !dbg !2334
+  %arrayidx25 = getelementptr inbounds %struct.POVMSData* %5, i64 %idxprom23, !dbg !2334
+  %7 = bitcast %struct.POVMSData* %arrayidx25 to i8*, !dbg !2334
+  %sub27 = sub nsw i32 %4, %index, !dbg !2334
+  %conv = sext i32 %sub27 to i64, !dbg !2334
+  %mul = shl nsw i64 %conv, 4, !dbg !2334
+  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* %6, i8* %7, i64 %mul, i32 1, i1 false), !dbg !2334
+  %.pre = load i32* %size, align 4, !dbg !2335, !tbaa !937
+  br label %if.end28, !dbg !2334
 
-; <label>:35                                      ; preds = %25, %22
-  %36 = phi i32 [ %.pre, %25 ], [ %23, %22 ]
-  %37 = getelementptr inbounds %union.anon* %7, i64 0, i32 0, !dbg !3948
-  %38 = load i8** %37, align 8, !dbg !3948, !tbaa !1210
-  %39 = add nsw i32 %36, -1, !dbg !3948
-  %40 = sext i32 %39 to i64, !dbg !3948
-  %41 = shl nsw i64 %40, 4, !dbg !3948
-  %42 = tail call i8* @realloc(i8* %38, i64 %41) #8, !dbg !3948
-  %43 = icmp eq i8* %42, null, !dbg !3949
-  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([46 x i8]* @.str13, i64 0, i64 0), i64 0, metadata !198, metadata !1201) #6, !dbg !3951
-  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i64 0, metadata !199, metadata !1201) #6, !dbg !3953
-  tail call void @llvm.dbg.value(metadata i32 3232, i64 0, metadata !200, metadata !1201) #6, !dbg !3954
-  br i1 %43, label %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, label %46, !dbg !3955
+if.end28:                                         ; preds = %if.then18, %if.then15
+  %8 = phi i32 [ %.pre, %if.then18 ], [ %4, %if.then15 ]
+  %9 = load %struct.POVMSData** %items, align 8, !dbg !2335, !tbaa !917
+  %10 = bitcast %struct.POVMSData* %9 to i8*, !dbg !2335
+  %sub31 = add nsw i32 %8, -1, !dbg !2335
+  %conv32 = sext i32 %sub31 to i64, !dbg !2335
+  %mul33 = shl nsw i64 %conv32, 4, !dbg !2335
+  %call34 = tail call i8* @realloc(i8* %10, i64 %mul33) #9, !dbg !2335
+  %cmp35 = icmp eq i8* %call34, null, !dbg !2336
+  tail call void @llvm.dbg.value(metadata !2337, i64 0, metadata !2338) #6, !dbg !2339
+  tail call void @llvm.dbg.value(metadata !925, i64 0, metadata !2340) #6, !dbg !2339
+  tail call void @llvm.dbg.value(metadata !2341, i64 0, metadata !2342) #6, !dbg !2339
+  br i1 %cmp35, label %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, label %if.else, !dbg !2343
 
-_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread:     ; preds = %35
-  %44 = load %struct.__sFILE** @__stderrp, align 8, !dbg !3956, !tbaa !1210
-  %45 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %44, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 3232, i8* getelementptr inbounds ([46 x i8]* @.str13, i64 0, i64 0)) #9, !dbg !3956
-  br label %47, !dbg !3957
+_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread:     ; preds = %if.end28
+  %11 = load %struct._IO_FILE** @stderr, align 8, !dbg !2344, !tbaa !917
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %11, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 3232, i8* getelementptr inbounds ([46 x i8]* @.str13, i64 0, i64 0)) #9, !dbg !2344
+  br label %if.end41, !dbg !2336
 
-; <label>:46                                      ; preds = %35
-  store i8* %42, i8** %37, align 8, !dbg !3958, !tbaa !1210
-  br label %47
+if.else:                                          ; preds = %if.end28
+  %12 = getelementptr inbounds %union.anon* %1, i64 0, i32 0, !dbg !2345
+  store i8* %call34, i8** %12, align 8, !dbg !2345, !tbaa !917
+  br label %if.end41
 
-; <label>:47                                      ; preds = %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, %46
-  %err.0 = phi i32 [ 0, %46 ], [ -2, %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread ]
-  %48 = load i32* %13, align 4, !dbg !3959, !tbaa !1542
-  %49 = add nsw i32 %48, -1, !dbg !3959
-  store i32 %49, i32* %13, align 4, !dbg !3959, !tbaa !1542
-  br label %50, !dbg !3960
+if.end41:                                         ; preds = %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, %if.else
+  %err.0 = phi i32 [ 0, %if.else ], [ -2, %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread ]
+  %13 = load i32* %size, align 4, !dbg !2346, !tbaa !937
+  %dec = add nsw i32 %13, -1, !dbg !2346
+  store i32 %dec, i32* %size, align 4, !dbg !2346, !tbaa !937
+  br label %return, !dbg !2347
 
-; <label>:50                                      ; preds = %16, %47, %12, %6, %2, %0
-  %.0 = phi i32 [ -1, %0 ], [ -19, %2 ], [ -1, %6 ], [ -1, %12 ], [ %err.0, %47 ], [ %20, %16 ]
-  ret i32 %.0, !dbg !3961
+return:                                           ; preds = %if.end12, %if.end41, %if.end9, %if.end3, %if.end, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ -19, %if.end ], [ -1, %if.end3 ], [ -1, %if.end9 ], [ %err.0, %if.end41 ], [ %call, %if.end12 ]
+  ret i32 %retval.0, !dbg !2348
 }

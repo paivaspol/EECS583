@@ -1,163 +1,160 @@
 define i32 @CCTK_ParameterWalk(i32 %first, i8* %origin, i8** %pfullname, %struct.PARAM_PROPS** %pdata) #1 {
-  tail call void @llvm.dbg.value(metadata i32 %first, i64 0, metadata !197, metadata !369), !dbg !1161
-  tail call void @llvm.dbg.value(metadata i8* %origin, i64 0, metadata !198, metadata !369), !dbg !1162
-  tail call void @llvm.dbg.value(metadata i8** %pfullname, i64 0, metadata !199, metadata !369), !dbg !1163
-  tail call void @llvm.dbg.value(metadata %struct.PARAM_PROPS** %pdata, i64 0, metadata !200, metadata !369), !dbg !1164
-  %1 = icmp eq i32 %first, 0, !dbg !1165
-  br i1 %1, label %2, label %10, !dbg !1167
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %first}, i64 0, metadata !173), !dbg !814
+  tail call void @llvm.dbg.value(metadata !{i8* %origin}, i64 0, metadata !174), !dbg !815
+  tail call void @llvm.dbg.value(metadata !{i8** %pfullname}, i64 0, metadata !175), !dbg !816
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM_PROPS** %pdata}, i64 0, metadata !176), !dbg !817
+  %tobool = icmp eq i32 %first, 0, !dbg !818
+  br i1 %tobool, label %if.then, label %if.end3, !dbg !818
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp ne i8* %origin, null, !dbg !1168
-  %4 = load %struct.PARAM** @CCTK_ParameterWalk.prev_startpoint_thorn, align 8, !dbg !1170, !tbaa !480
-  %5 = load %struct.PARAM** @CCTK_ParameterWalk.prev_startpoint_all, align 8, !dbg !1171, !tbaa !480
-  %6 = select i1 %3, %struct.PARAM* %4, %struct.PARAM* %5, !dbg !1168
-  tail call void @llvm.dbg.value(metadata %struct.PARAM* %6, i64 0, metadata !205, metadata !369), !dbg !1172
-  %7 = icmp eq %struct.PARAM* %6, null, !dbg !1173
-  br i1 %7, label %8, label %10, !dbg !1175
+if.then:                                          ; preds = %entry
+  %tobool1 = icmp ne i8* %origin, null, !dbg !819
+  %0 = load %struct.PARAM** @CCTK_ParameterWalk.prev_startpoint_thorn, align 8, !dbg !819, !tbaa !386
+  %1 = load %struct.PARAM** @CCTK_ParameterWalk.prev_startpoint_all, align 8, !dbg !819, !tbaa !386
+  %cond = select i1 %tobool1, %struct.PARAM* %0, %struct.PARAM* %1, !dbg !819
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM* %cond}, i64 0, metadata !194), !dbg !819
+  %cmp = icmp eq %struct.PARAM* %cond, null, !dbg !821
+  br i1 %cmp, label %if.then2, label %if.end3, !dbg !821
 
-; <label>:8                                       ; preds = %2
-  %9 = tail call i32 @CCTK_Warn(i32 2, i32 742, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([93 x i8]* @.str10, i64 0, i64 0)) #8, !dbg !1176
-  br label %.loopexit, !dbg !1178
+if.then2:                                         ; preds = %if.then
+  %call = tail call i32 @CCTK_Warn(i32 2, i32 742, i8* getelementptr inbounds ([67 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([93 x i8]* @.str10, i64 0, i64 0)) #8, !dbg !822
+  br label %return, !dbg !824
 
-; <label>:10                                      ; preds = %0, %2
-  %return_found.0 = phi i32 [ 0, %2 ], [ 1, %0 ]
-  %startpoint.0 = phi %struct.PARAM* [ %6, %2 ], [ null, %0 ]
-  %11 = load %struct.T_SKTREE** @paramtree, align 8, !dbg !1179, !tbaa !480
-  %12 = tail call %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %11) #8, !dbg !1180
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %12, i64 0, metadata !202, metadata !369), !dbg !1181
-  %13 = icmp eq %struct.T_SKTREE* %12, null, !dbg !1182
-  br i1 %13, label %.loopexit, label %.lr.ph13, !dbg !1182
+if.end3:                                          ; preds = %entry, %if.then
+  %return_found.0 = phi i32 [ 0, %if.then ], [ 1, %entry ]
+  %startpoint.0 = phi %struct.PARAM* [ %cond, %if.then ], [ null, %entry ]
+  %2 = load %struct.T_SKTREE** @paramtree, align 8, !dbg !825, !tbaa !386
+  %call4 = tail call %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %2) #8, !dbg !825
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call4}, i64 0, metadata !178), !dbg !825
+  %tobool586 = icmp eq %struct.T_SKTREE* %call4, null, !dbg !825
+  br i1 %tobool586, label %return, label %for.body.lr.ph, !dbg !825
 
-.lr.ph13:                                         ; preds = %10
-  %14 = icmp eq i8* %origin, null, !dbg !1183
-  br label %15, !dbg !1182
+for.body.lr.ph:                                   ; preds = %if.end3
+  %tobool12 = icmp eq i8* %origin, null, !dbg !826
+  br label %for.body, !dbg !825
 
-; <label>:15                                      ; preds = %.lr.ph13, %._crit_edge
-  %startpoint.111 = phi %struct.PARAM* [ %startpoint.0, %.lr.ph13 ], [ %startpoint.2.lcssa, %._crit_edge ]
-  %tnode.010 = phi %struct.T_SKTREE* [ %12, %.lr.ph13 ], [ %75, %._crit_edge ]
-  %return_found.19 = phi i32 [ %return_found.0, %.lr.ph13 ], [ %return_found.2.lcssa, %._crit_edge ]
-  %16 = getelementptr inbounds %struct.T_SKTREE* %tnode.010, i64 0, i32 5, !dbg !1187
-  %17 = bitcast i8** %16 to %struct.PARAMTREENODE**, !dbg !1187
-  %18 = load %struct.PARAMTREENODE** %17, align 8, !dbg !1187, !tbaa !493
-  tail call void @llvm.dbg.value(metadata %struct.PARAMTREENODE* %18, i64 0, metadata !203, metadata !369), !dbg !1188
-  %19 = getelementptr inbounds %struct.PARAMTREENODE* %18, i64 0, i32 0, !dbg !1189
-  %paramlist.03 = load %struct.PARAMLIST** %19, align 8, !dbg !1189
-  %20 = icmp eq %struct.PARAMLIST* %paramlist.03, null, !dbg !1190
-  br i1 %20, label %._crit_edge, label %.lr.ph, !dbg !1190
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc52
+  %startpoint.189 = phi %struct.PARAM* [ %startpoint.0, %for.body.lr.ph ], [ %startpoint.2.lcssa, %for.inc52 ]
+  %tnode.088 = phi %struct.T_SKTREE* [ %call4, %for.body.lr.ph ], [ %17, %for.inc52 ]
+  %return_found.187 = phi i32 [ %return_found.0, %for.body.lr.ph ], [ %return_found.2.lcssa, %for.inc52 ]
+  %data = getelementptr inbounds %struct.T_SKTREE* %tnode.088, i64 0, i32 5, !dbg !828
+  %3 = load i8** %data, align 8, !dbg !828, !tbaa !386
+  %paramlist6 = bitcast i8* %3 to %struct.PARAMLIST**, !dbg !829
+  %paramlist.079 = load %struct.PARAMLIST** %paramlist6, align 8, !dbg !829
+  %tobool880 = icmp eq %struct.PARAMLIST* %paramlist.079, null, !dbg !829
+  br i1 %tobool880, label %for.inc52, label %for.body9, !dbg !829
 
-.lr.ph:                                           ; preds = %15, %71
-  %paramlist.06 = phi %struct.PARAMLIST* [ %paramlist.0, %71 ], [ %paramlist.03, %15 ]
-  %startpoint.25 = phi %struct.PARAM* [ %startpoint.4, %71 ], [ %startpoint.111, %15 ]
-  %return_found.24 = phi i32 [ %return_found.3, %71 ], [ %return_found.19, %15 ]
-  %21 = icmp eq %struct.PARAM* %startpoint.25, null, !dbg !1191
-  %.pre17 = getelementptr inbounds %struct.PARAMLIST* %paramlist.06, i64 0, i32 0, !dbg !1192
-  br i1 %21, label %22, label %._crit_edge15, !dbg !1194
+for.body9:                                        ; preds = %for.body, %for.inc
+  %paramlist.083 = phi %struct.PARAMLIST* [ %paramlist.0, %for.inc ], [ %paramlist.079, %for.body ]
+  %startpoint.282 = phi %struct.PARAM* [ %startpoint.4, %for.inc ], [ %startpoint.189, %for.body ]
+  %return_found.281 = phi i32 [ %return_found.3, %for.inc ], [ %return_found.187, %for.body ]
+  %cmp10 = icmp eq %struct.PARAM* %startpoint.282, null, !dbg !830
+  %param16.pre = getelementptr inbounds %struct.PARAMLIST* %paramlist.083, i64 0, i32 0, !dbg !831
+  br i1 %cmp10, label %if.then11, label %if.end18, !dbg !830
 
-; <label>:22                                      ; preds = %.lr.ph
-  br i1 %14, label %._crit_edge16, label %23, !dbg !1195
+if.then11:                                        ; preds = %for.body9
+  br i1 %tobool12, label %if.then15, label %lor.lhs.false, !dbg !826
 
-; <label>:23                                      ; preds = %22
-  %24 = load %struct.PARAM** %.pre17, align 8, !dbg !1196, !tbaa !503
-  %25 = getelementptr inbounds %struct.PARAM* %24, i64 0, i32 0, !dbg !1197
-  %26 = load %struct.PARAM_PROPS** %25, align 8, !dbg !1197, !tbaa !406
-  %27 = getelementptr inbounds %struct.PARAM_PROPS* %26, i64 0, i32 1, !dbg !1198
-  %28 = load i8** %27, align 8, !dbg !1198, !tbaa !418
-  %29 = tail call i32 @CCTK_Equals(i8* %origin, i8* %28) #8, !dbg !1199
-  %30 = icmp eq i32 %29, 0, !dbg !1199
-  br i1 %30, label %._crit_edge15, label %._crit_edge16, !dbg !1200
+lor.lhs.false:                                    ; preds = %if.then11
+  %4 = load %struct.PARAM** %param16.pre, align 8, !dbg !826, !tbaa !386
+  %props = getelementptr inbounds %struct.PARAM* %4, i64 0, i32 0, !dbg !826
+  %5 = load %struct.PARAM_PROPS** %props, align 8, !dbg !826, !tbaa !386
+  %thorn = getelementptr inbounds %struct.PARAM_PROPS* %5, i64 0, i32 1, !dbg !826
+  %6 = load i8** %thorn, align 8, !dbg !826, !tbaa !386
+  %call13 = tail call i32 @CCTK_Equals(i8* %origin, i8* %6) #8, !dbg !826
+  %tobool14 = icmp eq i32 %call13, 0, !dbg !826
+  br i1 %tobool14, label %if.end18, label %if.then15, !dbg !826
 
-._crit_edge16:                                    ; preds = %22, %23
-  %31 = load %struct.PARAM** %.pre17, align 8, !dbg !1192, !tbaa !503
-  tail call void @llvm.dbg.value(metadata %struct.PARAM* %31, i64 0, metadata !205, metadata !369), !dbg !1172
-  br label %._crit_edge15, !dbg !1201
+if.then15:                                        ; preds = %if.then11, %lor.lhs.false
+  %7 = load %struct.PARAM** %param16.pre, align 8, !dbg !831, !tbaa !386
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM* %7}, i64 0, metadata !194), !dbg !831
+  br label %if.end18, !dbg !833
 
-._crit_edge15:                                    ; preds = %.lr.ph, %23, %._crit_edge16
-  %startpoint.3 = phi %struct.PARAM* [ null, %23 ], [ %31, %._crit_edge16 ], [ %startpoint.25, %.lr.ph ]
-  %32 = load %struct.PARAM** %.pre17, align 8, !dbg !1202, !tbaa !503
-  %33 = icmp eq %struct.PARAM* %startpoint.3, %32, !dbg !1203
-  br i1 %33, label %34, label %71, !dbg !1204
+if.end18:                                         ; preds = %for.body9, %lor.lhs.false, %if.then15
+  %startpoint.3 = phi %struct.PARAM* [ %7, %if.then15 ], [ null, %lor.lhs.false ], [ %startpoint.282, %for.body9 ]
+  %8 = load %struct.PARAM** %param16.pre, align 8, !dbg !834, !tbaa !386
+  %cmp20 = icmp eq %struct.PARAM* %startpoint.3, %8, !dbg !834
+  br i1 %cmp20, label %if.then21, label %for.inc, !dbg !834
 
-; <label>:34                                      ; preds = %._crit_edge15
-  %35 = icmp eq i32 %return_found.24, 0, !dbg !1205
-  br i1 %35, label %71, label %36, !dbg !1206
+if.then21:                                        ; preds = %if.end18
+  %tobool22 = icmp eq i32 %return_found.281, 0, !dbg !835
+  br i1 %tobool22, label %for.inc, label %if.then23, !dbg !835
 
-; <label>:36                                      ; preds = %34
-  %37 = icmp eq i8** %pfullname, null, !dbg !1207
-  br i1 %37, label %64, label %38, !dbg !1209
+if.then23:                                        ; preds = %if.then21
+  %tobool24 = icmp eq i8** %pfullname, null, !dbg !836
+  br i1 %tobool24, label %if.end44, label %if.then25, !dbg !836
 
-; <label>:38                                      ; preds = %36
-  %39 = getelementptr inbounds %struct.PARAM* %startpoint.3, i64 0, i32 0, !dbg !1210
-  %40 = load %struct.PARAM_PROPS** %39, align 8, !dbg !1210, !tbaa !406
-  %41 = getelementptr inbounds %struct.PARAM_PROPS* %40, i64 0, i32 1, !dbg !1212
-  %42 = load i8** %41, align 8, !dbg !1212, !tbaa !418
-  tail call void @llvm.dbg.value(metadata i8* %42, i64 0, metadata !206, metadata !369), !dbg !1213
-  %43 = getelementptr inbounds %struct.PARAM_PROPS* %40, i64 0, i32 2, !dbg !1214
-  %44 = load i32* %43, align 4, !dbg !1214, !tbaa !436
-  %45 = icmp eq i32 %44, 3, !dbg !1216
-  br i1 %45, label %48, label %46, !dbg !1217
+if.then25:                                        ; preds = %if.then23
+  %props26 = getelementptr inbounds %struct.PARAM* %startpoint.3, i64 0, i32 0, !dbg !837
+  %9 = load %struct.PARAM_PROPS** %props26, align 8, !dbg !837, !tbaa !386
+  %thorn27 = getelementptr inbounds %struct.PARAM_PROPS* %9, i64 0, i32 1, !dbg !837
+  %10 = load i8** %thorn27, align 8, !dbg !837, !tbaa !386
+  tail call void @llvm.dbg.value(metadata !{i8* %10}, i64 0, metadata !195), !dbg !837
+  %scope = getelementptr inbounds %struct.PARAM_PROPS* %9, i64 0, i32 2, !dbg !839
+  %11 = load i32* %scope, align 4, !dbg !839, !tbaa !396
+  %cmp29 = icmp eq i32 %11, 3, !dbg !839
+  br i1 %cmp29, label %if.end32, label %if.then30, !dbg !839
 
-; <label>:46                                      ; preds = %38
-  %47 = tail call i8* @CCTK_ThornImplementation(i8* %42) #8, !dbg !1218
-  tail call void @llvm.dbg.value(metadata i8* %47, i64 0, metadata !206, metadata !369), !dbg !1213
-  %.pre = load %struct.PARAM_PROPS** %39, align 8, !dbg !1220, !tbaa !406
-  br label %48, !dbg !1221
+if.then30:                                        ; preds = %if.then25
+  %call31 = tail call i8* @CCTK_ThornImplementation(i8* %10) #8, !dbg !840
+  tail call void @llvm.dbg.value(metadata !{i8* %call31}, i64 0, metadata !195), !dbg !840
+  %.pre = load %struct.PARAM_PROPS** %props26, align 8, !dbg !842, !tbaa !386
+  br label %if.end32, !dbg !843
 
-; <label>:48                                      ; preds = %38, %46
-  %49 = phi %struct.PARAM_PROPS* [ %.pre, %46 ], [ %40, %38 ]
-  %prefix.0 = phi i8* [ %47, %46 ], [ %42, %38 ]
-  %50 = tail call i64 @strlen(i8* %prefix.0) #8, !dbg !1222
-  %51 = getelementptr inbounds %struct.PARAM_PROPS* %49, i64 0, i32 0, !dbg !1223
-  %52 = load i8** %51, align 8, !dbg !1223, !tbaa !424
-  %53 = tail call i64 @strlen(i8* %52) #8, !dbg !1224
-  %54 = add i64 %50, 3, !dbg !1225
-  %55 = add i64 %54, %53, !dbg !1226
-  %56 = tail call i8* @malloc(i64 %55) #8, !dbg !1227
-  store i8* %56, i8** %pfullname, align 8, !dbg !1228, !tbaa !480
-  %57 = icmp eq i8* %56, null, !dbg !1229
-  br i1 %57, label %64, label %58, !dbg !1231
+if.end32:                                         ; preds = %if.then25, %if.then30
+  %12 = phi %struct.PARAM_PROPS* [ %.pre, %if.then30 ], [ %9, %if.then25 ]
+  %prefix.0 = phi i8* [ %call31, %if.then30 ], [ %10, %if.then25 ]
+  %call33 = tail call i64 @strlen(i8* %prefix.0) #9, !dbg !844
+  %name = getelementptr inbounds %struct.PARAM_PROPS* %12, i64 0, i32 0, !dbg !842
+  %13 = load i8** %name, align 8, !dbg !842, !tbaa !386
+  %call35 = tail call i64 @strlen(i8* %13) #9, !dbg !842
+  %add = add i64 %call33, 3, !dbg !842
+  %add36 = add i64 %add, %call35, !dbg !842
+  %call37 = tail call noalias i8* @malloc(i64 %add36) #8, !dbg !842
+  store i8* %call37, i8** %pfullname, align 8, !dbg !842, !tbaa !386
+  %tobool38 = icmp eq i8* %call37, null, !dbg !845
+  br i1 %tobool38, label %if.end44, label %if.then39, !dbg !845
 
-; <label>:58                                      ; preds = %48
-  %59 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %56, i1 false), !dbg !1232
-  %60 = load %struct.PARAM_PROPS** %39, align 8, !dbg !1232, !tbaa !406
-  %61 = getelementptr inbounds %struct.PARAM_PROPS* %60, i64 0, i32 0, !dbg !1232
-  %62 = load i8** %61, align 8, !dbg !1232, !tbaa !424
-  %63 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %56, i32 0, i64 %59, i8* getelementptr inbounds ([7 x i8]* @.str11, i64 0, i64 0), i8* %prefix.0, i8* %62) #8, !dbg !1232
-  br label %64, !dbg !1234
+if.then39:                                        ; preds = %if.end32
+  %14 = load %struct.PARAM_PROPS** %props26, align 8, !dbg !846, !tbaa !386
+  %name41 = getelementptr inbounds %struct.PARAM_PROPS* %14, i64 0, i32 0, !dbg !846
+  %15 = load i8** %name41, align 8, !dbg !846, !tbaa !386
+  %call42 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %call37, i8* getelementptr inbounds ([7 x i8]* @.str11, i64 0, i64 0), i8* %prefix.0, i8* %15) #8, !dbg !846
+  br label %if.end44, !dbg !848
 
-; <label>:64                                      ; preds = %48, %36, %58
-  %65 = icmp eq %struct.PARAM_PROPS** %pdata, null, !dbg !1235
-  br i1 %65, label %70, label %66, !dbg !1237
+if.end44:                                         ; preds = %if.end32, %if.then23, %if.then39
+  %tobool45 = icmp eq %struct.PARAM_PROPS** %pdata, null, !dbg !849
+  br i1 %tobool45, label %if.end48, label %if.then46, !dbg !849
 
-; <label>:66                                      ; preds = %64
-  %67 = bitcast %struct.PARAM* %startpoint.3 to i64*, !dbg !1238
-  %68 = load i64* %67, align 8, !dbg !1238, !tbaa !406
-  %69 = bitcast %struct.PARAM_PROPS** %pdata to i64*, !dbg !1240
-  store i64 %68, i64* %69, align 8, !dbg !1240, !tbaa !480
-  br label %70, !dbg !1241
+if.then46:                                        ; preds = %if.end44
+  %props47 = getelementptr inbounds %struct.PARAM* %startpoint.3, i64 0, i32 0, !dbg !850
+  %16 = load %struct.PARAM_PROPS** %props47, align 8, !dbg !850, !tbaa !386
+  store %struct.PARAM_PROPS* %16, %struct.PARAM_PROPS** %pdata, align 8, !dbg !850, !tbaa !386
+  br label %if.end48, !dbg !852
 
-; <label>:70                                      ; preds = %64, %66
-  store %struct.PARAM* %startpoint.3, %struct.PARAM** @CCTK_ParameterWalk.prev_startpoint_thorn, align 8, !dbg !1242, !tbaa !480
-  store %struct.PARAM* %startpoint.3, %struct.PARAM** @CCTK_ParameterWalk.prev_startpoint_all, align 8, !dbg !1243, !tbaa !480
-  br label %.loopexit, !dbg !1244
+if.end48:                                         ; preds = %if.end44, %if.then46
+  store %struct.PARAM* %startpoint.3, %struct.PARAM** @CCTK_ParameterWalk.prev_startpoint_thorn, align 8, !dbg !853, !tbaa !386
+  store %struct.PARAM* %startpoint.3, %struct.PARAM** @CCTK_ParameterWalk.prev_startpoint_all, align 8, !dbg !853, !tbaa !386
+  br label %return, !dbg !854
 
-; <label>:71                                      ; preds = %34, %._crit_edge15
-  %return_found.3 = phi i32 [ %return_found.24, %._crit_edge15 ], [ 1, %34 ]
-  %startpoint.4 = phi %struct.PARAM* [ %startpoint.3, %._crit_edge15 ], [ null, %34 ]
-  %72 = getelementptr inbounds %struct.PARAMLIST* %paramlist.06, i64 0, i32 2, !dbg !1245
-  %paramlist.0 = load %struct.PARAMLIST** %72, align 8, !dbg !1189
-  %73 = icmp eq %struct.PARAMLIST* %paramlist.0, null, !dbg !1190
-  br i1 %73, label %._crit_edge, label %.lr.ph, !dbg !1190
+for.inc:                                          ; preds = %if.then21, %if.end18
+  %return_found.3 = phi i32 [ %return_found.281, %if.end18 ], [ 1, %if.then21 ]
+  %startpoint.4 = phi %struct.PARAM* [ %startpoint.3, %if.end18 ], [ null, %if.then21 ]
+  %next = getelementptr inbounds %struct.PARAMLIST* %paramlist.083, i64 0, i32 2, !dbg !829
+  %paramlist.0 = load %struct.PARAMLIST** %next, align 8, !dbg !829
+  %tobool8 = icmp eq %struct.PARAMLIST* %paramlist.0, null, !dbg !829
+  br i1 %tobool8, label %for.inc52, label %for.body9, !dbg !829
 
-._crit_edge:                                      ; preds = %71, %15
-  %startpoint.2.lcssa = phi %struct.PARAM* [ %startpoint.111, %15 ], [ %startpoint.4, %71 ]
-  %return_found.2.lcssa = phi i32 [ %return_found.19, %15 ], [ %return_found.3, %71 ]
-  %74 = getelementptr inbounds %struct.T_SKTREE* %tnode.010, i64 0, i32 2, !dbg !1246
-  %75 = load %struct.T_SKTREE** %74, align 8, !dbg !1246, !tbaa !1004
-  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %75, i64 0, metadata !202, metadata !369), !dbg !1181
-  %76 = icmp eq %struct.T_SKTREE* %75, null, !dbg !1182
-  br i1 %76, label %.loopexit, label %15, !dbg !1182
+for.inc52:                                        ; preds = %for.inc, %for.body
+  %startpoint.2.lcssa = phi %struct.PARAM* [ %startpoint.189, %for.body ], [ %startpoint.4, %for.inc ]
+  %return_found.2.lcssa = phi i32 [ %return_found.187, %for.body ], [ %return_found.3, %for.inc ]
+  %next53 = getelementptr inbounds %struct.T_SKTREE* %tnode.088, i64 0, i32 2, !dbg !825
+  %17 = load %struct.T_SKTREE** %next53, align 8, !dbg !825, !tbaa !386
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %17}, i64 0, metadata !178), !dbg !825
+  %tobool5 = icmp eq %struct.T_SKTREE* %17, null, !dbg !825
+  br i1 %tobool5, label %return, label %for.body, !dbg !825
 
-.loopexit:                                        ; preds = %._crit_edge, %10, %70, %8
-  %.0 = phi i32 [ 0, %70 ], [ -1, %8 ], [ 1, %10 ], [ 1, %._crit_edge ]
-  ret i32 %.0, !dbg !1247
+return:                                           ; preds = %if.end3, %for.inc52, %if.end48, %if.then2
+  %retval.0 = phi i32 [ 0, %if.end48 ], [ -1, %if.then2 ], [ 1, %for.inc52 ], [ 1, %if.end3 ]
+  ret i32 %retval.0, !dbg !855
 }

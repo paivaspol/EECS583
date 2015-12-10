@@ -1,32 +1,33 @@
-define internal fastcc void @opencode(i8* nocapture readonly %operator, i32* nocapture %type, i32* nocapture %opcode) #1 {
-  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !213, metadata !266), !dbg !789
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !214, metadata !266), !dbg !790
-  br label %4, !dbg !791
+define internal fastcc void @opencode(i8* nocapture %operator, i32* nocapture %type, i32* nocapture %opcode) #1 {
+for.body.lr.ph:
+  tail call void @llvm.dbg.value(metadata !381, i64 0, metadata !196), !dbg !584
+  tail call void @llvm.dbg.value(metadata !55, i64 0, metadata !197), !dbg !585
+  br label %for.body, !dbg !585
 
-; <label>:1                                       ; preds = %4
-  %2 = trunc i64 %indvars.iv.next to i32, !dbg !791
-  %3 = icmp eq i32 %2, 28, !dbg !791
-  br i1 %3, label %.loopexit, label %4, !dbg !791
+for.cond:                                         ; preds = %for.body
+  %operator1 = getelementptr inbounds [29 x %struct.anon]* bitcast (<{ { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] } }>* @operators to [29 x %struct.anon]*), i64 0, i64 %indvars.iv.next, i32 0, !dbg !585
+  %0 = load i8** %operator1, align 8, !dbg !585, !tbaa !272
+  %tobool = icmp eq i8* %0, null, !dbg !585
+  br i1 %tobool, label %for.end, label %for.body, !dbg !585
 
-; <label>:4                                       ; preds = %0, %1
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %5 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv, i32 0, !dbg !793
-  %6 = load i8** %5, align 8, !dbg !793, !tbaa !545
-  %7 = tail call i32 @strcmp(i8* %6, i8* %operator) #10, !dbg !795
-  %8 = icmp eq i32 %7, 0, !dbg !795
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !791
-  br i1 %8, label %9, label %1, !dbg !798
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %1 = phi i8* [ getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0), %for.body.lr.ph ], [ %0, %for.cond ]
+  %call = tail call i32 @strcmp(i8* %1, i8* %operator) #13, !dbg !587
+  %tobool5 = icmp eq i32 %call, 0, !dbg !587
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !585
+  br i1 %tobool5, label %if.then, label %for.cond, !dbg !587
 
-; <label>:9                                       ; preds = %4
-  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !213, metadata !266), !dbg !789
-  %10 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv, i32 1, !dbg !799
-  %11 = load i32* %10, align 8, !dbg !799, !tbaa !801
-  store i32 %11, i32* %type, align 4, !dbg !802, !tbaa !298
-  %12 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv, i32 3, !dbg !803
-  %13 = load i32* %12, align 8, !dbg !803, !tbaa !804
-  store i32 %13, i32* %opcode, align 4, !dbg !805, !tbaa !298
-  br label %.loopexit, !dbg !806
+if.then:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !55, i64 0, metadata !196), !dbg !589
+  %type8 = getelementptr inbounds [29 x %struct.anon]* bitcast (<{ { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] } }>* @operators to [29 x %struct.anon]*), i64 0, i64 %indvars.iv, i32 1, !dbg !591
+  %2 = load i32* %type8, align 8, !dbg !591, !tbaa !269
+  store i32 %2, i32* %type, align 4, !dbg !591, !tbaa !269
+  %opcode11 = getelementptr inbounds [29 x %struct.anon]* bitcast (<{ { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] }, { i8*, i32, i32, i32, [4 x i8] } }>* @operators to [29 x %struct.anon]*), i64 0, i64 %indvars.iv, i32 3, !dbg !592
+  %3 = load i32* %opcode11, align 8, !dbg !592, !tbaa !269
+  store i32 %3, i32* %opcode, align 4, !dbg !592, !tbaa !269
+  br label %for.end, !dbg !593
 
-.loopexit:                                        ; preds = %1, %9
+for.end:                                          ; preds = %for.cond, %if.then
   ret void
 }

@@ -1,27 +1,30 @@
 define i8* @fname_string(i32 %rid) #0 {
 for.body.lr.ph:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{i32 %rid}, i64 0, metadata !1539), !dbg !2393
+  tail call void @llvm.dbg.value(metadata !1480, i64 0, metadata !1540), !dbg !2394
+  br label %for.body, !dbg !2394
 
 for.cond:                                         ; preds = %for.body
-  %idxprom = zext i32 %inc to i64
-  %decl = getelementptr inbounds [4 x %struct.fname_var_t]* @fname_vars, i64 0, i64 %idxprom, i32 0
-  %0 = load %union.tree_node*** %decl, align 16, !tbaa !3
-  %tobool = icmp eq %union.tree_node** %0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %idxprom = zext i32 %inc to i64, !dbg !2394
+  %decl = getelementptr inbounds [4 x %struct.fname_var_t]* @fname_vars, i64 0, i64 %idxprom, i32 0, !dbg !2394
+  %0 = load %union.tree_node*** %decl, align 16, !dbg !2394, !tbaa !2305
+  %tobool = icmp eq %union.tree_node** %0, null, !dbg !2394
+  br i1 %tobool, label %for.end, label %for.body, !dbg !2394
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.cond
   %idxprom10 = phi i64 [ 0, %for.body.lr.ph ], [ %idxprom, %for.cond ]
   %ix.09 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.cond ]
-  %rid3 = getelementptr inbounds [4 x %struct.fname_var_t]* @fname_vars, i64 0, i64 %idxprom10, i32 1
-  %1 = load i32* %rid3, align 8, !tbaa !0
-  %cmp = icmp eq i32 %1, %rid
-  %inc = add i32 %ix.09, 1
-  br i1 %cmp, label %for.end, label %for.cond
+  %rid3 = getelementptr inbounds [4 x %struct.fname_var_t]* @fname_vars, i64 0, i64 %idxprom10, i32 1, !dbg !2396
+  %1 = load i32* %rid3, align 8, !dbg !2396, !tbaa !2299
+  %cmp = icmp eq i32 %1, %rid, !dbg !2396
+  %inc = add i32 %ix.09, 1, !dbg !2394
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1540), !dbg !2394
+  br i1 %cmp, label %for.end, label %for.cond, !dbg !2396
 
 for.end:                                          ; preds = %for.cond, %for.body
   %idxprom.lcssa = phi i64 [ %idxprom10, %for.body ], [ %idxprom, %for.cond ]
-  %pretty = getelementptr inbounds [4 x %struct.fname_var_t]* @fname_vars, i64 0, i64 %idxprom.lcssa, i32 2
-  %2 = load i32* %pretty, align 4, !tbaa !0
-  %call = tail call i8* @fname_as_string(i32 %2) #9
-  ret i8* %call
+  %pretty = getelementptr inbounds [4 x %struct.fname_var_t]* @fname_vars, i64 0, i64 %idxprom.lcssa, i32 2, !dbg !2397
+  %2 = load i32* %pretty, align 4, !dbg !2397, !tbaa !2299
+  %call = tail call i8* @fname_as_string(i32 %2) #10, !dbg !2397
+  ret i8* %call, !dbg !2397
 }

@@ -1,0 +1,35 @@
+define linkonce_odr void @_ZN9flexarrayI11regboundobjE8doublingEb(%class.flexarray.1* nocapture %this, i1 zeroext %flcopy) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray.1* %this}, i64 0, metadata !649), !dbg !1482
+  tail call void @llvm.dbg.value(metadata !{i1 %flcopy}, i64 0, metadata !650), !dbg !1482
+  %maxelemqu = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 2, !dbg !1483
+  %0 = load i32* %maxelemqu, align 4, !dbg !1483, !tbaa !781
+  %shl = shl i32 %0, 1, !dbg !1483
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !652), !dbg !1483
+  %mul = mul i32 %0, 224, !dbg !1484
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !1485) #5, !dbg !1486
+  tail call void @llvm.dbg.value(metadata !796, i64 0, metadata !1487) #5, !dbg !1486
+  %conv.i = sext i32 %mul to i64, !dbg !1488
+  %call.i = tail call noalias i8* @malloc(i64 %conv.i) #8, !dbg !1488
+  %1 = bitcast i8* %call.i to %class.regboundobj*, !dbg !1484
+  tail call void @llvm.dbg.value(metadata !{%class.regboundobj* %1}, i64 0, metadata !651), !dbg !1484
+  %ep = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 0, !dbg !1489
+  %2 = load %class.regboundobj** %ep, align 8, !dbg !1489, !tbaa !777
+  br i1 %flcopy, label %if.then, label %if.end, !dbg !1490
+
+if.then:                                          ; preds = %entry
+  %3 = bitcast %class.regboundobj* %2 to i8*, !dbg !1489
+  %conv4 = sext i32 %0 to i64, !dbg !1489
+  %mul5 = mul i64 %conv4, 112, !dbg !1489
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call.i, i8* %3, i64 %mul5, i32 8, i1 false), !dbg !1489
+  br label %if.end, !dbg !1489
+
+if.end:                                           ; preds = %entry, %if.then
+  %ep6 = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 0, !dbg !1491
+  %4 = bitcast %class.regboundobj* %2 to i8*, !dbg !1491
+  tail call void @llvm.dbg.value(metadata !{i8* %4}, i64 0, metadata !1492) #5, !dbg !1493
+  tail call void @free(i8* %4) #8, !dbg !1494
+  store %class.regboundobj* %1, %class.regboundobj** %ep6, align 8, !dbg !1495, !tbaa !777
+  store i32 %shl, i32* %maxelemqu, align 4, !dbg !1496, !tbaa !781
+  ret void, !dbg !1497
+}

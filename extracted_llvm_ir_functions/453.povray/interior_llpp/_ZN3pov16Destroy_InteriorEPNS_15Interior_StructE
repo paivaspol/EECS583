@@ -1,25 +1,26 @@
 define void @_ZN3pov16Destroy_InteriorEPNS_15Interior_StructE(%"struct.pov::Interior_Struct"* %Interior) #1 {
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Interior_Struct"* %Interior, i64 0, metadata !801, metadata !1128), !dbg !1215
-  %1 = icmp eq %"struct.pov::Interior_Struct"* %Interior, null, !dbg !1216
-  br i1 %1, label %11, label %2, !dbg !1218
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Interior_Struct"* %Interior}, i64 0, metadata !798), !dbg !984
+  %cmp = icmp eq %"struct.pov::Interior_Struct"* %Interior, null, !dbg !985
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !985
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %"struct.pov::Interior_Struct"* %Interior, i64 0, i32 0, !dbg !1219
-  %4 = load i32* %3, align 4, !dbg !1220, !tbaa !1136
-  %5 = add nsw i32 %4, -1, !dbg !1220
-  store i32 %5, i32* %3, align 4, !dbg !1220, !tbaa !1136
-  %6 = icmp eq i32 %5, 0, !dbg !1221
-  br i1 %6, label %7, label %11, !dbg !1222
+land.lhs.true:                                    ; preds = %entry
+  %References = getelementptr inbounds %"struct.pov::Interior_Struct"* %Interior, i64 0, i32 0, !dbg !985
+  %0 = load i32* %References, align 4, !dbg !985, !tbaa !937
+  %dec = add nsw i32 %0, -1, !dbg !985
+  store i32 %dec, i32* %References, align 4, !dbg !985, !tbaa !937
+  %cmp1 = icmp eq i32 %dec, 0, !dbg !985
+  br i1 %cmp1, label %if.then, label %if.end, !dbg !985
 
-; <label>:7                                       ; preds = %2
-  %8 = getelementptr inbounds %"struct.pov::Interior_Struct"* %Interior, i64 0, i32 10, !dbg !1223
-  %9 = load %"struct.pov::Media_Struct"** %8, align 8, !dbg !1223, !tbaa !1200
-  tail call void @_ZN3pov13Destroy_MediaEPNS_12Media_StructE(%"struct.pov::Media_Struct"* %9) #6, !dbg !1225
-  %10 = bitcast %"struct.pov::Interior_Struct"* %Interior to i8*, !dbg !1226
-  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %10, i8* getelementptr inbounds ([69 x i8]* @.str, i64 0, i64 0), i32 286) #6, !dbg !1226
-  tail call void @llvm.dbg.value(metadata %"struct.pov::Interior_Struct"* null, i64 0, metadata !801, metadata !1128), !dbg !1215
-  br label %11, !dbg !1228
+if.then:                                          ; preds = %land.lhs.true
+  %IMedia = getelementptr inbounds %"struct.pov::Interior_Struct"* %Interior, i64 0, i32 10, !dbg !986
+  %1 = load %"struct.pov::Media_Struct"** %IMedia, align 8, !dbg !986, !tbaa !974
+  tail call void @_ZN3pov13Destroy_MediaEPNS_12Media_StructE(%"struct.pov::Media_Struct"* %1) #6, !dbg !986
+  %2 = bitcast %"struct.pov::Interior_Struct"* %Interior to i8*, !dbg !988
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %2, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), i32 286) #6, !dbg !988
+  tail call void @llvm.dbg.value(metadata !990, i64 0, metadata !798), !dbg !988
+  br label %if.end, !dbg !991
 
-; <label>:11                                      ; preds = %0, %7, %2
-  ret void, !dbg !1229
+if.end:                                           ; preds = %entry, %if.then, %land.lhs.true
+  ret void, !dbg !992
 }
