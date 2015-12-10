@@ -31,7 +31,7 @@ def convert_to_ir(root_dir, benchmark, output_dir):
                     convert_command = 'clang++ -Os -S -emit-llvm ' + compile_flags + ' {0} -o {1}'.format(input_full_path, output_full_path, path)
                 print convert_command
                 # print 'Converting: {0}'.format(input_full_path)
-                subprocess.call(convert_command, shell=True)
+                # subprocess.call(convert_command, shell=True)
 
 if __name__ == '__main__':
     parser = ArgumentParser()
