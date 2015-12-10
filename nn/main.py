@@ -31,7 +31,7 @@ class LSTMPredictor(object):
     self.num_steps = num_steps = config.num_steps
     size = config.hidden_size
     vocab_size = config.vocab_size
-    num_buckets = config.num_buckets
+    self.num_buckets = num_buckets = config.num_buckets
     initial_learning_rate = config.initial_learning_rate
 
     self._input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
@@ -61,6 +61,7 @@ class LSTMPredictor(object):
     softmax_W = tf.get_variable("softmax_W", [size, num_buckets])
     softmax_b = tf.get_variable("softmax_b", [num_buckets])
     logits = tf.nn.softmax(tf.matmul(mean_output,softmax_W) + softmax_b, name="logistic")
+    self._logits = logits
 
     cross_entropy = -tf.reduce_sum(self.targets * tf.log(tf.clip_by_value(logits,1e-10,1.0)))
     self._cross_entropy = cross_entropy
@@ -105,6 +106,10 @@ class LSTMPredictor(object):
     return self._accuracy
 
   @property
+  def logits(self):
+    return self._logits
+
+  @property
   def lr(self):
     return self._lr
 
@@ -117,7 +122,7 @@ class TrainConfig(object):
   initial_learning_rate = 0.001
   num_steps = 100
   hidden_size = 128
-  max_epoch = 20
+  max_epoch = 2
   keep_prob = 0.8
   batch_size = 20
   vocab_size = 10000
@@ -145,7 +150,7 @@ def data_iterator(data, batch_size):
 
     yield (x, y)
 
-def run_epoch(session, m, data, eval_op, verbose=False):
+def run_epoch(session, m, data, eval_op, verbose=False, save_logits=False):
   """Runs the model on the given data."""
   num_iterations = int(math.ceil(data[0].shape[0] / m.batch_size))
 
@@ -153,10 +158,17 @@ def run_epoch(session, m, data, eval_op, verbose=False):
   total_dist = 0
   total_xent = 0
 
+  all_logits = np.zeros([data[0].shape[0], m.num_buckets])
+
   for step, (x, y) in enumerate(data_iterator(data, m.batch_size)):
-    acc, dist, xent, _ = session.run([m.accuracy, m.distance, m.cross_entropy, eval_op],
+    acc, dist, xent, logits, _ = session.run([m.accuracy, m.distance, m.cross_entropy, m.logits, eval_op],
                                  {m.input_data: x,
                                   m.targets: y})
+
+    logit_begin_index = step * m.batch_size
+    logit_end_index = (step + 1) * m.batch_size
+    all_logits[logit_begin_index:logit_end_index, :] = logits
+
     total_accuracy += acc * m.batch_size
     total_dist += dist * m.batch_size
     total_xent += xent
@@ -168,6 +180,12 @@ def run_epoch(session, m, data, eval_op, verbose=False):
   avg_accuracy = total_accuracy / data[0].shape[0]
   avg_dist = total_dist / data[0].shape[0]
   avg_xent = total_xent / data[0].shape[0]
+
+  # if you want to save logits to file
+  if save_logits:
+    np.savetxt("data.csv", data[0], delimiter=",")
+    np.savetxt("actual.csv", data[1], delimiter=",")
+    np.savetxt("predicted.csv", all_logits, delimiter=",")
 
   return avg_accuracy, avg_dist, avg_xent
 
@@ -187,9 +205,8 @@ def main(unused_args):
   config = get_config()
   eval_config = get_config()
   eval_config.batch_size = 1
-  eval_config.num_steps = 1
 
-  # TODO: replace artificially generated training data
+  # TODO: replace artificially generated training data with real data
   train_size = 10000
   train_data = create_random_data(train_size, config.vocab_size, config.num_steps, config.num_buckets)
   valid_size = 3000
@@ -209,16 +226,17 @@ def main(unused_args):
     tf.initialize_all_variables().run()
 
     for i in range(config.max_epoch):
+      start = time.time()
       print("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
       train_accuracy, train_dist, train_xent = run_epoch(session, m, train_data, m.train_op,
                                    verbose=True)
       print("Epoch: %d Train Accuracy: %.3f Train Distance: %.3f Train Cross-Entropy %.3f" % (i + 1, train_accuracy, train_dist, train_xent))
       valid_accuracy, valid_dist, valid_xent = run_epoch(session, mvalid, valid_data, tf.no_op())
       print("Epoch: %d Valid Accuracy: %.3f Valid Distance: %.3f Valid Cross-Entropy %.3f" % (i + 1, valid_accuracy, valid_dist, valid_xent))
+      print("Epoch %d Execution Time: %ds" % (i + 1, time.time() - start))
 
-    test_accuracy, test_dist, test_xent = run_epoch(session, mtest, test_data, tf.no_op())
-    print("Test Accuracy: %.3f Test Distance: %.3f Test Cross-Entropy %.3f" % (i + 1, test_accuracy, test_dist, test_xent))
-
+    test_accuracy, test_dist, test_xent = run_epoch(session, mtest, test_data, tf.no_op(), save_logits=True)
+    print("Test Accuracy: %.3f Test Distance: %.3f Test Cross-Entropy %.3f" % (test_accuracy, test_dist, test_xent))
 
 if __name__ == "__main__":
   tf.app.run()
