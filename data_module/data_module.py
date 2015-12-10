@@ -18,6 +18,7 @@ class Data_Module:
         self.training_examples = []
         self.current_train_index = 0
         self.current_test_index = 0
+        self.lengths = []
 
         max_width = 0
         for benchmark in os.listdir(self.valgrind_path):
@@ -34,6 +35,8 @@ class Data_Module:
 
                         if len(tokens.split(",")) > max_width:
                             max_width = len(tokens.split(","))
+                        
+                        self.lengths.append(len(tokens.split(",")))
 
                         if random.random() < test_percent:
                             self.test_examples.append(Example(tokens.split(","),value))
@@ -48,6 +51,9 @@ class Data_Module:
         for example in self.test_examples:
             for i in range(len(example.tokens), max_width):
                 example.tokens.append(0)
+
+    def get_lengths(self):
+        return self.lengths
 
     def get_number_train_examples(self):
         return len(self.training_examples)
@@ -108,18 +114,28 @@ class Data_Module:
     def test_iterator(self, num_examples):
         return self.generic_iterator(self.test_examples, num_examples)
 
-# def main():
-#     d = Data_Module()
-#
-#     print d.get_number_train_examples(), d.get_number_test_examples()
-#
-#     # train_buckets, test_buckets = d.get_bucket_breakdown()
-#     # for value in sorted(train_buckets):
-#     #     print value, train_buckets[value] + test_buckets[value]
-#
-#     # num_examples = 100
-#     # num_training_iterations = int(math.ceil(d.get_number_train_examples() / num_examples))
-#     # for i, (tokens_array, results_array) in enumerate(d.train_iterator(num_examples)):
-#     #     print tokens_array.shape, results_array.shape
-#
-# main()
+def main():
+    d = Data_Module()
+
+    print d.get_number_train_examples(), d.get_number_test_examples()
+
+    train_buckets, test_buckets = d.get_bucket_breakdown()
+    for value in sorted(train_buckets):
+        print value, train_buckets[value] + test_buckets[value]
+
+
+    lens = d.get_lengths()
+    num = 0
+    for i in lens:
+        if  i < 200:
+            num += 1
+    print "num",num
+    print "o/w",len(lens) - num
+        
+
+    num_examples = 100
+    num_training_iterations = int(math.ceil(d.get_number_train_examples() / num_examples))
+    for i, (tokens_array, results_array) in enumerate(d.train_iterator(num_examples)):
+        print tokens_array.shape, results_array.shape
+
+main()
