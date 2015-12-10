@@ -75,7 +75,7 @@ class Data_Module:
 
         return training_buckets, testing_buckets
 
-    def generic_iterator(self, all_examples, batch_size):
+    def generic_iterator(self, all_examples, batch_size, num_buckets):
         length = len(all_examples)
 
         tokens_array = []
@@ -87,7 +87,10 @@ class Data_Module:
 
             # if you've gathered enough examples OR reached the end of set
             if (i % batch_size) == (batch_size - 1):
-                yield (np.array(tokens_array), np.array(results_array))
+                results_matrix = np.array(results_array, dtype=int)
+                results_matrix = np.eye(num_buckets)[results_matrix]
+
+                yield (np.array(tokens_array), results_matrix)
                 tokens_array = []
                 results_array = []
 
@@ -99,14 +102,15 @@ class Data_Module:
                 remaining_len = batch_size - tokens_matrix.shape[0]
                 tokens_matrix = np.vstack((tokens_matrix, np.zeros([remaining_len, tokens_matrix.shape[1]])))
                 results_matrix = np.concatenate((results_matrix, np.zeros(remaining_len)))
+                results_matrix = np.eye(num_buckets)[results_matrix]
 
                 yield (tokens_matrix, results_matrix)
 
-    def train_iterator(self, num_examples):
-        return self.generic_iterator(self.training_examples, num_examples)
+    def train_iterator(self, num_examples, num_buckets):
+        return self.generic_iterator(self.training_examples, num_examples, num_buckets)
 
-    def test_iterator(self, num_examples):
-        return self.generic_iterator(self.test_examples, num_examples)
+    def test_iterator(self, num_examples, num_buckets):
+        return self.generic_iterator(self.test_examples, num_examples, num_buckets)
 
 # def main():
 #     d = Data_Module()
