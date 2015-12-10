@@ -142,4 +142,3 @@ def main():
     for i, (tokens_array, results_array) in enumerate(d.train_iterator(num_examples)):
         print tokens_array.shape, results_array.shape
 
-main()
